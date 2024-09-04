@@ -1,32 +1,34 @@
-import { Transform } from "stream"
-import { pipeline } from "stream/promises"
-
-import { ObjectId } from "mongodb"
-import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import { JOB_STATUS } from "shared/models"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 export const cancelRemovedJobsPartners = async () => {
-  const cursor = await getDbCollection("computed_jobs_partners").find({ validated: true }).project({ _id: 0, validated: 0, errors: 0 }).stream()
-
-  const transform = new Transform({
-    objectMode: true,
-    async transform(computedJobPartner: Omit<IJobsPartnersOfferPrivate, "_id" | "created_at">, encoding, callback: (error?: Error | null, data?: any) => void) {
-      try {
-        await getDbCollection("jobs_partners").updateOne(
-          { partner_job_id: computedJobPartner.partner_job_id },
-          {
-            $set: { ...computedJobPartner },
-            $setOnInsert: { _id: new ObjectId() },
-          },
-          { upsert: true }
-        )
-        callback(null)
-      } catch (err: unknown) {
-        err instanceof Error ? callback(err) : callback(new Error(String(err)))
-      }
+  const job_update_date = new Date()
+  const pipeline = [
+    {
+      $lookup: {
+        from: "computed_jobs_partners",
+        localField: "partner_job_id",
+        foreignField: "partner_job_id",
+        as: "matched",
+      },
     },
-  })
+    {
+      $match: {
+        matched: { $size: 0 },
+      },
+    },
+    {
+      $set: { offer_status: JOB_STATUS.ANNULEE, job_update_date },
+    },
+    {
+      $merge: {
+        into: "jobs_partners",
+        whenMatched: "merge",
+        whenNotMatched: "discard",
+      },
+    },
+  ]
 
-  await pipeline(cursor, transform)
+  await getDbCollection("jobs_partners").aggregate(pipeline)
 }
