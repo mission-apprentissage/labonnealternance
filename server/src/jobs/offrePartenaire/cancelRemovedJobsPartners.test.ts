@@ -1,5 +1,6 @@
 import { createComputedJobPartner, createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
+import { JOB_STATUS } from "shared/models"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -14,11 +15,11 @@ describe("Canceling jobs_partners that have been removed from computed_jobs_part
     // création de plusieurs éléments dans computed jobs partners . certains avec validated true, d'autres false
     // certains éléments validated de computed sont déjà présents dans jobs partners
     // certains éléments dans jobs partners ne sont pas dans computed
-    await createJobPartner({ partner_job_id: "existing_1" })
-    await createJobPartner({ partner_job_id: "existing_2" })
-    await createJobPartner({ partner_job_id: "existing_3" })
-    await createJobPartner({ partner_job_id: "existing_4" })
-    await createJobPartner({ partner_job_id: "existing_5" })
+    await createJobPartner({ partner_job_id: "existing_1", offer_status: JOB_STATUS.ACTIVE })
+    await createJobPartner({ partner_job_id: "existing_2", offer_status: JOB_STATUS.ACTIVE })
+    await createJobPartner({ partner_job_id: "existing_3", offer_status: JOB_STATUS.ACTIVE })
+    await createJobPartner({ partner_job_id: "existing_4", offer_status: JOB_STATUS.ACTIVE })
+    await createJobPartner({ partner_job_id: "existing_5", offer_status: JOB_STATUS.ACTIVE })
     await createComputedJobPartner({ partner_job_id: "computed_1", validated: true })
     await createComputedJobPartner({ partner_job_id: "computed_2", validated: false })
     await createComputedJobPartner({ partner_job_id: "existing_3", validated: true })
@@ -35,8 +36,16 @@ describe("Canceling jobs_partners that have been removed from computed_jobs_part
     await cancelRemovedJobsPartners()
 
     // // les éléments non validated ne doivent pas se retrouver dans jobs partners
-    const countNonValidatedInJobsPartners = await getDbCollection("jobs_partners").countDocuments({ partner_job_id: { $in: ["computed_2", "computed_4"] } })
-    expect.soft(countNonValidatedInJobsPartners).toEqual(0)
+    const countCanceledJobsPartners = await getDbCollection("jobs_partners").countDocuments({
+      partner_job_id: { $in: ["existing_1", "existing_2"] },
+      offer_status: JOB_STATUS.ANNULEE,
+    })
+    expect.soft(countCanceledJobsPartners).toEqual(2)
+
+    const collectionA = await getDbCollection("jobs_partners").find().toArray()
+    console.log(collectionA.map((doc) => doc.partner_job_id))
+    const collectionB = await getDbCollection("computed_jobs_partners").find().toArray()
+    console.log(collectionB.map((doc) => doc.partner_job_id))
 
     // // les éléments validated et absents initialement de jobs partners doivent se rerouver dans jobs partners
     // const countNewValidatedInJobsPartners = await getDbCollection("jobs_partners").countDocuments({ partner_job_id: { $in: ["computed_1"] } })
