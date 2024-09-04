@@ -642,7 +642,7 @@ export async function updateJobOffer(id: ObjectId, identity: IApiApprentissageTo
   }
 
   if (current.offer_status !== JOB_STATUS.ACTIVE) {
-    throw forbidden("Job must be active in order to be modified")
+    throw badRequest("Job must be active in order to be modified")
   }
 
   if (current.partner !== identity.organisation) {
