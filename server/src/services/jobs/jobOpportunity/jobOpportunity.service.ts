@@ -1,17 +1,17 @@
 import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
 import { DateTime } from "luxon"
 import { Document, Filter, ObjectId } from "mongodb"
-import { assertUnreachable, IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS, parseEnum } from "shared"
-import { NIVEAU_DIPLOME_LABEL, NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, TRAINING_CONTRACT_TYPE } from "shared/constants"
+import { IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS, assertUnreachable, parseEnum } from "shared"
+import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import {
-  IJobsPartnersRecruiterApi,
-  IJobsPartnersOfferPrivate,
-  JOBPARTNERS_LABEL,
   IJobsPartnersOfferApi,
-  ZJobsPartnersRecruiterApi,
-  INiveauDiplomeEuropeen,
+  IJobsPartnersOfferPrivate,
+  IJobsPartnersRecruiterApi,
   IJobsPartnersWritableApi,
+  INiveauDiplomeEuropeen,
+  JOBPARTNERS_LABEL,
+  ZJobsPartnersRecruiterApi,
 } from "shared/models/jobsPartners.model"
 import { zOpcoLabel } from "shared/models/opco.model"
 import { IJobOpportunityGetQuery, IJobOpportunityGetQueryResolved, IJobsOpportunityResponse } from "shared/routes/jobOpportunity.routes"
@@ -31,7 +31,7 @@ import { getFtJobsV2, getSomeFtJobs } from "../../ftjob.service"
 import { FTJob } from "../../ftjob.service.types"
 import { TJobSearchQuery, TLbaItemResult } from "../../jobOpportunity.service.types"
 import { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "../../lbaitem.shared.service.types"
-import { getLbaJobs, getLbaJobsV2, IJobResult, incrementLbaJobsViewCount } from "../../lbajob.service"
+import { IJobResult, getLbaJobs, getLbaJobsV2, incrementLbaJobsViewCount } from "../../lbajob.service"
 import { jobsQueryValidator } from "../../queryValidator.service"
 import { getRecruteursLbaFromDB, getSomeCompanies } from "../../recruteurLba.service"
 import { getNearestCommuneByGeoPoint } from "../../referentiel/commune/commune.referentiel.service"
@@ -589,18 +589,23 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAppr
   }
 
   const { offer_creation, offer_expiration, offer_rome_code, offer_diploma_level_european, workplace_address_label, ...rest } = data
+  const now = new Date()
 
   const invariantData: Pick<IJobsPartnersOfferPrivate, InvariantFields> = {
     _id: current?._id ?? new ObjectId(),
-    created_at: current?.created_at ?? new Date(),
+    created_at: current?.created_at ?? now,
     partner: identity.organisation,
   }
+
+  const defaultOfferExpiration = current?.offer_expiration
+    ? current.offer_expiration
+    : DateTime.fromJSDate(invariantData.created_at, { zone: "Europe/Paris" }).plus({ months: 2 }).startOf("day").toJSDate()
 
   const writableData: Omit<IJobsPartnersOfferPrivate, InvariantFields> = {
     offer_rome_code: romeCode,
     offer_status: JOB_STATUS.ACTIVE,
     offer_creation: offer_creation ?? invariantData.created_at,
-    offer_expiration: offer_expiration ?? DateTime.fromJSDate(invariantData.created_at, { zone: "Europe/Paris" }).plus({ months: 2 }).startOf("day").toJSDate(),
+    offer_expiration: offer_expiration || defaultOfferExpiration,
     offer_diploma_level:
       offer_diploma_level_european == null
         ? null
@@ -608,6 +613,7 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAppr
             european: offer_diploma_level_european,
             label: NIVEAU_DIPLOME_LABEL[offer_diploma_level_european],
           },
+    updated_at: now,
     ...rest,
     // Data derived from workplace_address_label take priority over workplace_siret
     ...siretData,
@@ -633,6 +639,10 @@ export async function updateJobOffer(id: ObjectId, identity: IApiApprentissageTo
   // TODO: Move to authorisation service
   if (!current) {
     throw notFound("Job offer not found")
+  }
+
+  if (current.offer_status !== JOB_STATUS.ACTIVE) {
+    throw badRequest("Job must be active in order to be modified")
   }
 
   if (current.partner !== identity.organisation) {
