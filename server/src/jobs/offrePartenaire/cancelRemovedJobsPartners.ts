@@ -3,7 +3,6 @@ import { JOB_STATUS } from "shared/models"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 export const cancelRemovedJobsPartners = async () => {
-  const job_update_date = new Date()
   const pipeline = [
     {
       $lookup: {
@@ -19,11 +18,15 @@ export const cancelRemovedJobsPartners = async () => {
       },
     },
     {
-      $set: { offer_status: JOB_STATUS.ANNULEE, job_update_date },
+      $set: { offer_status: JOB_STATUS.ANNULEE },
+    },
+    {
+      $unset: "matched",
     },
     {
       $merge: {
         into: "jobs_partners",
+        on: ["partner_job_id", "partner_label"],
         whenMatched: "merge",
         whenNotMatched: "discard",
       },
