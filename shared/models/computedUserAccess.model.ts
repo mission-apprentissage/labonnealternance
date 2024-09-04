@@ -9,6 +9,7 @@ export const ZComputedUserAccess = z
     entreprises: z.array(z.string()),
     cfas: z.array(z.string()),
     opcos: z.array(extensions.buildEnum(OPCOS_LABEL)),
+    partnerLabel: z.array(z.string()),
   })
   .strict()
 
