@@ -20,10 +20,10 @@ export const ZJobsPartnersRecruiterApi = z.object({
   _id: zObjectId,
 
   workplace_siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
-  workplace_website: z.string().nullable().describe("Site web de l'entreprise").default(null),
-  workplace_name: z.string().nullable().describe("Nom customisé de l'entreprise"),
   workplace_brand: z.string().nullable().describe("Nom d'enseigne de l'établissement"),
   workplace_legal_name: z.string().nullable().describe("Nom légal de l'entreprise"),
+  workplace_website: z.string().url().nullable().describe("Site web de l'entreprise").default(null),
+  workplace_name: z.string().nullable().describe("Nom customisé de l'entreprise").default(null),
   workplace_description: z.string().nullable().describe("description de l'entreprise").default(null),
   workplace_size: z.string().nullable().describe("Taille de l'entreprise"),
   workplace_address: z.object({
@@ -35,8 +35,8 @@ export const ZJobsPartnersRecruiterApi = z.object({
   workplace_naf_code: z.string().nullable().describe("code NAF"),
   workplace_naf_label: z.string().nullable().describe("Libelle NAF"),
 
-  apply_url: z.string().nullable().describe("URL pour candidater").default(null),
-  apply_phone: z.string().nullable().describe("Téléphone de contact").default(null),
+  apply_url: z.string().url().nullable().describe("URL pour candidater").default(null),
+  apply_phone: extensions.telephone.nullable().describe("Téléphone de contact").default(null),
 })
 
 export const zDiplomaEuropeanLevel = z.enum(["3", "4", "5", "6", "7"])
@@ -56,7 +56,7 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   contract_type: z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)).nullable().describe("type de contrat, formaté à l'insertion"),
   contract_remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).nullable().describe("Format de travail de l'offre").default(null),
 
-  offer_title: z.string().describe("Titre de l'offre"),
+  offer_title: z.string().min(3).describe("Titre de l'offre"),
   offer_rome_codes: z.array(extensions.romeCode()).describe("Code rome de l'offre"),
   offer_description: z.string().describe("description de l'offre, soit définit par le partenaire, soit celle du ROME si pas suffisament grande"),
   offer_diploma_level: z
@@ -75,11 +75,12 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
 })
 
 const ZJobsPartnersRecruiterPrivateFields = z.object({
-  apply_email: z.string().nullable().describe("Email de contact").default(null),
+  apply_email: z.string().email().nullable().describe("Email de contact").default(null),
   offer_multicast: z.boolean().default(true).describe("Si l'offre peut être diffusé sur l'ensemble des plateformes partenaires"),
   offer_origin: z.string().nullable().describe("Origine de l'offre provenant d'un aggregateur").default(null),
 
   created_at: z.date().describe("Date de creation de l'offre"),
+  updated_at: z.date().describe("Date de mise à jour de l'offre"),
 })
 
 export const ZJobsPartnersRecruiterPrivate = ZJobsPartnersRecruiterApi.merge(ZJobsPartnersRecruiterPrivateFields)
@@ -123,6 +124,7 @@ const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
 
   workplace_description: true,
   workplace_website: true,
+  workplace_name: true,
 }).extend({
   contract_start: z.string({ message: "Expected ISO 8601 date string" }).datetime({ offset: true, message: "Expected ISO 8601 date string" }).pipe(z.coerce.date()),
   offer_creation: z

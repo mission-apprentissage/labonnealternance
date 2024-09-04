@@ -28,6 +28,7 @@ exports[`createJobOffer > should create a job offer with the minimal data 1`] = 
   "offer_to_be_acquired_skills": [],
   "partner": "Some organisation",
   "partner_job_id": null,
+  "updated_at": 2024-06-18T00:00:00.000Z,
   "workplace_address": {
     "label": "20 AVENUE DE SEGUR 75007 PARIS",
   },
@@ -176,6 +177,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "offer_to_be_acquired_skills": [],
     "partner": "Hellowork",
     "partner_job_id": null,
+    "updated_at": 2021-01-28T15:00:00.000Z,
     "workplace_address": {
       "label": "126 RUE DE L'UNIVERSITE 75007 PARIS",
     },
@@ -259,6 +261,7 @@ exports[`updateJobOffer > should update a job offer with the minimal data 1`] = 
   "offer_to_be_acquired_skills": [],
   "partner": "Some organisation",
   "partner_job_id": null,
+  "updated_at": 2024-06-18T00:00:00.000Z,
   "workplace_address": {
     "label": "20 AVENUE DE SEGUR 75007 PARIS",
   },

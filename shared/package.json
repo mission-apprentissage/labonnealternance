@@ -19,6 +19,7 @@
     "@fastify/swagger": "^8.15.0",
     "bson": "^6.7.0",
     "dayjs": "^1.11.13",
+    "libphonenumber-js": "^1.11.7",
     "lodash-es": "^4.17.21",
     "luhn": "^2.4.1",
     "openapi3-ts": "^4.4.0",
