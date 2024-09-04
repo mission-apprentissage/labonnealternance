@@ -33,5 +33,5 @@ export const cancelRemovedJobsPartners = async () => {
     },
   ]
 
-  await getDbCollection("jobs_partners").aggregate(pipeline)
+  await getDbCollection("jobs_partners").aggregate(pipeline).toArray()
 }
