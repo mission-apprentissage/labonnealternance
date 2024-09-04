@@ -5,7 +5,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 
 import { ZPointGeometry } from "./address.model"
 import { IModelDescriptor, zObjectId } from "./common"
-import { JOB_STATUS, ZJobStartDateCreate } from "./job.model"
+import { JOB_STATUS_ENGLISH } from "./job.model"
 import { zOpcoLabel } from "./opco.model"
 
 const collectionName = "jobs_partners" as const
@@ -20,6 +20,8 @@ export const ZJobsPartnersRecruiterApi = z.object({
   _id: zObjectId,
 
   workplace_siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
+  workplace_brand: z.string().nullable().describe("Nom d'enseigne de l'établissement"),
+  workplace_legal_name: z.string().nullable().describe("Nom légal de l'entreprise"),
   workplace_website: z.string().url().nullable().describe("Site web de l'entreprise").default(null),
   workplace_name: z.string().nullable().describe("Nom customisé de l'entreprise").default(null),
   workplace_description: z.string().nullable().describe("description de l'entreprise").default(null),
@@ -55,8 +57,7 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   contract_remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).nullable().describe("Format de travail de l'offre").default(null),
 
   offer_title: z.string().min(3).describe("Titre de l'offre"),
-  // TODO: pluriel ?
-  offer_rome_code: z.array(extensions.romeCode()).describe("Code rome de l'offre"),
+  offer_rome_codes: z.array(extensions.romeCode()).describe("Code rome de l'offre"),
   offer_description: z.string().describe("description de l'offre, soit définit par le partenaire, soit celle du ROME si pas suffisament grande"),
   offer_diploma_level: z
     .object({
@@ -70,7 +71,7 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   offer_creation: z.date().nullable().describe("Date de creation de l'offre").default(null),
   offer_expiration: z.date().nullable().describe("Date d'expiration de l'offre. Si pas présente, mettre à creation_date + 60j").default(null),
   offer_opening_count: z.number().describe("Nombre de poste disponible").default(1),
-  offer_status: extensions.buildEnum(JOB_STATUS).default(JOB_STATUS.ACTIVE).describe("Status de l'offre (surtout utilisé pour les offres ajouté par API)"),
+  offer_status: extensions.buildEnum(JOB_STATUS_ENGLISH).default(JOB_STATUS_ENGLISH.ACTIVE).describe("Status de l'offre (surtout utilisé pour les offres ajouté par API)"),
 })
 
 const ZJobsPartnersRecruiterPrivateFields = z.object({
@@ -99,6 +100,8 @@ export type IJobsPartnersRecruiterPrivate = z.output<typeof ZJobsPartnersRecruit
 export type IJobsPartnersOfferPrivate = z.output<typeof ZJobsPartnersOfferPrivate>
 export type IJobsPartnersOfferPrivateInput = z.input<typeof ZJobsPartnersOfferPrivate>
 
+const TIME_CLOCK_TOLERANCE = 300_000
+
 const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
   partner_job_id: true,
 
@@ -107,12 +110,10 @@ const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
   contract_remote: true,
 
   offer_title: true,
-  offer_rome_code: true,
+  offer_rome_codes: true,
   offer_desired_skills: true,
   offer_to_be_acquired_skills: true,
   offer_access_conditions: true,
-  offer_creation: true,
-  offer_expiration: true,
   offer_opening_count: true,
   offer_origin: true,
   offer_multicast: true,
@@ -125,10 +126,26 @@ const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
   workplace_website: true,
   workplace_name: true,
 }).extend({
-  // TODO: job start date must be greate or equal to today's date --> why ?
-  contract_start: ZJobStartDateCreate(),
-
-  offer_rome_code: ZJobsPartnersOfferPrivate.shape.offer_rome_code.nullable().default(null),
+  contract_start: z.string({ message: "Expected ISO 8601 date string" }).datetime({ offset: true, message: "Expected ISO 8601 date string" }).pipe(z.coerce.date()),
+  offer_creation: z
+    .string({ message: "Expected ISO 8601 date string" })
+    .datetime({ offset: true, message: "Expected ISO 8601 date string" })
+    .pipe(
+      z.coerce.date().refine((value) => value.getTime() < Date.now() + TIME_CLOCK_TOLERANCE, {
+        message: "Creation date cannot be in the future",
+      })
+    )
+    .nullable(),
+  offer_expiration: z
+    .string({ message: "Expected ISO 8601 date string" })
+    .datetime({ offset: true, message: "Expected ISO 8601 date string" })
+    .pipe(
+      z.coerce.date().refine((value) => value === null || value.getTime() > Date.now() - TIME_CLOCK_TOLERANCE, {
+        message: "Expiration date cannot be in the past",
+      })
+    )
+    .nullable(),
+  offer_rome_codes: ZJobsPartnersOfferPrivate.shape.offer_rome_codes.nullable().default(null),
   offer_description: ZJobsPartnersOfferPrivate.shape.offer_description.min(30, "Job description should be at least 30 characters"),
   offer_diploma_level_european: zDiplomaEuropeanLevel.nullable().default(null),
 
@@ -152,14 +169,15 @@ export const ZJobsPartnersWritableApi = ZJobsPartnersPostApiBodyBase.superRefine
 })
 
 export type IJobsPartnersWritableApi = z.output<typeof ZJobsPartnersWritableApi>
+export type IJobsPartnersWritableApiInput = z.input<typeof ZJobsPartnersWritableApi>
 
 export default {
   zod: ZJobsPartnersOfferPrivate,
   indexes: [
-    [{ workplace_geopoint: "2dsphere", offer_multicast: 1, offer_rome_code: 1 }, {}],
-    [{ offer_multicast: 1, offer_rome_code: 1, offer_creation: -1 }, {}],
+    [{ workplace_geopoint: "2dsphere", offer_multicast: 1, offer_rome_codes: 1 }, {}],
+    [{ offer_multicast: 1, offer_rome_codes: 1, offer_creation: -1 }, {}],
     [{ offer_multicast: 1, "offer_diploma_level.european": 1, offer_creation: -1 }, {}],
-    [{ offer_multicast: 1, offer_rome_code: 1, "offer_diploma_level.european": 1, offer_creation: -1 }, {}],
+    [{ offer_multicast: 1, offer_rome_codes: 1, "offer_diploma_level.european": 1, offer_creation: -1 }, {}],
 
     [{ partner: 1, partner_job_id: 1 }, {}],
   ],

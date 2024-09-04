@@ -1,7 +1,7 @@
 import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
 import { DateTime } from "luxon"
 import { Document, Filter, ObjectId } from "mongodb"
-import { IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS, assertUnreachable, parseEnum } from "shared"
+import { IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS_ENGLISH, assertUnreachable, parseEnum, translateJobStatus } from "shared"
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import {
@@ -203,7 +203,7 @@ export const getJobsPartnersFromDB = async ({ romes, geo, diplomaLevel }: IJobOp
   }
 
   if (romes) {
-    query.offer_rome_code = { $in: romes }
+    query.offer_rome_codes = { $in: romes }
   }
 
   if (diplomaLevel) {
@@ -222,6 +222,7 @@ export const getJobsPartnersFromDB = async ({ romes, geo, diplomaLevel }: IJobOp
               query,
             },
           },
+          { $sort: { distance: 1, offer_creation: -1 } },
         ]
 
   return await getDbCollection("jobs_partners")
@@ -253,6 +254,8 @@ export const convertLbaCompanyToJobPartnerRecruiterApi = (recruteursLba: ILbaCom
       workplace_siret: recruteurLba.siret,
       workplace_website: recruteurLba.website,
       workplace_name: recruteurLba.enseigne ?? recruteurLba.raison_sociale,
+      workplace_brand: recruteurLba.enseigne,
+      workplace_legal_name: recruteurLba.raison_sociale,
       workplace_description: null,
       workplace_size: recruteurLba.company_size,
       workplace_address: {
@@ -317,7 +320,7 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IJobRes
       contract_type: job.job_type,
       contract_remote: null,
       offer_title: job.rome_label!,
-      offer_rome_code: job.rome_code,
+      offer_rome_codes: job.rome_code,
       offer_description: job.rome_detail.definition,
       offer_diploma_level: getDiplomaEuropeanLevel(job),
       offer_desired_skills: job.rome_detail.competences.savoir_etre_professionnel?.map((x) => x.libelle) ?? [],
@@ -326,11 +329,13 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IJobRes
       offer_creation: job.job_creation_date ?? null,
       offer_expiration: job.job_expiration_date ?? null,
       offer_opening_count: job.job_count ?? 1,
-      offer_status: job.job_status,
+      offer_status: translateJobStatus(job.job_status),
 
       workplace_siret: recruiter.establishment_siret,
       workplace_website: null,
       workplace_name: recruiter.establishment_enseigne ?? recruiter.establishment_raison_sociale ?? null,
+      workplace_brand: recruiter.establishment_enseigne ?? null,
+      workplace_legal_name: recruiter.establishment_raison_sociale ?? null,
       workplace_description: null,
       workplace_size: recruiter.establishment_size ?? null,
       workplace_address: {
@@ -363,7 +368,7 @@ export const convertFranceTravailJobToJobPartnerOfferApi = (offresEmploiFranceTr
       contract_remote: null,
 
       offer_title: offreFT.intitule,
-      offer_rome_code: [offreFT.romeCode],
+      offer_rome_codes: [offreFT.romeCode],
       offer_description: offreFT.description,
       offer_diploma_level: null,
       offer_desired_skills: [],
@@ -372,10 +377,12 @@ export const convertFranceTravailJobToJobPartnerOfferApi = (offresEmploiFranceTr
       offer_creation: new Date(offreFT.dateCreation),
       offer_expiration: null,
       offer_opening_count: offreFT.nombrePostes,
-      offer_status: JOB_STATUS.ACTIVE,
+      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
 
       // Try to find entreprise SIRET from  offreFT.entreprise.siret ?
       workplace_siret: null,
+      workplace_brand: null,
+      workplace_legal_name: null,
       workplace_website: null,
       workplace_name: offreFT.entreprise.nom,
       workplace_description: offreFT.entreprise.description,
@@ -526,7 +533,16 @@ async function resolveWorkplaceLocationFromAddress(workplace_address_label: stri
 // List of fields impacted by change of the siret
 type WorkplaceSiretData = Pick<
   IJobsPartnersOfferApi,
-  "workplace_geopoint" | "workplace_address" | "workplace_name" | "workplace_naf_label" | "workplace_naf_code" | "workplace_opco" | "workplace_idcc" | "workplace_size"
+  | "workplace_geopoint"
+  | "workplace_address"
+  | "workplace_name"
+  | "workplace_legal_name"
+  | "workplace_brand"
+  | "workplace_naf_label"
+  | "workplace_naf_code"
+  | "workplace_opco"
+  | "workplace_idcc"
+  | "workplace_size"
 >
 
 async function resolveWorkplaceDataFromSiret(workplace_siret: string, zodError: ZodError): Promise<WorkplaceSiretData | null> {
@@ -541,6 +557,8 @@ async function resolveWorkplaceDataFromSiret(workplace_siret: string, zodError: 
     workplace_geopoint: entrepriseData.geopoint,
     workplace_address: { label: entrepriseData.address! },
     workplace_name: entrepriseData.establishment_enseigne ?? entrepriseData.establishment_raison_sociale ?? null,
+    workplace_brand: entrepriseData.establishment_enseigne ?? null,
+    workplace_legal_name: entrepriseData.establishment_raison_sociale ?? null,
     workplace_naf_label: entrepriseData.naf_label ?? null,
     workplace_naf_code: entrepriseData.naf_code ?? null,
     workplace_opco: zOpcoLabel.safeParse(opcoData?.opco).data ?? null,
@@ -551,8 +569,8 @@ async function resolveWorkplaceDataFromSiret(workplace_siret: string, zodError: 
 }
 
 async function resolveRomeCodes(data: IJobsPartnersWritableApi, siretData: WorkplaceSiretData | null, zodError: ZodError): Promise<string[] | null> {
-  if (data.offer_rome_code && data.offer_rome_code.length > 0) {
-    return data.offer_rome_code
+  if (data.offer_rome_codes && data.offer_rome_codes.length > 0) {
+    return data.offer_rome_codes
   }
 
   if (siretData === null) {
@@ -561,7 +579,7 @@ async function resolveRomeCodes(data: IJobsPartnersWritableApi, siretData: Workp
 
   const romeoResponse = await getRomeoInfos({ intitule: data.offer_title, contexte: siretData.workplace_naf_label ?? undefined })
   if (!romeoResponse) {
-    zodError.addIssue({ code: "custom", path: ["offer_rome_code"], message: "ROME is not provided and we are unable to retrieve ROME code for the given job title" })
+    zodError.addIssue({ code: "custom", path: ["offer_rome_codes"], message: "ROME is not provided and we are unable to retrieve ROME code for the given job title" })
     return null
   }
 
@@ -588,7 +606,7 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAppr
     throw internal("unexpected: cannot resolve all required data for the job offer")
   }
 
-  const { offer_creation, offer_expiration, offer_rome_code, offer_diploma_level_european, workplace_address_label, ...rest } = data
+  const { offer_creation, offer_expiration, offer_rome_codes, offer_diploma_level_european, workplace_address_label, ...rest } = data
   const now = new Date()
 
   const invariantData: Pick<IJobsPartnersOfferPrivate, InvariantFields> = {
@@ -602,8 +620,8 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAppr
     : DateTime.fromJSDate(invariantData.created_at, { zone: "Europe/Paris" }).plus({ months: 2 }).startOf("day").toJSDate()
 
   const writableData: Omit<IJobsPartnersOfferPrivate, InvariantFields> = {
-    offer_rome_code: romeCode,
-    offer_status: JOB_STATUS.ACTIVE,
+    offer_rome_codes: romeCode,
+    offer_status: JOB_STATUS_ENGLISH.ACTIVE,
     offer_creation: offer_creation ?? invariantData.created_at,
     offer_expiration: offer_expiration || defaultOfferExpiration,
     offer_diploma_level:
@@ -641,7 +659,7 @@ export async function updateJobOffer(id: ObjectId, identity: IApiApprentissageTo
     throw notFound("Job offer not found")
   }
 
-  if (current.offer_status !== JOB_STATUS.ACTIVE) {
+  if (current.offer_status !== JOB_STATUS_ENGLISH.ACTIVE) {
     throw badRequest("Job must be active in order to be modified")
   }
 

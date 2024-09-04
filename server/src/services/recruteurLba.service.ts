@@ -183,6 +183,7 @@ export const getRecruteursLbaFromDB = async ({ geo, romes }: IRecruteursLbaSearc
               query,
             },
           },
+          { $sort: { distance: 1, last_update_at: -1 } },
         ]
 
   return await getDbCollection("recruteurslba")

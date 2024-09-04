@@ -1,6 +1,6 @@
 import { ObjectId } from "bson"
 
-import { JOB_STATUS } from "../models"
+import { JOB_STATUS_ENGLISH } from "../models"
 import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "../models/jobsPartners.model"
 
 export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOfferPrivate>): IJobsPartnersOfferPrivate {
@@ -9,6 +9,8 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     workplace_siret: null,
     workplace_website: null,
     workplace_name: null,
+    workplace_brand: null,
+    workplace_legal_name: null,
     workplace_description: null,
     workplace_size: null,
     workplace_address: { label: "126 RUE DE L'UNIVERSITE 75007 PARIS" },
@@ -32,7 +34,7 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     contract_remote: null,
 
     offer_title: "Une super offre d'alternance",
-    offer_rome_code: [],
+    offer_rome_codes: [],
     offer_description: "Attention il te faut une super motivation pour ce job",
     offer_diploma_level: null,
     offer_desired_skills: [],
@@ -41,7 +43,7 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     offer_creation: null,
     offer_expiration: null,
     offer_opening_count: 1,
-    offer_status: JOB_STATUS.ACTIVE,
+    offer_status: JOB_STATUS_ENGLISH.ACTIVE,
 
     apply_email: null,
     offer_multicast: true,

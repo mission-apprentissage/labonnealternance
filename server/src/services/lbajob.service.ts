@@ -169,6 +169,7 @@ export const getLbaJobsV2 = async ({
           },
           { $limit: limit },
           { $unwind: { path: "$jobs" } },
+          { $sort: { distance: 1, "jobs.job_creation_date": -1 } },
         ]
 
   const recruiters = await getDbCollection("recruiters")

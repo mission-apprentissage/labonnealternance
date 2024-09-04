@@ -20,7 +20,7 @@ exports[`createJobOffer > should create a job offer with the minimal data 1`] = 
   "offer_multicast": true,
   "offer_opening_count": 1,
   "offer_origin": null,
-  "offer_rome_code": [
+  "offer_rome_codes": [
     "M1602",
   ],
   "offer_status": "Active",
@@ -32,6 +32,7 @@ exports[`createJobOffer > should create a job offer with the minimal data 1`] = 
   "workplace_address": {
     "label": "20 AVENUE DE SEGUR 75007 PARIS",
   },
+  "workplace_brand": null,
   "workplace_description": null,
   "workplace_geopoint": {
     "coordinates": [
@@ -41,6 +42,7 @@ exports[`createJobOffer > should create a job offer with the minimal data 1`] = 
     "type": "Point",
   },
   "workplace_idcc": 1459,
+  "workplace_legal_name": "DIRECTION INTERMINISTERIELLE DU NUMERIQUE",
   "workplace_naf_code": "84.11Z",
   "workplace_naf_label": "Administration publique générale",
   "workplace_name": "DIRECTION INTERMINISTERIELLE DU NUMERIQUE",
@@ -72,7 +74,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "offer_diploma_level": null,
     "offer_expiration": null,
     "offer_opening_count": 1,
-    "offer_rome_code": [
+    "offer_rome_codes": [
       "M1602",
     ],
     "offer_status": "Active",
@@ -87,6 +89,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "workplace_address": {
       "label": undefined,
     },
+    "workplace_brand": null,
     "workplace_description": null,
     "workplace_geopoint": {
       "coordinates": [
@@ -96,6 +99,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
       "type": "Point",
     },
     "workplace_idcc": null,
+    "workplace_legal_name": "ASSEMBLEE NATIONALE",
     "workplace_naf_code": null,
     "workplace_naf_label": null,
     "workplace_name": "ASSEMBLEE NATIONALE",
@@ -117,7 +121,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "offer_diploma_level": null,
     "offer_expiration": null,
     "offer_opening_count": 1,
-    "offer_rome_code": [
+    "offer_rome_codes": [
       "M1602",
     ],
     "offer_status": "Active",
@@ -128,6 +132,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "workplace_address": {
       "label": "",
     },
+    "workplace_brand": null,
     "workplace_description": "",
     "workplace_geopoint": {
       "coordinates": [
@@ -137,6 +142,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
       "type": "Point",
     },
     "workplace_idcc": null,
+    "workplace_legal_name": null,
     "workplace_naf_code": null,
     "workplace_naf_label": null,
     "workplace_name": "",
@@ -163,7 +169,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "offer_multicast": true,
     "offer_opening_count": 1,
     "offer_origin": null,
-    "offer_rome_code": [
+    "offer_rome_codes": [
       "M1602",
     ],
     "offer_status": "Active",
@@ -175,6 +181,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "workplace_address": {
       "label": "126 RUE DE L'UNIVERSITE 75007 PARIS",
     },
+    "workplace_brand": null,
     "workplace_description": null,
     "workplace_geopoint": {
       "coordinates": [
@@ -184,6 +191,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
       "type": "Point",
     },
     "workplace_idcc": null,
+    "workplace_legal_name": null,
     "workplace_naf_code": null,
     "workplace_naf_label": null,
     "workplace_name": null,
@@ -203,6 +211,7 @@ exports[`findJobsOpportunities > should execute query 2`] = `
     "workplace_address": {
       "label": "null null null null",
     },
+    "workplace_brand": "ASSEMBLEE NATIONALE - La vraie",
     "workplace_description": null,
     "workplace_geopoint": {
       "coordinates": [
@@ -212,6 +221,7 @@ exports[`findJobsOpportunities > should execute query 2`] = `
       "type": "Point",
     },
     "workplace_idcc": null,
+    "workplace_legal_name": "ASSEMBLEE NATIONALE",
     "workplace_naf_code": "8411Z",
     "workplace_naf_label": "Administration publique générale",
     "workplace_name": "ASSEMBLEE NATIONALE - La vraie",
@@ -243,7 +253,7 @@ exports[`updateJobOffer > should update a job offer with the minimal data 1`] = 
   "offer_multicast": true,
   "offer_opening_count": 1,
   "offer_origin": null,
-  "offer_rome_code": [
+  "offer_rome_codes": [
     "M1602",
   ],
   "offer_status": "Active",
@@ -255,6 +265,7 @@ exports[`updateJobOffer > should update a job offer with the minimal data 1`] = 
   "workplace_address": {
     "label": "20 AVENUE DE SEGUR 75007 PARIS",
   },
+  "workplace_brand": null,
   "workplace_description": null,
   "workplace_geopoint": {
     "coordinates": [
@@ -264,6 +275,7 @@ exports[`updateJobOffer > should update a job offer with the minimal data 1`] = 
     "type": "Point",
   },
   "workplace_idcc": 1459,
+  "workplace_legal_name": "DIRECTION INTERMINISTERIELLE DU NUMERIQUE",
   "workplace_naf_code": "84.11Z",
   "workplace_naf_label": "Administration publique générale",
   "workplace_name": "DIRECTION INTERMINISTERIELLE DU NUMERIQUE",
