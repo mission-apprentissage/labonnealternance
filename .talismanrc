@@ -203,6 +203,8 @@ fileignoreconfig:
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
+- filename: server/static/templates/mail-candidat-new.mjml.ejs
+  checksum: fa6a626f54f6599476fa13515c257b7384496e8175cb0101e8514711edd29609
 scopeconfig:
 - scope: node
 custom_patterns:

@@ -16,6 +16,7 @@ import { s3Delete, s3ReadAsString, s3Write } from "@/common/utils/awsUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { UserForAccessToken, userWithAccountToUserForToken } from "@/security/accessTokenService"
+import dayjs from "@/services/dayjs.service"
 
 import { logger } from "../common/logger"
 import { manageApiError } from "../common/utils/errorManager"
@@ -953,7 +954,15 @@ export const processApplicationEmails = {
       to: application.applicant_email,
       subject: `Votre candidature chez ${application.company_name}`,
       template: getEmailTemplate(type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "mail-candidat-matcha" : "mail-candidat"),
-      data: { ...sanitizeApplicationForEmail(application), ...images, publicUrl, urlOfDetail, urlOfDetailNoUtm },
+      data: {
+        ...sanitizeApplicationForEmail(application),
+        ...images,
+        publicUrl,
+        urlOfDetail,
+        urlOfDetailNoUtm,
+        applicationWebsiteOrigin: getApplicationWebsiteOrigin(application.caller),
+        reminderDate: dayjs(application.created_at).add(10, "days").format("DD/MM/YYYY"),
+      },
       attachments: [
         {
           filename: application.applicant_attachment_name,
@@ -968,6 +977,19 @@ export const processApplicationEmails = {
       throw internal("Email candidat destinataire rejeté.")
     }
   },
+}
+
+const getApplicationWebsiteOrigin = (caller: IApplication["caller"]) => {
+  switch (caller) {
+    case "1jeune1solution":
+      return "1jeune1solution"
+    case "oc":
+    case "openclassrooms":
+      return "OpenClassrooms"
+
+    default:
+      return "La bonne alternance"
+  }
 }
 
 const getJobOrCompany = async (application: IApplication): Promise<IJobOrCompany> => {
