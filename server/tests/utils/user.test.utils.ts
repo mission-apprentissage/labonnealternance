@@ -45,7 +45,7 @@ export function getFixture() {
   return new Fixture({ seed }).extend([
     Generator({
       schema: ZodArray,
-      filter: ({ context }) => context.path.at(-1) === "offer_rome_code",
+      filter: ({ context }) => context.path.at(-1) === "offer_rome_codes",
       output: () => [generateRandomRomeCode()],
     }),
     Generator({

@@ -1565,7 +1565,6 @@ describe("createJobOffer", () => {
     const job = await getDbCollection("jobs_partners").findOne({ _id: result })
     expect(job?.created_at).toEqual(now)
     expect(job?.partner_label).toEqual(identity.organisation)
-    expect(job?.offer_rome_code).toEqual(["M1602"])
     expect(job?.offer_rome_codes).toEqual(["M1602"])
     expect(job?.offer_status).toEqual(JOB_STATUS.ACTIVE)
     expect(job?.offer_creation).toEqual(now)
