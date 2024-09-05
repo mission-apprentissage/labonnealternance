@@ -229,7 +229,7 @@ async function getEntrepriseResource<S extends WithSecurityScheme>(schema: S, re
   return results.flatMap((_) => (_ ? [_] : []))
 }
 
-async function getJobsPartnerResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources["jobPartner"]> {
+async function getJobsPartnerResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources["jobPartners"]> {
   if (!schema.securityScheme.resources.jobPartner) {
     return []
   }
@@ -248,7 +248,7 @@ async function getJobsPartnerResource<S extends WithSecurityScheme>(schema: S, r
 }
 
 async function getResources<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources> {
-  const [recruiters, jobs, users, applications, entreprises, jobPartner] = await Promise.all([
+  const [recruiters, jobs, users, applications, entreprises, jobPartners] = await Promise.all([
     getRecruitersResource(schema, req),
     getJobsResource(schema, req),
     getUserResource(schema, req),
@@ -263,7 +263,7 @@ async function getResources<S extends WithSecurityScheme>(schema: S, req: IReque
     users,
     applications,
     entreprises,
-    jobPartner,
+    jobPartners,
   }
 }
 
@@ -324,7 +324,7 @@ function isAuthorized(access: AccessPermission, userAccess: ComputedUserAccess, 
     resources.applications.every((application) => canAccessApplication(userAccess, application)) &&
     resources.users.every((user) => canAccessUser(userAccess, user)) &&
     resources.entreprises.every((entreprise) => canAccessEntreprise(userAccess, entreprise)) &&
-    resources.jobPartner.every((job) => canAccessJobPartner(userAccess, job))
+    resources.jobPartners.every((job) => canAccessJobPartner(userAccess, job))
   )
 }
 
