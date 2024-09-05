@@ -7,8 +7,16 @@ export const cancelRemovedJobsPartners = async () => {
     {
       $lookup: {
         from: "computed_jobs_partners",
-        localField: "partner_job_id",
-        foreignField: "partner_job_id",
+        let: { partnerLabel: "$partner_label", partnerJobId: "$partner_job_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [{ $eq: ["$partner_label", "$$partnerLabel"] }, { $eq: ["$partner_job_id", "$$partnerJobId"] }],
+              },
+            },
+          },
+        ],
         as: "matched",
       },
     },

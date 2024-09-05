@@ -28,8 +28,8 @@ describe("Canceling jobs_partners that have been removed from computed_jobs_part
     await createComputedJobPartner({ partner_job_id: "existing_5", partner_label: "hw", validated: false })
 
     return async () => {
-      // await getDbCollection("computed_jobs_partners").deleteMany({})
-      // await getDbCollection("jobs_partners").deleteMany({})
+      await getDbCollection("computed_jobs_partners").deleteMany({})
+      await getDbCollection("jobs_partners").deleteMany({})
     }
   })
 
