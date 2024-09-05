@@ -173,7 +173,7 @@ export const getComputedUserAccess = (userId: string, grantedRoles: IRoleManagem
       }
       return []
     }),
-    partnerLabel: [],
+    partner: [],
   }
   return userAccess
 }

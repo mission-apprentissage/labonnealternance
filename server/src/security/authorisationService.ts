@@ -305,7 +305,7 @@ function canAccessEntreprise(userAccess: ComputedUserAccess, resource: Entrepris
 
 function canAccessJobPartner(userAccess: ComputedUserAccess, resource: JobPartnerResource): boolean {
   const { job } = resource
-  return userAccess.partnerLabel.includes(job.partner)
+  return userAccess.partner.includes(job.partner)
 }
 
 function isAuthorized(access: AccessPermission, userAccess: ComputedUserAccess, resources: Resources): boolean {
@@ -384,7 +384,7 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
       cfas: [],
       entreprises: [],
       opcos: opco ? [opco] : [],
-      partnerLabel: [],
+      partner: [],
     }
     if (!isAuthorized(requestedAccess, userAccess, resources)) {
       throw forbidden("non autorisé")
@@ -406,7 +406,7 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
       cfas: [],
       entreprises: [],
       opcos: [],
-      partnerLabel: [organisation],
+      partner: [organisation],
     }
     if (!isAuthorized(requestedAccess, userAccess, resources)) {
       throw forbidden("non autorisé")
