@@ -5,6 +5,7 @@ import { ADMIN, CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
 import { ComputedUserAccess, IApplication, IJob, IRecruiter } from "shared/models"
 import { ICFA } from "shared/models/cfa.model"
 import { IEntreprise } from "shared/models/entreprise.model"
+import { IJobsPartnersOfferApi } from "shared/models/jobsPartners.model"
 import { AccessEntityType, IRoleManagement } from "shared/models/roleManagement.model"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { AccessPermission, AccessResourcePath } from "shared/security/permissions"
@@ -21,6 +22,7 @@ type RecruiterResource = { recruiter: IRecruiter } & ({ type: "ENTREPRISE"; entr
 type JobResource = { job: IJob; recruiterResource: RecruiterResource }
 type ApplicationResource = { application: IApplication; jobResource?: JobResource; applicantId?: string }
 type EntrepriseResource = { entreprise: IEntreprise }
+type JobPartnerResource = { job: IJobsPartnersOfferApi }
 
 type Resources = {
   users: Array<{ _id: string }>
@@ -28,6 +30,7 @@ type Resources = {
   jobs: Array<JobResource>
   applications: Array<ApplicationResource>
   entreprises: Array<EntrepriseResource>
+  jobPartners: Array<JobPartnerResource>
 }
 export type ResourceIds = {
   recruiters?: string[]
@@ -226,13 +229,32 @@ async function getEntrepriseResource<S extends WithSecurityScheme>(schema: S, re
   return results.flatMap((_) => (_ ? [_] : []))
 }
 
+async function getJobsPartnerResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources["jobPartners"]> {
+  if (!schema.securityScheme.resources.jobPartner) {
+    return []
+  }
+
+  const results: (JobPartnerResource | null)[] = await Promise.all(
+    schema.securityScheme.resources.jobPartner.map(async (jobPartnerDef): Promise<JobPartnerResource | null> => {
+      if ("_id" in jobPartnerDef) {
+        const _id = getAccessResourcePathValue(jobPartnerDef._id, req)
+        const job = await getDbCollection("jobs_partners").findOne({ _id })
+        return job ? { job } : null
+      }
+      assertUnreachable(jobPartnerDef)
+    })
+  )
+  return results.flatMap((_) => (_ ? [_] : []))
+}
+
 async function getResources<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources> {
-  const [recruiters, jobs, users, applications, entreprises] = await Promise.all([
+  const [recruiters, jobs, users, applications, entreprises, jobPartners] = await Promise.all([
     getRecruitersResource(schema, req),
     getJobsResource(schema, req),
     getUserResource(schema, req),
     getApplicationResource(schema, req),
     getEntrepriseResource(schema, req),
+    getJobsPartnerResource(schema, req),
   ])
 
   return {
@@ -241,6 +263,7 @@ async function getResources<S extends WithSecurityScheme>(schema: S, req: IReque
     users,
     applications,
     entreprises,
+    jobPartners,
   }
 }
 
@@ -280,6 +303,11 @@ function canAccessEntreprise(userAccess: ComputedUserAccess, resource: Entrepris
   return userAccess.entreprises.includes(entreprise._id.toString()) || Boolean(entrepriseOpco && userAccess.opcos.includes(entrepriseOpco))
 }
 
+function canAccessJobPartner(userAccess: ComputedUserAccess, resource: JobPartnerResource): boolean {
+  const { job } = resource
+  return userAccess.partner.includes(job.partner)
+}
+
 function isAuthorized(access: AccessPermission, userAccess: ComputedUserAccess, resources: Resources): boolean {
   if (typeof access === "object") {
     if ("some" in access) {
@@ -295,7 +323,8 @@ function isAuthorized(access: AccessPermission, userAccess: ComputedUserAccess, 
     resources.jobs.every((job) => canAccessJob(userAccess, job)) &&
     resources.applications.every((application) => canAccessApplication(userAccess, application)) &&
     resources.users.every((user) => canAccessUser(userAccess, user)) &&
-    resources.entreprises.every((entreprise) => canAccessEntreprise(userAccess, entreprise))
+    resources.entreprises.every((entreprise) => canAccessEntreprise(userAccess, entreprise)) &&
+    resources.jobPartners.every((job) => canAccessJobPartner(userAccess, job))
   )
 }
 
@@ -355,6 +384,7 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
       cfas: [],
       entreprises: [],
       opcos: opco ? [opco] : [],
+      partner: [],
     }
     if (!isAuthorized(requestedAccess, userAccess, resources)) {
       throw forbidden("non autorisé")
@@ -369,7 +399,18 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
     if (schema.securityScheme.access !== null) {
       throw forbidden("access non autorisé")
     }
-    // dans le futur, la gestion de droits du client api apprentissage sera ici
+    const { organisation } = userWithType.value
+    const userAccess: ComputedUserAccess = {
+      admin: false,
+      users: [],
+      cfas: [],
+      entreprises: [],
+      opcos: [],
+      partner: [organisation],
+    }
+    if (!isAuthorized(requestedAccess, userAccess, resources)) {
+      throw forbidden("non autorisé")
+    }
   } else {
     assertUnreachable(userType)
   }
