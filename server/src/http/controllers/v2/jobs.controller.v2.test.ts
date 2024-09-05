@@ -355,7 +355,11 @@ describe("POST /jobs", async () => {
     expect(await getDbCollection("jobs_partners").countDocuments({})).toBe(0)
   })
 
-  it('should return 403 if user does not have "jobs:write" permission', async () => {
+  /**
+   * KBA 20240905
+   * Pas nécessaire dans la V1, sera réajuster dans un second temps
+   */
+  it.skip('should return 403 if user does not have "jobs:write" permission', async () => {
     const restrictedToken = getApiApprentissageTestingToken({ email: "mail@mail.com", organisation: "Un super Partenaire", habilitations: { "jobs:write": false } })
 
     const response = await httpClient().inject({
@@ -536,7 +540,11 @@ describe("PUT /jobs/:id", async () => {
     expect(response.json()).toEqual({ error: "Not Found", message: "Job offer not found", statusCode: 404 })
   })
 
-  it('should return 403 if user does not have "jobs:write" permission', async () => {
+  /**
+   * KBA 20240905
+   * Pas nécessaire dans la V1, sera réajuster dans un second temps
+   */
+  it.skip('should return 403 if user does not have "jobs:write" permission', async () => {
     const restrictedToken = getApiApprentissageTestingToken({ email: "mail@mail.com", organisation: "Un super Partenaire", habilitations: { "jobs:write": false } })
 
     const response = await httpClient().inject({

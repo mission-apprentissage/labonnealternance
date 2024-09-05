@@ -644,10 +644,13 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAppr
 }
 
 export async function createJobOffer(identity: IApiApprentissageTokenData, data: IJobsPartnersWritableApi): Promise<ObjectId> {
-  // TODO: Move to authorisation service
-  if (!identity.habilitations["jobs:write"]) {
-    throw forbidden("You are not allowed to create a job offer")
-  }
+  /**
+   * KBA 20240905
+   * Pas nécessaire dans la V1, sera réajuster dans un second temps
+   */
+  // if (!identity.habilitations["jobs:write"]) {
+  //   throw forbidden("You are not allowed to create a job offer")
+  // }
   return upsertJobOffer(data, identity, null)
 }
 
@@ -667,9 +670,13 @@ export async function updateJobOffer(id: ObjectId, identity: IApiApprentissageTo
     throw forbidden("You are not allowed to update this job offer")
   }
 
-  if (!identity.habilitations["jobs:write"]) {
-    throw forbidden("You are not allowed to update this job offer")
-  }
+  /**
+   * KBA 20240905
+   * Pas nécessaire dans la V1, sera réajuster dans un second temps
+   */
+  // if (!identity.habilitations["jobs:write"]) {
+  //   throw forbidden("You are not allowed to update this job offer")
+  // }
 
   await upsertJobOffer(data, identity, current)
 }
