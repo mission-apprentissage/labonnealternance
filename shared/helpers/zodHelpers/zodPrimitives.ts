@@ -1,6 +1,7 @@
 import { capitalize } from "lodash-es"
 
-import { CODE_INSEE_REGEX, CODE_NAF_REGEX, CODE_ROME_REGEX, LATITUDE_REGEX, LONGITUDE_REGEX, PHONE_REGEX, RNCP_REGEX, SIRET_REGEX, UAI_REGEX } from "../../constants/regex"
+import { CODE_INSEE_REGEX, CODE_NAF_REGEX, CODE_ROME_REGEX, LATITUDE_REGEX, LONGITUDE_REGEX, RNCP_REGEX, SIRET_REGEX, UAI_REGEX } from "../../constants/regex"
+import { validatePhone } from "../../validators/phoneValidator"
 import { validateSIRET } from "../../validators/siretValidator"
 import { removeUrlsFromText } from "../common"
 import { z } from "../zodWithOpenApi"
@@ -38,7 +39,7 @@ export const extensions = {
       .string()
       .trim()
       .transform((value) => removeUrlsFromText(value)), /// is it a phone extensions still ??
-  telephone: () => z.string().trim().regex(PHONE_REGEX, "Téléphone invalide"),
+  telephone: z.string().trim().refine(validatePhone, { message: "Phone number is not valid. Please use international format prefix (example: +33 for France)" }),
   code_naf: () =>
     z.preprocess(
       (v: unknown) => (typeof v === "string" ? v.replace(".", "") : v), // parfois, le code naf contient un point

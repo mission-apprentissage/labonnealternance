@@ -295,9 +295,9 @@ export const zJobsRoutesV2 = {
         })}`,
       },
     },
-    "/jobs": {
+    "/jobs/search": {
       method: "get",
-      path: "/jobs",
+      path: "/jobs/search",
       querystring: ZJobOpportunityGetQuery,
       response: {
         "200": ZJobsOpportunityResponse,

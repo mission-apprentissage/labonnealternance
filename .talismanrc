@@ -55,12 +55,10 @@ fileignoreconfig:
   checksum: 1f3c9b8cd7c578252a0c41ca9028672712a5bca2ce1686cba83ff60305708305
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
   checksum: dc77c04efc26dcd8ca4816f392ab24a32a92cb45ca4b94adb593a08e7a2d231e
-- filename: server/src/http/controllers/jobs.controller.v2.test.ts
-  checksum: b3850d8bb637ae7215e9cc30537769c2b6bd69b82e56855bbb50a5fff3a4a280
 - filename: server/src/http/controllers/updateRecruteurLba.controller.test.ts
   checksum: 71dd55af4f1f44fd2b69dee91f0fc8006f3b9e0bd80d40271c73697d4eea9ea2
 - filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts
-  checksum: 5d0ff6b14c5c635c149ae700c05574439449e3a3755b49b3e24a9973b304992d
+  checksum: 21b3574a8d82bba190ecdf1ace1b5db58db0fa45e6890506de530bc0781380af
 - filename: server/src/http/routes/appointmentRequest.controller.ts
   checksum: d2770daa97ae332eec0b66497fdb717229895583ac3bfd48af1a830b36504968
 - filename: server/src/http/routes/auth/password.controller.ts
@@ -135,6 +133,8 @@ fileignoreconfig:
   checksum: d7b85c3dff488cec523d78f0926e15dbea41071a1864bda62b4d6caeb2541df3
 - filename: shared/models/applications.model.ts
   checksum: 0db1feff739fda6ff77b2a460e214c03bbeb0451c2e4cf44556f5314c1896bd7
+- filename: shared/models/jobPartners/jobPartners.model.test.ts
+  checksum: 0a83cdb4c968e270d2e6bd8593b6941bb68f1e0c0df55f43b6cbc94a781a233c
 - filename: shared/models/lbaItem.model.ts
   checksum: 144ab34674299cdac89d96ffa6ed834814135c54e1621e1fa47ec5012924f862
 - filename: shared/routes/appointments.routes.ts
