@@ -30,7 +30,7 @@ type Resources = {
   jobs: Array<JobResource>
   applications: Array<ApplicationResource>
   entreprises: Array<EntrepriseResource>
-  jobPartner: Array<JobPartnerResource>
+  jobPartners: Array<JobPartnerResource>
 }
 export type ResourceIds = {
   recruiters?: string[]
