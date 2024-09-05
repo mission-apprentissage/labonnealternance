@@ -586,7 +586,7 @@ async function resolveRomeCodes(data: IJobsPartnersWritableApi, siretData: Workp
   return [romeoResponse]
 }
 
-type InvariantFields = "_id" | "created_at" | "partner"
+type InvariantFields = "_id" | "created_at" | "partner_label"
 
 async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiApprentissageTokenData, current: IJobsPartnersOfferPrivate | null): Promise<ObjectId> {
   const zodError = new ZodError([])
@@ -612,7 +612,7 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAppr
   const invariantData: Pick<IJobsPartnersOfferPrivate, InvariantFields> = {
     _id: current?._id ?? new ObjectId(),
     created_at: current?.created_at ?? now,
-    partner: identity.organisation,
+    partner_label: identity.organisation,
   }
 
   const defaultOfferExpiration = current?.offer_expiration

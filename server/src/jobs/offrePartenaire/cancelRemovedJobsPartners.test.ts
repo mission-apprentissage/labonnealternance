@@ -1,6 +1,6 @@
 import { createComputedJobPartner, createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-import { JOB_STATUS } from "shared/models"
+import { JOB_STATUS_ENGLISH } from "shared/models"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -15,11 +15,11 @@ describe("Canceling jobs_partners that have been removed from computed_jobs_part
     // création de plusieurs éléments dans computed jobs partners . certains avec validated true, d'autres false
     // certains éléments validated de computed sont déjà présents dans jobs partners
     // certains éléments dans jobs partners ne sont pas dans computed
-    await createJobPartner({ partner_job_id: "existing_1", partner_label: "ft", offer_status: JOB_STATUS.ACTIVE })
-    await createJobPartner({ partner_job_id: "existing_2", partner_label: "ft", offer_status: JOB_STATUS.ACTIVE })
-    await createJobPartner({ partner_job_id: "existing_3", partner_label: "hw", offer_status: JOB_STATUS.ACTIVE })
-    await createJobPartner({ partner_job_id: "existing_4", partner_label: "hw", offer_status: JOB_STATUS.ACTIVE })
-    await createJobPartner({ partner_job_id: "existing_5", partner_label: "hw", offer_status: JOB_STATUS.ACTIVE })
+    await createJobPartner({ partner_job_id: "existing_1", partner_label: "ft", offer_status: JOB_STATUS_ENGLISH.ACTIVE })
+    await createJobPartner({ partner_job_id: "existing_2", partner_label: "ft", offer_status: JOB_STATUS_ENGLISH.ACTIVE })
+    await createJobPartner({ partner_job_id: "existing_3", partner_label: "hw", offer_status: JOB_STATUS_ENGLISH.ACTIVE })
+    await createJobPartner({ partner_job_id: "existing_4", partner_label: "hw", offer_status: JOB_STATUS_ENGLISH.ACTIVE })
+    await createJobPartner({ partner_job_id: "existing_5", partner_label: "hw", offer_status: JOB_STATUS_ENGLISH.ACTIVE })
     await createComputedJobPartner({ partner_job_id: "existing_1", partner_label: "notft", validated: true })
     await createComputedJobPartner({ partner_job_id: "computed_1", partner_label: "ft", validated: true })
     await createComputedJobPartner({ partner_job_id: "computed_2", partner_label: "ft", validated: false })
@@ -39,7 +39,7 @@ describe("Canceling jobs_partners that have been removed from computed_jobs_part
     // les éléments de jobs_partners qui ne sont plus dans computed doivent être taggés Annulé
     const countCanceledJobsPartners = await getDbCollection("jobs_partners").countDocuments({
       partner_job_id: { $in: ["existing_1", "existing_2"] },
-      offer_status: JOB_STATUS.ANNULEE,
+      offer_status: JOB_STATUS_ENGLISH.ANNULEE,
     })
     expect.soft(countCanceledJobsPartners).toEqual(2)
 
