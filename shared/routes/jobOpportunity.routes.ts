@@ -7,7 +7,7 @@ export const ZJobOpportunityGetQuery = z
     latitude: extensions.latitude().nullable().default(null),
     longitude: extensions.longitude().nullable().default(null),
     radius: z.number().min(0).max(200).default(30),
-    diplomaLevel: zDiplomaEuropeanLevel.optional(),
+    target_diploma_level: zDiplomaEuropeanLevel.optional(),
     romes: extensions.romeCodeArray().nullable().default(null),
     rncp: extensions.rncpCode().nullable().default(null),
   })
