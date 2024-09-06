@@ -59,7 +59,7 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   offer_title: z.string().min(3).describe("Titre de l'offre"),
   offer_rome_codes: z.array(extensions.romeCode()).describe("Code rome de l'offre"),
   offer_description: z.string().describe("description de l'offre, soit définit par le partenaire, soit celle du ROME si pas suffisament grande"),
-  offer_diploma_level: z
+  offer_target_diploma: z
     .object({
       european: zDiplomaEuropeanLevel.describe("Niveau de diplome visé en fin d'étude, transformé pour chaque partenaire"),
       label: z.string().describe("Libellé du niveau de diplome"),
@@ -176,8 +176,8 @@ export default {
   indexes: [
     [{ workplace_geopoint: "2dsphere", offer_multicast: 1, offer_rome_codes: 1 }, {}],
     [{ offer_multicast: 1, offer_rome_codes: 1, offer_creation: -1 }, {}],
-    [{ offer_multicast: 1, "offer_diploma_level.european": 1, offer_creation: -1 }, {}],
-    [{ offer_multicast: 1, offer_rome_codes: 1, "offer_diploma_level.european": 1, offer_creation: -1 }, {}],
+    [{ offer_multicast: 1, "offer_target_diploma.european": 1, offer_creation: -1 }, {}],
+    [{ offer_multicast: 1, offer_rome_codes: 1, "offer_target_diploma.european": 1, offer_creation: -1 }, {}],
     [{ partner_label: 1, partner_job_id: 1 }, { unique: true }],
   ],
   collectionName,

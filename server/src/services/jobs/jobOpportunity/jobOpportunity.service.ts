@@ -197,7 +197,7 @@ export const getJobsQuery = async (
   return result
 }
 
-export const getJobsPartnersFromDB = async ({ romes, geo, diplomaLevel }: IJobOpportunityGetQueryResolved): Promise<IJobsPartnersOfferPrivate[]> => {
+export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }: IJobOpportunityGetQueryResolved): Promise<IJobsPartnersOfferPrivate[]> => {
   const query: Filter<IJobsPartnersOfferPrivate> = {
     offer_multicast: true,
   }
@@ -206,8 +206,8 @@ export const getJobsPartnersFromDB = async ({ romes, geo, diplomaLevel }: IJobOp
     query.offer_rome_codes = { $in: romes }
   }
 
-  if (diplomaLevel) {
-    query["offer_diploma_level.european"] = { $in: [diplomaLevel, null] }
+  if (target_diploma_level) {
+    query["offer_target_diploma.european"] = { $in: [target_diploma_level, null] }
   }
 
   const filterStages: Document[] =
@@ -272,7 +272,7 @@ export const convertLbaCompanyToJobPartnerRecruiterApi = (recruteursLba: ILbaCom
   )
 }
 
-function getDiplomaEuropeanLevel(job: IJob): IJobsPartnersOfferApi["offer_diploma_level"] {
+function getDiplomaEuropeanLevel(job: IJob): IJobsPartnersOfferApi["offer_target_diploma"] {
   const label = parseEnum(NIVEAUX_POUR_LBA, job.job_level_label)
 
   switch (label) {
@@ -322,7 +322,7 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IJobRes
       offer_title: job.rome_label!,
       offer_rome_codes: job.rome_code,
       offer_description: job.rome_detail.definition,
-      offer_diploma_level: getDiplomaEuropeanLevel(job),
+      offer_target_diploma: getDiplomaEuropeanLevel(job),
       offer_desired_skills: job.rome_detail.competences.savoir_etre_professionnel?.map((x) => x.libelle) ?? [],
       offer_to_be_acquired_skills: job.rome_detail.competences.savoir_faire?.flatMap((x) => x.items.map((y) => `${x.libelle}: ${y.libelle}`)) ?? [],
       offer_access_conditions: job.rome_detail.acces_metier.split("\n"),
@@ -370,7 +370,7 @@ export const convertFranceTravailJobToJobPartnerOfferApi = (offresEmploiFranceTr
       offer_title: offreFT.intitule,
       offer_rome_codes: [offreFT.romeCode],
       offer_description: offreFT.description,
-      offer_diploma_level: null,
+      offer_target_diploma: null,
       offer_desired_skills: [],
       offer_to_be_acquired_skills: [],
       offer_access_conditions: offreFT.formations ? offreFT.formations?.map((formation) => `${formation.domaineLibelle} - ${formation.niveauLibelle}`) : [],
@@ -402,8 +402,8 @@ export const convertFranceTravailJobToJobPartnerOfferApi = (offresEmploiFranceTr
 }
 
 async function findFranceTravailOpportunities(query: IJobOpportunityGetQueryResolved, context: JobOpportunityRequestContext): Promise<IJobsPartnersOfferApi[]> {
-  const getFtDiploma = (diplomaLevel: INiveauDiplomeEuropeen | null): keyof typeof NIVEAUX_POUR_OFFRES_PE | null => {
-    switch (diplomaLevel) {
+  const getFtDiploma = (target_diploma_level: INiveauDiplomeEuropeen | null): keyof typeof NIVEAUX_POUR_OFFRES_PE | null => {
+    switch (target_diploma_level) {
       case "3":
         return "3 (CAP...)"
       case "4":
@@ -417,7 +417,7 @@ async function findFranceTravailOpportunities(query: IJobOpportunityGetQueryReso
       case null:
         return null
       default:
-        assertUnreachable(diplomaLevel)
+        assertUnreachable(target_diploma_level)
     }
   }
 
@@ -426,7 +426,7 @@ async function findFranceTravailOpportunities(query: IJobOpportunityGetQueryReso
     romes: query.romes ?? null,
     insee: null,
     radius: query.geo?.radius ?? 0,
-    diploma: getFtDiploma(query.diplomaLevel ?? null),
+    diploma: getFtDiploma(query.target_diploma_level ?? null),
   }
 
   if (query.geo !== null) {
@@ -452,8 +452,8 @@ async function findLbaJobOpportunities(query: IJobOpportunityGetQueryResolved): 
     limit: 150,
   }
 
-  if (query.diplomaLevel) {
-    payload.niveau = NIVEAU_DIPLOME_LABEL[query.diplomaLevel]
+  if (query.target_diploma_level) {
+    payload.niveau = NIVEAU_DIPLOME_LABEL[query.target_diploma_level]
   }
 
   const lbaJobs = await getLbaJobsV2(payload)
@@ -624,7 +624,7 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAppr
     offer_status: JOB_STATUS_ENGLISH.ACTIVE,
     offer_creation: offer_creation ?? invariantData.created_at,
     offer_expiration: offer_expiration || defaultOfferExpiration,
-    offer_diploma_level:
+    offer_target_diploma:
       offer_diploma_level_european == null
         ? null
         : {
@@ -644,10 +644,13 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAppr
 }
 
 export async function createJobOffer(identity: IApiApprentissageTokenData, data: IJobsPartnersWritableApi): Promise<ObjectId> {
-  // TODO: Move to authorisation service
-  if (!identity.habilitations["jobs:write"]) {
-    throw forbidden("You are not allowed to create a job offer")
-  }
+  /**
+   * KBA 20240905
+   * Pas nécessaire dans la V1, sera réajuster dans un second temps
+   */
+  // if (!identity.habilitations["jobs:write"]) {
+  //   throw forbidden("You are not allowed to create a job offer")
+  // }
   return upsertJobOffer(data, identity, null)
 }
 
@@ -667,9 +670,13 @@ export async function updateJobOffer(id: ObjectId, identity: IApiApprentissageTo
     throw forbidden("You are not allowed to update this job offer")
   }
 
-  if (!identity.habilitations["jobs:write"]) {
-    throw forbidden("You are not allowed to update this job offer")
-  }
+  /**
+   * KBA 20240905
+   * Pas nécessaire dans la V1, sera réajuster dans un second temps
+   */
+  // if (!identity.habilitations["jobs:write"]) {
+  //   throw forbidden("You are not allowed to update this job offer")
+  // }
 
   await upsertJobOffer(data, identity, current)
 }

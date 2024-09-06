@@ -391,7 +391,7 @@ const transformFormation = (rawFormation: IFormationCatalogue): ILbaItemFormatio
       },
     },
 
-    diplomaLevel: rawFormation.niveau ?? null,
+    target_diploma_level: rawFormation.niveau ?? null,
     diploma: rawFormation.diplome ?? null,
     cleMinistereEducatif: rawFormation.cle_ministere_educatif ?? null,
     cfd: rawFormation.cfd ?? null,
@@ -475,7 +475,7 @@ const transformFormationV2 = (rawFormation: IFormationCatalogue): ILbaItemFormat
       title: (rawFormation.intitule_long || rawFormation.intitule_court || rawFormation.intitule_rco) ?? null,
       idRco: rawFormation.id_formation ?? null,
       cleMinistereEducatif: rawFormation.cle_ministere_educatif ?? null,
-      diplomaLevel: rawFormation.niveau ?? null,
+      target_diploma_level: rawFormation.niveau ?? null,
       diploma: rawFormation.diplome ?? null,
       cfd: rawFormation.cfd ?? null,
       rncpCode: rawFormation.rncp_code ?? null,

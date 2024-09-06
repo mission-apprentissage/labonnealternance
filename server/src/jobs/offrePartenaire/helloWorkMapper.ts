@@ -40,7 +40,7 @@ const teletravailMapping: Record<string, TRAINING_REMOTE_TYPE> = {
   Occasionnel: TRAINING_REMOTE_TYPE.hybrid,
 }
 
-function getDiplomaLevel(job: IHelloWorkJob): IComputedJobsPartners["offer_diploma_level"] {
+function getDiplomaLevel(job: IHelloWorkJob): IComputedJobsPartners["offer_target_diploma"] {
   if (job.education == null) return null
 
   switch (job.education) {
@@ -97,7 +97,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     contract_duration: contractDuration,
     offer_title: title,
     offer_description: description && description.length >= 30 ? description : undefined,
-    offer_diploma_level: getDiplomaLevel(job),
+    offer_target_diploma: getDiplomaLevel(job),
     offer_desired_skills: profile == null ? [] : [profile],
     offer_access_conditions: [],
     offer_to_be_acquired_skills: [],

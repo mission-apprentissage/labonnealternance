@@ -821,14 +821,14 @@ describe("findJobsOpportunities", () => {
             latitude: parisFixture.centre.coordinates[1],
             radius: 30,
             romes: ["M1602"],
-            diplomaLevel: "4",
+            target_diploma_level: "4",
             rncp: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
 
         expect.soft(results.jobs).toHaveLength(2)
-        expect.soft(results.jobs.map((j) => j.offer_diploma_level)).toEqual(
+        expect.soft(results.jobs.map((j) => j.offer_target_diploma)).toEqual(
           expect.arrayContaining([
             null,
             {
@@ -1160,12 +1160,12 @@ describe("findJobsOpportunities", () => {
           generateJobsPartnersOfferPrivate({
             offer_rome_codes: ["M1602"],
             workplace_geopoint: parisFixture.centre,
-            offer_diploma_level: { european: "4", label: "BP, Bac, autres formations niveau (Bac)" },
+            offer_target_diploma: { european: "4", label: "BP, Bac, autres formations niveau (Bac)" },
           }),
           generateJobsPartnersOfferPrivate({
             offer_rome_codes: ["M1602"],
             workplace_geopoint: parisFixture.centre,
-            offer_diploma_level: { european: "3", label: "CAP, BEP, autres formations niveau (CAP)" },
+            offer_target_diploma: { european: "3", label: "CAP, BEP, autres formations niveau (CAP)" },
           }),
         ])
         await getDbCollection("recruiters").deleteMany({})
@@ -1178,14 +1178,14 @@ describe("findJobsOpportunities", () => {
             latitude: parisFixture.centre.coordinates[1],
             radius: 30,
             romes: ["M1602"],
-            diplomaLevel: "3",
+            target_diploma_level: "3",
             rncp: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
 
         expect(results.jobs).toHaveLength(2)
-        expect(results.jobs.map((j) => j.offer_diploma_level)).toEqual([null, { european: "3", label: "CAP, BEP, autres formations niveau (CAP)" }])
+        expect(results.jobs.map((j) => j.offer_target_diploma)).toEqual([null, { european: "3", label: "CAP, BEP, autres formations niveau (CAP)" }])
       })
     })
   })
@@ -1259,7 +1259,7 @@ describe("findJobsOpportunities", () => {
         ["5", "NV3"],
         ["6", "NV2"],
         ["7", "NV1"],
-      ])("should support filter by diploma %s as level %s", async (diplomaLevel, ftLevel) => {
+      ])("should support filter by diploma %s as level %s", async (target_diploma_level, ftLevel) => {
         vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: [] })
 
         const results = await findJobsOpportunities(
@@ -1268,7 +1268,7 @@ describe("findJobsOpportunities", () => {
             latitude: clichyFixture.centre.coordinates[1],
             radius: 30,
             romes: ["M1602"],
-            diplomaLevel,
+            target_diploma_level,
             rncp: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
@@ -1569,7 +1569,7 @@ describe("createJobOffer", () => {
     expect(job?.offer_status).toEqual(JOB_STATUS.ACTIVE)
     expect(job?.offer_creation).toEqual(now)
     expect(job?.offer_expiration).toEqual(in2Month)
-    expect(job?.offer_diploma_level).toEqual(null)
+    expect(job?.offer_target_diploma).toEqual(null)
     expect(job?.workplace_geopoint).toEqual(parisFixture.centre)
     expect(job?.workplace_address?.label).toEqual("20 AVENUE DE SEGUR 75007 PARIS")
 
@@ -1704,7 +1704,7 @@ describe("updateJobOffer", () => {
     expect(job?.offer_creation).toEqual(originalCreatedAt)
     // TODO: figure out if the expiration should be updated
     expect(job?.offer_expiration).toEqual(originalCreatedAtPlus2Months)
-    expect(job?.offer_diploma_level).toEqual(null)
+    expect(job?.offer_target_diploma).toEqual(null)
     expect(job?.workplace_geopoint).toEqual(parisFixture.centre)
     expect(job?.workplace_address?.label).toEqual("20 AVENUE DE SEGUR 75007 PARIS")
 

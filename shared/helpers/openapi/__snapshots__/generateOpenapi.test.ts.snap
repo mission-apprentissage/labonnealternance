@@ -540,14 +540,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
-          "diplomaLevel": {
-            "description": "Le niveau de la formation.",
-            "example": "3 (CAP...)",
-            "type": [
-              "string",
-              "null",
-            ],
-          },
           "id": {
             "description": "L'identifiant de la formation dans le catalogue du Réseau des Carif-Oref.",
             "example": "5e8dfad720ff3b2161269d86",
@@ -639,6 +631,14 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             },
             "type": [
               "array",
+              "null",
+            ],
+          },
+          "target_diploma_level": {
+            "description": "Le niveau de la formation.",
+            "example": "3 (CAP...)",
+            "type": [
+              "string",
               "null",
             ],
           },
@@ -1802,14 +1802,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
-          "diplomaLevel": {
-            "description": "Le niveau de la formation.",
-            "example": "3 (CAP...)",
-            "type": [
-              "string",
-              "null",
-            ],
-          },
           "id": {
             "type": [
               "string",
@@ -1858,6 +1850,14 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             },
             "type": [
               "array",
+              "null",
+            ],
+          },
+          "target_diploma_level": {
+            "description": "Le niveau de la formation.",
+            "example": "3 (CAP...)",
+            "type": [
+              "string",
               "null",
             ],
           },
@@ -4006,14 +4006,6 @@ Limite : 7 appel(s) / 1 seconde(s)
                                       "null",
                                     ],
                                   },
-                                  "diplomaLevel": {
-                                    "description": "Le niveau de la formation.",
-                                    "example": "3 (CAP...)",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
                                   "duration": {
                                     "$ref": "#/components/schemas/Durée de session en jours",
                                   },
@@ -4068,6 +4060,14 @@ Limite : 7 appel(s) / 1 seconde(s)
                                     },
                                     "type": [
                                       "array",
+                                      "null",
+                                    ],
+                                  },
+                                  "target_diploma_level": {
+                                    "description": "Le niveau de la formation.",
+                                    "example": "3 (CAP...)",
+                                    "type": [
+                                      "string",
                                       "null",
                                     ],
                                   },
@@ -4358,14 +4358,6 @@ Limite : 7 appel(s) / 1 seconde(s)
                                     "null",
                                   ],
                                 },
-                                "diplomaLevel": {
-                                  "description": "Le niveau de la formation.",
-                                  "example": "3 (CAP...)",
-                                  "type": [
-                                    "string",
-                                    "null",
-                                  ],
-                                },
                                 "duration": {
                                   "$ref": "#/components/schemas/Durée de session en jours",
                                 },
@@ -4420,6 +4412,14 @@ Limite : 7 appel(s) / 1 seconde(s)
                                   },
                                   "type": [
                                     "array",
+                                    "null",
+                                  ],
+                                },
+                                "target_diploma_level": {
+                                  "description": "Le niveau de la formation.",
+                                  "example": "3 (CAP...)",
+                                  "type": [
+                                    "string",
                                     "null",
                                   ],
                                 },
@@ -4799,14 +4799,6 @@ Limite : 7 appel(s) / 1 seconde(s)
                                       "null",
                                     ],
                                   },
-                                  "diplomaLevel": {
-                                    "description": "Le niveau de la formation.",
-                                    "example": "3 (CAP...)",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
                                   "duration": {
                                     "$ref": "#/components/schemas/Durée de session en jours",
                                   },
@@ -4861,6 +4853,14 @@ Limite : 7 appel(s) / 1 seconde(s)
                                     },
                                     "type": [
                                       "array",
+                                      "null",
+                                    ],
+                                  },
+                                  "target_diploma_level": {
+                                    "description": "Le niveau de la formation.",
+                                    "example": "3 (CAP...)",
+                                    "type": [
+                                      "string",
                                       "null",
                                     ],
                                   },
@@ -5222,14 +5222,6 @@ Limite : 7 appel(s) / 1 seconde(s)
                                       "null",
                                     ],
                                   },
-                                  "diplomaLevel": {
-                                    "description": "Le niveau de la formation.",
-                                    "example": "3 (CAP...)",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
                                   "duration": {
                                     "$ref": "#/components/schemas/Durée de session en jours",
                                   },
@@ -5284,6 +5276,14 @@ Limite : 7 appel(s) / 1 seconde(s)
                                     },
                                     "type": [
                                       "array",
+                                      "null",
+                                    ],
+                                  },
+                                  "target_diploma_level": {
+                                    "description": "Le niveau de la formation.",
+                                    "example": "3 (CAP...)",
+                                    "type": [
+                                      "string",
                                       "null",
                                     ],
                                   },
