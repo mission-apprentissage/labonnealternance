@@ -2862,15 +2862,22 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "coordinates": {
                 "prefixItems": [
                   {
+                    "maximum": 180,
+                    "minimum": -180,
                     "type": "number",
                   },
                   {
+                    "maximum": 90,
+                    "minimum": -90,
                     "type": "number",
                   },
                 ],
                 "type": "array",
               },
               "type": {
+                "enum": [
+                  "Point",
+                ],
                 "type": "string",
               },
             },

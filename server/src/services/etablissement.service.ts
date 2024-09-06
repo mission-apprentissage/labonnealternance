@@ -283,7 +283,7 @@ const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntreprise => {
   }
 }
 
-function geometryToGeoCoord(geometry: any): [number, number] {
+function geometryToGeoCoord(geometry): [number, number] {
   const { type } = geometry
   if (type === "Point") {
     return geometry.coordinates
@@ -304,7 +304,7 @@ export const formatReferentielData = (d: IReferentiel): ICfaReferentielData => {
   }
   const coords = geometryToGeoCoord(geojson.geometry)
 
-  const referentielData = {
+  const referentielData: ICfaReferentielData = {
     establishment_state: d.etat_administratif,
     is_qualiopi: Boolean(d.qualiopi),
     establishment_siret: d.siret,
@@ -322,7 +322,7 @@ export const formatReferentielData = (d: IReferentiel): ICfaReferentielData => {
   if (!validation.success) {
     sentryCaptureException(internal(`erreur de validation sur les données du référentiel CFA pour le siret=${d.siret}.`, { validationError: validation.error }))
   }
-  return referentielData
+  return validation.data ?? referentielData
 }
 
 /**
