@@ -120,10 +120,10 @@ describe("GET /jobs/search", () => {
         validationError: {
           _errors: [],
           latitude: {
-            _errors: ["Latitude invalide"],
+            _errors: ["Latitude doit être comprise entre -90 et 90"],
           },
           longitude: {
-            _errors: ["Longitude invalide"],
+            _errors: ["Longitude doit être comprise entre -180 et 180"],
           },
         },
       },
