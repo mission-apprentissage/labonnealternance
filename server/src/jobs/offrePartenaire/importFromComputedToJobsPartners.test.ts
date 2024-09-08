@@ -12,8 +12,6 @@ describe("Importing computed_jobs_partners into jobs_partners", () => {
   const oldDesc = "description existante dans la table jobs_partners"
   const newDesc = "nouvelle description dans la table computed_jobs_partners"
 
-  console.log("test3")
-
   beforeEach(async () => {
     // créations de plusieurs éléments existants dans jobs partners
     // création de plusieurs éléments dans computed jobs partners . certains avec validated true, d'autres false
