@@ -2,6 +2,7 @@ import { addJob, initJobProcessor } from "job-processor"
 import { ObjectId } from "mongodb"
 
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
+import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
 
 import { getLoggerWithContext } from "../common/logger"
 import { getDatabase } from "../common/utils/mongodbUtils"
@@ -210,6 +211,10 @@ export async function setupJobProcessor() {
             cron_string: "*/5 * * * *",
             handler: generateFranceTravailAccess,
           },
+          "Mise à jour du référentiel commune": {
+            cron_string: "0 15 * * SUN",
+            handler: updateReferentielCommune,
+          },
         },
     jobs: {
       "remove:duplicates:recruiters": {
@@ -414,6 +419,9 @@ export async function setupJobProcessor() {
       },
       "send-applications": {
         handler: async () => processApplications(),
+      },
+      "referentiel:commune:import": {
+        handler: updateReferentielCommune,
       },
     },
   })
