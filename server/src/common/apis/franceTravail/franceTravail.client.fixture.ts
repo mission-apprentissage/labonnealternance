@@ -88,7 +88,7 @@ export function generateFtJobFixture(data: Partial<FTJob>): FTJob {
     accessibleTH: true,
     origineOffre: {
       origine: "",
-      urlOrigine: "",
+      urlOrigine: "http://job.com",
       partenaires: [],
     },
 

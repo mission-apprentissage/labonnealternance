@@ -78,7 +78,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     ],
     "offer_status": "Active",
     "offer_target_diploma": null,
-    "offer_title": undefined,
+    "offer_title": "Opérations administratives",
     "offer_to_be_acquired_skills": [
       "Production, Fabrication: Procéder à l'enregistrement, au tri, à l'affranchissement du courrier",
       "Production, Fabrication: Réaliser des travaux de reprographie",
@@ -87,7 +87,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "partner": "La bonne alternance",
     "partner_job_id": null,
     "workplace_address": {
-      "label": undefined,
+      "label": "Paris",
     },
     "workplace_brand": null,
     "workplace_description": null,
@@ -130,14 +130,14 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "partner": "France Travail",
     "partner_job_id": "1",
     "workplace_address": {
-      "label": "",
+      "label": "Paris",
     },
     "workplace_brand": null,
     "workplace_description": "",
     "workplace_geopoint": {
       "coordinates": [
-        NaN,
-        NaN,
+        2.347,
+        48.8589,
       ],
       "type": "Point",
     },
