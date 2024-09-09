@@ -62,6 +62,7 @@ const nextConfig = withImages({
     locales: ["fr"],
     defaultLocale: "fr",
   },
+  productionBrowserSourceMaps: true,
   poweredByHeader: false,
   swcMinify: true,
   experimental: {
