@@ -366,7 +366,7 @@ describe("POST /jobs", async () => {
     })
 
     expect.soft(response.statusCode).toBe(403)
-    expect(response.json()).toEqual({ error: "Forbidden", message: "You are not allowed to create a job offer", statusCode: 403 })
+    expect(response.json()).toEqual({ error: "Forbidden", message: "Unauthorized", statusCode: 403 })
   })
 
   it("should create a new job offer", async () => {
@@ -547,7 +547,7 @@ describe("PUT /jobs/:id", async () => {
     })
 
     expect.soft(response.statusCode).toBe(403)
-    expect(response.json()).toEqual({ error: "Forbidden", message: "You are not allowed to update this job offer", statusCode: 403 })
+    expect(response.json()).toEqual({ error: "Forbidden", message: "Unauthorized", statusCode: 403 })
   })
 
   it("should return 403 if user is trying to edit other partner job", async () => {
@@ -561,6 +561,6 @@ describe("PUT /jobs/:id", async () => {
     })
 
     expect.soft(response.statusCode).toBe(403)
-    expect(response.json()).toEqual({ error: "Forbidden", message: "You are not allowed to update this job offer", statusCode: 403 })
+    expect(response.json()).toEqual({ error: "Forbidden", message: "Unauthorized", statusCode: 403 })
   })
 })
