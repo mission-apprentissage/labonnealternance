@@ -20,6 +20,7 @@ vi.mock("@/common/apis/franceTravail/franceTravail.client")
 vi.mock("@/common/apis/apiEntreprise/apiEntreprise.client")
 
 const httpClient = useServer()
+
 const token = getApiApprentissageTestingToken({ email: "test@test.fr", organisation: "Un super Partenaire", habilitations: { "jobs:write": true } })
 
 const fakeToken = getApiApprentissageTestingTokenFromInvalidPrivateKey({
@@ -76,10 +77,10 @@ describe("GET /jobs/search", () => {
     expect(response.json()).toEqual({ statusCode: 401, error: "Unauthorized", message: "Unauthorized" })
   })
 
-  it("should return 403 if api key is invalid", async () => {
+  it("should return 401 if api key is invalid", async () => {
     const response = await httpClient().inject({ method: "GET", path: "/api/v2/jobs/search", headers: { authorization: `Bearer ${fakeToken}` } })
-    expect.soft(response.statusCode).toBe(403)
-    expect(response.json()).toEqual({ statusCode: 403, error: "Forbidden", message: "Invalid JWT token" })
+    expect.soft(response.statusCode).toBe(401)
+    expect(response.json()).toEqual({ statusCode: 401, error: "Unauthorized", message: "Invalid JWT token" })
   })
 
   it("should throw ZOD error if ROME is not formatted correctly", async () => {
@@ -350,8 +351,8 @@ describe("POST /jobs", async () => {
       headers: { authorization: `Bearer ${fakeToken}` },
     })
 
-    expect.soft(response.statusCode).toBe(403)
-    expect(response.json()).toEqual({ error: "Forbidden", message: "Invalid JWT token", statusCode: 403 })
+    expect.soft(response.statusCode).toBe(401)
+    expect(response.json()).toEqual({ statusCode: 401, error: "Unauthorized", message: "Invalid JWT token" })
     expect(await getDbCollection("jobs_partners").countDocuments({})).toBe(0)
   })
 
@@ -498,7 +499,7 @@ describe("PUT /jobs/:id", async () => {
     }
   })
 
-  it("should return 403 if no token is not signed by API", async () => {
+  it("should return 401 if no token is not signed by API", async () => {
     const response = await httpClient().inject({
       method: "PUT",
       path: `/api/v2/jobs/${id.toString()}`,
@@ -506,8 +507,8 @@ describe("PUT /jobs/:id", async () => {
       headers: { authorization: `Bearer ${fakeToken}` },
     })
 
-    expect.soft(response.statusCode).toBe(403)
-    expect(response.json()).toEqual({ error: "Forbidden", message: "Invalid JWT token", statusCode: 403 })
+    expect.soft(response.statusCode).toBe(401)
+    expect(response.json()).toEqual({ error: "Unauthorized", message: "Invalid JWT token", statusCode: 401 })
     expect(await getDbCollection("jobs_partners").findOne({ _id: id })).toEqual(originalJob)
   })
 
