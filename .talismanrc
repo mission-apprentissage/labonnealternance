@@ -58,7 +58,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/updateRecruteurLba.controller.test.ts
   checksum: 71dd55af4f1f44fd2b69dee91f0fc8006f3b9e0bd80d40271c73697d4eea9ea2
 - filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts
-  checksum: 21b3574a8d82bba190ecdf1ace1b5db58db0fa45e6890506de530bc0781380af
+  checksum: 06366000e6615ce90b5dedbd4792eac0a93ce5a0cf1459273e3cc9bbdf867e4f
 - filename: server/src/http/routes/appointmentRequest.controller.ts
   checksum: d2770daa97ae332eec0b66497fdb717229895583ac3bfd48af1a830b36504968
 - filename: server/src/http/routes/auth/password.controller.ts
@@ -90,7 +90,7 @@ fileignoreconfig:
 - filename: server/src/services/jobs/jobOpportunity/jobOpportunity.service.test.ts
   checksum: 7c2a7f5d8ec1c82652296c3271bd435f5998e9c61f9ead2d528a5f2a7195a07d
 - filename: server/src/services/recruteurLba.service.test.ts
-  checksum: 98a1f338a0721200ace9b9a62f755996ad395035621c5830681e721ca58d67c2
+  checksum: 38c947c87cfb508fec88cbce878f89725cbb6679e833a66bdb7fca60e3685a0a
 - filename: server/src/services/referrers.service.ts
   checksum: 966b0ece2b18b5a6066df531524c97ba0ad38266e782a334004e8c127b41ade6
 - filename: server/src/services/userRecruteur.service.ts

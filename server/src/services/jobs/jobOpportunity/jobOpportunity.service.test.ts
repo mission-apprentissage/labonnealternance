@@ -6,7 +6,7 @@ import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, RECRUITER_STATUS } from "shar
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
-import { generateLbaConpanyFixture } from "shared/fixtures/recruteurLba.fixture"
+import { generateLbaCompanyFixture } from "shared/fixtures/recruteurLba.fixture"
 import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
@@ -46,7 +46,7 @@ afterEach(() => {
 
 describe("findJobsOpportunities", () => {
   const recruiters: ILbaCompany[] = [
-    generateLbaConpanyFixture({
+    generateLbaCompanyFixture({
       siret: "11000001500013",
       raison_sociale: "ASSEMBLEE NATIONALE",
       enseigne: "ASSEMBLEE NATIONALE - La vraie",
@@ -56,7 +56,7 @@ describe("findJobsOpportunities", () => {
       phone: "0100000000",
       last_update_at: new Date("2021-01-01"),
     }),
-    generateLbaConpanyFixture({
+    generateLbaCompanyFixture({
       siret: "77555848900073",
       raison_sociale: "GRAND PORT MARITIME DE MARSEILLE (GPMM)",
       rome_codes: ["M1602", "D1212"],
@@ -65,7 +65,7 @@ describe("findJobsOpportunities", () => {
       phone: "0200000000",
       last_update_at: new Date("2022-01-01"),
     }),
-    generateLbaConpanyFixture({
+    generateLbaCompanyFixture({
       siret: "52951974600034",
       raison_sociale: "SOCIETE PARISIENNE DE LA PISCINE PONTOISE (S3P)",
       enseigne: "SOCIETE PARISIENNE DE LA PISCINE PONTOISE (S3P)",
@@ -637,7 +637,7 @@ describe("findJobsOpportunities", () => {
 
     it("should limit companies to 150", async () => {
       const extraLbaCompanies: ILbaCompany[] = Array.from({ length: 200 }, () =>
-        generateLbaConpanyFixture({
+        generateLbaCompanyFixture({
           geopoint: parisFixture.centre,
           rome_codes: ["M1602"],
         })
@@ -1347,7 +1347,7 @@ describe("findJobsOpportunities", () => {
       await getDbCollection("jobs_partners").insertMany(extraOffers)
 
       const extraLbaCompanies = [
-        generateLbaConpanyFixture({
+        generateLbaCompanyFixture({
           siret: "52951974600034",
           raison_sociale: "EXTRA LBA COMPANY 1",
           rome_codes: ["D1211"],
@@ -1355,7 +1355,7 @@ describe("findJobsOpportunities", () => {
           insee_city_code: levalloisFixture.code,
           last_update_at: new Date("2024-01-01"),
         }),
-        generateLbaConpanyFixture({
+        generateLbaCompanyFixture({
           siret: "52951974600034",
           raison_sociale: "EXTRA LBA COMPANY 2",
           rome_codes: ["D1211"],
@@ -1420,28 +1420,28 @@ describe("findJobsOpportunities", () => {
           // Paris
           {
             _id: partnerJobs[0]._id,
-            partner: "Hellowork",
+            partner: "Hello work",
             partner_job_id: null,
             workplace_legal_name: partnerJobs[0].workplace_legal_name,
           },
           // Levallois - 2024-01-01
           {
             _id: extraOffers[0]._id,
-            partner: "Hellowork",
+            partner: "Hello work",
             partner_job_id: null,
             workplace_legal_name: extraOffers[0].workplace_legal_name,
           },
           // Levallois - 2023-01-01
           {
             _id: partnerJobs[2]._id,
-            partner: "Hellowork",
+            partner: "Hello work",
             partner_job_id: null,
             workplace_legal_name: partnerJobs[2].workplace_legal_name,
           },
           // Levallois - 2021-01-01
           {
             _id: extraOffers[1]._id,
-            partner: "Hellowork",
+            partner: "Hello work",
             partner_job_id: null,
             workplace_legal_name: extraOffers[1].workplace_legal_name,
           },

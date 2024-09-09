@@ -538,7 +538,17 @@ program
   .option("-parallelism, [parallelism]", "Number of threads", "10")
   .action(createJobAction("referentiel-opco:constructys:import"))
 
-program.command("import-hellowork").description("Importe les offres hellowork").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("import-hellowork"))
+program
+  .command("import-hellowork")
+  .description("Importe les offres hellowork dans la collection raw")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("import-hellowork"))
+
+program
+  .command("import-hellowork-to-computed")
+  .description("Importe les offres hellowork depuis raw vers computed")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("import-hellowork-to-computed"))
 
 program.command("import-kelio").description("Importe les offres kelio").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("import-kelio"))
 

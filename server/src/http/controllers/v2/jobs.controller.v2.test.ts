@@ -4,7 +4,7 @@ import { useServer } from "@tests/utils/server.test.utils"
 import { ObjectId } from "mongodb"
 import nock from "nock"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
-import { generateLbaConpanyFixture } from "shared/fixtures/recruteurLba.fixture"
+import { generateLbaCompanyFixture } from "shared/fixtures/recruteurLba.fixture"
 import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { IGeoPoint } from "shared/models"
 import { IJobsPartnersOfferPrivate, IJobsPartnersWritableApiInput } from "shared/models/jobsPartners.model"
@@ -38,7 +38,7 @@ const porteDeClichy: IGeoPoint = {
 }
 const romesQuery = rome.join(",")
 const [longitude, latitude] = porteDeClichy.coordinates
-const recruteurLba = generateLbaConpanyFixture({ rome_codes: rome, geopoint: clichyFixture.centre, siret: "58006820882692", email: "email@mail.com", website: "http://site.fr" })
+const recruteurLba = generateLbaCompanyFixture({ rome_codes: rome, geopoint: clichyFixture.centre, siret: "58006820882692", email: "email@mail.com", website: "http://site.fr" })
 const jobPartnerOffer: IJobsPartnersOfferPrivate = generateJobsPartnersOfferPrivate({
   offer_rome_codes: ["D1214"],
   workplace_geopoint: parisFixture.centre,
