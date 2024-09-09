@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .bin/scripts/get-vault-password-client.sh
-  checksum: 721a0185a395874b58d38dd157aa326a15c73e7d381cfd968ad27fc5922ddfa3
+  checksum: 3dec27e43b260818a34b67230a5121ddea029a7341afca120547694216451559
 - filename: .bin/scripts/seed-apply.sh
   checksum: 49afe4f96fa13b38cf799d931085437d540b4c62eb05b2f15bc12cd3fb43268b
 - filename: .bin/scripts/seed-update.sh
@@ -30,7 +30,7 @@ fileignoreconfig:
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: c6e7c3be171a828eddf0ba79992dcef5d9c27bd64d11e817b7aa16c5fb91043a
+  checksum: 467ce4cc2c3d83875e6ebc94180d3b398de9caf6da1d4983b79e2f2fbf1e8207
 - filename: cypress/e2e/check-admin-algo-company.cy.ts
   checksum: 6a898ee25c84ce2c41da5666aa4f84e6e4aaf0a614dbc0a00153abe99e3617c1
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
