@@ -32,7 +32,7 @@ export function boomify(rawError: FastifyError | ValidationError | Boom<unknown>
 
   if (rawError instanceof ResponseValidationError) {
     if (config.env === "local") {
-      const zodError = new ZodError(rawError.details.error)
+      const zodError = new ZodError(rawError.details.errors)
       return internal(rawError.message, {
         validationError: zodError.format(),
       })

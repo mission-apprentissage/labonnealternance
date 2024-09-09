@@ -47,7 +47,7 @@ export const validatePhone = (phone: string) => {
   const phoneNumber = parseMax(phone)
   const phoneNumberType = parseMax(phone)?.getType()
 
-  if (!phoneNumber) return false
+  if (!phoneNumber || !phoneNumber.isPossible() || !phoneNumber.isValid()) return false
 
   if (forbiddenPhoneNumberTypes.includes(phoneNumberType)) return false
 
