@@ -1,4 +1,4 @@
-import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
+import { badRequest, internal, notFound } from "@hapi/boom"
 import { DateTime } from "luxon"
 import { Document, Filter, ObjectId } from "mongodb"
 import { IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS_ENGLISH, assertUnreachable, parseEnum, translateJobStatus } from "shared"
@@ -680,18 +680,6 @@ export async function updateJobOffer(id: ObjectId, identity: IApiApprentissageTo
   if (current.offer_status !== JOB_STATUS_ENGLISH.ACTIVE) {
     throw badRequest("Job must be active in order to be modified")
   }
-
-  if (current.partner !== identity.organisation) {
-    throw forbidden("You are not allowed to update this job offer")
-  }
-
-  /**
-   * KBA 20240905
-   * Pas nécessaire dans la V1, sera réajuster dans un second temps
-   */
-  // if (!identity.habilitations["jobs:write"]) {
-  //   throw forbidden("You are not allowed to update this job offer")
-  // }
 
   await upsertJobOffer(data, identity, current)
 }

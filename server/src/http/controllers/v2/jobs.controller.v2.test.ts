@@ -356,11 +356,7 @@ describe("POST /jobs", async () => {
     expect(await getDbCollection("jobs_partners").countDocuments({})).toBe(0)
   })
 
-  /**
-   * KBA 20240905
-   * Pas nécessaire dans la V1, sera réajuster dans un second temps
-   */
-  it.skip('should return 403 if user does not have "jobs:write" permission', async () => {
+  it('should return 403 if user does not have "jobs:write" permission', async () => {
     const restrictedToken = getApiApprentissageTestingToken({ email: "mail@mail.com", organisation: "Un super Partenaire", habilitations: { "jobs:write": false } })
 
     const response = await httpClient().inject({
@@ -371,7 +367,7 @@ describe("POST /jobs", async () => {
     })
 
     expect.soft(response.statusCode).toBe(403)
-    expect(response.json()).toEqual({ error: "Forbidden", message: "You are not allowed to create a job offer", statusCode: 403 })
+    expect(response.json()).toEqual({ error: "Forbidden", message: "Unauthorized", statusCode: 403 })
   })
 
   it("should create a new job offer", async () => {
@@ -541,11 +537,7 @@ describe("PUT /jobs/:id", async () => {
     expect(response.json()).toEqual({ error: "Not Found", message: "Job offer not found", statusCode: 404 })
   })
 
-  /**
-   * KBA 20240905
-   * Pas nécessaire dans la V1, sera réajuster dans un second temps
-   */
-  it.skip('should return 403 if user does not have "jobs:write" permission', async () => {
+  it('should return 403 if user does not have "jobs:write" permission', async () => {
     const restrictedToken = getApiApprentissageTestingToken({ email: "mail@mail.com", organisation: "Un super Partenaire", habilitations: { "jobs:write": false } })
 
     const response = await httpClient().inject({
@@ -556,7 +548,7 @@ describe("PUT /jobs/:id", async () => {
     })
 
     expect.soft(response.statusCode).toBe(403)
-    expect(response.json()).toEqual({ error: "Forbidden", message: "You are not allowed to update this job offer", statusCode: 403 })
+    expect(response.json()).toEqual({ error: "Forbidden", message: "Unauthorized", statusCode: 403 })
   })
 
   it("should return 403 if user is trying to edit other partner job", async () => {
@@ -570,6 +562,6 @@ describe("PUT /jobs/:id", async () => {
     })
 
     expect.soft(response.statusCode).toBe(403)
-    expect(response.json()).toEqual({ error: "Forbidden", message: "You are not allowed to update this job offer", statusCode: 403 })
+    expect(response.json()).toEqual({ error: "Forbidden", message: "Unauthorized", statusCode: 403 })
   })
 })
