@@ -201,7 +201,7 @@ describe("findJobsOpportunities", () => {
         expect.objectContaining({
           _id: null,
           partner_job_id: ftJobs[0].id,
-          partner: "France Travail",
+          partner_label: "France Travail",
         }),
         expect.objectContaining({
           _id: partnerJobs[0]._id,
@@ -271,7 +271,7 @@ describe("findJobsOpportunities", () => {
         expect.objectContaining({
           _id: null,
           partner_job_id: ftJobs[0].id,
-          partner: "France Travail",
+          partner_label: "France Travail",
         }),
         expect.objectContaining({
           _id: partnerJobs[0]._id,
@@ -337,7 +337,7 @@ describe("findJobsOpportunities", () => {
         expect.objectContaining({
           _id: null,
           partner_job_id: ftJobs[0].id,
-          partner: "France Travail",
+          partner_label: "France Travail",
         }),
         expect.objectContaining({
           _id: partnerJobs[1]._id,
@@ -586,7 +586,7 @@ describe("findJobsOpportunities", () => {
         expect.objectContaining({
           _id: null,
           partner_job_id: ftJobs[0].id,
-          partner: "France Travail",
+          partner_label: "France Travail",
         }),
         expect.objectContaining({
           _id: partnerJobs[0]._id,
