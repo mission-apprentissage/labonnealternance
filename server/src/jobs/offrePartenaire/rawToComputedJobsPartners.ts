@@ -39,7 +39,7 @@ export const rawToComputedJobsPartners = async <ZodInput extends AnyZodObject>({
           const computedJobPartner = mapper(parsedDocument)
           await getDbCollection("computed_jobs_partners").insertOne({
             ...computedJobPartner,
-            partner: partnerLabel,
+            partner_label: partnerLabel,
             validated: ZJobsPartnersOfferPrivate.safeParse(computedJobPartner).success,
           })
           counters.success++

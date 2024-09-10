@@ -1379,69 +1379,69 @@ describe("findJobsOpportunities", () => {
       )
 
       expect({
-        jobs: results.jobs.map((j) => ({ _id: j._id, partner_job_id: j.partner_job_id, partner: j.partner, workplace_legal_name: j.workplace_legal_name })),
+        jobs: results.jobs.map((j) => ({ _id: j._id, partner_job_id: j.partner_job_id, partner_label: j.partner_label, workplace_legal_name: j.workplace_legal_name })),
         recruiters: results.recruiters.map((j) => ({ _id: j._id, workplace_legal_name: j.workplace_legal_name })),
       }).toEqual({
         jobs: [
           {
             // Paris
             _id: lbaJobs[0].jobs[0]._id.toString(),
-            partner: "La bonne alternance",
+            partner_label: "La bonne alternance",
             partner_job_id: null,
             workplace_legal_name: lbaJobs[0].establishment_raison_sociale,
           },
           {
             // Levallois - 2024-01-01
             _id: extraLbaJob.jobs[1]._id.toString(),
-            partner: "La bonne alternance",
+            partner_label: "La bonne alternance",
             partner_job_id: null,
             workplace_legal_name: extraLbaJob.establishment_raison_sociale,
           },
           {
             // Levallois - 2023-01-01
             _id: lbaJobs[2].jobs[0]._id.toString(),
-            partner: "La bonne alternance",
+            partner_label: "La bonne alternance",
             partner_job_id: null,
             workplace_legal_name: lbaJobs[2].establishment_raison_sociale,
           },
           {
             // Levallois - 2021-01-01
             _id: extraLbaJob.jobs[0]._id.toString(),
-            partner: "La bonne alternance",
+            partner_label: "La bonne alternance",
             partner_job_id: null,
             workplace_legal_name: extraLbaJob.establishment_raison_sociale,
           },
           {
             _id: null,
             partner_job_id: ftJobs[0].id,
-            partner: "France Travail",
+            partner_label: "France Travail",
             workplace_legal_name: null,
           },
           // Paris
           {
             _id: partnerJobs[0]._id,
-            partner: "Hello work",
+            partner_label: "Hello work",
             partner_job_id: null,
             workplace_legal_name: partnerJobs[0].workplace_legal_name,
           },
           // Levallois - 2024-01-01
           {
             _id: extraOffers[0]._id,
-            partner: "Hello work",
+            partner_label: "Hello work",
             partner_job_id: null,
             workplace_legal_name: extraOffers[0].workplace_legal_name,
           },
           // Levallois - 2023-01-01
           {
             _id: partnerJobs[2]._id,
-            partner: "Hello work",
+            partner_label: "Hello work",
             partner_job_id: null,
             workplace_legal_name: partnerJobs[2].workplace_legal_name,
           },
           // Levallois - 2021-01-01
           {
             _id: extraOffers[1]._id,
-            partner: "Hello work",
+            partner_label: "Hello work",
             partner_job_id: null,
             workplace_legal_name: extraOffers[1].workplace_legal_name,
           },
@@ -1564,7 +1564,7 @@ describe("createJobOffer", () => {
 
     const job = await getDbCollection("jobs_partners").findOne({ _id: result })
     expect(job?.created_at).toEqual(now)
-    expect(job?.partner).toEqual(identity.organisation)
+    expect(job?.partner_label).toEqual(identity.organisation)
     expect(job?.offer_rome_codes).toEqual(["M1602"])
     expect(job?.offer_status).toEqual(JOB_STATUS.ACTIVE)
     expect(job?.offer_creation).toEqual(now)
@@ -1626,7 +1626,7 @@ describe("updateJobOffer", () => {
 
   const originalJob = generateJobsPartnersOfferPrivate({
     _id,
-    partner: identity.organisation,
+    partner_label: identity.organisation,
     created_at: originalCreatedAt,
     offer_creation: originalCreatedAt,
     offer_expiration: originalCreatedAtPlus2Months,
@@ -1698,7 +1698,7 @@ describe("updateJobOffer", () => {
 
     const job = await getDbCollection("jobs_partners").findOne({ _id })
     expect(job?.created_at).toEqual(originalCreatedAt)
-    expect(job?.partner).toEqual(identity.organisation)
+    expect(job?.partner_label).toEqual(identity.organisation)
     expect(job?.offer_rome_codes).toEqual(["M1602"])
     expect(job?.offer_status).toEqual(JOB_STATUS.ACTIVE)
     expect(job?.offer_creation).toEqual(originalCreatedAt)

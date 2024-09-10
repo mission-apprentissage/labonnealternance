@@ -388,7 +388,7 @@ describe("POST /jobs", async () => {
     const doc = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(responseJson.id as string) })
 
     // Ensure that the job offer is associated to the correct permission
-    expect(doc?.partner).toBe("Un super Partenaire")
+    expect(doc?.partner_label).toBe("Un super Partenaire")
   })
 
   it("should apply method be defined", async () => {
@@ -434,7 +434,7 @@ describe("PUT /jobs/:id", async () => {
   const now = new Date("2024-06-18T00:00:00.000Z")
   const inSept = new Date("2024-09-01T00:00:00.000Z")
 
-  const originalJob = generateJobsPartnersOfferPrivate({ _id: id, offer_title: "Old title", partner: "Un super Partenaire" })
+  const originalJob = generateJobsPartnersOfferPrivate({ _id: id, offer_title: "Old title", partner_label: "Un super Partenaire" })
 
   const data: IJobsPartnersWritableApiInput = {
     partner_job_id: null,
