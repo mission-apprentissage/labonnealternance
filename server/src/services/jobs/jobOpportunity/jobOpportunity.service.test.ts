@@ -1,5 +1,3 @@
-import { randomUUID } from "node:crypto"
-
 import { internal } from "@hapi/boom"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "mongodb"
@@ -150,16 +148,19 @@ describe("findJobsOpportunities", () => {
       offer_rome_codes: ["M1602"],
       workplace_geopoint: parisFixture.centre,
       offer_creation: new Date("2021-01-01"),
+      partner_job_id: "job-id-1",
     }),
     generateJobsPartnersOfferPrivate({
       offer_rome_codes: ["M1602", "D1214"],
       workplace_geopoint: marseilleFixture.centre,
       offer_creation: new Date("2022-01-01"),
+      partner_job_id: "job-id-2",
     }),
     generateJobsPartnersOfferPrivate({
       offer_rome_codes: ["D1212"],
       workplace_geopoint: levalloisFixture.centre,
       offer_creation: new Date("2023-01-01"),
+      partner_job_id: "job-id-3",
     }),
   ]
   const ftJobs: FTJob[] = [
@@ -1251,10 +1252,11 @@ describe("findJobsOpportunities", () => {
       vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: [] })
     })
     it("should limit jobs to 150", async () => {
-      const extraOffers: IJobsPartnersOfferPrivate[] = Array.from({ length: 300 }, () =>
+      const extraOffers: IJobsPartnersOfferPrivate[] = Array.from({ length: 300 }, (e, idx) =>
         generateJobsPartnersOfferPrivate({
           workplace_geopoint: parisFixture.centre,
           offer_rome_codes: ["M1602"],
+          partner_job_id: `job-id-a-${idx}`,
         })
       )
       await getDbCollection("jobs_partners").insertMany(extraOffers)
@@ -1303,6 +1305,7 @@ describe("findJobsOpportunities", () => {
           offer_rome_codes: ["M1602"],
           workplace_geopoint: parisFixture.centre,
           offer_multicast: false,
+          partner_job_id: "job-id-4",
         })
       )
       await getDbCollection("recruiters").deleteMany({})
@@ -1331,11 +1334,13 @@ describe("findJobsOpportunities", () => {
             offer_rome_codes: ["M1602"],
             workplace_geopoint: parisFixture.centre,
             offer_target_diploma: { european: "4", label: "BP, Bac, autres formations niveau (Bac)" },
+            partner_job_id: "job-id-5",
           }),
           generateJobsPartnersOfferPrivate({
             offer_rome_codes: ["M1602"],
             workplace_geopoint: parisFixture.centre,
             offer_target_diploma: { european: "3", label: "CAP, BEP, autres formations niveau (CAP)" },
+            partner_job_id: "job-id-6",
           }),
         ])
         await getDbCollection("recruiters").deleteMany({})
@@ -1571,6 +1576,7 @@ describe("findJobsOpportunities", () => {
           offer_rome_codes: ["D1212"],
           workplace_geopoint: levalloisFixture.centre,
           offer_creation: new Date("2024-01-01"),
+          partner_job_id: "job-id-7",
           // created_at reference the creation date of the job in LBA, not the offer so we don't sort by it
           created_at: new Date("2021-01-01"),
         }),
@@ -1578,6 +1584,7 @@ describe("findJobsOpportunities", () => {
           offer_rome_codes: ["D1212"],
           workplace_geopoint: levalloisFixture.centre,
           offer_creation: new Date("2021-01-01"),
+          partner_job_id: "job-id-8",
           // created_at reference the creation date of the job in LBA, not the offer so we don't sort by it
           created_at: new Date("2024-01-01"),
         }),
@@ -1801,7 +1808,7 @@ describe("createJobOffer", () => {
   })
 
   it("should create a job offer with the minimal data", async () => {
-    const result = await createJobOffer(identity, minimalData)
+    const result = await createJobOffer(identity, { ...minimalData, partner_job_id: "job-id-b" })
     expect(result).toBeInstanceOf(ObjectId)
 
     const job = await getDbCollection("jobs_partners").findOne({ _id: result })
@@ -1875,7 +1882,7 @@ describe("updateJobOffer", () => {
   })
 
   const minimalData: IJobsPartnersWritableApi = {
-    partner_job_id: randomUUID(),
+    partner_job_id: null,
 
     contract_start: inSept,
     contract_duration: null,
@@ -1936,7 +1943,7 @@ describe("updateJobOffer", () => {
   })
 
   it("should update a job offer with the minimal data", async () => {
-    await updateJobOffer(_id, identity, minimalData)
+    await updateJobOffer(_id, identity, { ...minimalData, partner_job_id: "job-id-9" })
 
     const job = await getDbCollection("jobs_partners").findOne({ _id })
     expect(job?.created_at).toEqual(originalCreatedAt)
@@ -1960,7 +1967,7 @@ describe("updateJobOffer", () => {
   it("should get default rome from ROMEO", async () => {
     vi.mocked(getRomeoPredictions).mockResolvedValue(franceTravailRomeoFixture["Software Engineer"])
 
-    await updateJobOffer(_id, identity, { ...minimalData, offer_rome_codes: [] })
+    await updateJobOffer(_id, identity, { ...minimalData, partner_job_id: "job-id-10", offer_rome_codes: [] })
 
     const job = await getDbCollection("jobs_partners").findOne({ _id })
     expect(job?.offer_rome_codes).toEqual(["E1206"])
@@ -1975,7 +1982,7 @@ describe("updateJobOffer", () => {
         features: [{ geometry: clichyFixture.centre }],
       })
 
-    await updateJobOffer(_id, identity, { ...minimalData, workplace_address_label: "1T impasse Passoir Clichy" })
+    await updateJobOffer(_id, identity, { ...minimalData, partner_job_id: "job-id-11", workplace_address_label: "1T impasse Passoir Clichy" })
 
     const job = await getDbCollection("jobs_partners").findOne({ _id })
     expect(job?.workplace_address).toEqual({ label: "1T impasse Passoir Clichy" })

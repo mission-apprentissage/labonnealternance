@@ -1,5 +1,3 @@
-import { randomUUID } from "node:crypto"
-
 import { ObjectId } from "bson"
 
 import { JOB_STATUS_ENGLISH } from "../models"
@@ -28,7 +26,7 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     apply_url: null,
     apply_phone: null,
     partner_label: JOBPARTNERS_LABEL.HELLOWORK,
-    partner_job_id: randomUUID(),
+    partner_job_id: null,
 
     contract_start: null,
     contract_duration: null,

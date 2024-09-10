@@ -26,7 +26,7 @@ exports[`createJobOffer > should create a job offer with the minimal data 1`] = 
   "offer_target_diploma": null,
   "offer_title": "Apprentis en développement web",
   "offer_to_be_acquired_skills": [],
-  "partner_job_id": null,
+  "partner_job_id": "job-id-b",
   "partner_label": "Some organisation",
   "updated_at": 2024-06-18T00:00:00.000Z,
   "workplace_address": {
@@ -175,7 +175,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "offer_target_diploma": null,
     "offer_title": "Une super offre d'alternance",
     "offer_to_be_acquired_skills": [],
-    "partner_job_id": "e20496bd-7e38-404d-8b49-f5471ab62ff7",
+    "partner_job_id": "job-id-1",
     "partner_label": "Hello work",
     "updated_at": 2021-01-28T15:00:00.000Z,
     "workplace_address": {
@@ -259,7 +259,7 @@ exports[`updateJobOffer > should update a job offer with the minimal data 1`] = 
   "offer_target_diploma": null,
   "offer_title": "Apprentis en développement web",
   "offer_to_be_acquired_skills": [],
-  "partner_job_id": "a4f62aa8-0b2d-4e5d-9c60-64bc93729b3f",
+  "partner_job_id": "job-id-9",
   "partner_label": "Some organisation",
   "updated_at": 2024-06-18T00:00:00.000Z,
   "workplace_address": {
