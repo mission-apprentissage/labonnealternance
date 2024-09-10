@@ -14,7 +14,7 @@ export const importFromComputedToJobsPartners = async () => {
     async transform(computedJobPartner: Omit<IJobsPartnersOfferPrivate, "_id" | "created_at">, encoding, callback: (error?: Error | null, data?: any) => void) {
       try {
         await getDbCollection("jobs_partners").updateOne(
-          { partner_job_id: computedJobPartner.partner_job_id },
+          { partner_job_id: computedJobPartner.partner_job_id, partner_label: computedJobPartner.partner_label },
           {
             $set: { ...computedJobPartner },
             $setOnInsert: { _id: new ObjectId() },
