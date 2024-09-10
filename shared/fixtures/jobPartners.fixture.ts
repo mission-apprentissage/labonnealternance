@@ -25,7 +25,7 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
 
     apply_url: null,
     apply_phone: null,
-    partner: JOBPARTNERS_LABEL.HELLOWORK,
+    partner_label: JOBPARTNERS_LABEL.HELLOWORK,
     partner_job_id: null,
 
     contract_start: null,
