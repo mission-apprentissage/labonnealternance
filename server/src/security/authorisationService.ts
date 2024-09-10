@@ -238,7 +238,7 @@ async function getJobsPartnerResource<S extends WithSecurityScheme>(schema: S, r
     schema.securityScheme.resources.jobPartner.map(async (jobPartnerDef): Promise<JobPartnerResource | null> => {
       if ("_id" in jobPartnerDef) {
         const _id = getAccessResourcePathValue(jobPartnerDef._id, req)
-        const job = await getDbCollection("jobs_partners").findOne({ _id })
+        const job = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(_id) })
         return job ? { job } : null
       }
       assertUnreachable(jobPartnerDef)
@@ -396,10 +396,13 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
       throw forbidden("non autorisé")
     }
   } else if (userType === "IApiApprentissage") {
-    if (schema.securityScheme.access !== null) {
-      throw forbidden("access non autorisé")
+    const { organisation, habilitations } = userWithType.value
+    /**
+     * KBA : temporaire, à modifier lorsque l'ensemble des habilitations seront définit
+     */
+    if (schema.securityScheme.access !== "job:manage" || !habilitations["jobs:write"]) {
+      throw forbidden("Unauthorized")
     }
-    const { organisation } = userWithType.value
     const userAccess: ComputedUserAccess = {
       admin: false,
       users: [],
@@ -409,7 +412,7 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
       partner: [organisation],
     }
     if (!isAuthorized(requestedAccess, userAccess, resources)) {
-      throw forbidden("non autorisé")
+      throw forbidden("Unauthorized")
     }
   } else {
     assertUnreachable(userType)

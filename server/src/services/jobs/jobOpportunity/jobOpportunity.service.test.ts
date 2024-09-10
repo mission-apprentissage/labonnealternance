@@ -14,6 +14,7 @@ import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import { ILbaCompany, IRecruiter, IReferentielRome, JOB_STATUS } from "shared/models"
 import { IJobsPartnersOfferPrivate, IJobsPartnersWritableApi, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
+import { ZJobsOpportunityResponse } from "shared/routes/jobOpportunity.routes"
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
@@ -88,6 +89,7 @@ describe("findJobsOpportunities", () => {
       jobs: [
         {
           rome_code: ["M1602"],
+          rome_label: "Opérations administratives",
           is_multi_published: true,
           job_status: JOB_STATUS.ACTIVE,
           job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
@@ -97,6 +99,7 @@ describe("findJobsOpportunities", () => {
       address_detail: {
         code_insee_localite: parisFixture.code,
       },
+      address: parisFixture.nom,
       phone: "0300000000",
     }),
     generateRecruiterFixture({
@@ -107,6 +110,7 @@ describe("findJobsOpportunities", () => {
       jobs: [
         {
           rome_code: ["M1602", "D1212"],
+          rome_label: "Opérations administratives",
           is_multi_published: true,
           job_status: JOB_STATUS.ACTIVE,
           job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
@@ -116,7 +120,8 @@ describe("findJobsOpportunities", () => {
       address_detail: {
         code_insee_localite: marseilleFixture.code,
       },
-      phone: "0400000000",
+      address: marseilleFixture.nom,
+      phone: "0465000000",
     }),
     generateRecruiterFixture({
       establishment_siret: "20003277900015",
@@ -126,6 +131,7 @@ describe("findJobsOpportunities", () => {
       jobs: [
         {
           rome_code: ["D1209"],
+          rome_label: "Opérations administratives",
           is_multi_published: true,
           job_status: JOB_STATUS.ACTIVE,
           job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
@@ -135,7 +141,8 @@ describe("findJobsOpportunities", () => {
       address_detail: {
         code_insee_localite: levalloisFixture.code,
       },
-      phone: "0400000001",
+      address: levalloisFixture.nom,
+      phone: "0465000001",
     }),
   ]
   const partnerJobs: IJobsPartnersOfferPrivate[] = [
@@ -159,6 +166,13 @@ describe("findJobsOpportunities", () => {
     generateFtJobFixture({
       id: "1",
       romeCode: "M1602",
+      lieuTravail: {
+        libelle: "Paris",
+        latitude: parisFixture.centre.coordinates[1].toString(),
+        longitude: parisFixture.centre.coordinates[0].toString(),
+        codePostal: parisFixture.codesPostaux[0],
+        commune: parisFixture.code,
+      },
     }),
   ]
   const romes: IReferentielRome[] = [
@@ -260,6 +274,9 @@ describe("findJobsOpportunities", () => {
       new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
     )
 
+    const parseResult = ZJobsOpportunityResponse.safeParse(results)
+    expect.soft(parseResult.success).toBeTruthy()
+    expect(parseResult.error).toBeUndefined()
     expect(results).toEqual({
       jobs: [
         expect.objectContaining({
@@ -326,6 +343,9 @@ describe("findJobsOpportunities", () => {
       },
       new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
     )
+    const parseResult = ZJobsOpportunityResponse.safeParse(results)
+    expect.soft(parseResult.success).toBeTruthy()
+    expect(parseResult.error).toBeUndefined()
 
     // Order is most recent first
     expect(results).toEqual({
@@ -393,6 +413,9 @@ describe("findJobsOpportunities", () => {
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
+      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      expect.soft(parseResult.success).toBeTruthy()
+      expect(parseResult.error).toBeUndefined()
 
       expect(results).toEqual({
         jobs: [
@@ -518,6 +541,9 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
+      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      expect.soft(parseResult.success).toBeTruthy()
+      expect(parseResult.error).toBeUndefined()
       expect(results).toEqual({
         jobs: [
           expect.objectContaining({
@@ -575,6 +601,9 @@ describe("findJobsOpportunities", () => {
       new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
     )
 
+    const parseResult = ZJobsOpportunityResponse.safeParse(results)
+    expect.soft(parseResult.success).toBeTruthy()
+    expect(parseResult.error).toBeUndefined()
     expect(results).toEqual({
       jobs: [
         expect.objectContaining({
@@ -657,6 +686,9 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
+      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      expect.soft(parseResult.success).toBeTruthy()
+      expect(parseResult.error).toBeUndefined()
       expect(results.recruiters).toHaveLength(150)
     })
 
@@ -709,6 +741,7 @@ describe("findJobsOpportunities", () => {
             jobs: [
               {
                 rome_code: ["M1602"],
+                rome_label: "Opérations Administratives",
                 is_multi_published: true,
                 job_status: JOB_STATUS.ACTIVE,
                 job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
@@ -717,6 +750,7 @@ describe("findJobsOpportunities", () => {
             address_detail: {
               code_insee_localite: parisFixture.code,
             },
+            address: parisFixture.nom,
           })
         )
       }
@@ -734,6 +768,9 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
+      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      expect.soft(parseResult.success).toBeTruthy()
+      expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(1)
     })
 
@@ -747,24 +784,28 @@ describe("findJobsOpportunities", () => {
           jobs: [
             {
               rome_code: ["M1602"],
+              rome_label: "Opérations administratives",
               is_multi_published: true,
               job_status: JOB_STATUS.ANNULEE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
             },
             {
               rome_code: ["M1602"],
+              rome_label: "Opérations administratives",
               is_multi_published: true,
               job_status: JOB_STATUS.EN_ATTENTE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
             },
             {
               rome_code: ["M1602"],
+              rome_label: "Opérations administratives",
               is_multi_published: true,
               job_status: JOB_STATUS.POURVUE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
             },
             {
               rome_code: ["M1602"],
+              rome_label: "Opérations administratives",
               is_multi_published: true,
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
@@ -773,6 +814,7 @@ describe("findJobsOpportunities", () => {
           address_detail: {
             code_insee_localite: parisFixture.code,
           },
+          address: parisFixture.nom,
         })
       )
 
@@ -787,6 +829,9 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
+      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      expect.soft(parseResult.success).toBeTruthy()
+      expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(2)
     })
 
@@ -800,12 +845,14 @@ describe("findJobsOpportunities", () => {
             jobs: [
               {
                 rome_code: ["M1602"],
+                rome_label: "Opérations administratives",
                 is_multi_published: true,
                 job_status: JOB_STATUS.ACTIVE,
                 job_level_label: NIVEAUX_POUR_LBA["3 (CAP...)"],
               },
               {
                 rome_code: ["M1602"],
+                rome_label: "Opérations administratives",
                 is_multi_published: true,
                 job_status: JOB_STATUS.ACTIVE,
                 job_level_label: NIVEAUX_POUR_LBA["4 (BAC...)"],
@@ -814,6 +861,7 @@ describe("findJobsOpportunities", () => {
             address_detail: {
               code_insee_localite: parisFixture.code,
             },
+            address: parisFixture.nom,
           })
         )
 
@@ -829,6 +877,9 @@ describe("findJobsOpportunities", () => {
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
 
+        const parseResult = ZJobsOpportunityResponse.safeParse(results)
+        expect.soft(parseResult.success).toBeTruthy()
+        expect(parseResult.error).toBeUndefined()
         expect.soft(results.jobs).toHaveLength(2)
         expect.soft(results.jobs.map((j) => j.offer_target_diploma)).toEqual(
           expect.arrayContaining([
@@ -851,6 +902,7 @@ describe("findJobsOpportunities", () => {
           jobs: [
             {
               rome_code: ["M1602"],
+              rome_label: "Opérations administratives",
               is_multi_published: false,
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
@@ -859,6 +911,7 @@ describe("findJobsOpportunities", () => {
           address_detail: {
             code_insee_localite: parisFixture.code,
           },
+          address: parisFixture.nom,
         })
       )
 
@@ -873,6 +926,9 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
+      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      expect.soft(parseResult.success).toBeTruthy()
+      expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(1)
     })
 
@@ -882,6 +938,7 @@ describe("findJobsOpportunities", () => {
       const extraRecruiters: IRecruiter[] = Array.from({ length: 500 }, () => {
         const jobs = Array.from({ length: JOB_PER_RECRUITER }, () => ({
           rome_code: ["M1602"],
+          rome_label: "Opérations Administratives",
           is_multi_published: true,
           job_status: JOB_STATUS.ACTIVE,
           job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
@@ -895,6 +952,7 @@ describe("findJobsOpportunities", () => {
           address_detail: {
             code_insee_localite: parisFixture.code,
           },
+          address: parisFixture.nom,
         })
       })
 
@@ -912,6 +970,9 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
+      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      expect.soft(parseResult.success).toBeTruthy()
+      expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(150)
     })
 
@@ -925,6 +986,7 @@ describe("findJobsOpportunities", () => {
           jobs: [
             {
               rome_code: ["C1110"],
+              rome_label: "Souscription d'assurances",
               is_multi_published: true,
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
@@ -933,6 +995,7 @@ describe("findJobsOpportunities", () => {
           address_detail: {
             code_insee_localite: parisFixture.code,
           },
+          address: parisFixture.nom,
         })
       )
 
@@ -947,6 +1010,9 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
+      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      expect.soft(parseResult.success).toBeTruthy()
+      expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(0)
     })
 
@@ -962,6 +1028,9 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
+      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      expect.soft(parseResult.success).toBeTruthy()
+      expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(0)
     })
 
@@ -974,6 +1043,7 @@ describe("findJobsOpportunities", () => {
           jobs: [
             {
               rome_code: ["M1602"],
+              rome_label: "Opérations Administratives",
               is_multi_published: true,
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
@@ -983,6 +1053,7 @@ describe("findJobsOpportunities", () => {
           address_detail: {
             code_insee_localite: parisFixture.code,
           },
+          address: parisFixture.nom,
         })
       )
 
@@ -997,6 +1068,9 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
+      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      expect.soft(parseResult.success).toBeTruthy()
+      expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(2)
     })
 
@@ -1004,6 +1078,7 @@ describe("findJobsOpportunities", () => {
       it("should return info from the cfa_delegated_siret", async () => {
         const cfa = generateCfaFixture({
           siret: "78430824900019",
+          address: parisFixture.nom,
         })
         await getDbCollection("cfas").insertOne(cfa)
 
@@ -1021,12 +1096,14 @@ describe("findJobsOpportunities", () => {
           jobs: [
             {
               rome_code: ["M1602"],
+              rome_label: "Opérations administratives",
               is_multi_published: true,
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
             },
             {
               rome_code: ["M1602"],
+              rome_label: "Opérations administratives",
               is_multi_published: true,
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
@@ -1035,6 +1112,7 @@ describe("findJobsOpportunities", () => {
           address_detail: {
             code_insee_localite: parisFixture.code,
           },
+          address: parisFixture.nom,
           is_delegated: true,
           cfa_delegated_siret: cfa.siret,
           managed_by: userWithAccount._id.toString(),
@@ -1053,6 +1131,9 @@ describe("findJobsOpportunities", () => {
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
 
+        const parseResult = ZJobsOpportunityResponse.safeParse(results)
+        expect.soft(parseResult.success).toBeTruthy()
+        expect(parseResult.error).toBeUndefined()
         expect(results.jobs).toHaveLength(3)
         expect(
           results.jobs.map((j) => ({
@@ -1085,6 +1166,84 @@ describe("findJobsOpportunities", () => {
         )
       })
     })
+
+    it("should ignore recruiters without adresse", async () => {
+      await getDbCollection("recruiters").insertOne(
+        generateRecruiterFixture({
+          establishment_siret: "11000001500013",
+          geopoint: parisFixture.centre,
+          status: RECRUITER_STATUS.ACTIF,
+          jobs: [
+            {
+              rome_code: ["M1602"],
+              rome_label: "Opérations Administratives",
+              is_multi_published: true,
+              job_status: JOB_STATUS.ACTIVE,
+              job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+            },
+          ],
+          address_detail: {
+            code_insee_localite: parisFixture.code,
+          },
+        })
+      )
+
+      const results = await findJobsOpportunities(
+        {
+          longitude: parisFixture.centre.coordinates[0],
+          latitude: parisFixture.centre.coordinates[1],
+          radius: 30,
+          romes: ["M1602"],
+          rncp: null,
+        },
+        new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
+      )
+
+      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      expect.soft(parseResult.success).toBeTruthy()
+      expect(parseResult.error).toBeUndefined()
+      expect(results.jobs).toHaveLength(1)
+      expect(results.jobs[0]._id).toBe(lbaJobs[0].jobs[0]._id.toString())
+    })
+
+    it("should ignore recruiters without geopoint", async () => {
+      await getDbCollection("recruiters").insertOne(
+        generateRecruiterFixture({
+          establishment_siret: "11000001500013",
+          status: RECRUITER_STATUS.ACTIF,
+          jobs: [
+            {
+              rome_code: ["M1602"],
+              rome_label: "Opérations Administratives",
+              is_multi_published: true,
+              job_status: JOB_STATUS.ACTIVE,
+              job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+            },
+          ],
+          address_detail: {
+            code_insee_localite: parisFixture.code,
+          },
+          address: parisFixture.nom,
+        })
+      )
+
+      const results = await findJobsOpportunities(
+        {
+          longitude: parisFixture.centre.coordinates[0],
+          latitude: parisFixture.centre.coordinates[1],
+          radius: 30,
+          romes: ["M1602"],
+          rncp: null,
+        },
+        new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
+      )
+
+      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      expect.soft(parseResult.success).toBeTruthy()
+      expect(parseResult.error).toBeUndefined()
+      expect(results.jobs).toHaveLength(1)
+      expect(results.jobs[0]._id).toBe(lbaJobs[0].jobs[0]._id.toString())
+    })
   })
 
   describe("jobs partners", () => {
@@ -1112,6 +1271,9 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
+      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      expect.soft(parseResult.success).toBeTruthy()
+      expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(150)
     })
 
@@ -1129,6 +1291,9 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
+      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      expect.soft(parseResult.success).toBeTruthy()
+      expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(0)
     })
 
@@ -1153,6 +1318,9 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
+      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      expect.soft(parseResult.success).toBeTruthy()
+      expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(1)
     })
 
@@ -1186,6 +1354,9 @@ describe("findJobsOpportunities", () => {
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
 
+        const parseResult = ZJobsOpportunityResponse.safeParse(results)
+        expect.soft(parseResult.success).toBeTruthy()
+        expect(parseResult.error).toBeUndefined()
         expect(results.jobs).toHaveLength(2)
         expect(results.jobs.map((j) => j.offer_target_diploma)).toEqual([null, { european: "3", label: "CAP, BEP, autres formations niveau (CAP)" }])
       })
@@ -1213,6 +1384,9 @@ describe("findJobsOpportunities", () => {
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
 
+        const parseResult = ZJobsOpportunityResponse.safeParse(results)
+        expect.soft(parseResult.success).toBeTruthy()
+        expect(parseResult.error).toBeUndefined()
         expect(results.jobs).toHaveLength(0)
         expect(results.warnings).toEqual([
           {
@@ -1237,6 +1411,9 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
+      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      expect.soft(parseResult.success).toBeTruthy()
+      expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(0)
       expect(results.warnings).toHaveLength(0)
 
@@ -1276,6 +1453,9 @@ describe("findJobsOpportunities", () => {
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
 
+        const parseResult = ZJobsOpportunityResponse.safeParse(results)
+        expect.soft(parseResult.success).toBeTruthy()
+        expect(parseResult.error).toBeUndefined()
         expect(results.jobs).toHaveLength(0)
         expect(results.warnings).toHaveLength(0)
 
@@ -1294,6 +1474,60 @@ describe("findJobsOpportunities", () => {
         )
       })
     })
+
+    it("should remove jobs without geoloc", async () => {
+      const ftJobWithoutGeoloc = generateFtJobFixture({
+        id: "2507875",
+        intitule: "Assistant manager supermarché en alternance H/F",
+        description: "RESPONSABILITÉS : \n\n - La mise en rayon, l'étiquetage et la vérification des dates de consommation",
+        dateCreation: "2024-08-17T17:18:18.000Z",
+        dateActualisation: "2024-08-17T17:18:18.000Z",
+        lieuTravail: {
+          libelle: "59 - Nord",
+        },
+        romeCode: "D1507",
+        romeLibelle: "Employé / Employée de libre-service",
+        appellationlibelle: "Employé / Employée de libre-service",
+        entreprise: {
+          nom: "CFA ALTERLINE",
+          description: "Tu cherches un moyen de t'insérer dans le monde du travail tout en obtenant un diplôme reconnu par l'Etat ?",
+          entrepriseAdaptee: false,
+        },
+        typeContrat: "CDD",
+        typeContratLibelle: "Contrat à durée déterminée - 12 Mois",
+        natureContrat: "Contrat apprentissage",
+        experienceExige: "D",
+        experienceLibelle: "Débutant accepté",
+        salaire: {},
+        dureeTravailLibelle: "35 H  Travail en journée",
+        dureeTravailLibelleConverti: "Temps plein",
+        alternance: true,
+        nombrePostes: 1,
+        accessibleTH: false,
+        qualificationCode: "5",
+        qualificationLibelle: "Employé non qualifié",
+      })
+
+      vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: [ftJobs[0], ftJobWithoutGeoloc] })
+
+      const results = await findJobsOpportunities(
+        {
+          longitude: clichyFixture.centre.coordinates[0],
+          latitude: clichyFixture.centre.coordinates[1],
+          radius: 100,
+          romes: ["M1602"],
+          rncp: null,
+        },
+        new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
+      )
+
+      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      expect.soft(parseResult.success).toBeTruthy()
+      expect(parseResult.error).toBeUndefined()
+      expect(results.jobs).toHaveLength(1)
+      expect(results.warnings).toHaveLength(0)
+      expect(results.jobs[0].partner_job_id).toEqual(ftJobs[0].id)
+    })
   })
 
   describe("when seaching with location", () => {
@@ -1308,6 +1542,7 @@ describe("findJobsOpportunities", () => {
         jobs: [
           {
             rome_code: ["D1209"],
+            rome_label: "Vente de végétaux",
             is_multi_published: true,
             job_status: JOB_STATUS.ACTIVE,
             job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
@@ -1315,6 +1550,7 @@ describe("findJobsOpportunities", () => {
           },
           {
             rome_code: ["D1209"],
+            rome_label: "Vente de végétaux",
             is_multi_published: true,
             job_status: JOB_STATUS.ACTIVE,
             job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
@@ -1324,7 +1560,8 @@ describe("findJobsOpportunities", () => {
         address_detail: {
           code_insee_localite: levalloisFixture.code,
         },
-        phone: "0400000001",
+        address: levalloisFixture.nom,
+        phone: "0465000001",
       })
 
       await getDbCollection("recruiters").insertOne(extraLbaJob)
@@ -1380,6 +1617,9 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
+      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      expect.soft(parseResult.success).toBeTruthy()
+      expect(parseResult.error).toBeUndefined()
       expect({
         jobs: results.jobs.map((j) => ({ _id: j._id, partner_job_id: j.partner_job_id, partner_label: j.partner_label, workplace_legal_name: j.workplace_legal_name })),
         recruiters: results.recruiters.map((j) => ({ _id: j._id, workplace_legal_name: j.workplace_legal_name })),
