@@ -34,7 +34,7 @@ const Header = () => {
           <Flex alignItems="center" px={[0, 4]}>
             <Link href="/" aria-label="Retour à la page d'accueil">
               <Flex direction="row" align="center" px={[0, 4]}>
-                <Image src="/images/espace_pro/logo.svg" alt="marianne" />
+                <Image src="/images/marianne.svg" aria-hidden={true} alt="" width="108" height="90" />
                 <LbaNew ml={4} w="143px" h="37px" />
               </Flex>
             </Link>
