@@ -93,7 +93,7 @@ export async function setupJobProcessor() {
           },
           "Envoi des offres à France Travail": {
             cron_string: "30 5 * * *",
-            handler: exportToFranceTravail,
+            handler: config.env === "production" ? () => exportToFranceTravail() : () => Promise.resolve(),
           },
           "Mise à jour des recruteurs en erreur": {
             cron_string: "10 0 * * *",
