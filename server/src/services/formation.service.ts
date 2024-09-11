@@ -59,6 +59,7 @@ const minimalDataMongoFields = {
   lieu_formation_geo_coordonnees: 1,
   localite: 1,
   distance: 1,
+  lieu_formation_geopoint: 1,
 }
 
 /**
@@ -332,8 +333,8 @@ const transformFormations = (rawFormations: IFormationCatalogue[], isMinimalData
  * Adaptation au modèle LBAC et conservation des seules infos utilisées des formations
  */
 const transformFormation = (rawFormation: IFormationCatalogue): ILbaItemFormation => {
-  const latOpt = rawFormation.lieu_formation_geopoint?.coordinates[0] ?? null
-  const longOpt = rawFormation.lieu_formation_geopoint?.coordinates[1] ?? null
+  const latOpt = rawFormation.lieu_formation_geopoint?.coordinates[1] ?? null
+  const longOpt = rawFormation.lieu_formation_geopoint?.coordinates[0] ?? null
   const sessions = setSessions(rawFormation)
   const duration = getDurationFromSessions(sessions)
 
@@ -417,8 +418,8 @@ const transformFormation = (rawFormation: IFormationCatalogue): ILbaItemFormatio
  * Adaptation au modèle LBAC et conservation des seules infos utilisées des formations
  */
 const transformFormationV2 = (rawFormation: IFormationCatalogue): ILbaItemFormation2 => {
-  const latOpt = rawFormation.lieu_formation_geopoint?.coordinates[0] ?? null
-  const longOpt = rawFormation.lieu_formation_geopoint?.coordinates[1] ?? null
+  const latOpt = rawFormation.lieu_formation_geopoint?.coordinates[1] ?? null
+  const longOpt = rawFormation.lieu_formation_geopoint?.coordinates[0] ?? null
 
   const sessions = setSessions(rawFormation)
   const duration = getDurationFromSessions(sessions)
@@ -493,8 +494,8 @@ const transformFormationV2 = (rawFormation: IFormationCatalogue): ILbaItemFormat
 }
 
 const transformFormationWithMinimalDataV2 = (rawFormation: IFormationCatalogue): ILbaItemFormation2 => {
-  const latOpt = rawFormation.lieu_formation_geopoint?.coordinates[0] ?? null
-  const longOpt = rawFormation.lieu_formation_geopoint?.coordinates[1] ?? null
+  const latOpt = rawFormation.lieu_formation_geopoint?.coordinates[1] ?? null
+  const longOpt = rawFormation.lieu_formation_geopoint?.coordinates[0] ?? null
 
   const resultFormation: ILbaItemFormation2 = {
     type: LBA_ITEM_TYPE.FORMATION,
@@ -526,8 +527,10 @@ const transformFormationWithMinimalDataV2 = (rawFormation: IFormationCatalogue):
  * Adaptation au modèle LBAC et conservation des seules infos utilisées des formations
  */
 const transformFormationWithMinimalData = (rawFormation: IFormationCatalogue): ILbaItemFormation => {
-  const latOpt = rawFormation.lieu_formation_geopoint?.coordinates[0] ?? null
-  const longOpt = rawFormation.lieu_formation_geopoint?.coordinates[1] ?? null
+  const latOpt = rawFormation.lieu_formation_geopoint?.coordinates[1] ?? null
+  const longOpt = rawFormation.lieu_formation_geopoint?.coordinates[0] ?? null
+
+  console.log("latOpt : ", rawFormation)
 
   const resultFormation: ILbaItemFormation = {
     ideaType: LBA_ITEM_TYPE_OLD.FORMATION,
