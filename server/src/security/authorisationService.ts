@@ -5,7 +5,7 @@ import { ADMIN, CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
 import { ComputedUserAccess, IApplication, IJob, IRecruiter } from "shared/models"
 import { ICFA } from "shared/models/cfa.model"
 import { IEntreprise } from "shared/models/entreprise.model"
-import { IJobsPartnersOfferApi } from "shared/models/jobsPartners.model"
+import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { AccessEntityType, IRoleManagement } from "shared/models/roleManagement.model"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { AccessPermission, AccessResourcePath } from "shared/security/permissions"
@@ -22,7 +22,7 @@ type RecruiterResource = { recruiter: IRecruiter } & ({ type: "ENTREPRISE"; entr
 type JobResource = { job: IJob; recruiterResource: RecruiterResource }
 type ApplicationResource = { application: IApplication; jobResource?: JobResource; applicantId?: string }
 type EntrepriseResource = { entreprise: IEntreprise }
-type JobPartnerResource = { job: IJobsPartnersOfferApi }
+type JobPartnerResource = { job: IJobsPartnersOfferPrivate }
 
 type Resources = {
   users: Array<{ _id: string }>

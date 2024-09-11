@@ -23,14 +23,14 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     workplace_naf_code: null,
     workplace_naf_label: null,
 
-    apply_url: null,
+    apply_url: "https://apply.com",
     apply_phone: null,
     partner_label: JOBPARTNERS_LABEL.HELLOWORK,
     partner_job_id: null,
 
     contract_start: null,
     contract_duration: null,
-    contract_type: null,
+    contract_type: ["Apprentissage", "Professionnalisation"],
     contract_remote: null,
 
     offer_title: "Une super offre d'alternance",

@@ -1753,7 +1753,7 @@ describe("createJobOffer", () => {
 
     contract_start: inSept,
     contract_duration: null,
-    contract_type: null,
+    contract_type: ["Apprentissage", "Professionnalisation"],
     contract_remote: null,
 
     offer_title: "Apprentis en développement web",
@@ -1767,7 +1767,7 @@ describe("createJobOffer", () => {
     offer_origin: null,
     offer_multicast: true,
     offer_description: "Envie de devenir développeur web ? Rejoignez-nous !",
-    offer_diploma_level_european: null,
+    offer_target_diploma_european: null,
 
     apply_url: null,
     apply_email: null,
@@ -1886,7 +1886,7 @@ describe("updateJobOffer", () => {
 
     contract_start: inSept,
     contract_duration: null,
-    contract_type: null,
+    contract_type: ["Apprentissage", "Professionnalisation"],
     contract_remote: null,
 
     offer_title: "Apprentis en développement web",
@@ -1900,7 +1900,7 @@ describe("updateJobOffer", () => {
     offer_origin: null,
     offer_multicast: true,
     offer_description: "Envie de devenir développeur web ? Rejoignez-nous !",
-    offer_diploma_level_european: null,
+    offer_target_diploma_european: null,
 
     apply_url: null,
     apply_email: null,
