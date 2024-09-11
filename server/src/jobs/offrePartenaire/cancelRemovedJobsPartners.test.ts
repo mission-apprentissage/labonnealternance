@@ -52,7 +52,5 @@ describe("Canceling jobs_partners that have been removed from computed_jobs_part
     // aucun éléments de jobs_partners n'a été retiré de la collection
     const countJobsPartners = await getDbCollection("jobs_partners").countDocuments({})
     expect.soft(countJobsPartners).toEqual(5)
-
-    //gérer les cas de partner_label et job_partner_id différents pour vérifier la compréhension de l'unicité
   })
 })

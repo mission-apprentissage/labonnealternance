@@ -1,4 +1,4 @@
-import { JOB_STATUS } from "shared/models"
+import { JOB_STATUS_ENGLISH } from "shared/models"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -26,7 +26,7 @@ export const cancelRemovedJobsPartners = async () => {
       },
     },
     {
-      $set: { offer_status: JOB_STATUS.ANNULEE },
+      $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE },
     },
     {
       $unset: "matched",
