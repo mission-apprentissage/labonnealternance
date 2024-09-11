@@ -93,7 +93,7 @@ export async function setupJobProcessor() {
           },
           "Envoi des offres à France Travail": {
             cron_string: "30 5 * * *",
-            handler: exportToFranceTravail,
+            handler: config.env === "production" ? () => exportToFranceTravail() : () => Promise.resolve(0),
           },
           "Mise à jour des recruteurs en erreur": {
             cron_string: "10 0 * * *",
@@ -177,11 +177,11 @@ export async function setupJobProcessor() {
           },
           "Contrôle quotidien des candidatures": {
             cron_string: "0 10-19/1 * * 1-5",
-            handler: config.env === "production" ? () => controlApplications() : () => Promise.resolve(),
+            handler: config.env === "production" ? () => controlApplications() : () => Promise.resolve(0),
           },
           "Contrôle quotidien des prises de rendez-vous": {
             cron_string: "0 11-19/2 * * 1-5",
-            handler: config.env === "production" ? () => controlAppointments() : () => Promise.resolve(),
+            handler: config.env === "production" ? () => controlAppointments() : () => Promise.resolve(0),
           },
           "Anonymisation des user recruteurs de plus de 2 ans": {
             cron_string: "0 1 * * *",
@@ -197,7 +197,7 @@ export async function setupJobProcessor() {
           },
           "export des offres LBA sur S3": {
             cron_string: "30 6 * * 1",
-            handler: config.env === "production" ? () => exportLbaJobsToS3() : () => Promise.resolve(),
+            handler: config.env === "production" ? () => exportLbaJobsToS3() : () => Promise.resolve(0),
           },
           "Creation de la collection rolemanagement360": {
             cron_string: "00 10,13,17 * * *",
