@@ -530,8 +530,6 @@ const transformFormationWithMinimalData = (rawFormation: IFormationCatalogue): I
   const latOpt = rawFormation.lieu_formation_geopoint?.coordinates[1] ?? null
   const longOpt = rawFormation.lieu_formation_geopoint?.coordinates[0] ?? null
 
-  console.log("latOpt : ", rawFormation)
-
   const resultFormation: ILbaItemFormation = {
     ideaType: LBA_ITEM_TYPE_OLD.FORMATION,
     title: (rawFormation.intitule_long || rawFormation.intitule_court || rawFormation.intitule_rco) ?? null,
