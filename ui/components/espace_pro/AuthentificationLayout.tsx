@@ -27,13 +27,13 @@ export default function AuthentificationLayout(props) {
   }
 
   return (
-    <Container maxW="container.xl" px={4} py={4}>
+    <Container maxW="container.xl" py={4}>
       <InfoBanner />
-      <Flex direction="column" px={[0, 4]}>
+      <Flex direction="column">
         <Flex justifyContent="space-between" align="center" justify="center" mb={["4", "0"]}>
           <Link href="/" aria-label="Retour à la page d'accueil">
-            <Flex direction="row" align="center" px={[0, 4]}>
-              <Image src="/images/espace_pro/logo.svg" alt="marianne" />
+            <Flex direction="row" align="center">
+              <Image src="/images/espace_pro/logo.svg" aria-hidden={true} alt="" />
               <LbaNew ml={4} w="143px" h="37px" />
             </Flex>
           </Link>
