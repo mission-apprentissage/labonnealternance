@@ -122,7 +122,7 @@ function CreationMiseEnRelationPage({ isWidget }: { isWidget?: boolean }) {
                           {etablissement?.numero_voie} {etablissement?.type_voie} {etablissement?.nom_voie}, {etablissement?.code_postal} {etablissement?.nom_departement}
                         </Text>
                         <Link
-                          href={`https://catalogue.apprentissage.beta.gouv.fr/etablissement/${etablissement._id}`}
+                          href={`https://catalogue-apprentissage.intercariforef.org/etablissement/${etablissement.siret}`}
                           isExternal
                           aria-label="Etablissement sur le site du catalogue des formations en apprentissage - nouvelle fenêtre"
                         >

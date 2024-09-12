@@ -178,7 +178,7 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: s
       _id: { $in: Array.from(etablissementsToRetrieve) },
       certifie_qualite: true,
     },
-    { _id: 1, numero_voie: 1, type_voie: 1, nom_voie: 1, code_postal: 1, nom_departement: 1, entreprise_raison_sociale: 1, geo_coordonnees: 1 }
+    { _id: 1, siret: 1, numero_voie: 1, type_voie: 1, nom_voie: 1, code_postal: 1, nom_departement: 1, entreprise_raison_sociale: 1, geo_coordonnees: 1 }
   )
 
   let etablissementsRefined = etablissements.flatMap((etablissement) => {
