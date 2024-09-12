@@ -2,7 +2,7 @@ import { ObjectId } from "bson"
 
 import { ILbaCompany } from "../models"
 
-export function generateLbaConpanyFixture(data: Partial<ILbaCompany>): ILbaCompany {
+export function generateLbaCompanyFixture(data: Partial<ILbaCompany>): ILbaCompany {
   return {
     _id: new ObjectId(),
     siret: "11000001500013",

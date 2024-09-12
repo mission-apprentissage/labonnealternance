@@ -197,7 +197,7 @@ export const getJobsQuery = async (
   return result
 }
 
-export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }: IJobOpportunityGetQueryResolved): Promise<IJobsPartnersOfferPrivate[]> => {
+export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }: IJobOpportunityGetQueryResolved): Promise<IJobsPartnersOfferApi[]> => {
   const query: Filter<IJobsPartnersOfferPrivate> = {
     offer_multicast: true,
   }
@@ -225,7 +225,7 @@ export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }
           { $sort: { distance: 1, offer_creation: -1 } },
         ]
 
-  return await getDbCollection("jobs_partners")
+  const jobsPartners = await getDbCollection("jobs_partners")
     .aggregate<IJobsPartnersOfferPrivate>([
       ...filterStages,
       {
@@ -233,6 +233,12 @@ export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }
       },
     ])
     .toArray()
+
+  return jobsPartners.map((j) => ({
+    ...j,
+    // TODO: set LBA url
+    apply_url: j.apply_url ?? `${config.publicUrl}/recherche-apprentissage`,
+  }))
 }
 
 const convertToGeopoint = ({ longitude, latitude }: { longitude: number; latitude: number }): IGeoPoint => ({ type: "Point", coordinates: [longitude, latitude] })
@@ -319,7 +325,7 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IJobRes
       .map(
         ({ recruiter, job }: IJobResult): IJobsPartnersOfferApi => ({
           _id: job._id.toString(),
-          partner: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+          partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
           partner_job_id: null,
           contract_start: job.job_start_date,
           contract_duration: job.job_duration ?? null,
@@ -372,7 +378,7 @@ export const convertFranceTravailJobToJobPartnerOfferApi = (offresEmploiFranceTr
       return {
         _id: null,
         partner_job_id: offreFT.id,
-        partner: JOBPARTNERS_LABEL.OFFRES_EMPLOI_FRANCE_TRAVAIL,
+        partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_FRANCE_TRAVAIL,
 
         contract_start: null,
         contract_duration: isNaN(contractDuration) ? null : contractDuration,
@@ -601,7 +607,7 @@ async function resolveRomeCodes(data: IJobsPartnersWritableApi, siretData: Workp
   return [romeoResponse]
 }
 
-type InvariantFields = "_id" | "created_at" | "partner"
+type InvariantFields = "_id" | "created_at" | "partner_label"
 
 async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiApprentissageTokenData, current: IJobsPartnersOfferPrivate | null): Promise<ObjectId> {
   const zodError = new ZodError([])
@@ -621,13 +627,13 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAppr
     throw internal("unexpected: cannot resolve all required data for the job offer")
   }
 
-  const { offer_creation, offer_expiration, offer_rome_codes, offer_diploma_level_european, workplace_address_label, ...rest } = data
+  const { offer_creation, offer_expiration, offer_rome_codes, offer_target_diploma_european, workplace_address_label, ...rest } = data
   const now = new Date()
 
   const invariantData: Pick<IJobsPartnersOfferPrivate, InvariantFields> = {
     _id: current?._id ?? new ObjectId(),
     created_at: current?.created_at ?? now,
-    partner: identity.organisation,
+    partner_label: identity.organisation,
   }
 
   const defaultOfferExpiration = current?.offer_expiration
@@ -640,11 +646,11 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAppr
     offer_creation: offer_creation ?? invariantData.created_at,
     offer_expiration: offer_expiration || defaultOfferExpiration,
     offer_target_diploma:
-      offer_diploma_level_european == null
+      offer_target_diploma_european == null
         ? null
         : {
-            european: offer_diploma_level_european,
-            label: NIVEAU_DIPLOME_LABEL[offer_diploma_level_european],
+            european: offer_target_diploma_european,
+            label: NIVEAU_DIPLOME_LABEL[offer_target_diploma_european],
           },
     updated_at: now,
     ...rest,
