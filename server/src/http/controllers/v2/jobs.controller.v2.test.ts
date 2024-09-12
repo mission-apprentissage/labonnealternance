@@ -4,7 +4,7 @@ import { useServer } from "@tests/utils/server.test.utils"
 import { ObjectId } from "mongodb"
 import nock from "nock"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
-import { generateLbaConpanyFixture } from "shared/fixtures/recruteurLba.fixture"
+import { generateLbaCompanyFixture } from "shared/fixtures/recruteurLba.fixture"
 import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { IGeoPoint } from "shared/models"
 import { IJobsPartnersOfferPrivate, IJobsPartnersWritableApiInput } from "shared/models/jobsPartners.model"
@@ -39,7 +39,7 @@ const porteDeClichy: IGeoPoint = {
 }
 const romesQuery = rome.join(",")
 const [longitude, latitude] = porteDeClichy.coordinates
-const recruteurLba = generateLbaConpanyFixture({ rome_codes: rome, geopoint: clichyFixture.centre, siret: "58006820882692", email: "email@mail.com", website: "http://site.fr" })
+const recruteurLba = generateLbaCompanyFixture({ rome_codes: rome, geopoint: clichyFixture.centre, siret: "58006820882692", email: "email@mail.com", website: "http://site.fr" })
 const jobPartnerOffer: IJobsPartnersOfferPrivate = generateJobsPartnersOfferPrivate({
   offer_rome_codes: ["D1214"],
   workplace_geopoint: parisFixture.centre,
@@ -164,8 +164,8 @@ describe("GET /jobs/search", () => {
       "offer_target_diploma",
       "offer_title",
       "offer_to_be_acquired_skills",
-      "partner",
       "partner_job_id",
+      "partner_label",
       "workplace_address",
       "workplace_brand",
       "workplace_description",
@@ -385,7 +385,7 @@ describe("POST /jobs", async () => {
     const doc = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(responseJson.id as string) })
 
     // Ensure that the job offer is associated to the correct permission
-    expect(doc?.partner).toBe("Un super Partenaire")
+    expect(doc?.partner_label).toBe("Un super Partenaire")
   })
 
   it("should apply method be defined", async () => {
@@ -431,7 +431,7 @@ describe("PUT /jobs/:id", async () => {
   const now = new Date("2024-06-18T00:00:00.000Z")
   const inSept = new Date("2024-09-01T00:00:00.000Z")
 
-  const originalJob = generateJobsPartnersOfferPrivate({ _id: id, offer_title: "Old title", partner: "Un super Partenaire" })
+  const originalJob = generateJobsPartnersOfferPrivate({ _id: id, offer_title: "Old title", partner_label: "Un super Partenaire" })
 
   const data: IJobsPartnersWritableApiInput = {
     partner_job_id: null,

@@ -6,7 +6,7 @@ import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, RECRUITER_STATUS } from "shar
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
-import { generateLbaConpanyFixture } from "shared/fixtures/recruteurLba.fixture"
+import { generateLbaCompanyFixture } from "shared/fixtures/recruteurLba.fixture"
 import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
@@ -47,7 +47,7 @@ afterEach(() => {
 
 describe("findJobsOpportunities", () => {
   const recruiters: ILbaCompany[] = [
-    generateLbaConpanyFixture({
+    generateLbaCompanyFixture({
       siret: "11000001500013",
       raison_sociale: "ASSEMBLEE NATIONALE",
       enseigne: "ASSEMBLEE NATIONALE - La vraie",
@@ -57,7 +57,7 @@ describe("findJobsOpportunities", () => {
       phone: "0100000000",
       last_update_at: new Date("2021-01-01"),
     }),
-    generateLbaConpanyFixture({
+    generateLbaCompanyFixture({
       siret: "77555848900073",
       raison_sociale: "GRAND PORT MARITIME DE MARSEILLE (GPMM)",
       rome_codes: ["M1602", "D1212"],
@@ -66,7 +66,7 @@ describe("findJobsOpportunities", () => {
       phone: "0200000000",
       last_update_at: new Date("2022-01-01"),
     }),
-    generateLbaConpanyFixture({
+    generateLbaCompanyFixture({
       siret: "52951974600034",
       raison_sociale: "SOCIETE PARISIENNE DE LA PISCINE PONTOISE (S3P)",
       enseigne: "SOCIETE PARISIENNE DE LA PISCINE PONTOISE (S3P)",
@@ -148,16 +148,19 @@ describe("findJobsOpportunities", () => {
       offer_rome_codes: ["M1602"],
       workplace_geopoint: parisFixture.centre,
       offer_creation: new Date("2021-01-01"),
+      partner_job_id: "job-id-1",
     }),
     generateJobsPartnersOfferPrivate({
       offer_rome_codes: ["M1602", "D1214"],
       workplace_geopoint: marseilleFixture.centre,
       offer_creation: new Date("2022-01-01"),
+      partner_job_id: "job-id-2",
     }),
     generateJobsPartnersOfferPrivate({
       offer_rome_codes: ["D1212"],
       workplace_geopoint: levalloisFixture.centre,
       offer_creation: new Date("2023-01-01"),
+      partner_job_id: "job-id-3",
     }),
   ]
   const ftJobs: FTJob[] = [
@@ -215,7 +218,7 @@ describe("findJobsOpportunities", () => {
         expect.objectContaining({
           _id: null,
           partner_job_id: ftJobs[0].id,
-          partner: "France Travail",
+          partner_label: "France Travail",
         }),
         expect.objectContaining({
           _id: partnerJobs[0]._id,
@@ -288,7 +291,7 @@ describe("findJobsOpportunities", () => {
         expect.objectContaining({
           _id: null,
           partner_job_id: ftJobs[0].id,
-          partner: "France Travail",
+          partner_label: "France Travail",
         }),
         expect.objectContaining({
           _id: partnerJobs[0]._id,
@@ -357,7 +360,7 @@ describe("findJobsOpportunities", () => {
         expect.objectContaining({
           _id: null,
           partner_job_id: ftJobs[0].id,
-          partner: "France Travail",
+          partner_label: "France Travail",
         }),
         expect.objectContaining({
           _id: partnerJobs[1]._id,
@@ -615,7 +618,7 @@ describe("findJobsOpportunities", () => {
         expect.objectContaining({
           _id: null,
           partner_job_id: ftJobs[0].id,
-          partner: "France Travail",
+          partner_label: "France Travail",
         }),
         expect.objectContaining({
           _id: partnerJobs[0]._id,
@@ -666,7 +669,7 @@ describe("findJobsOpportunities", () => {
 
     it("should limit companies to 150", async () => {
       const extraLbaCompanies: ILbaCompany[] = Array.from({ length: 200 }, () =>
-        generateLbaConpanyFixture({
+        generateLbaCompanyFixture({
           geopoint: parisFixture.centre,
           rome_codes: ["M1602"],
         })
@@ -1249,10 +1252,11 @@ describe("findJobsOpportunities", () => {
       vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: [] })
     })
     it("should limit jobs to 150", async () => {
-      const extraOffers: IJobsPartnersOfferPrivate[] = Array.from({ length: 300 }, () =>
+      const extraOffers: IJobsPartnersOfferPrivate[] = Array.from({ length: 300 }, (e, idx) =>
         generateJobsPartnersOfferPrivate({
           workplace_geopoint: parisFixture.centre,
           offer_rome_codes: ["M1602"],
+          partner_job_id: `job-id-a-${idx}`,
         })
       )
       await getDbCollection("jobs_partners").insertMany(extraOffers)
@@ -1301,6 +1305,7 @@ describe("findJobsOpportunities", () => {
           offer_rome_codes: ["M1602"],
           workplace_geopoint: parisFixture.centre,
           offer_multicast: false,
+          partner_job_id: "job-id-4",
         })
       )
       await getDbCollection("recruiters").deleteMany({})
@@ -1329,11 +1334,13 @@ describe("findJobsOpportunities", () => {
             offer_rome_codes: ["M1602"],
             workplace_geopoint: parisFixture.centre,
             offer_target_diploma: { european: "4", label: "BP, Bac, autres formations niveau (Bac)" },
+            partner_job_id: "job-id-5",
           }),
           generateJobsPartnersOfferPrivate({
             offer_rome_codes: ["M1602"],
             workplace_geopoint: parisFixture.centre,
             offer_target_diploma: { european: "3", label: "CAP, BEP, autres formations niveau (CAP)" },
+            partner_job_id: "job-id-6",
           }),
         ])
         await getDbCollection("recruiters").deleteMany({})
@@ -1569,6 +1576,7 @@ describe("findJobsOpportunities", () => {
           offer_rome_codes: ["D1212"],
           workplace_geopoint: levalloisFixture.centre,
           offer_creation: new Date("2024-01-01"),
+          partner_job_id: "job-id-7",
           // created_at reference the creation date of the job in LBA, not the offer so we don't sort by it
           created_at: new Date("2021-01-01"),
         }),
@@ -1576,6 +1584,7 @@ describe("findJobsOpportunities", () => {
           offer_rome_codes: ["D1212"],
           workplace_geopoint: levalloisFixture.centre,
           offer_creation: new Date("2021-01-01"),
+          partner_job_id: "job-id-8",
           // created_at reference the creation date of the job in LBA, not the offer so we don't sort by it
           created_at: new Date("2024-01-01"),
         }),
@@ -1584,7 +1593,7 @@ describe("findJobsOpportunities", () => {
       await getDbCollection("jobs_partners").insertMany(extraOffers)
 
       const extraLbaCompanies = [
-        generateLbaConpanyFixture({
+        generateLbaCompanyFixture({
           siret: "52951974600034",
           raison_sociale: "EXTRA LBA COMPANY 1",
           rome_codes: ["D1211"],
@@ -1592,7 +1601,7 @@ describe("findJobsOpportunities", () => {
           insee_city_code: levalloisFixture.code,
           last_update_at: new Date("2024-01-01"),
         }),
-        generateLbaConpanyFixture({
+        generateLbaCompanyFixture({
           siret: "52951974600034",
           raison_sociale: "EXTRA LBA COMPANY 2",
           rome_codes: ["D1211"],
@@ -1619,70 +1628,70 @@ describe("findJobsOpportunities", () => {
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
       expect({
-        jobs: results.jobs.map((j) => ({ _id: j._id, partner_job_id: j.partner_job_id, partner: j.partner, workplace_legal_name: j.workplace_legal_name })),
+        jobs: results.jobs.map((j) => ({ _id: j._id, partner_job_id: j.partner_job_id, partner_label: j.partner_label, workplace_legal_name: j.workplace_legal_name })),
         recruiters: results.recruiters.map((j) => ({ _id: j._id, workplace_legal_name: j.workplace_legal_name })),
       }).toEqual({
         jobs: [
           {
             // Paris
             _id: lbaJobs[0].jobs[0]._id.toString(),
-            partner: "La bonne alternance",
+            partner_label: "La bonne alternance",
             partner_job_id: null,
             workplace_legal_name: lbaJobs[0].establishment_raison_sociale,
           },
           {
             // Levallois - 2024-01-01
             _id: extraLbaJob.jobs[1]._id.toString(),
-            partner: "La bonne alternance",
+            partner_label: "La bonne alternance",
             partner_job_id: null,
             workplace_legal_name: extraLbaJob.establishment_raison_sociale,
           },
           {
             // Levallois - 2023-01-01
             _id: lbaJobs[2].jobs[0]._id.toString(),
-            partner: "La bonne alternance",
+            partner_label: "La bonne alternance",
             partner_job_id: null,
             workplace_legal_name: lbaJobs[2].establishment_raison_sociale,
           },
           {
             // Levallois - 2021-01-01
             _id: extraLbaJob.jobs[0]._id.toString(),
-            partner: "La bonne alternance",
+            partner_label: "La bonne alternance",
             partner_job_id: null,
             workplace_legal_name: extraLbaJob.establishment_raison_sociale,
           },
           {
             _id: null,
             partner_job_id: ftJobs[0].id,
-            partner: "France Travail",
+            partner_label: "France Travail",
             workplace_legal_name: null,
           },
           // Paris
           {
             _id: partnerJobs[0]._id,
-            partner: "Hellowork",
-            partner_job_id: null,
+            partner_label: "Hello work",
+            partner_job_id: expect.any(String),
             workplace_legal_name: partnerJobs[0].workplace_legal_name,
           },
           // Levallois - 2024-01-01
           {
             _id: extraOffers[0]._id,
-            partner: "Hellowork",
-            partner_job_id: null,
+            partner_label: "Hello work",
+            partner_job_id: expect.any(String),
             workplace_legal_name: extraOffers[0].workplace_legal_name,
           },
           // Levallois - 2023-01-01
           {
             _id: partnerJobs[2]._id,
-            partner: "Hellowork",
-            partner_job_id: null,
+            partner_label: "Hello work",
+            partner_job_id: expect.any(String),
             workplace_legal_name: partnerJobs[2].workplace_legal_name,
           },
           // Levallois - 2021-01-01
           {
             _id: extraOffers[1]._id,
-            partner: "Hellowork",
-            partner_job_id: null,
+            partner_label: "Hello work",
+            partner_job_id: expect.any(String),
             workplace_legal_name: extraOffers[1].workplace_legal_name,
           },
         ],
@@ -1799,12 +1808,12 @@ describe("createJobOffer", () => {
   })
 
   it("should create a job offer with the minimal data", async () => {
-    const result = await createJobOffer(identity, minimalData)
+    const result = await createJobOffer(identity, { ...minimalData, partner_job_id: "job-id-b" })
     expect(result).toBeInstanceOf(ObjectId)
 
     const job = await getDbCollection("jobs_partners").findOne({ _id: result })
     expect(job?.created_at).toEqual(now)
-    expect(job?.partner).toEqual(identity.organisation)
+    expect(job?.partner_label).toEqual(identity.organisation)
     expect(job?.offer_rome_codes).toEqual(["M1602"])
     expect(job?.offer_status).toEqual(JOB_STATUS.ACTIVE)
     expect(job?.offer_creation).toEqual(now)
@@ -1866,7 +1875,7 @@ describe("updateJobOffer", () => {
 
   const originalJob = generateJobsPartnersOfferPrivate({
     _id,
-    partner: identity.organisation,
+    partner_label: identity.organisation,
     created_at: originalCreatedAt,
     offer_creation: originalCreatedAt,
     offer_expiration: originalCreatedAtPlus2Months,
@@ -1934,11 +1943,11 @@ describe("updateJobOffer", () => {
   })
 
   it("should update a job offer with the minimal data", async () => {
-    await updateJobOffer(_id, identity, minimalData)
+    await updateJobOffer(_id, identity, { ...minimalData, partner_job_id: "job-id-9" })
 
     const job = await getDbCollection("jobs_partners").findOne({ _id })
     expect(job?.created_at).toEqual(originalCreatedAt)
-    expect(job?.partner).toEqual(identity.organisation)
+    expect(job?.partner_label).toEqual(identity.organisation)
     expect(job?.offer_rome_codes).toEqual(["M1602"])
     expect(job?.offer_status).toEqual(JOB_STATUS.ACTIVE)
     expect(job?.offer_creation).toEqual(originalCreatedAt)
@@ -1958,7 +1967,7 @@ describe("updateJobOffer", () => {
   it("should get default rome from ROMEO", async () => {
     vi.mocked(getRomeoPredictions).mockResolvedValue(franceTravailRomeoFixture["Software Engineer"])
 
-    await updateJobOffer(_id, identity, { ...minimalData, offer_rome_codes: [] })
+    await updateJobOffer(_id, identity, { ...minimalData, partner_job_id: "job-id-10", offer_rome_codes: [] })
 
     const job = await getDbCollection("jobs_partners").findOne({ _id })
     expect(job?.offer_rome_codes).toEqual(["E1206"])
@@ -1973,7 +1982,7 @@ describe("updateJobOffer", () => {
         features: [{ geometry: clichyFixture.centre }],
       })
 
-    await updateJobOffer(_id, identity, { ...minimalData, workplace_address_label: "1T impasse Passoir Clichy" })
+    await updateJobOffer(_id, identity, { ...minimalData, partner_job_id: "job-id-11", workplace_address_label: "1T impasse Passoir Clichy" })
 
     const job = await getDbCollection("jobs_partners").findOne({ _id })
     expect(job?.workplace_address).toEqual({ label: "1T impasse Passoir Clichy" })

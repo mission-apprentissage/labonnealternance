@@ -28,7 +28,7 @@ export default function AuthentificationLayout(props) {
 
   return (
     <Container maxW="container.xl" px={4} py={4}>
-      <InfoBanner />
+      <InfoBanner showInfo={true} />
       <Flex direction="column" px={[0, 4]}>
         <Flex justifyContent="space-between" align="center" justify="center" mb={["4", "0"]}>
           <Link href="/" aria-label="Retour à la page d'accueil">
