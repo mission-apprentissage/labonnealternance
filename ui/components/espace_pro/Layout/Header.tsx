@@ -35,7 +35,7 @@ const Header = () => {
             <Link href="/" aria-label="Retour à la page d'accueil">
               <Flex direction="row" align="center" px={[0, 4]}>
                 <Image src="/images/marianne.svg" aria-hidden={true} alt="" width="108" height="90" />
-                <LbaNew ml={4} w="143px" h="37px" />
+                <LbaNew w="143px" h="37px" />
               </Flex>
             </Link>
             {organisation?.includes("akto") && <LogoAkto display={["none", "flex"]} w="100px" h={6} />}

@@ -34,7 +34,7 @@ const Navigation = ({ currentPage = undefined }) => {
                   <Image src="/images/marianne.svg" aria-hidden={true} alt="" width="108" height="90" />
                 </NextLink>
                 <NextLink href="/" aria-label="Retour à l'accueil">
-                  <LbaNew ml={4} w={["75%", "143px"]} h="37px" />
+                  <LbaNew w="143px" h="37px" />
                 </NextLink>
               </Flex>
             </Flex>
