@@ -1,6 +1,7 @@
 import { capitalize } from "lodash-es"
 
-import { CODE_INSEE_REGEX, CODE_NAF_REGEX, CODE_ROME_REGEX, LATITUDE_REGEX, LONGITUDE_REGEX, PHONE_REGEX, RNCP_REGEX, SIRET_REGEX, UAI_REGEX } from "../../constants/regex"
+import { CODE_INSEE_REGEX, CODE_NAF_REGEX, CODE_ROME_REGEX, RNCP_REGEX, SIRET_REGEX, UAI_REGEX } from "../../constants/regex"
+import { validatePhone } from "../../validators/phoneValidator"
 import { validateSIRET } from "../../validators/siretValidator"
 import { removeUrlsFromText } from "../common"
 import { z } from "../zodWithOpenApi"
@@ -38,7 +39,7 @@ export const extensions = {
       .string()
       .trim()
       .transform((value) => removeUrlsFromText(value)), /// is it a phone extensions still ??
-  telephone: () => z.string().trim().regex(PHONE_REGEX, "Téléphone invalide"),
+  telephone: z.string().trim().refine(validatePhone, { message: "Phone number is not valid. Please use international format prefix (example: +33 for France)" }),
   code_naf: () =>
     z.preprocess(
       (v: unknown) => (typeof v === "string" ? v.replace(".", "") : v), // parfois, le code naf contient un point
@@ -108,18 +109,14 @@ export const extensions = {
         message: "One or more ROME codes are invalid. Expected format is 'D1234'.",
       }),
   rncpCode: () => z.string().trim().regex(RNCP_REGEX, "Code RNCP invalide"),
-  latitude: () =>
-    z
-      .string()
-      .trim()
-      .regex(LATITUDE_REGEX, "Latitude invalide")
-      .transform((val) => parseFloat(val)),
-  longitude: () =>
-    z
-      .string()
-      .trim()
-      .regex(LONGITUDE_REGEX, "Longitude invalide")
-      .transform((val) => parseFloat(val)),
+  latitude: ({ coerce }: { coerce: boolean }) => {
+    const base = coerce ? z.coerce.number() : z.number()
+    return base.min(-90, "Latitude doit être comprise entre -90 et 90").max(90, "Latitude doit être comprise entre -90 et 90")
+  },
+  longitude: ({ coerce }: { coerce: boolean }) => {
+    const base = coerce ? z.coerce.number() : z.number()
+    return base.min(-180, "Longitude doit être comprise entre -180 et 180").max(180, "Longitude doit être comprise entre -180 et 180")
+  },
   inseeCode: () => z.string().trim().regex(CODE_INSEE_REGEX, "Code INSEE invalide"),
   url: () => z.string().regex(/^(https?:\/\/)?(http?:\/\/)?(www\.)?([a-zA-Z0-9-]+)(\.[a-zA-Z0-9-]+)+([a-zA-Z]{2,6})(:[0-9]{1,5})?(\/.*)?$/, "URL invalide"),
 }

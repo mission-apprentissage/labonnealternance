@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { badRequest, internal } from "@hapi/boom"
 import { Document, Filter, ObjectId } from "mongodb"
 import { IJob, IRecruiter, IReferentielRomeForJob, JOB_STATUS } from "shared"
 import { NIVEAUX_POUR_LBA } from "shared/constants"
@@ -118,16 +118,12 @@ export type IJobResult = {
 }
 
 export const getLbaJobsV2 = async ({
-  distance,
-  lat,
-  lon,
+  geo,
   romes,
   niveau,
   limit,
 }: {
-  distance: number
-  lat: number
-  lon: number
+  geo: { latitude: number; longitude: number; radius: number } | null
   romes: string[] | null
   niveau: INiveauPourLbaLabel | null
   limit: number
@@ -150,18 +146,35 @@ export const getLbaJobsV2 = async ({
     ...jobFilters,
   }
 
+  const filterStage: Document[] =
+    geo === null
+      ? // Sans géoloc, on trie par date de création (Important de le faire avant le $limit)
+        [
+          { $match: query },
+          { $sort: { "jobs.job_creation_date": -1 } },
+          { $limit: limit },
+          { $unwind: { path: "$jobs" } },
+          // Make sure to sort after unwinding
+          { $sort: { "jobs.job_creation_date": -1 } },
+        ]
+      : [
+          // Avec géoloc, on trie par distance (comportement par défaut de $geoNear)
+          {
+            $geoNear: {
+              near: { type: "Point", coordinates: [geo.longitude, geo.latitude] },
+              distanceField: "distance",
+              maxDistance: geo.radius * 1000,
+              query,
+            },
+          },
+          { $limit: limit },
+          { $unwind: { path: "$jobs" } },
+          { $sort: { distance: 1, "jobs.job_creation_date": -1 } },
+        ]
+
   const recruiters = await getDbCollection("recruiters")
     .aggregate<IJobResult["recruiter"] & { jobs: IJobResult["job"] }>([
-      {
-        $geoNear: {
-          near: { type: "Point", coordinates: [lon, lat] },
-          distanceField: "distance",
-          maxDistance: distance * 1000,
-          query,
-        },
-      },
-      { $limit: limit },
-      { $unwind: { path: "$jobs" } },
+      ...filterStage,
       // Apply filters again on jobs individually
       { $match: jobFilters },
       // Limit the actual number of jobs returned
@@ -323,7 +336,7 @@ export const getLbaJobByIdV2 = async ({ id, caller }: { id: string; caller?: str
     const rawJob = await getOffreAvecInfoMandataire(id)
 
     if (!rawJob) {
-      throw Boom.badRequest()
+      throw badRequest()
     }
 
     const applicationCountByJob = await getApplicationByJobCount([id])
@@ -410,7 +423,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
           : null,
       },
       nafs: [{ label: recruiter.naf_label }],
-      diplomaLevel: offre.job_level_label || null,
+      target_diploma_level: offre.job_level_label || null,
       job: {
         id: offre._id.toString(),
         description: offre.job_description && offre.job_description.length > 50 ? offre.job_description : null,
@@ -558,7 +571,7 @@ const getLbaJobContactInfo = async (recruiter: IJobResult["recruiter"]): Promise
   if (recruiter.is_delegated && recruiter.cfa_delegated_siret) {
     const { managed_by } = recruiter
     if (!managed_by) {
-      throw Boom.internal(`managed_by est manquant pour le recruiter avec id=${recruiter._id}`)
+      throw internal(`managed_by est manquant pour le recruiter avec id=${recruiter._id}`)
     }
 
     const [cfa, cfaUser] = await Promise.all([
@@ -567,10 +580,10 @@ const getLbaJobContactInfo = async (recruiter: IJobResult["recruiter"]): Promise
     ])
 
     if (!cfa) {
-      throw Boom.internal(`inattendu: cfa introuvable avec le siret ${recruiter.cfa_delegated_siret}`)
+      throw internal(`inattendu: cfa introuvable avec le siret ${recruiter.cfa_delegated_siret}`)
     }
     if (!cfaUser) {
-      throw Boom.internal(`le user cfa est introuvable pour le recruiter avec id=${recruiter._id}`)
+      throw internal(`le user cfa est introuvable pour le recruiter avec id=${recruiter._id}`)
     }
 
     return {
@@ -590,6 +603,6 @@ const getLbaJobContactInfo = async (recruiter: IJobResult["recruiter"]): Promise
 
 export const replaceRecruiterFieldsWithCfaFields = async (recruiter: IRecruiter) => {
   if (recruiter.is_delegated && recruiter.cfa_delegated_siret) {
-    Object.assign(recruiter, getLbaJobContactInfo(recruiter))
+    Object.assign(recruiter, await getLbaJobContactInfo(recruiter))
   }
 }

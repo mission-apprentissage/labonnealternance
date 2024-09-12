@@ -10,58 +10,75 @@ import { isClamavAvailable } from "@/services/clamav.service"
 
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 
-export async function processApplications(batchSize: number) {
+const maxDuration = 1000 * 60 * 8 // 8 minutes
+
+export async function processApplications() {
   logger.info("starting job processApplications")
-  const scanResult = { success: 0, error: 0, total: 0 }
+  const timeoutTs = new Date().getTime() + maxDuration
+  const scanResult = { success: 0, error: 0, total: 0, virusDetected: 0 }
   if (await isClamavAvailable()) {
-    const normalScanResult = await scanApplications({ scan_status: ApplicationScanStatus.WAITING_FOR_SCAN }, batchSize)
-    const errorScanResult = await scanApplications({ scan_status: ApplicationScanStatus.ERROR_CLAMAV }, batchSize)
-    scanResult.success += normalScanResult.success + errorScanResult.success
-    scanResult.error += normalScanResult.error + errorScanResult.error
-    scanResult.total += normalScanResult.total + errorScanResult.total
-    if (scanResult.total > 0) {
+    const normalScanResult = await processApplicationGroup({ scan_status: ApplicationScanStatus.WAITING_FOR_SCAN }, timeoutTs)
+    const errorScanResult = await processApplicationGroup({ scan_status: ApplicationScanStatus.ERROR_CLAMAV }, timeoutTs)
+    const emailResult = await processApplicationGroup({ to_applicant_message_id: null, scan_status: ApplicationScanStatus.NO_VIRUS_DETECTED }, timeoutTs)
+    const results = [normalScanResult, errorScanResult, emailResult]
+    const add = (a: number, b: number) => a + b
+    scanResult.success += results.map((result) => result.success).reduce(add, 0)
+    scanResult.error += results.map((result) => result.error).reduce(add, 0)
+    scanResult.virusDetected += results.map((result) => result.virusDetected).reduce(add, 0)
+    scanResult.total += results.map((result) => result.total).reduce(add, 0)
+
+    if (scanResult.error > 0 || scanResult.virusDetected > 0) {
       await notifyToSlack({
-        subject: "Scan des candidatures",
-        message: `${scanResult.total} candidatures à scanner. ${scanResult.success} candidatures scannées. ${scanResult.error} erreurs.`,
-        error: scanResult.error > 0,
+        subject: "Envoi des candidatures",
+        message: `${scanResult.total} candidatures. ${scanResult.success} candidatures envoyées. ${scanResult.error} erreurs. ${scanResult.virusDetected} virus détecté.`,
+        error: true,
       })
     }
   } else {
     await notifyToSlack({
-      subject: "Scan des candidatures",
+      subject: "Envoi des candidatures",
       message: `Clamav indisponible`,
       error: true,
-    })
-  }
-  const emailResult = await sendApplicationsEmails({ to_applicant_message_id: null, scan_status: ApplicationScanStatus.NO_VIRUS_DETECTED }, batchSize)
-  if (emailResult.total > 0) {
-    await notifyToSlack({
-      subject: "Envoi des candidatures",
-      message: `${emailResult.total} candidatures à envoyer. ${emailResult.success} candidatures envoyées. ${emailResult.error} erreurs.`,
-      error: emailResult.error > 0,
     })
   }
   logger.info("ended job processApplications")
 }
 
-const scanApplications = async (applicationFilter: Filter<IApplication>, batchSize: number) => {
-  logger.info("start scanning applications for virus with filter", applicationFilter)
+const processApplicationGroup = async (applicationFilter: Filter<IApplication>, timeoutTs: number) => {
+  logger.info("start processing applications for filter", applicationFilter)
   const applicationCount = await getDbCollection("applications").countDocuments(applicationFilter)
-  logger.info(`${applicationCount} applications to scan. Taking the first ${batchSize}`)
-  const applicationsToScan = await getDbCollection("applications").find(applicationFilter).limit(batchSize).toArray()
   const results = { success: 0, error: 0, total: applicationCount, virusDetected: 0 }
-  await asyncForEach(applicationsToScan, async (application) => {
+  logger.info(`${applicationCount} applications to scan.`)
+  if (new Date().getTime() >= timeoutTs) {
+    return results
+  }
+  const applicationsToProcess = await getDbCollection("applications").find(applicationFilter).toArray()
+  await asyncForEach(applicationsToProcess, async (application) => {
+    if (new Date().getTime() >= timeoutTs) {
+      return
+    }
     try {
-      const hasVirus = await processApplicationScanForVirus(application)
-      results.success++
-      if (hasVirus) {
-        results.virusDetected++
+      let hasVirus: boolean = false
+      if (application.scan_status !== ApplicationScanStatus.NO_VIRUS_DETECTED) {
+        try {
+          hasVirus = await processApplicationScanForVirus(application)
+          if (hasVirus) {
+            results.virusDetected++
+          }
+        } catch (err2) {
+          await getDbCollection("applications").findOneAndUpdate({ _id: application._id }, { $set: { scan_status: ApplicationScanStatus.ERROR_CLAMAV } })
+          throw err2
+        }
       }
+      if (!hasVirus) {
+        await processApplicationEmails.sendEmailsIfNeeded(application)
+        await deleteApplicationCvFile(application)
+      }
+      results.success++
     } catch (err) {
       results.error++
-      logger.error(`error while scanning application with id=${application._id}`, err)
+      logger.error(`error while processing application with id=${application._id}`, err)
       sentryCaptureException(err, { data: { applicationId: application._id } })
-      await getDbCollection("applications").findOneAndUpdate({ _id: application._id }, { $set: { scan_status: ApplicationScanStatus.ERROR_CLAMAV } })
     }
   })
   logger.info(
@@ -69,26 +86,5 @@ const scanApplications = async (applicationFilter: Filter<IApplication>, batchSi
     applicationFilter,
     `total=${applicationCount}, success=${results.success}, errors=${results.error}. virus detected=${results.virusDetected}`
   )
-  return results
-}
-
-const sendApplicationsEmails = async (applicationFilter: Filter<IApplication>, batchSize: number) => {
-  logger.info("start sending emails for applications with filter", applicationFilter)
-  const applicationCount = await getDbCollection("applications").countDocuments(applicationFilter)
-  logger.info(`${applicationCount} applications to send emails. Taking the first ${batchSize}`)
-  const applications = await getDbCollection("applications").find(applicationFilter).limit(batchSize).toArray()
-  const results = { success: 0, error: 0, total: applicationCount }
-  await asyncForEach(applications, async (application) => {
-    try {
-      await processApplicationEmails.sendEmailsIfNeeded(application)
-      await deleteApplicationCvFile(application)
-      results.success++
-    } catch (err) {
-      results.error++
-      logger.error(`error while sending application emails with id=${application._id}`, err)
-      sentryCaptureException(err, { data: { applicationId: application._id } })
-    }
-  })
-  logger.info("done sending applications emails with filter", applicationFilter, `total=${applicationCount}, success=${results.success}, errors=${results.error}`)
   return results
 }

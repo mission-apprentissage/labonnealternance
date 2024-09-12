@@ -1,5 +1,5 @@
+import { internal, Boom, isBoom, badRequest } from "@hapi/boom"
 import { captureException } from "@sentry/node"
-import Boom from "boom"
 import { FastifyError, FastifyRequest } from "fastify"
 import { ResponseValidationError } from "fastify-type-provider-zod"
 import joi, { ValidationError } from "joi"
@@ -26,32 +26,32 @@ function isApiV2(request: FastifyRequest): boolean {
 }
 
 export function boomify(rawError: FastifyError | ValidationError | Boom<unknown> | Error | ZodError, request: FastifyRequest): Boom<unknown> {
-  if (Boom.isBoom(rawError)) {
+  if (isBoom(rawError)) {
     return rawError
   }
 
   if (rawError instanceof ResponseValidationError) {
     if (config.env === "local") {
-      const zodError = new ZodError(rawError.details.error)
-      return Boom.internal(rawError.message, {
+      const zodError = new ZodError(rawError.details.errors)
+      return internal(rawError.message, {
         validationError: zodError.format(),
       })
     }
 
-    return Boom.internal("Une erreur est survenue")
+    return internal("Une erreur est survenue")
   }
 
   if (rawError instanceof ZodError) {
     if (isApiV2(request)) {
-      return Boom.badRequest("Request validation failed", { validationError: rawError.format() })
+      return badRequest("Request validation failed", { validationError: rawError.format() })
     }
 
-    return Boom.badRequest(getZodMessageError(rawError, (rawError as unknown as FastifyError).validationContext ?? ""), { validationError: rawError })
+    return badRequest(getZodMessageError(rawError, (rawError as unknown as FastifyError).validationContext ?? ""), { validationError: rawError })
   }
 
   // Joi validation error throw from code
   if (joi.isError(rawError)) {
-    return Boom.badRequest(undefined, { details: rawError.details })
+    return badRequest(undefined, { details: rawError.details })
   }
 
   if ((rawError as FastifyError).statusCode) {
@@ -59,10 +59,10 @@ export function boomify(rawError: FastifyError | ValidationError | Boom<unknown>
   }
 
   if (config.env === "local") {
-    return Boom.internal(rawError.message, { rawError, cause: rawError })
+    return internal(rawError.message, { rawError, cause: rawError })
   }
 
-  return Boom.internal("Une erreur est survenue")
+  return internal("Une erreur est survenue")
 }
 
 export function errorMiddleware(server: Server) {

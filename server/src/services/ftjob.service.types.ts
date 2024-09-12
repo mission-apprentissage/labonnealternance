@@ -10,9 +10,10 @@ type FTContact = {
 
 type FTEntreprise = {
   nom: string
-  logo: string
+  logo?: string
   description: string
-  siret: string
+  siret?: string
+  entrepriseAdaptee?: boolean
 }
 
 type FTFormation = {
@@ -42,10 +43,10 @@ export type FTJob = {
   dateActualisation: string
   lieuTravail: {
     libelle: string
-    latitude: string
-    longitude: string
-    codePostal: string
-    commune: string
+    latitude?: string
+    longitude?: string
+    codePostal?: string
+    commune?: string
   }
   romeCode: string
   romeLibelle: string

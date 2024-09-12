@@ -25,6 +25,7 @@ import jobsPartnersComputedModel from "./jobsPartnersComputed.model "
 import opcoModel from "./opco.model"
 import optoutModel from "./optout.model"
 import rawHelloWorkModel from "./rawHelloWork.model"
+import rawKelioModel from "./rawKelio.model"
 import recruiterModel from "./recruiter.model"
 import lbaCompanyModel from "./recruteurLba.model"
 import lbaCompanyLegacyModel from "./recruteurLbaLegacy.model"
@@ -83,6 +84,7 @@ const modelDescriptorMap = {
   [userWithAccountModel.collectionName]: userWithAccountModel,
   [reportedCompanyModel.collectionName]: reportedCompanyModel,
   [referentielCommuneModel.collectionName]: referentielCommuneModel,
+  [rawKelioModel.collectionName]: rawKelioModel,
 } as const satisfies Record<string, IModelDescriptor>
 
 export const modelDescriptors = Object.values(modelDescriptorMap) as (typeof modelDescriptorMap)[keyof typeof modelDescriptorMap][] satisfies IModelDescriptor[]

@@ -1,10 +1,11 @@
-import Boom from "boom"
+import { forbidden, internal } from "@hapi/boom"
 import { FastifyRequest } from "fastify"
 import { ObjectId } from "mongodb"
 import { ADMIN, CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
 import { ComputedUserAccess, IApplication, IJob, IRecruiter } from "shared/models"
 import { ICFA } from "shared/models/cfa.model"
 import { IEntreprise } from "shared/models/entreprise.model"
+import { IJobsPartnersOfferApi } from "shared/models/jobsPartners.model"
 import { AccessEntityType, IRoleManagement } from "shared/models/roleManagement.model"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { AccessPermission, AccessResourcePath } from "shared/security/permissions"
@@ -21,6 +22,7 @@ type RecruiterResource = { recruiter: IRecruiter } & ({ type: "ENTREPRISE"; entr
 type JobResource = { job: IJob; recruiterResource: RecruiterResource }
 type ApplicationResource = { application: IApplication; jobResource?: JobResource; applicantId?: string }
 type EntrepriseResource = { entreprise: IEntreprise }
+type JobPartnerResource = { job: IJobsPartnersOfferApi }
 
 type Resources = {
   users: Array<{ _id: string }>
@@ -28,6 +30,7 @@ type Resources = {
   jobs: Array<JobResource>
   applications: Array<ApplicationResource>
   entreprises: Array<EntrepriseResource>
+  jobPartners: Array<JobPartnerResource>
 }
 export type ResourceIds = {
   recruiters?: string[]
@@ -53,13 +56,13 @@ const recruiterToRecruiterResource = async (recruiter: IRecruiter): Promise<Recr
   if (cfa_delegated_siret) {
     const cfa = await getDbCollection("cfas").findOne({ siret: cfa_delegated_siret })
     if (!cfa) {
-      throw Boom.internal(`could not find cfa for recruiter with id=${recruiter._id}`)
+      throw internal(`could not find cfa for recruiter with id=${recruiter._id}`)
     }
     return { recruiter, type: CFA, cfa }
   } else {
     const entreprise = await getDbCollection("entreprises").findOne({ siret: establishment_siret })
     if (!entreprise) {
-      throw Boom.internal(`could not find entreprise for recruiter with id=${recruiter._id}`)
+      throw internal(`could not find entreprise for recruiter with id=${recruiter._id}`)
     }
     return { recruiter, type: ENTREPRISE, entreprise }
   }
@@ -226,13 +229,32 @@ async function getEntrepriseResource<S extends WithSecurityScheme>(schema: S, re
   return results.flatMap((_) => (_ ? [_] : []))
 }
 
+async function getJobsPartnerResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources["jobPartners"]> {
+  if (!schema.securityScheme.resources.jobPartner) {
+    return []
+  }
+
+  const results: (JobPartnerResource | null)[] = await Promise.all(
+    schema.securityScheme.resources.jobPartner.map(async (jobPartnerDef): Promise<JobPartnerResource | null> => {
+      if ("_id" in jobPartnerDef) {
+        const _id = getAccessResourcePathValue(jobPartnerDef._id, req)
+        const job = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(_id) })
+        return job ? { job } : null
+      }
+      assertUnreachable(jobPartnerDef)
+    })
+  )
+  return results.flatMap((_) => (_ ? [_] : []))
+}
+
 async function getResources<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources> {
-  const [recruiters, jobs, users, applications, entreprises] = await Promise.all([
+  const [recruiters, jobs, users, applications, entreprises, jobPartners] = await Promise.all([
     getRecruitersResource(schema, req),
     getJobsResource(schema, req),
     getUserResource(schema, req),
     getApplicationResource(schema, req),
     getEntrepriseResource(schema, req),
+    getJobsPartnerResource(schema, req),
   ])
 
   return {
@@ -241,6 +263,7 @@ async function getResources<S extends WithSecurityScheme>(schema: S, req: IReque
     users,
     applications,
     entreprises,
+    jobPartners,
   }
 }
 
@@ -280,6 +303,11 @@ function canAccessEntreprise(userAccess: ComputedUserAccess, resource: Entrepris
   return userAccess.entreprises.includes(entreprise._id.toString()) || Boolean(entrepriseOpco && userAccess.opcos.includes(entrepriseOpco))
 }
 
+function canAccessJobPartner(userAccess: ComputedUserAccess, resource: JobPartnerResource): boolean {
+  const { job } = resource
+  return userAccess.partner.includes(job.partner)
+}
+
 function isAuthorized(access: AccessPermission, userAccess: ComputedUserAccess, resources: Resources): boolean {
   if (typeof access === "object") {
     if ("some" in access) {
@@ -295,13 +323,14 @@ function isAuthorized(access: AccessPermission, userAccess: ComputedUserAccess, 
     resources.jobs.every((job) => canAccessJob(userAccess, job)) &&
     resources.applications.every((application) => canAccessApplication(userAccess, application)) &&
     resources.users.every((user) => canAccessUser(userAccess, user)) &&
-    resources.entreprises.every((entreprise) => canAccessEntreprise(userAccess, entreprise))
+    resources.entreprises.every((entreprise) => canAccessEntreprise(userAccess, entreprise)) &&
+    resources.jobPartners.every((job) => canAccessJobPartner(userAccess, job))
   )
 }
 
 export async function authorizationMiddleware<S extends Pick<IRouteSchema, "method" | "path"> & WithSecurityScheme>(schema: S, req: IRequest) {
   if (!schema.securityScheme) {
-    throw Boom.internal(`authorizationMiddleware: route doesn't have security scheme`, { method: schema.method, path: schema.path })
+    throw internal(`authorizationMiddleware: route doesn't have security scheme`, { method: schema.method, path: schema.path })
   }
 
   const requestedAccess = schema.securityScheme.access
@@ -321,10 +350,10 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
   if (userType === "IUser2") {
     const user = userWithType.value
     if (!isUserEmailChecked(user)) {
-      throw Boom.forbidden("l'email doit être validé")
+      throw forbidden("l'email doit être validé")
     }
     if (isUserDisabled(user)) {
-      throw Boom.forbidden("user désactivé")
+      throw forbidden("user désactivé")
     }
     const { _id } = user
     grantedRoles = await getGrantedRoles(_id.toString())
@@ -333,12 +362,12 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
       return
     }
     if (!grantedRoles.length) {
-      throw Boom.forbidden("aucun role")
+      throw forbidden("aucun role")
     }
   }
 
   if (requestedAccess === "admin") {
-    throw Boom.forbidden("admin required")
+    throw forbidden("admin required")
   }
 
   const resources = await getResources(schema, req)
@@ -355,21 +384,36 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
       cfas: [],
       entreprises: [],
       opcos: opco ? [opco] : [],
+      partner: [],
     }
     if (!isAuthorized(requestedAccess, userAccess, resources)) {
-      throw Boom.forbidden("non autorisé")
+      throw forbidden("non autorisé")
     }
   } else if (userType === "IUser2") {
     const { _id } = userWithType.value
     const userAccess: ComputedUserAccess = getComputedUserAccess(_id.toString(), grantedRoles)
     if (!isAuthorized(requestedAccess, userAccess, resources)) {
-      throw Boom.forbidden("non autorisé")
+      throw forbidden("non autorisé")
     }
   } else if (userType === "IApiApprentissage") {
-    if (schema.securityScheme.access !== null) {
-      throw Boom.forbidden("access non autorisé")
+    const { organisation, habilitations } = userWithType.value
+    /**
+     * KBA : temporaire, à modifier lorsque l'ensemble des habilitations seront définit
+     */
+    if (schema.securityScheme.access !== "job:manage" || !habilitations["jobs:write"]) {
+      throw forbidden("Unauthorized")
     }
-    // dans le futur, la gestion de droits du client api apprentissage sera ici
+    const userAccess: ComputedUserAccess = {
+      admin: false,
+      users: [],
+      cfas: [],
+      entreprises: [],
+      opcos: [],
+      partner: [organisation],
+    }
+    if (!isAuthorized(requestedAccess, userAccess, resources)) {
+      throw forbidden("Unauthorized")
+    }
   } else {
     assertUnreachable(userType)
   }

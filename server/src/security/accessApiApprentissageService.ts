@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { isBoom, unauthorized } from "@hapi/boom"
 import jwt from "jsonwebtoken"
 import { z } from "zod"
 
@@ -13,11 +13,15 @@ const jwtPublicKey = config.auth.apiApprentissage.publicKey
 
 const ZApiApprentissageTokenData = z.object({
   email: z.string().email(),
+  organisation: z.string(),
+  habilitations: z.object({
+    "jobs:write": z.boolean(),
+  }),
 })
 
-export type ApiApprentissageTokenData = z.output<typeof ZApiApprentissageTokenData>
+export type IApiApprentissageTokenData = z.output<typeof ZApiApprentissageTokenData>
 
-export const parseApiApprentissageToken = (jwtToken: string): ApiApprentissageTokenData => {
+export const parseApiApprentissageToken = (jwtToken: string): IApiApprentissageTokenData => {
   try {
     const { payload } = jwt.verify(jwtToken, jwtPublicKey, {
       complete: true,
@@ -25,30 +29,30 @@ export const parseApiApprentissageToken = (jwtToken: string): ApiApprentissageTo
     })
     const parseResult = ZApiApprentissageTokenData.safeParse(payload)
     if (!parseResult.success) {
-      throw Boom.forbidden("Payload doesn't match expected schema")
+      throw unauthorized("Payload doesn't match expected schema")
     }
     return parseResult.data
   } catch (err: unknown) {
     if (err instanceof TokenExpiredError) {
-      const e = Boom.forbidden("JWT expired")
+      const e = unauthorized("JWT expired")
       e.cause = err
       throw e
     }
 
     if (err instanceof JsonWebTokenError) {
       logger.warn("invalid jwt token", jwtToken, err)
-      const e = Boom.forbidden("Invalid JWT token")
+      const e = unauthorized("Invalid JWT token")
       e.cause = err
       throw e
     }
 
-    if (err instanceof Error && Boom.isBoom(err)) {
+    if (err instanceof Error && isBoom(err)) {
       sentryCaptureException(err)
       throw err
     }
 
     sentryCaptureException(err)
-    const e = Boom.unauthorized()
+    const e = unauthorized()
     e.cause = err
     throw e
   }

@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { badRequest } from "@hapi/boom"
 import dayjs from "dayjs"
 import { chain } from "lodash-es"
 import { assertUnreachable, type IFormationCatalogue, type ILbaItemFormation2 } from "shared"
@@ -391,7 +391,7 @@ const transformFormation = (rawFormation: IFormationCatalogue): ILbaItemFormatio
       },
     },
 
-    diplomaLevel: rawFormation.niveau ?? null,
+    target_diploma_level: rawFormation.niveau ?? null,
     diploma: rawFormation.diplome ?? null,
     cleMinistereEducatif: rawFormation.cle_ministere_educatif ?? null,
     cfd: rawFormation.cfd ?? null,
@@ -475,7 +475,7 @@ const transformFormationV2 = (rawFormation: IFormationCatalogue): ILbaItemFormat
       title: (rawFormation.intitule_long || rawFormation.intitule_court || rawFormation.intitule_rco) ?? null,
       idRco: rawFormation.id_formation ?? null,
       cleMinistereEducatif: rawFormation.cle_ministere_educatif ?? null,
-      diplomaLevel: rawFormation.niveau ?? null,
+      target_diploma_level: rawFormation.niveau ?? null,
       diploma: rawFormation.diplome ?? null,
       cfd: rawFormation.cfd ?? null,
       rncpCode: rawFormation.rncp_code ?? null,
@@ -718,7 +718,7 @@ export const getFormationsV2 = async ({
     if ("error" in parameterControl) {
       switch (parameterControl.error) {
         case "wrong_parameters":
-          throw Boom.badRequest("wrong_parameters", parameterControl)
+          throw badRequest("wrong_parameters", parameterControl)
         default:
           assertUnreachable(parameterControl.error)
       }
@@ -857,7 +857,7 @@ export const getFormationsParRegionV2 = async ({
     if ("error" in queryValidationResult) {
       switch (queryValidationResult.error) {
         case "wrong_parameters":
-          throw Boom.badRequest("wrong_parameters", queryValidationResult)
+          throw badRequest("wrong_parameters", queryValidationResult)
         default:
           assertUnreachable(queryValidationResult.error)
       }

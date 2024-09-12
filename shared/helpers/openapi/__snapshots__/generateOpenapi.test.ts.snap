@@ -540,14 +540,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
-          "diplomaLevel": {
-            "description": "Le niveau de la formation.",
-            "example": "3 (CAP...)",
-            "type": [
-              "string",
-              "null",
-            ],
-          },
           "id": {
             "description": "L'identifiant de la formation dans le catalogue du Réseau des Carif-Oref.",
             "example": "5e8dfad720ff3b2161269d86",
@@ -639,6 +631,14 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             },
             "type": [
               "array",
+              "null",
+            ],
+          },
+          "target_diploma_level": {
+            "description": "Le niveau de la formation.",
+            "example": "3 (CAP...)",
+            "type": [
+              "string",
               "null",
             ],
           },
@@ -920,7 +920,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "BTS, DEUST, autres formations niveau (Bac+2)",
               "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
               "Master, titre ingénieur, autres formations niveau (Bac+5)",
-              "Indifférent",
             ],
             "type": [
               "string",
@@ -1348,7 +1347,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "rome_code",
           "job_status",
           "job_type",
-          "is_multi_published",
         ],
         "type": "object",
       },
@@ -1803,14 +1801,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
-          "diplomaLevel": {
-            "description": "Le niveau de la formation.",
-            "example": "3 (CAP...)",
-            "type": [
-              "string",
-              "null",
-            ],
-          },
           "id": {
             "type": [
               "string",
@@ -1859,6 +1849,14 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             },
             "type": [
               "array",
+              "null",
+            ],
+          },
+          "target_diploma_level": {
+            "description": "Le niveau de la formation.",
+            "example": "3 (CAP...)",
+            "type": [
+              "string",
               "null",
             ],
           },
@@ -2862,14 +2860,24 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "description": "Coordonnées geographique de l'établissement",
             "properties": {
               "coordinates": {
-                "items": {
-                  "type": "number",
-                },
-                "maxItems": 2,
-                "minItems": 2,
+                "prefixItems": [
+                  {
+                    "maximum": 180,
+                    "minimum": -180,
+                    "type": "number",
+                  },
+                  {
+                    "maximum": 90,
+                    "minimum": -90,
+                    "type": "number",
+                  },
+                ],
                 "type": "array",
               },
               "type": {
+                "enum": [
+                  "Point",
+                ],
                 "type": "string",
               },
             },
@@ -2961,12 +2969,9 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
         },
         "required": [
-          "establishment_id",
           "establishment_siret",
-          "is_delegated",
           "email",
           "jobs",
-          "status",
         ],
         "type": "object",
       },
@@ -4004,14 +4009,6 @@ Limite : 7 appel(s) / 1 seconde(s)
                                       "null",
                                     ],
                                   },
-                                  "diplomaLevel": {
-                                    "description": "Le niveau de la formation.",
-                                    "example": "3 (CAP...)",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
                                   "duration": {
                                     "$ref": "#/components/schemas/Durée de session en jours",
                                   },
@@ -4066,6 +4063,14 @@ Limite : 7 appel(s) / 1 seconde(s)
                                     },
                                     "type": [
                                       "array",
+                                      "null",
+                                    ],
+                                  },
+                                  "target_diploma_level": {
+                                    "description": "Le niveau de la formation.",
+                                    "example": "3 (CAP...)",
+                                    "type": [
+                                      "string",
                                       "null",
                                     ],
                                   },
@@ -4356,14 +4361,6 @@ Limite : 7 appel(s) / 1 seconde(s)
                                     "null",
                                   ],
                                 },
-                                "diplomaLevel": {
-                                  "description": "Le niveau de la formation.",
-                                  "example": "3 (CAP...)",
-                                  "type": [
-                                    "string",
-                                    "null",
-                                  ],
-                                },
                                 "duration": {
                                   "$ref": "#/components/schemas/Durée de session en jours",
                                 },
@@ -4418,6 +4415,14 @@ Limite : 7 appel(s) / 1 seconde(s)
                                   },
                                   "type": [
                                     "array",
+                                    "null",
+                                  ],
+                                },
+                                "target_diploma_level": {
+                                  "description": "Le niveau de la formation.",
+                                  "example": "3 (CAP...)",
+                                  "type": [
+                                    "string",
                                     "null",
                                   ],
                                 },
@@ -4797,14 +4802,6 @@ Limite : 7 appel(s) / 1 seconde(s)
                                       "null",
                                     ],
                                   },
-                                  "diplomaLevel": {
-                                    "description": "Le niveau de la formation.",
-                                    "example": "3 (CAP...)",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
                                   "duration": {
                                     "$ref": "#/components/schemas/Durée de session en jours",
                                   },
@@ -4859,6 +4856,14 @@ Limite : 7 appel(s) / 1 seconde(s)
                                     },
                                     "type": [
                                       "array",
+                                      "null",
+                                    ],
+                                  },
+                                  "target_diploma_level": {
+                                    "description": "Le niveau de la formation.",
+                                    "example": "3 (CAP...)",
+                                    "type": [
+                                      "string",
                                       "null",
                                     ],
                                   },
@@ -5220,14 +5225,6 @@ Limite : 7 appel(s) / 1 seconde(s)
                                       "null",
                                     ],
                                   },
-                                  "diplomaLevel": {
-                                    "description": "Le niveau de la formation.",
-                                    "example": "3 (CAP...)",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
                                   "duration": {
                                     "$ref": "#/components/schemas/Durée de session en jours",
                                   },
@@ -5282,6 +5279,14 @@ Limite : 7 appel(s) / 1 seconde(s)
                                     },
                                     "type": [
                                       "array",
+                                      "null",
+                                    ],
+                                  },
+                                  "target_diploma_level": {
+                                    "description": "Le niveau de la formation.",
+                                    "example": "3 (CAP...)",
+                                    "type": [
+                                      "string",
                                       "null",
                                     ],
                                   },
@@ -5687,6 +5692,7 @@ Limite : 5 appel(s) / 1 seconde(s)
         "operationId": "statsViewLbaJob",
         "parameters": [
           {
+            "description": "Identifiant unique",
             "in": "path",
             "name": "id",
             "required": false,
@@ -7814,6 +7820,7 @@ Limite : 5 appel(s) / 1 seconde(s)
 ",
         "parameters": [
           {
+            "description": "Identifiant unique",
             "in": "path",
             "name": "jobId",
             "required": false,
@@ -7980,6 +7987,7 @@ Limite : 5 appel(s) / 1 seconde(s)
 ",
         "parameters": [
           {
+            "description": "Identifiant unique",
             "in": "path",
             "name": "jobId",
             "required": false,
@@ -8079,6 +8087,7 @@ Limite : 5 appel(s) / 1 seconde(s)
         "description": "Create delegation related to a job offer.",
         "parameters": [
           {
+            "description": "Identifiant unique",
             "in": "path",
             "name": "jobId",
             "required": false,
@@ -8314,6 +8323,7 @@ Limite : 5 appel(s) / 1 seconde(s)
 ",
         "parameters": [
           {
+            "description": "Identifiant unique",
             "in": "path",
             "name": "jobId",
             "required": false,
@@ -8580,6 +8590,7 @@ Limite : 5 appel(s) / 1 seconde(s)
 ",
         "parameters": [
           {
+            "description": "Identifiant unique",
             "in": "path",
             "name": "id",
             "required": false,
@@ -8900,6 +8911,7 @@ Limite : 5 appel(s) / 1 seconde(s)
 ",
         "parameters": [
           {
+            "description": "Identifiant unique",
             "in": "path",
             "name": "jobId",
             "required": false,
@@ -9031,7 +9043,6 @@ Limite : 5 appel(s) / 1 seconde(s)
                       "BTS, DEUST, autres formations niveau (Bac+2)",
                       "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
                       "Master, titre ingénieur, autres formations niveau (Bac+5)",
-                      "Indifférent",
                     ],
                     "type": [
                       "string",
@@ -9071,7 +9082,6 @@ Limite : 5 appel(s) / 1 seconde(s)
                 },
                 "required": [
                   "job_type",
-                  "is_multi_published",
                   "job_start_date",
                   "appellation_code",
                 ],
@@ -9127,6 +9137,7 @@ Limite : 5 appel(s) / 1 seconde(s)
 ",
         "parameters": [
           {
+            "description": "Identifiant unique",
             "in": "path",
             "name": "jobId",
             "required": false,
@@ -9203,7 +9214,6 @@ Limite : 5 appel(s) / 1 seconde(s)
                       "BTS, DEUST, autres formations niveau (Bac+2)",
                       "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
                       "Master, titre ingénieur, autres formations niveau (Bac+5)",
-                      "Indifférent",
                     ],
                     "type": [
                       "string",

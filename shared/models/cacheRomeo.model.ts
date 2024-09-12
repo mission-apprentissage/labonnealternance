@@ -1,6 +1,6 @@
 import { z } from "../helpers/zodWithOpenApi"
 
-import { IModelDescriptor } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
 
 const collectionName = "cache_romeo" as const
 
@@ -12,7 +12,8 @@ const ZMetiersRomeRomeo = z.object({
   scorePrediction: z.number(),
 })
 
-const ZRomeo = z.object({
+export const ZRomeo = z.object({
+  _id: zObjectId,
   contexte: z.string(),
   identifiant: z.string(),
   intitule: z.string(),
@@ -20,7 +21,7 @@ const ZRomeo = z.object({
   metiersRome: z.array(ZMetiersRomeRomeo),
 })
 
-export const ZRomeoApiResponse = z.array(ZRomeo)
+export const ZRomeoApiResponse = z.array(ZRomeo.omit({ _id: true }))
 export type IRomeoApiResponse = z.output<typeof ZRomeoApiResponse>
 
 export default {

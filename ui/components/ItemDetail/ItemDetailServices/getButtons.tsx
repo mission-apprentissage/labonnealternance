@@ -66,14 +66,7 @@ export const BuildSwipe = ({ jobs, trainings, extendedSearch, activeFilters, sel
   }
 }
 
-export const getNavigationButtons = ({
-  goPrev,
-  goNext,
-  setSeeInfo = (t) => {
-    console.log(t)
-  },
-  handleClose,
-}) => {
+export const getNavigationButtons = ({ goPrev, goNext, handleClose }) => {
   return (
     <>
       <Box>
@@ -102,7 +95,6 @@ export const getNavigationButtons = ({
         <Button
           {...navigationButtonProperties}
           onClick={() => {
-            setSeeInfo(false)
             handleClose()
           }}
           data-testid="close-detail-button"
