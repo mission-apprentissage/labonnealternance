@@ -11,7 +11,9 @@ const blueBannerText = (
       La bonne alternance évolue pour les recruteurs !
     </Text>{" "}
     Vous pouvez désormais personnaliser le contenu de vos offres en décochant certains éléments du descriptif généré automatiquement{" "}
-    <Link textDecoration="underline" href="mailto:labonnealternance@beta.gouv.fr?subject=Personnaliser%20mon%20offre%20-%20en%20savoir%20plus">En savoir plus</Link>
+    <Link textDecoration="underline" href="mailto:labonnealternance@beta.gouv.fr?subject=Personnaliser%20mon%20offre%20-%20en%20savoir%20plus">
+      En savoir plus
+    </Link>
   </Text>
 )
 
