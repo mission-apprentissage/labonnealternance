@@ -318,7 +318,7 @@ export default (server: Server) => {
             ? await getDbCollection("cfas").findOne({ _id: new ObjectId(updatedRole.authorized_id) })
             : await getDbCollection("entreprises").findOne({ _id: new ObjectId(updatedRole.authorized_id) })
         if (!organization) {
-          throw internal("inattendu: organization introuvable")
+          throw internal("/user/:userId/organization/:organizationId/permission: inattendu: organization introuvable")
         }
         const { email, last_name, first_name, phone } = user
         const { siret, raison_sociale } = organization
