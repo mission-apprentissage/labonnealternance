@@ -48,7 +48,9 @@ export default function AuthentificationLayout(props) {
             {props.fromDashboard ? "fermer" : "Retour à l'accueil"}
           </Button>
         </Flex>
-        <Container maxW="full">{props.children}</Container>
+        <Container px={1} maxW="full">
+          {props.children}
+        </Container>
       </Flex>
     </Container>
   )
