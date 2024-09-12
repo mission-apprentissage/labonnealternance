@@ -319,7 +319,7 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IJobRes
       .map(
         ({ recruiter, job }: IJobResult): IJobsPartnersOfferApi => ({
           _id: job._id.toString(),
-          partner: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+          partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
           partner_job_id: null,
           contract_start: job.job_start_date,
           contract_duration: job.job_duration ?? null,
@@ -372,7 +372,7 @@ export const convertFranceTravailJobToJobPartnerOfferApi = (offresEmploiFranceTr
       return {
         _id: null,
         partner_job_id: offreFT.id,
-        partner: JOBPARTNERS_LABEL.OFFRES_EMPLOI_FRANCE_TRAVAIL,
+        partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_FRANCE_TRAVAIL,
 
         contract_start: null,
         contract_duration: isNaN(contractDuration) ? null : contractDuration,
@@ -601,7 +601,7 @@ async function resolveRomeCodes(data: IJobsPartnersWritableApi, siretData: Workp
   return [romeoResponse]
 }
 
-type InvariantFields = "_id" | "created_at" | "partner"
+type InvariantFields = "_id" | "created_at" | "partner_label"
 
 async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiApprentissageTokenData, current: IJobsPartnersOfferPrivate | null): Promise<ObjectId> {
   const zodError = new ZodError([])
@@ -627,7 +627,7 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAppr
   const invariantData: Pick<IJobsPartnersOfferPrivate, InvariantFields> = {
     _id: current?._id ?? new ObjectId(),
     created_at: current?.created_at ?? now,
-    partner: identity.organisation,
+    partner_label: identity.organisation,
   }
 
   const defaultOfferExpiration = current?.offer_expiration

@@ -305,7 +305,7 @@ function canAccessEntreprise(userAccess: ComputedUserAccess, resource: Entrepris
 
 function canAccessJobPartner(userAccess: ComputedUserAccess, resource: JobPartnerResource): boolean {
   const { job } = resource
-  return userAccess.partner.includes(job.partner)
+  return userAccess.partner.includes(job.partner_label)
 }
 
 function isAuthorized(access: AccessPermission, userAccess: ComputedUserAccess, resources: Resources): boolean {

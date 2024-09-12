@@ -11,7 +11,7 @@ import { zOpcoLabel } from "./opco.model"
 const collectionName = "jobs_partners" as const
 
 export enum JOBPARTNERS_LABEL {
-  HELLOWORK = "Hellowork",
+  HELLOWORK = "Hello work",
   OFFRES_EMPLOI_LBA = "La bonne alternance",
   OFFRES_EMPLOI_FRANCE_TRAVAIL = "France Travail",
 }
@@ -48,7 +48,7 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
 }).extend({
   _id: z.union([zObjectId, z.string()]).nullable().describe("Identifiant de l'offre"),
 
-  partner: z.string().describe("Référence du partenaire"),
+  partner_label: z.string().describe("Référence du partenaire"),
   partner_job_id: z.string().nullable().describe("Identifiant d'origine l'offre provenant du partenaire").default(null),
 
   contract_start: z.date().nullable().describe("Date de début de contrat"),
@@ -178,8 +178,7 @@ export default {
     [{ offer_multicast: 1, offer_rome_codes: 1, offer_creation: -1 }, {}],
     [{ offer_multicast: 1, "offer_target_diploma.european": 1, offer_creation: -1 }, {}],
     [{ offer_multicast: 1, offer_rome_codes: 1, "offer_target_diploma.european": 1, offer_creation: -1 }, {}],
-
-    [{ partner: 1, partner_job_id: 1 }, {}],
+    [{ partner_label: 1, partner_job_id: 1 }, { unique: true }],
   ],
   collectionName,
 } as const satisfies IModelDescriptor
