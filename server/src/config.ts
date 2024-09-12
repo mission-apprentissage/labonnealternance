@@ -2,6 +2,7 @@ import env from "env-var"
 
 const config = {
   version: env.get("PUBLIC_VERSION").required().asString(),
+  commitHash: env.get("COMMIT_HASH").required().asString(),
   port: env.get("LBA_SERVER_PORT").required().asPortNumber(),
   env: env.get("LBA_ENV").required().asEnum(["local", "recette", "pentest", "production", "preview"]),
   publicUrl: env.get("LBA_PUBLIC_URL").required().asString(),
