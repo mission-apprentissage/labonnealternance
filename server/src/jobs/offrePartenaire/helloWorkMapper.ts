@@ -40,7 +40,7 @@ const teletravailMapping: Record<string, TRAINING_REMOTE_TYPE> = {
   Occasionnel: TRAINING_REMOTE_TYPE.hybrid,
 }
 
-function getDiplomaLevel(job: IHelloWorkJob): IComputedJobsPartners["offer_diploma_level"] {
+function getDiplomaLevel(job: IHelloWorkJob): IComputedJobsPartners["offer_target_diploma"] {
   if (job.education == null) return null
 
   switch (job.education) {
@@ -85,11 +85,12 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
   const { latitude, longitude } = geolocToLatLon(geoloc)
   const siretParsing = extensions.siret.safeParse(siret)
   const codeRomeParsing = extensions.romeCode().safeParse(code_rome)
+  const urlParsing = extensions.url().safeParse(url)
 
   const partnerJob: IComputedJobsPartners = {
     _id: new ObjectId(),
     created_at: new Date(),
-    partner: JOBPARTNERS_LABEL.HELLOWORK,
+    partner_label: JOBPARTNERS_LABEL.HELLOWORK,
     partner_job_id: job_id,
     contract_start: parseDate(contract_start_date),
     contract_type: contract.toLowerCase() === "alternance" ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION] : undefined,
@@ -97,11 +98,11 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     contract_duration: contractDuration,
     offer_title: title,
     offer_description: description && description.length >= 30 ? description : undefined,
-    offer_diploma_level: getDiplomaLevel(job),
-    offer_desired_skills: profile == null ? null : [profile],
-    offer_access_conditions: null,
-    offer_to_be_acquired_skills: null,
-    offer_rome_code: codeRomeParsing.success ? [codeRomeParsing.data] : undefined,
+    offer_target_diploma: getDiplomaLevel(job),
+    offer_desired_skills: profile == null ? [] : [profile],
+    offer_access_conditions: [],
+    offer_to_be_acquired_skills: [],
+    offer_rome_codes: codeRomeParsing.success ? [codeRomeParsing.data] : undefined,
     offer_creation: parseDate(publication_date),
     offer_expiration: null,
     offer_origin: null,
@@ -122,7 +123,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
             coordinates: [longitude, latitude],
           }
         : undefined,
-    apply_url: url,
+    apply_url: urlParsing.success ? urlParsing.data : null,
     errors: [],
     validated: false,
   }

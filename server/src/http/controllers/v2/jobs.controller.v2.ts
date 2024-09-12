@@ -1,25 +1,18 @@
 import { badRequest, internal } from "@hapi/boom"
-import { ObjectId } from "mongodb"
-import { IGeoPoint, ILbaItemFtJob, ILbaItemLbaJob, JOB_STATUS, assertUnreachable, zRoutes } from "shared"
-import { NIVEAU_DIPLOME_LABEL } from "shared/constants"
-import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { ILbaItemFtJob, ILbaItemLbaJob, JOB_STATUS_ENGLISH, assertUnreachable, zRoutes } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { IJobsPartnersOfferPrivate, IJobsPartnersPatchApiBody, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { zOpcoLabel } from "shared/models/opco.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
-import { getRomeoInfos } from "@/services/cache.service"
 import { JobOpportunityRequestContext } from "@/services/jobs/jobOpportunity/JobOpportunityRequestContext"
 
 import { getFileSignedURL } from "../../../common/utils/awsUtils"
 import { trackApiCall } from "../../../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../../../common/utils/sentryUtils"
 import dayjs from "../../../services/dayjs.service"
-import { getEntrepriseDataFromSiret, getGeoCoordinates, getOpcoData } from "../../../services/etablissement.service"
 import { addExpirationPeriod, getFormulaires } from "../../../services/formulaire.service"
 import { getFtJobFromIdV2 } from "../../../services/ftjob.service"
-import { getJobsQuery, mergePatchWithDb, findJobsOpportunities } from "../../../services/jobs/jobOpportunity/jobOpportunity.service"
+import { getJobsQuery, findJobsOpportunities, createJobOffer, updateJobOffer } from "../../../services/jobs/jobOpportunity/jobOpportunity.service"
 import { addOffreDetailView, getLbaJobByIdV2 } from "../../../services/lbajob.service"
 import { getCompanyFromSiret } from "../../../services/recruteurLba.service"
 import { Server } from "../../server"
@@ -82,114 +75,23 @@ export default (server: Server) => {
       config,
     },
     async (req, res) => {
-      const { workplace_siret, workplace_address, offer_title, offer_rome_code, offer_diploma_level_european, ...rest } = req.body
-      let geopoint: IGeoPoint | null = null
-      let romeCode = offer_rome_code ?? null
-
-      const siretInformation = await getEntrepriseDataFromSiret({ siret: workplace_siret, type: "ENTREPRISE" })
-
-      if ("error" in siretInformation) {
-        return res.status(400).send(siretInformation)
-      }
-      if (workplace_address) {
-        const { latitude, longitude } = await getGeoCoordinates(workplace_address)
-        if (latitude && longitude) {
-          geopoint = { type: "Point", coordinates: [longitude, latitude] }
-        }
-      } else {
-        geopoint = siretInformation.geopoint
-      }
-      if (!geopoint) {
-        return res.status(400).send({
-          error: true,
-          errorCode: BusinessErrorCodes.GEOLOCATION_NOT_FOUND,
-          message: "",
-        })
-      }
-      if (!romeCode) {
-        const romeoResponse = await getRomeoInfos({ intitule: offer_title, contexte: siretInformation.naf_label ?? undefined })
-        if (!romeoResponse) {
-          return res.status(400).send({
-            error: true,
-            errorCode: BusinessErrorCodes.ROMEO_NOT_FOUND,
-            message: "",
-          })
-        }
-        romeCode = [romeoResponse]
-      }
-      const opcoData = await getOpcoData(workplace_siret)
-
-      const now = new Date()
-      const job: IJobsPartnersOfferPrivate = {
-        ...rest,
-        _id: new ObjectId(),
-        created_at: now,
-        partner: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
-        partner_job_id: rest.partner_job_id ?? null,
-        offer_title,
-        offer_rome_code: romeCode,
-        offer_status: JOB_STATUS.ACTIVE,
-        offer_creation: rest.offer_creation ?? now,
-        offer_expiration: rest.offer_expiration ?? addExpirationPeriod(now).toDate(),
-        offer_desired_skills: rest.offer_desired_skills ?? null,
-        offer_to_be_acquired_skills: rest.offer_to_be_acquired_skills ?? null,
-        offer_access_conditions: rest.offer_access_conditions ?? null,
-        offer_opening_count: rest.offer_opening_count ?? 1,
-        offer_multicast: rest.offer_multicast ?? true,
-        offer_origin: rest.offer_origin ?? null,
-        workplace_siret,
-        workplace_geopoint: geopoint,
-        workplace_address: {
-          label: workplace_address ?? siretInformation.address!,
-        },
-        offer_diploma_level:
-          offer_diploma_level_european == null
-            ? null
-            : {
-                european: offer_diploma_level_european,
-                label: NIVEAU_DIPLOME_LABEL[offer_diploma_level_european],
-              },
-        workplace_website: rest.workplace_website ?? null,
-        workplace_description: rest.workplace_description ?? null,
-        workplace_name: siretInformation.establishment_enseigne ?? siretInformation.establishment_raison_sociale ?? null,
-        workplace_naf_label: siretInformation.naf_label ?? null,
-        workplace_naf_code: siretInformation.naf_code ?? null,
-        workplace_opco: zOpcoLabel.safeParse(opcoData?.opco).data ?? null,
-        // En cas d'OPCO multiple on met une string invalide dans le champs idcc (getOpcoFromCfaDock)
-        workplace_idcc: opcoData?.idcc == null || Number.isNaN(parseInt(opcoData.idcc, 10)) ? null : parseInt(opcoData.idcc, 10),
-        workplace_size: siretInformation.establishment_size ?? null,
-        contract_remote: rest.contract_remote ?? null,
-        apply_url: rest.apply_url ?? null,
-        apply_email: rest.apply_email ?? null,
-        apply_phone: rest.apply_phone ?? null,
-      }
-
-      await getDbCollection("jobs_partners").insertOne(job)
-
-      return res.status(201).send({ id: job._id })
+      const user = getUserFromRequest(req, zRoutes.post["/jobs"]).value
+      const id = await createJobOffer(user, req.body)
+      return res.status(201).send({ id })
     }
   )
 
-  server.patch(
+  server.put(
     "/jobs/:id",
     {
-      schema: zRoutes.patch["/jobs/:id"],
-      onRequest: server.auth(zRoutes.patch["/jobs/:id"]),
+      schema: zRoutes.put["/jobs/:id"],
+      onRequest: server.auth(zRoutes.put["/jobs/:id"]),
       config,
     },
     async (req, res) => {
-      const { id } = req.params
-      const patchBody = req.body
-      const job = await getDbCollection("jobs_partners").findOne({ _id: id })
-      if (!job) {
-        throw badRequest("Job does not exist")
-      }
-      const update: IJobsPartnersPatchApiBody = mergePatchWithDb(patchBody, job)
-      const updatedJob = await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: update }, { returnDocument: "after" })
-      if (!updatedJob) {
-        throw internal(`Job partner updated did not return ${id}`)
-      }
-      return res.status(200).send(updatedJob)
+      const user = getUserFromRequest(req, zRoutes.put["/jobs/:id"]).value
+      await updateJobOffer(req.params.id, user, req.body)
+      return res.status(204).send()
     }
   )
 
@@ -207,10 +109,10 @@ export default (server: Server) => {
         throw badRequest("Job does not exist")
       }
 
-      if (job.offer_status === JOB_STATUS.POURVUE) {
+      if (job.offer_status === JOB_STATUS_ENGLISH.POURVUE) {
         throw badRequest("Job is already provided")
       }
-      await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_status: JOB_STATUS.POURVUE } })
+      await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_status: JOB_STATUS_ENGLISH.POURVUE } })
       return res.status(204).send()
     }
   )
@@ -229,10 +131,10 @@ export default (server: Server) => {
         throw badRequest("Job does not exists")
       }
 
-      if (job.offer_status === JOB_STATUS.ANNULEE) {
+      if (job.offer_status === JOB_STATUS_ENGLISH.ANNULEE) {
         throw badRequest("Job is already canceled")
       }
-      await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_status: JOB_STATUS.ANNULEE } })
+      await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE } })
       return res.status(204).send()
     }
   )
@@ -254,7 +156,7 @@ export default (server: Server) => {
         throw badRequest("Job is already extended up to two month")
       }
 
-      if (job.offer_status !== JOB_STATUS.ACTIVE) {
+      if (job.offer_status !== JOB_STATUS_ENGLISH.ACTIVE) {
         throw badRequest("Job cannot be extended as it is not active")
       }
       await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_expiration_date: addExpirationPeriod(dayjs()).toDate() } })
@@ -395,8 +297,8 @@ export default (server: Server) => {
     }
   )
 
-  server.get("/jobs", { schema: zRoutes.get["/jobs"], onRequest: server.auth(zRoutes.get["/jobs"]) }, async (req, res) => {
-    const result = await findJobsOpportunities(req.query, new JobOpportunityRequestContext(zRoutes.get["/jobs"], "api-apprentissage"))
+  server.get("/jobs/search", { schema: zRoutes.get["/jobs/search"], onRequest: server.auth(zRoutes.get["/jobs/search"]) }, async (req, res) => {
+    const result = await findJobsOpportunities(req.query, new JobOpportunityRequestContext(zRoutes.get["/jobs/search"], "api-apprentissage"))
     return res.send(result)
   })
 }

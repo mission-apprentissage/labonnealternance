@@ -169,6 +169,7 @@ export const getLbaJobsV2 = async ({
           },
           { $limit: limit },
           { $unwind: { path: "$jobs" } },
+          { $sort: { distance: 1, "jobs.job_creation_date": -1 } },
         ]
 
   const recruiters = await getDbCollection("recruiters")
@@ -422,7 +423,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
           : null,
       },
       nafs: [{ label: recruiter.naf_label }],
-      diplomaLevel: offre.job_level_label || null,
+      target_diploma_level: offre.job_level_label || null,
       job: {
         id: offre._id.toString(),
         description: offre.job_description && offre.job_description.length > 50 ? offre.job_description : null,

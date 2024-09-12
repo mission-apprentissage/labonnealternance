@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .bin/scripts/get-vault-password-client.sh
-  checksum: 721a0185a395874b58d38dd157aa326a15c73e7d381cfd968ad27fc5922ddfa3
+  checksum: 3dec27e43b260818a34b67230a5121ddea029a7341afca120547694216451559
 - filename: .bin/scripts/seed-apply.sh
   checksum: 49afe4f96fa13b38cf799d931085437d540b4c62eb05b2f15bc12cd3fb43268b
 - filename: .bin/scripts/seed-update.sh
@@ -30,7 +30,7 @@ fileignoreconfig:
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: c6e7c3be171a828eddf0ba79992dcef5d9c27bd64d11e817b7aa16c5fb91043a
+  checksum: 467ce4cc2c3d83875e6ebc94180d3b398de9caf6da1d4983b79e2f2fbf1e8207
 - filename: cypress/e2e/check-admin-algo-company.cy.ts
   checksum: 6a898ee25c84ce2c41da5666aa4f84e6e4aaf0a614dbc0a00153abe99e3617c1
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
@@ -42,7 +42,7 @@ fileignoreconfig:
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
-  checksum: 82154bb8da1666737f49535fcb6d2a903a804eea53663259c84366904082fade
+  checksum: 91999951702279c5dd4836cd3a9fdfc904ac019edc9e799c68c277741d450395
 - filename: server/src/common/utils/awsUtils.ts
   checksum: d7d550a8852127bd6838bd7c3f4aee9bba06731d932cff880ff2c1033578fdbd
 - filename: server/src/config.ts
@@ -55,10 +55,10 @@ fileignoreconfig:
   checksum: 1f3c9b8cd7c578252a0c41ca9028672712a5bca2ce1686cba83ff60305708305
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
   checksum: dc77c04efc26dcd8ca4816f392ab24a32a92cb45ca4b94adb593a08e7a2d231e
-- filename: server/src/http/controllers/jobs.controller.v2.test.ts
-  checksum: b3850d8bb637ae7215e9cc30537769c2b6bd69b82e56855bbb50a5fff3a4a280
 - filename: server/src/http/controllers/updateRecruteurLba.controller.test.ts
   checksum: 71dd55af4f1f44fd2b69dee91f0fc8006f3b9e0bd80d40271c73697d4eea9ea2
+- filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts
+  checksum: 06366000e6615ce90b5dedbd4792eac0a93ce5a0cf1459273e3cc9bbdf867e4f
 - filename: server/src/http/routes/appointmentRequest.controller.ts
   checksum: d2770daa97ae332eec0b66497fdb717229895583ac3bfd48af1a830b36504968
 - filename: server/src/http/routes/auth/password.controller.ts
@@ -87,8 +87,10 @@ fileignoreconfig:
   checksum: 38021ae663db3a146c848a8d691c0c1bc9bb262a80a6f2dedf9fcdb372eef3ac
 - filename: server/src/services/eligibleTrainingsForAppointment.service.ts
   checksum: 45f0984c6a79320da8aa2fa03c8ea001de0176b88c7ca05e35e385da8f98e218
+- filename: server/src/services/jobs/jobOpportunity/jobOpportunity.service.test.ts
+  checksum: 7c2a7f5d8ec1c82652296c3271bd435f5998e9c61f9ead2d528a5f2a7195a07d
 - filename: server/src/services/recruteurLba.service.test.ts
-  checksum: 98a1f338a0721200ace9b9a62f755996ad395035621c5830681e721ca58d67c2
+  checksum: 38c947c87cfb508fec88cbce878f89725cbb6679e833a66bdb7fca60e3685a0a
 - filename: server/src/services/referrers.service.ts
   checksum: 966b0ece2b18b5a6066df531524c97ba0ad38266e782a334004e8c127b41ade6
 - filename: server/src/services/userRecruteur.service.ts
@@ -116,7 +118,7 @@ fileignoreconfig:
 - filename: server/tests/unit/validateSendApplication.test.ts
   checksum: 997c5eb4940ea43126f96169dc22fcee7f1890ed19b23aa8b3bffd3522ff7b04
 - filename: server/tests/utils/jwt.test.utils.ts
-  checksum: d63fdd6737a8592a88458d1948ea96434727c3e7960f038a66a8c30df1652260
+  checksum: 27b6e1af0a5e079720d525534486bb02552431fe4cff9560ebf2cc9e16468b7b
 - filename: shared/constants/recruteur.ts
   checksum: af4631fe998b78b13691dbc821a8ffa71ffc2f4cb6967361cb5ef19965dc95cb
 - filename: shared/fixtures/recruiter.fixture.ts
@@ -131,6 +133,8 @@ fileignoreconfig:
   checksum: d7b85c3dff488cec523d78f0926e15dbea41071a1864bda62b4d6caeb2541df3
 - filename: shared/models/applications.model.ts
   checksum: 0db1feff739fda6ff77b2a460e214c03bbeb0451c2e4cf44556f5314c1896bd7
+- filename: shared/models/jobPartners/jobPartners.model.test.ts
+  checksum: 0a83cdb4c968e270d2e6bd8593b6941bb68f1e0c0df55f43b6cbc94a781a233c
 - filename: shared/models/lbaItem.model.ts
   checksum: 144ab34674299cdac89d96ffa6ed834814135c54e1621e1fa47ec5012924f862
 - filename: shared/routes/appointments.routes.ts
@@ -153,6 +157,8 @@ fileignoreconfig:
   checksum: 477c08911f43c273ad8b257c3885ae98b92e6a74c8ad096c7023201762907414
 - filename: ui/components/HomeComponents/FacilitezRDVA.tsx
   checksum: cdeae2ef94431bbe8fd1bb0f1bc0c007c938c1a1d4513316cc44cb966b7f4268
+- filename: ui/components/InfoBanner/InfoBanner.tsx
+  checksum: e5f8bd78ea46335fbb8784eabc01391be68922960f7d04ce9e8755484d10ce32
 - filename: ui/components/ItemDetail/ItemDetail.tsx
   checksum: 1fcc0442306f83b5e45bf7da67304527598d7749b9e2642c6d4628d3b4f15a9c
 - filename: ui/components/ItemDetail/LbaJobComponents/LbaJobTechniques.tsx

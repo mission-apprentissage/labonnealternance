@@ -26,14 +26,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@asteasolutions/zod-to-openapi@npm:^5.5.0":
-  version: 5.5.0
-  resolution: "@asteasolutions/zod-to-openapi@npm:5.5.0"
+"@asteasolutions/zod-to-openapi@npm:^7.1.1":
+  version: 7.1.1
+  resolution: "@asteasolutions/zod-to-openapi@npm:7.1.1"
   dependencies:
     openapi3-ts: ^4.1.2
   peerDependencies:
     zod: ^3.20.2
-  checksum: dfff401060c3ada0271d036984c78db41ea5e865fd1fea3b5605e90cf2e23ceec0697dc7736426d11f9687dbd90aa78e6713080bfda76b6c1a5fade32f15f091
+  checksum: 7d0d444f1e8721040d2ce08f1b1108a60be93e10c54eb806823490b3e2e3b41347f15fa9bb41b9754a0cdc844a1fad42267b0a9af5668efac09a762baad0801f
   languageName: node
   linkType: hard
 
@@ -2317,16 +2317,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fastify/swagger@npm:^8.10.1, @fastify/swagger@npm:^8.11.0":
-  version: 8.14.0
-  resolution: "@fastify/swagger@npm:8.14.0"
+"@fastify/swagger@npm:^8.10.1, @fastify/swagger@npm:^8.15.0":
+  version: 8.15.0
+  resolution: "@fastify/swagger@npm:8.15.0"
   dependencies:
     fastify-plugin: ^4.0.0
     json-schema-resolver: ^2.0.0
     openapi-types: ^12.0.0
     rfdc: ^1.3.0
     yaml: ^2.2.2
-  checksum: 1ad3c84535abecd93ef5f92363775966ae169f95a2d9398c387e2b55b9db2296b4779be3919ea5859bfda65753221e6b3aecff4fefa14c898787000576b9d941
+  checksum: dbd0ee0480c8d78728ec9c0dcf0d5dce0ed5dcb4f25201b7d1a64c21a46cd23d5f14cc4c9c70e0aedb8b1b9b889c716831a46bf0350a7443bb555899729aad68
   languageName: node
   linkType: hard
 
@@ -4388,6 +4388,13 @@ __metadata:
   version: 4.17.5
   resolution: "@types/lodash@npm:4.17.5"
   checksum: 3c9bb15772509f0ecb40428531863dbc3f064f2bf34bbccc2ce2b2923c69fb0868aec7e357b1d97fd0d7f7e435a014ea5c1adef8a64715529887179c97a5a823
+  languageName: node
+  linkType: hard
+
+"@types/luxon@npm:^3.4.2":
+  version: 3.4.2
+  resolution: "@types/luxon@npm:3.4.2"
+  checksum: 6f92d5bd02e89f310395753506bcd9cef3a56f5940f7a50db2a2b9822bce753553ac767d143cb5b4f9ed5ddd4a84e64f89ff538082ceb4d18739af7781b56925
   languageName: node
   linkType: hard
 
@@ -7584,10 +7591,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dayjs@npm:^1.10.4, dayjs@npm:^1.11.10":
-  version: 1.11.11
-  resolution: "dayjs@npm:1.11.11"
-  checksum: 84788275aad8a87fee4f1ce4be08861df29687aae6b7b43dd65350118a37dda56772a3902f802cb2dc651dfed447a5a8df62d88f0fb900dba8333e411190a5d5
+"dayjs@npm:^1.10.4, dayjs@npm:^1.11.10, dayjs@npm:^1.11.13":
+  version: 1.11.13
+  resolution: "dayjs@npm:1.11.13"
+  checksum: f388db88a6aa93956c1f6121644e783391c7b738b73dbc54485578736565c8931bdfba4bb94e9b1535c6e509c97d5deb918bbe1ae6b34358d994de735055cca9
   languageName: node
   linkType: hard
 
@@ -12608,6 +12615,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"libphonenumber-js@npm:^1.11.7":
+  version: 1.11.7
+  resolution: "libphonenumber-js@npm:1.11.7"
+  checksum: f581c9567b5a4225e895edb20818f6aa9f4ea5a45077cbd436f12f878de6746f9fa4ecac1c58c1f7375c780c41c3277ff7a42c876ef484ed0c5dab8348236dd7
+  languageName: node
+  linkType: hard
+
 "lie@npm:3.1.1":
   version: 3.1.1
   resolution: "lie@npm:3.1.1"
@@ -13108,10 +13122,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"luxon@npm:^3.2.1":
-  version: 3.4.4
-  resolution: "luxon@npm:3.4.4"
-  checksum: 36c1f99c4796ee4bfddf7dc94fa87815add43ebc44c8934c924946260a58512f0fd2743a629302885df7f35ccbd2d13f178c15df046d0e3b6eb71db178f1c60c
+"luxon@npm:^3.2.1, luxon@npm:^3.5.0":
+  version: 3.5.0
+  resolution: "luxon@npm:3.5.0"
+  checksum: f290fe5788c8e51e748744f05092160d4be12150dca70f9fadc0d233e53d60ce86acd82e7d909a114730a136a77e56f0d3ebac6141bbb82fd310969a4704825b
   languageName: node
   linkType: hard
 
@@ -15511,12 +15525,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openapi3-ts@npm:^4.1.2":
-  version: 4.3.3
-  resolution: "openapi3-ts@npm:4.3.3"
+"openapi3-ts@npm:^4.1.2, openapi3-ts@npm:^4.4.0":
+  version: 4.4.0
+  resolution: "openapi3-ts@npm:4.4.0"
   dependencies:
-    yaml: ^2.4.5
-  checksum: 6620742dbf57e22a1de47b43149ddbcc7c63d270cd2f796ccd7ab3ca9c1712c19259516f827e541c7d57c21a56eaa03d9d8b9fe07ec968d1c47493d60b02f209
+    yaml: ^2.5.0
+  checksum: d3c9c375e468e3552d0f769fb8dd07906d499f19a3d16b41c9b98ba8604c7e783bb15f36ac8fe28e0da3290743e48de4ecf0c1201b74d8b549a520e88776de5d
   languageName: node
   linkType: hard
 
@@ -18297,6 +18311,7 @@ __metadata:
     "@types/iconv-lite": ^0.0.1
     "@types/jsonwebtoken": ^9.0.3
     "@types/lodash-es": ^4.17.9
+    "@types/luxon": ^3.4.2
     "@types/memoizee": ^0.4.9
     "@types/mjml": ^4.7.2
     "@types/netmask": ^2.0.3
@@ -18341,6 +18356,7 @@ __metadata:
     jsonwebtoken: ^8.5.1
     lil-http-terminator: ^1.2.3
     lodash-es: ^4.17.21
+    luxon: ^3.5.0
     match-sorter: ^6.3.1
     memoizee: ^0.4.15
     migrate-mongo: ^11.0.0
@@ -18440,15 +18456,17 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "shared@workspace:shared"
   dependencies:
-    "@asteasolutions/zod-to-openapi": ^5.5.0
-    "@fastify/swagger": ^8.11.0
+    "@asteasolutions/zod-to-openapi": ^7.1.1
+    "@fastify/swagger": ^8.15.0
     bson: ^6.7.0
-    dayjs: ^1.11.10
+    dayjs: ^1.11.13
     eslint-plugin-zod: ^1.4.0
+    libphonenumber-js: ^1.11.7
     lodash-es: ^4.17.21
     luhn: ^2.4.1
     mongodb: ^6.7.0
-    type-fest: ^4.18.2
+    openapi3-ts: ^4.4.0
+    type-fest: ^4.26.0
     typescript: ^5.4.5
     zod: 3.23.8
     zod-mongodb-schema: ^1.0.2
@@ -19926,10 +19944,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^4.18.2, type-fest@npm:^4.2.0":
-  version: 4.20.1
-  resolution: "type-fest@npm:4.20.1"
-  checksum: 8cc8d86c900be4a803a4b252840b761153541f18b03c5bcc02fa2684d0237d48895cc675cd234049f110004d9ce63770242255c04890b85a133f72643c49e342
+"type-fest@npm:^4.18.2, type-fest@npm:^4.2.0, type-fest@npm:^4.26.0":
+  version: 4.26.0
+  resolution: "type-fest@npm:4.26.0"
+  checksum: f8073dc59a4a5bd897eecb3dfbf9d7716031fc161062ef572c402252a0375cc692c9ae1f50c75c80722964f1eda4011d1edbab36af63a130a53b3c1aab4ed1c5
   languageName: node
   linkType: hard
 
@@ -21088,12 +21106,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:^2.2.2, yaml@npm:^2.3.4, yaml@npm:^2.4.5":
-  version: 2.4.5
-  resolution: "yaml@npm:2.4.5"
+"yaml@npm:^2.2.2, yaml@npm:^2.3.4, yaml@npm:^2.5.0":
+  version: 2.5.0
+  resolution: "yaml@npm:2.5.0"
   bin:
     yaml: bin.mjs
-  checksum: f8efd407c07e095f00f3031108c9960b2b12971d10162b1ec19007200f6c987d2e28f73283f4731119aa610f177a3ea03d4a8fcf640600a25de1b74d00c69b3d
+  checksum: a116dca5c61641d9bf1f1016c6e71daeb1ed4915f5930ed237d45ab7a605aa5d92c332ff64879a6cd088cabede008c778774e3060ffeb4cd617d28088e4b2d83
   languageName: node
   linkType: hard
 
