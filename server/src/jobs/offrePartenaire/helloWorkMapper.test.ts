@@ -15,7 +15,7 @@ describe("helloWorkJobToJobsPartners", () => {
     }
   })
 
-  it("should convert a hellowork job to a partner job", () => {
+  it("should convert a hellowork job to a partner_label job", () => {
     expect(
       helloWorkJobToJobsPartners({
         job_id: "73228597",

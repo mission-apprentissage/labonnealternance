@@ -511,7 +511,7 @@ describe("PUT /jobs/:id", async () => {
     expect(response.json()).toEqual({ error: "Forbidden", message: "Unauthorized", statusCode: 403 })
   })
 
-  it("should return 403 if user is trying to edit other partner job", async () => {
+  it("should return 403 if user is trying to edit other partner_label job", async () => {
     const restrictedToken = getApiApprentissageTestingToken({ email: "mail@mail.com", organisation: "Un autre", habilitations: { "jobs:write": true } })
 
     const response = await httpClient().inject({

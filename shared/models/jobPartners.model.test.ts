@@ -40,7 +40,7 @@ type IJobRecruiterExpected = IJobWorkplaceExpected &
 type IJobOfferExpected = IJobWorkplaceExpected &
   IJobApplyExpected & {
     _id: ObjectId | string | null
-    partner: string
+    partner_label: string
     partner_job_id: string | null
 
     contract_start: Date | null
