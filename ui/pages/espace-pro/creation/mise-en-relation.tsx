@@ -80,7 +80,7 @@ function CreationMiseEnRelationPage({ isWidget }: { isWidget?: boolean }) {
 
       getRelatedEtablissementsFromRome({ rome: job?.rome_detail?.code || job?.rome_code[0], latitude: parseFloat(latitude), longitude: parseFloat(longitude) }).then(
         (data: IEtablissementCatalogueProcheWithDistance[]) => {
-          const etablissementUpdated = data.slice(0, 10).map((data, index) => ({
+          const etablissementUpdated = data.map((data, index) => ({
             ...data,
             checked: index < 3,
           }))
