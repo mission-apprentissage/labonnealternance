@@ -1,5 +1,6 @@
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
+import { ZEtablissementCatalogueProcheWithDistance } from "../interface/etablissement.types"
 import { ZJob, ZJobFields, ZJobStartDateCreate } from "../models"
 import { zObjectId } from "../models/common"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
@@ -141,21 +142,7 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "200": z.array(
-          z
-            .object({
-              _id: zObjectId,
-              numero_voie: z.string().nullish(),
-              type_voie: z.string().nullish(),
-              nom_voie: z.string().nullish(),
-              code_postal: z.string(),
-              nom_departement: z.string(),
-              entreprise_raison_sociale: z.string(),
-              geo_coordonnees: z.string(),
-              distance_en_km: z.number(),
-            })
-            .strict()
-        ),
+        "200": z.array(ZEtablissementCatalogueProcheWithDistance),
         "4xx": z.union([ZLbarError, ZResError]),
       },
       securityScheme: {
