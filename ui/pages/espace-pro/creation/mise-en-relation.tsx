@@ -78,7 +78,7 @@ function CreationMiseEnRelationPage({ isWidget }: { isWidget?: boolean }) {
     if (geo_coordinates) {
       const [latitude, longitude] = (geo_coordinates as string).split(",")
 
-      getRelatedEtablissementsFromRome({ rome: job?.rome_detail?.code || job?.rome_code[0], latitude: parseFloat(latitude), longitude: parseFloat(longitude) }).then(
+      getRelatedEtablissementsFromRome({ rome: job?.rome_detail?.code || job?.rome_code[0], latitude: parseFloat(latitude), longitude: parseFloat(longitude), limit: 10 }).then(
         (data: IEtablissementCatalogueProcheWithDistance[]) => {
           const etablissementUpdated = data.map((data, index) => ({
             ...data,

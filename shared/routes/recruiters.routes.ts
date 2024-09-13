@@ -42,6 +42,7 @@ export const zRecruiterRoutes = {
           latitude: z.coerce.number(),
           longitude: z.coerce.number(),
           rome: z.string(),
+          limit: z.coerce.number(),
         })
         .strict(),
       response: {

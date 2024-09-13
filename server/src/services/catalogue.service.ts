@@ -157,7 +157,7 @@ export const getCatalogueEtablissements = (query: object = {}, select: object = 
  * @param {{latitude: string, longitude: string}} origin
  * @returns {Promise<Object[]>}
  */
-export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: string[]; origin: { latitude: number; longitude: number } }) => {
+export const getNearEtablissementsFromRomes = async ({ rome, origin, limit }: { rome: string[]; origin: { latitude: number; longitude: number }; limit: number }) => {
   const formations = await getCatalogueFormations(
     {
       rome_codes: { $in: rome },
@@ -204,7 +204,7 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: s
     .toArray()
   const unsubscribedIds = unsubscribedEtablissements.map((unsubscribeOF) => unsubscribeOF.catalogue_id)
   etablissementsRefined = etablissementsRefined.filter((etablissement) => !unsubscribedIds.includes(etablissement._id))
-  return etablissementsRefined
+  return etablissementsRefined.slice(0, limit)
 }
 
 /**

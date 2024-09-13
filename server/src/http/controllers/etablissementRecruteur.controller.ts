@@ -53,8 +53,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { latitude, longitude, rome, limit } = req.query
       const etablissements = await getNearEtablissementsFromRomes({ rome: [rome], origin: { latitude: latitude, longitude: longitude }, limit })
-      const top10 = etablissements.slice(0, 10)
-      res.send(top10)
+      res.send(etablissements)
     }
   )
 

@@ -166,8 +166,8 @@ export const putCompanyContactInfo = async ({ siret, phone, email }: { siret: st
 export const createEtablissement = (etablissement) => apiPost("/etablissement/creation", { body: etablissement })
 
 export const getRomeDetail = (rome: string) => apiGet("/rome/detail/:rome", { params: { rome } })
-export const getRelatedEtablissementsFromRome = async ({ rome, latitude, longitude }: { rome: string; latitude: number; longitude: number }) =>
-  apiGet(`/etablissement/cfas-proches`, { querystring: { rome, latitude, longitude } })
+export const getRelatedEtablissementsFromRome = async ({ rome, latitude, longitude, limit }: { rome: string; latitude: number; longitude: number; limit: number }) =>
+  apiGet(`/etablissement/cfas-proches`, { querystring: { rome, latitude, longitude, limit } })
 
 export const etablissementUnsubscribeDemandeDelegation = (establishment_siret: any, token: string) =>
   apiPost("/etablissement/:establishment_siret/proposition/unsubscribe", {
