@@ -321,8 +321,6 @@ export const FormulaireCreationOffre = ({
     enabled: Boolean(rome && latitude && longitude),
   })
 
-  console.log(relatedEtablissementQuery)
-
   const haveProposals = Boolean(relatedEtablissementQuery.data?.length)
 
   const {
