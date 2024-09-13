@@ -2,6 +2,7 @@ import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Button, Center, Checkbox, Container, Divider, Flex, Grid, GridItem, Heading, Link, Spinner, Square, Text } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
+import { IEtablissementCatalogueProcheWithDistance } from "shared/interface/etablissement.types"
 
 import { ArrowRightLine, Check } from "../../../theme/components/icons"
 import { createEtablissementDelegation, createEtablissementDelegationByToken, getRelatedEtablissementsFromRome } from "../../../utils/api"
@@ -77,13 +78,15 @@ function CreationMiseEnRelationPage({ isWidget }: { isWidget?: boolean }) {
     if (geo_coordinates) {
       const [latitude, longitude] = (geo_coordinates as string).split(",")
 
-      getRelatedEtablissementsFromRome({ rome: job?.rome_detail?.code || job?.rome_code[0], latitude: parseFloat(latitude), longitude: parseFloat(longitude) }).then((data) => {
-        const etablissementUpdated = data.slice(0, 10).map((data, index) => ({
-          ...data,
-          checked: index < 3,
-        }))
-        setEtablissements(etablissementUpdated)
-      })
+      getRelatedEtablissementsFromRome({ rome: job?.rome_detail?.code || job?.rome_code[0], latitude: parseFloat(latitude), longitude: parseFloat(longitude) }).then(
+        (data: IEtablissementCatalogueProcheWithDistance[]) => {
+          const etablissementUpdated = data.slice(0, 10).map((data, index) => ({
+            ...data,
+            checked: index < 3,
+          }))
+          setEtablissements(etablissementUpdated)
+        }
+      )
     }
   }, [geo_coordinates])
 
