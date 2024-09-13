@@ -6,6 +6,7 @@ import { got } from "got"
 import { sortBy } from "lodash-es"
 import { ObjectId } from "mongodb"
 import { compose } from "oleoduc"
+import { IEtablissementCatalogue, IEtablissementCatalogueProche, IEtablissementCatalogueProcheWithDistance } from "shared/interface/etablissement.types"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
@@ -140,7 +141,7 @@ export const countFormations = async (): Promise<number | boolean> => {
  * @param {Object} query
  * @returns {Promise<Object[]>}
  */
-export const getCatalogueEtablissements = (query: object = {}, select: object = {}): Promise<any> =>
+export const getCatalogueEtablissements = (query: object = {}, select: object = {}): Promise<{ etablissements: IEtablissementCatalogue[] }> =>
   got(`${config.catalogueUrl}/api/v1/entity/etablissements`, {
     method: "POST",
     json: {
@@ -173,7 +174,7 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: s
   const etablissementsToRetrieve = new Set()
   formations.forEach((formation) => etablissementsToRetrieve.add(formation.etablissement_formateur_id))
 
-  const { etablissements } = await getCatalogueEtablissements(
+  const { etablissements }: { etablissements: IEtablissementCatalogueProche[] } = await getCatalogueEtablissements(
     {
       _id: { $in: Array.from(etablissementsToRetrieve) },
       certifie_qualite: true,
@@ -193,9 +194,9 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: s
     return [
       {
         ...etablissement,
-        distance_en_km: getDistanceInKm({ origin, destination: { latitude, longitude } }),
+        distance_en_km: getDistanceInKm({ origin, destination: { latitude: parseFloat(latitude), longitude: parseFloat(longitude) } }),
       },
-    ]
+    ] as IEtablissementCatalogueProcheWithDistance[]
   })
   etablissementsRefined = sortBy(etablissementsRefined, "distance_en_km")
   const unsubscribedEtablissements = await getDbCollection("unsubscribedofs")

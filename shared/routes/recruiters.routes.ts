@@ -2,6 +2,7 @@ import { Jsonify } from "type-fest"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
+import { ZEtablissementCatalogueProcheWithDistance } from "../interface/etablissement.types"
 import { ZPointGeometry, ZRecruiter } from "../models"
 import { zCFA } from "../models/cfa.model"
 import { zObjectId } from "../models/common"
@@ -44,22 +45,7 @@ export const zRecruiterRoutes = {
         })
         .strict(),
       response: {
-        // TODO ANY TO BE FIXED
-        "200": z.array(z.any()),
-        // "2xx": zEtablissementCatalogue
-        //   .pick({
-        //     _id: true,
-        //     numero_voie: true,
-        //     type_voie: true,
-        //     nom_voie: true,
-        //     nom_departement: true,
-        //     entreprise_raison_sociale: true,
-        //     geo_coordonnees: true,
-        //   })
-        //   .extend({
-        //     distance_en_km: z.string(),
-        //   })
-        //   .strict(),
+        "200": z.array(ZEtablissementCatalogueProcheWithDistance),
       },
       securityScheme: null,
     },
