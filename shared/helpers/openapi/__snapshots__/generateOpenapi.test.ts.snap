@@ -8005,7 +8005,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                     "additionalProperties": false,
                     "properties": {
                       "_id": {
-                        "description": "Identifiant unique",
+                        "type": "string",
                       },
                       "code_postal": {
                         "type": "string",
@@ -8034,6 +8034,9 @@ Limite : 5 appel(s) / 1 seconde(s)
                           "null",
                         ],
                       },
+                      "siret": {
+                        "type": "string",
+                      },
                       "type_voie": {
                         "type": [
                           "string",
@@ -8042,6 +8045,11 @@ Limite : 5 appel(s) / 1 seconde(s)
                       },
                     },
                     "required": [
+                      "_id",
+                      "siret",
+                      "numero_voie",
+                      "type_voie",
+                      "nom_voie",
                       "code_postal",
                       "nom_departement",
                       "entreprise_raison_sociale",
