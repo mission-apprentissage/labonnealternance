@@ -17,6 +17,8 @@ export default function CreationOffre() {
   const client = useQueryClient()
   const { user } = useAuth()
 
+  const isOpco = router.pathname.indexOf("opco") > 0 ? true : false
+
   const { establishment_id, jobId } = router.query as { establishment_id: string; jobId: string }
   const isCreation = jobId === "creation"
 
@@ -38,7 +40,11 @@ export default function CreationOffre() {
             isClosable: true,
           })
         })
-        .finally(() => router.push(`/espace-pro/administration/entreprise/${establishment_id}`))
+        .finally(() =>
+          isOpco
+            ? router.push(`/espace-pro/administration/opco/entreprise/${router.query.siret_userId}/entreprise/${establishment_id}`)
+            : router.push(`/espace-pro/administration/entreprise/${establishment_id}`)
+        )
     } else {
       const { recruiter: formulaire } = await createOffre(establishment_id, values)
       if (user.type === AUTHTYPE.ENTREPRISE) {
