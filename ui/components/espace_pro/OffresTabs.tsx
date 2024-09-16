@@ -4,7 +4,8 @@ import dayjs from "dayjs"
 import { useRouter } from "next/router"
 import { useState } from "react"
 import { useQueryClient } from "react-query"
-import { IJob } from "shared"
+import { IJob, JOB_STATUS } from "shared"
+import { RECRUITER_STATUS } from "shared/constants"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { sortReactTableDate } from "@/common/utils/dateUtils"
@@ -42,7 +43,50 @@ export const OffresTabs = ({ recruiter, userContext, establishmentId }: { recrui
   const offresPourvue = jobsWithGeoCoords.filter((x) => x.job_status === "Pourvue")
   const offresPourvueNbr = offresPourvue.length
 
-  console.log("ROUTER QUERY OFFRES TABS : ", router.query, userContext, establishmentId)
+  const displayJobStatus = (status: JOB_STATUS) => {
+    if (recruiter.status === RECRUITER_STATUS.EN_ATTENTE_VALIDATION) {
+      return (
+        <Badge variant="awaiting" textTransform="uppercase">
+          {RECRUITER_STATUS.EN_ATTENTE_VALIDATION}
+        </Badge>
+      )
+    }
+    if (recruiter.status === RECRUITER_STATUS.ARCHIVE) {
+      return (
+        <Badge variant="inactive" textTransform="uppercase">
+          EXPIREE
+        </Badge>
+      )
+    }
+    switch (status) {
+      case JOB_STATUS.ACTIVE:
+        return (
+          <Badge variant="neutral" textTransform="uppercase">
+            {JOB_STATUS.ACTIVE}
+          </Badge>
+        )
+      case JOB_STATUS.POURVUE:
+        return (
+          <Badge variant="active" textTransform="uppercase">
+            {JOB_STATUS.POURVUE}
+          </Badge>
+        )
+      case JOB_STATUS.ANNULEE:
+        return (
+          <Badge variant="inactive" textTransform="uppercase">
+            EXPIREE
+          </Badge>
+        )
+      case JOB_STATUS.EN_ATTENTE:
+        return (
+          <Badge variant="awaiting" textTransform="uppercase">
+            {RECRUITER_STATUS.EN_ATTENTE_VALIDATION}
+          </Badge>
+        )
+      default:
+        return null
+    }
+  }
 
   const columns = [
     {
@@ -59,6 +103,12 @@ export const OffresTabs = ({ recruiter, userContext, establishmentId }: { recrui
       },
       width: "500",
       maxWidth: "500",
+    },
+    {
+      Header: "Statut",
+      id: "job_status",
+      sortType: (a, b) => sortReactTableDate(a.original.job_status, b.original.job_status),
+      accessor: ({ job_status }) => displayJobStatus(job_status),
     },
     {
       Header: "Postée le",
