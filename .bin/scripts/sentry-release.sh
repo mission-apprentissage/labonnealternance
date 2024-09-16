@@ -14,7 +14,8 @@ fi
 
 readonly VAULT_FILE="${ROOT_DIR}/.infra/vault/vault.yml"
 
-SENTRY_DSN=$(ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq '.vault.LBA_SERVER_SENTRY_DSN')
+LBA_SERVER_SENTRY_DSN=$(ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq '.vault.LBA_SERVER_SENTRY_DSN')
+LBA_UI_SENTRY_DSN=$(ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq '.vault.LBA_UI_SENTRY_DSN')
 SENTRY_AUTH_TOKEN=$(ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq '.vault.SENTRY_AUTH_TOKEN')
 
 docker run \
@@ -23,7 +24,7 @@ docker run \
   -i \
   --entrypoint /bin/bash \
   -e SENTRY_AUTH_TOKEN="${SENTRY_AUTH_TOKEN}" \
-  -e SENTRY_DSN="${SENTRY_DSN}" \
+  -e SENTRY_DSN="${LBA_SERVER_SENTRY_DSN}" \
   ghcr.io/mission-apprentissage/mna_lba_server:${VERSION} \
   /app/server/sentry-release-server.sh "mission-apprentissage/labonnealternance" "${COMMIT_ID}" "${PREV_COMMIT_ID}" "${VERSION}"
 
@@ -33,6 +34,6 @@ docker run \
   -i \
   --entrypoint /bin/bash \
   -e SENTRY_AUTH_TOKEN="${SENTRY_AUTH_TOKEN}" \
-  -e SENTRY_DSN="${SENTRY_DSN}" \
+  -e SENTRY_DSN="${LBA_UI_SENTRY_DSN}" \
   ghcr.io/mission-apprentissage/mna_lba_ui:${VERSION}-production \
   /app/ui/sentry-release-ui.sh "mission-apprentissage/labonnealternance" "${COMMIT_ID}" "${PREV_COMMIT_ID}" "${VERSION}"
