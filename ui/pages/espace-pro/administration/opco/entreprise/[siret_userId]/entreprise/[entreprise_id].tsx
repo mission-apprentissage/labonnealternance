@@ -65,6 +65,8 @@ function DetailEntreprise() {
     queryFn: () => getFormulaire(userRecruteur.establishment_id),
   })
 
+  console.log("OPCO ENTREPRISES : ", router.query)
+
   const userMutation = useMutation(({ userId, values }: any) => updateEntrepriseAdmin(userId, values, userRecruteur.establishment_siret), {
     onSuccess: () => {
       client.invalidateQueries("user")
@@ -282,7 +284,7 @@ function DetailEntreprise() {
                         <Text fontSize="20px" lineHeight="32px" fontWeight="700" mb={6}>
                           Offres de recrutement en alternance
                         </Text>
-                        <OffresTabs recruiter={recruiter} />
+                        <OffresTabs establishmentId={userRecruteur.establishment_id} userContext="OPCO" recruiter={recruiter} />
                       </Box>
                       <Box mb={12}>
                         <UserValidationHistory histories={userRecruteur.status} />

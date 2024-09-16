@@ -139,6 +139,8 @@ function DetailEntreprise() {
   const lastUserState: IUserStatusValidation = userRecruteur.status.at(-1)
   const establishmentLabel = userRecruteur.establishment_raison_sociale ?? userRecruteur.establishment_siret
 
+  console.log("ADMIN USERS : ", router.query)
+
   return (
     <AnimationContainer>
       <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={userRecruteur} />
@@ -264,7 +266,7 @@ function DetailEntreprise() {
                         <Text fontSize="20px" lineHeight="32px" fontWeight="700" mb={6}>
                           Offres de recrutement en alternance
                         </Text>
-                        <OffresTabs recruiter={recruiter} />
+                        <OffresTabs establishmentId={userRecruteur.establishment_id} userContext="ADMIN" recruiter={recruiter} />
                       </Box>
                       <Box mb={12}>
                         <UserValidationHistory histories={userRecruteur.status} />

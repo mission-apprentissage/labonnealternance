@@ -5,6 +5,7 @@ import ListeOffres from "../../../../../../../components/espace_pro/ListeOffres"
 import { authProvider, withAuth } from "../../../../../../../components/espace_pro/withAuth"
 
 function OpcoEntrepriseListOffre() {
+  console.log("OPCOLISTESOFFRE ?")
   return (
     <Layout footer={false}>
       <ListeOffres hideModify={true} />

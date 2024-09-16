@@ -146,7 +146,7 @@ export default function ListeOffres({ hideModify = false }: { hideModify?: boole
       <Text fontWeight="700" py={6}>
         Offres de recrutement en alternance
       </Text>
-      <OffresTabs recruiter={data} />
+      <OffresTabs establishmentId={establishment_id} userContext={router.pathname.indexOf("opco") > 0 ? "ADMIN" : "OPCO"} recruiter={data} />
     </Container>
   )
 }

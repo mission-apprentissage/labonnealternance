@@ -19,7 +19,7 @@ import { extendOffre } from "../../utils/api"
 import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
 import Table from "./Table"
 
-export const OffresTabs = ({ recruiter }: { recruiter: IRecruiterJson }) => {
+export const OffresTabs = ({ recruiter, userContext, establishmentId }: { recruiter: IRecruiterJson; userContext: "OPCO" | "ADMIN"; establishmentId: string }) => {
   const router = useRouter()
   const toast = useToast()
   const client = useQueryClient()
@@ -41,6 +41,8 @@ export const OffresTabs = ({ recruiter }: { recruiter: IRecruiterJson }) => {
   const offresActiveNbr = offresActive.length
   const offresPourvue = jobsWithGeoCoords.filter((x) => x.job_status === "Pourvue")
   const offresPourvueNbr = offresPourvue.length
+
+  console.log("ROUTER QUERY OFFRES TABS : ", router.query, userContext, establishmentId)
 
   const columns = [
     {
@@ -102,7 +104,6 @@ export const OffresTabs = ({ recruiter }: { recruiter: IRecruiterJson }) => {
       accessor: (row) => {
         const [lat, lon] = (row.geo_coordinates ?? "").split(",")
         const isDisable = row.job_status === "Annulée" || row.job_status === "Pourvue" ? true : false
-
         return (
           <Box display={["none", isDisable ? "none" : "block"]}>
             <Menu>
@@ -116,7 +117,10 @@ export const OffresTabs = ({ recruiter }: { recruiter: IRecruiterJson }) => {
                       <Link
                         onClick={() =>
                           router.push({
-                            pathname: `/espace-pro/administration/entreprise/${router.query.establishment_id}/offre/${row._id}`,
+                            pathname:
+                              userContext === "OPCO"
+                                ? `/espace-pro/administration/opco/entreprise/${router.query.siret_userId}/${establishmentId}/offre/${row._id}`
+                                : `/espace-pro/administration/entreprise/${establishmentId}/offre/${row._id}`,
                             query: { establishment_raison_sociale: recruiter?.establishment_raison_sociale },
                           })
                         }
