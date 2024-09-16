@@ -1,4 +1,4 @@
-import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
+import { badRequest, internal, notFound } from "@hapi/boom"
 import { DateTime } from "luxon"
 import { Document, Filter, ObjectId } from "mongodb"
 import { IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS_ENGLISH, assertUnreachable, parseEnum, translateJobStatus } from "shared"
@@ -197,7 +197,7 @@ export const getJobsQuery = async (
   return result
 }
 
-export const getJobsPartnersFromDB = async ({ romes, geo, diplomaLevel }: IJobOpportunityGetQueryResolved): Promise<IJobsPartnersOfferPrivate[]> => {
+export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }: IJobOpportunityGetQueryResolved): Promise<IJobsPartnersOfferApi[]> => {
   const query: Filter<IJobsPartnersOfferPrivate> = {
     offer_multicast: true,
   }
@@ -206,8 +206,8 @@ export const getJobsPartnersFromDB = async ({ romes, geo, diplomaLevel }: IJobOp
     query.offer_rome_codes = { $in: romes }
   }
 
-  if (diplomaLevel) {
-    query["offer_diploma_level.european"] = { $in: [diplomaLevel, null] }
+  if (target_diploma_level) {
+    query["offer_target_diploma.european"] = { $in: [target_diploma_level, null] }
   }
 
   const filterStages: Document[] =
@@ -225,7 +225,7 @@ export const getJobsPartnersFromDB = async ({ romes, geo, diplomaLevel }: IJobOp
           { $sort: { distance: 1, offer_creation: -1 } },
         ]
 
-  return await getDbCollection("jobs_partners")
+  const jobsPartners = await getDbCollection("jobs_partners")
     .aggregate<IJobsPartnersOfferPrivate>([
       ...filterStages,
       {
@@ -233,6 +233,12 @@ export const getJobsPartnersFromDB = async ({ romes, geo, diplomaLevel }: IJobOp
       },
     ])
     .toArray()
+
+  return jobsPartners.map((j) => ({
+    ...j,
+    // TODO: set LBA url
+    apply_url: j.apply_url ?? `${config.publicUrl}/recherche-apprentissage`,
+  }))
 }
 
 const convertToGeopoint = ({ longitude, latitude }: { longitude: number; latitude: number }): IGeoPoint => ({ type: "Point", coordinates: [longitude, latitude] })
@@ -272,7 +278,7 @@ export const convertLbaCompanyToJobPartnerRecruiterApi = (recruteursLba: ILbaCom
   )
 }
 
-function getDiplomaEuropeanLevel(job: IJob): IJobsPartnersOfferApi["offer_diploma_level"] {
+function getDiplomaEuropeanLevel(job: IJob): IJobsPartnersOfferApi["offer_target_diploma"] {
   const label = parseEnum(NIVEAUX_POUR_LBA, job.job_level_label)
 
   switch (label) {
@@ -310,100 +316,115 @@ function getDiplomaEuropeanLevel(job: IJob): IJobsPartnersOfferApi["offer_diplom
 }
 
 export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IJobResult[]): IJobsPartnersOfferApi[] => {
-  return offresEmploiLba.map(
-    ({ recruiter, job }: IJobResult): IJobsPartnersOfferApi => ({
-      _id: job._id.toString(),
-      partner: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
-      partner_job_id: null,
-      contract_start: job.job_start_date,
-      contract_duration: job.job_duration ?? null,
-      contract_type: job.job_type,
-      contract_remote: null,
-      offer_title: job.rome_label!,
-      offer_rome_codes: job.rome_code,
-      offer_description: job.rome_detail.definition,
-      offer_diploma_level: getDiplomaEuropeanLevel(job),
-      offer_desired_skills: job.rome_detail.competences.savoir_etre_professionnel?.map((x) => x.libelle) ?? [],
-      offer_to_be_acquired_skills: job.rome_detail.competences.savoir_faire?.flatMap((x) => x.items.map((y) => `${x.libelle}: ${y.libelle}`)) ?? [],
-      offer_access_conditions: job.rome_detail.acces_metier.split("\n"),
-      offer_creation: job.job_creation_date ?? null,
-      offer_expiration: job.job_expiration_date ?? null,
-      offer_opening_count: job.job_count ?? 1,
-      offer_status: translateJobStatus(job.job_status),
+  return (
+    offresEmploiLba
+      // TODO: Temporary fix for missing geopoint & address
+      .filter(({ recruiter, job }: IJobResult) => {
+        return recruiter.address && recruiter.geopoint && job.rome_label
+      })
+      .map(
+        ({ recruiter, job }: IJobResult): IJobsPartnersOfferApi => ({
+          _id: job._id.toString(),
+          partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+          partner_job_id: null,
+          contract_start: job.job_start_date,
+          contract_duration: job.job_duration ?? null,
+          contract_type: job.job_type,
+          contract_remote: null,
+          offer_title: job.rome_label!,
+          offer_rome_codes: job.rome_code,
+          offer_description: job.rome_detail.definition,
+          offer_target_diploma: getDiplomaEuropeanLevel(job),
+          offer_desired_skills: job.rome_detail.competences.savoir_etre_professionnel?.map((x) => x.libelle) ?? [],
+          offer_to_be_acquired_skills: job.rome_detail.competences.savoir_faire?.flatMap((x) => x.items.map((y) => `${x.libelle}: ${y.libelle}`)) ?? [],
+          offer_access_conditions: job.rome_detail.acces_metier.split("\n"),
+          offer_creation: job.job_creation_date ?? null,
+          offer_expiration: job.job_expiration_date ?? null,
+          offer_opening_count: job.job_count ?? 1,
+          offer_status: translateJobStatus(job.job_status),
 
-      workplace_siret: recruiter.establishment_siret,
-      workplace_website: null,
-      workplace_name: recruiter.establishment_enseigne ?? recruiter.establishment_raison_sociale ?? null,
-      workplace_brand: recruiter.establishment_enseigne ?? null,
-      workplace_legal_name: recruiter.establishment_raison_sociale ?? null,
-      workplace_description: null,
-      workplace_size: recruiter.establishment_size ?? null,
-      workplace_address: {
-        label: recruiter.address!,
-      },
-      workplace_geopoint: recruiter.geopoint!,
-      workplace_idcc: recruiter.idcc ? Number(recruiter.idcc) : null,
-      workplace_opco: convertOpco(recruiter),
-      workplace_naf_code: recruiter.naf_code ?? null,
-      workplace_naf_label: recruiter.naf_label ?? null,
+          workplace_siret: recruiter.establishment_siret,
+          workplace_website: null,
+          workplace_name: recruiter.establishment_enseigne ?? recruiter.establishment_raison_sociale ?? null,
+          workplace_brand: recruiter.establishment_enseigne ?? null,
+          workplace_legal_name: recruiter.establishment_raison_sociale ?? null,
+          workplace_description: null,
+          workplace_size: recruiter.establishment_size ?? null,
+          workplace_address: {
+            label: recruiter.address!,
+          },
+          workplace_geopoint: recruiter.geopoint!,
+          workplace_idcc: recruiter.idcc ? Number(recruiter.idcc) : null,
+          workplace_opco: convertOpco(recruiter),
+          workplace_naf_code: recruiter.naf_code ?? null,
+          workplace_naf_label: recruiter.naf_label ?? null,
 
-      apply_url: `${config.publicUrl}/recherche-apprentissage?type=matcha&itemId=${job._id}`,
-      apply_phone: recruiter.phone ?? null,
-    })
+          apply_url: `${config.publicUrl}/recherche-apprentissage?type=matcha&itemId=${job._id}`,
+          apply_phone: recruiter.phone ?? null,
+        })
+      )
   )
 }
 
 export const convertFranceTravailJobToJobPartnerOfferApi = (offresEmploiFranceTravail: FTJob[]): IJobsPartnersOfferApi[] => {
-  return offresEmploiFranceTravail.map((offreFT): IJobsPartnersOfferApi => {
-    const contractDuration = parseInt(offreFT.typeContratLibelle, 10)
-    const contractType = parseEnum(TRAINING_CONTRACT_TYPE, offreFT.natureContrat)
-    return {
-      _id: null,
-      partner_job_id: offreFT.id,
-      partner: JOBPARTNERS_LABEL.OFFRES_EMPLOI_FRANCE_TRAVAIL,
+  return offresEmploiFranceTravail
+    .filter((j) => {
+      // TODO: Temporary fix for missing geopoint
+      return j.lieuTravail.latitude != null && j.lieuTravail.longitude != null
+    })
+    .map((offreFT): IJobsPartnersOfferApi => {
+      const contractDuration = parseInt(offreFT.typeContratLibelle, 10)
+      const contractType = parseEnum(TRAINING_CONTRACT_TYPE, offreFT.natureContrat)
+      return {
+        _id: null,
+        partner_job_id: offreFT.id,
+        partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_FRANCE_TRAVAIL,
 
-      contract_start: null,
-      contract_duration: isNaN(contractDuration) ? null : contractDuration,
-      contract_type: contractType ? [contractType] : [],
-      contract_remote: null,
+        contract_start: null,
+        contract_duration: isNaN(contractDuration) ? null : contractDuration,
+        contract_type: contractType ? [contractType] : [],
+        contract_remote: null,
 
-      offer_title: offreFT.intitule,
-      offer_rome_codes: [offreFT.romeCode],
-      offer_description: offreFT.description,
-      offer_diploma_level: null,
-      offer_desired_skills: [],
-      offer_to_be_acquired_skills: [],
-      offer_access_conditions: offreFT.formations ? offreFT.formations?.map((formation) => `${formation.domaineLibelle} - ${formation.niveauLibelle}`) : [],
-      offer_creation: new Date(offreFT.dateCreation),
-      offer_expiration: null,
-      offer_opening_count: offreFT.nombrePostes,
-      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+        offer_title: offreFT.intitule,
+        offer_rome_codes: [offreFT.romeCode],
+        offer_description: offreFT.description,
+        offer_target_diploma: null,
+        offer_desired_skills: [],
+        offer_to_be_acquired_skills: [],
+        offer_access_conditions: offreFT.formations ? offreFT.formations?.map((formation) => `${formation.domaineLibelle} - ${formation.niveauLibelle}`) : [],
+        offer_creation: new Date(offreFT.dateCreation),
+        offer_expiration: null,
+        offer_opening_count: offreFT.nombrePostes,
+        offer_status: JOB_STATUS_ENGLISH.ACTIVE,
 
-      // Try to find entreprise SIRET from  offreFT.entreprise.siret ?
-      workplace_siret: null,
-      workplace_brand: null,
-      workplace_legal_name: null,
-      workplace_website: null,
-      workplace_name: offreFT.entreprise.nom,
-      workplace_description: offreFT.entreprise.description,
-      workplace_size: null,
-      workplace_address: { label: offreFT.lieuTravail.libelle },
-      workplace_geopoint: convertToGeopoint({ longitude: parseFloat(offreFT.lieuTravail.longitude), latitude: parseFloat(offreFT.lieuTravail.latitude) }),
-      workplace_idcc: null,
-      // TODO: try to map opco from FT formation requirement
-      workplace_opco: null,
-      workplace_naf_code: offreFT.codeNAF ? offreFT.codeNAF : null,
-      workplace_naf_label: offreFT.secteurActiviteLibelle ? offreFT.secteurActiviteLibelle : null,
+        // Try to find entreprise SIRET from  offreFT.entreprise.siret ?
+        workplace_siret: null,
+        workplace_brand: null,
+        workplace_legal_name: null,
+        workplace_website: null,
+        workplace_name: offreFT.entreprise.nom,
+        workplace_description: offreFT.entreprise.description,
+        workplace_size: null,
+        workplace_address: { label: offreFT.lieuTravail.libelle },
+        workplace_geopoint: convertToGeopoint({
+          longitude: parseFloat(offreFT.lieuTravail.longitude!),
+          latitude: parseFloat(offreFT.lieuTravail.latitude!),
+        }),
+        workplace_idcc: null,
+        // TODO: try to map opco from FT formation requirement
+        workplace_opco: null,
+        workplace_naf_code: offreFT.codeNAF ? offreFT.codeNAF : null,
+        workplace_naf_label: offreFT.secteurActiviteLibelle ? offreFT.secteurActiviteLibelle : null,
 
-      apply_url: offreFT.origineOffre.partenaires[0]?.url ?? offreFT.origineOffre.urlOrigine,
-      apply_phone: null,
-    }
-  })
+        apply_url: offreFT.origineOffre.partenaires?.[0]?.url ?? offreFT.origineOffre.urlOrigine,
+        apply_phone: null,
+      }
+    })
 }
 
 async function findFranceTravailOpportunities(query: IJobOpportunityGetQueryResolved, context: JobOpportunityRequestContext): Promise<IJobsPartnersOfferApi[]> {
-  const getFtDiploma = (diplomaLevel: INiveauDiplomeEuropeen | null): keyof typeof NIVEAUX_POUR_OFFRES_PE | null => {
-    switch (diplomaLevel) {
+  const getFtDiploma = (target_diploma_level: INiveauDiplomeEuropeen | null): keyof typeof NIVEAUX_POUR_OFFRES_PE | null => {
+    switch (target_diploma_level) {
       case "3":
         return "3 (CAP...)"
       case "4":
@@ -417,7 +438,7 @@ async function findFranceTravailOpportunities(query: IJobOpportunityGetQueryReso
       case null:
         return null
       default:
-        assertUnreachable(diplomaLevel)
+        assertUnreachable(target_diploma_level)
     }
   }
 
@@ -426,7 +447,7 @@ async function findFranceTravailOpportunities(query: IJobOpportunityGetQueryReso
     romes: query.romes ?? null,
     insee: null,
     radius: query.geo?.radius ?? 0,
-    diploma: getFtDiploma(query.diplomaLevel ?? null),
+    diploma: getFtDiploma(query.target_diploma_level ?? null),
   }
 
   if (query.geo !== null) {
@@ -452,8 +473,8 @@ async function findLbaJobOpportunities(query: IJobOpportunityGetQueryResolved): 
     limit: 150,
   }
 
-  if (query.diplomaLevel) {
-    payload.niveau = NIVEAU_DIPLOME_LABEL[query.diplomaLevel]
+  if (query.target_diploma_level) {
+    payload.niveau = NIVEAU_DIPLOME_LABEL[query.target_diploma_level]
   }
 
   const lbaJobs = await getLbaJobsV2(payload)
@@ -586,7 +607,7 @@ async function resolveRomeCodes(data: IJobsPartnersWritableApi, siretData: Workp
   return [romeoResponse]
 }
 
-type InvariantFields = "_id" | "created_at" | "partner"
+type InvariantFields = "_id" | "created_at" | "partner_label"
 
 async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiApprentissageTokenData, current: IJobsPartnersOfferPrivate | null): Promise<ObjectId> {
   const zodError = new ZodError([])
@@ -606,13 +627,13 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAppr
     throw internal("unexpected: cannot resolve all required data for the job offer")
   }
 
-  const { offer_creation, offer_expiration, offer_rome_codes, offer_diploma_level_european, workplace_address_label, ...rest } = data
+  const { offer_creation, offer_expiration, offer_rome_codes, offer_target_diploma_european, workplace_address_label, ...rest } = data
   const now = new Date()
 
   const invariantData: Pick<IJobsPartnersOfferPrivate, InvariantFields> = {
     _id: current?._id ?? new ObjectId(),
     created_at: current?.created_at ?? now,
-    partner: identity.organisation,
+    partner_label: identity.organisation,
   }
 
   const defaultOfferExpiration = current?.offer_expiration
@@ -624,12 +645,12 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAppr
     offer_status: JOB_STATUS_ENGLISH.ACTIVE,
     offer_creation: offer_creation ?? invariantData.created_at,
     offer_expiration: offer_expiration || defaultOfferExpiration,
-    offer_diploma_level:
-      offer_diploma_level_european == null
+    offer_target_diploma:
+      offer_target_diploma_european == null
         ? null
         : {
-            european: offer_diploma_level_european,
-            label: NIVEAU_DIPLOME_LABEL[offer_diploma_level_european],
+            european: offer_target_diploma_european,
+            label: NIVEAU_DIPLOME_LABEL[offer_target_diploma_european],
           },
     updated_at: now,
     ...rest,
@@ -665,18 +686,6 @@ export async function updateJobOffer(id: ObjectId, identity: IApiApprentissageTo
   if (current.offer_status !== JOB_STATUS_ENGLISH.ACTIVE) {
     throw badRequest("Job must be active in order to be modified")
   }
-
-  if (current.partner !== identity.organisation) {
-    throw forbidden("You are not allowed to update this job offer")
-  }
-
-  /**
-   * KBA 20240905
-   * Pas nécessaire dans la V1, sera réajuster dans un second temps
-   */
-  // if (!identity.habilitations["jobs:write"]) {
-  //   throw forbidden("You are not allowed to update this job offer")
-  // }
 
   await upsertJobOffer(data, identity, current)
 }

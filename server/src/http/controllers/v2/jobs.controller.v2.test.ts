@@ -4,7 +4,7 @@ import { useServer } from "@tests/utils/server.test.utils"
 import { ObjectId } from "mongodb"
 import nock from "nock"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
-import { generateLbaConpanyFixture } from "shared/fixtures/recruteurLba.fixture"
+import { generateLbaCompanyFixture } from "shared/fixtures/recruteurLba.fixture"
 import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { IGeoPoint } from "shared/models"
 import { IJobsPartnersOfferPrivate, IJobsPartnersWritableApiInput } from "shared/models/jobsPartners.model"
@@ -20,6 +20,7 @@ vi.mock("@/common/apis/franceTravail/franceTravail.client")
 vi.mock("@/common/apis/apiEntreprise/apiEntreprise.client")
 
 const httpClient = useServer()
+
 const token = getApiApprentissageTestingToken({ email: "test@test.fr", organisation: "Un super Partenaire", habilitations: { "jobs:write": true } })
 
 const fakeToken = getApiApprentissageTestingTokenFromInvalidPrivateKey({
@@ -38,7 +39,7 @@ const porteDeClichy: IGeoPoint = {
 }
 const romesQuery = rome.join(",")
 const [longitude, latitude] = porteDeClichy.coordinates
-const recruteurLba = generateLbaConpanyFixture({ rome_codes: rome, geopoint: clichyFixture.centre, siret: "58006820882692", email: "email@mail.com", website: "http://site.fr" })
+const recruteurLba = generateLbaCompanyFixture({ rome_codes: rome, geopoint: clichyFixture.centre, siret: "58006820882692", email: "email@mail.com", website: "http://site.fr" })
 const jobPartnerOffer: IJobsPartnersOfferPrivate = generateJobsPartnersOfferPrivate({
   offer_rome_codes: ["D1214"],
   workplace_geopoint: parisFixture.centre,
@@ -76,10 +77,10 @@ describe("GET /jobs/search", () => {
     expect(response.json()).toEqual({ statusCode: 401, error: "Unauthorized", message: "Unauthorized" })
   })
 
-  it("should return 403 if api key is invalid", async () => {
+  it("should return 401 if api key is invalid", async () => {
     const response = await httpClient().inject({ method: "GET", path: "/api/v2/jobs/search", headers: { authorization: `Bearer ${fakeToken}` } })
-    expect.soft(response.statusCode).toBe(403)
-    expect(response.json()).toEqual({ statusCode: 403, error: "Forbidden", message: "Invalid JWT token" })
+    expect.soft(response.statusCode).toBe(401)
+    expect(response.json()).toEqual({ statusCode: 401, error: "Unauthorized", message: "Invalid JWT token" })
   })
 
   it("should throw ZOD error if ROME is not formatted correctly", async () => {
@@ -120,10 +121,10 @@ describe("GET /jobs/search", () => {
         validationError: {
           _errors: [],
           latitude: {
-            _errors: ["Latitude invalide"],
+            _errors: ["Latitude doit être comprise entre -90 et 90"],
           },
           longitude: {
-            _errors: ["Longitude invalide"],
+            _errors: ["Longitude doit être comprise entre -180 et 180"],
           },
         },
       },
@@ -156,15 +157,15 @@ describe("GET /jobs/search", () => {
       "offer_creation",
       "offer_description",
       "offer_desired_skills",
-      "offer_diploma_level",
       "offer_expiration",
       "offer_opening_count",
       "offer_rome_codes",
       "offer_status",
+      "offer_target_diploma",
       "offer_title",
       "offer_to_be_acquired_skills",
-      "partner",
       "partner_job_id",
+      "partner_label",
       "workplace_address",
       "workplace_brand",
       "workplace_description",
@@ -283,35 +284,15 @@ describe("POST /jobs", async () => {
   const inSept = new Date("2024-09-01T00:00:00.000Z")
 
   const data: IJobsPartnersWritableApiInput = {
-    partner_job_id: null,
-
     contract_start: inSept.toJSON(),
-    contract_duration: null,
-    contract_type: null,
-    contract_remote: null,
 
     offer_title: "Apprentis en développement web",
     offer_rome_codes: ["M1602"],
-    offer_desired_skills: [],
-    offer_to_be_acquired_skills: [],
-    offer_access_conditions: [],
-    offer_creation: null,
-    offer_expiration: null,
-    offer_opening_count: 1,
-    offer_origin: null,
-    offer_multicast: true,
     offer_description: "Envie de devenir développeur web ? Rejoignez-nous !",
-    offer_diploma_level_european: null,
 
-    apply_url: null,
     apply_email: "mail@mail.com",
-    apply_phone: null,
 
     workplace_siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
-    workplace_address_label: null,
-    workplace_description: null,
-    workplace_website: null,
-    workplace_name: null,
   }
 
   beforeEach(async () => {
@@ -350,16 +331,12 @@ describe("POST /jobs", async () => {
       headers: { authorization: `Bearer ${fakeToken}` },
     })
 
-    expect.soft(response.statusCode).toBe(403)
-    expect(response.json()).toEqual({ error: "Forbidden", message: "Invalid JWT token", statusCode: 403 })
+    expect.soft(response.statusCode).toBe(401)
+    expect(response.json()).toEqual({ statusCode: 401, error: "Unauthorized", message: "Invalid JWT token" })
     expect(await getDbCollection("jobs_partners").countDocuments({})).toBe(0)
   })
 
-  /**
-   * KBA 20240905
-   * Pas nécessaire dans la V1, sera réajuster dans un second temps
-   */
-  it.skip('should return 403 if user does not have "jobs:write" permission', async () => {
+  it('should return 403 if user does not have "jobs:write" permission', async () => {
     const restrictedToken = getApiApprentissageTestingToken({ email: "mail@mail.com", organisation: "Un super Partenaire", habilitations: { "jobs:write": false } })
 
     const response = await httpClient().inject({
@@ -370,7 +347,7 @@ describe("POST /jobs", async () => {
     })
 
     expect.soft(response.statusCode).toBe(403)
-    expect(response.json()).toEqual({ error: "Forbidden", message: "You are not allowed to create a job offer", statusCode: 403 })
+    expect(response.json()).toEqual({ error: "Forbidden", message: "Unauthorized", statusCode: 403 })
   })
 
   it("should create a new job offer", async () => {
@@ -388,7 +365,7 @@ describe("POST /jobs", async () => {
     const doc = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(responseJson.id as string) })
 
     // Ensure that the job offer is associated to the correct permission
-    expect(doc?.partner).toBe("Un super Partenaire")
+    expect(doc?.partner_label).toBe("Un super Partenaire")
   })
 
   it("should apply method be defined", async () => {
@@ -434,38 +411,18 @@ describe("PUT /jobs/:id", async () => {
   const now = new Date("2024-06-18T00:00:00.000Z")
   const inSept = new Date("2024-09-01T00:00:00.000Z")
 
-  const originalJob = generateJobsPartnersOfferPrivate({ _id: id, offer_title: "Old title", partner: "Un super Partenaire" })
+  const originalJob = generateJobsPartnersOfferPrivate({ _id: id, offer_title: "Old title", partner_label: "Un super Partenaire" })
 
   const data: IJobsPartnersWritableApiInput = {
-    partner_job_id: null,
-
     contract_start: inSept.toJSON(),
-    contract_duration: null,
-    contract_type: null,
-    contract_remote: null,
 
     offer_title: "Apprentis en développement web",
     offer_rome_codes: ["M1602"],
-    offer_desired_skills: [],
-    offer_to_be_acquired_skills: [],
-    offer_access_conditions: [],
-    offer_creation: null,
-    offer_expiration: null,
-    offer_opening_count: 1,
-    offer_origin: null,
-    offer_multicast: true,
     offer_description: "Envie de devenir développeur web ? Rejoignez-nous !",
-    offer_diploma_level_european: null,
 
-    apply_url: null,
     apply_email: "mail@mail.com",
-    apply_phone: null,
 
     workplace_siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
-    workplace_address_label: null,
-    workplace_description: null,
-    workplace_website: null,
-    workplace_name: null,
   }
 
   beforeEach(async () => {
@@ -498,7 +455,7 @@ describe("PUT /jobs/:id", async () => {
     }
   })
 
-  it("should return 403 if no token is not signed by API", async () => {
+  it("should return 401 if no token is not signed by API", async () => {
     const response = await httpClient().inject({
       method: "PUT",
       path: `/api/v2/jobs/${id.toString()}`,
@@ -506,8 +463,8 @@ describe("PUT /jobs/:id", async () => {
       headers: { authorization: `Bearer ${fakeToken}` },
     })
 
-    expect.soft(response.statusCode).toBe(403)
-    expect(response.json()).toEqual({ error: "Forbidden", message: "Invalid JWT token", statusCode: 403 })
+    expect.soft(response.statusCode).toBe(401)
+    expect(response.json()).toEqual({ error: "Unauthorized", message: "Invalid JWT token", statusCode: 401 })
     expect(await getDbCollection("jobs_partners").findOne({ _id: id })).toEqual(originalJob)
   })
 
@@ -540,11 +497,7 @@ describe("PUT /jobs/:id", async () => {
     expect(response.json()).toEqual({ error: "Not Found", message: "Job offer not found", statusCode: 404 })
   })
 
-  /**
-   * KBA 20240905
-   * Pas nécessaire dans la V1, sera réajuster dans un second temps
-   */
-  it.skip('should return 403 if user does not have "jobs:write" permission', async () => {
+  it('should return 403 if user does not have "jobs:write" permission', async () => {
     const restrictedToken = getApiApprentissageTestingToken({ email: "mail@mail.com", organisation: "Un super Partenaire", habilitations: { "jobs:write": false } })
 
     const response = await httpClient().inject({
@@ -555,10 +508,10 @@ describe("PUT /jobs/:id", async () => {
     })
 
     expect.soft(response.statusCode).toBe(403)
-    expect(response.json()).toEqual({ error: "Forbidden", message: "You are not allowed to update this job offer", statusCode: 403 })
+    expect(response.json()).toEqual({ error: "Forbidden", message: "Unauthorized", statusCode: 403 })
   })
 
-  it("should return 403 if user is trying to edit other partner job", async () => {
+  it("should return 403 if user is trying to edit other partner_label job", async () => {
     const restrictedToken = getApiApprentissageTestingToken({ email: "mail@mail.com", organisation: "Un autre", habilitations: { "jobs:write": true } })
 
     const response = await httpClient().inject({
@@ -569,6 +522,6 @@ describe("PUT /jobs/:id", async () => {
     })
 
     expect.soft(response.statusCode).toBe(403)
-    expect(response.json()).toEqual({ error: "Forbidden", message: "You are not allowed to update this job offer", statusCode: 403 })
+    expect(response.json()).toEqual({ error: "Forbidden", message: "Unauthorized", statusCode: 403 })
   })
 })

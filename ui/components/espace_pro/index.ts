@@ -1,5 +1,4 @@
 import AdresseAutocomplete from "./AdresseAutocomplete"
-import AjouterVoeux from "./AjouterVoeux"
 import AnimationContainer from "./AnimationContainer"
 import AuthentificationLayout from "./AuthentificationLayout"
 import Bandeau from "./Bandeau"
@@ -11,6 +10,7 @@ import ConfirmationSuppressionEntreprise from "./ConfirmationSuppressionEntrepri
 import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
 import CustomInput from "./CustomInput"
 import DropdownCombobox from "./DropdownCombobox"
+import FormulaireCreationOffre from "./FormulaireCreationOffre"
 // import Etablissement from "./Etablissement"
 // import ExportButtonNew from "./ExportButton/ExportButtonNew"
 import InfoPopover from "./InfoPopover"
@@ -29,7 +29,7 @@ import UserValidationHistory from "./UserValidationHistory"
 export {
   Pagination,
   Layout,
-  AjouterVoeux,
+  FormulaireCreationOffre,
   DropdownCombobox,
   AdresseAutocomplete,
   AnimationContainer,

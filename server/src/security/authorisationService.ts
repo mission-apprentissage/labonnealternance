@@ -5,7 +5,7 @@ import { ADMIN, CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
 import { ComputedUserAccess, IApplication, IJob, IRecruiter } from "shared/models"
 import { ICFA } from "shared/models/cfa.model"
 import { IEntreprise } from "shared/models/entreprise.model"
-import { IJobsPartnersOfferApi } from "shared/models/jobsPartners.model"
+import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { AccessEntityType, IRoleManagement } from "shared/models/roleManagement.model"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { AccessPermission, AccessResourcePath } from "shared/security/permissions"
@@ -22,7 +22,7 @@ type RecruiterResource = { recruiter: IRecruiter } & ({ type: "ENTREPRISE"; entr
 type JobResource = { job: IJob; recruiterResource: RecruiterResource }
 type ApplicationResource = { application: IApplication; jobResource?: JobResource; applicantId?: string }
 type EntrepriseResource = { entreprise: IEntreprise }
-type JobPartnerResource = { job: IJobsPartnersOfferApi }
+type JobPartnerResource = { job: IJobsPartnersOfferPrivate }
 
 type Resources = {
   users: Array<{ _id: string }>
@@ -238,7 +238,7 @@ async function getJobsPartnerResource<S extends WithSecurityScheme>(schema: S, r
     schema.securityScheme.resources.jobPartner.map(async (jobPartnerDef): Promise<JobPartnerResource | null> => {
       if ("_id" in jobPartnerDef) {
         const _id = getAccessResourcePathValue(jobPartnerDef._id, req)
-        const job = await getDbCollection("jobs_partners").findOne({ _id })
+        const job = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(_id) })
         return job ? { job } : null
       }
       assertUnreachable(jobPartnerDef)
@@ -305,7 +305,7 @@ function canAccessEntreprise(userAccess: ComputedUserAccess, resource: Entrepris
 
 function canAccessJobPartner(userAccess: ComputedUserAccess, resource: JobPartnerResource): boolean {
   const { job } = resource
-  return userAccess.partner.includes(job.partner)
+  return userAccess.partner_label.includes(job.partner_label)
 }
 
 function isAuthorized(access: AccessPermission, userAccess: ComputedUserAccess, resources: Resources): boolean {
@@ -384,7 +384,7 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
       cfas: [],
       entreprises: [],
       opcos: opco ? [opco] : [],
-      partner: [],
+      partner_label: [],
     }
     if (!isAuthorized(requestedAccess, userAccess, resources)) {
       throw forbidden("non autorisé")
@@ -396,20 +396,23 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
       throw forbidden("non autorisé")
     }
   } else if (userType === "IApiApprentissage") {
-    if (schema.securityScheme.access !== null) {
-      throw forbidden("access non autorisé")
+    const { organisation, habilitations } = userWithType.value
+    /**
+     * KBA : temporaire, à modifier lorsque l'ensemble des habilitations seront définit
+     */
+    if (schema.securityScheme.access !== "job:manage" || !habilitations["jobs:write"]) {
+      throw forbidden("Unauthorized")
     }
-    const { organisation } = userWithType.value
     const userAccess: ComputedUserAccess = {
       admin: false,
       users: [],
       cfas: [],
       entreprises: [],
       opcos: [],
-      partner: [organisation],
+      partner_label: [organisation],
     }
     if (!isAuthorized(requestedAccess, userAccess, resources)) {
-      throw forbidden("non autorisé")
+      throw forbidden("Unauthorized")
     }
   } else {
     assertUnreachable(userType)

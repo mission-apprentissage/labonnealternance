@@ -11,7 +11,7 @@ import { zOpcoLabel } from "./opco.model"
 const collectionName = "jobs_partners" as const
 
 export enum JOBPARTNERS_LABEL {
-  HELLOWORK = "Hellowork",
+  HELLOWORK = "Hello work",
   OFFRES_EMPLOI_LBA = "La bonne alternance",
   OFFRES_EMPLOI_FRANCE_TRAVAIL = "France Travail",
 }
@@ -35,7 +35,7 @@ export const ZJobsPartnersRecruiterApi = z.object({
   workplace_naf_code: z.string().nullable().describe("code NAF"),
   workplace_naf_label: z.string().nullable().describe("Libelle NAF"),
 
-  apply_url: z.string().url().nullable().describe("URL pour candidater").default(null),
+  apply_url: z.string().url().describe("URL pour candidater"),
   apply_phone: extensions.telephone.nullable().describe("Téléphone de contact").default(null),
 })
 
@@ -48,18 +48,21 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
 }).extend({
   _id: z.union([zObjectId, z.string()]).nullable().describe("Identifiant de l'offre"),
 
-  partner: z.string().describe("Référence du partenaire"),
+  partner_label: z.string().describe("Référence du partenaire"),
   partner_job_id: z.string().nullable().describe("Identifiant d'origine l'offre provenant du partenaire").default(null),
 
   contract_start: z.date().nullable().describe("Date de début de contrat"),
-  contract_duration: z.number().int().min(0).nullable().describe("Durée du contrat en mois"),
-  contract_type: z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)).nullable().describe("type de contrat, formaté à l'insertion"),
+  contract_duration: z.number().int().min(0).nullable().describe("Durée du contrat en mois").default(null),
+  contract_type: z
+    .array(extensions.buildEnum(TRAINING_CONTRACT_TYPE))
+    .describe("type de contrat, formaté à l'insertion")
+    .default([TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION]),
   contract_remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).nullable().describe("Format de travail de l'offre").default(null),
 
   offer_title: z.string().min(3).describe("Titre de l'offre"),
   offer_rome_codes: z.array(extensions.romeCode()).describe("Code rome de l'offre"),
   offer_description: z.string().describe("description de l'offre, soit définit par le partenaire, soit celle du ROME si pas suffisament grande"),
-  offer_diploma_level: z
+  offer_target_diploma: z
     .object({
       european: zDiplomaEuropeanLevel.describe("Niveau de diplome visé en fin d'étude, transformé pour chaque partenaire"),
       label: z.string().describe("Libellé du niveau de diplome"),
@@ -87,10 +90,12 @@ export const ZJobsPartnersRecruiterPrivate = ZJobsPartnersRecruiterApi.merge(ZJo
 
 export const ZJobsPartnersOfferPrivate = ZJobsPartnersOfferApi.omit({
   _id: true,
+  apply_url: true,
 })
   .merge(ZJobsPartnersRecruiterPrivateFields)
   .extend({
     _id: zObjectId,
+    apply_url: ZJobsPartnersOfferApi.shape.apply_url.nullable().default(null),
   })
 
 export type IJobsPartnersRecruiterApi = z.output<typeof ZJobsPartnersRecruiterApi>
@@ -118,7 +123,6 @@ const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
   offer_origin: true,
   offer_multicast: true,
 
-  apply_url: true,
   apply_email: true,
   apply_phone: true,
 
@@ -126,7 +130,12 @@ const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
   workplace_website: true,
   workplace_name: true,
 }).extend({
-  contract_start: z.string({ message: "Expected ISO 8601 date string" }).datetime({ offset: true, message: "Expected ISO 8601 date string" }).pipe(z.coerce.date()),
+  contract_start: z
+    .string({ message: "Expected ISO 8601 date string" })
+    .datetime({ offset: true, message: "Expected ISO 8601 date string" })
+    .pipe(z.coerce.date())
+    .nullable()
+    .default(null),
   offer_creation: z
     .string({ message: "Expected ISO 8601 date string" })
     .datetime({ offset: true, message: "Expected ISO 8601 date string" })
@@ -135,7 +144,8 @@ const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
         message: "Creation date cannot be in the future",
       })
     )
-    .nullable(),
+    .nullable()
+    .default(null),
   offer_expiration: z
     .string({ message: "Expected ISO 8601 date string" })
     .datetime({ offset: true, message: "Expected ISO 8601 date string" })
@@ -144,13 +154,16 @@ const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
         message: "Expiration date cannot be in the past",
       })
     )
-    .nullable(),
+    .nullable()
+    .default(null),
   offer_rome_codes: ZJobsPartnersOfferPrivate.shape.offer_rome_codes.nullable().default(null),
   offer_description: ZJobsPartnersOfferPrivate.shape.offer_description.min(30, "Job description should be at least 30 characters"),
-  offer_diploma_level_european: zDiplomaEuropeanLevel.nullable().default(null),
+  offer_target_diploma_european: zDiplomaEuropeanLevel.nullable().default(null),
 
   workplace_siret: extensions.siret,
   workplace_address_label: z.string().nullable().default(null),
+
+  apply_url: ZJobsPartnersOfferApi.shape.apply_url.nullable().default(null),
 })
 
 export const ZJobsPartnersWritableApi = ZJobsPartnersPostApiBodyBase.superRefine((data, ctx) => {
@@ -176,10 +189,9 @@ export default {
   indexes: [
     [{ workplace_geopoint: "2dsphere", offer_multicast: 1, offer_rome_codes: 1 }, {}],
     [{ offer_multicast: 1, offer_rome_codes: 1, offer_creation: -1 }, {}],
-    [{ offer_multicast: 1, "offer_diploma_level.european": 1, offer_creation: -1 }, {}],
-    [{ offer_multicast: 1, offer_rome_codes: 1, "offer_diploma_level.european": 1, offer_creation: -1 }, {}],
-
-    [{ partner: 1, partner_job_id: 1 }, {}],
+    [{ offer_multicast: 1, "offer_target_diploma.european": 1, offer_creation: -1 }, {}],
+    [{ offer_multicast: 1, offer_rome_codes: 1, "offer_target_diploma.european": 1, offer_creation: -1 }, {}],
+    [{ partner_label: 1, partner_job_id: 1 }, { unique: true }],
   ],
   collectionName,
 } as const satisfies IModelDescriptor

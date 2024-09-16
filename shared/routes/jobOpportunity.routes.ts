@@ -4,10 +4,10 @@ import { zDiplomaEuropeanLevel, ZJobsPartnersOfferApi, ZJobsPartnersRecruiterApi
 
 export const ZJobOpportunityGetQuery = z
   .object({
-    latitude: extensions.latitude().nullable().default(null),
-    longitude: extensions.longitude().nullable().default(null),
-    radius: z.number().min(0).max(200).default(30),
-    diplomaLevel: zDiplomaEuropeanLevel.optional(),
+    latitude: extensions.latitude({ coerce: true }).nullable().default(null),
+    longitude: extensions.longitude({ coerce: true }).nullable().default(null),
+    radius: z.coerce.number().min(0).max(200).default(30),
+    target_diploma_level: zDiplomaEuropeanLevel.optional(),
     romes: extensions.romeCodeArray().nullable().default(null),
     rncp: extensions.rncpCode().nullable().default(null),
   })
