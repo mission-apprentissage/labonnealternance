@@ -1,3 +1,4 @@
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
 const ZAcademie = z
@@ -7,12 +8,12 @@ const ZAcademie = z
   })
   .strict()
 
-const Z2DCoord = z.tuple([z.number(), z.number()])
+const Z2DCoord = z.tuple([extensions.longitude({ coerce: false }), extensions.latitude({ coerce: false })])
 
 export const ZPointGeometry = z
   .object({
     coordinates: Z2DCoord,
-    type: z.string(),
+    type: z.literal("Point"),
   })
   .strict()
 
@@ -23,7 +24,7 @@ const ZPolygonGeometry = z
   })
   .strict()
 
-export const ZGeometry = z.union([ZPointGeometry, ZPolygonGeometry])
+export const ZGeometry = z.discriminatedUnion("type", [ZPointGeometry, ZPolygonGeometry])
 
 export type IGeometry = z.input<typeof ZGeometry>
 

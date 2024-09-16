@@ -15,7 +15,7 @@ describe("helloWorkJobToJobsPartners", () => {
     }
   })
 
-  it("should convert a hellowork job to a partner job", () => {
+  it("should convert a hellowork job to a partner_label job", () => {
     expect(
       helloWorkJobToJobsPartners({
         job_id: "73228597",
@@ -62,7 +62,7 @@ describe("helloWorkJobToJobsPartners", () => {
     ).toEqual({
       _id: expect.any(ObjectId),
       created_at: now,
-      partner: "Hellowork",
+      partner_label: "Hello work",
       partner_job_id: "73228597",
       contract_start: new Date("2024-12-01T00:00:00.000+01:00"),
       contract_type: ["Apprentissage", "Professionnalisation"],
@@ -70,14 +70,14 @@ describe("helloWorkJobToJobsPartners", () => {
       contract_duration: 12,
       offer_title: "Gestionnaire Paie et ADP - Alternance H/F",
       offer_description: "ceci est une longue description qui a du sens et qui va passer la limite de 30 caractères",
-      offer_diploma_level: {
+      offer_target_diploma: {
         european: "6",
         label: "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
       },
       offer_desired_skills: ["profile"],
       offer_access_conditions: [],
       offer_to_be_acquired_skills: [],
-      offer_rome_code: ["M1203"],
+      offer_rome_codes: ["M1203"],
       offer_creation: new Date("2024-07-05T22:14:56.000+02:00"),
       offer_expiration: null,
       offer_origin: null,

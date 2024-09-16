@@ -63,7 +63,7 @@ const ChampNombre = ({ value, max, name, handleChange, label, dataTestId }) => {
   )
 }
 
-const AjouterVoeuxForm = ({
+const FormikCreationOffre = ({
   offre,
   onSubmit,
   onRomeChange,
@@ -285,7 +285,7 @@ const AjouterVoeuxForm = ({
   )
 }
 
-export const PageAjouterVoeux = ({
+export const FormulaireCreationOffre = ({
   fromDashboard,
   offre,
   handleSave,
@@ -316,10 +316,11 @@ export const PageAjouterVoeux = ({
 
   const { geo_coordinates } = formulaire ?? {}
   const [latitude, longitude] = geo_coordinates?.split(",")?.map((str) => parseFloat(str)) ?? []
-  const relatedEtablissementQuery = useQuery(["relatedEtablissement", rome, latitude, longitude], () => getRelatedEtablissementsFromRome({ rome, latitude, longitude }), {
+  const relatedEtablissementQuery = useQuery(["relatedEtablissement", rome, latitude, longitude], () => getRelatedEtablissementsFromRome({ rome, latitude, longitude, limit: 1 }), {
     retry: false,
     enabled: Boolean(rome && latitude && longitude),
   })
+
   const haveProposals = Boolean(relatedEtablissementQuery.data?.length)
 
   const {
@@ -441,7 +442,7 @@ export const PageAjouterVoeux = ({
           Merci de renseigner les champs ci-dessous pour créer votre offre
         </Text>
         <Box>
-          <AjouterVoeuxForm onRomeChange={onRomeChange} onSubmit={onSubmit} offre={offre} competencesDirty={competencesDirty} />
+          <FormikCreationOffre onRomeChange={onRomeChange} onSubmit={onSubmit} offre={offre} competencesDirty={competencesDirty} />
         </Box>
       </Box>
       <Box>
@@ -464,4 +465,4 @@ export const PageAjouterVoeux = ({
   )
 }
 
-export default PageAjouterVoeux
+export default FormulaireCreationOffre

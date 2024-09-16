@@ -9,7 +9,7 @@ import { AUTHTYPE } from "../../common/contants"
 import { ArrowDropRightLine } from "../../theme/components/icons"
 import { createOffre, getOffre } from "../../utils/api"
 
-import { AjouterVoeux, LoadingEmptySpace } from "."
+import { FormulaireCreationOffre, LoadingEmptySpace } from "."
 
 export default function CreationOffre() {
   const toast = useToast()
@@ -81,7 +81,7 @@ export default function CreationOffre() {
           )}
         </Breadcrumb>
       </Box>
-      <AjouterVoeux fromDashboard handleSave={handleSave} offre={offre} />
+      <FormulaireCreationOffre fromDashboard handleSave={handleSave} offre={offre} />
     </Container>
   )
 }
