@@ -25,7 +25,7 @@ docker run \
   -e SENTRY_AUTH_TOKEN="${SENTRY_AUTH_TOKEN}" \
   -e SENTRY_DSN="${SENTRY_DSN}" \
   ghcr.io/mission-apprentissage/mna_lba_server:${VERSION} \
-  /app/server/sentry-release-server.sh "mission-apprentissage/labonnealternance" "${COMMIT_ID}" "${PREV_COMMIT_ID}"
+  /app/server/sentry-release-server.sh "mission-apprentissage/labonnealternance" "${COMMIT_ID}" "${PREV_COMMIT_ID}" "${VERSION}"
 
 docker run \
   --platform=linux/amd64 \
@@ -35,4 +35,4 @@ docker run \
   -e SENTRY_AUTH_TOKEN="${SENTRY_AUTH_TOKEN}" \
   -e SENTRY_DSN="${SENTRY_DSN}" \
   ghcr.io/mission-apprentissage/mna_lba_ui:${VERSION}-production \
-  /app/ui/sentry-release-ui.sh "mission-apprentissage/labonnealternance" "${COMMIT_ID}" "${PREV_COMMIT_ID}"
+  /app/ui/sentry-release-ui.sh "mission-apprentissage/labonnealternance" "${COMMIT_ID}" "${PREV_COMMIT_ID}" "${VERSION}"
