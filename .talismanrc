@@ -11,12 +11,14 @@ fileignoreconfig:
   checksum: b3700a87a9d58839c8eafce8231d01b6164851a560ea5c232a1ecc19d8d22bc6
 - filename: .github/workflows/_build.yml
   checksum: ab457b5b512b181d7d73c8fdf9c3843eed39f3b0245f5d22742cc93697a08bf5
+- filename: .github/workflows/_deploy.yml
+  checksum: d17a016bb30a6fd52426255feb648b4dc241707bd3b28f0c181c8c4ff45bdd4d
 - filename: .github/workflows/cypress.yml
   checksum: 39f98fb68fdebf6a36959706adb43a8219a4b7781ac35329f957dc1cfa8b6de0
 - filename: .github/workflows/deploy_preview.yml
   checksum: 40f9da2dad1254d3f6674137046d431526c6f731989ed0e061995ba58be94322
 - filename: .github/workflows/release.yml
-  checksum: ffd104ff02d60abf3183694209c5191a0bb7479ce37d8243778275351b4d2228
+  checksum: a74f2767d7c66239e5cbf45c2aaaa6a2d980fe681e41ffa3b166247db323a907
 - filename: .infra/.env_server
   checksum: a3a8b9007e4c082a14b3d09ed8386138db9277ea11ca921a989ba87d0ea61f47
 - filename: .infra/env.ini

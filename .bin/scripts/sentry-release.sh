@@ -4,7 +4,7 @@ set -euo pipefail
 VERSION=${1:?"Veuillez préciser la version à build"}
 
 COMMIT_ID=$(git rev-parse --short HEAD)
-PREV_COMMIT_ID=$(git rev-parse --short HEAD^1)
+PREV_COMMIT_ID=$(curl https://labonnealternance.apprentissage.beta.gouv.fr/api/healthcheck | jq .commitHash)
 
 if [[ -z "${ANSIBLE_VAULT_PASSWORD_FILE:-}" ]]; then
   ansible_extra_opts+=("--vault-password-file" "${SCRIPT_DIR}/get-vault-password-client.sh")
@@ -24,5 +24,15 @@ docker run \
   --entrypoint /bin/bash \
   -e SENTRY_AUTH_TOKEN="${SENTRY_AUTH_TOKEN}" \
   -e SENTRY_DSN="${SENTRY_DSN}" \
-  ghcr.io/mission-apprentissage/mna_${PRODUCT_NAME}_server:${VERSION} \
-  /app/server/sentry-release-server.sh "mission-apprentissage/${REPO_NAME}" "${COMMIT_ID}" "${PREV_COMMIT_ID}"
+  ghcr.io/mission-apprentissage/mna_lba_server:${VERSION} \
+  /app/server/sentry-release-server.sh "mission-apprentissage/labonnealternance" "${COMMIT_ID}" "${PREV_COMMIT_ID}"
+
+docker run \
+  --platform=linux/amd64 \
+  --rm \
+  -i \
+  --entrypoint /bin/bash \
+  -e SENTRY_AUTH_TOKEN="${SENTRY_AUTH_TOKEN}" \
+  -e SENTRY_DSN="${SENTRY_DSN}" \
+  ghcr.io/mission-apprentissage/mna_lba_ui:${VERSION}-production \
+  /app/ui/sentry-release-ui.sh "mission-apprentissage/labonnealternance" "${COMMIT_ID}" "${PREV_COMMIT_ID}"
