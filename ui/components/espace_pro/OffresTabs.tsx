@@ -1,5 +1,5 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Badge, Box, Button, Icon, Link, Menu, MenuButton, MenuItem, MenuList, Tab, TabList, TabPanel, TabPanels, Tabs, useDisclosure, useToast } from "@chakra-ui/react"
+import { Badge, Box, Button, Flex, Icon, Image, Link, Menu, MenuButton, MenuItem, MenuList, Text, useDisclosure, useToast } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import { useRouter } from "next/router"
 import { useState } from "react"
@@ -31,17 +31,19 @@ export const OffresTabs = ({ recruiter, userContext, establishmentId }: { recrui
   const jobs: (IJob & { candidatures: number; geo_coordinates: string })[] = recruiter?.jobs ?? []
 
   if (jobs.length === 0) {
-    return null
+    return (
+      <Box py={6} backgroundColor="bluefrance.250">
+        <Flex width="fit-content" m="auto" alignItems="center">
+          <Image src="/images/espace_pro/no-job.svg" alt="" aria-hidden={true} />
+          <Text ml={2} fontWeight={700} color="#161616" as="span">
+            Aucune offre déposée
+          </Text>
+        </Flex>
+      </Box>
+    )
   }
 
   const jobsWithGeoCoords = jobs.map((job) => ({ ...job, geo_coordinates: recruiter.geo_coordinates }))
-
-  const offresTermine = jobsWithGeoCoords.filter((x) => x.job_status === "Annulée")
-  const offresTermineNbr = offresTermine.length
-  const offresActive = jobsWithGeoCoords.filter((x) => x.job_status === "Active")
-  const offresActiveNbr = offresActive.length
-  const offresPourvue = jobsWithGeoCoords.filter((x) => x.job_status === "Pourvue")
-  const offresPourvueNbr = offresPourvue.length
 
   const displayJobStatus = (status: JOB_STATUS) => {
     if (recruiter.status === RECRUITER_STATUS.EN_ATTENTE_VALIDATION) {
@@ -241,28 +243,7 @@ export const OffresTabs = ({ recruiter, userContext, establishmentId }: { recrui
   return (
     <>
       <ConfirmationSuppressionOffre {...confirmationSuppression} offre={currentOffre} />
-      <Tabs variant="search" isLazy>
-        <TabList>
-          <Tab width="300px">En cours ({offresActiveNbr})</Tab>
-          <Tab width="300px" isDisabled={offresPourvueNbr === 0 ? true : false}>
-            Pourvue ({offresPourvueNbr})
-          </Tab>
-          <Tab width="300px" isDisabled={offresTermineNbr === 0 ? true : false}>
-            Expirée ({offresTermineNbr})
-          </Tab>
-        </TabList>
-        <TabPanels>
-          <TabPanel>
-            <Table columns={columns} data={offresActive} />
-          </TabPanel>
-          <TabPanel>
-            <Table columns={columns} data={offresPourvue} />
-          </TabPanel>
-          <TabPanel>
-            <Table columns={columns} data={offresTermine} />
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
+      <Table columns={columns} data={jobsWithGeoCoords} />
     </>
   )
 }
