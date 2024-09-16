@@ -409,14 +409,14 @@ const newApplicationToApplicationDocument = async (newApplication: INewApplicati
     ...offreOrCompanyToCompanyFields(offreOrCompany),
     ...cleanApplicantFields(newApplication),
     company_email: recruteurEmail.toLowerCase(),
+    company_recruitment_intention: null,
+    company_feedback: null,
     job_origin: newApplication.company_type,
     _id: new ObjectId(),
     created_at: now,
     last_update_at: now,
     to_applicant_message_id: null,
     to_company_message_id: null,
-    company_recruitment_intention: null,
-    company_feedback: null,
     scan_status: ApplicationScanStatus.WAITING_FOR_SCAN,
   }
   return application
@@ -440,16 +440,16 @@ const newApplicationToApplicationDocumentV2 = async (
     applicant_email: newApplication.applicant_email.toLowerCase(),
     applicant_message_to_company: prepareMessageForMail(newApplication.message),
     applicant_phone: newApplication.applicant_phone,
-    caller: caller,
     company_email: recruteurEmail.toLowerCase(),
+    company_recruitment_intention: null,
+    company_feedback: null,
+    caller: caller,
     job_origin: LbaJob.type,
     _id: new ObjectId(),
     created_at: now,
     last_update_at: now,
     to_applicant_message_id: null,
     to_company_message_id: null,
-    company_recruitment_intention: null,
-    company_feedback: null,
     scan_status: ApplicationScanStatus.WAITING_FOR_SCAN,
   }
   return application
@@ -932,7 +932,7 @@ export const processApplicationEmails = {
     const emailCandidat = await mailer.sendEmail({
       to: application.applicant_email,
       subject: `Votre candidature chez ${application.company_name}`,
-      template: getEmailTemplate(type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "mail-candidat-matcha-new" : "mail-candidat-new"),
+      template: getEmailTemplate(type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "mail-candidat-offre-emploi-lba" : "mail-candidat-recruteur-lba"),
       data: {
         ...sanitizeApplicationForEmail(application),
         ...images,
