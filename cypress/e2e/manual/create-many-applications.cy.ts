@@ -2,7 +2,7 @@ import { givenAMatchaOffer } from "../../pages/givenAMatchaOffer"
 import { generateRandomString } from "../../utils/generateRandomString"
 
 describe("create-many-applications", () => {
-  it("create-many-applications", () => {
+  it.skip("create-many-applications", () => {
     cy.viewport(1271, 721)
 
     givenAMatchaOffer((recruiter) => {

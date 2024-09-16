@@ -1,5 +1,5 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Grid, GridItem, Box, Image, Link, Text, UnorderedList, ListItem } from "@chakra-ui/react"
+import { Box, Grid, GridItem, Image, Link, ListItem, Text, UnorderedList } from "@chakra-ui/react"
 
 export const FormCreatePageFooter = () => {
   return (
@@ -7,7 +7,7 @@ export const FormCreatePageFooter = () => {
       <Box as="nav" pl={{ base: 8, lg: 0 }} mt="12" borderTop="2px solid #3A55D1">
         <Grid templateColumns={{ base: "1fr", lg: "repeat(4, 1fr)" }} mb={{ base: 8, lg: 0 }} px={{ base: 0, lg: 10 }}>
           <GridItem colSpan={{ base: 1, lg: 1 }}>
-            <Image src="/images/marianne.svg#svgView(viewBox(12 0 162 78))" alt="" width="290" height="130" />
+            <Image src="/images/marianne.svg" aria-hidden={true} alt="" width="134" height="122" />
           </GridItem>
           <GridItem colSpan={{ base: 1, lg: 1 }}>
             <Box pl={{ base: 0, lg: 2 }} height="100%" display="flex" alignItems="center">
