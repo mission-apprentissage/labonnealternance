@@ -205,6 +205,8 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: server/static/templates/mail-candidat-new.mjml.ejs
   checksum: fa6a626f54f6599476fa13515c257b7384496e8175cb0101e8514711edd29609
+- filename: server/static/templates/mail-candidat-matcha-new.mjml.ejs
+  checksum: 5b69039d36d557cfc7371c926636589ae880e26698de5f96954f80fe020ed518
 scopeconfig:
 - scope: node
 custom_patterns:
