@@ -12,6 +12,7 @@ describe("healthcheckRoutes", () => {
 
     expect(response.statusCode).toBe(200)
     expect(JSON.parse(response.body)).toEqual({
+      commitHash: "hash-test",
       name: "La bonne alternance",
       version: config.version,
       env: "local",
