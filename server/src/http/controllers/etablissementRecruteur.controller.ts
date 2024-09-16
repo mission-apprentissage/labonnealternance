@@ -51,8 +51,8 @@ export default (server: Server) => {
       schema: zRoutes.get["/etablissement/cfas-proches"],
     },
     async (req, res) => {
-      const { latitude, longitude, rome } = req.query
-      const etablissements = await getNearEtablissementsFromRomes({ rome: [rome], origin: { latitude: latitude, longitude: longitude } })
+      const { latitude, longitude, rome, limit } = req.query
+      const etablissements = await getNearEtablissementsFromRomes({ rome: [rome], origin: { latitude: latitude, longitude: longitude }, limit })
       res.send(etablissements)
     }
   )

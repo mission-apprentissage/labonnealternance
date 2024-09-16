@@ -3,7 +3,7 @@ import { useRouter } from "next/router"
 
 import { DepotSimplifieLayout } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 
-import { AjouterVoeux, Bandeau } from "../../../components/espace_pro"
+import { FormulaireCreationOffre, Bandeau } from "../../../components/espace_pro"
 
 export default function DepotRapideAjouterVoeux() {
   const router = useRouter()
@@ -19,7 +19,7 @@ export default function DepotRapideAjouterVoeux() {
         />
       )}
       <Box mt={10}>
-        <AjouterVoeux />
+        <FormulaireCreationOffre />
       </Box>
     </DepotSimplifieLayout>
   )

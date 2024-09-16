@@ -6,6 +6,7 @@ import { got } from "got"
 import { sortBy } from "lodash-es"
 import { ObjectId } from "mongodb"
 import { compose } from "oleoduc"
+import { IEtablissementCatalogue, IEtablissementCatalogueProche, IEtablissementCatalogueProcheWithDistance } from "shared/interface/etablissement.types"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
@@ -140,7 +141,7 @@ export const countFormations = async (): Promise<number | boolean> => {
  * @param {Object} query
  * @returns {Promise<Object[]>}
  */
-export const getCatalogueEtablissements = (query: object = {}, select: object = {}): Promise<any> =>
+export const getCatalogueEtablissements = (query: object = {}, select: object = {}): Promise<{ etablissements: IEtablissementCatalogue[] }> =>
   got(`${config.catalogueUrl}/api/v1/entity/etablissements`, {
     method: "POST",
     json: {
@@ -156,7 +157,7 @@ export const getCatalogueEtablissements = (query: object = {}, select: object = 
  * @param {{latitude: string, longitude: string}} origin
  * @returns {Promise<Object[]>}
  */
-export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: string[]; origin: { latitude: number; longitude: number } }) => {
+export const getNearEtablissementsFromRomes = async ({ rome, origin, limit }: { rome: string[]; origin: { latitude: number; longitude: number }; limit: number }) => {
   const formations = await getCatalogueFormations(
     {
       rome_codes: { $in: rome },
@@ -173,12 +174,12 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: s
   const etablissementsToRetrieve = new Set()
   formations.forEach((formation) => etablissementsToRetrieve.add(formation.etablissement_formateur_id))
 
-  const { etablissements } = await getCatalogueEtablissements(
+  const { etablissements }: { etablissements: IEtablissementCatalogueProche[] } = await getCatalogueEtablissements(
     {
       _id: { $in: Array.from(etablissementsToRetrieve) },
       certifie_qualite: true,
     },
-    { _id: 1, numero_voie: 1, type_voie: 1, nom_voie: 1, code_postal: 1, nom_departement: 1, entreprise_raison_sociale: 1, geo_coordonnees: 1 }
+    { _id: 1, siret: 1, numero_voie: 1, type_voie: 1, nom_voie: 1, code_postal: 1, nom_departement: 1, entreprise_raison_sociale: 1, geo_coordonnees: 1 }
   )
 
   let etablissementsRefined = etablissements.flatMap((etablissement) => {
@@ -193,9 +194,9 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: s
     return [
       {
         ...etablissement,
-        distance_en_km: getDistanceInKm({ origin, destination: { latitude, longitude } }),
+        distance_en_km: getDistanceInKm({ origin, destination: { latitude: parseFloat(latitude), longitude: parseFloat(longitude) } }),
       },
-    ]
+    ] as IEtablissementCatalogueProcheWithDistance[]
   })
   etablissementsRefined = sortBy(etablissementsRefined, "distance_en_km")
   const unsubscribedEtablissements = await getDbCollection("unsubscribedofs")
@@ -203,7 +204,7 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: s
     .toArray()
   const unsubscribedIds = unsubscribedEtablissements.map((unsubscribeOF) => unsubscribeOF.catalogue_id)
   etablissementsRefined = etablissementsRefined.filter((etablissement) => !unsubscribedIds.includes(etablissement._id))
-  return etablissementsRefined
+  return etablissementsRefined.slice(0, limit)
 }
 
 /**
