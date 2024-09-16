@@ -42,7 +42,7 @@ fileignoreconfig:
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
-  checksum: 91999951702279c5dd4836cd3a9fdfc904ac019edc9e799c68c277741d450395
+  checksum: e03b5dac5c70accc532a744505fb928c9b2da6b233f360fe95ad127dbc0a5d6d
 - filename: server/src/common/utils/awsUtils.ts
   checksum: d7d550a8852127bd6838bd7c3f4aee9bba06731d932cff880ff2c1033578fdbd
 - filename: server/src/config.ts
