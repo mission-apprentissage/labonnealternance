@@ -6,6 +6,9 @@ import { rawToComputedJobsPartners } from "./rawToComputedJobsPartners"
 
 export const importHelloWork = async () => {
   await importFromUrlInXml({ destinationCollection: "raw_hellowork", url: "plop", offerXmlTag: "job" })
+}
+
+export const importRawHelloWorkIntoComputedJobPartners = async () => {
   await rawToComputedJobsPartners({
     collectionSource: "raw_hellowork",
     partnerLabel: JOBPARTNERS_LABEL.HELLOWORK,

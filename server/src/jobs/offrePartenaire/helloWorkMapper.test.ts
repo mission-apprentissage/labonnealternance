@@ -15,7 +15,7 @@ describe("helloWorkJobToJobsPartners", () => {
     }
   })
 
-  it("should convert a hellowork job to a partner job", () => {
+  it("should convert a hellowork job to a partner_label job", () => {
     expect(
       helloWorkJobToJobsPartners({
         job_id: "73228597",
@@ -62,7 +62,7 @@ describe("helloWorkJobToJobsPartners", () => {
     ).toEqual({
       _id: expect.any(ObjectId),
       created_at: now,
-      partner: "Hellowork",
+      partner_label: "Hello work",
       partner_job_id: "73228597",
       contract_start: new Date("2024-12-01T00:00:00.000+01:00"),
       contract_type: ["Apprentissage", "Professionnalisation"],

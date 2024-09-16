@@ -8,37 +8,15 @@ describe("ZJobsPartnersWritableApi", () => {
   const inOneMinute = new Date("2024-06-18T14:31:00.000Z")
   const oneHourAgo = new Date("2024-06-18T13:30:00.000Z")
   const inOneHour = new Date("2024-06-18T15:30:00.000Z")
-  const inSept = new Date("2024-09-01T00:00:00.000Z")
 
   const data: IJobsPartnersWritableApiInput = {
-    partner_job_id: null,
-
-    contract_start: inSept.toJSON(),
-    contract_duration: null,
-    contract_type: null,
-    contract_remote: null,
-
     offer_title: "Apprentis en développement web",
     offer_rome_codes: ["M1602"],
-    offer_desired_skills: [],
-    offer_to_be_acquired_skills: [],
-    offer_access_conditions: [],
-    offer_creation: null,
-    offer_expiration: null,
-    offer_opening_count: 1,
-    offer_origin: null,
-    offer_multicast: true,
     offer_description: "Envie de devenir développeur web ? Rejoignez-nous !",
-    offer_diploma_level_european: null,
 
-    apply_url: null,
     apply_email: "mail@mail.com",
-    apply_phone: null,
 
     workplace_siret: "39837261500128",
-    workplace_address_label: null,
-    workplace_description: null,
-    workplace_website: null,
   }
 
   beforeEach(async () => {
@@ -52,19 +30,13 @@ describe("ZJobsPartnersWritableApi", () => {
   })
 
   describe("contract_start", () => {
-    it("should be required", () => {
+    it("should be optional", () => {
       const result = ZJobsPartnersWritableApi.safeParse({
         ...data,
-        contract_start: null,
       })
 
-      expect(result.success).toBe(false)
-      expect(result.error?.format()).toEqual({
-        _errors: [],
-        contract_start: {
-          _errors: ["Expected ISO 8601 date string"],
-        },
-      })
+      expect(result.success).toBe(true)
+      expect(result.data?.contract_start).toBe(null)
     })
     it("should be required ISO 8601 date string", () => {
       const result = ZJobsPartnersWritableApi.safeParse({

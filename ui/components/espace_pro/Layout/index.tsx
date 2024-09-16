@@ -33,7 +33,7 @@ export default function Layout({
             {adminPage && <NavigationAdmin currentPage={adminPage} />}
           </Box>
         )}
-        <Container as="main" maxW="container.xl" flexGrow="1">
+        <Container as="main" p={0} maxW="container.xl" flexGrow="1">
           {children}
         </Container>
         {!widget && footer && <Footer />}
