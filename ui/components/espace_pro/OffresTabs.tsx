@@ -81,7 +81,7 @@ export const OffresTabs = ({ recruiter, userContext, establishmentId }: { recrui
         )
       case JOB_STATUS.EN_ATTENTE:
         return (
-          <Badge variant="awaiting" textTransform="uppercase">
+          <Badge variant="awaiting" whiteSpace="normal" textTransform="uppercase">
             {RECRUITER_STATUS.EN_ATTENTE_VALIDATION}
           </Badge>
         )
@@ -111,6 +111,8 @@ export const OffresTabs = ({ recruiter, userContext, establishmentId }: { recrui
       id: "job_status",
       sortType: (a, b) => sortReactTableDate(a.original.job_status, b.original.job_status),
       accessor: ({ job_status }) => displayJobStatus(job_status),
+      width: "250",
+      maxWidth: "250",
     },
     {
       Header: "Postée le",
