@@ -20,6 +20,51 @@ import { extendOffre } from "../../utils/api"
 import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
 import Table from "./Table"
 
+const displayJobStatus = (status: JOB_STATUS, recruiter: IRecruiterJson) => {
+  if (recruiter.status === RECRUITER_STATUS.EN_ATTENTE_VALIDATION) {
+    return (
+      <Badge variant="awaiting" textTransform="uppercase">
+        {RECRUITER_STATUS.EN_ATTENTE_VALIDATION}
+      </Badge>
+    )
+  }
+  if (recruiter.status === RECRUITER_STATUS.ARCHIVE) {
+    return (
+      <Badge variant="inactive" textTransform="uppercase">
+        EXPIREE
+      </Badge>
+    )
+  }
+  switch (status) {
+    case JOB_STATUS.ACTIVE:
+      return (
+        <Badge variant="neutral" textTransform="uppercase">
+          {JOB_STATUS.ACTIVE}
+        </Badge>
+      )
+    case JOB_STATUS.POURVUE:
+      return (
+        <Badge variant="active" textTransform="uppercase">
+          {JOB_STATUS.POURVUE}
+        </Badge>
+      )
+    case JOB_STATUS.ANNULEE:
+      return (
+        <Badge variant="inactive" textTransform="uppercase">
+          EXPIREE
+        </Badge>
+      )
+    case JOB_STATUS.EN_ATTENTE:
+      return (
+        <Badge variant="awaiting" whiteSpace="normal" textTransform="uppercase">
+          {RECRUITER_STATUS.EN_ATTENTE_VALIDATION}
+        </Badge>
+      )
+    default:
+      return null
+  }
+}
+
 export const OffresTabs = ({ recruiter, establishmentId, showStats = false }: { recruiter: IRecruiterJson; establishmentId: string; showStats?: boolean }) => {
   const router = useRouter()
   const toast = useToast()
@@ -45,51 +90,6 @@ export const OffresTabs = ({ recruiter, establishmentId, showStats = false }: { 
 
   const jobsWithGeoCoords = jobs.map((job) => ({ ...job, geo_coordinates: recruiter.geo_coordinates }))
 
-  const displayJobStatus = (status: JOB_STATUS) => {
-    if (recruiter.status === RECRUITER_STATUS.EN_ATTENTE_VALIDATION) {
-      return (
-        <Badge variant="awaiting" textTransform="uppercase">
-          {RECRUITER_STATUS.EN_ATTENTE_VALIDATION}
-        </Badge>
-      )
-    }
-    if (recruiter.status === RECRUITER_STATUS.ARCHIVE) {
-      return (
-        <Badge variant="inactive" textTransform="uppercase">
-          EXPIREE
-        </Badge>
-      )
-    }
-    switch (status) {
-      case JOB_STATUS.ACTIVE:
-        return (
-          <Badge variant="neutral" textTransform="uppercase">
-            {JOB_STATUS.ACTIVE}
-          </Badge>
-        )
-      case JOB_STATUS.POURVUE:
-        return (
-          <Badge variant="active" textTransform="uppercase">
-            {JOB_STATUS.POURVUE}
-          </Badge>
-        )
-      case JOB_STATUS.ANNULEE:
-        return (
-          <Badge variant="inactive" textTransform="uppercase">
-            EXPIREE
-          </Badge>
-        )
-      case JOB_STATUS.EN_ATTENTE:
-        return (
-          <Badge variant="awaiting" whiteSpace="normal" textTransform="uppercase">
-            {RECRUITER_STATUS.EN_ATTENTE_VALIDATION}
-          </Badge>
-        )
-      default:
-        return null
-    }
-  }
-
   const commonColumns = [
     {
       Header: "Métier",
@@ -110,7 +110,7 @@ export const OffresTabs = ({ recruiter, establishmentId, showStats = false }: { 
       Header: "Statut",
       id: "job_status",
       sortType: (a, b) => sortReactTableDate(a.original.job_status, b.original.job_status),
-      accessor: ({ job_status }) => displayJobStatus(job_status),
+      accessor: ({ job_status }) => displayJobStatus(job_status, recruiter),
       width: "150",
       maxWidth: "150",
     },
