@@ -20,7 +20,7 @@ import { extendOffre } from "../../utils/api"
 import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
 import Table from "./Table"
 
-export const OffresTabs = ({ recruiter, userContext, establishmentId }: { recruiter: IRecruiterJson; userContext: "OPCO" | "ADMIN"; establishmentId: string }) => {
+export const OffresTabs = ({ recruiter, establishmentId }: { recruiter: IRecruiterJson; establishmentId: string }) => {
   const router = useRouter()
   const toast = useToast()
   const client = useQueryClient()
@@ -29,6 +29,7 @@ export const OffresTabs = ({ recruiter, userContext, establishmentId }: { recrui
   const [currentOffre, setCurrentOffre] = useState()
 
   const jobs: (IJob & { candidatures: number; geo_coordinates: string })[] = recruiter?.jobs ?? []
+  const isOpco = router.pathname.indexOf("opco") >= 0 ? true : false
 
   if (jobs.length === 0) {
     return (
@@ -171,10 +172,9 @@ export const OffresTabs = ({ recruiter, userContext, establishmentId }: { recrui
                       <Link
                         onClick={() =>
                           router.push({
-                            pathname:
-                              userContext === "OPCO"
-                                ? `/espace-pro/administration/opco/entreprise/${router.query.siret_userId}/${establishmentId}/offre/${row._id}`
-                                : `/espace-pro/administration/entreprise/${establishmentId}/offre/${row._id}`,
+                            pathname: isOpco
+                              ? `/espace-pro/administration/opco/entreprise/${router.query.siret_userId}/${establishmentId}/offre/${row._id}`
+                              : `/espace-pro/administration/entreprise/${establishmentId}/offre/${row._id}`,
                             query: { establishment_raison_sociale: recruiter?.establishment_raison_sociale },
                           })
                         }

@@ -266,7 +266,7 @@ function DetailEntreprise() {
                         <Text fontSize="20px" lineHeight="32px" fontWeight="700" mb={6}>
                           Offres de recrutement en alternance
                         </Text>
-                        <OffresTabs establishmentId={userRecruteur.establishment_id} userContext="ADMIN" recruiter={recruiter} />
+                        <OffresTabs establishmentId={userRecruteur.establishment_id} recruiter={recruiter} />
                       </Box>
                       <Box mb={12}>
                         <UserValidationHistory histories={userRecruteur.status} />
