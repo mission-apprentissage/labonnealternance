@@ -83,7 +83,7 @@ const CandidatureLba = ({ item }) => {
               >
                 J&apos;envoie ma candidature{kind === LBA_ITEM_TYPE_OLD.LBA ? " spontanée" : ""}
               </Button>
-              <Modal isOpen={isOpen} onClose={onModalClose} closeOnOverlayClick={false} size="3xl">
+              <Modal isOpen={isOpen} onClose={onModalClose} closeOnOverlayClick={false} size={["full", "full", "full", "3xl"]}>
                 <ModalOverlay />
                 <ModalContent>
                   {/* @ts-expect-error: Chakra error */}

@@ -14,14 +14,6 @@ import server from "./http/server"
 
 async function startProcessor(signal: AbortSignal) {
   logger.info(`Process jobs queue - start`)
-  if (config.env !== "local" && config.env !== "preview") {
-    await addJob({
-      name: "crons:init",
-      queued: true,
-      payload: {},
-    })
-  }
-
   await startJobProcessor(signal)
   logger.info(`Processor shut down`)
 }

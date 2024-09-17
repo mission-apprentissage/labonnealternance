@@ -284,35 +284,15 @@ describe("POST /jobs", async () => {
   const inSept = new Date("2024-09-01T00:00:00.000Z")
 
   const data: IJobsPartnersWritableApiInput = {
-    partner_job_id: null,
-
     contract_start: inSept.toJSON(),
-    contract_duration: null,
-    contract_type: null,
-    contract_remote: null,
 
     offer_title: "Apprentis en développement web",
     offer_rome_codes: ["M1602"],
-    offer_desired_skills: [],
-    offer_to_be_acquired_skills: [],
-    offer_access_conditions: [],
-    offer_creation: null,
-    offer_expiration: null,
-    offer_opening_count: 1,
-    offer_origin: null,
-    offer_multicast: true,
     offer_description: "Envie de devenir développeur web ? Rejoignez-nous !",
-    offer_diploma_level_european: null,
 
-    apply_url: null,
     apply_email: "mail@mail.com",
-    apply_phone: null,
 
     workplace_siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
-    workplace_address_label: null,
-    workplace_description: null,
-    workplace_website: null,
-    workplace_name: null,
   }
 
   beforeEach(async () => {
@@ -434,35 +414,15 @@ describe("PUT /jobs/:id", async () => {
   const originalJob = generateJobsPartnersOfferPrivate({ _id: id, offer_title: "Old title", partner_label: "Un super Partenaire" })
 
   const data: IJobsPartnersWritableApiInput = {
-    partner_job_id: null,
-
     contract_start: inSept.toJSON(),
-    contract_duration: null,
-    contract_type: null,
-    contract_remote: null,
 
     offer_title: "Apprentis en développement web",
     offer_rome_codes: ["M1602"],
-    offer_desired_skills: [],
-    offer_to_be_acquired_skills: [],
-    offer_access_conditions: [],
-    offer_creation: null,
-    offer_expiration: null,
-    offer_opening_count: 1,
-    offer_origin: null,
-    offer_multicast: true,
     offer_description: "Envie de devenir développeur web ? Rejoignez-nous !",
-    offer_diploma_level_european: null,
 
-    apply_url: null,
     apply_email: "mail@mail.com",
-    apply_phone: null,
 
     workplace_siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
-    workplace_address_label: null,
-    workplace_description: null,
-    workplace_website: null,
-    workplace_name: null,
   }
 
   beforeEach(async () => {
@@ -551,7 +511,7 @@ describe("PUT /jobs/:id", async () => {
     expect(response.json()).toEqual({ error: "Forbidden", message: "Unauthorized", statusCode: 403 })
   })
 
-  it("should return 403 if user is trying to edit other partner job", async () => {
+  it("should return 403 if user is trying to edit other partner_label job", async () => {
     const restrictedToken = getApiApprentissageTestingToken({ email: "mail@mail.com", organisation: "Un autre", habilitations: { "jobs:write": true } })
 
     const response = await httpClient().inject({
