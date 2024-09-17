@@ -236,8 +236,8 @@ export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }
 
   return jobsPartners.map((j) => ({
     ...j,
-    // TODO: set LBA url
-    apply_url: j.apply_url ?? `${config.publicUrl}/recherche-apprentissage`,
+    contract_type: j.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
+    apply_url: j.apply_url ?? `${config.publicUrl}/recherche-apprentissage?type=partner&itemId=${j._id}`,
   }))
 }
 
