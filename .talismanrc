@@ -24,7 +24,7 @@ fileignoreconfig:
 - filename: .infra/files/configs/mongodb/mongod.conf
   checksum: 718bee5f44edc101636be8f11173ede5b728f2858abc3c26466ff9435f0d11de
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 646eab49f6ff33a2d4d2dc9892ae14ca7871404c81459fc4832b1fb12abbe1c9
+  checksum: 89f95ec4e20c1c7563fc94704501cc71f1c36c4d27092e43e0ebf2fd939dc6da
 - filename: .infra/files/scripts/seed.sh
   checksum: b1361c237cee243b74fc9e66fd59af80c538d6884b8f94c3659d25cdc2b873c2
 - filename: .infra/local/mongod.conf
@@ -190,7 +190,7 @@ fileignoreconfig:
 - filename: ui/components/espace_pro/AjouterVoeux.tsx
   checksum: 8ba50b9d7127114cd71789bbf7c26dc19b4b915ab4ae2e2e033c1ca65accee94
 - filename: ui/components/footer.tsx
-  checksum: d82b5a7d6905070fb32383864566fc16eae4797ca18f82782fb32c95a0d50369
+  checksum: e0dd3ec2ac813053ee5e672472b545719c95e49f0891cf2f8e1b5db484d00479
 - filename: ui/pages/accessibilite.tsx
   checksum: d6a7c57500f9de5e47e305f89435b21d717f505acac7b45656931f7ecdd0fcca
 - filename: ui/pages/espace-pro/admin/eligible-trainings-for-appointment/search.tsx
@@ -205,6 +205,7 @@ fileignoreconfig:
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
+threshold: medium
 scopeconfig:
 - scope: node
 custom_patterns:

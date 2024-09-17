@@ -2,7 +2,7 @@ import { Icon } from "@chakra-ui/react"
 
 export function LbaNew(props) {
   return (
-    <Icon width="179px" height="66px" viewBox="0 0 352 91" {...props}>
+    <Icon aria-hidden={true} width="179px" height="66px" viewBox="0 0 352 91" {...props}>
       <path
         d="M41.4 90.36C64.2646 90.36 82.8 82.7847 82.8 73.44C82.8 64.0954 64.2646 56.52 41.4 56.52C18.5354 56.52 0 64.0954 0 73.44C0 82.7847 18.5354 90.36 41.4 90.36Z"
         fill="#A558A0"

@@ -1,10 +1,8 @@
 import { z } from "zod"
 
-import { zObjectId } from "../models/common"
-
-export const zEtablissementCatalogue = z
+export const ZEtablissementCatalogue = z
   .object({
-    _id: zObjectId,
+    _id: z.string(),
     siege_social: z.boolean(),
     etablissement_siege_siret: z.string(),
     siret: z.string(),
@@ -19,9 +17,9 @@ export const zEtablissementCatalogue = z
     onisep_url: z.null(),
     onisep_code_postal: z.null(),
     adresse: z.string(),
-    numero_voie: z.string(),
-    type_voie: z.string(),
-    nom_voie: z.string(),
+    numero_voie: z.string().nullable(),
+    type_voie: z.string().nullable(),
+    nom_voie: z.string().nullable(),
     complement_adresse: z.string(),
     code_postal: z.string(),
     num_departement: z.string(),
@@ -107,3 +105,24 @@ export const zEtablissementCatalogue = z
     update_error: z.null(),
   })
   .strict()
+
+export type IEtablissementCatalogue = z.output<typeof ZEtablissementCatalogue>
+
+export const ZEtablissementCatalogueProche = ZEtablissementCatalogue.pick({
+  _id: true,
+  siret: true,
+  numero_voie: true,
+  type_voie: true,
+  nom_voie: true,
+  code_postal: true,
+  nom_departement: true,
+  entreprise_raison_sociale: true,
+  geo_coordonnees: true,
+})
+
+export type IEtablissementCatalogueProche = z.output<typeof ZEtablissementCatalogueProche>
+
+export const ZEtablissementCatalogueProcheWithDistance = ZEtablissementCatalogueProche.extend({
+  distance_en_km: z.number(),
+})
+export type IEtablissementCatalogueProcheWithDistance = z.output<typeof ZEtablissementCatalogueProcheWithDistance>

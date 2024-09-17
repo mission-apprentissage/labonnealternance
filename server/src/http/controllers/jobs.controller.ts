@@ -228,15 +228,14 @@ export default (server: Server) => {
           latitude: parseFloat(latitude),
           longitude: parseFloat(longitude),
         },
+        limit: 10,
       })
 
       if (!etablissements.length) {
         throw notFound("No delegations found")
       }
 
-      const top10 = etablissements.slice(0, 10)
-
-      return res.status(200).send(top10)
+      return res.status(200).send(etablissements)
     }
   )
 

@@ -1,7 +1,7 @@
 import { Box } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 
-import { AjouterVoeux, Bandeau } from "@/components/espace_pro"
+import { FormulaireCreationOffre, Bandeau } from "@/components/espace_pro"
 import { WidgetFooter } from "@/components/WidgetFooter/WidgetFooter"
 
 export const WidgetEntrepriseOffre = () => {
@@ -18,7 +18,7 @@ export const WidgetEntrepriseOffre = () => {
         />
       )}
       <Box mt={10}>
-        <AjouterVoeux />
+        <FormulaireCreationOffre />
       </Box>
       <WidgetFooter />
     </Box>
