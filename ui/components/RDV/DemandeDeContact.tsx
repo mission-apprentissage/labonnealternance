@@ -208,7 +208,7 @@ const DemandeDeContact = (props: Props) => {
             data-testid="lastname"
             name="lastname"
             type="text"
-            width={["100%", "100%", "95%", "95%"]}
+            width={["100%", "100%", "95%"]}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.lastname}
@@ -221,7 +221,7 @@ const DemandeDeContact = (props: Props) => {
             data-testid="firstname"
             name="firstname"
             type="text"
-            width={["100%", "100%", "95%", "95%"]}
+            width={["100%", "100%", "95%"]}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.firstname}
@@ -232,15 +232,7 @@ const DemandeDeContact = (props: Props) => {
       <Flex direction={["column", "column", "row"]} mt={4}>
         <FormControl data-testid="fieldset-email" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.email && formik.errors.email)}>
           <FormLabel htmlFor="email">E-mail *</FormLabel>
-          <Input
-            data-testid="email"
-            name="email"
-            type="email"
-            width={["100%", "100%", "95%", "95%"]}
-            onChange={onEmailChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.email}
-          />
+          <Input data-testid="email" name="email" type="email" width={["100%", "100%", "95%"]} onChange={onEmailChange} onBlur={formik.handleBlur} value={formik.values.email} />
           {suggestedEmails.length > 0 && (
             <Box mt={2} fontSize="12px" color="grey.600">
               <Text as="span" mr={2}>
@@ -274,7 +266,7 @@ const DemandeDeContact = (props: Props) => {
             data-testid="phone"
             name="phone"
             type="phone"
-            width={["100%", "100%", "95%", "95%"]}
+            width={["100%", "100%", "95%"]}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.phone}
@@ -461,7 +453,7 @@ const DemandeDeContact = (props: Props) => {
           >
             Je prends rendez-vous
           </Button>
-          <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false} size="3xl">
+          <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false} size={["full", "full", "full", "3xl"]}>
             <ModalOverlay />
             <ModalContent>
               <ModalHeader mt={4} paddingTop="10px" paddingBottom="0" sx={{ textAlign: "right" }}>
