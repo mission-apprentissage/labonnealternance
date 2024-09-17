@@ -32,7 +32,7 @@ fileignoreconfig:
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: 467ce4cc2c3d83875e6ebc94180d3b398de9caf6da1d4983b79e2f2fbf1e8207
+  checksum: 2aa9a236fdf2bf78ed20d691718a98a16b0ba36ab205cf430f330d8013a84277
 - filename: cypress/e2e/check-admin-algo-company.cy.ts
   checksum: 6a898ee25c84ce2c41da5666aa4f84e6e4aaf0a614dbc0a00153abe99e3617c1
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
@@ -207,7 +207,6 @@ fileignoreconfig:
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
-threshold: medium
 scopeconfig:
 - scope: node
 custom_patterns:
@@ -225,4 +224,5 @@ allowed_patterns:
 - versionKey
 - '@apprentissage.beta.gouv.fr'
 - adminusersview
+threshold: medium
 version: "1.0"
