@@ -65,8 +65,6 @@ function DetailEntreprise() {
     queryFn: () => getFormulaire(userRecruteur.establishment_id),
   })
 
-  console.log("OPCO ENTREPRISES : ", router.query)
-
   const userMutation = useMutation(({ userId, values }: any) => updateEntrepriseAdmin(userId, values, userRecruteur.establishment_siret), {
     onSuccess: () => {
       client.invalidateQueries("user")

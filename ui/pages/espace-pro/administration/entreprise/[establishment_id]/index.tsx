@@ -5,7 +5,6 @@ import ListeOffres from "../../../../../components/espace_pro/ListeOffres"
 import { authProvider, withAuth } from "../../../../../components/espace_pro/withAuth"
 
 function EntrepriseListOffrePage() {
-  console.log("ENTREPRISE LISTESOFFRE ?")
   return (
     <Layout footer={false}>
       <ListeOffres />

@@ -139,8 +139,6 @@ function DetailEntreprise() {
   const lastUserState: IUserStatusValidation = userRecruteur.status.at(-1)
   const establishmentLabel = userRecruteur.establishment_raison_sociale ?? userRecruteur.establishment_siret
 
-  console.log("ADMIN USERS : ", router.query)
-
   return (
     <AnimationContainer>
       <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={userRecruteur} />
