@@ -20,7 +20,7 @@ import { extendOffre } from "../../utils/api"
 import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
 import Table from "./Table"
 
-export const OffresTabs = ({ recruiter, establishmentId }: { recruiter: IRecruiterJson; establishmentId: string }) => {
+export const OffresTabs = ({ recruiter, establishmentId, showStats = false }: { recruiter: IRecruiterJson; establishmentId: string; showStats?: boolean }) => {
   const router = useRouter()
   const toast = useToast()
   const client = useQueryClient()
@@ -91,7 +91,7 @@ export const OffresTabs = ({ recruiter, establishmentId }: { recruiter: IRecruit
     }
   }
 
-  const columns = [
+  const commonColumns = [
     {
       Header: "Métier",
       accessor: "rome_label",
@@ -104,16 +104,16 @@ export const OffresTabs = ({ recruiter, establishmentId }: { recruiter: IRecruit
         const { rome_label, rome_appellation_label } = data[id]
         return rome_appellation_label ?? rome_label
       },
-      width: "500",
-      maxWidth: "500",
+      width: "300",
+      maxWidth: "300",
     },
     {
       Header: "Statut",
       id: "job_status",
       sortType: (a, b) => sortReactTableDate(a.original.job_status, b.original.job_status),
       accessor: ({ job_status }) => displayJobStatus(job_status),
-      width: "250",
-      maxWidth: "250",
+      width: "150",
+      maxWidth: "150",
     },
     {
       Header: "Postée le",
@@ -128,28 +128,37 @@ export const OffresTabs = ({ recruiter, establishmentId }: { recruiter: IRecruit
       sortType: (a, b) => sortReactTableDate(a.original.job_expiration_date, b.original.job_expiration_date),
       accessor: ({ job_expiration_date }) => dayjs(job_expiration_date).format("DD/MM/YYYY"),
     },
-    {
-      Header: "Recherches",
-      id: "searches",
-      width: "150",
-      accessor: ({ stats_search_view = 0 }) => {
-        return <NumberCell>{stats_search_view}</NumberCell>
-      },
-    },
-    {
-      Header: "Vues",
-      id: "views",
-      width: "90",
-      accessor: ({ stats_detail_view = 0 }) => {
-        return <NumberCell>{stats_detail_view}</NumberCell>
-      },
-    },
-    {
-      Header: "Candidat(s)",
-      id: "candidat",
-      width: "150",
-      accessor: ({ candidatures = 0 }) => <NumberCell>{Math.max(candidatures, 0)}</NumberCell>,
-    },
+  ]
+  const statsColumns = showStats
+    ? [
+        {
+          Header: "Recherches",
+          id: "searches",
+          width: "150",
+          accessor: ({ stats_search_view = 0 }) => {
+            return <NumberCell>{stats_search_view}</NumberCell>
+          },
+        },
+        {
+          Header: "Vues",
+          id: "views",
+          width: "90",
+          accessor: ({ stats_detail_view = 0 }) => {
+            return <NumberCell>{stats_detail_view}</NumberCell>
+          },
+        },
+        {
+          Header: "Candidat(s)",
+          id: "candidat",
+          width: "150",
+          accessor: ({ candidatures = 0 }) => <NumberCell>{Math.max(candidatures, 0)}</NumberCell>,
+        },
+      ]
+    : []
+
+  const columns = [
+    ...commonColumns,
+    ...statsColumns,
     {
       Header: "",
       id: "action",
