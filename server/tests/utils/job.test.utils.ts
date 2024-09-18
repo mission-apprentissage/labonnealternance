@@ -1,24 +1,5 @@
-//getDbCollection("referentielromes").insertOne(savedFiche)
-
 import { ObjectId } from "mongodb"
-import { IJob, IReferentielRomeForJob, JOB_STATUS } from "shared/models"
-
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-
-export const mockReferentielRome = async () => {
-  const referentielRome: IReferentielRomeForJob = {
-    numero: "numero",
-    rome: {
-      code_rome: "A1101",
-      intitule: "Conducteur / Conductrice d'engins agricoles",
-      code_ogr: "6",
-    },
-    definition: "definition",
-    acces_metier: "acces_metier",
-    competences: {},
-  }
-  await getDbCollection("referentielromes").insertOne({ _id: new ObjectId(), ...referentielRome })
-}
+import { IJob, JOB_STATUS } from "shared/models"
 
 export const jobFactory = (props: Partial<IJob> = {}) => {
   const job: IJob = {

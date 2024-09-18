@@ -1,12 +1,13 @@
 import { badRequest, notFound } from "@hapi/boom"
-import { jobFactory, mockReferentielRome } from "@tests/utils/job.test.utils"
+import { jobFactory } from "@tests/utils/job.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { saveRecruiter } from "@tests/utils/user.test.utils"
 import { ObjectId } from "bson"
 import dayjs from "dayjs"
 import { RECRUITER_STATUS } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { JOB_STATUS } from "shared/models"
+import { generateReferentielRome } from "shared/fixtures/rome.fixture"
+import { IReferentielRome, JOB_STATUS } from "shared/models"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -27,6 +28,17 @@ const fakeApplication = {
 describe("Sending application", () => {
   beforeEach(async () => {
     const dateMoins1 = dayjs().add(-1, "day")
+
+    const romes: IReferentielRome[] = [
+      generateReferentielRome({
+        rome: {
+          code_rome: "A1101",
+          intitule: "Opérations administratives",
+          code_ogr: "475",
+        },
+      }),
+    ]
+    await getDbCollection("referentielromes").insertMany(romes)
 
     await saveRecruiter({
       status: RECRUITER_STATUS.ACTIF,
@@ -64,7 +76,6 @@ describe("Sending application", () => {
       ],
     })
 
-    await mockReferentielRome()
     return async () => {
       await getDbCollection("recruiters").deleteMany({})
       await getDbCollection("referentielromes").deleteMany({})
