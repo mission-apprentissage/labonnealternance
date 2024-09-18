@@ -19,7 +19,7 @@ import { IJobOpportunityGetQuery, IJobOpportunityGetQueryResolved, IJobsOpportun
 import { ZodError } from "zod"
 
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { getRomeoInfos } from "@/services/cache.service"
+import { getRomeFromRomeo } from "@/services/cache.service"
 import { getEntrepriseDataFromSiret, getGeoPoint, getOpcoData } from "@/services/etablissement.service"
 
 import { IApiError } from "../../../common/utils/errorManager"
@@ -236,8 +236,8 @@ export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }
 
   return jobsPartners.map((j) => ({
     ...j,
-    // TODO: set LBA url
-    apply_url: j.apply_url ?? `${config.publicUrl}/recherche-apprentissage`,
+    contract_type: j.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
+    apply_url: j.apply_url ?? `${config.publicUrl}/recherche-apprentissage?type=partner&itemId=${j._id}`,
   }))
 }
 
@@ -598,7 +598,7 @@ async function resolveRomeCodes(data: IJobsPartnersWritableApi, siretData: Workp
     return null
   }
 
-  const romeoResponse = await getRomeoInfos({ intitule: data.offer_title, contexte: siretData.workplace_naf_label ?? undefined })
+  const romeoResponse = await getRomeFromRomeo({ intitule: data.offer_title, contexte: siretData.workplace_naf_label ?? undefined })
   if (!romeoResponse) {
     zodError.addIssue({ code: "custom", path: ["offer_rome_codes"], message: "ROME is not provided and we are unable to retrieve ROME code for the given job title" })
     return null

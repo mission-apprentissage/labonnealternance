@@ -1,4 +1,4 @@
-import { ACCESS_PARAMS, IAccessParams } from "@/common/apis/franceTravail/franceTravail"
+import { ACCESS_PARAMS, IAccessParams } from "@/common/apis/franceTravail/franceTravail.client"
 
 import { getFranceTravailTokenFromAPI } from "../../common/apis/franceTravail/franceTravail.client"
 

@@ -4,7 +4,7 @@ import querystring from "querystring"
 import { internal } from "@hapi/boom"
 import { ObjectId } from "bson"
 import FormData from "form-data"
-import { IRomeoApiResponse } from "shared/models/cacheRomeo.model"
+import { IRomeoAPIResponse } from "shared/models/cacheRomeo.model"
 import { IFranceTravailAccess, IFranceTravailAccessType } from "shared/models/franceTravailAccess.model"
 
 import config from "@/config"
@@ -176,7 +176,7 @@ type IRomeoOptions = {
   nbResultats?: number // betwwen 1 and 25, default 5
   seuilScorePrediction?: number
 }
-export const getRomeoPredictions = async (payload: IRomeoPayload[], options: IRomeoOptions = { nomAppelant: "La bonne alternance" }): Promise<IRomeoApiResponse | null> => {
+export const getRomeoPredictions = async (payload: IRomeoPayload[], options: IRomeoOptions = { nomAppelant: "La bonne alternance" }): Promise<IRomeoAPIResponse | null> => {
   if (payload.length > 50) throw Error("Maximum recommanded array size is 50") // Louis feeback https://mna-matcha.atlassian.net/browse/LBA-2232?focusedCommentId=13000
   const token = await getToken("ROMEO")
   try {
