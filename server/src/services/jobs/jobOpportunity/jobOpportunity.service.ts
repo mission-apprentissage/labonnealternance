@@ -1,4 +1,4 @@
-import { badRequest, internal, notFound } from "@hapi/boom"
+import { badRequest, conflict, internal, notFound } from "@hapi/boom"
 import { IApiAlternanceTokenData } from "api-alternance-sdk"
 import { DateTime } from "luxon"
 import { Document, Filter, ObjectId } from "mongodb"
@@ -665,13 +665,12 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAlte
 }
 
 export async function createJobOffer(identity: IApiAlternanceTokenData, data: IJobsPartnersWritableApi): Promise<ObjectId> {
-  /**
-   * KBA 20240905
-   * Pas nécessaire dans la V1, sera réajuster dans un second temps
-   */
-  // if (!identity.habilitations["jobs:write"]) {
-  //   throw forbidden("You are not allowed to create a job offer")
-  // }
+  const { partner_job_id } = data
+  const { organisation } = identity
+  const exist = await getDbCollection("jobs_partners").findOne<IJobsPartnersOfferPrivate>({ partner_label: organisation!, partner_job_id })
+  if (exist) {
+    throw conflict("Job already exist")
+  }
   return upsertJobOffer(data, identity, null)
 }
 
