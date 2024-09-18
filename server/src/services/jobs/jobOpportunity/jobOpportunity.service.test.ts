@@ -1,5 +1,6 @@
 import { internal } from "@hapi/boom"
 import { useMongo } from "@tests/utils/mongo.test.utils"
+import { IApiAlternanceTokenData } from "api-alternance-sdk"
 import { ObjectId } from "mongodb"
 import nock from "nock"
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, RECRUITER_STATUS } from "shared/constants"
@@ -20,7 +21,6 @@ import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/a
 import { getRomeoPredictions, searchForFtJobs } from "@/common/apis/franceTravail/franceTravail.client"
 import { franceTravailRomeoFixture, generateFtJobFixture } from "@/common/apis/franceTravail/franceTravail.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { IApiApprentissageTokenData } from "@/security/accessApiApprentissageService"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
 
 import { FTJob } from "../../ftjob.service.types"
@@ -1736,13 +1736,13 @@ describe("findJobsOpportunities", () => {
 })
 
 describe("createJobOffer", () => {
-  const identity: IApiApprentissageTokenData = {
+  const identity = {
     email: "mail@mailType.com",
     organisation: "Some organisation",
     habilitations: {
       "jobs:write": true,
     },
-  }
+  } as const satisfies IApiAlternanceTokenData
 
   const now = new Date("2024-06-18T00:00:00.000Z")
   const in2Month = new Date("2024-08-17T22:00:00.000Z")
@@ -1860,13 +1860,13 @@ describe("createJobOffer", () => {
 
 describe("updateJobOffer", () => {
   const _id = new ObjectId()
-  const identity: IApiApprentissageTokenData = {
+  const identity = {
     email: "mail@mailType.com",
     organisation: "Some organisation",
     habilitations: {
       "jobs:write": true,
     },
-  }
+  } as const satisfies IApiAlternanceTokenData
 
   const originalCreatedAt = new Date("2023-09-06T00:00:00.000+02:00")
   const originalCreatedAtPlus2Months = new Date("2023-11-06T00:00:00.000+01:00")
