@@ -3,20 +3,7 @@ import { randomUUID } from "crypto"
 import { ObjectId } from "mongodb"
 import { OPCOS_LABEL, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
-import {
-  IApplication,
-  ICredential,
-  IEmailBlacklist,
-  IJob,
-  ILbaCompany,
-  IRecruiter,
-  JOB_STATUS,
-  ZApplication,
-  ZCredential,
-  ZEmailBlacklist,
-  ZLbaCompany,
-  ZPointGeometry,
-} from "shared/models"
+import { IApplication, ICredential, IEmailBlacklist, ILbaCompany, IRecruiter, ZApplication, ZCredential, ZEmailBlacklist, ZLbaCompany, ZPointGeometry } from "shared/models"
 import { ICFA, zCFA } from "shared/models/cfa.model"
 import { zObjectId } from "shared/models/common"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent, ZEntreprise } from "shared/models/entreprise.model"
@@ -26,6 +13,8 @@ import { ZodArray, ZodObject, ZodString, ZodTypeAny, z } from "zod"
 import { Fixture, Generator } from "zod-fixture"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+
+import { jobFactory } from "./job.test.utils"
 
 function generateRandomRomeCode() {
   // Générer une lettre aléatoire
@@ -157,42 +146,6 @@ export const entrepriseStatusEventFactory = (props: Partial<IEntrepriseStatusEve
 
 export const saveCfa = async (data: Partial<ICFA> = {}) => {
   return saveDbEntity(zCFA, (item) => getDbCollection("cfas").insertOne(item), data)
-}
-
-export const jobFactory = (props: Partial<IJob> = {}) => {
-  const job: IJob = {
-    _id: new ObjectId(),
-    rome_label: "rome_label",
-    rome_appellation_label: "rome_appellation_label",
-    job_level_label: "BTS, DEUST, autres formations niveau (Bac+2)",
-    job_start_date: new Date(),
-    job_description: "job_description",
-    job_employer_description: "job_employer_description",
-    rome_code: ["rome_code"],
-    job_creation_date: new Date(),
-    job_expiration_date: new Date(),
-    job_update_date: new Date(),
-    job_last_prolongation_date: new Date(),
-    job_prolongation_count: 0,
-    relance_mail_sent: false,
-    job_status: JOB_STATUS.ACTIVE,
-    job_status_comment: "job_status_comment",
-    job_type: ["Apprentissage"],
-    is_multi_published: false,
-    job_delegation_count: 0,
-    delegations: [],
-    is_disabled_elligible: false,
-    job_count: 1,
-    job_duration: 6,
-    job_rythm: "Indifférent",
-    custom_address: "custom_address",
-    custom_geo_coordinates: "custom_geo_coordinates",
-    stats_detail_view: 0,
-    stats_search_view: 0,
-    managed_by: new ObjectId().toString(),
-    ...props,
-  }
-  return job
 }
 
 export async function createCredentialTest(data: Partial<ICredential>) {

@@ -83,6 +83,8 @@ fileignoreconfig:
   checksum: 2183e326a88ae3c10193a7033ab5fd421ce576cd1e234c323df247da335f74d7
 - filename: server/src/security/apiApprentissageService.ts
   checksum: 0e6d208dc8de66d2a440ff40a1260a76e41bf69fb414ccbfc6d99396df3f3b91
+- filename: server/src/services/application.service.test.ts
+  checksum: 699db3f85e236bf73fae46737f4e53dbf426f01db27ec96d0d05a673544f505c
 - filename: server/src/services/application.service.ts
   checksum: 38021ae663db3a146c848a8d691c0c1bc9bb262a80a6f2dedf9fcdb372eef3ac
 - filename: server/src/services/eligibleTrainingsForAppointment.service.ts
@@ -205,7 +207,6 @@ fileignoreconfig:
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
-threshold: medium
 scopeconfig:
 - scope: node
 custom_patterns:
@@ -223,4 +224,5 @@ allowed_patterns:
 - versionKey
 - '@apprentissage.beta.gouv.fr'
 - adminusersview
+threshold: medium
 version: "1.0"
