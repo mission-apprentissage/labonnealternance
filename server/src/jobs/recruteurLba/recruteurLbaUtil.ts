@@ -42,10 +42,12 @@ export const removePredictionFile = async () => {
  * @param {string} reason process calling the function
  */
 export const checkIfAlgoFileIsNew = async (reason: string) => {
-  const algoFileLastModificationDate = await getS3FileLastUpdate({ key: s3File })
-  // projection to be added, not working when migrated to mongoDB
-  const currentDbCreatedDate = ((await getDbCollection("recruteurslba").findOne({})) as ILbaCompany).created_at
+  const algoFileLastModificationDate = await getS3FileLastUpdate("storage", s3File)
+  if (!algoFileLastModificationDate) {
+    throw new Error("Aucune date de dernière modifications disponible sur le fichier issue de l'algo.")
+  }
 
+  const currentDbCreatedDate = ((await getDbCollection("recruteurslba").findOne({}, { projection: { created_at: 1 } })) as ILbaCompany).created_at
   if (algoFileLastModificationDate.getTime() < currentDbCreatedDate.getTime()) {
     await notifyToSlack({
       subject: "IMPORT SOCIETES ISSUES DE L'ALGO",

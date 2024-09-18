@@ -1,4 +1,4 @@
-import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, PutObjectRequest, S3Client, S3ClientConfig } from "@aws-sdk/client-s3"
+import { DeleteObjectCommand, GetObjectCommand, HeadObjectCommand, PutObjectCommand, PutObjectRequest, S3Client, S3ClientConfig } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { RequestPresigningArguments } from "@aws-sdk/types"
 import { internal } from "@hapi/boom"
@@ -80,17 +80,13 @@ export const s3SignedUrl = async (bucket: Bucket, key: string, options: RequestP
   }
 }
 
-export const getS3FileLastUpdate = async ({ key }: { key: string }): Promise<Date> => {
-  const headResponse = await s3Client
-    .headObject({
-      Key: key,
-      Bucket: bucket,
-    })
-    .promise()
-
-  if (headResponse.LastModified) {
-    return new Date(headResponse.LastModified)
-  } else {
-    throw new Error(`getS3FileLastUpdate failed to fetch`)
+export const getS3FileLastUpdate = async (bucket: Bucket, key: string): Promise<Date | null> => {
+  try {
+    const headResponse = await s3Client.send(new HeadObjectCommand({ Bucket: bucket, Key: key }))
+    return headResponse.LastModified ? new Date(headResponse.LastModified) : null
+  } catch (error: any) {
+    const newError = internal(`error getting s3 head object`, { key, bucket })
+    newError.cause = error.message
+    throw newError
   }
 }
