@@ -87,7 +87,7 @@ async function exportLbaJobsToS3() {
       const key = path.split("/").pop() as string
       const file = createReadStream(path)
       logger.info(`Uploading file ${key} to S3`)
-      s3Write("storage", key, { Body: file, CacheControl: "no-cache, no-store, must-revalidate" })
+      await s3Write("storage", key, { Body: file, CacheControl: "no-cache, no-store, must-revalidate" })
       logger.info(`file ${key} uploaded`)
     }),
     generateJsonExport(recruteurs_lba).then((path) => {
