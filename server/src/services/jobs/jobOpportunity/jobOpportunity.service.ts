@@ -19,7 +19,6 @@ import { IJobOpportunityGetQuery, IJobOpportunityGetQueryResolved, IJobsOpportun
 import { ZodError } from "zod"
 
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { IApiApprentissageTokenData } from "@/security/accessApiApprentissageService"
 import { getRomeFromRomeo } from "@/services/cache.service"
 import { getEntrepriseDataFromSiret, getGeoPoint, getOpcoData } from "@/services/etablissement.service"
 
