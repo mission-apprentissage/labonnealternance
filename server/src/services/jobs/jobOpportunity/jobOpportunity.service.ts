@@ -1,4 +1,5 @@
 import { badRequest, internal, notFound } from "@hapi/boom"
+import { IApiAlternanceTokenData } from "api-alternance-sdk"
 import { DateTime } from "luxon"
 import { Document, Filter, ObjectId } from "mongodb"
 import { IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS_ENGLISH, assertUnreachable, parseEnum, translateJobStatus } from "shared"
@@ -609,7 +610,7 @@ async function resolveRomeCodes(data: IJobsPartnersWritableApi, siretData: Workp
 
 type InvariantFields = "_id" | "created_at" | "partner_label"
 
-async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiApprentissageTokenData, current: IJobsPartnersOfferPrivate | null): Promise<ObjectId> {
+async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAlternanceTokenData, current: IJobsPartnersOfferPrivate | null): Promise<ObjectId> {
   const zodError = new ZodError([])
 
   const [siretData, addressData] = await Promise.all([
@@ -633,7 +634,7 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAppr
   const invariantData: Pick<IJobsPartnersOfferPrivate, InvariantFields> = {
     _id: current?._id ?? new ObjectId(),
     created_at: current?.created_at ?? now,
-    partner_label: identity.organisation,
+    partner_label: identity.organisation!,
   }
 
   const defaultOfferExpiration = current?.offer_expiration
@@ -664,7 +665,7 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAppr
   return invariantData._id
 }
 
-export async function createJobOffer(identity: IApiApprentissageTokenData, data: IJobsPartnersWritableApi): Promise<ObjectId> {
+export async function createJobOffer(identity: IApiAlternanceTokenData, data: IJobsPartnersWritableApi): Promise<ObjectId> {
   /**
    * KBA 20240905
    * Pas nécessaire dans la V1, sera réajuster dans un second temps
@@ -675,7 +676,7 @@ export async function createJobOffer(identity: IApiApprentissageTokenData, data:
   return upsertJobOffer(data, identity, null)
 }
 
-export async function updateJobOffer(id: ObjectId, identity: IApiApprentissageTokenData, data: IJobsPartnersWritableApi): Promise<void> {
+export async function updateJobOffer(id: ObjectId, identity: IApiAlternanceTokenData, data: IJobsPartnersWritableApi): Promise<void> {
   const current = await getDbCollection("jobs_partners").findOne<IJobsPartnersOfferPrivate>({ _id: id })
 
   // TODO: Move to authorisation service
