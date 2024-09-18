@@ -76,6 +76,7 @@ export default (server: Server) => {
         data: {
           images: {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+            logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
           },
           last_name: sanitizeForEmail(removeUrlsFromText(last_name)),
           first_name: sanitizeForEmail(removeUrlsFromText(first_name)),

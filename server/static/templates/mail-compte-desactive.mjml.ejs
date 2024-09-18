@@ -1,40 +1,237 @@
 <mjml>
   <mj-head>
-    <mj-title>Votre compte a été désactivé sur La bonne alternance</mj-title>
-    <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap"></mj-font>
-    <mj-style inline="inline">.grey {color: #1E1E1E;}</mj-style>
+    <mj-preview></mj-preview>
+    <mj-breakpoint width="480px"></mj-breakpoint>
     <mj-attributes>
-      <mj-text color="#242424" font-family="Work Sans, Arial" font-size="16px" line-height="24px"></mj-text>
-      <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Work Sans" height="40px"></mj-button>
+      <mj-all padding="0"></mj-all>
     </mj-attributes>
+    <mj-style>
+      @media only screen and (max-width: 799px) {
+        .text > div {
+            text-align: inherit !important;
+        }
+    
+        .wrapper > table > tbody > tr > td {
+            padding-left: 0px !important;
+            padding-right: 0px !important;
+        }
+
+        .section > table > tbody > tr > td {
+            padding-left: 20px !important;
+            padding-right: 20px !important;
+        }
+
+        .column > table > tbody > tr > td {
+            padding-left: 0px !important;
+            padding-right: 0px !important;
+        }
+
+        .padB40 {
+            padding-bottom: 40px !important;
+        }
+
+        .image {
+            padding-left: 0px !important;
+            padding-right: 0px !important;
+        }
+
+        .image > table {
+            text-align: center !important;
+            margin: 0 auto !important;
+        }
+
+        .divider {
+            padding-left: 0px !important;
+            padding-right: 0px !important;
+        }
+
+        .button > table {
+            width: 100% !important;
+        }
+
+        .button > table > tbody > tr > td > a {
+            width: 80% !important;
+        }
+    }
+    </mj-style>
+    <mj-style inline="inline">
+      .column > table { border-collapse: separate; }
+    </mj-style>
+    <mj-font href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400&display=swap" name="DM Sans"></mj-font>
+    <mj-font href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@700&display=swap" name="Public Sans"></mj-font>
   </mj-head>
-  <mj-body background-color="#F5F5FE">
-    <mj-section>
-      <mj-column>
-        <mj-image src="<%= data.images.logoLba %>" width="150px" alt="Logo du site La bonne alternance"></mj-image>
-      </mj-column>
-    </mj-section>
-    <mj-section background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 5px">
-      <mj-column>
-        <mj-image src="<%= data.images.accountDisabled %>" alt="image compte désactivé"></mj-image>
-      </mj-column>
-      <mj-column>
-        <mj-text>Bonjour <%= data.first_name %> <%= data.last_name %>,</mj-text>
-        <mj-text>Votre compte n'a pas pu être validé pour la raison suivante :</mj-text>
-        <mj-text container-background-color="#f6f6f6" padding-rigth="10px"><%= data.reason %></mj-text>
-      </mj-column>
-    </mj-section>
-    <mj-section> </mj-section>
-    <mj-section background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
-      <mj-column>
-        <mj-text>Vous pouvez contacter notre support pour plus d’information en communiquant l’email utilisé lors de la création de votre compte.</mj-text>
-        <mj-button color="#ffffff" background-color="#000091" href="<%= data.emailSupport %>"> Contacter le support </mj-button>
-      </mj-column>
-    </mj-section>
-    <mj-section>
-      <mj-column>
-        <mj-image src="https://labonnealternance.apprentissage.beta.gouv.fr/assets/logo-republique-francaise.png" width="200px" align="left"></mj-image>
-      </mj-column>
-    </mj-section>
+  <mj-body background-color="#f5f5fe" name="Compte désactivé" width="800px">
+    <mj-wrapper border-radius="0px" css-class="wrapper" padding="32px 100px 32px 100px">
+      <mj-section border-radius="0px" css-class="section" name="mj-section_group">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="14.83%">
+            <mj-image align="left" alt="Image" css-class="image" href="#" src="<%= data.images.logoRf %>" width="89px">
+
+            </mj-image>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" padding="0px 24px 0px 24px" vertical-align="middle" width="34.83%">
+            <mj-image align="left" alt="Image" css-class="image" href="#" padding="17px 0px 17px 0px" src="<%= data.images.logoLba %>" width="160px">
+
+            </mj-image>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" vertical-align="top" width="50.33%">
+
+          </mj-column>
+        </mj-group>
+      </mj-section>
+      <mj-spacer height="24px">
+
+      </mj-spacer>
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="23px 22px 23px 22px">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="99.64%">
+            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px" padding="0px 0px 12px 0px">
+              Votre compte a été désactivé
+<br/>
+            </mj-text>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 12px 0px">
+              Bonjour <%= data.first_name %> <%= data.last_name %>,
+<br/>
+            </mj-text>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 12px 0px">
+              Votre compte La bonne alternance n’a pas pu être validé pour la raison suivante : 
+<br/>
+            </mj-text>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="24px" padding="0px 0px 0px 0px">
+              <%= data.reason %>
+<br/>
+            </mj-text>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+      <mj-spacer height="24px">
+
+      </mj-spacer>
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="23px 23px 23px 23px">
+        <mj-group>
+          <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="18px" padding="24px 0px 0px 0px">
+            Compte concerné
+<br/>
+          </mj-text>
+          <mj-spacer height="24px" padding="0px 24px 0px 24px">
+
+          </mj-spacer>
+          <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 0px 0px">
+            SIRET : 
+<br/>
+          </mj-text>
+          <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="24px" padding="0px 0px 0px 0px">
+            <%= data.siret %>
+<br/>
+          </mj-text>
+          <mj-spacer height="24px" padding="0px 24px 0px 24px">
+
+          </mj-spacer>
+          <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 0px 0px">
+            Raison sociale de l’entreprise : 
+<br/>
+          </mj-text>
+          <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="24px" padding="0px 0px 0px 0px">
+            <%= data.raison_sociale %>
+<br/>
+          </mj-text>
+          <mj-spacer height="24px" padding="0px 24px 0px 24px">
+
+          </mj-spacer>
+          <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 0px 0px">
+            Email : 
+<br/>
+          </mj-text>
+          <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="24px" padding="0px 0px 0px 0px">
+            <%= data.email %>
+<br/>
+          </mj-text>
+          <mj-spacer height="24px" padding="0px 24px 0px 24px">
+
+          </mj-spacer>
+          <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 0px 0px">
+            Téléphone :
+<br/>
+          </mj-text>
+          <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="24px" padding="0px 0px 24px 0px">
+            <%= data.phone %>
+<br/>
+          </mj-text>
+        </mj-group>
+      </mj-section>
+      <mj-spacer height="24px">
+
+      </mj-spacer>
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="23px 23px 23px 23px">
+        <mj-group>
+          <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px" padding="24px 0px 0px 0px">
+            Pourquoi nous vérifions les comptes de nos utilisateurs ?
+<br/>
+          </mj-text>
+          <mj-spacer height="24px" padding="0px 24px 0px 24px">
+
+          </mj-spacer>
+          <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 0px 0px">
+            La bonne alternance est un service public qui s’adresse aux étudiants. À ce titre, nous nous assurons de la validité des informations diffusées par les entreprises et les organismes de formation.
+<br/>
+          </mj-text>
+          <mj-spacer height="24px" padding="0px 24px 0px 24px">
+
+          </mj-spacer>
+          <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 0px 0px">
+            Si les coordonnées que vous renseignez à la création de votre compte sont connues de nos bases de données, alors votre compte est automatiquement validé. Dans le cas inverse, nous prenons le temps de vérifier manuellement vos informations.
+<br/>
+          </mj-text>
+          <mj-spacer height="24px" padding="0px 24px 0px 24px">
+
+          </mj-spacer>
+          <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 0px 0px">
+            Vous pouvez contacter notre équipe support pour plus d’information en communiquant l’email utilisé lors de la création de votre compte.
+<br/>
+          </mj-text>
+          <mj-spacer height="24px" padding="0px 24px 0px 24px">
+
+          </mj-spacer>
+          <mj-column border-radius="0px" css-class="column" padding="0px 194px 0px 194px" vertical-align="middle" width="99.64%">
+            <mj-button align="center" background-color="transparent" border-radius="0px" border="1px solid #000091" color="#000091" css-class="button" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="700" href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Recruteur%20-%20Demande%20information" inner-padding="4px 0px 4px 0px" line-height="24px" padding="10px 0px 10px 0px" width="163px">
+              Contacter le support
+            </mj-button>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+      <mj-spacer height="24px">
+
+      </mj-spacer>
+      <mj-section border-radius="4px" css-class="section" name="mj-section_group">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+            <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
+              Ce courriel est généré automatiquement, vous ne pouvez pas y répondre.
+<br/>Pour toute question, consultez notre <a href="https://labonnealternance.apprentissage.beta.gouv.fr/faq#recruteur" style="text-decoration: underline; color: inherit;">FAQ</a> ou écrivez-nous à <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr" style="text-decoration: underline; color: inherit;">labonnealternance@apprentissage.beta.gouv.fr</a>
+<br/>
+            </mj-text>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+      <mj-spacer height="24px">
+
+      </mj-spacer>
+      <mj-section border-radius="4px" css-class="section" name="mj-section_group">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+            <mj-text align="left" color="#666666" css-class="text" font-family="DM Sans, Times, Georgia, serif" font-size="14px" font-weight="400" line-height="24px">
+              <span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">La bonne alternance est un site développé par la Mission interministérielle pour l'apprentissage, au sein de l’État, conformément aux missions d’intérêt public du ministère du Travail, du Plein emploi et de l’Insertion.
+</span><br/><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">
+</span><br/><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">Nous vous contactons car votre compte a été désactivé par un administrateur de plateforme ou un référent OPCO. 
+</span><br/><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">
+</span><br/><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">Nous ne faisons aucune utilisation commerciale de vos adresses e-mail. Vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse </span><a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Droit%20opposition" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">labonnealternance@apprentissage.beta.gouv.fr</a><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">
+</span><br/><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">
+</span><br/><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">Si vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL. Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la </span><a href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">politique de confidentialité</a><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;"> de La bonne alternance.</span>
+<br/>
+            </mj-text>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+    </mj-wrapper>
   </mj-body>
 </mjml>
