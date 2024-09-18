@@ -6743,6 +6743,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"api-alternance-sdk@npm:^0.0.2-rc.3":
+  version: 0.0.2-rc.3
+  resolution: "api-alternance-sdk@npm:0.0.2-rc.3"
+  dependencies:
+    "@asteasolutions/zod-to-openapi": ^7.1.1
+    jsonwebtoken: ^9.0.2
+    luhn: ^2.4.1
+    luxon: ^3.5.0
+    openapi3-ts: ^4.3.3
+    zod: ^3.23.8
+  checksum: df675013469ffefa360900d2bec4333661cc5793d4b98b59f9701214ffa7f77f9b83e303e0d45023e0bba2bdab3266b83bd402dd07093da452b6697b7d1a6ea4
+  languageName: node
+  linkType: hard
+
 "aproba@npm:^1.0.3 || ^2.0.0, aproba@npm:^2.0.0":
   version: 2.0.0
   resolution: "aproba@npm:2.0.0"
@@ -13599,6 +13613,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jsonwebtoken@npm:^9.0.2":
+  version: 9.0.2
+  resolution: "jsonwebtoken@npm:9.0.2"
+  dependencies:
+    jws: ^3.2.2
+    lodash.includes: ^4.3.0
+    lodash.isboolean: ^3.0.3
+    lodash.isinteger: ^4.0.4
+    lodash.isnumber: ^3.0.3
+    lodash.isplainobject: ^4.0.6
+    lodash.isstring: ^4.0.1
+    lodash.once: ^4.0.0
+    ms: ^2.1.1
+    semver: ^7.5.4
+  checksum: fc739a6a8b33f1974f9772dca7f8493ca8df4cc31c5a09dcfdb7cff77447dcf22f4236fb2774ef3fe50df0abeb8e1c6f4c41eba82f500a804ab101e2fbc9d61a
+  languageName: node
+  linkType: hard
+
 "jsprim@npm:^1.2.2":
   version: 1.4.2
   resolution: "jsprim@npm:1.4.2"
@@ -16797,7 +16829,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openapi3-ts@npm:^4.1.2, openapi3-ts@npm:^4.4.0":
+"openapi3-ts@npm:^4.1.2, openapi3-ts@npm:^4.3.3, openapi3-ts@npm:^4.4.0":
   version: 4.4.0
   resolution: "openapi3-ts@npm:4.4.0"
   dependencies:
@@ -19581,6 +19613,7 @@ __metadata:
     "@types/nodemailer-html-to-text": ^3.1.1
     "@types/supertest": ^2.0.13
     "@typescript-eslint/eslint-plugin": ^5.62.0
+    api-alternance-sdk: ^0.0.2-rc.3
     axios: ^1.7.4
     axios-cache-interceptor: ^1.5.3
     basic-ftp: ^5.0.3
@@ -22484,7 +22517,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:3.23.8":
+"zod@npm:3.23.8, zod@npm:^3.23.8":
   version: 3.23.8
   resolution: "zod@npm:3.23.8"
   checksum: 15949ff82118f59c893dacd9d3c766d02b6fa2e71cf474d5aa888570c469dbf5446ac5ad562bb035bf7ac9650da94f290655c194f4a6de3e766f43febd432c5c

@@ -148,6 +148,6 @@ describe("IJobsPartnersWritableApi", () => {
 
 describe("IJobsPartnersWritableApiInput", () => {
   it("should have proper typing", () => {
-    expectTypeOf<Pick<IJobsPartnersWritableApiInput, keyof IJobOfferWritableInputExpected>>().toEqualTypeOf<IJobOfferWritableInputExpected>()
+    expectTypeOf<IJobsPartnersWritableApiInput>().toEqualTypeOf<IJobOfferWritableInputExpected>()
   })
 })
