@@ -1,5 +1,6 @@
 import { forbidden, internal, unauthorized } from "@hapi/boom"
 import { captureException } from "@sentry/node"
+import { parseApiAlternanceToken, type IApiAlternanceTokenData } from "api-alternance-sdk"
 import { FastifyRequest } from "fastify"
 import { JwtPayload } from "jsonwebtoken"
 import { ICredential, assertUnreachable } from "shared"
@@ -16,13 +17,12 @@ import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
 import { getDbCollection } from "../common/utils/mongodbUtils"
 import { controlUserState } from "../services/login.service"
 
-import { IApiApprentissageTokenData, parseApiApprentissageToken } from "./accessApiApprentissageService"
 import { IAccessToken, parseAccessToken, verifyJwtToken } from "./accessTokenService"
 
 export type AccessUser2 = UserWithType<"IUser2", IUserWithAccount>
 export type AccessUserCredential = UserWithType<"ICredential", ICredential>
 export type AccessUserToken = UserWithType<"IAccessToken", IAccessToken>
-export type AccessApiApprentissage = UserWithType<"IApiApprentissage", IApiApprentissageTokenData>
+export type AccessApiApprentissage = UserWithType<"IApiApprentissage", IApiAlternanceTokenData>
 
 export type IUserWithType = AccessUser2 | AccessUserCredential | AccessUserToken | AccessApiApprentissage
 
@@ -99,12 +99,14 @@ async function authApiKey(req: FastifyRequest): Promise<AccessUserCredential | n
 }
 
 function authApiApprentissage(req: FastifyRequest): AccessApiApprentissage | null {
-  const token = extractBearerTokenFromHeader(req)
-  if (token === null) {
-    return null
-  }
-  const apiData = parseApiApprentissageToken(token)
-  return { type: "IApiApprentissage", value: apiData }
+  const result = parseApiAlternanceToken({
+    token: req.headers.authorization ?? "",
+    publicKey: config.auth.apiApprentissage.publicKey,
+  })
+
+  if (result.success) return { type: "IApiApprentissage", value: result.data }
+
+  throw unauthorized(`Unable to parse token ${result.reason}`)
 }
 
 const bearerRegex = /^bearer\s+(\S+)$/i
