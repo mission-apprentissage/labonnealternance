@@ -10,7 +10,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
-import { getFileFromS3Bucket, getS3FileLastUpdate, uploadFileToS3 } from "../../common/utils/awsUtils"
+import { getS3FileLastUpdate, s3ReadAsStream } from "../../common/utils/awsUtils"
 // import geoData from "../../common/utils/geoData"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import { streamJsonArray } from "../../common/utils/streamUtils"
@@ -56,12 +56,6 @@ export const checkIfAlgoFileIsNew = async (reason: string) => {
   }
 }
 
-export const pushFileToBucket = async ({ key, filePath }) => {
-  logger.info(`Uploading SAVE file ${key} to S3 Bucket...`)
-
-  await uploadFileToS3({ filePath, key })
-}
-
 /**
  * Télécharge localement le fichier des sociétés issues de l'algo
  * @param {string | null} sourceFile un fichier source alternatif
@@ -74,7 +68,7 @@ export const downloadAlgoCompanyFile = async (sourceFile: string | null) => {
 
 export const downloadFile = async ({ from, to }) => {
   await createAssetsFolder()
-  await oleoduc(getFileFromS3Bucket({ key: from }), fs.createWriteStream(to))
+  await oleoduc(s3ReadAsStream({ bucket: "storage", key: from }), fs.createWriteStream(to))
 }
 
 export const readCompaniesFromJson = async () => {

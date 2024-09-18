@@ -1,3 +1,5 @@
+import { createReadStream } from "fs"
+
 import { badRequest, internal, tooManyRequests } from "@hapi/boom"
 import { isEmailBurner } from "burner-email-providers"
 import Joi from "joi"
@@ -158,7 +160,7 @@ export const sendApplication = async ({
         return { error: "email du recruteur manquant" }
       }
       const application = await newApplicationToApplicationDocument(newApplication, offreOrError, recruteurEmail)
-      const fileContent = newApplication.applicant_file_content
+      const fileContent = createReadStream(newApplication.applicant_file_content)
       await s3Write("applications", getApplicationCvS3Filename(application), {
         Body: fileContent,
       })
@@ -225,7 +227,7 @@ export const sendApplicationV2 = async ({
 
   try {
     const application = await newApplicationToApplicationDocumentV2(newApplication, lbaJob, recruteurEmail, caller)
-    const fileContent = newApplication.applicant_file_content
+    const fileContent = createReadStream(newApplication.applicant_file_content)
     await s3Write("applications", getApplicationCvS3Filename(application), {
       Body: fileContent,
     })
