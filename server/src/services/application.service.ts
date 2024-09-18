@@ -1,6 +1,6 @@
 import { badRequest, internal, tooManyRequests } from "@hapi/boom"
 import { isEmailBurner } from "burner-email-providers"
-// import dayjs from "dayjs"
+import dayjs from "dayjs"
 import Joi from "joi"
 import { ObjectId } from "mongodb"
 import { ApplicationScanStatus, IApplication, IJob, ILbaCompany, INewApplicationV2, IRecruiter, JOB_STATUS, assertUnreachable } from "shared"
@@ -213,7 +213,8 @@ export const sendApplicationV2 = async ({
       throw badRequest(BusinessErrorCodes.NOTFOUND)
     }
     const { recruiter, job } = recruiterResult
-    if (recruiter.status !== RECRUITER_STATUS.ACTIF || job.job_status !== JOB_STATUS.ACTIVE /*|| dayjs(job.job_expiration_date).isBefore(dayjs())*/) {
+    // la vérification sur la date accepte une période de grâce de 1j
+    if (recruiter.status !== RECRUITER_STATUS.ACTIF || job.job_status !== JOB_STATUS.ACTIVE || dayjs(job.job_expiration_date).isBefore(dayjs().add(1, "day"))) {
       throw badRequest(BusinessErrorCodes.EXPIRED)
     }
 
