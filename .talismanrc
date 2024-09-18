@@ -84,7 +84,7 @@ fileignoreconfig:
 - filename: server/src/security/apiApprentissageService.ts
   checksum: 0e6d208dc8de66d2a440ff40a1260a76e41bf69fb414ccbfc6d99396df3f3b91
 - filename: server/src/services/application.service.test.ts
-  checksum: 699db3f85e236bf73fae46737f4e53dbf426f01db27ec96d0d05a673544f505c
+  checksum: 350e85a60ff568b47a722aedfe8b08d46370b0b601ac5b6ba68aa1e0ab5bf482
 - filename: server/src/services/application.service.ts
   checksum: 38021ae663db3a146c848a8d691c0c1bc9bb262a80a6f2dedf9fcdb372eef3ac
 - filename: server/src/services/eligibleTrainingsForAppointment.service.ts
