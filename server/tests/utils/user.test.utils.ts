@@ -2,6 +2,7 @@ import { randomUUID } from "crypto"
 
 import { ObjectId } from "mongodb"
 import { OPCOS_LABEL, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { IApplication, ICredential, IEmailBlacklist, ILbaCompany, IRecruiter, ZApplication, ZCredential, ZEmailBlacklist, ZLbaCompany, ZPointGeometry } from "shared/models"
 import { ICFA, zCFA } from "shared/models/cfa.model"
@@ -13,8 +14,6 @@ import { ZodArray, ZodObject, ZodString, ZodTypeAny, z } from "zod"
 import { Fixture, Generator } from "zod-fixture"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-
-import { jobFactory } from "./job.test.utils"
 
 function generateRandomRomeCode() {
   // Générer une lettre aléatoire
@@ -239,18 +238,20 @@ export const saveEntrepriseUserTest = async (userProps: Partial<IUserWithAccount
     status: [roleManagementEventFactory()],
     ...roleProps,
   })
-  const recruiter = await saveRecruiter({
-    is_delegated: false,
-    cfa_delegated_siret: null,
-    status: RECRUITER_STATUS.ACTIF,
-    establishment_siret: entreprise.siret,
-    opco: entreprise.opco,
-    jobs: [
-      jobFactory({
-        managed_by: user._id.toString(),
-      }),
-    ],
-  })
+  const recruiter = await saveRecruiter(
+    generateRecruiterFixture({
+      is_delegated: false,
+      cfa_delegated_siret: null,
+      status: RECRUITER_STATUS.ACTIF,
+      establishment_siret: entreprise.siret,
+      opco: entreprise.opco,
+      jobs: [
+        {
+          managed_by: user._id.toString(),
+        },
+      ],
+    })
+  )
   return { user, role, entreprise, recruiter }
 }
 
@@ -263,16 +264,18 @@ export const saveCfaUserTest = async (userProps: Partial<IUserWithAccount> = {})
     authorized_type: AccessEntityType.CFA,
     status: [roleManagementEventFactory()],
   })
-  const recruiter = await saveRecruiter({
-    is_delegated: true,
-    cfa_delegated_siret: cfa.siret,
-    status: RECRUITER_STATUS.ACTIF,
-    jobs: [
-      jobFactory({
-        managed_by: user._id.toString(),
-      }),
-    ],
-  })
+  const recruiter = await saveRecruiter(
+    generateRecruiterFixture({
+      is_delegated: true,
+      cfa_delegated_siret: cfa.siret,
+      status: RECRUITER_STATUS.ACTIF,
+      jobs: [
+        {
+          managed_by: user._id.toString(),
+        },
+      ],
+    })
+  )
   return { user, role, cfa, recruiter }
 }
 

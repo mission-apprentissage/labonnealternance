@@ -1,11 +1,11 @@
 import { badRequest, notFound } from "@hapi/boom"
-import { jobFactory } from "@tests/utils/job.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { saveRecruiter } from "@tests/utils/user.test.utils"
 import { ObjectId } from "bson"
 import dayjs from "dayjs"
 import { RECRUITER_STATUS } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { IReferentielRome, JOB_STATUS } from "shared/models"
 import { beforeEach, describe, expect, it } from "vitest"
@@ -40,41 +40,47 @@ describe("Sending application", () => {
     ]
     await getDbCollection("referentielromes").insertMany(romes)
 
-    await saveRecruiter({
-      status: RECRUITER_STATUS.ACTIF,
-      jobs: [
-        jobFactory({
-          _id: new ObjectId("6081289803569600282e0001"),
-          rome_code: ["A1101"],
-          job_expiration_date: dateMoins1.toDate(),
-        }),
-      ],
-    })
+    await saveRecruiter(
+      generateRecruiterFixture({
+        status: RECRUITER_STATUS.ACTIF,
+        jobs: [
+          {
+            _id: new ObjectId("6081289803569600282e0001"),
+            rome_code: ["A1101"],
+            job_expiration_date: dateMoins1.toDate(),
+          },
+        ],
+      })
+    )
 
     const datePlus1 = dayjs().add(1, "day")
 
-    await saveRecruiter({
-      status: RECRUITER_STATUS.ARCHIVE,
-      jobs: [
-        jobFactory({
-          _id: new ObjectId("6081289803569600282e0002"),
-          rome_code: ["A1101"],
-          job_expiration_date: datePlus1.toDate(),
-        }),
-      ],
-    })
+    await saveRecruiter(
+      generateRecruiterFixture({
+        status: RECRUITER_STATUS.ARCHIVE,
+        jobs: [
+          {
+            _id: new ObjectId("6081289803569600282e0002"),
+            rome_code: ["A1101"],
+            job_expiration_date: datePlus1.toDate(),
+          },
+        ],
+      })
+    )
 
-    await saveRecruiter({
-      status: RECRUITER_STATUS.ACTIF,
-      jobs: [
-        jobFactory({
-          _id: new ObjectId("6081289803569600282e0003"),
-          rome_code: ["A1101"],
-          job_status: JOB_STATUS.POURVUE,
-          job_expiration_date: datePlus1.toDate(),
-        }),
-      ],
-    })
+    await saveRecruiter(
+      generateRecruiterFixture({
+        status: RECRUITER_STATUS.ACTIF,
+        jobs: [
+          {
+            _id: new ObjectId("6081289803569600282e0003"),
+            rome_code: ["A1101"],
+            job_status: JOB_STATUS.POURVUE,
+            job_expiration_date: datePlus1.toDate(),
+          },
+        ],
+      })
+    )
 
     return async () => {
       await getDbCollection("recruiters").deleteMany({})
