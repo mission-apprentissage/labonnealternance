@@ -556,7 +556,6 @@ type WorkplaceSiretData = Pick<
   IJobsPartnersOfferApi,
   | "workplace_geopoint"
   | "workplace_address"
-  | "workplace_name"
   | "workplace_legal_name"
   | "workplace_brand"
   | "workplace_naf_label"
@@ -567,7 +566,10 @@ type WorkplaceSiretData = Pick<
 >
 
 async function resolveWorkplaceDataFromSiret(workplace_siret: string, zodError: ZodError): Promise<WorkplaceSiretData | null> {
-  const [entrepriseData, opcoData] = await Promise.all([getEntrepriseDataFromSiret({ siret: workplace_siret, type: "ENTREPRISE" }), getOpcoData(workplace_siret)])
+  const [entrepriseData, opcoData] = await Promise.all([
+    getEntrepriseDataFromSiret({ siret: workplace_siret, type: "ENTREPRISE", isApiApprentissage: true }),
+    getOpcoData(workplace_siret),
+  ])
 
   if ("error" in entrepriseData) {
     zodError.addIssue({ code: "custom", path: ["workplace_siret"], message: entrepriseData.message })
@@ -577,7 +579,6 @@ async function resolveWorkplaceDataFromSiret(workplace_siret: string, zodError: 
   return {
     workplace_geopoint: entrepriseData.geopoint,
     workplace_address: { label: entrepriseData.address! },
-    workplace_name: entrepriseData.establishment_enseigne ?? entrepriseData.establishment_raison_sociale ?? null,
     workplace_brand: entrepriseData.establishment_enseigne ?? null,
     workplace_legal_name: entrepriseData.establishment_raison_sociale ?? null,
     workplace_naf_label: entrepriseData.naf_label ?? null,
