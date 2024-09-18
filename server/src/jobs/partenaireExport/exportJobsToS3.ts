@@ -83,14 +83,14 @@ async function exportLbaJobsToS3() {
     fileName: LBA_ITEM_TYPE.RECRUTEURS_LBA,
   }
   await Promise.all([
-    generateJsonExport(offres_emploi_lba).then((path) => {
+    generateJsonExport(offres_emploi_lba).then(async (path) => {
       const key = path.split("/").pop() as string
       const file = createReadStream(path)
       logger.info(`Uploading file ${key} to S3`)
       await s3Write("storage", key, { Body: file, CacheControl: "no-cache, no-store, must-revalidate" })
       logger.info(`file ${key} uploaded`)
     }),
-    generateJsonExport(recruteurs_lba).then((path) => {
+    generateJsonExport(recruteurs_lba).then(async (path) => {
       const key = path.split("/").pop() as string
       const file = createReadStream(path)
       logger.info(`Uploading file ${key} to S3`)
