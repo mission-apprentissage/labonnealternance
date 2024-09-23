@@ -135,6 +135,7 @@ export const getLbaJobsV2 = async ({
   const jobFilters: Filter<IRecruiter> = {
     "jobs.job_status": JOB_STATUS.ACTIVE,
     "jobs.is_multi_published": true,
+    "jobs.job_expiration_date": { $gt: dayjs().add(-1, "day").toDate() },
   }
 
   if (romes) {
