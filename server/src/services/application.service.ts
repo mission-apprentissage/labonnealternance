@@ -158,9 +158,8 @@ export const sendApplication = async ({
         return { error: "email du recruteur manquant" }
       }
       const application = await newApplicationToApplicationDocument(newApplication, offreOrError, recruteurEmail)
-      const fileContent = newApplication.applicant_file_content
       await s3Write("applications", getApplicationCvS3Filename(application), {
-        Body: fileContent,
+        Body: newApplication.applicant_file_content,
       })
       await getDbCollection("applications").insertOne(application)
       return { result: "ok", message: "messages sent" }
@@ -225,9 +224,8 @@ export const sendApplicationV2 = async ({
 
   try {
     const application = await newApplicationToApplicationDocumentV2(newApplication, lbaJob, recruteurEmail, caller)
-    const fileContent = newApplication.applicant_file_content
     await s3Write("applications", getApplicationCvS3Filename(application), {
-      Body: fileContent,
+      Body: newApplication.applicant_file_content,
     })
     await getDbCollection("applications").insertOne(application)
   } catch (err) {

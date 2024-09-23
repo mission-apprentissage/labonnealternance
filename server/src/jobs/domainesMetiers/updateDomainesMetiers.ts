@@ -11,7 +11,7 @@ import { initializeCacheMetiers } from "@/services/metiers.service"
 
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
-import { getFileFromS3Bucket } from "../../common/utils/awsUtils"
+import { s3ReadAsStream } from "../../common/utils/awsUtils"
 import { readXLSXFile } from "../../common/utils/fileUtils"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
@@ -24,7 +24,7 @@ const downloadAndSaveFile = async (from = "currentDomainesMetiers.xlsx") => {
   logger.info(`Downloading and save file ${from} from S3 Bucket...`)
 
   await createAssetsFolder()
-  await oleoduc(getFileFromS3Bucket({ key: from }), fs.createWriteStream(FILEPATH))
+  await oleoduc(s3ReadAsStream("storage", from), fs.createWriteStream(FILEPATH))
 }
 
 export default async function (optionalFileName?: string) {

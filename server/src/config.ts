@@ -101,8 +101,10 @@ const config = {
     secretAccessKey: env.get("LBA_S3_SECRETACCESSKEY").required().asString(),
     endpoint: env.get("LBA_S3_ENDPOINT").required().asString(),
     region: env.get("LBA_S3_REGION").required().asString(),
-    bucket: env.get("LBA_S3_BUCKET").required().asString(),
-    applicationsBucket: env.get("LBA_S3_APPLICATIONS_BUCKET").required().asString(),
+    bucket: {
+      storage: env.get("LBA_S3_BUCKET").required().asString(),
+      application: env.get("LBA_S3_APPLICATIONS_BUCKET").required().asString(),
+    },
   },
   entreprise: {
     baseUrl: "https://entreprise.api.gouv.fr/v3/insee",

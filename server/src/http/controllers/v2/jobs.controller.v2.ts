@@ -6,13 +6,13 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { JobOpportunityRequestContext } from "@/services/jobs/jobOpportunity/JobOpportunityRequestContext"
 
-import { getFileSignedURL } from "../../../common/utils/awsUtils"
+import { s3SignedUrl } from "../../../common/utils/awsUtils"
 import { trackApiCall } from "../../../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../../../common/utils/sentryUtils"
 import dayjs from "../../../services/dayjs.service"
 import { addExpirationPeriod, getFormulaires } from "../../../services/formulaire.service"
 import { getFtJobFromIdV2 } from "../../../services/ftjob.service"
-import { getJobsQuery, findJobsOpportunities, createJobOffer, updateJobOffer } from "../../../services/jobs/jobOpportunity/jobOpportunity.service"
+import { createJobOffer, findJobsOpportunities, getJobsQuery, updateJobOffer } from "../../../services/jobs/jobOpportunity/jobOpportunity.service"
 import { addOffreDetailView, getLbaJobByIdV2 } from "../../../services/lbajob.service"
 import { getCompanyFromSiret } from "../../../services/recruteurLba.service"
 import { Server } from "../../server"
@@ -277,7 +277,8 @@ export default (server: Server) => {
       const { source } = req.query
       if (source === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
         try {
-          const url = await getFileSignedURL({ key: `${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}.json` })
+          const key = `${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}.json`
+          const url = await s3SignedUrl("storage", key, { expiresIn: 120 })
           trackApiCall({ caller: user._id.toString(), api_path: `${zRoutes.get["/jobs/export"].path}/${source}`, response: "OK" })
           return res.send(url)
         } catch (error) {
@@ -286,7 +287,8 @@ export default (server: Server) => {
         }
       } else {
         try {
-          const url = await getFileSignedURL({ key: `${LBA_ITEM_TYPE.RECRUTEURS_LBA}.json` })
+          const key = `${LBA_ITEM_TYPE.RECRUTEURS_LBA}.json`
+          const url = await s3SignedUrl("storage", key, { expiresIn: 120 })
           trackApiCall({ caller: user._id.toString(), api_path: `${zRoutes.get["/jobs/export"].path}/${source}`, response: "OK" })
           return res.send(url)
         } catch (error) {

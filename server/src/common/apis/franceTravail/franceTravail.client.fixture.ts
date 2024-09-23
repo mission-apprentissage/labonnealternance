@@ -1,5 +1,5 @@
 import nock from "nock"
-import { IRomeoApiResponse } from "shared/models/cacheRomeo.model"
+import { IRomeoAPIResponse } from "shared/models/cacheRomeo.model"
 
 import { FTJob, FTResponse } from "@/services/ftjob.service.types"
 
@@ -51,7 +51,7 @@ export const franceTravailRomeoFixture = {
       uuidInference: "180d530a-474a-496b-8d3b-f3d91928c663",
     },
   ],
-} as const satisfies Record<string, IRomeoApiResponse>
+} as const satisfies Record<string, IRomeoAPIResponse>
 
 export function generateFtJobFixture(data: Partial<FTJob>): FTJob {
   return {
@@ -130,7 +130,7 @@ export function nockFranceTravailTokenAccessRomeo() {
     .reply(200, { access_token: "ft_token_romeo", expires_in: 300 })
 }
 
-export function nockFranceTravailRomeo(payload: IRomeoPayload[], response: IRomeoApiResponse) {
+export function nockFranceTravailRomeo(payload: IRomeoPayload[], response: IRomeoAPIResponse) {
   return nock("https://api.francetravail.io/partenaire")
     .post("/romeo/v2/predictionMetiers", { appellations: payload, options: { nomAppelant: "La bonne alternance" } })
     .matchHeader(`authorization`, `Bearer ft_token_romeo`)
