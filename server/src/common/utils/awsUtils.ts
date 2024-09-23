@@ -24,7 +24,7 @@ function getBucketName(bucket: Bucket) {
   }
 }
 
-export async function s3ReadAsStream({ bucket, key }: { bucket: Bucket; key: string }) {
+export async function s3ReadAsStream(bucket: Bucket, key: string) {
   try {
     const object = await s3Client.send(new GetObjectCommand({ Bucket: getBucketName(bucket), Key: key }))
     return object.Body?.transformToWebStream()

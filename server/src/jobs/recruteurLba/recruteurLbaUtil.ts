@@ -70,7 +70,7 @@ export const downloadAlgoCompanyFile = async (sourceFile: string | null) => {
 
 export const downloadFile = async ({ from, to }) => {
   await createAssetsFolder()
-  await oleoduc(s3ReadAsStream({ bucket: "storage", key: from }), fs.createWriteStream(to))
+  await oleoduc(s3ReadAsStream("storage", from), fs.createWriteStream(to))
 }
 
 export const readCompaniesFromJson = async () => {

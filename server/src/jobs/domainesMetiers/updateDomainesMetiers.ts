@@ -24,7 +24,7 @@ const downloadAndSaveFile = async (from = "currentDomainesMetiers.xlsx") => {
   logger.info(`Downloading and save file ${from} from S3 Bucket...`)
 
   await createAssetsFolder()
-  await oleoduc(s3ReadAsStream({ bucket: "storage", key: from }), fs.createWriteStream(FILEPATH))
+  await oleoduc(s3ReadAsStream("storage", from), fs.createWriteStream(FILEPATH))
 }
 
 export default async function (optionalFileName?: string) {
