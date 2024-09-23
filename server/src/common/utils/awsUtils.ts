@@ -1,110 +1,93 @@
-import fs from "fs"
-import * as stream from "stream"
-
+import { DeleteObjectCommand, GetObjectCommand, HeadObjectCommand, PutObjectCommand, PutObjectRequest, S3Client, S3ClientConfig } from "@aws-sdk/client-s3"
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
+import { RequestPresigningArguments } from "@aws-sdk/types"
 import { internal } from "@hapi/boom"
-import AWS from "aws-sdk"
+import { StreamingBlobPayloadInputTypes } from "@smithy/types"
 import { assertUnreachable } from "shared/utils"
 
 import config from "../../config"
 import { logger } from "../logger"
 
-const { endpoint, region, bucket, accessKeyId, secretAccessKey } = config.s3
+const { endpoint, region, accessKeyId, secretAccessKey, bucket: s3Buckets } = config.s3
+const configuration: S3ClientConfig = { credentials: { accessKeyId, secretAccessKey }, endpoint, region, forcePathStyle: true }
+const s3Client = new S3Client(configuration)
 
-AWS.config.update({
-  accessKeyId,
-  secretAccessKey,
-  s3ForcePathStyle: true,
-  signatureVersion: "v4",
-})
-
-const repository: AWS.S3 = new AWS.S3({ endpoint, region })
-
-type Bucket = "applications"
-
+type Bucket = "applications" | "storage"
 function getBucketName(bucket: Bucket) {
   switch (bucket) {
     case "applications":
-      return config.s3.applicationsBucket
+      return s3Buckets.application
+    case "storage":
+      return s3Buckets.storage
     default:
       assertUnreachable(bucket)
   }
 }
 
-export function s3ReadStream(bucket: Bucket, fileKey: string) {
-  return repository.getObject({ Bucket: getBucketName(bucket), Key: fileKey }).createReadStream()
+export async function s3ReadAsStream(bucket: Bucket, key: string) {
+  try {
+    const object = await s3Client.send(new GetObjectCommand({ Bucket: getBucketName(bucket), Key: key }))
+    return object.Body?.transformToWebStream()
+  } catch (error: any) {
+    const newError = internal(`Error reading S3 file stream`, { key: key, bucket: getBucketName(bucket) })
+    newError.cause = error.message
+    throw newError
+  }
 }
 
 export async function s3ReadAsString(bucket: Bucket, fileKey: string): Promise<string | undefined> {
-  const response = await repository.getObject({ Bucket: getBucketName(bucket), Key: fileKey }).promise()
-  const errorOpt = response.$response.error
-  if (errorOpt) {
-    const newError = internal(`error while getting s3 file`, { key: fileKey, bucket: getBucketName(bucket) })
-    newError.cause = errorOpt
+  try {
+    const object = await s3Client.send(new GetObjectCommand({ Bucket: getBucketName(bucket), Key: fileKey }))
+    return object.Body?.transformToString()
+  } catch (error: any) {
+    const newError = internal(`Error reading S3 file string`, { key: fileKey, bucket: getBucketName(bucket) })
+    newError.cause = error.message
     throw newError
   }
-  return response.Body?.toString()
 }
 
-export async function s3Write(bucket: Bucket, fileKey: string, options: Omit<AWS.S3.PutObjectRequest, "Key" | "Bucket">) {
+export async function s3Write(bucket: Bucket, fileKey: string, options: Omit<PutObjectRequest, "Body" | "Bucket" | "Key"> & { Body: StreamingBlobPayloadInputTypes }) {
   const bucketName = getBucketName(bucket)
-  logger.info("writing s3 file:", { bucket: bucketName, key: fileKey })
-  await repository.upload({ ...options, Key: fileKey, Bucket: bucketName }).promise()
+  try {
+    logger.info("writing s3 file:", { bucket: bucketName, key: fileKey })
+    await s3Client.send(new PutObjectCommand({ Bucket: bucketName, Key: fileKey, ...options }))
+  } catch (error: any) {
+    const newError = internal(`Error writing S3 file`, { key: fileKey, bucket: getBucketName(bucket) })
+    newError.cause = error.message
+    throw newError
+  }
 }
 
 export async function s3Delete(bucket: Bucket, fileKey: string) {
   const bucketName = getBucketName(bucket)
-  logger.info("deleting s3 file:", { bucket: bucketName, key: fileKey })
-  const result = await repository.deleteObject({ Bucket: bucketName, Key: fileKey }).promise()
-  const errorOpt = result.$response.error
-  if (errorOpt) {
+  try {
+    logger.info("deleting s3 file:", { bucket: bucketName, key: fileKey })
+    await s3Client.send(new DeleteObjectCommand({ Bucket: bucketName, Key: fileKey }))
+  } catch (error: any) {
     const newError = internal(`error while deleting s3 file`, { key: fileKey, bucket: bucketName })
-    newError.cause = errorOpt
+    newError.cause = error.message
     throw newError
   }
 }
 
-export const getFileFromS3Bucket = ({ key }: { key: string }): stream.Readable => {
-  return repository.getObject({ Bucket: bucket, Key: key }).createReadStream()
-}
-
-export const getFileSignedURL = async ({ key, expireInSeconds = 120 }: { key: string; expireInSeconds?: number }): Promise<string> => {
-  return await repository.getSignedUrl("getObject", { Bucket: bucket, Key: key, Expires: expireInSeconds })
-}
-
-interface IUploadParams {
-  Key: string
-  Body: Buffer
-  Bucket: string
-  [key: string]: any
-}
-
-export const uploadFileToS3 = async ({ key, filePath, noCache = false }: { key: string; filePath: string; noCache?: boolean }) => {
-  const blob = fs.readFileSync(filePath)
-
-  const params: IUploadParams = {
-    Key: key,
-    Body: blob,
-    Bucket: bucket,
+export const s3SignedUrl = async (bucket: Bucket, key: string, options: RequestPresigningArguments = {}) => {
+  try {
+    const url = getSignedUrl(s3Client, new GetObjectCommand({ Bucket: bucket, Key: key }), options)
+    return url
+  } catch (error: any) {
+    const newError = internal(`error getting s3 file url`, { key, bucket })
+    newError.cause = error.message
+    throw newError
   }
-
-  if (noCache) {
-    params.CacheControl = "no-cache, no-store, must-revalidate"
-  }
-
-  await repository.upload(params).promise()
 }
 
-export const getS3FileLastUpdate = async ({ key }: { key: string }): Promise<Date> => {
-  const headResponse = await repository
-    .headObject({
-      Key: key,
-      Bucket: bucket,
-    })
-    .promise()
-
-  if (headResponse.LastModified) {
-    return new Date(headResponse.LastModified)
-  } else {
-    throw new Error(`getS3FileLastUpdate failed to fetch`)
+export const getS3FileLastUpdate = async (bucket: Bucket, key: string): Promise<Date | null> => {
+  try {
+    const headResponse = await s3Client.send(new HeadObjectCommand({ Bucket: bucket, Key: key }))
+    return headResponse.LastModified ? new Date(headResponse.LastModified) : null
+  } catch (error: any) {
+    const newError = internal(`error getting s3 head object`, { key, bucket })
+    newError.cause = error.message
+    throw newError
   }
 }
