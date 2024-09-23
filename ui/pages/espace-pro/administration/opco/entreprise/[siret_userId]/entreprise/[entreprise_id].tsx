@@ -20,7 +20,7 @@ import {
 } from "@chakra-ui/react"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
-import { useMutation, useQuery, useQueryClient } from "react-query"
+import { useMutation, useQuery } from "react-query"
 import { IUserStatusValidation } from "shared"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
@@ -47,7 +47,6 @@ import { getUser, updateEntrepriseAdmin } from "@/utils/api"
 function DetailEntreprise() {
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationModificationOpco = useDisclosure()
-  const client = useQueryClient()
   const toast = useToast()
   const { user } = useAuth()
   const router = useRouter()
@@ -60,8 +59,8 @@ function DetailEntreprise() {
   })
 
   const userMutation = useMutation(({ userId, values }: any) => updateEntrepriseAdmin(userId, values, userRecruteur.establishment_siret), {
-    onSuccess: () => {
-      client.invalidateQueries("user")
+    onSuccess: async () => {
+      await router.push(getUserNavigationContext())
     },
   })
 
