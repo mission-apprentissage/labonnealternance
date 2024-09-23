@@ -14,20 +14,25 @@ import {
 } from "@/security/accessTokenService"
 
 export function createAuthMagicLinkToken(user: UserForAccessToken) {
-  return generateAccessToken(user, [
-    generateScope({
-      schema: zRoutes.post["/login/verification"],
-      options: {
-        params: undefined,
-        querystring: undefined,
-      },
-    }),
-  ])
+  return generateAccessToken(
+    user,
+    [
+      generateScope({
+        schema: zRoutes.post["/login/verification"],
+        options: {
+          params: undefined,
+          querystring: undefined,
+        },
+      }),
+    ],
+    {
+      expiresIn: "15m",
+    }
+  )
 }
 
 export function createAuthMagicLink(user: UserForAccessToken) {
   const token = createAuthMagicLinkToken(user)
-
   return `${config.publicUrl}/espace-pro/authentification/verification?token=${encodeURIComponent(token)}`
 }
 

@@ -462,28 +462,48 @@ export const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_s
   }
 }
 
-export const getEntrepriseDataFromSiret = async ({ siret, type }: { siret: string; type: "CFA" | "ENTREPRISE" }): Promise<EntrepriseData | IBusinessError> => {
+export const getEntrepriseDataFromSiret = async ({
+  siret,
+  type,
+  isApiApprentissage = false,
+}: {
+  siret: string
+  type: "CFA" | "ENTREPRISE"
+  isApiApprentissage?: boolean
+}): Promise<EntrepriseData | IBusinessError> => {
   const result = await getEtablissementFromGouvSafe(siret)
   if (!result) {
     return errorFactory("Le numéro siret est invalide.")
   }
   if (result === BusinessErrorCodes.NON_DIFFUSIBLE) {
-    return errorFactory(
-      `Les informations de votre entreprise sont non diffusibles. <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Espace%20pro%20-%20Donnees%20entreprise%20non%20diffusibles" target="_blank" title="contacter le support - nouvelle fenêtre">Contacter le support pour en savoir plus</a>`,
-      BusinessErrorCodes.NON_DIFFUSIBLE
-    )
+    if (isApiApprentissage) {
+      return errorFactory("Non-distributable company.", BusinessErrorCodes.NON_DIFFUSIBLE)
+    } else {
+      return errorFactory(
+        `Les informations de votre entreprise sont non diffusibles. <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Espace%20pro%20-%20Donnees%20entreprise%20non%20diffusibles" target="_blank" title="contacter le support - nouvelle fenêtre">Contacter le support pour en savoir plus</a>`,
+        BusinessErrorCodes.NON_DIFFUSIBLE
+      )
+    }
   }
 
   const { etat_administratif, activite_principale } = result.data
 
   if (etat_administratif === "F") {
-    return errorFactory("Cette entreprise est considérée comme fermée.", BusinessErrorCodes.CLOSED)
+    if (isApiApprentissage) {
+      return errorFactory("The company is considered closed.", BusinessErrorCodes.CLOSED)
+    } else {
+      return errorFactory("Cette entreprise est considérée comme fermée.", BusinessErrorCodes.CLOSED)
+    }
   }
   // Check if a CFA already has the company as partenaire
   if (type === ENTREPRISE) {
     // Allow cfa to add themselves as a company
     if (activite_principale.code.startsWith("85")) {
-      return errorFactory("Le numéro siret n'est pas référencé comme une entreprise.", BusinessErrorCodes.IS_CFA)
+      if (isApiApprentissage) {
+        return errorFactory("The SIRET number is not referenced as a company.", BusinessErrorCodes.IS_CFA)
+      } else {
+        return errorFactory("Le numéro siret n'est pas référencé comme une entreprise.", BusinessErrorCodes.IS_CFA)
+      }
     }
   }
   const entrepriseData = formatEntrepriseData(result.data)
