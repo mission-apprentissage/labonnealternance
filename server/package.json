@@ -32,6 +32,7 @@
     "@immobiliarelabs/fastify-sentry": "^7.1.1",
     "@sentry/integrations": "^7.72.0",
     "@sentry/node": "^7.72.0",
+    "@smithy/types": "^3.4.2",
     "@turf/distance": "^6.5.0",
     "@types/netmask": "^2.0.3",
     "@types/nodemailer": "^6.4.11",

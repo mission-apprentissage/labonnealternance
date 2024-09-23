@@ -2,6 +2,7 @@ import { DeleteObjectCommand, GetObjectCommand, HeadObjectCommand, PutObjectComm
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { RequestPresigningArguments } from "@aws-sdk/types"
 import { internal } from "@hapi/boom"
+import { StreamingBlobPayloadInputTypes } from "@smithy/types"
 import { assertUnreachable } from "shared/utils"
 
 import config from "../../config"
@@ -45,7 +46,7 @@ export async function s3ReadAsString(bucket: Bucket, fileKey: string): Promise<s
   }
 }
 
-export async function s3Write(bucket: Bucket, fileKey: string, options: Omit<PutObjectRequest, "Key" | "Bucket">) {
+export async function s3Write(bucket: Bucket, fileKey: string, options: Omit<PutObjectRequest, "Body" | "Bucket" | "Key"> & { Body: StreamingBlobPayloadInputTypes }) {
   const bucketName = getBucketName(bucket)
   try {
     logger.info("writing s3 file:", { bucket: bucketName, key: fileKey })
