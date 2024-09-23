@@ -1,10 +1,11 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Badge, Box, Button, Icon, Link, Menu, MenuButton, MenuItem, MenuList, Tab, TabList, TabPanel, TabPanels, Tabs, useDisclosure, useToast } from "@chakra-ui/react"
+import { Badge, Box, Button, Flex, Icon, Image, Link, Menu, MenuButton, MenuItem, MenuList, Text, useDisclosure, useToast } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import { useRouter } from "next/router"
 import { useState } from "react"
 import { useQueryClient } from "react-query"
-import { IJob } from "shared"
+import { IJob, JOB_STATUS } from "shared"
+import { RECRUITER_STATUS } from "shared/constants"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { sortReactTableDate } from "@/common/utils/dateUtils"
@@ -19,7 +20,52 @@ import { extendOffre } from "../../utils/api"
 import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
 import Table from "./Table"
 
-export const OffresTabs = ({ recruiter }: { recruiter: IRecruiterJson }) => {
+const displayJobStatus = (status: JOB_STATUS, recruiter: IRecruiterJson) => {
+  if (recruiter.status === RECRUITER_STATUS.EN_ATTENTE_VALIDATION) {
+    return (
+      <Badge variant="awaiting" textTransform="uppercase">
+        {RECRUITER_STATUS.EN_ATTENTE_VALIDATION}
+      </Badge>
+    )
+  }
+  if (recruiter.status === RECRUITER_STATUS.ARCHIVE) {
+    return (
+      <Badge variant="inactive" textTransform="uppercase">
+        EXPIREE
+      </Badge>
+    )
+  }
+  switch (status) {
+    case JOB_STATUS.ACTIVE:
+      return (
+        <Badge variant="neutral" textTransform="uppercase">
+          {JOB_STATUS.ACTIVE}
+        </Badge>
+      )
+    case JOB_STATUS.POURVUE:
+      return (
+        <Badge variant="active" textTransform="uppercase">
+          {JOB_STATUS.POURVUE}
+        </Badge>
+      )
+    case JOB_STATUS.ANNULEE:
+      return (
+        <Badge variant="inactive" textTransform="uppercase">
+          EXPIREE
+        </Badge>
+      )
+    case JOB_STATUS.EN_ATTENTE:
+      return (
+        <Badge variant="awaiting" whiteSpace="normal" textTransform="uppercase">
+          {RECRUITER_STATUS.EN_ATTENTE_VALIDATION}
+        </Badge>
+      )
+    default:
+      return null
+  }
+}
+
+export const OffresTabs = ({ recruiter, establishmentId, showStats = false }: { recruiter: IRecruiterJson; establishmentId: string; showStats?: boolean }) => {
   const router = useRouter()
   const toast = useToast()
   const client = useQueryClient()
@@ -30,19 +76,21 @@ export const OffresTabs = ({ recruiter }: { recruiter: IRecruiterJson }) => {
   const jobs: (IJob & { candidatures: number; geo_coordinates: string })[] = recruiter?.jobs ?? []
 
   if (jobs.length === 0) {
-    return null
+    return (
+      <Box py={6} backgroundColor="bluefrance.250">
+        <Flex width="fit-content" m="auto" alignItems="center">
+          <Image src="/images/espace_pro/no-job.svg" alt="" aria-hidden={true} />
+          <Text ml={2} fontWeight={700} color="#161616" as="span">
+            Aucune offre déposée
+          </Text>
+        </Flex>
+      </Box>
+    )
   }
 
   const jobsWithGeoCoords = jobs.map((job) => ({ ...job, geo_coordinates: recruiter.geo_coordinates }))
 
-  const offresTermine = jobsWithGeoCoords.filter((x) => x.job_status === "Annulée")
-  const offresTermineNbr = offresTermine.length
-  const offresActive = jobsWithGeoCoords.filter((x) => x.job_status === "Active")
-  const offresActiveNbr = offresActive.length
-  const offresPourvue = jobsWithGeoCoords.filter((x) => x.job_status === "Pourvue")
-  const offresPourvueNbr = offresPourvue.length
-
-  const columns = [
+  const commonColumns = [
     {
       Header: "Métier",
       accessor: "rome_label",
@@ -55,8 +103,16 @@ export const OffresTabs = ({ recruiter }: { recruiter: IRecruiterJson }) => {
         const { rome_label, rome_appellation_label } = data[id]
         return rome_appellation_label ?? rome_label
       },
-      width: "500",
-      maxWidth: "500",
+      width: "300",
+      maxWidth: "300",
+    },
+    {
+      Header: "Statut",
+      id: "job_status",
+      sortType: (a, b) => sortReactTableDate(a.original.job_status, b.original.job_status),
+      accessor: ({ job_status }) => displayJobStatus(job_status, recruiter),
+      width: "150",
+      maxWidth: "150",
     },
     {
       Header: "Postée le",
@@ -71,28 +127,37 @@ export const OffresTabs = ({ recruiter }: { recruiter: IRecruiterJson }) => {
       sortType: (a, b) => sortReactTableDate(a.original.job_expiration_date, b.original.job_expiration_date),
       accessor: ({ job_expiration_date }) => dayjs(job_expiration_date).format("DD/MM/YYYY"),
     },
-    {
-      Header: "Recherches",
-      id: "searches",
-      width: "150",
-      accessor: ({ stats_search_view = 0 }) => {
-        return <NumberCell>{stats_search_view}</NumberCell>
-      },
-    },
-    {
-      Header: "Vues",
-      id: "views",
-      width: "90",
-      accessor: ({ stats_detail_view = 0 }) => {
-        return <NumberCell>{stats_detail_view}</NumberCell>
-      },
-    },
-    {
-      Header: "Candidat(s)",
-      id: "candidat",
-      width: "150",
-      accessor: ({ candidatures = 0 }) => <NumberCell>{Math.max(candidatures, 0)}</NumberCell>,
-    },
+  ]
+  const statsColumns = showStats
+    ? [
+        {
+          Header: "Recherches",
+          id: "searches",
+          width: "150",
+          accessor: ({ stats_search_view = 0 }) => {
+            return <NumberCell>{stats_search_view}</NumberCell>
+          },
+        },
+        {
+          Header: "Vues",
+          id: "views",
+          width: "90",
+          accessor: ({ stats_detail_view = 0 }) => {
+            return <NumberCell>{stats_detail_view}</NumberCell>
+          },
+        },
+        {
+          Header: "Candidat(s)",
+          id: "candidat",
+          width: "150",
+          accessor: ({ candidatures = 0 }) => <NumberCell>{Math.max(candidatures, 0)}</NumberCell>,
+        },
+      ]
+    : []
+
+  const columns = [
+    ...commonColumns,
+    ...statsColumns,
     {
       Header: "",
       id: "action",
@@ -102,7 +167,6 @@ export const OffresTabs = ({ recruiter }: { recruiter: IRecruiterJson }) => {
       accessor: (row) => {
         const [lat, lon] = (row.geo_coordinates ?? "").split(",")
         const isDisable = row.job_status === "Annulée" || row.job_status === "Pourvue" ? true : false
-
         return (
           <Box display={["none", isDisable ? "none" : "block"]}>
             <Menu>
@@ -116,7 +180,10 @@ export const OffresTabs = ({ recruiter }: { recruiter: IRecruiterJson }) => {
                       <Link
                         onClick={() =>
                           router.push({
-                            pathname: `/espace-pro/administration/entreprise/${router.query.establishment_id}/offre/${row._id}`,
+                            pathname:
+                              user.type === "OPCO"
+                                ? `/espace-pro/administration/opco/entreprise/${router.query.siret_userId}/${establishmentId}/offre/${row._id}`
+                                : `/espace-pro/administration/entreprise/${establishmentId}/offre/${row._id}`,
                             query: { establishment_raison_sociale: recruiter?.establishment_raison_sociale },
                           })
                         }
@@ -187,28 +254,7 @@ export const OffresTabs = ({ recruiter }: { recruiter: IRecruiterJson }) => {
   return (
     <>
       <ConfirmationSuppressionOffre {...confirmationSuppression} offre={currentOffre} />
-      <Tabs variant="search" isLazy>
-        <TabList>
-          <Tab width="300px">En cours ({offresActiveNbr})</Tab>
-          <Tab width="300px" isDisabled={offresPourvueNbr === 0 ? true : false}>
-            Pourvue ({offresPourvueNbr})
-          </Tab>
-          <Tab width="300px" isDisabled={offresTermineNbr === 0 ? true : false}>
-            Expirée ({offresTermineNbr})
-          </Tab>
-        </TabList>
-        <TabPanels>
-          <TabPanel>
-            <Table columns={columns} data={offresActive} />
-          </TabPanel>
-          <TabPanel>
-            <Table columns={columns} data={offresPourvue} />
-          </TabPanel>
-          <TabPanel>
-            <Table columns={columns} data={offresTermine} />
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
+      <Table columns={columns} data={jobsWithGeoCoords} />
     </>
   )
 }

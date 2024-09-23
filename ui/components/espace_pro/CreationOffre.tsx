@@ -38,7 +38,11 @@ export default function CreationOffre() {
             isClosable: true,
           })
         })
-        .finally(() => router.push(`/espace-pro/administration/entreprise/${establishment_id}`))
+        .finally(() =>
+          user.type === "OPCO"
+            ? router.push(`/espace-pro/administration/opco/entreprise/${router.query.siret_userId}/entreprise/${establishment_id}`)
+            : router.push(`/espace-pro/administration/entreprise/${establishment_id}`)
+        )
     } else {
       const { recruiter: formulaire } = await createOffre(establishment_id, values)
       if (user.type === AUTHTYPE.ENTREPRISE) {

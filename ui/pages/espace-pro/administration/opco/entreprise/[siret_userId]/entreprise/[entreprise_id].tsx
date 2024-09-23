@@ -39,10 +39,11 @@ import {
   UserValidationHistory,
 } from "@/components/espace_pro"
 import { OpcoSelect } from "@/components/espace_pro/CreationRecruteur/OpcoSelect"
+import { OffresTabs } from "@/components/espace_pro/OffresTabs"
 import { authProvider, withAuth } from "@/components/espace_pro/withAuth"
 import { useAuth } from "@/context/UserContext"
 import { ArrowDropRightLine, ArrowRightLine } from "@/theme/components/icons"
-import { getUser, updateEntrepriseAdmin } from "@/utils/api"
+import { getFormulaire, getUser, updateEntrepriseAdmin } from "@/utils/api"
 
 function DetailEntreprise() {
   const confirmationDesactivationUtilisateur = useDisclosure()
@@ -57,6 +58,11 @@ function DetailEntreprise() {
     enabled: !!siret_userId,
     queryFn: () => getUser(siret_userId, entreprise_id),
     cacheTime: 0,
+  })
+
+  const { data: recruiter, isLoading: recruiterLoading } = useQuery(["recruiter", userRecruteur?.establishment_id], {
+    enabled: Boolean(userRecruteur?.establishment_id),
+    queryFn: () => getFormulaire(userRecruteur.establishment_id),
   })
 
   const userMutation = useMutation(({ userId, values }: any) => updateEntrepriseAdmin(userId, values, userRecruteur.establishment_siret), {
@@ -128,7 +134,7 @@ function DetailEntreprise() {
     }
   }
 
-  if (isLoading || !siret_userId) {
+  if (isLoading || !siret_userId || recruiterLoading) {
     return <LoadingEmptySpace />
   }
 
@@ -162,26 +168,6 @@ function DetailEntreprise() {
               </Flex>
               <Stack direction={["column", "column", "column", "row"]} spacing="10px">
                 {getActionButtons(lastUserState, userRecruteur._id)}
-                {userRecruteur.type === AUTHTYPE.ENTREPRISE ? (
-                  userRecruteur.jobs.length ? (
-                    lastUserState.status === ETAT_UTILISATEUR.ATTENTE || lastUserState.status === ETAT_UTILISATEUR.ERROR ? (
-                      <Button variant="secondary" isDisabled={true}>
-                        Offre en attente de validation
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="secondary"
-                        onClick={() => router.push(`/espace-pro/administration/opco/entreprise/${userRecruteur.establishment_siret}/${userRecruteur.establishment_id}`)}
-                      >
-                        Voir les offres
-                      </Button>
-                    )
-                  ) : (
-                    <Button variant="secondary" isDisabled={true}>
-                      Pas d'offre(s) déposée(s)
-                    </Button>
-                  )
-                ) : null}
               </Stack>
             </Flex>
           </Box>
@@ -270,9 +256,18 @@ function DetailEntreprise() {
                     </Box>
                   </SimpleGrid>
                   {(user.type === AUTHTYPE.OPCO || user.type === AUTHTYPE.ADMIN) && (
-                    <Box mb={12}>
-                      <UserValidationHistory histories={userRecruteur.status} />
-                    </Box>
+                    <>
+                      <hr style={{ marginTop: 24 }} />
+                      <Box my={6}>
+                        <Text fontSize="20px" lineHeight="32px" fontWeight="700" mb={6}>
+                          Offres de recrutement en alternance
+                        </Text>
+                        <OffresTabs establishmentId={userRecruteur.establishment_id} recruiter={recruiter} />
+                      </Box>
+                      <Box mb={12}>
+                        <UserValidationHistory histories={userRecruteur.status} />
+                      </Box>
+                    </>
                   )}
                 </>
               )
