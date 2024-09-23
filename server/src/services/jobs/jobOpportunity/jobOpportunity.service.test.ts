@@ -92,6 +92,7 @@ describe("findJobsOpportunities", () => {
           job_status: JOB_STATUS.ACTIVE,
           job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
           job_creation_date: new Date("2021-01-01"),
+          job_expiration_date: new Date("2050-01-01"),
         },
       ],
       address_detail: {
@@ -113,6 +114,7 @@ describe("findJobsOpportunities", () => {
           job_status: JOB_STATUS.ACTIVE,
           job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
           job_creation_date: new Date("2022-01-01"),
+          job_expiration_date: new Date("2050-01-01"),
         },
       ],
       address_detail: {
@@ -134,6 +136,7 @@ describe("findJobsOpportunities", () => {
           job_status: JOB_STATUS.ACTIVE,
           job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
           job_creation_date: new Date("2023-01-01"),
+          job_expiration_date: new Date("2050-01-01"),
         },
       ],
       address_detail: {
@@ -746,6 +749,7 @@ describe("findJobsOpportunities", () => {
                 is_multi_published: true,
                 job_status: JOB_STATUS.ACTIVE,
                 job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+                job_expiration_date: new Date(),
               },
             ],
             address_detail: {
@@ -789,6 +793,7 @@ describe("findJobsOpportunities", () => {
               is_multi_published: true,
               job_status: JOB_STATUS.ANNULEE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+              job_expiration_date: new Date(),
             },
             {
               rome_code: ["M1602"],
@@ -796,6 +801,7 @@ describe("findJobsOpportunities", () => {
               is_multi_published: true,
               job_status: JOB_STATUS.EN_ATTENTE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+              job_expiration_date: new Date(),
             },
             {
               rome_code: ["M1602"],
@@ -803,6 +809,7 @@ describe("findJobsOpportunities", () => {
               is_multi_published: true,
               job_status: JOB_STATUS.POURVUE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+              job_expiration_date: new Date(),
             },
             {
               rome_code: ["M1602"],
@@ -810,6 +817,15 @@ describe("findJobsOpportunities", () => {
               is_multi_published: true,
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+              job_expiration_date: new Date(),
+            },
+            {
+              rome_code: ["M1602"],
+              rome_label: "Opérations administratives",
+              is_multi_published: true,
+              job_status: JOB_STATUS.ACTIVE,
+              job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+              job_expiration_date: new Date("2024-01-01"),
             },
           ],
           address_detail: {
@@ -850,6 +866,7 @@ describe("findJobsOpportunities", () => {
                 is_multi_published: true,
                 job_status: JOB_STATUS.ACTIVE,
                 job_level_label: NIVEAUX_POUR_LBA["3 (CAP...)"],
+                job_expiration_date: new Date(),
               },
               {
                 rome_code: ["M1602"],
@@ -857,6 +874,7 @@ describe("findJobsOpportunities", () => {
                 is_multi_published: true,
                 job_status: JOB_STATUS.ACTIVE,
                 job_level_label: NIVEAUX_POUR_LBA["4 (BAC...)"],
+                job_expiration_date: new Date(),
               },
             ],
             address_detail: {
@@ -907,6 +925,7 @@ describe("findJobsOpportunities", () => {
               is_multi_published: false,
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+              job_expiration_date: new Date(),
             },
           ],
           address_detail: {
@@ -943,6 +962,7 @@ describe("findJobsOpportunities", () => {
           is_multi_published: true,
           job_status: JOB_STATUS.ACTIVE,
           job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+          job_expiration_date: new Date(),
         }))
 
         return generateRecruiterFixture({
@@ -991,6 +1011,7 @@ describe("findJobsOpportunities", () => {
               is_multi_published: true,
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+              job_expiration_date: new Date(),
             },
           ],
           address_detail: {
@@ -1049,6 +1070,7 @@ describe("findJobsOpportunities", () => {
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
               custom_geo_coordinates: `${marseilleFixture.centre.coordinates[1]},${marseilleFixture.centre.coordinates[0]}`,
+              job_expiration_date: new Date(),
             },
           ],
           address_detail: {
@@ -1101,6 +1123,7 @@ describe("findJobsOpportunities", () => {
               is_multi_published: true,
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+              job_expiration_date: new Date(),
             },
             {
               rome_code: ["M1602"],
@@ -1108,6 +1131,7 @@ describe("findJobsOpportunities", () => {
               is_multi_published: true,
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+              job_expiration_date: new Date(),
             },
           ],
           address_detail: {
@@ -1181,6 +1205,7 @@ describe("findJobsOpportunities", () => {
               is_multi_published: true,
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+              job_expiration_date: new Date(),
             },
           ],
           address_detail: {
@@ -1219,6 +1244,7 @@ describe("findJobsOpportunities", () => {
               is_multi_published: true,
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+              job_expiration_date: new Date(),
             },
           ],
           address_detail: {
@@ -1552,6 +1578,7 @@ describe("findJobsOpportunities", () => {
             job_status: JOB_STATUS.ACTIVE,
             job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
             job_creation_date: new Date("2021-01-01"),
+            job_expiration_date: new Date(),
           },
           {
             rome_code: ["D1209"],
@@ -1560,6 +1587,7 @@ describe("findJobsOpportunities", () => {
             job_status: JOB_STATUS.ACTIVE,
             job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
             job_creation_date: new Date("2024-01-01"),
+            job_expiration_date: new Date(),
           },
         ],
         address_detail: {
