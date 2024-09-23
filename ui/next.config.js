@@ -166,4 +166,8 @@ module.exports = withSentryConfig(nextConfig, {
   // https://docs.sentry.io/product/crons/
   // https://vercel.com/docs/cron-jobs
   // automaticVercelMonitors: true,
+
+  experimental: {
+    instrumentationHook: true,
+  },
 })
