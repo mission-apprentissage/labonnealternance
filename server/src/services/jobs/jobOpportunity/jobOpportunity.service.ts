@@ -1,4 +1,5 @@
-import { badRequest, internal, notFound } from "@hapi/boom"
+import { badRequest, conflict, internal, notFound } from "@hapi/boom"
+import { IApiAlternanceTokenData } from "api-alternance-sdk"
 import { DateTime } from "luxon"
 import { Document, Filter, ObjectId } from "mongodb"
 import { IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS_ENGLISH, assertUnreachable, parseEnum, translateJobStatus } from "shared"
@@ -18,8 +19,7 @@ import { IJobOpportunityGetQuery, IJobOpportunityGetQueryResolved, IJobsOpportun
 import { ZodError } from "zod"
 
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { IApiApprentissageTokenData } from "@/security/accessApiApprentissageService"
-import { getRomeoInfos } from "@/services/cache.service"
+import { getRomeFromRomeo } from "@/services/cache.service"
 import { getEntrepriseDataFromSiret, getGeoPoint, getOpcoData } from "@/services/etablissement.service"
 
 import { IApiError } from "../../../common/utils/errorManager"
@@ -236,8 +236,8 @@ export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }
 
   return jobsPartners.map((j) => ({
     ...j,
-    // TODO: set LBA url
-    apply_url: j.apply_url ?? `${config.publicUrl}/recherche-apprentissage`,
+    contract_type: j.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
+    apply_url: j.apply_url ?? `${config.publicUrl}/recherche-apprentissage?type=partner&itemId=${j._id}`,
   }))
 }
 
@@ -556,7 +556,6 @@ type WorkplaceSiretData = Pick<
   IJobsPartnersOfferApi,
   | "workplace_geopoint"
   | "workplace_address"
-  | "workplace_name"
   | "workplace_legal_name"
   | "workplace_brand"
   | "workplace_naf_label"
@@ -567,7 +566,10 @@ type WorkplaceSiretData = Pick<
 >
 
 async function resolveWorkplaceDataFromSiret(workplace_siret: string, zodError: ZodError): Promise<WorkplaceSiretData | null> {
-  const [entrepriseData, opcoData] = await Promise.all([getEntrepriseDataFromSiret({ siret: workplace_siret, type: "ENTREPRISE" }), getOpcoData(workplace_siret)])
+  const [entrepriseData, opcoData] = await Promise.all([
+    getEntrepriseDataFromSiret({ siret: workplace_siret, type: "ENTREPRISE", isApiApprentissage: true }),
+    getOpcoData(workplace_siret),
+  ])
 
   if ("error" in entrepriseData) {
     zodError.addIssue({ code: "custom", path: ["workplace_siret"], message: entrepriseData.message })
@@ -577,7 +579,6 @@ async function resolveWorkplaceDataFromSiret(workplace_siret: string, zodError: 
   return {
     workplace_geopoint: entrepriseData.geopoint,
     workplace_address: { label: entrepriseData.address! },
-    workplace_name: entrepriseData.establishment_enseigne ?? entrepriseData.establishment_raison_sociale ?? null,
     workplace_brand: entrepriseData.establishment_enseigne ?? null,
     workplace_legal_name: entrepriseData.establishment_raison_sociale ?? null,
     workplace_naf_label: entrepriseData.naf_label ?? null,
@@ -598,7 +599,7 @@ async function resolveRomeCodes(data: IJobsPartnersWritableApi, siretData: Workp
     return null
   }
 
-  const romeoResponse = await getRomeoInfos({ intitule: data.offer_title, contexte: siretData.workplace_naf_label ?? undefined })
+  const romeoResponse = await getRomeFromRomeo({ intitule: data.offer_title, contexte: siretData.workplace_naf_label ?? undefined })
   if (!romeoResponse) {
     zodError.addIssue({ code: "custom", path: ["offer_rome_codes"], message: "ROME is not provided and we are unable to retrieve ROME code for the given job title" })
     return null
@@ -609,7 +610,7 @@ async function resolveRomeCodes(data: IJobsPartnersWritableApi, siretData: Workp
 
 type InvariantFields = "_id" | "created_at" | "partner_label"
 
-async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiApprentissageTokenData, current: IJobsPartnersOfferPrivate | null): Promise<ObjectId> {
+async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAlternanceTokenData, current: IJobsPartnersOfferPrivate | null): Promise<ObjectId> {
   const zodError = new ZodError([])
 
   const [siretData, addressData] = await Promise.all([
@@ -633,7 +634,7 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAppr
   const invariantData: Pick<IJobsPartnersOfferPrivate, InvariantFields> = {
     _id: current?._id ?? new ObjectId(),
     created_at: current?.created_at ?? now,
-    partner_label: identity.organisation,
+    partner_label: identity.organisation!,
   }
 
   const defaultOfferExpiration = current?.offer_expiration
@@ -664,18 +665,17 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAppr
   return invariantData._id
 }
 
-export async function createJobOffer(identity: IApiApprentissageTokenData, data: IJobsPartnersWritableApi): Promise<ObjectId> {
-  /**
-   * KBA 20240905
-   * Pas nécessaire dans la V1, sera réajuster dans un second temps
-   */
-  // if (!identity.habilitations["jobs:write"]) {
-  //   throw forbidden("You are not allowed to create a job offer")
-  // }
+export async function createJobOffer(identity: IApiAlternanceTokenData, data: IJobsPartnersWritableApi): Promise<ObjectId> {
+  const { partner_job_id } = data
+  const { organisation } = identity
+  const exist = await getDbCollection("jobs_partners").findOne<IJobsPartnersOfferPrivate>({ partner_label: organisation!, partner_job_id })
+  if (exist) {
+    throw conflict("Job already exist")
+  }
   return upsertJobOffer(data, identity, null)
 }
 
-export async function updateJobOffer(id: ObjectId, identity: IApiApprentissageTokenData, data: IJobsPartnersWritableApi): Promise<void> {
+export async function updateJobOffer(id: ObjectId, identity: IApiAlternanceTokenData, data: IJobsPartnersWritableApi): Promise<void> {
   const current = await getDbCollection("jobs_partners").findOne<IJobsPartnersOfferPrivate>({ _id: id })
 
   // TODO: Move to authorisation service

@@ -204,19 +204,35 @@ const DemandeDeContact = (props: Props) => {
       <Flex direction={["column", "column", "row"]} mt={6}>
         <FormControl data-testid="fieldset-lastname" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.lastname && formik.errors.lastname)}>
           <FormLabel htmlFor="lastname">Nom *</FormLabel>
-          <Input data-testid="lastname" name="lastname" type="text" width="95%" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.lastname} />
+          <Input
+            data-testid="lastname"
+            name="lastname"
+            type="text"
+            width={["100%", "100%", "95%"]}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.lastname}
+          />
           <FormErrorMessage>{formik.errors.lastname}</FormErrorMessage>
         </FormControl>
         <FormControl data-testid="fieldset-firstname" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.firstname && formik.errors.firstname)}>
           <FormLabel htmlFor="firstname">Prénom *</FormLabel>
-          <Input data-testid="firstname" name="firstname" type="text" width="95%" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.firstname} />
+          <Input
+            data-testid="firstname"
+            name="firstname"
+            type="text"
+            width={["100%", "100%", "95%"]}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.firstname}
+          />
           <FormErrorMessage>{formik.errors.firstname}</FormErrorMessage>
         </FormControl>
       </Flex>
       <Flex direction={["column", "column", "row"]} mt={4}>
         <FormControl data-testid="fieldset-email" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.email && formik.errors.email)}>
           <FormLabel htmlFor="email">E-mail *</FormLabel>
-          <Input data-testid="email" name="email" type="email" width="95%" onChange={onEmailChange} onBlur={formik.handleBlur} value={formik.values.email} />
+          <Input data-testid="email" name="email" type="email" width={["100%", "100%", "95%"]} onChange={onEmailChange} onBlur={formik.handleBlur} value={formik.values.email} />
           {suggestedEmails.length > 0 && (
             <Box mt={2} fontSize="12px" color="grey.600">
               <Text as="span" mr={2}>
@@ -246,14 +262,22 @@ const DemandeDeContact = (props: Props) => {
         </FormControl>
         <FormControl data-testid="fieldset-phone" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.phone && formik.errors.phone)}>
           <FormLabel htmlFor="email">Téléphone *</FormLabel>
-          <Input data-testid="phone" name="phone" type="phone" width="95%" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.phone} />
+          <Input
+            data-testid="phone"
+            name="phone"
+            type="phone"
+            width={["100%", "100%", "95%"]}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.phone}
+          />
           <FormErrorMessage>{formik.errors.phone}</FormErrorMessage>
         </FormControl>
       </Flex>
       <Flex direction={["column", "column", "row"]} mt={4}>
         <FormControl data-testid="fieldset-reasons" mt={{ base: 3, md: "0" }}>
           <FormLabel htmlFor="reasons">Quel(s) sujet(s) souhaitez-vous aborder ? *</FormLabel>
-          <Accordion allowToggle borderLeftWidth={1} borderRightWidth={1} mr={4}>
+          <Accordion allowToggle borderLeftWidth={1} borderRightWidth={1} mr={4} width={["100%", "100%", "auto", "auto"]}>
             <AccordionItem>
               <h2>
                 <AccordionButton
@@ -429,13 +453,13 @@ const DemandeDeContact = (props: Props) => {
           >
             Je prends rendez-vous
           </Button>
-          <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false} size="3xl">
+          <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false} size={["full", "full", "full", "3xl"]}>
             <ModalOverlay />
             <ModalContent>
               <ModalHeader mt={4} paddingTop="10px" paddingBottom="0" sx={{ textAlign: "right" }}>
                 <LBAModalCloseButton onClose={onClose} />
               </ModalHeader>
-              <ModalBody data-testid="modalbody-contact-confirmation" mx={onSuccessSubmitResponse ? 12 : 4}>
+              <ModalBody data-testid="modalbody-contact-confirmation" mx={onSuccessSubmitResponse ? [0, 0, 12, 12] : [0, 0, 4, 4]}>
                 {onSuccessSubmitResponse ? (
                   formConfirmed()
                 ) : (

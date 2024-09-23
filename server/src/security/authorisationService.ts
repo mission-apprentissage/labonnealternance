@@ -400,7 +400,7 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
     /**
      * KBA : temporaire, à modifier lorsque l'ensemble des habilitations seront définit
      */
-    if (schema.securityScheme.access !== "job:manage" || !habilitations["jobs:write"]) {
+    if (schema.securityScheme.access !== "job:manage" || !habilitations["jobs:write"] || !organisation) {
       throw forbidden("Unauthorized")
     }
     const userAccess: ComputedUserAccess = {

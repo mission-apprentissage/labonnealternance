@@ -74,13 +74,13 @@ describe("GET /jobs/search", () => {
   it("should return 401 if no api key provided", async () => {
     const response = await httpClient().inject({ method: "GET", path: "/api/v2/jobs/search" })
     expect(response.statusCode).toBe(401)
-    expect(response.json()).toEqual({ statusCode: 401, error: "Unauthorized", message: "Unauthorized" })
+    expect(response.json()).toEqual({ statusCode: 401, error: "Unauthorized", message: "Unable to parse token missing-bearer" })
   })
 
   it("should return 401 if api key is invalid", async () => {
     const response = await httpClient().inject({ method: "GET", path: "/api/v2/jobs/search", headers: { authorization: `Bearer ${fakeToken}` } })
     expect.soft(response.statusCode).toBe(401)
-    expect(response.json()).toEqual({ statusCode: 401, error: "Unauthorized", message: "Invalid JWT token" })
+    expect(response.json()).toEqual({ statusCode: 401, error: "Unauthorized", message: "Unable to parse token invalid-signature" })
   })
 
   it("should throw ZOD error if ROME is not formatted correctly", async () => {
@@ -332,7 +332,7 @@ describe("POST /jobs", async () => {
     })
 
     expect.soft(response.statusCode).toBe(401)
-    expect(response.json()).toEqual({ statusCode: 401, error: "Unauthorized", message: "Invalid JWT token" })
+    expect(response.json()).toEqual({ statusCode: 401, error: "Unauthorized", message: "Unable to parse token invalid-signature" })
     expect(await getDbCollection("jobs_partners").countDocuments({})).toBe(0)
   })
 
@@ -464,7 +464,7 @@ describe("PUT /jobs/:id", async () => {
     })
 
     expect.soft(response.statusCode).toBe(401)
-    expect(response.json()).toEqual({ error: "Unauthorized", message: "Invalid JWT token", statusCode: 401 })
+    expect(response.json()).toEqual({ error: "Unauthorized", message: "Unable to parse token invalid-signature", statusCode: 401 })
     expect(await getDbCollection("jobs_partners").findOne({ _id: id })).toEqual(originalJob)
   })
 
