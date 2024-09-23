@@ -74,7 +74,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "offer_desired_skills": [
       "Faire preuve de rigueur et de précision",
     ],
-    "offer_expiration": null,
+    "offer_expiration": 2050-01-01T00:00:00.000Z,
     "offer_opening_count": 1,
     "offer_rome_codes": [
       "M1602",
