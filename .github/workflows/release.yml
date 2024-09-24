@@ -176,12 +176,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: upload sourcemaps to sentry
-        run: .bin/mna-lba sentry:release ${{ needs.release.outputs.VERSION }}"
-        env:
-          ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REF_NAME: ${{ env.GITHUB_REF_NAME }}
+      # - name: upload sourcemaps to sentry
+      #   run: .bin/mna-lba sentry:release ${{ needs.release.outputs.VERSION }}"
+      #   env:
+      #     ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     GITHUB_REF_NAME: ${{ env.GITHUB_REF_NAME }}
 
   cypress:
     needs: ["deploy"]
