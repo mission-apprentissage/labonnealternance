@@ -51,10 +51,14 @@ fileignoreconfig:
   checksum: 5c7a2ec4655f0543f42bfbccc759bff4eb10456946885531c91107cac3e8dbc0
 - filename: server/src/db/migrations/202405230000000-migrate-fix-missing-date-blacklist.ts
   checksum: 0c1b814245a58b8ca788fbfab9899206edbddaae795d56963f86c5aa83ea555f
+- filename: server/src/http/controllers/__snapshots__/etablissementRecruteur.controller.test.ts.snap
+  checksum: 1844a9ad314c3074adc11bd09ec0aac528802aed67d05e9e3da788545be88c92
 - filename: server/src/http/controllers/application.controller.test.ts
   checksum: 1f3c9b8cd7c578252a0c41ca9028672712a5bca2ce1686cba83ff60305708305
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
   checksum: dc77c04efc26dcd8ca4816f392ab24a32a92cb45ca4b94adb593a08e7a2d231e
+- filename: server/src/http/controllers/etablissementRecruteur.controller.test.ts
+  checksum: 6e187972b61616791476704a51dcbd97404489e66db72c00912e7aa1436966e5
 - filename: server/src/http/controllers/updateRecruteurLba.controller.test.ts
   checksum: 71dd55af4f1f44fd2b69dee91f0fc8006f3b9e0bd80d40271c73697d4eea9ea2
 - filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts
