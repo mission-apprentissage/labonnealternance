@@ -18,11 +18,11 @@ const getHealthCheck = async () => {
 }
 
 export const coreRoutes = (app: Server) => {
-  app.get("/", { schema: zRoutes.get["/"] }, async (request, response) => {
+  app.get("/", { schema: zRoutes.get["/"] }, async (_request, response) => {
     const result = await getHealthCheck()
     response.status(result.mongo ? 200 : 500).send(result)
   })
-  app.get("/healthcheck", { schema: zRoutes.get["/healthcheck"] }, async (request, response) => {
+  app.get("/healthcheck", { schema: zRoutes.get["/healthcheck"] }, async (_request, response) => {
     const result = await getHealthCheck()
     response.status(result.mongo ? 200 : 500).send(result)
   })

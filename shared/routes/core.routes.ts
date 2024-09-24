@@ -44,5 +44,13 @@ export const zCoreRoutes = {
       },
       securityScheme: null,
     },
+    "/processor/healthcheck": {
+      method: "get",
+      path: "/processor/healthcheck",
+      response: {
+        "200": z.object({}).passthrough(),
+      },
+      securityScheme: null,
+    },
   },
 } as const satisfies IRoutesDef

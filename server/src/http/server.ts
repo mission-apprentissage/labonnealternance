@@ -32,6 +32,7 @@ import formationsRegionV1Route from "./controllers/formationRegion.controller"
 import formationsV1Route from "./controllers/formations.controller"
 import formationsRouteV2 from "./controllers/formations.controller.v2"
 import formulaireRoute from "./controllers/formulaire.controller"
+import { jobProcessorController } from "./controllers/jobProcessor.controller"
 import jobsV1Route from "./controllers/jobs.controller"
 import jobsEtFormationsV1Route from "./controllers/jobsEtFormations.controller"
 import jobsEtFormationsRouteV2 from "./controllers/jobsEtFormations.controller.v2"
@@ -118,6 +119,7 @@ export async function bind(app: Server) {
     (subApp, _, done) => {
       const typedSubApp = subApp.withTypeProvider<ZodTypeProvider>()
       coreRoutes(typedSubApp)
+      jobProcessorController(typedSubApp)
 
       /**
        * LBACandidat
@@ -194,7 +196,7 @@ export async function bind(app: Server) {
   return app
 }
 
-export default async (): Promise<Server> => {
+export const bindFastifyServer = async (): Promise<Server> => {
   const app: Server = fastify({
     logger: logMiddleware(),
     trustProxy: 1,
