@@ -5,25 +5,25 @@ import config from "@/config"
 import { ensureInitialization, getMongodbClientState } from "../../common/utils/mongodbUtils"
 import { Server } from "../server"
 
+const getHealthCheck = async () => {
+  ensureInitialization()
+  const dbState = await getMongodbClientState()
+  return {
+    name: "La bonne alternance",
+    version: config.version,
+    env: config.env,
+    commitHash: config.commitHash,
+    mongo: dbState === "connected",
+  }
+}
+
 export const coreRoutes = (app: Server) => {
   app.get("/", { schema: zRoutes.get["/"] }, async (request, response) => {
-    ensureInitialization()
-    const dbState = await getMongodbClientState()
-    response.status(dbState === "connected" ? 200 : 500).send({
-      name: "La bonne alternance",
-      version: config.version,
-      env: config.env,
-      mongo: dbState === "connected",
-    })
+    const result = await getHealthCheck()
+    response.status(result.mongo ? 200 : 500).send(result)
   })
   app.get("/healthcheck", { schema: zRoutes.get["/healthcheck"] }, async (request, response) => {
-    ensureInitialization()
-    const dbState = await getMongodbClientState()
-    response.status(dbState === "connected" ? 200 : 500).send({
-      name: "La bonne alternance",
-      version: config.version,
-      env: config.env,
-      mongo: dbState === "connected",
-    })
+    const result = await getHealthCheck()
+    response.status(result.mongo ? 200 : 500).send(result)
   })
 }

@@ -2,7 +2,8 @@
   "variable": {
     "VERSION": {},
     "CHANNEL": {},
-    "DEPS_ID": {}
+    "DEPS_ID": {},
+    "COMMIT_HASH": {}
   },
   "group": {
     "production": {
@@ -24,7 +25,8 @@
   "target": {
     "common": {
       "args": {
-        "PUBLIC_VERSION": "${VERSION}"
+        "PUBLIC_VERSION": "${VERSION}",
+        "COMMIT_HASH": "${COMMIT_HASH}"
       },
       "dockerfile": "Dockerfile",
       "platforms": ["linux/amd64"],

@@ -21,6 +21,8 @@ function Help() {
    echo "  log:encrypt <log_file>                     Encrypt log file"
    echo "  log:decrypt <encrypted_log_file>           Decrypt log file"
    echo "  e2e:run                                    Run end to end tests"
+   echo "  sentry:release                             Create sentry release for existing docker image"
+   echo "  sentry:deploy                              Notify deployment to sentry for existing sentry release"
    echo
    echo
 }
@@ -96,4 +98,12 @@ function log:encrypt() {
 
 function log:decrypt() {
   "${SCRIPT_DIR}/log-decrypt.sh" "$@"
+}
+
+function sentry:release() {
+  "${SCRIPT_DIR}/sentry-release.sh" "$@"
+}
+
+function sentry:deploy() {
+  "${SCRIPT_DIR}/sentry-deploy.sh" "$@"
 }

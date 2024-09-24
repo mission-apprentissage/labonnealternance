@@ -8,15 +8,17 @@ fileignoreconfig:
 - filename: .bin/scripts/set-cypress-env.sh
   checksum: 4463ed7c1d5b82a8b152248b953778f37771bfba72865ee0e8af3b61cf3c38da
 - filename: .bin/scripts/setup-local-env.sh
-  checksum: 164cfbaa5965f9c06f84d90cb7e5af0df0c4cc1745e57d99490d44ba6efc1b33
+  checksum: b3700a87a9d58839c8eafce8231d01b6164851a560ea5c232a1ecc19d8d22bc6
 - filename: .github/workflows/_build.yml
   checksum: ab457b5b512b181d7d73c8fdf9c3843eed39f3b0245f5d22742cc93697a08bf5
+- filename: .github/workflows/_deploy.yml
+  checksum: d17a016bb30a6fd52426255feb648b4dc241707bd3b28f0c181c8c4ff45bdd4d
 - filename: .github/workflows/cypress.yml
   checksum: 39f98fb68fdebf6a36959706adb43a8219a4b7781ac35329f957dc1cfa8b6de0
 - filename: .github/workflows/deploy_preview.yml
   checksum: 40f9da2dad1254d3f6674137046d431526c6f731989ed0e061995ba58be94322
 - filename: .github/workflows/release.yml
-  checksum: ffd104ff02d60abf3183694209c5191a0bb7479ce37d8243778275351b4d2228
+  checksum: a74f2767d7c66239e5cbf45c2aaaa6a2d980fe681e41ffa3b166247db323a907
 - filename: .infra/.env_server
   checksum: a3a8b9007e4c082a14b3d09ed8386138db9277ea11ca921a989ba87d0ea61f47
 - filename: .infra/env.ini
@@ -30,7 +32,7 @@ fileignoreconfig:
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: 467ce4cc2c3d83875e6ebc94180d3b398de9caf6da1d4983b79e2f2fbf1e8207
+  checksum: 2aa9a236fdf2bf78ed20d691718a98a16b0ba36ab205cf430f330d8013a84277
 - filename: cypress/e2e/check-admin-algo-company.cy.ts
   checksum: 6a898ee25c84ce2c41da5666aa4f84e6e4aaf0a614dbc0a00153abe99e3617c1
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
@@ -42,7 +44,7 @@ fileignoreconfig:
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
-  checksum: 91999951702279c5dd4836cd3a9fdfc904ac019edc9e799c68c277741d450395
+  checksum: e03b5dac5c70accc532a744505fb928c9b2da6b233f360fe95ad127dbc0a5d6d
 - filename: server/src/common/utils/awsUtils.ts
   checksum: d7d550a8852127bd6838bd7c3f4aee9bba06731d932cff880ff2c1033578fdbd
 - filename: server/src/config.ts
