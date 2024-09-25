@@ -9,6 +9,8 @@ const zResponse = z
     commitHash: z.string(),
     env: z.enum(["local", "recette", "pentest", "production", "preview"]),
     mongo: z.boolean(),
+    error: z.boolean(),
+    processor: z.unknown(),
   })
   .strict()
 
@@ -41,14 +43,6 @@ export const zCoreRoutes = {
             version: z.string(),
           })
           .strict(),
-      },
-      securityScheme: null,
-    },
-    "/processor/healthcheck": {
-      method: "get",
-      path: "/processor/healthcheck",
-      response: {
-        "200": z.object({}).passthrough(),
       },
       securityScheme: null,
     },
