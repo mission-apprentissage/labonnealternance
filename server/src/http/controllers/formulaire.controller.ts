@@ -1,4 +1,4 @@
-import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
+import { badRequest, conflict, internal, notFound } from "@hapi/boom"
 import { RECRUITER_STATUS } from "shared/constants"
 import { JOB_STATUS, zRoutes } from "shared/index"
 
@@ -348,7 +348,7 @@ export default (server: Server) => {
       }
 
       if (recruiterOpt.status !== RECRUITER_STATUS.ACTIF || offreOpt.job_status !== JOB_STATUS.ACTIVE) {
-        throw forbidden("Offer is not active")
+        throw conflict("Offer is not active")
       }
       await patchOffre(jobId, req.body)
       return res.status(200).send({})
