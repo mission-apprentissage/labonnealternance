@@ -28,7 +28,7 @@ export default function CreationOffre() {
   const handleSave = async (values) => {
     // Updates an offer
     if (!isCreation) {
-      apiPut(`/formulaire/offre/:jobId`, { params: { jobId }, body: { ...values, job_update_date: new Date() } })
+      apiPut("/formulaire/offre/:jobId", { params: { jobId }, body: { ...values, job_update_date: new Date() } })
         .then(() => {
           toast({
             title: "Offre mise à jour avec succès.",
