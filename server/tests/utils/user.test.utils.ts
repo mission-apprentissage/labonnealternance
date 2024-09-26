@@ -279,7 +279,7 @@ export const saveCfaUserTest = async (userProps: Partial<IUserWithAccount> = {})
   return { user, role, cfa, recruiter }
 }
 
-export const saveOpcoUserTest = async () => {
+export const saveOpcoUserTest = async (opco = OPCOS_LABEL.AKTO) => {
   const user = await saveUserWithAccount({
     status: [
       {
@@ -298,7 +298,7 @@ export const saveOpcoUserTest = async () => {
   })
   const role = await saveRoleManagement({
     user_id: user._id,
-    authorized_id: OPCOS_LABEL.AKTO,
+    authorized_id: opco,
     authorized_type: AccessEntityType.OPCO,
     status: [roleManagementEventFactory()],
   })
