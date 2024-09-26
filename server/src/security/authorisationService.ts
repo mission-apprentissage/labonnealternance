@@ -334,10 +334,13 @@ function canAccessJob(userAccess: ComputedUserAccess, resource: JobResource): bo
 }
 
 function canAccessUser(userAccess: ComputedUserAccess, resource: Resources["users"][number]): boolean {
+  if (userAccess.users.includes(resource.user._id.toString())) {
+    return true
+  }
   if (userAccess.opcos.length) {
     return userAccess.opcos.some((opco) => resource.entreprises && resource.entreprises.some((entreprise) => entreprise.opco === opco))
   }
-  return userAccess.users.includes(resource.user._id.toString())
+  return false
 }
 
 function canAccessApplication(userAccess: ComputedUserAccess, resource: ApplicationResource): boolean {
