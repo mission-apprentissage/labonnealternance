@@ -123,7 +123,7 @@ async function getRecruitersResource<S extends WithSecurityScheme>(schema: S, re
     await Promise.all(
       schema.securityScheme.resources.recruiter.map(async (recruiterDef): Promise<IRecruiter[]> => {
         if ("_id" in recruiterDef) {
-          const recruiterOpt = await getDbCollection("recruiters").findOne({ _id: getAccessResourcePathValue(recruiterDef._id, req) })
+          const recruiterOpt = await getDbCollection("recruiters").findOne({ _id: new ObjectId(getAccessResourcePathValue(recruiterDef._id, req)) })
           return recruiterOpt ? [recruiterOpt] : []
         }
         if ("establishment_id" in recruiterDef) {
@@ -168,7 +168,7 @@ async function getJobsResource<S extends WithSecurityScheme>(schema: S, req: IRe
     await Promise.all(
       schema.securityScheme.resources.job.map(async (jobDef): Promise<JobResource | null> => {
         if ("_id" in jobDef) {
-          const id = getAccessResourcePathValue(jobDef._id, req)
+          const id = new ObjectId(getAccessResourcePathValue(jobDef._id, req))
           const recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": id })
 
           if (!recruiter) {
@@ -223,7 +223,7 @@ async function getApplicationResource<S extends WithSecurityScheme>(schema: S, r
   const results: (ApplicationResource | null)[] = await Promise.all(
     schema.securityScheme.resources.application.map(async (applicationDef): Promise<ApplicationResource | null> => {
       if ("_id" in applicationDef) {
-        const id = getAccessResourcePathValue(applicationDef._id, req)
+        const id = new ObjectId(getAccessResourcePathValue(applicationDef._id, req))
         const application = await getDbCollection("applications").findOne({ _id: id })
 
         if (!application) return null
@@ -231,7 +231,7 @@ async function getApplicationResource<S extends WithSecurityScheme>(schema: S, r
         if (!job_id) {
           return { application }
         }
-        const recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": job_id })
+        const recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": new ObjectId(job_id) })
         if (!recruiter) {
           return { application }
         }
@@ -337,10 +337,7 @@ function canAccessUser(userAccess: ComputedUserAccess, resource: Resources["user
   if (userAccess.users.includes(resource.user._id.toString())) {
     return true
   }
-  if (userAccess.opcos.length) {
-    return userAccess.opcos.some((opco) => resource.entreprises && resource.entreprises.some((entreprise) => entreprise.opco === opco))
-  }
-  return false
+  return userAccess.opcos.some((opco) => resource.entreprises && resource.entreprises.some((entreprise) => entreprise.opco === opco))
 }
 
 function canAccessApplication(userAccess: ComputedUserAccess, resource: ApplicationResource): boolean {
