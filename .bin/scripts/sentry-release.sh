@@ -5,7 +5,7 @@ VERSION=${1:?"Veuillez préciser la version à build"}
 
 COMMIT_ID=$(git rev-parse --short HEAD)
 curl https://labonnealternance.apprentissage.beta.gouv.fr/api/healthcheck
-PREV_COMMIT_ID=$(curl https://labonnealternance.apprentissage.beta.gouv.fr/api/healthcheck|awk -F 'commitHash' '{print FS $2}'|cut -d'"' -f3)
+PREV_COMMIT_ID=$(curl https://labonnealternance.apprentissage.beta.gouv.fr/api/healthcheck | awk -F 'commitHash' '{print FS $2}' | cut -d'"' -f3)
 
 if [[ -z "${ANSIBLE_VAULT_PASSWORD_FILE:-}" ]]; then
   ansible_extra_opts+=("--vault-password-file" "${SCRIPT_DIR}/get-vault-password-client.sh")
