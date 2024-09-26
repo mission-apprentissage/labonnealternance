@@ -29,7 +29,7 @@ type UserResource = {
 }
 
 type Resources = {
-  users: Array<UserResource> //Array<{ _id: string }> // array de userResource
+  users: Array<UserResource>
   recruiters: Array<RecruiterResource>
   jobs: Array<JobResource>
   applications: Array<ApplicationResource>
