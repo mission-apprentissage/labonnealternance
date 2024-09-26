@@ -29,6 +29,7 @@ import ItemDetailCard from "./ItemDetailServices/ItemDetailCard"
 import JobItemCardHeader from "./ItemDetailServices/JobItemCardHeader"
 import LbaJobDetail from "./LbaJobComponents/LbaJobDetail"
 import RecruteurLbaDetail from "./RecruteurLbaComponents/RecruteurLbaDetail"
+import ShareLink from "./ShareLink"
 import TrainingDetail from "./TrainingDetail"
 
 const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
@@ -165,6 +166,8 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
           )}
 
           {kind === LBA_ITEM_TYPE_OLD.LBA && !isCandidatureLba(selectedItem) && <NoCandidatureLba />}
+
+          <ShareLink item={selectedItem} />
 
           {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && !hasApplied(selectedItem) && (
             <>
