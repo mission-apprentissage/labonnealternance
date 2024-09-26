@@ -158,24 +158,23 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
             </Box>
           )}
 
-          {isCandidatureLba(selectedItem) && (
-            <>
-              <Divider my={2} />
-              <CandidatureLba item={selectedItem} />
-            </>
-          )}
+          <Divider my={2} />
 
-          {kind === LBA_ITEM_TYPE_OLD.LBA && !isCandidatureLba(selectedItem) && <NoCandidatureLba />}
+          <Flex>
+            <Box flex={1}>
+              {isCandidatureLba(selectedItem) && <CandidatureLba item={selectedItem} />}
 
-          <ShareLink item={selectedItem} />
+              {kind === LBA_ITEM_TYPE_OLD.LBA && !isCandidatureLba(selectedItem) && <NoCandidatureLba />}
 
-          {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && !hasApplied(selectedItem) && (
-            <>
-              <Divider my={2} />
-              <DemandeDeContact context={selectedItem.rdvContext} referrer="LBA" showInModal />
-            </>
-          )}
-          {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && <ItemDetailApplicationsStatus item={selectedItem} mt={2} mb={2} />}
+              {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && !hasApplied(selectedItem) && (
+                <DemandeDeContact context={selectedItem.rdvContext} referrer="LBA" showInModal />
+              )}
+              {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && <ItemDetailApplicationsStatus item={selectedItem} mt={2} mb={2} />}
+            </Box>
+            <Box pt={4}>
+              <ShareLink item={selectedItem} />
+            </Box>
+          </Flex>
         </Box>
       </Box>
 
