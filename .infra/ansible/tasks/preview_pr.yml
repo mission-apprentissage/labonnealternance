@@ -68,7 +68,7 @@
 
     - name: "[{{ pr_number }}] Build local images 0.0.0-{{ pr_number }}"
       shell:
-        cmd: "flock --verbose --close /tmp/deployment_build.lock .bin/mna-lba preview:build:temp 0.0.0-{{ pr_number }} load preview"
+        cmd: "flock --verbose --close /tmp/deployment_build.lock .bin/mna-lba preview:build 0.0.0-{{ pr_number }} load commit-hash-temp preview"
         chdir: "/opt/app/projects/{{ pr_number }}/repository"
       async: 900 # max 15 minutes
       poll: 15 # check every 15s
