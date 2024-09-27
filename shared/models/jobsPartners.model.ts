@@ -122,6 +122,7 @@ const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
   offer_opening_count: true,
   offer_origin: true,
   offer_multicast: true,
+  offer_status: true,
 
   apply_email: true,
 
