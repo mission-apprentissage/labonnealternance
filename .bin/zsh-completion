@@ -10,6 +10,7 @@ _mna-lba_completion() {
    "release\:interactive:'Interactivelly Build & Push Docker image releases'"
    "deploy:'Deploy application to <env>'"
    "build\:image:'Build image'"
+   "build\:image\:temp:'Build image temp'"
    "preview\:build:'Build preview from open pull-requests'"
    "preview\:cleanup:'Remove preview from close pull-requests'"
    "vault\:edit:'Edit vault file'"
