@@ -7,12 +7,9 @@ import { DisplayContext } from "@/context/DisplayContextProvider"
 
 const blueBannerText = (
   <Text>
-    <Text as="span" fontWeight={700}>
-      La bonne alternance évolue pour les recruteurs !
-    </Text>{" "}
-    Vous pouvez désormais personnaliser le contenu de vos offres en décochant certains éléments du descriptif généré automatiquement{" "}
-    <Link textDecoration="underline" href="mailto:labonnealternance@beta.gouv.fr?subject=Personnaliser%20mon%20offre%20-%20en%20savoir%20plus">
-      En savoir plus
+    Souhaiteriez-vous accéder à toutes vos candidatures depuis votre espace connecté ?{" "}
+    <Link textDecoration="underline" href="https://tally.so/r/3Xq19z">
+      Donnez-nous votre avis en 3 clics.
     </Link>
   </Text>
 )
