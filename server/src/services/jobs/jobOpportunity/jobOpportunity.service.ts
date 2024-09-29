@@ -320,6 +320,11 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IJobRes
     offresEmploiLba
       // TODO: Temporary fix for missing geopoint & address
       .filter(({ recruiter, job }: IJobResult) => {
+        if (!recruiter.address || !recruiter.geopoint) {
+          const jobDataError = new Error("Lba job has no geopoint or no address")
+          jobDataError.message = `job with id ${job._id.toString()}. geopoint=${recruiter?.geopoint} address=${recruiter?.address}`
+          sentryCaptureException(jobDataError)
+        }
         return recruiter.address && recruiter.geopoint && job.rome_label
       })
       .map(
