@@ -542,6 +542,12 @@ program
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("import-hellowork-to-computed"))
 
+program
+  .command("import-rhalternance")
+  .description("Importe les offres RHAlternance dans la collection raw")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("import-rhalternance"))
+
 program.command("import-kelio").description("Importe les offres kelio").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("import-kelio"))
 
 program

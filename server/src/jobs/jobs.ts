@@ -32,6 +32,7 @@ import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPa
 import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromComputedToJobsPartners"
 import { importHelloWork, importRawHelloWorkIntoComputedJobPartners } from "./offrePartenaire/importHelloWork"
 import { importKelio } from "./offrePartenaire/importKelio"
+import { importRHAlternance } from "./offrePartenaire/importRHAlternance"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -418,6 +419,9 @@ export async function setupJobProcessor() {
       },
       "import-hellowork-to-computed": {
         handler: async () => importRawHelloWorkIntoComputedJobPartners(),
+      },
+      "import-rhalternance": {
+        handler: async () => importRHAlternance(),
       },
       "import-kelio": {
         handler: async () => importKelio(),
