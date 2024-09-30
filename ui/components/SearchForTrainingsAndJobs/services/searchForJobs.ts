@@ -1,4 +1,5 @@
 import axios from "axios"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { factorInternalJobsForMap, factorPartnerJobsForMap, layerType, setJobMarkers } from "@/utils/mapTools"
 
@@ -184,7 +185,8 @@ export const searchForPartnerJobsFunction = async ({
         peJobs: response.data.peJobs.result && response.data.peJobs.result === "error" ? null : peJobs,
       }
 
-      if (followUpItem && followUpItem.parameters.type === "offres") {
+      console.log("followUpItem", followUpItem)
+      if (followUpItem && followUpItem.parameters.type === LBA_ITEM_TYPE_OLD.PEJOB) {
         selectFollowUpItem({
           itemId: followUpItem.parameters.itemId,
           type: followUpItem.parameters.type,
