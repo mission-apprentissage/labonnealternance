@@ -39,7 +39,7 @@ const ShareLink = ({ item }: { item: ILbaItemFormation | ILbaItemFtJob | ILbaIte
       {copied ? (
         <>
           <Image mr={2} src="/images/icons/share_copied_icon.svg" aria-hidden={true} alt="" />
-          <Text fontSize={14} color="bluefrance.500">
+          <Text fontSize={14} color="#18753C">
             Lien copié !
           </Text>
         </>
