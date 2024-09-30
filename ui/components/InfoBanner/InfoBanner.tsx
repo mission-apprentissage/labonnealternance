@@ -8,7 +8,7 @@ import { DisplayContext } from "@/context/DisplayContextProvider"
 const blueBannerText = (
   <Text>
     Souhaiteriez-vous accéder à toutes vos candidatures depuis votre espace connecté ?{" "}
-    <Link textDecoration="underline" href="https://tally.so/r/3Xq19z">
+    <Link textDecoration="underline" href="https://tally.so/r/3Xq19z" isExternal aria-label="Accéder au formulaire - nouvelle fenêtre">
       Donnez-nous votre avis en 3 clics.
     </Link>
   </Text>
@@ -39,7 +39,7 @@ const envBannerText = (
       Vous êtes ici sur un site de test !
     </Text>{" "}
     Vos candidatures ne seront pas transmises aux recruteurs ni aux centres de formation. Pour accéder au site La bonne alternance, veuillez cliquer sur ce lien :{" "}
-    <Link href="https://labonnealternance.apprentissage.beta.gouv.fr" textDecoration="underline" isExternal aria-label="Accéder au formulaire - nouvelle fenêtre">
+    <Link href="https://labonnealternance.apprentissage.beta.gouv.fr" textDecoration="underline">
       La bonne alternance - Trouvez votre alternance
     </Link>
   </Text>
