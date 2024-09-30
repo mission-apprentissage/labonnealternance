@@ -147,6 +147,9 @@ const config = {
       endDay: 31,
     },
   },
+  rhalternance: {
+    apiKey: env.get("RH_ALTERNANCE_API_KEY").required().asString(),
+  },
 }
 
 export default config

@@ -5,14 +5,17 @@ import HttpTerminator from "lil-http-terminator"
 
 import { closeMemoryCache } from "./common/apis/client"
 import { logger } from "./common/logger"
-import { sleep } from "./common/utils/asyncUtils"
 import { closeMongodbConnection } from "./common/utils/mongodbUtils"
 import { notifyToSlack } from "./common/utils/slackUtils"
 import config from "./config"
+import { bindProcessorServer } from "./http/jobProcessorServer"
 import { closeSentry, initSentryProcessor } from "./http/sentry"
-import server from "./http/server"
+import { bindFastifyServer } from "./http/server"
+import { setupJobProcessor } from "./jobs/jobs"
 
 async function startProcessor(signal: AbortSignal) {
+  logger.info("Setup job processor")
+  await setupJobProcessor()
   logger.info(`Process jobs queue - start`)
   await startJobProcessor(signal)
   logger.info(`Processor shut down`)
@@ -78,7 +81,7 @@ program
   .action(async ({ withProcessor = false }) => {
     try {
       const signal = createProcessExitSignal()
-      const httpServer = await server()
+      const httpServer = await bindFastifyServer()
       await httpServer.ready()
       await httpServer.listen({ port: config.port, host: "0.0.0.0" })
       logger.info(`Server ready and listening on port ${config.port}`)
@@ -124,14 +127,43 @@ program
   .command("job_processor:start")
   .description("Run job processor")
   .action(async () => {
-    const signal = createProcessExitSignal()
-    if (config.disable_processors) {
-      // The processor will exit, and be restarted by docker every day
-      await sleep(24 * 3_600_000, signal)
-      return
-    }
+    try {
+      const signal = createProcessExitSignal()
+      const httpServer = await bindProcessorServer()
+      await httpServer.ready()
+      await httpServer.listen({ port: config.port, host: "0.0.0.0" })
+      logger.info(`Server ready and listening on port ${config.port}`)
 
-    await startProcessor(signal)
+      const terminator = HttpTerminator({
+        server: httpServer.server,
+        maxWaitTimeout: 50_000,
+        logger: logger,
+      })
+
+      if (signal.aborted) {
+        await terminator.terminate()
+        return
+      }
+
+      await Promise.all([
+        new Promise<void>((resolve, reject) => {
+          signal.addEventListener("abort", async () => {
+            try {
+              await terminator.terminate()
+              logger.warn("Server shut down")
+              resolve()
+            } catch (err) {
+              reject(err)
+            }
+          })
+        }),
+        startProcessor(signal),
+      ])
+    } catch (err) {
+      logger.error(err)
+      captureException(err)
+      throw err
+    }
   })
 
 function createJobAction(name) {
@@ -541,6 +573,12 @@ program
   .description("Importe les offres hellowork depuis raw vers computed")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("import-hellowork-to-computed"))
+
+program
+  .command("import-rhalternance")
+  .description("Importe les offres RHAlternance dans la collection raw")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("import-rhalternance"))
 
 program.command("import-kelio").description("Importe les offres kelio").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("import-kelio"))
 

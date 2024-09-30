@@ -194,7 +194,7 @@ export async function bind(app: Server) {
   return app
 }
 
-export default async (): Promise<Server> => {
+export const bindFastifyServer = async (): Promise<Server> => {
   const app: Server = fastify({
     logger: logMiddleware(),
     trustProxy: 1,
