@@ -11,7 +11,7 @@ const computeProcessorHealthCheck = async () => {
   const health = await getProcessorHealthcheck()
   const { workers } = health
   const startedAtOpt = workers.at(0)?.task?.started_at
-  const error: boolean = !workers.length || Boolean(startedAtOpt && dayjs(startedAtOpt).isBefore(dayjs().subtract(6, "hour")))
+  const error: boolean = Boolean(startedAtOpt && dayjs(startedAtOpt).isBefore(dayjs().subtract(6, "hour")))
   return {
     ...health,
     error,
