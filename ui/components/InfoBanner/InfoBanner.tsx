@@ -32,7 +32,7 @@ const redBannerText = (
       Service temporairement indisponible.
     </Text>{" "}
     Suite à un problème chez notre prestataire d'envoi d'emails, la connexion à votre compte est momentanément bloquée. Merci de revenir ultérieurement.{" "}
-    <Link textDecoration="underline">En savoir plus</Link>
+    {/*<Link textDecoration="underline">En savoir plus</Link>*/}
   </Text>
 )
 
