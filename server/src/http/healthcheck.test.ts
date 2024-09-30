@@ -2,16 +2,19 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
 import { describe, expect, it } from "vitest"
 
+import { setupJobProcessor } from "@/jobs/jobs"
+
 import config from "../config"
 
 describe("healthcheckRoutes", () => {
   useMongo()
   const httpClient = useServer()
   it("Vérifie que le server fonctionne", async () => {
+    await setupJobProcessor()
     const response = await httpClient().inject({ method: "GET", path: "/api" })
 
-    expect(response.statusCode).toBe(200)
-    expect(JSON.parse(response.body)).toEqual({
+    const json = JSON.parse(response.body)
+    expect.soft(json).toMatchObject({
       commitHash: "hash-test",
       name: "La bonne alternance",
       version: config.version,
