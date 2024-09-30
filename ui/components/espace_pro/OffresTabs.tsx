@@ -239,7 +239,7 @@ export const OffresTabs = ({ recruiter, establishmentId, showStats = false }: { 
                         {copied ? (
                           <Flex>
                             <Image mr={2} src="/images/icons/share_copied_icon.svg" aria-hidden={true} alt="" />
-                            <Text>Lien copié !</Text>
+                            <Text color="#18753C">Lien copié !</Text>
                           </Flex>
                         ) : (
                           "Partager l'offre"
