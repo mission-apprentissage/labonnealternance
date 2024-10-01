@@ -11,7 +11,6 @@ function Help() {
    echo "  release:app                                Build & Push Docker image releases"
    echo "  deploy <env> --user <your_username>        Deploy application to <env>"
    echo "  preview:build                              Build preview"
-   echo "  preview:build:temp                         Build preview temp"
    echo "  preview:cleanup --user <your_username>     Remove preview from close pull-requests"
    echo "  vault:edit                                 Edit vault file"
    echo "  vault:password                             Show vault password"
@@ -58,10 +57,6 @@ function build:image() {
 
 function preview:build() {
   "${SCRIPT_DIR}/build-images.sh" "$@"
-}
-
-function preview:build:temp() {
-  "${SCRIPT_DIR}/build-images-temp.sh" "$@"
 }
 
 function preview:cleanup() {
