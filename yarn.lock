@@ -4509,7 +4509,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/node@npm:^7.60.0, @sentry/node@npm:^7.72.0":
+"@sentry/node@npm:^7.60.0, @sentry/node@npm:^7.72.0, @sentry/node@npm:^7.80.0":
   version: 7.119.0
   resolution: "@sentry/node@npm:7.119.0"
   dependencies:
@@ -13382,10 +13382,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"job-processor@npm:^1.6.0":
-  version: 1.6.0
-  resolution: "job-processor@npm:1.6.0"
+"job-processor@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "job-processor@npm:1.5.0"
   dependencies:
+    "@sentry/node": ^7.80.0
     cron-parser: ^4.9.0
     date-fns: ^2.30.0
     type-fest: ^4.18.2
@@ -13393,7 +13394,6 @@ __metadata:
     "@codegouvfr/react-dsfr": ^1.9.11
     "@mui/material": ^5.15.18
     "@mui/x-data-grid": ^7.5.0
-    "@sentry/node": ^7.51.1 || ^8.0.0
     mongodb: "*"
     react: ^18.0.0
     zod: ^3.0.0
@@ -13407,7 +13407,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 88e2b82e1f871a787ceff1a07d25af72b8a6b7bf56cf8a026e4535272bbb35a763c0de42690a6309ab347c0607c68e9be17541fccab629417360c102210b63ee
+  checksum: e9e2238cd9e5b94e65c347372bf3fa396ad631cb0aebafc0f7ab20b4983a3d7850a96962e972a45eb3d993623d58b664df20de745c0705b6dcc4da586cd85de9
   languageName: node
   linkType: hard
 
@@ -19731,7 +19731,7 @@ __metadata:
     got: ^12.5.2
     iconv-lite: ^0.6.3
     is-semver: ^1.0.11
-    job-processor: ^1.6.0
+    job-processor: ^1.5.0
     joi: ^17.6.0
     jsonwebtoken: ^8.5.1
     lil-http-terminator: ^1.2.3

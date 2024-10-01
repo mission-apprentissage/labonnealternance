@@ -9,8 +9,6 @@ const zResponse = z
     commitHash: z.string(),
     env: z.enum(["local", "recette", "pentest", "production", "preview"]),
     mongo: z.boolean(),
-    error: z.boolean(),
-    processor: z.unknown(),
   })
   .strict()
 
