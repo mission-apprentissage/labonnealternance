@@ -1,10 +1,14 @@
 import { Button, Image, Text } from "@chakra-ui/react"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "shared"
-import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE_OLD, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
+
+import { DisplayContext } from "@/context/DisplayContextProvider"
 
 const ShareLink = ({ item }: { item: ILbaItemFormation | ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob }) => {
   const [copied, setCopied] = useState(false)
+
+  const { formValues } = useContext(DisplayContext)
 
   useEffect(() => {
     setCopied(false)
@@ -12,7 +16,12 @@ const ShareLink = ({ item }: { item: ILbaItemFormation | ILbaItemFtJob | ILbaIte
 
   const copyLink = (e) => {
     e.preventDefault()
-    navigator.clipboard.writeText(window.location.href).then(function () {
+
+    const link =
+      item.ideaType === LBA_ITEM_TYPE_OLD.LBA && !formValues?.location?.value
+        ? `${window.location.origin}${window.location.pathname}?display=list&page=fiche&type=lba&itemId=${item.id}`
+        : window.location.href
+    navigator.clipboard.writeText(link).then(function () {
       setCopied(true)
     })
   }
