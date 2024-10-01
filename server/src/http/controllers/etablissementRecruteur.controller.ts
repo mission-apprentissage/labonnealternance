@@ -237,7 +237,7 @@ export default (server: Server) => {
             subject: "RECRUTEUR",
             message: `Nouvel OF en attente de validation - ${config.publicUrl}/espace-pro/administration/users/${userCfa._id}`,
           }
-          const token = generateCfaCreationToken(userWithAccountToUserForToken(userCfa), establishment_siret)
+          const token = generateCfaCreationToken(userWithAccountToUserForToken(userCfa))
           const userAndOrganization: UserAndOrganization = { user: userCfa, organization }
           if (!contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
