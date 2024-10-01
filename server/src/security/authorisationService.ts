@@ -2,7 +2,7 @@ import { forbidden, internal } from "@hapi/boom"
 import { FastifyRequest } from "fastify"
 import { ObjectId } from "mongodb"
 import { ADMIN, CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
-import { ComputedUserAccess, IApplication, IJob, IRecruiter } from "shared/models"
+import { ComputedUserAccess, IApplication, IJob, IRecruiter, IUserWithAccount } from "shared/models"
 import { ICFA } from "shared/models/cfa.model"
 import { IEntreprise } from "shared/models/entreprise.model"
 import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
@@ -20,12 +20,16 @@ import { getUserFromRequest } from "./authenticationService"
 
 type RecruiterResource = { recruiter: IRecruiter } & ({ type: "ENTREPRISE"; entreprise: IEntreprise } | { type: "CFA"; cfa: ICFA })
 type JobResource = { job: IJob; recruiterResource: RecruiterResource }
-type ApplicationResource = { application: IApplication; jobResource?: JobResource; applicantId?: string }
+type ApplicationResource = { application: IApplication; jobResource?: JobResource; applicantId?: string; user?: IUserWithAccount | null }
 type EntrepriseResource = { entreprise: IEntreprise }
 type JobPartnerResource = { job: IJobsPartnersOfferPrivate }
+type UserResource = {
+  user: IUserWithAccount
+  entreprises: IEntreprise[] | null
+}
 
 type Resources = {
-  users: Array<{ _id: string }>
+  users: Array<UserResource>
   recruiters: Array<RecruiterResource>
   jobs: Array<JobResource>
   applications: Array<ApplicationResource>
@@ -73,6 +77,43 @@ const jobToJobResource = async (job: IJob, recruiter: IRecruiter): Promise<JobRe
   return { job, recruiterResource }
 }
 
+const getEntreprisesManagedByUser = async (user: IUserWithAccount) => {
+  const entreprises = await getDbCollection("rolemanagements")
+    .aggregate([
+      {
+        $match: { user_id: user._id, authorized_type: ENTREPRISE },
+      },
+      {
+        // conversion de authorized_id en ObjectId
+        $addFields: {
+          authorizedId: { $toObjectId: "$authorized_id" },
+        },
+      },
+      {
+        // récupération des entreprises correspondantes à rolemanagements.authorized_id
+        $lookup: {
+          from: "entreprises",
+          localField: "authorizedId",
+          foreignField: "_id",
+          as: "entreprises",
+        },
+      },
+      {
+        $unwind: "$entreprises",
+      },
+      {
+        // on garde les entreprises
+        $project: {
+          _id: 0,
+          entreprises: 1,
+        },
+      },
+    ])
+    .toArray()
+
+  return entreprises?.length ? entreprises.map((entreprise) => entreprise.entreprises) : null
+}
+
 async function getRecruitersResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources["recruiters"]> {
   if (!schema.securityScheme.resources.recruiter) {
     return []
@@ -82,7 +123,7 @@ async function getRecruitersResource<S extends WithSecurityScheme>(schema: S, re
     await Promise.all(
       schema.securityScheme.resources.recruiter.map(async (recruiterDef): Promise<IRecruiter[]> => {
         if ("_id" in recruiterDef) {
-          const recruiterOpt = await getDbCollection("recruiters").findOne({ _id: getAccessResourcePathValue(recruiterDef._id, req) })
+          const recruiterOpt = await getDbCollection("recruiters").findOne({ _id: new ObjectId(getAccessResourcePathValue(recruiterDef._id, req)) })
           return recruiterOpt ? [recruiterOpt] : []
         }
         if ("establishment_id" in recruiterDef) {
@@ -127,7 +168,7 @@ async function getJobsResource<S extends WithSecurityScheme>(schema: S, req: IRe
     await Promise.all(
       schema.securityScheme.resources.job.map(async (jobDef): Promise<JobResource | null> => {
         if ("_id" in jobDef) {
-          const id = getAccessResourcePathValue(jobDef._id, req)
+          const id = new ObjectId(getAccessResourcePathValue(jobDef._id, req))
           const recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": id })
 
           if (!recruiter) {
@@ -157,8 +198,16 @@ async function getUserResource<S extends WithSecurityScheme>(schema: S, req: IRe
     await Promise.all(
       schema.securityScheme.resources.user.map(async (userDef) => {
         if ("_id" in userDef) {
-          const userOpt = await getDbCollection("userswithaccounts").findOne({ _id: getAccessResourcePathValue(userDef._id, req) })
-          return userOpt ? { _id: userOpt._id.toString() } : null
+          const userId = new ObjectId(getAccessResourcePathValue(userDef._id, req))
+          const userOpt = await getDbCollection("userswithaccounts").findOne({ _id: userId })
+
+          if (userOpt) {
+            return {
+              user: userOpt,
+              entreprises: await getEntreprisesManagedByUser(userOpt),
+            }
+          }
+          return null
         }
         assertUnreachable(userDef)
       })
@@ -174,7 +223,7 @@ async function getApplicationResource<S extends WithSecurityScheme>(schema: S, r
   const results: (ApplicationResource | null)[] = await Promise.all(
     schema.securityScheme.resources.application.map(async (applicationDef): Promise<ApplicationResource | null> => {
       if ("_id" in applicationDef) {
-        const id = getAccessResourcePathValue(applicationDef._id, req)
+        const id = new ObjectId(getAccessResourcePathValue(applicationDef._id, req))
         const application = await getDbCollection("applications").findOne({ _id: id })
 
         if (!application) return null
@@ -182,7 +231,7 @@ async function getApplicationResource<S extends WithSecurityScheme>(schema: S, r
         if (!job_id) {
           return { application }
         }
-        const recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": job_id })
+        const recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": new ObjectId(job_id) })
         if (!recruiter) {
           return { application }
         }
@@ -192,7 +241,7 @@ async function getApplicationResource<S extends WithSecurityScheme>(schema: S, r
         }
         const jobResource = await jobToJobResource(job, recruiter)
         const user = await getUserWithAccountByEmail(application.applicant_email)
-        return { application, jobResource, applicantId: user?._id.toString() }
+        return { application, jobResource, user }
       }
 
       assertUnreachable(applicationDef)
@@ -285,16 +334,16 @@ function canAccessJob(userAccess: ComputedUserAccess, resource: JobResource): bo
 }
 
 function canAccessUser(userAccess: ComputedUserAccess, resource: Resources["users"][number]): boolean {
-  if (userAccess.opcos.length) {
+  if (userAccess.users.includes(resource.user._id.toString())) {
     return true
   }
-  return userAccess.users.includes(resource._id)
+  return userAccess.opcos.some((opco) => resource.entreprises && resource.entreprises.some((entreprise) => entreprise.opco === opco))
 }
 
 function canAccessApplication(userAccess: ComputedUserAccess, resource: ApplicationResource): boolean {
-  const { jobResource, applicantId } = resource
+  const { jobResource, user } = resource
   // TODO ajout de granularité pour les accès candidat et recruteur
-  return (jobResource && canAccessJob(userAccess, jobResource)) || (applicantId ? canAccessUser(userAccess, { _id: applicantId }) : false)
+  return (jobResource && canAccessJob(userAccess, jobResource)) || (user ? canAccessUser(userAccess, { user, entreprises: [] }) : false)
 }
 
 function canAccessEntreprise(userAccess: ComputedUserAccess, resource: EntrepriseResource): boolean {
