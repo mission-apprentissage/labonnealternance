@@ -10,7 +10,7 @@ export const WidgetEntrepriseOffre = () => {
 
   return (
     <Box>
-      {displayBanner && (
+      {displayBanner === "true" && (
         <Bandeau
           type="success"
           header="Votre compte a été créé avec succès, et est en attente de vérification."
