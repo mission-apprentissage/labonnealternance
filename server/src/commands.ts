@@ -167,9 +167,7 @@ function createJobAction(name) {
   return async (options) => {
     try {
       const { queued = false, ...payload } = options
-      if (!queued) {
-        await setupJobProcessor()
-      }
+      await setupJobProcessor()
       const exitCode = await addJob({
         name,
         queued,
