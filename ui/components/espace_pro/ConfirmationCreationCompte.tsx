@@ -8,7 +8,6 @@ import { AUTHTYPE } from "../../common/contants"
 import { redirect } from "../../common/utils/router"
 import { WidgetContext } from "../../context/contextWidget"
 import { InfoCircle } from "../../theme/components/icons"
-import { cancelAccountCreation } from "../../utils/api"
 
 export const ConfirmationCreationCompte = (props: {
   isOpen: boolean
@@ -20,7 +19,7 @@ export const ConfirmationCreationCompte = (props: {
   siret: string
   token?: string
 }) => {
-  const { isOpen, onClose, user, formulaire, isWidget, token, type, siret } = props
+  const { isOpen, onClose, user, formulaire, isWidget, token, type } = props
   const router = useRouter()
   const { widget } = useContext(WidgetContext)
 
@@ -43,7 +42,6 @@ export const ConfirmationCreationCompte = (props: {
   }
 
   const deleteAccount = async () => {
-    await cancelAccountCreation(siret, token)
     if (widget.isWidget) {
       redirect(`/espace-pro/widget/${formulaire.origin}`, true)
     } else {
