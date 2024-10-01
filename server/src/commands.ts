@@ -13,12 +13,14 @@ import { closeSentry, initSentryProcessor } from "./http/sentry"
 import { bindFastifyServer } from "./http/server"
 import { setupJobProcessor } from "./jobs/jobs"
 
-async function startProcessor(signal: AbortSignal) {
+async function setupAndStartProcessor(signal: AbortSignal, shouldStartWorker: boolean) {
   logger.info("Setup job processor")
   await setupJobProcessor()
-  logger.info(`Process jobs queue - start`)
-  await startJobProcessor(signal)
-  logger.info(`Processor shut down`)
+  if (shouldStartWorker) {
+    logger.info(`Process jobs queue - start`)
+    await startJobProcessor(signal)
+    logger.info(`Processor shut down`)
+  }
 }
 
 function createProcessExitSignal() {
@@ -97,7 +99,7 @@ program
         return
       }
 
-      const tasks = [
+      await Promise.all([
         new Promise<void>((resolve, reject) => {
           signal.addEventListener("abort", async () => {
             try {
@@ -109,13 +111,8 @@ program
             }
           })
         }),
-      ]
-
-      if (withProcessor) {
-        tasks.push(startProcessor(signal))
-      }
-
-      await Promise.all(tasks)
+        setupAndStartProcessor(signal, withProcessor),
+      ])
     } catch (err) {
       logger.error(err)
       captureException(err)
@@ -157,7 +154,7 @@ program
             }
           })
         }),
-        startProcessor(signal),
+        setupAndStartProcessor(signal, true),
       ])
     } catch (err) {
       logger.error(err)
