@@ -146,7 +146,9 @@ const ValidatedAccountDescription = ({ withDelegation, email, onResendEmail }: {
           </Heading>
           <Text textAlign="justify">
             Pour publier votre offre auprès des candidats {withDelegation ? "et la transmettre aux organismes de formation sélectionnés" : ""}, merci de confirmer votre adresse
-            mail en cliquant sur le lien que nous venons de vous transmettre à l’adresse suivante: <span style={{ fontWeight: "700" }}>{email}</span>
+            mail en cliquant sur le lien que nous venons de vous transmettre à l'adresse suivante:
+            <br />
+            <span style={{ fontWeight: "700" }}>{email}</span>
           </Text>
         </Box>
       </Flex>
@@ -167,7 +169,7 @@ const AwaitingAccountDescription = ({ withDelegation, email, onResendEmail }: { 
         <Box>
           <Heading fontSize="18px">Confirmez votre email</Heading>
           <Text>
-            Cliquez sur le lien que nous venons de vous transmettre à l’adresse suivante:
+            Cliquez sur le lien que nous venons de vous transmettre à l'adresse suivante:
             <br />
             <span style={{ fontWeight: "700" }}>{email}</span>.
           </Text>
