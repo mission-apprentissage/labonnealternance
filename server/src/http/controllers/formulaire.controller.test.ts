@@ -8,6 +8,8 @@ import { describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
+import { generateEntrepriseFixture } from "../../../../shared/fixtures/entreprise.fixture"
+
 describe("formulaire.controller", () => {
   useMongo()
   const httpClient = useServer()
@@ -15,7 +17,11 @@ describe("formulaire.controller", () => {
   it("met à jour une offre active", async () => {
     // given
     const opco = OPCOS_LABEL.CONSTRUCTYS
+    const entreprise = generateEntrepriseFixture()
+    await getDbCollection("entreprises").insertOne(entreprise)
+    const { siret } = entreprise
     const recruiter = generateRecruiterFixture({
+      establishment_siret: siret,
       opco,
       jobs: [generateJobFixture({ job_status: JOB_STATUS.ACTIVE })],
     })
@@ -50,7 +56,11 @@ describe("formulaire.controller", () => {
   it.each([JOB_STATUS.ANNULEE, JOB_STATUS.POURVUE, JOB_STATUS.EN_ATTENTE])("interdit la mise à jour d'une offre au status %s", async (jobStatus) => {
     // given
     const opco = OPCOS_LABEL.CONSTRUCTYS
+    const entreprise = generateEntrepriseFixture()
+    await getDbCollection("entreprises").insertOne(entreprise)
+    const { siret } = entreprise
     const recruiter = generateRecruiterFixture({
+      establishment_siret: siret,
       opco,
       jobs: [generateJobFixture({ job_status: jobStatus })],
     })
