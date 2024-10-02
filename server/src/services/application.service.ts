@@ -440,6 +440,7 @@ const newApplicationToApplicationDocumentV2 = async (
     applicant_email: newApplication.applicant_email.toLowerCase(),
     applicant_message_to_company: prepareMessageForMail(newApplication.message),
     applicant_phone: newApplication.applicant_phone,
+    job_searched_by_user: newApplication.job_searched_by_user,
     caller: caller,
     company_email: recruteurEmail.toLowerCase(),
     job_origin: LbaJob.type,
@@ -835,6 +836,7 @@ const sanitizeApplicationForEmail = (application: IApplication) => {
     caller,
     created_at,
     last_update_at,
+    job_searched_by_user,
   } = application
   return {
     applicant_email: sanitizeForEmail(applicant_email),
@@ -843,6 +845,7 @@ const sanitizeApplicationForEmail = (application: IApplication) => {
     applicant_phone: sanitizeForEmail(applicant_phone),
     applicant_attachment_name: sanitizeForEmail(applicant_attachment_name),
     applicant_message_to_company: sanitizeForEmail(applicant_message_to_company),
+    job_searched_by_user: sanitizeForEmail(job_searched_by_user),
     company_recruitment_intention: sanitizeForEmail(company_recruitment_intention),
     company_feedback: sanitizeForEmail(company_feedback),
     company_feedback_date: company_feedback_date,

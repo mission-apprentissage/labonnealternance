@@ -54,6 +54,7 @@ export const ZApplication = z
       description: "Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat.",
       example: "Madame, monsieur...",
     }),
+    job_searched_by_user: z.string().nullish().describe("Métier recherché par le candidat"),
     company_recruitment_intention: z.string().nullish().describe("L'intention de la société vis à vis du candidat"),
     company_feedback: z.string().nullish().describe("L'avis donné par la société"),
     company_feedback_date: z.date().nullish().describe("Date d'intention/avis donnée"),
