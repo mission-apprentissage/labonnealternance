@@ -1,5 +1,6 @@
-import { badRequest, internal, notFound } from "@hapi/boom"
-import { zRoutes } from "shared/index"
+import { badRequest, conflict, internal, notFound } from "@hapi/boom"
+import { RECRUITER_STATUS } from "shared/constants"
+import { JOB_STATUS, zRoutes } from "shared/index"
 
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateOffreToken } from "@/services/appLinks.service"
@@ -20,6 +21,7 @@ import {
   getFormulaireWithRomeDetailAndApplicationCount,
   getJob,
   getJobWithRomeDetail,
+  getOffre,
   patchOffre,
   provideOffre,
   updateFormulaire,
@@ -338,7 +340,17 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.put["/formulaire/offre/:jobId"])],
     },
     async (req, res) => {
-      await patchOffre(req.params.jobId, req.body)
+      const { jobId } = req.params
+      const recruiterOpt = await getOffre(jobId)
+      const offreOpt = recruiterOpt?.jobs.find((job) => job._id.toString() === jobId.toString())
+      if (!recruiterOpt || !offreOpt) {
+        throw notFound("offer not found")
+      }
+
+      if (recruiterOpt.status !== RECRUITER_STATUS.ACTIF || offreOpt.job_status !== JOB_STATUS.ACTIVE) {
+        throw conflict("Offer is not active")
+      }
+      await patchOffre(jobId, req.body)
       return res.status(200).send({})
     }
   )
