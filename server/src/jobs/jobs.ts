@@ -4,7 +4,7 @@ import { ObjectId } from "mongodb"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
 
-import { getLoggerWithContext } from "../common/logger"
+import { getLoggerWithContext, logger } from "../common/logger"
 import { getDatabase } from "../common/utils/mongodbUtils"
 import config from "../config"
 
@@ -68,6 +68,7 @@ import { controlApplications } from "./verifications/controlApplications"
 import { controlAppointments } from "./verifications/controlAppointments"
 
 export async function setupJobProcessor() {
+  logger.info("Setup job processor")
   return initJobProcessor({
     db: getDatabase(),
     logger: getLoggerWithContext("script"),
