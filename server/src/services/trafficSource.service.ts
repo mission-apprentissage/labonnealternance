@@ -5,7 +5,7 @@ import { ITrackingCookies, TrafficType } from "shared/models"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-function hashEmail(email) {
+export function hashEmail(email) {
   return crypto.createHash("sha256").update(email).digest("hex")
 }
 
@@ -36,7 +36,7 @@ const saveTrafficSourceIfAny = async ({
   source?: ITrackingCookies
 }) => {
   if (source?.referer || source?.utm_campaign) {
-    await getDbCollection("traffic_sources").insertOne({
+    await getDbCollection("trafficsources").insertOne({
       _id: new ObjectId(),
       user_id,
       application_id,

@@ -3,7 +3,7 @@ import { z } from "../helpers/zodWithOpenApi"
 
 import { IModelDescriptor, zObjectId } from "./common"
 
-const collectionName = "traffic_sources" as const
+const collectionName = "trafficsources" as const
 
 export enum TrafficType {
   ENTREPRISE = "ENTREPRISE",
