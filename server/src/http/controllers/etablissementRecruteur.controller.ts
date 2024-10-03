@@ -200,7 +200,7 @@ export default (server: Server) => {
             if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw forbidden(result.message, result)
             else throw badRequest(result.message, result)
           }
-          const token = generateDepotSimplifieToken(userWithAccountToUserForToken(result.user), result.formulaire.establishment_id, siret)
+          const token = generateDepotSimplifieToken(userWithAccountToUserForToken(result.user), result.formulaire.establishment_id)
           return res.status(200).send({ formulaire: result.formulaire, user: result.user, token, validated: result.validated })
         }
         case CFA: {
@@ -237,7 +237,7 @@ export default (server: Server) => {
             subject: "RECRUTEUR",
             message: `Nouvel OF en attente de validation - ${config.publicUrl}/espace-pro/administration/users/${userCfa._id}`,
           }
-          const token = generateCfaCreationToken(userWithAccountToUserForToken(userCfa), establishment_siret)
+          const token = generateCfaCreationToken(userWithAccountToUserForToken(userCfa))
           const userAndOrganization: UserAndOrganization = { user: userCfa, organization }
           if (!contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
