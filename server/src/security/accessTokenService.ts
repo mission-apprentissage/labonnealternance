@@ -1,11 +1,10 @@
-import Boom from "boom"
+import { forbidden, internal } from "@hapi/boom"
 import jwt from "jsonwebtoken"
 import { ObjectId } from "mongodb"
 import { PathParam, QueryString } from "shared/helpers/generateUri"
 import { IUserRecruteur } from "shared/models"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
-import { assertUnreachable } from "shared/utils"
 import { Jsonify } from "type-fest"
 import { AnyZodObject, z } from "zod"
 
@@ -31,18 +30,7 @@ type AuthorizedValuesRecord<ZodObject> = ZodObject extends AnyZodObject
     }
   : undefined
 
-// TODO à retirer à partir du 01/02/2024
-type OldIScope<Schema extends SchemaWithSecurity> = {
-  schema: Schema
-  options:
-    | "all"
-    | {
-        params: AuthorizedValuesRecord<Schema["params"]>
-        querystring: AuthorizedValuesRecord<Schema["querystring"]>
-      }
-}
-
-type NewIScope<Schema extends SchemaWithSecurity> = {
+type IScope<Schema extends SchemaWithSecurity> = {
   method: Schema["method"]
   path: Schema["path"]
   options:
@@ -52,10 +40,7 @@ type NewIScope<Schema extends SchemaWithSecurity> = {
         querystring: AuthorizedValuesRecord<Schema["querystring"]>
       }
 }
-
-type IScope<Schema extends SchemaWithSecurity> = NewIScope<Schema> | OldIScope<Schema>
-
-export const generateScope = <Schema extends SchemaWithSecurity>(scope: Omit<NewIScope<Schema>, "method" | "path"> & { schema: Schema }): NewIScope<Schema> => {
+export const generateScope = <Schema extends SchemaWithSecurity>(scope: Omit<IScope<Schema>, "method" | "path"> & { schema: Schema }): IScope<Schema> => {
   const { schema, options } = scope
   return { options, path: schema.path, method: schema.method }
 }
@@ -96,7 +81,7 @@ export const applicationToUserForToken = ({ company_siret, jobId }: IApplication
   }
 }
 
-export function generateAccessToken(user: UserForAccessToken, scopes: ReadonlyArray<NewIScope<SchemaWithSecurity>>, options: { expiresIn?: string } = {}): string {
+export function generateAccessToken(user: UserForAccessToken, scopes: ReadonlyArray<IScope<SchemaWithSecurity>>, options: { expiresIn?: string } = {}): string {
   const identity: IAccessToken["identity"] = "_id" in user ? { type: "IUser2", _id: user._id.toString(), email: user.email.toLowerCase() } : user
   const data: IAccessToken<SchemaWithSecurity> = {
     identity,
@@ -108,22 +93,9 @@ export function generateAccessToken(user: UserForAccessToken, scopes: ReadonlyAr
     issuer: config.publicUrl,
   })
   if (token.length > TOKEN_MAX_LENGTH) {
-    sentryCaptureException(Boom.internal(`Token généré trop long : ${token.length}`))
+    sentryCaptureException(internal(`Token généré trop long : ${token.length}`))
   }
   return token
-}
-
-function getMethodAndPath<Schema extends SchemaWithSecurity>(scope: IScope<Schema>) {
-  if ("schema" in scope) {
-    const { schema } = scope
-    const { method, path } = schema
-    return { method, path }
-  } else if ("method" in scope && "path" in scope) {
-    const { method, path } = scope
-    return { method, path }
-  } else {
-    assertUnreachable(scope)
-  }
 }
 
 function isAllowAllValue(x: unknown): x is AllowAllType {
@@ -142,7 +114,7 @@ export function getAccessTokenScope<Schema extends SchemaWithSecurity>(
 ): IScope<Schema> | null {
   return (
     token?.scopes.find((scope) => {
-      const { method, path } = getMethodAndPath(scope)
+      const { method, path } = scope
       if (path !== schema.path || method !== schema.method) {
         return false
       }
@@ -211,10 +183,10 @@ export const verifyJwtToken = (jwtToken: string) => {
   } catch (err: any) {
     const errorStr = err + ""
     if (errorStr === "TokenExpiredError: jwt expired") {
-      throw Boom.forbidden("JWT expired")
+      throw forbidden("JWT expired")
     }
     console.warn("invalid jwt token", jwtToken, err)
-    throw Boom.forbidden()
+    throw forbidden()
   }
 }
 
@@ -228,17 +200,17 @@ export async function parseAccessToken<Schema extends SchemaWithSecurity>(
   if (token.identity.type === "IUserRecruteur") {
     const user = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(token.identity._id) })
 
-    if (!user) throw Boom.forbidden()
+    if (!user) throw forbidden()
 
     const userStatus = await controlUserState(user)
 
     if (userStatus.error && !authorizedPaths.includes(schema.path)) {
-      throw Boom.forbidden()
+      throw forbidden()
     }
   }
   const scopeOpt = getAccessTokenScope(token, schema, params, querystring)
   if (!scopeOpt) {
-    throw Boom.forbidden("Aucun scope ne correspond")
+    throw forbidden("Aucun scope ne correspond")
   }
   return token
 }

@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { forbidden } from "@hapi/boom"
 import { zRoutes } from "shared/index"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -16,7 +16,7 @@ export default (server: Server) => {
     async (req, res) => {
       const userIdentity = getUserFromRequest(req, zRoutes.get["/optout/validate"]).value.identity
       if (userIdentity.type !== "cfa") {
-        throw Boom.forbidden()
+        throw forbidden()
       }
 
       const user = await getDbCollection("optouts").findOne({ siret: userIdentity.siret, "contacts.email": userIdentity.email })

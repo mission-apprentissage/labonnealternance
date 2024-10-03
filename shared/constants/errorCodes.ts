@@ -12,6 +12,7 @@ export enum BusinessErrorCodes {
   TOO_MANY_APPLICATIONS_PER_SIRET = "Vous avez atteint le quota maximum de candidatures pour ce SIRET",
   BURNER = "L'email est invalide.",
   NOTFOUND = "Aucune offre correspondante trouvée.",
+  EXPIRED = "EXPIRED",
   ATTACHMENT = "Pièce jointe invalide.",
   INTERNAL_EMAIL = "Aucun email pour l'offre trouvée.",
   ROMEO_NOT_FOUND = "Une erreur est survenue lors de la récupération du code ROME à partir du titre de l'offre",

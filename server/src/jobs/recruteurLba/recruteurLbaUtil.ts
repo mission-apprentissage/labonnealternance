@@ -10,7 +10,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
-import { getFileFromS3Bucket, getS3FileLastUpdate, uploadFileToS3 } from "../../common/utils/awsUtils"
+import { getS3FileLastUpdate, s3ReadAsStream } from "../../common/utils/awsUtils"
 // import geoData from "../../common/utils/geoData"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import { streamJsonArray } from "../../common/utils/streamUtils"
@@ -42,10 +42,12 @@ export const removePredictionFile = async () => {
  * @param {string} reason process calling the function
  */
 export const checkIfAlgoFileIsNew = async (reason: string) => {
-  const algoFileLastModificationDate = await getS3FileLastUpdate({ key: s3File })
-  // projection to be added, not working when migrated to mongoDB
-  const currentDbCreatedDate = ((await getDbCollection("recruteurslba").findOne({})) as ILbaCompany).created_at
+  const algoFileLastModificationDate = await getS3FileLastUpdate("storage", s3File)
+  if (!algoFileLastModificationDate) {
+    throw new Error("Aucune date de dernière modifications disponible sur le fichier issue de l'algo.")
+  }
 
+  const currentDbCreatedDate = ((await getDbCollection("recruteurslba").findOne({}, { projection: { created_at: 1 } })) as ILbaCompany).created_at
   if (algoFileLastModificationDate.getTime() < currentDbCreatedDate.getTime()) {
     await notifyToSlack({
       subject: "IMPORT SOCIETES ISSUES DE L'ALGO",
@@ -54,12 +56,6 @@ export const checkIfAlgoFileIsNew = async (reason: string) => {
     })
     throw new Error("Sociétés issues de l'algo déjà à jour")
   }
-}
-
-export const pushFileToBucket = async ({ key, filePath }) => {
-  logger.info(`Uploading SAVE file ${key} to S3 Bucket...`)
-
-  await uploadFileToS3({ filePath, key })
 }
 
 /**
@@ -74,7 +70,7 @@ export const downloadAlgoCompanyFile = async (sourceFile: string | null) => {
 
 export const downloadFile = async ({ from, to }) => {
   await createAssetsFolder()
-  await oleoduc(getFileFromS3Bucket({ key: from }), fs.createWriteStream(to))
+  await oleoduc(s3ReadAsStream("storage", from), fs.createWriteStream(to))
 }
 
 export const readCompaniesFromJson = async () => {

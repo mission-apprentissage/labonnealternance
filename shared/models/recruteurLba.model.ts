@@ -39,12 +39,14 @@ export const ZLbaCompany = z
 
 export type ILbaCompany = z.output<typeof ZLbaCompany>
 
-export const ZLbaCompanyForContactUpdate = ZLbaCompany.pick({
-  siret: true,
-  email: true,
-  phone: true,
-  enseigne: true,
+export const ZLbaCompanyForContactUpdate = z.object({
+  siret: z.string().describe("Le Siret de la société"), // use extension.siret
+  enseigne: z.string().nullish().describe("Enseigne de l'entreprise"),
+  email: z.string().nullish().describe("Adresse email de contact"),
+  phone: extensions.phone().nullish().describe("Numéro de téléphone de contact"),
+  active: z.boolean().describe("société présente dans recruteurslba ou non"),
 })
+
 export type ILbaCompanyForContactUpdate = z.output<typeof ZLbaCompanyForContactUpdate>
 
 export default {
@@ -56,6 +58,11 @@ export default {
     [{ opco_short_name: 1 }, {}],
     [{ rome_codes: 1, size: 1 }, {}],
     [{ opco_url: 1 }, {}],
+
+    // Support API v2 by ROME code without location
+    [{ rome_codes: 1, last_update_at: -1 }, {}],
+    // Support API v2 without params
+    [{ last_update_at: -1 }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor

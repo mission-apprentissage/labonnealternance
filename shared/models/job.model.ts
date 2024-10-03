@@ -3,6 +3,7 @@ import { Jsonify } from "type-fest"
 import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "../constants/recruteur"
 import dayjs from "../helpers/dayjs"
 import { z } from "../helpers/zodWithOpenApi"
+import { assertUnreachable } from "../utils"
 
 import { zObjectId } from "./common"
 import { ZReferentielRomeForJob, ZRomeCompetence } from "./rome.model"
@@ -14,8 +15,30 @@ export enum JOB_STATUS {
   EN_ATTENTE = "En attente",
 }
 
+export enum JOB_STATUS_ENGLISH {
+  ACTIVE = "Active",
+  POURVUE = "Filled",
+  ANNULEE = "Cancelled",
+  EN_ATTENTE = "Pending",
+}
+
+export function translateJobStatus(status: JOB_STATUS): JOB_STATUS_ENGLISH {
+  switch (status) {
+    case JOB_STATUS.ACTIVE:
+      return JOB_STATUS_ENGLISH.ACTIVE
+    case JOB_STATUS.POURVUE:
+      return JOB_STATUS_ENGLISH.POURVUE
+    case JOB_STATUS.ANNULEE:
+      return JOB_STATUS_ENGLISH.ANNULEE
+    case JOB_STATUS.EN_ATTENTE:
+      return JOB_STATUS_ENGLISH.EN_ATTENTE
+    default:
+      assertUnreachable(status)
+  }
+}
+
 const allJobRythm = Object.values(TRAINING_RYTHM)
-const allJobLevel = [...Object.values(NIVEAUX_POUR_LBA), "Indifférent"] as const
+const allJobLevel = [...Object.values(NIVEAUX_POUR_LBA)] as const
 const allJobStatus = Object.values(JOB_STATUS)
 const allJobType = Object.values(TRAINING_CONTRACT_TYPE)
 export const ZJobType = z.array(z.enum([allJobType[0], ...allJobType.slice(1)])).describe("Type de contrat")
@@ -84,11 +107,17 @@ export const ZJobWithRomeDetail = ZJob.extend({
   .strict()
   .openapi("JobWithRomeDetail")
 
-export const ZJobStartDateCreate = (now: dayjs.Dayjs = dayjs.tz()) =>
+export const ZJobStartDateCreate = (now: dayjs.Dayjs | null = null) =>
   // Le changement de jour se fait à minuit (heure de Paris)
-  ZJobFields.shape.job_start_date.refine((date) => dayjs.tz(date).isSameOrAfter(dayjs.tz(now).startOf("days")), {
-    message: "job_start_date must be greater or equal to today's date",
-  })
+  ZJobFields.shape.job_start_date.refine(
+    (date) => {
+      const startOfDay = dayjs.tz(now ?? dayjs.tz()).startOf("days")
+      return dayjs.tz(date).isSameOrAfter(startOfDay)
+    },
+    {
+      message: "job_start_date must be greater or equal to today's date",
+    }
+  )
 
 export const ZJobWrite = ZJobFields.pick({
   rome_appellation_label: true,

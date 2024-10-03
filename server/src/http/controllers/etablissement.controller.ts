@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { badRequest, notFound } from "@hapi/boom"
 import * as _ from "lodash-es"
 import { ObjectId } from "mongodb"
 import { zRoutes } from "shared"
@@ -45,7 +45,7 @@ export default (server: Server) => {
       const etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id.toString()) }, { projection: etablissementProjection })
 
       if (!etablissement) {
-        throw Boom.notFound()
+        throw notFound()
       }
 
       return res.send(etablissement)
@@ -65,15 +65,15 @@ export default (server: Server) => {
       const etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id.toString()) })
 
       if (!etablissement) {
-        throw Boom.badRequest("Etablissement not found.")
+        throw badRequest("Etablissement not found.")
       }
 
       if (etablissement.premium_affelnet_activation_date) {
-        throw Boom.badRequest("Premium already activated.")
+        throw badRequest("Premium already activated.")
       }
 
       if (!etablissement.gestionnaire_email) {
-        throw Boom.badRequest("Gestionnaire email not found")
+        throw badRequest("Gestionnaire email not found")
       }
 
       await sendMailCfaPremiumStart(etablissement, "affelnet")
@@ -161,15 +161,15 @@ export default (server: Server) => {
       const etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id.toString()) })
 
       if (!etablissement) {
-        throw Boom.badRequest("Etablissement not found.")
+        throw badRequest("Etablissement not found.")
       }
 
       if (etablissement.premium_activation_date) {
-        throw Boom.badRequest("Premium Parcoursup already activated.")
+        throw badRequest("Premium Parcoursup already activated.")
       }
 
       if (!etablissement.gestionnaire_email) {
-        throw Boom.badRequest("Gestionnaire email not found")
+        throw badRequest("Gestionnaire email not found")
       }
 
       await sendMailCfaPremiumStart(etablissement, "parcoursup")
@@ -261,19 +261,19 @@ export default (server: Server) => {
       const etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id) })
 
       if (!etablissement) {
-        throw Boom.badRequest("Etablissement not found.")
+        throw badRequest("Etablissement not found.")
       }
 
       if (etablissement.premium_affelnet_refusal_date) {
-        throw Boom.badRequest("Premium Affelnet already refused.")
+        throw badRequest("Premium Affelnet already refused.")
       }
 
       if (etablissement.premium_affelnet_activation_date) {
-        throw Boom.badRequest("Premium Affelnet already activated.")
+        throw badRequest("Premium Affelnet already activated.")
       }
 
       if (!etablissement.gestionnaire_email) {
-        throw Boom.badRequest("Gestionnaire email not found")
+        throw badRequest("Gestionnaire email not found")
       }
 
       await mailer.sendEmail({
@@ -327,19 +327,19 @@ export default (server: Server) => {
       const etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id) })
 
       if (!etablissement) {
-        throw Boom.badRequest("Etablissement not found.")
+        throw badRequest("Etablissement not found.")
       }
 
       if (etablissement.premium_refusal_date) {
-        throw Boom.badRequest("Premium Parcoursup already refused.")
+        throw badRequest("Premium Parcoursup already refused.")
       }
 
       if (etablissement.premium_activation_date) {
-        throw Boom.badRequest("Premium Parcoursup already activated.")
+        throw badRequest("Premium Parcoursup already activated.")
       }
 
       if (!etablissement.gestionnaire_email) {
-        throw Boom.badRequest("Gestionnaire email not found")
+        throw badRequest("Gestionnaire email not found")
       }
 
       await mailer.sendEmail({
@@ -399,7 +399,7 @@ export default (server: Server) => {
       )
 
       if (!etablissement || etablissement.optout_refusal_date) {
-        throw Boom.notFound()
+        throw notFound()
       }
 
       if ("opt_out_question" in req.body) {
@@ -452,7 +452,7 @@ export default (server: Server) => {
       )
 
       if (!etablissement.gestionnaire_email) {
-        throw Boom.badRequest("Gestionnaire email not found")
+        throw badRequest("Gestionnaire email not found")
       }
 
       await mailer.sendEmail({

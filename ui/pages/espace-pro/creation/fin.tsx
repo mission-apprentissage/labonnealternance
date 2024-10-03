@@ -3,6 +3,7 @@ import { Box, Button, Circle, Flex, Heading, Link, Stack, Text, useToast } from 
 import { useRouter } from "next/router"
 import { useContext, useState } from "react"
 import { useQuery, useQueryClient } from "react-query"
+import { ETAT_UTILISATEUR } from "shared/constants"
 import { zObjectId } from "shared/models/common"
 import { z } from "zod"
 
@@ -11,13 +12,9 @@ import { WidgetContext } from "../../../context/contextWidget"
 import { MailCloud } from "../../../theme/components/logos"
 import { getUserStatus, getUserStatusByToken, sendValidationLink } from "../../../utils/api"
 
-function parseQueryString(value: string | string[]): string {
-  return Array.isArray(value) ? value[0] : value
-}
-
 const ZComponentProps = z
   .object({
-    job: z.string(),
+    jobId: z.string(),
     email: z.string(),
     withDelegation: z.enum(["true", "false"]).transform((value) => value === "true"),
     fromDashboard: z.enum(["true", "false"]).transform((value) => value === "true"),
@@ -45,42 +42,12 @@ export default function DepotRapideFin() {
 }
 
 function FinComponent(props: ComponentProps) {
-  const [disableLink, setDisableLink] = useState(false)
-  const [userIsValidated, setUserIsValidated] = useState(false)
-  const [userIsInError, setUserIsInError] = useState(false)
-  const [title, setTitle] = useState("")
   const router = useRouter()
-
   const toast = useToast()
   const client = useQueryClient()
-
   const { widget } = useContext(WidgetContext)
 
-  const { job: jobString, email, withDelegation, fromDashboard, userId, establishment_id, token } = props
-
-  const job = JSON.parse(parseQueryString(jobString) ?? "{}")
-
-  /**
-   * KBA 20230130 : retry set to false to avoid waiting for failure if user is from dashboard (userId is not passed)
-   * - To be changed with userID in URL params
-   */
-  const { isFetched } = useQuery("userdetail", () => (token ? getUserStatusByToken(userId.toString(), token) : getUserStatus(userId.toString())), {
-    enabled: Boolean(userId),
-    onSettled: (data) => {
-      if (data?.status_current === "ERROR") {
-        setUserIsInError(true)
-      } else if (data?.status_current === "VALIDÉ" || fromDashboard === true) {
-        setUserIsValidated(true)
-      }
-      setTitle("Félicitations, votre offre est créée.")
-    },
-  })
-
-  if (!job && !email && !withDelegation && !fromDashboard && !userId) return <></>
-
-  if (!isFetched && userId) {
-    return <LoadingEmptySpace />
-  }
+  const { jobId, email, withDelegation, fromDashboard, userId, establishment_id, token } = props
 
   const resendMail = () => {
     sendValidationLink(userId.toString(), token)
@@ -119,9 +86,23 @@ function FinComponent(props: ComponentProps) {
           }
         }
       })
-      .finally(() => {
-        setDisableLink(true)
-      })
+  }
+
+  /**
+   * KBA 20230130 : retry set to false to avoid waiting for failure if user is from dashboard (userId is not passed)
+   * - To be changed with userID in URL params
+   */
+  const { isFetched, data: userStatusData } = useQuery("userdetail", () => (token ? getUserStatusByToken(userId.toString(), token) : getUserStatus(userId.toString())), {
+    enabled: Boolean(userId),
+  })
+
+  const userIsInError = userStatusData?.status_current === ETAT_UTILISATEUR.ERROR
+  const userIsValidated = userStatusData?.status_current === ETAT_UTILISATEUR.VALIDE || fromDashboard === true
+
+  if (!jobId && !email && !withDelegation && !fromDashboard && !userId) return <></>
+
+  if (!isFetched && userId) {
+    return <LoadingEmptySpace />
   }
 
   /**
@@ -133,93 +114,7 @@ function FinComponent(props: ComponentProps) {
     await router.push(`/espace-pro/administration/entreprise/${encodeURIComponent(establishment_id.toString())}`)
   }
 
-  const ValidatedAccountDescription = ({ withDelegation }) => {
-    return (
-      <Box mb={5} mt={5}>
-        <Flex alignItems="flex-start" mb={3}>
-          <Box>
-            <Heading fontSize="18px" pb={2}>
-              Confirmez votre email
-            </Heading>
-            <Text textAlign="justify">
-              Pour publier votre offre auprès des candidats {withDelegation ? "et la transmettre aux organismes de formation sélectionnés" : ""}, merci de confirmer votre adresse
-              mail en cliquant sur le lien que nous venons de vous transmettre à l’adresse suivante: <span style={{ fontWeight: "700" }}>{email}</span>
-            </Text>
-          </Box>
-        </Flex>
-        {!userIsInError && (
-          <Stack direction="row" align="center" spacing={4} mt={6}>
-            <Text mr={10}>Vous n’avez pas reçu le mail ? </Text>
-            <Button variant="popover" fontWeight={400} textDecoration="underline" onClick={resendMail} isDisabled={disableLink}>
-              Renvoyer le mail
-            </Button>
-          </Stack>
-        )}
-      </Box>
-    )
-  }
-  const AwaitingAccountDescription = ({ withDelegation }) => {
-    return (
-      <Stack spacing={4} my={4}>
-        <Text>Voici les prochaines étapes qui vous attendent :</Text>
-        <Stack direction="row" spacing={4}>
-          <Circle p={5} size="20px" bg="#E3E3FD" color="#000091" fontWeight="700">
-            1
-          </Circle>
-          <Box>
-            <Heading fontSize="18px">Confirmez votre email</Heading>
-            <Text>
-              Cliquez sur le lien que nous venons de vous transmettre à l’adresse suivante:
-              <br />
-              <span style={{ fontWeight: "700" }}>{email}</span>.
-            </Text>
-            {!userIsInError && (
-              <Stack direction="row" align="center" spacing={4}>
-                <Text mr={10}>Vous n’avez pas reçu le mail ? </Text>
-                <Button variant="popover" fontWeight={400} textDecoration="underline" onClick={resendMail} isDisabled={disableLink}>
-                  Renvoyer le mail
-                </Button>
-              </Stack>
-            )}
-          </Box>
-        </Stack>
-        <Stack direction="row" spacing={4}>
-          <Circle p={5} size="20px" bg="#E3E3FD" color="#000091" fontWeight="700">
-            2
-          </Circle>
-          <Box>
-            <Heading fontSize="18px">Votre compte sera validé manuellement</Heading>
-            <Text>
-              {withDelegation
-                ? "Une fois votre compte validé, vous en serez notifié par email. Votre offre sera publiée en ligne et partagée aux organismes de formation que vous avez sélectionnés."
-                : "Une fois votre compte validé, vous en serez notifié par email. Votre offre sera publiée en ligne."}
-            </Text>
-          </Box>
-        </Stack>
-      </Stack>
-    )
-  }
-
-  const JobPreview = ({ job }) => {
-    return (
-      <Box mb={2}>
-        <Box mb={2}>
-          <Link
-            href={`/recherche-apprentissage?display=list&page=fiche&type=matcha&itemId=${job._id}`}
-            aria-label="Ouvrir la page de prévisualisation de l'offre sur le site La bonne alternance - nouvelle fenêtre"
-            isExternal
-            variant="basicUnderlinedBlue"
-          >
-            Voir mon offre sur La bonne alternance <ExternalLinkIcon mx="2px" />
-          </Link>
-        </Box>
-        <Text fontStyle="italic" fontSize={16} color="grey.425">
-          Votre offre est également visible sur les sites internet partenaires de La bonne alternance dont : Parcoursup, “Choisir son affectation après la 3è”, le Portail de
-          l’alternance, l’ONISEP, la CCI, des plateformes régionales et certains sites d’OPCO.
-        </Text>
-      </Box>
-    )
-  }
+  const shouldDisplayAccountInformation = !fromDashboard && !userIsInError
 
   return (
     <AuthentificationLayout fromDashboard={fromDashboard} onClose={onClose}>
@@ -227,16 +122,118 @@ function FinComponent(props: ComponentProps) {
         <MailCloud style={{ paddingRight: "10px" }} />
         <Box pt={[3, 0]} ml={10}>
           <Heading fontSize="24px" mb={6} mt={widget?.mobile ? "10px" : "0px"}>
-            <div dangerouslySetInnerHTML={{ __html: title }} />
+            Félicitations, votre offre est créée.
           </Heading>
-          <JobPreview job={job} />
-          {fromDashboard ? null : userIsInError ? null : userIsValidated ? (
-            <ValidatedAccountDescription withDelegation={withDelegation} />
+          <JobPreview jobId={jobId} />
+          {!shouldDisplayAccountInformation ? null : userIsValidated ? (
+            <ValidatedAccountDescription withDelegation={withDelegation} email={email} onResendEmail={resendMail} />
           ) : (
-            <AwaitingAccountDescription withDelegation={withDelegation} />
+            <AwaitingAccountDescription withDelegation={withDelegation} email={email} onResendEmail={resendMail} />
           )}
         </Box>
       </Flex>
     </AuthentificationLayout>
+  )
+}
+
+const ValidatedAccountDescription = ({ withDelegation, email, onResendEmail }: { withDelegation: boolean; email: string; onResendEmail: () => void }) => {
+  return (
+    <Box mb={5} mt={5}>
+      <Flex alignItems="flex-start" mb={3}>
+        <Box>
+          <Heading fontSize="18px" pb={2}>
+            Confirmez votre email
+          </Heading>
+          <Text textAlign="justify">
+            Pour publier votre offre auprès des candidats {withDelegation ? "et la transmettre aux organismes de formation sélectionnés" : ""}, merci de confirmer votre adresse
+            mail en cliquant sur le lien que nous venons de vous transmettre à l'adresse suivante:
+            <br />
+            <span style={{ fontWeight: "700" }}>{email}</span>
+          </Text>
+        </Box>
+      </Flex>
+      <Stack direction="row" align="center" spacing={4} mt={6}>
+        <ResendEmailContent onClick={onResendEmail} />
+      </Stack>
+    </Box>
+  )
+}
+const AwaitingAccountDescription = ({ withDelegation, email, onResendEmail }: { withDelegation: boolean; email: string; onResendEmail: () => void }) => {
+  return (
+    <Stack spacing={4} my={4}>
+      <Text>Voici les prochaines étapes qui vous attendent :</Text>
+      <Stack direction="row" spacing={4}>
+        <Circle p={5} size="20px" bg="#E3E3FD" color="#000091" fontWeight="700">
+          1
+        </Circle>
+        <Box>
+          <Heading fontSize="18px">Confirmez votre email</Heading>
+          <Text>
+            Cliquez sur le lien que nous venons de vous transmettre à l'adresse suivante:
+            <br />
+            <span style={{ fontWeight: "700" }}>{email}</span>.
+          </Text>
+          <Stack direction="row" align="center" spacing={4}>
+            <ResendEmailContent onClick={onResendEmail} />
+          </Stack>
+        </Box>
+      </Stack>
+      <Stack direction="row" spacing={4}>
+        <Circle p={5} size="20px" bg="#E3E3FD" color="#000091" fontWeight="700">
+          2
+        </Circle>
+        <Box>
+          <Heading fontSize="18px">Votre compte sera validé manuellement</Heading>
+          <Text>
+            {withDelegation
+              ? "Une fois votre compte validé, vous en serez notifié par email. Votre offre sera publiée en ligne et partagée aux organismes de formation que vous avez sélectionnés."
+              : "Une fois votre compte validé, vous en serez notifié par email. Votre offre sera publiée en ligne."}
+          </Text>
+        </Box>
+      </Stack>
+    </Stack>
+  )
+}
+
+const ResendEmailContent = ({ onClick }: { onClick: () => void }) => {
+  const [disableLink, setDisableLink] = useState(false)
+
+  return (
+    <>
+      <Text mr={10}>Vous n’avez pas reçu le mail ? </Text>
+      <Button
+        variant="popover"
+        fontWeight={400}
+        textDecoration="underline"
+        onClick={() => {
+          setDisableLink(true)
+          onClick()
+        }}
+        isDisabled={disableLink}
+      >
+        Renvoyer le mail
+      </Button>
+    </>
+  )
+}
+
+const JobPreview = ({ jobId }: { jobId: string }) => {
+  return (
+    <Box mb={2}>
+      <Box mb={2}>
+        <Link
+          href={`/recherche-apprentissage?display=list&page=fiche&type=matcha&itemId=${jobId}`}
+          aria-label="Ouvrir la page de prévisualisation de l'offre sur le site La bonne alternance - nouvelle fenêtre"
+          isExternal
+          variant="basicUnderlinedBlue"
+        >
+          Voir mon offre sur La bonne alternance <ExternalLinkIcon mx="2px" />
+        </Link>
+      </Box>
+      <Text fontStyle="italic" fontSize={16} color="grey.425">
+        Votre offre est également visible sur les sites internet partenaires de La bonne alternance dont : Parcoursup, “Choisir son affectation après la 3è”, le Portail de
+        l’alternance, l’ONISEP, la CCI, des plateformes régionales et certains sites d’OPCO.
+      </Text>
+    </Box>
   )
 }

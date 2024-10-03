@@ -31,6 +31,7 @@ export const connectToMongodb = async (uri: string) => {
     retryReads: true,
     minPoolSize: config.env === "local" ? 0 : 5,
     maxPoolSize: 1_000,
+    serverSelectionTimeoutMS: config.env === "local" ? 1_000 : 10_000,
   })
 
   client.on("connectionPoolReady", () => {
@@ -114,7 +115,7 @@ export const configureDbSchemaValidation = async (modelDescriptors: IModelDescri
   const db = getDatabase()
   ensureInitialization()
   await Promise.all(
-    modelDescriptors.map(async ({ collectionName, zod }) => {
+    modelDescriptors.map(async ({ collectionName, zod, authorizeAdditionalProperties = false }) => {
       await createCollectionIfDoesNotExist(collectionName)
 
       const convertedSchema = zodToMongoSchema(zod)
@@ -123,15 +124,19 @@ export const configureDbSchemaValidation = async (modelDescriptors: IModelDescri
         await db.command({
           collMod: collectionName,
           validationLevel: "strict",
-          validationAction: "error",
+          validationAction: config.env === "production" ? "warn" : "error",
           validator: {
             $jsonSchema: {
               title: `${collectionName} validation schema`,
               ...convertedSchema,
+              additionalProperties: authorizeAdditionalProperties,
             },
           },
         })
+
+        logger.info(`Validation rule for collection ${collectionName} updated`)
       } catch (error) {
+        logger.error(`Error adding validation rule for collection ${collectionName}`)
         captureException(error)
         logger.error(error)
       }

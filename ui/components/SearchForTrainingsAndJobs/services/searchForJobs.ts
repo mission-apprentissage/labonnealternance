@@ -1,4 +1,5 @@
 import axios from "axios"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { factorInternalJobsForMap, factorPartnerJobsForMap, layerType, setJobMarkers } from "@/utils/mapTools"
 
@@ -74,7 +75,7 @@ export const searchForJobsFunction = async ({
         results.matchas = results.matchas.filter((matcha) => !matcha.company.mandataire)
       }
 
-      if (followUpItem && ["matcha", "lba"].includes(followUpItem.parameters.type)) {
+      if (followUpItem && [LBA_ITEM_TYPE_OLD.MATCHA, LBA_ITEM_TYPE_OLD.LBA].includes(followUpItem.parameters.type)) {
         selectFollowUpItem({
           itemId: followUpItem.parameters.itemId,
           type: followUpItem.parameters.type,
@@ -184,7 +185,7 @@ export const searchForPartnerJobsFunction = async ({
         peJobs: response.data.peJobs.result && response.data.peJobs.result === "error" ? null : peJobs,
       }
 
-      if (followUpItem && followUpItem.parameters.type === "offres") {
+      if (followUpItem && followUpItem.parameters.type === LBA_ITEM_TYPE_OLD.PEJOB) {
         selectFollowUpItem({
           itemId: followUpItem.parameters.itemId,
           type: followUpItem.parameters.type,

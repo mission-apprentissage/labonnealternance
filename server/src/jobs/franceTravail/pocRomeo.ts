@@ -1,4 +1,6 @@
-import { IRomeoPayload, getRomeoPredictions } from "../../common/apis/FranceTravail"
+import { logger } from "@/common/logger"
+
+import { IRomeoPayload, getRomeoPredictions } from "../../common/apis/franceTravail/franceTravail.client"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 
 type MainObject = {
@@ -48,5 +50,5 @@ export const pocRomeo = async () => {
   const romeoResult = await getRomeoPredictions(dataset)
   if (!romeoResult) return null
   const formated = transformMetiersRomeArray(romeoResult)
-  console.log(formated)
+  logger.info(formated)
 }

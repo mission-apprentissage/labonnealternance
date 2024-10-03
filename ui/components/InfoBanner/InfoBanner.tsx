@@ -8,10 +8,12 @@ import { DisplayContext } from "@/context/DisplayContextProvider"
 const blueBannerText = (
   <Text>
     <Text as="span" fontWeight={700}>
-      La bonne alternance évolue !
+      La bonne alternance évolue pour les recruteurs !
     </Text>{" "}
-    Vous pouvez désormais être plusieurs utilisateurs au sein de votre organisation à gérer les offres d’emploi de votre entreprise.{" "}
-    <Link textDecoration="underline">En savoir plus</Link>
+    Vous pouvez désormais personnaliser le contenu de vos offres en décochant certains éléments du descriptif généré automatiquement{" "}
+    <Link textDecoration="underline" href="mailto:labonnealternance@beta.gouv.fr?subject=Personnaliser%20mon%20offre%20-%20en%20savoir%20plus">
+      En savoir plus
+    </Link>
   </Text>
 )
 
@@ -29,8 +31,8 @@ const redBannerText = (
     <Text as="span" fontWeight={700}>
       Service temporairement indisponible.
     </Text>{" "}
-    Suite à un problème chez l’un de nos fournisseurs de données, la création de compte est momentanément bloquée. Merci de revenir ultérieurement.{" "}
-    <Link textDecoration="underline">En savoir plus</Link>
+    Suite à un problème chez notre prestataire d'envoi d'emails, la connexion à votre compte est momentanément bloquée. Merci de revenir ultérieurement.{" "}
+    {/*<Link textDecoration="underline">En savoir plus</Link>*/}
   </Text>
 )
 

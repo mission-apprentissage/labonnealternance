@@ -1,6 +1,6 @@
 import { generateRandomString } from "../utils/generateRandomString"
 
-export const givenAMatchaOffer = () => {
+export const givenAMatchaOffer = (callback?: (job: any) => void) => {
   const apiKey = Cypress.env("SERVER_API_KEY")
 
   cy.request({
@@ -37,6 +37,7 @@ export const givenAMatchaOffer = () => {
       if (jobResponse.body.error) {
         throw new Error("error creating the offer")
       }
+      callback?.(jobResponse.body)
     })
   })
 }

@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { internal } from "@hapi/boom"
 import { Filter } from "mongodb"
 import { oleoduc, writeData } from "oleoduc"
 import { IJobsPartnersOfferPrivate, ZJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
@@ -62,7 +62,7 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
           counters.success++
         } catch (err) {
           counters.error++
-          const newError = Boom.internal(`error pour le document avec id=${document._id}`)
+          const newError = internal(`error pour le document avec id=${document._id}`)
           logger.error(newError.message, err)
           newError.cause = err
           sentryCaptureException(newError)

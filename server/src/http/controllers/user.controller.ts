@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { ENTREPRISE, RECRUITER_STATUS } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
@@ -12,7 +12,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { stopSession } from "@/common/utils/session.service"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { modifyPermissionToUser, roleToUserType } from "@/services/roleManagement.service"
-import { activateUser, createSuperUser, getUserWithAccountByEmail, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
+import { activateUser, createSuperUser, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
@@ -48,7 +48,7 @@ export default (server: Server) => {
       const userFromRequest = getUserFromRequest(req, zRoutes.get["/user/opco"]).value
       const opcoRole = await getDbCollection("rolemanagements").findOne({ authorized_type: AccessEntityType.OPCO, user_id: userFromRequest._id })
       if (!opcoRole) {
-        throw Boom.forbidden("pas de role opco")
+        throw forbidden("pas de role opco")
       }
       const opco = parseEnumOrError(OPCOS_LABEL, opcoRole.authorized_id)
       return res.status(200).send(await getUserAndRecruitersDataForOpcoUser(opco))
@@ -87,7 +87,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { userId } = req.params
       const user = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(userId) })
-      if (!user) throw Boom.notFound(`user with id=${userId} not found`)
+      if (!user) throw notFound(`user with id=${userId} not found`)
       const role = await getDbCollection("rolemanagements").findOne({ user_id: new ObjectId(userId), authorized_type: { $in: [AccessEntityType.ADMIN, AccessEntityType.OPCO] } })
       return res.status(200).send({ ...user, role: role ?? undefined })
     }
@@ -121,12 +121,12 @@ export default (server: Server) => {
       const { opco, ...userFields } = req.body
       const result = await updateUserWithAccountFields(userId, userFields)
       if ("error" in result) {
-        throw Boom.badRequest("L'email est déjà utilisé", { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS })
+        throw badRequest("L'email est déjà utilisé", { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS })
       }
       if (opco) {
         const entreprise = await getDbCollection("entreprises").findOneAndUpdate({ siret }, { $set: { opco, updatedAt: new Date() } }, { returnDocument: "after" })
         if (!entreprise) {
-          throw Boom.badRequest(`pas d'entreprise ayant le siret ${siret}`)
+          throw badRequest(`pas d'entreprise ayant le siret ${siret}`)
         }
       }
       return res.status(200).send({ ok: true })
@@ -161,7 +161,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const requestUser = getUserFromRequest(req, zRoutes.get["/user/:userId/organization/:organizationId"]).value
-      if (!requestUser) throw Boom.badRequest()
+      if (!requestUser) throw badRequest()
       const { userId } = req.params
       const role = await getDbCollection("rolemanagements").findOne({
         user_id: new ObjectId(userId),
@@ -169,23 +169,23 @@ export default (server: Server) => {
         // authorized_id: organizationId,
       })
       if (!role) {
-        throw Boom.badRequest("role not found")
+        throw badRequest("role not found")
       }
       const user = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(userId) })
       if (!user) {
-        throw Boom.badRequest("user not found")
+        throw badRequest("user not found")
       }
       const type = roleToUserType(role)
 
       if (!type) {
-        throw Boom.internal("user type not found")
+        throw internal("user type not found")
       }
 
       let organization: ICFA | IEntreprise | null = null
       if (type === CFA || type === ENTREPRISE) {
         organization = await getDbCollection(type === CFA ? "cfas" : "entreprises").findOne({ _id: new ObjectId(role.authorized_id) })
         if (!organization) {
-          throw Boom.internal(`inattendu : impossible de trouver l'organization avec id=${role.authorized_id}`)
+          throw internal(`inattendu : impossible de trouver l'organization avec id=${role.authorized_id}`)
         }
       }
 
@@ -226,9 +226,9 @@ export default (server: Server) => {
     async (req, res) => {
       const user = await getUserRecruteurById(req.params.userId)
 
-      if (!user) throw Boom.notFound("User not found")
+      if (!user) throw notFound("User not found")
       const status_current = getUserStatus(user.status)
-      if (!status_current) throw Boom.internal("User doesn't have status")
+      if (!status_current) throw internal("User doesn't have status")
 
       return res.status(200).send({ status_current })
     }
@@ -243,9 +243,9 @@ export default (server: Server) => {
     async (req, res) => {
       const user = await getUserRecruteurById(req.params.userId)
 
-      if (!user) throw Boom.notFound("User not found")
+      if (!user) throw notFound("User not found")
       const status_current = getUserStatus(user.status)
-      if (!status_current) throw Boom.internal("User doesn't have status")
+      if (!status_current) throw internal("User doesn't have status")
 
       return res.status(200).send({ status_current })
     }
@@ -280,13 +280,13 @@ export default (server: Server) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { userId, organizationId } = req.params
       const requestUser = getUserFromRequest(req, zRoutes.put["/user/:userId/organization/:organizationId/permission"]).value
-      if (!requestUser) throw Boom.badRequest()
+      if (!requestUser) throw badRequest()
       const user = await getDbCollection("userswithaccounts").findOne({ _id: userId })
-      if (!user) throw Boom.badRequest()
+      if (!user) throw badRequest()
 
       const roles = await getDbCollection("rolemanagements").find({ user_id: userId }).toArray()
       if (roles.length !== 1) {
-        throw Boom.internal(`inattendu : attendu 1 role, ${roles.length} roles trouvés pour user id=${userId}`)
+        throw internal(`inattendu : attendu 1 role, ${roles.length} roles trouvés pour user id=${userId}`)
       }
       const [mainRole] = roles
       const updatedRole = await modifyPermissionToUser(
@@ -307,14 +307,21 @@ export default (server: Server) => {
         }
       )
 
-      const { email, last_name, first_name } = user
-
       const newEvent = getLastStatusEvent(updatedRole.status)
       if (!newEvent) {
-        throw Boom.internal("inattendu : aucun event sauvegardé")
+        throw internal("inattendu : aucun event sauvegardé")
       }
       // if user is disabled, return the user data directly
       if (newEvent.status === AccessStatus.DENIED) {
+        const organization =
+          updatedRole.authorized_type === AccessEntityType.CFA
+            ? await getDbCollection("cfas").findOne({ _id: new ObjectId(updatedRole.authorized_id) })
+            : await getDbCollection("entreprises").findOne({ _id: new ObjectId(updatedRole.authorized_id) })
+        if (!organization) {
+          throw internal("/user/:userId/organization/:organizationId/permission: inattendu: organization introuvable")
+        }
+        const { email, last_name, first_name, phone } = user
+        const { siret, raison_sociale } = organization
         // send email to user to notify him his account has been disabled
         await mailer.sendEmail({
           to: email,
@@ -324,10 +331,15 @@ export default (server: Server) => {
             images: {
               accountDisabled: `${config.publicUrl}/images/image-compte-desactive.png?raw=true`,
               logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+              logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
             },
             last_name: sanitizeForEmail(last_name),
             first_name: sanitizeForEmail(first_name),
             reason: sanitizeForEmail(newEvent.reason),
+            email,
+            siret: sanitizeForEmail(siret),
+            raison_sociale: sanitizeForEmail(raison_sociale),
+            phone: sanitizeForEmail(phone),
             emailSupport: "mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Compte%20pro%20non%20validé",
           },
         })
@@ -387,32 +399,6 @@ export default (server: Server) => {
         await deleteFormulaire(recruiterId)
       }
       await stopSession(req, res)
-      return res.status(200).send({})
-    }
-  )
-
-  server.delete(
-    "/user/organization/:siret",
-    {
-      schema: zRoutes.delete["/user/organization/:siret"],
-      onRequest: [server.auth(zRoutes.delete["/user/organization/:siret"])],
-    },
-    async (req, res) => {
-      const requestingUser = getUserFromRequest(req, zRoutes.delete["/user/organization/:siret"]).value
-      const userOpt = await getUserWithAccountByEmail(requestingUser.identity.email)
-      if (!userOpt) {
-        throw Boom.notFound("user not found")
-      }
-      const { siret } = req.params
-      const entrepriseOpt = await getDbCollection("entreprises").findOne({ siret })
-      if (entrepriseOpt) {
-        await getDbCollection("rolemanagements").deleteOne({ user_id: userOpt._id, authorized_id: entrepriseOpt._id.toString(), authorized_type: AccessEntityType.ENTREPRISE })
-      }
-      const cfaOpt = await getDbCollection("cfas").findOne({ siret })
-      if (cfaOpt) {
-        await getDbCollection("rolemanagements").deleteOne({ user_id: userOpt._id, authorized_id: cfaOpt._id.toString(), authorized_type: AccessEntityType.CFA })
-      }
-      await getDbCollection("recruiters").deleteOne({ establishment_siret: siret, managed_by: userOpt._id.toString() })
       return res.status(200).send({})
     }
   )

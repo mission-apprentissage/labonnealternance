@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { forbidden, unauthorized } from "@hapi/boom"
 import { removeUrlsFromText } from "shared/helpers/common"
 import { toPublicUser, zRoutes } from "shared/index"
 
@@ -76,6 +76,7 @@ export default (server: Server) => {
         data: {
           images: {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+            logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
           },
           last_name: sanitizeForEmail(removeUrlsFromText(last_name)),
           first_name: sanitizeForEmail(removeUrlsFromText(first_name)),
@@ -100,13 +101,13 @@ export default (server: Server) => {
       const user = await getUserWithAccountByEmail(formatedEmail)
 
       if (!user) {
-        throw Boom.unauthorized()
+        throw unauthorized()
       }
 
       const userState = await controlUserState(user)
 
       if (userState?.error) {
-        throw Boom.forbidden()
+        throw forbidden()
       }
 
       await updateLastConnectionDate(formatedEmail)
@@ -127,7 +128,7 @@ export default (server: Server) => {
     },
     async (request, response) => {
       if (!request.user) {
-        throw Boom.forbidden()
+        throw forbidden()
       }
       const userFromRequest = getUserFromRequest(request, zRoutes.get["/auth/session"]).value
       return response.status(200).send(toPublicUser(userFromRequest, await getPublicUserRecruteurPropsOrError(userFromRequest._id)))
@@ -142,7 +143,7 @@ export default (server: Server) => {
     },
     async (request, response) => {
       if (!request.user) {
-        throw Boom.forbidden()
+        throw forbidden()
       }
       const userFromRequest = getUserFromRequest(request, zRoutes.get["/auth/access"]).value
       const userId = userFromRequest._id.toString()

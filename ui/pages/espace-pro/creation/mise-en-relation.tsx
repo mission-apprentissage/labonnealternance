@@ -2,6 +2,7 @@ import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Button, Center, Checkbox, Container, Divider, Flex, Grid, GridItem, Heading, Link, Spinner, Square, Text } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
+import { IEtablissementCatalogueProcheWithDistance } from "shared/interface/etablissement.types"
 
 import { ArrowRightLine, Check } from "../../../theme/components/icons"
 import { createEtablissementDelegation, createEtablissementDelegationByToken, getRelatedEtablissementsFromRome } from "../../../utils/api"
@@ -34,7 +35,7 @@ function CreationMiseEnRelationPage({ isWidget }: { isWidget?: boolean }) {
   const goToEndStep = ({ withDelegation }) => {
     router.replace({
       pathname: isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin",
-      query: { job: JSON.stringify(job), email, withDelegation, fromDashboard, userId, establishment_id, token },
+      query: { jobId: job._id.toString(), email, withDelegation, fromDashboard, userId, establishment_id, token },
     })
   }
 
@@ -77,13 +78,15 @@ function CreationMiseEnRelationPage({ isWidget }: { isWidget?: boolean }) {
     if (geo_coordinates) {
       const [latitude, longitude] = (geo_coordinates as string).split(",")
 
-      getRelatedEtablissementsFromRome({ rome: job?.rome_detail?.code || job?.rome_code[0], latitude: parseFloat(latitude), longitude: parseFloat(longitude) }).then((data) => {
-        const etablissementUpdated = data.slice(0, 10).map((data, index) => ({
-          ...data,
-          checked: index < 3,
-        }))
-        setEtablissements(etablissementUpdated)
-      })
+      getRelatedEtablissementsFromRome({ rome: job?.rome_detail?.code || job?.rome_code[0], latitude: parseFloat(latitude), longitude: parseFloat(longitude), limit: 10 }).then(
+        (data: IEtablissementCatalogueProcheWithDistance[]) => {
+          const etablissementUpdated = data.map((data, index) => ({
+            ...data,
+            checked: index < 3,
+          }))
+          setEtablissements(etablissementUpdated)
+        }
+      )
     }
   }, [geo_coordinates])
 
@@ -122,7 +125,7 @@ function CreationMiseEnRelationPage({ isWidget }: { isWidget?: boolean }) {
                           {etablissement?.numero_voie} {etablissement?.type_voie} {etablissement?.nom_voie}, {etablissement?.code_postal} {etablissement?.nom_departement}
                         </Text>
                         <Link
-                          href={`https://catalogue.apprentissage.beta.gouv.fr/etablissement/${etablissement._id}`}
+                          href={`https://catalogue-apprentissage.intercariforef.org/etablissement/${etablissement.siret}`}
                           isExternal
                           aria-label="Etablissement sur le site du catalogue des formations en apprentissage - nouvelle fenêtre"
                         >

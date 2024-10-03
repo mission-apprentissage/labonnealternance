@@ -1,5 +1,5 @@
 import { CloseIcon, HamburgerIcon, LockIcon } from "@chakra-ui/icons"
-import { Box, Container, Flex, Image, Show, Stack, useDisclosure } from "@chakra-ui/react"
+import { Box, Container, Flex, Image, Stack, useDisclosure } from "@chakra-ui/react"
 import NextLink from "next/link"
 
 import { LbaNew } from "../theme/components/logos"
@@ -31,13 +31,11 @@ const Navigation = ({ currentPage = undefined }) => {
             <Flex flexGrow={1}>
               <Flex alignItems="center">
                 <NextLink href="/" aria-label="Retour à l'accueil">
-                  <Image src="/images/marianne.svg#svgView(viewBox(12 0 162 78))" alt="" width="162" height="78" />
+                  <Image src="/images/marianne.svg" aria-hidden={true} alt="" width="108" height="90" />
                 </NextLink>
-                <Show above="md">
-                  <NextLink href="/" aria-label="Retour à l'accueil">
-                    <LbaNew ml={4} w="143px" h="37px" />
-                  </NextLink>
-                </Show>
+                <NextLink href="/" aria-label="Retour à l'accueil">
+                  <LbaNew w="143px" h="37px" />
+                </NextLink>
               </Flex>
             </Flex>
             <HamburgerIcon

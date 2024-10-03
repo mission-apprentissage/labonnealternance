@@ -5,7 +5,7 @@ import { createSession, deleteSession } from "@/services/sessions.service"
 
 import config from "../../config"
 
-const createSessionToken = (email: string) => {
+export const createSessionToken = (email: string) => {
   return jwt.sign({ email }, config.auth.user.jwtSecret, {
     issuer: config.publicUrl,
     expiresIn: config.auth.user.expiresIn,

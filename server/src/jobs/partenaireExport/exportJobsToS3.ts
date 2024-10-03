@@ -1,11 +1,11 @@
-import { createWriteStream } from "fs"
+import { createReadStream, createWriteStream } from "fs"
 import { Transform } from "stream"
 import { pipeline } from "stream/promises"
 
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { logger } from "../../common/logger"
-import { uploadFileToS3 } from "../../common/utils/awsUtils"
+import { s3Write } from "../../common/utils/awsUtils"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 
 interface IGeneratorParams {
@@ -83,16 +83,18 @@ async function exportLbaJobsToS3() {
     fileName: LBA_ITEM_TYPE.RECRUTEURS_LBA,
   }
   await Promise.all([
-    generateJsonExport(offres_emploi_lba).then((path) => {
+    generateJsonExport(offres_emploi_lba).then(async (path) => {
       const key = path.split("/").pop() as string
+      const file = createReadStream(path)
       logger.info(`Uploading file ${key} to S3`)
-      uploadFileToS3({ key, filePath: path, noCache: true })
+      await s3Write("storage", key, { Body: file, CacheControl: "no-cache, no-store, must-revalidate" })
       logger.info(`file ${key} uploaded`)
     }),
-    generateJsonExport(recruteurs_lba).then((path) => {
+    generateJsonExport(recruteurs_lba).then(async (path) => {
       const key = path.split("/").pop() as string
+      const file = createReadStream(path)
       logger.info(`Uploading file ${key} to S3`)
-      uploadFileToS3({ key, filePath: path, noCache: true })
+      await s3Write("storage", key, { Body: file, CacheControl: "no-cache, no-store, must-revalidate" })
       logger.info(`File ${key} uploaded`)
     }),
   ])

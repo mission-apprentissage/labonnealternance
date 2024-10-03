@@ -1,5 +1,6 @@
-import Boom from "boom"
+import { badRequest, internal, tooManyRequests } from "@hapi/boom"
 import { isEmailBurner } from "burner-email-providers"
+import dayjs from "dayjs"
 import Joi from "joi"
 import { ObjectId } from "mongodb"
 import { ApplicationScanStatus, IApplication, IJob, ILbaCompany, INewApplicationV2, IRecruiter, JOB_STATUS, assertUnreachable } from "shared"
@@ -158,9 +159,8 @@ export const sendApplication = async ({
         return { error: "email du recruteur manquant" }
       }
       const application = await newApplicationToApplicationDocument(newApplication, offreOrError, recruteurEmail)
-      const fileContent = newApplication.applicant_file_content
       await s3Write("applications", getApplicationCvS3Filename(application), {
-        Body: fileContent,
+        Body: newApplication.applicant_file_content,
       })
       await getDbCollection("applications").insertOne(application)
       return { result: "ok", message: "messages sent" }
@@ -194,24 +194,30 @@ export const sendApplicationV2 = async ({
   let lbaJob: IJobOrCompany = { type: null as any, job: null as any, recruiter: null }
 
   if (isEmailBurner(newApplication.applicant_email)) {
-    throw Boom.badRequest(BusinessErrorCodes.BURNER)
+    throw badRequest(BusinessErrorCodes.BURNER)
   }
 
   if ("company_siret" in newApplication) {
     // email can be null in collection
     const LbaRecruteur = await getDbCollection("recruteurslba").findOne({ siret: newApplication.company_siret, email: { $not: { $eq: null } } })
     if (!LbaRecruteur) {
-      throw Boom.badRequest(BusinessErrorCodes.NOTFOUND)
+      throw badRequest(BusinessErrorCodes.NOTFOUND)
     }
     lbaJob = { type: LBA_ITEM_TYPE.RECRUTEURS_LBA, job: LbaRecruteur, recruiter: null }
   }
 
   if ("job_id" in newApplication) {
-    const recruiter = await getOffreAvecInfoMandataire(newApplication.job_id)
-    if (!recruiter) {
-      throw Boom.badRequest(BusinessErrorCodes.NOTFOUND)
+    const recruiterResult = await getOffreAvecInfoMandataire(newApplication.job_id)
+    if (!recruiterResult) {
+      throw badRequest(BusinessErrorCodes.NOTFOUND)
     }
-    lbaJob = { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job: recruiter?.job, recruiter: recruiter?.recruiter }
+    const { recruiter, job } = recruiterResult
+    // la vérification sur la date accepte une période de grâce de 1j
+    if (recruiter.status !== RECRUITER_STATUS.ACTIF || job.job_status !== JOB_STATUS.ACTIVE || dayjs(job.job_expiration_date).isBefore(dayjs().add(1, "day"))) {
+      throw badRequest(BusinessErrorCodes.EXPIRED)
+    }
+
+    lbaJob = { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job, recruiter }
   }
 
   await checkUserApplicationCountV2(newApplication.applicant_email.toLowerCase(), lbaJob, caller)
@@ -220,14 +226,13 @@ export const sendApplicationV2 = async ({
   const recruteurEmail = (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? recruiter.email : job.email)?.toLowerCase()
   if (!recruteurEmail) {
     sentryCaptureException(`${BusinessErrorCodes.INTERNAL_EMAIL} ${type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? `recruiter: ${recruiter._id} ` : `LbaCompany: ${job._id}`}`)
-    throw Boom.internal(BusinessErrorCodes.INTERNAL_EMAIL)
+    throw internal(BusinessErrorCodes.INTERNAL_EMAIL)
   }
 
   try {
     const application = await newApplicationToApplicationDocumentV2(newApplication, lbaJob, recruteurEmail, caller)
-    const fileContent = newApplication.applicant_file_content
     await s3Write("applications", getApplicationCvS3Filename(application), {
-      Body: fileContent,
+      Body: newApplication.applicant_file_content,
     })
     await getDbCollection("applications").insertOne(application)
   } catch (err) {
@@ -241,7 +246,7 @@ export const sendApplicationV2 = async ({
       })
     }
     logger.error(err)
-    throw Boom.badRequest(BusinessErrorCodes.UNKNOWN)
+    throw badRequest(BusinessErrorCodes.UNKNOWN)
   }
 }
 
@@ -275,11 +280,11 @@ const buildUserForToken = (application: IApplication, user?: IUserWithAccount): 
     return { type: "lba-company", siret: company_siret, email: company_email }
   } else if (job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     if (!user) {
-      throw Boom.internal("un user recruteur était attendu")
+      throw internal("un user recruteur était attendu")
     }
     return userWithAccountToUserForToken(user)
   } else {
-    throw Boom.internal(`job_origin=${job_origin} non supporté`)
+    throw internal(`job_origin=${job_origin} non supporté`)
   }
 }
 
@@ -323,7 +328,7 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
   if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     const jobOrCompany = await getJobOrCompany(application)
     if (jobOrCompany.type !== LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
-      throw Boom.internal(`inattendu : type !== ${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}`)
+      throw internal(`inattendu : type !== ${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}`)
     }
     user = await getUser2ManagingOffer(jobOrCompany.job)
   }
@@ -599,15 +604,15 @@ const checkUserApplicationCountV2 = async (applicantEmail: string, LbaJob: IJobO
   ])
 
   if (todayApplicationsCount > MAX_CANDIDATURES_PAR_CANDIDAT_PAR_JOUR) {
-    throw Boom.tooManyRequests(BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_DAY)
+    throw tooManyRequests(BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_DAY)
   }
 
   if (itemApplicationCount >= MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT) {
-    throw Boom.tooManyRequests(BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER)
+    throw tooManyRequests(BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER)
   }
 
   if (callerApplicationCount >= MAX_MESSAGES_PAR_SIRET_PAR_CALLER) {
-    throw Boom.tooManyRequests(BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_SIRET)
+    throw tooManyRequests(BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_SIRET)
   }
 }
 
@@ -860,7 +865,7 @@ const getApplicationCvS3Filename = (application: IApplication) => `cv-${applicat
 const getApplicationAttachmentContent = async (application: IApplication): Promise<string> => {
   const content = await s3ReadAsString("applications", getApplicationCvS3Filename(application))
   if (!content) {
-    throw Boom.internal(`inattendu : cv vide pour la candidature avec id=${application._id}`)
+    throw internal(`inattendu : cv vide pour la candidature avec id=${application._id}`)
   }
   return content
 }
@@ -942,7 +947,7 @@ export const processApplicationEmails = {
       await getDbCollection("applications").findOneAndUpdate({ _id: application._id }, { $set: { to_company_message_id: emailCompany.messageId } })
     } else {
       logger.error(`Application email rejected. applicant_email=${application.applicant_email} company_email=${application.company_email}`)
-      throw Boom.internal("Email entreprise destinataire rejeté.")
+      throw internal("Email entreprise destinataire rejeté.")
     }
   },
   async sendCandidatEmail(application: IApplication, attachmentContent: string) {
@@ -965,7 +970,7 @@ export const processApplicationEmails = {
       await getDbCollection("applications").findOneAndUpdate({ _id: application._id }, { $set: { to_applicant_message_id: emailCandidat.messageId } })
     } else {
       logger.error(`Application email rejected. applicant_email=${application.applicant_email} company_email=${application.company_email}`)
-      throw Boom.internal("Email candidat destinataire rejeté.")
+      throw internal("Email candidat destinataire rejeté.")
     }
   },
 }
@@ -975,17 +980,17 @@ const getJobOrCompany = async (application: IApplication): Promise<IJobOrCompany
   if (job_id) {
     const recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": new ObjectId(job_id) })
     if (!recruiter) {
-      throw Boom.internal(`inattendu: aucun recruiter avec jobs._id=${job_id}`)
+      throw internal(`inattendu: aucun recruiter avec jobs._id=${job_id}`)
     }
     const job = recruiter?.jobs?.find((job) => job._id.toString() === job_id)
     if (!job) {
-      throw Boom.internal(`inattendu: aucun job avec id=${job_id}`)
+      throw internal(`inattendu: aucun job avec id=${job_id}`)
     }
     return { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job, recruiter }
   } else {
     const company = await getDbCollection("recruteurslba").findOne({ siret: company_siret })
     if (!company) {
-      throw Boom.internal(`inattendu: aucun recruteur lba avec siret=${company_siret}`)
+      throw internal(`inattendu: aucun recruteur lba avec siret=${company_siret}`)
     }
     return { type: LBA_ITEM_TYPE.RECRUTEURS_LBA, job: company, recruiter: null }
   }

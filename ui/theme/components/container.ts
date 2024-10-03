@@ -1,15 +1,15 @@
 const Container = {
   variants: {
     responsiveContainer: {
-      maxWidth: ["480px", "540px", "720px", "960px", "1140px"],
+      maxWidth: ["576px", "768px", "992px", "1248px"],
     },
     pageContainer: {
       bg: "grey.100",
-      maxWidth: ["480px", "540px", "720px", "960px", "1140px"],
+      maxWidth: ["576px", "768px", "992px", "1248px"],
       borderRadius: ["0px", "0px", "10px"],
     },
     whitePageContainer: {
-      maxWidth: ["480px", "540px", "720px", "960px", "1140px"],
+      maxWidth: ["576px", "768px", "992px", "1248px"],
       borderRadius: ["0px", "0px", "10px"],
     },
     defaultAutocomplete: {
@@ -19,7 +19,7 @@ const Container = {
       position: "absolute",
       borderTop: "0px",
       zIndex: 1000,
-      maxHeight: "480px",
+      maxHeight: "576px",
       background: "#fff",
       overflowY: "auto",
       margin: "4px 0 0",

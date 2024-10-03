@@ -283,7 +283,7 @@ const ZLbaItemTraining2 = z
     }), // formation -> intitule_long OU intitule_court
     idRco: z.string().nullish(), // formation -> id_formation
     cleMinistereEducatif: z.string().nullish(), // formation
-    diplomaLevel: z
+    target_diploma_level: z
       .string()
       .openapi({
         example: "3 (CAP...)",
@@ -362,7 +362,7 @@ export const ZLbaItemFormation = z
 
     /** TODO API V2: move inside training<ILbaItemTraining> */
     cleMinistereEducatif: z.string().nullish(), // formation
-    diplomaLevel: z
+    target_diploma_level: z
       .string()
       .openapi({
         example: "3 (CAP...)",
@@ -462,7 +462,7 @@ export const ZLbaItemLbaJob = z
     place: ZLbaItemPlace.nullable(),
     company: ZLbaItemCompany.nullable(),
     id: z.string().nullable().openapi({}), // matcha -> id_form
-    diplomaLevel: z
+    target_diploma_level: z
       .string()
       .openapi({
         example: "3 (CAP...)",

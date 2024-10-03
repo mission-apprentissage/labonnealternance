@@ -1,5 +1,6 @@
-import Boom from "boom"
-import { zRoutes } from "shared/index"
+import { badRequest, conflict, internal, notFound } from "@hapi/boom"
+import { RECRUITER_STATUS } from "shared/constants"
+import { JOB_STATUS, zRoutes } from "shared/index"
 
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateOffreToken } from "@/services/appLinks.service"
@@ -20,6 +21,7 @@ import {
   getFormulaireWithRomeDetailAndApplicationCount,
   getJob,
   getJobWithRomeDetail,
+  getOffre,
   patchOffre,
   provideOffre,
   updateFormulaire,
@@ -40,7 +42,7 @@ export default (server: Server) => {
       const { establishment_id } = req.params
       const recruiterOpt = await getFormulaireWithRomeDetailAndApplicationCount({ establishment_id })
       if (!recruiterOpt) {
-        throw Boom.notFound(`pas de formulaire avec establishment_id=${establishment_id}`)
+        throw notFound(`pas de formulaire avec establishment_id=${establishment_id}`)
       }
       return res.status(200).send(recruiterOpt)
     }
@@ -55,7 +57,7 @@ export default (server: Server) => {
       const { establishment_id } = req.params
       const recruiterOpt = await getFormulaireWithRomeDetailAndApplicationCount({ establishment_id })
       if (!recruiterOpt) {
-        throw Boom.notFound(`pas de formulaire avec establishment_id=${establishment_id}`)
+        throw notFound(`pas de formulaire avec establishment_id=${establishment_id}`)
       }
       return res.status(200).send(recruiterOpt)
     }
@@ -74,7 +76,7 @@ export default (server: Server) => {
       const result = await getFormulaireWithRomeDetail({ establishment_id: req.params.establishment_id })
 
       if (!result) {
-        throw Boom.badRequest()
+        throw badRequest()
       }
 
       return res.status(200).send(result)
@@ -95,10 +97,10 @@ export default (server: Server) => {
       const { establishment_siret, email, last_name, first_name, phone, opco, idcc } = req.body
       const userRecruteurOpt = await getUserRecruteurById(userRecruteurId)
       if (!userRecruteurOpt) {
-        throw Boom.badRequest("Nous n'avons pas trouvé votre compte utilisateur")
+        throw badRequest("Nous n'avons pas trouvé votre compte utilisateur")
       }
       if (!userRecruteurOpt.establishment_siret) {
-        throw Boom.internal("unexpected: userRecruteur without establishment_siret")
+        throw internal("unexpected: userRecruteur without establishment_siret")
       }
       const response = await entrepriseOnboardingWorkflow.createFromCFA({
         email,
@@ -114,7 +116,7 @@ export default (server: Server) => {
       })
       if ("error" in response) {
         const { message } = response
-        throw Boom.badRequest(message)
+        throw badRequest(message)
       }
       return res.status(200).send(response)
     }
@@ -173,7 +175,7 @@ export default (server: Server) => {
     async (req, res) => {
       const offre = await getJobWithRomeDetail(req.params.jobId.toString())
       if (!offre) {
-        throw Boom.badRequest("L'offre n'existe pas")
+        throw badRequest("L'offre n'existe pas")
       }
 
       res.status(200).send(offre)
@@ -252,7 +254,7 @@ export default (server: Server) => {
       const { email } = tokenUser.identity
       const user = await getUserWithAccountByEmail(email)
       if (!user) {
-        throw Boom.internal(`inattendu : impossible de récupérer l'utilisateur de type token ayant pour email=${email}`)
+        throw internal(`inattendu : impossible de récupérer l'utilisateur de type token ayant pour email=${email}`)
       }
       const {
         is_disabled_elligible,
@@ -338,7 +340,17 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.put["/formulaire/offre/:jobId"])],
     },
     async (req, res) => {
-      await patchOffre(req.params.jobId, req.body)
+      const { jobId } = req.params
+      const recruiterOpt = await getOffre(jobId)
+      const offreOpt = recruiterOpt?.jobs.find((job) => job._id.toString() === jobId.toString())
+      if (!recruiterOpt || !offreOpt) {
+        throw notFound("offer not found")
+      }
+
+      if (recruiterOpt.status !== RECRUITER_STATUS.ACTIF || offreOpt.job_status !== JOB_STATUS.ACTIVE) {
+        throw conflict("Offer is not active")
+      }
+      await patchOffre(jobId, req.body)
       return res.status(200).send({})
     }
   )
@@ -359,7 +371,7 @@ export default (server: Server) => {
       const exists = await checkOffreExists(jobId)
 
       if (!exists) {
-        throw Boom.badRequest("L'offre n'existe pas.")
+        throw badRequest("L'offre n'existe pas.")
       }
 
       const offre = await getJob(jobId.toString())
@@ -367,13 +379,13 @@ export default (server: Server) => {
       const delegations = offre?.delegations
 
       if (!delegations) {
-        throw Boom.badRequest("Le siret formateur n'a pas été proposé à l'offre.")
+        throw badRequest("Le siret formateur n'a pas été proposé à l'offre.")
       }
 
       const delegationFound = delegations.find((delegation) => delegation.siret_code == siret_formateur)
 
       if (!delegationFound) {
-        throw Boom.badRequest("Le siret formateur n'a pas été proposé à l'offre.")
+        throw badRequest("Le siret formateur n'a pas été proposé à l'offre.")
       }
 
       await patchOffre(jobId, {

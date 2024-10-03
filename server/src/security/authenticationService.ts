@@ -1,5 +1,6 @@
+import { forbidden, internal, unauthorized } from "@hapi/boom"
 import { captureException } from "@sentry/node"
-import Boom from "boom"
+import { parseApiAlternanceToken, type IApiAlternanceTokenData } from "api-alternance-sdk"
 import { FastifyRequest } from "fastify"
 import { JwtPayload } from "jsonwebtoken"
 import { ICredential, assertUnreachable } from "shared"
@@ -16,13 +17,12 @@ import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
 import { getDbCollection } from "../common/utils/mongodbUtils"
 import { controlUserState } from "../services/login.service"
 
-import { ApiApprentissageTokenData, parseApiApprentissageToken } from "./accessApiApprentissageService"
 import { IAccessToken, parseAccessToken, verifyJwtToken } from "./accessTokenService"
 
 export type AccessUser2 = UserWithType<"IUser2", IUserWithAccount>
 export type AccessUserCredential = UserWithType<"ICredential", ICredential>
 export type AccessUserToken = UserWithType<"IAccessToken", IAccessToken>
-export type AccessApiApprentissage = UserWithType<"IApiApprentissage", ApiApprentissageTokenData>
+export type AccessApiApprentissage = UserWithType<"IApiApprentissage", IApiAlternanceTokenData>
 
 export type IUserWithType = AccessUser2 | AccessUserCredential | AccessUserToken | AccessApiApprentissage
 
@@ -45,7 +45,7 @@ type AuthenticatedUser<AuthScheme extends WithSecurityScheme["securityScheme"]["
 
 export const getUserFromRequest = <S extends WithSecurityScheme>(req: Pick<FastifyRequest, "user">, _schema: S): AuthenticatedUser<S["securityScheme"]["auth"]> => {
   if (!req.user) {
-    throw Boom.internal("User should be authenticated")
+    throw internal("User should be authenticated")
   }
   return req.user as AuthenticatedUser<S["securityScheme"]["auth"]>
 }
@@ -54,7 +54,7 @@ async function authCookieSession(req: FastifyRequest): Promise<AccessUser2 | nul
   const token = req.cookies?.[config.auth.session.cookieName]
 
   if (!token) {
-    throw Boom.forbidden("Session invalide")
+    throw forbidden("Session invalide")
   }
 
   try {
@@ -75,7 +75,7 @@ async function authCookieSession(req: FastifyRequest): Promise<AccessUser2 | nul
 
     if (userState?.error) {
       if (userState.reason !== "VALIDATION") {
-        throw Boom.forbidden(`user state invalide : ${userState.reason}`)
+        throw forbidden(`user state invalide : ${userState.reason}`)
       }
     }
 
@@ -99,12 +99,14 @@ async function authApiKey(req: FastifyRequest): Promise<AccessUserCredential | n
 }
 
 function authApiApprentissage(req: FastifyRequest): AccessApiApprentissage | null {
-  const token = extractBearerTokenFromHeader(req)
-  if (token === null) {
-    return null
-  }
-  const apiData = parseApiApprentissageToken(token)
-  return { type: "IApiApprentissage", value: apiData }
+  const result = parseApiAlternanceToken({
+    token: req.headers.authorization ?? "",
+    publicKey: config.auth.apiApprentissage.publicKey,
+  })
+
+  if (result.success) return { type: "IApiApprentissage", value: result.data }
+
+  throw unauthorized(`Unable to parse token ${result.reason}`)
 }
 
 const bearerRegex = /^bearer\s+(\S+)$/i
@@ -129,7 +131,7 @@ async function authAccessToken<S extends ISecuredRouteSchema>(req: FastifyReques
 
 export async function authenticationMiddleware<S extends ISecuredRouteSchema>(schema: S, req: FastifyRequest) {
   if (!schema.securityScheme) {
-    throw Boom.internal("Missing securityScheme")
+    throw internal("Missing securityScheme")
   }
 
   const securityScheme = schema.securityScheme
@@ -152,6 +154,6 @@ export async function authenticationMiddleware<S extends ISecuredRouteSchema>(sc
   }
 
   if (!req.user) {
-    throw Boom.unauthorized()
+    throw unauthorized()
   }
 }

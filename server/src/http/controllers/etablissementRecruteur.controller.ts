@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
 import { assertUnreachable, toPublicUser, zRoutes } from "shared"
 import { CFA, ENTREPRISE } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
@@ -51,8 +51,8 @@ export default (server: Server) => {
       schema: zRoutes.get["/etablissement/cfas-proches"],
     },
     async (req, res) => {
-      const { latitude, longitude, rome } = req.query
-      const etablissements = await getNearEtablissementsFromRomes({ rome: [rome], origin: { latitude: latitude, longitude: longitude } })
+      const { latitude, longitude, rome, limit } = req.query
+      const etablissements = await getNearEtablissementsFromRomes({ rome: [rome], origin: { latitude: latitude, longitude: longitude }, limit })
       res.send(etablissements)
     }
   )
@@ -70,12 +70,12 @@ export default (server: Server) => {
       const cfa_delegated_siret: string | undefined = req.query.cfa_delegated_siret
       const skipUpdate: boolean = req.query.skipUpdate === "true"
       if (!siret) {
-        throw Boom.badRequest("Le numéro siret est obligatoire.")
+        throw badRequest("Le numéro siret est obligatoire.")
       }
 
       const cfaVerification = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
       if (cfaVerification) {
-        throw Boom.badRequest(cfaVerification.message)
+        throw badRequest(cfaVerification.message)
       }
 
       if (skipUpdate) {
@@ -88,7 +88,7 @@ export default (server: Server) => {
       const entreprise = await upsertEntrepriseData(siret, "création de compte entreprise", siretResponse, false)
 
       if ("error" in siretResponse) {
-        throw Boom.badRequest(siretResponse.message, siretResponse)
+        throw badRequest(siretResponse.message, siretResponse)
       } else {
         return res.status(200).send(entreprise)
       }
@@ -106,11 +106,11 @@ export default (server: Server) => {
     async (req, res) => {
       const siret = req.params.siret
       if (!siret) {
-        throw Boom.badRequest("Le numéro siret est obligatoire.")
+        throw badRequest("Le numéro siret est obligatoire.")
       }
       const result = await getOpcoData(siret)
       if (!result) {
-        throw Boom.notFound("aucune données OPCO trouvées")
+        throw notFound("aucune données OPCO trouvées")
       }
       return res.status(200).send(result)
     }
@@ -127,7 +127,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { siret } = req.params
       if (!siret) {
-        throw Boom.badRequest("Le numéro siret est obligatoire.")
+        throw badRequest("Le numéro siret est obligatoire.")
       }
       const { address, address_detail, geo_coordinates, raison_sociale, enseigne } = await getCfaSiretInfos(siret)
       return res.status(200).send({ address, address_detail, geo_coordinates, raison_sociale, enseigne, siret })
@@ -145,11 +145,11 @@ export default (server: Server) => {
     async (req, res) => {
       const { siret } = req.params
       if (!siret) {
-        throw Boom.badRequest("Le numéro siret est obligatoire.")
+        throw badRequest("Le numéro siret est obligatoire.")
       }
       const isValid = await isCfaCreationValid(siret)
       if (!isValid) {
-        throw Boom.forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: BusinessErrorCodes.ALREADY_EXISTS })
+        throw forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: BusinessErrorCodes.ALREADY_EXISTS })
       }
       await validateEligibiliteCfa(siret)
       return res.status(200).send({})
@@ -169,11 +169,11 @@ export default (server: Server) => {
       const { cfaId } = req.params
       const cfa = await getDbCollection("cfas").findOne({ _id: cfaId })
       if (!cfa) {
-        throw Boom.notFound(`Aucun CFA ayant pour id ${cfaId.toString()}`)
+        throw notFound(`Aucun CFA ayant pour id ${cfaId.toString()}`)
       }
       const cfa_delegated_siret = cfa.siret
       if (!cfa_delegated_siret) {
-        throw Boom.internal(`inattendu : le cfa n'a pas de champ cfa_delegated_siret`)
+        throw internal(`inattendu : le cfa n'a pas de champ cfa_delegated_siret`)
       }
       const entreprises = await getDbCollection("recruiters")
         .find({ status: { $in: [RECRUITER_STATUS.ACTIF, RECRUITER_STATUS.EN_ATTENTE_VALIDATION] }, cfa_delegated_siret })
@@ -197,10 +197,10 @@ export default (server: Server) => {
           const siret = req.body.establishment_siret
           const result = await entrepriseOnboardingWorkflow.create({ ...req.body, siret })
           if ("error" in result) {
-            if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw Boom.forbidden(result.message, result)
-            else throw Boom.badRequest(result.message, result)
+            if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw forbidden(result.message, result)
+            else throw badRequest(result.message, result)
           }
-          const token = generateDepotSimplifieToken(userWithAccountToUserForToken(result.user), result.formulaire.establishment_id, siret)
+          const token = generateDepotSimplifieToken(userWithAccountToUserForToken(result.user), result.formulaire.establishment_id)
           return res.status(200).send({ formulaire: result.formulaire, user: result.user, token, validated: result.validated })
         }
         case CFA: {
@@ -209,12 +209,12 @@ export default (server: Server) => {
           const formatedEmail = email.toLocaleLowerCase()
           // check if user already exist
           if (await emailHasActiveRole(formatedEmail)) {
-            throw Boom.forbidden("L'adresse mail est déjà associée à un compte La bonne alternance.")
+            throw forbidden("L'adresse mail est déjà associée à un compte La bonne alternance.")
           }
 
           const isValid = await isCfaCreationValid(establishment_siret)
           if (!isValid) {
-            throw Boom.forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: BusinessErrorCodes.ALREADY_EXISTS })
+            throw forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: BusinessErrorCodes.ALREADY_EXISTS })
           }
           const {
             referentiel: { contacts },
@@ -237,7 +237,7 @@ export default (server: Server) => {
             subject: "RECRUTEUR",
             message: `Nouvel OF en attente de validation - ${config.publicUrl}/espace-pro/administration/users/${userCfa._id}`,
           }
-          const token = generateCfaCreationToken(userWithAccountToUserForToken(userCfa), establishment_siret)
+          const token = generateCfaCreationToken(userWithAccountToUserForToken(userCfa))
           const userAndOrganization: UserAndOrganization = { user: userCfa, organization }
           if (!contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
@@ -306,7 +306,7 @@ export default (server: Server) => {
       const { _id, ...rest } = req.body
       const result = await updateUserWithAccountFields(req.params.id, rest)
       if ("error" in result) {
-        throw Boom.badRequest("L'adresse mail est déjà associée à un compte La bonne alternance.")
+        throw badRequest("L'adresse mail est déjà associée à un compte La bonne alternance.")
       }
       return res.status(200).send({ ok: true })
     }
@@ -324,10 +324,10 @@ export default (server: Server) => {
 
       const user = await getUserWithAccountByEmail(email)
       if (!user) {
-        throw Boom.badRequest("La validation de l'adresse mail a échoué. Merci de contacter le support La bonne alternance.")
+        throw badRequest("La validation de l'adresse mail a échoué. Merci de contacter le support La bonne alternance.")
       }
       if (isUserDisabled(user)) {
-        throw Boom.forbidden("Votre compte est désactivé. Merci de contacter le support La bonne alternance.")
+        throw forbidden("Votre compte est désactivé. Merci de contacter le support La bonne alternance.")
       }
       if (!isUserEmailChecked(user)) {
         await validateUserWithAccountEmail(user._id)

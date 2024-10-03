@@ -4,7 +4,7 @@ import fastifyCors from "@fastify/cors"
 import fastifyRateLimt from "@fastify/rate-limit"
 import fastifySwagger, { FastifyStaticSwaggerOptions } from "@fastify/swagger"
 import fastifySwaggerUI, { FastifySwaggerUiOptions } from "@fastify/swagger-ui"
-import Boom from "boom"
+import { notFound } from "@hapi/boom"
 import fastify, { FastifyBaseLogger, FastifyInstance, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerDefault } from "fastify"
 import { ZodTypeProvider, serializerCompiler, validatorCompiler } from "fastify-type-provider-zod"
 import { Netmask } from "netmask"
@@ -187,14 +187,14 @@ export async function bind(app: Server) {
   initBrevoWebhooks()
 
   app.setNotFoundHandler((req, res) => {
-    res.status(404).send(Boom.notFound().output)
+    res.status(404).send(notFound().output)
   })
 
   errorMiddleware(app)
   return app
 }
 
-export default async (): Promise<Server> => {
+export const bindFastifyServer = async (): Promise<Server> => {
   const app: Server = fastify({
     logger: logMiddleware(),
     trustProxy: 1,

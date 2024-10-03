@@ -1,63 +1,153 @@
 <mjml>
   <mj-head>
-    <mj-title>Lien de connexion</mj-title>
-    <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap" />
-    <mj-style inline="inline">
-      .grey {color: #1E1E1E;}
-    </mj-style>
+    <mj-preview></mj-preview>
+    <mj-breakpoint width="480px"></mj-breakpoint>
     <mj-attributes>
-      <mj-all font-family="Work Sans"/>
-      <mj-text color="#242424" font-family="Work Sans, Arial" font-size="16px" line-height="24px" />
-      <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Work Sans" height="40px" />
+      <mj-all padding="0"></mj-all>
     </mj-attributes>
+    <mj-style>
+      @media only screen and (max-width: 799px) {
+        .text > div {
+            text-align: inherit !important;
+        }
+    
+        .wrapper > table > tbody > tr > td {
+            padding-left: 0px !important;
+            padding-right: 0px !important;
+        }
+
+        .section > table > tbody > tr > td {
+            padding-left: 20px !important;
+            padding-right: 20px !important;
+        }
+
+        .column > table > tbody > tr > td {
+            padding-left: 0px !important;
+            padding-right: 0px !important;
+        }
+
+        .padB40 {
+            padding-bottom: 40px !important;
+        }
+
+        .image {
+            padding-left: 0px !important;
+            padding-right: 0px !important;
+        }
+
+        .image > table {
+            text-align: center !important;
+            margin: 0 auto !important;
+        }
+
+        .divider {
+            padding-left: 0px !important;
+            padding-right: 0px !important;
+        }
+
+        .button > table {
+            width: 100% !important;
+        }
+
+        .button > table > tbody > tr > td > a {
+            width: 80% !important;
+        }
+    }
+    </mj-style>
+    <mj-style inline="inline">
+      .column > table { border-collapse: separate; }
+    </mj-style>
+    <mj-font href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@700&display=swap" name="Public Sans"></mj-font>
   </mj-head>
-  <mj-body background-color="#E5E5E5">
-    <mj-section>
-      <mj-column>
-        <mj-image src="<%= data.images.logoLba %>" width="150px"  alt="Logo du site La bonne alternance" />
-      </mj-column>
-    </mj-section>
-    <mj-wrapper background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF">
+  <mj-body background-color="#f5f5fe" name="Lien de connexion" width="800px">
+    <mj-wrapper border-radius="0px" css-class="wrapper" padding="32px 100px 32px 100px">
+      <mj-section border-radius="0px" css-class="section" name="mj-section_group">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="14.83%">
+            <mj-image align="left" alt="Image" css-class="image" href="#" src="<%= data.images.logoRf %>" width="89px">
 
-      <mj-section padding="0px 0px">
-        <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
-          <mj-text>
-            Bonjour <%= data.first_name %> <%= data.last_name %>,
-          </mj-text>
+            </mj-image>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" padding="0px 24px 0px 24px" vertical-align="middle" width="34.83%">
+            <mj-image align="left" alt="Image" css-class="image" href="#" padding="17px 0px 17px 0px" src="<%= data.images.logoLba %>" width="160px">
 
-          <mj-text>
-            Pour accéder à votre espace, merci de cliquer sur le lien ci-dessous :
-          </mj-text>
-          <mj-button font-family="Work Sans" color="#ffffff" background-color="#000091" href="<%= data.connexion_url %>">
-            Accéder à mon espace
-          </mj-button>
+            </mj-image>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" vertical-align="top" width="50.33%">
+
+          </mj-column>
+        </mj-group>
       </mj-section>
-      <mj-section padding="20px 20px">
-        <mj-column background-color="#E5E5E5">
-          <mj-text>ℹ️ Attention, ce lien n'est valide que pour une durée de 1 heure.</mj-text>
-        </mj-column>
-      </mj-section>
-      <mj-section>
-        <mj-column>
+      <mj-spacer height="24px">
 
-          <mj-text>Si le lien ne fonctionne pas, copier le lien suivant dans le navigateur : </mj-text>
-          <mj-text><%= data.connexion_url %></mj-text>
-        </mj-column>
+      </mj-spacer>
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="11px 23px 11px 23px">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="-298.56%">
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="10px 0px 10px 0px">
+              Bonjour <%= data.first_name %> <%= data.last_name %>,
+<br/>
+            </mj-text>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="99.64%">
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="10px 0px 10px 0px">
+              Pour accéder à votre espace, merci de cliquer sur le lien ci-dessous :
+<br/>
+            </mj-text>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" padding="0px 184px 0px 184px" vertical-align="middle" width="99.64%">
+            <mj-button href="<%= data.connexion_url %>" align="center" background-color="#000091" border-radius="0px" border="1px solid #000091" color="#ffffff" css-class="button" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="700" href="#" inner-padding="4px 0px 4px 0px" line-height="24px" padding="10px 0px 10px 0px" width="184px">
+              Accéder à mon espace
+            </mj-button>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="99.64%">
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-style="italic" font-weight="700" line-height="24px" padding="10px 0px 10px 0px">
+              Attention, ce lien est valide pendant 15 minutes.
+<br/>
+            </mj-text>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="99.64%">
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="22px" padding="10px 0px 10px 0px">
+              Si le bouton ne fonctionne pas, copiez le lien suivant dans votre navigateur :
+<br/><%= data.connexion_url %>
+<br/>
+            </mj-text>
+          </mj-column>
+        </mj-group>
       </mj-section>
+      <mj-spacer height="24px">
 
-      <mj-section>
-        <mj-column>
-          <mj-text>
-            L'équipe La bonne alternance, <br>
-            Mission interministérielle pour l'apprentissage
-          </mj-text>
-        </mj-column>
+      </mj-spacer>
+      <mj-section border-radius="4px" css-class="section" name="mj-section_group">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+            <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
+              Ce courriel est généré automatiquement, vous ne pouvez pas y répondre.
+<br/>Pour toute question, consultez notre <a href="https://labonnealternance.apprentissage.beta.gouv.fr/faq#recruteur" style="text-decoration: underline; color: inherit;">FAQ</a> ou écrivez-nous à <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr" style="text-decoration: underline; color: inherit;">labonnealternance@apprentissage.beta.gouv.fr</a>
+<br/>
+            </mj-text>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+      <mj-spacer height="24px">
+
+      </mj-spacer>
+      <mj-section border-radius="4px" css-class="section" name="mj-section_group">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+            <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
+              La bonne alternance est un site développé par la Mission interministérielle pour l'apprentissage, au sein de l’État, conformément aux missions d’intérêt public du ministère du Travail, du Plein emploi et de l’Insertion.
+<br/>
+<br/>Nous vous contactons car vous souhaitez vous connecter à votre compte pour déposer des offres d'emploi en alternance. 
+<br/>
+<br/>Nous ne faisons aucune utilisation commerciale de vos adresses e-mail. Vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Droit%20opposition" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">labonnealternance@apprentissage.beta.gouv.fr</a>
+<br/>
+<br/>Si vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL. Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la <a href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">politique de confidentialité</a> de La bonne alternance.
+<br/>
+            </mj-text>
+          </mj-column>
+        </mj-group>
       </mj-section>
     </mj-wrapper>
-    <mj-section padding-top="30px">
-      <mj-column>
-        <mj-image src="https://labonnealternance.apprentissage.beta.gouv.fr/assets/logo-republique-francaise.png" width="182px" align="left" />
-      </mj-column>
-    </mj-section>
   </mj-body>
 </mjml>

@@ -1,29 +1,26 @@
 import { captureException } from "@sentry/node"
 import { program } from "commander"
+import { addJob, startJobProcessor } from "job-processor"
 import HttpTerminator from "lil-http-terminator"
 
 import { closeMemoryCache } from "./common/apis/client"
 import { logger } from "./common/logger"
-import { sleep } from "./common/utils/asyncUtils"
 import { closeMongodbConnection } from "./common/utils/mongodbUtils"
 import { notifyToSlack } from "./common/utils/slackUtils"
 import config from "./config"
+import { bindProcessorServer } from "./http/jobProcessorServer"
 import { closeSentry, initSentryProcessor } from "./http/sentry"
-import server from "./http/server"
-import { addJob, processor } from "./jobs/jobs_actions"
+import { bindFastifyServer } from "./http/server"
+import { setupJobProcessor } from "./jobs/jobs"
 
-async function startJobProcessor(signal: AbortSignal) {
-  logger.info(`Process jobs queue - start`)
-  if (config.env !== "local" && config.env !== "preview") {
-    await addJob({
-      name: "crons:init",
-      queued: true,
-      payload: {},
-    })
+async function setupAndStartProcessor(signal: AbortSignal, shouldStartWorker: boolean) {
+  logger.info("Setup job processor")
+  await setupJobProcessor()
+  if (shouldStartWorker) {
+    logger.info(`Process jobs queue - start`)
+    await startJobProcessor(signal)
+    logger.info(`Processor shut down`)
   }
-
-  await processor(signal)
-  logger.info(`Processor shut down`)
 }
 
 function createProcessExitSignal() {
@@ -86,7 +83,7 @@ program
   .action(async ({ withProcessor = false }) => {
     try {
       const signal = createProcessExitSignal()
-      const httpServer = await server()
+      const httpServer = await bindFastifyServer()
       await httpServer.ready()
       await httpServer.listen({ port: config.port, host: "0.0.0.0" })
       logger.info(`Server ready and listening on port ${config.port}`)
@@ -102,7 +99,7 @@ program
         return
       }
 
-      const tasks = [
+      await Promise.all([
         new Promise<void>((resolve, reject) => {
           signal.addEventListener("abort", async () => {
             try {
@@ -114,13 +111,8 @@ program
             }
           })
         }),
-      ]
-
-      if (withProcessor) {
-        tasks.push(startJobProcessor(signal))
-      }
-
-      await Promise.all(tasks)
+        setupAndStartProcessor(signal, withProcessor),
+      ])
     } catch (err) {
       logger.error(err)
       captureException(err)
@@ -132,25 +124,54 @@ program
   .command("job_processor:start")
   .description("Run job processor")
   .action(async () => {
-    const signal = createProcessExitSignal()
-    if (config.disable_processors) {
-      // The processor will exit, and be restarted by docker every day
-      await sleep(24 * 3_600_000, signal)
-      return
-    }
+    try {
+      const signal = createProcessExitSignal()
+      const httpServer = await bindProcessorServer()
+      await httpServer.ready()
+      await httpServer.listen({ port: config.port, host: "0.0.0.0" })
+      logger.info(`Server ready and listening on port ${config.port}`)
 
-    await startJobProcessor(signal)
+      const terminator = HttpTerminator({
+        server: httpServer.server,
+        maxWaitTimeout: 50_000,
+        logger: logger,
+      })
+
+      if (signal.aborted) {
+        await terminator.terminate()
+        return
+      }
+
+      await Promise.all([
+        new Promise<void>((resolve, reject) => {
+          signal.addEventListener("abort", async () => {
+            try {
+              await terminator.terminate()
+              logger.warn("Server shut down")
+              resolve()
+            } catch (err) {
+              reject(err)
+            }
+          })
+        }),
+        setupAndStartProcessor(signal, true),
+      ])
+    } catch (err) {
+      logger.error(err)
+      captureException(err)
+      throw err
+    }
   })
 
 function createJobAction(name) {
   return async (options) => {
     try {
       const { queued = false, ...payload } = options
+      await setupJobProcessor()
       const exitCode = await addJob({
         name,
         queued,
         payload,
-        disallowPentest: false,
       })
 
       if (exitCode) {
@@ -163,9 +184,14 @@ function createJobAction(name) {
   }
 }
 
-program.command("poc:romeo").description("temporaire - poc api romeo").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("poc:romeo"))
 program.command("recreate:indexes").description("Recreate MongoDB indexes").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("recreate:indexes"))
 program.command("db:validate").description("Validate Documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:validate"))
+
+program
+  .command("remove:duplicates:recruiters")
+  .description("Remove duplicate recruiters based on SIRET and EMAIL")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("remove:duplicates:recruiters"))
 
 program
   .command("lbajobs:export:s3")
@@ -536,16 +562,40 @@ program
 
 program
   .command("import-hellowork")
-  .description("Importe les offres hellowork")
+  .description("Importe les offres hellowork dans la collection raw")
   .option("-q, --queued", "Run job asynchronously", false)
-  .option("-parallelism, [parallelism]", "Number of threads", "10")
   .action(createJobAction("import-hellowork"))
 
 program
-  .command("send-applications")
-  .description("Scanne les virus des pièces jointes et envoie les candidatures")
+  .command("import-hellowork-to-computed")
+  .description("Importe les offres hellowork depuis raw vers computed")
   .option("-q, --queued", "Run job asynchronously", false)
-  .option("-batchSize, [batchSize]", "Maximum de candidatures traitées", "100")
+  .action(createJobAction("import-hellowork-to-computed"))
+
+program
+  .command("import-rhalternance")
+  .description("Importe les offres RHAlternance dans la collection raw")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("import-rhalternance"))
+
+program.command("import-kelio").description("Importe les offres kelio").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("import-kelio"))
+
+program
+  .command("import-computed-to-jobs-partners")
+  .description("Met à jour la collection jobs_partners à partir de computed_jobs_partners")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("import-computed-to-jobs-partners"))
+
+program
+  .command("cancel-removed-jobs-partners")
+  .description("Met à jour la collection jobs_partners en mettant à 'Annulé' les offres qui ne sont plus dans computed_jobs_partners")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("cancel-removed-jobs-partners"))
+
+program
+  .command("send-applications")
+  .description("Scanne les virus des pièces jointes et envoie les candidatures. Timeout à 8 minutes.")
+  .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("send-applications"))
 
 program
