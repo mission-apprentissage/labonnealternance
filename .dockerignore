@@ -6,10 +6,14 @@
 !/server/tsconfig.json
 !/server/tsoa.json
 !/server/tsup.config.ts
+!/server/sentry-deploy-server.sh
+!/server/sentry-release-server.sh
 
 !/shared
 
 !/ui
+!/ui/sentry-deploy-ui.sh
+!/ui/sentry-release-ui.sh
 /ui/.env
 /ui/.next
 /ui/.eslintrc.js
