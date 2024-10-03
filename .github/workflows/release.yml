@@ -179,7 +179,7 @@ jobs:
       - name: upload sourcemaps to sentry
         run: .bin/mna-lba sentry:release ${{ needs.release.outputs.VERSION }}
         env:
-          ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
+          ANSIBLE_VAULT_PASSWORD_FILE: ${{ secrets.VAULT_PWD }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REF_NAME: ${{ env.GITHUB_REF_NAME }}
 
