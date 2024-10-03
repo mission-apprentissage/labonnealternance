@@ -24,6 +24,7 @@ export const ZTrafficSource = ZTrackingCookies.extend({
   _id: zObjectId,
   user_id: zObjectId.nullable(),
   application_id: zObjectId.nullable(),
+  applicant_email_hash: z.string().nullable(),
   traffic_type: ZTrafficType,
 })
 
@@ -33,7 +34,9 @@ export default {
   zod: ZTrafficSource,
   indexes: [
     [{ traffic_type: 1 }, {}],
-    [{ utm_campaing: 1 }, {}],
+    [{ utm_campaign: 1 }, {}],
+    [{ applicant_email_hash: 1 }, {}],
+    [{ user_id: 1 }, {}],
     [{ referer: 1 }, {}],
   ],
   collectionName,

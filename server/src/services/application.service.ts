@@ -240,7 +240,7 @@ export const sendApplicationV2 = async ({
       Body: newApplication.applicant_file_content,
     })
     await getDbCollection("applications").insertOne(application)
-    await saveApplicationTrafficSourceIfAny({ application_id: application._id, source })
+    await saveApplicationTrafficSourceIfAny({ application_id: application._id, applicant_email: application.applicant_email, source })
   } catch (err) {
     sentryCaptureException(err)
     if (caller) {
