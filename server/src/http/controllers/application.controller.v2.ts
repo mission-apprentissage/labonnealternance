@@ -1,5 +1,7 @@
 import { zRoutes } from "shared/index"
 
+import { getSourceFromCookies } from "@/common/utils/httpUtils"
+
 import { getUserFromRequest } from "../../security/authenticationService"
 import { sendApplicationV2 } from "../../services/application.service"
 import { Server } from "../server"
@@ -41,7 +43,7 @@ export default function (server: Server) {
       await sendApplicationV2({
         newApplication: req.body,
         caller: req.body.caller || undefined,
-        source: { utm_campaign: req?.cookies["utm_campaign"], referer: req?.cookies["referer"] },
+        source: getSourceFromCookies(req),
       })
       return res.status(200).send({})
     }

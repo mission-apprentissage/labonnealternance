@@ -11,14 +11,21 @@ export enum TrafficType {
 }
 export const ZTrafficType = extensions.buildEnum(TrafficType)
 
-export const ZTrafficSource = z.object({
+const ZTrackingCookies = z.object({
+  utm_campaign: z.string().nullable(),
+  utm_medium: z.string().nullable(),
+  utm_source: z.string().nullable(),
+  referer: z.string().nullable(),
+})
+export type ITrackingCookies = z.output<typeof ZTrackingCookies>
+
+export const ZTrafficSource = ZTrackingCookies.extend({
   _id: zObjectId,
   user_id: zObjectId.nullable(),
   application_id: zObjectId.nullable(),
   traffic_type: ZTrafficType,
-  utm_campaign: z.string().nullable(),
-  referer: z.string().nullable(),
 })
+
 export type ITrafficSource = z.output<typeof ZTrafficSource>
 
 export default {

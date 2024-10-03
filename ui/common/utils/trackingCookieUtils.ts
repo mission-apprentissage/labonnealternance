@@ -54,5 +54,11 @@ export const setTrackingCookies = (router: NextRouter) => {
     if (utm_campaign) {
       setCookie("utm_campaign", utm_campaign)
     }
+    if (query?.utm_source) {
+      setCookie("utm_source", query.utm_source as string)
+    }
+    if (query?.utm_medium) {
+      setCookie("utm_medium", query.utm_medium as string)
+    }
   }
 }

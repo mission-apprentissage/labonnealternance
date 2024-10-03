@@ -9,7 +9,7 @@ import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
-import { TrafficType } from "shared/models/trafficSources.model"
+import { ITrackingCookies, TrafficType } from "shared/models/trafficSources.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { INewApplicationV2NEWCompanySiret, INewApplicationV2NEWJobId } from "shared/routes/application.routes.v2"
 import { z } from "zod"
@@ -192,10 +192,7 @@ export const sendApplicationV2 = async ({
 }: {
   newApplication: INewApplicationV2NEWCompanySiret | INewApplicationV2NEWJobId
   caller?: string
-  source?: {
-    referer?: string
-    utm_campaign?: string
-  }
+  source?: ITrackingCookies
 }): Promise<void> => {
   let lbaJob: IJobOrCompany = { type: null as any, job: null as any, recruiter: null }
 
@@ -247,8 +244,10 @@ export const sendApplicationV2 = async ({
         user_id: null,
         application_id: application._id,
         traffic_type: TrafficType.APPLICATION,
-        utm_campaign: source?.utm_campaign || null,
-        referer: source?.referer || null,
+        utm_campaign: source.utm_campaign,
+        referer: source.referer,
+        utm_medium: source.utm_medium,
+        utm_source: source.utm_source,
       })
     }
   } catch (err) {
