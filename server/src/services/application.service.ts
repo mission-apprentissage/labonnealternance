@@ -9,7 +9,7 @@ import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
-import { ITrackingCookies, TrafficType } from "shared/models/trafficSources.model"
+import { ITrackingCookies } from "shared/models/trafficSources.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { INewApplicationV2NEWCompanySiret, INewApplicationV2NEWJobId } from "shared/routes/application.routes.v2"
 import { z } from "zod"
@@ -31,6 +31,7 @@ import { getOffreAvecInfoMandataire } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { validateCaller } from "./queryValidator.service"
 import { buildLbaCompanyAddress } from "./recruteurLba.service"
+import { saveApplicationTrafficSourceIfAny } from "./trafficSource.service"
 
 const MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT = 3
 const MAX_MESSAGES_PAR_SIRET_PAR_CALLER = 20
@@ -233,23 +234,13 @@ export const sendApplicationV2 = async ({
   }
 
   try {
+    sendApplicationV2
     const application = await newApplicationToApplicationDocumentV2(newApplication, lbaJob, recruteurEmail, caller)
     await s3Write("applications", getApplicationCvS3Filename(application), {
       Body: newApplication.applicant_file_content,
     })
     await getDbCollection("applications").insertOne(application)
-    if (source?.referer || source?.utm_campaign) {
-      await getDbCollection("traffic_sources").insertOne({
-        _id: new ObjectId(),
-        user_id: null,
-        application_id: application._id,
-        traffic_type: TrafficType.APPLICATION,
-        utm_campaign: source.utm_campaign,
-        referer: source.referer,
-        utm_medium: source.utm_medium,
-        utm_source: source.utm_source,
-      })
-    }
+    await saveApplicationTrafficSourceIfAny({ application_id: application._id, source })
   } catch (err) {
     sentryCaptureException(err)
     if (caller) {
