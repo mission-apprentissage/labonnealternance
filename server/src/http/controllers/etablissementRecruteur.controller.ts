@@ -1,11 +1,12 @@
 import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
-import { assertUnreachable, toPublicUser, zRoutes } from "shared"
+import { assertUnreachable, toPublicUser, TrafficType, zRoutes } from "shared"
 import { CFA, ENTREPRISE } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
+import { getSourceFromCookies } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { startSession } from "@/common/utils/session.service"
 import config from "@/config"
@@ -25,6 +26,7 @@ import {
 } from "@/services/etablissement.service"
 import { Organization, upsertEntrepriseData, UserAndOrganization } from "@/services/organization.service"
 import { getMainRoleManagement, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
+import { saveUserTrafficSourceIfAny } from "@/services/trafficSource.service"
 import {
   autoValidateUser,
   createOrganizationUser,
@@ -195,7 +197,7 @@ export default (server: Server) => {
       switch (type) {
         case ENTREPRISE: {
           const siret = req.body.establishment_siret
-          const result = await entrepriseOnboardingWorkflow.create({ ...req.body, siret })
+          const result = await entrepriseOnboardingWorkflow.create({ ...req.body, siret, source: getSourceFromCookies(req) })
           if ("error" in result) {
             if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw forbidden(result.message, result)
             else throw badRequest(result.message, result)
@@ -232,6 +234,7 @@ export default (server: Server) => {
             is_email_checked: false,
             organization: { type: CFA, cfa },
           })
+          await saveUserTrafficSourceIfAny({ user_id: userCfa._id, type: TrafficType.CFA, source: getSourceFromCookies(req) })
 
           const slackNotification = {
             subject: "RECRUTEUR",

@@ -1,6 +1,7 @@
 import { badRequest, internal, notFound } from "@hapi/boom"
 import { IJob, JOB_STATUS, zRoutes } from "shared"
 
+import { getSourceFromCookies } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { Appellation } from "@/services/rome.service.types"
@@ -102,6 +103,7 @@ export default (server: Server) => {
           idcc,
           siret: establishment_siret,
           opco: user.organisation,
+          source: getSourceFromCookies(req),
         },
         {
           isUserValidated: true,

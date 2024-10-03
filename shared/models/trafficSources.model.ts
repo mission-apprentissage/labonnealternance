@@ -6,7 +6,8 @@ import { IModelDescriptor, zObjectId } from "./common"
 const collectionName = "traffic_sources" as const
 
 export enum TrafficType {
-  USER = "USER",
+  ENTREPRISE = "ENTREPRISE",
+  CFA = "CFA",
   APPLICATION = "APPLICATION",
 }
 export const ZTrafficType = extensions.buildEnum(TrafficType)
