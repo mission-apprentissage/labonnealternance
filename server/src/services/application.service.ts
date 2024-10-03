@@ -234,7 +234,6 @@ export const sendApplicationV2 = async ({
   }
 
   try {
-    sendApplicationV2
     const application = await newApplicationToApplicationDocumentV2(newApplication, lbaJob, recruteurEmail, caller)
     await s3Write("applications", getApplicationCvS3Filename(application), {
       Body: newApplication.applicant_file_content,
