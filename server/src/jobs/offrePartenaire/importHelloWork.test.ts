@@ -20,7 +20,7 @@ describe("importHelloWork", () => {
         .find({ partner_label: JOBPARTNERS_LABEL.HELLOWORK }, { projection: { _id: 0, created_at: 0 } })
         .sort({ partner_id: 1 })
         .toArray()
-    ).map((job) => ({ ...job, offer_creation_date: job.offer_creation_date?.toISOString() }))
+    ).map((job) => ({ ...job, offer_creation_date: job.offer_creation?.toISOString() }))
     const expectedJson = JSON.parse(await fs.readFileSync("server/src/jobs/offrePartenaire/importHelloWork.test.expected.json", "utf-8"))
     expect(jobs).toEqual(expectedJson)
   })

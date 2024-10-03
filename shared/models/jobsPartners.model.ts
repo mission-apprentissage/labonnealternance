@@ -26,9 +26,7 @@ export const ZJobsPartnersRecruiterApi = z.object({
   workplace_name: z.string().nullable().describe("Nom customisé de l'entreprise").default(null),
   workplace_description: z.string().nullable().describe("description de l'entreprise").default(null),
   workplace_size: z.string().nullable().describe("Taille de l'entreprise"),
-  workplace_address: z.object({
-    label: z.string().describe("Adresse de l'offre, provenant du SIRET ou du partenaire"),
-  }),
+  workplace_address_label: z.string().describe("Adresse de l'offre, provenant du SIRET ou du partenaire"),
   workplace_geopoint: ZPointGeometry.describe("Geolocalisation de l'offre"),
   workplace_idcc: z.number().nullable().describe("Identifiant convention collective"),
   workplace_opco: zOpcoLabel.nullable().describe("Nom de l'OPCO"), // enum ?

@@ -6,7 +6,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { saveDbEntity } from "./user.test.utils"
 
-export async function createComputedJobPartner(data: Partial<IComputedJobsPartners>) {
+export async function createComputedJobPartner(data: Partial<IComputedJobsPartners> = {}) {
   const cjp = {
     errors: [],
     validated: true,

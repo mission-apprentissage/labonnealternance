@@ -9,7 +9,14 @@ import { formatEntrepriseData } from "@/services/etablissement.service"
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 
 export const fillSiretInfosForPartners = async () => {
-  const filledFields = ["workplace_size", "workplace_name", "workplace_address", "workplace_geopoint", "workplace_naf_code", "workplace_naf_label"] as const
+  const filledFields = [
+    "workplace_size",
+    "workplace_name",
+    "workplace_address_label",
+    "workplace_geopoint",
+    "workplace_naf_code",
+    "workplace_naf_label",
+  ] as const satisfies (keyof IComputedJobsPartners)[]
   return fillFieldsForPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.API_SIRET,
     sourceFields: ["workplace_siret"],
@@ -28,9 +35,9 @@ export const fillSiretInfosForPartners = async () => {
 
       const result: Partial<Pick<IComputedJobsPartners, (typeof filledFields)[number]>> = {
         workplace_size: establishment_size,
-        workplace_raison_sociale: establishment_raison_sociale,
+        workplace_name: establishment_raison_sociale,
         workplace_enseigne: establishment_enseigne,
-        workplace_address: address,
+        workplace_address_label: address,
         workplace_geopoint: geo_coordinates ? convertStringCoordinatesToGeoPoint(geo_coordinates) : null,
         workplace_naf_code: naf_code,
         workplace_naf_label: naf_label,
