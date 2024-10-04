@@ -16,7 +16,6 @@ import { s3Delete, s3ReadAsString, s3Write } from "@/common/utils/awsUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { UserForAccessToken, userWithAccountToUserForToken } from "@/security/accessTokenService"
-import dayjs from "@/services/dayjs.service"
 
 import { logger } from "../common/logger"
 import { manageApiError } from "../common/utils/errorManager"
