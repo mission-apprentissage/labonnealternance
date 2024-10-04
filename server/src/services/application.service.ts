@@ -1,5 +1,6 @@
 import { badRequest, internal, tooManyRequests } from "@hapi/boom"
 import { isEmailBurner } from "burner-email-providers"
+import dayjs from "dayjs"
 import { ObjectId } from "mongodb"
 import { ApplicationScanStatus, IApplication, IJob, ILbaCompany, INewApplicationV2, IRecruiter, JOB_STATUS, assertUnreachable } from "shared"
 import { ApplicantIntention } from "shared/constants/application"
@@ -158,9 +159,8 @@ export const sendApplication = async ({
         return { error: "email du recruteur manquant" }
       }
       const application = await newApplicationToApplicationDocument(newApplication, offreOrError, recruteurEmail)
-      const fileContent = newApplication.applicant_file_content
       await s3Write("applications", getApplicationCvS3Filename(application), {
-        Body: fileContent,
+        Body: newApplication.applicant_file_content,
       })
       await getDbCollection("applications").insertOne(application)
       return { result: "ok", message: "messages sent" }
@@ -207,11 +207,17 @@ export const sendApplicationV2 = async ({
   }
 
   if ("job_id" in newApplication) {
-    const recruiter = await getOffreAvecInfoMandataire(newApplication.job_id)
-    if (!recruiter) {
+    const recruiterResult = await getOffreAvecInfoMandataire(newApplication.job_id)
+    if (!recruiterResult) {
       throw badRequest(BusinessErrorCodes.NOTFOUND)
     }
-    lbaJob = { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job: recruiter?.job, recruiter: recruiter?.recruiter }
+    const { recruiter, job } = recruiterResult
+    // la vérification sur la date accepte une période de grâce de 1j
+    if (recruiter.status !== RECRUITER_STATUS.ACTIF || job.job_status !== JOB_STATUS.ACTIVE || dayjs(job.job_expiration_date).isBefore(dayjs().add(1, "day"))) {
+      throw badRequest(BusinessErrorCodes.EXPIRED)
+    }
+
+    lbaJob = { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job, recruiter }
   }
 
   await checkUserApplicationCountV2(newApplication.applicant_email.toLowerCase(), lbaJob, caller)
@@ -228,9 +234,8 @@ export const sendApplicationV2 = async ({
 
   try {
     const application = await newApplicationToApplicationDocumentV2(newApplication, lbaJob, recruteurEmail, caller)
-    const fileContent = newApplication.applicant_file_content
     await s3Write("applications", getApplicationCvS3Filename(application), {
-      Body: fileContent,
+      Body: newApplication.applicant_file_content,
     })
     await getDbCollection("applications").insertOne(application)
   } catch (err) {

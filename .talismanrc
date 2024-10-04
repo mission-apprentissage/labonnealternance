@@ -8,15 +8,17 @@ fileignoreconfig:
 - filename: .bin/scripts/set-cypress-env.sh
   checksum: 4463ed7c1d5b82a8b152248b953778f37771bfba72865ee0e8af3b61cf3c38da
 - filename: .bin/scripts/setup-local-env.sh
-  checksum: 164cfbaa5965f9c06f84d90cb7e5af0df0c4cc1745e57d99490d44ba6efc1b33
+  checksum: b3700a87a9d58839c8eafce8231d01b6164851a560ea5c232a1ecc19d8d22bc6
 - filename: .github/workflows/_build.yml
   checksum: ab457b5b512b181d7d73c8fdf9c3843eed39f3b0245f5d22742cc93697a08bf5
+- filename: .github/workflows/_deploy.yml
+  checksum: d17a016bb30a6fd52426255feb648b4dc241707bd3b28f0c181c8c4ff45bdd4d
 - filename: .github/workflows/cypress.yml
   checksum: 39f98fb68fdebf6a36959706adb43a8219a4b7781ac35329f957dc1cfa8b6de0
 - filename: .github/workflows/deploy_preview.yml
   checksum: 40f9da2dad1254d3f6674137046d431526c6f731989ed0e061995ba58be94322
 - filename: .github/workflows/release.yml
-  checksum: ffd104ff02d60abf3183694209c5191a0bb7479ce37d8243778275351b4d2228
+  checksum: a74f2767d7c66239e5cbf45c2aaaa6a2d980fe681e41ffa3b166247db323a907
 - filename: .infra/.env_server
   checksum: a3a8b9007e4c082a14b3d09ed8386138db9277ea11ca921a989ba87d0ea61f47
 - filename: .infra/env.ini
@@ -30,7 +32,7 @@ fileignoreconfig:
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: 467ce4cc2c3d83875e6ebc94180d3b398de9caf6da1d4983b79e2f2fbf1e8207
+  checksum: 8793bec9767d242da058f7e42e408b80ea539265b980f8e37913c0a0336da488
 - filename: cypress/e2e/check-admin-algo-company.cy.ts
   checksum: 6a898ee25c84ce2c41da5666aa4f84e6e4aaf0a614dbc0a00153abe99e3617c1
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
@@ -42,7 +44,7 @@ fileignoreconfig:
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
-  checksum: 91999951702279c5dd4836cd3a9fdfc904ac019edc9e799c68c277741d450395
+  checksum: e03b5dac5c70accc532a744505fb928c9b2da6b233f360fe95ad127dbc0a5d6d
 - filename: server/src/common/utils/awsUtils.ts
   checksum: d7d550a8852127bd6838bd7c3f4aee9bba06731d932cff880ff2c1033578fdbd
 - filename: server/src/config.ts
@@ -51,10 +53,14 @@ fileignoreconfig:
   checksum: 5c7a2ec4655f0543f42bfbccc759bff4eb10456946885531c91107cac3e8dbc0
 - filename: server/src/db/migrations/202405230000000-migrate-fix-missing-date-blacklist.ts
   checksum: 0c1b814245a58b8ca788fbfab9899206edbddaae795d56963f86c5aa83ea555f
+- filename: server/src/http/controllers/__snapshots__/etablissementRecruteur.controller.test.ts.snap
+  checksum: 1844a9ad314c3074adc11bd09ec0aac528802aed67d05e9e3da788545be88c92
 - filename: server/src/http/controllers/application.controller.test.ts
   checksum: 1f3c9b8cd7c578252a0c41ca9028672712a5bca2ce1686cba83ff60305708305
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
   checksum: dc77c04efc26dcd8ca4816f392ab24a32a92cb45ca4b94adb593a08e7a2d231e
+- filename: server/src/http/controllers/etablissementRecruteur.controller.test.ts
+  checksum: 6e187972b61616791476704a51dcbd97404489e66db72c00912e7aa1436966e5
 - filename: server/src/http/controllers/updateRecruteurLba.controller.test.ts
   checksum: 71dd55af4f1f44fd2b69dee91f0fc8006f3b9e0bd80d40271c73697d4eea9ea2
 - filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts
@@ -83,6 +89,8 @@ fileignoreconfig:
   checksum: 2183e326a88ae3c10193a7033ab5fd421ce576cd1e234c323df247da335f74d7
 - filename: server/src/security/apiApprentissageService.ts
   checksum: 0e6d208dc8de66d2a440ff40a1260a76e41bf69fb414ccbfc6d99396df3f3b91
+- filename: server/src/services/application.service.test.ts
+  checksum: 02c7f8874a880cc0f9913469d6ef097ad42bbea8df79d7f08451410f7b32e2c0
 - filename: server/src/services/application.service.ts
   checksum: 38021ae663db3a146c848a8d691c0c1bc9bb262a80a6f2dedf9fcdb372eef3ac
 - filename: server/src/services/eligibleTrainingsForAppointment.service.ts
@@ -99,6 +107,8 @@ fileignoreconfig:
   checksum: 34eb30b463153df565aa89f8e42f08eb77633b6bfa4673f4d6ef5f40633c6101
 - filename: server/static/templates/mail-echec-envoi-candidature.mjml.ejs
   checksum: 9055c5495ced85a674770e7fb8a81b3bd84949f9ff8f6e6450989aa3b7cda326
+- filename: server/tests/fixture/connectedUser.fixture.ts
+  checksum: bfbb2f218580ce302d3bfcd9ba7494a46ff0a05ba02ca0f38a801ea8c6bf9be2
 - filename: server/tests/integration/http/formationV1.test.ts
   checksum: 5ea3eed110facafaa7c3cbe3a6cb9f4bca5984f9c34b5e6987355aaea90bdbf6
 - filename: server/tests/integration/http/passwordRoutes.test.ts
@@ -205,7 +215,6 @@ fileignoreconfig:
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
-threshold: medium
 scopeconfig:
 - scope: node
 custom_patterns:
@@ -223,4 +232,5 @@ allowed_patterns:
 - versionKey
 - '@apprentissage.beta.gouv.fr'
 - adminusersview
+threshold: medium
 version: "1.0"

@@ -22,7 +22,7 @@ export const ZJobsPartnersRecruiterApi = z.object({
   workplace_siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
   workplace_brand: z.string().nullable().describe("Nom d'enseigne de l'établissement"),
   workplace_legal_name: z.string().nullable().describe("Nom légal de l'entreprise"),
-  workplace_website: z.string().url().nullable().describe("Site web de l'entreprise").default(null),
+  workplace_website: z.string().nullable().describe("Site web de l'entreprise").default(null),
   workplace_name: z.string().nullable().describe("Nom customisé de l'entreprise").default(null),
   workplace_description: z.string().nullable().describe("description de l'entreprise").default(null),
   workplace_size: z.string().nullable().describe("Taille de l'entreprise"),
@@ -36,7 +36,7 @@ export const ZJobsPartnersRecruiterApi = z.object({
   workplace_naf_label: z.string().nullable().describe("Libelle NAF"),
 
   apply_url: z.string().url().describe("URL pour candidater"),
-  apply_phone: extensions.telephone.nullable().describe("Téléphone de contact").default(null),
+  apply_phone: z.string().nullable().describe("Téléphone de contact").default(null),
 })
 
 export const zDiplomaEuropeanLevel = z.enum(["3", "4", "5", "6", "7"])
@@ -124,7 +124,6 @@ const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
   offer_multicast: true,
 
   apply_email: true,
-  apply_phone: true,
 
   workplace_description: true,
   workplace_website: true,
@@ -164,6 +163,7 @@ const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
   workplace_address_label: z.string().nullable().default(null),
 
   apply_url: ZJobsPartnersOfferApi.shape.apply_url.nullable().default(null),
+  apply_phone: extensions.telephone.nullable().describe("Téléphone de contact").default(null),
 })
 
 export const ZJobsPartnersWritableApi = ZJobsPartnersPostApiBodyBase.superRefine((data, ctx) => {

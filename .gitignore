@@ -171,3 +171,5 @@ cypress.env
 assets/*
 tmp
 
+venv
+

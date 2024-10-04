@@ -115,7 +115,7 @@ export const configureDbSchemaValidation = async (modelDescriptors: IModelDescri
   const db = getDatabase()
   ensureInitialization()
   await Promise.all(
-    modelDescriptors.map(async ({ collectionName, zod }) => {
+    modelDescriptors.map(async ({ collectionName, zod, authorizeAdditionalProperties = false }) => {
       await createCollectionIfDoesNotExist(collectionName)
 
       const convertedSchema = zodToMongoSchema(zod)
@@ -129,6 +129,7 @@ export const configureDbSchemaValidation = async (modelDescriptors: IModelDescri
             $jsonSchema: {
               title: `${collectionName} validation schema`,
               ...convertedSchema,
+              additionalProperties: authorizeAdditionalProperties,
             },
           },
         })

@@ -624,7 +624,9 @@ export const entrepriseOnboardingWorkflow = {
       sentryCaptureException(err)
     }
     const entreprise = await upsertEntrepriseData(siret, origin, siretResponse, isSiretInternalError)
-    await updateEntrepriseOpco(siret, { opco, idcc })
+    const opcoResult = await updateEntrepriseOpco(siret, { opco, idcc })
+    opco = opcoResult.opco
+    idcc = opcoResult.idcc ?? undefined
 
     let validated = false
     const managingUser = await createOrganizationUser({
@@ -721,7 +723,9 @@ export const entrepriseOnboardingWorkflow = {
     }
     const entreprise = await upsertEntrepriseData(siret, origin, siretResponse, isSiretInternalError)
     if (opco) {
-      await updateEntrepriseOpco(siret, { opco, idcc: idcc ?? undefined })
+      const opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: idcc ?? undefined })
+      opco = opcoResult.opco
+      idcc = opcoResult.idcc
     }
 
     const formulaireInfo = await createFormulaire(
@@ -747,7 +751,8 @@ export const entrepriseOnboardingWorkflow = {
   },
 }
 
-const entrepriseToRecruiter = ({ siret, address, address_detail, enseigne, geo_coordinates, idcc, opco, raison_sociale }: IEntreprise): Partial<IRecruiter> => {
+const entrepriseToRecruiter = (entreprise: IEntreprise): Partial<IRecruiter> => {
+  const { siret, address, address_detail, enseigne, geo_coordinates, idcc, opco, raison_sociale } = entreprise
   const [latitude, longitude] = geo_coordinates!.split(",").map((coords) => parseFloat(coords))
   const formulaire: Partial<IRecruiter> = {
     establishment_siret: siret,

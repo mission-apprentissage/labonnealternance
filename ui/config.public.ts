@@ -1,5 +1,6 @@
 export interface PublicConfig {
   sentry_dsn: string
+  sentryDisabled?: boolean
   baseUrl: string
   host: string
   env: "local" | "recette" | "pentest" | "production" | "preview"
@@ -113,6 +114,7 @@ function getLocalPublicConfig(): PublicConfig {
 
   return {
     sentry_dsn: SENTRY_DSN,
+    sentryDisabled: true,
     env: "local",
     host,
     baseUrl: `http://${host}:3000`,

@@ -166,26 +166,6 @@ function DetailEntreprise() {
               </Flex>
               <Stack direction={["column", "column", "column", "row"]} spacing="10px">
                 {getActionButtons(lastUserState, userRecruteur._id)}
-                {userRecruteur.type === AUTHTYPE.ENTREPRISE ? (
-                  userRecruteur.jobs.length ? (
-                    lastUserState.status === ETAT_UTILISATEUR.ATTENTE || lastUserState.status === ETAT_UTILISATEUR.ERROR ? (
-                      <Button variant="secondary" isDisabled={true}>
-                        Offre en attente de validation
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="secondary"
-                        onClick={() => router.push(`/espace-pro/administration/opco/entreprise/${userRecruteur.establishment_siret}/${userRecruteur.establishment_id}`)}
-                      >
-                        Voir les offres
-                      </Button>
-                    )
-                  ) : (
-                    <Button variant="secondary" isDisabled={true}>
-                      Pas d'offre(s) déposée(s)
-                    </Button>
-                  )
-                ) : null}
               </Stack>
             </Flex>
           </Box>
@@ -284,7 +264,7 @@ function DetailEntreprise() {
                         <Text fontSize="20px" lineHeight="32px" fontWeight="700" mb={6}>
                           Offres de recrutement en alternance
                         </Text>
-                        <OffresTabs recruiter={recruiter} />
+                        <OffresTabs establishmentId={userRecruteur.establishment_id} recruiter={recruiter} />
                       </Box>
                       <Box mb={12}>
                         <UserValidationHistory histories={userRecruteur.status} />

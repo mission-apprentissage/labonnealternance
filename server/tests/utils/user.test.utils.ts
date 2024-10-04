@@ -2,21 +2,9 @@ import { randomUUID } from "crypto"
 
 import { ObjectId } from "mongodb"
 import { OPCOS_LABEL, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
-import {
-  IApplication,
-  ICredential,
-  IEmailBlacklist,
-  IJob,
-  ILbaCompany,
-  IRecruiter,
-  JOB_STATUS,
-  ZApplication,
-  ZCredential,
-  ZEmailBlacklist,
-  ZLbaCompany,
-  ZPointGeometry,
-} from "shared/models"
+import { IApplication, ICredential, IEmailBlacklist, ILbaCompany, IRecruiter, ZApplication, ZCredential, ZEmailBlacklist, ZLbaCompany, ZPointGeometry } from "shared/models"
 import { ICFA, zCFA } from "shared/models/cfa.model"
 import { zObjectId } from "shared/models/common"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent, ZEntreprise } from "shared/models/entreprise.model"
@@ -159,42 +147,6 @@ export const saveCfa = async (data: Partial<ICFA> = {}) => {
   return saveDbEntity(zCFA, (item) => getDbCollection("cfas").insertOne(item), data)
 }
 
-export const jobFactory = (props: Partial<IJob> = {}) => {
-  const job: IJob = {
-    _id: new ObjectId(),
-    rome_label: "rome_label",
-    rome_appellation_label: "rome_appellation_label",
-    job_level_label: "BTS, DEUST, autres formations niveau (Bac+2)",
-    job_start_date: new Date(),
-    job_description: "job_description",
-    job_employer_description: "job_employer_description",
-    rome_code: ["rome_code"],
-    job_creation_date: new Date(),
-    job_expiration_date: new Date(),
-    job_update_date: new Date(),
-    job_last_prolongation_date: new Date(),
-    job_prolongation_count: 0,
-    relance_mail_sent: false,
-    job_status: JOB_STATUS.ACTIVE,
-    job_status_comment: "job_status_comment",
-    job_type: ["Apprentissage"],
-    is_multi_published: false,
-    job_delegation_count: 0,
-    delegations: [],
-    is_disabled_elligible: false,
-    job_count: 1,
-    job_duration: 6,
-    job_rythm: "Indifférent",
-    custom_address: "custom_address",
-    custom_geo_coordinates: "custom_geo_coordinates",
-    stats_detail_view: 0,
-    stats_search_view: 0,
-    managed_by: new ObjectId().toString(),
-    ...props,
-  }
-  return job
-}
-
 export async function createCredentialTest(data: Partial<ICredential>) {
   const u: ICredential = {
     ...getFixture().fromSchema(ZCredential),
@@ -286,18 +238,20 @@ export const saveEntrepriseUserTest = async (userProps: Partial<IUserWithAccount
     status: [roleManagementEventFactory()],
     ...roleProps,
   })
-  const recruiter = await saveRecruiter({
-    is_delegated: false,
-    cfa_delegated_siret: null,
-    status: RECRUITER_STATUS.ACTIF,
-    establishment_siret: entreprise.siret,
-    opco: entreprise.opco,
-    jobs: [
-      jobFactory({
-        managed_by: user._id.toString(),
-      }),
-    ],
-  })
+  const recruiter = await saveRecruiter(
+    generateRecruiterFixture({
+      is_delegated: false,
+      cfa_delegated_siret: null,
+      status: RECRUITER_STATUS.ACTIF,
+      establishment_siret: entreprise.siret,
+      opco: entreprise.opco,
+      jobs: [
+        {
+          managed_by: user._id.toString(),
+        },
+      ],
+    })
+  )
   return { user, role, entreprise, recruiter }
 }
 
@@ -310,20 +264,22 @@ export const saveCfaUserTest = async (userProps: Partial<IUserWithAccount> = {})
     authorized_type: AccessEntityType.CFA,
     status: [roleManagementEventFactory()],
   })
-  const recruiter = await saveRecruiter({
-    is_delegated: true,
-    cfa_delegated_siret: cfa.siret,
-    status: RECRUITER_STATUS.ACTIF,
-    jobs: [
-      jobFactory({
-        managed_by: user._id.toString(),
-      }),
-    ],
-  })
+  const recruiter = await saveRecruiter(
+    generateRecruiterFixture({
+      is_delegated: true,
+      cfa_delegated_siret: cfa.siret,
+      status: RECRUITER_STATUS.ACTIF,
+      jobs: [
+        {
+          managed_by: user._id.toString(),
+        },
+      ],
+    })
+  )
   return { user, role, cfa, recruiter }
 }
 
-export const saveOpcoUserTest = async () => {
+export const saveOpcoUserTest = async (opco = OPCOS_LABEL.AKTO) => {
   const user = await saveUserWithAccount({
     status: [
       {
@@ -342,7 +298,7 @@ export const saveOpcoUserTest = async () => {
   })
   const role = await saveRoleManagement({
     user_id: user._id,
-    authorized_id: OPCOS_LABEL.AKTO,
+    authorized_id: opco,
     authorized_type: AccessEntityType.OPCO,
     status: [roleManagementEventFactory()],
   })

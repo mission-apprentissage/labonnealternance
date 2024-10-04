@@ -22,7 +22,11 @@ export const updateEntrepriseOpco = async (siret: string, { opco, idcc }: { opco
   if (!entreprise) {
     throw new Error("inattendu: aucune entreprise trouvée. Merci d'appeler cette méthode une fois l'entreprise créée")
   }
-  await getDbCollection("entreprises").findOneAndUpdate({ siret }, { $set: { opco, idcc } })
+  if (!entreprise.opco) {
+    await getDbCollection("entreprises").findOneAndUpdate({ siret }, { $set: { opco, idcc } })
+    return { opco, idcc }
+  }
+  return { opco: entreprise.opco, idcc: entreprise.idcc }
 }
 
 /**

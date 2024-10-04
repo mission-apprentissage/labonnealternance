@@ -2,6 +2,7 @@ import env from "env-var"
 
 const config = {
   version: env.get("PUBLIC_VERSION").required().asString(),
+  commitHash: env.get("COMMIT_HASH").required().asString(),
   port: env.get("LBA_SERVER_PORT").required().asPortNumber(),
   env: env.get("LBA_ENV").required().asEnum(["local", "recette", "pentest", "production", "preview"]),
   publicUrl: env.get("LBA_PUBLIC_URL").required().asString(),
@@ -101,8 +102,10 @@ const config = {
     secretAccessKey: env.get("LBA_S3_SECRETACCESSKEY").required().asString(),
     endpoint: env.get("LBA_S3_ENDPOINT").required().asString(),
     region: env.get("LBA_S3_REGION").required().asString(),
-    bucket: env.get("LBA_S3_BUCKET").required().asString(),
-    applicationsBucket: env.get("LBA_S3_APPLICATIONS_BUCKET").required().asString(),
+    bucket: {
+      storage: env.get("LBA_S3_BUCKET").required().asString(),
+      application: env.get("LBA_S3_APPLICATIONS_BUCKET").required().asString(),
+    },
   },
   entreprise: {
     baseUrl: "https://entreprise.api.gouv.fr/v3/insee",
@@ -143,6 +146,9 @@ const config = {
       endMonth: 7,
       endDay: 31,
     },
+  },
+  rhalternance: {
+    apiKey: env.get("RH_ALTERNANCE_API_KEY").required().asString(),
   },
 }
 

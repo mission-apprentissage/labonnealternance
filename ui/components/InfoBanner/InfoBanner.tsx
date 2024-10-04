@@ -31,8 +31,8 @@ const redBannerText = (
     <Text as="span" fontWeight={700}>
       Service temporairement indisponible.
     </Text>{" "}
-    Suite à un problème chez l’un de nos fournisseurs de données, la création de compte est momentanément bloquée. Merci de revenir ultérieurement.{" "}
-    <Link textDecoration="underline">En savoir plus</Link>
+    Suite à un problème chez notre prestataire d'envoi d'emails, la connexion à votre compte est momentanément bloquée. Merci de revenir ultérieurement.{" "}
+    {/*<Link textDecoration="underline">En savoir plus</Link>*/}
   </Text>
 )
 

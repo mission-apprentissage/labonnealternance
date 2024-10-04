@@ -5,6 +5,9 @@ export VERSION="${1:?"Veuillez préciser la version"}"
 mode=${2:?"Veuillez préciser le mode <push|load>"}
 shift 2
 
+export COMMIT_HASH="${1:?"Veuillez préciser le hash du commit"}"
+shift
+
 get_channel() {
   local version="$1"
   channel=$(echo "$version" | cut -d '-' -f 2)
