@@ -821,7 +821,7 @@ const sanitizeApplicationForEmail = (application: IApplication) => {
     applicant_last_name: sanitizeForEmail(applicant_last_name),
     applicant_phone: sanitizeForEmail(applicant_phone),
     applicant_attachment_name: sanitizeForEmail(applicant_attachment_name),
-    applicant_message_to_company: sanitizeForEmail(applicant_message_to_company),
+    applicant_message_to_company: sanitizeForEmail(applicant_message_to_company, "keepBr"),
     company_recruitment_intention: sanitizeForEmail(company_recruitment_intention),
     company_feedback: sanitizeForEmail(company_feedback),
     company_feedback_date: company_feedback_date,
