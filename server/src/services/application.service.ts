@@ -961,13 +961,13 @@ export const processApplicationEmails = {
 const getApplicationWebsiteOrigin = (caller: IApplication["caller"]) => {
   switch (caller) {
     case "1jeune1solution":
-      return "1jeune1solution"
+      return " par 1jeune1solution"
     case "oc":
     case "openclassrooms":
-      return "OpenClassrooms"
+      return " par OpenClassrooms"
 
     default:
-      return "La bonne alternance"
+      return ""
   }
 }
 
