@@ -944,6 +944,7 @@ export const processApplicationEmails = {
         urlOfDetail,
         urlOfDetailNoUtm,
         applicationWebsiteOrigin: getApplicationWebsiteOrigin(application.caller),
+        applicationDate: dayjs(application.created_at).format("DD/MM/YYYY"),
         reminderDate: dayjs(application.created_at).add(10, "days").format("DD/MM/YYYY"),
         attachmentName: application.applicant_attachment_name,
       },
