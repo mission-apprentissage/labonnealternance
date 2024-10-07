@@ -101,6 +101,8 @@ fileignoreconfig:
   checksum: 38c947c87cfb508fec88cbce878f89725cbb6679e833a66bdb7fca60e3685a0a
 - filename: server/src/services/referrers.service.ts
   checksum: 966b0ece2b18b5a6066df531524c97ba0ad38266e782a334004e8c127b41ade6
+- filename: server/src/services/trafficSource.service.test.ts
+  checksum: 3fb0d479999b8aa8abe2ba4e56c34ee6e409636b8ade9f10b07e6ca32081b58f
 - filename: server/src/services/userRecruteur.service.ts
   checksum: 5fbdf21310d8dfaf259eb39a5ca1e72a53b15493cf3a59ed42c4cb5c8f3a62ab
 - filename: server/static/templates/mail-bienvenue.mjml.ejs

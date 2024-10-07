@@ -8,6 +8,7 @@ import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
+import { ITrackingCookies } from "shared/models/trafficSources.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { INewApplicationV2NEWCompanySiret, INewApplicationV2NEWJobId } from "shared/routes/application.routes.v2"
 import { z } from "zod"
@@ -29,6 +30,7 @@ import { getOffreAvecInfoMandataire } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { validateCaller } from "./queryValidator.service"
 import { buildLbaCompanyAddress } from "./recruteurLba.service"
+import { saveApplicationTrafficSourceIfAny } from "./trafficSource.service"
 
 const MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT = 3
 const MAX_MESSAGES_PAR_SIRET_PAR_CALLER = 20
@@ -186,9 +188,11 @@ export const sendApplication = async ({
 export const sendApplicationV2 = async ({
   newApplication,
   caller,
+  source,
 }: {
   newApplication: INewApplicationV2NEWCompanySiret | INewApplicationV2NEWJobId
   caller?: string
+  source?: ITrackingCookies
 }): Promise<void> => {
   let lbaJob: IJobOrCompany = { type: null as any, job: null as any, recruiter: null }
 
@@ -237,6 +241,7 @@ export const sendApplicationV2 = async ({
       Body: newApplication.applicant_file_content,
     })
     await getDbCollection("applications").insertOne(application)
+    await saveApplicationTrafficSourceIfAny({ application_id: application._id, applicant_email: application.applicant_email, source })
   } catch (err) {
     sentryCaptureException(err)
     if (caller) {

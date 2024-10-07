@@ -38,6 +38,7 @@ import roleManagementModel from "./roleManagement.model"
 import romeModel from "./rome.model"
 import sessionModel from "./session.model"
 import siretDiffusibleStatusModel from "./siretDiffusibleStatus.model"
+import trafficSourcesModel from "./trafficSources.model"
 import unsubscribedLbaCompanyModel from "./unsubscribedRecruteurLba.model"
 import unsubscribeOFModel from "./unsubscribeOF.model"
 import userModel from "./user.model"
@@ -85,6 +86,7 @@ const modelDescriptorMap = {
   [referentielCommuneModel.collectionName]: referentielCommuneModel,
   [rawKelioModel.collectionName]: rawKelioModel,
   [rawRHAlternanceModel.collectionName]: rawRHAlternanceModel,
+  [trafficSourcesModel.collectionName]: trafficSourcesModel,
 } as const satisfies Record<string, IModelDescriptor>
 
 export const modelDescriptors = Object.values(modelDescriptorMap) as (typeof modelDescriptorMap)[keyof typeof modelDescriptorMap][] satisfies IModelDescriptor[]
