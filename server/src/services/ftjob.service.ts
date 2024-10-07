@@ -168,18 +168,21 @@ const transformFtJobs = ({ jobs, radius, latitude, longitude, isMinimalData }: {
 
   if (jobs && jobs.length) {
     for (let i = 0; i < jobs.length; ++i) {
-      const job = isMinimalData
-        ? transformFtJobWithMinimalData({
-            job: jobs[i],
-            latitude,
-            longitude,
-          })
-        : transformFtJob({ job: jobs[i], latitude, longitude })
+      if (jobs[i].lieuTravail.latitude) {
+        // exclusion des offres ft sans geoloc
+        const job = isMinimalData
+          ? transformFtJobWithMinimalData({
+              job: jobs[i],
+              latitude,
+              longitude,
+            })
+          : transformFtJob({ job: jobs[i], latitude, longitude })
 
-      const d = job.place?.distance ?? 0
-      if (d < getRoundedRadius(radius)) {
-        if (!job?.company?.name || blackListedCompanies.indexOf(job.company.name.toLowerCase()) < 0) {
-          resultJobs.push(job)
+        const d = job.place?.distance ?? 0
+        if (d < getRoundedRadius(radius)) {
+          if (!job?.company?.name || blackListedCompanies.indexOf(job.company.name.toLowerCase()) < 0) {
+            resultJobs.push(job)
+          }
         }
       }
     }
