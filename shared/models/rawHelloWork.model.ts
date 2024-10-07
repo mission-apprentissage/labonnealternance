@@ -11,4 +11,5 @@ export default {
     .passthrough(),
   indexes: [],
   collectionName: "raw_hellowork",
+  authorizeAdditionalProperties: true,
 } as const satisfies IModelDescriptor

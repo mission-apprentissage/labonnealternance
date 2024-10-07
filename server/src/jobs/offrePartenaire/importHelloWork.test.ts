@@ -6,22 +6,23 @@ import { describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-import { importHelloWork } from "./importHelloWork"
+import { importHelloWorkRaw, importHelloWorkToComputed } from "./importHelloWork"
 
 describe("importHelloWork", () => {
   useMongo()
 
   it("should test the whole import", async () => {
     const fileStream = fs.createReadStream("server/src/jobs/offrePartenaire/importHelloWork.test.input.xml")
-    await importHelloWork(fileStream)
-    expect(await getDbCollection("raw_hellowork").countDocuments({})).toBe(5)
+    await importHelloWorkRaw(fileStream)
+    expect.soft(await getDbCollection("raw_hellowork").countDocuments({})).toBe(5)
+
+    await importHelloWorkToComputed()
     const jobs = (
       await getDbCollection("computed_jobs_partners")
         .find({ partner_label: JOBPARTNERS_LABEL.HELLOWORK }, { projection: { _id: 0, created_at: 0 } })
-        .sort({ partner_id: 1 })
         .toArray()
-    ).map((job) => ({ ...job, offer_creation_date: job.offer_creation?.toISOString() }))
-    const expectedJson = JSON.parse(await fs.readFileSync("server/src/jobs/offrePartenaire/importHelloWork.test.expected.json", "utf-8"))
-    expect(jobs).toEqual(expectedJson)
+    ).sort((a, b) => ((a.partner_job_id ?? "") < (b.partner_job_id ?? "") ? -1 : 1))
+    expect.soft(jobs.length).toBe(5)
+    expect.soft(jobs).toMatchSnapshot()
   })
 })

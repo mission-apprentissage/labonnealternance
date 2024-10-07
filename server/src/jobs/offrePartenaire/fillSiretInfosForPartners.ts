@@ -35,10 +35,9 @@ export const fillSiretInfosForPartners = async () => {
 
       const result: Partial<Pick<IComputedJobsPartners, (typeof filledFields)[number]>> = {
         workplace_size: establishment_size,
-        workplace_name: establishment_raison_sociale,
-        workplace_enseigne: establishment_enseigne,
-        workplace_address_label: address,
-        workplace_geopoint: geo_coordinates ? convertStringCoordinatesToGeoPoint(geo_coordinates) : null,
+        workplace_name: establishment_enseigne ?? establishment_raison_sociale,
+        workplace_address_label: address ?? undefined,
+        workplace_geopoint: geo_coordinates ? convertStringCoordinatesToGeoPoint(geo_coordinates) : undefined,
         workplace_naf_code: naf_code,
         workplace_naf_label: naf_label,
       }

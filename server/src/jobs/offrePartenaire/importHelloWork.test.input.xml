@@ -115,11 +115,11 @@ Rejoignez-nous et venez goûter à une expérience unique !]]></description>
   <contract><![CDATA[CDI]]></contract>
   <contract_period_value />
   <contract_period_unit />
-  <qualification><![CDATA[RJ/Qualif/Ingenieur_B5]]></qualification>
+  <qualification><![CDATA[RJ/Qualif/Technicien]]></qualification>
   <experience />
   <function><![CDATA[Marketing_com_graphisme]]></function>
   <job_time />
-  <education><![CDATA[RJ/Qualif/Ingenieur_B5]]></education>
+  <education><![CDATA[RJ/Qualif/Technicien]]></education>
   <language />
   <remote />
   <sector><![CDATA[Ind_agro]]></sector>
@@ -345,11 +345,11 @@ Ref : 1jvie4rokd]]></profile>
   <contract><![CDATA[CDI]]></contract>
   <contract_period_value />
   <contract_period_unit />
-  <qualification><![CDATA[RJ/Qualif/Ingenieur_B5]]></qualification>
+  <qualification><![CDATA[RJ/Qualif/BEP_CAP]]></qualification>
   <experience><![CDATA[1_7]]></experience>
   <function><![CDATA[Com_market]]></function>
   <job_time />
-  <education><![CDATA[RJ/Qualif/Ingenieur_B5]]></education>
+  <education><![CDATA[RJ/Qualif/BEP_CAP]]></education>
   <language />
   <remote><![CDATA[Pas_teletravail]]></remote>
   <sector><![CDATA[Serv_pers_part]]></sector>

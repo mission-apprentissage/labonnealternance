@@ -561,10 +561,10 @@ program
   .action(createJobAction("referentiel-opco:constructys:import"))
 
 program
-  .command("import-hellowork")
+  .command("import-hellowork-raw")
   .description("Importe les offres hellowork dans la collection raw")
   .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("import-hellowork"))
+  .action(createJobAction("import-hellowork-raw"))
 
 program
   .command("import-hellowork-to-computed")
