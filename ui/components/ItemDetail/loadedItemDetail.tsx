@@ -171,7 +171,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
               )}
               {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && <ItemDetailApplicationsStatus item={selectedItem} mt={2} mb={2} />}
             </Box>
-            <Box alignSelf={{ base: "end", sm: "unset" }} pt={{ base: 0, sm: 4 }}>
+            <Box pt={{ base: 0, sm: 4 }}>
               <ShareLink item={selectedItem} />
             </Box>
           </Flex>
