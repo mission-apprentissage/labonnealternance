@@ -75,7 +75,7 @@ const LbaJobDetail = ({ job }) => {
             </Box>
           )}
           <Flex direction="row" wrap="wrap">
-            <strong>Niveau visé en fin d&apos;études :</strong> {" "}
+            <strong>Niveau visé en fin d&apos;études : </strong>{" "}
             {job?.diplomaLevel ? (
               <Flex direction="row" wrap="wrap">
                 {job?.diplomaLevel.split(", ").map(function (d, idx) {
