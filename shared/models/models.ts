@@ -18,7 +18,6 @@ import etablissementModel from "./etablissement.model"
 import formationModel from "./formation.model"
 import franceTravailAccessModel from "./franceTravailAccess.model"
 import geolocationsModel from "./geolocations.model"
-import internalJobModel from "./internalJob.model"
 import jobsModel from "./jobs.model"
 import jobsPartnersModel from "./jobsPartners.model"
 import jobsPartnersComputedModel from "./jobsPartnersComputed.model "
@@ -62,7 +61,6 @@ const modelDescriptorMap = {
   [formationModel.collectionName]: formationModel,
   [franceTravailAccessModel.collectionName]: franceTravailAccessModel,
   [geolocationsModel.collectionName]: geolocationsModel,
-  [internalJobModel.collectionName]: internalJobModel,
   [jobsModel.collectionName]: jobsModel,
   [jobsPartnersModel.collectionName]: jobsPartnersModel,
   [jobsPartnersComputedModel.collectionName]: jobsPartnersComputedModel,

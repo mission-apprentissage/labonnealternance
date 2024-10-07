@@ -1,7 +1,6 @@
 import { badRequest, internal, tooManyRequests } from "@hapi/boom"
 import { isEmailBurner } from "burner-email-providers"
 import dayjs from "dayjs"
-import Joi from "joi"
 import { ObjectId } from "mongodb"
 import { ApplicationScanStatus, IApplication, IJob, ILbaCompany, INewApplicationV2, IRecruiter, JOB_STATUS, assertUnreachable } from "shared"
 import { ApplicantIntention } from "shared/constants/application"
@@ -223,6 +222,9 @@ export const sendApplicationV2 = async ({
   await checkUserApplicationCountV2(newApplication.applicant_email.toLowerCase(), lbaJob, caller)
 
   const { type, job, recruiter } = lbaJob
+  /**
+   * TODO REFACTOR : recruteurEmail can be deduce directly in offreOrCompanyToCompanyFields function
+   */
   const recruteurEmail = (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? recruiter.email : job.email)?.toLowerCase()
   if (!recruteurEmail) {
     sentryCaptureException(`${BusinessErrorCodes.INTERNAL_EMAIL} ${type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? `recruiter: ${recruiter._id} ` : `LbaCompany: ${job._id}`}`)
@@ -361,23 +363,25 @@ const offreOrCompanyToCompanyFields = (LbaJob: IJobOrCompany) => {
   const { type } = LbaJob
   if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     const { job } = LbaJob
-    const { siret, enseigne, naf_label } = job
+    const { siret, enseigne, naf_label, phone } = job
     const application = {
       company_siret: siret,
       company_name: enseigne,
       company_naf: naf_label,
+      company_phone: phone,
       job_title: enseigne,
       company_address: buildLbaCompanyAddress(job),
     }
     return application
   } else if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     const { job, recruiter } = LbaJob
-    const { address, is_delegated, establishment_siret, establishment_enseigne, establishment_raison_sociale, naf_label } = recruiter
+    const { address, is_delegated, establishment_siret, establishment_enseigne, establishment_raison_sociale, naf_label, phone } = recruiter
     const { rome_appellation_label, rome_label } = job
     const application = {
       company_siret: establishment_siret,
       company_name: establishment_enseigne || establishment_raison_sociale || "Enseigne inconnue",
       company_naf: naf_label ?? "",
+      company_phone: phone,
       job_title: rome_appellation_label ?? rome_label ?? undefined,
       company_address: is_delegated ? null : address,
       job_id: job._id.toString(),
@@ -409,14 +413,14 @@ const newApplicationToApplicationDocument = async (newApplication: INewApplicati
     ...offreOrCompanyToCompanyFields(offreOrCompany),
     ...cleanApplicantFields(newApplication),
     company_email: recruteurEmail.toLowerCase(),
+    company_recruitment_intention: null,
+    company_feedback: null,
     job_origin: newApplication.company_type,
     _id: new ObjectId(),
     created_at: now,
     last_update_at: now,
     to_applicant_message_id: null,
     to_company_message_id: null,
-    company_recruitment_intention: null,
-    company_feedback: null,
     scan_status: ApplicationScanStatus.WAITING_FOR_SCAN,
   }
   return application
@@ -440,16 +444,16 @@ const newApplicationToApplicationDocumentV2 = async (
     applicant_email: newApplication.applicant_email.toLowerCase(),
     applicant_message_to_company: prepareMessageForMail(newApplication.message),
     applicant_phone: newApplication.applicant_phone,
-    caller: caller,
     company_email: recruteurEmail.toLowerCase(),
+    company_recruitment_intention: null,
+    company_feedback: null,
+    caller: caller,
     job_origin: LbaJob.type,
     _id: new ObjectId(),
     created_at: now,
     last_update_at: now,
     to_applicant_message_id: null,
     to_company_message_id: null,
-    company_recruitment_intention: null,
-    company_feedback: null,
     scan_status: ApplicationScanStatus.WAITING_FOR_SCAN,
   }
   return application
@@ -614,32 +618,6 @@ const checkUserApplicationCountV2 = async (applicantEmail: string, LbaJob: IJobO
   if (callerApplicationCount >= MAX_MESSAGES_PAR_SIRET_PAR_CALLER) {
     throw tooManyRequests(BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_SIRET)
   }
-}
-
-interface IApplicationFeedback {
-  id: string
-  iv: string
-  avis: string
-  comment: string
-  intention: string
-}
-
-/**
- * @description checks application feedback comment parameters
- * @param {Partial<IApplicationFeedback>} validable
- * @return {Promise<string>}
- */
-export const validateFeedbackApplicationComment = async (validable: Partial<IApplicationFeedback>): Promise<string> => {
-  const schema = Joi.object({
-    id: Joi.string().required(),
-    iv: Joi.string().required(),
-    comment: Joi.string().required(),
-    avis: Joi.optional(),
-    intention: Joi.optional(),
-  })
-  await schema.validateAsync(validable)
-
-  return "ok"
 }
 
 /**
@@ -826,6 +804,7 @@ const sanitizeApplicationForEmail = (application: IApplication) => {
     company_feedback_date,
     company_siret,
     company_email,
+    company_phone,
     company_name,
     company_naf,
     company_address,
@@ -842,12 +821,13 @@ const sanitizeApplicationForEmail = (application: IApplication) => {
     applicant_last_name: sanitizeForEmail(applicant_last_name),
     applicant_phone: sanitizeForEmail(applicant_phone),
     applicant_attachment_name: sanitizeForEmail(applicant_attachment_name),
-    applicant_message_to_company: sanitizeForEmail(applicant_message_to_company),
+    applicant_message_to_company: sanitizeForEmail(applicant_message_to_company, "keepBr"),
     company_recruitment_intention: sanitizeForEmail(company_recruitment_intention),
     company_feedback: sanitizeForEmail(company_feedback),
     company_feedback_date: company_feedback_date,
     company_siret: company_siret,
     company_email: sanitizeForEmail(company_email),
+    company_phone: sanitizeForEmail(company_phone),
     company_name: company_name,
     company_naf: company_naf,
     company_address: company_address,
@@ -910,13 +890,12 @@ export const deleteApplicationCvFile = async (application: IApplication) => {
 export const processApplicationEmails = {
   async sendEmailsIfNeeded(application: IApplication) {
     const { to_company_message_id, to_applicant_message_id } = application
-
     const attachmentContent = await getApplicationAttachmentContent(application)
     if (!to_company_message_id) {
       await this.sendRecruteurEmail(application, attachmentContent)
     }
     if (!to_applicant_message_id) {
-      await this.sendCandidatEmail(application, attachmentContent)
+      await this.sendCandidatEmail(application)
     }
   },
   async sendRecruteurEmail(application: IApplication, attachmentContent: string) {
@@ -950,21 +929,25 @@ export const processApplicationEmails = {
       throw internal("Email entreprise destinataire rejeté.")
     }
   },
-  async sendCandidatEmail(application: IApplication, attachmentContent: string) {
+  async sendCandidatEmail(application: IApplication) {
     const { job_id } = application
     const type = job_id ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA : LBA_ITEM_TYPE.RECRUTEURS_LBA
     const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, application)
     const emailCandidat = await mailer.sendEmail({
       to: application.applicant_email,
       subject: `Votre candidature chez ${application.company_name}`,
-      template: getEmailTemplate(type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "mail-candidat-matcha" : "mail-candidat"),
-      data: { ...sanitizeApplicationForEmail(application), ...images, publicUrl, urlOfDetail, urlOfDetailNoUtm },
-      attachments: [
-        {
-          filename: application.applicant_attachment_name,
-          path: attachmentContent,
-        },
-      ],
+      template: getEmailTemplate(type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "mail-candidat-offre-emploi-lba" : "mail-candidat-recruteur-lba"),
+      data: {
+        ...sanitizeApplicationForEmail(application),
+        ...images,
+        publicUrl,
+        urlOfDetail,
+        urlOfDetailNoUtm,
+        applicationWebsiteOrigin: getApplicationWebsiteOrigin(application.caller),
+        applicationDate: dayjs(application.created_at).format("DD/MM/YYYY"),
+        reminderDate: dayjs(application.created_at).add(10, "days").format("DD/MM/YYYY"),
+        attachmentName: application.applicant_attachment_name,
+      },
     })
     if (emailCandidat?.accepted?.length) {
       await getDbCollection("applications").findOneAndUpdate({ _id: application._id }, { $set: { to_applicant_message_id: emailCandidat.messageId } })
@@ -973,6 +956,19 @@ export const processApplicationEmails = {
       throw internal("Email candidat destinataire rejeté.")
     }
   },
+}
+
+const getApplicationWebsiteOrigin = (caller: IApplication["caller"]) => {
+  switch (caller) {
+    case "1jeune1solution":
+      return " par 1jeune1solution"
+    case "oc":
+    case "openclassrooms":
+      return " par OpenClassrooms"
+
+    default:
+      return ""
+  }
 }
 
 const getJobOrCompany = async (application: IApplication): Promise<IJobOrCompany> => {
