@@ -160,7 +160,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
 
           <Divider my={2} />
 
-          <Flex>
+          <Flex flexDirection={{ base: "column", sm: "row" }}>
             <Box flex={1}>
               {isCandidatureLba(selectedItem) && <CandidatureLba item={selectedItem} />}
 
@@ -171,7 +171,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
               )}
               {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && <ItemDetailApplicationsStatus item={selectedItem} mt={2} mb={2} />}
             </Box>
-            <Box pt={4}>
+            <Box alignSelf={{ base: "end", sm: "unset" }} pt={{ base: 0, sm: 4 }}>
               <ShareLink item={selectedItem} />
             </Box>
           </Flex>
