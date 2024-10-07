@@ -72,6 +72,7 @@ export const OffresTabs = ({ recruiter, establishmentId, showStats = false }: { 
   const { user } = useAuth()
   const confirmationSuppression = useDisclosure()
   const [currentOffre, setCurrentOffre] = useState()
+  const [copied, setCopied] = useState(false)
 
   const jobs: (IJob & { candidatures: number; geo_coordinates: string })[] = recruiter?.jobs ?? []
 
@@ -169,7 +170,11 @@ export const OffresTabs = ({ recruiter, establishmentId, showStats = false }: { 
         const isDisable = row.job_status === "Annulée" || row.job_status === "Pourvue" ? true : false
         return (
           <Box display={["none", isDisable ? "none" : "block"]}>
-            <Menu>
+            <Menu
+              onOpen={() => {
+                setCopied(false)
+              }}
+            >
               {({ isOpen }) => (
                 <>
                   <MenuButton isActive={isOpen} as={Button} variant="navdot">
@@ -218,6 +223,27 @@ export const OffresTabs = ({ recruiter, establishmentId, showStats = false }: { 
                       >
                         Voir l'offre en ligne
                         <ExternalLinkLine ml={1} color="bluefrance.500" />
+                      </Link>
+                    </MenuItem>
+                    <MenuItem>
+                      <Link
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          navigator.clipboard.writeText(`${publicConfig.baseUrl}/recherche-apprentissage?&type=${LBA_ITEM_TYPE_OLD.MATCHA}&itemId=${row._id}`).then(function () {
+                            setCopied(true)
+                          })
+                        }}
+                        aria-label="Copier le lien de partage de l'offre dans le presse papier"
+                      >
+                        {copied ? (
+                          <Flex>
+                            <Image mr={2} src="/images/icons/share_copied_icon.svg" aria-hidden={true} alt="" />
+                            <Text color="#18753C">Lien copié !</Text>
+                          </Flex>
+                        ) : (
+                          "Partager l'offre"
+                        )}
                       </Link>
                     </MenuItem>
                     {user.type !== AUTHTYPE.CFA && (

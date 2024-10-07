@@ -11,7 +11,7 @@ import { generateLbaCompanyFixture } from "shared/fixtures/recruteurLba.fixture"
 import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
-import { ILbaCompany, IRecruiter, IReferentielRome, JOB_STATUS } from "shared/models"
+import { ILbaCompany, IRecruiter, IReferentielRome, JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models"
 import { IJobsPartnersOfferPrivate, IJobsPartnersWritableApi, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 import { ZJobsOpportunityResponse } from "shared/routes/jobOpportunity.routes"
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
@@ -1796,6 +1796,7 @@ describe("createJobOffer", () => {
     offer_multicast: true,
     offer_description: "Envie de devenir développeur web ? Rejoignez-nous !",
     offer_target_diploma_european: null,
+    offer_status: JOB_STATUS_ENGLISH.ACTIVE,
 
     apply_url: null,
     apply_email: null,
@@ -1929,6 +1930,7 @@ describe("updateJobOffer", () => {
     offer_multicast: true,
     offer_description: "Envie de devenir développeur web ? Rejoignez-nous !",
     offer_target_diploma_european: null,
+    offer_status: JOB_STATUS_ENGLISH.ACTIVE,
 
     apply_url: null,
     apply_email: null,

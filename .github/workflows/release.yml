@@ -176,8 +176,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Create vault pwd file
+        run: echo ${{ secrets.VAULT_PWD }} > .infra/.vault_pwd.txt
+
       - name: upload sourcemaps to sentry
-        run: .bin/mna-lba sentry:release ${{ needs.release.outputs.VERSION }}"
+        run: .bin/mna-lba sentry:release ${{ needs.release.outputs.VERSION }}
         env:
           ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

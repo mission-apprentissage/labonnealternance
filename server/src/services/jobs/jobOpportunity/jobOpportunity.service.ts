@@ -320,6 +320,11 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IJobRes
     offresEmploiLba
       // TODO: Temporary fix for missing geopoint & address
       .filter(({ recruiter, job }: IJobResult) => {
+        if (!recruiter.address || !recruiter.geopoint) {
+          const jobDataError = new Error("Lba job has no geopoint or no address")
+          jobDataError.message = `job with id ${job._id.toString()}. geopoint=${recruiter?.geopoint} address=${recruiter?.address}`
+          sentryCaptureException(jobDataError)
+        }
         return recruiter.address && recruiter.geopoint && job.rome_label
       })
       .map(
@@ -628,7 +633,7 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAlte
     throw internal("unexpected: cannot resolve all required data for the job offer")
   }
 
-  const { offer_creation, offer_expiration, offer_rome_codes, offer_target_diploma_european, workplace_address_label, ...rest } = data
+  const { offer_creation, offer_expiration, offer_rome_codes, offer_status, offer_target_diploma_european, workplace_address_label, ...rest } = data
   const now = new Date()
 
   const invariantData: Pick<IJobsPartnersOfferPrivate, InvariantFields> = {
@@ -643,7 +648,7 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAlte
 
   const writableData: Omit<IJobsPartnersOfferPrivate, InvariantFields> = {
     offer_rome_codes: romeCode,
-    offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+    offer_status: offer_status ?? JOB_STATUS_ENGLISH.ACTIVE,
     offer_creation: offer_creation ?? invariantData.created_at,
     offer_expiration: offer_expiration || defaultOfferExpiration,
     offer_target_diploma:
