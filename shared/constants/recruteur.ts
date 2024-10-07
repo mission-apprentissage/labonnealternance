@@ -60,6 +60,8 @@ export enum OPCOS_LABEL {
   PASS = "pass",
 }
 
+export const UNKNOWN_OPCO = "inconnu"
+
 export const NIVEAUX_POUR_LBA = {
   INDIFFERENT: "Indifférent",
   "3 (CAP...)": "Cap, autres formations niveau (Infrabac)",

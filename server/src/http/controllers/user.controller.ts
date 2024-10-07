@@ -2,8 +2,8 @@ import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { ENTREPRISE, RECRUITER_STATUS } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { CFA, OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
-import { IJob, IRecruiter, getUserStatus, parseEnumOrError, zRoutes } from "shared/index"
+import { CFA, OPCOS_LABEL, UNKNOWN_OPCO, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { IJob, IRecruiter, getUserStatus, isEnum, parseEnumOrError, zRoutes } from "shared/index"
 import { ICFA } from "shared/models/cfa.model"
 import { IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
@@ -119,6 +119,10 @@ export default (server: Server) => {
     async (req, res) => {
       const { userId, siret } = req.params
       const { opco, ...userFields } = req.body
+
+      if (!isEnum(OPCOS_LABEL, opco) && opco !== UNKNOWN_OPCO) {
+        throw badRequest("Uknown OPCO value", { error: BusinessErrorCodes.UNSUPPORTED })
+      }
       const result = await updateUserWithAccountFields(userId, userFields)
       if ("error" in result) {
         throw badRequest("L'email est déjà utilisé", { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS })
