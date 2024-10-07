@@ -3,7 +3,7 @@ import { ObjectId } from "bson"
 import { JOB_STATUS_ENGLISH } from "../models"
 import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "../models/jobsPartners.model"
 
-export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOfferPrivate>): IJobsPartnersOfferPrivate {
+export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOfferPrivate> = {}): IJobsPartnersOfferPrivate {
   return {
     _id: new ObjectId(),
     workplace_siret: null,
