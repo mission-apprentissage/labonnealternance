@@ -71,7 +71,7 @@ const LbaJobDetail = ({ job }) => {
           </Box>
           {job?.job?.quantiteContrat > 1 && (
             <Box my={2}>
-              <strong>Nombre de postes disponibles: </strong> {job?.job?.quantiteContrat}
+              <strong>Nombre de postes disponibles : </strong> {job?.job?.quantiteContrat}
             </Box>
           )}
           <Flex direction="row" wrap="wrap">
