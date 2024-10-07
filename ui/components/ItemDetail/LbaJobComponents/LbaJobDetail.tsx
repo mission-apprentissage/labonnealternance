@@ -71,11 +71,11 @@ const LbaJobDetail = ({ job }) => {
           </Box>
           {job?.job?.quantiteContrat > 1 && (
             <Box my={2}>
-              <strong>Nombre de postes disponibles: </strong> {job?.job?.quantiteContrat}
+              <strong>Nombre de postes disponibles : </strong> {job?.job?.quantiteContrat}
             </Box>
           )}
           <Flex direction="row" wrap="wrap">
-            <strong>Niveau visé en fin d&apos;études :</strong>{" "}
+            <strong>Niveau visé en fin d&apos;études : </strong>{" "}
             {job?.diplomaLevel ? (
               <Flex direction="row" wrap="wrap">
                 {job?.diplomaLevel.split(", ").map(function (d, idx) {
@@ -87,7 +87,7 @@ const LbaJobDetail = ({ job }) => {
                 })}
               </Flex>
             ) : (
-              "non défini"
+              "Indifférent"
             )}
           </Flex>
 
