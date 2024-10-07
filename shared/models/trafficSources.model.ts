@@ -10,7 +10,7 @@ export enum TrafficType {
   CFA = "CFA",
   APPLICATION = "APPLICATION",
 }
-export const ZTrafficType = extensions.buildEnum(TrafficType)
+const ZTrafficType = extensions.buildEnum(TrafficType)
 
 const ZTrackingCookies = z.object({
   utm_campaign: z.string().nullable(),
