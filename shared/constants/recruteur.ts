@@ -57,7 +57,6 @@ export enum OPCOS_LABEL {
   MOBILITE = "Opco Mobilités",
   SANTE = "Opco Santé",
   UNIFORMATION = "Uniformation, l'Opco de la Cohésion sociale",
-  PASS = "Secteur publique",
   UNKNOWN_OPCO = "inconnu",
   MULTIPLE_OPCO = "OPCO multiple",
 }

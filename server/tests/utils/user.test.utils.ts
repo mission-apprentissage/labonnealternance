@@ -181,7 +181,7 @@ export async function saveRecruiter(data: Partial<IRecruiter>) {
     email: `${randomUUID()}@email.fr`,
     jobs: [],
     origin: "origin",
-    opco: "opco",
+    opco: OPCOS_LABEL.MOBILITE,
     idcc: "idcc",
     status: RECRUITER_STATUS.ACTIF,
     naf_code: "naf_code",
