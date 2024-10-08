@@ -7,7 +7,7 @@ import { IAdresseV3, IBusinessError, ICfaReferentielData, IEtablissement, IGeoPo
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants"
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
@@ -119,7 +119,7 @@ const getOpcoFromCfaDock = async (siret: string): Promise<{ opco: string; idcc?:
         return { opco: opcoName, idcc: idcc?.toString() }
       }
       case "MULTIPLE_OPCO": {
-        return { opco: "Opco multiple", idcc: "Opco multiple, IDCC non défini" }
+        return { opco: OPCOS_LABEL.MULTIPLE_OPCO, idcc: "OPCO multiple, IDCC non défini" }
       }
       default: {
         return undefined
