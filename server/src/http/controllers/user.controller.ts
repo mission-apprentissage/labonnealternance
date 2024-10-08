@@ -2,7 +2,7 @@ import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { ENTREPRISE, RECRUITER_STATUS } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { CFA, OPCOS_LABEL, UNKNOWN_OPCO, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { CFA, MULTIPLE_OPCO, OPCOS_LABEL, UNKNOWN_OPCO, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { IJob, IRecruiter, getUserStatus, isEnum, parseEnumOrError, zRoutes } from "shared/index"
 import { ICFA } from "shared/models/cfa.model"
 import { IEntreprise } from "shared/models/entreprise.model"
@@ -120,7 +120,7 @@ export default (server: Server) => {
       const { userId, siret } = req.params
       const { opco, ...userFields } = req.body
 
-      if (!isEnum(OPCOS_LABEL, opco) && opco !== UNKNOWN_OPCO) {
+      if (!isEnum(OPCOS_LABEL, opco) && opco !== UNKNOWN_OPCO && opco !== MULTIPLE_OPCO) {
         throw badRequest("Uknown OPCO value", { error: BusinessErrorCodes.UNSUPPORTED })
       }
       const result = await updateUserWithAccountFields(userId, userFields)

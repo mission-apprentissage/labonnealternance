@@ -61,6 +61,7 @@ export enum OPCOS_LABEL {
 }
 
 export const UNKNOWN_OPCO = "inconnu"
+export const MULTIPLE_OPCO = "OPCO multiple"
 
 export const NIVEAUX_POUR_LBA = {
   INDIFFERENT: "Indifférent",
