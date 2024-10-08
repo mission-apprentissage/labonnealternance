@@ -145,6 +145,7 @@ export const zRecruiterRoutes = {
               email: true,
               origin: true,
               establishment_siret: true,
+              opco: true,
             }).shape
           ),
         z

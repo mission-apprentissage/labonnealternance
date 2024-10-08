@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react"
 import { useState } from "react"
 import { IUserRecruteurJson } from "shared"
-import { UNKNOWN_OPCO } from "shared/constants"
+import { OPCOS_LABEL } from "shared/constants"
 
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 
@@ -51,7 +51,7 @@ export const ConfirmationDesactivationUtilisateur = ({
     switch (type) {
       case AUTHTYPE.ENTREPRISE:
         if (reason === "Ne relève pas des champs de compétences de mon OPCO") {
-          await Promise.all([updateEntrepriseAdmin(_id, { opco: UNKNOWN_OPCO }, establishment_siret), reassignUserToAdmin(reason)])
+          await Promise.all([updateEntrepriseAdmin(_id, { opco: OPCOS_LABEL.UNKNOWN_OPCO }, establishment_siret), reassignUserToAdmin(reason)])
         } else {
           await Promise.all([archiveFormulaire(establishment_id), disableUser(reason)])
         }

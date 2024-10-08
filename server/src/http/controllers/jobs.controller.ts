@@ -1,5 +1,6 @@
 import { badRequest, internal, notFound } from "@hapi/boom"
 import { IJob, JOB_STATUS, zRoutes } from "shared"
+import { OPCOS_LABEL } from "shared/constants"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
@@ -101,7 +102,7 @@ export default (server: Server) => {
           origin: `${user.scope}${origin ? `-${origin}` : ""}`,
           idcc,
           siret: establishment_siret,
-          opco: user.organisation,
+          opco: (user.organisation as OPCOS_LABEL) || OPCOS_LABEL.UNKNOWN_OPCO,
         },
         {
           isUserValidated: true,

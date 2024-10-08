@@ -587,7 +587,7 @@ export const entrepriseOnboardingWorkflow = {
       phone?: string
       email: string
       origin?: string | null
-      opco: string
+      opco: OPCOS_LABEL
       idcc?: string
     },
     {
@@ -666,7 +666,7 @@ export const entrepriseOnboardingWorkflow = {
         first_name,
         last_name,
         phone,
-        opco,
+        opco: opco || OPCOS_LABEL.UNKNOWN_OPCO,
         idcc,
         origin,
         email: formatedEmail,
@@ -698,7 +698,7 @@ export const entrepriseOnboardingWorkflow = {
     phone: string
     email: string
     cfa_delegated_siret: string
-    opco?: string
+    opco?: OPCOS_LABEL
     idcc?: string | null
     managedBy: string
     origin: string
@@ -740,7 +740,7 @@ export const entrepriseOnboardingWorkflow = {
         cfa_delegated_siret,
         is_delegated: true,
         origin,
-        opco,
+        opco: opco || OPCOS_LABEL.UNKNOWN_OPCO,
         idcc,
         naf_label: "naf_label" in siretResponse ? siretResponse.naf_label : undefined,
         naf_code: "naf_code" in siretResponse ? siretResponse.naf_code : undefined,

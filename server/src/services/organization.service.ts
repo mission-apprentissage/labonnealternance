@@ -1,6 +1,6 @@
 import { internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
-import { CFA, ENTREPRISE } from "shared/constants"
+import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants"
 import { ICFA } from "shared/models/cfa.model"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
@@ -17,7 +17,7 @@ import { deactivateEntreprise, setEntrepriseInError, setEntrepriseValid } from "
 export type Organization = { entreprise: IEntreprise; type: typeof ENTREPRISE } | { cfa: ICFA; type: typeof CFA }
 export type UserAndOrganization = { user: IUserWithAccount; organization: Organization }
 
-export const updateEntrepriseOpco = async (siret: string, { opco, idcc }: { opco: string; idcc?: string }) => {
+export const updateEntrepriseOpco = async (siret: string, { opco, idcc }: { opco: OPCOS_LABEL; idcc?: string }) => {
   const entreprise = await getDbCollection("entreprises").findOne({ siret })
   if (!entreprise) {
     throw new Error("inattendu: aucune entreprise trouvée. Merci d'appeler cette méthode une fois l'entreprise créée")
@@ -46,7 +46,7 @@ export const upsertEntrepriseData = async (
   if ("error" in siretResponse) {
     if (!existingEntreprise) {
       const now = new Date()
-      existingEntreprise = { _id: new ObjectId(), opco: null, createdAt: now, updatedAt: now, siret, origin, status: [] }
+      existingEntreprise = { _id: new ObjectId(), opco: OPCOS_LABEL.UNKNOWN_OPCO, createdAt: now, updatedAt: now, siret, origin, status: [] }
       await getDbCollection("entreprises").insertOne(existingEntreprise)
     }
     if (isInternalError) {
@@ -79,7 +79,7 @@ export const upsertEntrepriseData = async (
     savedEntreprise = updatedEntreprise
   } else {
     const now = new Date()
-    savedEntreprise = { ...entrepriseFields, siret, origin, _id: new ObjectId(), createdAt: now, updatedAt: now, status: [] }
+    savedEntreprise = { ...entrepriseFields, opco: OPCOS_LABEL.UNKNOWN_OPCO, siret, origin, _id: new ObjectId(), createdAt: now, updatedAt: now, status: [] }
     await getDbCollection("entreprises").insertOne(savedEntreprise)
   }
   await setEntrepriseValid(savedEntreprise._id)
