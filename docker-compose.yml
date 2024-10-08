@@ -32,6 +32,7 @@ services:
       - 3310:3310
     volumes:
       - lba_clamav_data:/var/lib/clamav
+      - ./.infra/files/configs/clamav/clamd.conf:/etc/clamav/clamd.conf
 
   smtp:
     image: axllent/mailpit:v1.15
