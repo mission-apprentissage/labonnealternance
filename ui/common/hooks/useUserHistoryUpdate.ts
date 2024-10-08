@@ -4,20 +4,17 @@ import { useQueryClient } from "react-query"
 import { assertUnreachable } from "shared"
 import { AccessStatus } from "shared/models/roleManagement.model"
 
-import { updateUserValidationHistory } from "../../utils/api"
-
 export default function useUserHistoryUpdate() {
   const client = useQueryClient()
   const toast = useToast()
 
   return useCallback(
-    async (props: Parameters<typeof updateUserValidationHistory>[0]) => {
-      await updateUserValidationHistory(props)
+    async (status: AccessStatus, apiCall: () => Promise<unknown>) => {
+      await apiCall()
         .then(() => ["user-list-opco", "user-list", "user"].map((x) => client.invalidateQueries(x)))
         .then(() => {
-          const newStatus = props.status
           toast({
-            description: `Utilisateur ${getDescription(newStatus)}`,
+            description: `Utilisateur ${getDescription(status)}`,
             position: "top-right",
             status: "success",
             duration: 4000,
