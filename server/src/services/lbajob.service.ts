@@ -1,4 +1,5 @@
 import { badRequest, internal } from "@hapi/boom"
+import dayjs from "dayjs"
 import { Document, Filter, ObjectId } from "mongodb"
 import { IJob, IRecruiter, IReferentielRomeForJob, JOB_STATUS } from "shared"
 import { NIVEAUX_POUR_LBA } from "shared/constants"
@@ -51,10 +52,13 @@ export const getJobs = async ({
   caller?: string | null
   isMinimalData: boolean
 }): Promise<IRecruiter[]> => {
+  const expirationDateLimit = dayjs().add(-1, "day").toDate()
+
   const query: Filter<IRecruiter> = {
     status: RECRUITER_STATUS.ACTIF,
     "jobs.job_status": JOB_STATUS.ACTIVE,
     "jobs.rome_code": { $in: romes },
+    "jobs.job_expiration_date": { $gt: expirationDateLimit },
   }
 
   if (niveau && niveau !== NIVEAUX_POUR_LBA["INDIFFERENT"]) {
@@ -97,7 +101,7 @@ export const getJobs = async ({
 
       const jobs: any[] = []
       recruiter.jobs.forEach((job) => {
-        if (romes.some((item) => job.rome_code.includes(item)) && job.job_status === JOB_STATUS.ACTIVE) {
+        if (romes.some((item) => job.rome_code.includes(item)) && job.job_status === JOB_STATUS.ACTIVE && dayjs(job.job_expiration_date).isAfter(expirationDateLimit)) {
           job.rome_label = job.rome_appellation_label ?? job.rome_label
           if (!niveau || NIVEAUX_POUR_LBA["INDIFFERENT"] === job.job_level_label || niveau === job.job_level_label) {
             jobs.push(job)
@@ -131,6 +135,7 @@ export const getLbaJobsV2 = async ({
   const jobFilters: Filter<IRecruiter> = {
     "jobs.job_status": JOB_STATUS.ACTIVE,
     "jobs.is_multi_published": true,
+    "jobs.job_expiration_date": { $gt: dayjs().add(-1, "day").toDate() },
   }
 
   if (romes) {
@@ -169,6 +174,7 @@ export const getLbaJobsV2 = async ({
           },
           { $limit: limit },
           { $unwind: { path: "$jobs" } },
+          { $sort: { distance: 1, "jobs.job_creation_date": -1 } },
         ]
 
   const recruiters = await getDbCollection("recruiters")
@@ -422,7 +428,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
           : null,
       },
       nafs: [{ label: recruiter.naf_label }],
-      diplomaLevel: offre.job_level_label || null,
+      target_diploma_level: offre.job_level_label || null,
       job: {
         id: offre._id.toString(),
         description: offre.job_description && offre.job_description.length > 50 ? offre.job_description : null,

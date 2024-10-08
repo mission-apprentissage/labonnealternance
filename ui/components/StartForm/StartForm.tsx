@@ -26,7 +26,7 @@ const StartForm = () => {
 
   return (
     <>
-      <Box display={["block", "block", "block", "none"]}>
+      <Box display={["block", "block", "block", "none"]} marginBottom="24px">
         <SearchFormResponsive handleSearchSubmit={handleSearchSubmitFunction} isHome={true} showResultList={() => {}} />
       </Box>
       <Box display={["none", "none", "none", "block"]}>

@@ -12,7 +12,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { stopSession } from "@/common/utils/session.service"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { modifyPermissionToUser, roleToUserType } from "@/services/roleManagement.service"
-import { activateUser, createSuperUser, getUserWithAccountByEmail, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
+import { activateUser, createSuperUser, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
@@ -307,14 +307,21 @@ export default (server: Server) => {
         }
       )
 
-      const { email, last_name, first_name } = user
-
       const newEvent = getLastStatusEvent(updatedRole.status)
       if (!newEvent) {
         throw internal("inattendu : aucun event sauvegardé")
       }
       // if user is disabled, return the user data directly
       if (newEvent.status === AccessStatus.DENIED) {
+        const organization =
+          updatedRole.authorized_type === AccessEntityType.CFA
+            ? await getDbCollection("cfas").findOne({ _id: new ObjectId(updatedRole.authorized_id) })
+            : await getDbCollection("entreprises").findOne({ _id: new ObjectId(updatedRole.authorized_id) })
+        if (!organization) {
+          throw internal("/user/:userId/organization/:organizationId/permission: inattendu: organization introuvable")
+        }
+        const { email, last_name, first_name, phone } = user
+        const { siret, raison_sociale } = organization
         // send email to user to notify him his account has been disabled
         await mailer.sendEmail({
           to: email,
@@ -324,10 +331,15 @@ export default (server: Server) => {
             images: {
               accountDisabled: `${config.publicUrl}/images/image-compte-desactive.png?raw=true`,
               logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+              logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
             },
             last_name: sanitizeForEmail(last_name),
             first_name: sanitizeForEmail(first_name),
             reason: sanitizeForEmail(newEvent.reason),
+            email,
+            siret: sanitizeForEmail(siret),
+            raison_sociale: sanitizeForEmail(raison_sociale),
+            phone: sanitizeForEmail(phone),
             emailSupport: "mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Compte%20pro%20non%20validé",
           },
         })
@@ -387,32 +399,6 @@ export default (server: Server) => {
         await deleteFormulaire(recruiterId)
       }
       await stopSession(req, res)
-      return res.status(200).send({})
-    }
-  )
-
-  server.delete(
-    "/user/organization/:siret",
-    {
-      schema: zRoutes.delete["/user/organization/:siret"],
-      onRequest: [server.auth(zRoutes.delete["/user/organization/:siret"])],
-    },
-    async (req, res) => {
-      const requestingUser = getUserFromRequest(req, zRoutes.delete["/user/organization/:siret"]).value
-      const userOpt = await getUserWithAccountByEmail(requestingUser.identity.email)
-      if (!userOpt) {
-        throw notFound("user not found")
-      }
-      const { siret } = req.params
-      const entrepriseOpt = await getDbCollection("entreprises").findOne({ siret })
-      if (entrepriseOpt) {
-        await getDbCollection("rolemanagements").deleteOne({ user_id: userOpt._id, authorized_id: entrepriseOpt._id.toString(), authorized_type: AccessEntityType.ENTREPRISE })
-      }
-      const cfaOpt = await getDbCollection("cfas").findOne({ siret })
-      if (cfaOpt) {
-        await getDbCollection("rolemanagements").deleteOne({ user_id: userOpt._id, authorized_id: cfaOpt._id.toString(), authorized_type: AccessEntityType.CFA })
-      }
-      await getDbCollection("recruiters").deleteOne({ establishment_siret: siret, managed_by: userOpt._id.toString() })
       return res.status(200).send({})
     }
   )

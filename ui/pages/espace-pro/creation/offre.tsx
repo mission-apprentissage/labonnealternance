@@ -3,7 +3,7 @@ import { useRouter } from "next/router"
 
 import { DepotSimplifieLayout } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 
-import { AjouterVoeux, Bandeau } from "../../../components/espace_pro"
+import { FormulaireCreationOffre, Bandeau } from "../../../components/espace_pro"
 
 export default function DepotRapideAjouterVoeux() {
   const router = useRouter()
@@ -11,15 +11,13 @@ export default function DepotRapideAjouterVoeux() {
 
   return (
     <DepotSimplifieLayout>
-      {displayBanner && (
-        <Bandeau
-          type="success"
-          header="Votre compte a été créé avec succès, et est en attente de vérification."
-          description="Vous pouvez d’ores et déjà créer une offre de recrutement."
-        />
-      )}
+      <Bandeau
+        type="success"
+        header={`Votre compte a été créé avec succès${displayBanner === "true" ? " et est en attente de vérification" : ""}.`}
+        description="Vous pouvez d’ores et déjà créer une offre de recrutement."
+      />
       <Box mt={10}>
-        <AjouterVoeux />
+        <FormulaireCreationOffre />
       </Box>
     </DepotSimplifieLayout>
   )

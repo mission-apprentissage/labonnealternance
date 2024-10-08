@@ -9,7 +9,7 @@ import { AUTHTYPE } from "../../common/contants"
 import { ArrowDropRightLine } from "../../theme/components/icons"
 import { createOffre, getOffre } from "../../utils/api"
 
-import { AjouterVoeux, LoadingEmptySpace } from "."
+import { FormulaireCreationOffre, LoadingEmptySpace } from "."
 
 export default function CreationOffre() {
   const toast = useToast()
@@ -28,7 +28,7 @@ export default function CreationOffre() {
   const handleSave = async (values) => {
     // Updates an offer
     if (!isCreation) {
-      apiPut(`/formulaire/offre/:jobId`, { params: { jobId }, body: { ...values, job_update_date: new Date() } })
+      apiPut("/formulaire/offre/:jobId", { params: { jobId }, body: { ...values, job_update_date: new Date() } })
         .then(() => {
           toast({
             title: "Offre mise à jour avec succès.",
@@ -38,7 +38,11 @@ export default function CreationOffre() {
             isClosable: true,
           })
         })
-        .finally(() => router.push(`/espace-pro/administration/entreprise/${establishment_id}`))
+        .finally(() =>
+          user.type === "OPCO"
+            ? router.push(`/espace-pro/administration/opco/entreprise/${router.query.siret_userId}/entreprise/${establishment_id}`)
+            : router.push(`/espace-pro/administration/entreprise/${establishment_id}`)
+        )
     } else {
       const { recruiter: formulaire } = await createOffre(establishment_id, values)
       if (user.type === AUTHTYPE.ENTREPRISE) {
@@ -81,7 +85,7 @@ export default function CreationOffre() {
           )}
         </Breadcrumb>
       </Box>
-      <AjouterVoeux fromDashboard handleSave={handleSave} offre={offre} />
+      <FormulaireCreationOffre fromDashboard handleSave={handleSave} offre={offre} />
     </Container>
   )
 }

@@ -10,7 +10,7 @@ export default defineConfig((options) => {
   const migrationFiles = fs.readdirSync("./src/migrations")
 
   const entry: Record<string, string> = {
-    index: isDev ? "src/dev.ts" : "src/main.ts",
+    index: "src/index.ts",
   }
 
   for (const file of migrationFiles) {

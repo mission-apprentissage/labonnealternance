@@ -1,9 +1,8 @@
 import { LBA_ITEM_TYPE } from "../constants/lbaitem"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZBusinessError } from "../models"
 import { zObjectId } from "../models/common"
-import { ZJobsPartnersOfferPrivate, ZJobsPartnersPatchApiBody, ZJobsPartnersPostApiBody } from "../models/jobsPartners.model"
+import { ZJobsPartnersWritableApi } from "../models/jobsPartners.model"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
 import { ZLbaItemFtJob, ZLbaItemLbaCompany, ZLbaItemLbaJob } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
@@ -296,9 +295,9 @@ export const zJobsRoutesV2 = {
         })}`,
       },
     },
-    "/jobs": {
+    "/jobs/search": {
       method: "get",
-      path: "/jobs",
+      path: "/jobs/search",
       querystring: ZJobOpportunityGetQuery,
       response: {
         "200": ZJobsOpportunityResponse,
@@ -314,14 +313,13 @@ export const zJobsRoutesV2 = {
     "/jobs": {
       method: "post",
       path: "/jobs",
-      body: ZJobsPartnersPostApiBody,
+      body: ZJobsPartnersWritableApi,
       response: {
         "201": z.object({ id: zObjectId }),
-        "400": z.union([ZBusinessError, ZResError]),
       },
       securityScheme: {
         auth: "api-apprentissage",
-        access: null,
+        access: "job:manage",
         resources: {},
       },
     },
@@ -395,21 +393,23 @@ export const zJobsRoutesV2 = {
       },
     },
   },
-  patch: {
+  put: {
     "/jobs/:id": {
-      method: "patch",
+      method: "put",
       path: "/jobs/:id",
       params: z.object({
         id: zObjectId,
       }),
-      body: ZJobsPartnersPatchApiBody,
+      body: ZJobsPartnersWritableApi,
       response: {
-        "200": ZJobsPartnersOfferPrivate,
+        "204": z.null(),
       },
       securityScheme: {
         auth: "api-apprentissage",
-        access: null,
-        resources: {},
+        access: "job:manage",
+        resources: {
+          jobPartner: [{ _id: { type: "params", key: "id" } }],
+        },
       },
     },
   },

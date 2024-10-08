@@ -54,6 +54,7 @@ export const ZApplication = z
       description: "Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat.",
       example: "Madame, monsieur...",
     }),
+    job_searched_by_user: z.string().nullish().describe("Métier recherché par le candidat"),
     company_recruitment_intention: z.string().nullish().describe("L'intention de la société vis à vis du candidat"),
     company_feedback: z.string().nullish().describe("L'avis donné par la société"),
     company_feedback_date: z.date().nullish().describe("Date d'intention/avis donnée"),
@@ -66,6 +67,7 @@ export const ZApplication = z
         "L'adresse email de la société pour postuler. Vous devez impérativement utiliser les valeurs émises par l'API LBA avec le vecteur d'initialisation correspondant à l'adresse.",
       example: "...f936e4352b5ae5...",
     }),
+    company_phone: z.string().nullish().describe("Numéro de téléphone du recruteur"),
     company_name: z.string().openapi({
       description: "Le nom de la société. Fourni par La bonne alternance. ",
       example: "Au bon pain d'antan",

@@ -1,6 +1,6 @@
 import { setTimeout } from "timers/promises"
 
-import { badRequest, internal } from "@hapi/boom"
+import { badRequest, internal, isBoom } from "@hapi/boom"
 import { AxiosResponse } from "axios"
 import { Filter as MongoDBFilter, ObjectId } from "mongodb"
 import {
@@ -8,12 +8,14 @@ import {
   IBusinessError,
   ICfaReferentielData,
   IEtablissement,
+  IGeoPoint,
   ILbaCompany,
   ILbaCompanyLegacy,
   IRecruiter,
-  ISiretDiffusibleStatus,
-  ZAdresseV3,
+  ITrackingCookies,
+  TrafficType,
   ZCfaReferentielData,
+  ZPointGeometry,
 } from "shared"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants"
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
@@ -24,6 +26,7 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
+import { getEtablissementDiffusionStatus, getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
 import { FCGetOpcoInfos } from "@/common/apis/franceCompetences/franceCompetencesClient"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
@@ -46,14 +49,8 @@ import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service"
 import { UserAndOrganization, updateEntrepriseOpco, upsertEntrepriseData } from "./organization.service"
 import { modifyPermissionToUser } from "./roleManagement.service"
+import { saveUserTrafficSourceIfAny } from "./trafficSource.service"
 import { autoValidateUser as authorizeUserOnEntreprise, createOrganizationUser, setUserHasToBeManuallyValidated } from "./userRecruteur.service"
-
-const apiParams = {
-  token: config.entreprise.apiKey,
-  context: config.entreprise.context,
-  recipient: config.entreprise.recipient, // Siret Dinum
-  object: config.entreprise.object,
-}
 
 /**
  * Get company size by code
@@ -178,95 +175,6 @@ const getIdcc = async (siret: string): Promise<ISIRET2IDCC | null> => {
   }
 }
 
-/**
- * @description Get the establishment information from the ENTREPRISE API for a given SIRET
- */
-const getEtablissementFromGouvSafe = async (siret: string): Promise<IAPIEtablissement | BusinessErrorCodes.NON_DIFFUSIBLE | null> => {
-  try {
-    if (config.entreprise.simulateError) {
-      throw new Error("API entreprise : simulation d'erreur")
-    }
-    const { data } = await getHttpClient({ timeout: 5000 }).get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/diffusibles/${encodeURIComponent(siret)}`, {
-      params: apiParams,
-    })
-    if (data.data.status_diffusion !== EDiffusibleStatus.DIFFUSIBLE) {
-      return BusinessErrorCodes.NON_DIFFUSIBLE
-    }
-    ZAdresseV3.parse(data.data.adresse)
-    return data
-  } catch (error: any) {
-    const status = error?.response?.status
-    if (status === 451) {
-      return BusinessErrorCodes.NON_DIFFUSIBLE
-    }
-    if ([404, 422, 429].includes(status)) {
-      return null
-    }
-    sentryCaptureException(error)
-    throw error
-  }
-}
-
-/**
- * @description Get diffusion status from the ENTREPRISE API for a given SIRET
- */
-const getEtablissementDiffusionStatus = async (siret: string): Promise<string> => {
-  try {
-    if (config.entreprise.simulateError) {
-      throw new Error("API entreprise : simulation d'erreur")
-    }
-
-    const siretDiffusibleStatus = await getDbCollection("siretdiffusiblestatuses").findOne({ siret })
-    if (siretDiffusibleStatus) {
-      return siretDiffusibleStatus.status_diffusion
-    }
-
-    const { data } = await getHttpClient({ timeout: 5000 }).get<IAPIEtablissement>(
-      `${config.entreprise.baseUrl}/sirene/etablissements/diffusibles/${encodeURIComponent(siret)}/adresse`,
-      {
-        params: apiParams,
-      }
-    )
-    await saveSiretDiffusionStatus(siret, data.data.status_diffusion)
-
-    return data.data.status_diffusion
-  } catch (error: any) {
-    if (error?.response?.status === 404) {
-      await saveSiretDiffusionStatus(siret, EDiffusibleStatus.NOT_FOUND)
-      return EDiffusibleStatus.NOT_FOUND
-    }
-    if (error?.response?.status === 451) {
-      await saveSiretDiffusionStatus(siret, EDiffusibleStatus.UNAVAILABLE)
-      return EDiffusibleStatus.UNAVAILABLE
-    }
-    if (error?.response?.status === 429 || error?.response?.status === 504) {
-      return "quota"
-    }
-    if (error?.code === "ECONNABORTED") {
-      return "quota"
-    }
-    sentryCaptureException(error)
-    throw error
-  }
-}
-
-const saveSiretDiffusionStatus = async (siret, diffusionStatus) => {
-  try {
-    const now = new Date()
-    const obj: ISiretDiffusibleStatus = {
-      _id: new ObjectId(),
-      siret,
-      status_diffusion: diffusionStatus,
-      created_at: now,
-      last_update_at: now,
-    }
-    await getDbCollection("siretdiffusiblestatuses").insertOne(obj)
-  } catch (err) {
-    // non blocking error
-    sentryCaptureException(err)
-  }
-}
-
 const MAX_RETRY = 100
 const DELAY = 100
 
@@ -316,27 +224,30 @@ export type GeoCoord = {
   longitude: number
 }
 
-/**
- * @description Get the geolocation information from the ADDRESS API for a given address
- * @param {String} adresse
- */
-export const getGeoCoordinates = async (adresse: string): Promise<GeoCoord> => {
+export const getGeoPoint = async (adresse: string): Promise<IGeoPoint> => {
   try {
-    const response: AxiosResponse<IAPIAdresse> = await getHttpClient().get(`https://api-adresse.data.gouv.fr/search/?q=${adresse}`)
+    const response: AxiosResponse<IAPIAdresse> = await getHttpClient().get(`https://api-adresse.data.gouv.fr/search?q=${encodeURIComponent(adresse)}&limit=1`)
     const firstFeature = response.data?.features.at(0)
     if (!firstFeature) {
-      throw new Error("pas trouvé")
+      throw internal("getGeoPoint: addresse non trouvée", { adresse })
     }
-    const [longitude, latitude] = firstFeature.geometry.coordinates
-    if (latitude === undefined || longitude === undefined) {
-      throw internal("moins de 2 coordonnées", { latitude, longitude })
-    }
-    return { latitude, longitude }
+
+    return ZPointGeometry.parse(firstFeature.geometry)
   } catch (error: any) {
-    const newError = internal(`erreur de récupération des geo coordonnées`, { adresse })
+    if (isBoom(error)) {
+      throw error
+    }
+    const newError = internal(`getGeoPoint: erreur de récupération des geo coordonnées`, { adresse })
     newError.cause = error
     throw newError
   }
+}
+
+export const getGeoCoordinates = async (adresse: string): Promise<GeoCoord> => {
+  const geopoint = await getGeoPoint(adresse)
+  const [longitude, latitude] = geopoint.coordinates
+
+  return { latitude, longitude }
 }
 
 type IGetAllEmailFromLbaCompanyLegacy = Pick<ILbaCompanyLegacy, "email">
@@ -386,7 +297,7 @@ const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntreprise => {
   }
 }
 
-function geometryToGeoCoord(geometry: any): [number, number] {
+function geometryToGeoCoord(geometry): [number, number] {
   const { type } = geometry
   if (type === "Point") {
     return geometry.coordinates
@@ -407,7 +318,7 @@ export const formatReferentielData = (d: IReferentiel): ICfaReferentielData => {
   }
   const coords = geometryToGeoCoord(geojson.geometry)
 
-  const referentielData = {
+  const referentielData: ICfaReferentielData = {
     establishment_state: d.etat_administratif,
     is_qualiopi: Boolean(d.qualiopi),
     establishment_siret: d.siret,
@@ -420,12 +331,12 @@ export const formatReferentielData = (d: IReferentiel): ICfaReferentielData => {
       type: "Point",
       coordinates: coords,
     },
-  }
+  } as ICfaReferentielData
   const validation = ZCfaReferentielData.safeParse(referentielData)
   if (!validation.success) {
     sentryCaptureException(internal(`erreur de validation sur les données du référentiel CFA pour le siret=${d.siret}.`, { validationError: validation.error }))
   }
-  return referentielData
+  return validation.data ?? referentielData
 }
 
 /**
@@ -527,15 +438,15 @@ const getOpcoDataRaw = async (siret: string): Promise<{ opco: string; idcc?: str
   return (await getOpcoFromCfaDock(siret)) ?? (await getOpcoFromCfaDockByIdcc(siret)) ?? (await getOpcoFromFranceCompetences(siret))
 }
 
-export const getOpcoData = async (siret: string): Promise<{ opco: string; idcc?: string | null } | undefined> => {
+export const getOpcoData = async (siret: string): Promise<{ opco: string; idcc: string | null } | null> => {
   const siren = siret.substring(0, 9)
   const opcoFromDB = await getOpcoBySirenFromDB(siren)
   if (opcoFromDB) {
-    return opcoFromDB
+    return { opco: opcoFromDB.opco, idcc: opcoFromDB.idcc ?? null }
   }
   const entreprise = await getDbCollection("entreprises").findOne({ siret })
   if (entreprise) {
-    const { opco, idcc } = entreprise
+    const { opco, idcc = null } = entreprise
     if (opco) {
       return { opco, idcc }
     }
@@ -545,11 +456,13 @@ export const getOpcoData = async (siret: string): Promise<{ opco: string; idcc?:
   if (result) {
     const { opco, idcc } = result
     await saveOpco({ opco, idcc, siren })
+    return { opco, idcc: idcc ?? null }
   }
-  return result
+
+  return null
 }
 
-export type EntrepriseData = IFormatAPIEntreprise & { opco: string; idcc: string; geo_coordinates: string }
+export type EntrepriseData = IFormatAPIEntreprise & { geo_coordinates: string; geopoint: IGeoPoint }
 
 export const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_siret }: { siret: string; cfa_delegated_siret?: string }) => {
   if (!cfa_delegated_siret) return
@@ -563,28 +476,48 @@ export const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_s
   }
 }
 
-export const getEntrepriseDataFromSiret = async ({ siret, type }: { siret: string; type: "CFA" | "ENTREPRISE" }) => {
+export const getEntrepriseDataFromSiret = async ({
+  siret,
+  type,
+  isApiApprentissage = false,
+}: {
+  siret: string
+  type: "CFA" | "ENTREPRISE"
+  isApiApprentissage?: boolean
+}): Promise<EntrepriseData | IBusinessError> => {
   const result = await getEtablissementFromGouvSafe(siret)
   if (!result) {
     return errorFactory("Le numéro siret est invalide.")
   }
   if (result === BusinessErrorCodes.NON_DIFFUSIBLE) {
-    return errorFactory(
-      `Les informations de votre entreprise sont non diffusibles. <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Espace%20pro%20-%20Donnees%20entreprise%20non%20diffusibles" target="_blank" title="contacter le support - nouvelle fenêtre">Contacter le support pour en savoir plus</a>`,
-      BusinessErrorCodes.NON_DIFFUSIBLE
-    )
+    if (isApiApprentissage) {
+      return errorFactory("Non-distributable company.", BusinessErrorCodes.NON_DIFFUSIBLE)
+    } else {
+      return errorFactory(
+        `Les informations de votre entreprise sont non diffusibles. <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Espace%20pro%20-%20Donnees%20entreprise%20non%20diffusibles" target="_blank" title="contacter le support - nouvelle fenêtre">Contacter le support pour en savoir plus</a>`,
+        BusinessErrorCodes.NON_DIFFUSIBLE
+      )
+    }
   }
 
   const { etat_administratif, activite_principale } = result.data
 
   if (etat_administratif === "F") {
-    return errorFactory("Cette entreprise est considérée comme fermée.", BusinessErrorCodes.CLOSED)
+    if (isApiApprentissage) {
+      return errorFactory("The company is considered closed.", BusinessErrorCodes.CLOSED)
+    } else {
+      return errorFactory("Cette entreprise est considérée comme fermée.", BusinessErrorCodes.CLOSED)
+    }
   }
   // Check if a CFA already has the company as partenaire
   if (type === ENTREPRISE) {
     // Allow cfa to add themselves as a company
     if (activite_principale.code.startsWith("85")) {
-      return errorFactory("Le numéro siret n'est pas référencé comme une entreprise.", BusinessErrorCodes.IS_CFA)
+      if (isApiApprentissage) {
+        return errorFactory("The SIRET number is not referenced as a company.", BusinessErrorCodes.IS_CFA)
+      } else {
+        return errorFactory("Le numéro siret n'est pas référencé comme une entreprise.", BusinessErrorCodes.IS_CFA)
+      }
     }
   }
   const entrepriseData = formatEntrepriseData(result.data)
@@ -661,6 +594,7 @@ export const entrepriseOnboardingWorkflow = {
       origin,
       opco,
       idcc,
+      source,
     }: {
       siret: string
       last_name: string
@@ -670,6 +604,7 @@ export const entrepriseOnboardingWorkflow = {
       origin?: string | null
       opco: string
       idcc?: string
+      source: ITrackingCookies
     },
     {
       isUserValidated = false,
@@ -705,7 +640,9 @@ export const entrepriseOnboardingWorkflow = {
       sentryCaptureException(err)
     }
     const entreprise = await upsertEntrepriseData(siret, origin, siretResponse, isSiretInternalError)
-    await updateEntrepriseOpco(siret, { opco, idcc })
+    const opcoResult = await updateEntrepriseOpco(siret, { opco, idcc })
+    opco = opcoResult.opco
+    idcc = opcoResult.idcc ?? undefined
 
     let validated = false
     const managingUser = await createOrganizationUser({
@@ -719,6 +656,8 @@ export const entrepriseOnboardingWorkflow = {
       is_email_checked: false,
       organization: { type: ENTREPRISE, entreprise },
     })
+    await saveUserTrafficSourceIfAny({ user_id: managingUser._id, type: TrafficType.ENTREPRISE, source })
+
     if (isUserValidated) {
       await modifyPermissionToUser(
         {
@@ -802,7 +741,9 @@ export const entrepriseOnboardingWorkflow = {
     }
     const entreprise = await upsertEntrepriseData(siret, origin, siretResponse, isSiretInternalError)
     if (opco) {
-      await updateEntrepriseOpco(siret, { opco, idcc: idcc ?? undefined })
+      const opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: idcc ?? undefined })
+      opco = opcoResult.opco
+      idcc = opcoResult.idcc
     }
 
     const formulaireInfo = await createFormulaire(
@@ -828,7 +769,8 @@ export const entrepriseOnboardingWorkflow = {
   },
 }
 
-const entrepriseToRecruiter = ({ siret, address, address_detail, enseigne, geo_coordinates, idcc, opco, raison_sociale }: IEntreprise): Partial<IRecruiter> => {
+const entrepriseToRecruiter = (entreprise: IEntreprise): Partial<IRecruiter> => {
+  const { siret, address, address_detail, enseigne, geo_coordinates, idcc, opco, raison_sociale } = entreprise
   const [latitude, longitude] = geo_coordinates!.split(",").map((coords) => parseFloat(coords))
   const formulaire: Partial<IRecruiter> = {
     establishment_siret: siret,

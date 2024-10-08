@@ -12,6 +12,10 @@ const Badge = {
       bg: "#FEECC2",
       color: "#716043",
     },
+    neutral: {
+      bg: "#E8EDFF",
+      color: "#0063CB",
+    },
   },
 }
 

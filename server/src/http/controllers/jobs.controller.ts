@@ -1,6 +1,7 @@
 import { badRequest, internal, notFound } from "@hapi/boom"
 import { IJob, JOB_STATUS, zRoutes } from "shared"
 
+import { getSourceFromCookies } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { Appellation } from "@/services/rome.service.types"
@@ -102,6 +103,7 @@ export default (server: Server) => {
           idcc,
           siret: establishment_siret,
           opco: user.organisation,
+          source: getSourceFromCookies(req),
         },
         {
           isUserValidated: true,
@@ -228,15 +230,14 @@ export default (server: Server) => {
           latitude: parseFloat(latitude),
           longitude: parseFloat(longitude),
         },
+        limit: 10,
       })
 
       if (!etablissements.length) {
         throw notFound("No delegations found")
       }
 
-      const top10 = etablissements.slice(0, 10)
-
-      return res.status(200).send(top10)
+      return res.status(200).send(etablissements)
     }
   )
 

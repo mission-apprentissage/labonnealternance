@@ -81,6 +81,7 @@ export type AccessRessouces = {
         siret: AccessResourcePath
       }
   >
+  jobPartner?: ReadonlyArray<{ _id: AccessResourcePath }>
 }
 
 export type UserWithType<T, V> = Readonly<{

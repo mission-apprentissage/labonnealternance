@@ -811,7 +811,7 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, co
 }
 
 export function addExpirationPeriod(fromDate: Date | dayjs.Dayjs): dayjs.Dayjs {
-  return dayjs(fromDate).add(2, "months")
+  return dayjs(fromDate).add(2, "months").startOf("day")
 }
 
 export const getJobFromRecruiter = (recruiter: IRecruiter, jobId: string): IJob => {

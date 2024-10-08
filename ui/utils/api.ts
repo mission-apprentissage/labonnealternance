@@ -74,7 +74,6 @@ export const updateUserValidationHistory = ({
   reason: string
   organizationType: typeof AccessEntityType.ENTREPRISE | typeof AccessEntityType.CFA
 }) => apiPut("/user/:userId/organization/:organizationId/permission", { params: { userId, organizationId }, body: { organizationType, status, reason } }).catch(errorHandler)
-export const cancelAccountCreation = (siret: string, token: string) => apiDelete("/user/organization/:siret", { params: { siret }, headers: { authorization: `Bearer ${token}` } })
 export const createSuperUser = (user: INewSuperUser) => apiPost("/admin/users", { body: user })
 
 // Temporaire, en attendant d'ajuster le modèle pour n'avoir qu'une seul source de données pour les entreprises
@@ -166,9 +165,8 @@ export const putCompanyContactInfo = async ({ siret, phone, email }: { siret: st
 export const createEtablissement = (etablissement) => apiPost("/etablissement/creation", { body: etablissement })
 
 export const getRomeDetail = (rome: string) => apiGet("/rome/detail/:rome", { params: { rome } })
-export const getRelatedEtablissementsFromRome = async ({ rome, latitude, longitude }: { rome: string; latitude: number; longitude: number }) => {
-  return apiGet(`/etablissement/cfas-proches`, { querystring: { rome, latitude, longitude } })
-}
+export const getRelatedEtablissementsFromRome = async ({ rome, latitude, longitude, limit }: { rome: string; latitude: number; longitude: number; limit: number }) =>
+  apiGet(`/etablissement/cfas-proches`, { querystring: { rome, latitude, longitude, limit } })
 
 export const etablissementUnsubscribeDemandeDelegation = (establishment_siret: any, token: string) =>
   apiPost("/etablissement/:establishment_siret/proposition/unsubscribe", {

@@ -1,11 +1,12 @@
 import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
-import { assertUnreachable, toPublicUser, zRoutes } from "shared"
+import { assertUnreachable, toPublicUser, TrafficType, zRoutes } from "shared"
 import { CFA, ENTREPRISE } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
+import { getSourceFromCookies } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { startSession } from "@/common/utils/session.service"
 import config from "@/config"
@@ -25,6 +26,7 @@ import {
 } from "@/services/etablissement.service"
 import { Organization, upsertEntrepriseData, UserAndOrganization } from "@/services/organization.service"
 import { getMainRoleManagement, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
+import { saveUserTrafficSourceIfAny } from "@/services/trafficSource.service"
 import {
   autoValidateUser,
   createOrganizationUser,
@@ -51,8 +53,8 @@ export default (server: Server) => {
       schema: zRoutes.get["/etablissement/cfas-proches"],
     },
     async (req, res) => {
-      const { latitude, longitude, rome } = req.query
-      const etablissements = await getNearEtablissementsFromRomes({ rome: [rome], origin: { latitude: latitude, longitude: longitude } })
+      const { latitude, longitude, rome, limit } = req.query
+      const etablissements = await getNearEtablissementsFromRomes({ rome: [rome], origin: { latitude: latitude, longitude: longitude }, limit })
       res.send(etablissements)
     }
   )
@@ -195,12 +197,12 @@ export default (server: Server) => {
       switch (type) {
         case ENTREPRISE: {
           const siret = req.body.establishment_siret
-          const result = await entrepriseOnboardingWorkflow.create({ ...req.body, siret })
+          const result = await entrepriseOnboardingWorkflow.create({ ...req.body, siret, source: getSourceFromCookies(req) })
           if ("error" in result) {
             if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw forbidden(result.message, result)
             else throw badRequest(result.message, result)
           }
-          const token = generateDepotSimplifieToken(userWithAccountToUserForToken(result.user), result.formulaire.establishment_id, siret)
+          const token = generateDepotSimplifieToken(userWithAccountToUserForToken(result.user), result.formulaire.establishment_id)
           return res.status(200).send({ formulaire: result.formulaire, user: result.user, token, validated: result.validated })
         }
         case CFA: {
@@ -232,12 +234,13 @@ export default (server: Server) => {
             is_email_checked: false,
             organization: { type: CFA, cfa },
           })
+          await saveUserTrafficSourceIfAny({ user_id: userCfa._id, type: TrafficType.CFA, source: getSourceFromCookies(req) })
 
           const slackNotification = {
             subject: "RECRUTEUR",
             message: `Nouvel OF en attente de validation - ${config.publicUrl}/espace-pro/administration/users/${userCfa._id}`,
           }
-          const token = generateCfaCreationToken(userWithAccountToUserForToken(userCfa), establishment_siret)
+          const token = generateCfaCreationToken(userWithAccountToUserForToken(userCfa))
           const userAndOrganization: UserAndOrganization = { user: userCfa, organization }
           if (!contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur

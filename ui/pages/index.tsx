@@ -1,15 +1,14 @@
-import { Box, Image } from "@chakra-ui/react"
+import { Box, Container, Image } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import React, { useEffect } from "react"
 
 import Footer from "../components/footer"
 import AlgoHome from "../components/HomeComponents/AlgoHome"
-// import AmeliorerLBA from "../components/HomeComponents/AmeliorerLBA"
-import HomeHero from "../components/HomeHero"
 import HowTo from "../components/HowTo"
 import Navigation from "../components/navigation"
 import PromoRessources from "../components/Ressources/promoRessources"
 import ScrollToTop from "../components/ScrollToTop"
+import StartForm from "../components/StartForm/StartForm"
 import { ParameterContext } from "../context/ParameterContextProvider"
 import { initParametersFromQuery } from "../services/config"
 
@@ -56,7 +55,13 @@ const Home = () => {
           <Image src="/images/howtocircle4.svg" {...circleImgCssProperties} top="12px" right="312px" alt="" />
           {/* @ts-expect-error: TODO */}
           <Image src="/images/howtocircle5.svg" {...circleImgCssProperties} bottom="112px" right="-12px" alt="" />
-          <HomeHero />
+          <Box backgroundSize="contain" backgroundRepeat="no-repeat">
+            <Container variant="responsiveContainer" pt={{ base: 3, sm: 12 }} pb={12} position="relative">
+              <Box boxShadow="0 4px 12px 2px rgb(0 0 0 / 21%)" pb={6} pt={[2, 2, 2, 6]} px={4} bg="white" backgroundClip="border-box" borderRadius="10px">
+                <StartForm />
+              </Box>
+            </Container>
+          </Box>
           <HowTo />
         </Box>
         {/* @ts-expect-error: TODO */}

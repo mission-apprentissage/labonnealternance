@@ -2,8 +2,9 @@ import { addJob, initJobProcessor } from "job-processor"
 import { ObjectId } from "mongodb"
 
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
+import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
 
-import { getLoggerWithContext } from "../common/logger"
+import { getLoggerWithContext, logger } from "../common/logger"
 import { getDatabase } from "../common/utils/mongodbUtils"
 import config from "../config"
 
@@ -27,8 +28,11 @@ import { pocRomeo } from "./franceTravail/pocRomeo"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
-import { importHelloWork } from "./offrePartenaire/importHelloWork"
+import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
+import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromComputedToJobsPartners"
+import { importHelloWork, importRawHelloWorkIntoComputedJobPartners } from "./offrePartenaire/importHelloWork"
 import { importKelio } from "./offrePartenaire/importKelio"
+import { importRHAlternance } from "./offrePartenaire/importRHAlternance"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -64,6 +68,7 @@ import { controlApplications } from "./verifications/controlApplications"
 import { controlAppointments } from "./verifications/controlAppointments"
 
 export async function setupJobProcessor() {
+  logger.info("Setup job processor")
   return initJobProcessor({
     db: getDatabase(),
     logger: getLoggerWithContext("script"),
@@ -92,7 +97,7 @@ export async function setupJobProcessor() {
           },
           "Envoi des offres à France Travail": {
             cron_string: "30 5 * * *",
-            handler: exportToFranceTravail,
+            handler: config.env === "production" ? () => exportToFranceTravail() : () => Promise.resolve(0),
           },
           "Mise à jour des recruteurs en erreur": {
             cron_string: "10 0 * * *",
@@ -176,11 +181,11 @@ export async function setupJobProcessor() {
           },
           "Contrôle quotidien des candidatures": {
             cron_string: "0 10-19/1 * * 1-5",
-            handler: config.env === "production" ? () => controlApplications() : () => Promise.resolve(),
+            handler: config.env === "production" ? () => controlApplications() : () => Promise.resolve(0),
           },
           "Contrôle quotidien des prises de rendez-vous": {
             cron_string: "0 11-19/2 * * 1-5",
-            handler: config.env === "production" ? () => controlAppointments() : () => Promise.resolve(),
+            handler: config.env === "production" ? () => controlAppointments() : () => Promise.resolve(0),
           },
           "Anonymisation des user recruteurs de plus de 2 ans": {
             cron_string: "0 1 * * *",
@@ -196,7 +201,7 @@ export async function setupJobProcessor() {
           },
           "export des offres LBA sur S3": {
             cron_string: "30 6 * * 1",
-            handler: config.env === "production" ? () => exportLbaJobsToS3() : () => Promise.resolve(),
+            handler: config.env === "production" ? () => exportLbaJobsToS3() : () => Promise.resolve(0),
           },
           "Creation de la collection rolemanagement360": {
             cron_string: "00 10,13,17 * * *",
@@ -209,6 +214,10 @@ export async function setupJobProcessor() {
           "Génération du token France Travail pour la récupération des offres": {
             cron_string: "*/5 * * * *",
             handler: generateFranceTravailAccess,
+          },
+          "Mise à jour du référentiel commune": {
+            cron_string: "0 15 * * SUN",
+            handler: updateReferentielCommune,
           },
         },
     jobs: {
@@ -409,11 +418,26 @@ export async function setupJobProcessor() {
       "import-hellowork": {
         handler: async () => importHelloWork(),
       },
+      "import-hellowork-to-computed": {
+        handler: async () => importRawHelloWorkIntoComputedJobPartners(),
+      },
+      "import-rhalternance": {
+        handler: async () => importRHAlternance(),
+      },
       "import-kelio": {
         handler: async () => importKelio(),
       },
+      "import-computed-to-jobs-partners": {
+        handler: async () => importFromComputedToJobsPartners(),
+      },
+      "cancel-removed-jobs-partners": {
+        handler: async () => cancelRemovedJobsPartners(),
+      },
       "send-applications": {
         handler: async () => processApplications(),
+      },
+      "referentiel:commune:import": {
+        handler: updateReferentielCommune,
       },
     },
   })

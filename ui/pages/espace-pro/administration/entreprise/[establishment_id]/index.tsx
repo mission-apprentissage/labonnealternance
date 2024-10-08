@@ -7,7 +7,7 @@ import { authProvider, withAuth } from "../../../../../components/espace_pro/wit
 function EntrepriseListOffrePage() {
   return (
     <Layout footer={false}>
-      <ListeOffres />
+      <ListeOffres showStats={true} />
     </Layout>
   )
 }

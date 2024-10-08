@@ -8,10 +8,11 @@ import { DisplayContext } from "@/context/DisplayContextProvider"
 const blueBannerText = (
   <Text>
     <Text as="span" fontWeight={700}>
-      La bonne alternance évolue !
-    </Text>{" "}
-    Vous pouvez désormais être plusieurs utilisateurs au sein de votre organisation à gérer les offres d’emploi de votre entreprise.{" "}
-    <Link textDecoration="underline">En savoir plus</Link>
+      Souhaiteriez-vous accéder à toutes vos candidatures depuis votre espace connecté ?{" "}
+    </Text>
+    <Link textDecoration="underline" href="https://tally.so/r/3Xq19z" isExternal aria-label="Accéder au formulaire - nouvelle fenêtre">
+      Donnez-nous votre avis en 3 clics.
+    </Link>
   </Text>
 )
 
@@ -29,8 +30,8 @@ const redBannerText = (
     <Text as="span" fontWeight={700}>
       Service temporairement indisponible.
     </Text>{" "}
-    Suite à un problème chez l’un de nos fournisseurs de données, la création de compte est momentanément bloquée. Merci de revenir ultérieurement.{" "}
-    <Link textDecoration="underline">En savoir plus</Link>
+    Suite à un problème chez notre prestataire d'envoi d'emails, la connexion à votre compte est momentanément bloquée. Merci de revenir ultérieurement.{" "}
+    {/*<Link textDecoration="underline">En savoir plus</Link>*/}
   </Text>
 )
 

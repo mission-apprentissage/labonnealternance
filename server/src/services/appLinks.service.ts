@@ -14,20 +14,25 @@ import {
 } from "@/security/accessTokenService"
 
 export function createAuthMagicLinkToken(user: UserForAccessToken) {
-  return generateAccessToken(user, [
-    generateScope({
-      schema: zRoutes.post["/login/verification"],
-      options: {
-        params: undefined,
-        querystring: undefined,
-      },
-    }),
-  ])
+  return generateAccessToken(
+    user,
+    [
+      generateScope({
+        schema: zRoutes.post["/login/verification"],
+        options: {
+          params: undefined,
+          querystring: undefined,
+        },
+      }),
+    ],
+    {
+      expiresIn: "15m",
+    }
+  )
 }
 
 export function createAuthMagicLink(user: UserForAccessToken) {
   const token = createAuthMagicLinkToken(user)
-
   return `${config.publicUrl}/espace-pro/authentification/verification?token=${encodeURIComponent(token)}`
 }
 
@@ -328,7 +333,7 @@ export function generateApplicationReplyToken(tokenUser: UserForAccessToken, app
   )
 }
 
-export function generateDepotSimplifieToken(user: IUserWithAccountForAccessToken, establishment_id: string, siret: string) {
+export function generateDepotSimplifieToken(user: IUserWithAccountForAccessToken, establishment_id: string) {
   return generateAccessToken(
     user,
     [
@@ -353,13 +358,6 @@ export function generateDepotSimplifieToken(user: IUserWithAccountForAccessToken
           querystring: undefined,
         },
       }),
-      generateScope({
-        schema: zRoutes.delete["/user/organization/:siret"],
-        options: {
-          params: { siret },
-          querystring: undefined,
-        },
-      }),
     ],
     {
       expiresIn: "2h",
@@ -367,7 +365,7 @@ export function generateDepotSimplifieToken(user: IUserWithAccountForAccessToken
   )
 }
 
-export function generateCfaCreationToken(user: IUserWithAccountForAccessToken, siret: string) {
+export function generateCfaCreationToken(user: IUserWithAccountForAccessToken) {
   return generateAccessToken(
     user,
     [
@@ -375,13 +373,6 @@ export function generateCfaCreationToken(user: IUserWithAccountForAccessToken, s
         schema: zRoutes.get["/user/status/:userId/by-token"],
         options: {
           params: { userId: user._id.toString() },
-          querystring: undefined,
-        },
-      }),
-      generateScope({
-        schema: zRoutes.delete["/user/organization/:siret"],
-        options: {
-          params: { siret },
           querystring: undefined,
         },
       }),

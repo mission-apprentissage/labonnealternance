@@ -1,4 +1,4 @@
-import { notFound, badRequest } from "@hapi/boom"
+import { badRequest, notFound } from "@hapi/boom"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { createApplicationTest, createRecruteurLbaTest } from "@tests/utils/user.test.utils"
 import { ERecruteurLbaUpdateEventType } from "shared/models"
@@ -12,7 +12,12 @@ useMongo()
 
 describe("/lbacompany/:siret/contactInfo", () => {
   beforeEach(async () => {
-    await createApplicationTest({ company_siret: "34843069553553", company_email: "application_company_email@test.com", company_name: "fake_company_name" })
+    await createApplicationTest({
+      company_siret: "34843069553553",
+      company_email: "application_company_email@test.com",
+      company_name: "fake_company_name",
+      applicant_attachment_name: "cv.pdf",
+    })
     await createRecruteurLbaTest({ email: "recruteur_lba@test.com", phone: "0610101010", siret: "58006820882692", enseigne: "fake_company_name" })
 
     return async () => {

@@ -1,7 +1,7 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
 import { ObjectId } from "mongodb"
-import { ILbaCompany } from "shared/models"
+import { generateLbaCompanyFixture } from "shared/fixtures/recruteurLba.fixture"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { s3Write } from "@/common/utils/awsUtils"
@@ -23,8 +23,7 @@ useMongo()
 
 describe("POST /v1/application", () => {
   const httpClient = useServer()
-  const recruteur: ILbaCompany = {
-    _id: new ObjectId(),
+  const recruteur = generateLbaCompanyFixture({
     siret: "11000001500013",
     raison_sociale: "ASSEMBLEE NATIONALE",
     enseigne: "ASSEMBLEE NATIONALE",
@@ -50,7 +49,7 @@ describe("POST /v1/application", () => {
     opco_url: "https://www.opcomobilites.fr/",
     created_at: new Date("2024-07-04T23:24:58.995Z"),
     last_update_at: new Date("2024-07-04T23:24:58.995Z"),
-  }
+  })
 
   beforeEach(async () => {
     await getDbCollection("recruteurslba").insertOne(recruteur)
@@ -101,6 +100,7 @@ describe("POST /v1/application", () => {
         company_feedback: null,
         company_naf: "Administration publique générale",
         company_name: "ASSEMBLEE NATIONALE",
+        company_phone: null,
         company_recruitment_intention: null,
         company_siret: recruteur.siret,
         created_at: expect.any(Date),

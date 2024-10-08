@@ -5,6 +5,7 @@ export interface IModelDescriptor<CollectionName = string, LocalZodType = ZodTyp
   zod: LocalZodType
   indexes: [IndexSpecification, CreateIndexesOptions][]
   collectionName: CollectionName
+  authorizeAdditionalProperties?: boolean
 }
 
 export { zObjectId } from "zod-mongodb-schema"

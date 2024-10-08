@@ -33,7 +33,7 @@ const EmptySpace = () => (
   </Stack>
 )
 
-export default function ListeOffres({ hideModify = false }: { hideModify?: boolean }) {
+export default function ListeOffres({ hideModify = false, showStats = false }: { hideModify?: boolean; showStats?: boolean }) {
   const router = useRouter()
   const { user } = useAuth()
 
@@ -146,7 +146,7 @@ export default function ListeOffres({ hideModify = false }: { hideModify?: boole
       <Text fontWeight="700" py={6}>
         Offres de recrutement en alternance
       </Text>
-      <OffresTabs recruiter={data} />
+      <OffresTabs showStats={showStats} establishmentId={establishment_id} recruiter={data} />
     </Container>
   )
 }

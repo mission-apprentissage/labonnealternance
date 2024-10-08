@@ -2,6 +2,7 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import { saveAdminUserTest, saveCfaUserTest, saveEntrepriseUserTest, saveOpcoUserTest } from "@tests/utils/user.test.utils"
 import { FastifyRequest } from "fastify"
 import { ObjectId } from "mongodb"
+import { OPCOS_LABEL } from "shared/constants"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { AuthStrategy, IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { AccessRessouces } from "shared/security/permissions"
@@ -78,14 +79,16 @@ describe("authorisationService", async () => {
   let cfaUserA: Awaited<ReturnType<typeof saveCfaUserTest>>
   let cfaUserB: Awaited<ReturnType<typeof saveCfaUserTest>>
   let opcoUserA: Awaited<ReturnType<typeof saveOpcoUserTest>>
+  let opcoUserB: Awaited<ReturnType<typeof saveOpcoUserTest>>
 
   useMongo(async () => {
     adminUser = await saveAdminUserTest()
-    entrepriseUserA = await saveEntrepriseUserTest()
-    entrepriseUserB = await saveEntrepriseUserTest()
+    entrepriseUserA = await saveEntrepriseUserTest({}, {}, { opco: OPCOS_LABEL.AKTO })
+    entrepriseUserB = await saveEntrepriseUserTest({}, {}, { opco: OPCOS_LABEL.EP })
     cfaUserA = await saveCfaUserTest()
     cfaUserB = await saveCfaUserTest()
-    opcoUserA = await saveOpcoUserTest()
+    opcoUserA = await saveOpcoUserTest(OPCOS_LABEL.AKTO)
+    opcoUserB = await saveOpcoUserTest(OPCOS_LABEL.EP)
   }, "beforeAll")
 
   const givenACookieUser = (user: IUserWithAccount): AccessUser2 => {
@@ -137,6 +140,16 @@ describe("authorisationService", async () => {
           )
         ).rejects.toThrow("non autorisé")
       })
+      it("an opco user should NOT have access to an user who doesn't relate to it's opco", async () => {
+        const user = opcoUserA.user
+        const accessedUser = opcoUserB.user
+        await expect(
+          authorizationMiddleware(
+            givenARoute({ authStrategy: "cookie-session", resourceType: "user" }),
+            givenARequest({ user: givenACookieUser(user), resourceId: accessedUser._id })
+          )
+        ).rejects.toThrow("non autorisé")
+      })
       it("a cfa user should have access to its user", async () => {
         const user = cfaUserA.user
         await expect(
@@ -147,6 +160,26 @@ describe("authorisationService", async () => {
         const user = opcoUserA.user
         await expect(
           authorizationMiddleware(givenARoute({ authStrategy: "cookie-session", resourceType: "user" }), givenARequest({ user: givenACookieUser(user), resourceId: user._id }))
+        ).resolves.toBe(undefined)
+      })
+      it("an opco user should NOT have access to another opco's user", async () => {
+        const user = opcoUserB.user
+        const targetOpcoUser = entrepriseUserA.user
+        await expect(
+          authorizationMiddleware(
+            givenARoute({ authStrategy: "cookie-session", resourceType: "user" }),
+            givenARequest({ user: givenACookieUser(user), resourceId: targetOpcoUser._id })
+          )
+        ).rejects.toThrow("non autorisé")
+      })
+      it("an opco user should have access to it's users", async () => {
+        const user = opcoUserA.user
+        const targetOpcoUser = entrepriseUserA.user
+        await expect(
+          authorizationMiddleware(
+            givenARoute({ authStrategy: "cookie-session", resourceType: "user" }),
+            givenARequest({ user: givenACookieUser(user), resourceId: targetOpcoUser._id })
+          )
         ).resolves.toBe(undefined)
       })
     })

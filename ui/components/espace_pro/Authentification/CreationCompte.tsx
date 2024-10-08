@@ -267,7 +267,7 @@ export default function CreationCompte({ type, isWidget = false, origin = "lba" 
     <AuthentificationLayout>
       <AnimationContainer>
         {bandeau && <Bandeau {...bandeau} />}
-        <SimpleGrid columns={[1, 1, 1, 2]} spacing={[0, 0, 0, "75px"]} mt={wid.isWidget ? 0 : 12}>
+        <SimpleGrid columns={[1, 1, 1, 2]} spacing={[0, 0, 0, "75px"]} mt={wid.isWidget ? 0 : { base: 4, md: 12 }}>
           <Box>
             {wid.isWidget && (
               <Text textTransform="uppercase" fontSize="20px" color="#666666">
