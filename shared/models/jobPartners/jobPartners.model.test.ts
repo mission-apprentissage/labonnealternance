@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { JOB_STATUS_ENGLISH } from "../job.model"
 import { IJobsPartnersWritableApiInput, ZJobsPartnersWritableApi } from "../jobsPartners.model"
 
 describe("ZJobsPartnersWritableApi", () => {
@@ -71,6 +72,17 @@ describe("ZJobsPartnersWritableApi", () => {
 
       expect(result.success).toBe(true)
       expect(result.data?.contract_start).toEqual(inOneHour)
+    })
+  })
+
+  describe("offer_status", () => {
+    it("should be optional", () => {
+      const result = ZJobsPartnersWritableApi.safeParse({
+        ...data,
+      })
+
+      expect(result.success).toBe(true)
+      expect(result.data?.offer_status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
     })
   })
 

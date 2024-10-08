@@ -116,6 +116,13 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "example": "Au bon pain d'antan",
             "type": "string",
           },
+          "company_phone": {
+            "description": "Numéro de téléphone du recruteur",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
           "company_siret": {
             "description": "Le siret de l'entreprise. Fourni par La bonne alternance. ",
             "example": "00004993900000",

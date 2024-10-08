@@ -1,4 +1,5 @@
 import { Box, Button, Flex, FormControl, FormErrorMessage, Image, Input, Spinner, Text } from "@chakra-ui/react"
+import * as Sentry from "@sentry/nextjs"
 import React, { useState } from "react"
 import { useDropzone } from "react-dropzone"
 
@@ -116,6 +117,15 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
     accept: ".docx,.pdf",
     maxSize: 3145728,
     maxFiles: 1,
+    onDropRejected(fileRejections) {
+      const [fileRejection] = fileRejections
+      const { errors } = fileRejection ?? {}
+      const [error] = errors
+      const { message } = error ?? {}
+      Sentry.setTag("errorType", "envoi_PJ_candidature")
+      Sentry.captureException(new Error(message))
+      Sentry.setTag("errorType", "")
+    },
   })
 
   return (

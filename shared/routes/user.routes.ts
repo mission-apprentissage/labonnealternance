@@ -284,23 +284,6 @@ export const zUserRecruteurRoutes = {
         },
       },
     },
-    "/user/organization/:siret": {
-      method: "delete",
-      path: "/user/organization/:siret",
-      params: z
-        .object({
-          siret: z.string(),
-        })
-        .strict(),
-      response: {
-        "200": z.object({}).strict(),
-      },
-      securityScheme: {
-        auth: "access-token",
-        access: null,
-        resources: {},
-      },
-    },
     "/admin/users/:userId": {
       method: "delete",
       path: "/admin/users/:userId",

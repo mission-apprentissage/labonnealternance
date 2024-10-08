@@ -67,6 +67,7 @@ export const ZApplication = z
         "L'adresse email de la société pour postuler. Vous devez impérativement utiliser les valeurs émises par l'API LBA avec le vecteur d'initialisation correspondant à l'adresse.",
       example: "...f936e4352b5ae5...",
     }),
+    company_phone: z.string().nullish().describe("Numéro de téléphone du recruteur"),
     company_name: z.string().openapi({
       description: "Le nom de la société. Fourni par La bonne alternance. ",
       example: "Au bon pain d'antan",
