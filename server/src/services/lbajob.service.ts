@@ -4,7 +4,7 @@ import { Document, Filter, ObjectId } from "mongodb"
 import { IJob, IRecruiter, IReferentielRomeForJob, JOB_STATUS } from "shared"
 import { NIVEAUX_POUR_LBA } from "shared/constants"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
-import { INiveauPourLbaLabel, OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/recruteur"
+import { INiveauPourLbaLabel, RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -436,9 +436,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
         creationDate: offre.job_creation_date ? new Date(offre.job_creation_date) : null,
         contractType: offre.job_type ? offre.job_type.join(", ") : null,
         jobStartDate: offre.job_start_date ? new Date(offre.job_start_date) : null,
-        // KBA 20231123 - remove ROME for all PASS jobs until they use it.
-        romeDetails:
-          recruiter.opco === OPCOS_LABEL.PASS ? null : offre.rome_detail ? { ...offre.rome_detail, competences: offre?.competences_rome ?? offre.rome_detail?.competences } : null,
+        romeDetails: offre.rome_detail ? { ...offre.rome_detail, competences: offre?.competences_rome ?? offre.rome_detail?.competences } : null,
         rythmeAlternance: offre.job_rythm || null,
         dureeContrat: "" + offre.job_duration,
         quantiteContrat: offre.job_count,
