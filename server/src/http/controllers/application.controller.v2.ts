@@ -1,5 +1,7 @@
 import { zRoutes } from "shared/index"
 
+import { getSourceFromCookies } from "@/common/utils/httpUtils"
+
 import { getUserFromRequest } from "../../security/authenticationService"
 import { sendApplicationV2 } from "../../services/application.service"
 import { Server } from "../server"
@@ -38,7 +40,11 @@ export default function (server: Server) {
       bodyLimit: 5 * 1024 ** 2, // 5MB
     },
     async (req, res) => {
-      await sendApplicationV2({ newApplication: req.body, caller: req.body.caller || undefined })
+      await sendApplicationV2({
+        newApplication: req.body,
+        caller: req.body.caller || undefined,
+        source: getSourceFromCookies(req),
+      })
       return res.status(200).send({})
     }
   )

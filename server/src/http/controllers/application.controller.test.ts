@@ -100,6 +100,7 @@ describe("POST /v1/application", () => {
         company_feedback: null,
         company_naf: "Administration publique générale",
         company_name: "ASSEMBLEE NATIONALE",
+        company_phone: null,
         company_recruitment_intention: null,
         company_siret: recruteur.siret,
         created_at: expect.any(Date),

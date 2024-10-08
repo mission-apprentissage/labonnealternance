@@ -2,7 +2,9 @@ import http from "http"
 import https from "https"
 
 import axios, { AxiosRequestConfig, CreateAxiosDefaults } from "axios"
+import { FastifyRequest } from "fastify"
 import { compose, transformData } from "oleoduc"
+import { ITrackingCookies } from "shared/models"
 
 import { logger } from "../logger"
 
@@ -79,4 +81,12 @@ const getHttpClient = (options: CreateAxiosDefaults<any> = {}) =>
     ...options,
   })
 
-export { addCsvHeaders, fetchJson, fetchStream, getHttpClient }
+const getSourceFromCookies = (req: FastifyRequest) =>
+  <ITrackingCookies>{
+    utm_campaign: req?.cookies?.utm_campaign || null,
+    referer: req?.cookies?.referer || null,
+    utm_medium: req?.cookies?.utm_medium || null,
+    utm_source: req?.cookies?.utm_source || null,
+  }
+
+export { addCsvHeaders, fetchJson, fetchStream, getHttpClient, getSourceFromCookies }

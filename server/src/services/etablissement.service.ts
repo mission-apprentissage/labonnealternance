@@ -3,7 +3,20 @@ import { setTimeout } from "timers/promises"
 import { badRequest, internal, isBoom } from "@hapi/boom"
 import { AxiosResponse } from "axios"
 import { Filter as MongoDBFilter, ObjectId } from "mongodb"
-import { IAdresseV3, IBusinessError, ICfaReferentielData, IEtablissement, IGeoPoint, ILbaCompany, ILbaCompanyLegacy, IRecruiter, ZCfaReferentielData, ZPointGeometry } from "shared"
+import {
+  IAdresseV3,
+  IBusinessError,
+  ICfaReferentielData,
+  IEtablissement,
+  IGeoPoint,
+  ILbaCompany,
+  ILbaCompanyLegacy,
+  IRecruiter,
+  ITrackingCookies,
+  TrafficType,
+  ZCfaReferentielData,
+  ZPointGeometry,
+} from "shared"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants"
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
@@ -36,6 +49,7 @@ import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service"
 import { UserAndOrganization, updateEntrepriseOpco, upsertEntrepriseData } from "./organization.service"
 import { modifyPermissionToUser } from "./roleManagement.service"
+import { saveUserTrafficSourceIfAny } from "./trafficSource.service"
 import { autoValidateUser as authorizeUserOnEntreprise, createOrganizationUser, setUserHasToBeManuallyValidated } from "./userRecruteur.service"
 
 /**
@@ -580,6 +594,7 @@ export const entrepriseOnboardingWorkflow = {
       origin,
       opco,
       idcc,
+      source,
     }: {
       siret: string
       last_name: string
@@ -589,6 +604,7 @@ export const entrepriseOnboardingWorkflow = {
       origin?: string | null
       opco: OPCOS_LABEL
       idcc?: string
+      source: ITrackingCookies
     },
     {
       isUserValidated = false,
@@ -640,6 +656,8 @@ export const entrepriseOnboardingWorkflow = {
       is_email_checked: false,
       organization: { type: ENTREPRISE, entreprise },
     })
+    await saveUserTrafficSourceIfAny({ user_id: managingUser._id, type: TrafficType.ENTREPRISE, source })
+
     if (isUserValidated) {
       await modifyPermissionToUser(
         {
