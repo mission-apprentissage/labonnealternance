@@ -107,6 +107,10 @@ fileignoreconfig:
   checksum: 5fbdf21310d8dfaf259eb39a5ca1e72a53b15493cf3a59ed42c4cb5c8f3a62ab
 - filename: server/static/templates/mail-bienvenue.mjml.ejs
   checksum: 34eb30b463153df565aa89f8e42f08eb77633b6bfa4673f4d6ef5f40633c6101
+- filename: server/static/templates/mail-candidat-offre-emploi-lba.mjml.ejs
+  checksum: 3188f43c847d071acfb7a366748647ab88d821abb3e022830b82fd092db90f83
+- filename: server/static/templates/mail-candidat-recruteur-lba.mjml.ejs
+  checksum: 0b806bca197dba97415902339e84f924cb45dae766cf8d3cfc47d80d2bdd203c
 - filename: server/static/templates/mail-echec-envoi-candidature.mjml.ejs
   checksum: 9055c5495ced85a674770e7fb8a81b3bd84949f9ff8f6e6450989aa3b7cda326
 - filename: server/tests/fixture/connectedUser.fixture.ts

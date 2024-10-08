@@ -449,6 +449,7 @@ const newApplicationToApplicationDocumentV2 = async (
     applicant_email: newApplication.applicant_email.toLowerCase(),
     applicant_message_to_company: prepareMessageForMail(newApplication.message),
     applicant_phone: newApplication.applicant_phone,
+    job_searched_by_user: newApplication.job_searched_by_user,
     company_email: recruteurEmail.toLowerCase(),
     company_recruitment_intention: null,
     company_feedback: null,
@@ -819,6 +820,7 @@ const sanitizeApplicationForEmail = (application: IApplication) => {
     caller,
     created_at,
     last_update_at,
+    job_searched_by_user,
   } = application
   return {
     applicant_email: sanitizeForEmail(applicant_email),
@@ -826,6 +828,7 @@ const sanitizeApplicationForEmail = (application: IApplication) => {
     applicant_last_name: sanitizeForEmail(applicant_last_name),
     applicant_phone: sanitizeForEmail(applicant_phone),
     applicant_attachment_name: sanitizeForEmail(applicant_attachment_name),
+    job_searched_by_user: sanitizeForEmail(job_searched_by_user),
     applicant_message_to_company: sanitizeForEmail(applicant_message_to_company, "keepBr"),
     company_recruitment_intention: sanitizeForEmail(company_recruitment_intention),
     company_feedback: sanitizeForEmail(company_feedback),

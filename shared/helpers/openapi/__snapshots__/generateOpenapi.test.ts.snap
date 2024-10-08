@@ -161,6 +161,13 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
+          "job_searched_by_user": {
+            "description": "Métier recherché par le candidat",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
           "job_title": {
             "description": "Le titre de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est offres_emploi_lba . La valeur est fournie par La bonne alternance. ",
             "example": "Téléconseil, vente à distance",
@@ -3129,6 +3136,13 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "pattern": "^[0-9]{14}$",
             "type": "string",
           },
+          "job_searched_by_user": {
+            "description": "Métier recherché par le candidat",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
           "message": {
             "description": "Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat.",
             "example": "Madame, monsieur...",
@@ -3143,9 +3157,9 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "applicant_last_name",
           "applicant_email",
           "applicant_phone",
-          "company_siret",
           "applicant_file_name",
           "applicant_file_content",
+          "company_siret",
         ],
         "type": "object",
       },
@@ -3249,6 +3263,13 @@ Limite : 5 appel(s) / 5 seconde(s)
                             "description": "Identifiant unique de l'offre LBA",
                             "example": "id_mongoDB",
                             "type": "string",
+                          },
+                          "job_searched_by_user": {
+                            "description": "Métier recherché par le candidat",
+                            "type": [
+                              "string",
+                              "null",
+                            ],
                           },
                           "message": {
                             "description": "Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat.",
