@@ -42,7 +42,7 @@ export const ZEntreprise = z
     address: z.string().nullish().describe("Adresse de l'établissement"),
     address_detail: ZGlobalAddress.nullish().describe("Detail de l'adresse de l'établissement"),
     geo_coordinates: z.string().nullish().describe("Latitude/Longitude de l'adresse de l'entreprise"),
-    opco: extensions.buildEnum(OPCOS_LABEL).nullish().describe("Opco de l'entreprise"),
+    opco: extensions.buildEnum(OPCOS_LABEL).nullable().describe("Opco de l'entreprise"),
     status: z.array(ZEntrepriseStatusEvent).describe("historique de la mise à jour des données entreprise"),
   })
   .strict()
