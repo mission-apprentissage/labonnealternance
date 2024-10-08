@@ -1,5 +1,5 @@
 import { Select } from "@chakra-ui/react"
-import { OPCOS_LABEL, UNKNOWN_OPCO } from "shared/constants"
+import { OPCOS_LABEL } from "shared/constants"
 
 export const OpcoSelect = ({ name, onChange, value }) => {
   return (
@@ -16,7 +16,7 @@ export const OpcoSelect = ({ name, onChange, value }) => {
       <option value={OPCOS_LABEL.MOBILITE}>Opco Mobilités</option>
       <option value={OPCOS_LABEL.SANTE}>Opco Santé</option>
       <option value={OPCOS_LABEL.UNIFORMATION}>Uniformation</option>
-      <option value={UNKNOWN_OPCO}>Je ne sais pas</option>
+      <option value={OPCOS_LABEL.UNKNOWN_OPCO}>Je ne sais pas</option>
     </Select>
   )
 }
