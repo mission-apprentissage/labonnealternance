@@ -88,6 +88,10 @@ export const updateEntrepriseAdmin = async (userId: string, user: any, siret = "
   await apiPut("/admin/users/:userId/organization/:siret", { params: { userId, siret }, body: user })
 }
 
+export const updateUser = async (userId: string, user: any) => {
+  await apiPut("/admin/users/:userId", { params: { userId }, body: user })
+}
+
 /**
  * Auth API
  */

@@ -111,6 +111,25 @@ export default (server: Server) => {
   )
 
   server.put(
+    "/admin/users/:userId",
+    {
+      schema: zRoutes.put["/admin/users/:userId"],
+      onRequest: [server.auth(zRoutes.put["/admin/users/:userId"])],
+    },
+    async (req, res) => {
+      const { userId } = req.params
+      const { ...userFields } = req.body
+
+      const result = await updateUserWithAccountFields(userId, userFields)
+      if ("error" in result) {
+        throw badRequest("L'email est déjà utilisé", { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS })
+      }
+
+      return res.status(200).send({ ok: true })
+    }
+  )
+
+  server.put(
     "/admin/users/:userId/organization/:siret",
     {
       schema: zRoutes.put["/admin/users/:userId/organization/:siret"],
@@ -121,8 +140,11 @@ export default (server: Server) => {
       const { opco, ...userFields } = req.body
 
       if (!isEnum(OPCOS_LABEL, opco)) {
-        throw badRequest("Uknown OPCO value", { error: BusinessErrorCodes.UNSUPPORTED })
+        throw badRequest("Unknown OPCO value", { error: BusinessErrorCodes.UNSUPPORTED })
       }
+
+      await getDbCollection("rolemanagements").findOne({ user_id: userId, authorized_type: AccessEntityType.ENTREPRISE })
+      await getDbCollection("entreprises").findOne({ siret })
       const result = await updateUserWithAccountFields(userId, userFields)
       if ("error" in result) {
         throw badRequest("L'email est déjà utilisé", { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS })
