@@ -190,7 +190,7 @@ export const zUserRecruteurRoutes = {
       },
     },
     "/user/:userId/organization/:organizationId/activate": {
-      method: "put",
+      method: "post",
       path: "/user/:userId/organization/:organizationId/activate",
       params: z.object({ userId: zObjectId, organizationId: zObjectId }).strict(),
       response: {
@@ -205,7 +205,7 @@ export const zUserRecruteurRoutes = {
       },
     },
     "/user/:userId/organization/:organizationId/deactivate": {
-      method: "put",
+      method: "post",
       path: "/user/:userId/organization/:organizationId/deactivate",
       params: z.object({ userId: zObjectId, organizationId: zObjectId }).strict(),
       body: ZRoleManagementEvent.pick({
@@ -223,7 +223,7 @@ export const zUserRecruteurRoutes = {
       },
     },
     "/user/:userId/organization/:organizationId/not-my-opco": {
-      method: "put",
+      method: "post",
       path: "/user/:userId/organization/:organizationId/not-my-opco",
       params: z.object({ userId: zObjectId, organizationId: zObjectId }).strict(),
       body: ZRoleManagementEvent.pick({
