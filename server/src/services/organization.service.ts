@@ -5,7 +5,7 @@ import { ICFA } from "shared/models/cfa.model"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
-import { getLastStatusEvent } from "shared/utils"
+import { getLastStatusEvent, isEnum } from "shared/utils"
 
 import { asyncForEach } from "../common/utils/asyncUtils"
 import { getDbCollection } from "../common/utils/mongodbUtils"
@@ -22,7 +22,7 @@ export const updateEntrepriseOpco = async (siret: string, { opco, idcc }: { opco
   if (!entreprise) {
     throw new Error("inattendu: aucune entreprise trouvée. Merci d'appeler cette méthode une fois l'entreprise créée")
   }
-  if (!entreprise.opco) {
+  if (!isKnownOpco(entreprise.opco)) {
     await getDbCollection("entreprises").findOneAndUpdate({ siret }, { $set: { opco, idcc } })
     return { opco, idcc }
   }
@@ -129,3 +129,5 @@ export const upsertEntrepriseData = async (
   }
   return savedEntreprise
 }
+
+export const isKnownOpco = (opco: OPCOS_LABEL | null) => isEnum(OPCOS_LABEL, opco) && opco !== OPCOS_LABEL.UNKNOWN_OPCO && opco !== OPCOS_LABEL.MULTIPLE_OPCO

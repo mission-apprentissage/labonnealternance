@@ -219,10 +219,12 @@ export default (server: Server) => {
           if (!isValid) {
             throw forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: BusinessErrorCodes.ALREADY_EXISTS })
           }
+
           const {
             referentiel: { contacts },
             cfa,
           } = await validateEligibiliteCfa(establishment_siret, origin)
+
           const organization: Organization = { type: CFA, cfa }
           const userCfa = await createOrganizationUser({
             userFields: {

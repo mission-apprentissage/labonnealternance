@@ -54,7 +54,7 @@ fileignoreconfig:
 - filename: server/src/db/migrations/202405230000000-migrate-fix-missing-date-blacklist.ts
   checksum: 0c1b814245a58b8ca788fbfab9899206edbddaae795d56963f86c5aa83ea555f
 - filename: server/src/http/controllers/__snapshots__/etablissementRecruteur.controller.test.ts.snap
-  checksum: 1844a9ad314c3074adc11bd09ec0aac528802aed67d05e9e3da788545be88c92
+  checksum: 528cda4714a442fb1eb02c542ca9ad22fa49fa312c6887b766f989992814c92c
 - filename: server/src/http/controllers/application.controller.test.ts
   checksum: 1f3c9b8cd7c578252a0c41ca9028672712a5bca2ce1686cba83ff60305708305
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
