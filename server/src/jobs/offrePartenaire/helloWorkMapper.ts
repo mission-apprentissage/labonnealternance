@@ -49,12 +49,14 @@ function getDiplomaLevel(job: IHelloWorkJob): IComputedJobsPartners["offer_targe
     case "RJ/Qualif/Employe_Operateur":
       return { european: "3", label: NIVEAUX_POUR_LBA["3 (CAP...)"] }
     case "RJ/Qualif/Technicien_B2":
+    case "RJ/Qualif/Technicien":
       return { european: "5", label: NIVEAUX_POUR_LBA["5 (BTS, DEUST...)"] }
     case "RJ/Qualif/Agent_maitrise_B3":
+    case "RJ/Qualif/Agent_maitrise":
       return { european: "6", label: NIVEAUX_POUR_LBA["6 (Licence, BUT...)"] }
     case "RJ/Qualif/Cadre_dirigeant":
-      return { european: "7", label: NIVEAUX_POUR_LBA["7 (Master, titre ingénieur...)"] }
     case "RJ/Qualif/Ingenieur_B5":
+    case "RJ/Qualif/Ingenieur":
       return { european: "7", label: NIVEAUX_POUR_LBA["7 (Master, titre ingénieur...)"] }
     default:
       return null
@@ -77,7 +79,6 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     company_description,
     address,
     city,
-    postal_code,
     geoloc,
     url,
   } = job
@@ -86,6 +87,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
   const siretParsing = extensions.siret.safeParse(siret)
   const codeRomeParsing = extensions.romeCode().safeParse(code_rome)
   const urlParsing = extensions.url().safeParse(url)
+  const creationDate = parseDate(publication_date)
 
   const partnerJob: IComputedJobsPartners = {
     _id: new ObjectId(),
@@ -103,8 +105,8 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     offer_access_conditions: [],
     offer_to_be_acquired_skills: [],
     offer_rome_codes: codeRomeParsing.success ? [codeRomeParsing.data] : undefined,
-    offer_creation: parseDate(publication_date),
-    offer_expiration: null,
+    offer_creation: creationDate,
+    offer_expiration: creationDate ? dayjs(creationDate).add(2, "months").toDate() : null,
     offer_origin: null,
     offer_opening_count: 1,
     offer_multicast: false,
@@ -113,9 +115,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     workplace_description: company_description && company_description.length >= 30 ? company_description : null,
     workplace_size: null,
     workplace_website: null,
-    workplace_address: {
-      label: [address, postal_code, city].filter((x) => x).join(" "),
-    },
+    workplace_address_label: [address, city].filter((x) => x).join(" "),
     workplace_geopoint:
       latitude && longitude
         ? {
@@ -159,7 +159,9 @@ const parseContractDuration = ({ contract_period_unit, contract_period_value }: 
     case "month":
       return contract_period_value
     case "week":
-      return Math.ceil((contract_period_value * 7) / (365 / 12))
+      return Math.round((contract_period_value * 7) / (365 / 12))
+    case "day":
+      return Math.round(contract_period_value / 30)
   }
   return null
 }

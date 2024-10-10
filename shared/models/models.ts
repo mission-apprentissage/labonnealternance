@@ -3,6 +3,7 @@ import { z } from "zod"
 import apicallsModel from "./apicalls.model"
 import applicationsModel from "./applications.model"
 import appointmentsModel from "./appointments.model"
+import cacheInfosSiretModel from "./cacheInfosSiret.model"
 import cacheRomeoModel from "./cacheRomeo.model"
 import cfaModel from "./cfa.model"
 import { IModelDescriptor } from "./common"
@@ -83,6 +84,7 @@ const modelDescriptorMap = {
   [userModel.collectionName]: userModel,
   [userWithAccountModel.collectionName]: userWithAccountModel,
   [reportedCompanyModel.collectionName]: reportedCompanyModel,
+  [cacheInfosSiretModel.collectionName]: cacheInfosSiretModel,
   [referentielCommuneModel.collectionName]: referentielCommuneModel,
   [rawKelioModel.collectionName]: rawKelioModel,
   [rawRHAlternanceModel.collectionName]: rawRHAlternanceModel,

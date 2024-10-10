@@ -1849,7 +1849,7 @@ describe("createJobOffer", () => {
     expect(job?.offer_expiration).toEqual(in2Month)
     expect(job?.offer_target_diploma).toEqual(null)
     expect(job?.workplace_geopoint).toEqual(parisFixture.centre)
-    expect(job?.workplace_address?.label).toEqual("20 AVENUE DE SEGUR 75007 PARIS")
+    expect(job?.workplace_address_label).toEqual("20 AVENUE DE SEGUR 75007 PARIS")
 
     expect(job).toMatchSnapshot({
       _id: expect.any(ObjectId),
@@ -1881,7 +1881,7 @@ describe("createJobOffer", () => {
     expect(result).toBeInstanceOf(ObjectId)
 
     const job = await getDbCollection("jobs_partners").findOne({ _id: result })
-    expect(job?.workplace_address).toEqual({ label: "1T impasse Passoir Clichy" })
+    expect(job?.workplace_address_label).toEqual("1T impasse Passoir Clichy")
     expect(job?.workplace_geopoint).toEqual(clichyFixture.centre)
     expect(nock.isDone()).toBeTruthy()
   })
@@ -1985,7 +1985,7 @@ describe("updateJobOffer", () => {
     expect(job?.offer_expiration).toEqual(originalCreatedAtPlus2Months)
     expect(job?.offer_target_diploma).toEqual(null)
     expect(job?.workplace_geopoint).toEqual(parisFixture.centre)
-    expect(job?.workplace_address?.label).toEqual("20 AVENUE DE SEGUR 75007 PARIS")
+    expect(job?.workplace_address_label).toEqual("20 AVENUE DE SEGUR 75007 PARIS")
 
     expect(job).toMatchSnapshot({
       _id: expect.any(ObjectId),
@@ -2015,7 +2015,7 @@ describe("updateJobOffer", () => {
     await updateJobOffer(_id, identity, { ...minimalData, partner_job_id: "job-id-11", workplace_address_label: "1T impasse Passoir Clichy" })
 
     const job = await getDbCollection("jobs_partners").findOne({ _id })
-    expect(job?.workplace_address).toEqual({ label: "1T impasse Passoir Clichy" })
+    expect(job?.workplace_address_label).toEqual("1T impasse Passoir Clichy")
     expect(job?.workplace_geopoint).toEqual(clichyFixture.centre)
     expect(nock.isDone()).toBeTruthy()
   })
