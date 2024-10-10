@@ -1,6 +1,6 @@
 import { Jsonify } from "type-fest"
 
-import { AUTHTYPE, CFA, ETAT_UTILISATEUR } from "../constants/recruteur"
+import { AUTHTYPE, CFA, ETAT_UTILISATEUR, OPCOS_LABEL } from "../constants/recruteur"
 import { removeUrlsFromText } from "../helpers/common"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
@@ -34,7 +34,7 @@ export const ZUserRecruteurWritable = z
       .string()
       .transform((value) => removeUrlsFromText(value))
       .describe("Prénom de l'utilisateur"),
-    opco: z.string().nullish().describe("Information sur l'opco de l'entreprise"),
+    opco: extensions.buildEnum(OPCOS_LABEL).nullable().describe("Information sur l'opco de l'entreprise"),
     idcc: z.string().nullish().describe("Identifiant convention collective de l'entreprise"),
     establishment_raison_sociale: z.string().nullish().describe("Raison social de l'établissement"),
     establishment_enseigne: z.string().nullish().describe("Enseigne de l'établissement"),

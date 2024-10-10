@@ -2,7 +2,7 @@ import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
 import { assertUnreachable, toPublicUser, TrafficType, zRoutes } from "shared"
 import { CFA, ENTREPRISE } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { RECRUITER_STATUS } from "shared/constants/recruteur"
+import { OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
@@ -197,7 +197,8 @@ export default (server: Server) => {
       switch (type) {
         case ENTREPRISE: {
           const siret = req.body.establishment_siret
-          const result = await entrepriseOnboardingWorkflow.create({ ...req.body, siret, source: getSourceFromCookies(req) })
+          const opco = (req.body.opco as OPCOS_LABEL) || OPCOS_LABEL.UNKNOWN_OPCO
+          const result = await entrepriseOnboardingWorkflow.create({ ...req.body, opco, siret, source: getSourceFromCookies(req) })
           if ("error" in result) {
             if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw forbidden(result.message, result)
             else throw badRequest(result.message, result)
@@ -218,10 +219,12 @@ export default (server: Server) => {
           if (!isValid) {
             throw forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: BusinessErrorCodes.ALREADY_EXISTS })
           }
+
           const {
             referentiel: { contacts },
             cfa,
           } = await validateEligibiliteCfa(establishment_siret, origin)
+
           const organization: Organization = { type: CFA, cfa }
           const userCfa = await createOrganizationUser({
             userFields: {

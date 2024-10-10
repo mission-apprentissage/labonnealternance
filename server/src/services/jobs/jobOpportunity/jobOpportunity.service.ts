@@ -249,7 +249,6 @@ function convertOpco(recruteurLba: Pick<ILbaCompany | IRecruiter, "opco">): IJob
     return r.data
   }
 
-  // Currently in database we have things such as "Sélectionnez un OPCO" or "Opco multiple"
   return null
 }
 

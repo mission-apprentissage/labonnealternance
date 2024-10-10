@@ -84,9 +84,13 @@ export const userAndRoleAndOrganizationToUserRecruteur = (
   const type = roleType ?? organismeType ?? null
   if (!type) throw internal("unexpected: no type found")
   const { siret, address, address_detail, geo_coordinates, origin, raison_sociale, enseigne } = organisme ?? {}
-  let entrepriseFields = {}
+  let entrepriseFields: {
+    idcc?: string | null
+    opco?: OPCOS_LABEL | null
+    establishment_id?: string
+  } = {}
   if (organisme && "opco" in organisme) {
-    const { idcc, opco } = organisme
+    const { idcc, opco }: { idcc?: string | null; opco: OPCOS_LABEL | null } = organisme
     entrepriseFields = { idcc, opco }
   }
   if (formulaire) {
@@ -112,6 +116,7 @@ export const userAndRoleAndOrganizationToUserRecruteur = (
     first_name,
     last_name,
     phone,
+    opco: entrepriseFields.opco || OPCOS_LABEL.UNKNOWN_OPCO,
     last_connection: last_action_date,
     status: oldStatus,
   }

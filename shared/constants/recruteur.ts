@@ -57,7 +57,8 @@ export enum OPCOS_LABEL {
   MOBILITE = "Opco Mobilités",
   SANTE = "Opco Santé",
   UNIFORMATION = "Uniformation, l'Opco de la Cohésion sociale",
-  PASS = "pass",
+  UNKNOWN_OPCO = "inconnu",
+  MULTIPLE_OPCO = "OPCO multiple",
 }
 
 export const NIVEAUX_POUR_LBA = {
