@@ -125,7 +125,7 @@ const obfuscateFormations = async () => {
   )
 }
 
-const getFakeEmail = () => `${randomUUID()}@faux-domaine.fr`
+export const getFakeEmail = () => `${randomUUID()}@faux-domaine.fr`
 
 const keepSpecificUser = async (email: string, type: AccessEntityType) => {
   const role = await getDbCollection("rolemanagements").findOne({ authorized_type: type })

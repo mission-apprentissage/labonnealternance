@@ -14,6 +14,7 @@ import { ZodArray, ZodObject, ZodString, ZodTypeAny, z } from "zod"
 import { Fixture, Generator } from "zod-fixture"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getFakeEmail } from "@/jobs/database/obfuscateCollections"
 
 function generateRandomRomeCode() {
   // Générer une lettre aléatoire
@@ -279,7 +280,7 @@ export const saveCfaUserTest = async (userProps: Partial<IUserWithAccount> = {})
   return { user, role, cfa, recruiter }
 }
 
-export const saveOpcoUserTest = async (opco = OPCOS_LABEL.AKTO) => {
+export const saveOpcoUserTest = async (opco = OPCOS_LABEL.AKTO, email?: string) => {
   const user = await saveUserWithAccount({
     status: [
       {
@@ -295,6 +296,7 @@ export const saveOpcoUserTest = async (opco = OPCOS_LABEL.AKTO) => {
         validation_type: VALIDATION_UTILISATEUR.AUTO,
       },
     ],
+    email: email || getFakeEmail(),
   })
   const role = await saveRoleManagement({
     user_id: user._id,

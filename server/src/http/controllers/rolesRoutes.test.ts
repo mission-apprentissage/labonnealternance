@@ -26,7 +26,7 @@ describe("rolesRoutes", () => {
     expect(response.statusCode).toBe(200)
   })
 
-  it.skip("Vérifie qu'on ne peut pas se connecter à une route d'admin en tant que cfa", async () => {
+  it("Vérifie qu'on ne peut pas se connecter à une route d'admin en tant que cfa", async () => {
     const bearerToken = await createAndLogUser(httpClient, "userCfa", { type: "CFA" })
     const response = await httpClient().inject({ method: "GET", path: "/api/admin/appointments/details", headers: bearerToken })
     assert.notStrictEqual(response.statusCode, 200)

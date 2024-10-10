@@ -63,6 +63,8 @@ fileignoreconfig:
   checksum: 6e187972b61616791476704a51dcbd97404489e66db72c00912e7aa1436966e5
 - filename: server/src/http/controllers/updateRecruteurLba.controller.test.ts
   checksum: 71dd55af4f1f44fd2b69dee91f0fc8006f3b9e0bd80d40271c73697d4eea9ea2
+- filename: server/src/http/controllers/user.controller.test.ts
+  checksum: 2c8a4a9e141d7829c7f717dc5a179435313f157a052df3dfe55fd64104754a35
 - filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts
   checksum: 06366000e6615ce90b5dedbd4792eac0a93ce5a0cf1459273e3cc9bbdf867e4f
 - filename: server/src/http/routes/appointmentRequest.controller.ts

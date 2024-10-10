@@ -1,43 +1,108 @@
-/*import assert from "assert"
-
+import { createAndLogUser, logUser } from "@tests/utils/login.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
-
-import { beforeEach, describe, expect, it } from "vitest"
-import { createAndLogUser } from "@tests/utils/login.test.utils"
 import { OPCOS_LABEL } from "shared/constants"
 import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
+import { beforeEach, describe, expect, it } from "vitest"
+
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 describe("/admin/users/:userId/organization/:siret", () => {
-
-
   beforeEach(async () => {
-    const entreprise = generateEntrepriseFixture({opco: OPCOS_LABEL.AKTO, siret: "89557430766546"})
+    const entreprise = generateEntrepriseFixture({ opco: OPCOS_LABEL.AKTO, siret: "89557430766546" })
     await getDbCollection("entreprises").insertOne(entreprise)
-    
+
     return async () => {
       await getDbCollection("entreprises").deleteMany({})
+      //await getDbCollection("entreprises").deleteMany({})
     }
   })
 
   useMongo()
   const httpClient = useServer()
-  it("Vérifie qu'une modification légitime d'OPCO fonctionne correctement", async () => {
 
-
+  it("Vérifie qu'une création d'ADMIN ou d'utilisateur OPCO légitime fonctionne correctement", async () => {
     const bearerToken = await createAndLogUser(httpClient, "userAdmin", { type: "ADMIN" })
 
+    const response1 = await httpClient().inject({
+      method: "POST",
+      path: "/api/admin/users",
+      headers: bearerToken,
+      body: {
+        email: "admin-bis@mail.fr",
+        first_name: "first_name",
+        last_name: "last_name",
+        phone: "",
+        type: "ADMIN",
+      },
+    })
+    expect.soft(response1.statusCode).to.equal(200)
+
+    const response2 = await httpClient().inject({
+      method: "POST",
+      path: "/api/admin/users",
+      headers: bearerToken,
+      body: {
+        email: "opco-bis@mail.fr",
+        first_name: "first_name",
+        last_name: "last_name",
+        phone: "",
+        type: "OPCO",
+        opco: OPCOS_LABEL.ATLAS,
+      },
+    })
+    expect.soft(response2.statusCode).to.equal(200)
+  })
+
+  it("Vérifie qu'une création d'ADMIN ou d'utilisateur OPCO par un utilisateur OPCO est bloquée", async () => {
+    let bearerToken = await createAndLogUser(httpClient, "userOPCO", { type: "OPCO" })
+    const response1 = await httpClient().inject({
+      method: "POST",
+      path: "/api/admin/users",
+      headers: bearerToken,
+      body: {
+        email: "admin-bis@mail.fr",
+        first_name: "first_name",
+        last_name: "last_name",
+        phone: "",
+        type: "ADMIN",
+      },
+    })
+    expect.soft(response1.statusCode).to.equal(403)
+
+    bearerToken = await logUser(httpClient, "userOPCO")
+    const response2 = await httpClient().inject({
+      method: "POST",
+      path: "/api/admin/users",
+      headers: bearerToken,
+      body: {
+        email: "opco-bis@mail.fr",
+        first_name: "first_name",
+        last_name: "last_name",
+        phone: "",
+        type: "OPCO",
+        opco: OPCOS_LABEL.ATLAS,
+      },
+    })
+    expect.soft(response2.statusCode).to.equal(403)
+  })
+
+  /*
+  it("Vérifie qu'une création d'ADMIN ou d'utilisateur OPCO par un utilisateur ENTREPRISE est bloquée", async () => {})
+
+  it("Vérifie qu'une modification des paramètres d'un ADMIN ou d'un utilisateur OPCO légitime fonctionne correctement", async () => {})
+
+  it("Vérifie qu'une modification d'ADMIN ou d'utilisateur OPCO  par un utilisateur OPCO est bloquée", async () => {})
+
+  it("Vérifie qu'une modification d'ADMIN ou d'utilisateur OPCO par un utilisateur ENTREPRISE est bloquée", async () => {})
+
+  it("Vérifie qu'une modification légitime d'OPCO fonctionne correctement", async () => {
     expect(response.statusCode).toBe(200)
   })
 
   it("Vérifie qu'une modification avec un OPCO farfelue est bloquée", async () => {
     const response = await httpClient().inject({ method: "GET", path: "/api/version" })
-
-    assert(isSemver(JSON.parse(response.body).version))
   })
-})
-
 
   server.put(
     "/admin/users/:userId/organization/:siret",
@@ -64,6 +129,5 @@ describe("/admin/users/:userId/organization/:siret", () => {
       }
       return res.status(200).send({ ok: true })
     }
-  )
-/*
-*/
+  )*/
+})
