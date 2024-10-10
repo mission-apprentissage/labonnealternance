@@ -42,7 +42,7 @@ for file in $(find ./.next/static |grep ".js.map") ; do
 done
 echo "ignored files: $ignoredFiles"
 
-../node_modules/.bin/sentry-cli sourcemaps upload -r $PUBLIC_VERSION --url-prefix app:///_next/static \
+../node_modules/.bin/sentry-cli sourcemaps upload -r $PUBLIC_VERSION --url-prefix "~/_next/static" \
   --ignore "*.css" \
   --ignore "*.css.map" \
   --ignore "**/_buildManifest.js" \
