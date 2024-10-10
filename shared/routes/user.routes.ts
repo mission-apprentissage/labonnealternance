@@ -189,6 +189,57 @@ export const zUserRecruteurRoutes = {
         resources: {},
       },
     },
+    "/user/:userId/organization/:organizationId/activate": {
+      method: "post",
+      path: "/user/:userId/organization/:organizationId/activate",
+      params: z.object({ userId: zObjectId, organizationId: zObjectId }).strict(),
+      response: {
+        "200": z.object({}).strict(),
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        access: "user:validate",
+        resources: {
+          user: [{ _id: { type: "params", key: "userId" } }],
+        },
+      },
+    },
+    "/user/:userId/organization/:organizationId/deactivate": {
+      method: "post",
+      path: "/user/:userId/organization/:organizationId/deactivate",
+      params: z.object({ userId: zObjectId, organizationId: zObjectId }).strict(),
+      body: ZRoleManagementEvent.pick({
+        reason: true,
+      }),
+      response: {
+        "200": z.object({}).strict(),
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        access: "user:validate",
+        resources: {
+          user: [{ _id: { type: "params", key: "userId" } }],
+        },
+      },
+    },
+    "/user/:userId/organization/:organizationId/not-my-opco": {
+      method: "post",
+      path: "/user/:userId/organization/:organizationId/not-my-opco",
+      params: z.object({ userId: zObjectId, organizationId: zObjectId }).strict(),
+      body: ZRoleManagementEvent.pick({
+        reason: true,
+      }),
+      response: {
+        "200": z.object({}).strict(),
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        access: "user:validate",
+        resources: {
+          user: [{ _id: { type: "params", key: "userId" } }],
+        },
+      },
+    },
   },
   put: {
     "/user/:userId": {
@@ -229,27 +280,6 @@ export const zUserRecruteurRoutes = {
         resources: {
           user: [{ _id: { type: "params", key: "userId" } }],
           entreprise: [{ siret: { type: "params", key: "siret" } }],
-        },
-      },
-    },
-    "/user/:userId/organization/:organizationId/permission": {
-      method: "put",
-      path: "/user/:userId/organization/:organizationId/permission",
-      params: z.object({ userId: zObjectId, organizationId: zObjectId }).strict(),
-      body: ZRoleManagementEvent.pick({
-        status: true,
-        reason: true,
-      }).extend({
-        organizationType: z.enum([AccessEntityType.ENTREPRISE, AccessEntityType.CFA]),
-      }),
-      response: {
-        "200": z.object({}).strict(),
-      },
-      securityScheme: {
-        auth: "cookie-session",
-        access: "user:validate",
-        resources: {
-          user: [{ _id: { type: "params", key: "userId" } }],
         },
       },
     },

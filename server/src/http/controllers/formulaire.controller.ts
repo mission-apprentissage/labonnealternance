@@ -9,8 +9,7 @@ import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
 
 import { entrepriseOnboardingWorkflow } from "../../services/etablissement.service"
 import {
-  archiveDelegatedFormulaire,
-  archiveFormulaire,
+  archiveFormulaireByEstablishmentId,
   cancelOffre,
   cancelOffreFromAdminInterface,
   checkOffreExists,
@@ -144,19 +143,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.delete["/formulaire/:establishment_id"])],
     },
     async (req, res) => {
-      await archiveFormulaire(req.params.establishment_id)
-      return res.status(200).send({})
-    }
-  )
-
-  server.delete(
-    "/formulaire/delegated/:establishment_siret",
-    {
-      schema: zRoutes.delete["/formulaire/delegated/:establishment_siret"],
-      onRequest: [server.auth(zRoutes.delete["/formulaire/delegated/:establishment_siret"])],
-    },
-    async (req, res) => {
-      await archiveDelegatedFormulaire(req.params.establishment_siret)
+      await archiveFormulaireByEstablishmentId(req.params.establishment_id)
       return res.status(200).send({})
     }
   )
