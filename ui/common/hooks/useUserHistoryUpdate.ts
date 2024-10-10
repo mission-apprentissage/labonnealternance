@@ -13,7 +13,7 @@ export default function useUserHistoryUpdate() {
   return useCallback(
     async (props: Parameters<typeof updateUserValidationHistory>[0]) => {
       await updateUserValidationHistory(props)
-        .then(() => ["user-list-opco", "user-list", "user"].map((x) => client.invalidateQueries(x)))
+        .then(() => ["user-list-opco", "user-list"].map((x) => client.invalidateQueries(x)))
         .then(() => {
           const newStatus = props.status
           toast({
