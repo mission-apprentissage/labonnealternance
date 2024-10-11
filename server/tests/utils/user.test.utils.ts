@@ -280,22 +280,24 @@ export const saveCfaUserTest = async (userProps: Partial<IUserWithAccount> = {})
   return { user, role, cfa, recruiter }
 }
 
+export const validatedUserStatus = [
+  {
+    date: new Date(),
+    reason: "test",
+    status: UserEventType.VALIDATION_EMAIL,
+    validation_type: VALIDATION_UTILISATEUR.AUTO,
+  },
+  {
+    date: new Date(),
+    reason: "test",
+    status: UserEventType.ACTIF,
+    validation_type: VALIDATION_UTILISATEUR.AUTO,
+  },
+]
+
 export const saveOpcoUserTest = async (opco = OPCOS_LABEL.AKTO, email?: string) => {
   const user = await saveUserWithAccount({
-    status: [
-      {
-        date: new Date(),
-        reason: "test",
-        status: UserEventType.VALIDATION_EMAIL,
-        validation_type: VALIDATION_UTILISATEUR.AUTO,
-      },
-      {
-        date: new Date(),
-        reason: "test",
-        status: UserEventType.ACTIF,
-        validation_type: VALIDATION_UTILISATEUR.AUTO,
-      },
-    ],
+    status: validatedUserStatus,
     email: email || getFakeEmail(),
   })
   const role = await saveRoleManagement({

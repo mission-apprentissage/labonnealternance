@@ -1,6 +1,7 @@
 import { createAndLogUser, logUser } from "@tests/utils/login.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
+import { saveOpcoUserTest } from "@tests/utils/user.test.utils"
 import { OPCOS_LABEL } from "shared/constants"
 import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
 import { beforeEach, describe, expect, it } from "vitest"
@@ -14,7 +15,8 @@ describe("/admin/users/:userId/organization/:siret", () => {
 
     return async () => {
       await getDbCollection("entreprises").deleteMany({})
-      //await getDbCollection("entreprises").deleteMany({})
+      await getDbCollection("userswithaccounts").deleteMany({})
+      await getDbCollection("rolemanagements").deleteMany({})
     }
   })
 
@@ -22,7 +24,7 @@ describe("/admin/users/:userId/organization/:siret", () => {
   const httpClient = useServer()
 
   it("Vérifie qu'une création d'ADMIN ou d'utilisateur OPCO légitime fonctionne correctement", async () => {
-    const bearerToken = await createAndLogUser(httpClient, "userAdmin", { type: "ADMIN" })
+    const { bearerToken } = await createAndLogUser(httpClient, "userAdmin", { type: "ADMIN" })
 
     const response1 = await httpClient().inject({
       method: "POST",
@@ -55,11 +57,11 @@ describe("/admin/users/:userId/organization/:siret", () => {
   })
 
   it("Vérifie qu'une création d'ADMIN ou d'utilisateur OPCO par un utilisateur OPCO est bloquée", async () => {
-    let bearerToken = await createAndLogUser(httpClient, "userOPCO", { type: "OPCO" })
+    let loggedUser = await createAndLogUser(httpClient, "userOPCO", { type: "OPCO" })
     const response1 = await httpClient().inject({
       method: "POST",
       path: "/api/admin/users",
-      headers: bearerToken,
+      headers: loggedUser.bearerToken,
       body: {
         email: "admin-bis@mail.fr",
         first_name: "first_name",
@@ -70,11 +72,11 @@ describe("/admin/users/:userId/organization/:siret", () => {
     })
     expect.soft(response1.statusCode).to.equal(403)
 
-    bearerToken = await logUser(httpClient, "userOPCO")
+    loggedUser = await logUser(httpClient, "userOPCO")
     const response2 = await httpClient().inject({
       method: "POST",
       path: "/api/admin/users",
-      headers: bearerToken,
+      headers: loggedUser.bearerToken,
       body: {
         email: "opco-bis@mail.fr",
         first_name: "first_name",
@@ -87,10 +89,40 @@ describe("/admin/users/:userId/organization/:siret", () => {
     expect.soft(response2.statusCode).to.equal(403)
   })
 
-  /*
-  it("Vérifie qu'une création d'ADMIN ou d'utilisateur OPCO par un utilisateur ENTREPRISE est bloquée", async () => {})
+  it("Vérifie qu'une modification des paramètres d'un ADMIN ou d'un utilisateur OPCO légitime fonctionne correctement", async () => {
+    const { bearerToken, user } = await createAndLogUser(httpClient, "userAdmin", { type: "ADMIN" })
 
-  it("Vérifie qu'une modification des paramètres d'un ADMIN ou d'un utilisateur OPCO légitime fonctionne correctement", async () => {})
+    const response1 = await httpClient().inject({
+      method: "PUT",
+      path: `/api/admin/users/${user._id.toString()}`,
+      headers: bearerToken,
+      body: {
+        email: user.email,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        phone: user.phone,
+      },
+    })
+    expect.soft(response1.statusCode).to.equal(200)
+
+    const userOpco = (await saveOpcoUserTest(OPCOS_LABEL.CONSTRUCTYS)).user
+
+    const response2 = await httpClient().inject({
+      method: "PUT",
+      path: `/api/admin/users/${userOpco._id.toString()}`,
+      headers: bearerToken,
+      body: {
+        email: userOpco.email,
+        first_name: "Newfirstname",
+        last_name: "Newlastname",
+        phone: "0606060606",
+      },
+    })
+    expect.soft(response2.statusCode).to.equal(200)
+  })
+
+  /*
+  
 
   it("Vérifie qu'une modification d'ADMIN ou d'utilisateur OPCO  par un utilisateur OPCO est bloquée", async () => {})
 

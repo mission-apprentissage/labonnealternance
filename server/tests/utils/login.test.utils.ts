@@ -6,14 +6,14 @@ import { Server } from "@/http/server"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { createAuthMagicLinkToken } from "@/services/appLinks.service"
 
-import { saveAdminUserTest, saveCfaUserTest, saveOpcoUserTest } from "./user.test.utils"
+import { saveAdminUserTest, saveCfaUserTest, saveOpcoUserTest, validatedUserStatus } from "./user.test.utils"
 
 export const createAndLogUser = async (httpClient: () => Server, username: string, { type }: { type: "CFA" | "ADMIN" | "OPCO" }) => {
   const email = `${username.toLowerCase()}@mail.com`
   let user: IUserWithAccount
   switch (type) {
     case "ADMIN": {
-      const result = await saveAdminUserTest({ email })
+      const result = await saveAdminUserTest({ email, status: validatedUserStatus })
       user = result.user
       break
     }
@@ -37,7 +37,10 @@ export const createAndLogUser = async (httpClient: () => Server, username: strin
     headers: { authorization: `Bearer ${createAuthMagicLinkToken(userWithAccountToUserForToken(user))}` },
   })
   return {
-    Cookie: response.cookies.reduce((acc, cookie) => `${acc} ${cookie.name}=${cookie.value}`, ""),
+    bearerToken: {
+      Cookie: response.cookies.reduce((acc, cookie) => `${acc} ${cookie.name}=${cookie.value}`, ""),
+    },
+    user,
   }
 }
 
@@ -54,6 +57,9 @@ export const logUser = async (httpClient: () => Server, username: string) => {
     headers: { authorization: `Bearer ${createAuthMagicLinkToken(userWithAccountToUserForToken(user))}` },
   })
   return {
-    Cookie: response.cookies.reduce((acc, cookie) => `${acc} ${cookie.name}=${cookie.value}`, ""),
+    bearerToken: {
+      Cookie: response.cookies.reduce((acc, cookie) => `${acc} ${cookie.name}=${cookie.value}`, ""),
+    },
+    user,
   }
 }
