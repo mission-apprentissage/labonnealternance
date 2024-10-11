@@ -22,17 +22,14 @@ const Developpeurs = () => (
         <Grid templateColumns="repeat(12, 1fr)">
           <GridItem px={4} colSpan={[12, 12, 12, 5]}>
             <Text variant="editorialContentH1" as="h1">
-              Développeurs
+              Nos Données
             </Text>
             <Divider variant="pageTitleDivider" my={12} />
           </GridItem>
           <GridItem px={4} colSpan={[12, 12, 12, 7]}>
-            <Text variant="editorialContentH3" as="h3" mt={4}>
-              Données ouvertes
-            </Text>
             <Text as="p" mb={4}>
-              Afin de faciliter l’accès aux informations pour les publics là où ils se trouvent (notamment sur votre site internet !), nous avons développé 4 API et un Widget,
-              disponibles en open source.
+              Afin de faciliter l’accès aux données de l'apprentissage pour les publics là où ils se trouvent (notamment sur votre site internet !), nous avons développé 4 API et
+              un Widget, disponibles en open source.
             </Text>
 
             <Divider mt={4} my={12} w="100%" />
