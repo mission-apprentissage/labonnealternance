@@ -1,7 +1,7 @@
 import { createAndLogUser, logUser } from "@tests/utils/login.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
-import { saveOpcoUserTest } from "@tests/utils/user.test.utils"
+import { saveAdminUserTest, saveOpcoUserTest } from "@tests/utils/user.test.utils"
 import { OPCOS_LABEL } from "shared/constants"
 import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
 import { beforeEach, describe, expect, it } from "vitest"
@@ -119,6 +119,38 @@ describe("/admin/users/:userId/organization/:siret", () => {
       },
     })
     expect.soft(response2.statusCode).to.equal(200)
+  })
+
+  it("Vérifie qu'une modification d'ADMIN ou d'utilisateur OPCO  par un utilisateur OPCO est bloquée", async () => {
+    let loggedUser = await createAndLogUser(httpClient, "userOPCO", { type: "OPCO" })
+    const adminUser = (await saveAdminUserTest()).user
+    const response1 = await httpClient().inject({
+      method: "PUT",
+      path: `/api/admin/users/${adminUser._id.toString()}`,
+      headers: loggedUser.bearerToken,
+      body: {
+        email: adminUser.email,
+        first_name: adminUser.first_name,
+        last_name: adminUser.last_name,
+        phone: adminUser.phone,
+      },
+    })
+    expect.soft(response1.statusCode).to.equal(403)
+
+    loggedUser = await logUser(httpClient, "userOPCO")
+    const opcoUser = (await saveOpcoUserTest(OPCOS_LABEL.CONSTRUCTYS)).user
+    const response2 = await httpClient().inject({
+      method: "PUT",
+      path: `/api/admin/users/${opcoUser._id.toString()}`,
+      headers: loggedUser.bearerToken,
+      body: {
+        email: opcoUser.email,
+        first_name: "Newfirstname",
+        last_name: "Newlastname",
+        phone: "0606060606",
+      },
+    })
+    expect.soft(response2.statusCode).to.equal(403)
   })
 
   /*
