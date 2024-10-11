@@ -16,7 +16,6 @@ import {
 } from "@chakra-ui/react"
 import { useState } from "react"
 import { IUserRecruteurJson } from "shared"
-import { OPCOS_LABEL } from "shared/constants"
 
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 
