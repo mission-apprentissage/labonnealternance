@@ -171,6 +171,7 @@ const ZApplicationV2Base = ZApplication.pick({
   applicant_last_name: true,
   applicant_email: true,
   applicant_phone: true,
+  caller: true,
 }).extend({
   applicant_message: ZApplication.shape.applicant_message_to_company.optional(),
   applicant_file_name: ZApplication.shape.applicant_attachment_name,
@@ -193,14 +194,12 @@ export type IApplicationApiJobId = z.output<typeof ZApplicationApiJobId>
 export const ZApplicationPrivateCompanySiret = ZApplicationV2Base.extend({
   company_siret: ZApplication.shape.company_siret,
   job_searched_by_user: ZApplication.shape.job_searched_by_user,
-  caller: ZApplication.shape.caller,
 })
 export type IApplicationPrivateCompanySiret = z.output<typeof ZApplicationPrivateCompanySiret>
 
 export const ZApplicationPrivateJobId = ZApplicationV2Base.extend({
   job_id: z.string().describe("Identifiant unique de l'offre LBA"),
   job_searched_by_user: ZApplication.shape.job_searched_by_user,
-  caller: ZApplication.shape.caller,
 })
 export type IApplicationPrivateJobId = z.output<typeof ZApplicationPrivateJobId>
 

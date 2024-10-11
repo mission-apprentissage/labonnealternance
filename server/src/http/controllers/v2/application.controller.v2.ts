@@ -23,7 +23,7 @@ export default function (server: Server) {
     async (req, res) => {
       const user = getUserFromRequest(req, zRoutes.post["/application"]).value
       const result = await sendApplicationV2({ newApplication: req.body, caller: user.organisation! })
-      return res.send({ id: result._id.toString() })
+      return res.status(202).send({ id: result._id.toString() })
     }
   )
   server.post(

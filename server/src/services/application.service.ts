@@ -178,7 +178,6 @@ export const sendApplication = async ({
       await getDbCollection("applications").insertOne(application)
       return { result: "ok", message: "messages sent" }
     } catch (err) {
-      console.error(err)
       logger.error("Error sending application", err)
       sentryCaptureException(err)
       if (newApplication?.caller) {
