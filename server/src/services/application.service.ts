@@ -195,7 +195,7 @@ export const sendApplication = async ({
 }
 
 /**
- * Send an application from UI
+ * Send an application
  */
 export const sendApplicationV2 = async ({
   newApplication,
@@ -247,9 +247,6 @@ export const sendApplicationV2 = async ({
   await checkUserApplicationCountV2(newApplication.applicant_email.toLowerCase(), lbaJob, caller)
 
   const { type, job, recruiter } = lbaJob
-  /**
-   * TODO REFACTOR : recruteurEmail can be deduce directly in offreOrCompanyToCompanyFields function
-   */
   const recruteurEmail = (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? recruiter.email : job.email)?.toLowerCase()
   if (!recruteurEmail) {
     sentryCaptureException(`${BusinessErrorCodes.INTERNAL_EMAIL} ${type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? `recruiter: ${recruiter._id} ` : `LbaCompany: ${job._id}`}`)
@@ -257,7 +254,7 @@ export const sendApplicationV2 = async ({
   }
 
   try {
-    const application = await newApplicationToApplicationDocumentV2(newApplication, lbaJob, recruteurEmail, caller)
+    const application = await newApplicationToApplicationDocumentV2(newApplication, lbaJob, caller)
     await s3Write("applications", getApplicationCvS3Filename(application), {
       Body: newApplication.applicant_file_content,
     })
@@ -390,25 +387,27 @@ const offreOrCompanyToCompanyFields = (LbaJob: IJobOrCompany) => {
   const { type } = LbaJob
   if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     const { job } = LbaJob
-    const { siret, enseigne, naf_label, phone } = job
+    const { siret, enseigne, naf_label, phone, email } = job
     const application = {
       company_siret: siret,
       company_name: enseigne,
       company_naf: naf_label,
       company_phone: phone,
+      company_email: email!,
       job_title: enseigne,
       company_address: buildLbaCompanyAddress(job),
     }
     return application
   } else if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     const { job, recruiter } = LbaJob
-    const { address, is_delegated, establishment_siret, establishment_enseigne, establishment_raison_sociale, naf_label, phone } = recruiter
+    const { address, is_delegated, establishment_siret, establishment_enseigne, establishment_raison_sociale, naf_label, phone, email } = recruiter
     const { rome_appellation_label, rome_label } = job
     const application = {
       company_siret: establishment_siret,
       company_name: establishment_enseigne || establishment_raison_sociale || "Enseigne inconnue",
       company_naf: naf_label ?? "",
       company_phone: phone,
+      company_email: email,
       job_title: rome_appellation_label ?? rome_label ?? undefined,
       company_address: is_delegated ? null : address,
       job_id: job._id.toString(),
@@ -459,7 +458,6 @@ const newApplicationToApplicationDocument = async (newApplication: INewApplicati
 const newApplicationToApplicationDocumentV2 = async (
   newApplication: IApplicationApiRecruteurId | IApplicationApiJobId | IApplicationPrivateCompanySiret | IApplicationPrivateJobId,
   LbaJob: IJobOrCompany,
-  recruteurEmail: string,
   caller?: string
 ) => {
   const now = new Date()
@@ -472,7 +470,6 @@ const newApplicationToApplicationDocumentV2 = async (
     applicant_message_to_company: prepareMessageForMail(newApplication.applicant_message),
     applicant_phone: newApplication.applicant_phone,
     job_searched_by_user: "job_searched_by_user" in newApplication ? newApplication.job_searched_by_user : null,
-    company_email: recruteurEmail.toLowerCase(),
     company_recruitment_intention: null,
     company_feedback: null,
     caller: caller,
@@ -496,7 +493,7 @@ export const getEmailTemplate = (type = "mail-candidat"): string => {
 
 /**
  * @description checks if job applied to is valid
- * KBA 20240502 : TO DELETE WHEN SWITCHING TO V2
+ * KBA 20240502 : TO DELETE WHEN SWITCHING TO V2 and V1 support has ended
  */
 export const validateJob = async (application: INewApplicationV1): Promise<IJobOrCompany | { error: string }> => {
   const { company_type, job_id, company_siret } = application
@@ -530,7 +527,7 @@ export const validateJob = async (application: INewApplicationV1): Promise<IJobO
 
 /**
  * @description checks if attachment is corrupted
- * KBA 20240502 : TO DELETE WHEN SWITCHING TO V2
+ * KBA 20240502 : TO DELETE WHEN SWITCHING TO V2 and V1 support has ended
  */
 const scanFileContent = async (applicant_file_content: string): Promise<string> => {
   return (await isInfected(applicant_file_content)) ? "pièce jointe invalide" : "ok"
@@ -538,7 +535,7 @@ const scanFileContent = async (applicant_file_content: string): Promise<string> 
 
 /**
  * checks if email is not disposable
- * KBA 20240502 : TO DELETE WHEN SWITCHING TO V2
+ * KBA 20240502 : TO DELETE WHEN SWITCHING TO V2 and V1 support has ended
  */
 export const validatePermanentEmail = (email: string): string => {
   if (isEmailBurner(email)) {
@@ -567,7 +564,7 @@ async function getApplicationCountForItem(applicantEmail: string, LbaJob: IJobOr
 
 /**
  * @description checks if email's owner has not sent more than allowed count of applications per day
- * KBA 20240502 : TO DELETE WHEN SWITCHING TO V2
+ * KBA 20240502 : TO DELETE WHEN SWITCHING TO V2 and V1 support has ended
  */
 const checkUserApplicationCount = async (applicantEmail: string, offreOrCompany: IJobOrCompany, caller: string | null | undefined): Promise<string> => {
   const start = new Date()
