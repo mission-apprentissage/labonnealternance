@@ -16,11 +16,13 @@ const fakeToken = getApiApprentissageTestingTokenFromInvalidPrivateKey({
 })
 
 const eligibleTraining = generateEligibleTrainingFixture({})
+const notEligibleTraining = generateEligibleTrainingFixture({ referrers: ["LBA"], parcoursup_id: "10021" })
 const etablissement = generateEligibleTrainingEstablishmentFixture({})
 const referentielOnisep = generateReferentielOnisepFixture({})
 
 const mockData = async () => {
   await getDbCollection("eligible_trainings_for_appointments").insertOne(eligibleTraining)
+  await getDbCollection("eligible_trainings_for_appointments").insertOne(notEligibleTraining)
   await getDbCollection("etablissements").insertOne(etablissement)
   await getDbCollection("referentieloniseps").insertOne(referentielOnisep)
 }
@@ -41,6 +43,23 @@ describe("POST /v2/appointment", () => {
     const response = await httpClient().inject({ method: "POST", path: "/api/v2/appointment", headers: { authorization: `Bearer ${fakeToken}` } })
     expect.soft(response.statusCode).toBe(401)
     expect(response.json()).toEqual({ statusCode: 401, error: "Unauthorized", message: "Unable to parse token invalid-signature" })
+  })
+
+  it("Return 200 + error object if appointment is not available", async () => {
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/v2/appointment",
+      body: {
+        parcoursup_id: notEligibleTraining.parcoursup_id,
+        referrer: referrers.PARCOURSUP.name.toLocaleLowerCase(),
+      },
+      headers: { authorization: `Bearer ${token}` },
+    })
+
+    expect.soft(response.statusCode).toEqual(200)
+    expect.soft(response.json()).toEqual({
+      error: "Appointment request not available",
+    })
   })
 
   it("Return 200 using PARCOURSUP ID", async () => {

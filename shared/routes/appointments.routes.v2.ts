@@ -47,7 +47,7 @@ const ZAppointmentContextApi = z.union([
 ])
 export type IAppointmentContextAPI = z.output<typeof ZAppointmentContextApi>
 
-const ZAppointmentResponse = z
+const ZAppointmentResponseAvailable = z
   .object({
     etablissement_formateur_entreprise_raison_sociale: z.string().nullable().describe("Raison social de l'établissement formateur"),
     intitule_long: z.string().describe("Intitulé long de la formation"),
@@ -62,7 +62,12 @@ const ZAppointmentResponse = z
   })
   .strict()
 
-export type IAppointmentResponse = z.output<typeof ZAppointmentResponse>
+const ZAppointmentResponseUnavailable = z.object({
+  error: z.literal("Appointment request not available"),
+})
+
+const ZAppointmentResponseSchema = z.union([ZAppointmentResponseAvailable, ZAppointmentResponseUnavailable])
+export type IAppointmentResponseSchema = z.output<typeof ZAppointmentResponseSchema>
 
 export const zAppointmentsRouteV2 = {
   post: {
@@ -71,8 +76,7 @@ export const zAppointmentsRouteV2 = {
       path: "/appointment",
       body: ZAppointmentContextApi,
       response: {
-        "200": ZAppointmentResponse,
-        "204": z.literal("Appointment request not available"),
+        "200": ZAppointmentResponseSchema,
       },
       securityScheme: { auth: "api-apprentissage", access: null, resources: {} },
     },

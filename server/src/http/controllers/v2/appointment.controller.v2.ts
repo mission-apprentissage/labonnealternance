@@ -11,11 +11,7 @@ export default (server: Server) => {
       onRequest: server.auth(zRoutes.post["/appointment"]),
     },
     async (req, res) => {
-      const appointment = await findElligibleTrainingForAppointmentV2(req.body)
-      if (!appointment) {
-        return res.status(204).send("Appointment request not available")
-      }
-      return res.send(appointment)
+      res.status(200).send(await findElligibleTrainingForAppointmentV2(req.body))
     }
   )
 }

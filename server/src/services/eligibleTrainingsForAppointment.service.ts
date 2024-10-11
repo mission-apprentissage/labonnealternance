@@ -2,7 +2,7 @@ import { badRequest, internal, notFound } from "@hapi/boom"
 import { Filter, ObjectId } from "mongodb"
 import { IEligibleTrainingsForAppointment, IFormationCatalogue } from "shared"
 import { IAppointmentRequestContextCreateResponseSchema } from "shared/routes/appointments.routes"
-import { IAppointmentContextAPI, IAppointmentResponse } from "shared/routes/appointments.routes.v2"
+import { IAppointmentContextAPI, IAppointmentResponseSchema } from "shared/routes/appointments.routes.v2"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -133,7 +133,7 @@ export const findElligibleTrainingForAppointment = async (req: any): Promise<IAp
   }
 }
 
-export const findElligibleTrainingForAppointmentV2 = async (context: IAppointmentContextAPI): Promise<IAppointmentResponse | null> => {
+export const findElligibleTrainingForAppointmentV2 = async (context: IAppointmentContextAPI): Promise<IAppointmentResponseSchema> => {
   const { referrer } = context
   const referrerObj = getReferrerByKeyName(referrer)
   let eligibleTrainingsForAppointment: IEligibleTrainingsForAppointment | null
@@ -153,7 +153,9 @@ export const findElligibleTrainingForAppointmentV2 = async (context: IAppointmen
   }
 
   if (!isOpenForAppointments(eligibleTrainingsForAppointment, referrerObj.name)) {
-    return null
+    return {
+      error: "Appointment request not available",
+    }
   }
 
   const etablissement = await findEtablissement(eligibleTrainingsForAppointment.etablissement_formateur_siret)
