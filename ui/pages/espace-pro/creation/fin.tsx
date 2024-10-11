@@ -1,5 +1,5 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Button, Circle, Flex, Heading, Link, Stack, Text, useToast } from "@chakra-ui/react"
+import { Box, Button, Circle, Flex, Heading, Image, Link, Stack, Text, useToast } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useContext, useState } from "react"
 import { useQuery, useQueryClient } from "react-query"
@@ -39,6 +39,20 @@ export default function DepotRapideFin() {
   }
 
   return <FinComponent {...parsedQuery.data} />
+}
+
+function PrintJobLink({ jobId }) {
+  return (
+    <Link
+      href={`/espace-pro/offre/impression/${jobId}`}
+      aria-label="Ouvrir la page de prévisualisation de l'offre sur le site La bonne alternance - nouvelle fenêtre"
+      isExternal
+      variant="basicUnderlinedBlue"
+      display="flex"
+    >
+      <Text as="span">Imprimer l'offre</Text> <Image src="/images/icons/print.svg" mt="4px" mx="3px" aria-hidden={true} alt="" />
+    </Link>
+  )
 }
 
 function FinComponent(props: ComponentProps) {
@@ -124,7 +138,7 @@ function FinComponent(props: ComponentProps) {
           <Heading fontSize="24px" mb={6} mt={widget?.mobile ? "10px" : "0px"}>
             Félicitations, votre offre est créée.
           </Heading>
-          <JobPreview jobId={jobId} />
+          <JobPreview jobId={jobId} userIsValidated={userIsValidated} />
           {!shouldDisplayAccountInformation ? null : userIsValidated ? (
             <ValidatedAccountDescription withDelegation={withDelegation} email={email} onResendEmail={resendMail} />
           ) : (
@@ -217,7 +231,7 @@ const ResendEmailContent = ({ onClick }: { onClick: () => void }) => {
   )
 }
 
-const JobPreview = ({ jobId }: { jobId: string }) => {
+const JobPreview = ({ jobId, userIsValidated }: { jobId: string; userIsValidated: boolean }) => {
   return (
     <Box mb={2}>
       <Box mb={2}>
@@ -230,6 +244,11 @@ const JobPreview = ({ jobId }: { jobId: string }) => {
           Voir mon offre sur La bonne alternance <ExternalLinkIcon mx="2px" />
         </Link>
       </Box>
+      {userIsValidated && (
+        <Box mb={2}>
+          <PrintJobLink jobId={jobId} />
+        </Box>
+      )}
       <Text fontStyle="italic" fontSize={16} color="grey.425">
         Votre offre est également visible sur les sites internet partenaires de La bonne alternance dont : Parcoursup, “Choisir son affectation après la 3è”, le Portail de
         l’alternance, l’ONISEP, la CCI, des plateformes régionales et certains sites d’OPCO.
