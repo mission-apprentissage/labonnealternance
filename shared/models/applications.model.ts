@@ -175,19 +175,16 @@ const ZApplicationV2Base = ZApplication.pick({
 }).extend({
   applicant_message: ZApplication.shape.applicant_message_to_company.optional(),
   applicant_file_name: ZApplication.shape.applicant_attachment_name,
-  applicant_file_content: z.string().max(4_215_276).openapi({
-    description: "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
-    example: "data:application/pdf;base64,JVBERi0xLjQKJ...",
-  }),
+  applicant_file_content: z.string().max(4_215_276).describe("Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo."),
 })
 
 export const ZApplicationApiRecruteurId = ZApplicationV2Base.extend({
-  recruteur_id: z.string(),
+  recruteur_id: z.string().describe("Identifiant unique du recruteur issue de La bonne alternance"),
 })
 export type IApplicationApiRecruteurId = z.output<typeof ZApplicationApiRecruteurId>
 
 export const ZApplicationApiJobId = ZApplicationV2Base.extend({
-  job_id: z.string(),
+  job_id: z.string().describe("Identifiant unique de l'offre d'emploi issue de La bonne alternance"),
 })
 export type IApplicationApiJobId = z.output<typeof ZApplicationApiJobId>
 
