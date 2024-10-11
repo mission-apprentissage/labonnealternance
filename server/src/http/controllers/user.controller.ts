@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb"
 import { ENTREPRISE, RECRUITER_STATUS } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { CFA, OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
-import { IJob, IRecruiter, getUserStatus, isEnum, parseEnumOrError, zRoutes } from "shared/index"
+import { IJob, IRecruiter, getUserStatus, parseEnumOrError, zRoutes } from "shared/index"
 import { ICFA } from "shared/models/cfa.model"
 import { IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
@@ -139,10 +139,6 @@ export default (server: Server) => {
       const { userId, siret } = req.params
       const { opco, ...userFields } = req.body
 
-      if (!isEnum(OPCOS_LABEL, opco)) {
-        throw badRequest("Unknown OPCO value", { error: BusinessErrorCodes.UNSUPPORTED })
-      }
-
       const entreprise = await getDbCollection("entreprises").findOne({ siret })
       if (!entreprise) {
         throw notFound("Entreprise non trouvée", { error: BusinessErrorCodes.NOTFOUND })
@@ -153,7 +149,7 @@ export default (server: Server) => {
         authorized_type: AccessEntityType.ENTREPRISE,
       })
       if (!roleManagement) {
-        throw badRequest("L'entreprise n'est pas gérée par l'utilisateur cible", { error: BusinessErrorCodes.UNSUPPORTED })
+        throw forbidden("L'entreprise n'est pas gérée par l'utilisateur cible", { error: BusinessErrorCodes.UNSUPPORTED })
       }
 
       const result = await updateUserWithAccountFields(userId, userFields)

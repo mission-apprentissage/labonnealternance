@@ -1,18 +1,14 @@
 import { createAndLogUser, logUser } from "@tests/utils/login.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
-import { saveAdminUserTest, saveOpcoUserTest } from "@tests/utils/user.test.utils"
+import { saveAdminUserTest, saveEntrepriseUserTest, saveOpcoUserTest } from "@tests/utils/user.test.utils"
 import { OPCOS_LABEL } from "shared/constants"
-import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-describe("/admin/users/:userId/organization/:siret", () => {
+describe("Modification des utilisateurs par ADMIN et par utilisateur OPCO ", () => {
   beforeEach(async () => {
-    const entreprise = generateEntrepriseFixture({ opco: OPCOS_LABEL.AKTO, siret: "89557430766546" })
-    await getDbCollection("entreprises").insertOne(entreprise)
-
     return async () => {
       await getDbCollection("entreprises").deleteMany({})
       await getDbCollection("userswithaccounts").deleteMany({})
@@ -153,45 +149,84 @@ describe("/admin/users/:userId/organization/:siret", () => {
     expect.soft(response2.statusCode).to.equal(403)
   })
 
-  /*
-  
-
-  it("Vérifie qu'une modification d'ADMIN ou d'utilisateur OPCO  par un utilisateur OPCO est bloquée", async () => {})
-
-  it("Vérifie qu'une modification d'ADMIN ou d'utilisateur OPCO par un utilisateur ENTREPRISE est bloquée", async () => {})
-
   it("Vérifie qu'une modification légitime d'OPCO fonctionne correctement", async () => {
-    expect(response.statusCode).toBe(200)
+    const entrepriseUserA = await saveEntrepriseUserTest({}, {}, { siret: "89557430766546", opco: OPCOS_LABEL.AKTO })
+    const entrepriseUserB = await saveEntrepriseUserTest({}, {}, { siret: "10392947668876", opco: OPCOS_LABEL.CONSTRUCTYS })
+
+    let loggedUser = await createAndLogUser(httpClient, "userAdmin", { type: "ADMIN" })
+
+    let response = await httpClient().inject({
+      method: "PUT",
+      path: `/api/admin/users/${entrepriseUserA.user._id.toString()}/organization/${entrepriseUserA.entreprise.siret}`,
+      headers: loggedUser.bearerToken,
+      body: {
+        first_name: "testfirstname",
+        last_name: "testlastname",
+        email: entrepriseUserA.user.email,
+        phone: entrepriseUserA.user.phone,
+        opco: entrepriseUserA.entreprise.opco,
+      },
+    })
+    expect.soft(response.statusCode).toBe(200)
+
+    //test nom d'OPCO erroné
+    response = await httpClient().inject({
+      method: "PUT",
+      path: `/api/admin/users/${entrepriseUserA.user._id.toString()}/organization/${entrepriseUserA.entreprise.siret}`,
+      headers: loggedUser.bearerToken,
+      body: {
+        first_name: "testfirstname",
+        last_name: "testlastname",
+        email: entrepriseUserA.user.email,
+        phone: entrepriseUserA.user.phone,
+        opco: "NOT_AN_OPCO",
+      },
+    })
+    expect.soft(response.statusCode).toBe(400)
+
+    // test entreprise non reliée à l'utilisateur
+    response = await httpClient().inject({
+      method: "PUT",
+      path: `/api/admin/users/${entrepriseUserB.user._id.toString()}/organization/${entrepriseUserA.entreprise.siret}`,
+      headers: loggedUser.bearerToken,
+      body: {
+        first_name: "testfirstname",
+        last_name: "testlastname",
+        email: entrepriseUserA.user.email,
+        phone: entrepriseUserA.user.phone,
+        opco: entrepriseUserA.entreprise.opco,
+      },
+    })
+    expect.soft(response.statusCode).toBe(403)
+
+    loggedUser = await createAndLogUser(httpClient, "userOPCO", { type: "OPCO" })
+    response = await httpClient().inject({
+      method: "PUT",
+      path: `/api/admin/users/${entrepriseUserA.user._id.toString()}/organization/${entrepriseUserA.entreprise.siret}`,
+      headers: loggedUser.bearerToken,
+      body: {
+        first_name: "testfirstname",
+        last_name: "testlastname",
+        email: entrepriseUserA.user.email,
+        phone: entrepriseUserA.user.phone,
+        opco: entrepriseUserA.entreprise.opco,
+      },
+    })
+    expect.soft(response.statusCode).toBe(200)
+
+    // tentative modification société liée à un autre OPCO que l'utilisateur OPCO
+    response = await httpClient().inject({
+      method: "PUT",
+      path: `/api/admin/users/${entrepriseUserB.user._id.toString()}/organization/${entrepriseUserB.entreprise.siret}`,
+      headers: loggedUser.bearerToken,
+      body: {
+        first_name: "testfirstname",
+        last_name: "testlastname",
+        email: entrepriseUserA.user.email,
+        phone: entrepriseUserA.user.phone,
+        opco: entrepriseUserA.entreprise.opco,
+      },
+    })
+    expect.soft(response.statusCode).toBe(403)
   })
-
-  it("Vérifie qu'une modification avec un OPCO farfelue est bloquée", async () => {
-    const response = await httpClient().inject({ method: "GET", path: "/api/version" })
-  })
-
-  server.put(
-    "/admin/users/:userId/organization/:siret",
-    {
-      schema: zRoutes.put["/admin/users/:userId/organization/:siret"],
-      onRequest: [server.auth(zRoutes.put["/admin/users/:userId/organization/:siret"])],
-    },
-    async (req, res) => {
-      const { userId, siret } = req.params
-      const { opco, ...userFields } = req.body
-
-      if (!isEnum(OPCOS_LABEL, opco)) {
-        throw badRequest("Uknown OPCO value", { error: BusinessErrorCodes.UNSUPPORTED })
-      }
-      const result = await updateUserWithAccountFields(userId, userFields)
-      if ("error" in result) {
-        throw badRequest("L'email est déjà utilisé", { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS })
-      }
-      if (opco) {
-        const entreprise = await getDbCollection("entreprises").findOneAndUpdate({ siret }, { $set: { opco, updatedAt: new Date() } }, { returnDocument: "after" })
-        if (!entreprise) {
-          throw badRequest(`pas d'entreprise ayant le siret ${siret}`)
-        }
-      }
-      return res.status(200).send({ ok: true })
-    }
-  )*/
 })
