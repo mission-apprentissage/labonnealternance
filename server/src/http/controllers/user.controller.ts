@@ -143,8 +143,19 @@ export default (server: Server) => {
         throw badRequest("Unknown OPCO value", { error: BusinessErrorCodes.UNSUPPORTED })
       }
 
-      await getDbCollection("rolemanagements").findOne({ user_id: userId, authorized_type: AccessEntityType.ENTREPRISE })
-      await getDbCollection("entreprises").findOne({ siret })
+      const entreprise = await getDbCollection("entreprises").findOne({ siret })
+      if (!entreprise) {
+        throw notFound("Entreprise non trouvée", { error: BusinessErrorCodes.NOTFOUND })
+      }
+      const roleManagement = await getDbCollection("rolemanagements").findOne({
+        user_id: userId,
+        authorized_id: entreprise._id.toString(),
+        authorized_type: AccessEntityType.ENTREPRISE,
+      })
+      if (!roleManagement) {
+        throw badRequest("L'entreprise n'est pas gérée par l'utilisateur cible", { error: BusinessErrorCodes.UNSUPPORTED })
+      }
+
       const result = await updateUserWithAccountFields(userId, userFields)
       if ("error" in result) {
         throw badRequest("L'email est déjà utilisé", { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS })
