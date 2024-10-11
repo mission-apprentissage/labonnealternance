@@ -2,7 +2,20 @@ import { badRequest, internal, tooManyRequests } from "@hapi/boom"
 import { isEmailBurner } from "burner-email-providers"
 import dayjs from "dayjs"
 import { ObjectId } from "mongodb"
-import { ApplicationScanStatus, IApplication, IJob, ILbaCompany, INewApplicationV2, IRecruiter, JOB_STATUS, assertUnreachable } from "shared"
+import {
+  ApplicationScanStatus,
+  IApplication,
+  IApplicationApiJobId,
+  IApplicationApiRecruteurId,
+  IApplicationPrivateCompanySiret,
+  IApplicationPrivateJobId,
+  IJob,
+  ILbaCompany,
+  INewApplicationV1,
+  IRecruiter,
+  JOB_STATUS,
+  assertUnreachable,
+} from "shared"
 import { ApplicantIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType } from "shared/constants/lbaitem"
@@ -10,7 +23,6 @@ import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 import { ITrackingCookies } from "shared/models/trafficSources.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
-import { INewApplicationV2NEWCompanySiret, INewApplicationV2NEWJobId } from "shared/routes/application.routes.v2"
 import { z } from "zod"
 
 import { s3Delete, s3ReadAsString, s3Write } from "@/common/utils/awsUtils"
@@ -121,14 +133,14 @@ export const removeEmailFromLbaCompanies = async (email: string) => {
 }
 
 /**
- * Send an application email to a company and a confirmation email to the applicant
- * KBA 20240502 : TO DELETE WHEN SWITCHING TO V2
+ * Send an application from UI V1
+ * KBA 20240502 : TO DELETE WHEN SWITCHING TO V2 and V1 support has ended
  */
 export const sendApplication = async ({
   newApplication,
   referer,
 }: {
-  newApplication: INewApplicationV2
+  newApplication: INewApplicationV1
   referer: string | undefined
 }): Promise<{ error: string } | { result: "ok"; message: "messages sent" }> => {
   if (!validateCaller({ caller: newApplication.caller, referer })) {
@@ -183,21 +195,30 @@ export const sendApplication = async ({
 }
 
 /**
- * Send an application email to a company and a confirmation email to the applicant
+ * Send an application from UI
  */
 export const sendApplicationV2 = async ({
   newApplication,
   caller,
   source,
 }: {
-  newApplication: INewApplicationV2NEWCompanySiret | INewApplicationV2NEWJobId
+  newApplication: IApplicationPrivateCompanySiret | IApplicationPrivateJobId | IApplicationApiRecruteurId | IApplicationApiJobId
   caller?: string
   source?: ITrackingCookies
-}): Promise<void> => {
+}): Promise<{ _id: ObjectId }> => {
   let lbaJob: IJobOrCompany = { type: null as any, job: null as any, recruiter: null }
 
   if (isEmailBurner(newApplication.applicant_email)) {
     throw badRequest(BusinessErrorCodes.BURNER)
+  }
+
+  if ("recruteur_id" in newApplication) {
+    // email can be null in collection
+    const LbaRecruteur = await getDbCollection("recruteurslba").findOne({ _id: new ObjectId(newApplication.recruteur_id), email: { $not: { $eq: null } } })
+    if (!LbaRecruteur) {
+      throw badRequest(BusinessErrorCodes.NOTFOUND)
+    }
+    lbaJob = { type: LBA_ITEM_TYPE.RECRUTEURS_LBA, job: LbaRecruteur, recruiter: null }
   }
 
   if ("company_siret" in newApplication) {
@@ -242,12 +263,13 @@ export const sendApplicationV2 = async ({
     })
     await getDbCollection("applications").insertOne(application)
     await saveApplicationTrafficSourceIfAny({ application_id: application._id, applicant_email: application.applicant_email, source })
+    return { _id: application._id }
   } catch (err) {
     sentryCaptureException(err)
     if (caller) {
       manageApiError({
         error: err,
-        api_path: "applicationV1",
+        api_path: "applicationV2",
         caller: caller,
         errorTitle: "error_sending_application",
       })
@@ -397,7 +419,7 @@ const offreOrCompanyToCompanyFields = (LbaJob: IJobOrCompany) => {
   }
 }
 
-const cleanApplicantFields = (newApplication: INewApplicationV2) => {
+const cleanApplicantFields = (newApplication: INewApplicationV1) => {
   return {
     applicant_first_name: newApplication.applicant_first_name,
     applicant_last_name: newApplication.applicant_last_name,
@@ -412,7 +434,7 @@ const cleanApplicantFields = (newApplication: INewApplicationV2) => {
 /**
  * @description Initialize application object from query parameters
  */
-const newApplicationToApplicationDocument = async (newApplication: INewApplicationV2, offreOrCompany: IJobOrCompany, recruteurEmail: string) => {
+const newApplicationToApplicationDocument = async (newApplication: INewApplicationV1, offreOrCompany: IJobOrCompany, recruteurEmail: string) => {
   const now = new Date()
   const application: IApplication = {
     ...offreOrCompanyToCompanyFields(offreOrCompany),
@@ -435,7 +457,7 @@ const newApplicationToApplicationDocument = async (newApplication: INewApplicati
  * @description Initialize application object from query parameters
  */
 const newApplicationToApplicationDocumentV2 = async (
-  newApplication: INewApplicationV2NEWCompanySiret | INewApplicationV2NEWJobId,
+  newApplication: IApplicationApiRecruteurId | IApplicationApiJobId | IApplicationPrivateCompanySiret | IApplicationPrivateJobId,
   LbaJob: IJobOrCompany,
   recruteurEmail: string,
   caller?: string
@@ -447,9 +469,9 @@ const newApplicationToApplicationDocumentV2 = async (
     applicant_last_name: newApplication.applicant_last_name,
     applicant_attachment_name: newApplication.applicant_file_name,
     applicant_email: newApplication.applicant_email.toLowerCase(),
-    applicant_message_to_company: prepareMessageForMail(newApplication.message),
+    applicant_message_to_company: prepareMessageForMail(newApplication.applicant_message),
     applicant_phone: newApplication.applicant_phone,
-    job_searched_by_user: newApplication.job_searched_by_user,
+    job_searched_by_user: "job_searched_by_user" in newApplication ? newApplication.job_searched_by_user : null,
     company_email: recruteurEmail.toLowerCase(),
     company_recruitment_intention: null,
     company_feedback: null,
@@ -476,7 +498,7 @@ export const getEmailTemplate = (type = "mail-candidat"): string => {
  * @description checks if job applied to is valid
  * KBA 20240502 : TO DELETE WHEN SWITCHING TO V2
  */
-export const validateJob = async (application: INewApplicationV2): Promise<IJobOrCompany | { error: string }> => {
+export const validateJob = async (application: INewApplicationV1): Promise<IJobOrCompany | { error: string }> => {
   const { company_type, job_id, company_siret } = application
 
   if (company_type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
