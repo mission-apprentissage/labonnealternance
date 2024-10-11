@@ -126,7 +126,7 @@ export const getCompanyMissingData = async (rawCompany): Promise<ILbaCompany | n
     }
   }
 
-  company.email = company.email && (await getNotBlacklistedEmail(company.email))
+  company.email = (company.email && (await getNotBlacklistedEmail(company.email))) || null
 
   return company
 }
