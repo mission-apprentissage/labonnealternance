@@ -2,9 +2,9 @@ import { zRoutes } from "shared/index"
 
 import { getSourceFromCookies } from "@/common/utils/httpUtils"
 
-import { getUserFromRequest } from "../../security/authenticationService"
-import { sendApplicationV2 } from "../../services/application.service"
-import { Server } from "../server"
+import { getUserFromRequest } from "../../../security/authenticationService"
+import { sendApplicationV2 } from "../../../services/application.service"
+import { Server } from "../../server"
 
 export default function (server: Server) {
   server.post(
