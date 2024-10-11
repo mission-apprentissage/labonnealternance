@@ -641,7 +641,7 @@ export const entrepriseOnboardingWorkflow = {
     }
     const entreprise = await upsertEntrepriseData(siret, origin, siretResponse, isSiretInternalError)
     const opcoResult = await updateEntrepriseOpco(siret, { opco, idcc })
-    opco = opcoResult.opco
+    opco = opcoResult.opco || OPCOS_LABEL.UNKNOWN_OPCO
     idcc = opcoResult.idcc ?? undefined
 
     let validated = false
@@ -742,7 +742,7 @@ export const entrepriseOnboardingWorkflow = {
     const entreprise = await upsertEntrepriseData(siret, origin, siretResponse, isSiretInternalError)
     if (opco) {
       const opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: idcc ?? undefined })
-      opco = opcoResult.opco
+      opco = opcoResult.opco || OPCOS_LABEL.UNKNOWN_OPCO
       idcc = opcoResult.idcc
     }
 
