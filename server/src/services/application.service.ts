@@ -133,7 +133,7 @@ export const removeEmailFromLbaCompanies = async (email: string) => {
 }
 
 /**
- * Send an application from UI V1
+ * Send an application V1
  * KBA 20240502 : TO DELETE WHEN SWITCHING TO V2 and V1 support has ended
  */
 export const sendApplication = async ({
