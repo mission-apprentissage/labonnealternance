@@ -11,7 +11,7 @@ import ScrollToTop from "../components/ScrollToTop"
 const Developpeurs = () => (
   <Box>
     <NextSeo
-      title="Développeurs | La bonne alternance | Trouvez votre alternance"
+      title="Nos Données | La bonne alternance | Trouvez votre alternance"
       description="Afin de faciliter l’accès aux informations pour les publics là où ils se trouvent, nous avons développé 4 API et un Widget"
     />
     <ScrollToTop />
@@ -27,12 +27,6 @@ const Developpeurs = () => (
             <Divider variant="pageTitleDivider" my={12} />
           </GridItem>
           <GridItem px={4} colSpan={[12, 12, 12, 7]}>
-            <Text variant="editorialContentH3" as="h3">
-              Code source ouvert
-            </Text>
-            <Link variant="editorialContentLink" aria-label="Accès au site Github - nouvelle fenêtre" href="https://github.com/mission-apprentissage/labonnealternance" isExternal>
-              LBA - Recherche d&apos;une formation et/ou d&apos;un organisme de formation en apprentissage <ExternalLinkIcon mx="2px" />
-            </Link>
             <Text variant="editorialContentH3" as="h3" mt={4}>
               Données ouvertes
             </Text>
@@ -40,8 +34,23 @@ const Developpeurs = () => (
               Afin de faciliter l’accès aux informations pour les publics là où ils se trouvent (notamment sur votre site internet !), nous avons développé 4 API et un Widget,
               disponibles en open source.
             </Text>
+
+            <Divider mt={4} my={12} w="100%" />
             <Text as="p" mb={4}>
-              Testez le widget et les API et accédez à leur documentation sur le site API.gouv
+              Testez la dernière version (v2) de nos API et accédez à leur documentation sur la plateforme API Apprentissage :
+            </Text>
+            <Link
+              variant="editorialContentLink"
+              aria-label="Accès au site api.apprentissage - nouvelle fenêtre"
+              href="https://api.apprentissage.beta.gouv.fr/fr/explorer"
+              isExternal
+            >
+              https://api.apprentissage.beta.gouv.fr/fr/explorer <ExternalLinkIcon mx="2px" />
+            </Link>
+
+            <Divider mt={4} my={12} w="100%" />
+            <Text as="p" mb={4}>
+              Testez le widget et l'ancienne version (v1) de nos API et accédez à leur documentation sur le site API.gouv :
             </Text>
             <Link variant="editorialContentLink" aria-label="Accès au site api.gouv - nouvelle fenêtre" href="https://api.gouv.fr/les-api/api-la-bonne-alternance" isExternal>
               https://api.gouv.fr/les-api/api-la-bonne-alternance <ExternalLinkIcon mx="2px" />
