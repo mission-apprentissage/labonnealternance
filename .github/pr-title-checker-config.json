@@ -4,8 +4,8 @@
     "color": "D93F0B"
   },
   "CHECKS": {
-    "prefixes": ["fix: ", "feat: ", "refactor: ", "chore: "],
-    "regexp": "docs\\(v[0-9]\\): "
+    "prefixes": ["fix: ", "feat: ", "refactor: ", "chore: ", "docs: "],
+    "regexp": "^(fix|feat|refactor|chore|docs)(\\([a-zA-Z0-9_-]+\\))?: .+"
   },
   "MESSAGES": {
     "success": "PR title OK",
