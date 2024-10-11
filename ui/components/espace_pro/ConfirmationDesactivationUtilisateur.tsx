@@ -22,15 +22,14 @@ import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActi
 
 import { AUTHTYPE } from "../../common/contants"
 import { Close } from "../../theme/components/icons"
-import { archiveDelegatedFormulaire, archiveFormulaire, updateEntrepriseAdmin } from "../../utils/api"
 
 export const ConfirmationDesactivationUtilisateur = ({
   userRecruteur,
   onClose,
   isOpen,
   onUpdate,
-}: { userRecruteur?: IUserRecruteurJson; onUpdate?: () => void } & ReturnType<typeof useDisclosure>) => {
-  const { establishment_raison_sociale, _id: _idObject, type, establishment_id, establishment_siret } = userRecruteur ?? {}
+}: { userRecruteur?: IUserRecruteurJson; onUpdate?: (props: { reason: string }) => void } & ReturnType<typeof useDisclosure>) => {
+  const { establishment_raison_sociale, _id: _idObject, type } = userRecruteur ?? {}
   const _id = (_idObject ?? "").toString()
   const [reason, setReason] = useState()
   const reasonComment = useDisclosure()
@@ -51,22 +50,20 @@ export const ConfirmationDesactivationUtilisateur = ({
     switch (type) {
       case AUTHTYPE.ENTREPRISE:
         if (reason === "Ne relève pas des champs de compétences de mon OPCO") {
-          await Promise.all([updateEntrepriseAdmin(_id, { opco: OPCOS_LABEL.UNKNOWN_OPCO }, establishment_siret), reassignUserToAdmin(reason)])
+          await reassignUserToAdmin(reason)
         } else {
-          await Promise.all([archiveFormulaire(establishment_id), disableUser(reason)])
+          await disableUser(reason)
         }
         break
 
       case AUTHTYPE.CFA:
-        await Promise.all([archiveDelegatedFormulaire(establishment_siret), disableUser(reason)])
-        break
       case AUTHTYPE.ADMIN:
         await disableUser(reason)
         break
       default:
         throw new Error(`unsupported type: ${type}`)
     }
-    onUpdate?.()
+    onUpdate?.({ reason })
     onClose()
     reasonComment.onClose()
   }

@@ -70,7 +70,7 @@ const updateRecruteursSiretInfosInError = async () => {
       const siretResponse = await getEntrepriseDataFromSiret({ siret: establishment_siret, type: CFA })
       if ("error" in siretResponse) {
         logger.warn(`Correction des recruteurs en erreur: recruteur id=${_id}, désactivation car création interdite, raison=${siretResponse.message}`)
-        await archiveFormulaire(establishment_id)
+        await archiveFormulaire(recruteur)
         stats.deactivated++
       } else {
         await upsertEntrepriseData(establishment_siret, "script de reprise de données entreprise", siretResponse, false)

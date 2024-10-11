@@ -17,13 +17,12 @@ readonly VAULT_FILE="${ROOT_DIR}/.infra/vault/vault.yml"
 
 LBA_SERVER_SENTRY_DSN=$(ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq '.vault.LBA_SERVER_SENTRY_DSN')
 LBA_UI_SENTRY_DSN=$(ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq '.vault.LBA_UI_SENTRY_DSN')
-SENTRY_AUTH_TOKEN=$(ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq '.vault.SENTRY_AUTH_TOKEN')
+export SENTRY_AUTH_TOKEN=$(ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq '.vault.SENTRY_AUTH_TOKEN')
 
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly ROOT_DIR="../.."
+export SENTRY_DSN="${LBA_SERVER_SENTRY_DSN}"
+cd "$ROOT_DIR/server"
+"./sentry-release-server.sh" "mission-apprentissage/labonnealternance" "${COMMIT_ID}" "${PREV_COMMIT_ID}" "${VERSION}"
 
-SENTRY_DSN="${LBA_SERVER_SENTRY_DSN}"
-"$ROOT_DIR/server/sentry-release-server.sh" "mission-apprentissage/labonnealternance" "${COMMIT_ID}" "${PREV_COMMIT_ID}" "${VERSION}"
-
-SENTRY_DSN="${LBA_UI_SENTRY_DSN}"
-"$ROOT_DIR/ui/sentry-release-ui.sh" "mission-apprentissage/labonnealternance" "${COMMIT_ID}" "${PREV_COMMIT_ID}" "${VERSION}"
+export SENTRY_DSN="${LBA_UI_SENTRY_DSN}"
+cd "$ROOT_DIR/ui"
+"./sentry-release-ui.sh" "mission-apprentissage/labonnealternance" "${COMMIT_ID}" "${PREV_COMMIT_ID}" "${VERSION}"

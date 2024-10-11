@@ -73,6 +73,7 @@ services:
           memory: 2g
     volumes:
       - /opt/app/data/clamav:/var/lib/clamav
+      - /opt/app/configs/clamav/clamd.conf:/etc/clamav/clamd.conf
     healthcheck:
       test: ["CMD", "/usr/local/bin/clamdcheck.sh"]
       interval: 60s
