@@ -20,7 +20,7 @@ import {
 } from "@chakra-ui/react"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
-import { useMutation, useQuery } from "react-query"
+import { useMutation, useQuery, useQueryClient } from "react-query"
 import { IUserStatusValidation } from "shared"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
@@ -46,6 +46,7 @@ import { ArrowDropRightLine, ArrowRightLine } from "@/theme/components/icons"
 import { getFormulaire, getUser, updateEntrepriseAdmin } from "@/utils/api"
 
 function DetailEntreprise() {
+  const client = useQueryClient()
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationModificationOpco = useDisclosure()
   const toast = useToast()
@@ -54,7 +55,7 @@ function DetailEntreprise() {
   const { siret_userId, entreprise_id } = router.query as { siret_userId: string; entreprise_id: string }
 
   const { data: userRecruteur, isLoading } = useQuery("user", {
-    enabled: !!siret_userId,
+    enabled: Boolean(siret_userId),
     queryFn: () => getUser(siret_userId, entreprise_id),
     cacheTime: 0,
   })
@@ -142,7 +143,17 @@ function DetailEntreprise() {
 
   return (
     <AnimationContainer>
-      <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={userRecruteur} />
+      <ConfirmationDesactivationUtilisateur
+        {...confirmationDesactivationUtilisateur}
+        userRecruteur={userRecruteur}
+        onUpdate={({ reason }) => {
+          if (reason === "Ne relève pas des champs de compétences de mon OPCO") {
+            router.push(getUserNavigationContext())
+          } else {
+            client.invalidateQueries("user")
+          }
+        }}
+      />
       <Layout displayNavigationMenu={false} header={false} footer={false}>
         <Container maxW="container.xl">
           <Box mt="16px" mb={6}>

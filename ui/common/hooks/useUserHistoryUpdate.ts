@@ -11,7 +11,7 @@ export default function useUserHistoryUpdate() {
   return useCallback(
     async (status: AccessStatus, apiCall: () => Promise<unknown>) => {
       await apiCall()
-        .then(() => ["user-list-opco", "user-list", "user"].map((x) => client.invalidateQueries(x)))
+        .then(() => ["user-list-opco", "user-list"].map((x) => client.invalidateQueries(x)))
         .then(() => {
           toast({
             description: `Utilisateur ${getDescription(status)}`,

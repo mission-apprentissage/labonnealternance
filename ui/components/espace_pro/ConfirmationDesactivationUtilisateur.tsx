@@ -27,7 +27,7 @@ export const ConfirmationDesactivationUtilisateur = ({
   onClose,
   isOpen,
   onUpdate,
-}: { userRecruteur?: IUserRecruteurJson; onUpdate?: () => void } & ReturnType<typeof useDisclosure>) => {
+}: { userRecruteur?: IUserRecruteurJson; onUpdate?: (props: { reason: string }) => void } & ReturnType<typeof useDisclosure>) => {
   const { establishment_raison_sociale, _id: _idObject, type } = userRecruteur ?? {}
   const _id = (_idObject ?? "").toString()
   const [reason, setReason] = useState()
@@ -62,7 +62,7 @@ export const ConfirmationDesactivationUtilisateur = ({
       default:
         throw new Error(`unsupported type: ${type}`)
     }
-    onUpdate?.()
+    onUpdate?.({ reason })
     onClose()
     reasonComment.onClose()
   }
