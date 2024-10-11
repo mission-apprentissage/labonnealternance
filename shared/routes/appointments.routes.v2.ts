@@ -1,33 +1,30 @@
 import { referrers } from "../constants/referers"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZEtablissement } from "../models"
 
 import { IRoutesDef } from "./common.routes"
 
-const zContextCreateSchemaParcoursup = z
+const ZAppointmentContextParcoursup = z
   .object({
-    idParcoursup: z.string(),
-    trainingHasJob: z.boolean().optional(),
+    parcoursup_id: z.string(),
     referrer: z.literal(referrers.PARCOURSUP.name.toLowerCase()),
   })
   .strict()
 
-export type IContextCreateSchemaParcoursup = z.output<typeof zContextCreateSchemaParcoursup>
+export type IAppointmentContextParcoursup = z.output<typeof ZAppointmentContextParcoursup>
 
-const zContextCreateSchemaActionFormation = z
+const ZAppointmentContextOnisep = z
   .object({
-    idActionFormation: z.string().min(1),
-    trainingHasJob: z.boolean().optional(),
+    onisep_id: z.string().describe("Identifiant ONISEP utilisé avec le mapping de la collection referentielonisep"),
     referrer: z.literal(referrers.ONISEP.name.toLowerCase()),
   })
   .strict()
 
-export type IContextCreateSchemaActionFormation = z.output<typeof zContextCreateSchemaActionFormation>
+export type IAppointmentContextOnisep = z.output<typeof ZAppointmentContextOnisep>
 
-const zContextCreateSchemaCleMinistereEducatif = z
+const ZAppointmentContextCleMinistereEducatif = z
   .object({
-    idCleMinistereEducatif: z.string().min(1),
-    trainingHasJob: z.boolean().optional(),
+    cle_ministere_educatif: z.string(),
     referrer: z.enum([
       referrers.PARCOURSUP.name.toLowerCase(),
       referrers.LBA.name.toLowerCase(),
@@ -38,81 +35,46 @@ const zContextCreateSchemaCleMinistereEducatif = z
   })
   .strict()
 
-export type IContextCreateSchemaCleMinistereEducatif = z.output<typeof zContextCreateSchemaCleMinistereEducatif>
+export type IAppointmentContextCleMinistereEducatif = z.output<typeof ZAppointmentContextCleMinistereEducatif>
 
-const zContextCreateSchema = z.union([
+const ZAppointmentContextApi = z.union([
   // Find through "idParcoursup"
-  zContextCreateSchemaParcoursup,
-
+  ZAppointmentContextParcoursup,
   // Find through "idActionFormation"
-  zContextCreateSchemaActionFormation,
-
+  ZAppointmentContextOnisep,
   // Find through "idCleMinistereEducatif"
-  zContextCreateSchemaCleMinistereEducatif,
+  ZAppointmentContextCleMinistereEducatif,
 ])
+export type IAppointmentContextAPI = z.output<typeof ZAppointmentContextApi>
 
-const zAppointmentRequestContextCreateFormAvailableResponseSchema = z
+const ZAppointmentResponse = z
   .object({
-    etablissement_formateur_entreprise_raison_sociale: ZEtablissement.shape.raison_sociale,
-    intitule_long: z.string().openapi({
-      example: "METIERS D'ART ET DU DESIGN (DN)",
-    }),
-    lieu_formation_adresse: z.string().openapi({
-      example: "80 Rue Jules Ferry",
-    }),
-    code_postal: z.string().openapi({
-      example: "93170",
-    }),
-    etablissement_formateur_siret: ZEtablissement.shape.formateur_siret,
-    cfd: z.string().openapi({
-      example: "24113401",
-    }),
-    localite: z.string().openapi({ example: "Bagnolet" }),
-    id_rco_formation: z
-      .string()
-      .openapi({
-        example: "14_AF_0000095539|14_SE_0000501120##14_SE_0000598458##14_SE_0000642556##14_SE_0000642557##14_SE_0000825379##14_SE_0000825382|101249",
-      })
-      .nullable(),
-    cle_ministere_educatif: z.string().openapi({
-      example: "101249P01313538697790003635386977900036-93006#L01",
-    }),
-    form_url: z.string().openapi({
-      example: "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=affelnet&cleMinistereEducatif=101249P01313538697790003635386977900036-93006%23L01",
-    }),
+    etablissement_formateur_entreprise_raison_sociale: z.string().nullable().describe("Raison social de l'établissement formateur"),
+    intitule_long: z.string().describe("Intitulé long de la formation"),
+    lieu_formation_adresse: z.string().describe("Adresse du lieu de formation"),
+    code_postal: z.string().describe("Code postal du lieu de formation"),
+    etablissement_formateur_siret: extensions.siret.nullable().describe("Numéro SIRET de l'établissement formateur"),
+    cfd: z.string().describe("Code formation diplôme de la formation"),
+    localite: z.string().describe("Localité du lieu de formation"),
+    id_rco_formation: z.string().nullable().describe("Identifiant RCO de la formation"),
+    cle_ministere_educatif: z.string().describe("Identifiant unique de la formation au sein du ministère de l'éducation"),
+    form_url: z.string().describe("Lien de prise de rendez-vous La bonne alternance"),
   })
   .strict()
 
-const zAppointmentRequestContextCreateFormUnavailableResponseSchema = z
-  .object({
-    error: z.literal("Prise de rendez-vous non disponible."),
-  })
-  .strict()
-
-const zAppointmentRequestContextCreateResponseSchema = z.union([
-  zAppointmentRequestContextCreateFormAvailableResponseSchema,
-  zAppointmentRequestContextCreateFormUnavailableResponseSchema,
-])
-
-export type IAppointmentRequestContextCreateResponseSchema = z.output<typeof zAppointmentRequestContextCreateResponseSchema>
-export type IAppointmentRequestContextCreateFormAvailableResponseSchema = z.output<typeof zAppointmentRequestContextCreateFormAvailableResponseSchema>
-export type IAppointmentRequestContextCreateFormUnavailableResponseSchema = z.output<typeof zAppointmentRequestContextCreateFormUnavailableResponseSchema>
+export type IAppointmentResponse = z.output<typeof ZAppointmentResponse>
 
 export const zAppointmentsRouteV2 = {
   post: {
     "/appointment": {
       method: "post",
       path: "/appointment",
-      body: zContextCreateSchema,
+      body: ZAppointmentContextApi,
       response: {
-        "200": zAppointmentRequestContextCreateResponseSchema,
+        "200": ZAppointmentResponse,
+        "204": z.literal("Appointment request not available"),
       },
-      securityScheme: { auth: "api-key", access: null, resources: {} },
-      openapi: {
-        tags: ["V2 - Appointment Request"] as string[],
-        operationId: "appointmentCreateContext",
-        description: "Appointment request",
-      },
+      securityScheme: { auth: "api-apprentissage", access: null, resources: {} },
     },
   },
 } as const satisfies IRoutesDef
