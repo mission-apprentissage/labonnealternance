@@ -227,6 +227,15 @@ export const OffresTabs = ({ recruiter, establishmentId, showStats = false }: { 
                     </MenuItem>
                     <MenuItem>
                       <Link
+                        isExternal
+                        href={`${publicConfig.baseUrl}/espace-pro/offre/impression/${row._id}`}
+                        aria-label="Lien vers la page d'impression de l'offre - nouvelle fenêtre"
+                      >
+                        Imprimer l'offre
+                      </Link>
+                    </MenuItem>
+                    <MenuItem>
+                      <Link
                         onClick={(e) => {
                           e.preventDefault()
                           e.stopPropagation()
