@@ -101,6 +101,25 @@ export default (server: Server) => {
   )
 
   server.put(
+    "/admin/users/:userId",
+    {
+      schema: zRoutes.put["/admin/users/:userId"],
+      onRequest: [server.auth(zRoutes.put["/admin/users/:userId"])],
+    },
+    async (req, res) => {
+      const { userId } = req.params
+      const { ...userFields } = req.body
+
+      const result = await updateUserWithAccountFields(userId, userFields)
+      if ("error" in result) {
+        throw badRequest("L'email est déjà utilisé", { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS })
+      }
+
+      return res.status(200).send({ ok: true })
+    }
+  )
+
+  server.put(
     "/admin/users/:userId/organization/:siret",
     {
       schema: zRoutes.put["/admin/users/:userId/organization/:siret"],
@@ -109,6 +128,20 @@ export default (server: Server) => {
     async (req, res) => {
       const { userId, siret } = req.params
       const { opco, ...userFields } = req.body
+
+      const entreprise = await getDbCollection("entreprises").findOne({ siret })
+      if (!entreprise) {
+        throw notFound("Entreprise non trouvée", { error: BusinessErrorCodes.NOTFOUND })
+      }
+      const roleManagement = await getDbCollection("rolemanagements").findOne({
+        user_id: userId,
+        authorized_id: entreprise._id.toString(),
+        authorized_type: AccessEntityType.ENTREPRISE,
+      })
+      if (!roleManagement) {
+        throw forbidden("L'entreprise n'est pas gérée par l'utilisateur cible", { error: BusinessErrorCodes.UNSUPPORTED })
+      }
+
       const result = await updateUserWithAccountFields(userId, userFields)
       if ("error" in result) {
         throw badRequest("L'email est déjà utilisé", { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS })

@@ -32,6 +32,7 @@ export function generateRecruiterFixture(data: RecruiterFixtureInput): IRecruite
     establishment_siret: "11000001500013",
     email: `stages-${randomUUID()}@mail.com`,
     is_delegated: false,
+    opco: null,
     status: RECRUITER_STATUS.ACTIF,
     createdAt: new Date("2021-01-28T15:00:00.000Z"),
     updatedAt: new Date("2021-02-03T17:00:00.000Z"),

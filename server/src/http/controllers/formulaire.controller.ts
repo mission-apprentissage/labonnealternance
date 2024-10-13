@@ -1,5 +1,5 @@
 import { badRequest, conflict, internal, notFound } from "@hapi/boom"
-import { RECRUITER_STATUS } from "shared/constants"
+import { OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants"
 import { JOB_STATUS, zRoutes } from "shared/index"
 
 import { getUserFromRequest } from "@/security/authenticationService"
@@ -93,7 +93,8 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { userId: userRecruteurId } = req.params
-      const { establishment_siret, email, last_name, first_name, phone, opco, idcc } = req.body
+      const { establishment_siret, email, last_name, first_name, phone, idcc } = req.body
+      const opco = req.body?.opco as OPCOS_LABEL
       const userRecruteurOpt = await getUserRecruteurById(userRecruteurId)
       if (!userRecruteurOpt) {
         throw badRequest("Nous n'avons pas trouvé votre compte utilisateur")
@@ -109,7 +110,7 @@ export default (server: Server) => {
         siret: establishment_siret,
         cfa_delegated_siret: userRecruteurOpt.establishment_siret,
         origin: userRecruteurOpt.scope ?? "",
-        opco,
+        opco: opco || OPCOS_LABEL.UNKNOWN_OPCO,
         idcc,
         managedBy: userRecruteurOpt._id.toString(),
       })

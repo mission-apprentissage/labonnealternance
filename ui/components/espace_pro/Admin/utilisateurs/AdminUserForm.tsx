@@ -7,7 +7,7 @@ import { INewSuperUser, IUserWithAccountJson, ZNewSuperUser, ZUserWithAccountFie
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
-import { createSuperUser, updateEntrepriseAdmin } from "@/utils/api"
+import { createSuperUser, updateUser } from "@/utils/api"
 import { apiDelete, ApiError } from "@/utils/api.utils"
 
 import { CustomFormControl } from "../../CustomFormControl"
@@ -46,7 +46,7 @@ export const AdminUserForm = ({
   const onSubmit = async (values: INewSuperUser) => {
     if (user) {
       const { email, first_name, last_name, phone = "" } = values
-      updateEntrepriseAdmin(user._id.toString(), { email, first_name, last_name, phone })
+      updateUser(user._id.toString(), { email, first_name, last_name, phone })
         .then(() => {
           toast({
             title: "Utilisateur mis à jour",

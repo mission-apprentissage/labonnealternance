@@ -264,6 +264,22 @@ export const zUserRecruteurRoutes = {
         },
       },
     },
+    "/admin/users/:userId": {
+      method: "put",
+      path: "/admin/users/:userId",
+      params: z.object({ userId: zObjectId }).strict(),
+      body: ZUserWithAccountFields.partial(),
+      response: {
+        "200": z.object({ ok: z.boolean() }).strict(),
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        access: "user:manage",
+        resources: {
+          user: [{ _id: { type: "params", key: "userId" } }],
+        },
+      },
+    },
     "/admin/users/:userId/organization/:siret": {
       method: "put",
       path: "/admin/users/:userId/organization/:siret",
