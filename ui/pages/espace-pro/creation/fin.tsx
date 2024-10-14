@@ -4,6 +4,7 @@ import { useRouter } from "next/router"
 import { useContext, useState } from "react"
 import { useQuery, useQueryClient } from "react-query"
 import { ETAT_UTILISATEUR } from "shared/constants"
+import { getDirectJobPath } from "shared/constants/lbaitem"
 import { zObjectId } from "shared/models/common"
 import { z } from "zod"
 
@@ -236,7 +237,7 @@ const JobPreview = ({ jobId, userIsValidated }: { jobId: string; userIsValidated
     <Box mb={2}>
       <Box mb={2}>
         <Link
-          href={`/recherche-apprentissage?display=list&page=fiche&type=matcha&itemId=${jobId}`}
+          href={getDirectJobPath(jobId)}
           aria-label="Ouvrir la page de prévisualisation de l'offre sur le site La bonne alternance - nouvelle fenêtre"
           isExternal
           variant="basicUnderlinedBlue"

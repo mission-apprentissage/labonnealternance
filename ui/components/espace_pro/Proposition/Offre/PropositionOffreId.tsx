@@ -3,6 +3,7 @@ import { useRouter } from "next/router"
 import { useEffect } from "react"
 import { useQuery } from "react-query"
 import { IJobJson } from "shared"
+import { getDirectJobPath } from "shared/constants/lbaitem"
 
 import { LoadingEmptySpace } from "../.."
 import { dayjs } from "../../../../common/dayjs"
@@ -28,7 +29,7 @@ export default function PropositionOffreId() {
    * @return {Promise<void>}
    */
   const copyInClipboard = () => {
-    navigator.clipboard.writeText(`${publicConfig.baseUrl}/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`)
+    navigator.clipboard.writeText(`${publicConfig.baseUrl}${getDirectJobPath(job._id)}`)
     toast({
       title: "Lien copié.",
       position: "top-right",

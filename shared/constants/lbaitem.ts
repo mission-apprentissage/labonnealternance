@@ -66,3 +66,5 @@ export const newItemTypeToOldItemType = (lbaItemType: LBA_ITEM_TYPE): LBA_ITEM_T
 
 export const allLbaItemType = Object.values(LBA_ITEM_TYPE)
 export const allLbaItemTypeOLD = Object.values(LBA_ITEM_TYPE_OLD)
+
+export const getDirectJobPath = (jobId: string) => `/recherche-apprentissage?display=list&page=fiche&type=matcha&itemId=${jobId}`

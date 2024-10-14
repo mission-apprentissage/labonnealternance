@@ -1,57 +1,68 @@
 import { Box, Image, Text } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import { useRouter } from "next/router"
+import QRCode from "react-qr-code"
 import { useQuery } from "react-query"
+import { getDirectJobPath } from "shared/constants/lbaitem"
 
 import { LoadingEmptySpace } from "@/components/espace_pro"
-import { getOffre } from "@/utils/api"
+import fetchLbaJobDetails from "@/services/fetchLbaJobDetails"
+import { LbaNew } from "@/theme/components/logos"
 
 export default function PrintableJobPage() {
   const router = useRouter()
   const { jobId } = router.query as { jobId: string }
 
-  const { data: offre, isLoading } = useQuery("offre", () => getOffre(jobId), {
+  const { data: offre, isLoading } = useQuery("offre", () => fetchLbaJobDetails({ id: jobId }), {
     enabled: !!jobId,
     cacheTime: 0,
   })
 
   if (isLoading || !jobId) return <LoadingEmptySpace label="Chargement en cours" />
 
+  console.log("offre : ", offre)
   return (
     <Box maxWidth="21cm" textAlign="center" py={12} px={12}>
       <Image mx="auto" src="/images/espace_pro/images/illustration-impression.svg" alt="" aria-hidden={true} />
       <Text mx="auto" fontSize="24px" mt={6}>
-        {}
+        {offre.company.name}
       </Text>
       <Text mx="auto" fontSize="28px" fontWeight={700}>
         recrute en alternance !
       </Text>
-      <Text mx="auto" fontSize="32px" mt={8} color="pinksoft.600" fontWeight={700}>
-        {offre.rome_appellation_label}
+      <Text mx="auto" fontSize="32px" mt={7} color="pinksoft.600" fontWeight={700}>
+        {offre.title}
       </Text>
       <Box backgroundColor="#F6F6F6" maxWidth="500px" mx="auto" mt={6} p={6} textAlign="center">
         <Text color="#161616" fontSize="16px">
           Date de début :{" "}
           <Text as="span" fontWeight={700}>
-            {dayjs(offre.job_start_date).format("DD/MM/YYYY")}
+            {dayjs(offre.job.jobStartDate).format("DD/MM/YYYY")}
           </Text>
         </Text>
         <Text color="#161616" fontSize="16px">
           Niveau visé en fin d'études :{" "}
           <Text as="span" fontWeight={700}>
-            {offre.job_level_label}
+            {offre.target_diploma_level}
           </Text>
         </Text>
       </Box>
       <Text mt={6} fontWeight={700} mx="auto" color="#161616">
         Pour lire plus de détails sur l’offre et postuler
       </Text>
-      <Text fontWeight={700} mx="auto" color="pinksoft.600">
+      <Text fontWeight={700} mx="auto" mb={6} color="pinksoft.600">
         Rendez-vous sur La bonne alternance
       </Text>
+      <QRCode
+        value={`https://labonnealternance.apprentissage.beta.gouv.fr${getDirectJobPath(jobId)}`}
+        size={128}
+        style={{ margin: "auto", height: "auto", maxWidth: "128x", width: "128px" }}
+        viewBox={`0 0 128 128`}
+      />
       <Text mt={6} fontSize="12px" mx="auto" color="#161616">
         Scannez ce QR Code pour voir le détail de l'offre
       </Text>
+      <LbaNew mt={6} w="143px" h="37px" />
     </Box>
   )
 }
