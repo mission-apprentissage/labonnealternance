@@ -20,7 +20,6 @@ export default function PrintableJobPage() {
 
   if (isLoading || !jobId) return <LoadingEmptySpace label="Chargement en cours" />
 
-  console.log("offre : ", offre)
   return (
     <Box maxWidth="21cm" textAlign="center" py={12} px={12}>
       <Image mx="auto" src="/images/espace_pro/images/illustration-impression.svg" alt="" aria-hidden={true} />
@@ -54,7 +53,7 @@ export default function PrintableJobPage() {
         Rendez-vous sur La bonne alternance
       </Text>
       <QRCode
-        value={`https://labonnealternance.apprentissage.beta.gouv.fr${getDirectJobPath(jobId)}`}
+        value={`${window.location.origin}${getDirectJobPath(jobId)}`}
         size={128}
         style={{ margin: "auto", height: "auto", maxWidth: "128x", width: "128px" }}
         viewBox={`0 0 128 128`}
