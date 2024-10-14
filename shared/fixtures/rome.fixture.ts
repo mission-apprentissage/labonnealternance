@@ -2,7 +2,7 @@ import { ObjectId } from "bson"
 
 import { IReferentielRome } from "../models"
 
-export function generateReferentielRome(data: Partial<IReferentielRome>): IReferentielRome {
+export function generateReferentielRome(data: Partial<IReferentielRome> = {}): IReferentielRome {
   return {
     _id: new ObjectId(),
     competences: {

@@ -229,7 +229,12 @@ export const saveAdminUserTest = async (userProps: Partial<IUserWithAccount> = {
   return { user, role }
 }
 
-export const saveEntrepriseUserTest = async (userProps: Partial<IUserWithAccount> = {}, roleProps: Partial<IRoleManagement> = {}, entrepriseProps: Partial<IEntreprise> = {}) => {
+export const saveEntrepriseUserTest = async (
+  userProps: Partial<IUserWithAccount> = {},
+  roleProps: Partial<IRoleManagement> = {},
+  entrepriseProps: Partial<IEntreprise> = {},
+  recruiterProps: Partial<IRecruiter> = {}
+) => {
   const user = await saveUserWithAccount(userProps)
   const entreprise = await saveEntreprise(entrepriseProps)
   const role = await saveRoleManagement({
@@ -251,6 +256,7 @@ export const saveEntrepriseUserTest = async (userProps: Partial<IUserWithAccount
           managed_by: user._id.toString(),
         },
       ],
+      ...recruiterProps,
     })
   )
   return { user, role, entreprise, recruiter }
