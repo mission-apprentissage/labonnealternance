@@ -37,7 +37,7 @@ export const up = async (db: Db) => {
     { opco: null },
     {
       $set: {
-        opco: OPCOS_LABEL.MULTIPLE_OPCO,
+        opco: OPCOS_LABEL.UNKNOWN_OPCO,
       },
     },
     {
@@ -48,7 +48,7 @@ export const up = async (db: Db) => {
     { opco: null },
     {
       $set: {
-        opco: OPCOS_LABEL.MULTIPLE_OPCO,
+        opco: OPCOS_LABEL.UNKNOWN_OPCO,
       },
     },
     {
