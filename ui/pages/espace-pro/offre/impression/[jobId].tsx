@@ -32,20 +32,26 @@ export default function PrintableJobPage() {
       <Text mx="auto" fontSize="32px" mt={7} color="pinksoft.600" fontWeight={700}>
         {offre.title}
       </Text>
-      <Box backgroundColor="#F6F6F6" maxWidth="500px" mx="auto" mt={6} p={6} textAlign="center">
-        <Text color="#161616" fontSize="16px">
-          Date de début :{" "}
-          <Text as="span" fontWeight={700}>
-            {dayjs(offre.job.jobStartDate).format("DD/MM/YYYY")}
-          </Text>
-        </Text>
-        <Text color="#161616" fontSize="16px">
-          Niveau visé en fin d'études :{" "}
-          <Text as="span" fontWeight={700}>
-            {offre.target_diploma_level}
-          </Text>
-        </Text>
-      </Box>
+      {(offre.target_diploma_level || offre.job.jobStartDate) && (
+        <Box backgroundColor="#F6F6F6" maxWidth="500px" mx="auto" mt={6} p={6} textAlign="center">
+          {offre.job.jobStartDate && (
+            <Text color="#161616" fontSize="16px">
+              Date de début :{" "}
+              <Text as="span" fontWeight={700}>
+                {dayjs(offre.job.jobStartDate).format("DD/MM/YYYY")}
+              </Text>
+            </Text>
+          )}
+          {offre.target_diploma_level && (
+            <Text color="#161616" fontSize="16px">
+              Niveau visé en fin d'études :{" "}
+              <Text as="span" fontWeight={700}>
+                {offre.target_diploma_level}
+              </Text>
+            </Text>
+          )}
+        </Box>
+      )}
       <Text mt={6} fontWeight={700} mx="auto" color="#161616">
         Pour lire plus de détails sur l’offre et postuler
       </Text>
@@ -60,6 +66,11 @@ export default function PrintableJobPage() {
       />
       <Text mt={6} fontSize="12px" mx="auto" color="#161616">
         Scannez ce QR Code pour voir le détail de l'offre
+        <br />
+        ou rendez-vous sur{" "}
+        <Text as="span" fontWeight={700}>
+          labonnealternance.apprentissage.beta.gouv.fr
+        </Text>
       </Text>
       <LbaNew mt={6} w="143px" h="37px" />
     </Box>
