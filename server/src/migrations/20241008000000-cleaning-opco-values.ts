@@ -14,6 +14,9 @@ export const up = async (db: Db) => {
       $set: {
         opco: OPCOS_LABEL.UNKNOWN_OPCO,
       },
+    },
+    {
+      bypassDocumentValidation: true,
     }
   )
   await db.collection("recruiters").updateMany(
@@ -24,6 +27,9 @@ export const up = async (db: Db) => {
       $set: {
         opco: OPCOS_LABEL.UNKNOWN_OPCO,
       },
+    },
+    {
+      bypassDocumentValidation: true,
     }
   )
 
@@ -33,6 +39,9 @@ export const up = async (db: Db) => {
       $set: {
         opco: OPCOS_LABEL.MULTIPLE_OPCO,
       },
+    },
+    {
+      bypassDocumentValidation: true,
     }
   )
   await db.collection("recruiters").updateMany(
@@ -41,6 +50,9 @@ export const up = async (db: Db) => {
       $set: {
         opco: OPCOS_LABEL.MULTIPLE_OPCO,
       },
+    },
+    {
+      bypassDocumentValidation: true,
     }
   )
 
