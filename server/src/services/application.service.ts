@@ -272,7 +272,7 @@ const buildUrlsOfDetail = (publicUrl: string, application: IApplication) => {
   if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     urlSearchParams.append("utm_source", "lba")
     urlSearchParams.append("utm_medium", "email")
-    urlSearchParams.append("utm_campaign", "jecandidaterecruteur")
+    urlSearchParams.append("utm_campaign", "je-candidate-recruteur")
   }
   const params = urlSearchParams.toString()
   return {
@@ -304,7 +304,7 @@ const buildReplyLink = (application: IApplication, intention: ApplicantIntention
   searchParams.append("ln", application.applicant_last_name)
   searchParams.append("utm_source", "lba")
   searchParams.append("utm_medium", "email")
-  searchParams.append("utm_campaign", "jecandidaterecruteur")
+  searchParams.append("utm_campaign", "je-candidate-recruteur")
   const token = generateApplicationReplyToken(userForToken, applicationId)
   searchParams.append("token", token)
   return `${config.publicUrl}/formulaire-intention?${searchParams.toString()}`
@@ -329,7 +329,7 @@ export const getUser2ManagingOffer = async (job: Pick<IJob, "managed_by" | "_id"
 const buildRecruiterEmailUrls = async (application: IApplication) => {
   const { job_id } = application
   const type = job_id ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA : LBA_ITEM_TYPE.RECRUTEURS_LBA
-  const utmRecruiterData = "&utm_source=lba&utm_medium=email&utm_campaign=jecandidaterecruteur"
+  const utmRecruiterData = "&utm_source=lba&utm_medium=email&utm_campaign=je-candidate-recruteur"
 
   let user: IUserWithAccount | undefined
   if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
