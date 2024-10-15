@@ -3,6 +3,7 @@ import dayjs from "dayjs"
 import { useRouter } from "next/router"
 import QRCode from "react-qr-code"
 import { useQuery } from "react-query"
+import { NIVEAUX_POUR_LBA } from "shared/constants"
 import { getDirectJobPath } from "shared/constants/lbaitem"
 
 import { LoadingEmptySpace } from "@/components/espace_pro"
@@ -38,7 +39,7 @@ export default function PrintableJobPage() {
       <Text mx="auto" fontSize="32px" mt={7} color="pinksoft.600" fontWeight={700}>
         {offre.title}
       </Text>
-      {(offre.target_diploma_level || offre.job.jobStartDate) && (
+      {((offre.target_diploma_level && offre.target_diploma_level !== NIVEAUX_POUR_LBA.INDIFFERENT) || offre.job.jobStartDate) && (
         <Box backgroundColor="#F6F6F6" maxWidth="500px" mx="auto" mt={6} p={6} textAlign="center">
           {offre.job.jobStartDate && (
             <Text color="#161616" fontSize="16px">
@@ -48,13 +49,15 @@ export default function PrintableJobPage() {
               </Text>
             </Text>
           )}
-          {offre.target_diploma_level && (
+          {offre.target_diploma_level && offre.target_diploma_level !== NIVEAUX_POUR_LBA.INDIFFERENT ? (
             <Text color="#161616" fontSize="16px">
               Niveau visé en fin d'études :{" "}
               <Text as="span" fontWeight={700}>
                 {offre.target_diploma_level}
               </Text>
             </Text>
+          ) : (
+            <></>
           )}
         </Box>
       )}
