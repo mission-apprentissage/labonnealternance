@@ -18,7 +18,13 @@ export default function PrintableJobPage() {
     cacheTime: 0,
   })
 
-  if (isLoading || !jobId) return <LoadingEmptySpace label="Chargement en cours" />
+  if (isLoading || !jobId) {
+    return <LoadingEmptySpace label="Chargement en cours" />
+  } else {
+    setTimeout(() => {
+      window.print()
+    }, 2000)
+  }
 
   return (
     <Box maxWidth="21cm" textAlign="center" py={12} px={12}>
