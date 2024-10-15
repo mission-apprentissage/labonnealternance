@@ -27,12 +27,21 @@ const Developpeurs = () => (
             <Divider variant="pageTitleDivider" my={12} />
           </GridItem>
           <GridItem px={4} colSpan={[12, 12, 12, 7]}>
+            <Text variant="editorialContentH2" as="h2">
+              Obtenir des données
+            </Text>
+            <Text as="span" fontWeight={700}>
+              API
+            </Text>
             <Text as="p" mb={4}>
               Les opportunités d'emplois et de formation exposées sur le site La bonne alternance sont accessibles à tous via notre API.
             </Text>
             <Text as="p" mt={4} mb={4}>
               Utilisée dans sa globalité cette API permet la mise en relation des candidats à l’alternance avec des entreprises accueillant des alternants d’une part et/ou avec des
               organismes de formation en alternance d’autre part.
+            </Text>
+            <Text as="p" mt={4} mb={4}>
+              Documentation des différentes routes API
             </Text>
             <UnorderedList>
               <ListItem>
@@ -51,6 +60,9 @@ const Developpeurs = () => (
               <ListItem>Envoi de candidatures à une opportunités d'emploi : à venir</ListItem>
               <ListItem>Envoi de prise de contact à une opportunité de formation : à venir</ListItem>
             </UnorderedList>
+            <Text as="span" fontWeight={700}>
+              Widget
+            </Text>
             <Text as="p" mt={4} mb={4}>
               Pour une intégration rapide et simplifiée, les données présentées ci-dessus sont également disponibles sous forme de widget.
             </Text>
@@ -78,14 +90,22 @@ const Developpeurs = () => (
               >
                 consultez cette page.
               </Link>
+            </Text>            
+            <Text variant="editorialContentH2" as="h2">
+              Envoyer des données
             </Text>
-            <Divider mt={4} my={12} w="100%" />
+            <Text as="span" fontWeight={700}>
+              API
+            </Text>
             <Text as="p" mb={4}>
               Par ailleurs, collectez et partagez les besoins en recrutement en alternance de vos entreprises, afin d’améliorer leur visibilité auprès des candidats à l’alternance
               via cette API :{" "}
               <Link variant="editorialContentLink" aria-label="Dépôt d'offre" href="https://api.apprentissage.beta.gouv.fr/fr/explorer/depot-offre" isExternal>
                 https://api.apprentissage.beta.gouv.fr/fr/explorer/depot-offre
               </Link>
+            </Text>
+            <Text as="span" fontWeight={700}>
+              Widget
             </Text>
             <Text as="p" mb={4}>
               Pour une intégration rapide et simplifiée, cette fonctionnalité est également disponible sous forme de widget.
