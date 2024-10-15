@@ -88,7 +88,7 @@ describe("helloWorkJobToJobsPartners", () => {
       workplace_description: "ceci est une longue description de l'entreprise qui a du sens et qui va passer la limite de 30 caractères",
       workplace_size: null,
       workplace_website: null,
-      workplace_address: { label: "Stem Propreté Lyon,Villeurbanne,69100 69100 VILLEURBANNE" },
+      workplace_address_label: "Stem Propreté Lyon,Villeurbanne,69100 69100 VILLEURBANNE",
       workplace_geopoint: {
         type: "Point",
         coordinates: [4.889070834, 45.770996568],
