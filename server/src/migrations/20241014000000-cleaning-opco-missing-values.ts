@@ -6,7 +6,20 @@ import { logger } from "@/common/logger"
 export const up = async (db: Db) => {
   logger.info("20241014000000-cleaning-opco-missing-values started")
 
-  await db.collection("entreprise").updateMany(
+  await db.collection("entreprises").updateMany(
+    {
+      opco: { $in: ["Sélectionnez un OPCO", "", "pass"] },
+    },
+    {
+      $set: {
+        opco: OPCOS_LABEL.UNKNOWN_OPCO,
+      },
+    },
+    {
+      bypassDocumentValidation: true,
+    }
+  )
+  await db.collection("entreprises").updateMany(
     {
       opco: { $exists: false },
     },
@@ -33,7 +46,18 @@ export const up = async (db: Db) => {
     }
   )
 
-  await db.collection("entreprise").updateMany(
+  await db.collection("entreprises").updateMany(
+    { opco: "Opco multiple" },
+    {
+      $set: {
+        opco: OPCOS_LABEL.MULTIPLE_OPCO,
+      },
+    },
+    {
+      bypassDocumentValidation: true,
+    }
+  )
+  await db.collection("entreprises").updateMany(
     { opco: null },
     {
       $set: {
