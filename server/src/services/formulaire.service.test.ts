@@ -62,7 +62,7 @@ describe("createJob", () => {
 
     expect.soft(omit(result, "jobs")).toMatchSnapshot()
     expect.soft(result.jobs.length).toEqual(1)
-    expect.soft(omit(result.jobs[0], "job_creation_date", "job_update_date", "_id")).toMatchSnapshot()
+    expect.soft(omit(result.jobs[0], "job_creation_date", "job_update_date", "_id", "job_expiration_date")).toMatchSnapshot()
   })
   it("should raise a bad request when savoir_etre_professionnel do not match referentiel rome", async () => {
     const job = generateValidJobWritable()
