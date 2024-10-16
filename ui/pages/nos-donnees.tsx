@@ -43,7 +43,7 @@ const Developpeurs = () => (
             <Text as="p" mt={4} mb={4}>
               Documentation des différentes routes API
             </Text>
-            <UnorderedList>
+            <UnorderedList mb={4}>
               <ListItem>
                 Recherche d'opportunités d'emploi en alternance :{" "}
                 <Link
@@ -90,7 +90,7 @@ const Developpeurs = () => (
               >
                 consultez cette page.
               </Link>
-            </Text>            
+            </Text>
             <Text variant="editorialContentH2" as="h2">
               Envoyer des données
             </Text>
