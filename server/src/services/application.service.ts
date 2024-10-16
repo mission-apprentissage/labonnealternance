@@ -5,7 +5,7 @@ import { ObjectId } from "mongodb"
 import { ApplicationScanStatus, IApplication, IJob, ILbaCompany, INewApplicationV2, IRecruiter, JOB_STATUS, assertUnreachable } from "shared"
 import { ApplicantIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType } from "shared/constants/lbaitem"
+import { getDirectJobPath, LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 import { ITrackingCookies } from "shared/models/trafficSources.model"
@@ -358,7 +358,7 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
     urls.cancelJobUrl = createCancelJobLink(userForToken, application.job_id, utmRecruiterData)
   }
   if (application.job_id) {
-    urls.jobUrl = `${config.publicUrl}/recherche-apprentissage?display=list&page=fiche&type=matcha&itemId=${application.job_id}${utmRecruiterData}`
+    urls.jobUrl = `${config.publicUrl}${getDirectJobPath(application.job_id)}${utmRecruiterData}`
   }
 
   return urls
@@ -868,7 +868,6 @@ export const processApplicationScanForVirus = async (application: IApplication) 
 
   if (hasVirus) {
     const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, application)
-    const attachmentContent = await getApplicationAttachmentContent(application)
     await mailer.sendEmail({
       to: application.applicant_email,
       subject: "Echec d'envoi de votre candidature",
@@ -879,12 +878,6 @@ export const processApplicationScanForVirus = async (application: IApplication) 
         urlOfDetail,
         urlOfDetailNoUtm,
       },
-      attachments: [
-        {
-          filename: application.applicant_attachment_name,
-          path: attachmentContent,
-        },
-      ],
     })
   }
 
