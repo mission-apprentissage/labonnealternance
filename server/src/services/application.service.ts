@@ -868,7 +868,6 @@ export const processApplicationScanForVirus = async (application: IApplication) 
 
   if (hasVirus) {
     const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, application)
-    const attachmentContent = await getApplicationAttachmentContent(application)
     await mailer.sendEmail({
       to: application.applicant_email,
       subject: "Echec d'envoi de votre candidature",
@@ -879,12 +878,6 @@ export const processApplicationScanForVirus = async (application: IApplication) 
         urlOfDetail,
         urlOfDetailNoUtm,
       },
-      attachments: [
-        {
-          filename: application.applicant_attachment_name,
-          path: attachmentContent,
-        },
-      ],
     })
   }
 
