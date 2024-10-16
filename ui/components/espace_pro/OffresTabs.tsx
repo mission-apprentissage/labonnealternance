@@ -76,6 +76,8 @@ export const OffresTabs = ({ recruiter, establishmentId, showStats = false }: { 
 
   const jobs: (IJob & { candidatures: number; geo_coordinates: string })[] = recruiter?.jobs ?? []
 
+  console.log("recruiter stat : ", recruiter.status)
+
   if (jobs.length === 0) {
     return (
       <Box py={6} backgroundColor="bluefrance.250">
@@ -225,6 +227,17 @@ export const OffresTabs = ({ recruiter, establishmentId, showStats = false }: { 
                         <ExternalLinkLine ml={1} color="bluefrance.500" />
                       </Link>
                     </MenuItem>
+                    {row.job_status !== JOB_STATUS.EN_ATTENTE && (
+                      <MenuItem>
+                        <Link
+                          isExternal
+                          href={`${publicConfig.baseUrl}/espace-pro/offre/impression/${row._id}`}
+                          aria-label="Lien vers la page d'impression de l'offre - nouvelle fenêtre"
+                        >
+                          Imprimer l'offre
+                        </Link>
+                      </MenuItem>
+                    )}
                     <MenuItem>
                       <Link
                         onClick={(e) => {
