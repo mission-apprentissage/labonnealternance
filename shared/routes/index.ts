@@ -43,7 +43,6 @@ const zRoutesGetP1 = {
 const zRoutesGetP2 = {
   ...zV1JobsRoutes.get,
   ...zV1FormationsRoutes.get,
-  ...zAppointmentsRouteV2.get,
 } as const
 
 const zRoutesGetP3 = {

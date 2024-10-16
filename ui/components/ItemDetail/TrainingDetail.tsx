@@ -1,13 +1,14 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Image, Link, Text } from "@chakra-ui/react"
 import React, { Fragment, useContext, useEffect, useState } from "react"
+import { useQuery } from "react-query"
 
 import { isCfaEntreprise } from "@/services/cfaEntreprise"
+import { getPrdvContext } from "@/utils/api"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import fetchInserJeuneStats from "../../services/fetchInserJeuneStats"
-import fetchPrdv from "../../services/fetchPrdv"
 import { SendPlausibleEvent } from "../../utils/plausible"
 import { formatDate } from "../../utils/strutils"
 
@@ -23,9 +24,14 @@ const dontBreakOutCssParameters = {
   hyphens: "auto",
 }
 
-const TrainingDetail = ({ training, hasAlsoJob }) => {
+const TrainingDetail = ({ training }) => {
   const [IJStats, setIJStats] = useState(null)
   const isCfaDEntreprise = isCfaEntreprise(training?.company?.siret, training?.company?.headquarter?.siret)
+
+  useQuery(["getPrdv", training.id], () => fetchPrdvContext(training.id), {
+    retry: false,
+    enabled: training && !training.prdvLoaded,
+  })
 
   useEffect(() => {
     SendPlausibleEvent("Affichage - Fiche formation", {
@@ -50,27 +56,19 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
     document.getElementsByClassName("choiceCol")[0].scrollTo(0, 0)
   }, []) // Utiliser le useEffect une seule fois : https://css-tricks.com/run-useeffect-only-once/
 
-  useEffect(() => {
-    if (!training.prdvLoaded) {
-      fetchPrdv(training, hasAlsoJob).then((result) => {
-        if (result) {
-          applyDataFromRdvA(result.error === "indisponible" ? "" : result)
-        }
-      })
-    }
-  }, [training.id])
-
-  const applyDataFromRdvA = (appointmentContextResponse) => {
+  const fetchPrdvContext = async (cleMinistereEducatif: string) => {
+    const context = await getPrdvContext(cleMinistereEducatif)
     const updatedTrainings = trainings
     updatedTrainings.forEach(async (v) => {
       if (v.id === training.id) {
         if (!v.prdvLoaded) {
           v.prdvLoaded = true
-          v.rdvContext = appointmentContextResponse
+          v.rdvContext = context
           setTrainingsAndSelectedItem(updatedTrainings, v)
         }
       }
     })
+    return
   }
 
   return (

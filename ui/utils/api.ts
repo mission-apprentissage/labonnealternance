@@ -151,6 +151,18 @@ export const getEntrepriseOpco = async (siret: string) => {
   }
 }
 
+export const getPrdvContext = async (cle_ministere_educatif: string) => {
+  try {
+    const data = await apiGet("/appointment/:cle_ministere_educatif/context", { params: { cle_ministere_educatif } }, { timeout: 7000 })
+    return data
+  } catch (error) {
+    if (error.message !== BusinessErrorCodes.TRAINING_NOT_FOUND) {
+      captureException(error)
+    }
+    return null
+  }
+}
+
 export const getCompanyContactInfo = async (siret: string) => {
   const data = await apiGet("/lbacompany/:siret/contactInfo", { params: { siret } })
   return data

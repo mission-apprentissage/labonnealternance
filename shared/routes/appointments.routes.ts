@@ -101,6 +101,23 @@ export type IAppointmentRequestContextCreateFormUnavailableResponseSchema = z.ou
 
 export const zAppointmentsRoute = {
   get: {
+    "/appointment/:cle_ministere_educatif/context": {
+      method: "get",
+      path: "/appointment/:cle_ministere_educatif/context",
+      params: z
+        .object({
+          cle_ministere_educatif: z.string().openapi({
+            param: {
+              description: "the id of the lba  job looked for.",
+            },
+          }),
+        })
+        .strict(),
+      response: {
+        "200": zAppointmentRequestContextCreateResponseSchema,
+      },
+      securityScheme: null,
+    },
     "/appointment-request/context/short-recap": {
       method: "get",
       path: "/appointment-request/context/short-recap",
