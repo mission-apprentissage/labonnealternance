@@ -106,7 +106,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     offer_to_be_acquired_skills: [],
     offer_rome_codes: codeRomeParsing.success ? [codeRomeParsing.data] : undefined,
     offer_creation: creationDate,
-    offer_expiration: creationDate ? dayjs(creationDate).add(2, "months").toDate() : null,
+    offer_expiration: creationDate ? dayjs.tz(creationDate).add(2, "months").toDate() : null,
     offer_origin: null,
     offer_opening_count: 1,
     offer_multicast: false,

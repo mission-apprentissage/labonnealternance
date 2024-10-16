@@ -32,7 +32,6 @@ export const rawToComputedJobsPartners = async <ZodInput extends AnyZodObject>({
     getDbCollection(collectionSource).find({}).stream(),
     writeData(
       async (document) => {
-        //console.log("DOCUMENT : ", document)
         counters.total++
         try {
           const rawJob = documentJobRoot ? document[documentJobRoot] : document
