@@ -10,6 +10,8 @@ import { LoadingEmptySpace } from "@/components/espace_pro"
 import fetchLbaJobDetails from "@/services/fetchLbaJobDetails"
 import { LbaNew } from "@/theme/components/logos"
 
+const printExactColor = { sx: { "-webkit-print-color-adjust": "exact", "print-color-adjust": "exact" } }
+
 export default function PrintableJobPage() {
   const router = useRouter()
   const { jobId } = router.query as { jobId: string }
@@ -36,11 +38,11 @@ export default function PrintableJobPage() {
       <Text mx="auto" fontSize="28px" fontWeight={700}>
         recrute en alternance !
       </Text>
-      <Text mx="auto" fontSize="32px" mt={7} color="pinksoft.600" fontWeight={700}>
+      <Text mx="auto" fontSize="32px" mt={7} {...printExactColor} color="pinksoft.600" fontWeight={700}>
         {offre.title}
       </Text>
       {((offre.target_diploma_level && offre.target_diploma_level !== NIVEAUX_POUR_LBA.INDIFFERENT) || offre.job.jobStartDate) && (
-        <Box backgroundColor="#F6F6F6" maxWidth="500px" mx="auto" mt={6} p={6} textAlign="center">
+        <Box {...printExactColor} backgroundColor="#F6F6F6" maxWidth="500px" mx="auto" mt={6} p={6} textAlign="center">
           {offre.job.jobStartDate && (
             <Text color="#161616" fontSize="16px">
               Date de début :{" "}
@@ -64,7 +66,7 @@ export default function PrintableJobPage() {
       <Text mt={6} fontWeight={700} mx="auto" color="#161616">
         Pour lire plus de détails sur l’offre et postuler
       </Text>
-      <Text fontWeight={700} mx="auto" mb={6} color="pinksoft.600">
+      <Text fontWeight={700} mx="auto" mb={6} {...printExactColor} color="pinksoft.600">
         Rendez-vous sur La bonne alternance
       </Text>
       <QRCode
