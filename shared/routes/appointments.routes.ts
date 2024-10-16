@@ -108,7 +108,7 @@ export const zAppointmentsRoute = {
         .object({
           cle_ministere_educatif: z.string().openapi({
             param: {
-              description: "the id of the lba  job looked for.",
+              description: "the cle ministère éducatif of the targetted training.",
             },
           }),
         })
