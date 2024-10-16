@@ -46,6 +46,7 @@ const saveTrafficSourceIfAny = async ({
       referer: source.referer,
       utm_medium: source.utm_medium,
       utm_source: source.utm_source,
+      created_at: new Date(),
     })
   }
 }
