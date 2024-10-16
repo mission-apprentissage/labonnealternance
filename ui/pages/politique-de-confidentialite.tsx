@@ -13,7 +13,7 @@ import {
   optUserOut,
   removeCookie,
   setCookie,
-} from "@/common/utils/matomoCookieUtils"
+} from "@/common/utils/trackingCookieUtils"
 
 import Breadcrumb from "../components/breadcrumb"
 import Footer from "../components/footer"
@@ -44,11 +44,11 @@ const PolitiqueDeConfidentialite = ({ recordMap }) => {
   const changeMatomoOptout = ({ checked }) => {
     if (checked) {
       removeCookie(CONSENT_REMOVED_COOKIE_NAME)
-      setCookie(CONSENT_COOKIE_NAME, new Date().getTime(), MTM_CONSENT_COOKIE_DURATION)
+      setCookie(CONSENT_COOKIE_NAME, "" + new Date().getTime(), MTM_CONSENT_COOKIE_DURATION)
       forgetOptUserOut()
     } else {
       removeCookie(CONSENT_COOKIE_NAME)
-      setCookie(CONSENT_REMOVED_COOKIE_NAME, new Date().getTime(), MTM_CONSENT_COOKIE_DURATION)
+      setCookie(CONSENT_REMOVED_COOKIE_NAME, "" + new Date().getTime(), MTM_CONSENT_COOKIE_DURATION)
       optUserOut()
     }
     setHasConsent(checked)

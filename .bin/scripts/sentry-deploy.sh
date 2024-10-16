@@ -16,24 +16,12 @@ readonly VAULT_FILE="${ROOT_DIR}/.infra/vault/vault.yml"
 
 LBA_SERVER_SENTRY_DSN=$(ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq '.vault.LBA_SERVER_SENTRY_DSN')
 LBA_UI_SENTRY_DSN=$(ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq '.vault.LBA_UI_SENTRY_DSN')
-SENTRY_AUTH_TOKEN=$(ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq '.vault.SENTRY_AUTH_TOKEN')
+export SENTRY_AUTH_TOKEN=$(ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq '.vault.SENTRY_AUTH_TOKEN')
 
-docker run \
-  --platform=linux/amd64 \
-  --rm \
-  -i \
-  --entrypoint /bin/bash \
-  -e SENTRY_AUTH_TOKEN="${SENTRY_AUTH_TOKEN}" \
-  -e SENTRY_DSN="${LBA_SERVER_SENTRY_DSN}" \
-  ghcr.io/mission-apprentissage/mna_lba_server:${VERSION} \
-  /app/server/sentry-deploy-server.sh "${ENVIRONMENT}" "${VERSION}"
+export SENTRY_DSN="${LBA_SERVER_SENTRY_DSN}"
+cd "$ROOT_DIR/server"
+"./sentry-deploy-server.sh" "${ENVIRONMENT}" "${VERSION}"
 
-docker run \
-  --platform=linux/amd64 \
-  --rm \
-  -i \
-  --entrypoint /bin/bash \
-  -e SENTRY_AUTH_TOKEN="${SENTRY_AUTH_TOKEN}" \
-  -e SENTRY_DSN="${LBA_UI_SENTRY_DSN}" \
-  ghcr.io/mission-apprentissage/mna_lba_ui:${VERSION}-${ENVIRONMENT} \
-  /app/ui/sentry-deploy-ui.sh "${ENVIRONMENT}" "${VERSION}"
+export SENTRY_DSN="${LBA_UI_SENTRY_DSN}"
+cd "$ROOT_DIR/ui"
+"./sentry-deploy-ui.sh" "${ENVIRONMENT}" "${VERSION}"

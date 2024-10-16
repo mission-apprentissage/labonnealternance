@@ -1,7 +1,8 @@
 import { init } from "@socialgouv/matomo-next"
+import { useRouter } from "next/router"
 import { useEffect } from "react"
 
-import { setIsTrackingEnabled } from "@/common/utils/matomoCookieUtils"
+import { setIsTrackingEnabled, setTrackingCookies } from "@/common/utils/trackingCookieUtils"
 
 import HeadLaBonneAlternance from "../components/head"
 import PageTracker from "../components/pageTracker"
@@ -14,10 +15,15 @@ import "../public/styles/notion.css"
 import "../styles/search.css"
 
 export default function LaBonneAlternance({ Component, pageProps }) {
+  const router = useRouter()
+
   useEffect(() => {
     init(publicConfig.matomo)
     setIsTrackingEnabled()
   }, [])
+  useEffect(() => {
+    setTrackingCookies(router)
+  }, [router.query])
 
   return (
     <Providers>

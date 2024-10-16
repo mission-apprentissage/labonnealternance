@@ -116,6 +116,13 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "example": "Au bon pain d'antan",
             "type": "string",
           },
+          "company_phone": {
+            "description": "Numéro de téléphone du recruteur",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
           "company_siret": {
             "description": "Le siret de l'entreprise. Fourni par La bonne alternance. ",
             "example": "00004993900000",
@@ -149,6 +156,13 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "job_id": {
             "description": "L'identifiant de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est offres_emploi_lba . La valeur est fournie par La bonne alternance. ",
             "example": "...59c24c059b...",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "job_searched_by_user": {
+            "description": "Métier recherché par le candidat",
             "type": [
               "string",
               "null",
@@ -2938,6 +2952,21 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "opco": {
             "description": "Opco de rattachement de l'établissement",
+            "enum": [
+              "AFDAS",
+              "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
+              "ATLAS",
+              "Constructys",
+              "L'Opcommerce",
+              "OCAPIAT",
+              "OPCO 2i",
+              "Opco entreprises de proximité",
+              "Opco Mobilités",
+              "Opco Santé",
+              "Uniformation, l'Opco de la Cohésion sociale",
+              "inconnu",
+              "OPCO multiple",
+            ],
             "type": [
               "string",
               "null",
@@ -2972,6 +3001,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "establishment_siret",
           "email",
           "jobs",
+          "opco",
         ],
         "type": "object",
       },
@@ -3122,6 +3152,13 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "pattern": "^[0-9]{14}$",
             "type": "string",
           },
+          "job_searched_by_user": {
+            "description": "Métier recherché par le candidat",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
           "message": {
             "description": "Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat.",
             "example": "Madame, monsieur...",
@@ -3136,9 +3173,9 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "applicant_last_name",
           "applicant_email",
           "applicant_phone",
-          "company_siret",
           "applicant_file_name",
           "applicant_file_content",
+          "company_siret",
         ],
         "type": "object",
       },
@@ -3242,6 +3279,13 @@ Limite : 5 appel(s) / 5 seconde(s)
                             "description": "Identifiant unique de l'offre LBA",
                             "example": "id_mongoDB",
                             "type": "string",
+                          },
+                          "job_searched_by_user": {
+                            "description": "Métier recherché par le candidat",
+                            "type": [
+                              "string",
+                              "null",
+                            ],
                           },
                           "message": {
                             "description": "Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat.",

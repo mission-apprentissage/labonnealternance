@@ -169,12 +169,21 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      - name: Build sourcemaps
+        run: yarn build
+        env:
+          NEXT_PUBLIC_ENV: production
+          NEXT_PUBLIC_VERSION: ${{ needs.release.outputs.VERSION }}
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create vault pwd file
+        run: echo ${{ secrets.VAULT_PWD }} > .infra/.vault_pwd.txt
 
       - name: upload sourcemaps to sentry
         run: .bin/mna-lba sentry:release ${{ needs.release.outputs.VERSION }}

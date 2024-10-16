@@ -26,14 +26,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@asteasolutions/zod-to-openapi@npm:^7.1.1":
-  version: 7.1.1
-  resolution: "@asteasolutions/zod-to-openapi@npm:7.1.1"
+"@asteasolutions/zod-to-openapi@npm:^7.1.1, @asteasolutions/zod-to-openapi@npm:^7.2.0":
+  version: 7.2.0
+  resolution: "@asteasolutions/zod-to-openapi@npm:7.2.0"
   dependencies:
     openapi3-ts: ^4.1.2
   peerDependencies:
     zod: ^3.20.2
-  checksum: 7d0d444f1e8721040d2ce08f1b1108a60be93e10c54eb806823490b3e2e3b41347f15fa9bb41b9754a0cdc844a1fad42267b0a9af5668efac09a762baad0801f
+  checksum: a1117fc8e851a4263e4acddadff6a5ca886aa62955e7a09c869f704c784800ec4fa5405df837571fa40e12412e41ae40447e573463c5363d3057b92a0477a001
   languageName: node
   linkType: hard
 
@@ -6829,17 +6829,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"api-alternance-sdk@npm:^0.0.2-rc.3":
-  version: 0.0.2-rc.3
-  resolution: "api-alternance-sdk@npm:0.0.2-rc.3"
+"api-alternance-sdk@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "api-alternance-sdk@npm:1.1.0"
   dependencies:
-    "@asteasolutions/zod-to-openapi": ^7.1.1
+    "@asteasolutions/zod-to-openapi": ^7.2.0
     jsonwebtoken: ^9.0.2
     luhn: ^2.4.1
     luxon: ^3.5.0
-    openapi3-ts: ^4.3.3
+    openapi3-ts: ^4.4.0
     zod: ^3.23.8
-  checksum: df675013469ffefa360900d2bec4333661cc5793d4b98b59f9701214ffa7f77f9b83e303e0d45023e0bba2bdab3266b83bd402dd07093da452b6697b7d1a6ea4
+  checksum: f7e9cd114980020e401dafe5f4095efe143ac0831dc506546349ea2d3184f14b98569ce7ab0d8ea5ecbfebed9bd753c5febfc38e19487a473d92c671c2b1cc39
   languageName: node
   linkType: hard
 
@@ -16915,7 +16915,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openapi3-ts@npm:^4.1.2, openapi3-ts@npm:^4.3.3, openapi3-ts@npm:^4.4.0":
+"openapi3-ts@npm:^4.1.2, openapi3-ts@npm:^4.4.0":
   version: 4.4.0
   resolution: "openapi3-ts@npm:4.4.0"
   dependencies:
@@ -19700,7 +19700,7 @@ __metadata:
     "@types/nodemailer-html-to-text": ^3.1.1
     "@types/supertest": ^2.0.13
     "@typescript-eslint/eslint-plugin": ^5.62.0
-    api-alternance-sdk: ^0.0.2-rc.3
+    api-alternance-sdk: ^1.1.0
     axios: ^1.7.4
     axios-cache-interceptor: ^1.5.3
     basic-ftp: ^5.0.3

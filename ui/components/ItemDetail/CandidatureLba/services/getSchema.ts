@@ -1,16 +1,19 @@
 import * as Yup from "yup"
 
+import { sessionStorageGet } from "@/utils/localStorage"
+
 import { phoneValidation } from "../../../../common/validation/fieldValidations"
 
 export function getInitialSchemaValues() {
+  const inSessionValue = JSON.parse(sessionStorageGet("application-form-values"))
   return {
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    fileName: "",
-    fileContent: null,
-    message: "",
+    firstName: inSessionValue?.applicant_first_name ?? "",
+    lastName: inSessionValue?.applicant_last_name ?? "",
+    email: inSessionValue?.applicant_email ?? "",
+    phone: inSessionValue?.applicant_phone ?? "",
+    fileName: inSessionValue?.applicant_file_name ?? "",
+    fileContent: inSessionValue?.applicant_file_content ?? "",
+    message: inSessionValue?.message ?? "",
   }
 }
 

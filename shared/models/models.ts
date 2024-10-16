@@ -19,7 +19,6 @@ import etablissementModel from "./etablissement.model"
 import formationModel from "./formation.model"
 import franceTravailAccessModel from "./franceTravailAccess.model"
 import geolocationsModel from "./geolocations.model"
-import internalJobModel from "./internalJob.model"
 import jobsModel from "./jobs.model"
 import jobsPartnersModel from "./jobsPartners.model"
 import jobsPartnersComputedModel from "./jobsPartnersComputed.model "
@@ -40,6 +39,7 @@ import roleManagementModel from "./roleManagement.model"
 import romeModel from "./rome.model"
 import sessionModel from "./session.model"
 import siretDiffusibleStatusModel from "./siretDiffusibleStatus.model"
+import trafficSourcesModel from "./trafficSources.model"
 import unsubscribedLbaCompanyModel from "./unsubscribedRecruteurLba.model"
 import unsubscribeOFModel from "./unsubscribeOF.model"
 import userModel from "./user.model"
@@ -63,7 +63,6 @@ const modelDescriptorMap = {
   [formationModel.collectionName]: formationModel,
   [franceTravailAccessModel.collectionName]: franceTravailAccessModel,
   [geolocationsModel.collectionName]: geolocationsModel,
-  [internalJobModel.collectionName]: internalJobModel,
   [jobsModel.collectionName]: jobsModel,
   [jobsPartnersModel.collectionName]: jobsPartnersModel,
   [jobsPartnersComputedModel.collectionName]: jobsPartnersComputedModel,
@@ -89,6 +88,7 @@ const modelDescriptorMap = {
   [referentielCommuneModel.collectionName]: referentielCommuneModel,
   [rawKelioModel.collectionName]: rawKelioModel,
   [rawRHAlternanceModel.collectionName]: rawRHAlternanceModel,
+  [trafficSourcesModel.collectionName]: trafficSourcesModel,
 } as const satisfies Record<string, IModelDescriptor>
 
 export const modelDescriptors = Object.values(modelDescriptorMap) as (typeof modelDescriptorMap)[keyof typeof modelDescriptorMap][] satisfies IModelDescriptor[]

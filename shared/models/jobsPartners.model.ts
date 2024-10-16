@@ -156,6 +156,11 @@ const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
   offer_rome_codes: ZJobsPartnersOfferPrivate.shape.offer_rome_codes.nullable().default(null),
   offer_description: ZJobsPartnersOfferPrivate.shape.offer_description.min(30, "Job description should be at least 30 characters"),
   offer_target_diploma_european: zDiplomaEuropeanLevel.nullable().default(null),
+  offer_status: extensions
+    .buildEnum(JOB_STATUS_ENGLISH)
+    .nullish()
+    .default(JOB_STATUS_ENGLISH.ACTIVE)
+    .describe("Status de l'offre (surtout utilisé pour les offres ajouté par API)"),
 
   workplace_siret: extensions.siret,
   workplace_address_label: z.string().nullable().default(null),

@@ -14,7 +14,7 @@ import CandidatureLbaFailed from "./CandidatureLbaFailed"
 import CandidatureLbaModalBody from "./CandidatureLbaModalBody"
 import CandidatureLbaWorked from "./CandidatureLbaWorked"
 import { getInitialSchemaValues, getValidationSchema } from "./services/getSchema"
-import submitCandidature from "./services/submitCandidature"
+import { useSubmitCandidature } from "./services/submitCandidature"
 
 export const NoCandidatureLba = () => {
   return (
@@ -32,6 +32,7 @@ export const NoCandidatureLba = () => {
 const CandidatureLba = ({ item }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [sendingState, setSendingState] = useState("not_sent")
+  const submitCandidature = useSubmitCandidature()
   const kind: LBA_ITEM_TYPE_OLD = item?.ideaType || ""
 
   const onModalClose = () => {

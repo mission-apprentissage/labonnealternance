@@ -416,6 +416,7 @@ export const createFormulaire = async (payload: Partial<Omit<IRecruiter, "_id" |
     email: payload.email as string,
     establishment_siret: payload.establishment_siret as string,
     is_delegated: payload.is_delegated ?? (false as boolean),
+    opco: payload.opco ?? null,
     jobs: [],
   }
   await getDbCollection("recruiters").insertOne(recruiter)
@@ -452,21 +453,20 @@ export const updateFormulaire = async (establishment_id: IRecruiter["establishme
  * @param {IRecruiter["establishment_id"]} establishment_id
  * @returns {Promise<boolean>}
  */
-export const archiveFormulaire = async (id: IRecruiter["establishment_id"]): Promise<boolean> => {
+export const archiveFormulaireByEstablishmentId = async (id: IRecruiter["establishment_id"]) => {
   const recruiter = await getDbCollection("recruiters").findOne({ establishment_id: id })
   if (!recruiter) {
     throw internal("Recruiter not found")
   }
+  await archiveFormulaire(recruiter)
+}
 
+export const archiveFormulaire = async (recruiter: IRecruiter) => {
   recruiter.status = RECRUITER_STATUS.ARCHIVE
-
   recruiter.jobs.map((job) => {
     job.job_status = JOB_STATUS.ANNULEE
   })
-
   await getDbCollection("recruiters").findOneAndUpdate({ _id: recruiter._id }, { $set: { ...recruiter, updatedAt: new Date() } })
-
-  return true
 }
 
 /**
@@ -486,24 +486,11 @@ export const reactivateRecruiter = async (id: IRecruiter["_id"]): Promise<boolea
 /**
  * @description Archive existing delegated formulaires and cancel all its job offers
  * @param {IUserRecruteur["establishment_siret"]} establishment_siret
- * @returns {Promise<boolean>}
  */
-export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establishment_siret"]): Promise<boolean> => {
+export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establishment_siret"]) => {
   const formulaires = await getDbCollection("recruiters").find({ cfa_delegated_siret: siret }).toArray()
-
   if (!formulaires.length) return false
-
-  await asyncForEach(formulaires, async (form: IRecruiter) => {
-    form.status = RECRUITER_STATUS.ARCHIVE
-
-    form.jobs.forEach((job) => {
-      job.job_status = JOB_STATUS.ANNULEE
-    })
-
-    await getDbCollection("recruiters").findOneAndUpdate({ _id: form._id }, { $set: { ...form, updatedAt: new Date() } })
-  })
-
-  return true
+  await asyncForEach(formulaires, archiveFormulaire)
 }
 
 /**

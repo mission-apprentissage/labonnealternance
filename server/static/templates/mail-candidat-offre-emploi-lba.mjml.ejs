@@ -1,0 +1,272 @@
+<mjml>
+    <mj-head>
+      <mj-preview></mj-preview>
+      <mj-breakpoint width="480px"></mj-breakpoint>
+      <mj-attributes>
+        <mj-all padding="0"></mj-all>
+      </mj-attributes>
+      <mj-style>
+        @media only screen and (max-width: 799px) {
+        .text > div {
+        text-align: inherit !important;
+        }
+  
+        .wrapper > table > tbody > tr > td {
+        padding-left: 0px !important;
+        padding-right: 0px !important;
+        }
+  
+        .section > table > tbody > tr > td {
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+        }
+  
+        .column > table > tbody > tr > td {
+        padding-left: 0px !important;
+        padding-right: 0px !important;
+        }
+  
+        .padB40 {
+        padding-bottom: 40px !important;
+        }
+  
+        .image {
+        padding-left: 0px !important;
+        padding-right: 0px !important;
+        }
+  
+        .image > table {
+        text-align: center !important;
+        margin: 0 auto !important;
+        }
+  
+        .divider {
+        padding-left: 0px !important;
+        padding-right: 0px !important;
+        }
+  
+        .button > table {
+        width: 100% !important;
+        }
+  
+        .button > table > tbody > tr > td > a {
+        width: 80% !important;
+        }
+        }
+      </mj-style>
+      <mj-style inline="inline">
+        .column > table { border-collapse: separate; }
+      </mj-style>
+      <mj-font href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400&display=swap" name="DM Sans"></mj-font>
+      <mj-font href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@700&display=swap" name="Public Sans"></mj-font>
+    </mj-head>
+    <mj-body background-color="#f5f5fe" name="Candidat - Confirmation de candidature spontanée" width="800px">
+      <mj-wrapper border-radius="0px" css-class="wrapper" padding="32px 100px 32px 100px">
+        <mj-section border-radius="0px" css-class="section" name="mj-section_group">
+          <mj-group>
+            <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="14.83%">
+              <mj-image align="left" alt="Image" css-class="image" href="#" src="https://media.cannoli.app/media/figma/46a9d7a92237d70a777298cc54afe73c.png" width="89px">
+  
+              </mj-image>
+            </mj-column>
+            <mj-column border-radius="0px" css-class="column" padding="0px 24px 0px 24px" vertical-align="middle" width="34.83%">
+              <mj-image align="left" alt="Image" css-class="image" href="#" padding="17px 0px 17px 0px" src="https://media.cannoli.app/media/figma/a7e530fa093bb73a6c543fbd862951b7.png" width="160px">
+  
+              </mj-image>
+            </mj-column>
+            <mj-column border-radius="0px" css-class="column" vertical-align="top" width="50.33%">
+  
+            </mj-column>
+          </mj-group>
+        </mj-section>
+        <mj-spacer height="24px">
+  
+        </mj-spacer>
+        <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="23px 23px 23px 23px">
+          <mj-group>
+            <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="-298.56%">
+              <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px" padding="16px 0px 16px 0px">
+                Votre candidature a bien été envoyée<%= data.applicationWebsiteOrigin %> à
+                <br />
+              </mj-text>
+            </mj-column>
+            <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="99.64%">
+              <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="24px" padding="10px 0px 10px 0px">
+                <%= data.company_name %>, <span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;"><%= data.company_address %>.</span>
+                <br />
+              </mj-text>
+            </mj-column>
+            <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="99.64%">
+              <mj-text align="left" color="#161616" css-class="text" font-family="DM Sans, Times, Georgia, serif" font-size="16px" font-weight="400" line-height="24px" padding="10px 0px 10px 0px">
+                <span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 700;">ℹ️ </span><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; font-weight: 700; color: #161616;">Il faut en moyenne 30 candidatures pour obtenir un entretien. </span>
+                <br />
+                <span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; font-weight: 400; color: #161616;">Continuez de postulez à des opportunités en alternance :</span>
+                <br />
+              </mj-text>
+            </mj-column>
+            <mj-column border-radius="0px" css-class="column" padding="0px 157px 0px 157px" vertical-align="middle" width="99.64%">
+              <mj-button align="center" background-color="#000091" border-radius="0px" border="1px solid #000091" color="#ffffff" css-class="button" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" inner-padding="4px 0px 4px 0px" line-height="24px" padding="10px 0px 10px 0px" width="238px" href="https://labonnealternance.apprentissage.beta.gouv.fr/?utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidatecandidat">
+                J’envoie d’autres candidatures
+              </mj-button>
+            </mj-column>
+            <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="99.64%">
+              <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="10px 0px 10px 0px">
+                <span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 700;">Besoin d’aide dans le suivi de vos candidatures ?
+                </span><br />Téléchargez notre <a href="https://mission-apprentissage.notion.site/Tableau-de-suivi-des-candidatures-c82bcabc36b24445a78c9f1eef2f7179?pvs=4" style="text-decoration: underline; color: inherit;">tableau de suivi</a> à compléter.
+                <br />
+              </mj-text>
+            </mj-column>
+          </mj-group>
+        </mj-section>
+        <mj-spacer height="24px">
+  
+        </mj-spacer>
+        <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="23px 23px 23px 23px">
+          <mj-group>
+            <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="-198.92000000000002%">
+              <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px" padding="10px 0px 10px 0px">
+                Vous avez déjà envoyé plus de 30 candidatures ?
+                <br />
+              </mj-text>
+            </mj-column>
+            <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="99.64%">
+              <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="10px 0px 10px 0px">
+                <span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; font-weight: 700;">💡 Profitez de conseils </span><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; font-weight: 400;">pour trouver votre entreprise grâce à notre outil interactif “</span><a href="https://dinum-beta.didask.com/courses/demonstration/60d21bf5be76560000ae916e" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; font-weight: 400; text-decoration: underline; color: inherit;">chercher un employeur</a><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; font-weight: 400;">”.</span>
+                <br />
+              </mj-text>
+            </mj-column>
+            <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="99.64%">
+              <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="10px 0px 10px 0px">
+                <span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; font-weight: 700;">💡</span>&nbsp;<span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; font-weight: 700;">Contactez la Mission locale de votre secteur. </span><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; font-weight: 400;">Des conseillers vous aideront dans vos recherches d'entreprise. </span><a href="https://www.unml.info/les-missions-locales/annuaire/" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; font-weight: 400; text-decoration: underline; color: inherit;">Trouver ma mission locale</a><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; font-weight: 400;">.</span>
+                <br />
+              </mj-text>
+            </mj-column>
+            <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="99.64%">
+              <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="10px 0px 10px 0px">
+                <span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; font-weight: 700;">💡</span>&nbsp;<span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; font-weight: 700;">Diversifiez vos démarches</span><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; font-weight: 400;"> en répondant à des offres d'emploi ainsi qu'en envoyant des candidatures spontanées, car </span><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; font-weight: 700;">5 employeurs sur 10 recrutent sans déposer d'offres</span><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; font-weight: 400;">.</span>
+                <br />
+              </mj-text>
+            </mj-column>
+          </mj-group>
+        </mj-section>
+        <mj-spacer height="24px">
+  
+        </mj-spacer>
+        <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="23px 23px 23px 23px">
+          <mj-group>
+            <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="-298.56%">
+              <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px">
+                Rappel de votre candidature
+                <br />
+              </mj-text>
+            </mj-column>
+            <mj-spacer height="24px" padding="0px 24px 0px 24px">
+
+            </mj-spacer>
+            <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="99.64%">
+                <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px">
+                  Métier :
+                  <br />
+                </mj-text>
+                <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="24px">
+                    <%= data.job_title %>
+                  <br />
+                </mj-text>
+              </mj-column>
+              <mj-spacer height="24px" padding="0px 24px 0px 24px">
+
+              </mj-spacer>
+            <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="99.64%">
+              <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px">
+                Message au responsable du recrutement :
+                <br />
+              </mj-text>
+              <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="28px">
+                <%- data.applicant_message_to_company %>
+              </mj-text>
+            </mj-column>
+            <mj-spacer height="24px" padding="0px 24px 0px 24px">
+  
+            </mj-spacer>
+            <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="99.64%">
+              <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px">
+                Pièce jointe envoyée :
+                <br />
+              </mj-text>
+              <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="24px">
+                <%= data.attachmentName %>
+                <br />
+              </mj-text>
+            </mj-column>
+            <mj-spacer height="23px" padding="0px 24px 0px 24px">
+  
+            </mj-spacer>
+            <% if (data.company_phone) { %>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 0px 0px">
+              📞 Si l'établissement <%= data.company_name %> ne vous a pas répondu le <%= data.reminderDate %>, relancez le par téléphone au <span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 700;"><%= data.company_phone %>.</span>
+              <br />
+            </mj-text>
+            <% } %>
+            <mj-spacer height="24px" padding="0px 24px 0px 24px">
+  
+            </mj-spacer>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 0px 0px">
+              Exemple de relance :<span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; font-style: italic;">
+              </span><br /><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; font-style: italic;">“Bonjour,
+              </span><br /><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; font-style: italic;">Je suis <%= data.applicant_first_name %> <%= data.applicant_last_name %>. Je vous appelle car je vous ai envoyé ma candidature par mail le <%= data.applicationDate %> pour un poste d'apprenti <%= data.job_title %>. N'ayant pas reçu de réponse, je me permets de vous relancer car je suis vraiment très intéressé·e par votre entreprise. Je serai heureux·se de vous expliquer plus en détail ma motivation lors d'un rendez-vous. Pourriez-vous me dire à qui je dois m’adresser pour savoir où en est ma candidature et quand puis-je espérer recevoir une réponse ?”</span>
+              <br />
+            </mj-text>
+            <mj-spacer height="24px" padding="0px 24px 0px 24px">
+  
+            </mj-spacer>
+            <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="99.64%">
+              <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px">
+                Lien vers l’offre :
+                <br />
+              </mj-text>
+              <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="24px" text-decoration="underline">
+                <span style="text-decoration: none;"></span><a href="<%= data.urlOfDetailNoUtm %>"><%= data.urlOfDetailNoUtm %></a><span style="text-decoration: none;"></span>
+                <br />
+              </mj-text>
+            </mj-column>
+            <mj-spacer height="24px" padding="0px 24px 24px 24px">
+  
+            </mj-spacer>
+          </mj-group>
+        </mj-section>
+        <mj-spacer height="24px">
+  
+        </mj-spacer>
+        <mj-section border-radius="4px" css-class="section" name="mj-section_group">
+          <mj-group>
+            <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+              <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
+                Ce courriel est généré automatiquement, vous ne pouvez pas y répondre.
+                <br />Pour toute question, consultez notre <a href="https://labonnealternance.apprentissage.beta.gouv.fr/faq" style="text-decoration: underline; color: inherit;">FAQ</a> ou écrivez-nous à <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr" style="text-decoration: underline; color: inherit;">labonnealternance@apprentissage.beta.gouv.fr</a>
+                <br />
+              </mj-text>
+            </mj-column>
+          </mj-group>
+        </mj-section>
+        <mj-spacer height="24px">
+  
+        </mj-spacer>
+        <mj-section border-radius="4px" css-class="section" name="mj-section_group">
+          <mj-group>
+            <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+              <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
+                La bonne alternance est un site développé par la Mission interministérielle pour l'apprentissage, au sein de l’État, conformément aux missions d’intérêt public du ministère du Travail, du Plein emploi et de l’Insertion.
+                <br />
+                <br />Nous vous contactons car vous avez candidaté à une entreprise identifiée par La bonne alternance.
+                <br />
+                <br />Nous ne faisons aucune utilisation commerciale de vos adresses e-mail. Vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Droit%20opposition" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">labonnealternance@apprentissage.beta.gouv.fr</a>
+                <br />
+                <br />Si vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL. Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la <a href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">politique de confidentialité</a> de La bonne alternance.
+                <br />
+              </mj-text>
+            </mj-column>
+          </mj-group>
+        </mj-section>
+      </mj-wrapper>
+    </mj-body>
+  </mjml>

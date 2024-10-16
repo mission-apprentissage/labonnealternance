@@ -1,9 +1,29 @@
+import { useContext } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
+import { DisplayContext } from "@/context/DisplayContextProvider"
 import { getItemId } from "@/utils/getItemId"
-import { localStorageSet } from "@/utils/localStorage"
+import { localStorageSet, sessionStorageSet } from "@/utils/localStorage"
 
 import { apiPost } from "../../../../utils/api.utils"
+
+export const useSubmitCandidature = (): typeof submitCandidature => {
+  const displayContext = useContext(DisplayContext)
+  if (!displayContext) {
+    return submitCandidature
+  }
+  const { formValues } = displayContext
+  const { job } = formValues ?? {}
+  const { label: job_searched_by_user } = job ?? {}
+  return (props) =>
+    submitCandidature({
+      ...props,
+      formValues: {
+        ...props.formValues,
+        job_searched_by_user,
+      },
+    })
+}
 
 export default async function submitCandidature({
   formValues,
@@ -18,7 +38,7 @@ export default async function submitCandidature({
 }) {
   setSendingState("currently_sending")
 
-  const payload = {
+  const applicationPayload = {
     applicant_first_name: formValues.firstName,
     applicant_last_name: formValues.lastName,
     applicant_email: formValues.email,
@@ -26,6 +46,10 @@ export default async function submitCandidature({
     message: formValues.message,
     applicant_file_name: formValues.fileName,
     applicant_file_content: formValues.fileContent,
+    job_searched_by_user: formValues.job_searched_by_user,
+  }
+  const payload = {
+    ...applicationPayload,
     company_siret: LbaJob.ideaType === LBA_ITEM_TYPE_OLD.LBA ? LbaJob.company?.siret : undefined, // either company_siret or job_id
     job_id: LbaJob.ideaType === LBA_ITEM_TYPE_OLD.MATCHA ? LbaJob.job?.id : undefined, // either company_siret or job_id
     caller,
@@ -33,6 +57,7 @@ export default async function submitCandidature({
 
   try {
     await apiPost("/_private/application", { body: payload, headers: { authorization: `Bearer ${LbaJob.token}` } }, {}, "V2")
+    sessionStorageSet("application-form-values", applicationPayload)
     localStorageSet(`application-${LbaJob.ideaType}-${getItemId(LbaJob)}`, Date.now().toString())
     setSendingState("ok_sent")
     return true
