@@ -1,5 +1,6 @@
 import { badRequest, internal, notFound } from "@hapi/boom"
 import { ObjectId } from "mongodb"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { EApplicantRole } from "shared/constants/rdva"
 import { zRoutes } from "shared/index"
 
@@ -46,7 +47,7 @@ export default (server: Server) => {
       })
 
       if (!eligibleTrainingsForAppointment) {
-        throw badRequest("Formation introuvable.")
+        throw badRequest(BusinessErrorCodes.TRAINING_NOT_FOUND)
       }
 
       if (!eligibleTrainingsForAppointment.lieu_formation_email) {
@@ -231,6 +232,17 @@ export default (server: Server) => {
         user,
         formation,
       })
+    }
+  )
+
+  server.get(
+    "/appointment/:cle_ministere_educatif/context",
+    {
+      schema: zRoutes.get["/appointment/:cle_ministere_educatif/context"],
+    },
+    async (req, res) => {
+      const { cle_ministere_educatif } = req.params
+      res.status(200).send(await eligibleTrainingsForAppointmentService.getElligibleTrainingAppointmentContext(cle_ministere_educatif))
     }
   )
 

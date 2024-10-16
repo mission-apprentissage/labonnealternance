@@ -1,6 +1,7 @@
 import { badRequest, internal, notFound } from "@hapi/boom"
 import { Filter, ObjectId } from "mongodb"
 import { IEligibleTrainingsForAppointment, IFormationCatalogue } from "shared"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { IAppointmentRequestContextCreateResponseSchema } from "shared/routes/appointments.routes"
 
 import { logger } from "@/common/logger"
@@ -85,11 +86,10 @@ const findEtablissement = async (formateurSiret: string | null | undefined) => {
   return await getDbCollection("etablissements").findOne({ formateur_siret: formateurSiret })
 }
 
-export const getElligibleTrainingAppointmentContext = async (cleMinistereEducatif: string, referrer: string): Promise<IAppointmentRequestContextCreateResponseSchema> => {
-  const referrerObj = getReferrerByKeyName(referrer)
+export const getElligibleTrainingAppointmentContext = async (cleMinistereEducatif: string): Promise<IAppointmentRequestContextCreateResponseSchema> => {
   const eligibleTrainingsForAppointment = await findEligibleTrainingByMinisterialKey(cleMinistereEducatif)
 
-  return await getEtfaContext(eligibleTrainingsForAppointment, referrerObj.name)
+  return await getEtfaContext(eligibleTrainingsForAppointment, "LBA")
 }
 
 export const findElligibleTrainingForAppointment = async (req: any): Promise<IAppointmentRequestContextCreateResponseSchema> => {
@@ -115,7 +115,7 @@ const getEtfaContext = async (
   referrerName: string
 ): Promise<IAppointmentRequestContextCreateResponseSchema> => {
   if (!eligibleTrainingsForAppointment) {
-    throw notFound("Formation introuvable")
+    throw notFound(BusinessErrorCodes.TRAINING_NOT_FOUND)
   }
   if (!isOpenForAppointments(eligibleTrainingsForAppointment, referrerName)) {
     return {
