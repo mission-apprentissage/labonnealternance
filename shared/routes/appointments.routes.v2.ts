@@ -115,4 +115,28 @@ export const zAppointmentsRouteV2 = {
       },
     },
   },
+  get: {
+    "/appointment/:cle_ministere_educatif/context": {
+      method: "get",
+      path: "/appointment/:cle_ministere_educatif/context",
+      params: z
+        .object({
+          cle_ministere_educatif: z.string().openapi({
+            param: {
+              description: "the id of the lba  job looked for.",
+            },
+          }),
+        })
+        .strict(),
+      querystring: z
+        .object({
+          referrer: z.string(),
+        })
+        .strict(),
+      response: {
+        "200": zAppointmentRequestContextCreateResponseSchema,
+      },
+      securityScheme: null,
+    },
+  },
 } as const satisfies IRoutesDef

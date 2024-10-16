@@ -85,6 +85,13 @@ const findEtablissement = async (formateurSiret: string | null | undefined) => {
   return await getDbCollection("etablissements").findOne({ formateur_siret: formateurSiret })
 }
 
+export const getElligibleTrainingAppointmentContext = async (cleMinistereEducatif: string, referrer: string): Promise<IAppointmentRequestContextCreateResponseSchema> => {
+  const referrerObj = getReferrerByKeyName(referrer)
+  const eligibleTrainingsForAppointment = await findEligibleTrainingByMinisterialKey(cleMinistereEducatif)
+
+  return await getEtfaContext(eligibleTrainingsForAppointment, referrerObj.name)
+}
+
 export const findElligibleTrainingForAppointment = async (req: any): Promise<IAppointmentRequestContextCreateResponseSchema> => {
   const { referrer } = req.body
   const referrerObj = getReferrerByKeyName(referrer)
@@ -100,11 +107,17 @@ export const findElligibleTrainingForAppointment = async (req: any): Promise<IAp
     throw badRequest("Critère de recherche non conforme.")
   }
 
+  return await getEtfaContext(eligibleTrainingsForAppointment, referrerObj.name)
+}
+
+const getEtfaContext = async (
+  eligibleTrainingsForAppointment: IEligibleTrainingsForAppointment | null,
+  referrerName: string
+): Promise<IAppointmentRequestContextCreateResponseSchema> => {
   if (!eligibleTrainingsForAppointment) {
     throw notFound("Formation introuvable")
   }
-
-  if (!isOpenForAppointments(eligibleTrainingsForAppointment, referrerObj.name)) {
+  if (!isOpenForAppointments(eligibleTrainingsForAppointment, referrerName)) {
     return {
       error: "Prise de rendez-vous non disponible.",
     }
@@ -126,7 +139,7 @@ export const findElligibleTrainingForAppointment = async (req: any): Promise<IAp
     localite: eligibleTrainingsForAppointment.lieu_formation_city,
     id_rco_formation: eligibleTrainingsForAppointment.rco_formation_id,
     cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
-    form_url: `${config.publicUrl}/espace-pro/form?referrer=${referrerObj.name.toLowerCase()}&cleMinistereEducatif=${encodeURIComponent(
+    form_url: `${config.publicUrl}/espace-pro/form?referrer=${referrerName.toLowerCase()}&cleMinistereEducatif=${encodeURIComponent(
       eligibleTrainingsForAppointment.cle_ministere_educatif
     )}`,
   }
