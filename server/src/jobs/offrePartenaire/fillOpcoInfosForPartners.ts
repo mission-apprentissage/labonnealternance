@@ -7,7 +7,7 @@ import { getOpcoData } from "@/services/etablissement.service"
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 
 export const fillOpcoInfosForPartners = async () => {
-  const filledFields = ["workplace_idcc", "workplace_opco"] as const
+  const filledFields = ["workplace_idcc", "workplace_opco"] as const satisfies (keyof IComputedJobsPartners)[]
   return fillFieldsForPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.API_OPCO,
     sourceFields: ["workplace_siret"],

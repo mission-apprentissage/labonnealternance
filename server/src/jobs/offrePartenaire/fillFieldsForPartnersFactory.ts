@@ -3,6 +3,7 @@ import { Filter } from "mongodb"
 import { oleoduc, writeData } from "oleoduc"
 import { IJobsPartnersOfferPrivate, ZJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model "
+import { entriesToTypedRecord } from "shared/utils"
 
 import { logger as globalLogger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -39,10 +40,20 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
         counters.total % 1000 === 0 && logger.info(`processing document ${counters.total}`)
         try {
           const newFields = await getData(document)
+          const entries = Object.entries(newFields) as [FilledFields, IComputedJobsPartners[FilledFields]][]
+          const newFieldsUpdateOnlyEmpty = entriesToTypedRecord(
+            entries.filter(([key, _value]) => {
+              const oldValue = document[key]
+              return oldValue === undefined || oldValue === null || oldValue === ""
+            })
+          )
           const result = await getDbCollection("computed_jobs_partners").findOneAndUpdate(
             { _id: document._id },
             {
-              $set: newFields,
+              $set: newFieldsUpdateOnlyEmpty,
+            },
+            {
+              returnDocument: "after",
             }
           )
           if (!result) {

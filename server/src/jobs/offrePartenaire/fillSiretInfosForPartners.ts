@@ -16,6 +16,8 @@ export const fillSiretInfosForPartners = async () => {
     "workplace_geopoint",
     "workplace_naf_code",
     "workplace_naf_label",
+    "workplace_brand",
+    "workplace_legal_name",
   ] as const satisfies (keyof IComputedJobsPartners)[]
   return fillFieldsForPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.API_SIRET,
@@ -35,6 +37,8 @@ export const fillSiretInfosForPartners = async () => {
 
       const result: Partial<Pick<IComputedJobsPartners, (typeof filledFields)[number]>> = {
         workplace_size: establishment_size,
+        workplace_legal_name: establishment_raison_sociale,
+        workplace_brand: establishment_enseigne,
         workplace_name: establishment_enseigne ?? establishment_raison_sociale,
         workplace_address_label: address ?? undefined,
         workplace_geopoint: geo_coordinates ? convertStringCoordinatesToGeoPoint(geo_coordinates) : undefined,
