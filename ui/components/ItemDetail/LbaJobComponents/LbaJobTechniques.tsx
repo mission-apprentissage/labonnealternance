@@ -5,27 +5,6 @@ import React from "react"
 import { scrollToNestedElement } from "@/utils/tools"
 
 const LbaJobTechniques = ({ job }) => {
-  const getText = () => {
-    const res = (
-      <Box pl="12px">
-        {job.job.romeDetails.competences.savoirs.map((competence) => (
-          <Box key={competence.code} mb={2}>
-            <Text as="span" ml={3} fontWeight={700}>
-              {competence.libelle}
-            </Text>
-            {competence.items.map((item, idx) => (
-              <Box key={idx} pl={6}>
-                <Text as="span">&bull; {item.libelle}</Text>
-              </Box>
-            ))}
-          </Box>
-        ))}
-      </Box>
-    )
-
-    return res
-  }
-
   const onClick = (e) => {
     setTimeout(() => {
       scrollToNestedElement({ containerId: "itemDetailColumn", nestedElement: e.target, yOffsett: 220 })
@@ -44,7 +23,22 @@ const LbaJobTechniques = ({ job }) => {
               {isExpanded ? <MinusIcon fontSize="10px" /> : <AddIcon fontSize="10px" />}
             </AccordionButton>
 
-            <AccordionPanel pb={4}>{getText()}</AccordionPanel>
+            <AccordionPanel pb={4}>
+              <Box pl="12px">
+                {job.job.romeDetails.competences.savoirs.map((competence) => (
+                  <Box key={competence.code} mb={2}>
+                    <Text as="span" ml={3} fontWeight={700}>
+                      {competence.libelle}
+                    </Text>
+                    {competence.items.map((item, idx) => (
+                      <Box key={idx} pl={6}>
+                        <Text as="span">&bull; {item.libelle}</Text>
+                      </Box>
+                    ))}
+                  </Box>
+                ))}
+              </Box>
+            </AccordionPanel>
           </>
         )}
       </AccordionItem>

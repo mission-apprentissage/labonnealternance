@@ -5,23 +5,6 @@ import React from "react"
 import { scrollToNestedElement } from "@/utils/tools"
 
 const LbaJobQualites = ({ job }) => {
-  const getText = () => {
-    const res = (
-      <Box pl="12px" mt={4}>
-        {job.job.romeDetails.competences.savoir_etre_professionnel.map((competence) => (
-          <Box key={competence.code} mt={2}>
-            &bull;
-            <Text as="span" ml={3}>
-              {competence.libelle}
-            </Text>
-          </Box>
-        ))}
-      </Box>
-    )
-
-    return res
-  }
-
   const onClick = (e) => {
     setTimeout(() => {
       scrollToNestedElement({ containerId: "itemDetailColumn", nestedElement: e.target, yOffsett: 220 })
@@ -40,7 +23,18 @@ const LbaJobQualites = ({ job }) => {
               {isExpanded ? <MinusIcon fontSize="10px" /> : <AddIcon fontSize="10px" />}
             </AccordionButton>
 
-            <AccordionPanel pb={4}>{getText()}</AccordionPanel>
+            <AccordionPanel pb={4}>
+              <Box pl="12px" mt={4}>
+                {job.job.romeDetails.competences.savoir_etre_professionnel.map((competence) => (
+                  <Box key={competence.code} mt={2}>
+                    &bull;
+                    <Text as="span" ml={3}>
+                      {competence.libelle}
+                    </Text>
+                  </Box>
+                ))}
+              </Box>
+            </AccordionPanel>
           </>
         )}
       </AccordionItem>

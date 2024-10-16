@@ -103,7 +103,7 @@ const ZRomeSavoir = z
   })
   .strict()
 
-const ZRomeCategorieSavoir = z
+export const ZRomeCategorieSavoir = z
   .object({
     libelle: z.string(),
     items: z.array(ZRomeSavoir),

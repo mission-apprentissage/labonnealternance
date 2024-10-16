@@ -1,9 +1,21 @@
 import { randomUUID } from "node:crypto"
 
-import { internal, notFound } from "@hapi/boom"
+import { badRequest, internal, notFound } from "@hapi/boom"
 import { Filter, ObjectId, UpdateFilter } from "mongodb"
-import { IDelegation, IJob, IJobWithRomeDetail, IJobWritable, IRecruiter, IRecruiterWithApplicationCount, IUserRecruteur, JOB_STATUS } from "shared"
+import {
+  IDelegation,
+  IJob,
+  IJobWithRomeDetail,
+  IJobWritable,
+  IRecruiter,
+  IRecruiterWithApplicationCount,
+  IReferentielRome,
+  IUserRecruteur,
+  JOB_STATUS,
+  ZRomeCategorieSavoir,
+} from "shared"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
+import { z } from "shared/helpers/zodWithOpenApi"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
@@ -214,6 +226,10 @@ const isAuthorizedToPublishJob = async ({ userId, entrepriseId }: { userId: Obje
  * @description Create job offer for formulaire
  */
 export const createJob = async ({ job, establishment_id, user }: { job: IJobWritable; establishment_id: string; user: IUserWithAccount }): Promise<IRecruiter> => {
+  const invalidCompetences = await areJobCompetencesValid(job)
+  if (invalidCompetences.length) {
+    throw badRequest("compétences invalides", { invalidCompetences })
+  }
   const userId = user._id
   const recruiter = await getDbCollection("recruiters").findOne({ establishment_id: establishment_id })
   if (!recruiter) {
@@ -241,10 +257,6 @@ export const createJob = async ({ job, establishment_id, user }: { job: IJobWrit
   const codeRome = job.rome_code.at(0)
   if (!codeRome) {
     throw internal(`inattendu : pas de code rome pour une création d'offre pour le recruiter id=${establishment_id}`)
-  }
-  const romeData = await getRomeDetailsFromDB(codeRome)
-  if (!romeData) {
-    throw internal(`could not find rome infos for rome=${codeRome}`)
   }
   const creationDate = new Date()
   const { job_start_date } = job
@@ -819,4 +831,29 @@ export const getFormulaireFromUserIdOrError = async (userId: string) => {
     throw internal(`inattendu : formulaire non trouvé`, { userId })
   }
   return formulaire
+}
+
+const areJobCompetencesValid = async (job: IJobWritable) => {
+  const { competences_rome, rome_code } = job
+  const romeDetails = await getRomeDetailsFromDB(rome_code[0])
+  if (!romeDetails) {
+    throw internal("unexpected: rome details not found")
+  }
+  const { savoir_etre_professionnel, savoir_faire, savoirs } = competences_rome ?? {}
+  const acceptedSavoirEtre = (romeDetails.competences.savoir_etre_professionnel ?? []).map(({ libelle }) => libelle)
+
+  const invalidCompetences = [
+    ...(savoir_etre_professionnel ?? []).filter((competence) => !acceptedSavoirEtre.includes(competence.libelle)),
+    ...(savoir_faire ?? []).filter((categorieSavoir) => !savoirIsIncludedIn(categorieSavoir, romeDetails.competences.savoir_faire)),
+    ...(savoirs ?? []).filter((categorieSavoir) => !savoirIsIncludedIn(categorieSavoir, romeDetails.competences.savoirs)),
+  ]
+  return invalidCompetences
+}
+
+const savoirIsIncludedIn = (jobSavoir: z.output<typeof ZRomeCategorieSavoir>, refCompetences: IReferentielRome["competences"]["savoir_faire"]): boolean => {
+  const refCompetence = refCompetences?.find((competence) => competence.libelle === jobSavoir.libelle)
+  if (!refCompetence) {
+    return false
+  }
+  return jobSavoir.items.every((item) => refCompetence.items.some((refItem) => refItem.libelle === item.libelle))
 }
