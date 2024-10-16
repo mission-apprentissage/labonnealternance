@@ -79,7 +79,7 @@ describe("helloWorkJobToJobsPartners", () => {
       offer_to_be_acquired_skills: [],
       offer_rome_codes: ["M1203"],
       offer_creation: new Date("2024-07-05T22:14:56.000+02:00"),
-      offer_expiration: null,
+      offer_expiration: new Date("2024-09-05T20:14:56.000Z"),
       offer_origin: null,
       offer_opening_count: 1,
       offer_multicast: false,
@@ -88,7 +88,7 @@ describe("helloWorkJobToJobsPartners", () => {
       workplace_description: "ceci est une longue description de l'entreprise qui a du sens et qui va passer la limite de 30 caractères",
       workplace_size: null,
       workplace_website: null,
-      workplace_address_label: "Stem Propreté Lyon,Villeurbanne,69100 69100 VILLEURBANNE",
+      workplace_address_label: "Stem Propreté Lyon,Villeurbanne,69100 VILLEURBANNE",
       workplace_geopoint: {
         type: "Point",
         coordinates: [4.889070834, 45.770996568],
