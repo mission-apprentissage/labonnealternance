@@ -72,9 +72,9 @@ const processApplicationGroup = async (applicationFilter: Filter<IApplication>, 
       }
       if (!hasVirus) {
         await processApplicationEmails.sendEmailsIfNeeded(application)
+        results.success++
       }
       await deleteApplicationCvFile(application)
-      results.success++
     } catch (err) {
       results.error++
       logger.error(`error while processing application with id=${application._id}`, err)
