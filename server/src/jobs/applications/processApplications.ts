@@ -72,8 +72,8 @@ const processApplicationGroup = async (applicationFilter: Filter<IApplication>, 
       }
       if (!hasVirus) {
         await processApplicationEmails.sendEmailsIfNeeded(application)
-        await deleteApplicationCvFile(application)
       }
+      await deleteApplicationCvFile(application)
       results.success++
     } catch (err) {
       results.error++
