@@ -26,7 +26,7 @@ export default (server: Server) => {
       schema: zRoutes.post["/appointment-request/context/create"],
     },
     async (req, res) => {
-      res.status(200).send(await findElligibleTrainingForAppointment(req))
+      res.status(200).send(await findElligibleTrainingForAppointment(req.body))
     }
   )
 
@@ -236,13 +236,12 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/appointment/:cle_ministere_educatif/context",
+    "/appointment/context",
     {
-      schema: zRoutes.get["/appointment/:cle_ministere_educatif/context"],
+      schema: zRoutes.get["/appointment/context"],
     },
     async (req, res) => {
-      const { cle_ministere_educatif } = req.params
-      res.status(200).send(await eligibleTrainingsForAppointmentService.getElligibleTrainingAppointmentContext(cle_ministere_educatif))
+      res.status(200).send(await findElligibleTrainingForAppointment(req.query))
     }
   )
 

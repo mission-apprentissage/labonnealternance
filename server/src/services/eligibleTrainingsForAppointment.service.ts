@@ -86,23 +86,26 @@ const findEtablissement = async (formateurSiret: string | null | undefined) => {
   return await getDbCollection("etablissements").findOne({ formateur_siret: formateurSiret })
 }
 
-export const getElligibleTrainingAppointmentContext = async (cleMinistereEducatif: string): Promise<IAppointmentRequestContextCreateResponseSchema> => {
-  const eligibleTrainingsForAppointment = await findEligibleTrainingByMinisterialKey(cleMinistereEducatif)
-
-  return await getEtfaContext(eligibleTrainingsForAppointment, "LBA")
-}
-
-export const findElligibleTrainingForAppointment = async (req: any): Promise<IAppointmentRequestContextCreateResponseSchema> => {
-  const { referrer } = req.body
+export const findElligibleTrainingForAppointment = async ({
+  idCleMinistereEducatif,
+  idParcoursup,
+  idActionFormation,
+  referrer,
+}: {
+  idCleMinistereEducatif?: string
+  idParcoursup?: string
+  idActionFormation?: string
+  referrer: string
+}): Promise<IAppointmentRequestContextCreateResponseSchema> => {
   const referrerObj = getReferrerByKeyName(referrer)
   let eligibleTrainingsForAppointment: IEligibleTrainingsForAppointment | null
 
-  if ("idCleMinistereEducatif" in req.body) {
-    eligibleTrainingsForAppointment = await findEligibleTrainingByMinisterialKey(req.body.idCleMinistereEducatif)
-  } else if ("idParcoursup" in req.body) {
-    eligibleTrainingsForAppointment = await findEligibleTrainingByParcoursupId(req.body.idParcoursup)
-  } else if ("idActionFormation" in req.body) {
-    eligibleTrainingsForAppointment = await findEligibleTrainingByActionFormation(req.body.idActionFormation)
+  if (idCleMinistereEducatif) {
+    eligibleTrainingsForAppointment = await findEligibleTrainingByMinisterialKey(idCleMinistereEducatif)
+  } else if (idParcoursup) {
+    eligibleTrainingsForAppointment = await findEligibleTrainingByParcoursupId(idParcoursup)
+  } else if (idActionFormation) {
+    eligibleTrainingsForAppointment = await findEligibleTrainingByActionFormation(idActionFormation)
   } else {
     throw badRequest("Critère de recherche non conforme.")
   }
