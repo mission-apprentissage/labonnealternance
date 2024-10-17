@@ -33,6 +33,21 @@ const TrainingDetail = ({ training }) => {
     enabled: training && !training.prdvLoaded,
   })
 
+  const fetchPrdvContext = async (cleMinistereEducatif: string) => {
+    const context = await getPrdvContext(cleMinistereEducatif)
+    const updatedTrainings = trainings
+    updatedTrainings.forEach(async (v) => {
+      if (v.id === training.id) {
+        if (!v.prdvLoaded) {
+          v.prdvLoaded = true
+          v.rdvContext = context && !("error" in context) ? context : null
+          setTrainingsAndSelectedItem(updatedTrainings, v)
+        }
+      }
+    })
+    return
+  }
+
   useEffect(() => {
     SendPlausibleEvent("Affichage - Fiche formation", {
       info_fiche: `${training.cleMinistereEducatif}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
@@ -55,21 +70,6 @@ const TrainingDetail = ({ training }) => {
     // S'assurer que l'utilisateur voit bien le haut de la fiche au départ
     document.getElementsByClassName("choiceCol")[0].scrollTo(0, 0)
   }, []) // Utiliser le useEffect une seule fois : https://css-tricks.com/run-useeffect-only-once/
-
-  const fetchPrdvContext = async (cleMinistereEducatif: string) => {
-    const context = await getPrdvContext(cleMinistereEducatif)
-    const updatedTrainings = trainings
-    updatedTrainings.forEach(async (v) => {
-      if (v.id === training.id) {
-        if (!v.prdvLoaded) {
-          v.prdvLoaded = true
-          v.rdvContext = context
-          setTrainingsAndSelectedItem(updatedTrainings, v)
-        }
-      }
-    })
-    return
-  }
 
   return (
     <>
