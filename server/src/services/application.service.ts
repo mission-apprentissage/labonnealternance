@@ -1,4 +1,4 @@
-import { badRequest, internal, tooManyRequests } from "@hapi/boom"
+import { badRequest, internal, notFound, tooManyRequests } from "@hapi/boom"
 import { isEmailBurner } from "burner-email-providers"
 import dayjs from "dayjs"
 import { ObjectId } from "mongodb"
@@ -27,6 +27,7 @@ import { z } from "zod"
 
 import { s3Delete, s3ReadAsString, s3Write } from "@/common/utils/awsUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { createToken, getTokenValue } from "@/common/utils/jwtUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { UserForAccessToken, userWithAccountToUserForToken } from "@/security/accessTokenService"
 
@@ -364,12 +365,17 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
     waitCandidateUrl: buildReplyLink(application, ApplicantIntention.NESAISPAS, userForToken),
     refuseCandidateUrl: buildReplyLink(application, ApplicantIntention.REFUS, userForToken),
     lbaRecruiterUrl: `${config.publicUrl}/acces-recruteur?${utmRecruiterData}`,
-    unsubscribeUrl: `${config.publicUrl}/desinscription?email=${application.company_email}${utmRecruiterData}`,
+    unsubscribeUrl: `${config.publicUrl}/desinscription?applicationId=${createToken({ application_id: application._id }, "30d", "desinscription")}${utmRecruiterData}`,
     lbaUrl: `${config.publicUrl}?${utmRecruiterData}`,
     faqUrl: `${config.publicUrl}/faq?${utmRecruiterData}`,
     jobProvidedUrl: "",
     cancelJobUrl: "",
   }
+
+  const token = createToken({ application_id: application._id }, "30d", "desinscription")
+  console.log(token)
+  const verified = getTokenValue(token)
+  console.log(verified)
 
   if (application.job_id && user) {
     urls.jobProvidedUrl = createProvidedJobLink(userForToken, application.job_id, utmRecruiterData)
@@ -1008,5 +1014,21 @@ const getJobOrCompany = async (application: IApplication): Promise<IJobOrCompany
       throw internal(`inattendu: aucun recruteur lba avec siret=${company_siret}`)
     }
     return { type: LBA_ITEM_TYPE.RECRUTEURS_LBA, job: company, recruiter: null }
+  }
+}
+
+export const getCompanyEmailFromToken = async (token: string) => {
+  const { applicationId } = getTokenValue(token)
+
+  if (!applicationId) {
+    throw badRequest("Invalid token")
+  }
+
+  const application = await getDbCollection("applications").findOne({ _id: new ObjectId(applicationId) })
+
+  if (application) {
+    return { company_email: application.company_email }
+  } else {
+    throw notFound("Adresse non trouvée")
   }
 }

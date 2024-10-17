@@ -101,4 +101,17 @@ export default function (server: Server) {
       return res.status(200).send({ result: "ok" })
     }
   )
+
+  server.get(
+    "/application/company/email/:token",
+    {
+      schema: zRoutes.get["/application/company/email/:token"],
+    },
+    async (req, res) => {
+      const { token } = req.params
+
+      const company_email = await getCompanyEmailFromToken(token)
+      return res.status(200).send({ company_email })
+    }
+  )
 }
