@@ -172,7 +172,6 @@ export const findElligibleTrainingForAppointmentV2 = async (context: IAppointmen
     etablissement_formateur_siret: etablissement.formateur_siret ?? null,
     cfd: eligibleTrainingsForAppointment.training_code_formation_diplome,
     localite: eligibleTrainingsForAppointment.lieu_formation_city,
-    id_rco_formation: eligibleTrainingsForAppointment.rco_formation_id,
     cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
     form_url: `${config.publicUrl}/espace-pro/form?referrer=${referrerObj.name.toLowerCase()}&cleMinistereEducatif=${encodeURIComponent(
       eligibleTrainingsForAppointment.cle_ministere_educatif

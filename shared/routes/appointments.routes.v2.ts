@@ -56,7 +56,6 @@ const ZAppointmentResponseAvailable = z
     etablissement_formateur_siret: extensions.siret.nullable().describe("Numéro SIRET de l'établissement formateur"),
     cfd: z.string().describe("Code formation diplôme de la formation"),
     localite: z.string().describe("Localité du lieu de formation"),
-    id_rco_formation: z.string().nullable().describe("Identifiant RCO de la formation"),
     cle_ministere_educatif: z.string().describe("Identifiant unique de la formation au sein du ministère de l'éducation"),
     form_url: z.string().describe("Lien de prise de rendez-vous La bonne alternance"),
   })
