@@ -45,8 +45,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
         "additionalProperties": false,
         "properties": {
           "applicant_email": {
-            "description": "L'adresse email du candidat à laquelle l'entreprise contactée pourra répondre. Les adresses emails temporaires ne sont pas acceptées.",
-            "example": "john.smith@mail.com",
+            "description": "Email du candidat",
             "format": "email",
             "type": "string",
           },
@@ -57,26 +56,22 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "type": "string",
           },
           "applicant_file_name": {
-            "description": "Le nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés.",
-            "example": "cv.pdf",
+            "description": "Nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés.",
             "pattern": "((.*?))(\\.)+(docx|pdf)$",
             "type": "string",
           },
           "applicant_first_name": {
-            "description": "Le prénom du candidat.",
-            "example": "Jean",
+            "description": "Prenom du candidat",
             "maxLength": 50,
             "type": "string",
           },
           "applicant_last_name": {
-            "description": "Le nom du candidat.",
-            "example": "Dupont",
+            "description": "Nom du candidat",
             "maxLength": 50,
             "type": "string",
           },
           "applicant_phone": {
-            "description": "Le numéro de téléphone du candidat.",
-            "example": "0101010101",
+            "description": "Téléphone du candidat",
             "type": "string",
           },
           "caller": {
@@ -88,8 +83,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "company_address": {
-            "description": "L'adresse postale de la société. Fournie par La bonne alternance. (champs : place.fullAddress)",
-            "example": "38 RUE DES HAMECONS, 75021 PARIS-21",
+            "description": "Adresse de l'entreprise",
             "type": [
               "string",
               "null",
@@ -104,16 +98,14 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "company_naf": {
-            "description": "La valeur associée au code NAF de l'entreprise. Fournie par La bonne alternance. ",
-            "example": "Boulangerie et boulangerie-pâtisserie",
+            "description": "Code NAF de l'entreprise",
             "type": [
               "string",
               "null",
             ],
           },
           "company_name": {
-            "description": "Le nom de la société. Fourni par La bonne alternance. ",
-            "example": "Au bon pain d'antan",
+            "description": "Nom de l'entreprise",
             "type": "string",
           },
           "company_phone": {
@@ -124,8 +116,8 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "company_siret": {
-            "description": "Le siret de l'entreprise. Fourni par La bonne alternance. ",
-            "example": "00004993900000",
+            "description": "Le numéro de SIRET de l'établissement",
+            "example": "78424186100011",
             "pattern": "^[0-9]{14}$",
             "type": "string",
           },
@@ -155,7 +147,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "job_id": {
             "description": "L'identifiant de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est offres_emploi_lba . La valeur est fournie par La bonne alternance. ",
-            "example": "...59c24c059b...",
             "type": [
               "string",
               "null",
@@ -170,7 +161,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "job_title": {
             "description": "Le titre de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est offres_emploi_lba . La valeur est fournie par La bonne alternance. ",
-            "example": "Téléconseil, vente à distance",
             "type": [
               "string",
               "null",
@@ -178,7 +168,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "message": {
             "description": "Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat.",
-            "example": "Madame, monsieur...",
             "type": [
               "string",
               "null",
@@ -3108,77 +3097,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "null",
         ],
       },
-      "V2 - Application": {
-        "additionalProperties": false,
-        "properties": {
-          "applicant_email": {
-            "description": "L'adresse email du candidat à laquelle l'entreprise contactée pourra répondre. Les adresses emails temporaires ne sont pas acceptées.",
-            "example": "john.smith@mail.com",
-            "format": "email",
-            "type": "string",
-          },
-          "applicant_file_content": {
-            "description": "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
-            "example": "data:application/pdf;base64,JVBERi0xLjQKJ...",
-            "maxLength": 4215276,
-            "type": "string",
-          },
-          "applicant_file_name": {
-            "description": "Le nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés.",
-            "example": "cv.pdf",
-            "pattern": "((.*?))(\\.)+(docx|pdf)$",
-            "type": "string",
-          },
-          "applicant_first_name": {
-            "description": "Le prénom du candidat.",
-            "example": "Jean",
-            "maxLength": 50,
-            "type": "string",
-          },
-          "applicant_last_name": {
-            "description": "Le nom du candidat.",
-            "example": "Dupont",
-            "maxLength": 50,
-            "type": "string",
-          },
-          "applicant_phone": {
-            "description": "Le numéro de téléphone du candidat.",
-            "example": "0101010101",
-            "type": "string",
-          },
-          "company_siret": {
-            "description": "Le siret de l'entreprise. Fourni par La bonne alternance. ",
-            "example": "00004993900000",
-            "pattern": "^[0-9]{14}$",
-            "type": "string",
-          },
-          "job_searched_by_user": {
-            "description": "Métier recherché par le candidat",
-            "type": [
-              "string",
-              "null",
-            ],
-          },
-          "message": {
-            "description": "Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat.",
-            "example": "Madame, monsieur...",
-            "type": [
-              "string",
-              "null",
-            ],
-          },
-        },
-        "required": [
-          "applicant_first_name",
-          "applicant_last_name",
-          "applicant_email",
-          "applicant_phone",
-          "applicant_file_name",
-          "applicant_file_content",
-          "company_siret",
-        ],
-        "type": "object",
-      },
       "ZLbarError": {
         "additionalProperties": false,
         "properties": {
@@ -3219,320 +3137,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
   },
   "openapi": "3.1.0",
   "paths": {
-    "/application": {
-      "post": {
-        "description": "Envoi d'un email de candidature à une offre postée sur La bonne alternance recruteur ou une candidature spontanée à une entreprise identifiée par La bonne alternance.
-L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne alternance.
-Limite : 5 appel(s) / 5 seconde(s)
-",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/V2 - Application",
-                  },
-                  {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/V2 - Application",
-                      },
-                      {
-                        "properties": {
-                          "applicant_email": {
-                            "description": "L'adresse email du candidat à laquelle l'entreprise contactée pourra répondre. Les adresses emails temporaires ne sont pas acceptées.",
-                            "example": "john.smith@mail.com",
-                            "format": "email",
-                            "type": "string",
-                          },
-                          "applicant_file_content": {
-                            "description": "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
-                            "example": "data:application/pdf;base64,JVBERi0xLjQKJ...",
-                            "maxLength": 4215276,
-                            "type": "string",
-                          },
-                          "applicant_file_name": {
-                            "description": "Le nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés.",
-                            "example": "cv.pdf",
-                            "pattern": "((.*?))(\\.)+(docx|pdf)$",
-                            "type": "string",
-                          },
-                          "applicant_first_name": {
-                            "description": "Le prénom du candidat.",
-                            "example": "Jean",
-                            "maxLength": 50,
-                            "type": "string",
-                          },
-                          "applicant_last_name": {
-                            "description": "Le nom du candidat.",
-                            "example": "Dupont",
-                            "maxLength": 50,
-                            "type": "string",
-                          },
-                          "applicant_phone": {
-                            "description": "Le numéro de téléphone du candidat.",
-                            "example": "0101010101",
-                            "type": "string",
-                          },
-                          "job_id": {
-                            "description": "Identifiant unique de l'offre LBA",
-                            "example": "id_mongoDB",
-                            "type": "string",
-                          },
-                          "job_searched_by_user": {
-                            "description": "Métier recherché par le candidat",
-                            "type": [
-                              "string",
-                              "null",
-                            ],
-                          },
-                          "message": {
-                            "description": "Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat.",
-                            "example": "Madame, monsieur...",
-                            "type": [
-                              "string",
-                              "null",
-                            ],
-                          },
-                        },
-                        "required": [
-                          "applicant_first_name",
-                          "applicant_last_name",
-                          "applicant_email",
-                          "applicant_phone",
-                          "applicant_file_name",
-                          "applicant_file_content",
-                          "job_id",
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-            },
-          },
-          "required": true,
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "description": "Indique le succès ou l'échec de l'opération",
-                  "enum": [
-                    "OK",
-                  ],
-                  "type": "string",
-                },
-              },
-            },
-            "description": "Indique le succès ou l'échec de l'opération",
-          },
-        },
-        "security": [
-          {
-            "api-key": [],
-          },
-        ],
-        "tags": [
-          "V2 - Applications",
-        ],
-      },
-    },
-    "/appointment": {
-      "post": {
-        "description": "Appointment request",
-        "operationId": "appointmentCreateContext",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "additionalProperties": false,
-                    "properties": {
-                      "idParcoursup": {
-                        "type": "string",
-                      },
-                      "referrer": {
-                        "enum": [
-                          "parcoursup",
-                        ],
-                        "type": "string",
-                      },
-                      "trainingHasJob": {
-                        "type": "boolean",
-                      },
-                    },
-                    "required": [
-                      "idParcoursup",
-                      "referrer",
-                    ],
-                    "type": "object",
-                  },
-                  {
-                    "additionalProperties": false,
-                    "properties": {
-                      "idActionFormation": {
-                        "minLength": 1,
-                        "type": "string",
-                      },
-                      "referrer": {
-                        "enum": [
-                          "onisep",
-                        ],
-                        "type": "string",
-                      },
-                      "trainingHasJob": {
-                        "type": "boolean",
-                      },
-                    },
-                    "required": [
-                      "idActionFormation",
-                      "referrer",
-                    ],
-                    "type": "object",
-                  },
-                  {
-                    "additionalProperties": false,
-                    "properties": {
-                      "idCleMinistereEducatif": {
-                        "minLength": 1,
-                        "type": "string",
-                      },
-                      "referrer": {
-                        "enum": [
-                          "parcoursup",
-                          "lba",
-                          "onisep",
-                          "jeune_1_solution",
-                          "affelnet",
-                        ],
-                        "type": "string",
-                      },
-                      "trainingHasJob": {
-                        "type": "boolean",
-                      },
-                    },
-                    "required": [
-                      "idCleMinistereEducatif",
-                      "referrer",
-                    ],
-                    "type": "object",
-                  },
-                ],
-              },
-            },
-          },
-          "required": true,
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "additionalProperties": false,
-                      "properties": {
-                        "cfd": {
-                          "example": "24113401",
-                          "type": "string",
-                        },
-                        "cle_ministere_educatif": {
-                          "example": "101249P01313538697790003635386977900036-93006#L01",
-                          "type": "string",
-                        },
-                        "code_postal": {
-                          "example": "93170",
-                          "type": "string",
-                        },
-                        "etablissement_formateur_entreprise_raison_sociale": {
-                          "example": "CAMPUS FONDERIE DE L'IMAGE",
-                          "type": [
-                            "string",
-                            "null",
-                          ],
-                        },
-                        "etablissement_formateur_siret": {
-                          "description": "Le numéro de SIRET de l'établissement",
-                          "example": "78424186100011",
-                          "pattern": "^[0-9]{14}$",
-                          "type": [
-                            "string",
-                            "null",
-                          ],
-                        },
-                        "form_url": {
-                          "example": "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=affelnet&cleMinistereEducatif=101249P01313538697790003635386977900036-93006%23L01",
-                          "type": "string",
-                        },
-                        "id_rco_formation": {
-                          "example": "14_AF_0000095539|14_SE_0000501120##14_SE_0000598458##14_SE_0000642556##14_SE_0000642557##14_SE_0000825379##14_SE_0000825382|101249",
-                          "type": [
-                            "string",
-                            "null",
-                          ],
-                        },
-                        "intitule_long": {
-                          "example": "METIERS D'ART ET DU DESIGN (DN)",
-                          "type": "string",
-                        },
-                        "lieu_formation_adresse": {
-                          "example": "80 Rue Jules Ferry",
-                          "type": "string",
-                        },
-                        "localite": {
-                          "example": "Bagnolet",
-                          "type": "string",
-                        },
-                      },
-                      "required": [
-                        "etablissement_formateur_entreprise_raison_sociale",
-                        "intitule_long",
-                        "lieu_formation_adresse",
-                        "code_postal",
-                        "cfd",
-                        "localite",
-                        "id_rco_formation",
-                        "cle_ministere_educatif",
-                        "form_url",
-                      ],
-                      "type": "object",
-                    },
-                    {
-                      "additionalProperties": false,
-                      "properties": {
-                        "error": {
-                          "enum": [
-                            "Prise de rendez-vous non disponible.",
-                          ],
-                          "type": "string",
-                        },
-                      },
-                      "required": [
-                        "error",
-                      ],
-                      "type": "object",
-                    },
-                  ],
-                },
-              },
-            },
-            "description": "",
-          },
-        },
-        "security": [
-          {
-            "api-key": [],
-          },
-        ],
-        "tags": [
-          "V2 - Appointment Request",
-        ],
-      },
-    },
     "/appointment-request/context/create": {
       "post": {
         "description": "Appointment request",
