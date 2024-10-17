@@ -1,0 +1,27 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`fillSiretInfosForPartners > should enrich with api when siret is present 1`] = `
+{
+  "workplace_address_label": "2 rue du loup 75001 Paris",
+  "workplace_brand": "Plop brand",
+  "workplace_geopoint": null,
+  "workplace_legal_name": "Plop company Inc",
+  "workplace_naf_code": "43.22A",
+  "workplace_naf_label": "plombier",
+  "workplace_name": "Plop brand",
+  "workplace_size": "3 à 5 salariés",
+}
+`;
+
+exports[`fillSiretInfosForPartners > should enrich with cache when siret is present 1`] = `
+{
+  "workplace_address_label": "2 rue du loup 75001 Paris",
+  "workplace_brand": "Plop brand",
+  "workplace_geopoint": null,
+  "workplace_legal_name": "Plop company Inc",
+  "workplace_naf_code": "43.22A",
+  "workplace_naf_label": "plombier",
+  "workplace_name": "Plop brand",
+  "workplace_size": "3 à 5 salariés",
+}
+`;

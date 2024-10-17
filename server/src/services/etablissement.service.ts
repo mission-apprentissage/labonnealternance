@@ -1,6 +1,7 @@
 import { setTimeout } from "timers/promises"
 
 import { badRequest, internal, isBoom } from "@hapi/boom"
+import { captureException } from "@sentry/node"
 import { AxiosResponse } from "axios"
 import { Filter as MongoDBFilter, ObjectId } from "mongodb"
 import {
@@ -13,6 +14,7 @@ import {
   ILbaCompanyLegacy,
   IRecruiter,
   ITrackingCookies,
+  parseEnum,
   TrafficType,
   ZCfaReferentielData,
   ZPointGeometry,
@@ -21,13 +23,16 @@ import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants"
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { IEtablissementGouvData } from "shared/models/cacheInfosSiret.model"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
+import { IOpco } from "shared/models/opco.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { getEtablissementDiffusionStatus, getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
 import { FCGetOpcoInfos } from "@/common/apis/franceCompetences/franceCompetencesClient"
+import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -40,81 +45,42 @@ import config from "../config"
 
 import { createValidationMagicLink } from "./appLinks.service"
 import { validationOrganisation } from "./bal.service"
+import { getSiretInfos } from "./cacheInfosSiret.service"
 import { getCatalogueEtablissements } from "./catalogue.service"
 import { upsertCfa } from "./cfa.service"
+import { fetchOpcosFromCFADock } from "./cfadock.service"
 import dayjs from "./dayjs.service"
-import { IAPIAdresse, IAPIEtablissement, ICFADock, IEtablissementGouv, IFormatAPIEntreprise, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types"
+import { IAPIAdresse, ICFADock, IFormatAPIEntreprise, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types"
 import { createFormulaire, getFormulaire } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
-import { getOpcoBySirenFromDB, saveOpco } from "./opco.service"
-import { UserAndOrganization, updateEntrepriseOpco, upsertEntrepriseData } from "./organization.service"
+import { getOpcoBySirenFromDB, getOpcosBySiretFromDB, insertOpcos, saveOpco } from "./opco.service"
+import { updateEntrepriseOpco, upsertEntrepriseData, UserAndOrganization } from "./organization.service"
 import { modifyPermissionToUser } from "./roleManagement.service"
 import { saveUserTrafficSourceIfAny } from "./trafficSource.service"
 import { autoValidateUser as authorizeUserOnEntreprise, createOrganizationUser, setUserHasToBeManuallyValidated } from "./userRecruteur.service"
 
-/**
- * Get company size by code
- * @param {string} code
- * @returns {string}
- */
-const getEffectif = (code) => {
-  switch (code) {
-    case "00":
-      return "0 salarié"
-
-    case "01":
-      return "1 ou 2 salariés"
-
-    case "02":
-      return "3 à 5 salariés"
-
-    case "03":
-      return "6 à 9 salariés"
-
-    case "11":
-      return "10 à 19 salariés"
-
-    case "12":
-      return "20 à 49 salariés"
-
-    case "21":
-      return "50 à 99 salariés"
-
-    case "22":
-      return "100 à 199 salariés"
-
-    case "31":
-      return "200 à 249 salariés"
-
-    case "32":
-      return "250 à 499 salariés"
-
-    case "41":
-      return "500 à 999 salariés"
-
-    case "42":
-      return "1 000 à 1 999 salariés"
-
-    case "51":
-      return "2 000 à 4 999 salariés"
-
-    case "52":
-      return "5 000 à 9 999 salariés"
-
-    case "53":
-      return "10 000 salariés et plus"
-
-    default:
-      return "Non diffusé"
-  }
+const effectifMapping: Record<NonNullable<IEtablissementGouvData["data"]["unite_legale"]["tranche_effectif_salarie"]["code"]>, string | null> = {
+  "00": "0 salarié",
+  "01": "1 ou 2 salariés",
+  "02": "3 à 5 salariés",
+  "03": "6 à 9 salariés",
+  "11": "10 à 19 salariés",
+  "12": "20 à 49 salariés",
+  "21": "50 à 99 salariés",
+  "22": "100 à 199 salariés",
+  "31": "200 à 249 salariés",
+  "32": "250 à 499 salariés",
+  "41": "500 à 999 salariés",
+  "42": "1 000 à 1 999 salariés",
+  "51": "2 000 à 4 999 salariés",
+  "52": "5 000 à 9 999 salariés",
+  "53": "10 000 salariés et plus",
+  NN: null,
 }
 
-/**
- * @description Returns one item.
- * @param {Object} conditions
- * @returns {Promise<Etablissement>}
- */
-export const findOne = async (conditions): Promise<IEtablissement | null> => getDbCollection("etablissements").findOne(conditions)
+const getEffectif = (code: IEtablissementGouvData["data"]["unite_legale"]["tranche_effectif_salarie"]["code"]) => {
+  return (code ? effectifMapping[code] : null) ?? "Non diffusé"
+}
 
 /**
  * @description Get opco details from CFADOCK API for a given SIRET
@@ -194,7 +160,7 @@ export const checkIsDiffusible = async (siret: string) => (await getDiffusionSta
  * @description Get the establishment information from the ENTREPRISE API for a given SIRET
  * Throw an error if the data is private
  */
-export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtablissement | null> => {
+export const getEtablissementFromGouv = async (siret: string): Promise<IEtablissementGouvData | null> => {
   const data = await getEtablissementFromGouvSafe(siret)
   if (data === BusinessErrorCodes.NON_DIFFUSIBLE) {
     throw internal(BusinessErrorCodes.NON_DIFFUSIBLE)
@@ -258,7 +224,7 @@ type IGetAllEmailFromLbaCompany = Pick<ILbaCompany, "email">
 export const getAllEstablishmentFromLbaCompany = async (query: MongoDBFilter<ILbaCompany>) =>
   (await getDbCollection("recruteurslba").find(query).project({ email: 1, _id: 0 }).toArray()) as IGetAllEmailFromLbaCompany[]
 
-function getRaisonSocialeFromGouvResponse(d: IEtablissementGouv): string | undefined {
+function getRaisonSocialeFromGouvResponse(d: IEtablissementGouvData["data"]): string | undefined {
   const { personne_morale_attributs, personne_physique_attributs } = d.unite_legale
   const { raison_sociale } = personne_morale_attributs
   if (raison_sociale) {
@@ -278,22 +244,22 @@ const addressDetailToString = (address: IAdresseV3): string => {
 /**
  * @description Format Entreprise data
  */
-const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntreprise => {
-  if (!d.adresse) {
+export const formatEntrepriseData = (data: IEtablissementGouvData["data"]): IFormatAPIEntreprise => {
+  if (!data.adresse) {
     throw new Error("erreur dans le format de l'api SIRENE : le champ adresse est vide")
   }
   return {
-    establishment_enseigne: d.enseigne,
-    establishment_state: d.etat_administratif, // F pour fermé ou A pour actif
-    establishment_siret: d.siret,
-    establishment_raison_sociale: getRaisonSocialeFromGouvResponse(d),
-    address_detail: d.adresse,
-    address: addressDetailToString(d.adresse),
+    establishment_enseigne: data.enseigne,
+    establishment_state: data.etat_administratif, // F pour fermé ou A pour actif
+    establishment_siret: data.siret,
+    establishment_raison_sociale: getRaisonSocialeFromGouvResponse(data),
+    address_detail: data.adresse,
+    address: addressDetailToString(data.adresse),
     contacts: [], // conserve la coherence avec l'UI
-    naf_code: d.activite_principale.code,
-    naf_label: d.activite_principale.libelle,
-    establishment_size: getEffectif(d.unite_legale.tranche_effectif_salarie.code),
-    establishment_creation_date: new Date(d.unite_legale.date_creation * 1000),
+    naf_code: data.activite_principale.code,
+    naf_label: data.activite_principale.libelle,
+    establishment_size: getEffectif(data.unite_legale.tranche_effectif_salarie.code),
+    establishment_creation_date: data.unite_legale?.date_creation ? new Date(data.unite_legale.date_creation * 1000) : null,
   }
 }
 
@@ -462,6 +428,79 @@ export const getOpcoData = async (siret: string): Promise<{ opco: string; idcc: 
   return null
 }
 
+export const getOpcosData = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc?: string; siret: string }[]> => {
+  const opcoFromDB = await getOpcosBySiretFromDB(sirets)
+  sirets = sirets.filter((requestedSiret) => !opcoFromDB.some(({ siret }) => siret === requestedSiret))
+  const opcoFromEntreprises = await getOpcosDataFromEntreprises(sirets)
+  sirets = sirets.filter((requestedSiret) => !opcoFromEntreprises.some(({ siret }) => siret === requestedSiret))
+  const opcoFromCfaDock = await getOpcosDataFromCfaDock(sirets)
+  sirets = sirets.filter((requestedSiret) => !opcoFromCfaDock.some(({ siret }) => siret === requestedSiret))
+  const opcoFromFranceCompetences = await getOpcosDataFromFranceCompetence(sirets)
+  const savedOpcoDatas: Omit<IOpco, "_id">[] = [...opcoFromCfaDock, ...opcoFromFranceCompetences].map(({ siret, opco, idcc }) => ({
+    opco,
+    idcc,
+    siren: siret.substring(0, 9),
+  }))
+  await insertOpcos(savedOpcoDatas)
+  return [...opcoFromDB, ...opcoFromEntreprises, ...opcoFromCfaDock, ...opcoFromFranceCompetences]
+}
+
+const getOpcosDataFromEntreprises = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc?: string; siret: string }[]> => {
+  if (!sirets.length) {
+    return []
+  }
+  const entreprises = await getDbCollection("entreprises")
+    .find({ siret: { $in: sirets } })
+    .toArray()
+  return entreprises.flatMap(({ opco, idcc, siret }) => {
+    if (!opco) {
+      return []
+    }
+    return [{ siret, opco, idcc: idcc ?? undefined }]
+  })
+}
+
+const getOpcosDataFromCfaDock = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc?: string; siret: string }[]> => {
+  try {
+    if (!sirets.length) {
+      return []
+    }
+    const sirens = new Set<string>(sirets.map((siret) => siret.substring(0, 9)))
+    const results = await fetchOpcosFromCFADock(sirens)
+    return sirets.flatMap((siret) => {
+      const siren = siret.substring(0, 9)
+      const result = results.find((result) => result.filters.siret === siren)
+      if (!result) {
+        return []
+      }
+      const { opcoName, idcc } = result
+      return [{ siret, opco: opcoName, idcc: idcc?.toString() ?? undefined }]
+    })
+  } catch (err) {
+    captureException(err)
+    return []
+  }
+}
+
+const getOpcosDataFromFranceCompetence = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc?: string; siret: string }[]> => {
+  if (!sirets.length) {
+    return []
+  }
+  const results = [] as { opco: OPCOS_LABEL; idcc?: string; siret: string }[]
+  await asyncForEach(sirets, async (siret) => {
+    try {
+      const result = await getOpcoFromFranceCompetences(siret)
+      const opco = parseEnum(OPCOS_LABEL, result?.opco)
+      if (opco) {
+        results.push({ siret, opco })
+      }
+    } catch (err) {
+      captureException(err)
+    }
+  })
+  return results
+}
+
 export type EntrepriseData = IFormatAPIEntreprise & { geo_coordinates: string; geopoint: IGeoPoint }
 
 export const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_siret }: { siret: string; cfa_delegated_siret?: string }) => {
@@ -485,7 +524,7 @@ export const getEntrepriseDataFromSiret = async ({
   type: "CFA" | "ENTREPRISE"
   isApiApprentissage?: boolean
 }): Promise<EntrepriseData | IBusinessError> => {
-  const result = await getEtablissementFromGouvSafe(siret)
+  const result = await getSiretInfos(siret)
   if (!result) {
     return errorFactory("Le numéro siret est invalide.")
   }
@@ -512,7 +551,7 @@ export const getEntrepriseDataFromSiret = async ({
   // Check if a CFA already has the company as partenaire
   if (type === ENTREPRISE) {
     // Allow cfa to add themselves as a company
-    if (activite_principale.code.startsWith("85")) {
+    if (activite_principale?.code?.startsWith("85")) {
       if (isApiApprentissage) {
         return errorFactory("The SIRET number is not referenced as a company.", BusinessErrorCodes.IS_CFA)
       } else {
@@ -889,7 +928,7 @@ export const sendMailCfaPremiumStart = (etablissement: IEtablissement, type: "af
 export const isHardbounceEventFromEtablissement = async (payload) => {
   const messageId = payload["message-id"]
 
-  const etablissement = await findOne({ to_CFA_invite_optout_last_message_id: messageId })
+  const etablissement = await getDbCollection("etablissements").findOne({ to_CFA_invite_optout_last_message_id: messageId })
   if (etablissement) {
     return true
   }

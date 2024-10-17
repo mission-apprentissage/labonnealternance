@@ -76,8 +76,6 @@ export const OffresTabs = ({ recruiter, establishmentId, showStats = false }: { 
 
   const jobs: (IJob & { candidatures: number; geo_coordinates: string })[] = recruiter?.jobs ?? []
 
-  console.log("recruiter stat : ", recruiter.status)
-
   if (jobs.length === 0) {
     return (
       <Box py={6} backgroundColor="bluefrance.250">
