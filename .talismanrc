@@ -32,7 +32,7 @@ fileignoreconfig:
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: 8793bec9767d242da058f7e42e408b80ea539265b980f8e37913c0a0336da488
+  checksum: c6c880488c5f0bf8978f3e1a0647ea3ed278f034ace0b12c47fc4553404a4b2d
 - filename: cypress/e2e/check-admin-algo-company.cy.ts
   checksum: 6a898ee25c84ce2c41da5666aa4f84e6e4aaf0a614dbc0a00153abe99e3617c1
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
