@@ -257,7 +257,7 @@ export const entrepriseIsNotMyOpco = async ({ reason, userId, requestedBy }: { r
 
   const entreprise = await getDbCollection("entreprises").findOneAndUpdate(
     { _id: new ObjectId(updatedRole.authorized_id) },
-    { $set: { opco: "inconnu", updatedAt: new Date() } },
+    { $set: { opco: OPCOS_LABEL.UNKNOWN_OPCO, updatedAt: new Date() } },
     { returnDocument: "after" }
   )
   if (!entreprise) {

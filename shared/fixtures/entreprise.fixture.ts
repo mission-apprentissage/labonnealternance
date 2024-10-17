@@ -12,6 +12,7 @@ export function generateEntrepriseFixture(data: Partial<IEntreprise> = {}): IEnt
     status: [generateEntrepriseEventFixture()],
     raison_sociale: "OVH",
     siret: "42476141900045",
+    opco: null,
     createdAt: now,
     updatedAt: now,
     ...data,

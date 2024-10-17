@@ -113,9 +113,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     workplace_description: company_description && company_description.length >= 30 ? company_description : null,
     workplace_size: null,
     workplace_website: null,
-    workplace_address: {
-      label: [address, postal_code, city].filter((x) => x).join(" "),
-    },
+    workplace_address_label: [address, postal_code, city].filter((x) => x).join(" "),
     workplace_geopoint:
       latitude && longitude
         ? {

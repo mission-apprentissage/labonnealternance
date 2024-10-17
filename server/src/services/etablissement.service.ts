@@ -20,7 +20,7 @@ import {
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants"
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
@@ -133,7 +133,7 @@ const getOpcoFromCfaDock = async (siret: string): Promise<{ opco: string; idcc?:
         return { opco: opcoName, idcc: idcc?.toString() }
       }
       case "MULTIPLE_OPCO": {
-        return { opco: "Opco multiple", idcc: "Opco multiple, IDCC non défini" }
+        return { opco: OPCOS_LABEL.MULTIPLE_OPCO, idcc: "OPCO multiple, IDCC non défini" }
       }
       default: {
         return undefined
@@ -602,7 +602,7 @@ export const entrepriseOnboardingWorkflow = {
       phone?: string
       email: string
       origin?: string | null
-      opco: string
+      opco: OPCOS_LABEL
       idcc?: string
       source: ITrackingCookies
     },
@@ -641,7 +641,7 @@ export const entrepriseOnboardingWorkflow = {
     }
     const entreprise = await upsertEntrepriseData(siret, origin, siretResponse, isSiretInternalError)
     const opcoResult = await updateEntrepriseOpco(siret, { opco, idcc })
-    opco = opcoResult.opco
+    opco = opcoResult.opco || OPCOS_LABEL.UNKNOWN_OPCO
     idcc = opcoResult.idcc ?? undefined
 
     let validated = false
@@ -684,7 +684,7 @@ export const entrepriseOnboardingWorkflow = {
         first_name,
         last_name,
         phone,
-        opco,
+        opco: opco || OPCOS_LABEL.UNKNOWN_OPCO,
         idcc,
         origin,
         email: formatedEmail,
@@ -716,7 +716,7 @@ export const entrepriseOnboardingWorkflow = {
     phone: string
     email: string
     cfa_delegated_siret: string
-    opco?: string
+    opco?: OPCOS_LABEL
     idcc?: string | null
     managedBy: string
     origin: string
@@ -742,7 +742,7 @@ export const entrepriseOnboardingWorkflow = {
     const entreprise = await upsertEntrepriseData(siret, origin, siretResponse, isSiretInternalError)
     if (opco) {
       const opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: idcc ?? undefined })
-      opco = opcoResult.opco
+      opco = opcoResult.opco || OPCOS_LABEL.UNKNOWN_OPCO
       idcc = opcoResult.idcc
     }
 
@@ -758,7 +758,7 @@ export const entrepriseOnboardingWorkflow = {
         cfa_delegated_siret,
         is_delegated: true,
         origin,
-        opco,
+        opco: opco || OPCOS_LABEL.UNKNOWN_OPCO,
         idcc,
         naf_label: "naf_label" in siretResponse ? siretResponse.naf_label : undefined,
         naf_code: "naf_code" in siretResponse ? siretResponse.naf_code : undefined,

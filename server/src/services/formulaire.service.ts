@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto"
 import { internal, notFound } from "@hapi/boom"
 import { Filter, ObjectId, UpdateFilter } from "mongodb"
 import { IDelegation, IJob, IJobWithRomeDetail, IJobWritable, IRecruiter, IRecruiterWithApplicationCount, IUserRecruteur, JOB_STATUS } from "shared"
+import { getDirectJobPath } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
@@ -416,6 +417,7 @@ export const createFormulaire = async (payload: Partial<Omit<IRecruiter, "_id" |
     email: payload.email as string,
     establishment_siret: payload.establishment_siret as string,
     is_delegated: payload.is_delegated ?? (false as boolean),
+    opco: payload.opco ?? null,
     jobs: [],
   }
   await getDbCollection("recruiters").insertOne(recruiter)
@@ -791,7 +793,7 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, co
         job_level_label: job.job_level_label,
         job_start_date: dayjs(job.job_start_date).format("DD/MM/YY"),
       },
-      lba_url: `${config.publicUrl}/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`,
+      lba_url: `${config.publicUrl}${getDirectJobPath(job._id.toString())}`,
     },
   })
 }

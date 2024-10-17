@@ -14,9 +14,7 @@ type IJobWorkplaceExpected = {
   workplace_name: string | null
   workplace_description: string | null
   workplace_size: string | null
-  workplace_address: {
-    label: string
-  }
+  workplace_address_label: string
   workplace_geopoint: {
     type: "Point"
     coordinates: [number, number]
