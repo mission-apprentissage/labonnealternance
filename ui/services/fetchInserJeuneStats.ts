@@ -1,26 +1,22 @@
-import axios from "axios"
+import axios, { AxiosError } from "axios"
 
 import { inserJeuneApiUrl } from "../config/config"
 import { logError } from "../utils/tools"
 
-export default async function fetchInserJeuneStats(training, _axios = axios, _window = window, _logError = logError) {
-  let res = null
-
+export default async function fetchInserJeuneStats(training) {
   if (!training) {
-    return res
+    return null
   }
-
   try {
-    const response = await _axios.get(`${inserJeuneApiUrl}/api/inserjeunes/regionales/${training.place.zipCode}/certifications/${training.cfd}`)
-    const isAxiosError = Boolean(response?.data?.error)
-    if (isAxiosError) {
-      _logError("InserJeune API error", `InserJeune API error ${response.data.error}`)
-    } else {
-      res = response.data
+    const response = await axios.get(`${inserJeuneApiUrl}/api/inserjeunes/regionales/${training.place.zipCode}/certifications/${training.cfd}`)
+    return response.data
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      if (error.response?.data?.message === "Pas de données disponibles") {
+        return null
+      }
     }
-  } catch (err) {
-    _logError("InserJeune API error", `InserJeune API error ${err}`)
+    logError("InserJeune API error", `InserJeune API error ${error}`)
   }
-
-  return res
+  return null
 }
