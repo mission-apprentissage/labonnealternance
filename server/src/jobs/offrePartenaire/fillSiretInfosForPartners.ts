@@ -1,5 +1,5 @@
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model "
+import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { isEnum } from "shared/utils"
 
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
@@ -23,10 +23,13 @@ export const fillSiretInfosForPartners = async () => {
     job: COMPUTED_ERROR_SOURCE.API_SIRET,
     sourceFields: ["workplace_siret"],
     filledFields,
-    getData: async ({ workplace_siret: siret }) => {
+    groupSize: 1,
+    getData: async (documents) => {
+      const [document] = documents
+      const { workplace_siret: siret } = document
       const response = await getSiretInfos(siret)
       if (!response) {
-        throw new Error("pas de réponse")
+        return []
       }
       if (isEnum(BusinessErrorCodes, response)) {
         throw new Error(response)
@@ -35,7 +38,7 @@ export const fillSiretInfosForPartners = async () => {
       const { data } = response
       const { establishment_enseigne, establishment_raison_sociale, naf_code, naf_label, geo_coordinates, establishment_size, address } = formatEntrepriseData(data)
 
-      const result: Partial<Pick<IComputedJobsPartners, (typeof filledFields)[number]>> = {
+      const result: Pick<IComputedJobsPartners, (typeof filledFields)[number]> = {
         workplace_size: establishment_size,
         workplace_legal_name: establishment_raison_sociale,
         workplace_brand: establishment_enseigne,
@@ -45,7 +48,7 @@ export const fillSiretInfosForPartners = async () => {
         workplace_naf_code: naf_code,
         workplace_naf_label: naf_label,
       }
-      return result
+      return [result]
     },
   })
 }

@@ -29,6 +29,7 @@ import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollecti
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
 import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
+import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
 import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromComputedToJobsPartners"
 import { importHelloWorkRaw, importHelloWorkToComputed } from "./offrePartenaire/importHelloWork"
 import { importKelio } from "./offrePartenaire/importKelio"
@@ -426,6 +427,9 @@ export async function setupJobProcessor() {
       },
       "import-kelio": {
         handler: async () => importKelio(),
+      },
+      "fill-computed-jobs-partners": {
+        handler: async () => fillComputedJobsPartners(),
       },
       "import-computed-to-jobs-partners": {
         handler: async () => importFromComputedToJobsPartners(),

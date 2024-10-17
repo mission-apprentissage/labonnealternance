@@ -17,12 +17,14 @@ describe("importHelloWork", () => {
     vi.useFakeTimers()
     vi.setSystemTime(now)
 
-    return () => {
+    return async () => {
       vi.useRealTimers()
+      await getDbCollection("computed_jobs_partners").deleteMany({})
+      await getDbCollection("raw_hellowork").deleteMany({})
     }
   })
 
-  it("should test the whole import", async () => {
+  it("should test the import of hellowork data into computed_job_partners", async () => {
     const fileStream = fs.createReadStream("server/src/jobs/offrePartenaire/importHelloWork.test.input.xml")
     await importHelloWorkRaw(fileStream)
     expect.soft(await getDbCollection("raw_hellowork").countDocuments({})).toBe(5)

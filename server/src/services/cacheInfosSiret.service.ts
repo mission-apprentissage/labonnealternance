@@ -29,10 +29,12 @@ export const getSiretInfos = async (siret: string | null | undefined): Promise<B
         },
         $setOnInsert: {
           _id: new ObjectId(),
-          siret,
-          error: response,
           createdAt: now,
+          siret,
         },
+      },
+      {
+        upsert: true,
       }
     )
     return response

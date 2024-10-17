@@ -2,7 +2,7 @@ import { internal } from "@hapi/boom"
 import { oleoduc, writeData } from "oleoduc"
 import { z } from "shared/helpers/zodWithOpenApi"
 import { JOBPARTNERS_LABEL, ZJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model "
+import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { CollectionName } from "shared/models/models"
 import { AnyZodObject } from "zod"
 

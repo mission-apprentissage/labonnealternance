@@ -12,6 +12,7 @@ export enum COMPUTED_ERROR_SOURCE {
   API_OPCO = "api_opco",
   API_ADRESSE = "api_adresse",
   API_ROMEO = "api_romeo",
+  VALIDATION = "validation",
 }
 
 export const ZComputedJobsPartners = extensions.optionalToNullish(ZJobsPartnersOfferPrivate.partial()).extend({

@@ -6,7 +6,6 @@ describe("create-many-applications", () => {
     cy.viewport(1271, 721)
 
     givenAMatchaOffer((recruiter) => {
-      console.log(recruiter)
       const jobId = recruiter.jobs[0]._id
 
       cy.request({
