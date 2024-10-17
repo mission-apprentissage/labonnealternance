@@ -6,12 +6,12 @@ import { compose, oleoduc, writeData } from "oleoduc"
 import { ILbaCompany } from "shared/models"
 
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
+import { isValidEmail } from "@/common/utils/isValidEmail"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
 import { getS3FileLastUpdate, s3ReadAsStream } from "../../common/utils/awsUtils"
-// import geoData from "../../common/utils/geoData"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import { streamJsonArray } from "../../common/utils/streamUtils"
 import config from "../../config"
@@ -126,7 +126,8 @@ export const getCompanyMissingData = async (rawCompany): Promise<ILbaCompany | n
     }
   }
 
-  company.email = company.email && (await getNotBlacklistedEmail(company.email))
+  company.email = company.email.trim()
+  company.email = (isValidEmail(company.email) && (await getNotBlacklistedEmail(company.email))) || null
 
   return company
 }
