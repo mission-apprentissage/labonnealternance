@@ -157,7 +157,9 @@ export const InformationCreationCompte = ({ isWidget = false }: { isWidget?: boo
 
   const submitForm = (values, { setSubmitting, setFieldError }) => {
     const payload = { ...values, type, establishment_siret }
-    payload.opco = OPCOS_LABEL.UNKNOWN_OPCO
+    if (type === AUTHTYPE.CFA) {
+      payload.opco = OPCOS_LABEL.UNKNOWN_OPCO
+    }
     createEtablissement(payload)
       .then((data) => {
         if (!data) {
