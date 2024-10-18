@@ -372,11 +372,6 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
     cancelJobUrl: "",
   }
 
-  const token = createToken({ application_id: application._id }, "30d", "desinscription")
-  console.log(token)
-  const verified = getTokenValue(token)
-  console.log(verified)
-
   if (application.job_id && user) {
     urls.jobProvidedUrl = createProvidedJobLink(userForToken, application.job_id, utmRecruiterData)
     urls.cancelJobUrl = createCancelJobLink(userForToken, application.job_id, utmRecruiterData)
@@ -1018,13 +1013,13 @@ const getJobOrCompany = async (application: IApplication): Promise<IJobOrCompany
 }
 
 export const getCompanyEmailFromToken = async (token: string) => {
-  const { applicationId } = getTokenValue(token)
+  const { application_id } = getTokenValue(token)
 
-  if (!applicationId) {
+  if (!application_id) {
     throw badRequest("Invalid token")
   }
 
-  const application = await getDbCollection("applications").findOne({ _id: new ObjectId(applicationId) })
+  const application = await getDbCollection("applications").findOne({ _id: new ObjectId(application_id) })
 
   if (application) {
     return application.company_email

@@ -17,7 +17,7 @@ export const getTokenValue = (token: string) => {
   })
 
   if (payload instanceof Object && "exp" in payload && payload.exp) {
-    if (payload.exp < new Date().getTime()) {
+    if (payload.exp * 1000 < new Date().getTime()) {
       throw unauthorized("Token has expired")
     } else {
       return payload

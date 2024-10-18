@@ -109,9 +109,6 @@ export default function (server: Server) {
     },
     async (req, res) => {
       const { token } = req.query
-
-      console.log("ici : ", token)
-
       const company_email = await getCompanyEmailFromToken(token)
       return res.status(200).send({ company_email })
     }
