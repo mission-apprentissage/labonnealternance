@@ -88,10 +88,10 @@ export const zApplicationRoutes = {
     },
   },
   get: {
-    "/application/company/email/:token": {
-      path: "/application/company/email/:token",
+    "/application/company/email": {
+      path: "/application/company/email",
       method: "get",
-      params: z.object({ token: z.string() }).strict(),
+      querystring: z.object({ token: z.string() }).strict(),
       response: {
         "200": z
           .object({

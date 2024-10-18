@@ -4,7 +4,7 @@ import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import { zRoutes } from "shared/index"
 
 import { getDbCollection } from "../../common/utils/mongodbUtils"
-import { sendApplication, sendMailToApplicant } from "../../services/application.service"
+import { getCompanyEmailFromToken, sendApplication, sendMailToApplicant } from "../../services/application.service"
 import { Server } from "../server"
 
 const rateLimitConfig = {
@@ -103,12 +103,14 @@ export default function (server: Server) {
   )
 
   server.get(
-    "/application/company/email/:token",
+    "/application/company/email",
     {
-      schema: zRoutes.get["/application/company/email/:token"],
+      schema: zRoutes.get["/application/company/email"],
     },
     async (req, res) => {
-      const { token } = req.params
+      const { token } = req.query
+
+      console.log("ici : ", token)
 
       const company_email = await getCompanyEmailFromToken(token)
       return res.status(200).send({ company_email })

@@ -365,7 +365,7 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
     waitCandidateUrl: buildReplyLink(application, ApplicantIntention.NESAISPAS, userForToken),
     refuseCandidateUrl: buildReplyLink(application, ApplicantIntention.REFUS, userForToken),
     lbaRecruiterUrl: `${config.publicUrl}/acces-recruteur?${utmRecruiterData}`,
-    unsubscribeUrl: `${config.publicUrl}/desinscription?applicationId=${createToken({ application_id: application._id }, "30d", "desinscription")}${utmRecruiterData}`,
+    unsubscribeUrl: `${config.publicUrl}/desinscription?application_id=${createToken({ application_id: application._id }, "30d", "desinscription")}${utmRecruiterData}`,
     lbaUrl: `${config.publicUrl}?${utmRecruiterData}`,
     faqUrl: `${config.publicUrl}/faq?${utmRecruiterData}`,
     jobProvidedUrl: "",
@@ -1027,7 +1027,7 @@ export const getCompanyEmailFromToken = async (token: string) => {
   const application = await getDbCollection("applications").findOne({ _id: new ObjectId(applicationId) })
 
   if (application) {
-    return { company_email: application.company_email }
+    return application.company_email
   } else {
     throw notFound("Adresse non trouvée")
   }

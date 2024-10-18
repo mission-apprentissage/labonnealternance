@@ -162,7 +162,7 @@ export const putCompanyContactInfo = async ({ siret, phone, email }: { siret: st
 }
 
 export const getApplicationCompanyEmailAddress = async (token: string) => {
-  const data = await apiGet("/application/company/email/:token", { params: { token } })
+  const data = await apiGet("/application/company/email", { querystring: { token } })
   return data
 }
 
