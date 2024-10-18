@@ -87,4 +87,19 @@ export const zApplicationRoutes = {
       },
     },
   },
+  get: {
+    "/application/company/email": {
+      path: "/application/company/email",
+      method: "get",
+      querystring: z.object({ token: z.string() }).strict(),
+      response: {
+        "200": z
+          .object({
+            company_email: z.string().email(),
+          })
+          .strict(),
+      },
+      securityScheme: null,
+    },
+  },
 } as const satisfies IRoutesDef

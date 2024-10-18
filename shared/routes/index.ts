@@ -43,6 +43,7 @@ const zRoutesGetP1 = {
 const zRoutesGetP2 = {
   ...zV1JobsRoutes.get,
   ...zV1FormationsRoutes.get,
+  ...zApplicationRoutes.get,
 } as const
 
 const zRoutesGetP3 = {
@@ -67,7 +68,7 @@ const zRoutesGetP5 = {
   ...zFormulaireRoute.get,
   ...zRecruiterRoutes.get,
   ...zJobsRoutesV2.get,
-}
+} as const
 
 const zRoutesGet: typeof zRoutesGetP1 & typeof zRoutesGetP2 & typeof zRoutesGetP3 & typeof zRoutesGetP4 & typeof zRoutesGetP5 = {
   ...zRoutesGetP1,
