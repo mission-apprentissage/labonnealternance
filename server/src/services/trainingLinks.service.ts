@@ -99,12 +99,14 @@ const getTrainingsFromParameters = async (wish: IWish): Promise<IFormationCatalo
   }
 
   // extraction des codes romes erronés
-  formations = formations
-    .map((formation) => {
-      filterWrongRomes(formation)
-      return formation
-    })
-    .filter((formation) => formation.rome_codes.length > 0)
+  if (formations?.length) {
+    formations = formations
+      .map((formation) => {
+        filterWrongRomes(formation)
+        return formation
+      })
+      .filter((formation) => formation.rome_codes.length > 0)
+  }
 
   return formations || []
 }
