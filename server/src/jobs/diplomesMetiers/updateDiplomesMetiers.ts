@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb"
 import { ZDiplomesMetiers } from "shared/models"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -82,9 +83,13 @@ export default async function () {
   logger.info(`Début traitement`)
 
   await getIntitulesFormations()
+  const now = new Date()
 
   for (const k in diplomesMetiers) {
     diplomesMetiers[k].acronymes_intitule = buildAcronyms(diplomesMetiers[k].intitule_long)
+    diplomesMetiers[k]._id = new ObjectId()
+    diplomesMetiers[k].last_update_at = now
+    diplomesMetiers[k].created_at = now
 
     if (diplomesMetiers[k]?.codes_romes?.length) {
       const parsedDiplomeMetier = ZDiplomesMetiers.safeParse(diplomesMetiers[k])
