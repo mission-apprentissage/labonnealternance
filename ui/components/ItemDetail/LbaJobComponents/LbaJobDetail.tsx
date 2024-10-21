@@ -187,6 +187,7 @@ const LbaJobDetail = ({ job }) => {
               Localisation :{" "}
             </Text>
             <Text as="span">{job.place.city}</Text>
+            <br />
             <ItemDistanceToCenter item={job} />
           </Text>
         )}

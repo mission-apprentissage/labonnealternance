@@ -8,7 +8,7 @@ export default function ItemDistanceToCenter({ item }: { item: ILbaItemFormation
   const { formValues } = useContext(DisplayContext)
 
   return formValues?.location?.value && (item?.place?.distance ?? -1) >= 0 ? (
-    <Text color="grey.425" whiteSpace="nowrap" fontSize={14}>
+    <Text as="span" color="grey.425" whiteSpace="nowrap" fontSize={14}>
       {item?.place?.distance} km(s) du lieu de recherche
     </Text>
   ) : (

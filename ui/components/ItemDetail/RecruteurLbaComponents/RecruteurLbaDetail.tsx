@@ -191,7 +191,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
                     <br />
                     Voici un exemple de relance par téléphone :
                     <br />
-                    <Text py={4} fontStyle="italic" color="grey.425">
+                    <Text as="span" py={4} fontStyle="italic" color="grey.425">
                       “Bonjour,
                       <br />
                       Je suis [Prénom Nom]. Je vous appelle car je vous ai envoyé ma candidature par mail le [jour/mois] pour un poste d'apprenti [intitulé du poste visé]. N'ayant
@@ -199,6 +199,8 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
                       détail ma motivation lors d'un rendez-vous. Pourriez-vous me dire à qui je dois m’adresser pour savoir où en est ma candidature et quand puis-je espérer
                       recevoir une réponse ?”
                     </Text>
+                    <br />
+                    <br />
                     <strong>Vous avez une proposition d’entretien ?</strong>
                     <br />
                     Préparez-vous avec ce quizz interactif :
