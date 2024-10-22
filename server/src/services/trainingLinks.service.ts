@@ -11,6 +11,7 @@ import { asyncForEach } from "../common/utils/asyncUtils"
 import config from "../config.js"
 
 import { getRomesFromRncp } from "./external/api-alternance/certification.service"
+import { filterWrongRomes } from "./formation.service"
 
 interface IWish {
   id: string
@@ -95,6 +96,16 @@ const getTrainingsFromParameters = async (wish: IWish): Promise<IFormationCatalo
     if (wish.uai_formateur_responsable) {
       formations = await getFormations({ ...query, etablissement_gestionnaire_uai: wish.uai_formateur_responsable })
     }
+  }
+
+  // extraction des codes romes erronés
+  if (formations?.length) {
+    formations = formations
+      .map((formation) => {
+        filterWrongRomes(formation)
+        return formation
+      })
+      .filter((formation) => formation.rome_codes.length > 0)
   }
 
   return formations || []
