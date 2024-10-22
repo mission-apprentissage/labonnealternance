@@ -600,7 +600,7 @@ program
 
 program
   .command("fill-computed-jobs-partners")
-  .description("Enrichie la collection computed_jobs_partners avec les données provenant d'API externes")
+  .description("Enrichi la collection computed_jobs_partners avec les données provenant d'API externes")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("fill-computed-jobs-partners"))
 
