@@ -45,7 +45,6 @@ function getDiplomaLevel(job: IHelloWorkJob): IComputedJobsPartners["offer_targe
 
   switch (job.education) {
     case "RJ/Qualif/BEP_CAP":
-      return { european: "3", label: NIVEAUX_POUR_LBA["3 (CAP...)"] }
     case "RJ/Qualif/Employe_Operateur":
       return { european: "3", label: NIVEAUX_POUR_LBA["3 (CAP...)"] }
     case "RJ/Qualif/Technicien_B2":
