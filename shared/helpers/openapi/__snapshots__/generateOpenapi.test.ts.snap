@@ -7076,6 +7076,7 @@ Limite : 5 appel(s) / 1 seconde(s)
     },
     "/v1/jobs": {
       "get": {
+        "deprecated": true,
         "description": "Get job opportunities matching the query parameters
 Limite : 5 appel(s) / 1 seconde(s)
 ",
@@ -7361,6 +7362,7 @@ Limite : 5 appel(s) / 1 seconde(s)
     },
     "/v1/jobs/bulk": {
       "get": {
+        "deprecated": true,
         "description": "Get all jobs related to my organization
 Limite : 5 appel(s) / 1 seconde(s)
 ",
@@ -7463,6 +7465,7 @@ Limite : 5 appel(s) / 1 seconde(s)
     },
     "/v1/jobs/canceled/{jobId}": {
       "post": {
+        "deprecated": true,
         "description": "Update a job offer status to Canceled
 Limite : 5 appel(s) / 1 seconde(s)
 ",
@@ -7503,6 +7506,7 @@ Limite : 5 appel(s) / 1 seconde(s)
     },
     "/v1/jobs/company/{siret}": {
       "get": {
+        "deprecated": true,
         "description": "Get one company identified by it's siret
 Limite : 5 appel(s) / 1 seconde(s)
 ",
@@ -7630,6 +7634,7 @@ Limite : 5 appel(s) / 1 seconde(s)
     },
     "/v1/jobs/delegations/{jobId}": {
       "get": {
+        "deprecated": true,
         "description": "Get related training organization related to a job offer.
 Limite : 5 appel(s) / 1 seconde(s)
 ",
@@ -7740,6 +7745,7 @@ Limite : 5 appel(s) / 1 seconde(s)
         ],
       },
       "post": {
+        "deprecated": true,
         "description": "Create delegation related to a job offer.",
         "parameters": [
           {
@@ -7815,6 +7821,7 @@ Limite : 5 appel(s) / 1 seconde(s)
     },
     "/v1/jobs/establishment": {
       "get": {
+        "deprecated": true,
         "description": "Get existing establishment id from siret & email
 Limite : 5 appel(s) / 1 seconde(s)
 ",
@@ -7883,6 +7890,7 @@ Limite : 5 appel(s) / 1 seconde(s)
         ],
       },
       "post": {
+        "deprecated": true,
         "description": "Create an establishment entity
 Limite : 5 appel(s) / 1 seconde(s)
 ",
@@ -7974,6 +7982,7 @@ Limite : 5 appel(s) / 1 seconde(s)
     },
     "/v1/jobs/extend/{jobId}": {
       "post": {
+        "deprecated": true,
         "description": "Update a job expiration date by 30 days.
 Limite : 5 appel(s) / 1 seconde(s)
 ",
@@ -8014,6 +8023,7 @@ Limite : 5 appel(s) / 1 seconde(s)
     },
     "/v1/jobs/job/{id}": {
       "get": {
+        "deprecated": true,
         "description": "Get one pe job identified by it's id
 Limite : 5 appel(s) / 1 seconde(s)
 ",
@@ -8137,6 +8147,7 @@ Limite : 5 appel(s) / 1 seconde(s)
     },
     "/v1/jobs/matcha/{id}": {
       "get": {
+        "deprecated": true,
         "description": "Get one lba job identified by it's id
 Limite : 5 appel(s) / 1 seconde(s)
 ",
@@ -8241,6 +8252,7 @@ Limite : 5 appel(s) / 1 seconde(s)
     },
     "/v1/jobs/matcha/{id}/stats/view-details": {
       "post": {
+        "deprecated": true,
         "description": "Notifies that the detail of a matcha job has been viewed
 Limite : 5 appel(s) / 1 seconde(s)
 ",
@@ -8277,6 +8289,7 @@ Limite : 5 appel(s) / 1 seconde(s)
     },
     "/v1/jobs/min": {
       "get": {
+        "deprecated": true,
         "description": "Get job opportunities matching the query parameters
 Limite : 5 appel(s) / 1 seconde(s)
 ",
@@ -8562,6 +8575,7 @@ Limite : 5 appel(s) / 1 seconde(s)
     },
     "/v1/jobs/provided/{jobId}": {
       "post": {
+        "deprecated": true,
         "description": "Update a job offer status to Provided
 Limite : 5 appel(s) / 1 seconde(s)
 ",
@@ -8602,6 +8616,7 @@ Limite : 5 appel(s) / 1 seconde(s)
     },
     "/v1/jobs/{establishmentId}": {
       "post": {
+        "deprecated": true,
         "description": "Create a job offer inside an establishment entity.
 Limite : 5 appel(s) / 1 seconde(s)
 ",
@@ -8788,6 +8803,7 @@ Limite : 5 appel(s) / 1 seconde(s)
     },
     "/v1/jobs/{jobId}": {
       "patch": {
+        "deprecated": true,
         "description": "Update a job offer specific fields inside an establishment entity.
 Limite : 5 appel(s) / 1 seconde(s)
 ",
