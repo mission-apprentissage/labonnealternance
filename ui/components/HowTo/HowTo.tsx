@@ -27,7 +27,7 @@ const HowTo = () => {
               <Text as="h3" fontSize="1.25rem" fontWeight="500" mb="3">
                 En un clin d’&oelig;il
               </Text>
-              <Text as="p">Obtenez la liste des formations et entreprises prêtes à vous accueillir.</Text>
+              <Text as="p">Obtenez la liste des formations et entreprises où réaliser votre alternance</Text>
             </Box>
           </GridItem>
           <GridItem position="relative" width={{ base: "200px", md: "auto" }} mx="auto" mb="12">
@@ -40,7 +40,7 @@ const HowTo = () => {
               <Text as="h3" fontSize="1.25rem" fontWeight="500" mb="3">
                 Un contact facile
               </Text>
-              <Text as="p">Contactez facilement les centres de formation ou les entreprises pour postuler </Text>
+              <Text as="p">Contactez facilement les centres de formation ou les entreprises pour postuler</Text>
             </Box>
           </GridItem>
         </Grid>
