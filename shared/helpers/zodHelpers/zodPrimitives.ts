@@ -119,4 +119,18 @@ export const extensions = {
   },
   inseeCode: () => z.string().trim().regex(CODE_INSEE_REGEX, "Code INSEE invalide"),
   url: () => z.string().regex(/^(https?:\/\/)?(http?:\/\/)?(www\.)?([a-zA-Z0-9-]+)(\.[a-zA-Z0-9-]+)+([a-zA-Z]{2,6})(:[0-9]{1,5})?(\/.*)?$/, "URL invalide"),
+  optionalToNullish<Schema extends z.AnyZodObject>(schema: Schema) {
+    // cf https://github.com/colinhacks/zod/discussions/2050
+    const entries = Object.entries(schema.shape) as [keyof Schema["shape"], z.ZodTypeAny][]
+    const newProps = entries.reduce(
+      (acc, [key, value]) => {
+        acc[key] = value instanceof z.ZodOptional ? value.unwrap().nullish() : value
+        return acc
+      },
+      {} as {
+        [key in keyof Schema["shape"]]: Schema["shape"][key] extends z.ZodOptional<infer T> ? z.ZodOptional<z.ZodNullable<T>> : Schema["shape"][key]
+      }
+    )
+    return z.object(newProps)
+  },
 }

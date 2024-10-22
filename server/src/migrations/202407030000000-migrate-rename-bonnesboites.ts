@@ -9,9 +9,9 @@ export const up = async (db: Db) => {
     const collections = await db.listCollections({ name: newName }).toArray()
     if (collections.length === 0) {
       await db.collection(oldName).rename(newName)
-      console.log(`Renamed collection ${oldName} to ${newName}`)
+      console.info(`Renamed collection ${oldName} to ${newName}`)
     } else {
-      console.log(`Collection ${newName} already exists, skipping rename of ${oldName}`)
+      console.info(`Collection ${newName} already exists, skipping rename of ${oldName}`)
     }
   }
 
