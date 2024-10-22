@@ -417,7 +417,6 @@ export const zV1JobsRoutes = {
         is_disabled_elligible: true,
         custom_address: true,
         custom_geo_coordinates: true,
-        is_multi_published: true,
         custom_job_title: true,
       })
         .extend({

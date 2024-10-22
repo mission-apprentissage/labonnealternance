@@ -68,7 +68,6 @@ async function exportLbaJobsToS3() {
       establishment_id: 0,
       origin: 0,
       recruiterStatus: 0,
-      is_multi_published: 0,
       job_delegation_count: 0,
       stats_detail_view: 0,
       stats_search_view: 0,
