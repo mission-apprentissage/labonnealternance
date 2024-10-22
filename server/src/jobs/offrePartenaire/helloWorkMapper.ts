@@ -88,9 +88,10 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
   const urlParsing = extensions.url().safeParse(url)
   const creationDate = parseDate(publication_date)
 
+  const created_at = new Date()
   const partnerJob: IComputedJobsPartners = {
     _id: new ObjectId(),
-    created_at: new Date(),
+    created_at,
     partner_label: JOBPARTNERS_LABEL.HELLOWORK,
     partner_job_id: job_id,
     contract_start: parseDate(contract_start_date),
@@ -105,7 +106,10 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     offer_to_be_acquired_skills: [],
     offer_rome_codes: codeRomeParsing.success ? [codeRomeParsing.data] : undefined,
     offer_creation: creationDate,
-    offer_expiration: creationDate ? dayjs.tz(creationDate).add(2, "months").toDate() : null,
+    offer_expiration: dayjs
+      .tz(creationDate || created_at)
+      .add(2, "months")
+      .toDate(),
     offer_origin: null,
     offer_opening_count: 1,
     offer_multicast: false,
