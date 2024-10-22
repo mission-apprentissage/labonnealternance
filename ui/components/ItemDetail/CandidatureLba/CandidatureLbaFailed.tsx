@@ -56,7 +56,7 @@ const sendingStateValues = {
     text: "Veuillez patienter quelques instants et réessayer. Si l'erreur persiste merci de nous contacter.",
     dataTestId: "CandidatureSpontaneeFailedTempEmailTitle",
   },
-  "offre expirée": {
+  [BusinessErrorCodes.EXPIRED]: {
     title: "Offre expirée",
     text: "Cette offre n'est plus active",
     dataTestId: "CandidatureSpontaneeFailedExpiredJob",
