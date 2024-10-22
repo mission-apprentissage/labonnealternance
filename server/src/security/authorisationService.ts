@@ -447,9 +447,15 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
   } else if (userType === "IApiApprentissage") {
     const { organisation, habilitations } = userWithType.value
     /**
-     * KBA : temporaire, à modifier lorsque l'ensemble des habilitations seront définit
+     * KBA : temporaire, à modifier lorsque l'ensemble des habilitations seront définies
      */
-    if (schema.securityScheme.access !== "job:manage" || !habilitations["jobs:write"] || !organisation) {
+    if (
+      schema.securityScheme.access !== "job:manage" ||
+      !habilitations["jobs:write"] ||
+      !habilitations["applications:write"] ||
+      !habilitations["appointments:write"] ||
+      !organisation
+    ) {
       throw forbidden("Unauthorized")
     }
     const userAccess: ComputedUserAccess = {

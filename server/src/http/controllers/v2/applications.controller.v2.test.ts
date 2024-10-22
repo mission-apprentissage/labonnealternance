@@ -26,11 +26,11 @@ vi.mock("@/services/clamav.service", () => {
   }
 })
 
-const token = getApiApprentissageTestingToken({ email: "test@test.fr", organisation: "Un super Partenaire", habilitations: { "jobs:write": true } })
+const token = getApiApprentissageTestingToken({ email: "test@test.fr", organisation: "Un super Partenaire", habilitations: { "applications:write": true } })
 const fakeToken = getApiApprentissageTestingTokenFromInvalidPrivateKey({
   email: "mail@mail.com",
   organisation: "Un super Partenaire",
-  habilitations: { "jobs:write": true },
+  habilitations: { "applications:write": true },
 })
 
 const recruteur = generateLbaCompanyFixture({
