@@ -14,6 +14,7 @@ import {
   JOB_STATUS,
   ZRomeCategorieSavoir,
 } from "shared"
+import { getDirectJobPath } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { z } from "shared/helpers/zodWithOpenApi"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
@@ -804,7 +805,7 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, co
         job_level_label: job.job_level_label,
         job_start_date: dayjs(job.job_start_date).format("DD/MM/YY"),
       },
-      lba_url: `${config.publicUrl}/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`,
+      lba_url: `${config.publicUrl}${getDirectJobPath(job._id.toString())}`,
     },
   })
 }

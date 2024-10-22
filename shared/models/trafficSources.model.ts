@@ -26,6 +26,7 @@ export const ZTrafficSource = ZTrackingCookies.extend({
   application_id: zObjectId.nullable(),
   applicant_email_hash: z.string().nullable(),
   traffic_type: ZTrafficType,
+  created_at: z.date(),
 })
 
 export type ITrafficSource = z.output<typeof ZTrafficSource>

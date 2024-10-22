@@ -225,6 +225,17 @@ export const OffresTabs = ({ recruiter, establishmentId, showStats = false }: { 
                         <ExternalLinkLine ml={1} color="bluefrance.500" />
                       </Link>
                     </MenuItem>
+                    {row.job_status !== JOB_STATUS.EN_ATTENTE && (
+                      <MenuItem>
+                        <Link
+                          isExternal
+                          href={`${publicConfig.baseUrl}/espace-pro/offre/impression/${row._id}`}
+                          aria-label="Lien vers la page d'impression de l'offre - nouvelle fenêtre"
+                        >
+                          Imprimer l'offre
+                        </Link>
+                      </MenuItem>
+                    )}
                     <MenuItem>
                       <Link
                         onClick={(e) => {

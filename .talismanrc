@@ -227,6 +227,20 @@ fileignoreconfig:
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
+- filename: server/src/http/controllers/v2/applications.controller.v2.test.ts
+  checksum: bbbbd6c52ef2491fb6b0468a730c91fc3aaa77154429c220f8270b46b83afa07
+- filename: shared/fixtures/referentiel/onisep.fixture.ts
+  checksum: 3f54d57761ea54731e3cfa80013d3f8b300a5f275beb8a29cfca235b6a8d44f7
+- filename: server/src/http/controllers/v2/appointment.controller.v2.test.ts
+  checksum: bf324d263445d1ffb1acc6b5203e36449973dea7d7fce6832b933d7a375f74bc
+- filename: shared/fixtures/appointment.fixture.ts
+  checksum: 9090cddf673370dec0a6196d368ac1e99f8922feb1e55ada277c1e0339bdb016
+- filename: server/static/templates/mail-candidat-entretien.mjml.ejs
+  checksum: 55e635282f6a7ac57319c69cbc98f484b9c5d7e6c4ba0901e1e5395caac9e8cd
+- filename: server/static/templates/mail-candidat-nsp.mjml.ejs
+  checksum: 203d57160c0cda492f4172d9651c2dea9b8d7b4b3ab0e25f80a24438e3f1e184
+- filename: server/static/templates/mail-candidat-refus.mjml.ejs
+  checksum: 7e912b174e33f96f0fbb180bdb5d04d92951c2db880ab147eba395a24c74ae87
 scopeconfig:
 - scope: node
 custom_patterns:
