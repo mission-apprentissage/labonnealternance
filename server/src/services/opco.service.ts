@@ -63,8 +63,10 @@ export const insertOpcos = async (opcoDatas: Omit<IOpco, "_id">[]) => {
   }
   await getDbCollection("opcos").bulkWrite(
     opcoDatas.map((data) => ({
-      insertOne: {
-        document: { _id: new ObjectId(), ...data },
+      updateOne: {
+        filter: { siren: data.siren },
+        update: { $set: { ...data }, $setOnInsert: { _id: new ObjectId() } },
+        upsert: true,
       },
     })),
     {
