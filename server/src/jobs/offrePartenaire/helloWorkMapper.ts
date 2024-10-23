@@ -20,6 +20,7 @@ export const ZHelloWorkJob = z
     profile: z.string().nullish(),
     code_rome: z.string().nullish(),
     publication_date: z.string().nullish(),
+    updated_date: z.string().nullish(),
     siret: z.string().nullish(),
     company_title: z.string(),
     company_description: z.string().nullish(),
@@ -80,6 +81,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     city,
     geoloc,
     url,
+    updated_date,
   } = job
   const contractDuration: number | null = parseContractDuration(job)
   const { latitude, longitude } = geolocToLatLon(geoloc)
@@ -92,6 +94,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
   const partnerJob: IComputedJobsPartners = {
     _id: new ObjectId(),
     created_at,
+    updated_at: updated_date ? parseDate(updated_date) : created_at,
     partner_label: JOBPARTNERS_LABEL.HELLOWORK,
     partner_job_id: job_id,
     contract_start: parseDate(contract_start_date),
