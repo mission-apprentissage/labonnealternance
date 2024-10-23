@@ -44,10 +44,14 @@ export const fillSiretInfosForPartners = async () => {
         workplace_brand: establishment_enseigne,
         workplace_name: establishment_enseigne ?? establishment_raison_sociale,
         workplace_address_label: address ?? undefined,
-        workplace_geopoint: geo_coordinates ? convertStringCoordinatesToGeoPoint(geo_coordinates) : undefined,
         workplace_naf_code: naf_code,
         workplace_naf_label: naf_label,
       }
+
+      if (geo_coordinates) {
+        result.workplace_geopoint = convertStringCoordinatesToGeoPoint(geo_coordinates as string)
+      }
+
       return [result]
     },
   })
