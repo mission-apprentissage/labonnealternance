@@ -37,6 +37,7 @@ export const validateComputedJobPartners = async () => {
           })
 
           if (error) {
+            counters.error++
             pushOperations.push({
               updateOne: {
                 filter: { _id: document._id },
@@ -50,14 +51,20 @@ export const validateComputedJobPartners = async () => {
                 },
               },
             })
+          } else {
+            counters.success++
           }
         })
-        await getDbCollection("computed_jobs_partners").bulkWrite(setOperations, {
-          ordered: false,
-        })
-        await getDbCollection("computed_jobs_partners").bulkWrite(pushOperations, {
-          ordered: false,
-        })
+        if (setOperations?.length) {
+          await getDbCollection("computed_jobs_partners").bulkWrite(setOperations, {
+            ordered: false,
+          })
+        }
+        if (pushOperations?.length) {
+          await getDbCollection("computed_jobs_partners").bulkWrite(pushOperations, {
+            ordered: false,
+          })
+        }
       },
       { parallel: 1 }
     )
