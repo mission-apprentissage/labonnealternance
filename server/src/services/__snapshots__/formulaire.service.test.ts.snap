@@ -68,12 +68,12 @@ exports[`createJob > should insert a job 2`] = `
       {
         "items": [
           {
-            "code_ogr": "121411",
+            "code_ogr": "120992",
             "coeur_metier": null,
-            "libelle": "Méthode de classement et d'archivage",
+            "libelle": "Gestion administrative du courrier",
           },
         ],
-        "libelle": "Normes et procédés",
+        "libelle": "Domaines d'expertise",
       },
     ],
   },
