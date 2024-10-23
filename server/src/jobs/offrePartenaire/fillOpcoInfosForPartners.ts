@@ -1,3 +1,4 @@
+import { OPCOS_LABEL } from "shared/constants"
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
 import { getOpcosData } from "@/services/etablissement.service"
@@ -18,7 +19,10 @@ export const fillOpcoInfosForPartners = async () => {
       return documents.map((document) => {
         const opcoData = opcosData.find((data) => data.siret === document.workplace_siret)
         if (!opcoData) {
-          return undefined
+          return {
+            workplace_idcc: null,
+            workplace_opco: OPCOS_LABEL.UNKNOWN_OPCO,
+          }
         }
         const { opco, idcc } = opcoData
         let parsedIdcc: number | null = null
