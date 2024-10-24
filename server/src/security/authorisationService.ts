@@ -1,4 +1,5 @@
 import { forbidden, internal } from "@hapi/boom"
+import { IApiAlternanceTokenData } from "api-alternance-sdk"
 import { FastifyRequest } from "fastify"
 import { ObjectId } from "mongodb"
 import { ADMIN, CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
@@ -357,6 +358,20 @@ function canAccessJobPartner(userAccess: ComputedUserAccess, resource: JobPartne
   return userAccess.partner_label.includes(job.partner_label)
 }
 
+function isApiApprentissageAuthorized(requestedAccess: AccessPermission, habilitations: IApiAlternanceTokenData["habilitations"]): boolean {
+  switch (requestedAccess) {
+    case "api-apprentissage:applications":
+      return habilitations["applications:write"]
+    case "api-apprentissage:jobs":
+      return habilitations["jobs:write"]
+    case "api-apprentissage:appointment":
+      return habilitations["appointments:write"]
+
+    default:
+      return false
+  }
+}
+
 function isAuthorized(access: AccessPermission, userAccess: ComputedUserAccess, resources: Resources): boolean {
   if (typeof access === "object") {
     if ("some" in access) {
@@ -392,7 +407,7 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
   const userType = userWithType.type
 
   if (userType === "IAccessToken") {
-    // authorization check has already been done in authentication
+    // authorization check done in authentication
     return
   }
   let grantedRoles: IRoleManagement[] = []
@@ -446,16 +461,10 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
     }
   } else if (userType === "IApiApprentissage") {
     const { organisation, habilitations } = userWithType.value
-    /**
-     * KBA : temporaire, à modifier lorsque l'ensemble des habilitations seront définies
-     */
-    if (
-      schema.securityScheme.access !== "job:manage" ||
-      !habilitations["jobs:write"] ||
-      !habilitations["applications:write"] ||
-      !habilitations["appointments:write"] ||
-      !organisation
-    ) {
+    if (!organisation) {
+      throw forbidden("Unauthorized: user organisation not defined")
+    }
+    if (!isApiApprentissageAuthorized(requestedAccess, habilitations)) {
       throw forbidden("Unauthorized")
     }
     const userAccess: ComputedUserAccess = {

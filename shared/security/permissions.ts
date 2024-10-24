@@ -1,4 +1,15 @@
-export type Permission = "recruiter:manage" | "user:validate" | "recruiter:add_job" | "job:manage" | "school:manage" | "application:manage" | "user:manage" | "admin"
+export type Permission =
+  | "recruiter:manage"
+  | "user:validate"
+  | "recruiter:add_job"
+  | "job:manage"
+  | "school:manage"
+  | "application:manage"
+  | "user:manage"
+  | "admin"
+  | "api-apprentissage:jobs"
+  | "api-apprentissage:applications"
+  | "api-apprentissage:appointment"
 
 export type RoleNames = "opco" | "recruiter" | "cfa" | "admin" | "pending_recruiter"
 
