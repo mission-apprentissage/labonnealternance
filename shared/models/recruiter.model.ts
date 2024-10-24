@@ -115,7 +115,6 @@ export default {
     [
       {
         "jobs.status": 1,
-        "jobs.is_multi_published": 1,
         "jobs.rome_code": 1,
         "jobs.job_creation_date": -1,
       },
@@ -125,7 +124,6 @@ export default {
     [
       {
         "jobs.status": 1,
-        "jobs.is_multi_published": 1,
         "jobs.job_creation_date": -1,
       },
       {},

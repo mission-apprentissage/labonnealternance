@@ -850,11 +850,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
-          "is_multi_published": {
-            "default": true,
-            "description": "Definit si l'offre est diffusée sur d'autres jobboard que La bonne alternance",
-            "type": "boolean",
-          },
           "job_count": {
             "default": 1,
             "description": "Nombre de poste(s) ouvert(s) pour cette offre",
@@ -8668,11 +8663,6 @@ Limite : 5 appel(s) / 1 seconde(s)
                       "boolean",
                       "null",
                     ],
-                  },
-                  "is_multi_published": {
-                    "default": true,
-                    "description": "Definit si l'offre est diffusée sur d'autres jobboard que La bonne alternance",
-                    "type": "boolean",
                   },
                   "job_count": {
                     "default": 1,

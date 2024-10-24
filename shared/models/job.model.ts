@@ -74,7 +74,6 @@ export const ZJobFields = z
     job_status: z.enum([allJobStatus[0], ...allJobStatus.slice(1)]).describe("Statut de l'offre"),
     job_status_comment: z.string().nullish().describe("Raison de la suppression de l'offre"),
     job_type: ZJobType,
-    is_multi_published: z.boolean().default(true).describe("Definit si l'offre est diffusée sur d'autres jobboard que La bonne alternance"),
     job_delegation_count: z.number().nullish().describe("Nombre de délégations"),
     delegations: z.array(ZDelegation).nullish().describe("Liste des délégations"),
     is_disabled_elligible: z.boolean().nullish().default(false).describe("Poste ouvert aux personnes en situation de handicap"),

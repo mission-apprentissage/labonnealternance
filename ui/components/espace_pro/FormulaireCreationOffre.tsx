@@ -109,7 +109,6 @@ const FormikCreationOffre = ({
         job_expiration_date: offre?.job_expiration_date ?? dayjs().add(2, "month").format(DATE_FORMAT),
         job_status: offre?.job_status ?? JOB_STATUS.ACTIVE,
         job_type: offre?.job_type ?? ["Apprentissage"],
-        is_multi_published: offre?.is_multi_published ?? undefined,
         delegations: offre?.delegations ?? undefined,
         is_disabled_elligible: offre?.is_disabled_elligible ?? false,
         job_count: offre?.job_count ?? 1,
@@ -123,7 +122,6 @@ const FormikCreationOffre = ({
         job_start_date: Yup.date().required("Champ obligatoire"),
         job_type: Yup.array().required("Champ obligatoire"),
         job_duration: Yup.number().max(36, "Durée maximale du contrat : 36 mois").min(6, "Durée minimale du contrat : 6 mois").typeError("Durée minimale du contrat : 6 mois"),
-        is_multi_published: Yup.boolean(),
       })}
       onSubmit={(values: any, bag) => onSubmit(values, bag)}
     >
