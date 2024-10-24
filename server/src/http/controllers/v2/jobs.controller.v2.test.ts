@@ -21,12 +21,16 @@ vi.mock("@/common/apis/apiEntreprise/apiEntreprise.client")
 
 const httpClient = useServer()
 
-const token = getApiApprentissageTestingToken({ email: "test@test.fr", organisation: "Un super Partenaire", habilitations: { "jobs:write": true } })
+const token = getApiApprentissageTestingToken({
+  email: "test@test.fr",
+  organisation: "Un super Partenaire",
+  habilitations: { "applications:write": false, "appointments:write": false, "jobs:write": true },
+})
 
 const fakeToken = getApiApprentissageTestingTokenFromInvalidPrivateKey({
   email: "mail@mail.com",
   organisation: "Un super Partenaire",
-  habilitations: { "jobs:write": true },
+  habilitations: { "applications:write": false, "appointments:write": false, "jobs:write": true },
 })
 
 const rome = ["D1214", "D1212", "D1211"]
@@ -337,7 +341,11 @@ describe("POST /jobs", async () => {
   })
 
   it('should return 403 if user does not have "jobs:write" permission', async () => {
-    const restrictedToken = getApiApprentissageTestingToken({ email: "mail@mail.com", organisation: "Un super Partenaire", habilitations: { "jobs:write": false } })
+    const restrictedToken = getApiApprentissageTestingToken({
+      email: "mail@mail.com",
+      organisation: "Un super Partenaire",
+      habilitations: { "applications:write": false, "appointments:write": false, "jobs:write": false },
+    })
 
     const response = await httpClient().inject({
       method: "POST",
@@ -498,7 +506,11 @@ describe("PUT /jobs/:id", async () => {
   })
 
   it('should return 403 if user does not have "jobs:write" permission', async () => {
-    const restrictedToken = getApiApprentissageTestingToken({ email: "mail@mail.com", organisation: "Un super Partenaire", habilitations: { "jobs:write": false } })
+    const restrictedToken = getApiApprentissageTestingToken({
+      email: "mail@mail.com",
+      organisation: "Un super Partenaire",
+      habilitations: { "applications:write": false, "appointments:write": false, "jobs:write": false },
+    })
 
     const response = await httpClient().inject({
       method: "PUT",
@@ -512,7 +524,11 @@ describe("PUT /jobs/:id", async () => {
   })
 
   it("should return 403 if user is trying to edit other partner_label job", async () => {
-    const restrictedToken = getApiApprentissageTestingToken({ email: "mail@mail.com", organisation: "Un autre", habilitations: { "jobs:write": true } })
+    const restrictedToken = getApiApprentissageTestingToken({
+      email: "mail@mail.com",
+      organisation: "Un autre",
+      habilitations: { "applications:write": false, "appointments:write": false, "jobs:write": true },
+    })
 
     const response = await httpClient().inject({
       method: "PUT",

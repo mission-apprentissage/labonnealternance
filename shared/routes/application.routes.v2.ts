@@ -14,7 +14,7 @@ export const zApplicationRoutesV2 = {
           id: z.string(),
         }),
       },
-      securityScheme: { auth: "api-apprentissage", access: null, resources: {} },
+      securityScheme: { auth: "api-apprentissage", access: "api-apprentissage:applications", resources: {} },
     },
     "/_private/application": {
       path: "/_private/application",

@@ -1767,9 +1767,7 @@ describe("createJobOffer", () => {
   const identity = {
     email: "mail@mailType.com",
     organisation: "Some organisation",
-    habilitations: {
-      "jobs:write": true,
-    },
+    habilitations: { "applications:write": false, "appointments:write": false, "jobs:write": true },
   } as const satisfies IApiAlternanceTokenData
 
   const now = new Date("2024-06-18T00:00:00.000Z")
@@ -1892,9 +1890,7 @@ describe("updateJobOffer", () => {
   const identity = {
     email: "mail@mailType.com",
     organisation: "Some organisation",
-    habilitations: {
-      "jobs:write": true,
-    },
+    habilitations: { "applications:write": false, "appointments:write": false, "jobs:write": true },
   } as const satisfies IApiAlternanceTokenData
 
   const originalCreatedAt = new Date("2023-09-06T00:00:00.000+02:00")
