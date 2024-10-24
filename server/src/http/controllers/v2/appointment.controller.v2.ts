@@ -4,6 +4,7 @@ import { findElligibleTrainingForAppointmentV2 } from "../../../services/eligibl
 import { Server } from "../../server"
 
 export default (server: Server) => {
+  // TODO: évaluation passage en GET avant communication utilisateurs finaux
   server.post(
     "/appointment",
     {

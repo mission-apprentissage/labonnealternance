@@ -1,5 +1,6 @@
 import { badRequest, internal, notFound } from "@hapi/boom"
 import { ObjectId } from "mongodb"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { EApplicantRole } from "shared/constants/rdva"
 import { zRoutes } from "shared/index"
 
@@ -25,7 +26,7 @@ export default (server: Server) => {
       schema: zRoutes.post["/appointment-request/context/create"],
     },
     async (req, res) => {
-      res.status(200).send(await findElligibleTrainingForAppointment(req))
+      res.status(200).send(await findElligibleTrainingForAppointment(req.body))
     }
   )
 
@@ -46,7 +47,7 @@ export default (server: Server) => {
       })
 
       if (!eligibleTrainingsForAppointment) {
-        throw badRequest("Formation introuvable.")
+        throw badRequest(BusinessErrorCodes.TRAINING_NOT_FOUND)
       }
 
       if (!eligibleTrainingsForAppointment.lieu_formation_email) {
@@ -231,6 +232,16 @@ export default (server: Server) => {
         user,
         formation,
       })
+    }
+  )
+
+  server.get(
+    "/appointment",
+    {
+      schema: zRoutes.get["/appointment"],
+    },
+    async (req, res) => {
+      res.status(200).send(await findElligibleTrainingForAppointment(req.query))
     }
   )
 
