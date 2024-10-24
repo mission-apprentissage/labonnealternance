@@ -4,7 +4,7 @@ import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import { zRoutes } from "shared/index"
 
 import { getDbCollection } from "../../common/utils/mongodbUtils"
-import { sendApplication, sendMailToApplicant } from "../../services/application.service"
+import { getCompanyEmailFromToken, sendApplication, sendMailToApplicant } from "../../services/application.service"
 import { Server } from "../server"
 
 const rateLimitConfig = {
@@ -99,6 +99,18 @@ export default function (server: Server) {
       if (!application) throw new Error("application not found")
 
       return res.status(200).send({ result: "ok" })
+    }
+  )
+
+  server.get(
+    "/application/company/email",
+    {
+      schema: zRoutes.get["/application/company/email"],
+    },
+    async (req, res) => {
+      const { token } = req.query
+      const company_email = await getCompanyEmailFromToken(token)
+      return res.status(200).send({ company_email })
     }
   )
 }

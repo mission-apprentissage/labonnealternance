@@ -24,7 +24,6 @@ import {
   Checkbox,
 } from "@chakra-ui/react"
 import { Formik, Field, Form } from "formik"
-import { useRouter } from "next/router"
 import React, { useState } from "react"
 import * as Yup from "yup"
 
@@ -163,14 +162,13 @@ const ConfirmationDesinscription = ({
   )
 }
 
-const FormulaireDesinscription = ({ handleUnsubscribeSuccess }) => {
+const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSuccess }) => {
   const [emailError, setEmailError] = useState(null)
   const [popupData, setPopupData] = useState(noPopupData)
   const [selectedSirets, setSelectedSirets] = useState([])
   const [allSelected, setAllSelected] = useState(true)
   const [isMultipleSubmitting, setIsMultipleSubmitting] = useState(false)
   const validationPopup = useDisclosure()
-  const router = useRouter()
 
   const handleUnsubscribeSubmit = async (values) => {
     setEmailError(null)
@@ -224,7 +222,7 @@ const FormulaireDesinscription = ({ handleUnsubscribeSuccess }) => {
               reason: Yup.string().required("Vous devez sélectionner un motif"),
               email: Yup.string().email("Veuillez saisir une adresse email valide").required("Veuillez saisir une adresse email valide"),
             })}
-            initialValues={{ email: router?.query?.email || "", reason: "" }}
+            initialValues={{ email: companyEmail || "", reason: "" }}
             onSubmit={handleUnsubscribeSubmit}
             enableReinitialize={true}
           >
