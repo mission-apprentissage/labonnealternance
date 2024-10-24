@@ -1022,8 +1022,11 @@ export const getCompanyEmailFromToken = async (token: string) => {
   const application = await getDbCollection("applications").findOne({ _id: new ObjectId(application_id) })
 
   if (application) {
-    return application.company_email
-  } else {
-    throw notFound("Adresse non trouvée")
+    const recruteurLba = await getDbCollection("recruteurslba").findOne({ siret: application.company_siret })
+    if (recruteurLba?.email) {
+      return recruteurLba.email
+    }
   }
+
+  throw notFound("Adresse non trouvée")
 }
