@@ -8,11 +8,15 @@ import { useMongo } from "../../../../tests/utils/mongo.test.utils"
 import { useServer } from "../../../../tests/utils/server.test.utils"
 import { getDbCollection } from "../../../common/utils/mongodbUtils"
 
-const token = getApiApprentissageTestingToken({ email: "test@test.fr", organisation: "Un super Partenaire", habilitations: { "appointments:write": true } })
+const token = getApiApprentissageTestingToken({
+  email: "test@test.fr",
+  organisation: "Un super Partenaire",
+  habilitations: { "applications:write": false, "appointments:write": true, "jobs:write": false },
+})
 const fakeToken = getApiApprentissageTestingTokenFromInvalidPrivateKey({
   email: "mail@mail.com",
   organisation: "Un super Partenaire",
-  habilitations: { "appointments:write": true },
+  habilitations: { "applications:write": false, "appointments:write": true, "jobs:write": false },
 })
 
 const eligibleTraining = generateEligibleTrainingFixture({})
