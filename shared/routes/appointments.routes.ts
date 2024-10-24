@@ -116,9 +116,9 @@ const zContextQuerySchema = z
 
 export const zAppointmentsRoute = {
   get: {
-    "/appointment/context": {
+    "/appointment": {
       method: "get",
-      path: "/appointment/context",
+      path: "/appointment",
       querystring: zContextQuerySchema,
       response: {
         "200": zAppointmentRequestContextCreateResponseSchema,

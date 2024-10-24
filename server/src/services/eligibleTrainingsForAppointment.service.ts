@@ -111,10 +111,10 @@ export const findElligibleTrainingForAppointment = async ({
     throw badRequest("Critère de recherche non conforme.")
   }
 
-  return await getEtfaContext(eligibleTrainingsForAppointment, referrerObj.name)
+  return await getAppointmentContext(eligibleTrainingsForAppointment, referrerObj.name)
 }
 
-const getEtfaContext = async (
+const getAppointmentContext = async (
   eligibleTrainingsForAppointment: IEligibleTrainingsForAppointment | null,
   referrerName: string
 ): Promise<IAppointmentRequestContextCreateResponseSchema> => {

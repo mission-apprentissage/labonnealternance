@@ -236,9 +236,9 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/appointment/context",
+    "/appointment",
     {
-      schema: zRoutes.get["/appointment/context"],
+      schema: zRoutes.get["/appointment"],
     },
     async (req, res) => {
       res.status(200).send(await findElligibleTrainingForAppointment(req.query))

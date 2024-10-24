@@ -157,7 +157,7 @@ export const getPrdvContext = async (
   referrer: string = "lba"
 ): Promise<IAppointmentRequestContextCreateFormAvailableResponseSchema | IAppointmentRequestContextCreateFormUnavailableResponseSchema | null> => {
   try {
-    const data = await apiGet("/appointment/context", { querystring: { idCleMinistereEducatif, referrer } }, { timeout: 7000 })
+    const data = await apiGet("/appointment", { querystring: { idCleMinistereEducatif, referrer } }, { timeout: 7000 })
     return data
   } catch (error) {
     if (error.message !== BusinessErrorCodes.TRAINING_NOT_FOUND) {
