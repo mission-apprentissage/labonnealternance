@@ -171,7 +171,6 @@ export default (server: Server) => {
         custom_address: body.custom_address,
         custom_geo_coordinates: body.custom_geo_coordinates,
         custom_job_title: body.custom_job_title,
-        is_multi_published: body.is_multi_published,
         managed_by: user._id.toString(),
       }
 

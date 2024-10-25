@@ -12,7 +12,6 @@ export function generateJobFixture(data: Partial<IJob>): IJob {
     rome_code: ["M1602"], // linked by default to generateReferentielRome
     job_status: JOB_STATUS.ACTIVE,
     job_type: [TRAINING_CONTRACT_TYPE.APPRENTISSAGE],
-    is_multi_published: true,
     is_disabled_elligible: null,
     job_count: 1,
     ...data,
