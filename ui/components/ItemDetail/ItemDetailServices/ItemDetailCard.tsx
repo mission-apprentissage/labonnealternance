@@ -42,6 +42,7 @@ export default function ItemDetailCard({ selectedItem }) {
         <Text whiteSpace="nowrap" ml={1} mr={2}>
           {selectedItem?.place?.city || selectedItem?.place?.address}
         </Text>
+        <br />
         <ItemDistanceToCenter item={selectedItem} />
       </Flex>
     </Flex>

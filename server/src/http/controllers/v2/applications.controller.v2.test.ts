@@ -26,11 +26,15 @@ vi.mock("@/services/clamav.service", () => {
   }
 })
 
-const token = getApiApprentissageTestingToken({ email: "test@test.fr", organisation: "Un super Partenaire", habilitations: { "jobs:write": true } })
+const token = getApiApprentissageTestingToken({
+  email: "test@test.fr",
+  organisation: "Un super Partenaire",
+  habilitations: { "applications:write": true, "appointments:write": false, "jobs:write": false },
+})
 const fakeToken = getApiApprentissageTestingTokenFromInvalidPrivateKey({
   email: "mail@mail.com",
   organisation: "Un super Partenaire",
-  habilitations: { "jobs:write": true },
+  habilitations: { "applications:write": true, "appointments:write": false, "jobs:write": false },
 })
 
 const recruteur = generateLbaCompanyFixture({
@@ -68,7 +72,6 @@ const recruiter = generateRecruiterFixture({
     {
       rome_code: ["M1602"],
       rome_label: "Opérations administratives",
-      is_multi_published: true,
       job_status: JOB_STATUS.ACTIVE,
       job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
       job_creation_date: new Date("2021-01-01"),

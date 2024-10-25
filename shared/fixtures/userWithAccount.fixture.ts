@@ -3,7 +3,7 @@ import { ObjectId } from "bson"
 import { VALIDATION_UTILISATEUR } from "../constants"
 import { IUserStatusEvent, IUserWithAccount, UserEventType } from "../models"
 
-export function generateUserWithAccountFixture(data: Partial<IUserWithAccount>): IUserWithAccount {
+export function generateUserWithAccountFixture(data: Partial<IUserWithAccount> = {}): IUserWithAccount {
   return {
     _id: new ObjectId(),
     status: [

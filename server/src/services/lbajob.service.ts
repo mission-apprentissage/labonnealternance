@@ -41,7 +41,6 @@ export const getJobs = async ({
   lon,
   romes,
   niveau,
-  caller,
   isMinimalData,
 }: {
   distance: number
@@ -49,7 +48,6 @@ export const getJobs = async ({
   lon: number | undefined
   romes: string[]
   niveau: string | null
-  caller?: string | null
   isMinimalData: boolean
 }): Promise<IRecruiter[]> => {
   const expirationDateLimit = dayjs().add(-1, "day").toDate()
@@ -63,10 +61,6 @@ export const getJobs = async ({
 
   if (niveau && niveau !== NIVEAUX_POUR_LBA["INDIFFERENT"]) {
     query["jobs.job_level_label"] = { $in: [niveau, NIVEAUX_POUR_LBA["INDIFFERENT"]] }
-  }
-
-  if (caller) {
-    query["jobs.is_multi_published"] = true
   }
 
   const stages: Document[] = [
@@ -134,7 +128,6 @@ export const getLbaJobsV2 = async ({
 }): Promise<IJobResult[]> => {
   const jobFilters: Filter<IRecruiter> = {
     "jobs.job_status": JOB_STATUS.ACTIVE,
-    "jobs.is_multi_published": true,
     "jobs.job_expiration_date": { $gt: dayjs().add(-1, "day").toDate() },
   }
 

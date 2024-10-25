@@ -6829,9 +6829,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"api-alternance-sdk@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "api-alternance-sdk@npm:1.1.0"
+"api-alternance-sdk@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "api-alternance-sdk@npm:1.3.0"
   dependencies:
     "@asteasolutions/zod-to-openapi": ^7.2.0
     jsonwebtoken: ^9.0.2
@@ -6839,7 +6839,7 @@ __metadata:
     luxon: ^3.5.0
     openapi3-ts: ^4.4.0
     zod: ^3.23.8
-  checksum: f7e9cd114980020e401dafe5f4095efe143ac0831dc506546349ea2d3184f14b98569ce7ab0d8ea5ecbfebed9bd753c5febfc38e19487a473d92c671c2b1cc39
+  checksum: fa21ca57aca00b0fd020430d2d34b0c9eab9a4b01b2b3ddbe673a54d374e43a561a815fbf9a921fcc23e22e86007ca59c4da720bd2a5c88dd3ca7916ed35347b
   languageName: node
   linkType: hard
 
@@ -19719,7 +19719,7 @@ __metadata:
     "@types/nodemailer-html-to-text": ^3.1.1
     "@types/supertest": ^2.0.13
     "@typescript-eslint/eslint-plugin": ^5.62.0
-    api-alternance-sdk: ^1.1.0
+    api-alternance-sdk: ^1.3.0
     axios: ^1.7.4
     axios-cache-interceptor: ^1.5.3
     basic-ftp: ^5.0.3
@@ -19742,6 +19742,7 @@ __metadata:
     eslint: ^8.50.0
     express: ^4.18.2
     express-rate-limit: ^5.5.1
+    fast-deep-equal: ^3.1.3
     fastify: ^4.23.2
     fastify-type-provider-zod: ^1.1.9
     form-data: ^4.0.0

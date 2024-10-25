@@ -198,9 +198,11 @@ const getLBALink = async (wish: IWish): Promise<string> => {
   }
 
   // Get romes based on rncp or training database
-  const romes = wish.rncp
+  let romes = wish.rncp
     ? (await getRomesFromRncp(wish.rncp)) || (await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef }))
     : await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef })
+
+  romes = romes.filter((rome_code) => rome_code.length === 5 && !rome_code.endsWith("00"))
 
   // Build url based on formations and coordinates
   if (formations?.length) {

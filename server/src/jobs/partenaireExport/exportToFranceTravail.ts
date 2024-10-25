@@ -181,7 +181,6 @@ export const exportToFranceTravail = async (): Promise<void> => {
         geo_coordinates: { $nin: ["NOT FOUND", null] },
         job_update_date: { $gte: threshold },
         address_detail: { $ne: null },
-        is_multi_published: true,
       })
       .toArray()
 
