@@ -159,6 +159,12 @@ export const astuces = [
     lien: "https://web-app.diagoriente.beta.gouv.fr/#/inscription?utm_campaign=lba-jan2022-orientation",
   },
   {
+    id: "ORI_PASSTOWORK",
+    theme: "Orientation",
+    message: "Vous manquez d'inspiration pour votre CV ? Découvrez vos savoir-être en jouant avec le service Pass to work",
+    lien: "https://www.monkey-tie.com/la-bonne-alternance/",
+  },
+  {
     id: "ORI_PARCOURS_ANAF",
     theme: "Orientation",
     message: "L'ANAF (Association Nationale des Apprentis de France) peut vous aider à tout moment de votre parcours et pour toute question que vous vous posez !",

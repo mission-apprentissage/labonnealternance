@@ -87,7 +87,7 @@ jobs:
         env:
           ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
           ANSIBLE_REMOTE_USER: deploy
-          ANSIBLE_BECOME_PASS: ${{ secrets.DEPLOY_PASS }}
+          ANSIBLE_BECOME_PASS: ${{ secrets.DEPLOY_PASS_PREVIEW }}
 
       - name: Encrypt logs
         run: .bin/mna-lba deploy:log:encrypt
