@@ -1,4 +1,5 @@
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { IGeoPoint } from "shared/models"
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { isEnum } from "shared/utils"
 
@@ -21,12 +22,15 @@ export const fillSiretInfosForPartners = async () => {
   ] as const satisfies (keyof IComputedJobsPartners)[]
   return fillFieldsForPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.API_SIRET,
-    sourceFields: ["workplace_siret", "workplace_geopoint", "workplace_address_label"],
+    sourceFields: ["workplace_siret"],
     filledFields,
     groupSize: 1,
     getData: async (documents) => {
       const [document] = documents
-      const { workplace_siret: siret, workplace_geopoint, workplace_address_label } = document
+      const { workplace_siret: siret } = document
+
+      const workplace_geopoint: IGeoPoint | null = "workplace_geopoint" in document ? (document.workplace_geopoint as IGeoPoint) : null
+      const workplace_address_label: string | null = "workplace_address_label" in document ? (document.workplace_address_label as string) : null
       const response = await getSiretInfos(siret)
       if (!response) {
         return []
