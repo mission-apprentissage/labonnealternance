@@ -61,7 +61,7 @@ export const upsertEntrepriseData = async (
     return (await getDbCollection("entreprises").findOne({ siret }))!
   }
 
-  const { address, address_detail, establishment_enseigne, geo_coordinates, establishment_raison_sociale } = siretResponse
+  const { address, address_detail, establishment_enseigne, geo_coordinates, establishment_raison_sociale, naf_code, naf_label } = siretResponse
 
   const entrepriseFields: Omit<IEntreprise, "_id" | "createdAt" | "updatedAt" | "status" | "origin" | "siret" | "opco" | "idcc"> = {
     address,
@@ -69,6 +69,8 @@ export const upsertEntrepriseData = async (
     enseigne: establishment_enseigne,
     geo_coordinates,
     raison_sociale: establishment_raison_sociale,
+    naf_code,
+    naf_label,
   }
   let savedEntreprise: IEntreprise
   if (existingEntreprise) {
