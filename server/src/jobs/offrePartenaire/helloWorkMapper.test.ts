@@ -62,6 +62,7 @@ describe("helloWorkJobToJobsPartners", () => {
     ).toEqual({
       _id: expect.any(ObjectId),
       created_at: now,
+      updated_at: new Date("2024-07-21T04:49:06.000+02:00"),
       partner_label: "Hello work",
       partner_job_id: "73228597",
       contract_start: new Date("2024-12-01T00:00:00.000+01:00"),
@@ -88,6 +89,12 @@ describe("helloWorkJobToJobsPartners", () => {
       workplace_description: "ceci est une longue description de l'entreprise qui a du sens et qui va passer la limite de 30 caractères",
       workplace_size: null,
       workplace_website: null,
+      workplace_opco: null,
+      workplace_naf_label: null,
+      workplace_naf_code: null,
+      workplace_idcc: null,
+      workplace_legal_name: null,
+      workplace_brand: null,
       workplace_address_label: "Stem Propreté Lyon,Villeurbanne,69100 VILLEURBANNE",
       workplace_geopoint: {
         type: "Point",
