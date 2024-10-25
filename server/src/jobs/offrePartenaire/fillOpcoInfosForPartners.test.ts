@@ -209,6 +209,6 @@ describe("fillOpcoInfosForPartners", () => {
     expect.soft(pick(job1, filledFields)).toEqual({ workplace_opco: OPCOS_LABEL.AFDAS, workplace_idcc: 1313 })
     expect.soft(pick(job2, filledFields)).toEqual({ workplace_opco: OPCOS_LABEL.AFDAS, workplace_idcc: 1313 })
     expect.soft(pick(job3, filledFields)).toEqual({ workplace_opco: OPCOS_LABEL.AKTO, workplace_idcc: null })
-    expect.soft(pick(job4, filledFields)).toEqual({ workplace_opco: null, workplace_idcc: null })
+    expect.soft(pick(job4, filledFields)).toEqual({ workplace_opco: OPCOS_LABEL.UNKNOWN_OPCO, workplace_idcc: null })
   })
 })
