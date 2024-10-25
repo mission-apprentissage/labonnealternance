@@ -131,7 +131,7 @@ describe("fillOpcoInfosForPartners", () => {
     expect.soft(job.errors).toEqual([])
     expect.soft({ workplace_opco, workplace_idcc }).toEqual({ workplace_opco: OPCOS_LABEL.AFDAS, workplace_idcc: null })
   })
-  it("should add an error in the document when data is not found", async () => {
+  it("should set opco to unknown when data is not found", async () => {
     // given
     await givenSomeComputedJobPartners([
       {
@@ -146,12 +146,9 @@ describe("fillOpcoInfosForPartners", () => {
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     expect.soft(jobs.length).toBe(1)
     const [job] = jobs
-    expect.soft(job.errors).toEqual([
-      {
-        error: "data not found",
-        source: "api_opco",
-      },
-    ])
+    const { workplace_opco, workplace_idcc } = job
+    expect.soft(job.errors).toEqual([])
+    expect.soft({ workplace_opco, workplace_idcc }).toEqual({ workplace_opco: OPCOS_LABEL.UNKNOWN_OPCO, workplace_idcc: null })
   })
   it("should be able to handle multiple documents", async () => {
     // given
