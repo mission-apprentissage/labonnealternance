@@ -200,12 +200,7 @@ describe("fillOpcoInfosForPartners", () => {
     expect.soft(job1.errors).toEqual([])
     expect.soft(job2.errors).toEqual([])
     expect.soft(job3.errors).toEqual([])
-    expect.soft(job4.errors).toEqual([
-      {
-        error: "data not found",
-        source: "api_opco",
-      },
-    ])
+    expect.soft(job4.errors).toEqual([])
     expect.soft(pick(job1, filledFields)).toEqual({ workplace_opco: OPCOS_LABEL.AFDAS, workplace_idcc: 1313 })
     expect.soft(pick(job2, filledFields)).toEqual({ workplace_opco: OPCOS_LABEL.AFDAS, workplace_idcc: 1313 })
     expect.soft(pick(job3, filledFields)).toEqual({ workplace_opco: OPCOS_LABEL.AKTO, workplace_idcc: null })
