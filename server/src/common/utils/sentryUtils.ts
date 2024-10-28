@@ -4,8 +4,8 @@ export const sentryCaptureException = (error: any, options?: object): void => {
   Sentry.captureException(error, options)
 }
 
-export function startSentryPerfRecording({ name, operation }: { name: string; operation: string }, callback: () => void) {
-  Sentry.startSpan(
+export async function startSentryPerfRecording({ name, operation }: { name: string; operation: string }, callback: () => void) {
+  await Sentry.startSpan(
     {
       name,
       op: operation,

@@ -48,7 +48,7 @@ const createMailer = () => {
   const transporter = createTransporter()
   const renderEmail = async (template: string, data: Data = {}): Promise<string> => {
     let html
-    startSentryPerfRecording({ name: "mailer", operation: "renderEmail" }, async () => {
+    await startSentryPerfRecording({ name: "mailer", operation: "renderEmail" }, async () => {
       const buffer = await renderFile(template, { data })
       const converted = mjml(buffer.toString(), { minify: true })
       html = converted.html
@@ -80,7 +80,7 @@ const createMailer = () => {
     }): Promise<{ messageId: string; accepted?: string[] }> => {
       const html = await renderEmail(template, data)
       let mail
-      startSentryPerfRecording({ name: "mailer", operation: "sendEmail" }, () => {
+      await startSentryPerfRecording({ name: "mailer", operation: "sendEmail" }, () => {
         mail = transporter.sendMail({
           from,
           to,
