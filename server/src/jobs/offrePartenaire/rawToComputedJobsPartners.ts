@@ -2,7 +2,7 @@ import { internal } from "@hapi/boom"
 import { oleoduc, writeData } from "oleoduc"
 import { z } from "shared/helpers/zodWithOpenApi"
 import { JOBPARTNERS_LABEL, ZJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model "
+import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { CollectionName } from "shared/models/models"
 import { AnyZodObject } from "zod"
 
@@ -32,7 +32,6 @@ export const rawToComputedJobsPartners = async <ZodInput extends AnyZodObject>({
     getDbCollection(collectionSource).find({}).stream(),
     writeData(
       async (document) => {
-        //console.log("DOCUMENT : ", document)
         counters.total++
         try {
           const rawJob = documentJobRoot ? document[documentJobRoot] : document
@@ -46,7 +45,7 @@ export const rawToComputedJobsPartners = async <ZodInput extends AnyZodObject>({
           counters.success++
         } catch (err) {
           counters.error++
-          const newError = internal(`error converting raw job to partner_label job for partner_label=${partnerLabel}, id=${document._id}`)
+          const newError = internal(`error converting raw job to partner_label job for id=${document._id} partner_label=${partnerLabel}`)
           logger.error(newError.message, err)
           newError.cause = err
           sentryCaptureException(newError)

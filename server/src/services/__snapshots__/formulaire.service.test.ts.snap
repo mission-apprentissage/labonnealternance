@@ -1,0 +1,92 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`createJob > should insert a job 1`] = `
+{
+  "_id": "670ce30b57a50d6875c141f9",
+  "address": "address",
+  "address_detail": "address_detail",
+  "cfa_delegated_siret": null,
+  "createdAt": 2021-01-28T15:00:00.000Z,
+  "distance": 10,
+  "email": "entreprise@mail.fr",
+  "establishment_creation_date": 2024-10-14T09:23:21.588Z,
+  "establishment_enseigne": "establishment_enseigne",
+  "establishment_id": "xxxx-xxxx-xxxx-xxxx",
+  "establishment_raison_sociale": "establishment_raison_sociale",
+  "establishment_siret": "wosdnnpetvgxonk",
+  "establishment_size": "establishment_size",
+  "first_name": "first_name",
+  "geo_coordinates": "geo_coordinates",
+  "geopoint": {
+    "coordinates": [
+      41,
+      10,
+    ],
+    "type": "Point",
+  },
+  "idcc": "idcc",
+  "is_delegated": false,
+  "last_name": "last_name",
+  "naf_code": "naf_code",
+  "naf_label": "naf_label",
+  "opco": "OPCO multiple",
+  "origin": "origin",
+  "phone": "phone",
+  "status": "Actif",
+  "updatedAt": 2021-02-03T17:00:00.000Z,
+}
+`;
+
+exports[`createJob > should insert a job 2`] = `
+{
+  "competences_rome": {
+    "savoir_etre_professionnel": [
+      {
+        "code_ogr": "300490",
+        "coeur_metier": null,
+        "libelle": "Faire preuve de rigueur et de précision",
+      },
+    ],
+    "savoir_faire": [
+      {
+        "items": [
+          {
+            "code_ogr": "101622",
+            "coeur_metier": "Principale",
+            "libelle": "Procéder à l'enregistrement, au tri, à l'affranchissement du courrier",
+          },
+          {
+            "code_ogr": "113818",
+            "coeur_metier": null,
+            "libelle": "Réaliser des travaux de reprographie",
+          },
+        ],
+        "libelle": "Production, Fabrication",
+      },
+    ],
+    "savoirs": [
+      {
+        "items": [
+          {
+            "code_ogr": "120992",
+            "coeur_metier": null,
+            "libelle": "Gestion administrative du courrier",
+          },
+        ],
+        "libelle": "Domaines d'expertise",
+      },
+    ],
+  },
+  "is_disabled_elligible": null,
+  "job_count": 1,
+  "job_start_date": 2021-01-28T15:00:00.000Z,
+  "job_status": "En attente",
+  "job_type": [
+    "Apprentissage",
+  ],
+  "managed_by": "670ce1ded6ce30c3c90a0e1d",
+  "rome_code": [
+    "M1602",
+  ],
+}
+`;

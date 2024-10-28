@@ -18,6 +18,7 @@ export default function ItemLocalisation({ item }: { item: ILbaItemFormation2 | 
           <ExternalLinkIcon mb="3px" ml="2px" />
         </Link>
       </Text>
+      <br />
       <ItemDistanceToCenter item={item} />
     </Text>
   )

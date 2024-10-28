@@ -46,7 +46,6 @@ export const createJobsCollectionForMetabase = async () => {
           job_status: "$jobs.job_status",
           job_status_comment: "$jobs.job_status_comment",
           job_type: "$jobs.job_type",
-          is_multi_published: "$jobs.is_multi_published",
           job_delegation_count: "$jobs.job_delegation_count",
           delegations: "$jobs.delegations",
           is_disabled_elligible: "$jobs.is_disabled_elligible",

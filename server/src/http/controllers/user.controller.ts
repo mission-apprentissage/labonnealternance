@@ -130,28 +130,41 @@ export default (server: Server) => {
       const { opco, ...userFields } = req.body
 
       const entreprise = await getDbCollection("entreprises").findOne({ siret })
-      if (!entreprise) {
-        throw notFound("Entreprise non trouvée", { error: BusinessErrorCodes.NOTFOUND })
-      }
-      const roleManagement = await getDbCollection("rolemanagements").findOne({
-        user_id: userId,
-        authorized_id: entreprise._id.toString(),
-        authorized_type: AccessEntityType.ENTREPRISE,
-      })
-      if (!roleManagement) {
-        throw forbidden("L'entreprise n'est pas gérée par l'utilisateur cible", { error: BusinessErrorCodes.UNSUPPORTED })
+
+      if (entreprise) {
+        const roleManagement = await getDbCollection("rolemanagements").findOne({
+          user_id: userId,
+          authorized_id: entreprise._id.toString(),
+          authorized_type: AccessEntityType.ENTREPRISE,
+        })
+        if (!roleManagement) {
+          throw forbidden("L'entreprise n'est pas gérée par l'utilisateur cible", { error: BusinessErrorCodes.UNSUPPORTED })
+        }
+      } else {
+        const cfa = await getDbCollection("cfas").findOne({ siret })
+        if (cfa) {
+          const roleManagement = await getDbCollection("rolemanagements").findOne({
+            user_id: userId,
+            authorized_id: cfa._id.toString(),
+            authorized_type: AccessEntityType.CFA,
+          })
+          if (!roleManagement) {
+            throw forbidden("Le CFA n'est pas géré par l'utilisateur cible", { error: BusinessErrorCodes.UNSUPPORTED })
+          }
+        } else {
+          throw notFound("Etablissement non trouvé", { error: BusinessErrorCodes.NOTFOUND })
+        }
       }
 
       const result = await updateUserWithAccountFields(userId, userFields)
       if ("error" in result) {
         throw badRequest("L'email est déjà utilisé", { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS })
       }
-      if (opco) {
-        const entreprise = await getDbCollection("entreprises").findOneAndUpdate({ siret }, { $set: { opco, updatedAt: new Date() } }, { returnDocument: "after" })
-        if (!entreprise) {
-          throw badRequest(`pas d'entreprise ayant le siret ${siret}`)
-        }
+
+      if (opco && entreprise) {
+        await getDbCollection("entreprises").findOneAndUpdate({ siret }, { $set: { opco, updatedAt: new Date() } }, { returnDocument: "after" })
       }
+
       return res.status(200).send({ ok: true })
     }
   )
