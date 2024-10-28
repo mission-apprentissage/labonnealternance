@@ -42,6 +42,12 @@ Vous contribuez au développement commercial en concevant des nouvelles offres, 
     "updated_at": 2024-02-25T04:36:25.000Z,
     "validated": false,
     "workplace_address_label": "VINCENNES",
+    "workplace_address": {
+      "zipcode": null,
+      "city": "VINCENNES",
+      "country": null,
+      "street": null,
+    },
     "workplace_brand": null,
     "workplace_description": "Software Consulting est un cabinet de conseil en stratégie, management et en organisation indépendant et spécialisé dans les services financiers : la banque et l'assurance.",
     "workplace_geopoint": {
@@ -132,6 +138,12 @@ Rejoignez-nous et venez goûter à une expérience unique !",
     "updated_at": 2024-02-25T04:36:28.000Z,
     "validated": false,
     "workplace_address_label": "LAVAL",
+    "workplace_address": {
+      "zipcode": null,
+      "city": "LAVAL",
+      "country": null,
+      "street": null,
+    },
     "workplace_brand": null,
     "workplace_description": "Vous aussi venez vivre votre #LactalisExperience !
 Fondé en 1933 par André Besnier à Laval, le Groupe Lactalis est une entreprise familiale devenue en trois générations le leader mondial des produits laitiers (250 sites de production dans 43 pays - 85 000 collaborateurs)",
@@ -222,6 +234,12 @@ En tant que leader, vous dirigerez les équipes marketing et communication, coor
     "updated_at": 2024-02-25T04:36:28.000Z,
     "validated": false,
     "workplace_address_label": "TINQUEUX",
+    "workplace_address": {
+      "zipcode": null,
+      "city": "TINQUEUX",
+      "country": null,
+      "street": null,
+    },
     "workplace_brand": null,
     "workplace_description": "Distributeur spécialisé en robinetterie et accessoires depuis plus de 40 ans, nous accompagnons les professionnels du Génie Climatique, du Logement et de l'Industrie dans la réussite de leurs projets.
 
@@ -304,6 +322,12 @@ Chez Exotec, nous garantissons l'égalité des chances dans notre processus de r
     "updated_at": 2024-02-25T04:36:28.000Z,
     "validated": false,
     "workplace_address_label": "LILLE",
+    "workplace_address": {
+      "zipcode": null,
+      "city": "LILLE",
+      "country": null,
+      "street": null,
+    },
     "workplace_brand": null,
     "workplace_description": "Chez Exotec, nous mettons l'excellence technologique au service de la redéfinition des relations entre humains et robots. A travers le monde, nos solutions révolutionnent la façon dont nos clients délivrent leurs produits aux consommateurs finaux. Nous contribuons au succès des plus grandes marques du commerce et de l'industrie, tout en améliorant les conditions de travail de leurs salariés.
 
@@ -388,6 +412,12 @@ Ref : 1jvie4rokd",
     "updated_at": 2024-02-25T04:36:31.000Z,
     "validated": false,
     "workplace_address_label": "Photo-Me,Échirolles,38130 ECHIROLLES",
+    "workplace_address": {
+      "zipcode": "38130",
+      "city": "ECHIROLLES",
+      "country": null,
+      "street": null,
+    },
     "workplace_brand": null,
     "workplace_description": "ME GROUP (Photomaton) développe et commercialise des distributeurs automatiques en libre-service à valeur ajoutée. Aujourd'hui, nous sommes un acteur majeur dans des secteurs aussi divers que la photographie, l'alimentation et les laveries automatiques.",
     "workplace_geopoint": {
@@ -451,6 +481,12 @@ Vous contribuez au développement commercial en concevant des nouvelles offres, 
     "partner_label": "Hello work",
     "validated": false,
     "workplace_address_label": "VINCENNES",
+    "workplace_address": {
+      "zipcode": null,
+      "city": "VINCENNES",
+      "country": null,
+      "street": null,
+    },
     "workplace_description": "Software Consulting est un cabinet de conseil en stratégie, management et en organisation indépendant et spécialisé dans les services financiers : la banque et l'assurance.",
     "workplace_geopoint": {
       "coordinates": [
@@ -534,6 +570,12 @@ Rejoignez-nous et venez goûter à une expérience unique !",
     "partner_label": "Hello work",
     "validated": false,
     "workplace_address_label": "LAVAL",
+    "workplace_address": {
+      "zipcode": null,
+      "city": "LAVAL",
+      "country": null,
+      "street": null,
+    },
     "workplace_description": "Vous aussi venez vivre votre #LactalisExperience !
 Fondé en 1933 par André Besnier à Laval, le Groupe Lactalis est une entreprise familiale devenue en trois générations le leader mondial des produits laitiers (250 sites de production dans 43 pays - 85 000 collaborateurs)",
     "workplace_geopoint": {
@@ -617,6 +659,12 @@ En tant que leader, vous dirigerez les équipes marketing et communication, coor
     "partner_label": "Hello work",
     "validated": false,
     "workplace_address_label": "TINQUEUX",
+    "workplace_address": {
+      "zipcode": null,
+      "city": "TINQUEUX",
+      "country": null,
+      "street": null,
+    },
     "workplace_description": "Distributeur spécialisé en robinetterie et accessoires depuis plus de 40 ans, nous accompagnons les professionnels du Génie Climatique, du Logement et de l'Industrie dans la réussite de leurs projets.
 
 Pour ce faire, nous proposons une gamme élargie de solutions et de services associée à une logistique de pointe et à l'expertise de nos 300 collaborateurs.
@@ -692,6 +740,12 @@ Chez Exotec, nous garantissons l'égalité des chances dans notre processus de r
     "partner_label": "Hello work",
     "validated": false,
     "workplace_address_label": "LILLE",
+    "workplace_address": {
+      "zipcode": null,
+      "city": "LILLE",
+      "country": null,
+      "street": null,
+    },
     "workplace_description": "Chez Exotec, nous mettons l'excellence technologique au service de la redéfinition des relations entre humains et robots. A travers le monde, nos solutions révolutionnent la façon dont nos clients délivrent leurs produits aux consommateurs finaux. Nous contribuons au succès des plus grandes marques du commerce et de l'industrie, tout en améliorant les conditions de travail de leurs salariés.
 
 Par l'alliance de l'intelligence artificielle et d'un hardware performant, nos robots sont désormais déployés dans le monde entier et leur succès a fait de nous la première licorne industrielle française.
@@ -769,6 +823,12 @@ Ref : 1jvie4rokd",
     "partner_label": "Hello work",
     "validated": false,
     "workplace_address_label": "Photo-Me,Échirolles,38130 ECHIROLLES",
+    "workplace_address": {
+      "zipcode": "38130",
+      "city": "ECHIROLLES",
+      "country": null,
+      "street": null,
+    },
     "workplace_description": "ME GROUP (Photomaton) développe et commercialise des distributeurs automatiques en libre-service à valeur ajoutée. Aujourd'hui, nous sommes un acteur majeur dans des secteurs aussi divers que la photographie, l'alimentation et les laveries automatiques.",
     "workplace_geopoint": {
       "coordinates": [

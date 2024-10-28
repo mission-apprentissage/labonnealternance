@@ -6,6 +6,7 @@ import { IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS_ENGLISH, assertUnr
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import {
+  IJobPartnerWorkplaceAddress,
   IJobsPartnersOfferApi,
   IJobsPartnersOfferPrivate,
   IJobsPartnersRecruiterApi,
@@ -264,6 +265,12 @@ export const convertLbaCompanyToJobPartnerRecruiterApi = (recruteursLba: ILbaCom
       workplace_description: null,
       workplace_size: recruteurLba.company_size,
       workplace_address_label: `${recruteurLba.street_number} ${recruteurLba.street_name} ${recruteurLba.zip_code} ${recruteurLba.city}`,
+      workplace_address: {
+        street: `${recruteurLba.street_number} ${recruteurLba.street_name}`,
+        zipcode: recruteurLba.zip_code,
+        city: recruteurLba.city,
+        country: "France",
+      },
       workplace_geopoint: recruteurLba.geopoint!,
       workplace_idcc: null,
       workplace_opco: convertOpco(recruteurLba),
@@ -353,6 +360,12 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IJobRes
           workplace_description: null,
           workplace_size: recruiter.establishment_size ?? null,
           workplace_address_label: recruiter.address!,
+          workplace_address: {
+            city: recruiter.address_detail.localite, //TODO, différents f,ormats possible, voir à utiliser helper construisant address
+            zipcode: recruiter.address_detail.code_postal,
+            street: `${recruiter.address_detail.numero_voie} ${recruiter.address_detail.type_voie} ${recruiter.address_detail.nom_voie}`,
+            country: "France",
+          },
           workplace_geopoint: recruiter.geopoint!,
           workplace_idcc: recruiter.idcc ? Number(recruiter.idcc) : null,
           workplace_opco: convertOpco(recruiter),
@@ -406,6 +419,12 @@ export const convertFranceTravailJobToJobPartnerOfferApi = (offresEmploiFranceTr
         workplace_description: offreFT.entreprise.description,
         workplace_size: null,
         workplace_address_label: offreFT.lieuTravail.libelle,
+        workplace_address: {
+          city: offreFT.lieuTravail.commune,
+          street: offreFT.lieuTravail.libelle,
+          zipcode: offreFT.lieuTravail.codePostal,
+          country: "France",
+        },
         workplace_geopoint: convertToGeopoint({
           longitude: parseFloat(offreFT.lieuTravail.longitude!),
           latitude: parseFloat(offreFT.lieuTravail.latitude!),
@@ -531,23 +550,23 @@ export async function findJobsOpportunities(payload: IJobOpportunityGetQuery, co
   }
 }
 
-type WorkplaceAddressData = Pick<IJobsPartnersOfferApi, "workplace_geopoint" | "workplace_address_label">
+type WorkplaceAddressData = Pick<IJobsPartnersOfferApi, "workplace_geopoint" | "workplace_address">
 
-async function resolveWorkplaceLocationFromAddress(workplace_address_label: string | null, zodError: ZodError): Promise<WorkplaceAddressData | null> {
-  if (workplace_address_label === null) {
+async function resolveWorkplaceLocationFromAddress(workplace_address: IJobPartnerWorkplaceAddress | null, zodError: ZodError): Promise<WorkplaceAddressData | null> {
+  if (workplace_address === null) {
     return null
   }
 
-  const geopoint = await getGeoPoint(workplace_address_label)
+  const geopoint = await getGeoPoint(`${workplace_address.street || ""} ${workplace_address.zipcode || ""} ${workplace_address.city}`.trim())
 
   if (!geopoint) {
-    zodError.addIssue({ code: "custom", path: ["workplace_address_label"], message: "Cannot resolve geo-coordinates for the given address" })
+    zodError.addIssue({ code: "custom", path: ["workplace_address"], message: "Cannot resolve geo-coordinates for the given address" })
     return null
   }
 
   return {
     workplace_geopoint: geopoint,
-    workplace_address_label,
+    workplace_address,
   }
 }
 
@@ -556,6 +575,7 @@ type WorkplaceSiretData = Pick<
   IJobsPartnersOfferApi,
   | "workplace_geopoint"
   | "workplace_address_label"
+  | "workplace_address"
   | "workplace_legal_name"
   | "workplace_brand"
   | "workplace_naf_label"
@@ -579,6 +599,12 @@ async function resolveWorkplaceDataFromSiret(workplace_siret: string, zodError: 
   return {
     workplace_geopoint: entrepriseData.geopoint,
     workplace_address_label: entrepriseData.address!,
+    workplace_address: {
+      city: "",
+      street: "",
+      zipcode: "",
+      country: "",
+    },
     workplace_brand: entrepriseData.establishment_enseigne ?? null,
     workplace_legal_name: entrepriseData.establishment_raison_sociale ?? null,
     workplace_naf_label: entrepriseData.naf_label ?? null,
@@ -615,7 +641,7 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAlte
 
   const [siretData, addressData] = await Promise.all([
     resolveWorkplaceDataFromSiret(data.workplace_siret, zodError),
-    resolveWorkplaceLocationFromAddress(data.workplace_address_label, zodError),
+    resolveWorkplaceLocationFromAddress(data.workplace_address, zodError),
   ])
 
   const romeCode = await resolveRomeCodes(data, siretData, zodError)
@@ -628,7 +654,7 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAlte
     throw internal("unexpected: cannot resolve all required data for the job offer")
   }
 
-  const { offer_creation, offer_expiration, offer_rome_codes, offer_status, offer_target_diploma_european, workplace_address_label, ...rest } = data
+  const { offer_creation, offer_expiration, offer_rome_codes, offer_status, offer_target_diploma_european, workplace_address_label, workplace_address, ...rest } = data
   const now = new Date()
 
   const invariantData: Pick<IJobsPartnersOfferPrivate, InvariantFields> = {
@@ -655,7 +681,7 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAlte
           },
     updated_at: now,
     ...rest,
-    // Data derived from workplace_address_label take priority over workplace_siret
+    // Data derived from workplace_address take priority over workplace_siret
     ...siretData,
     ...addressData,
   }

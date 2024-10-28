@@ -96,6 +96,12 @@ describe("helloWorkJobToJobsPartners", () => {
       workplace_legal_name: null,
       workplace_brand: null,
       workplace_address_label: "Stem Propreté Lyon,Villeurbanne,69100 VILLEURBANNE",
+      workplace_address: {
+        zipcode: "69100",
+        city: "VILLEURBANNE",
+        country: "FRANCE",
+        street: "",
+      },
       workplace_geopoint: {
         type: "Point",
         coordinates: [4.889070834, 45.770996568],

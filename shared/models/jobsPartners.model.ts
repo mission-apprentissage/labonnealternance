@@ -27,6 +27,7 @@ export const ZJobsPartnersRecruiterApi = z.object({
   workplace_description: z.string().nullable().describe("description de l'entreprise").default(null),
   workplace_size: z.string().nullable().describe("Taille de l'entreprise"),
   workplace_address_label: z.string().describe("Adresse de l'offre, provenant du SIRET ou du partenaire"),
+  workplace_address: ZJobPartnerWorkplaceAddress.describe("Adresse de l'offre, provenant du SIRET ou du partneraire"),
   workplace_geopoint: ZPointGeometry.describe("Geolocalisation de l'offre"),
   workplace_idcc: z.number().nullable().describe("Identifiant convention collective"),
   workplace_opco: zOpcoLabel.nullable().describe("Nom de l'OPCO"), // enum ?
@@ -105,6 +106,15 @@ export type IJobsPartnersOfferPrivateInput = z.input<typeof ZJobsPartnersOfferPr
 
 const TIME_CLOCK_TOLERANCE = 300_000
 
+export const ZJobPartnerWorkplaceAddress = z.object({
+  zipcode: extensions.zipCode().nullable(),
+  street: z.string().nullable(),
+  city: z.string().nullable(),
+  country: z.string().nullable(),
+})
+
+export type IJobPartnerWorkplaceAddress = z.input<typeof ZJobPartnerWorkplaceAddress>
+
 const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
   partner_job_id: true,
 
@@ -164,7 +174,7 @@ const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
 
   workplace_siret: extensions.siret,
   workplace_address_label: z.string().nullable().default(null),
-
+  workplace_address: ZJobPartnerWorkplaceAddress,
   apply_url: ZJobsPartnersOfferApi.shape.apply_url.nullable().default(null),
   apply_phone: extensions.telephone.nullable().describe("Téléphone de contact").default(null),
 })

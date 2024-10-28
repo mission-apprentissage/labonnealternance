@@ -4,7 +4,7 @@ import { describe, expectTypeOf, it } from "vitest"
 import { OPCOS_LABEL, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
 
 import { JOB_STATUS_ENGLISH } from "./job.model.js"
-import { IJobsPartnersWritableApi, IJobsPartnersOfferApi, IJobsPartnersRecruiterApi, IJobsPartnersWritableApiInput } from "./jobsPartners.model.js"
+import { IJobsPartnersWritableApi, IJobsPartnersOfferApi, IJobsPartnersRecruiterApi, IJobsPartnersWritableApiInput, IJobPartnerWorkplaceAddress } from "./jobsPartners.model.js"
 
 type IJobWorkplaceExpected = {
   workplace_siret: string | null
@@ -15,6 +15,7 @@ type IJobWorkplaceExpected = {
   workplace_description: string | null
   workplace_size: string | null
   workplace_address_label: string
+  workplace_address: IJobPartnerWorkplaceAddress | null
   workplace_geopoint: {
     type: "Point"
     coordinates: [number, number]
@@ -92,6 +93,7 @@ type IJobOfferWritableExpected = {
   workplace_website: string | null
   workplace_description: string | null
   workplace_address_label: string | null
+  workplace_address: IJobPartnerWorkplaceAddress | null
 }
 
 type IJobOfferWritableInputExpected = {
@@ -125,6 +127,7 @@ type IJobOfferWritableInputExpected = {
   workplace_website?: string | null | undefined
   workplace_description?: string | null | undefined
   workplace_address_label?: string | null | undefined
+  workplace_address?: IJobPartnerWorkplaceAddress | null | undefined
 }
 
 describe("IJobRecruiterExpected", () => {

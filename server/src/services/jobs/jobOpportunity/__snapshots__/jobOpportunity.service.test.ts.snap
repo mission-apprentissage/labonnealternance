@@ -33,6 +33,12 @@ exports[`createJobOffer > should create a job offer with the minimal data 1`] = 
   "partner_label": "Some organisation",
   "updated_at": 2024-06-18T00:00:00.000Z,
   "workplace_address_label": "20 AVENUE DE SEGUR 75007 PARIS",
+  "workplace_address": {
+    "city": "PARIS",
+    "zipcode": "75007",
+    "street": "20 AVENUE DE SEGUR",
+    "country": null,
+  },
   "workplace_brand": null,
   "workplace_description": null,
   "workplace_geopoint": {
@@ -98,6 +104,12 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "partner_job_id": null,
     "partner_label": "La bonne alternance",
     "workplace_address_label": "Paris",
+    "workplace_address": {
+      "city": "Paris",
+      "zipcode": null,
+      "street": null,
+      "country": null,
+    },
     "workplace_brand": null,
     "workplace_description": null,
     "workplace_geopoint": {
@@ -139,6 +151,12 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "partner_job_id": "1",
     "partner_label": "France Travail",
     "workplace_address_label": "Paris",
+    "workplace_address": {
+      "city": "Paris",
+      "zipcode": null,
+      "street": null,
+      "country": null,
+    },
     "workplace_brand": null,
     "workplace_description": "",
     "workplace_geopoint": {
@@ -189,6 +207,12 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "partner_label": "Hello work",
     "updated_at": 2021-01-28T15:00:00.000Z,
     "workplace_address_label": "126 RUE DE L'UNIVERSITE 75007 PARIS",
+    "workplace_address": {
+      "city": "PARIS",
+      "zipcode": "75007",
+      "street": "126 RUE DE L'UNIVERSITE",
+      "country": null,
+    },
     "workplace_brand": null,
     "workplace_description": null,
     "workplace_geopoint": {
@@ -217,6 +241,12 @@ exports[`findJobsOpportunities > should execute query 2`] = `
     "apply_phone": "0100000000",
     "apply_url": "http://localhost:3000/recherche-apprentissage?type=lba&itemId=11000001500013",
     "workplace_address_label": "null null null null",
+    "workplace_address": {
+      "city": null,
+      "zipcode": null,
+      "street": null,
+      "country": null,
+    },
     "workplace_brand": "ASSEMBLEE NATIONALE - La vraie",
     "workplace_description": null,
     "workplace_geopoint": {
@@ -272,6 +302,12 @@ exports[`updateJobOffer > should update a job offer with the minimal data 1`] = 
   "partner_label": "Some organisation",
   "updated_at": 2024-06-18T00:00:00.000Z,
   "workplace_address_label": "20 AVENUE DE SEGUR 75007 PARIS",
+  "workplace_address": {
+    "city": "PARIS",
+    "zipcode": "75007",
+    "street": "20 AVENUE DE SEGUR",
+    "country": null,
+  },
   "workplace_brand": null,
   "workplace_description": null,
   "workplace_geopoint": {

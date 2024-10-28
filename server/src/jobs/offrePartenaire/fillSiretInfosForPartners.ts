@@ -14,6 +14,7 @@ export const fillSiretInfosForPartners = async () => {
     "workplace_size",
     "workplace_name",
     "workplace_address_label",
+    "workplace_address",
     "workplace_geopoint",
     "workplace_naf_code",
     "workplace_naf_label",
@@ -46,10 +47,10 @@ export const fillSiretInfosForPartners = async () => {
         workplace_size: establishment_size,
         workplace_legal_name: establishment_raison_sociale,
         workplace_brand: establishment_enseigne,
-        workplace_name: establishment_enseigne ?? establishment_raison_sociale,
-        workplace_address_label: (address || workplace_address_label) ?? undefined,
         workplace_naf_code: naf_code,
         workplace_naf_label: naf_label,
+        workplace_name: establishment_enseigne ?? establishment_raison_sociale,
+        workplace_address_label: workplace_address_label || (address ?? undefined),
         workplace_geopoint: workplace_geopoint || (geo_coordinates ? convertStringCoordinatesToGeoPoint(geo_coordinates) : undefined),
       }
 

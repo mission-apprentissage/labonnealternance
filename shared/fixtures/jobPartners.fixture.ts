@@ -15,6 +15,12 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     workplace_description: null,
     workplace_size: null,
     workplace_address_label: "126 RUE DE L'UNIVERSITE 75007 PARIS",
+    workplace_address: {
+      city: "PARIS",
+      zipcode: "75007",
+      street: "126 RUE DE L'UNIVERSITE",
+      country: null,
+    },
     workplace_geopoint: {
       coordinates: [0, 0],
       type: "Point",
@@ -70,6 +76,12 @@ export function generateComputedJobsPartnersFixture(data: Partial<IComputedJobsP
     workplace_description: null,
     workplace_size: null,
     workplace_address_label: "126 RUE DE L'UNIVERSITE 75007 PARIS",
+    workplace_address: {
+      city: "PARIS",
+      zipcode: "75007",
+      street: "126 RUE DE L'UNIVERSITE",
+      country: null,
+    },
     workplace_geopoint: {
       coordinates: [0, 0],
       type: "Point",
