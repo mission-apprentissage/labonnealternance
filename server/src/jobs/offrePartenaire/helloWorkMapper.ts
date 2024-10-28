@@ -77,13 +77,11 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     siret,
     company_title,
     company_description,
-    address,
     city,
     geoloc,
     url,
     updated_date,
     postal_code,
-    country,
   } = job
   const contractDuration: number | null = parseContractDuration(job)
   const { latitude, longitude } = geolocToLatLon(geoloc)
@@ -129,11 +127,10 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     workplace_description: company_description && company_description.length >= 30 ? company_description : null,
     workplace_size: null,
     workplace_website: null,
-    workplace_address_label: [address, city].filter((x) => x).join(" "),
     workplace_address: {
-      zipcode: postal_code,
-      city,
-      country,
+      zipcode: postal_code || null,
+      city: city || null,
+      country: null,
       street: null,
     },
     workplace_geopoint:

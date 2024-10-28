@@ -15,7 +15,6 @@ const now = new Date("2024-07-21T04:49:06.000+02:00")
 const filledFields = [
   "workplace_size",
   "workplace_name",
-  "workplace_address_label",
   "workplace_address",
   "workplace_geopoint",
   "workplace_naf_code",

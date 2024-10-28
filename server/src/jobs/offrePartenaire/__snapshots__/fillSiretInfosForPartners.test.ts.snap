@@ -2,7 +2,6 @@
 
 exports[`fillSiretInfosForPartners > should enrich with api when siret is present 1`] = `
 {
-  "workplace_address_label": "2 rue du loup 75001 Paris",
   "workplace_address": {
       "zipcode": "75001",
       "city": "Paris",
@@ -21,7 +20,6 @@ exports[`fillSiretInfosForPartners > should enrich with api when siret is presen
 
 exports[`fillSiretInfosForPartners > should enrich with cache when siret is present 1`] = `
 {
-  "workplace_address_label": "2 rue du loup 75001 Paris",
   "workplace_address": {
       "zipcode": "75001",
       "city": "Paris",

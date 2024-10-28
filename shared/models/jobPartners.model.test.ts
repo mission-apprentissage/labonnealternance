@@ -14,8 +14,7 @@ type IJobWorkplaceExpected = {
   workplace_name: string | null
   workplace_description: string | null
   workplace_size: string | null
-  workplace_address_label: string
-  workplace_address: IJobPartnerWorkplaceAddress | null
+  workplace_address: IJobPartnerWorkplaceAddress
   workplace_geopoint: {
     type: "Point"
     coordinates: [number, number]
@@ -92,7 +91,6 @@ type IJobOfferWritableExpected = {
   workplace_name: string | null
   workplace_website: string | null
   workplace_description: string | null
-  workplace_address_label: string | null
   workplace_address: IJobPartnerWorkplaceAddress | null
 }
 
@@ -126,7 +124,6 @@ type IJobOfferWritableInputExpected = {
   workplace_name?: string | null | undefined
   workplace_website?: string | null | undefined
   workplace_description?: string | null | undefined
-  workplace_address_label?: string | null | undefined
   workplace_address?: IJobPartnerWorkplaceAddress | null | undefined
 }
 

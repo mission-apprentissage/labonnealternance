@@ -16,6 +16,15 @@ export enum JOBPARTNERS_LABEL {
   OFFRES_EMPLOI_FRANCE_TRAVAIL = "France Travail",
 }
 
+export const ZJobPartnerWorkplaceAddress = z.object({
+  zipcode: extensions.zipCode().nullable(),
+  street: z.string().nullable(),
+  city: z.string().nullable(),
+  country: z.string().nullable(),
+})
+
+export type IJobPartnerWorkplaceAddress = z.input<typeof ZJobPartnerWorkplaceAddress>
+
 export const ZJobsPartnersRecruiterApi = z.object({
   _id: zObjectId,
 
@@ -26,7 +35,6 @@ export const ZJobsPartnersRecruiterApi = z.object({
   workplace_name: z.string().nullable().describe("Nom customisé de l'entreprise").default(null),
   workplace_description: z.string().nullable().describe("description de l'entreprise").default(null),
   workplace_size: z.string().nullable().describe("Taille de l'entreprise"),
-  workplace_address_label: z.string().describe("Adresse de l'offre, provenant du SIRET ou du partenaire"),
   workplace_address: ZJobPartnerWorkplaceAddress.describe("Adresse de l'offre, provenant du SIRET ou du partneraire"),
   workplace_geopoint: ZPointGeometry.describe("Geolocalisation de l'offre"),
   workplace_idcc: z.number().nullable().describe("Identifiant convention collective"),
@@ -106,15 +114,6 @@ export type IJobsPartnersOfferPrivateInput = z.input<typeof ZJobsPartnersOfferPr
 
 const TIME_CLOCK_TOLERANCE = 300_000
 
-export const ZJobPartnerWorkplaceAddress = z.object({
-  zipcode: extensions.zipCode().nullable(),
-  street: z.string().nullable(),
-  city: z.string().nullable(),
-  country: z.string().nullable(),
-})
-
-export type IJobPartnerWorkplaceAddress = z.input<typeof ZJobPartnerWorkplaceAddress>
-
 const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
   partner_job_id: true,
 
@@ -173,7 +172,6 @@ const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
     .describe("Status de l'offre (surtout utilisé pour les offres ajouté par API)"),
 
   workplace_siret: extensions.siret,
-  workplace_address_label: z.string().nullable().default(null),
   workplace_address: ZJobPartnerWorkplaceAddress,
   apply_url: ZJobsPartnersOfferApi.shape.apply_url.nullable().default(null),
   apply_phone: extensions.telephone.nullable().describe("Téléphone de contact").default(null),
