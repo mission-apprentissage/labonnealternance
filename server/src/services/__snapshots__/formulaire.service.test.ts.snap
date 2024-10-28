@@ -78,7 +78,6 @@ exports[`createJob > should insert a job 2`] = `
     ],
   },
   "is_disabled_elligible": null,
-  "is_multi_published": true,
   "job_count": 1,
   "job_start_date": 2021-01-28T15:00:00.000Z,
   "job_status": "En attente",

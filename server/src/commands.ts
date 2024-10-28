@@ -561,10 +561,10 @@ program
   .action(createJobAction("referentiel-opco:constructys:import"))
 
 program
-  .command("import-hellowork")
+  .command("import-hellowork-raw")
   .description("Importe les offres hellowork dans la collection raw")
   .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("import-hellowork"))
+  .action(createJobAction("import-hellowork-raw"))
 
 program
   .command("import-hellowork-to-computed")
@@ -597,6 +597,12 @@ program
   .description("Scanne les virus des pièces jointes et envoie les candidatures. Timeout à 8 minutes.")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("send-applications"))
+
+program
+  .command("fill-computed-jobs-partners")
+  .description("Enrichi la collection computed_jobs_partners avec les données provenant d'API externes")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("fill-computed-jobs-partners"))
 
 program
   .command("referentiel:commune:import")

@@ -1,28 +1,4 @@
 fileignoreconfig:
-- filename: .bin/scripts/get-vault-password-client.sh
-  checksum: 3dec27e43b260818a34b67230a5121ddea029a7341afca120547694216451559
-- filename: .bin/scripts/seed-apply.sh
-  checksum: 49afe4f96fa13b38cf799d931085437d540b4c62eb05b2f15bc12cd3fb43268b
-- filename: .bin/scripts/seed-update.sh
-  checksum: 707139e7844412ee81d2796abfb2dac00dd90a9a65eb3b5f2cdede7571e96ef2
-- filename: .bin/scripts/set-cypress-env.sh
-  checksum: 4463ed7c1d5b82a8b152248b953778f37771bfba72865ee0e8af3b61cf3c38da
-- filename: .bin/scripts/setup-local-env.sh
-  checksum: b3700a87a9d58839c8eafce8231d01b6164851a560ea5c232a1ecc19d8d22bc6
-- filename: .github/workflows/_build.yml
-  checksum: ab457b5b512b181d7d73c8fdf9c3843eed39f3b0245f5d22742cc93697a08bf5
-- filename: .github/workflows/_deploy.yml
-  checksum: d17a016bb30a6fd52426255feb648b4dc241707bd3b28f0c181c8c4ff45bdd4d
-- filename: .github/workflows/cypress.yml
-  checksum: 39f98fb68fdebf6a36959706adb43a8219a4b7781ac35329f957dc1cfa8b6de0
-- filename: .github/workflows/deploy_preview.yml
-  checksum: 40f9da2dad1254d3f6674137046d431526c6f731989ed0e061995ba58be94322
-- filename: .github/workflows/release.yml
-  checksum: a74f2767d7c66239e5cbf45c2aaaa6a2d980fe681e41ffa3b166247db323a907
-- filename: .infra/.env_server
-  checksum: a3a8b9007e4c082a14b3d09ed8386138db9277ea11ca921a989ba87d0ea61f47
-- filename: .infra/env.ini
-  checksum: 60d461050d64c0b87831d6918a8696a8dd2f69cd86b4e6d94b40c3b7b285c320
 - filename: .infra/files/configs/mongodb/mongod.conf
   checksum: 718bee5f44edc101636be8f11173ede5b728f2858abc3c26466ff9435f0d11de
 - filename: .infra/files/configs/mongodb/seed.gpg
@@ -66,7 +42,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/user.controller.test.ts
   checksum: 2c8a4a9e141d7829c7f717dc5a179435313f157a052df3dfe55fd64104754a35
 - filename: server/src/http/controllers/v2/applications.controller.v2.test.ts
-  checksum: 5a8d9a23a50cc981af9fc97cdba226af94ef30dc0567f30490f5e490238df40d
+  checksum: 91f4cb9a288d144a19596772bc8ceed1903476df3faeeac6f235162560de8e3b
 - filename: server/src/http/controllers/v2/appointment.controller.v2.test.ts
   checksum: 72502c3acc46f9b6903b69095518c3d865cf437f311ed14585da04d8440b4ac0
 - filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts
@@ -89,6 +65,8 @@ fileignoreconfig:
   checksum: 18bd149922151536ad0e239b082309697cee6046b33512d5eecc54b2d25b465a
 - filename: server/src/jobs/offrePartenaire/importHelloWork.ts
   checksum: 26caf0b5a97ce2ff7451cc2717a3b36f38b20f94db6beb490b98b8311debfd25
+- filename: server/src/migrations/20241022093834-remove-multi-published.ts
+  checksum: a807c70a69c4c8bfc2a0568b466a7f274fd3840169ef3ef4792885d63cb75217
 - filename: server/src/security/accessApiApprentissageService.ts
   checksum: ab427834ccbb6bb3798b0c3a299d1ecea236705187df86eececae7b68218e8bd
 - filename: server/src/security/accessTokenService.ts
@@ -96,7 +74,7 @@ fileignoreconfig:
 - filename: server/src/security/apiApprentissageService.ts
   checksum: 0e6d208dc8de66d2a440ff40a1260a76e41bf69fb414ccbfc6d99396df3f3b91
 - filename: server/src/services/__snapshots__/formulaire.service.test.ts.snap
-  checksum: 49c3c364aabc4158f1968f8c96d87f2473e56a27b4bedf727ab68d2b8d23d89a
+  checksum: cbed2837ec4143df8ec123d725f07a2d836b2de40250e4d48759328b1482a73e
 - filename: server/src/services/application.service.test.ts
   checksum: 02c7f8874a880cc0f9913469d6ef097ad42bbea8df79d7f08451410f7b32e2c0
 - filename: server/src/services/application.service.ts
@@ -104,7 +82,9 @@ fileignoreconfig:
 - filename: server/src/services/eligibleTrainingsForAppointment.service.ts
   checksum: 45f0984c6a79320da8aa2fa03c8ea001de0176b88c7ca05e35e385da8f98e218
 - filename: server/src/services/formulaire.service.test.ts
-  checksum: 15a4cf6a8420b65ae4dc823e7500db2f05d9c3a94e0c5771b0fd832c067446e0
+  checksum: 0b57b45fbf40bdbee16a3b61ad6d725532fa067a8c7baf3710352fbeb2ab059a
+- filename: server/src/services/formulaire.service.ts
+  checksum: e93ff7ce146d35e70eedcbe9b66097750e7754650468a5ada6b0ed72f0fdbc49
 - filename: server/src/services/jobs/jobOpportunity/jobOpportunity.service.test.ts
   checksum: 7c2a7f5d8ec1c82652296c3271bd435f5998e9c61f9ead2d528a5f2a7195a07d
 - filename: server/src/services/recruteurLba.service.test.ts
@@ -117,10 +97,16 @@ fileignoreconfig:
   checksum: 5fbdf21310d8dfaf259eb39a5ca1e72a53b15493cf3a59ed42c4cb5c8f3a62ab
 - filename: server/static/templates/mail-bienvenue.mjml.ejs
   checksum: 34eb30b463153df565aa89f8e42f08eb77633b6bfa4673f4d6ef5f40633c6101
+- filename: server/static/templates/mail-candidat-entretien.mjml.ejs
+  checksum: 55e635282f6a7ac57319c69cbc98f484b9c5d7e6c4ba0901e1e5395caac9e8cd
+- filename: server/static/templates/mail-candidat-nsp.mjml.ejs
+  checksum: 203d57160c0cda492f4172d9651c2dea9b8d7b4b3ab0e25f80a24438e3f1e184
 - filename: server/static/templates/mail-candidat-offre-emploi-lba.mjml.ejs
   checksum: 3188f43c847d071acfb7a366748647ab88d821abb3e022830b82fd092db90f83
 - filename: server/static/templates/mail-candidat-recruteur-lba.mjml.ejs
   checksum: 0b806bca197dba97415902339e84f924cb45dae766cf8d3cfc47d80d2bdd203c
+- filename: server/static/templates/mail-candidat-refus.mjml.ejs
+  checksum: 7e912b174e33f96f0fbb180bdb5d04d92951c2db880ab147eba395a24c74ae87
 - filename: server/static/templates/mail-echec-envoi-candidature.mjml.ejs
   checksum: 9055c5495ced85a674770e7fb8a81b3bd84949f9ff8f6e6450989aa3b7cda326
 - filename: server/tests/fixture/connectedUser.fixture.ts
@@ -193,6 +179,10 @@ fileignoreconfig:
   checksum: 88f2245cd7c4d0f962f53bb6e3dd8179ac98cfd8202f1d985f46c4b07c1d75ee
 - filename: ui/components/ItemDetail/ItemDetail.tsx
   checksum: 1fcc0442306f83b5e45bf7da67304527598d7749b9e2642c6d4628d3b4f15a9c
+- filename: ui/components/ItemDetail/LbaJobComponents/LbaJobCompetences.tsx
+  checksum: 6f16b6a45bfa356372f8dbac680bb41d0f403585f08b640449701f83826568c5
+- filename: ui/components/ItemDetail/LbaJobComponents/LbaJobQualites.tsx
+  checksum: ea8a44288ade31e5f8940091bad543e229376f11ed972262f7bcaf7947b5228c
 - filename: ui/components/ItemDetail/LbaJobComponents/LbaJobTechniques.tsx
   checksum: 553720667140e5bbf7cef1969c02cbcd3c234defc30bb08208398c1900e29e3b
 - filename: ui/components/ItemDetail/LbaJobDetail.tsx
@@ -237,20 +227,8 @@ fileignoreconfig:
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
-- filename: server/src/http/controllers/v2/applications.controller.v2.test.ts
-  checksum: bbbbd6c52ef2491fb6b0468a730c91fc3aaa77154429c220f8270b46b83afa07
-- filename: shared/fixtures/referentiel/onisep.fixture.ts
-  checksum: 3f54d57761ea54731e3cfa80013d3f8b300a5f275beb8a29cfca235b6a8d44f7
-- filename: server/src/http/controllers/v2/appointment.controller.v2.test.ts
-  checksum: bf324d263445d1ffb1acc6b5203e36449973dea7d7fce6832b933d7a375f74bc
-- filename: shared/fixtures/appointment.fixture.ts
-  checksum: 9090cddf673370dec0a6196d368ac1e99f8922feb1e55ada277c1e0339bdb016
-- filename: server/static/templates/mail-candidat-entretien.mjml.ejs
-  checksum: 55e635282f6a7ac57319c69cbc98f484b9c5d7e6c4ba0901e1e5395caac9e8cd
-- filename: server/static/templates/mail-candidat-nsp.mjml.ejs
-  checksum: 203d57160c0cda492f4172d9651c2dea9b8d7b4b3ab0e25f80a24438e3f1e184
-- filename: server/static/templates/mail-candidat-refus.mjml.ejs
-  checksum: 7e912b174e33f96f0fbb180bdb5d04d92951c2db880ab147eba395a24c74ae87
+- filename: yarn.lock
+  checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
 scopeconfig:
 - scope: node
 custom_patterns:
