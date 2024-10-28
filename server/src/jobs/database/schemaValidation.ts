@@ -14,7 +14,7 @@ export async function validateDocuments(collectionName: string) {
   const invalidCount = await countInvalidDocuments(collectionName)
   if (invalidCount > 0) {
     const error = new Error(`Collection ${collectionName} contains ${invalidCount} invalid documents`)
-    captureException(error)
+    captureException(error, { level: "fatal" })
     throw error
   }
 }

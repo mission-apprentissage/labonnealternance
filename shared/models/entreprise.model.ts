@@ -43,6 +43,8 @@ export const ZEntreprise = z
     address_detail: ZGlobalAddress.nullish().describe("Detail de l'adresse de l'établissement"),
     geo_coordinates: z.string().nullish().describe("Latitude/Longitude de l'adresse de l'entreprise"),
     opco: extensions.buildEnum(OPCOS_LABEL).nullable().describe("Opco de l'entreprise"),
+    naf_code: z.string().nullish().describe("Code NAF de l'entreprise"),
+    naf_label: z.string().nullish().describe("Libelle NAF de l'entreprise"),
     status: z.array(ZEntrepriseStatusEvent).describe("historique de la mise à jour des données entreprise"),
   })
   .strict()

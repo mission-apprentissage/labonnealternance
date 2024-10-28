@@ -21,6 +21,7 @@ import {
   getJob,
   getJobWithRomeDetail,
   getOffre,
+  patchJobDelegation,
   patchOffre,
   provideOffre,
   updateFormulaire,
@@ -376,18 +377,19 @@ export default (server: Server) => {
         throw badRequest("Le siret formateur n'a pas été proposé à l'offre.")
       }
 
-      await patchOffre(jobId, {
-        delegations: delegations.map((delegation) => {
-          // Save the date of the first read of the company detail
-          if (delegation.siret_code === delegationFound.siret_code && !delegation.cfa_read_company_detail_at) {
-            return {
-              ...delegation,
-              cfa_read_company_detail_at: new Date(),
-            }
+      const updatedDelegations = delegations.map((delegation) => {
+        // Save the date of the first read of the company detail
+        if (delegation.siret_code === delegationFound.siret_code && !delegation.cfa_read_company_detail_at) {
+          return {
+            ...delegation,
+            cfa_read_company_detail_at: new Date(),
           }
-          return delegation
-        }),
+        }
+        return delegation
       })
+
+      await patchJobDelegation(jobId, updatedDelegations)
+
       return res.send({})
     }
   )

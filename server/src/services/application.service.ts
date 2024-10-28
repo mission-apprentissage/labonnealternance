@@ -508,7 +508,7 @@ export const validateJob = async (application: INewApplicationV1): Promise<IJobO
     }
     const { recruiter, job } = recruiterResult
     if (recruiter.status !== RECRUITER_STATUS.ACTIF || job.job_status !== JOB_STATUS.ACTIVE) {
-      return { error: "offre expirée" }
+      return { error: BusinessErrorCodes.EXPIRED }
     }
     return { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job, recruiter }
   } else if (company_type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {

@@ -77,7 +77,7 @@ export const zAppointmentsRouteV2 = {
       response: {
         "200": ZAppointmentResponseSchema,
       },
-      securityScheme: { auth: "api-apprentissage", access: null, resources: {} },
+      securityScheme: { auth: "api-apprentissage", access: "api-apprentissage:appointment", resources: {} },
     },
   },
 } as const satisfies IRoutesDef
