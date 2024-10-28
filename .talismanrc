@@ -32,7 +32,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/__snapshots__/etablissementRecruteur.controller.test.ts.snap
   checksum: 1844a9ad314c3074adc11bd09ec0aac528802aed67d05e9e3da788545be88c92
 - filename: server/src/http/controllers/application.controller.test.ts
-  checksum: 1f3c9b8cd7c578252a0c41ca9028672712a5bca2ce1686cba83ff60305708305
+  checksum: 00cac67c8e138098126ae98702e2bdc3e1092e1bbf188d9a437197e9ca94e16a
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
   checksum: dc77c04efc26dcd8ca4816f392ab24a32a92cb45ca4b94adb593a08e7a2d231e
 - filename: server/src/http/controllers/etablissementRecruteur.controller.test.ts
@@ -40,7 +40,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/updateRecruteurLba.controller.test.ts
   checksum: 71dd55af4f1f44fd2b69dee91f0fc8006f3b9e0bd80d40271c73697d4eea9ea2
 - filename: server/src/http/controllers/user.controller.test.ts
-  checksum: 2c8a4a9e141d7829c7f717dc5a179435313f157a052df3dfe55fd64104754a35
+  checksum: e01d1b9c54d1e6d0c98fd7984f32c3a93f3e9bde92887bdab320cb7af91fdd92
 - filename: server/src/http/controllers/v2/applications.controller.v2.test.ts
   checksum: 91f4cb9a288d144a19596772bc8ceed1903476df3faeeac6f235162560de8e3b
 - filename: server/src/http/controllers/v2/appointment.controller.v2.test.ts
@@ -74,7 +74,7 @@ fileignoreconfig:
 - filename: server/src/security/apiApprentissageService.ts
   checksum: 0e6d208dc8de66d2a440ff40a1260a76e41bf69fb414ccbfc6d99396df3f3b91
 - filename: server/src/services/__snapshots__/formulaire.service.test.ts.snap
-  checksum: cbed2837ec4143df8ec123d725f07a2d836b2de40250e4d48759328b1482a73e
+  checksum: 71d9956fd03fcec52d37b3799fc5bc806d42ec40200254b1740819b3d5a2b0d1
 - filename: server/src/services/application.service.test.ts
   checksum: 02c7f8874a880cc0f9913469d6ef097ad42bbea8df79d7f08451410f7b32e2c0
 - filename: server/src/services/application.service.ts
@@ -186,13 +186,15 @@ fileignoreconfig:
 - filename: ui/components/ItemDetail/LbaJobComponents/LbaJobTechniques.tsx
   checksum: 553720667140e5bbf7cef1969c02cbcd3c234defc30bb08208398c1900e29e3b
 - filename: ui/components/ItemDetail/LbaJobDetail.tsx
-  checksum: e1c36f9a6cd1cec8d459da178e5c42d723760a63a867dac1f50dd941a334696c
+  checksum: 74951335936fd8df7dbbda0dfcb9fd36d01ec96a34d04d61761e5b081ac2bd96
+- filename: ui/components/ItemDetail/LbaJobComponents/LbaJobDetail.tsx
+  checksum: 74951335936fd8df7dbbda0dfcb9fd36d01ec96a34d04d61761e5b081ac2bd96
 - filename: ui/components/ItemDetail/LbaRecruteurComponents/LbaRecruteurDetail.tsx
   checksum: 6e552b66f9238645f70705a0c43c81905e8dbee1c83d364cd89f951f80cb7ea0
 - filename: ui/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaDetail.tsx
-  checksum: e61fa8a7bca174c70714ce633165436127f89e9fd8cf9005af681ca870465806
+  checksum: 5d8d24178d6390f4745bcddcaca7e7ea3f8f6af79ef304bb48187a6bea7ccfa1
 - filename: ui/components/ItemDetail/TrainingDetail.tsx
-  checksum: 01556e58758449693529955a0de80ba4a2c243bfb8a41d1829df0daeca83e456
+  checksum: a681f3f410db93db9fc2640636b70df05fe2d9e3d0879f8afc19f9cd451bae59
 - filename: ui/components/ItemDetail/loadedItemDetail.tsx
   checksum: 9db6a64f202979b07251fd40445961d8db03bdb18b6668f9813bdbdf0d56aa65
 - filename: ui/components/RDV/DemandeDeContact.tsx
@@ -210,7 +212,7 @@ fileignoreconfig:
 - filename: ui/components/espace_pro/Admin/utilisateurs/infoDetails/InfoDetails.tsx
   checksum: be2ad6ca5c2bd36d26cd7aebb33ab876bd32662be3735fee3b167325c284ccff
 - filename: ui/components/espace_pro/AjouterVoeux.tsx
-  checksum: 8ba50b9d7127114cd71789bbf7c26dc19b4b915ab4ae2e2e033c1ca65accee94
+  checksum: bd5e3fc26e296e4e0e8b51305082dcb718a355b2000bb0b2b45dd9751bc81269
 - filename: ui/components/footer.tsx
   checksum: e0dd3ec2ac813053ee5e672472b545719c95e49f0891cf2f8e1b5db484d00479
 - filename: ui/pages/accessibilite.tsx
@@ -229,6 +231,8 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
+- filename: server/src/jobs/offrePartenaire/importHelloWork.test.input.xml
+  checksum: 6f28aee7664d1ec1e4b4da34b96b63e23781538b3fe3e8d50dddbdad3884fa3f
 scopeconfig:
 - scope: node
 custom_patterns:

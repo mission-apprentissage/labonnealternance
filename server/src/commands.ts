@@ -5,11 +5,11 @@ import HttpTerminator from "lil-http-terminator"
 
 import { closeMemoryCache } from "./common/apis/client"
 import { logger } from "./common/logger"
+import { closeSentry } from "./common/sentry/sentry"
 import { closeMongodbConnection } from "./common/utils/mongodbUtils"
 import { notifyToSlack } from "./common/utils/slackUtils"
 import config from "./config"
 import { bindProcessorServer } from "./http/jobProcessorServer"
-import { closeSentry, initSentryProcessor } from "./http/sentry"
 import { bindFastifyServer } from "./http/server"
 import { setupJobProcessor } from "./jobs/jobs"
 
@@ -60,8 +60,6 @@ program
     // on définit le module du logger en global pour distinguer les logs des jobs
     if (command !== "start") {
       logger.fields.module = `cli:${command}`
-      // Pas besoin d'init Sentry dans le cas du server car il est start automatiquement
-      initSentryProcessor()
     }
     logger.info(`Starting command ${command}`)
   })
