@@ -82,7 +82,7 @@ export async function isClamavAvailable(): Promise<boolean> {
 
 export async function isInfected(file: string): Promise<boolean> {
   let _isInfected: boolean = false
-  startSentryPerfRecording({ name: "clamav", operation: "scan" }, async () => {
+  await startSentryPerfRecording({ name: "clamav", operation: "scan" }, async () => {
     const clamav = await getClamav()
     const decodedAscii = Readable.from(Buffer.from(file.substring(file.indexOf(";base64,") + 8), "base64").toString("ascii"))
     const rs = Readable.from(decodedAscii)
