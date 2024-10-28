@@ -1,6 +1,10 @@
 import { Box, Container } from "@chakra-ui/react"
+import { useRouter } from "next/router"
 import { NextSeo } from "next-seo"
 import React, { useState } from "react"
+import { useQuery } from "react-query"
+
+import { getApplicationCompanyEmailAddress } from "@/utils/api"
 
 import Breadcrumb from "../components/breadcrumb"
 import FormulaireDesinscription from "../components/DesinscriptionEntreprise/FormulaireDesinscription"
@@ -13,9 +17,16 @@ import ScrollToTop from "../components/ScrollToTop"
 const DesinscriptionRecruteur = () => {
   const [isSuccess, setIsSuccess] = useState(false)
 
+  const router = useRouter()
+  const { application_id } = router.query as { application_id: string }
+
   const handleUnsubscribeSuccess = () => {
     setIsSuccess(true)
   }
+
+  const { data } = useQuery("getApplicationEmail", () => getApplicationCompanyEmailAddress(application_id), {
+    enabled: !!application_id,
+  })
 
   return (
     <Box>
@@ -32,7 +43,7 @@ const DesinscriptionRecruteur = () => {
         <Container my={0} px={0} variant="pageContainer" bg="white">
           {!isSuccess ? (
             <>
-              <FormulaireDesinscription handleUnsubscribeSuccess={handleUnsubscribeSuccess} />
+              <FormulaireDesinscription companyEmail={data?.company_email || ""} handleUnsubscribeSuccess={handleUnsubscribeSuccess} />
 
               <Box>
                 <AlgoRecruiter withLinks={false} />
