@@ -3,6 +3,7 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
 import { OPCOS_LABEL } from "shared/constants"
 import { generateJobFixture, generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
+import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { AccessEntityType, JOB_STATUS } from "shared/models"
 import { describe, expect, it } from "vitest"
 
@@ -18,13 +19,14 @@ describe("formulaire.controller", () => {
     // given
     const opco = OPCOS_LABEL.CONSTRUCTYS
     const entreprise = generateEntrepriseFixture()
-    await getDbCollection("entreprises").insertOne(entreprise)
-    const { siret } = entreprise
+    const referentielRome = generateReferentielRome()
     const recruiter = generateRecruiterFixture({
-      establishment_siret: siret,
+      establishment_siret: entreprise.siret,
       opco,
-      jobs: [generateJobFixture({ job_status: JOB_STATUS.ACTIVE })],
+      jobs: [generateJobFixture({ job_status: JOB_STATUS.ACTIVE, competences_rome: referentielRome.competences })],
     })
+    await getDbCollection("referentielromes").insertOne(referentielRome)
+    await getDbCollection("entreprises").insertOne(entreprise)
     await getDbCollection("recruiters").insertOne(recruiter)
     const { cookies } = await givenAConnectedOpcoUser(
       {},
@@ -57,13 +59,12 @@ describe("formulaire.controller", () => {
     // given
     const opco = OPCOS_LABEL.CONSTRUCTYS
     const entreprise = generateEntrepriseFixture()
-    await getDbCollection("entreprises").insertOne(entreprise)
-    const { siret } = entreprise
     const recruiter = generateRecruiterFixture({
-      establishment_siret: siret,
+      establishment_siret: entreprise.siret,
       opco,
       jobs: [generateJobFixture({ job_status: jobStatus })],
     })
+    await getDbCollection("entreprises").insertOne(entreprise)
     await getDbCollection("recruiters").insertOne(recruiter)
     const { cookies } = await givenAConnectedOpcoUser(
       {},

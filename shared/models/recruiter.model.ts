@@ -2,7 +2,8 @@ import { randomUUID } from "crypto"
 
 import { Jsonify } from "type-fest"
 
-import { RECRUITER_STATUS } from "../constants/recruteur"
+import { OPCOS_LABEL, RECRUITER_STATUS } from "../constants/recruteur"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { ZPointGeometry } from "./address.model"
@@ -31,7 +32,7 @@ export const ZRecruiterWritable = z
     email: z.string().describe("Email du contact"),
     jobs: z.array(ZJob).describe("Liste des offres"),
     origin: z.string().nullish().describe("Origine de la creation de l'établissement"),
-    opco: z.string().nullish().describe("Opco de rattachement de l'établissement"),
+    opco: extensions.buildEnum(OPCOS_LABEL).nullable().describe("Opco de rattachement de l'établissement"),
     idcc: z.string().nullish().describe("Identifiant de la convention collective de l'établissement"),
     status: z
       .enum([allRecruiterStatus[0], ...allRecruiterStatus.slice(1)])
@@ -114,7 +115,6 @@ export default {
     [
       {
         "jobs.status": 1,
-        "jobs.is_multi_published": 1,
         "jobs.rome_code": 1,
         "jobs.job_creation_date": -1,
       },
@@ -124,7 +124,6 @@ export default {
     [
       {
         "jobs.status": 1,
-        "jobs.is_multi_published": 1,
         "jobs.job_creation_date": -1,
       },
       {},

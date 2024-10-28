@@ -43,7 +43,7 @@ export default async function submitCandidature({
     applicant_last_name: formValues.lastName,
     applicant_email: formValues.email,
     applicant_phone: formValues.phone,
-    message: formValues.message,
+    applicant_message: formValues.message,
     applicant_file_name: formValues.fileName,
     applicant_file_content: formValues.fileContent,
     job_searched_by_user: formValues.job_searched_by_user,

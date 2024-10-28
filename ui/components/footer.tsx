@@ -143,8 +143,16 @@ const Footer = ({ ressources = "" }: { ressources?: string }) => {
                 </NextLink>
               </ListItem>
               <ListItem {...basicLink}>
-                <NextLink legacyBehavior passHref href="/developpeurs">
-                  <Link aria-label="Accès à la page Développeurs">Développeurs</Link>
+                <NextLink legacyBehavior passHref target="_blank" href="https://github.com/mission-apprentissage/labonnealternance">
+                  <Link aria-label="Notre code source" isExternal>
+                    Code source
+                    <ExternalLinkIcon mx="2px" />
+                  </Link>
+                </NextLink>
+              </ListItem>
+              <ListItem {...basicLink}>
+                <NextLink legacyBehavior passHref href="/nos-donnees">
+                  <Link aria-label="Accès à nos données">Nos données</Link>
                 </NextLink>
               </ListItem>
               <ListItem {...lastLink}>

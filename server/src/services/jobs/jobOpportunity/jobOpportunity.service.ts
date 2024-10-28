@@ -249,7 +249,6 @@ function convertOpco(recruteurLba: Pick<ILbaCompany | IRecruiter, "opco">): IJob
     return r.data
   }
 
-  // Currently in database we have things such as "Sélectionnez un OPCO" or "Opco multiple"
   return null
 }
 
@@ -264,9 +263,7 @@ export const convertLbaCompanyToJobPartnerRecruiterApi = (recruteursLba: ILbaCom
       workplace_legal_name: recruteurLba.raison_sociale,
       workplace_description: null,
       workplace_size: recruteurLba.company_size,
-      workplace_address: {
-        label: `${recruteurLba.street_number} ${recruteurLba.street_name} ${recruteurLba.zip_code} ${recruteurLba.city}`,
-      },
+      workplace_address_label: `${recruteurLba.street_number} ${recruteurLba.street_name} ${recruteurLba.zip_code} ${recruteurLba.city}`,
       workplace_geopoint: recruteurLba.geopoint!,
       workplace_idcc: null,
       workplace_opco: convertOpco(recruteurLba),
@@ -355,9 +352,7 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IJobRes
           workplace_legal_name: recruiter.establishment_raison_sociale ?? null,
           workplace_description: null,
           workplace_size: recruiter.establishment_size ?? null,
-          workplace_address: {
-            label: recruiter.address!,
-          },
+          workplace_address_label: recruiter.address!,
           workplace_geopoint: recruiter.geopoint!,
           workplace_idcc: recruiter.idcc ? Number(recruiter.idcc) : null,
           workplace_opco: convertOpco(recruiter),
@@ -410,7 +405,7 @@ export const convertFranceTravailJobToJobPartnerOfferApi = (offresEmploiFranceTr
         workplace_name: offreFT.entreprise.nom,
         workplace_description: offreFT.entreprise.description,
         workplace_size: null,
-        workplace_address: { label: offreFT.lieuTravail.libelle },
+        workplace_address_label: offreFT.lieuTravail.libelle,
         workplace_geopoint: convertToGeopoint({
           longitude: parseFloat(offreFT.lieuTravail.longitude!),
           latitude: parseFloat(offreFT.lieuTravail.latitude!),
@@ -536,7 +531,7 @@ export async function findJobsOpportunities(payload: IJobOpportunityGetQuery, co
   }
 }
 
-type WorkplaceAddressData = Pick<IJobsPartnersOfferApi, "workplace_geopoint" | "workplace_address">
+type WorkplaceAddressData = Pick<IJobsPartnersOfferApi, "workplace_geopoint" | "workplace_address_label">
 
 async function resolveWorkplaceLocationFromAddress(workplace_address_label: string | null, zodError: ZodError): Promise<WorkplaceAddressData | null> {
   if (workplace_address_label === null) {
@@ -552,7 +547,7 @@ async function resolveWorkplaceLocationFromAddress(workplace_address_label: stri
 
   return {
     workplace_geopoint: geopoint,
-    workplace_address: { label: workplace_address_label },
+    workplace_address_label,
   }
 }
 
@@ -560,7 +555,7 @@ async function resolveWorkplaceLocationFromAddress(workplace_address_label: stri
 type WorkplaceSiretData = Pick<
   IJobsPartnersOfferApi,
   | "workplace_geopoint"
-  | "workplace_address"
+  | "workplace_address_label"
   | "workplace_legal_name"
   | "workplace_brand"
   | "workplace_naf_label"
@@ -583,7 +578,7 @@ async function resolveWorkplaceDataFromSiret(workplace_siret: string, zodError: 
 
   return {
     workplace_geopoint: entrepriseData.geopoint,
-    workplace_address: { label: entrepriseData.address! },
+    workplace_address_label: entrepriseData.address!,
     workplace_brand: entrepriseData.establishment_enseigne ?? null,
     workplace_legal_name: entrepriseData.establishment_raison_sociale ?? null,
     workplace_naf_label: entrepriseData.naf_label ?? null,

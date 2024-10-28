@@ -210,7 +210,6 @@ export const zFormulaireRoute = {
         job_description: true,
         job_status: true,
         job_type: true,
-        is_multi_published: true,
         delegations: true,
         is_disabled_elligible: true,
         job_count: true,
@@ -333,21 +332,6 @@ export const zFormulaireRoute = {
         access: "recruiter:manage",
         resources: {
           recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
-        },
-      },
-    },
-    "/formulaire/delegated/:establishment_siret": {
-      method: "delete",
-      path: "/formulaire/delegated/:establishment_siret",
-      params: z.object({ establishment_siret: z.string() }).strict(),
-      response: {
-        "2xx": z.object({}).strict(),
-      },
-      securityScheme: {
-        auth: "cookie-session",
-        access: "recruiter:manage",
-        resources: {
-          recruiter: [{ cfa_delegated_siret: { type: "params", key: "establishment_siret" } }],
         },
       },
     },

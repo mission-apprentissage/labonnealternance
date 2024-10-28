@@ -26,14 +26,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@asteasolutions/zod-to-openapi@npm:^7.1.1":
-  version: 7.1.1
-  resolution: "@asteasolutions/zod-to-openapi@npm:7.1.1"
+"@asteasolutions/zod-to-openapi@npm:^7.1.1, @asteasolutions/zod-to-openapi@npm:^7.2.0":
+  version: 7.2.0
+  resolution: "@asteasolutions/zod-to-openapi@npm:7.2.0"
   dependencies:
     openapi3-ts: ^4.1.2
   peerDependencies:
     zod: ^3.20.2
-  checksum: 7d0d444f1e8721040d2ce08f1b1108a60be93e10c54eb806823490b3e2e3b41347f15fa9bb41b9754a0cdc844a1fad42267b0a9af5668efac09a762baad0801f
+  checksum: a1117fc8e851a4263e4acddadff6a5ca886aa62955e7a09c869f704c784800ec4fa5405df837571fa40e12412e41ae40447e573463c5363d3057b92a0477a001
   languageName: node
   linkType: hard
 
@@ -7410,17 +7410,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"api-alternance-sdk@npm:^0.0.2-rc.3":
-  version: 0.0.2-rc.3
-  resolution: "api-alternance-sdk@npm:0.0.2-rc.3"
+"api-alternance-sdk@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "api-alternance-sdk@npm:1.3.0"
   dependencies:
-    "@asteasolutions/zod-to-openapi": ^7.1.1
+    "@asteasolutions/zod-to-openapi": ^7.2.0
     jsonwebtoken: ^9.0.2
     luhn: ^2.4.1
     luxon: ^3.5.0
-    openapi3-ts: ^4.3.3
+    openapi3-ts: ^4.4.0
     zod: ^3.23.8
-  checksum: df675013469ffefa360900d2bec4333661cc5793d4b98b59f9701214ffa7f77f9b83e303e0d45023e0bba2bdab3266b83bd402dd07093da452b6697b7d1a6ea4
+  checksum: fa21ca57aca00b0fd020430d2d34b0c9eab9a4b01b2b3ddbe673a54d374e43a561a815fbf9a921fcc23e22e86007ca59c4da720bd2a5c88dd3ca7916ed35347b
   languageName: node
   linkType: hard
 
@@ -17538,7 +17538,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openapi3-ts@npm:^4.1.2, openapi3-ts@npm:^4.3.3, openapi3-ts@npm:^4.4.0":
+"openapi3-ts@npm:^4.1.2, openapi3-ts@npm:^4.4.0":
   version: 4.4.0
   resolution: "openapi3-ts@npm:4.4.0"
   dependencies:
@@ -18661,6 +18661,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"qr.js@npm:0.0.0":
+  version: 0.0.0
+  resolution: "qr.js@npm:0.0.0"
+  checksum: 5ac6c393967bdeaa660e7fd3a501a25eb538c1f6008a4d30ab2b97bbe520e5c236530090773f1578aa0a523cdaa6923c866615e21143f9e7cd22abd41c789b69
+  languageName: node
+  linkType: hard
+
 "qrcode-terminal@npm:^0.12.0":
   version: 0.12.0
   resolution: "qrcode-terminal@npm:0.12.0"
@@ -19247,6 +19254,18 @@ __metadata:
     react: ^16.0.0-0 || ^17.0.0-0 || ^18.0.0-0
     react-dom: ^16.0.0-0 || ^17.0.0-0 || ^18.0.0-0
   checksum: dc7cd0c6907d1859c0eca4571108934ac791eb9eaf020529a26d4732b7bb556a53bf7e87e868f9918bd60c58f512cc36a49aef5671c964d0a49494168fb2abe0
+  languageName: node
+  linkType: hard
+
+"react-qr-code@npm:^2.0.15":
+  version: 2.0.15
+  resolution: "react-qr-code@npm:2.0.15"
+  dependencies:
+    prop-types: ^15.8.1
+    qr.js: 0.0.0
+  peerDependencies:
+    react: "*"
+  checksum: 4124b7c2ce71bfe94279d85322175c881ba87dcc9b67f3c6d6e2806854a8792cf5f9ed8e10ea04c22e39aa060ef12fb39e679e780cba14f168d3cd6cffb7086d
   languageName: node
   linkType: hard
 
@@ -20449,7 +20468,7 @@ __metadata:
     "@types/nodemailer-html-to-text": ^3.1.1
     "@types/supertest": ^2.0.13
     "@typescript-eslint/eslint-plugin": ^5.62.0
-    api-alternance-sdk: ^0.0.2-rc.3
+    api-alternance-sdk: ^1.3.0
     axios: ^1.7.4
     axios-cache-interceptor: ^1.5.3
     basic-ftp: ^5.0.3
@@ -20472,6 +20491,7 @@ __metadata:
     eslint: ^8.50.0
     express: ^4.18.2
     express-rate-limit: ^5.5.1
+    fast-deep-equal: ^3.1.3
     fastify: ^4.23.2
     fastify-type-provider-zod: ^1.1.9
     form-data: ^4.0.0
@@ -22260,6 +22280,7 @@ __metadata:
     react-html-parser: ^2.0.2
     react-icons: ^4.11.0
     react-notion-x: ^4.19.8
+    react-qr-code: ^2.0.15
     react-query: ^3.39.3
     react-swipeable: ^6.2.2
     react-table: ^7.8.0

@@ -11,6 +11,7 @@ import { asyncForEach } from "../common/utils/asyncUtils"
 import config from "../config.js"
 
 import { getRomesFromRncp } from "./external/api-alternance/certification.service"
+import { filterWrongRomes } from "./formation.service"
 
 interface IWish {
   id: string
@@ -95,6 +96,16 @@ const getTrainingsFromParameters = async (wish: IWish): Promise<IFormationCatalo
     if (wish.uai_formateur_responsable) {
       formations = await getFormations({ ...query, etablissement_gestionnaire_uai: wish.uai_formateur_responsable })
     }
+  }
+
+  // extraction des codes romes erronés
+  if (formations?.length) {
+    formations = formations
+      .map((formation) => {
+        filterWrongRomes(formation)
+        return formation
+      })
+      .filter((formation) => formation.rome_codes.length > 0)
   }
 
   return formations || []
@@ -187,9 +198,11 @@ const getLBALink = async (wish: IWish): Promise<string> => {
   }
 
   // Get romes based on rncp or training database
-  const romes = wish.rncp
+  let romes = wish.rncp
     ? (await getRomesFromRncp(wish.rncp)) || (await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef }))
     : await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef })
+
+  romes = romes.filter((rome_code) => rome_code.length === 5 && !rome_code.endsWith("00"))
 
   // Build url based on formations and coordinates
   if (formations?.length) {

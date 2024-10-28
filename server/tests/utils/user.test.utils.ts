@@ -14,6 +14,7 @@ import { ZodArray, ZodObject, ZodString, ZodTypeAny, z } from "zod"
 import { Fixture, Generator } from "zod-fixture"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getFakeEmail } from "@/jobs/database/obfuscateCollections"
 
 function generateRandomRomeCode() {
   // Générer une lettre aléatoire
@@ -181,7 +182,7 @@ export async function saveRecruiter(data: Partial<IRecruiter>) {
     email: `${randomUUID()}@email.fr`,
     jobs: [],
     origin: "origin",
-    opco: "opco",
+    opco: OPCOS_LABEL.MOBILITE,
     idcc: "idcc",
     status: RECRUITER_STATUS.ACTIF,
     naf_code: "naf_code",
@@ -228,7 +229,12 @@ export const saveAdminUserTest = async (userProps: Partial<IUserWithAccount> = {
   return { user, role }
 }
 
-export const saveEntrepriseUserTest = async (userProps: Partial<IUserWithAccount> = {}, roleProps: Partial<IRoleManagement> = {}, entrepriseProps: Partial<IEntreprise> = {}) => {
+export const saveEntrepriseUserTest = async (
+  userProps: Partial<IUserWithAccount> = {},
+  roleProps: Partial<IRoleManagement> = {},
+  entrepriseProps: Partial<IEntreprise> = {},
+  recruiterProps: Partial<IRecruiter> = {}
+) => {
   const user = await saveUserWithAccount(userProps)
   const entreprise = await saveEntreprise(entrepriseProps)
   const role = await saveRoleManagement({
@@ -250,6 +256,7 @@ export const saveEntrepriseUserTest = async (userProps: Partial<IUserWithAccount
           managed_by: user._id.toString(),
         },
       ],
+      ...recruiterProps,
     })
   )
   return { user, role, entreprise, recruiter }
@@ -279,22 +286,25 @@ export const saveCfaUserTest = async (userProps: Partial<IUserWithAccount> = {})
   return { user, role, cfa, recruiter }
 }
 
-export const saveOpcoUserTest = async (opco = OPCOS_LABEL.AKTO) => {
+export const validatedUserStatus = [
+  {
+    date: new Date(),
+    reason: "test",
+    status: UserEventType.VALIDATION_EMAIL,
+    validation_type: VALIDATION_UTILISATEUR.AUTO,
+  },
+  {
+    date: new Date(),
+    reason: "test",
+    status: UserEventType.ACTIF,
+    validation_type: VALIDATION_UTILISATEUR.AUTO,
+  },
+]
+
+export const saveOpcoUserTest = async (opco = OPCOS_LABEL.AKTO, email?: string) => {
   const user = await saveUserWithAccount({
-    status: [
-      {
-        date: new Date(),
-        reason: "test",
-        status: UserEventType.VALIDATION_EMAIL,
-        validation_type: VALIDATION_UTILISATEUR.AUTO,
-      },
-      {
-        date: new Date(),
-        reason: "test",
-        status: UserEventType.ACTIF,
-        validation_type: VALIDATION_UTILISATEUR.AUTO,
-      },
-    ],
+    status: validatedUserStatus,
+    email: email || getFakeEmail(),
   })
   const role = await saveRoleManagement({
     user_id: user._id,

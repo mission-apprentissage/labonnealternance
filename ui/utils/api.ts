@@ -4,7 +4,6 @@ import { IJobWritable, INewDelegations, INewSuperUser, IRoutes, removeUndefinedF
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { IEntrepriseJson } from "shared/models/entreprise.model"
-import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 
 import { publicConfig } from "@/config.public"
 
@@ -33,7 +32,6 @@ export const postFormulaire = (userId: string, form) => apiPost("/user/:userId/f
 export const updateFormulaire = (establishment_id: string, values) => apiPut("/formulaire/:establishment_id", { params: { establishment_id }, body: values })
 
 export const archiveFormulaire = (establishment_id: string) => apiDelete("/formulaire/:establishment_id", { params: { establishment_id } }).catch(errorHandler)
-export const archiveDelegatedFormulaire = (siret: string) => API.delete(`/formulaire/delegated/${siret}`).catch(errorHandler)
 
 /**
  * Offre API
@@ -61,19 +59,16 @@ export const getUser = (userId: string, organizationId: string = "unused") => ap
 export const getUserStatus = (userId: string) => apiGet("/user/status/:userId", { params: { userId } })
 export const getUserStatusByToken = (userId: string, token: string) =>
   apiGet("/user/status/:userId/by-token", { params: { userId }, headers: { authorization: `Bearer ${token}` } })
-export const updateUserValidationHistory = ({
-  userId,
-  organizationId,
-  reason,
-  status,
-  organizationType,
-}: {
-  userId: string
-  organizationId: string
-  status: AccessStatus
-  reason: string
-  organizationType: typeof AccessEntityType.ENTREPRISE | typeof AccessEntityType.CFA
-}) => apiPut("/user/:userId/organization/:organizationId/permission", { params: { userId, organizationId }, body: { organizationType, status, reason } }).catch(errorHandler)
+
+export const activateUserRole = (userId: string, organizationId: string) =>
+  apiPost("/user/:userId/organization/:organizationId/activate", { params: { userId, organizationId } }).catch(errorHandler)
+
+export const deactivateUserRole = (userId: string, organizationId: string, reason: string) =>
+  apiPost("/user/:userId/organization/:organizationId/deactivate", { params: { userId, organizationId }, body: { reason } }).catch(errorHandler)
+
+export const notifyNotMyOpcoUserRole = (userId: string, organizationId: string, reason: string) =>
+  apiPost("/user/:userId/organization/:organizationId/not-my-opco", { params: { userId, organizationId }, body: { reason } }).catch(errorHandler)
+
 export const createSuperUser = (user: INewSuperUser) => apiPost("/admin/users", { body: user })
 
 // Temporaire, en attendant d'ajuster le modèle pour n'avoir qu'une seul source de données pour les entreprises
@@ -86,6 +81,10 @@ export const updateEntreprise = async (userId: string, user: any) => {
 
 export const updateEntrepriseAdmin = async (userId: string, user: any, siret = "unused") => {
   await apiPut("/admin/users/:userId/organization/:siret", { params: { userId, siret }, body: user })
+}
+
+export const updateUser = async (userId: string, user: any) => {
+  await apiPut("/admin/users/:userId", { params: { userId }, body: user })
 }
 
 /**

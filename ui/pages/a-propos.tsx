@@ -61,7 +61,7 @@ const APropos = () => (
               </Text>{" "}
               intéressés par l'alternance à trouver une formation d’une part, et un contrat avec une entreprise d’autre part, en exposant et permettant aux candidat d'entrer en
               contact avec :
-              <UnorderedList my={4}>
+              <UnorderedList my={4} spacing={6}>
                 <ListItem>
                   Les formations en apprentissage issues du{" "}
                   <Link
@@ -76,7 +76,13 @@ const APropos = () => (
                 </ListItem>
                 <ListItem>
                   De nombreuses offres d’emploi en alternance : celles postées par les recruteurs directement sur notre plateforme, ainsi que sur les sites de nos partenaires (via
-                  API ou Widget).
+                  API ou Widget, cf.{" "}
+                  <NextLink legacyBehavior passHref href="/nos-donnees">
+                    <Link aria-label="Accès à nos données" variant="basicUnderlinedBlue">
+                      Nos données
+                    </Link>
+                  </NextLink>
+                  ).
                 </ListItem>
                 <ListItem>
                   Nous agrégeons également les offres en alternance de France travail et de ses{" "}

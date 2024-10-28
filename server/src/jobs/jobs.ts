@@ -29,8 +29,9 @@ import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollecti
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
 import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
+import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
 import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromComputedToJobsPartners"
-import { importHelloWork, importRawHelloWorkIntoComputedJobPartners } from "./offrePartenaire/importHelloWork"
+import { importHelloWorkRaw, importHelloWorkToComputed } from "./offrePartenaire/importHelloWork"
 import { importKelio } from "./offrePartenaire/importKelio"
 import { importRHAlternance } from "./offrePartenaire/importRHAlternance"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
@@ -415,17 +416,20 @@ export async function setupJobProcessor() {
       "migrations:create": {
         handler: async (job) => createMigration(job.payload as any),
       },
-      "import-hellowork": {
-        handler: async () => importHelloWork(),
+      "import-hellowork-raw": {
+        handler: async () => importHelloWorkRaw(),
       },
       "import-hellowork-to-computed": {
-        handler: async () => importRawHelloWorkIntoComputedJobPartners(),
+        handler: async () => importHelloWorkToComputed(),
       },
       "import-rhalternance": {
         handler: async () => importRHAlternance(),
       },
       "import-kelio": {
         handler: async () => importKelio(),
+      },
+      "fill-computed-jobs-partners": {
+        handler: async () => fillComputedJobsPartners(),
       },
       "import-computed-to-jobs-partners": {
         handler: async () => importFromComputedToJobsPartners(),

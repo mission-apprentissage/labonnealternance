@@ -319,7 +319,7 @@ export const zJobsRoutesV2 = {
       },
       securityScheme: {
         auth: "api-apprentissage",
-        access: "job:manage",
+        access: "api-apprentissage:jobs",
         resources: {},
       },
     },
@@ -406,7 +406,7 @@ export const zJobsRoutesV2 = {
       },
       securityScheme: {
         auth: "api-apprentissage",
-        access: "job:manage",
+        access: "api-apprentissage:jobs",
         resources: {
           jobPartner: [{ _id: { type: "params", key: "id" } }],
         },

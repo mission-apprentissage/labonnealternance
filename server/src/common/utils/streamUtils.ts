@@ -1,3 +1,5 @@
+import { Transform } from "stream"
+
 import { compose, transformData } from "oleoduc"
 import streamJson from "stream-json"
 // eslint-disable-next-line import/extensions
@@ -20,4 +22,25 @@ export function streamJsonArray() {
     streamers.streamArray(),
     transformData((data) => data.value)
   )
+}
+
+export const streamGroupByCount = (count: number) => {
+  let group: any[] = []
+  return new Transform({
+    objectMode: true,
+    transform(chunk, _encoding, callback) {
+      group.push(chunk)
+      if (group.length === count) {
+        this.push(group)
+        group = []
+      }
+      callback()
+    },
+    flush(callback) {
+      if (group.length > 0) {
+        this.push(group)
+      }
+      callback()
+    },
+  })
 }

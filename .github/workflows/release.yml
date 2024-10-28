@@ -169,6 +169,12 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      - name: Build sourcemaps
+        run: yarn build
+        env:
+          NEXT_PUBLIC_ENV: production
+          NEXT_PUBLIC_VERSION: ${{ needs.release.outputs.VERSION }}
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:

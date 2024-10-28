@@ -960,3 +960,10 @@ export const findFirstNonBlacklistedEmail = async (emails) => {
   }
   return null // All emails are blacklisted
 }
+
+/**
+ * retire les codes romes qui se terminent par 00 ou font moins de 5 caractères
+ */
+export const filterWrongRomes = (formation) => {
+  formation.rome_codes = formation.rome_codes.filter((rome_code) => rome_code.length === 5 && !rome_code.endsWith("00"))
+}
