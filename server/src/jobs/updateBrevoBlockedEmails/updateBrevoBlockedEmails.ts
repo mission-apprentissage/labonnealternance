@@ -1,6 +1,8 @@
+import { EApplicantRole } from "shared/constants/rdva"
 import SibApiV3Sdk from "sib-api-v3-sdk"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { BlackListOrigins } from "@/services/application.service"
 import { BrevoEventStatus } from "@/services/brevo.service"
 import { processBlacklistedEmail } from "@/services/emails.service"
 
@@ -48,7 +50,27 @@ const saveBlacklistEmails = async (contacts) => {
       }
 
       // identifier la source
-      const origin = ""
+      let origin: BlackListOrigins = BlackListOrigins.UNKNOWN
+
+      if (await getDbCollection("applications").findOne({ company_email: email })) {
+        origin = BlackListOrigins.SPONT
+      }
+
+      if (origin === BlackListOrigins.UNKNOWN && (await getDbCollection("applications").findOne({ applicant_email: email }))) {
+        origin = BlackListOrigins.SPONT_CANDIDAT
+      }
+
+      if (origin === BlackListOrigins.UNKNOWN && (await getDbCollection("users").findOne({ email, role: EApplicantRole.CANDIDAT }))) {
+        origin = BlackListOrigins.PRDV_CANDIDAT
+      }
+
+      if (origin === BlackListOrigins.UNKNOWN && (await getDbCollection("eligible_trainings_for_appointments").findOne({ lieu_formation_email: email }))) {
+        origin = BlackListOrigins.PRDV_CFA
+      }
+
+      if (origin === BlackListOrigins.UNKNOWN && (await getDbCollection("userswithaccounts").findOne({ email }))) {
+        origin = BlackListOrigins.USER_WITH_ACCOUNT
+      }
 
       await processBlacklistedEmail(email, origin, reason)
     }

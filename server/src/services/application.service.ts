@@ -78,10 +78,13 @@ type IJobOrCompany = { type: LBA_ITEM_TYPE.RECRUTEURS_LBA; job: ILbaCompany; rec
 
 export enum BlackListOrigins {
   SPONT = "candidature_spontanee",
+  SPONT_CANDIDAT = "candidature_spontanee_candidat",
   PRDV_CFA = "prise_de_rdv",
   PRDV_CANDIDAT = "candidat_prise_de_rdv",
   PRDV_INVITATION = "invitation_prise_de_rdv",
+  USER_WITH_ACCOUNT = "user_with_account",
   CAMPAIGN = "campaign",
+  UNKNOWN = "unknown",
 }
 
 /**
@@ -797,20 +800,30 @@ export const getApplicationByCompanyCount = async (sirets: ILbaCompany["siret"][
  * warns the applicant and returns true otherwise returns false
  */
 export const processApplicationHardbounceEvent = async (payload) => {
-  const { event, email } = payload
+  const { email } = payload
   const messageId = payload["message-id"]
 
-  // application
-  if (event === BrevoEventStatus.HARD_BOUNCE) {
-    const application = await findApplicationByMessageId({
-      messageId,
-      email,
-    })
+  const application = await findApplicationByMessageId({
+    messageId,
+    email,
+  })
 
-    if (application) {
-      await sendNotificationForApplicationHardbounce({ payload, application })
-      return true
-    }
+  if (application) {
+    await sendNotificationForApplicationHardbounce({ payload, application })
+    return true
+  }
+
+  return false
+}
+
+export const processApplicationCandidateHardbounceEvent = async (payload) => {
+  const { email } = payload
+  const messageId = payload["message-id"]
+
+  const application = await getDbCollection("applications").findOne({ applicant_email: email, to_applicant_message_id: messageId })
+
+  if (application) {
+    return true
   }
 
   return false

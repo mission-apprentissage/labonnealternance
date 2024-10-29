@@ -1,4 +1,10 @@
-import { addEmailToBlacklist, BlackListOrigins, processApplicationHardbounceEvent, removeEmailFromLbaCompanies } from "@/services/application.service"
+import {
+  addEmailToBlacklist,
+  BlackListOrigins,
+  processApplicationCandidateHardbounceEvent,
+  processApplicationHardbounceEvent,
+  removeEmailFromLbaCompanies,
+} from "@/services/application.service"
 import {
   isHardbounceEventFromAppointmentApplicant,
   isHardbounceEventFromAppointmentCfa,
@@ -42,6 +48,10 @@ export const processHardBounceWebhookEvent = async (payload: IBrevoWebhookEvent)
   if ([BrevoEventStatus.HARD_BOUNCE, BrevoEventStatus.BLOCKED, BrevoEventStatus.SPAM, BrevoEventStatus.UNSUBSCRIBED].includes(event)) {
     if (await processApplicationHardbounceEvent(payload)) {
       origin = BlackListOrigins.SPONT
+    }
+
+    if (await processApplicationCandidateHardbounceEvent(payload)) {
+      origin = BlackListOrigins.SPONT_CANDIDAT
     }
 
     if (await isHardbounceEventFromAppointmentCfa(payload)) {
