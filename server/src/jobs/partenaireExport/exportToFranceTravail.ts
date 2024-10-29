@@ -182,21 +182,17 @@ const getJobsToExport = async () => {
       geo_coordinates: { $nin: ["NOT FOUND", null] },
       job_update_date: { $gte: threshold },
       address_detail: { $ne: null },
+      rome_detail: { $exists: true },
     })
     .toArray()
 
   logger.info(`get info from ${offres.length} offers`)
   await asyncForEach(offres, async (offre) => {
     const cfa = offre.is_delegated ? await getDbCollection("cfas").findOne({ siret: offre.cfa_delegated_siret }) : null
-
-    if (typeof offre.rome_detail !== "string" && offre.rome_detail) {
-      offre.job_type.map(async (type) => {
-        if (offre.rome_detail && typeof offre.rome_detail !== "string") {
-          const cfaFields = cfa ? { address_detail: cfa.address_detail, establishment_raison_sociale: cfa.raison_sociale } : null
-          buffer.push({ ...offre, type, cfa: cfaFields })
-        }
-      })
-    }
+    offre.job_type.map(async (type) => {
+      const cfaFields = cfa ? { address_detail: cfa.address_detail, establishment_raison_sociale: cfa.raison_sociale } : null
+      buffer.push({ ...offre, type, cfa: cfaFields })
+    })
   })
 
   return buffer
