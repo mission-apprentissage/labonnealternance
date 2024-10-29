@@ -222,7 +222,6 @@ export const exportJobsToFranceTravail = async () => {
   try {
     const jobs = await getJobsToExport()
     await generateCsvFile(csvPath, jobs)
-    return
     logger.info("Send CSV file to France Travail")
     await sendCsvToFranceTravail(path.resolve(csvPath.pathname))
     await notifyToSlack({
