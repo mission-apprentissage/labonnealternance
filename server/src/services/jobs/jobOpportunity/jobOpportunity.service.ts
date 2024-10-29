@@ -354,7 +354,7 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IJobRes
           workplace_size: recruiter.establishment_size ?? null,
           workplace_address_label: recruiter.address!,
           workplace_geopoint: recruiter.geopoint!,
-          workplace_idcc: recruiter.idcc ? Number(recruiter.idcc) : null,
+          workplace_idcc: recruiter.idcc ? recruiter.idcc : null,
           workplace_opco: convertOpco(recruiter),
           workplace_naf_code: recruiter.naf_code ?? null,
           workplace_naf_label: recruiter.naf_label ?? null,
@@ -585,7 +585,7 @@ async function resolveWorkplaceDataFromSiret(workplace_siret: string, zodError: 
     workplace_naf_code: entrepriseData.naf_code ?? null,
     workplace_opco: zOpcoLabel.safeParse(opcoData?.opco).data ?? null,
     // En cas d'OPCO multiple on met une string invalide dans le champs idcc (getOpcoFromCfaDock)
-    workplace_idcc: opcoData?.idcc == null || Number.isNaN(parseInt(opcoData.idcc, 10)) ? null : parseInt(opcoData.idcc, 10),
+    workplace_idcc: opcoData?.idcc || null,
     workplace_size: entrepriseData.establishment_size ?? null,
   }
 }
