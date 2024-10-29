@@ -88,7 +88,6 @@ describe("findJobsOpportunities", () => {
         {
           rome_code: ["M1602"],
           rome_label: "Opérations administratives",
-          is_multi_published: true,
           job_status: JOB_STATUS.ACTIVE,
           job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
           job_creation_date: new Date("2021-01-01"),
@@ -110,7 +109,6 @@ describe("findJobsOpportunities", () => {
         {
           rome_code: ["M1602", "D1212"],
           rome_label: "Opérations administratives",
-          is_multi_published: true,
           job_status: JOB_STATUS.ACTIVE,
           job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
           job_creation_date: new Date("2022-01-01"),
@@ -132,7 +130,6 @@ describe("findJobsOpportunities", () => {
         {
           rome_code: ["D1209"],
           rome_label: "Opérations administratives",
-          is_multi_published: true,
           job_status: JOB_STATUS.ACTIVE,
           job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
           job_creation_date: new Date("2023-01-01"),
@@ -746,7 +743,6 @@ describe("findJobsOpportunities", () => {
               {
                 rome_code: ["M1602"],
                 rome_label: "Opérations Administratives",
-                is_multi_published: true,
                 job_status: JOB_STATUS.ACTIVE,
                 job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
                 job_expiration_date: new Date(),
@@ -790,7 +786,6 @@ describe("findJobsOpportunities", () => {
             {
               rome_code: ["M1602"],
               rome_label: "Opérations administratives",
-              is_multi_published: true,
               job_status: JOB_STATUS.ANNULEE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
               job_expiration_date: new Date(),
@@ -798,7 +793,6 @@ describe("findJobsOpportunities", () => {
             {
               rome_code: ["M1602"],
               rome_label: "Opérations administratives",
-              is_multi_published: true,
               job_status: JOB_STATUS.EN_ATTENTE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
               job_expiration_date: new Date(),
@@ -806,7 +800,6 @@ describe("findJobsOpportunities", () => {
             {
               rome_code: ["M1602"],
               rome_label: "Opérations administratives",
-              is_multi_published: true,
               job_status: JOB_STATUS.POURVUE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
               job_expiration_date: new Date(),
@@ -814,7 +807,6 @@ describe("findJobsOpportunities", () => {
             {
               rome_code: ["M1602"],
               rome_label: "Opérations administratives",
-              is_multi_published: true,
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
               job_expiration_date: new Date(),
@@ -822,7 +814,6 @@ describe("findJobsOpportunities", () => {
             {
               rome_code: ["M1602"],
               rome_label: "Opérations administratives",
-              is_multi_published: true,
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
               job_expiration_date: new Date("2024-01-01"),
@@ -863,7 +854,6 @@ describe("findJobsOpportunities", () => {
               {
                 rome_code: ["M1602"],
                 rome_label: "Opérations administratives",
-                is_multi_published: true,
                 job_status: JOB_STATUS.ACTIVE,
                 job_level_label: NIVEAUX_POUR_LBA["3 (CAP...)"],
                 job_expiration_date: new Date(),
@@ -871,7 +861,6 @@ describe("findJobsOpportunities", () => {
               {
                 rome_code: ["M1602"],
                 rome_label: "Opérations administratives",
-                is_multi_published: true,
                 job_status: JOB_STATUS.ACTIVE,
                 job_level_label: NIVEAUX_POUR_LBA["4 (BAC...)"],
                 job_expiration_date: new Date(),
@@ -912,46 +901,6 @@ describe("findJobsOpportunities", () => {
       })
     })
 
-    it("should returns only job with the multi published flag", async () => {
-      await getDbCollection("recruiters").insertOne(
-        generateRecruiterFixture({
-          establishment_siret: "11000001500013",
-          geopoint: parisFixture.centre,
-          status: RECRUITER_STATUS.ACTIF,
-          jobs: [
-            {
-              rome_code: ["M1602"],
-              rome_label: "Opérations administratives",
-              is_multi_published: false,
-              job_status: JOB_STATUS.ACTIVE,
-              job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-              job_expiration_date: new Date(),
-            },
-          ],
-          address_detail: {
-            code_insee_localite: parisFixture.code,
-          },
-          address: parisFixture.nom,
-        })
-      )
-
-      const results = await findJobsOpportunities(
-        {
-          longitude: parisFixture.centre.coordinates[0],
-          latitude: parisFixture.centre.coordinates[1],
-          radius: 30,
-          romes: ["M1602"],
-          rncp: null,
-        },
-        new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
-      )
-
-      const parseResult = ZJobsOpportunityResponse.safeParse(results)
-      expect.soft(parseResult.success).toBeTruthy()
-      expect(parseResult.error).toBeUndefined()
-      expect(results.jobs).toHaveLength(1)
-    })
-
     it("should limit the number of jobs to 150", async () => {
       const JOB_PER_RECRUITER = 10
 
@@ -959,7 +908,6 @@ describe("findJobsOpportunities", () => {
         const jobs = Array.from({ length: JOB_PER_RECRUITER }, () => ({
           rome_code: ["M1602"],
           rome_label: "Opérations Administratives",
-          is_multi_published: true,
           job_status: JOB_STATUS.ACTIVE,
           job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
           job_expiration_date: new Date(),
@@ -1008,7 +956,6 @@ describe("findJobsOpportunities", () => {
             {
               rome_code: ["C1110"],
               rome_label: "Souscription d'assurances",
-              is_multi_published: true,
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
               job_expiration_date: new Date(),
@@ -1066,7 +1013,6 @@ describe("findJobsOpportunities", () => {
             {
               rome_code: ["M1602"],
               rome_label: "Opérations Administratives",
-              is_multi_published: true,
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
               custom_geo_coordinates: `${marseilleFixture.centre.coordinates[1]},${marseilleFixture.centre.coordinates[0]}`,
@@ -1120,7 +1066,6 @@ describe("findJobsOpportunities", () => {
             {
               rome_code: ["M1602"],
               rome_label: "Opérations administratives",
-              is_multi_published: true,
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
               job_expiration_date: new Date(),
@@ -1128,7 +1073,6 @@ describe("findJobsOpportunities", () => {
             {
               rome_code: ["M1602"],
               rome_label: "Opérations administratives",
-              is_multi_published: true,
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
               job_expiration_date: new Date(),
@@ -1202,7 +1146,6 @@ describe("findJobsOpportunities", () => {
             {
               rome_code: ["M1602"],
               rome_label: "Opérations Administratives",
-              is_multi_published: true,
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
               job_expiration_date: new Date(),
@@ -1241,7 +1184,6 @@ describe("findJobsOpportunities", () => {
             {
               rome_code: ["M1602"],
               rome_label: "Opérations Administratives",
-              is_multi_published: true,
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
               job_expiration_date: new Date(),
@@ -1574,7 +1516,6 @@ describe("findJobsOpportunities", () => {
           {
             rome_code: ["D1209"],
             rome_label: "Vente de végétaux",
-            is_multi_published: true,
             job_status: JOB_STATUS.ACTIVE,
             job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
             job_creation_date: new Date("2021-01-01"),
@@ -1583,7 +1524,6 @@ describe("findJobsOpportunities", () => {
           {
             rome_code: ["D1209"],
             rome_label: "Vente de végétaux",
-            is_multi_published: true,
             job_status: JOB_STATUS.ACTIVE,
             job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
             job_creation_date: new Date("2024-01-01"),
@@ -1767,9 +1707,7 @@ describe("createJobOffer", () => {
   const identity = {
     email: "mail@mailType.com",
     organisation: "Some organisation",
-    habilitations: {
-      "jobs:write": true,
-    },
+    habilitations: { "applications:write": false, "appointments:write": false, "jobs:write": true },
   } as const satisfies IApiAlternanceTokenData
 
   const now = new Date("2024-06-18T00:00:00.000Z")
@@ -1892,9 +1830,7 @@ describe("updateJobOffer", () => {
   const identity = {
     email: "mail@mailType.com",
     organisation: "Some organisation",
-    habilitations: {
-      "jobs:write": true,
-    },
+    habilitations: { "applications:write": false, "appointments:write": false, "jobs:write": true },
   } as const satisfies IApiAlternanceTokenData
 
   const originalCreatedAt = new Date("2023-09-06T00:00:00.000+02:00")

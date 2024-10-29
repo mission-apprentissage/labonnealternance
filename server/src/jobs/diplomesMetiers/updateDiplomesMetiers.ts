@@ -1,6 +1,8 @@
+import { ObjectId } from "mongodb"
 import { ZDiplomesMetiers } from "shared/models"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { filterWrongRomes } from "@/services/formation.service"
 import { initializeCacheDiplomas } from "@/services/metiers.service"
 
 import { logger } from "../../common/logger"
@@ -48,13 +50,6 @@ const updateDiplomeMetier = ({ initial, toAdd }) => {
   return initial
 }
 
-/**
- * retire les codes romes qui se terminent par 00 ou font moins de 5 caractères
- */
-const filterWrongRomes = (formation) => {
-  formation.rome_codes = formation.rome_codes.filter((rome_code) => rome_code.length === 5 && !rome_code.endsWith("00"))
-}
-
 const getIntitulesFormations = async () => {
   const intitulesFormations = await getDbCollection("formationcatalogues")
     .find({}, { projection: { _id: 0, intitule_long: 1, rome_codes: 1, rncp_code: 1 } })
@@ -88,9 +83,13 @@ export default async function () {
   logger.info(`Début traitement`)
 
   await getIntitulesFormations()
+  const now = new Date()
 
   for (const k in diplomesMetiers) {
     diplomesMetiers[k].acronymes_intitule = buildAcronyms(diplomesMetiers[k].intitule_long)
+    diplomesMetiers[k]._id = new ObjectId()
+    diplomesMetiers[k].last_update_at = now
+    diplomesMetiers[k].created_at = now
 
     if (diplomesMetiers[k]?.codes_romes?.length) {
       const parsedDiplomeMetier = ZDiplomesMetiers.safeParse(diplomesMetiers[k])

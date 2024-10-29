@@ -8,7 +8,7 @@ import { notifyToSlack } from "../../common/utils/slackUtils"
 import dayjs from "../../services/dayjs.service"
 
 export const cancelOfferJob = async () => {
-  const today = dayjs().startOf("day").utc(true)
+  const today = dayjs().startOf("day").utc(true).toDate()
 
   const formulaires = await getDbCollection("recruiters")
     .find({

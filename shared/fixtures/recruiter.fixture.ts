@@ -9,10 +9,9 @@ export function generateJobFixture(data: Partial<IJob>): IJob {
   return {
     _id: new ObjectId(),
     job_start_date: new Date("2021-01-28T15:00:00.000Z"),
-    rome_code: [],
+    rome_code: ["M1602"], // linked by default to generateReferentielRome
     job_status: JOB_STATUS.ACTIVE,
     job_type: [TRAINING_CONTRACT_TYPE.APPRENTISSAGE],
-    is_multi_published: true,
     is_disabled_elligible: null,
     job_count: 1,
     ...data,

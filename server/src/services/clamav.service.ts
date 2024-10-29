@@ -81,26 +81,27 @@ export async function isClamavAvailable(): Promise<boolean> {
 }
 
 export async function isInfected(file: string): Promise<boolean> {
-  const onFinish = startSentryPerfRecording("clamav", "scan")
-  const clamav = await getClamav()
-  const decodedAscii = Readable.from(Buffer.from(file.substring(file.indexOf(";base64,") + 8), "base64").toString("ascii"))
-  const rs = Readable.from(decodedAscii)
-  try {
-    const { isInfected, viruses } = await clamav.scanStream(rs)
-    if (isInfected === null) {
-      throw internal("Unable to scan file for viruses", { viruses })
+  let _isInfected: boolean = false
+  await startSentryPerfRecording({ name: "clamav", operation: "scan" }, async () => {
+    const clamav = await getClamav()
+    const decodedAscii = Readable.from(Buffer.from(file.substring(file.indexOf(";base64,") + 8), "base64").toString("ascii"))
+    const rs = Readable.from(decodedAscii)
+    try {
+      const { isInfected, viruses } = await clamav.scanStream(rs)
+      if (isInfected === null) {
+        throw internal("Unable to scan file for viruses", { viruses })
+      }
+      if (isInfected) {
+        logger.error(`Virus detected ${viruses.toString()}`)
+        await notifyToSlack({ subject: "CLAMAV", message: `Virus detected ${viruses.toString()}`, error: true })
+      }
+      _isInfected = isInfected
+    } catch (error) {
+      handleClamavError()
+      const err = internal("Error scanning file for viruses")
+      err.cause = error
+      throw err
     }
-    if (isInfected) {
-      logger.error(`Virus detected ${viruses.toString()}`)
-      await notifyToSlack({ subject: "CLAMAV", message: `Virus detected ${viruses.toString()}`, error: true })
-    }
-    return isInfected
-  } catch (error) {
-    handleClamavError()
-    const err = internal("Error scanning file for viruses")
-    err.cause = error
-    throw err
-  } finally {
-    onFinish()
-  }
+  })
+  return _isInfected
 }
