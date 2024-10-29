@@ -1,8 +1,9 @@
 import { createWriteStream } from "fs"
 import path from "path"
-import { Readable } from "stream"
+import { Readable, Transform, pipeline } from "stream"
+import { promisify } from "util"
 
-import { oleoduc, transformData, transformIntoCSV } from "oleoduc"
+import { stringify } from "csv-stringify"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { JOB_STATUS } from "shared/models"
 
@@ -14,23 +15,30 @@ import { getDbCollection } from "../../common/utils/mongodbUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import dayjs from "../../services/dayjs.service"
 
+const pipelineAsync = promisify(pipeline)
+
 const regex = /^(.*) (\d{4,5}) (.*)$/
 const formatDate = (date) => dayjs(date).format("DD/MM/YYYY")
 const splitter = (str) => str.split(regex).filter(String)
+const removeFormatting = (text: string | null | undefined): null | string => {
+  if (!text?.length || text == undefined || text == null) {
+    return null
+  }
+  // Utiliser une expression régulière pour supprimer les balises HTML s'il y en a
+  let plainText = text.replace(/<\/?[^>]+(>|$)/g, "")
+  // Supprimer les puces et les numéros de liste
+  plainText = plainText.replace(/[-*•\d]\s+/g, "")
+  // Remplacer les multiples espaces par un seul espace
+  plainText = plainText.replace(/\s+/g, " ").trim()
+  return plainText
+}
 
-/**
- * @description format data into Pole Emploi specific fields
- * @param {object} offre
- * @returns {Promise<object>}
- */
-const formatToPe = async (offre) => {
+const formatData = (offre) => {
   //Récupération de l'appellation dans le rome_detail pour identifier le code OGR
   const appellation = offre.rome_detail.appellations.find((v) => v.libelle === offre.rome_appellation_label)
   const adresse = offre.address_detail
   const [latitude, longitude] = offre.geo_coordinates.split(",")
-
   const [rue, code_postal, ville] = offre.is_delegated && offre.cfa?.address_detail?.label ? splitter(offre.cfa.address_detail.label) : []
-
   const ntcCle = offre.type === "Apprentissage" ? "E2" : "FS"
 
   if (!appellation || !adresse || !latitude || !longitude) {
@@ -140,7 +148,7 @@ const formatToPe = async (offre) => {
     Type_mouvement: "C",
     Date_debut_contrat: formatDate(offre.job_start_date),
     Motif_suppression: null,
-    Description_entreprise: offre.job_description ?? null,
+    Description_entreprise: removeFormatting(offre.job_description),
     Off_etab_siret: offre.cfa_delegated_siret,
     Id_recruteur: null,
     Civ_correspondant: null,
@@ -164,53 +172,65 @@ const formatToPe = async (offre) => {
   }
 }
 
-/**
- * @description Generate a CSV with eligible offers for Pole Emploi integration
- */
-export const exportToFranceTravail = async (): Promise<void> => {
-  try {
-    const csvPath = new URL("./exportFT.csv", import.meta.url)
-    const buffer: any[] = []
-    const threshold = dayjs().subtract(30, "days").toDate()
-
-    // Retrieve only active offers
-    const offres: any[] = await getDbCollection("jobs")
-      .find({
-        job_status: JOB_STATUS.ACTIVE,
-        recruiterStatus: RECRUITER_STATUS.ACTIF,
-        geo_coordinates: { $nin: ["NOT FOUND", null] },
-        job_update_date: { $gte: threshold },
-        address_detail: { $ne: null },
-      })
-      .toArray()
-
-    logger.info(`get info from ${offres.length} offers...`)
-    await asyncForEach(offres, async (offre) => {
-      const cfa = offre.is_delegated ? await getDbCollection("cfas").findOne({ siret: offre.cfa_delegated_siret }) : null
-
-      if (typeof offre.rome_detail !== "string" && offre.rome_detail) {
-        offre.job_type.map(async (type) => {
-          if (offre.rome_detail && typeof offre.rome_detail !== "string") {
-            const cfaFields = cfa ? { address_detail: cfa.address_detail, establishment_raison_sociale: cfa.raison_sociale } : null
-            buffer.push({ ...offre, type, cfa: cfaFields })
-          }
-        })
-      }
+const getJobsToExport = async () => {
+  const buffer: any[] = []
+  const threshold = dayjs().subtract(30, "days").toDate()
+  const offres: any[] = await getDbCollection("jobs")
+    .find({
+      job_status: JOB_STATUS.ACTIVE,
+      recruiterStatus: RECRUITER_STATUS.ACTIF,
+      geo_coordinates: { $nin: ["NOT FOUND", null] },
+      job_update_date: { $gte: threshold },
+      address_detail: { $ne: null },
     })
+    .toArray()
 
-    logger.info("Start stream to CSV...")
-    await oleoduc(
-      Readable.from(buffer),
-      transformData((value) => formatToPe(value)),
-      transformIntoCSV({ separator: "|" }),
-      createWriteStream(csvPath)
-    )
+  logger.info(`get info from ${offres.length} offers`)
+  await asyncForEach(offres, async (offre) => {
+    const cfa = offre.is_delegated ? await getDbCollection("cfas").findOne({ siret: offre.cfa_delegated_siret }) : null
 
+    if (typeof offre.rome_detail !== "string" && offre.rome_detail) {
+      offre.job_type.map(async (type) => {
+        if (offre.rome_detail && typeof offre.rome_detail !== "string") {
+          const cfaFields = cfa ? { address_detail: cfa.address_detail, establishment_raison_sociale: cfa.raison_sociale } : null
+          buffer.push({ ...offre, type, cfa: cfaFields })
+        }
+      })
+    }
+  })
+
+  return buffer
+}
+
+const generateCsvFile = async (csvPath, jobs) => {
+  const source = Readable.from(jobs)
+  const stringifier = stringify({ header: true, encoding: "utf8", delimiter: "|", quoted: true })
+  const destination = createWriteStream(csvPath)
+  const transform = new Transform({
+    objectMode: true,
+    transform(chunk, encoding, callback) {
+      try {
+        const transformedChunk = formatData(chunk)
+        callback(null, transformedChunk)
+      } catch (error: any) {
+        callback(error)
+      }
+    },
+  })
+  logger.info("Start stream to CSV")
+  await pipelineAsync(source, transform, stringifier, destination)
+}
+
+export const exportJobsToFranceTravail = async () => {
+  const csvPath = new URL("./exportFT.csv", import.meta.url)
+  try {
+    const jobs = await getJobsToExport()
+    await generateCsvFile(csvPath, jobs)
+    logger.info("Send CSV file to France Travail")
     await sendCsvToFranceTravail(path.resolve(csvPath.pathname))
-
     await notifyToSlack({
       subject: "EXPORT FRANCE TRAVAIL",
-      message: `${buffer.length} offres transmises à France Travail`,
+      message: `${jobs.length} offres transmises à France Travail`,
     })
   } catch (err) {
     await notifyToSlack({
