@@ -1,6 +1,7 @@
 import SibApiV3Sdk from "sib-api-v3-sdk"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { BrevoEventStatus } from "@/services/brevo.service"
 import { processBlacklistedEmail } from "@/services/emails.service"
 
 import { logger } from "../../common/logger"
@@ -8,12 +9,48 @@ import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import config from "../../config"
 
+enum BrevoBlockedReasons {
+  UNSUBSCRIBED_VIA_MA = "unsubscribedViaMA",
+  UNSUBSCRIBED_VIA_EMAIL = "unsubscribedViaEmail",
+  UNSUBSCRIBED_VIA_API = "unsubscribedViaApi",
+  ADMIN_BLOCKED = "adminBlocked",
+  HARD_BOUNCE = "hardBounce",
+  SPAM = "contactFlaggedAsSpam",
+}
+
 const saveBlacklistEmails = async (contacts) => {
   for (let i = 0; i < contacts.length; ++i) {
     const email = contacts[i].email.toLowerCase()
+    const reasonCode: BrevoBlockedReasons = contacts[i].reason.code as BrevoBlockedReasons
     const blackListedEmail = await getDbCollection("emailblacklists").findOne({ email })
+
     if (!blackListedEmail) {
-      await processBlacklistedEmail(email, "brevo_spam")
+      let reason: BrevoEventStatus
+      switch (reasonCode) {
+        case BrevoBlockedReasons.UNSUBSCRIBED_VIA_API:
+        case BrevoBlockedReasons.UNSUBSCRIBED_VIA_EMAIL:
+        case BrevoBlockedReasons.UNSUBSCRIBED_VIA_MA: {
+          reason = BrevoEventStatus.UNSUBSCRIBED
+          break
+        }
+        case BrevoBlockedReasons.HARD_BOUNCE: {
+          reason = BrevoEventStatus.HARD_BOUNCE
+          break
+        }
+        case BrevoBlockedReasons.SPAM: {
+          reason = BrevoEventStatus.SPAM
+          break
+        }
+        default: {
+          reason = BrevoEventStatus.BLOCKED
+          break
+        }
+      }
+
+      // identifier la source
+      const origin = ""
+
+      await processBlacklistedEmail(email, origin, reason)
     }
   }
 }
