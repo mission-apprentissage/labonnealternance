@@ -592,11 +592,18 @@ async function resolveWorkplaceDataFromSiret(workplace_siret: string, zodError: 
     return null
   }
 
+  /*
+  --> s'assurer de l'info correcte sortie des lba, des ft et des matchas --> toutes variantes d'adresse
+  --> insérer les données correctes suite au fill from siret
+  --> ajouter le fill from ban
+  --> migration (aïe, compliqué, suppression des éléments et lancement des jobs ?)
+  */
+
   return {
     workplace_geopoint: entrepriseData.geopoint,
     workplace_address: {
-      city: "",
-      street: "",
+      city: entrepriseData.address_detail.commune,
+      street: entrepriseData.address_detail.l4, // vérifier champ
       zipcode: "",
       country: "",
     },

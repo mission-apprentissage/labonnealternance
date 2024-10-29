@@ -98,7 +98,7 @@ describe("helloWorkJobToJobsPartners", () => {
       workplace_address: {
         zipcode: "69100",
         city: "VILLEURBANNE",
-        country: "FRANCE",
+        country: "France",
         street: "",
       },
       workplace_geopoint: {

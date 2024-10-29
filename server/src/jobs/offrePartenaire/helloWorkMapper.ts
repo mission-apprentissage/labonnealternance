@@ -27,6 +27,7 @@ export const ZHelloWorkJob = z
     address: z.string().nullish(),
     postal_code: z.string().nullish(),
     city: z.string().nullish(),
+    country: z.string().nullish(),
     geoloc: z.string().nullish(),
     url: extensions.url(),
   })
@@ -82,6 +83,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     url,
     updated_date,
     postal_code,
+    country,
   } = job
   const contractDuration: number | null = parseContractDuration(job)
   const { latitude, longitude } = geolocToLatLon(geoloc)
@@ -130,7 +132,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     workplace_address: {
       zipcode: postal_code || null,
       city: city || null,
-      country: null,
+      country: country || null,
       street: null,
     },
     workplace_geopoint:
