@@ -1,4 +1,4 @@
-import { addEmailToBlacklist, processApplicationHardbounceEvent, removeEmailFromLbaCompanies } from "@/services/application.service"
+import { addEmailToBlacklist, BlackListOrigins, processApplicationHardbounceEvent, removeEmailFromLbaCompanies } from "@/services/application.service"
 import {
   isHardbounceEventFromAppointmentApplicant,
   isHardbounceEventFromAppointmentCfa,
@@ -37,23 +37,23 @@ type IBrevoWebhookEvent = {
 export const processHardBounceWebhookEvent = async (payload: IBrevoWebhookEvent) => {
   const { event, email } = payload
 
-  let origin = "campaign"
+  let origin = BlackListOrigins.CAMPAIGN
 
   if ([BrevoEventStatus.HARD_BOUNCE, BrevoEventStatus.BLOCKED, BrevoEventStatus.SPAM, BrevoEventStatus.UNSUBSCRIBED].includes(event)) {
     if (await processApplicationHardbounceEvent(payload)) {
-      origin = "candidature_spontanee"
+      origin = BlackListOrigins.SPONT
     }
 
     if (await isHardbounceEventFromAppointmentCfa(payload)) {
-      origin = "prise_de_rdv"
+      origin = BlackListOrigins.PRDV_CFA
     }
 
     if (await isHardbounceEventFromAppointmentApplicant(payload)) {
-      origin = "candidat_prise_de_rdv"
+      origin = BlackListOrigins.PRDV_CANDIDAT
     }
 
     if (await isHardbounceEventFromEtablissement(payload)) {
-      origin = "invitation_prise_de_rdv"
+      origin = BlackListOrigins.PRDV_INVITATION
     }
 
     await processBlacklistedEmail(email, origin, event)
@@ -62,7 +62,7 @@ export const processHardBounceWebhookEvent = async (payload: IBrevoWebhookEvent)
   }
 }
 
-export const processBlacklistedEmail = async (email: string, origin: string, event: BrevoEventStatus) => {
+export const processBlacklistedEmail = async (email: string, origin: BlackListOrigins, event: BrevoEventStatus) => {
   await Promise.all([
     addEmailToBlacklist(email, origin, event),
     removeEmailFromLbaCompanies(email),

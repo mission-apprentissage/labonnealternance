@@ -76,6 +76,14 @@ const images: object = {
 
 type IJobOrCompany = { type: LBA_ITEM_TYPE.RECRUTEURS_LBA; job: ILbaCompany; recruiter: null } | { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA; job: IJob; recruiter: IRecruiter }
 
+export enum BlackListOrigins {
+  SPONT = "candidature_spontanee",
+  PRDV_CFA = "prise_de_rdv",
+  PRDV_CANDIDAT = "candidat_prise_de_rdv",
+  PRDV_INVITATION = "invitation_prise_de_rdv",
+  CAMPAIGN = "campaign",
+}
+
 /**
  * @description Get applications by job id
  */
@@ -99,7 +107,7 @@ export const isEmailBlacklisted = async (email: string): Promise<boolean> => Boo
  * @param {string} blacklistingOrigin
  * @return {Promise<void>}
  */
-export const addEmailToBlacklist = async (email: string, blacklistingOrigin: string): Promise<void> => {
+export const addEmailToBlacklist = async (email: string, blacklistingOrigin: BlackListOrigins, event: BrevoEventStatus): Promise<void> => {
   try {
     z.string().email().parse(email)
 
@@ -108,7 +116,7 @@ export const addEmailToBlacklist = async (email: string, blacklistingOrigin: str
       {
         $set: {
           email,
-          blacklisting_origin: blacklistingOrigin,
+          blacklisting_origin: `${blacklistingOrigin} (${event})`,
         },
         $setOnInsert: { _id: new ObjectId(), created_at: new Date() },
       },
