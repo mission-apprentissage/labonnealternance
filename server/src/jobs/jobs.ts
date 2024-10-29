@@ -35,7 +35,7 @@ import { importHelloWorkRaw, importHelloWorkToComputed } from "./offrePartenaire
 import { importKelio } from "./offrePartenaire/importKelio"
 import { importRHAlternance } from "./offrePartenaire/importRHAlternance"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
-import { exportToFranceTravail } from "./partenaireExport/exportToFranceTravail"
+import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
 import { importReferentielOnisep } from "./rdv/importReferentielOnisep"
@@ -98,7 +98,7 @@ export async function setupJobProcessor() {
           },
           "Envoi des offres à France Travail": {
             cron_string: "30 5 * * *",
-            handler: config.env === "production" ? () => exportToFranceTravail() : () => Promise.resolve(0),
+            handler: config.env === "production" ? () => exportJobsToFranceTravail() : () => Promise.resolve(0),
           },
           "Mise à jour des recruteurs en erreur": {
             cron_string: "10 0 * * *",
@@ -298,7 +298,7 @@ export async function setupJobProcessor() {
         handler: async () => opcoReminderJob(),
       },
       "pe:offre:export": {
-        handler: async () => updateSiretInfosInError(),
+        handler: async () => exportJobsToFranceTravail(),
       },
       "siret:inError:update": {
         handler: async () => updateSiretInfosInError(),

@@ -9373,6 +9373,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"csv-stringify@npm:^6.5.1":
+  version: 6.5.1
+  resolution: "csv-stringify@npm:6.5.1"
+  checksum: 5eb8167ee944f5328c53c733d8c4b1eea88fb9e510abec430e2fcb4be6c4ce008b92e90da7825d424fe74d22c85405add7f89b9dcf82ffe2bf0a1cf31536057a
+  languageName: node
+  linkType: hard
+
 "cyclist@npm:1.0.1":
   version: 1.0.1
   resolution: "cyclist@npm:1.0.1"
@@ -20483,6 +20490,7 @@ __metadata:
     convert-csv-to-json: ^0.0.15
     cron-parser: ^4.9.0
     csv-parse: ^5.5.0
+    csv-stringify: ^6.5.1
     date-fns: ^2.30.0
     dayjs: ^1.11.10
     dotenv: ^16.3.1

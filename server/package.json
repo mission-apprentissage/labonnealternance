@@ -51,6 +51,7 @@
     "convert-csv-to-json": "^0.0.15",
     "cron-parser": "^4.9.0",
     "csv-parse": "^5.5.0",
+    "csv-stringify": "^6.5.1",
     "date-fns": "^2.30.0",
     "dayjs": "^1.11.10",
     "dotenv": "^16.3.1",
