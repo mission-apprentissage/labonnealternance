@@ -4,7 +4,7 @@ import { describe, expectTypeOf, it } from "vitest"
 import { OPCOS_LABEL, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
 
 import { JOB_STATUS_ENGLISH } from "./job.model.js"
-import { IJobsPartnersWritableApi, IJobsPartnersOfferApi, IJobsPartnersRecruiterApi, IJobsPartnersWritableApiInput } from "./jobsPartners.model.js"
+import { IJobsPartnersOfferApi, IJobsPartnersRecruiterApi, IJobsPartnersWritableApi, IJobsPartnersWritableApiInput } from "./jobsPartners.model.js"
 
 type IJobWorkplaceExpected = {
   workplace_siret: string | null
@@ -19,7 +19,7 @@ type IJobWorkplaceExpected = {
     type: "Point"
     coordinates: [number, number]
   }
-  workplace_idcc: number | null
+  workplace_idcc: string | null
   workplace_opco: OPCOS_LABEL | null
   workplace_naf_code: string | null
   workplace_naf_label: string | null
