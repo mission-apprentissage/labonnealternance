@@ -10,8 +10,7 @@ function getOptions(): Sentry.NodeOptions {
     profilesSampleRate: config.env === "production" ? 0.1 : 1.0,
     environment: config.env,
     release: config.version,
-    enabled: true,
-    debug: true,
+    enabled: config.env !== "local",
     dsn: config.serverSentryDsn,
     integrations: [
       Sentry.httpIntegration(),
