@@ -77,11 +77,11 @@ const images: object = {
 type IJobOrCompany = { type: LBA_ITEM_TYPE.RECRUTEURS_LBA; job: ILbaCompany; recruiter: null } | { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA; job: IJob; recruiter: IRecruiter }
 
 export enum BlackListOrigins {
-  SPONT = "candidature_spontanee",
+  SPONT = "candidature_spontanee_recruteur",
   SPONT_CANDIDAT = "candidature_spontanee_candidat",
-  PRDV_CFA = "prise_de_rdv",
-  PRDV_CANDIDAT = "candidat_prise_de_rdv",
-  PRDV_INVITATION = "invitation_prise_de_rdv",
+  PRDV_CFA = "prise_de_rdv_CFA",
+  PRDV_CANDIDAT = "prise_de_rdv_candidat",
+  PRDV_INVITATION = "prise_de_rdv_invitation",
   USER_WITH_ACCOUNT = "user_with_account",
   CAMPAIGN = "campaign",
   UNKNOWN = "unknown",
