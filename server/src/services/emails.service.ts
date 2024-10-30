@@ -30,7 +30,8 @@ export type IBrevoWebhookEvent = {
   id: number
   date: string
   "message-id": string
-  reason: string
+  reason: string | undefined
+  subject: string | undefined
   tag: string
   sending_ip: string
   ts_epoch: number

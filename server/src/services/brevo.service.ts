@@ -20,6 +20,10 @@ export const enum BrevoEventStatus {
   BLOCKED = "blocked",
   SPAM = "spam",
   UNSUBSCRIBED = "unsubscribed",
+  DELIVRE = "delivered",
+  ENVOYE = "requete",
+  UNIQUE_OPENED = "unique_opened",
+  CLIQUE = "click",
 }
 
 emailWebhook = {
