@@ -83,6 +83,8 @@ fileignoreconfig:
   checksum: 38021ae663db3a146c848a8d691c0c1bc9bb262a80a6f2dedf9fcdb372eef3ac
 - filename: server/src/services/eligibleTrainingsForAppointment.service.ts
   checksum: 45f0984c6a79320da8aa2fa03c8ea001de0176b88c7ca05e35e385da8f98e218
+- filename: server/src/services/emails.service.test.ts
+  checksum: 9b7c80b04fddd1b90523a0178fe55b4787411af6f022730e28b75445a9f052fc
 - filename: server/src/services/formulaire.service.test.ts
   checksum: 0b57b45fbf40bdbee16a3b61ad6d725532fa067a8c7baf3710352fbeb2ab059a
 - filename: server/src/services/formulaire.service.ts
