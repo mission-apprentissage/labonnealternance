@@ -140,7 +140,7 @@ fileignoreconfig:
 - filename: shared/fixtures/application.fixture.ts
   checksum: 212b539cf9613a2f5565d0d4c3e5f5f92f5a7af2aff428d55d60ff14db357ef0
 - filename: shared/fixtures/appointment.fixture.ts
-  checksum: 9090cddf673370dec0a6196d368ac1e99f8922feb1e55ada277c1e0339bdb016
+  checksum: 8b894b4059d8f7531e26f249901b83dbec433d4e660c0eca193c8e61572b3ae0
 - filename: shared/fixtures/recruiter.fixture.ts
   checksum: c540cb13c2235d69c13e1964e3391b9c935bf7991dafe2cc21e9965c974378e6
 - filename: shared/fixtures/referentiel/onisep.fixture.ts

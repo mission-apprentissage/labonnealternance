@@ -1,5 +1,6 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { generateApplicationFixture } from "shared/fixtures/application.fixture"
+import { generateAppointmentFixture } from "shared/fixtures/appointment.fixture"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -123,10 +124,38 @@ describe("email blaklist events", () => {
     )
   })
 
+  //UNSUB + prdv cfa
+
+  it("Adresse CFA PRDV with Unsubscribe should register prise_de_rdv_CFA (unsubscribed)", async () => {
+    await getDbCollection("appointments").insertOne(
+      generateAppointmentFixture({
+        to_cfa_mails: [
+          {
+            campaign: "CANDIDAT_APPOINTMENT",
+            status: null,
+            message_id: fakeMessageId_1,
+            email_sent_at: new Date(),
+          },
+        ],
+      })
+    )
+    baseWebHookPayload.event = BrevoEventStatus.UNSUBSCRIBED
+    baseWebHookPayload["message-id"] = fakeMessageId_1
+
+    await processHardBounceWebhookEvent(baseWebHookPayload)
+
+    const blEvent = await getDbCollection("emailblacklists").findOne({ email: blacklistedEmail })
+    expect.soft(blEvent).toEqual(
+      expect.objectContaining({
+        blacklisting_origin: `${BlackListOrigins.PRDV_CFA} (${BrevoEventStatus.UNSUBSCRIBED})`,
+        email: blacklistedEmail,
+      })
+    )
+  })
+
   /*
 
     ----
-  BrevoEventStatus.BLOCKED + candidat existant
   --> event candidat (blocked)
 
         if (origin === BlackListOrigins.UNKNOWN && (await getDbCollection("applications").findOne({ applicant_email: email }))) {
@@ -141,7 +170,7 @@ describe("email blaklist events", () => {
   ----
 
   ----
-  UNSUB + prdv cfa
+  
   --> event prdv cfa (unsub) + etfa id avec referrers =  [], lieu_formation_email =  ""
   if (origin === BlackListOrigins.UNKNOWN && (await getDbCollection("eligible_trainings_for_appointments").findOne({ lieu_formation_email: email }))) {
         origin = BlackListOrigins.PRDV_CFA
