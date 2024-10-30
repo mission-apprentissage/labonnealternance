@@ -1,6 +1,7 @@
 import { badRequest, internal, notFound, tooManyRequests } from "@hapi/boom"
 import { isEmailBurner } from "burner-email-providers"
 import dayjs from "dayjs"
+import { fileTypeFromBuffer } from "file-type"
 import { ObjectId } from "mongodb"
 import {
   ApplicationScanStatus,
@@ -18,7 +19,7 @@ import {
 } from "shared"
 import { ApplicantIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { getDirectJobPath, LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, getDirectJobPath, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 import { ITrackingCookies } from "shared/models/trafficSources.model"
@@ -194,6 +195,25 @@ export const sendApplication = async ({
   }
 }
 
+async function validateApplicationFileType(base64String: string) {
+  // Remove the data URL part if it's present
+  const base64Data = base64String.replace(/^data:[^;]+;base64,/, "")
+  // Convert base64 string to a buffer
+  const buffer = Buffer.from(base64Data, "base64")
+  // Get the file type from the buffer
+  const type = await fileTypeFromBuffer(buffer)
+
+  if (!type) {
+    sentryCaptureException("Application file type could not be determined", { extra: { responseData: base64Data } })
+    throw badRequest(BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED)
+  }
+
+  if (!["pdf", "docx", "doc"].includes(type?.ext)) {
+    sentryCaptureException("Application file type not supported", { extra: { responseData: type } })
+    throw badRequest(BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED)
+  }
+}
+
 /**
  * Send an application
  */
@@ -207,6 +227,8 @@ export const sendApplicationV2 = async ({
   source?: ITrackingCookies
 }): Promise<{ _id: ObjectId }> => {
   let lbaJob: IJobOrCompany = { type: null as any, job: null as any, recruiter: null }
+
+  await validateApplicationFileType(newApplication.applicant_file_content)
 
   if (isEmailBurner(newApplication.applicant_email)) {
     throw badRequest(BusinessErrorCodes.BURNER)
