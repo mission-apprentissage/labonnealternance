@@ -24,7 +24,7 @@ export const processWebhookEvent = async (payload) => {
     await processAppointmentToApplicantWebhookEvent(payload)
   }
 }
-type IBrevoWebhookEvent = {
+export type IBrevoWebhookEvent = {
   event: BrevoEventStatus
   email: string
   id: number
@@ -34,7 +34,7 @@ type IBrevoWebhookEvent = {
   tag: string
   sending_ip: string
   ts_epoch: number
-  template_id: string
+  template_id: number
 }
 
 /**
