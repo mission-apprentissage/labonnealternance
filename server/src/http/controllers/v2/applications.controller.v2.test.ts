@@ -4,6 +4,7 @@ import { ObjectId } from "mongodb"
 import { IApplicationApiJobId, IApplicationApiRecruteurId, JOB_STATUS } from "shared"
 import { NIVEAUX_POUR_LBA, RECRUITER_STATUS } from "shared/constants"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { applicationTestFile } from "shared/fixtures/application.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { generateLbaCompanyFixture } from "shared/fixtures/recruteurLba.fixture"
 import { parisFixture } from "shared/fixtures/referentiel/commune.fixture"
@@ -119,7 +120,7 @@ describe("POST /v2/application", () => {
   it("Return 202 and create an application using a recruter lba", async () => {
     const body: IApplicationApiRecruteurId = {
       applicant_file_name: "cv.pdf",
-      applicant_file_content: "data:application/pdf;base64,",
+      applicant_file_content: applicationTestFile,
       applicant_email: "jeam.dupont@mail.com",
       applicant_first_name: "Jean",
       applicant_last_name: "Dupont",
@@ -175,7 +176,7 @@ describe("POST /v2/application", () => {
     const job = recruiter.jobs[0]
     const body: IApplicationApiJobId = {
       applicant_file_name: "cv.pdf",
-      applicant_file_content: "data:application/pdf;base64,",
+      applicant_file_content: applicationTestFile,
       applicant_email: "jeam.dupont@mail.com",
       applicant_first_name: "Jean",
       applicant_last_name: "Dupont",

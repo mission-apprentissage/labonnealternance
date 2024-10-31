@@ -5,6 +5,7 @@ import { ObjectId } from "bson"
 import dayjs from "dayjs"
 import { RECRUITER_STATUS } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { applicationTestFile } from "shared/fixtures/application.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { IReferentielRome, JOB_STATUS } from "shared/models"
@@ -23,7 +24,7 @@ const fakeApplication = {
   applicant_phone: "0125252525",
   message: "some blahblahblah",
   applicant_file_name: "cv.pdf",
-  applicant_file_content: "aaa",
+  applicant_file_content: applicationTestFile,
 }
 describe("Sending application", () => {
   beforeEach(async () => {

@@ -354,7 +354,7 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IJobRes
           workplace_size: recruiter.establishment_size ?? null,
           workplace_address_label: recruiter.address!,
           workplace_geopoint: recruiter.geopoint!,
-          workplace_idcc: recruiter.idcc ? Number(recruiter.idcc) : null,
+          workplace_idcc: recruiter.idcc ? (Number.isNaN(parseInt(recruiter.idcc, 10)) ? null : parseInt(recruiter.idcc, 10)) : null,
           workplace_opco: convertOpco(recruiter),
           workplace_naf_code: recruiter.naf_code ?? null,
           workplace_naf_label: recruiter.naf_label ?? null,
