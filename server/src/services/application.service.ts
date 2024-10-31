@@ -208,7 +208,7 @@ async function validateApplicationFileType(base64String: string) {
     throw badRequest(BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED)
   }
 
-  if (!["pdf", "docx", "doc"].includes(type?.ext)) {
+  if (!["pdf", "docx"].includes(type?.ext)) {
     sentryCaptureException("Application file type not supported", { extra: { responseData: type } })
     throw badRequest(BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED)
   }
