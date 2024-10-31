@@ -375,7 +375,6 @@ export const getSomeFtJobs = async ({ romes, insee, radius, latitude, longitude,
 export const getFtJobFromId = async ({ id, caller }: { id: string; caller: string | undefined }): Promise<{ peJobs: ILbaItemFtJob[] }> => {
   try {
     const job = await getFtJob(id)
-
     if (job.status === 204 || job.data === "") {
       throw notFound()
     }
