@@ -1,39 +1,14 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { generateApplicationFixture } from "shared/fixtures/application.fixture"
-import { generateAppointmentFixture } from "shared/fixtures/appointment.fixture"
+import { generateAppointmentFixture, generateEligibleTrainingEstablishmentFixture } from "shared/fixtures/appointment.fixture"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { BrevoBlockedReasons, saveBlacklistEmails } from "@/jobs/updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 
 import { BlackListOrigins } from "./application.service"
 import { BrevoEventStatus } from "./brevo.service"
 import { IBrevoWebhookEvent, processHardBounceWebhookEvent } from "./emails.service"
-
-/*
-  expect.soft(result).toStrictEqual({
-      active: true,
-      siret: "58006820882692",
-      enseigne: "fake_company_name",
-      phone: "",
-      email: "",
-    })
-
-    const modifiedRecruteurLba = await getDbCollection("recruteurslba").findOne({ siret: "58006820882692" })
-    expect.soft(modifiedRecruteurLba).toEqual(
-      expect.objectContaining({
-        phone: "",
-        email: "",
-      })
-    )
-
-    let eventCount = await getDbCollection("recruteurlbaupdateevents").countDocuments({ siret: "58006820882692", event: ERecruteurLbaUpdateEventType.DELETE_PHONE })
-    expect.soft(eventCount).toEqual(1)
-
-    eventCount = await getDbCollection("recruteurlbaupdateevents").countDocuments({ siret: "58006820882692", event: ERecruteurLbaUpdateEventType.DELETE_EMAIL })
-    expect.soft(eventCount).toEqual(1)
-
-
-*/
 
 async function cleanTest() {
   await getDbCollection("emailblacklists").deleteMany({})
@@ -49,8 +24,6 @@ describe("email blaklist events", () => {
   useMongo()
 
   beforeEach(async () => {
-    //await cleanTest()
-
     return async () => {
       await cleanTest()
     }
@@ -74,6 +47,15 @@ describe("email blaklist events", () => {
     template_id: 1,
   }
 
+  const baseBlockedAddress = [
+    {
+      email: blacklistedEmail,
+      reason: {
+        code: BrevoBlockedReasons.ADMIN_BLOCKED,
+      },
+    },
+  ]
+
   it("Non 'blocked' event shoud throw an error", async () => {
     baseWebHookPayload.event = BrevoEventStatus.DELIVRE
     await expect.soft(processHardBounceWebhookEvent(baseWebHookPayload)).rejects.toThrow("Non hardbounce event received on hardbounce webhook route")
@@ -87,6 +69,18 @@ describe("email blaklist events", () => {
     expect.soft(blEvent).toEqual(
       expect.objectContaining({
         blacklisting_origin: `${BlackListOrigins.CAMPAIGN} (${BrevoEventStatus.HARD_BOUNCE})`,
+        email: blacklistedEmail,
+      })
+    )
+  })
+
+  it("Unidentified blocked should register unknown origin", async () => {
+    await saveBlacklistEmails(baseBlockedAddress)
+
+    const blEvent = await getDbCollection("emailblacklists").findOne({ email: blacklistedEmail })
+    expect.soft(blEvent).toEqual(
+      expect.objectContaining({
+        blacklisting_origin: `${BlackListOrigins.UNKNOWN} (${BrevoEventStatus.BLOCKED})`,
         email: blacklistedEmail,
       })
     )
@@ -124,8 +118,6 @@ describe("email blaklist events", () => {
     )
   })
 
-  //UNSUB + prdv cfa
-
   it("Adresse CFA PRDV with Unsubscribe should register prise_de_rdv_CFA (unsubscribed)", async () => {
     await getDbCollection("appointments").insertOne(
       generateAppointmentFixture({
@@ -148,6 +140,53 @@ describe("email blaklist events", () => {
     expect.soft(blEvent).toEqual(
       expect.objectContaining({
         blacklisting_origin: `${BlackListOrigins.PRDV_CFA} (${BrevoEventStatus.UNSUBSCRIBED})`,
+        email: blacklistedEmail,
+      })
+    )
+  })
+
+  it("Adresse Candidat PRDV with hardbounce should register prise_de_rdv_candidat (hardbounce)", async () => {
+    await getDbCollection("appointments").insertOne(
+      generateAppointmentFixture({
+        to_applicant_mails: [
+          {
+            campaign: "CANDIDAT_APPOINTMENT",
+            status: null,
+            message_id: fakeMessageId_1,
+            email_sent_at: new Date(),
+          },
+        ],
+      })
+    )
+    baseWebHookPayload.event = BrevoEventStatus.HARD_BOUNCE
+    baseWebHookPayload["message-id"] = fakeMessageId_1
+
+    await processHardBounceWebhookEvent(baseWebHookPayload)
+
+    const blEvent = await getDbCollection("emailblacklists").findOne({ email: blacklistedEmail })
+    expect.soft(blEvent).toEqual(
+      expect.objectContaining({
+        blacklisting_origin: `${BlackListOrigins.PRDV_CANDIDAT} (${BrevoEventStatus.HARD_BOUNCE})`,
+        email: blacklistedEmail,
+      })
+    )
+  })
+
+  it("Adresse campagne PRDV with SPAM should register prise_de_rdv_invitation (SPAM)", async () => {
+    await getDbCollection("etablissements").insertOne(
+      generateEligibleTrainingEstablishmentFixture({
+        to_CFA_invite_optout_last_message_id: fakeMessageId_1,
+      })
+    )
+    baseWebHookPayload.event = BrevoEventStatus.HARD_BOUNCE
+    baseWebHookPayload["message-id"] = fakeMessageId_1
+
+    await processHardBounceWebhookEvent(baseWebHookPayload)
+
+    const blEvent = await getDbCollection("emailblacklists").findOne({ email: blacklistedEmail })
+    expect.soft(blEvent).toEqual(
+      expect.objectContaining({
+        blacklisting_origin: `${BlackListOrigins.PRDV_INVITATION} (${BrevoEventStatus.HARD_BOUNCE})`,
         email: blacklistedEmail,
       })
     )
@@ -178,7 +217,6 @@ describe("email blaklist events", () => {
   ----
 
   ----
-  Hardbounce + prdv candidat 
   --> event prdv cand (harbbounce) + users avec email-blacklist-par-lba%
 
    if (origin === BlackListOrigins.UNKNOWN && (await getDbCollection("users").findOne({ email, role: EApplicantRole.CANDIDAT }))) {

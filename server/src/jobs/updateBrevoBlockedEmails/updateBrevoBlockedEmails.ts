@@ -11,7 +11,7 @@ import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import config from "../../config"
 
-enum BrevoBlockedReasons {
+export enum BrevoBlockedReasons {
   UNSUBSCRIBED_VIA_MA = "unsubscribedViaMA",
   UNSUBSCRIBED_VIA_EMAIL = "unsubscribedViaEmail",
   UNSUBSCRIBED_VIA_API = "unsubscribedViaApi",
@@ -20,7 +20,7 @@ enum BrevoBlockedReasons {
   SPAM = "contactFlaggedAsSpam",
 }
 
-const saveBlacklistEmails = async (contacts) => {
+export const saveBlacklistEmails = async (contacts) => {
   for (let i = 0; i < contacts.length; ++i) {
     const email = contacts[i].email.toLowerCase()
     const reasonCode: BrevoBlockedReasons = contacts[i].reason.code as BrevoBlockedReasons
