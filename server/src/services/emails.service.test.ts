@@ -1,6 +1,9 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
+import { EApplicantRole } from "shared/constants/rdva"
 import { generateApplicationFixture } from "shared/fixtures/application.fixture"
-import { generateAppointmentFixture, generateEligibleTrainingEstablishmentFixture } from "shared/fixtures/appointment.fixture"
+import { generateAppointmentFixture, generateEligibleTrainingEstablishmentFixture, generateEligibleTrainingFixture } from "shared/fixtures/appointment.fixture"
+import { generateUserFixture } from "shared/fixtures/user.fixture"
+import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -97,6 +100,79 @@ describe("email blaklist events", () => {
     expect.soft(blEvent).toEqual(
       expect.objectContaining({
         blacklisting_origin: `${BlackListOrigins.SPONT_CANDIDAT} (${BrevoEventStatus.BLOCKED})`,
+        email: blacklistedEmail,
+      })
+    )
+  })
+
+  it("Unsubscribed variation events should register correct origin with (unsubscribed) reason", async () => {
+    baseBlockedAddress[0].reason.code = BrevoBlockedReasons.UNSUBSCRIBED_VIA_API
+    await getDbCollection("applications").insertOne(generateApplicationFixture({ applicant_email: blacklistedEmail }))
+
+    await saveBlacklistEmails(baseBlockedAddress)
+
+    let blEvent = await getDbCollection("emailblacklists").findOne({ email: blacklistedEmail })
+    expect.soft(blEvent).toEqual(
+      expect.objectContaining({
+        blacklisting_origin: `${BlackListOrigins.SPONT_CANDIDAT} (${BrevoEventStatus.UNSUBSCRIBED})`,
+        email: blacklistedEmail,
+      })
+    )
+
+    await getDbCollection("emailblacklists").deleteMany({})
+    await getDbCollection("applications").insertOne(generateApplicationFixture({ company_email: blacklistedEmail }))
+    baseBlockedAddress[0].reason.code = BrevoBlockedReasons.UNSUBSCRIBED_VIA_EMAIL
+
+    await saveBlacklistEmails(baseBlockedAddress)
+
+    blEvent = await getDbCollection("emailblacklists").findOne({ email: blacklistedEmail })
+    expect.soft(blEvent).toEqual(
+      expect.objectContaining({
+        blacklisting_origin: `${BlackListOrigins.SPONT} (${BrevoEventStatus.UNSUBSCRIBED})`,
+        email: blacklistedEmail,
+      })
+    )
+
+    await getDbCollection("emailblacklists").deleteMany({})
+    await getDbCollection("applications").deleteMany({})
+    await getDbCollection("users").insertOne(generateUserFixture({ email: blacklistedEmail, role: EApplicantRole.CANDIDAT }))
+    baseBlockedAddress[0].reason.code = BrevoBlockedReasons.UNSUBSCRIBED_VIA_MA
+
+    await saveBlacklistEmails(baseBlockedAddress)
+
+    blEvent = await getDbCollection("emailblacklists").findOne({ email: blacklistedEmail })
+    expect.soft(blEvent).toEqual(
+      expect.objectContaining({
+        blacklisting_origin: `${BlackListOrigins.PRDV_CANDIDAT} (${BrevoEventStatus.UNSUBSCRIBED})`,
+        email: blacklistedEmail,
+      })
+    )
+
+    await getDbCollection("emailblacklists").deleteMany({})
+    await getDbCollection("users").deleteMany({})
+    await getDbCollection("userswithaccounts").insertOne(generateUserWithAccountFixture({ email: blacklistedEmail }))
+    baseBlockedAddress[0].reason.code = BrevoBlockedReasons.HARD_BOUNCE
+
+    await saveBlacklistEmails(baseBlockedAddress)
+
+    blEvent = await getDbCollection("emailblacklists").findOne({ email: blacklistedEmail })
+    expect.soft(blEvent).toEqual(
+      expect.objectContaining({
+        blacklisting_origin: `${BlackListOrigins.USER_WITH_ACCOUNT} (${BrevoEventStatus.HARD_BOUNCE})`,
+        email: blacklistedEmail,
+      })
+    )
+
+    await getDbCollection("emailblacklists").deleteMany({})
+    await getDbCollection("eligible_trainings_for_appointments").insertOne(generateEligibleTrainingFixture({ lieu_formation_email: blacklistedEmail }))
+    baseBlockedAddress[0].reason.code = BrevoBlockedReasons.SPAM
+
+    await saveBlacklistEmails(baseBlockedAddress)
+
+    blEvent = await getDbCollection("emailblacklists").findOne({ email: blacklistedEmail })
+    expect.soft(blEvent).toEqual(
+      expect.objectContaining({
+        blacklisting_origin: `${BlackListOrigins.PRDV_CFA} (${BrevoEventStatus.SPAM})`,
         email: blacklistedEmail,
       })
     )

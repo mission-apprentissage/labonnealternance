@@ -145,6 +145,8 @@ fileignoreconfig:
   checksum: c540cb13c2235d69c13e1964e3391b9c935bf7991dafe2cc21e9965c974378e6
 - filename: shared/fixtures/referentiel/onisep.fixture.ts
   checksum: 3f54d57761ea54731e3cfa80013d3f8b300a5f275beb8a29cfca235b6a8d44f7
+- filename: shared/fixtures/user.fixture.ts
+  checksum: 8665b4a014d02f3d36e3c537524f31e39c9b1e123d9116f5ebca3a3e8b9f6033
 - filename: shared/fixtures/userWithAccount.fixture.ts
   checksum: bf864b963375d5836150faf3e343e482a8612552581bd39be21b4f1e8f566971
 - filename: shared/helpers/generateUri.ts
