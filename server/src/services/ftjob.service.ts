@@ -18,7 +18,7 @@ import { TLbaItemResult } from "./jobOpportunity.service.types"
 import { ILbaItemCompany, ILbaItemContact, ILbaItemFtJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
 
-const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i", "ief2i", "institut f2i", "openclassrooms", "mewo", "acp interim et recrutement", "jour j recrutement", ""]
+const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i", "ief2i", "institut f2i", "openclassrooms", "mewo", "acp interim et recrutement", "jour j recrutement"]
 
 const correspondancesNatureContrat = {
   "Cont. professionnalisation": TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION,
