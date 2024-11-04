@@ -241,6 +241,10 @@ const addressDetailToString = (address: IAdresseV3): string => {
   return [l4, l6, l7 === "FRANCE" ? null : l7].filter((_) => _).join(" ")
 }
 
+export const addressDetailToStreetLabel = (address: IAdresseV3): string => {
+  return `${address.numero_voie ?? ""} ${address.type_voie ?? ""} ${address.libelle_voie ?? ""}`.trim()
+}
+
 /**
  * @description Format Entreprise data
  */
