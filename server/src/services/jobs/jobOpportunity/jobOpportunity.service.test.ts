@@ -1741,12 +1741,10 @@ describe("createJobOffer", () => {
     apply_phone: null,
 
     workplace_siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
-    workplace_address: {
-      zipcode: null,
-      city: null,
-      country: null,
-      street: null,
-    },
+    workplace_address_zipcode: null,
+    workplace_address_city: null,
+    workplace_address_country: null,
+    workplace_address_street_label: null,
     workplace_description: null,
     workplace_website: null,
     workplace_name: null,

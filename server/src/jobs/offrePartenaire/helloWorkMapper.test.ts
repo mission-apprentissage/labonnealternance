@@ -95,12 +95,10 @@ describe("helloWorkJobToJobsPartners", () => {
       workplace_idcc: null,
       workplace_legal_name: null,
       workplace_brand: null,
-      workplace_address: {
-        zipcode: "69100",
-        city: "VILLEURBANNE",
-        country: "France",
-        street: "",
-      },
+      workplace_address_zipcode: "69100",
+      workplace_address_city: "VILLEURBANNE",
+      workplace_address_country: "France",
+      workplace_address_street_label: "",
       workplace_geopoint: {
         type: "Point",
         coordinates: [4.889070834, 45.770996568],

@@ -1,6 +1,5 @@
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { IGeoPoint } from "shared/models"
-import { IJobPartnerWorkplaceAddress } from "shared/models/jobsPartners.model"
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { isEnum } from "shared/utils"
 
@@ -14,7 +13,10 @@ export const fillSiretInfosForPartners = async () => {
   const filledFields = [
     "workplace_size",
     "workplace_name",
-    "workplace_address",
+    "workplace_address_street_label",
+    "workplace_address_country",
+    "workplace_address_city",
+    "workplace_address_zipcode",
     "workplace_geopoint",
     "workplace_naf_code",
     "workplace_naf_label",
@@ -31,7 +33,10 @@ export const fillSiretInfosForPartners = async () => {
       const { workplace_siret: siret } = document
 
       const workplace_geopoint: IGeoPoint | null = "workplace_geopoint" in document ? (document.workplace_geopoint as IGeoPoint) : null
-      const workplace_address: IJobPartnerWorkplaceAddress | null = "workplace_address" in document ? (document.workplace_address as IJobPartnerWorkplaceAddress) : null
+      const workplace_address_street_label: string | null = "workplace_address_street_label" in document ? (document.workplace_address_street_label as string) : null
+      const workplace_address_city: string | null = "workplace_address_city" in document ? (document.workplace_address_city as string) : null
+      const workplace_address_zipcode: string | null = "workplace_address_zipcode" in document ? (document.workplace_address_zipcode as string) : null
+      const workplace_address_country: string | null = "workplace_address_country" in document ? (document.workplace_address_country as string) : null
 
       const response = await getSiretInfos(siret)
       if (!response) {
@@ -51,7 +56,10 @@ export const fillSiretInfosForPartners = async () => {
         workplace_naf_code: naf_code,
         workplace_naf_label: naf_label,
         workplace_name: establishment_enseigne ?? establishment_raison_sociale,
-        workplace_address: workplace_address || null,
+        workplace_address_street_label: workplace_address_street_label || null,
+        workplace_address_city: workplace_address_city || null,
+        workplace_address_zipcode: workplace_address_zipcode || null,
+        workplace_address_country: workplace_address_country || null,
         workplace_geopoint: workplace_geopoint || (geo_coordinates ? convertStringCoordinatesToGeoPoint(geo_coordinates) : undefined),
       }
 

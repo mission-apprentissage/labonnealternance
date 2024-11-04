@@ -129,12 +129,10 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     workplace_description: company_description && company_description.length >= 30 ? company_description : null,
     workplace_size: null,
     workplace_website: null,
-    workplace_address: {
-      zipcode: postal_code || null,
-      city: city || null,
-      country: country || null,
-      street: null,
-    },
+    workplace_address_zipcode: postal_code || null,
+    workplace_address_city: city || null,
+    workplace_address_country: country || null,
+    workplace_address_street_label: null,
     workplace_geopoint:
       latitude && longitude
         ? {
