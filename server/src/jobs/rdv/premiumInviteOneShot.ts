@@ -53,10 +53,10 @@ export const premiumInviteOneShot = async () => {
           url: config.publicUrl,
           images: {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoParcoursup: `${config.publicUrl}/assets/logo-parcoursup.png?raw=true`,
-            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
-            peopleLaptop: `${config.publicUrl}/assets/people-laptop.png?raw=true`,
-            informationIcon: `${config.publicUrl}/assets/icon-information-orange.png?raw=true`,
+            logoParcoursup: `${config.publicUrl}/assets/logo-parcoursup.webp?raw=true`,
+            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
+            peopleLaptop: `${config.publicUrl}/assets/people-laptop.webp?raw=true`,
+            informationIcon: `${config.publicUrl}/assets/icon-information-orange.webp?raw=true`,
           },
           etablissement: {
             name: etablissement.raison_sociale,

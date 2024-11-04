@@ -910,7 +910,7 @@ export const sendMailCfaPremiumStart = (etablissement: IEtablissement, type: "af
       ...(type === "affelnet" ? { isAffelnet: true } : type === "parcoursup" ? { isParcoursup: true } : {}),
       images: {
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-        logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+        logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
       },
       etablissement: {
         name: etablissement.raison_sociale,
