@@ -3,7 +3,6 @@ import { Filter } from "mongodb"
 import { oleoduc, writeData } from "oleoduc"
 import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
-import { entriesToTypedRecord } from "shared/utils"
 
 import { logger as globalLogger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -20,7 +19,7 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
   job: COMPUTED_ERROR_SOURCE
   sourceFields: readonly SourceFields[]
   filledFields: readonly FilledFields[]
-  getData: (sourceFields: Pick<IComputedJobsPartners, SourceFields>[]) => Promise<Array<Pick<IComputedJobsPartners, FilledFields> | undefined>>
+  getData: (sourceFields: Pick<IComputedJobsPartners, SourceFields | FilledFields>[]) => Promise<Array<Pick<IComputedJobsPartners, FilledFields> | undefined>>
   groupSize: number
 }) => {
   const logger = globalLogger.child({
@@ -36,7 +35,14 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
   logger.info(`${toUpdateCount} documents à traiter`)
   const counters = { total: 0, success: 0, error: 0 }
   await oleoduc(
-    getDbCollection("computed_jobs_partners").find(queryFilter).stream(),
+    getDbCollection("computed_jobs_partners")
+      .find(queryFilter, {
+        projection: {
+          ...Object.fromEntries([...sourceFields, ...filledFields].map((field) => [field, 1])),
+          _id: 1,
+        },
+      })
+      .stream(),
     streamGroupByCount(groupSize),
     writeData(
       async (documents: IComputedJobsPartners[]) => {
@@ -50,18 +56,11 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
             if (!newFields) {
               return []
             }
-            const entries = Object.entries(newFields) as [FilledFields, IComputedJobsPartners[FilledFields]][]
-            const newFieldsUpdateOnlyEmpty = entriesToTypedRecord(
-              entries.filter(([key, _value]) => {
-                const oldValue = document[key]
-                return oldValue === undefined || oldValue === null || oldValue === ""
-              })
-            )
             return [
               {
                 updateOne: {
                   filter: { _id: document._id },
-                  update: { $set: newFieldsUpdateOnlyEmpty },
+                  update: { $set: newFields },
                 },
               },
             ]

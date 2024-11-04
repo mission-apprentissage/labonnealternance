@@ -33,8 +33,8 @@ export const fillOpcoInfosForPartners = async () => {
           }
         }
         const result: Pick<IComputedJobsPartners, (typeof filledFields)[number]> = {
-          workplace_idcc: parsedIdcc,
-          workplace_opco: opco,
+          workplace_idcc: document.workplace_idcc ?? parsedIdcc,
+          workplace_opco: document.workplace_opco ?? opco,
         }
         return result
       })
