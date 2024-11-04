@@ -11,7 +11,7 @@ import { apiGet } from "@/utils/api.utils"
 import { AUTHTYPE } from "../../../common/contants"
 import { LogoContext } from "../../../context/contextLogo"
 import { LockFill } from "../../../theme/components/icons"
-import { LbaNew } from "../../../theme/components/logos_pro"
+import { LbaNew } from "../../../theme/components/logos"
 import LogoAkto from "../assets/images/akto"
 
 const Header = () => {

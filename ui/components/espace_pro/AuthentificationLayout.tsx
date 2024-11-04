@@ -5,7 +5,7 @@ import { useContext } from "react"
 
 import { WidgetContext } from "../../context/contextWidget"
 import { ArrowLeft } from "../../theme/components/icons"
-import { LbaNew } from "../../theme/components/logos_pro"
+import { LbaNew } from "../../theme/components/logos"
 import InfoBanner from "../InfoBanner/InfoBanner"
 
 export default function AuthentificationLayout(props) {

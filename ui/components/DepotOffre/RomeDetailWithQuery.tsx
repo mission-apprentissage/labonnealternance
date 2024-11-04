@@ -21,8 +21,8 @@ export const RomeDetailWithQuery = ({
 }: {
   rome: string
   appellation: string
-  onChange: (selectedCompetences: Record) => void
-  selectedCompetences: Record
+  onChange: (selectedCompetences: Record<string, string[]>) => void
+  selectedCompetences: Record<string, string[]>
 }) => {
   const [fakeLoading, setFakeLoading] = useState<{ id: string; isLoading: boolean }>({ id: new Date().toISOString(), isLoading: true })
   const {
