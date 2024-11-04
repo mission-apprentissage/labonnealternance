@@ -540,15 +540,12 @@ export async function findJobsOpportunities(payload: IJobOpportunityGetQuery, co
   }
 }
 
-type WorkplaceAddressData = Pick<
-  IJobsPartnersOfferApi,
-  "workplace_geopoint" | "workplace_address_street_label" | "workplace_address_city" | "workplace_address_zipcode" | "workplace_address_country"
->
+type WorkplaceAddressData = Pick<IJobsPartnersOfferApi, "workplace_geopoint" | "workplace_address_country">
 
-async function resolveWorkplaceLocationFromAddress(
+async function resolveWorkplaceGeoLocationFromAddress(
   workplace_address_street_label: string | null,
-  workplace_address_city: string,
-  workplace_address_zipcode: string,
+  workplace_address_city: string | null,
+  workplace_address_zipcode: string | null,
   zodError: ZodError
 ): Promise<WorkplaceAddressData | null> {
   if (workplace_address_street_label === null && workplace_address_zipcode === null && workplace_address_city === null) {
@@ -564,9 +561,6 @@ async function resolveWorkplaceLocationFromAddress(
 
   return {
     workplace_geopoint: geopoint,
-    workplace_address_street_label,
-    workplace_address_city,
-    workplace_address_zipcode,
     workplace_address_country: "France",
   }
 }
@@ -598,13 +592,6 @@ async function resolveWorkplaceDataFromSiret(workplace_siret: string, zodError: 
     zodError.addIssue({ code: "custom", path: ["workplace_siret"], message: entrepriseData.message })
     return null
   }
-
-  /*
-  --> s'assurer de l'info correcte sortie des lba, des ft et des matchas --> toutes variantes d'adresse
-  --> insérer les données correctes suite au fill from siret
-  --> ajouter le fill from ban
-  --> migration (aïe, compliqué, suppression des éléments et lancement des jobs ?)
-  */
 
   return {
     workplace_geopoint: entrepriseData.geopoint,
@@ -646,9 +633,22 @@ type InvariantFields = "_id" | "created_at" | "partner_label"
 async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAlternanceTokenData, current: IJobsPartnersOfferPrivate | null): Promise<ObjectId> {
   const zodError = new ZodError([])
 
+  const {
+    offer_creation,
+    offer_expiration,
+    offer_rome_codes,
+    offer_status,
+    offer_target_diploma_european,
+    workplace_address_street_label,
+    workplace_address_city,
+    workplace_address_zipcode,
+    workplace_address_country,
+    ...rest
+  } = data
+
   const [siretData, addressData] = await Promise.all([
     resolveWorkplaceDataFromSiret(data.workplace_siret as string, zodError),
-    resolveWorkplaceLocationFromAddress(data.workplace_address_street_label, data.workplace_address_city, data.workplace_address_zipcode, zodError),
+    resolveWorkplaceGeoLocationFromAddress(workplace_address_street_label, workplace_address_city, workplace_address_zipcode, zodError),
   ])
 
   const romeCode = await resolveRomeCodes(data, siretData, zodError)
@@ -661,7 +661,6 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAlte
     throw internal("unexpected: cannot resolve all required data for the job offer")
   }
 
-  const { offer_creation, offer_expiration, offer_rome_codes, offer_status, offer_target_diploma_european, workplace_address, ...rest } = data
   const now = new Date()
 
   const invariantData: Pick<IJobsPartnersOfferPrivate, InvariantFields> = {
@@ -690,6 +689,10 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAlte
     ...rest,
     // Data derived from workplace_address take priority over workplace_siret
     ...siretData,
+    workplace_address_city: workplace_address_city ?? siretData?.workplace_address_city,
+    workplace_address_street_label: workplace_address_street_label ?? siretData?.workplace_address_street_label,
+    workplace_address_zipcode: workplace_address_zipcode ?? siretData?.workplace_address_zipcode,
+    workplace_address_country: workplace_address_country ?? siretData?.workplace_address_country,
     ...addressData,
   }
 
