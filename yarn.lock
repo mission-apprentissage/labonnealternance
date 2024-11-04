@@ -16222,13 +16222,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next-compose-plugins@npm:^2.2.1":
-  version: 2.2.1
-  resolution: "next-compose-plugins@npm:2.2.1"
-  checksum: 771762fda2b12b81daf10431cbb494816cff96be02b44009692c6c0eefbacd62cbf51ddb93af8d3380ec00254c6a95d64d10f744d4b9ddadefc21efee7dc69fc
-  languageName: node
-  linkType: hard
-
 "next-images@npm:1.8.5":
   version: 1.8.5
   resolution: "next-images@npm:1.8.5"
@@ -21617,7 +21610,6 @@ __metadata:
     markdown-it: ^12.0.4
     match-sorter: ^6.3.1
     next: latest
-    next-compose-plugins: ^2.2.1
     next-images: 1.8.5
     next-plausible: ^3.11.1
     next-seo: ^4.29.0
