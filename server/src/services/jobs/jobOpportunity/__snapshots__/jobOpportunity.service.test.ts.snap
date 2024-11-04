@@ -32,9 +32,7 @@ exports[`createJobOffer > should create a job offer with the minimal data 1`] = 
   "partner_job_id": "job-id-b",
   "partner_label": "Some organisation",
   "updated_at": 2024-06-18T00:00:00.000Z,
-  "workplace_address": {
-    "label": "20 AVENUE DE SEGUR 75007 PARIS",
-  },
+  "workplace_address_label": "20 AVENUE DE SEGUR 75007 PARIS",
   "workplace_brand": null,
   "workplace_description": null,
   "workplace_geopoint": {
@@ -67,12 +65,14 @@ exports[`findJobsOpportunities > should execute query 1`] = `
       "Apprentissage",
     ],
     "offer_access_conditions": [
-      "Ce métier est accessible avec un diplôme de fin d'études secondaires",
+      "Ce métier est accessible avec un diplôme de fin d'études secondaires (brevet des collèges) à Bac (professionnel, Brevet Professionnel, ...) dans le secteur tertiaire. Il est également accessible avec une expérience professionnelle sans diplôme particulier. La maîtrise de l'outil bureautique (traitement de texte, tableur, ...) peut être requise.",
     ],
     "offer_creation": 2021-01-01T00:00:00.000Z,
-    "offer_description": "Exécute des travaux administratifs courants",
+    "offer_description": "Exécute des travaux administratifs courants (vérification de documents, frappe et mise en forme de courriers pré-établis, suivi de dossier administratifs, ...) selon l'organisation de la structure ou du service. Peut être en charge d'activités de reprographie et d'archivage. Peut réaliser l'accueil de la structure.",
     "offer_desired_skills": [
       "Faire preuve de rigueur et de précision",
+      "Organiser son travail selon les priorités et les objectifs",
+      "Être à l'écoute, faire preuve d'empathie",
     ],
     "offer_expiration": 2050-01-01T00:00:00.000Z,
     "offer_opening_count": 1,
@@ -85,13 +85,19 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "offer_to_be_acquired_skills": [
       "Production, Fabrication: Procéder à l'enregistrement, au tri, à l'affranchissement du courrier",
       "Production, Fabrication: Réaliser des travaux de reprographie",
+      "Gestion des stocks: Contrôler l'état des stocks",
+      "Gestion des stocks: Définir des besoins en approvisionnement",
+      "Logistique: Organiser le traitement des commandes",
+      "Relation client: Accueillir, orienter, informer une personne",
       "Organisation: Contrôler la conformité des données ou des documents",
+      "Organisation: Corriger et mettre en forme un document",
+      "Organisation: Numériser des documents, médias ou supports techniques",
+      "Organisation: Utiliser les outils bureautiques",
+      "Organisation: Établir, mettre à jour un dossier, une base de données",
     ],
     "partner_job_id": null,
     "partner_label": "La bonne alternance",
-    "workplace_address": {
-      "label": "Paris",
-    },
+    "workplace_address_label": "Paris",
     "workplace_brand": null,
     "workplace_description": null,
     "workplace_geopoint": {
@@ -132,9 +138,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "offer_to_be_acquired_skills": [],
     "partner_job_id": "1",
     "partner_label": "France Travail",
-    "workplace_address": {
-      "label": "Paris",
-    },
+    "workplace_address_label": "Paris",
     "workplace_brand": null,
     "workplace_description": "",
     "workplace_geopoint": {
@@ -184,9 +188,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "partner_job_id": "job-id-1",
     "partner_label": "Hello work",
     "updated_at": 2021-01-28T15:00:00.000Z,
-    "workplace_address": {
-      "label": "126 RUE DE L'UNIVERSITE 75007 PARIS",
-    },
+    "workplace_address_label": "126 RUE DE L'UNIVERSITE 75007 PARIS",
     "workplace_brand": null,
     "workplace_description": null,
     "workplace_geopoint": {
@@ -214,9 +216,7 @@ exports[`findJobsOpportunities > should execute query 2`] = `
   {
     "apply_phone": "0100000000",
     "apply_url": "http://localhost:3000/recherche-apprentissage?type=lba&itemId=11000001500013",
-    "workplace_address": {
-      "label": "null null null null",
-    },
+    "workplace_address_label": "null null null null",
     "workplace_brand": "ASSEMBLEE NATIONALE - La vraie",
     "workplace_description": null,
     "workplace_geopoint": {
@@ -271,9 +271,7 @@ exports[`updateJobOffer > should update a job offer with the minimal data 1`] = 
   "partner_job_id": "job-id-9",
   "partner_label": "Some organisation",
   "updated_at": 2024-06-18T00:00:00.000Z,
-  "workplace_address": {
-    "label": "20 AVENUE DE SEGUR 75007 PARIS",
-  },
+  "workplace_address_label": "20 AVENUE DE SEGUR 75007 PARIS",
   "workplace_brand": null,
   "workplace_description": null,
   "workplace_geopoint": {

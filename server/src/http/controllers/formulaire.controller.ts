@@ -1,5 +1,6 @@
-import { badRequest, internal, notFound } from "@hapi/boom"
-import { zRoutes } from "shared/index"
+import { badRequest, conflict, internal, notFound } from "@hapi/boom"
+import { OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants"
+import { JOB_STATUS, zRoutes } from "shared/index"
 
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateOffreToken } from "@/services/appLinks.service"
@@ -8,8 +9,7 @@ import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
 
 import { entrepriseOnboardingWorkflow } from "../../services/etablissement.service"
 import {
-  archiveDelegatedFormulaire,
-  archiveFormulaire,
+  archiveFormulaireByEstablishmentId,
   cancelOffre,
   cancelOffreFromAdminInterface,
   checkOffreExists,
@@ -20,6 +20,8 @@ import {
   getFormulaireWithRomeDetailAndApplicationCount,
   getJob,
   getJobWithRomeDetail,
+  getOffre,
+  patchJobDelegation,
   patchOffre,
   provideOffre,
   updateFormulaire,
@@ -92,7 +94,8 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { userId: userRecruteurId } = req.params
-      const { establishment_siret, email, last_name, first_name, phone, opco, idcc } = req.body
+      const { establishment_siret, email, last_name, first_name, phone, idcc } = req.body
+      const opco = req.body?.opco as OPCOS_LABEL
       const userRecruteurOpt = await getUserRecruteurById(userRecruteurId)
       if (!userRecruteurOpt) {
         throw badRequest("Nous n'avons pas trouvé votre compte utilisateur")
@@ -108,7 +111,7 @@ export default (server: Server) => {
         siret: establishment_siret,
         cfa_delegated_siret: userRecruteurOpt.establishment_siret,
         origin: userRecruteurOpt.scope ?? "",
-        opco,
+        opco: opco || OPCOS_LABEL.UNKNOWN_OPCO,
         idcc,
         managedBy: userRecruteurOpt._id.toString(),
       })
@@ -142,19 +145,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.delete["/formulaire/:establishment_id"])],
     },
     async (req, res) => {
-      await archiveFormulaire(req.params.establishment_id)
-      return res.status(200).send({})
-    }
-  )
-
-  server.delete(
-    "/formulaire/delegated/:establishment_siret",
-    {
-      schema: zRoutes.delete["/formulaire/delegated/:establishment_siret"],
-      onRequest: [server.auth(zRoutes.delete["/formulaire/delegated/:establishment_siret"])],
-    },
-    async (req, res) => {
-      await archiveDelegatedFormulaire(req.params.establishment_siret)
+      await archiveFormulaireByEstablishmentId(req.params.establishment_id)
       return res.status(200).send({})
     }
   )
@@ -338,7 +329,17 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.put["/formulaire/offre/:jobId"])],
     },
     async (req, res) => {
-      await patchOffre(req.params.jobId, req.body)
+      const { jobId } = req.params
+      const recruiterOpt = await getOffre(jobId)
+      const offreOpt = recruiterOpt?.jobs.find((job) => job._id.toString() === jobId.toString())
+      if (!recruiterOpt || !offreOpt) {
+        throw notFound("offer not found")
+      }
+
+      if (recruiterOpt.status !== RECRUITER_STATUS.ACTIF || offreOpt.job_status !== JOB_STATUS.ACTIVE) {
+        throw conflict("Offer is not active")
+      }
+      await patchOffre(jobId, req.body)
       return res.status(200).send({})
     }
   )
@@ -376,18 +377,19 @@ export default (server: Server) => {
         throw badRequest("Le siret formateur n'a pas été proposé à l'offre.")
       }
 
-      await patchOffre(jobId, {
-        delegations: delegations.map((delegation) => {
-          // Save the date of the first read of the company detail
-          if (delegation.siret_code === delegationFound.siret_code && !delegation.cfa_read_company_detail_at) {
-            return {
-              ...delegation,
-              cfa_read_company_detail_at: new Date(),
-            }
+      const updatedDelegations = delegations.map((delegation) => {
+        // Save the date of the first read of the company detail
+        if (delegation.siret_code === delegationFound.siret_code && !delegation.cfa_read_company_detail_at) {
+          return {
+            ...delegation,
+            cfa_read_company_detail_at: new Date(),
           }
-          return delegation
-        }),
+        }
+        return delegation
       })
+
+      await patchJobDelegation(jobId, updatedDelegations)
+
       return res.send({})
     }
   )

@@ -1,16 +1,28 @@
-import { internal } from "@hapi/boom"
+import { badRequest, internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
-import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS_LABEL } from "shared/constants/recruteur"
-import { ComputedUserAccess, IUserRecruteurPublic } from "shared/models"
+import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS_LABEL, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { ComputedUserAccess, IUserRecruteurPublic, IUserWithAccount } from "shared/models"
 import { ICFA } from "shared/models/cfa.model"
 import { IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
 import { parseEnum, parseEnumOrError } from "shared/utils"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import config from "@/config"
+
 import { getDbCollection } from "../common/utils/mongodbUtils"
 
-import { getFormulaireFromUserIdOrError } from "./formulaire.service"
+import {
+  activateEntrepriseRecruiterForTheFirstTime,
+  archiveDelegatedFormulaire,
+  archiveFormulaire,
+  getFormulaireFromUserIdOrError,
+  reactivateRecruiter,
+} from "./formulaire.service"
+import mailer, { sanitizeForEmail } from "./mailer.service"
+import { sendWelcomeEmailToUserRecruteur } from "./userRecruteur.service"
+import { activateUser, validateUserWithAccountEmail } from "./userWithAccount.service"
 
 export const modifyPermissionToUser = async (
   props: Pick<IRoleManagement, "authorized_id" | "authorized_type" | "user_id" | "origin">,
@@ -197,4 +209,151 @@ export const getOrganizationFromRole = async (role: IRoleManagement): Promise<IC
     default:
       return null
   }
+}
+
+const adminOrOpcoUpdatePermissionToUser = async ({
+  reason,
+  userId,
+  status,
+  requestedBy,
+}: {
+  reason: string
+  userId: ObjectId
+  requestedBy: IUserWithAccount
+  status: AccessStatus
+}) => {
+  const roles = await getDbCollection("rolemanagements").find({ user_id: userId }).toArray()
+  if (roles.length !== 1) {
+    throw internal(`inattendu : attendu 1 role, ${roles.length} roles trouvés pour user id=${userId}`)
+  }
+  const [mainRole] = roles
+  const updatedRole = await modifyPermissionToUser(
+    {
+      user_id: userId,
+      authorized_id: mainRole.authorized_id,
+      // WARNING : ce code est temporaire tant qu'on sait qu'un user n'a qu'au plus 1 role
+      // authorized_id: organizationId.toString(),
+      authorized_type: mainRole.authorized_type,
+      // authorized_type: organizationType,
+      origin: "action admin ou opco",
+    },
+    {
+      validation_type: VALIDATION_UTILISATEUR.MANUAL,
+      reason,
+      status,
+      granted_by: requestedBy._id.toString(),
+    }
+  )
+  return updatedRole
+}
+
+export const entrepriseIsNotMyOpco = async ({ reason, userId, requestedBy }: { reason: string; userId: ObjectId; requestedBy: IUserWithAccount }) => {
+  const updatedRole = await adminOrOpcoUpdatePermissionToUser({
+    reason,
+    status: AccessStatus.AWAITING_VALIDATION,
+    requestedBy,
+    userId,
+  })
+
+  const entreprise = await getDbCollection("entreprises").findOneAndUpdate(
+    { _id: new ObjectId(updatedRole.authorized_id) },
+    { $set: { opco: OPCOS_LABEL.UNKNOWN_OPCO, updatedAt: new Date() } },
+    { returnDocument: "after" }
+  )
+  if (!entreprise) {
+    throw internal(`pas d'entreprise pour le role _id=${updatedRole._id}`)
+  }
+}
+
+export const deactivateUserRole = async ({ reason, userId, requestedBy }: { reason: string; userId: ObjectId; requestedBy: IUserWithAccount }) => {
+  const user = await getDbCollection("userswithaccounts").findOne({ _id: userId })
+  if (!user) throw badRequest()
+
+  const updatedRole = await adminOrOpcoUpdatePermissionToUser({
+    reason,
+    userId,
+    requestedBy,
+    status: AccessStatus.DENIED,
+  })
+
+  const organization =
+    updatedRole.authorized_type === AccessEntityType.CFA
+      ? await getDbCollection("cfas").findOne({ _id: new ObjectId(updatedRole.authorized_id) })
+      : await getDbCollection("entreprises").findOne({ _id: new ObjectId(updatedRole.authorized_id) })
+  if (!organization) {
+    throw internal("deactivateUserRole: inattendu: organization introuvable")
+  }
+  const { email, last_name, first_name, phone } = user
+  const { siret, raison_sociale } = organization
+  // send email to user to notify him his account has been disabled
+  await mailer.sendEmail({
+    to: email,
+    subject: "Votre compte a été désactivé sur La bonne alternance",
+    template: getStaticFilePath("./templates/mail-compte-desactive.mjml.ejs"),
+    data: {
+      images: {
+        accountDisabled: `${config.publicUrl}/images/image-compte-desactive.png?raw=true`,
+        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+        logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+      },
+      last_name: sanitizeForEmail(last_name),
+      first_name: sanitizeForEmail(first_name),
+      reason: sanitizeForEmail(reason),
+      email,
+      siret: sanitizeForEmail(siret),
+      raison_sociale: sanitizeForEmail(raison_sociale),
+      phone: sanitizeForEmail(phone),
+      emailSupport: "mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Compte%20pro%20non%20validé",
+    },
+  })
+
+  if (updatedRole.authorized_type === AccessEntityType.ENTREPRISE) {
+    const formulaire = await getDbCollection("recruiters").findOne({
+      managed_by: updatedRole.user_id.toString(),
+      establishment_siret: organization.siret,
+    })
+    if (!formulaire) {
+      throw internal(`inattendu: recruiter pour le role id=${updatedRole._id} introuvable`)
+    }
+    await archiveFormulaire(formulaire)
+  } else if (updatedRole.authorized_type === AccessEntityType.CFA) {
+    await archiveDelegatedFormulaire(organization.siret)
+  }
+}
+
+export const activateUserRole = async ({ userId, requestedBy }: { userId: ObjectId; requestedBy: IUserWithAccount }) => {
+  const user = await getDbCollection("userswithaccounts").findOne({ _id: userId })
+  if (!user) throw badRequest()
+
+  const updatedRole = await adminOrOpcoUpdatePermissionToUser({
+    reason: "",
+    userId,
+    requestedBy,
+    status: AccessStatus.GRANTED,
+  })
+
+  if (updatedRole.authorized_type === AccessEntityType.ENTREPRISE) {
+    /**
+     * if entreprise type of user is validated :
+     * - activate offer
+     * - update expiration date to one month later
+     * - send email to delegation if available
+     */
+    const userFormulaire = await getFormulaireFromUserIdOrError(user._id.toString())
+    if (userFormulaire.status === RECRUITER_STATUS.ARCHIVE) {
+      // le recruiter étant archivé on se contente de le rendre de nouveau Actif
+      await reactivateRecruiter(userFormulaire._id)
+    } else if (userFormulaire.status === RECRUITER_STATUS.ACTIF) {
+      // le compte se trouve validé, on procède à l'activation de la première offre et à la notification aux CFAs
+      if (userFormulaire?.jobs?.length) {
+        await activateEntrepriseRecruiterForTheFirstTime(userFormulaire)
+      }
+    }
+  }
+
+  await activateUser(user, requestedBy._id.toString())
+
+  // validate user email addresse
+  await validateUserWithAccountEmail(user._id)
+  await sendWelcomeEmailToUserRecruteur(user)
 }

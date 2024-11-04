@@ -189,6 +189,57 @@ export const zUserRecruteurRoutes = {
         resources: {},
       },
     },
+    "/user/:userId/organization/:organizationId/activate": {
+      method: "post",
+      path: "/user/:userId/organization/:organizationId/activate",
+      params: z.object({ userId: zObjectId, organizationId: zObjectId }).strict(),
+      response: {
+        "200": z.object({}).strict(),
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        access: "user:validate",
+        resources: {
+          user: [{ _id: { type: "params", key: "userId" } }],
+        },
+      },
+    },
+    "/user/:userId/organization/:organizationId/deactivate": {
+      method: "post",
+      path: "/user/:userId/organization/:organizationId/deactivate",
+      params: z.object({ userId: zObjectId, organizationId: zObjectId }).strict(),
+      body: ZRoleManagementEvent.pick({
+        reason: true,
+      }),
+      response: {
+        "200": z.object({}).strict(),
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        access: "user:validate",
+        resources: {
+          user: [{ _id: { type: "params", key: "userId" } }],
+        },
+      },
+    },
+    "/user/:userId/organization/:organizationId/not-my-opco": {
+      method: "post",
+      path: "/user/:userId/organization/:organizationId/not-my-opco",
+      params: z.object({ userId: zObjectId, organizationId: zObjectId }).strict(),
+      body: ZRoleManagementEvent.pick({
+        reason: true,
+      }),
+      response: {
+        "200": z.object({}).strict(),
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        access: "user:validate",
+        resources: {
+          user: [{ _id: { type: "params", key: "userId" } }],
+        },
+      },
+    },
   },
   put: {
     "/user/:userId": {
@@ -204,6 +255,22 @@ export const zUserRecruteurRoutes = {
       response: {
         "200": z.union([ZUserRecruteur, z.null()]),
         "400": z.union([ZResError, z.object({ error: z.boolean(), reason: z.string() }).strict()]),
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        access: "user:manage",
+        resources: {
+          user: [{ _id: { type: "params", key: "userId" } }],
+        },
+      },
+    },
+    "/admin/users/:userId": {
+      method: "put",
+      path: "/admin/users/:userId",
+      params: z.object({ userId: zObjectId }).strict(),
+      body: ZUserWithAccountFields.partial(),
+      response: {
+        "200": z.object({ ok: z.boolean() }).strict(),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -229,27 +296,6 @@ export const zUserRecruteurRoutes = {
         resources: {
           user: [{ _id: { type: "params", key: "userId" } }],
           entreprise: [{ siret: { type: "params", key: "siret" } }],
-        },
-      },
-    },
-    "/user/:userId/organization/:organizationId/permission": {
-      method: "put",
-      path: "/user/:userId/organization/:organizationId/permission",
-      params: z.object({ userId: zObjectId, organizationId: zObjectId }).strict(),
-      body: ZRoleManagementEvent.pick({
-        status: true,
-        reason: true,
-      }).extend({
-        organizationType: z.enum([AccessEntityType.ENTREPRISE, AccessEntityType.CFA]),
-      }),
-      response: {
-        "200": z.object({}).strict(),
-      },
-      securityScheme: {
-        auth: "cookie-session",
-        access: "user:validate",
-        resources: {
-          user: [{ _id: { type: "params", key: "userId" } }],
         },
       },
     },
@@ -282,23 +328,6 @@ export const zUserRecruteurRoutes = {
             },
           ],
         },
-      },
-    },
-    "/user/organization/:siret": {
-      method: "delete",
-      path: "/user/organization/:siret",
-      params: z
-        .object({
-          siret: z.string(),
-        })
-        .strict(),
-      response: {
-        "200": z.object({}).strict(),
-      },
-      securityScheme: {
-        auth: "access-token",
-        access: null,
-        resources: {},
       },
     },
     "/admin/users/:userId": {

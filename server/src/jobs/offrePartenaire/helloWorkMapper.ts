@@ -3,7 +3,7 @@ import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "
 import dayjs from "shared/helpers/dayjs"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model "
+import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
 
 export const ZHelloWorkJob = z
@@ -20,6 +20,7 @@ export const ZHelloWorkJob = z
     profile: z.string().nullish(),
     code_rome: z.string().nullish(),
     publication_date: z.string().nullish(),
+    updated_date: z.string().nullish(),
     siret: z.string().nullish(),
     company_title: z.string(),
     company_description: z.string().nullish(),
@@ -45,16 +46,17 @@ function getDiplomaLevel(job: IHelloWorkJob): IComputedJobsPartners["offer_targe
 
   switch (job.education) {
     case "RJ/Qualif/BEP_CAP":
-      return { european: "3", label: NIVEAUX_POUR_LBA["3 (CAP...)"] }
     case "RJ/Qualif/Employe_Operateur":
       return { european: "3", label: NIVEAUX_POUR_LBA["3 (CAP...)"] }
     case "RJ/Qualif/Technicien_B2":
+    case "RJ/Qualif/Technicien":
       return { european: "5", label: NIVEAUX_POUR_LBA["5 (BTS, DEUST...)"] }
     case "RJ/Qualif/Agent_maitrise_B3":
+    case "RJ/Qualif/Agent_maitrise":
       return { european: "6", label: NIVEAUX_POUR_LBA["6 (Licence, BUT...)"] }
     case "RJ/Qualif/Cadre_dirigeant":
-      return { european: "7", label: NIVEAUX_POUR_LBA["7 (Master, titre ingénieur...)"] }
     case "RJ/Qualif/Ingenieur_B5":
+    case "RJ/Qualif/Ingenieur":
       return { european: "7", label: NIVEAUX_POUR_LBA["7 (Master, titre ingénieur...)"] }
     default:
       return null
@@ -77,19 +79,22 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     company_description,
     address,
     city,
-    postal_code,
     geoloc,
     url,
+    updated_date,
   } = job
   const contractDuration: number | null = parseContractDuration(job)
   const { latitude, longitude } = geolocToLatLon(geoloc)
   const siretParsing = extensions.siret.safeParse(siret)
   const codeRomeParsing = extensions.romeCode().safeParse(code_rome)
   const urlParsing = extensions.url().safeParse(url)
+  const creationDate = parseDate(publication_date)
 
+  const created_at = new Date()
   const partnerJob: IComputedJobsPartners = {
     _id: new ObjectId(),
-    created_at: new Date(),
+    created_at,
+    updated_at: updated_date ? parseDate(updated_date) : created_at,
     partner_label: JOBPARTNERS_LABEL.HELLOWORK,
     partner_job_id: job_id,
     contract_start: parseDate(contract_start_date),
@@ -103,19 +108,26 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     offer_access_conditions: [],
     offer_to_be_acquired_skills: [],
     offer_rome_codes: codeRomeParsing.success ? [codeRomeParsing.data] : undefined,
-    offer_creation: parseDate(publication_date),
-    offer_expiration: null,
+    offer_creation: creationDate,
+    offer_expiration: dayjs
+      .tz(creationDate || created_at)
+      .add(2, "months")
+      .toDate(),
     offer_origin: null,
     offer_opening_count: 1,
     offer_multicast: false,
     workplace_siret: siretParsing.success ? siretParsing.data : null,
+    workplace_brand: null,
+    workplace_idcc: null,
+    workplace_legal_name: null,
+    workplace_opco: null,
+    workplace_naf_code: null,
+    workplace_naf_label: null,
     workplace_name: company_title,
     workplace_description: company_description && company_description.length >= 30 ? company_description : null,
     workplace_size: null,
     workplace_website: null,
-    workplace_address: {
-      label: [address, postal_code, city].filter((x) => x).join(" "),
-    },
+    workplace_address_label: [address, city].filter((x) => x).join(" "),
     workplace_geopoint:
       latitude && longitude
         ? {
@@ -159,7 +171,9 @@ const parseContractDuration = ({ contract_period_unit, contract_period_value }: 
     case "month":
       return contract_period_value
     case "week":
-      return Math.ceil((contract_period_value * 7) / (365 / 12))
+      return Math.round((contract_period_value * 7) / (365 / 12))
+    case "day":
+      return Math.round(contract_period_value / 30)
   }
   return null
 }

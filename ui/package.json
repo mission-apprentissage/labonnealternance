@@ -48,6 +48,7 @@
     "react-html-parser": "^2.0.2",
     "react-icons": "^4.11.0",
     "react-notion-x": "^4.19.8",
+    "react-qr-code": "^2.0.15",
     "react-query": "^3.39.3",
     "react-swipeable": "^6.2.2",
     "react-table": "^7.8.0",

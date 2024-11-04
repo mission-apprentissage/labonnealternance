@@ -1,11 +1,11 @@
 import { internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
-import { CFA, ENTREPRISE } from "shared/constants"
+import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants"
 import { ICFA } from "shared/models/cfa.model"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
-import { getLastStatusEvent } from "shared/utils"
+import { getLastStatusEvent, isEnum } from "shared/utils"
 
 import { asyncForEach } from "../common/utils/asyncUtils"
 import { getDbCollection } from "../common/utils/mongodbUtils"
@@ -17,12 +17,12 @@ import { deactivateEntreprise, setEntrepriseInError, setEntrepriseValid } from "
 export type Organization = { entreprise: IEntreprise; type: typeof ENTREPRISE } | { cfa: ICFA; type: typeof CFA }
 export type UserAndOrganization = { user: IUserWithAccount; organization: Organization }
 
-export const updateEntrepriseOpco = async (siret: string, { opco, idcc }: { opco: string; idcc?: string }) => {
+export const updateEntrepriseOpco = async (siret: string, { opco, idcc }: { opco: OPCOS_LABEL; idcc?: string }) => {
   const entreprise = await getDbCollection("entreprises").findOne({ siret })
   if (!entreprise) {
     throw new Error("inattendu: aucune entreprise trouvée. Merci d'appeler cette méthode une fois l'entreprise créée")
   }
-  if (!entreprise.opco) {
+  if (!isKnownOpco(entreprise.opco)) {
     await getDbCollection("entreprises").findOneAndUpdate({ siret }, { $set: { opco, idcc } })
     return { opco, idcc }
   }
@@ -46,7 +46,7 @@ export const upsertEntrepriseData = async (
   if ("error" in siretResponse) {
     if (!existingEntreprise) {
       const now = new Date()
-      existingEntreprise = { _id: new ObjectId(), createdAt: now, updatedAt: now, siret, origin, status: [] }
+      existingEntreprise = { _id: new ObjectId(), opco: OPCOS_LABEL.UNKNOWN_OPCO, createdAt: now, updatedAt: now, siret, origin, status: [] }
       await getDbCollection("entreprises").insertOne(existingEntreprise)
     }
     if (isInternalError) {
@@ -61,7 +61,7 @@ export const upsertEntrepriseData = async (
     return (await getDbCollection("entreprises").findOne({ siret }))!
   }
 
-  const { address, address_detail, establishment_enseigne, geo_coordinates, establishment_raison_sociale } = siretResponse
+  const { address, address_detail, establishment_enseigne, geo_coordinates, establishment_raison_sociale, naf_code, naf_label } = siretResponse
 
   const entrepriseFields: Omit<IEntreprise, "_id" | "createdAt" | "updatedAt" | "status" | "origin" | "siret" | "opco" | "idcc"> = {
     address,
@@ -69,6 +69,8 @@ export const upsertEntrepriseData = async (
     enseigne: establishment_enseigne,
     geo_coordinates,
     raison_sociale: establishment_raison_sociale,
+    naf_code,
+    naf_label,
   }
   let savedEntreprise: IEntreprise
   if (existingEntreprise) {
@@ -79,7 +81,7 @@ export const upsertEntrepriseData = async (
     savedEntreprise = updatedEntreprise
   } else {
     const now = new Date()
-    savedEntreprise = { ...entrepriseFields, siret, origin, _id: new ObjectId(), createdAt: now, updatedAt: now, status: [] }
+    savedEntreprise = { ...entrepriseFields, opco: OPCOS_LABEL.UNKNOWN_OPCO, siret, origin, _id: new ObjectId(), createdAt: now, updatedAt: now, status: [] }
     await getDbCollection("entreprises").insertOne(savedEntreprise)
   }
   await setEntrepriseValid(savedEntreprise._id)
@@ -129,3 +131,5 @@ export const upsertEntrepriseData = async (
   }
   return savedEntreprise
 }
+
+export const isKnownOpco = (opco: OPCOS_LABEL | null) => isEnum(OPCOS_LABEL, opco) && opco !== OPCOS_LABEL.UNKNOWN_OPCO && opco !== OPCOS_LABEL.MULTIPLE_OPCO

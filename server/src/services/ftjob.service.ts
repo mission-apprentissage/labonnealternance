@@ -18,7 +18,7 @@ import { TLbaItemResult } from "./jobOpportunity.service.types"
 import { ILbaItemCompany, ILbaItemContact, ILbaItemFtJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
 
-const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i", "openclassrooms", "mewo"]
+const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i", "openclassrooms", "mewo", "ief2i"]
 
 const correspondancesNatureContrat = {
   "Cont. professionnalisation": TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION,
@@ -168,18 +168,21 @@ const transformFtJobs = ({ jobs, radius, latitude, longitude, isMinimalData }: {
 
   if (jobs && jobs.length) {
     for (let i = 0; i < jobs.length; ++i) {
-      const job = isMinimalData
-        ? transformFtJobWithMinimalData({
-            job: jobs[i],
-            latitude,
-            longitude,
-          })
-        : transformFtJob({ job: jobs[i], latitude, longitude })
+      if (jobs[i].lieuTravail.latitude) {
+        // exclusion des offres ft sans geoloc
+        const job = isMinimalData
+          ? transformFtJobWithMinimalData({
+              job: jobs[i],
+              latitude,
+              longitude,
+            })
+          : transformFtJob({ job: jobs[i], latitude, longitude })
 
-      const d = job.place?.distance ?? 0
-      if (d < getRoundedRadius(radius)) {
-        if (!job?.company?.name || blackListedCompanies.indexOf(job.company.name.toLowerCase()) < 0) {
-          resultJobs.push(job)
+        const d = job.place?.distance ?? 0
+        if (d < getRoundedRadius(radius)) {
+          if (!job?.company?.name || blackListedCompanies.indexOf(job.company.name.toLowerCase()) < 0) {
+            resultJobs.push(job)
+          }
         }
       }
     }
@@ -369,10 +372,9 @@ export const getSomeFtJobs = async ({ romes, insee, radius, latitude, longitude,
 /**
  * @description Retourne un tableau contenant la seule offre France Travail identifiée
  */
-export const getFtJobFromId = async ({ id, caller }: { id: string; caller: string | undefined }): Promise<IApiError | { peJobs: ILbaItemFtJob[] }> => {
+export const getFtJobFromId = async ({ id, caller }: { id: string; caller: string | undefined }): Promise<{ peJobs: ILbaItemFtJob[] }> => {
   try {
     const job = await getFtJob(id)
-
     if (job.status === 204 || job.data === "") {
       throw notFound()
     }
@@ -394,8 +396,9 @@ export const getFtJobFromId = async ({ id, caller }: { id: string; caller: strin
   } catch (error: any) {
     if (!error.isBoom) {
       sentryCaptureException(error)
+      manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from FT" })
     }
-    return manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from FT" })
+    throw error
   }
 }
 /**

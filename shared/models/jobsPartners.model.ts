@@ -22,13 +22,11 @@ export const ZJobsPartnersRecruiterApi = z.object({
   workplace_siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
   workplace_brand: z.string().nullable().describe("Nom d'enseigne de l'établissement"),
   workplace_legal_name: z.string().nullable().describe("Nom légal de l'entreprise"),
-  workplace_website: z.string().url().nullable().describe("Site web de l'entreprise").default(null),
+  workplace_website: z.string().nullable().describe("Site web de l'entreprise").default(null),
   workplace_name: z.string().nullable().describe("Nom customisé de l'entreprise").default(null),
   workplace_description: z.string().nullable().describe("description de l'entreprise").default(null),
   workplace_size: z.string().nullable().describe("Taille de l'entreprise"),
-  workplace_address: z.object({
-    label: z.string().describe("Adresse de l'offre, provenant du SIRET ou du partenaire"),
-  }),
+  workplace_address_label: z.string().describe("Adresse de l'offre, provenant du SIRET ou du partenaire"),
   workplace_geopoint: ZPointGeometry.describe("Geolocalisation de l'offre"),
   workplace_idcc: z.number().nullable().describe("Identifiant convention collective"),
   workplace_opco: zOpcoLabel.nullable().describe("Nom de l'OPCO"), // enum ?
@@ -158,6 +156,11 @@ const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
   offer_rome_codes: ZJobsPartnersOfferPrivate.shape.offer_rome_codes.nullable().default(null),
   offer_description: ZJobsPartnersOfferPrivate.shape.offer_description.min(30, "Job description should be at least 30 characters"),
   offer_target_diploma_european: zDiplomaEuropeanLevel.nullable().default(null),
+  offer_status: extensions
+    .buildEnum(JOB_STATUS_ENGLISH)
+    .nullish()
+    .default(JOB_STATUS_ENGLISH.ACTIVE)
+    .describe("Status de l'offre (surtout utilisé pour les offres ajouté par API)"),
 
   workplace_siret: extensions.siret,
   workplace_address_label: z.string().nullable().default(null),

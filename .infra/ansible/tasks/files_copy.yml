@@ -28,6 +28,20 @@
     # /app/tools is managed by infra
     - item.path | regex_search('^tools/?') == none
     - item.path | regex_search('^system/?') == none
+    # avoid jinja2 files
+    - item.path | regex_search('\.jinja2$') == none
+
+- name: Copie des fichiers template de l'arborescence /opt/app à partir de .infra/files
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "/opt/app/{{ (item.path | splitext)[0] }}"
+    mode: "{{ item.mode }}"
+  with_filetree: "{{inventory_dir}}/files"
+  when:
+    - item.state == 'file'
+    - item.path | basename != '.gitkeep'
+    - item.path | basename != '.DS_Store'
+    - item.path | regex_search('\.jinja2$') != none
 
 - name: Copie du fichier de seed
   ansible.builtin.copy:

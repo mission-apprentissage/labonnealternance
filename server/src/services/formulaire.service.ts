@@ -1,8 +1,10 @@
 import { randomUUID } from "node:crypto"
 
-import { internal, notFound } from "@hapi/boom"
+import { badRequest, internal, notFound } from "@hapi/boom"
+import equal from "fast-deep-equal"
 import { Filter, ObjectId, UpdateFilter } from "mongodb"
 import { IDelegation, IJob, IJobWithRomeDetail, IJobWritable, IRecruiter, IRecruiterWithApplicationCount, IUserRecruteur, JOB_STATUS } from "shared"
+import { getDirectJobPath } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
@@ -214,6 +216,8 @@ const isAuthorizedToPublishJob = async ({ userId, entrepriseId }: { userId: Obje
  * @description Create job offer for formulaire
  */
 export const createJob = async ({ job, establishment_id, user }: { job: IJobWritable; establishment_id: string; user: IUserWithAccount }): Promise<IRecruiter> => {
+  await controlEditableRomeDetail(job)
+
   const userId = user._id
   const recruiter = await getDbCollection("recruiters").findOne({ establishment_id: establishment_id })
   if (!recruiter) {
@@ -241,10 +245,6 @@ export const createJob = async ({ job, establishment_id, user }: { job: IJobWrit
   const codeRome = job.rome_code.at(0)
   if (!codeRome) {
     throw internal(`inattendu : pas de code rome pour une création d'offre pour le recruiter id=${establishment_id}`)
-  }
-  const romeData = await getRomeDetailsFromDB(codeRome)
-  if (!romeData) {
-    throw internal(`could not find rome infos for rome=${codeRome}`)
   }
   const creationDate = new Date()
   const { job_start_date } = job
@@ -416,6 +416,7 @@ export const createFormulaire = async (payload: Partial<Omit<IRecruiter, "_id" |
     email: payload.email as string,
     establishment_siret: payload.establishment_siret as string,
     is_delegated: payload.is_delegated ?? (false as boolean),
+    opco: payload.opco ?? null,
     jobs: [],
   }
   await getDbCollection("recruiters").insertOne(recruiter)
@@ -452,21 +453,20 @@ export const updateFormulaire = async (establishment_id: IRecruiter["establishme
  * @param {IRecruiter["establishment_id"]} establishment_id
  * @returns {Promise<boolean>}
  */
-export const archiveFormulaire = async (id: IRecruiter["establishment_id"]): Promise<boolean> => {
+export const archiveFormulaireByEstablishmentId = async (id: IRecruiter["establishment_id"]) => {
   const recruiter = await getDbCollection("recruiters").findOne({ establishment_id: id })
   if (!recruiter) {
     throw internal("Recruiter not found")
   }
+  await archiveFormulaire(recruiter)
+}
 
+export const archiveFormulaire = async (recruiter: IRecruiter) => {
   recruiter.status = RECRUITER_STATUS.ARCHIVE
-
   recruiter.jobs.map((job) => {
     job.job_status = JOB_STATUS.ANNULEE
   })
-
   await getDbCollection("recruiters").findOneAndUpdate({ _id: recruiter._id }, { $set: { ...recruiter, updatedAt: new Date() } })
-
-  return true
 }
 
 /**
@@ -486,24 +486,11 @@ export const reactivateRecruiter = async (id: IRecruiter["_id"]): Promise<boolea
 /**
  * @description Archive existing delegated formulaires and cancel all its job offers
  * @param {IUserRecruteur["establishment_siret"]} establishment_siret
- * @returns {Promise<boolean>}
  */
-export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establishment_siret"]): Promise<boolean> => {
+export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establishment_siret"]) => {
   const formulaires = await getDbCollection("recruiters").find({ cfa_delegated_siret: siret }).toArray()
-
   if (!formulaires.length) return false
-
-  await asyncForEach(formulaires, async (form: IRecruiter) => {
-    form.status = RECRUITER_STATUS.ARCHIVE
-
-    form.jobs.forEach((job) => {
-      job.job_status = JOB_STATUS.ANNULEE
-    })
-
-    await getDbCollection("recruiters").findOneAndUpdate({ _id: form._id }, { $set: { ...form, updatedAt: new Date() } })
-  })
-
-  return true
+  await asyncForEach(formulaires, archiveFormulaire)
 }
 
 /**
@@ -574,7 +561,8 @@ export async function updateOffre(id: string | ObjectId, payload: UpdateFilter<I
  * @param {object} payload
  * @returns {Promise<IRecruiter>}
  */
-export const patchOffre = async (id: IJob["_id"], payload: UpdateFilter<IJob>): Promise<IRecruiter> => {
+export const patchOffre = async (id: IJob["_id"], payload: Partial<IJob>): Promise<IRecruiter> => {
+  await controlEditableRomeDetail(payload)
   const fields = {}
   for (const key in payload) {
     fields[`jobs.$.${key}`] = payload[key]
@@ -593,6 +581,16 @@ export const patchOffre = async (id: IJob["_id"], payload: UpdateFilter<IJob>): 
   }
 
   return recruiter
+}
+
+export const patchJobDelegation = async (id: IJob["_id"], delegations: IJob["delegations"]) => {
+  await getDbCollection("recruiters").findOneAndUpdate(
+    { "jobs._id": id },
+    {
+      $set: { delegations, "jobs.$.job_update_date": new Date(), updatedAt: new Date() },
+    },
+    { returnDocument: "after" }
+  )
 }
 
 /**
@@ -805,7 +803,7 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, co
         job_level_label: job.job_level_label,
         job_start_date: dayjs(job.job_start_date).format("DD/MM/YY"),
       },
-      lba_url: `${config.publicUrl}/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`,
+      lba_url: `${config.publicUrl}${getDirectJobPath(job._id.toString())}`,
     },
   })
 }
@@ -832,4 +830,59 @@ export const getFormulaireFromUserIdOrError = async (userId: string) => {
     throw internal(`inattendu : formulaire non trouvé`, { userId })
   }
   return formulaire
+}
+
+const generateKey = (item) => `${item.libelle}-${item.code_ogr}-${item.coeur_metier}`
+
+const filterRomeDetails = (romeDetails, competencesRome) => {
+  const filteredRome: any = {}
+
+  Object.keys(competencesRome).forEach((key) => {
+    if (romeDetails[key]) {
+      if (key === "savoir_etre_professionnel") {
+        // Create a map of competencesRome for quick lookup
+        const competencesMap = new Map(competencesRome[key].map((item) => [generateKey(item), item]))
+
+        // Filter romeDetails based on the map created above
+        filteredRome[key] = romeDetails[key].filter((item) => competencesMap.has(generateKey(item)))
+      } else {
+        // For savoir_faire and savoirs
+        filteredRome[key] = romeDetails[key]
+          .map((category) => {
+            const competencesCategory = competencesRome[key].find((c) => c.libelle === category.libelle)
+            if (competencesCategory) {
+              // Create a map of items for quick lookup
+              const competencesMap = new Map(competencesCategory.items.map((item) => [generateKey(item), item]))
+
+              // Filter items in the category based on the map created above
+              const filteredItems = category.items.filter((item) => competencesMap.has(generateKey(item)))
+              return {
+                libelle: category.libelle,
+                items: filteredItems,
+              }
+            }
+          })
+          // filter undefined if competencesCategory not found
+          .filter((x) => x)
+      }
+    }
+  })
+
+  return filteredRome
+}
+
+const controlEditableRomeDetail = async (job) => {
+  const { competences_rome, rome_code } = job
+  const romeDetails = await getRomeDetailsFromDB(rome_code[0])
+
+  if (!romeDetails) {
+    throw internal("unexpected: rome details not found")
+  }
+
+  const filteredRome = filterRomeDetails(romeDetails.competences, competences_rome)
+  const isValid = equal(filteredRome, competences_rome)
+
+  if (!isValid) {
+    throw badRequest("compétences invalides")
+  }
 }

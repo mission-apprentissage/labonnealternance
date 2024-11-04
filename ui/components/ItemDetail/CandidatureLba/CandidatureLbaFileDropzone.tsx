@@ -1,11 +1,12 @@
 import { Box, Button, Flex, FormControl, FormErrorMessage, Image, Input, Spinner, Text } from "@chakra-ui/react"
+import * as Sentry from "@sentry/nextjs"
 import React, { useState } from "react"
 import { useDropzone } from "react-dropzone"
 
 const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   const [fileData, setFileData] = useState(formik.values.fileName ? { fileName: formik.values.fileName, fileContent: formik.values.fileContent } : null)
   const [fileLoading, setFileLoading] = useState(false)
-  const [showUnacceptedFileMessage, setShowUnacceptedFileMessages] = useState(false)
+  const [showUnacceptedFileMessages, setShowUnacceptedFileMessages] = useState(false)
 
   const onRemoveFile = () => {
     setFileValue(null)
@@ -57,7 +58,7 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
 
   const getFileDropzone = () => {
     return (
-      <FormControl cursor={hasSelectedFile() ? "auto" : "pointer"} data-testid="fileDropzone" isInvalid={formik.touched.fileName && formik.errors.fileName}>
+      <FormControl cursor={hasSelectedFile() ? "auto" : "pointer"} data-testid="fileDropzone" isInvalid={showUnacceptedFileMessages}>
         {/* @ts-expect-error: TODO */}
         <Input {...getInputProps()} />
         {isDragActive ? (
@@ -75,7 +76,7 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
             </Box>
           </Flex>
         )}
-        {showUnacceptedFileMessage && <FormErrorMessage ml={6}>⚠ Le fichier n&apos;est pas au bon format (autorisé : .docx ou .pdf, &lt;3mo, max 1 fichier)</FormErrorMessage>}
+        {showUnacceptedFileMessages && <FormErrorMessage ml={6}>⚠ Le fichier n&apos;est pas au bon format (autorisé : .docx ou .pdf, &lt;3mo, max 1 fichier)</FormErrorMessage>}
         <FormErrorMessage ml={6}>{formik.errors.fileName}</FormErrorMessage>
       </FormControl>
     )
@@ -116,10 +117,20 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
     accept: ".docx,.pdf",
     maxSize: 3145728,
     maxFiles: 1,
+    onDropRejected(fileRejections) {
+      const [fileRejection] = fileRejections
+      setShowUnacceptedFileMessages(true)
+      const { errors } = fileRejection ?? {}
+      const [error] = errors
+      const { message } = error ?? {}
+      Sentry.setTag("errorType", "envoi_PJ_candidature")
+      Sentry.captureException(new Error(message))
+      Sentry.setTag("errorType", "")
+    },
   })
 
   return (
-    <Box p="20px" width="97%" border="1px dashed" borderColor="grey.600" {...getRootProps()}>
+    <Box p="20px" width="97%" border="1px dashed" borderColor={showUnacceptedFileMessages ? "red.500" : "grey.600"} {...getRootProps()}>
       {fileLoading ? getSpinner() : hasSelectedFile() ? getSelectedFile() : getFileDropzone()}
     </Box>
   )

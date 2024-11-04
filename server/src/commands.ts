@@ -5,20 +5,22 @@ import HttpTerminator from "lil-http-terminator"
 
 import { closeMemoryCache } from "./common/apis/client"
 import { logger } from "./common/logger"
+import { closeSentry } from "./common/sentry/sentry"
 import { closeMongodbConnection } from "./common/utils/mongodbUtils"
 import { notifyToSlack } from "./common/utils/slackUtils"
 import config from "./config"
 import { bindProcessorServer } from "./http/jobProcessorServer"
-import { closeSentry, initSentryProcessor } from "./http/sentry"
 import { bindFastifyServer } from "./http/server"
 import { setupJobProcessor } from "./jobs/jobs"
 
-async function startProcessor(signal: AbortSignal) {
+async function setupAndStartProcessor(signal: AbortSignal, shouldStartWorker: boolean) {
   logger.info("Setup job processor")
   await setupJobProcessor()
-  logger.info(`Process jobs queue - start`)
-  await startJobProcessor(signal)
-  logger.info(`Processor shut down`)
+  if (shouldStartWorker) {
+    logger.info(`Process jobs queue - start`)
+    await startJobProcessor(signal)
+    logger.info(`Processor shut down`)
+  }
 }
 
 function createProcessExitSignal() {
@@ -58,8 +60,6 @@ program
     // on définit le module du logger en global pour distinguer les logs des jobs
     if (command !== "start") {
       logger.fields.module = `cli:${command}`
-      // Pas besoin d'init Sentry dans le cas du server car il est start automatiquement
-      initSentryProcessor()
     }
     logger.info(`Starting command ${command}`)
   })
@@ -97,7 +97,7 @@ program
         return
       }
 
-      const tasks = [
+      await Promise.all([
         new Promise<void>((resolve, reject) => {
           signal.addEventListener("abort", async () => {
             try {
@@ -109,13 +109,8 @@ program
             }
           })
         }),
-      ]
-
-      if (withProcessor) {
-        tasks.push(startProcessor(signal))
-      }
-
-      await Promise.all(tasks)
+        setupAndStartProcessor(signal, withProcessor),
+      ])
     } catch (err) {
       logger.error(err)
       captureException(err)
@@ -157,7 +152,7 @@ program
             }
           })
         }),
-        startProcessor(signal),
+        setupAndStartProcessor(signal, true),
       ])
     } catch (err) {
       logger.error(err)
@@ -170,6 +165,7 @@ function createJobAction(name) {
   return async (options) => {
     try {
       const { queued = false, ...payload } = options
+      await setupJobProcessor()
       const exitCode = await addJob({
         name,
         queued,
@@ -563,10 +559,10 @@ program
   .action(createJobAction("referentiel-opco:constructys:import"))
 
 program
-  .command("import-hellowork")
+  .command("import-hellowork-raw")
   .description("Importe les offres hellowork dans la collection raw")
   .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("import-hellowork"))
+  .action(createJobAction("import-hellowork-raw"))
 
 program
   .command("import-hellowork-to-computed")
@@ -599,6 +595,12 @@ program
   .description("Scanne les virus des pièces jointes et envoie les candidatures. Timeout à 8 minutes.")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("send-applications"))
+
+program
+  .command("fill-computed-jobs-partners")
+  .description("Enrichi la collection computed_jobs_partners avec les données provenant d'API externes")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("fill-computed-jobs-partners"))
 
 program
   .command("referentiel:commune:import")

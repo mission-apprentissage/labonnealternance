@@ -14,9 +14,13 @@ import config from "../config"
 const htmlToText = nodemailerHtmlToText.htmlToText
 const renderFile: (path: string, data: Data) => Promise<string> = promisify(ejs.renderFile)
 
-export const sanitizeForEmail = (text: string | null | undefined) => {
+export const sanitizeForEmail = (text: string | null | undefined, keepBr?: "keepBr") => {
   if (!text) return ""
-  text = text.replaceAll(/(<([^>]+)>)/gi, "")
+  if (keepBr === "keepBr") {
+    text = text.replaceAll(/<(?!br\s*\/?)[^>]+>/gi, "")
+  } else {
+    text = text.replaceAll(/(<([^>]+)>)/gi, "")
+  }
   text = text.replaceAll(/\./g, "\u200B.\u200B")
   return text
 }
@@ -43,15 +47,13 @@ const createTransporter = (): Transporter => {
 const createMailer = () => {
   const transporter = createTransporter()
   const renderEmail = async (template: string, data: Data = {}): Promise<string> => {
-    const onFinally = startSentryPerfRecording("mailer", "renderEmail")
-    try {
+    let html
+    await startSentryPerfRecording({ name: "mailer", operation: "renderEmail" }, async () => {
       const buffer = await renderFile(template, { data })
-      const { html } = mjml(buffer.toString(), { minify: true })
-
-      return html
-    } finally {
-      onFinally()
-    }
+      const converted = mjml(buffer.toString(), { minify: true })
+      html = converted.html
+    })
+    return html
   }
 
   return {
@@ -77,10 +79,9 @@ const createMailer = () => {
       attachments?: object[]
     }): Promise<{ messageId: string; accepted?: string[] }> => {
       const html = await renderEmail(template, data)
-      const onFinally = startSentryPerfRecording("mailer", "sendEmail")
-
-      return transporter
-        .sendMail({
+      let mail
+      await startSentryPerfRecording({ name: "mailer", operation: "sendEmail" }, () => {
+        mail = transporter.sendMail({
           from,
           to,
           cc,
@@ -89,7 +90,9 @@ const createMailer = () => {
           list: {},
           attachments,
         })
-        .finally(onFinally)
+      })
+
+      return mail
     },
   }
 }

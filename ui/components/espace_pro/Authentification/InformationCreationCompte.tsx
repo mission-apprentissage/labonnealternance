@@ -1,10 +1,9 @@
-import { Box, Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, SimpleGrid, Text, useDisclosure } from "@chakra-ui/react"
+import { Box, Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, SimpleGrid, Text } from "@chakra-ui/react"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
-import { useContext, useState } from "react"
-import { IRecruiterJson, assertUnreachable, parseEnum } from "shared"
+import { useContext } from "react"
+import { assertUnreachable, parseEnum } from "shared"
 import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
-import { IUserWithAccountJson } from "shared/models/userWithAccount.model"
 import * as Yup from "yup"
 
 import { ApiError } from "@/utils/api.utils"
@@ -16,7 +15,7 @@ import { ArrowRightLine } from "../../../theme/components/icons"
 import logosOpco from "../../../theme/components/logos_pro/logosOpco"
 import { createEtablissement } from "../../../utils/api"
 import { OpcoSelect } from "../CreationRecruteur/OpcoSelect"
-import { AnimationContainer, AuthentificationLayout, ConfirmationCreationCompte, CustomInput, InformationLegaleEntreprise, InformationOpco } from "../index"
+import { AnimationContainer, AuthentificationLayout, CustomInput, InformationLegaleEntreprise, InformationOpco } from "../index"
 
 const Formulaire = ({ submitForm }) => {
   const router = useRouter()
@@ -151,8 +150,6 @@ const FormulaireLayout = ({ left, right }) => {
 
 export const InformationCreationCompte = ({ isWidget = false }: { isWidget?: boolean }) => {
   const router = useRouter()
-  const validationPopup = useDisclosure()
-  const [popupData, setPopupData] = useState<{ user: IUserWithAccountJson; formulaire: IRecruiterJson; token?: string; type: "CFA" | "ENTREPRISE" } | null>(null)
 
   const { type, informationSiret: informationSiretString }: { type: "CFA" | "ENTREPRISE"; informationSiret: string } = router.query as any
   const informationSiret = JSON.parse(informationSiretString || "{}")
@@ -161,36 +158,41 @@ export const InformationCreationCompte = ({ isWidget = false }: { isWidget?: boo
   const submitForm = (values, { setSubmitting, setFieldError }) => {
     const payload = { ...values, type, establishment_siret }
     if (type === AUTHTYPE.CFA) {
-      delete payload.opco
+      payload.opco = OPCOS_LABEL.UNKNOWN_OPCO
     }
     createEtablissement(payload)
       .then((data) => {
         if (!data) {
           throw new Error("no data")
         }
-        const isValidated = data.validated
-        if (isValidated) {
-          if (type === AUTHTYPE.ENTREPRISE) {
-            // Dépot simplifié
+        const { user, formulaire, token, validated } = data
+
+        if (!user) {
+          throw new Error("unexpected: data.user is empty")
+        }
+
+        switch (type) {
+          case AUTHTYPE.ENTREPRISE: {
             router.push({
               pathname: isWidget ? "/espace-pro/widget/entreprise/offre" : "/espace-pro/creation/offre",
-              query: { establishment_id: data.formulaire.establishment_id, type, email: data.user.email, userId: data.user._id.toString(), token: data.token },
+              query: { establishment_id: formulaire.establishment_id, type, email: user.email, userId: user._id.toString(), token, displayBanner: !validated },
             })
-          } else if (type === AUTHTYPE.CFA) {
-            router.push({
-              pathname: "/espace-pro/authentification/confirmation",
-              query: { email: data.user.email },
-            })
-          } else {
+            break
+          }
+          case AUTHTYPE.CFA: {
+            if (validated) {
+              router.push({
+                pathname: "/espace-pro/authentification/confirmation",
+                query: { email: user.email },
+              })
+            } else {
+              router.push("/espace-pro/authentification/en-attente")
+            }
+            break
+          }
+          default:
             assertUnreachable(type)
-          }
-        } else {
-          validationPopup.onOpen()
-          const { user, formulaire } = data
-          if (!user) {
-            throw new Error("unexpected: data.user is empty")
-          }
-          setPopupData({ user, formulaire, ...data, type })
+            break
         }
         setSubmitting(false)
       })
@@ -204,7 +206,6 @@ export const InformationCreationCompte = ({ isWidget = false }: { isWidget?: boo
 
   return (
     <AnimationContainer>
-      <ConfirmationCreationCompte {...popupData} {...validationPopup} isWidget={isWidget} siret={establishment_siret} />
       <AuthentificationLayout>
         <Formulaire submitForm={submitForm} />
       </AuthentificationLayout>

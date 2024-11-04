@@ -14,6 +14,7 @@ import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 
 import { localOrigin } from "@/common/utils/isOriginLocal"
 
+import { initSentryFastify } from "../common/sentry/sentry.fastify"
 import config from "../config"
 import { initBrevoWebhooks } from "../services/brevo.service"
 
@@ -21,9 +22,7 @@ import eligibleTrainingsForAppointmentRoute from "./controllers/admin/eligibleTr
 import adminEtablissementRoute from "./controllers/admin/etablissement.controller"
 import formationsRoute from "./controllers/admin/formations.controller"
 import application from "./controllers/application.controller"
-import applicationRouteV2 from "./controllers/application.controller.v2"
 import appointmentRequestRoute from "./controllers/appointmentRequest.controller"
-import appointmentRequestRouteV2 from "./controllers/appointmentRequest.controller.v2"
 import { coreRoutes } from "./controllers/core.controller"
 import emailsRoute from "./controllers/emails.controller"
 import etablissementRoute from "./controllers/etablissement.controller"
@@ -47,12 +46,13 @@ import trainingLinks from "./controllers/trainingLinks.controller"
 import unsubscribeLbaCompany from "./controllers/unsubscribeRecruteurLba.controller"
 import updateLbaCompany from "./controllers/updateRecruteurLba.controller"
 import userRoute from "./controllers/user.controller"
+import applicationRouteV2 from "./controllers/v2/application.controller.v2"
+import appointmentRequestRouteV2 from "./controllers/v2/appointment.controller.v2"
 import jobsRouteV2 from "./controllers/v2/jobs.controller.v2"
 import version from "./controllers/version.controller"
 import { auth } from "./middlewares/authMiddleware"
 import { errorMiddleware } from "./middlewares/errorMiddleware"
 import { logMiddleware } from "./middlewares/logMiddleware"
-import { initSentryFastify } from "./sentry"
 
 export interface Server
   extends FastifyInstance<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>, FastifyBaseLogger, ZodTypeProvider> {}

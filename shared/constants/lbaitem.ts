@@ -36,11 +36,10 @@ export const oldItemTypeToNewItemType = (lbaItemType: LBA_ITEM_TYPE_OLD): LBA_IT
     case LBA_ITEM_TYPE_OLD.LBB:
       return LBA_ITEM_TYPE.RECRUTEURS_LBA
     case LBA_ITEM_TYPE_OLD.PE:
-      return LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES
     case LBA_ITEM_TYPE_OLD.PEJOB:
-      throw new Error("not used")
+      return LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES
     case LBA_ITEM_TYPE_OLD.FORMATION:
-      throw new Error("not used")
+      return LBA_ITEM_TYPE.FORMATION
     default:
       assertUnreachable(lbaItemType)
   }
@@ -67,3 +66,5 @@ export const newItemTypeToOldItemType = (lbaItemType: LBA_ITEM_TYPE): LBA_ITEM_T
 
 export const allLbaItemType = Object.values(LBA_ITEM_TYPE)
 export const allLbaItemTypeOLD = Object.values(LBA_ITEM_TYPE_OLD)
+
+export const getDirectJobPath = (jobId: string) => `/recherche-apprentissage?display=list&page=fiche&type=matcha&itemId=${jobId}`
