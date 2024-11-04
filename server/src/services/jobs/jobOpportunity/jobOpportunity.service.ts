@@ -6,7 +6,6 @@ import { IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS_ENGLISH, assertUnr
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import {
-  IJobPartnerWorkplaceAddress,
   IJobsPartnersOfferApi,
   IJobsPartnersOfferPrivate,
   IJobsPartnersRecruiterApi,
@@ -264,12 +263,10 @@ export const convertLbaCompanyToJobPartnerRecruiterApi = (recruteursLba: ILbaCom
       workplace_legal_name: recruteurLba.raison_sociale,
       workplace_description: null,
       workplace_size: recruteurLba.company_size,
-      workplace_address: {
-        street: `${recruteurLba.street_number} ${recruteurLba.street_name}`,
-        zipcode: recruteurLba.zip_code,
-        city: recruteurLba.city,
-        country: "France",
-      },
+      workplace_address_street_label: `${recruteurLba.street_number} ${recruteurLba.street_name}`,
+      workplace_address_zipcode: recruteurLba.zip_code,
+      workplace_address_city: recruteurLba.city,
+      workplace_address_country: "France",
       workplace_geopoint: recruteurLba.geopoint!,
       workplace_idcc: null,
       workplace_opco: convertOpco(recruteurLba),
@@ -358,12 +355,10 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IJobRes
           workplace_legal_name: recruiter.establishment_raison_sociale ?? null,
           workplace_description: null,
           workplace_size: recruiter.establishment_size ?? null,
-          workplace_address: {
-            city: recruiter.address_detail.localite, //TODO, différents f,ormats possible, voir à utiliser helper construisant address
-            zipcode: recruiter.address_detail.code_postal,
-            street: `${recruiter.address_detail.numero_voie} ${recruiter.address_detail.type_voie} ${recruiter.address_detail.nom_voie}`,
-            country: "France",
-          },
+          workplace_address_city: recruiter.address_detail.localite, //TODO, différents f,ormats possible, voir à utiliser helper construisant address
+          workplace_address_zipcode: recruiter.address_detail.code_postal,
+          workplace_address_street_label: `${recruiter.address_detail.numero_voie} ${recruiter.address_detail.type_voie} ${recruiter.address_detail.nom_voie}`,
+          workplace_address_country: "France",
           workplace_geopoint: recruiter.geopoint!,
           workplace_idcc: recruiter.idcc ? Number(recruiter.idcc) : null,
           workplace_opco: convertOpco(recruiter),
@@ -416,12 +411,10 @@ export const convertFranceTravailJobToJobPartnerOfferApi = (offresEmploiFranceTr
         workplace_name: offreFT.entreprise.nom,
         workplace_description: offreFT.entreprise.description,
         workplace_size: null,
-        workplace_address: {
-          city: offreFT.lieuTravail.commune || null,
-          street: offreFT.lieuTravail.libelle,
-          zipcode: offreFT.lieuTravail.codePostal || null,
-          country: "France",
-        },
+        workplace_address_city: offreFT.lieuTravail.commune || null,
+        workplace_address_street_label: offreFT.lieuTravail.libelle,
+        workplace_address_zipcode: offreFT.lieuTravail.codePostal || null,
+        workplace_address_country: "France",
         workplace_geopoint: convertToGeopoint({
           longitude: parseFloat(offreFT.lieuTravail.longitude!),
           latitude: parseFloat(offreFT.lieuTravail.latitude!),
@@ -547,14 +540,22 @@ export async function findJobsOpportunities(payload: IJobOpportunityGetQuery, co
   }
 }
 
-type WorkplaceAddressData = Pick<IJobsPartnersOfferApi, "workplace_geopoint" | "workplace_address">
+type WorkplaceAddressData = Pick<
+  IJobsPartnersOfferApi,
+  "workplace_geopoint" | "workplace_address_street_label" | "workplace_address_city" | "workplace_address_zipcode" | "workplace_address_country"
+>
 
-async function resolveWorkplaceLocationFromAddress(workplace_address: IJobPartnerWorkplaceAddress | null, zodError: ZodError): Promise<WorkplaceAddressData | null> {
-  if (workplace_address === null) {
+async function resolveWorkplaceLocationFromAddress(
+  workplace_address_street_label: string | null,
+  workplace_address_city: string,
+  workplace_address_zipcode: string,
+  zodError: ZodError
+): Promise<WorkplaceAddressData | null> {
+  if (workplace_address_street_label === null && workplace_address_zipcode === null && workplace_address_city === null) {
     return null
   }
 
-  const geopoint = await getGeoPoint(`${workplace_address.street || ""} ${workplace_address.zipcode || ""} ${workplace_address.city}`.trim())
+  const geopoint = await getGeoPoint(`${workplace_address_street_label || ""} ${workplace_address_zipcode || ""} ${workplace_address_city}`.trim())
 
   if (!geopoint) {
     zodError.addIssue({ code: "custom", path: ["workplace_address"], message: "Cannot resolve geo-coordinates for the given address" })
@@ -563,7 +564,10 @@ async function resolveWorkplaceLocationFromAddress(workplace_address: IJobPartne
 
   return {
     workplace_geopoint: geopoint,
-    workplace_address,
+    workplace_address_street_label,
+    workplace_address_city,
+    workplace_address_zipcode,
+    workplace_address_country: "France",
   }
 }
 
@@ -571,7 +575,10 @@ async function resolveWorkplaceLocationFromAddress(workplace_address: IJobPartne
 type WorkplaceSiretData = Pick<
   IJobsPartnersOfferApi,
   | "workplace_geopoint"
-  | "workplace_address"
+  | "workplace_address_street_label"
+  | "workplace_address_country"
+  | "workplace_address_city"
+  | "workplace_address_zipcode"
   | "workplace_legal_name"
   | "workplace_brand"
   | "workplace_naf_label"
@@ -601,12 +608,10 @@ async function resolveWorkplaceDataFromSiret(workplace_siret: string, zodError: 
 
   return {
     workplace_geopoint: entrepriseData.geopoint,
-    workplace_address: {
-      city: entrepriseData.address_detail.commune,
-      street: entrepriseData.address_detail.l4, // vérifier champ
-      zipcode: "",
-      country: "",
-    },
+    workplace_address_city: entrepriseData.address_detail.commune,
+    workplace_address_street_label: entrepriseData.address_detail.l4, // vérifier champ
+    workplace_address_zipcode: "",
+    workplace_address_country: "",
     workplace_brand: entrepriseData.establishment_enseigne ?? null,
     workplace_legal_name: entrepriseData.establishment_raison_sociale ?? null,
     workplace_naf_label: entrepriseData.naf_label ?? null,
@@ -642,8 +647,8 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAlte
   const zodError = new ZodError([])
 
   const [siretData, addressData] = await Promise.all([
-    resolveWorkplaceDataFromSiret(data.workplace_siret, zodError),
-    resolveWorkplaceLocationFromAddress(data.workplace_address, zodError),
+    resolveWorkplaceDataFromSiret(data.workplace_siret as string, zodError),
+    resolveWorkplaceLocationFromAddress(data.workplace_address_street_label, data.workplace_address_city, data.workplace_address_zipcode, zodError),
   ])
 
   const romeCode = await resolveRomeCodes(data, siretData, zodError)

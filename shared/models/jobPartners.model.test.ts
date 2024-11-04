@@ -4,7 +4,7 @@ import { describe, expectTypeOf, it } from "vitest"
 import { OPCOS_LABEL, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
 
 import { JOB_STATUS_ENGLISH } from "./job.model.js"
-import { IJobsPartnersWritableApi, IJobsPartnersOfferApi, IJobsPartnersRecruiterApi, IJobsPartnersWritableApiInput, IJobPartnerWorkplaceAddress } from "./jobsPartners.model.js"
+import { IJobsPartnersWritableApi, IJobsPartnersOfferApi, IJobsPartnersRecruiterApi, IJobsPartnersWritableApiInput } from "./jobsPartners.model.js"
 
 type IJobWorkplaceExpected = {
   workplace_siret: string | null
@@ -14,7 +14,10 @@ type IJobWorkplaceExpected = {
   workplace_name: string | null
   workplace_description: string | null
   workplace_size: string | null
-  workplace_address: IJobPartnerWorkplaceAddress
+  workplace_address_city: string | null
+  workplace_address_zipcode: string | null
+  workplace_address_street_label: string | null
+  workplace_address_country: string | null
   workplace_geopoint: {
     type: "Point"
     coordinates: [number, number]
@@ -91,7 +94,10 @@ type IJobOfferWritableExpected = {
   workplace_name: string | null
   workplace_website: string | null
   workplace_description: string | null
-  workplace_address: IJobPartnerWorkplaceAddress | null
+  workplace_address_city: string | null
+  workplace_address_zipcode: string | null
+  workplace_address_street_label: string | null
+  workplace_address_country: string | null
 }
 
 type IJobOfferWritableInputExpected = {
@@ -124,7 +130,10 @@ type IJobOfferWritableInputExpected = {
   workplace_name?: string | null | undefined
   workplace_website?: string | null | undefined
   workplace_description?: string | null | undefined
-  workplace_address?: IJobPartnerWorkplaceAddress | null | undefined
+  workplace_address_city?: string | null | undefined
+  workplace_address_zipcode?: string | null | undefined
+  workplace_address_street_label?: string | null | undefined
+  workplace_address_country?: string | null | undefined
 }
 
 describe("IJobRecruiterExpected", () => {
