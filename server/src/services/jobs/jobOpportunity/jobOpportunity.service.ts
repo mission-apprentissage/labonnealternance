@@ -558,7 +558,7 @@ async function resolveWorkplaceLocationFromAddress(
   const geopoint = await getGeoPoint(`${workplace_address_street_label || ""} ${workplace_address_zipcode || ""} ${workplace_address_city}`.trim())
 
   if (!geopoint) {
-    zodError.addIssue({ code: "custom", path: ["workplace_address"], message: "Cannot resolve geo-coordinates for the given address" })
+    zodError.addIssue({ code: "custom", path: ["workplace_geopoint"], message: "Cannot resolve geo-coordinates for the given address" })
     return null
   }
 

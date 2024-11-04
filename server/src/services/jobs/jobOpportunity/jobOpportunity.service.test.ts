@@ -1790,13 +1790,10 @@ describe("createJobOffer", () => {
     expect(job?.offer_expiration).toEqual(in2Month)
     expect(job?.offer_target_diploma).toEqual(null)
     expect(job?.workplace_geopoint).toEqual(parisFixture.centre)
-    expect(job?.workplace_address).toEqual({
-      zipcode: "75007",
-      city: "PARIS",
-      country: null,
-      street: "20 AVENUE DE SEGUR",
-    })
-
+    expect(job?.workplace_address_street_label).toEqual("20 AVENUE DE SEGUR")
+    expect(job?.workplace_address_zipcode).toEqual("75007")
+    expect(job?.workplace_address_city).toEqual("PARIS")
+    expect(job?.workplace_address_country).toEqual(null)
     expect(job).toMatchSnapshot({
       _id: expect.any(ObjectId),
     })
@@ -1815,7 +1812,7 @@ describe("createJobOffer", () => {
     expect(nock.isDone()).toBeTruthy()
   })
 
-  it('should get workplace location from given "workplace_address"', async () => {
+  it('should get workplace location from given "workplace_address_*" fields', async () => {
     nock("https://api-adresse.data.gouv.fr:443")
       .get("/search")
       .query({ q: "1T impasse Passoir Clichy", limit: "1" })
@@ -1825,17 +1822,18 @@ describe("createJobOffer", () => {
 
     const result = await createJobOffer(identity, {
       ...minimalData,
-      workplace_address: { street: "1T impasse Passoir", city: "Clichy", zipcode: clichyFixture.codesPostaux[0], country: "France" },
+      workplace_address_street_label: "1T impasse Passoir",
+      workplace_address_city: "Clichy",
+      workplace_address_zipcode: clichyFixture.codesPostaux[0],
+      workplace_address_country: "France",
     })
     expect(result).toBeInstanceOf(ObjectId)
 
     const job = await getDbCollection("jobs_partners").findOne({ _id: result })
-    expect(job?.workplace_address).toEqual({
-      steet: "1T impasse Passoir",
-      city: "Clichy",
-      zipcode: "92110",
-      country: "France",
-    })
+    expect(job?.workplace_address_street_label).toEqual("1T impasse Passoir")
+    expect(job?.workplace_address_city).toEqual("Clichy")
+    expect(job?.workplace_address_zipcode).toEqual("92110")
+    expect(job?.workplace_address_country).toEqual("France")
     expect(job?.workplace_geopoint).toEqual(clichyFixture.centre)
     expect(nock.isDone()).toBeTruthy()
   })
@@ -1889,7 +1887,10 @@ describe("updateJobOffer", () => {
     apply_phone: null,
 
     workplace_siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
-    workplace_address: null,
+    workplace_address_street_label: null,
+    workplace_address_city: null,
+    workplace_address_zipcode: null,
+    workplace_address_country: null,
     workplace_description: null,
     workplace_website: null,
     workplace_name: null,
@@ -1937,12 +1938,10 @@ describe("updateJobOffer", () => {
     expect(job?.offer_expiration).toEqual(originalCreatedAtPlus2Months)
     expect(job?.offer_target_diploma).toEqual(null)
     expect(job?.workplace_geopoint).toEqual(parisFixture.centre)
-    expect(job?.workplace_address).toEqual({
-      zipcode: "75007",
-      city: "PARIS",
-      country: null,
-      street: "20 AVENUE DE SEGUR",
-    })
+    expect(job?.workplace_address_street_label).toEqual("20 AVENUE DE SEGUR")
+    expect(job?.workplace_address_zipcode).toEqual("75007")
+    expect(job?.workplace_address_city).toEqual("PARIS")
+    expect(job?.workplace_address_country).toEqual(null)
 
     expect(job).toMatchSnapshot({
       _id: expect.any(ObjectId),
@@ -1961,7 +1960,7 @@ describe("updateJobOffer", () => {
     expect(nock.isDone()).toBeTruthy()
   })
 
-  it('should get workplace location from given "workplace_address"', async () => {
+  it('should get workplace location from given "workplace_address_*" fields', async () => {
     nock("https://api-adresse.data.gouv.fr:443")
       .get("/search")
       .query({ q: "1T impasse Passoir Clichy", limit: "1" })
@@ -1972,16 +1971,17 @@ describe("updateJobOffer", () => {
     await updateJobOffer(_id, identity, {
       ...minimalData,
       partner_job_id: "job-id-11",
-      workplace_address: { street: "1T impasse Passoir", city: "Clichy", zipcode: clichyFixture.codesPostaux[0], country: "France" },
+      workplace_address_street_label: "1T impasse Passoir",
+      workplace_address_city: "Clichy",
+      workplace_address_zipcode: clichyFixture.codesPostaux[0],
+      workplace_address_country: "France",
     })
 
     const job = await getDbCollection("jobs_partners").findOne({ _id })
-    expect(job?.workplace_address).toEqual({
-      steet: "1T impasse Passoir",
-      city: "Clichy",
-      zipcode: "92110",
-      country: "France",
-    })
+    expect(job?.workplace_address_street_label).toEqual("1T impasse Passoir")
+    expect(job?.workplace_address_city).toEqual("Clichy")
+    expect(job?.workplace_address_zipcode).toEqual("92110")
+    expect(job?.workplace_address_country).toEqual("France")
     expect(job?.workplace_geopoint).toEqual(clichyFixture.centre)
     expect(nock.isDone()).toBeTruthy()
   })
