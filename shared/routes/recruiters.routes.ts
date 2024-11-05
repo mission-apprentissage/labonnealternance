@@ -208,27 +208,4 @@ export const zRecruiterRoutes = {
       },
     },
   },
-  put: {
-    "/etablissement/:id": {
-      method: "put",
-      path: "/etablissement/:id",
-      params: z.object({ id: zObjectId }).strict(),
-      body: ZUserRecruteurWritable.pick({
-        last_name: true,
-        first_name: true,
-        phone: true,
-        email: true,
-      }).extend({ _id: zObjectId }),
-      response: {
-        "200": z.object({ ok: z.boolean() }).strict(),
-      },
-      securityScheme: {
-        auth: "cookie-session",
-        access: "user:manage",
-        resources: {
-          user: [{ _id: { type: "params", key: "id" } }],
-        },
-      },
-    },
-  },
 } as const satisfies IRoutesDef

@@ -26,7 +26,7 @@ type EntrepriseResource = { entreprise: IEntreprise }
 type JobPartnerResource = { job: IJobsPartnersOfferPrivate }
 type UserResource = {
   user: IUserWithAccount
-  entreprises: IEntreprise[] | null
+  entreprises: IEntreprise[]
 }
 
 type Resources = {
@@ -112,7 +112,7 @@ const getEntreprisesManagedByUser = async (user: IUserWithAccount) => {
     ])
     .toArray()
 
-  return entreprises?.length ? entreprises.map((entreprise) => entreprise.entreprises) : null
+  return entreprises?.length ? entreprises.map((entreprise) => entreprise.entreprises) : []
 }
 
 async function getRecruitersResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources["recruiters"]> {
@@ -338,7 +338,7 @@ function canAccessUser(userAccess: ComputedUserAccess, resource: Resources["user
   if (userAccess.users.includes(resource.user._id.toString())) {
     return true
   }
-  return userAccess.opcos.some((opco) => resource.entreprises && resource.entreprises.some((entreprise) => entreprise.opco === opco))
+  return userAccess.opcos.some((opco) => resource.entreprises.some((entreprise) => entreprise.opco === opco))
 }
 
 function canAccessApplication(userAccess: ComputedUserAccess, resource: ApplicationResource): boolean {

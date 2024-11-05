@@ -12,7 +12,7 @@ import { ZJob } from "./job.model"
 
 const allRecruiterStatus = Object.values(RECRUITER_STATUS)
 
-export const ZRecruiterWritable = z
+const ZRecruiterWritable = z
   .object({
     establishment_id: z.string().default(randomUUID).describe("Identifiant de formulaire unique").openapi({
       default: "Random UUID",
