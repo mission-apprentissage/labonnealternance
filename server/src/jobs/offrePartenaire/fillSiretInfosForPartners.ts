@@ -31,12 +31,6 @@ export const fillSiretInfosForPartners = async () => {
       const [document] = documents
       const { workplace_siret: siret } = document
 
-      const workplace_geopoint: IGeoPoint | null = "workplace_geopoint" in document ? (document.workplace_geopoint as IGeoPoint) : null
-      const workplace_address_street_label: string | null = "workplace_address_street_label" in document ? (document.workplace_address_street_label as string) : null
-      const workplace_address_city: string | null = "workplace_address_city" in document ? (document.workplace_address_city as string) : null
-      const workplace_address_zipcode: string | null = "workplace_address_zipcode" in document ? (document.workplace_address_zipcode as string) : null
-      const workplace_address_country: string | null = "workplace_address_country" in document ? (document.workplace_address_country as string) : null
-
       const response = await getSiretInfos(siret)
       if (!response) {
         return []
@@ -56,10 +50,10 @@ export const fillSiretInfosForPartners = async () => {
         workplace_naf_code: document.workplace_naf_code ?? naf_code,
         workplace_naf_label: document.workplace_naf_label ?? naf_label,
         workplace_name: document.workplace_name ?? establishment_enseigne ?? establishment_raison_sociale,
-        workplace_address_street_label: workplace_address_street_label ?? (address_street_label ?? null),
-        workplace_address_city: workplace_address_city ?? (address_detail?.libelle_commune ?? null),
-        workplace_address_zipcode: workplace_address_zipcode ?? (address_detail?.code_postal ?? null),
-        workplace_address_country: workplace_address_country ?? (address_detail?.libelle_pays_etranger ?? "France"),
+        workplace_address_street_label: document.workplace_address_street_label ?? address_street_label ?? null,
+        workplace_address_city: document.workplace_address_city ?? address_detail?.libelle_commune ?? null,
+        workplace_address_zipcode: document.workplace_address_zipcode ?? address_detail?.code_postal ?? null,
+        workplace_address_country: document.workplace_address_country ?? address_detail?.libelle_pays_etranger ?? "France",
         workplace_geopoint: document.workplace_geopoint ?? (geo_coordinates ? convertStringCoordinatesToGeoPoint(geo_coordinates) : null),
       }
 
