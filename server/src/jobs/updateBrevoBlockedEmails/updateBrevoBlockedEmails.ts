@@ -53,9 +53,9 @@ export const saveBlacklistEmails = async (contacts) => {
       let origin: BlackListOrigins = BlackListOrigins.UNKNOWN
 
       if (await getDbCollection("applications").findOne({ company_email: email })) {
-        origin = BlackListOrigins.SPONT
+        origin = BlackListOrigins.CANDIDATURE_SPONTANEE_RECRUTEUR
       } else if (await getDbCollection("applications").findOne({ applicant_email: email })) {
-        origin = BlackListOrigins.SPONT_CANDIDAT
+        origin = BlackListOrigins.CANDIDATURE_SPONTANEE_CANDIDAT
       } else if (await getDbCollection("users").findOne({ email, role: EApplicantRole.CANDIDAT })) {
         origin = BlackListOrigins.PRDV_CANDIDAT
       } else if (await getDbCollection("eligible_trainings_for_appointments").findOne({ lieu_formation_email: email })) {

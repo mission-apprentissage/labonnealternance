@@ -48,11 +48,11 @@ export const processHardBounceWebhookEvent = async (payload: IBrevoWebhookEvent)
 
   if ([BrevoEventStatus.HARD_BOUNCE, BrevoEventStatus.BLOCKED, BrevoEventStatus.SPAM, BrevoEventStatus.UNSUBSCRIBED].includes(event)) {
     if (await processApplicationHardbounceEvent(payload)) {
-      origin = BlackListOrigins.SPONT
+      origin = BlackListOrigins.CANDIDATURE_SPONTANEE_RECRUTEUR
     }
 
     if (await processApplicationCandidateHardbounceEvent(payload)) {
-      origin = BlackListOrigins.SPONT_CANDIDAT
+      origin = BlackListOrigins.CANDIDATURE_SPONTANEE_CANDIDAT
     }
 
     if (await isHardbounceEventFromAppointmentCfa(payload)) {

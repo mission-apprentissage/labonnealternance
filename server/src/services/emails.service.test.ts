@@ -99,7 +99,7 @@ describe("email blaklist events", () => {
     const blEvent = await getDbCollection("emailblacklists").findOne({ email: blacklistedEmail })
     expect.soft(blEvent).toEqual(
       expect.objectContaining({
-        blacklisting_origin: `${BlackListOrigins.SPONT_CANDIDAT} (${BrevoEventStatus.BLOCKED})`,
+        blacklisting_origin: `${BlackListOrigins.CANDIDATURE_SPONTANEE_CANDIDAT} (${BrevoEventStatus.BLOCKED})`,
         email: blacklistedEmail,
       })
     )
@@ -114,7 +114,7 @@ describe("email blaklist events", () => {
     let blEvent = await getDbCollection("emailblacklists").findOne({ email: blacklistedEmail })
     expect.soft(blEvent).toEqual(
       expect.objectContaining({
-        blacklisting_origin: `${BlackListOrigins.SPONT_CANDIDAT} (${BrevoEventStatus.UNSUBSCRIBED})`,
+        blacklisting_origin: `${BlackListOrigins.CANDIDATURE_SPONTANEE_CANDIDAT} (${BrevoEventStatus.UNSUBSCRIBED})`,
         email: blacklistedEmail,
       })
     )
@@ -128,7 +128,7 @@ describe("email blaklist events", () => {
     blEvent = await getDbCollection("emailblacklists").findOne({ email: blacklistedEmail })
     expect.soft(blEvent).toEqual(
       expect.objectContaining({
-        blacklisting_origin: `${BlackListOrigins.SPONT} (${BrevoEventStatus.UNSUBSCRIBED})`,
+        blacklisting_origin: `${BlackListOrigins.CANDIDATURE_SPONTANEE_RECRUTEUR} (${BrevoEventStatus.UNSUBSCRIBED})`,
         email: blacklistedEmail,
       })
     )
@@ -188,7 +188,7 @@ describe("email blaklist events", () => {
     const blEvent = await getDbCollection("emailblacklists").findOne({ email: blacklistedEmail })
     expect.soft(blEvent).toEqual(
       expect.objectContaining({
-        blacklisting_origin: `${BlackListOrigins.SPONT} (${BrevoEventStatus.SPAM})`,
+        blacklisting_origin: `${BlackListOrigins.CANDIDATURE_SPONTANEE_RECRUTEUR} (${BrevoEventStatus.SPAM})`,
         email: blacklistedEmail,
       })
     )
