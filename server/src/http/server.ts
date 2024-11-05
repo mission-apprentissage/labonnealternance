@@ -14,6 +14,7 @@ import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 
 import { localOrigin } from "@/common/utils/isOriginLocal"
 
+import { initSentryFastify } from "../common/sentry/sentry.fastify"
 import config from "../config"
 import { initBrevoWebhooks } from "../services/brevo.service"
 
@@ -52,7 +53,6 @@ import version from "./controllers/version.controller"
 import { auth } from "./middlewares/authMiddleware"
 import { errorMiddleware } from "./middlewares/errorMiddleware"
 import { logMiddleware } from "./middlewares/logMiddleware"
-import { initSentryFastify } from "./sentry"
 
 export interface Server
   extends FastifyInstance<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>, FastifyBaseLogger, ZodTypeProvider> {}

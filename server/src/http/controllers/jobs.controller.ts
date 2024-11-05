@@ -465,22 +465,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { id } = req.params
       const { caller } = req.query
-
-      const result = await getFtJobFromId({
-        id,
-        caller,
-      })
-
-      if ("error" in result) {
-        if (result.error === "wrong_parameters") {
-          res.status(400)
-        } else if (result.error === "not_found") {
-          res.status(404)
-        } else {
-          res.status(500)
-        }
-      }
-
+      const result = await getFtJobFromId({ id, caller })
       return res.send(result)
     }
   )

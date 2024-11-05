@@ -360,7 +360,7 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IJobRes
           workplace_address_street_label: `${recruiter.address_detail.numero_voie} ${recruiter.address_detail.type_voie} ${recruiter.address_detail.nom_voie}`,
           workplace_address_country: "France",
           workplace_geopoint: recruiter.geopoint!,
-          workplace_idcc: recruiter.idcc ? Number(recruiter.idcc) : null,
+          workplace_idcc: recruiter.idcc ? (Number.isNaN(parseInt(recruiter.idcc, 10)) ? null : parseInt(recruiter.idcc, 10)) : null,
           workplace_opco: convertOpco(recruiter),
           workplace_naf_code: recruiter.naf_code ?? null,
           workplace_naf_label: recruiter.naf_label ?? null,
