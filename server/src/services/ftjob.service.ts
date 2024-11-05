@@ -372,10 +372,9 @@ export const getSomeFtJobs = async ({ romes, insee, radius, latitude, longitude,
 /**
  * @description Retourne un tableau contenant la seule offre France Travail identifiée
  */
-export const getFtJobFromId = async ({ id, caller }: { id: string; caller: string | undefined }): Promise<IApiError | { peJobs: ILbaItemFtJob[] }> => {
+export const getFtJobFromId = async ({ id, caller }: { id: string; caller: string | undefined }): Promise<{ peJobs: ILbaItemFtJob[] }> => {
   try {
     const job = await getFtJob(id)
-
     if (job.status === 204 || job.data === "") {
       throw notFound()
     }
@@ -397,8 +396,9 @@ export const getFtJobFromId = async ({ id, caller }: { id: string; caller: strin
   } catch (error: any) {
     if (!error.isBoom) {
       sentryCaptureException(error)
+      manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from FT" })
     }
-    return manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from FT" })
+    throw error
   }
 }
 /**

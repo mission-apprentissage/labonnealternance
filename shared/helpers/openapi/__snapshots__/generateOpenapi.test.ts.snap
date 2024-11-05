@@ -8073,66 +8073,6 @@ Limite : 5 appel(s) / 1 seconde(s)
             },
             "description": "",
           },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                    {
-                      "$ref": "#/components/schemas/ApiError",
-                    },
-                  ],
-                },
-              },
-            },
-            "description": "",
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                    {
-                      "$ref": "#/components/schemas/ApiError",
-                    },
-                  ],
-                },
-              },
-            },
-            "description": "",
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                    {
-                      "$ref": "#/components/schemas/ApiError",
-                    },
-                  ],
-                },
-              },
-            },
-            "description": "",
-          },
         },
         "security": [],
         "tags": [
