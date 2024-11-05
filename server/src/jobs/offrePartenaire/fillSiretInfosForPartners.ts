@@ -12,6 +12,7 @@ export const fillSiretInfosForPartners = async () => {
   const filledFields = [
     "workplace_size",
     "workplace_name",
+    "workplace_address_label",
     "workplace_address_street_label",
     "workplace_address_country",
     "workplace_address_city",
@@ -40,7 +41,7 @@ export const fillSiretInfosForPartners = async () => {
       }
 
       const { data } = response
-      const { establishment_enseigne, establishment_raison_sociale, naf_code, naf_label, geo_coordinates, establishment_size, address_detail } = formatEntrepriseData(data)
+      const { establishment_enseigne, establishment_raison_sociale, naf_code, naf_label, geo_coordinates, establishment_size, address, address_detail } = formatEntrepriseData(data)
       const address_street_label = addressDetailToStreetLabel(address_detail)
 
       const result: Pick<IComputedJobsPartners, (typeof filledFields)[number]> = {
@@ -50,6 +51,7 @@ export const fillSiretInfosForPartners = async () => {
         workplace_naf_code: document.workplace_naf_code ?? naf_code,
         workplace_naf_label: document.workplace_naf_label ?? naf_label,
         workplace_name: document.workplace_name ?? establishment_enseigne ?? establishment_raison_sociale,
+        workplace_address_label: document.workplace_address_label ?? address ?? null,
         workplace_address_street_label: document.workplace_address_street_label ?? address_street_label ?? null,
         workplace_address_city: document.workplace_address_city ?? address_detail?.libelle_commune ?? null,
         workplace_address_zipcode: document.workplace_address_zipcode ?? address_detail?.code_postal ?? null,

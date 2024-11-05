@@ -46,6 +46,7 @@ export const importFromComputedToJobsPartners = async () => {
           workplace_name: computedJobPartner.workplace_name ?? null,
           workplace_description: computedJobPartner.workplace_description ?? null,
           workplace_size: computedJobPartner.workplace_size ?? null,
+          workplace_address_label: computedJobPartner.workplace_address_label,
           workplace_address_street_label: computedJobPartner.workplace_address_street_label,
           workplace_address_zipcode: computedJobPartner.workplace_address_zipcode,
           workplace_address_city: computedJobPartner.workplace_address_city,

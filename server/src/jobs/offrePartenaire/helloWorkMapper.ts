@@ -82,6 +82,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     geoloc,
     url,
     updated_date,
+    address,
     postal_code,
     country,
   } = job
@@ -132,6 +133,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     workplace_address_zipcode: postal_code || null,
     workplace_address_city: city || null,
     workplace_address_country: country || null,
+    workplace_address_label: [address, city].filter((x) => x).join(" "),
     workplace_address_street_label: null,
     workplace_geopoint:
       latitude && longitude

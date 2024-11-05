@@ -1744,6 +1744,7 @@ describe("createJobOffer", () => {
     workplace_address_zipcode: null,
     workplace_address_city: null,
     workplace_address_country: null,
+    workplace_address_label: null,
     workplace_address_street_label: null,
     workplace_description: null,
     workplace_website: null,
@@ -1790,6 +1791,7 @@ describe("createJobOffer", () => {
     expect(job?.offer_expiration).toEqual(in2Month)
     expect(job?.offer_target_diploma).toEqual(null)
     expect(job?.workplace_geopoint).toEqual(parisFixture.centre)
+    expect(job?.workplace_address_label).toEqual("20 AVENUE DE SEGUR 75007 PARIS")
     expect(job?.workplace_address_street_label).toEqual("20 AVENUE DE SEGUR")
     expect(job?.workplace_address_zipcode).toEqual("75007")
     expect(job?.workplace_address_city).toEqual("PARIS")
@@ -1822,6 +1824,7 @@ describe("createJobOffer", () => {
 
     const result = await createJobOffer(identity, {
       ...minimalData,
+      workplace_address_label: "1T impasse Passoir Clichy",
       workplace_address_street_label: "1T impasse Passoir",
       workplace_address_city: "Clichy",
       workplace_address_zipcode: clichyFixture.codesPostaux[0],
@@ -1830,6 +1833,7 @@ describe("createJobOffer", () => {
     expect(result).toBeInstanceOf(ObjectId)
 
     const job = await getDbCollection("jobs_partners").findOne({ _id: result })
+    expect(job?.workplace_address_label).toEqual("1T impasse Passoir Clichy")
     expect(job?.workplace_address_street_label).toEqual("1T impasse Passoir")
     expect(job?.workplace_address_city).toEqual("Clichy")
     expect(job?.workplace_address_zipcode).toEqual("92110")
@@ -1887,6 +1891,7 @@ describe("updateJobOffer", () => {
     apply_phone: null,
 
     workplace_siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
+    workplace_address_label: null,
     workplace_address_street_label: null,
     workplace_address_city: null,
     workplace_address_zipcode: null,
@@ -1938,6 +1943,7 @@ describe("updateJobOffer", () => {
     expect(job?.offer_expiration).toEqual(originalCreatedAtPlus2Months)
     expect(job?.offer_target_diploma).toEqual(null)
     expect(job?.workplace_geopoint).toEqual(parisFixture.centre)
+    expect(job?.workplace_address_label).toEqual("20 AVENUE DE SEGUR 75007 PARIS")
     expect(job?.workplace_address_street_label).toEqual("20 AVENUE DE SEGUR")
     expect(job?.workplace_address_zipcode).toEqual("75007")
     expect(job?.workplace_address_city).toEqual("PARIS")
@@ -1971,6 +1977,7 @@ describe("updateJobOffer", () => {
     await updateJobOffer(_id, identity, {
       ...minimalData,
       partner_job_id: "job-id-11",
+      workplace_address_label: "1T impasse Passoir Clichy",
       workplace_address_street_label: "1T impasse Passoir",
       workplace_address_city: "Clichy",
       workplace_address_zipcode: clichyFixture.codesPostaux[0],
@@ -1978,6 +1985,7 @@ describe("updateJobOffer", () => {
     })
 
     const job = await getDbCollection("jobs_partners").findOne({ _id })
+    expect(job?.workplace_address_label).toEqual("1T impasse Passoir Clichy")
     expect(job?.workplace_address_street_label).toEqual("1T impasse Passoir")
     expect(job?.workplace_address_city).toEqual("Clichy")
     expect(job?.workplace_address_zipcode).toEqual("92110")
