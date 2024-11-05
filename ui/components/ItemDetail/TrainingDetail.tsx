@@ -29,7 +29,6 @@ const TrainingDetail = ({ training }) => {
   const isCfaDEntreprise = isCfaEntreprise(training?.company?.siret, training?.company?.headquarter?.siret)
 
   useQuery(["getPrdv", training.id], () => fetchPrdvContext(training.id), {
-    retry: false,
     enabled: training && !training.prdvLoaded,
   })
 
