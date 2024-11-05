@@ -233,6 +233,8 @@ fileignoreconfig:
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
 - filename: server/src/jobs/offrePartenaire/importHelloWork.test.input.xml
   checksum: 6f28aee7664d1ec1e4b4da34b96b63e23781538b3fe3e8d50dddbdad3884fa3f
+- filename: shared/fixtures/application.fixture.ts
+  checksum: c7e694afcde9ceaa11ce455a48d2e3f3b018a6ec3118f4a88e666d85d32ffcad
 scopeconfig:
 - scope: node
 custom_patterns:

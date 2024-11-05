@@ -361,9 +361,6 @@ export const zV1JobsRoutes = {
       headers: zRefererHeaders,
       response: {
         "200": ZLbaItemFtJobReturnedByAPI,
-        "400": z.union([ZResError, ZLbacError, ZApiError]),
-        "404": z.union([ZResError, ZLbacError, ZApiError]),
-        "500": z.union([ZResError, ZLbacError, ZApiError]),
       },
       securityScheme: null,
       openapi: {

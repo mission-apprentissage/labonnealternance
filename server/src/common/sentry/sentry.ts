@@ -11,6 +11,7 @@ function getOptions(): Sentry.NodeOptions {
     environment: config.env,
     release: config.version,
     enabled: config.env !== "local",
+    dsn: config.serverSentryDsn,
     integrations: [
       Sentry.httpIntegration(),
       Sentry.mongoIntegration(),

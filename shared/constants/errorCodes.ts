@@ -10,6 +10,7 @@ export enum BusinessErrorCodes {
   TOO_MANY_APPLICATIONS_PER_DAY = "Maximum application per day reached",
   TOO_MANY_APPLICATIONS_PER_OFFER = "Maximum application per offer reached",
   TOO_MANY_APPLICATIONS_PER_SIRET = "Maximum application per recruiter reached",
+  FILE_TYPE_NOT_SUPPORTED = "File type is not supported",
   BURNER = "Disposable email are not allowed",
   NOTFOUND = "Job or recruiter not found",
   EXPIRED = "Job offer has expired",

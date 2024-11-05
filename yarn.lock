@@ -4552,6 +4552,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sec-ant/readable-stream@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "@sec-ant/readable-stream@npm:0.4.1"
+  checksum: eb56f72a70995f725269f1c1c206d6dbeb090e88413b1302a456c600041175a7a484c2f0172454f7bed65a8ab95ffed7647d8ad03e6c23b1e3bbc9845f78cd17
+  languageName: node
+  linkType: hard
+
 "@semantic-release/changelog@npm:^6.0.2":
   version: 6.0.3
   resolution: "@semantic-release/changelog@npm:6.0.3"
@@ -6002,6 +6009,13 @@ __metadata:
     react: ^18.0.0
     react-dom: ^18.0.0
   checksum: 51ec548c1fdb1271089a5c63e0908f0166f2c7fcd9cacd3108ebbe0ce64cb4351812d885892020dc37608418cfb15698514856502b3cab0e5cc58d6cc1bd4a3e
+  languageName: node
+  linkType: hard
+
+"@tokenizer/token@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "@tokenizer/token@npm:0.3.0"
+  checksum: 1d575d02d2a9f0c5a4ca5180635ebd2ad59e0f18b42a65f3d04844148b49b3db35cf00b6012a1af2d59c2ab3caca59451c5689f747ba8667ee586ad717ee58e1
   languageName: node
   linkType: hard
 
@@ -9373,6 +9387,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"csv-stringify@npm:^6.5.1":
+  version: 6.5.1
+  resolution: "csv-stringify@npm:6.5.1"
+  checksum: 5eb8167ee944f5328c53c733d8c4b1eea88fb9e510abec430e2fcb4be6c4ce008b92e90da7825d424fe74d22c85405add7f89b9dcf82ffe2bf0a1cf31536057a
+  languageName: node
+  linkType: hard
+
 "cyclist@npm:1.0.1":
   version: 1.0.1
   resolution: "cyclist@npm:1.0.1"
@@ -11745,6 +11766,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"file-type@npm:^19.6.0":
+  version: 19.6.0
+  resolution: "file-type@npm:19.6.0"
+  dependencies:
+    get-stream: ^9.0.1
+    strtok3: ^9.0.1
+    token-types: ^6.0.0
+    uint8array-extras: ^1.3.0
+  checksum: f9f130bd5432e8c8fd9c663f87eecad0226b2ae3deda87247be22fed3abe9f931368dbbf526a5b6bdacef883a8a83c25e150a80723fecaa3752f6daae0d5312b
+  languageName: node
+  linkType: hard
+
 "filelist@npm:^1.0.4":
   version: 1.0.4
   resolution: "filelist@npm:1.0.4"
@@ -12279,6 +12312,16 @@ __metadata:
   version: 8.0.1
   resolution: "get-stream@npm:8.0.1"
   checksum: 01e3d3cf29e1393f05f44d2f00445c5f9ec3d1c49e8179b31795484b9c117f4c695e5e07b88b50785d5c8248a788c85d9913a79266fc77e3ef11f78f10f1b974
+  languageName: node
+  linkType: hard
+
+"get-stream@npm:^9.0.1":
+  version: 9.0.1
+  resolution: "get-stream@npm:9.0.1"
+  dependencies:
+    "@sec-ant/readable-stream": ^0.4.1
+    is-stream: ^4.0.1
+  checksum: 631df71d7bd60a7f373094d3c352e2ce412b82d30b1b0ec562e5a4aced976173a4cc0dabef019050e1aceaffb1f0e086349ab3d14377b0b7280510bd75bd3e1e
   languageName: node
   linkType: hard
 
@@ -13747,6 +13790,13 @@ __metadata:
   version: 3.0.0
   resolution: "is-stream@npm:3.0.0"
   checksum: 172093fe99119ffd07611ab6d1bcccfe8bc4aa80d864b15f43e63e54b7abc71e779acd69afdb854c4e2a67fdc16ae710e370eda40088d1cfc956a50ed82d8f16
+  languageName: node
+  linkType: hard
+
+"is-stream@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "is-stream@npm:4.0.1"
+  checksum: cbea3f1fc271b21ceb228819d0c12a0965a02b57f39423925f99530b4eb86935235f258f06310b67cd02b2d10b49e9a0998f5ececf110ab7d3760bae4055ad23
   languageName: node
   linkType: hard
 
@@ -18100,6 +18150,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"peek-readable@npm:^5.3.1":
+  version: 5.3.1
+  resolution: "peek-readable@npm:5.3.1"
+  checksum: 5db122ce37b79f89f34181e4d8326e3f4f5e8d797707fb9aa2f3a1a6fb87cdb9a5b23677cdb3f4687f8ccff0000ce4c0ebb8e5cad64f49997ff29c38ee6d0bc8
+  languageName: node
+  linkType: hard
+
 "pend@npm:~1.2.0":
   version: 1.2.0
   resolution: "pend@npm:1.2.0"
@@ -20483,6 +20540,7 @@ __metadata:
     convert-csv-to-json: ^0.0.15
     cron-parser: ^4.9.0
     csv-parse: ^5.5.0
+    csv-stringify: ^6.5.1
     date-fns: ^2.30.0
     dayjs: ^1.11.10
     dotenv: ^16.3.1
@@ -20494,6 +20552,7 @@ __metadata:
     fast-deep-equal: ^3.1.3
     fastify: ^4.23.2
     fastify-type-provider-zod: ^1.1.9
+    file-type: ^19.6.0
     form-data: ^4.0.0
     fs-extra: ^9.1.0
     geolib: ^3.3.4
@@ -21324,6 +21383,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"strtok3@npm:^9.0.1":
+  version: 9.0.1
+  resolution: "strtok3@npm:9.0.1"
+  dependencies:
+    "@tokenizer/token": ^0.3.0
+    peek-readable: ^5.3.1
+  checksum: 9c583a8b84a28706a9114b70d0ff6fb6ee435f1e5f2c47a49ee125eea6b1da5c2178ec821a1f47e7906f480f6a1f3d534c2d3e4c1ef73407e1686dcf11f7ff1a
+  languageName: node
+  linkType: hard
+
 "style-value-types@npm:5.0.0":
   version: 5.0.0
   resolution: "style-value-types@npm:5.0.0"
@@ -21739,6 +21808,16 @@ __metadata:
   version: 1.0.1
   resolution: "toidentifier@npm:1.0.1"
   checksum: 952c29e2a85d7123239b5cfdd889a0dde47ab0497f0913d70588f19c53f7e0b5327c95f4651e413c74b785147f9637b17410ac8c846d5d4a20a5a33eb6dc3a45
+  languageName: node
+  linkType: hard
+
+"token-types@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "token-types@npm:6.0.0"
+  dependencies:
+    "@tokenizer/token": ^0.3.0
+    ieee754: ^1.2.1
+  checksum: 9d4fb5fad76bb968687a03aaae37f7eb606cca54c35b840ec438bbbc9b696ad0fbbd72760248b4eed16cbb3c87ab61590c287fc6bd973583944626b7c772f47b
   languageName: node
   linkType: hard
 
@@ -22292,6 +22371,13 @@ __metadata:
     zod-formik-adapter: ^1.3.0
   languageName: unknown
   linkType: soft
+
+"uint8array-extras@npm:^1.3.0":
+  version: 1.4.0
+  resolution: "uint8array-extras@npm:1.4.0"
+  checksum: 791c07e1f632cb6b4d5c0275dcac2efa4689be523f021cc78b66377872e500dbe5b4c56749367cc97892f6952bc5bccd34cf9147a2a16ccb253f3b7f94588398
+  languageName: node
+  linkType: hard
 
 "unbox-primitive@npm:^1.0.2":
   version: 1.0.2
