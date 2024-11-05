@@ -2,7 +2,7 @@ import { badRequest, conflict, internal, notFound } from "@hapi/boom"
 import { IApiAlternanceTokenData } from "api-alternance-sdk"
 import { DateTime } from "luxon"
 import { Document, Filter, ObjectId } from "mongodb"
-import { IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS_ENGLISH, assertUnreachable, parseEnum, translateJobStatus } from "shared"
+import { IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS_ENGLISH, assertUnreachable, joinNonNullStrings, parseEnum, translateJobStatus } from "shared"
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import {
@@ -546,16 +546,18 @@ export async function findJobsOpportunities(payload: IJobOpportunityGetQuery, co
 type WorkplaceAddressData = Pick<IJobsPartnersOfferApi, "workplace_geopoint" | "workplace_address_country">
 
 async function resolveWorkplaceGeoLocationFromAddress(
+  workplace_address_label: string | null,
   workplace_address_street_label: string | null,
   workplace_address_city: string | null,
   workplace_address_zipcode: string | null,
   zodError: ZodError
 ): Promise<WorkplaceAddressData | null> {
-  if (workplace_address_street_label === null && workplace_address_zipcode === null && workplace_address_city === null) {
+  const consolidatedAddress = joinNonNullStrings([workplace_address_street_label, workplace_address_zipcode, workplace_address_city])
+  if (workplace_address_label === null && consolidatedAddress === null) {
     return null
   }
 
-  const geopoint = await getGeoPoint(`${workplace_address_street_label || ""} ${workplace_address_zipcode || ""} ${workplace_address_city}`.trim())
+  const geopoint = await getGeoPoint((consolidatedAddress || workplace_address_label)!)
 
   if (!geopoint) {
     zodError.addIssue({ code: "custom", path: ["workplace_geopoint"], message: "Cannot resolve geo-coordinates for the given address" })
@@ -654,7 +656,7 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAlte
 
   const [siretData, addressData] = await Promise.all([
     resolveWorkplaceDataFromSiret(data.workplace_siret as string, zodError),
-    resolveWorkplaceGeoLocationFromAddress(workplace_address_street_label, workplace_address_city, workplace_address_zipcode, zodError),
+    resolveWorkplaceGeoLocationFromAddress(workplace_address_label, workplace_address_street_label, workplace_address_city, workplace_address_zipcode, zodError),
   ])
 
   const romeCode = await resolveRomeCodes(data, siretData, zodError)
