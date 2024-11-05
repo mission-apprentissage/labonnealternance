@@ -14,6 +14,7 @@ import {
   ILbaCompanyLegacy,
   IRecruiter,
   ITrackingCookies,
+  joinNonNullStrings,
   parseEnum,
   TrafficType,
   ZCfaReferentielData,
@@ -241,8 +242,8 @@ const addressDetailToString = (address: IAdresseV3): string => {
   return [l4, l6, l7 === "FRANCE" ? null : l7].filter((_) => _).join(" ")
 }
 
-export const addressDetailToStreetLabel = (address: IAdresseV3): string => {
-  return `${address.numero_voie ?? ""} ${address.type_voie ?? ""} ${address.libelle_voie ?? ""}`.trim()
+export const addressDetailToStreetLabel = (address: IAdresseV3): string | null => {
+  return joinNonNullStrings([address.numero_voie, address.type_voie, address.libelle_voie])
 }
 
 /**
