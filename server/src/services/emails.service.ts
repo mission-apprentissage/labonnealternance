@@ -49,21 +49,13 @@ export const processHardBounceWebhookEvent = async (payload: IBrevoWebhookEvent)
   if ([BrevoEventStatus.HARD_BOUNCE, BrevoEventStatus.BLOCKED, BrevoEventStatus.SPAM, BrevoEventStatus.UNSUBSCRIBED].includes(event)) {
     if (await processApplicationHardbounceEvent(payload)) {
       origin = BlackListOrigins.CANDIDATURE_SPONTANEE_RECRUTEUR
-    }
-
-    if (await processApplicationCandidateHardbounceEvent(payload)) {
+    } else if (await processApplicationCandidateHardbounceEvent(payload)) {
       origin = BlackListOrigins.CANDIDATURE_SPONTANEE_CANDIDAT
-    }
-
-    if (await isHardbounceEventFromAppointmentCfa(payload)) {
+    } else if (await isHardbounceEventFromAppointmentCfa(payload)) {
       origin = BlackListOrigins.PRDV_CFA
-    }
-
-    if (await isHardbounceEventFromAppointmentApplicant(payload)) {
+    } else if (await isHardbounceEventFromAppointmentApplicant(payload)) {
       origin = BlackListOrigins.PRDV_CANDIDAT
-    }
-
-    if (await isHardbounceEventFromEtablissement(payload)) {
+    } else if (await isHardbounceEventFromEtablissement(payload)) {
       origin = BlackListOrigins.PRDV_INVITATION
     }
 
