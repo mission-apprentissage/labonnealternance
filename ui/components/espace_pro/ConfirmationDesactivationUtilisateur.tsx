@@ -84,8 +84,7 @@ export const ConfirmationDesactivationUtilisateur = ({
         </ModalHeader>
         <ModalBody pb={6}>
           <Text>
-            Vous êtes sur le point de désactiver le compte de l’entreprise {establishment_raison_sociale}. Une fois le compte inactif, l’entreprise ne pourra plus accéder au
-            service de dépot d’offres et modifier ses informations.
+            Vous êtes sur le point de désactiver le compte de l’entreprise {establishment_raison_sociale}. Pouvez-vous nous préciser pour quelle raison ?
           </Text>
           <FormControl isRequired mt={5}>
             <FormLabel>Motif de refus</FormLabel>
