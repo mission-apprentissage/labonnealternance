@@ -20,8 +20,8 @@ export const fillOpcoInfosForPartners = async () => {
         const opcoData = opcosData.find((data) => data.siret === document.workplace_siret)
         if (!opcoData) {
           return {
-            workplace_idcc: null,
-            workplace_opco: OPCOS_LABEL.UNKNOWN_OPCO,
+            workplace_idcc: document.workplace_idcc ?? null,
+            workplace_opco: document.workplace_opco ?? OPCOS_LABEL.UNKNOWN_OPCO,
           }
         }
         const { opco, idcc } = opcoData
