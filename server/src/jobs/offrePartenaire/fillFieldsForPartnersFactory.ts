@@ -9,6 +9,15 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { streamGroupByCount } from "@/common/utils/streamUtils"
 
+/**
+ * Fonction permettant de facilement enrichir un computedJobPartner avec de nouvelles données provenant d'une source async
+ *
+ * @param job: nom du job
+ * @param sourceFields: champs nécessaires à la récupération des données
+ * @param filledFields: champs potentiellement modifiés par l'enrichissement
+ * @param groupSize: taille du packet de documents (utile pour optimiser les appels API et BDD)
+ * @param getData: fonction récupérant les nouvelles données. Les champs retournés seront modifiés et écraseront les anciennes données
+ */
 export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJobsPartnersOfferPrivate, FilledFields extends keyof IJobsPartnersOfferPrivate>({
   job,
   sourceFields,
@@ -27,9 +36,14 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
   })
   logger.info(`job ${job} : début d'enrichissement des données`)
   const queryFilter: Filter<IComputedJobsPartners> = {
-    validated: false,
-    ...Object.fromEntries(sourceFields.map((field) => [[field], { $ne: null }])),
-    $or: filledFields.map((field) => ({ [field]: null })),
+    $and: [
+      {
+        $or: sourceFields.map((field) => ({ [field]: { $ne: null } })),
+      },
+      {
+        $or: filledFields.map((field) => ({ [field]: null })),
+      },
+    ],
   }
   const toUpdateCount = await getDbCollection("computed_jobs_partners").countDocuments(queryFilter)
   logger.info(`${toUpdateCount} documents à traiter`)
