@@ -54,21 +54,13 @@ export const saveBlacklistEmails = async (contacts) => {
 
       if (await getDbCollection("applications").findOne({ company_email: email })) {
         origin = BlackListOrigins.SPONT
-      }
-
-      if (origin === BlackListOrigins.UNKNOWN && (await getDbCollection("applications").findOne({ applicant_email: email }))) {
+      } else if (await getDbCollection("applications").findOne({ applicant_email: email })) {
         origin = BlackListOrigins.SPONT_CANDIDAT
-      }
-
-      if (origin === BlackListOrigins.UNKNOWN && (await getDbCollection("users").findOne({ email, role: EApplicantRole.CANDIDAT }))) {
+      } else if (await getDbCollection("users").findOne({ email, role: EApplicantRole.CANDIDAT })) {
         origin = BlackListOrigins.PRDV_CANDIDAT
-      }
-
-      if (origin === BlackListOrigins.UNKNOWN && (await getDbCollection("eligible_trainings_for_appointments").findOne({ lieu_formation_email: email }))) {
+      } else if (await getDbCollection("eligible_trainings_for_appointments").findOne({ lieu_formation_email: email })) {
         origin = BlackListOrigins.PRDV_CFA
-      }
-
-      if (origin === BlackListOrigins.UNKNOWN && (await getDbCollection("userswithaccounts").findOne({ email }))) {
+      } else if (await getDbCollection("userswithaccounts").findOne({ email })) {
         origin = BlackListOrigins.USER_WITH_ACCOUNT
       }
 
