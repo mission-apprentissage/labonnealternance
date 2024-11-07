@@ -27,6 +27,8 @@ const dontBreakOutCssParameters = {
 const TrainingDetail = ({ training }) => {
   const [IJStats, setIJStats] = useState(null)
   const isCfaDEntreprise = isCfaEntreprise(training?.company?.siret, training?.company?.headquarter?.siret)
+  const { trainings, setTrainingsAndSelectedItem } = useContext(SearchResultContext)
+  const { formValues } = React.useContext(DisplayContext)
 
   useQuery(["getPrdv", training.id], () => fetchPrdvContext(training.id), {
     enabled: training && !training.prdvLoaded,
@@ -61,9 +63,6 @@ const TrainingDetail = ({ training }) => {
     }
     getStats()
   }, [training.id])
-
-  const { trainings, setTrainingsAndSelectedItem } = useContext(SearchResultContext)
-  const { formValues } = React.useContext(DisplayContext)
 
   useEffect(() => {
     // S'assurer que l'utilisateur voit bien le haut de la fiche au départ

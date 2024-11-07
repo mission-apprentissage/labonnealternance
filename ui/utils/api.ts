@@ -160,7 +160,7 @@ export const getPrdvContext = async (
     const data = await apiGet("/appointment", { querystring: { idCleMinistereEducatif, referrer } }, { timeout: 7000 })
     return data
   } catch (error) {
-    if (error.message !== BusinessErrorCodes.TRAINING_NOT_FOUND) {
+    if (error?.message !== BusinessErrorCodes.TRAINING_NOT_FOUND) {
       captureException(error)
     }
     return { error: error.message }
