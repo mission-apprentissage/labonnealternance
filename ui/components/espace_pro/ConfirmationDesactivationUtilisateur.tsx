@@ -83,9 +83,7 @@ export const ConfirmationDesactivationUtilisateur = ({
           </Heading>
         </ModalHeader>
         <ModalBody pb={6}>
-          <Text>
-            Vous êtes sur le point de désactiver le compte de l’entreprise {establishment_raison_sociale}. Pouvez-vous nous préciser pour quelle raison ?
-          </Text>
+          <Text>Vous êtes sur le point de désactiver le compte de l’entreprise {establishment_raison_sociale}. Pouvez-vous nous préciser pour quelle raison ?</Text>
           <FormControl isRequired mt={5}>
             <FormLabel>Motif de refus</FormLabel>
             <Select onChange={(e) => handleReason(e.target.value)}>
