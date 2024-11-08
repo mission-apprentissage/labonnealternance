@@ -46,7 +46,7 @@ export const upsertEntrepriseData = async (
   if ("error" in siretResponse) {
     if (!existingEntreprise) {
       const now = new Date()
-      existingEntreprise = { _id: new ObjectId(), opco: OPCOS_LABEL.UNKNOWN_OPCO, createdAt: now, updatedAt: now, siret, origin, status: [] }
+      existingEntreprise = { _id: new ObjectId(), opco: OPCOS_LABEL.UNKNOWN_OPCO, idcc: null, createdAt: now, updatedAt: now, siret, origin, status: [] }
       await getDbCollection("entreprises").insertOne(existingEntreprise)
     }
     if (isInternalError) {
@@ -79,7 +79,7 @@ export const upsertEntrepriseData = async (
     savedEntreprise = updatedEntreprise
   } else {
     const now = new Date()
-    savedEntreprise = { ...entrepriseFields, opco: OPCOS_LABEL.UNKNOWN_OPCO, siret, origin, _id: new ObjectId(), createdAt: now, updatedAt: now, status: [] }
+    savedEntreprise = { ...entrepriseFields, opco: OPCOS_LABEL.UNKNOWN_OPCO, idcc: null, siret, origin, _id: new ObjectId(), createdAt: now, updatedAt: now, status: [] }
     await getDbCollection("entreprises").insertOne(savedEntreprise)
   }
   await setEntrepriseValid(savedEntreprise._id)

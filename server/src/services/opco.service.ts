@@ -140,7 +140,7 @@ export const cfaDockOpcoItemToIOpco = (opcoItem: ICfaDockOpcoItem) => {
     opco: opcoItem.opcoName,
     opco_short_name: getMemoizedOpcoShortName(opcoItem.opcoName ?? ""),
     url: opcoItem.url,
-    idcc: opcoItem.idcc?.toString(),
+    idcc: opcoItem.idcc,
   }
   return result
 }

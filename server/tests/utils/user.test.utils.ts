@@ -183,7 +183,7 @@ export async function saveRecruiter(data: Partial<IRecruiter>) {
     jobs: [],
     origin: "origin",
     opco: OPCOS_LABEL.MOBILITE,
-    idcc: "idcc",
+    idcc: 1000,
     status: RECRUITER_STATUS.ACTIF,
     naf_code: "naf_code",
     naf_label: "naf_label",
