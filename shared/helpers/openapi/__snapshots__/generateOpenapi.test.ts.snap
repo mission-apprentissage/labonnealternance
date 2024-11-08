@@ -2896,7 +2896,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "idcc": {
             "description": "Identifiant de la convention collective de l'établissement",
             "type": [
-              "string",
+              "number",
               "null",
             ],
           },
@@ -2991,6 +2991,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "email",
           "jobs",
           "opco",
+          "idcc",
         ],
         "type": "object",
       },
