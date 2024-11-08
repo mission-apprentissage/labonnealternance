@@ -20,7 +20,7 @@ export const getOpcoBySirenFromDB = async (siren: string) => {
   }
 }
 
-const getOpcosBySirenFromDB = async (sirens: string[]): Promise<{ opco: OPCOS_LABEL; idcc?: string; siren: string }[]> => {
+const getOpcosBySirenFromDB = async (sirens: string[]): Promise<{ opco: OPCOS_LABEL; idcc: number | null; siren: string }[]> => {
   const results = await getDbCollection("opcos")
     .find({ siren: { $in: sirens } })
     .toArray()
@@ -29,11 +29,11 @@ const getOpcosBySirenFromDB = async (sirens: string[]): Promise<{ opco: OPCOS_LA
     if (!parsedOpco) {
       return []
     }
-    return [{ siren, opco: parsedOpco, idcc: idcc ?? undefined }]
+    return [{ siren, opco: parsedOpco, idcc: idcc ?? null }]
   })
 }
 
-export const getOpcosBySiretFromDB = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc?: string; siret: string }[]> => {
+export const getOpcosBySiretFromDB = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc: number | null; siret: string }[]> => {
   if (!sirets.length) {
     return []
   }

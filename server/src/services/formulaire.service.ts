@@ -417,6 +417,7 @@ export const createFormulaire = async (payload: Partial<Omit<IRecruiter, "_id" |
     establishment_siret: payload.establishment_siret as string,
     is_delegated: payload.is_delegated ?? (false as boolean),
     opco: payload.opco ?? null,
+    idcc: payload.idcc ?? null,
     jobs: [],
   }
   await getDbCollection("recruiters").insertOne(recruiter)

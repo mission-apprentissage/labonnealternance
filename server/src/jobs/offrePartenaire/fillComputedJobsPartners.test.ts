@@ -72,7 +72,7 @@ describe("fillComputedJobsPartners", () => {
       _id: new ObjectId(),
       siren: siret.substring(0, 9),
       opco: OPCOS_LABEL.AFDAS,
-      idcc: "1313",
+      idcc: 1313,
     })
     // when
     await fillComputedJobsPartners()
