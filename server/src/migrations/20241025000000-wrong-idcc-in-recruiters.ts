@@ -7,7 +7,7 @@ export const up = async (db: Db) => {
 
   await db.collection("recruiters").updateMany(
     {
-      $or: [{ idcc: { $regex: "^a0I0Y" } }, { idcc: { $regex: "^Opco multiple" } }, { idcc: { $exists: false } }],
+      $or: [{ idcc: { $regex: "^a0I0Y" } }, { idcc: { $regex: "^Opco multiple", $options: "i" } }, { idcc: { $exists: false } }],
     },
     {
       $set: {
@@ -23,7 +23,7 @@ export const up = async (db: Db) => {
   })
 
   await db.collection("entreprises").updateMany(
-    { $or: [{ idcc: { $regex: "^a0I0Y" } }, { idcc: { $regex: "^Opco multiple" } }, { idcc: { $exists: false } }] },
+    { $or: [{ idcc: { $regex: "^a0I0Y" } }, { idcc: { $regex: "^Opco multiple", $options: "i" } }, { idcc: { $exists: false } }] },
     {
       $set: {
         idcc: null,
