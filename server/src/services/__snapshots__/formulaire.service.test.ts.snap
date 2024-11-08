@@ -24,7 +24,7 @@ exports[`createJob > should insert a job 1`] = `
     ],
     "type": "Point",
   },
-  "idcc": "idcc",
+  "idcc": null,
   "is_delegated": false,
   "last_name": "last_name",
   "naf_code": "naf_code",
