@@ -17,7 +17,7 @@ import { deactivateEntreprise, setEntrepriseInError, setEntrepriseValid } from "
 export type Organization = { entreprise: IEntreprise; type: typeof ENTREPRISE } | { cfa: ICFA; type: typeof CFA }
 export type UserAndOrganization = { user: IUserWithAccount; organization: Organization }
 
-export const updateEntrepriseOpco = async (siret: string, { opco, idcc }: { opco: OPCOS_LABEL; idcc?: string }) => {
+export const updateEntrepriseOpco = async (siret: string, { opco, idcc }: { opco: OPCOS_LABEL; idcc: number | null }) => {
   const entreprise = await getDbCollection("entreprises").findOne({ siret })
   if (!entreprise) {
     throw new Error("inattendu: aucune entreprise trouvée. Merci d'appeler cette méthode une fois l'entreprise créée")
