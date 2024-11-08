@@ -29,12 +29,13 @@ import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollecti
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
 import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
+import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
 import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromComputedToJobsPartners"
-import { importHelloWork, importRawHelloWorkIntoComputedJobPartners } from "./offrePartenaire/importHelloWork"
+import { importHelloWorkRaw, importHelloWorkToComputed } from "./offrePartenaire/importHelloWork"
 import { importKelio } from "./offrePartenaire/importKelio"
 import { importRHAlternance } from "./offrePartenaire/importRHAlternance"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
-import { exportToFranceTravail } from "./partenaireExport/exportToFranceTravail"
+import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
 import { importReferentielOnisep } from "./rdv/importReferentielOnisep"
@@ -97,7 +98,7 @@ export async function setupJobProcessor() {
           },
           "Envoi des offres à France Travail": {
             cron_string: "30 5 * * *",
-            handler: config.env === "production" ? () => exportToFranceTravail() : () => Promise.resolve(0),
+            handler: config.env === "production" ? () => exportJobsToFranceTravail() : () => Promise.resolve(0),
           },
           "Mise à jour des recruteurs en erreur": {
             cron_string: "10 0 * * *",
@@ -297,7 +298,7 @@ export async function setupJobProcessor() {
         handler: async () => opcoReminderJob(),
       },
       "pe:offre:export": {
-        handler: async () => updateSiretInfosInError(),
+        handler: async () => exportJobsToFranceTravail(),
       },
       "siret:inError:update": {
         handler: async () => updateSiretInfosInError(),
@@ -415,17 +416,20 @@ export async function setupJobProcessor() {
       "migrations:create": {
         handler: async (job) => createMigration(job.payload as any),
       },
-      "import-hellowork": {
-        handler: async () => importHelloWork(),
+      "import-hellowork-raw": {
+        handler: async () => importHelloWorkRaw(),
       },
       "import-hellowork-to-computed": {
-        handler: async () => importRawHelloWorkIntoComputedJobPartners(),
+        handler: async () => importHelloWorkToComputed(),
       },
       "import-rhalternance": {
         handler: async () => importRHAlternance(),
       },
       "import-kelio": {
         handler: async () => importKelio(),
+      },
+      "fill-computed-jobs-partners": {
+        handler: async () => fillComputedJobsPartners(),
       },
       "import-computed-to-jobs-partners": {
         handler: async () => importFromComputedToJobsPartners(),

@@ -1,7 +1,9 @@
 export const typedKeys = <Key extends string | number | symbol>(record: Record<Key, any>): Key[] => Object.keys(record) as Key[]
 
-export const entriesToTypedRecord = <A extends string | number | symbol, B>(entries: [A, B][]): Record<A, B> => {
-  return Object.fromEntries(entries) as Record<A, B>
+export const typedEntries = <Key extends string | number | symbol, Value>(record: Record<Key, Value>): [Key, Value][] => Object.entries(record) as [Key, Value][]
+
+export const entriesToTypedRecord = <Key extends string | number | symbol, Value>(entries: [Key, Value][]): Record<Key, Value> => {
+  return Object.fromEntries(entries) as Record<Key, Value>
 }
 
 export function removeUndefinedFields<T extends Record<string, any>>(obj: T): T {

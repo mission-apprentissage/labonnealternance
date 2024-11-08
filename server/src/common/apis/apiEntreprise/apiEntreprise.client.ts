@@ -2,11 +2,11 @@ import { ObjectId } from "mongodb"
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { ISiretDiffusibleStatus, ZAdresseV3 } from "shared/models"
+import { IEtablissementGouvData } from "shared/models/cacheInfosSiret.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
-import { IAPIEtablissement } from "@/services/etablissement.service.types"
 
 import getApiClient from "../client"
 
@@ -22,12 +22,12 @@ const apiParams = {
 /**
  * @description Get the establishment information from the ENTREPRISE API for a given SIRET
  */
-export async function getEtablissementFromGouvSafe(siret: string): Promise<IAPIEtablissement | BusinessErrorCodes.NON_DIFFUSIBLE | null> {
+export async function getEtablissementFromGouvSafe(siret: string): Promise<IEtablissementGouvData | BusinessErrorCodes.NON_DIFFUSIBLE | null> {
   try {
     if (config.entreprise.simulateError) {
       throw new Error("API entreprise : simulation d'erreur")
     }
-    const { data } = await client.get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/diffusibles/${encodeURIComponent(siret)}`, {
+    const { data } = await client.get<IEtablissementGouvData>(`${config.entreprise.baseUrl}/sirene/etablissements/diffusibles/${encodeURIComponent(siret)}`, {
       params: apiParams,
     })
     if (data.data.status_diffusion !== EDiffusibleStatus.DIFFUSIBLE) {
@@ -79,7 +79,7 @@ export async function getEtablissementDiffusionStatus(siret: string): Promise<st
       return siretDiffusibleStatus.status_diffusion
     }
 
-    const { data } = await client.get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/diffusibles/${encodeURIComponent(siret)}/adresse`, {
+    const { data } = await client.get<IEtablissementGouvData>(`${config.entreprise.baseUrl}/sirene/etablissements/diffusibles/${encodeURIComponent(siret)}/adresse`, {
       params: apiParams,
     })
     await saveSiretDiffusionStatus(siret, data.data.status_diffusion)

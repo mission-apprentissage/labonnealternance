@@ -35,7 +35,7 @@ async function mergeJobs(primaryDuplicate: IDuplicate, duplicatesToMerge: IDupli
         primaryDuplicate.jobs.push(job)
         uniqueJobCombinations.add(jobPattern)
       } else {
-        console.log("Pattern found, job not added :", jobPattern)
+        console.warn("Pattern found, job not added :", jobPattern)
       }
     })
   })

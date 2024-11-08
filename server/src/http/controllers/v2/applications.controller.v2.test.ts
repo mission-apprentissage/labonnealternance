@@ -4,6 +4,7 @@ import { ObjectId } from "mongodb"
 import { IApplicationApiJobId, IApplicationApiRecruteurId, JOB_STATUS } from "shared"
 import { NIVEAUX_POUR_LBA, RECRUITER_STATUS } from "shared/constants"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { applicationTestFile } from "shared/fixtures/application.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { generateLbaCompanyFixture } from "shared/fixtures/recruteurLba.fixture"
 import { parisFixture } from "shared/fixtures/referentiel/commune.fixture"
@@ -26,11 +27,15 @@ vi.mock("@/services/clamav.service", () => {
   }
 })
 
-const token = getApiApprentissageTestingToken({ email: "test@test.fr", organisation: "Un super Partenaire", habilitations: { "jobs:write": true } })
+const token = getApiApprentissageTestingToken({
+  email: "test@test.fr",
+  organisation: "Un super Partenaire",
+  habilitations: { "applications:write": true, "appointments:write": false, "jobs:write": false },
+})
 const fakeToken = getApiApprentissageTestingTokenFromInvalidPrivateKey({
   email: "mail@mail.com",
   organisation: "Un super Partenaire",
-  habilitations: { "jobs:write": true },
+  habilitations: { "applications:write": true, "appointments:write": false, "jobs:write": false },
 })
 
 const recruteur = generateLbaCompanyFixture({
@@ -68,7 +73,6 @@ const recruiter = generateRecruiterFixture({
     {
       rome_code: ["M1602"],
       rome_label: "Opérations administratives",
-      is_multi_published: true,
       job_status: JOB_STATUS.ACTIVE,
       job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
       job_creation_date: new Date("2021-01-01"),
@@ -116,7 +120,7 @@ describe("POST /v2/application", () => {
   it("Return 202 and create an application using a recruter lba", async () => {
     const body: IApplicationApiRecruteurId = {
       applicant_file_name: "cv.pdf",
-      applicant_file_content: "data:application/pdf;base64,",
+      applicant_file_content: applicationTestFile,
       applicant_email: "jeam.dupont@mail.com",
       applicant_first_name: "Jean",
       applicant_last_name: "Dupont",
@@ -172,7 +176,7 @@ describe("POST /v2/application", () => {
     const job = recruiter.jobs[0]
     const body: IApplicationApiJobId = {
       applicant_file_name: "cv.pdf",
-      applicant_file_content: "data:application/pdf;base64,",
+      applicant_file_content: applicationTestFile,
       applicant_email: "jeam.dupont@mail.com",
       applicant_first_name: "Jean",
       applicant_last_name: "Dupont",
