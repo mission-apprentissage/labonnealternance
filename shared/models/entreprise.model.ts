@@ -38,7 +38,7 @@ export const ZEntreprise = z
     siret: z.string().describe("Siret de l'établissement"),
     raison_sociale: z.string().nullish().describe("Raison sociale de l'établissement"),
     enseigne: z.string().nullish().describe("Enseigne de l'établissement"),
-    idcc: z.string().nullish().describe("Identifiant convention collective de l'entreprise"),
+    idcc: z.number().nullable().describe("Identifiant convention collective de l'entreprise"),
     address: z.string().nullish().describe("Adresse de l'établissement"),
     address_detail: ZGlobalAddress.nullish().describe("Detail de l'adresse de l'établissement"),
     geo_coordinates: z.string().nullish().describe("Latitude/Longitude de l'adresse de l'entreprise"),

@@ -14,7 +14,7 @@ export const ZOpco = z
     siren: z.string().describe("SIREN de l'établissement"),
     opco: z.string().describe("Opco de rattachement de l'établissement"),
     opco_short_name: z.string().nullish().describe("Nom court de de l'opco servant de clef dans notre table de constantes"),
-    idcc: z.string().nullish().describe("Identifiant convention collective"),
+    idcc: z.number().nullable().describe("Identifiant convention collective"),
     url: z.string().nullish().describe("Site internet de l'opco"),
   })
   .strict()
