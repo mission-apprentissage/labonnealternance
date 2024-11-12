@@ -13,14 +13,6 @@ import { BlackListOrigins } from "@/services/application.service"
 import { BrevoEventStatus } from "./brevo.service"
 import { IBrevoWebhookEvent, processHardBounceWebhookEvent } from "./emails.service"
 
-vi.mock("@/services/application.service", async (importOriginal) => {
-  const mod = (await importOriginal()) as object
-  return {
-    ...mod,
-    sendNotificationForApplicationHardbounce: vi.fn().mockResolvedValue(null),
-  }
-})
-
 async function cleanTest() {
   await getDbCollection("emailblacklists").deleteMany({})
   await getDbCollection("applications").deleteMany({})
@@ -191,7 +183,9 @@ describe("email blaklist events", () => {
     baseWebHookPayload.event = BrevoEventStatus.SPAM
     baseWebHookPayload["message-id"] = fakeMessageId_1
 
-    await processHardBounceWebhookEvent(baseWebHookPayload)
+    const mockedFn = vi.fn().mockReturnValue(null)
+
+    await processHardBounceWebhookEvent(baseWebHookPayload, mockedFn)
 
     const blEvent = await getDbCollection("emailblacklists").findOne({ email: blacklistedEmail })
     expect.soft(blEvent).toEqual(

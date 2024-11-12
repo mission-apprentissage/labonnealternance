@@ -1,3 +1,5 @@
+import { IApplication } from "shared/models"
+
 import {
   addEmailToBlacklist,
   BlackListOrigins,
@@ -41,13 +43,16 @@ export type IBrevoWebhookEvent = {
 /**
  *  réagit à un hardbounce non lié à aux autres processeurs de webhook email
  */
-export const processHardBounceWebhookEvent = async (payload: IBrevoWebhookEvent) => {
+export const processHardBounceWebhookEvent = async (
+  payload: IBrevoWebhookEvent,
+  _mockedFn?: ({ application, payload }: { application: IApplication; payload: any }) => Promise<void>
+) => {
   const { event, email } = payload
 
   let origin = BlackListOrigins.CAMPAIGN
 
   if ([BrevoEventStatus.HARD_BOUNCE, BrevoEventStatus.BLOCKED, BrevoEventStatus.SPAM, BrevoEventStatus.UNSUBSCRIBED].includes(event)) {
-    if (await processApplicationHardbounceEvent(payload)) {
+    if (await processApplicationHardbounceEvent(payload, _mockedFn)) {
       origin = BlackListOrigins.CANDIDATURE_SPONTANEE_RECRUTEUR
     } else if (await processApplicationCandidateHardbounceEvent(payload)) {
       origin = BlackListOrigins.CANDIDATURE_SPONTANEE_CANDIDAT
