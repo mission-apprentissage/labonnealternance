@@ -4,14 +4,22 @@ import { generateApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateAppointmentFixture, generateEligibleTrainingEstablishmentFixture, generateEligibleTrainingFixture } from "shared/fixtures/appointment.fixture"
 import { generateUserFixture } from "shared/fixtures/user.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
-import { beforeEach, describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { BrevoBlockedReasons, saveBlacklistEmails } from "@/jobs/updateBrevoBlockedEmails/updateBrevoBlockedEmails"
+import { BlackListOrigins } from "@/services/application.service"
 
-import { BlackListOrigins } from "./application.service"
 import { BrevoEventStatus } from "./brevo.service"
 import { IBrevoWebhookEvent, processHardBounceWebhookEvent } from "./emails.service"
+
+vi.mock("@/services/application.service", async (importOriginal) => {
+  const mod = (await importOriginal()) as object
+  return {
+    ...mod,
+    sendNotificationForApplicationHardbounce: vi.fn().mockResolvedValue(null),
+  }
+})
 
 async function cleanTest() {
   await getDbCollection("emailblacklists").deleteMany({})
