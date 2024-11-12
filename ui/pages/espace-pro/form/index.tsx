@@ -1,11 +1,10 @@
 import { Box, Spinner, Text } from "@chakra-ui/react"
 import { useRouter } from "next/router"
-import { useEffect, useState } from "react"
-import { IAppointmentRequestContextCreateFormAvailableResponseSchema, IAppointmentRequestContextCreateResponseSchema } from "shared/routes/appointments.routes"
+import { useQuery } from "react-query"
 
 import { ContactCfaSummary } from "@/components/espace_pro/Candidat/layout/ContactCfaSummary"
 import DemandeDeContact from "@/components/RDV/DemandeDeContact"
-import { apiPost } from "@/utils/api.utils"
+import { getPrdvContext } from "@/utils/api"
 
 import { FormLayoutComponent } from "../../../components/espace_pro/Candidat/layout/FormLayoutComponent"
 
@@ -14,37 +13,12 @@ import { FormLayoutComponent } from "../../../components/espace_pro/Candidat/lay
  */
 export default function FormCreatePage() {
   const router = useRouter()
-
-  const [data, setData] = useState<IAppointmentRequestContextCreateFormAvailableResponseSchema | null>(null)
-  const [error, setError] = useState()
-  const [loading, setLoading] = useState(false)
-
   const { cleMinistereEducatif, referrer } = router.query as { cleMinistereEducatif: string; referrer: string }
-  /**
-   * @description Initialize.
-   */
-  useEffect(() => {
-    async function fetchContext() {
-      try {
-        setLoading(true)
 
-        const response = (await apiPost("/appointment-request/context/create", {
-          body: { idCleMinistereEducatif: cleMinistereEducatif, referrer },
-        })) as IAppointmentRequestContextCreateResponseSchema
-
-        if ("error" in response) {
-          throw new Error(response?.error)
-        }
-
-        setData(response as IAppointmentRequestContextCreateFormAvailableResponseSchema)
-      } catch (error) {
-        setError(error.message)
-      } finally {
-        setLoading(false)
-      }
-    }
-    if (referrer) fetchContext()
-  }, [cleMinistereEducatif, referrer])
+  const { data, isLoading } = useQuery(["getPrdvForm", cleMinistereEducatif], () => getPrdvContext(cleMinistereEducatif, referrer), {
+    enabled: !!cleMinistereEducatif,
+    cacheTime: 0,
+  })
 
   return (
     <FormLayoutComponent
@@ -59,13 +33,13 @@ export default function FormCreatePage() {
       }
       bg="white"
     >
-      {loading && <Spinner display="block" mx="auto" size="xl" mt="10rem" />}
-      {error && (
+      {isLoading && <Spinner display="block" mx="auto" size="xl" mt="10rem" />}
+      {data && "error" in data && (
         <Box mt="5rem" textAlign="center">
-          {error}
+          {data.error}
         </Box>
       )}
-      {data && (
+      {data && "intitule_long" in data && (
         <>
           <ContactCfaSummary
             entrepriseRaisonSociale={data?.etablissement_formateur_entreprise_raison_sociale}
