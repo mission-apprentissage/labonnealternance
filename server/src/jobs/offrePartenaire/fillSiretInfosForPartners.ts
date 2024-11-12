@@ -39,7 +39,8 @@ export const fillSiretInfosForPartners = async () => {
       const { data } = response
       const { establishment_enseigne, establishment_raison_sociale, naf_code, naf_label, geo_coordinates, establishment_size, address } = formatEntrepriseData(data)
 
-      const result: Pick<IComputedJobsPartners, (typeof filledFields)[number]> = {
+      const result: Pick<IComputedJobsPartners, (typeof filledFields)[number] | "_id"> = {
+        _id: document._id,
         workplace_size: document.workplace_size ?? establishment_size,
         workplace_legal_name: document.workplace_legal_name ?? establishment_raison_sociale,
         workplace_brand: document.workplace_brand ?? establishment_enseigne,

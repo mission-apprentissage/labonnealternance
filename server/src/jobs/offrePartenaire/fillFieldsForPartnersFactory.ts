@@ -28,7 +28,7 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
   job: COMPUTED_ERROR_SOURCE
   sourceFields: readonly SourceFields[]
   filledFields: readonly FilledFields[]
-  getData: (sourceFields: Pick<IComputedJobsPartners, SourceFields | FilledFields>[]) => Promise<Array<Pick<IComputedJobsPartners, FilledFields> | undefined>>
+  getData: (sourceFields: Pick<IComputedJobsPartners, SourceFields | FilledFields | "_id">[]) => Promise<Array<Pick<IComputedJobsPartners, FilledFields | "_id">>>
   groupSize: number
 }) => {
   const logger = globalLogger.child({
@@ -65,19 +65,14 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
         try {
           const responses = await getData(documents)
 
-          const dataToWrite = documents.flatMap((document, index) => {
-            const newFields = responses[index]
-            if (!newFields) {
-              return []
-            }
-            return [
-              {
-                updateOne: {
-                  filter: { _id: document._id },
-                  update: { $set: newFields },
-                },
+          const dataToWrite = responses.map((document) => {
+            const { _id, ...newFields } = document
+            return {
+              updateOne: {
+                filter: { _id },
+                update: { $set: newFields },
               },
-            ]
+            }
           })
           if (dataToWrite.length) {
             await getDbCollection("computed_jobs_partners").bulkWrite(dataToWrite, {
