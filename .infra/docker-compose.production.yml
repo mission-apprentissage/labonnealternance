@@ -1,5 +1,3 @@
-version: "3.8"
-
 # The following variables define reusable configurations for deployment, providing consistent and predefined
 # behaviors for updating, rolling back, and restarting services.
 
