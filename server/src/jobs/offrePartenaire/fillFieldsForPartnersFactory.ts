@@ -16,7 +16,9 @@ import { streamGroupByCount } from "@/common/utils/streamUtils"
  * @param sourceFields: champs nécessaires à la récupération des données
  * @param filledFields: champs potentiellement modifiés par l'enrichissement
  * @param groupSize: taille du packet de documents (utile pour optimiser les appels API et BDD)
- * @param getData: fonction récupérant les nouvelles données. Les champs retournés seront modifiés et écraseront les anciennes données
+ * @param getData: fonction récupérant les nouvelles données.
+ * La fonction doit retourner un tableau d'objet contenant l'_id du document à mettre à jour et les nouvelles valeurs à mettre à jour.
+ * Les valeurs retournées seront modifiées et écraseront les anciennes données.
  */
 export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJobsPartnersOfferPrivate, FilledFields extends keyof IJobsPartnersOfferPrivate>({
   job,
