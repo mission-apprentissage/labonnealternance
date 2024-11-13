@@ -304,6 +304,7 @@ describe("POST /jobs", async () => {
 
     apply_email: "mail@mail.com",
 
+    workplace_address_label: "adresse",
     workplace_siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
   }
 
@@ -437,6 +438,7 @@ describe("PUT /jobs/:id", async () => {
     offer_description: "Envie de devenir développeur web ? Rejoignez-nous !",
 
     apply_email: "mail@mail.com",
+    workplace_address_label: "adresse",
 
     workplace_siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
   }

@@ -17,6 +17,7 @@ describe("ZJobsPartnersWritableApi", () => {
 
     apply_email: "mail@mail.com",
 
+    workplace_address_label: "address",
     workplace_siret: "39837261500128",
   }
 

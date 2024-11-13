@@ -263,7 +263,7 @@ export const convertLbaCompanyToJobPartnerRecruiterApi = (recruteursLba: ILbaCom
       workplace_legal_name: recruteurLba.raison_sociale,
       workplace_description: null,
       workplace_size: recruteurLba.company_size,
-      workplace_address_label: joinNonNullStrings([recruteurLba.street_number, recruteurLba.street_name, recruteurLba.zip_code, recruteurLba.city]),
+      workplace_address_label: joinNonNullStrings([recruteurLba.street_number, recruteurLba.street_name, recruteurLba.zip_code, recruteurLba.city])!,
       workplace_address_street_label: joinNonNullStrings([recruteurLba.street_number, recruteurLba.street_name]),
       workplace_address_zipcode: recruteurLba.zip_code,
       workplace_address_city: recruteurLba.city,
