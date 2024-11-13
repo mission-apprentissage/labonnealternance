@@ -22,14 +22,16 @@ import dayjs from "dayjs"
 import { useRouter } from "next/router"
 import { memo, useEffect, useState } from "react"
 import { useQuery } from "react-query"
+import { IRecruiter, IRecruiterJson } from "shared"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
+import { AnimationContainer, Layout, LoadingEmptySpace, TableNew } from "@/components/espace_pro"
+import { ConfirmationSuppressionEntreprise } from "@/components/espace_pro/ConfirmationSuppressionEntreprise"
 import { useAuth } from "@/context/UserContext"
 import { getEntreprisesManagedByCfa } from "@/utils/api"
 
 import { sortReactTableDate, sortReactTableString } from "../../../common/utils/dateUtils"
 import BreadcrumbLink from "../../../components/BreadcrumbLink"
-import { AnimationContainer, ConfirmationSuppressionEntreprise, Layout, LoadingEmptySpace, TableNew } from "../../../components/espace_pro"
 import { authProvider, withAuth } from "../../../components/espace_pro/withAuth"
 import Link from "../../../components/Link"
 import { Parametre } from "../../../theme/components/icons"
@@ -54,7 +56,7 @@ const EmptySpace = () => (
 )
 
 function ListeEntreprise() {
-  const [currentEntreprise, setCurrentEntreprise] = useState()
+  const [currentEntreprise, setCurrentEntreprise] = useState<IRecruiterJson | null>(null)
   const confirmationSuppression = useDisclosure()
   const router = useRouter()
   const { userAccess } = useAuth()
@@ -129,14 +131,14 @@ function ListeEntreprise() {
       Header: "Offres",
       id: "nombre_offres",
       sortType: "basic",
-      accessor: ({ jobs }) => jobs.length,
+      accessor: ({ jobs }: IRecruiterJson) => jobs.length,
     },
     {
       Header: "Dernière offre créée le",
       id: "date_creation_offre",
       disableSortBy: true,
       width: "225",
-      accessor: ({ jobs }) => {
+      accessor: ({ jobs }: IRecruiter /* should be IRecruiterJson but jobs is not typed properly */) => {
         if (jobs.length > 0) {
           const last = jobs.pop()
           return dayjs(last.job_creation_date).format("DD/MM/YYYY")
@@ -150,7 +152,7 @@ function ListeEntreprise() {
       id: "action",
       maxWidth: "50",
       disableSortBy: true,
-      accessor: (row) => {
+      accessor: (row: IRecruiterJson) => {
         return (
           <Box display={["none", "block"]}>
             <Menu>
@@ -184,7 +186,6 @@ function ListeEntreprise() {
   ]
   return (
     <AnimationContainer>
-      {/* @ts-expect-error: TODO */}
       <ConfirmationSuppressionEntreprise {...confirmationSuppression} {...currentEntreprise} />
       <Container maxW="container.xl" mt={5}>
         <Box mb={5}>

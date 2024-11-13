@@ -296,11 +296,11 @@ export default (server: Server) => {
     async (req, res) => {
       const { userId } = req.params
       const result = await updateUserWithAccountFields(userId, req.body)
+
       if ("error" in result) {
         return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
       }
-      const user = await getUserRecruteurById(userId)
-      return res.status(200).send(user)
+      return res.status(200).send({})
     }
   )
 
