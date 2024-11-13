@@ -191,7 +191,6 @@ export const zFormulaireRoute = {
         rome_appellation_label: true,
         rome_code: true,
         job_level_label: true,
-        job_description: true,
         job_status: true,
         job_type: true,
         delegations: true,
