@@ -2,7 +2,7 @@ import { internal } from "@hapi/boom"
 import { Filter } from "mongodb"
 import { oleoduc, writeData } from "oleoduc"
 import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners, JOB_VALIDITY } from "shared/models/jobsPartnersComputed.model"
 
 import { logger as globalLogger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -18,7 +18,7 @@ import { streamGroupByCount } from "@/common/utils/streamUtils"
  * @param groupSize: taille du packet de documents (utile pour optimiser les appels API et BDD)
  * @param getData: fonction récupérant les nouvelles données. Les champs retournés seront modifiés et écraseront les anciennes données
  */
-export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJobsPartnersOfferPrivate, FilledFields extends keyof IJobsPartnersOfferPrivate | "errors">({
+export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJobsPartnersOfferPrivate, FilledFields extends keyof IJobsPartnersOfferPrivate | "job_validity">({
   job,
   sourceFields,
   filledFields,
@@ -42,6 +42,9 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
       },
       {
         $or: filledFields.map((field) => ({ [field]: null })),
+      },
+      {
+        job_validity: { $in: [JOB_VALIDITY.VALID, JOB_VALIDITY.UNKNOWN] },
       },
     ],
   }
