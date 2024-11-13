@@ -38,6 +38,20 @@ export const up = async (db: Db) => {
     bypassDocumentValidation: true,
   })
 
+  await db.collection("opcos").updateMany(
+    {
+      $or: [{ idcc: { $regex: "^a0I0Y" } }, { idcc: { $regex: "^Opco multiple", $options: "i" } }, { idcc: { $exists: false } }],
+    },
+    {
+      $set: {
+        idcc: null,
+      },
+    },
+    {
+      bypassDocumentValidation: true,
+    }
+  )
+
   await db.collection("opcos").updateMany({ idcc: { $type: "string" } }, [{ $set: { idcc: { $toInt: "$idcc" } } }], {
     bypassDocumentValidation: true,
   })
