@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto"
 import { badRequest, internal, notFound } from "@hapi/boom"
 import equal from "fast-deep-equal"
 import { Filter, ObjectId, UpdateFilter } from "mongodb"
-import { IDelegation, IJob, IJobWithRomeDetail, IJobWritable, IRecruiter, IRecruiterWithApplicationCount, IUserRecruteur, JOB_STATUS } from "shared"
+import { IDelegation, IJob, IJobCreate, IJobWithRomeDetail, IRecruiter, IRecruiterWithApplicationCount, IUserRecruteur, JOB_STATUS } from "shared"
 import { getDirectJobPath } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
@@ -215,7 +215,7 @@ const isAuthorizedToPublishJob = async ({ userId, entrepriseId }: { userId: Obje
 /**
  * @description Create job offer for formulaire
  */
-export const createJob = async ({ job, establishment_id, user }: { job: IJobWritable; establishment_id: string; user: IUserWithAccount }): Promise<IRecruiter> => {
+export const createJob = async ({ job, establishment_id, user }: { job: IJobCreate; establishment_id: string; user: IUserWithAccount }): Promise<IRecruiter> => {
   await controlEditableRomeDetail(job)
 
   const userId = user._id

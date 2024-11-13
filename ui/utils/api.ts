@@ -1,6 +1,6 @@
 import { captureException } from "@sentry/nextjs"
 import Axios from "axios"
-import { IJobWritable, INewDelegations, INewSuperUser, IRoutes, removeUndefinedFields } from "shared"
+import { IJobCreate, INewDelegations, INewSuperUser, IRoutes, removeUndefinedFields } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { IEntrepriseJson } from "shared/models/entreprise.model"
@@ -38,8 +38,8 @@ export const archiveFormulaire = (establishment_id: string) => apiDelete("/formu
  * Offre API
  */
 export const getOffre = (jobId: string) => apiGet("/formulaire/offre/f/:jobId", { params: { jobId } })
-export const createOffre = (establishment_id: string, newOffre: IJobWritable) => apiPost("/formulaire/:establishment_id/offre", { params: { establishment_id }, body: newOffre })
-export const createOffreByToken = (establishment_id: string, newOffre: IJobWritable, token: string) =>
+export const createOffre = (establishment_id: string, newOffre: IJobCreate) => apiPost("/formulaire/:establishment_id/offre", { params: { establishment_id }, body: newOffre })
+export const createOffreByToken = (establishment_id: string, newOffre: IJobCreate, token: string) =>
   apiPost("/formulaire/:establishment_id/offre/by-token", { params: { establishment_id }, body: newOffre, headers: { authorization: `Bearer ${token}` } })
 export const patchOffreDelegation = (jobId: string, siret: string) =>
   apiPatch(`/formulaire/offre/:jobId/delegation`, { params: { jobId }, querystring: { siret_formateur: siret } }).catch(errorHandler)
