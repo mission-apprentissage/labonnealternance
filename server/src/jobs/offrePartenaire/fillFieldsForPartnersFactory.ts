@@ -18,7 +18,7 @@ import { streamGroupByCount } from "@/common/utils/streamUtils"
  * @param groupSize: taille du packet de documents (utile pour optimiser les appels API et BDD)
  * @param getData: fonction récupérant les nouvelles données. Les champs retournés seront modifiés et écraseront les anciennes données
  */
-export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJobsPartnersOfferPrivate, FilledFields extends keyof IJobsPartnersOfferPrivate>({
+export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJobsPartnersOfferPrivate, FilledFields extends keyof IJobsPartnersOfferPrivate | "errors">({
   job,
   sourceFields,
   filledFields,
