@@ -2,6 +2,7 @@ import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Container, Fle
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useMutation, useQuery, useQueryClient } from "react-query"
+import { IUserWithAccountFields } from "shared"
 import { ENTREPRISE } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
@@ -12,7 +13,7 @@ import { AUTHTYPE } from "../../../../../common/contants"
 import { AnimationContainer, CustomInput, InformationLegaleEntreprise, Layout, LoadingEmptySpace } from "../../../../../components/espace_pro"
 import { authProvider, withAuth } from "../../../../../components/espace_pro/withAuth"
 import { ArrowDropRightLine, ArrowRightLine } from "../../../../../theme/components/icons"
-import { getFormulaire, updateEntreprise, updateFormulaire } from "../../../../../utils/api"
+import { getFormulaire, updateUserWithAccountFields } from "../../../../../utils/api"
 
 const Formulaire = ({
   last_name,
@@ -36,7 +37,7 @@ const Formulaire = ({
    * KBA 20230511 : values for recruiter collection are casted in api.js file directly. form values must remain as awaited in userRecruteur collection
    */
   // TODO
-  const entrepriseMutation = useMutation<any, unknown, any, unknown>(({ userId, values }) => updateEntreprise(userId, values), {
+  const updateUserMutation = useMutation(({ userId, values }: { userId: string; values: IUserWithAccountFields }) => updateUserWithAccountFields(userId, values), {
     onSuccess: () => {
       toast({
         title: "Entreprise mise à jour avec succès.",
@@ -45,47 +46,21 @@ const Formulaire = ({
         duration: 4000,
       })
       router.push(`/espace-pro/administration/entreprise/${establishment_id}`)
-      client.invalidateQueries("formulaire-edition")
+      client.invalidateQueries("getFormulaire")
     },
   })
 
-  const cfaMutation = useMutation<void, unknown, { establishment_id: string; values: any }, unknown>(
-    ({ establishment_id, values }) => updateFormulaire(establishment_id, values).then(() => {}),
-    {
-      onSuccess: () => {
-        toast({
-          title: "Entreprise mise à jour avec succès.",
-          position: "top-right",
-          status: "success",
-          duration: 4000,
-        })
-        router.push(`/espace-pro/administration/entreprise/${establishment_id}`)
-        client.invalidateQueries("formulaire-edition")
-      },
-    }
-  )
-
-  const submitForm = async (values, { setSubmitting, setFieldError }) => {
-    if (user.type === AUTHTYPE.ENTREPRISE) {
-      entrepriseMutation.mutate(
-        { userId: user._id, values },
-        {
-          onError: (error: any) => {
-            switch (error.response.data.reason) {
-              case "EMAIL_TAKEN":
-                setFieldError("email", "l'adresse email est déjà utilisé")
-                break
-
-              default:
-                break
-            }
-          },
-        }
-      )
-    } else {
-      cfaMutation.mutate({ establishment_id, values })
-    }
-
+  const submitForm = async (values: IUserWithAccountFields, { setSubmitting, setFieldError }) => {
+    updateUserMutation.mutate(
+      { userId: user._id, values },
+      {
+        onError: (error: any) => {
+          if (error.response.data.reason === "EMAIL_TAKEN") {
+            setFieldError("email", "l'adresse email est déjà utilisée")
+          }
+        },
+      }
+    )
     setSubmitting(false)
   }
 
@@ -162,7 +137,7 @@ function EditionEntrepriseContact() {
 
   const { establishment_id } = router.query as { establishment_id: string }
   // TODO pourquoi afficher le formulaire ?
-  const { data: formulaire, isLoading } = useQuery("formulaire-edition", () => getFormulaire(establishment_id), { cacheTime: 0, enabled: !!establishment_id })
+  const { data: formulaire, isLoading } = useQuery("getFormulaire", () => getFormulaire(establishment_id), { cacheTime: 0, enabled: !!establishment_id })
 
   if (isLoading || !establishment_id) {
     return <LoadingEmptySpace />

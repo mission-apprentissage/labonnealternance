@@ -62,7 +62,7 @@ describe("fillOpcoInfosForPartners", () => {
       _id: new ObjectId(),
       siren: "424761419",
       opco: OPCOS_LABEL.AFDAS,
-      idcc: "1313",
+      idcc: 1313,
     })
     // when
     await fillOpcoInfosForPartners()
@@ -106,31 +106,6 @@ describe("fillOpcoInfosForPartners", () => {
     expect.soft(job.errors).toEqual([])
     expect.soft({ workplace_opco, workplace_idcc }).toEqual({ workplace_opco: OPCOS_LABEL.CONSTRUCTYS, workplace_idcc: 124 })
   })
-  it("should not fill idcc if not a number", async () => {
-    // given
-    await givenSomeComputedJobPartners([
-      {
-        workplace_siret: "42476141900045",
-        workplace_opco: null,
-        workplace_idcc: null,
-      },
-    ])
-    await getDbCollection("opcos").insertOne({
-      _id: new ObjectId(),
-      siren: "424761419",
-      opco: OPCOS_LABEL.AFDAS,
-      idcc: "plop",
-    })
-    // when
-    await fillOpcoInfosForPartners()
-    // then
-    const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
-    expect.soft(jobs.length).toBe(1)
-    const [job] = jobs
-    const { workplace_opco, workplace_idcc } = job
-    expect.soft(job.errors).toEqual([])
-    expect.soft({ workplace_opco, workplace_idcc }).toEqual({ workplace_opco: OPCOS_LABEL.AFDAS, workplace_idcc: null })
-  })
   it("should not fill opco if already present", async () => {
     // given
     await givenSomeComputedJobPartners([
@@ -144,7 +119,7 @@ describe("fillOpcoInfosForPartners", () => {
       _id: new ObjectId(),
       siren: "424761419",
       opco: OPCOS_LABEL.CONSTRUCTYS,
-      idcc: "267",
+      idcc: 267,
     })
     // when
     await fillOpcoInfosForPartners()
@@ -208,12 +183,13 @@ describe("fillOpcoInfosForPartners", () => {
         _id: new ObjectId(),
         siren: "424761419",
         opco: OPCOS_LABEL.AFDAS,
-        idcc: "1313",
+        idcc: 1313,
       },
       {
         _id: new ObjectId(),
         siren: "808413827",
         opco: OPCOS_LABEL.AKTO,
+        idcc: null,
       },
     ])
     // when
