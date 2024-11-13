@@ -111,7 +111,6 @@ const zRoutesPost = {
 const zRoutesPut = {
   ...zUserRecruteurRoutes.put,
   ...zFormulaireRoute.put,
-  ...zRecruiterRoutes.put,
   ...zUpdateLbaCompanyRoutes.put,
   ...zJobsRoutesV2.put,
 } as const

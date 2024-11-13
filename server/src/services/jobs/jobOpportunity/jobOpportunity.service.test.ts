@@ -1769,7 +1769,7 @@ describe("createJobOffer", () => {
       siren: "130025265",
       opco: "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
       opco_short_name: "AKTO",
-      idcc: "1459",
+      idcc: 1459,
       url: null,
     })
 
@@ -1921,7 +1921,7 @@ describe("updateJobOffer", () => {
       siren: "130025265",
       opco: "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
       opco_short_name: "AKTO",
-      idcc: "1459",
+      idcc: 1459,
       url: null,
     })
 

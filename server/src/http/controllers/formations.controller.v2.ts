@@ -1,5 +1,6 @@
 import { notFound } from "@hapi/boom"
 import { zRoutes } from "shared"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
 
 import { trackApiCall } from "../../common/utils/sendTrackingEvent"
 import { getFormationsParRegionV2, getFormationsV2, getFormationv2 } from "../../services/formation.service"
@@ -68,7 +69,7 @@ export default (server: Server) => {
           }
           return res.send(formationOpt)
         } else {
-          throw notFound("formation introuvable")
+          throw notFound(BusinessErrorCodes.TRAINING_NOT_FOUND)
         }
       } catch (err) {
         if (caller) {

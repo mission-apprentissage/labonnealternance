@@ -77,6 +77,17 @@ const images: object = {
 
 type IJobOrCompany = { type: LBA_ITEM_TYPE.RECRUTEURS_LBA; job: ILbaCompany; recruiter: null } | { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA; job: IJob; recruiter: IRecruiter }
 
+export enum BlackListOrigins {
+  CANDIDATURE_SPONTANEE_RECRUTEUR = "candidature_spontanee_recruteur",
+  CANDIDATURE_SPONTANEE_CANDIDAT = "candidature_spontanee_candidat",
+  PRDV_CFA = "prise_de_rdv_CFA",
+  PRDV_CANDIDAT = "prise_de_rdv_candidat",
+  PRDV_INVITATION = "prise_de_rdv_invitation",
+  USER_WITH_ACCOUNT = "user_with_account",
+  CAMPAIGN = "campaign",
+  UNKNOWN = "unknown",
+}
+
 /**
  * @description Get applications by job id
  */
@@ -100,7 +111,7 @@ export const isEmailBlacklisted = async (email: string): Promise<boolean> => Boo
  * @param {string} blacklistingOrigin
  * @return {Promise<void>}
  */
-export const addEmailToBlacklist = async (email: string, blacklistingOrigin: string): Promise<void> => {
+export const addEmailToBlacklist = async (email: string, blacklistingOrigin: BlackListOrigins, event: BrevoEventStatus): Promise<void> => {
   try {
     z.string().email().parse(email)
 
@@ -109,7 +120,7 @@ export const addEmailToBlacklist = async (email: string, blacklistingOrigin: str
       {
         $set: {
           email,
-          blacklisting_origin: blacklistingOrigin,
+          blacklisting_origin: `${blacklistingOrigin} (${event})`,
         },
         $setOnInsert: { _id: new ObjectId(), created_at: new Date() },
       },
@@ -810,21 +821,31 @@ export const getApplicationByCompanyCount = async (sirets: ILbaCompany["siret"][
  *  if hardbounce event si related to an application sent to a compay then
  * warns the applicant and returns true otherwise returns false
  */
-export const processApplicationHardbounceEvent = async (payload) => {
-  const { event, email } = payload
+export const processApplicationHardbounceEvent = async (payload, sendNotificationToApplicant = sendNotificationForApplicationHardbounce) => {
+  const { email } = payload
   const messageId = payload["message-id"]
 
-  // application
-  if (event === BrevoEventStatus.HARD_BOUNCE) {
-    const application = await findApplicationByMessageId({
-      messageId,
-      email,
-    })
+  const application = await findApplicationByMessageId({
+    messageId,
+    email,
+  })
 
-    if (application) {
-      await sendNotificationForApplicationHardbounce({ payload, application })
-      return true
-    }
+  if (application) {
+    await sendNotificationToApplicant({ payload, application })
+    return true
+  }
+
+  return false
+}
+
+export const processApplicationCandidateHardbounceEvent = async (payload) => {
+  const { email } = payload
+  const messageId = payload["message-id"]
+
+  const application = await getDbCollection("applications").findOne({ applicant_email: email, to_applicant_message_id: messageId })
+
+  if (application) {
+    return true
   }
 
   return false

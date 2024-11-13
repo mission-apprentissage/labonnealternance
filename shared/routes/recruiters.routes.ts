@@ -78,7 +78,7 @@ export const zRecruiterRoutes = {
         "200": z
           .object({
             opco: z.string(),
-            idcc: z.string().nullish(),
+            idcc: z.number().nullable(),
           })
           .strict(),
       },
@@ -205,29 +205,6 @@ export const zRecruiterRoutes = {
         auth: "access-token",
         access: null,
         resources: {},
-      },
-    },
-  },
-  put: {
-    "/etablissement/:id": {
-      method: "put",
-      path: "/etablissement/:id",
-      params: z.object({ id: zObjectId }).strict(),
-      body: ZUserRecruteurWritable.pick({
-        last_name: true,
-        first_name: true,
-        phone: true,
-        email: true,
-      }).extend({ _id: zObjectId }),
-      response: {
-        "200": z.object({ ok: z.boolean() }).strict(),
-      },
-      securityScheme: {
-        auth: "cookie-session",
-        access: "user:manage",
-        resources: {
-          user: [{ _id: { type: "params", key: "id" } }],
-        },
       },
     },
   },

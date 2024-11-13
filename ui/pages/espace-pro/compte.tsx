@@ -2,12 +2,12 @@ import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Container, Fle
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useMutation, useQuery, useQueryClient } from "react-query"
+import { IUserWithAccountFields } from "shared"
 import { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
 import { useAuth } from "@/context/UserContext"
-import { apiPut } from "@/utils/api.utils"
 
 import { AUTHTYPE } from "../../common/contants"
 import { LoadingEmptySpace } from "../../components/espace_pro"
@@ -18,7 +18,7 @@ import Layout from "../../components/espace_pro/Layout"
 import ModificationCompteEmail from "../../components/espace_pro/ModificationCompteEmail"
 import { authProvider, withAuth } from "../../components/espace_pro/withAuth"
 import { ArrowDropRightLine, ArrowRightLine } from "../../theme/components/icons"
-import { getUser } from "../../utils/api"
+import { getUser, updateUserWithAccountFields } from "../../utils/api"
 
 function Compte() {
   const client = useQueryClient()
@@ -45,14 +45,9 @@ function Compte() {
 
   const { data, isLoading } = useQuery("user", () => getUser(user._id.toString()))
   const userMutation = useMutation(
-    ({ values }: { values: any; isChangingEmail: boolean; setFieldError: any }) => {
+    ({ values }: { values: IUserWithAccountFields; isChangingEmail: boolean }) => {
       const userId = user._id.toString()
-      return apiPut("/etablissement/:id", {
-        params: {
-          id: userId,
-        },
-        body: { ...values, _id: userId },
-      })
+      return updateUserWithAccountFields(userId, values)
     },
     {
       onSuccess: (_, variables) => {
@@ -69,8 +64,10 @@ function Compte() {
           ModificationEmailPopup.onOpen()
         }
       },
-      onError: (_, variables) => {
-        variables.setFieldError("email", "L'adresse mail est déjà associée à un compte La bonne alternance.")
+      onError: (error: any, variables: any) => {
+        if (error.response.data.reason === "EMAIL_TAKEN") {
+          variables.setFieldError("email", "L'adresse mail est déjà associée à un compte La bonne alternance.")
+        }
       },
     }
   )

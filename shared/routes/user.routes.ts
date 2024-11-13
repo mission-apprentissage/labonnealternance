@@ -253,7 +253,7 @@ export const zUserRecruteurRoutes = {
         email: true,
       }).strict(),
       response: {
-        "200": z.union([ZUserRecruteur, z.null()]),
+        "200": z.object({}),
         "400": z.union([ZResError, z.object({ error: z.boolean(), reason: z.string() }).strict()]),
       },
       securityScheme: {

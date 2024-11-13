@@ -120,12 +120,26 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
     onDropRejected(fileRejections) {
       const [fileRejection] = fileRejections
       setShowUnacceptedFileMessages(true)
-      const { errors } = fileRejection ?? {}
+      const { errors, file } = fileRejection ?? {}
       const [error] = errors
       const { message } = error ?? {}
       Sentry.setTag("errorType", "envoi_PJ_candidature")
+      if (errors.some((error) => error.code === "file-invalid-type")) {
+        const fileExtension = getFileExtension(file.name)
+        Sentry.setTag("file-extension", fileExtension)
+      }
+      if (errors.some((error) => error.code === "file-too-large")) {
+        const sizeInMo = Math.round(file.size / 1024 / 1024)
+        Sentry.setTag("file-size-in-mo", sizeInMo)
+      }
+      if (fileRejections.length > 1) {
+        Sentry.setTag("multiple-files", "true")
+      }
       Sentry.captureException(new Error(message))
-      Sentry.setTag("errorType", "")
+      Sentry.setTag("errorType", undefined)
+      Sentry.setTag("file-extension", undefined)
+      Sentry.setTag("file-size-in-mo", undefined)
+      Sentry.setTag("multiple-files", undefined)
     },
   })
 
@@ -134,6 +148,12 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
       {fileLoading ? getSpinner() : hasSelectedFile() ? getSelectedFile() : getFileDropzone()}
     </Box>
   )
+}
+
+const getFileExtension = (filename: string): string => {
+  const pointIndex = filename.lastIndexOf(".")
+  if (pointIndex === -1) return null
+  return filename.substring(pointIndex)
 }
 
 export default CandidatureLbaFileDropzone

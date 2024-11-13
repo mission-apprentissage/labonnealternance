@@ -24,17 +24,10 @@ export const fillOpcoInfosForPartners = async () => {
             workplace_opco: document.workplace_opco ?? OPCOS_LABEL.UNKNOWN_OPCO,
           }
         }
-        const { opco, idcc } = opcoData
-        let parsedIdcc: number | null = null
-        if (idcc !== null && idcc !== undefined) {
-          parsedIdcc = parseInt(idcc, 10)
-          if (isNaN(parsedIdcc)) {
-            parsedIdcc = null
-          }
-        }
+
         const result: Pick<IComputedJobsPartners, (typeof filledFields)[number]> = {
-          workplace_idcc: document.workplace_idcc ?? parsedIdcc,
-          workplace_opco: document.workplace_opco ?? opco,
+          workplace_idcc: document.workplace_idcc ?? opcoData.idcc,
+          workplace_opco: document.workplace_opco ?? opcoData.opco,
         }
         return result
       })

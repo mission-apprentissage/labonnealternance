@@ -1,4 +1,12 @@
-import { addEmailToBlacklist, processApplicationHardbounceEvent, removeEmailFromLbaCompanies } from "@/services/application.service"
+import { IApplication } from "shared/models"
+
+import {
+  addEmailToBlacklist,
+  BlackListOrigins,
+  processApplicationCandidateHardbounceEvent,
+  processApplicationHardbounceEvent,
+  removeEmailFromLbaCompanies,
+} from "@/services/application.service"
 import {
   isHardbounceEventFromAppointmentApplicant,
   isHardbounceEventFromAppointmentCfa,
@@ -18,41 +26,53 @@ export const processWebhookEvent = async (payload) => {
     await processAppointmentToApplicantWebhookEvent(payload)
   }
 }
+export type IBrevoWebhookEvent = {
+  event: BrevoEventStatus
+  email: string
+  id: number
+  date: string
+  "message-id": string
+  reason: string | undefined
+  subject: string | undefined
+  tag: string
+  sending_ip: string
+  ts_epoch: number
+  template_id: number
+}
 
 /**
  *  réagit à un hardbounce non lié à aux autres processeurs de webhook email
  */
-export const processHardBounceWebhookEvent = async (payload) => {
+export const processHardBounceWebhookEvent = async (
+  payload: IBrevoWebhookEvent,
+  _mockedFn?: ({ application, payload }: { application: IApplication; payload: any }) => Promise<void>
+) => {
   const { event, email } = payload
 
-  let origin = "campaign"
+  let origin = BlackListOrigins.CAMPAIGN
 
-  if (event === BrevoEventStatus.HARD_BOUNCE) {
-    if (await processApplicationHardbounceEvent(payload)) {
-      origin = "candidature_spontanee"
+  if ([BrevoEventStatus.HARD_BOUNCE, BrevoEventStatus.BLOCKED, BrevoEventStatus.SPAM, BrevoEventStatus.UNSUBSCRIBED].includes(event)) {
+    if (await processApplicationHardbounceEvent(payload, _mockedFn)) {
+      origin = BlackListOrigins.CANDIDATURE_SPONTANEE_RECRUTEUR
+    } else if (await processApplicationCandidateHardbounceEvent(payload)) {
+      origin = BlackListOrigins.CANDIDATURE_SPONTANEE_CANDIDAT
+    } else if (await isHardbounceEventFromAppointmentCfa(payload)) {
+      origin = BlackListOrigins.PRDV_CFA
+    } else if (await isHardbounceEventFromAppointmentApplicant(payload)) {
+      origin = BlackListOrigins.PRDV_CANDIDAT
+    } else if (await isHardbounceEventFromEtablissement(payload)) {
+      origin = BlackListOrigins.PRDV_INVITATION
     }
 
-    if (await isHardbounceEventFromAppointmentCfa(payload)) {
-      origin = "prise_de_rdv"
-    }
-
-    if (await isHardbounceEventFromAppointmentApplicant(payload)) {
-      origin = "candidat_prise_de_rdv"
-    }
-
-    if (await isHardbounceEventFromEtablissement(payload)) {
-      origin = "invitation_prise_de_rdv"
-    }
-
-    await processBlacklistedEmail(email, origin)
+    await processBlacklistedEmail(email, origin, event)
   } else {
     throw new Error("Non hardbounce event received on hardbounce webhook route")
   }
 }
 
-export const processBlacklistedEmail = async (email: string, origin: string) => {
+export const processBlacklistedEmail = async (email: string, origin: BlackListOrigins, event: BrevoEventStatus) => {
   await Promise.all([
-    addEmailToBlacklist(email, origin),
+    addEmailToBlacklist(email, origin, event),
     removeEmailFromLbaCompanies(email),
     cleanHardbouncedAppointmentUser(email),
     disableEligibleTraininForAppointmentWithEmail(email),
