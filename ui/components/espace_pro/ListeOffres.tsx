@@ -15,24 +15,6 @@ import { OffresTabs } from "./OffresTabs"
 
 import { LoadingEmptySpace } from "."
 
-const EmptySpace = () => (
-  <Stack direction={["column", "column", "column", "row"]} mt={12} pt={12} py={8} border="1px solid" borderColor="grey.400" spacing="32px">
-    <Flex justify={["center", "center", "center", "flex-end"]} align={["center", "center", "center", "flex-start"]} w={["100%", "100%", "100%", "350px"]} h="150px">
-      {/* eslint-disable-next-line jsx-a11y/alt-text */}
-      <Image src="/images/espace_pro/add-offer.svg" />
-    </Flex>
-
-    <Box w={["100%", "100%", "100%", "600px"]}>
-      <Heading fontSize="2rem" pb={7}>
-        Ajoutez votre première offre d’emploi en alternance.
-      </Heading>
-      <Text fontSize="1.375rem">
-        Décrivez vos besoins de recrutement pour les afficher sur le site <span style={{ fontWeight: "700" }}>La bonne alternance</span> dès aujourd’hui.
-      </Text>
-    </Box>
-  </Stack>
-)
-
 export default function ListeOffres({ hideModify = false, showStats = false }: { hideModify?: boolean; showStats?: boolean }) {
   const router = useRouter()
   const { user } = useAuth()
@@ -75,6 +57,20 @@ export default function ListeOffres({ hideModify = false, showStats = false }: {
     })
   }
 
+  const shouldDisplayModifyButton = !hideModify && user.type !== AUTHTYPE.CFA
+  const ActionButtons = (
+    <Box>
+      {shouldDisplayModifyButton && user.type !== AUTHTYPE.OPCO && (
+        <Button mr={5} variant="secondary" leftIcon={<Building />} onClick={() => router.push(`/espace-pro/administration/entreprise/${establishment_id}/edition`)}>
+          {user.type === AUTHTYPE.ENTREPRISE ? "Mes informations" : "Modifier l'entreprise"}
+        </Button>
+      )}
+      <Button variant="primary" leftIcon={<Plus />} onClick={navigateToCreation}>
+        Ajouter une offre
+      </Button>
+    </Box>
+  )
+
   if (jobs.length === 0) {
     return (
       <Container maxW="container.xl" my={12}>
@@ -82,16 +78,7 @@ export default function ListeOffres({ hideModify = false, showStats = false }: {
           <Text fontSize="2rem" fontWeight={700}>
             {entrepriseTitle}
           </Text>
-          <Box>
-            {!hideModify && user.type !== AUTHTYPE.OPCO && (
-              <Button mr={5} variant="secondary" leftIcon={<Building />} onClick={() => router.push(`/espace-pro/administration/entreprise/${establishment_id}/edition`)}>
-                Modifier l'entreprise
-              </Button>
-            )}
-            <Button variant="primary" leftIcon={<Plus />} onClick={navigateToCreation}>
-              Ajouter une offre
-            </Button>
-          </Box>
+          {ActionButtons}
         </Flex>
         <EmptySpace />
       </Container>
@@ -132,16 +119,7 @@ export default function ListeOffres({ hideModify = false, showStats = false }: {
         <Text fontSize="2rem" fontWeight={700}>
           {establishment_raison_sociale ?? `SIRET ${establishment_siret}`}
         </Text>
-        <Box>
-          {!hideModify && user.type !== AUTHTYPE.OPCO && (
-            <Button mr={5} variant="secondary" leftIcon={<Building />} onClick={() => router.push(`/espace-pro/administration/entreprise/${establishment_id}/edition`)}>
-              {user.type === AUTHTYPE.ENTREPRISE ? "Mes informations" : "Modifier l'entreprise"}
-            </Button>
-          )}
-          <Button variant="primary" leftIcon={<Plus />} onClick={navigateToCreation}>
-            Ajouter une offre
-          </Button>
-        </Box>
+        {ActionButtons}
       </Flex>
       <Text fontWeight="700" py={6}>
         Offres de recrutement en alternance
@@ -150,3 +128,21 @@ export default function ListeOffres({ hideModify = false, showStats = false }: {
     </Container>
   )
 }
+
+const EmptySpace = () => (
+  <Stack direction={["column", "column", "column", "row"]} mt={12} pt={12} py={8} border="1px solid" borderColor="grey.400" spacing="32px">
+    <Flex justify={["center", "center", "center", "flex-end"]} align={["center", "center", "center", "flex-start"]} w={["100%", "100%", "100%", "350px"]} h="150px">
+      {/* eslint-disable-next-line jsx-a11y/alt-text */}
+      <Image src="/images/espace_pro/add-offer.svg" />
+    </Flex>
+
+    <Box w={["100%", "100%", "100%", "600px"]}>
+      <Heading fontSize="2rem" pb={7}>
+        Ajoutez votre première offre d’emploi en alternance.
+      </Heading>
+      <Text fontSize="1.375rem">
+        Décrivez vos besoins de recrutement pour les afficher sur le site <span style={{ fontWeight: "700" }}>La bonne alternance</span> dès aujourd’hui.
+      </Text>
+    </Box>
+  </Stack>
+)

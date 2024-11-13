@@ -1,6 +1,6 @@
 import { captureException } from "@sentry/nextjs"
 import Axios from "axios"
-import { IJobCreate, INewDelegations, INewSuperUser, IRoutes, removeUndefinedFields } from "shared"
+import { IJobCreate, INewDelegations, INewSuperUser, IRecruiterJson, IRoutes, IUserWithAccountFields, removeUndefinedFields } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { IEntrepriseJson } from "shared/models/entreprise.model"
@@ -30,7 +30,6 @@ export const getFormulaire = (establishment_id: string) => apiGet("/formulaire/:
 export const getFormulaireByToken = (establishment_id: string, token: string) =>
   apiGet("/formulaire/:establishment_id/by-token", { params: { establishment_id }, headers: { authorization: `Bearer ${token}` } }).catch(errorHandler)
 export const postFormulaire = (userId: string, form) => apiPost("/user/:userId/formulaire", { params: { userId }, body: form })
-export const updateFormulaire = (establishment_id: string, values) => apiPut("/formulaire/:establishment_id", { params: { establishment_id }, body: values })
 
 export const archiveFormulaire = (establishment_id: string) => apiDelete("/formulaire/:establishment_id", { params: { establishment_id } }).catch(errorHandler)
 
@@ -76,7 +75,7 @@ export const createSuperUser = (user: INewSuperUser) => apiPost("/admin/users", 
 /**
  * KBA 20230511 : (migration db) : casting des valueurs coté collection recruiter, car les champs ne sont plus identiques avec la collection userRecruteur.
  */
-export const updateEntreprise = async (userId: string, user: any) => {
+export const updateUserWithAccountFields = async (userId: string, user: IUserWithAccountFields) => {
   await apiPut("/user/:userId", { params: { userId }, body: user })
 }
 
@@ -98,7 +97,7 @@ export const sendValidationLink = async (userId: string, token: string) =>
 /**
  * Etablissement API
  */
-export const getEntreprisesManagedByCfa = (cfaId: string) => apiGet("/etablissement/cfa/:cfaId/entreprises", { params: { cfaId } })
+export const getEntreprisesManagedByCfa = (cfaId: string): Promise<IRecruiterJson[]> => apiGet("/etablissement/cfa/:cfaId/entreprises", { params: { cfaId } })
 export const getCfaInformation = async (siret: string) => {
   try {
     const data = await apiGet("/etablissement/cfa/:siret", { params: { siret } })

@@ -1,7 +1,7 @@
 import { z } from "../helpers/zodWithOpenApi"
 import { zObjectId } from "../models/common"
 import { JOB_STATUS, ZJob, ZJobCreate } from "../models/job.model"
-import { ZRecruiter, ZRecruiterWithApplicationCount, ZRecruiterWritable } from "../models/recruiter.model"
+import { ZRecruiter, ZRecruiterWithApplicationCount } from "../models/recruiter.model"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -182,22 +182,6 @@ export const zFormulaireRoute = {
     },
   },
   put: {
-    "/formulaire/:establishment_id": {
-      method: "put",
-      path: "/formulaire/:establishment_id",
-      params: z.object({ establishment_id: z.string() }).strict(),
-      body: ZRecruiterWritable.partial(),
-      response: {
-        "200": ZRecruiter,
-      },
-      securityScheme: {
-        auth: "cookie-session",
-        access: "recruiter:manage",
-        resources: {
-          recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
-        },
-      },
-    },
     "/formulaire/offre/:jobId": {
       method: "put",
       path: "/formulaire/offre/:jobId",
