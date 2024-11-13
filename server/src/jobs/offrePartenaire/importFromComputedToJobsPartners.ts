@@ -6,13 +6,17 @@ import { ObjectId } from "mongodb"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { JOB_STATUS_ENGLISH } from "shared/models"
 import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import { JOB_VALIDITY } from "shared/models/jobsPartnersComputed.model"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 
 export const importFromComputedToJobsPartners = async () => {
-  const stream = await getDbCollection("computed_jobs_partners").find({ validated: true }).project({ _id: 0, validated: 0, errors: 0 }).stream()
+  const stream = await getDbCollection("computed_jobs_partners")
+    .find({ validated: true, job_validity: { $in: [JOB_VALIDITY.UNKNOWN, JOB_VALIDITY.VALID] } })
+    .project({ _id: 0, validated: 0, job_validity: 0, errors: 0 })
+    .stream()
 
   const counters = { total: 0, success: 0, error: 0 }
   const importDate = new Date()
