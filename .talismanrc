@@ -83,6 +83,8 @@ fileignoreconfig:
   checksum: 38021ae663db3a146c848a8d691c0c1bc9bb262a80a6f2dedf9fcdb372eef3ac
 - filename: server/src/services/eligibleTrainingsForAppointment.service.ts
   checksum: 45f0984c6a79320da8aa2fa03c8ea001de0176b88c7ca05e35e385da8f98e218
+- filename: server/src/services/emails.service.test.ts
+  checksum: 9b7c80b04fddd1b90523a0178fe55b4787411af6f022730e28b75445a9f052fc
 - filename: server/src/services/formulaire.service.test.ts
   checksum: 0b57b45fbf40bdbee16a3b61ad6d725532fa067a8c7baf3710352fbeb2ab059a
 - filename: server/src/services/formulaire.service.ts
@@ -138,11 +140,13 @@ fileignoreconfig:
 - filename: shared/fixtures/application.fixture.ts
   checksum: c7e694afcde9ceaa11ce455a48d2e3f3b018a6ec3118f4a88e666d85d32ffcad
 - filename: shared/fixtures/appointment.fixture.ts
-  checksum: 9090cddf673370dec0a6196d368ac1e99f8922feb1e55ada277c1e0339bdb016
+  checksum: 8b894b4059d8f7531e26f249901b83dbec433d4e660c0eca193c8e61572b3ae0
 - filename: shared/fixtures/recruiter.fixture.ts
   checksum: c540cb13c2235d69c13e1964e3391b9c935bf7991dafe2cc21e9965c974378e6
 - filename: shared/fixtures/referentiel/onisep.fixture.ts
   checksum: 3f54d57761ea54731e3cfa80013d3f8b300a5f275beb8a29cfca235b6a8d44f7
+- filename: shared/fixtures/user.fixture.ts
+  checksum: 8665b4a014d02f3d36e3c537524f31e39c9b1e123d9116f5ebca3a3e8b9f6033
 - filename: shared/fixtures/userWithAccount.fixture.ts
   checksum: bf864b963375d5836150faf3e343e482a8612552581bd39be21b4f1e8f566971
 - filename: shared/helpers/generateUri.ts

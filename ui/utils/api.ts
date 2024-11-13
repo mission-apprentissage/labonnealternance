@@ -4,6 +4,7 @@ import { IJobWritable, INewDelegations, INewSuperUser, IRoutes, removeUndefinedF
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { IEntrepriseJson } from "shared/models/entreprise.model"
+import { IAppointmentRequestContextCreateFormAvailableResponseSchema, IAppointmentRequestContextCreateFormUnavailableResponseSchema } from "shared/routes/appointments.routes"
 
 import { publicConfig } from "@/config.public"
 
@@ -148,6 +149,21 @@ export const getEntrepriseOpco = async (siret: string) => {
   } catch (error) {
     captureException(error)
     return null
+  }
+}
+
+export const getPrdvContext = async (
+  idCleMinistereEducatif: string,
+  referrer: string = "lba"
+): Promise<IAppointmentRequestContextCreateFormAvailableResponseSchema | IAppointmentRequestContextCreateFormUnavailableResponseSchema | null> => {
+  try {
+    const data = await apiGet("/appointment", { querystring: { idCleMinistereEducatif, referrer } }, { timeout: 7000 })
+    return data
+  } catch (error) {
+    if (error?.message !== BusinessErrorCodes.TRAINING_NOT_FOUND) {
+      captureException(error)
+    }
+    return { error: error.message }
   }
 }
 

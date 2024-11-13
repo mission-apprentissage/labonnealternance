@@ -23,7 +23,6 @@ import getActualTitle from "./ItemDetailServices/getActualTitle"
 import { BuildSwipe, buttonJePostuleShouldBeDisplayed, buttonRdvShouldBeDisplayed, getNavigationButtons } from "./ItemDetailServices/getButtons"
 import getJobPublishedTimeAndApplications from "./ItemDetailServices/getJobPublishedTimeAndApplications"
 import getTags from "./ItemDetailServices/getTags"
-import hasAlsoEmploi from "./ItemDetailServices/hasAlsoEmploi"
 import ItemDetailApplicationsStatus, { hasApplied } from "./ItemDetailServices/ItemDetailApplicationStatus"
 import ItemDetailCard from "./ItemDetailServices/ItemDetailCard"
 import JobItemCardHeader from "./ItemDetailServices/JobItemCardHeader"
@@ -52,8 +51,6 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
   }, [selectedItem?.id, selectedItem?.company?.siret, selectedItem?.job?.id])
 
   const actualTitle = getActualTitle({ kind, selectedItem })
-
-  const hasAlsoJob = hasAlsoEmploi({ isCfa, company: selectedItem?.company, searchedMatchaJobs: jobs?.matchas })
 
   const { swipeHandlers, goNext, goPrev } = BuildSwipe({ jobs, trainings, extendedSearch, activeFilters, handleSelectItem, selectedItem })
 
@@ -181,7 +178,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
       {kind === LBA_ITEM_TYPE_OLD.PEJOB && <FTJobDetail job={selectedItem} />}
       {kind === LBA_ITEM_TYPE_OLD.MATCHA && <LbaJobDetail job={selectedItem} />}
       {kind === LBA_ITEM_TYPE_OLD.LBA && <RecruteurLbaDetail recruteurLba={selectedItem as ILbaItemLbaCompany} />}
-      {kind === LBA_ITEM_TYPE_OLD.FORMATION && <TrainingDetail training={selectedItem} hasAlsoJob={hasAlsoJob} />}
+      {kind === LBA_ITEM_TYPE_OLD.FORMATION && <TrainingDetail training={selectedItem} />}
 
       <AideApprentissage />
 

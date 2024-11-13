@@ -1,7 +1,7 @@
 import { ObjectId } from "bson"
 
 import { referrers } from "../constants/referers"
-import { IEligibleTrainingsForAppointment, IEtablissement } from "../models"
+import { IAppointment, IEligibleTrainingsForAppointment, IEtablissement } from "../models"
 
 export function generateEligibleTrainingFixture(data: Partial<IEligibleTrainingsForAppointment>): IEligibleTrainingsForAppointment {
   return {
@@ -54,6 +54,42 @@ export function generateEligibleTrainingEstablishmentFixture(data: Partial<IEtab
     premium_refusal_date: null,
     premium_affelnet_refusal_date: null,
     premium_follow_up_date: new Date("2024-02-29T08:37:38.383Z"),
+    ...data,
+  }
+}
+
+export function generateAppointmentFixture(data: Partial<IAppointment>): IAppointment {
+  return {
+    _id: new ObjectId(),
+    applicant_id: new ObjectId(),
+    cfa_intention_to_applicant: null,
+    cfa_message_to_applicant_date: null,
+    cfa_message_to_applicant: "Réponse du cfa ...",
+    applicant_message_to_cfa: "Message du candidat ...",
+    applicant_reasons: ["modalite"],
+    cfa_gestionnaire_siret: null,
+    cfa_formateur_siret: "13002797200152",
+    appointment_origin: "LBA",
+    cfa_read_appointment_details_date: null,
+    to_applicant_mails: [
+      {
+        campaign: "CANDIDAT_APPOINTMENT",
+        status: null,
+        message_id: "<gnignigni@domaine.fr>",
+        email_sent_at: new Date(),
+      },
+    ],
+    to_cfa_mails: [
+      {
+        campaign: "CANDIDAT_APPOINTMENT",
+        status: null,
+        message_id: "<gnignigni@domaine.fr>",
+        email_sent_at: new Date(),
+      },
+    ],
+    cle_ministere_educatif: "aaa",
+    cfa_recipient_email: "faux_email@faux-domaine-compagnie.com",
+    created_at: new Date(),
     ...data,
   }
 }
