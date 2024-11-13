@@ -1,6 +1,6 @@
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { IJobsPartnersOfferPrivate, ZJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { IComputedJobsPartners, JOB_VALIDITY } from "shared/models/jobsPartnersComputed.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -10,6 +10,7 @@ export async function createComputedJobPartner(data: Partial<IComputedJobsPartne
   const computedJobPartner = {
     errors: [],
     validated: true,
+    job_validity: JOB_VALIDITY.VALID,
     ...generateJobsPartnersOfferPrivate(),
     ...data,
   }
