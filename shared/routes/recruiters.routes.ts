@@ -78,7 +78,7 @@ export const zRecruiterRoutes = {
         "200": z
           .object({
             opco: z.string(),
-            idcc: z.string().nullish(),
+            idcc: z.number().nullable(),
           })
           .strict(),
       },

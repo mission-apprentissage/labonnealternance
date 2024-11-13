@@ -11,7 +11,7 @@ const ZResponseItem = z.object({
   opcoName: zOpcoLabel,
   searchStatus: z.string(),
   url: z.string().nullish(),
-  idcc: z.number().nullish(),
+  idcc: z.number().nullable(),
 })
 export type ICfaDockOpcoItem = z.output<typeof ZResponseItem>
 

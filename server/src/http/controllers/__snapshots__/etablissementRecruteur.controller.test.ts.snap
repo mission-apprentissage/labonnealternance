@@ -42,7 +42,7 @@ exports[`POST /etablissement/creation > Vérifie que le recruteur est créé ave
     ],
     "type": "Point",
   },
-  "idcc": "3248",
+  "idcc": 3248,
   "is_delegated": false,
   "jobs": [],
   "last_name": "Doe",
