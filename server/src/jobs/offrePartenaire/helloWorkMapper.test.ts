@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb"
+import { JOB_VALIDITY } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { helloWorkJobToJobsPartners } from "./helloWorkMapper"
@@ -103,6 +104,7 @@ describe("helloWorkJobToJobsPartners", () => {
       apply_url: "https://www.url.com/redirect?poc=2&op=5989883668&o=1",
       errors: [],
       validated: false,
+      job_validity: JOB_VALIDITY.UNKNOWN,
     })
   })
 })
