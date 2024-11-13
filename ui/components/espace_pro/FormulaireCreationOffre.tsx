@@ -40,9 +40,11 @@ import { ArrowRightLine, ExternalLinkLine, Minus, Plus, Warning } from "@/theme/
 import { createOffre, createOffreByToken, getFormulaire, getFormulaireByToken, getRelatedEtablissementsFromRome, getRomeDetail } from "@/utils/api"
 import { apiGet } from "@/utils/api.utils"
 
+import CustomInput from "./CustomInput"
 import DropdownCombobox from "./DropdownCombobox"
 
-const DATE_FORMAT = "YYYY-MM-DD"
+const ISO_DATE_FORMAT = "YYYY-MM-DD"
+const FR_DATE_FORMAT = "DD/MM/YYYY"
 
 const ChampNombre = ({ value, max, name, handleChange, label, dataTestId }) => {
   return (
@@ -80,8 +82,6 @@ const FormikCreationOffre = ({
 
   const { type } = router.query as { establishment_id: string; email: string; userId: string; type: string; token: string }
 
-  const minDate = dayjs().format(DATE_FORMAT)
-
   const handleJobSearch = async (search: string) => {
     if (search.trim().length !== 0) {
       try {
@@ -94,6 +94,9 @@ const FormikCreationOffre = ({
     return []
   }
 
+  const minStartDate = dayjs().startOf("day")
+  const maxStartDate = dayjs().add(2, "years")
+
   return (
     <Formik
       validateOnMount
@@ -103,10 +106,10 @@ const FormikCreationOffre = ({
         rome_appellation_label: offre?.rome_appellation_label ?? "",
         rome_code: offre?.rome_code ?? [],
         job_level_label: offre?.job_level_label ?? "Indifférent",
-        job_start_date: offre?.job_start_date ? dayjs(offre.job_start_date).format(DATE_FORMAT) : "",
+        job_start_date: offre?.job_start_date ? dayjs(offre.job_start_date).format(ISO_DATE_FORMAT) : "",
         job_description: offre?.job_description ?? undefined,
-        job_creation_date: offre?.job_creation_date ?? dayjs().format(DATE_FORMAT),
-        job_expiration_date: offre?.job_expiration_date ?? dayjs().add(2, "month").format(DATE_FORMAT),
+        job_creation_date: offre?.job_creation_date ?? dayjs().format(ISO_DATE_FORMAT),
+        job_expiration_date: offre?.job_expiration_date ?? dayjs().add(2, "month").format(ISO_DATE_FORMAT),
         job_status: offre?.job_status ?? JOB_STATUS.ACTIVE,
         job_type: offre?.job_type ?? ["Apprentissage"],
         delegations: offre?.delegations ?? undefined,
@@ -119,7 +122,10 @@ const FormikCreationOffre = ({
       validationSchema={Yup.object().shape({
         rome_label: Yup.string().required("Champ obligatoire"),
         job_level_label: Yup.string().required("Champ obligatoire"),
-        job_start_date: Yup.date().required("Champ obligatoire"),
+        job_start_date: Yup.date()
+          .min(minStartDate, `La date de début doit être après le ${minStartDate.format(FR_DATE_FORMAT)}`)
+          .max(maxStartDate, `La date de début doit être avant le ${maxStartDate.format(FR_DATE_FORMAT)}`)
+          .required("Champ obligatoire"),
         job_type: Yup.array().required("Champ obligatoire"),
         job_duration: Yup.number().max(36, "Durée maximale du contrat : 36 mois").min(6, "Durée minimale du contrat : 6 mois").typeError("Durée minimale du contrat : 6 mois"),
       })}
@@ -198,10 +204,17 @@ const FormikCreationOffre = ({
               </Select>
               {errors.job_level_label && touched.job_level_label && <FormErrorMessage>{errors.job_level_label as string}</FormErrorMessage>}
             </FormControl>
-            <FormControl mt={6} isRequired>
-              <FormLabel>Date de début</FormLabel>
-              <Input type="date" name="job_start_date" min={minDate} defaultValue={values.job_start_date} onChange={handleChange} />
-            </FormControl>
+            <Box mt={6}>
+              <CustomInput
+                required={true}
+                name="job_start_date"
+                label="Date de début"
+                type="date"
+                value={values.job_start_date}
+                min={minStartDate.format(ISO_DATE_FORMAT)}
+                max={maxStartDate.format(ISO_DATE_FORMAT)}
+              />
+            </Box>
             {organisation !== "atlas" && (
               <FormControl mt={6}>
                 <Checkbox name="is_disabled_elligible" isChecked={values.is_disabled_elligible} onChange={handleChange}>
