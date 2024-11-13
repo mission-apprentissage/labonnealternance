@@ -3,13 +3,21 @@ import { Filter } from "mongodb"
 import { oleoduc, writeData } from "oleoduc"
 import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
-import { entriesToTypedRecord } from "shared/utils"
 
 import { logger as globalLogger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { streamGroupByCount } from "@/common/utils/streamUtils"
 
+/**
+ * Fonction permettant de facilement enrichir un computedJobPartner avec de nouvelles données provenant d'une source async
+ *
+ * @param job: nom du job
+ * @param sourceFields: champs nécessaires à la récupération des données
+ * @param filledFields: champs potentiellement modifiés par l'enrichissement
+ * @param groupSize: taille du packet de documents (utile pour optimiser les appels API et BDD)
+ * @param getData: fonction récupérant les nouvelles données. Les champs retournés seront modifiés et écraseront les anciennes données
+ */
 export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJobsPartnersOfferPrivate, FilledFields extends keyof IJobsPartnersOfferPrivate>({
   job,
   sourceFields,
@@ -20,7 +28,7 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
   job: COMPUTED_ERROR_SOURCE
   sourceFields: readonly SourceFields[]
   filledFields: readonly FilledFields[]
-  getData: (sourceFields: Pick<IComputedJobsPartners, SourceFields>[]) => Promise<Array<Pick<IComputedJobsPartners, FilledFields> | undefined>>
+  getData: (sourceFields: Pick<IComputedJobsPartners, SourceFields | FilledFields>[]) => Promise<Array<Pick<IComputedJobsPartners, FilledFields> | undefined>>
   groupSize: number
 }) => {
   const logger = globalLogger.child({
@@ -28,15 +36,27 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
   })
   logger.info(`job ${job} : début d'enrichissement des données`)
   const queryFilter: Filter<IComputedJobsPartners> = {
-    validated: false,
-    ...Object.fromEntries(sourceFields.map((field) => [[field], { $ne: null }])),
-    $or: filledFields.map((field) => ({ [field]: null })),
+    $and: [
+      {
+        $or: sourceFields.map((field) => ({ [field]: { $ne: null } })),
+      },
+      {
+        $or: filledFields.map((field) => ({ [field]: null })),
+      },
+    ],
   }
   const toUpdateCount = await getDbCollection("computed_jobs_partners").countDocuments(queryFilter)
   logger.info(`${toUpdateCount} documents à traiter`)
   const counters = { total: 0, success: 0, error: 0 }
   await oleoduc(
-    getDbCollection("computed_jobs_partners").find(queryFilter).stream(),
+    getDbCollection("computed_jobs_partners")
+      .find(queryFilter, {
+        projection: {
+          ...Object.fromEntries([...sourceFields, ...filledFields].map((field) => [field, 1])),
+          _id: 1,
+        },
+      })
+      .stream(),
     streamGroupByCount(groupSize),
     writeData(
       async (documents: IComputedJobsPartners[]) => {
@@ -50,18 +70,11 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
             if (!newFields) {
               return []
             }
-            const entries = Object.entries(newFields) as [FilledFields, IComputedJobsPartners[FilledFields]][]
-            const newFieldsUpdateOnlyEmpty = entriesToTypedRecord(
-              entries.filter(([key, _value]) => {
-                const oldValue = document[key]
-                return oldValue === undefined || oldValue === null || oldValue === ""
-              })
-            )
             return [
               {
                 updateOne: {
                   filter: { _id: document._id },
-                  update: { $set: newFieldsUpdateOnlyEmpty },
+                  update: { $set: newFields },
                 },
               },
             ]

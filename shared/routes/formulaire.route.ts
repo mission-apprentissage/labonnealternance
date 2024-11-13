@@ -1,6 +1,6 @@
 import { z } from "../helpers/zodWithOpenApi"
 import { zObjectId } from "../models/common"
-import { JOB_STATUS, ZJob, ZJobWrite } from "../models/job.model"
+import { JOB_STATUS, ZJob, ZJobCreate } from "../models/job.model"
 import { ZRecruiter, ZRecruiterWithApplicationCount } from "../models/recruiter.model"
 
 import { IRoutesDef } from "./common.routes"
@@ -100,7 +100,7 @@ export const zFormulaireRoute = {
       // TODO_SECURITY_FIX limiter les champs autorisés à la modification. Utiliser un "ZRecruiterNew" (ou un autre nom du genre ZFormulaire)
       params: z.object({ establishment_id: z.string() }).strict(),
       // TODO nonstrict TO BE FIXED on the frontend
-      body: ZJobWrite.nonstrict(),
+      body: ZJobCreate.nonstrict(),
       response: {
         "200": z
           .object({
@@ -123,7 +123,7 @@ export const zFormulaireRoute = {
       // TODO_SECURITY_FIX limiter les champs autorisés à la modification. Utiliser un "ZRecruiterNew" (ou un autre nom du genre ZFormulaire)
       params: z.object({ establishment_id: z.string() }).strict(),
       // TODO nonstrict TO BE FIXED on the frontend
-      body: ZJobWrite.nonstrict(),
+      body: ZJobCreate.nonstrict(),
       response: {
         "200": z
           .object({

@@ -99,8 +99,32 @@ export type IAppointmentRequestContextCreateResponseSchema = z.output<typeof zAp
 export type IAppointmentRequestContextCreateFormAvailableResponseSchema = z.output<typeof zAppointmentRequestContextCreateFormAvailableResponseSchema>
 export type IAppointmentRequestContextCreateFormUnavailableResponseSchema = z.output<typeof zAppointmentRequestContextCreateFormUnavailableResponseSchema>
 
+const zContextQuerySchema = z
+  .object({
+    idCleMinistereEducatif: z.string().optional(),
+    idActionFormation: z.string().optional(),
+    idParcoursup: z.string().optional(),
+    referrer: z.enum([
+      referrers.PARCOURSUP.name.toLowerCase(),
+      referrers.LBA.name.toLowerCase(),
+      referrers.ONISEP.name.toLowerCase(),
+      referrers.JEUNE_1_SOLUTION.name.toLowerCase(),
+      referrers.AFFELNET.name.toLowerCase(),
+    ]),
+  })
+  .strict()
+
 export const zAppointmentsRoute = {
   get: {
+    "/appointment": {
+      method: "get",
+      path: "/appointment",
+      querystring: zContextQuerySchema,
+      response: {
+        "200": zAppointmentRequestContextCreateResponseSchema,
+      },
+      securityScheme: null,
+    },
     "/appointment-request/context/short-recap": {
       method: "get",
       path: "/appointment-request/context/short-recap",

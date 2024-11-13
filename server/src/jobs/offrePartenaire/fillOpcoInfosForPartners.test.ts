@@ -62,7 +62,7 @@ describe("fillOpcoInfosForPartners", () => {
       _id: new ObjectId(),
       siren: "424761419",
       opco: OPCOS_LABEL.AFDAS,
-      idcc: "1313",
+      idcc: 1313,
     })
     // when
     await fillOpcoInfosForPartners()
@@ -106,20 +106,20 @@ describe("fillOpcoInfosForPartners", () => {
     expect.soft(job.errors).toEqual([])
     expect.soft({ workplace_opco, workplace_idcc }).toEqual({ workplace_opco: OPCOS_LABEL.CONSTRUCTYS, workplace_idcc: 124 })
   })
-  it("should not fill idcc if not a number", async () => {
+  it("should not fill opco if already present", async () => {
     // given
     await givenSomeComputedJobPartners([
       {
         workplace_siret: "42476141900045",
-        workplace_opco: null,
+        workplace_opco: OPCOS_LABEL.ATLAS,
         workplace_idcc: null,
       },
     ])
     await getDbCollection("opcos").insertOne({
       _id: new ObjectId(),
       siren: "424761419",
-      opco: OPCOS_LABEL.AFDAS,
-      idcc: "plop",
+      opco: OPCOS_LABEL.CONSTRUCTYS,
+      idcc: 267,
     })
     // when
     await fillOpcoInfosForPartners()
@@ -129,7 +129,7 @@ describe("fillOpcoInfosForPartners", () => {
     const [job] = jobs
     const { workplace_opco, workplace_idcc } = job
     expect.soft(job.errors).toEqual([])
-    expect.soft({ workplace_opco, workplace_idcc }).toEqual({ workplace_opco: OPCOS_LABEL.AFDAS, workplace_idcc: null })
+    expect.soft({ workplace_opco, workplace_idcc }).toEqual({ workplace_opco: OPCOS_LABEL.ATLAS, workplace_idcc: 267 })
   })
   it("should set opco to unknown when data is not found", async () => {
     // given
@@ -183,12 +183,13 @@ describe("fillOpcoInfosForPartners", () => {
         _id: new ObjectId(),
         siren: "424761419",
         opco: OPCOS_LABEL.AFDAS,
-        idcc: "1313",
+        idcc: 1313,
       },
       {
         _id: new ObjectId(),
         siren: "808413827",
         opco: OPCOS_LABEL.AKTO,
+        idcc: null,
       },
     ])
     // when

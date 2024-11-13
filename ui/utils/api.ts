@@ -1,9 +1,10 @@
 import { captureException } from "@sentry/nextjs"
 import Axios from "axios"
-import { IJobWritable, INewDelegations, INewSuperUser, IRecruiterJson, IRoutes, removeUndefinedFields, IUserWithAccountFields } from "shared"
+import { IJobCreate, INewDelegations, INewSuperUser, IRecruiterJson, IRoutes, IUserWithAccountFields, removeUndefinedFields } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { IEntrepriseJson } from "shared/models/entreprise.model"
+import { IAppointmentRequestContextCreateFormAvailableResponseSchema, IAppointmentRequestContextCreateFormUnavailableResponseSchema } from "shared/routes/appointments.routes"
 
 import { publicConfig } from "@/config.public"
 
@@ -36,8 +37,8 @@ export const archiveFormulaire = (establishment_id: string) => apiDelete("/formu
  * Offre API
  */
 export const getOffre = (jobId: string) => apiGet("/formulaire/offre/f/:jobId", { params: { jobId } })
-export const createOffre = (establishment_id: string, newOffre: IJobWritable) => apiPost("/formulaire/:establishment_id/offre", { params: { establishment_id }, body: newOffre })
-export const createOffreByToken = (establishment_id: string, newOffre: IJobWritable, token: string) =>
+export const createOffre = (establishment_id: string, newOffre: IJobCreate) => apiPost("/formulaire/:establishment_id/offre", { params: { establishment_id }, body: newOffre })
+export const createOffreByToken = (establishment_id: string, newOffre: IJobCreate, token: string) =>
   apiPost("/formulaire/:establishment_id/offre/by-token", { params: { establishment_id }, body: newOffre, headers: { authorization: `Bearer ${token}` } })
 export const patchOffreDelegation = (jobId: string, siret: string) =>
   apiPatch(`/formulaire/offre/:jobId/delegation`, { params: { jobId }, querystring: { siret_formateur: siret } }).catch(errorHandler)
@@ -147,6 +148,21 @@ export const getEntrepriseOpco = async (siret: string) => {
   } catch (error) {
     captureException(error)
     return null
+  }
+}
+
+export const getPrdvContext = async (
+  idCleMinistereEducatif: string,
+  referrer: string = "lba"
+): Promise<IAppointmentRequestContextCreateFormAvailableResponseSchema | IAppointmentRequestContextCreateFormUnavailableResponseSchema | null> => {
+  try {
+    const data = await apiGet("/appointment", { querystring: { idCleMinistereEducatif, referrer } }, { timeout: 7000 })
+    return data
+  } catch (error) {
+    if (error?.message !== BusinessErrorCodes.TRAINING_NOT_FOUND) {
+      captureException(error)
+    }
+    return { error: error.message }
   }
 }
 

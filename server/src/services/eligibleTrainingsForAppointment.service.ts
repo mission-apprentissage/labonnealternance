@@ -1,6 +1,7 @@
 import { badRequest, internal, notFound } from "@hapi/boom"
 import { Filter, ObjectId } from "mongodb"
 import { IEligibleTrainingsForAppointment, IFormationCatalogue } from "shared"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { IAppointmentRequestContextCreateResponseSchema } from "shared/routes/appointments.routes"
 import { IAppointmentContextAPI, IAppointmentResponseSchema } from "shared/routes/appointments.routes.v2"
 
@@ -86,26 +87,41 @@ const findEtablissement = async (formateurSiret: string | null | undefined) => {
   return await getDbCollection("etablissements").findOne({ formateur_siret: formateurSiret })
 }
 
-export const findElligibleTrainingForAppointment = async (req: any): Promise<IAppointmentRequestContextCreateResponseSchema> => {
-  const { referrer } = req.body
+export const findElligibleTrainingForAppointment = async ({
+  idCleMinistereEducatif,
+  idParcoursup,
+  idActionFormation,
+  referrer,
+}: {
+  idCleMinistereEducatif?: string
+  idParcoursup?: string
+  idActionFormation?: string
+  referrer: string
+}): Promise<IAppointmentRequestContextCreateResponseSchema> => {
   const referrerObj = getReferrerByKeyName(referrer)
   let eligibleTrainingsForAppointment: IEligibleTrainingsForAppointment | null
 
-  if ("idCleMinistereEducatif" in req.body) {
-    eligibleTrainingsForAppointment = await findEligibleTrainingByMinisterialKey(req.body.idCleMinistereEducatif)
-  } else if ("idParcoursup" in req.body) {
-    eligibleTrainingsForAppointment = await findEligibleTrainingByParcoursupId(req.body.idParcoursup)
-  } else if ("idActionFormation" in req.body) {
-    eligibleTrainingsForAppointment = await findEligibleTrainingByActionFormation(req.body.idActionFormation)
+  if (idCleMinistereEducatif) {
+    eligibleTrainingsForAppointment = await findEligibleTrainingByMinisterialKey(idCleMinistereEducatif)
+  } else if (idParcoursup) {
+    eligibleTrainingsForAppointment = await findEligibleTrainingByParcoursupId(idParcoursup)
+  } else if (idActionFormation) {
+    eligibleTrainingsForAppointment = await findEligibleTrainingByActionFormation(idActionFormation)
   } else {
     throw badRequest("Critère de recherche non conforme.")
   }
 
-  if (!eligibleTrainingsForAppointment) {
-    throw notFound("Formation introuvable")
-  }
+  return await getAppointmentContext(eligibleTrainingsForAppointment, referrerObj.name)
+}
 
-  if (!isOpenForAppointments(eligibleTrainingsForAppointment, referrerObj.name)) {
+const getAppointmentContext = async (
+  eligibleTrainingsForAppointment: IEligibleTrainingsForAppointment | null,
+  referrerName: string
+): Promise<IAppointmentRequestContextCreateResponseSchema> => {
+  if (!eligibleTrainingsForAppointment) {
+    throw notFound(BusinessErrorCodes.TRAINING_NOT_FOUND)
+  }
+  if (!isOpenForAppointments(eligibleTrainingsForAppointment, referrerName)) {
     return {
       error: "Prise de rendez-vous non disponible.",
     }
@@ -127,7 +143,7 @@ export const findElligibleTrainingForAppointment = async (req: any): Promise<IAp
     localite: eligibleTrainingsForAppointment.lieu_formation_city,
     id_rco_formation: eligibleTrainingsForAppointment.rco_formation_id,
     cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
-    form_url: `${config.publicUrl}/espace-pro/form?referrer=${referrerObj.name.toLowerCase()}&cleMinistereEducatif=${encodeURIComponent(
+    form_url: `${config.publicUrl}/espace-pro/form?referrer=${referrerName.toLowerCase()}&cleMinistereEducatif=${encodeURIComponent(
       eligibleTrainingsForAppointment.cle_ministere_educatif
     )}`,
   }
