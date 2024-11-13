@@ -5,6 +5,7 @@ import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobs
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { streamGroupByCount } from "@/common/utils/streamUtils"
+import { isJobPartnerCompanyClosed } from "@/services/jobsPartner.service"
 
 const groupSize = 100
 const zodModel = jobsPartnersModel.zod
@@ -26,7 +27,9 @@ export const validateComputedJobPartners = async () => {
         const setOperations: Operation[] = []
         const pushOperations: Operation[] = []
         documents.map((document) => {
-          const { success: validated, error } = zodModel.safeParse(document)
+          const { success, error } = zodModel.safeParse(document)
+          const validated = !isJobPartnerCompanyClosed(document) && success
+
           setOperations.push({
             updateOne: {
               filter: { _id: document._id },
@@ -52,7 +55,11 @@ export const validateComputedJobPartners = async () => {
               },
             })
           } else {
-            counters.success++
+            if (validated) {
+              counters.success++
+            } else {
+              counters.error++
+            }
           }
         })
         if (setOperations?.length) {

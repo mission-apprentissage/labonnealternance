@@ -5,6 +5,7 @@ import { isEnum } from "shared/utils"
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
 import { getSiretInfos } from "@/services/cacheInfosSiret.service"
 import { formatEntrepriseData } from "@/services/etablissement.service"
+import { isJobPartnerCompanyClosed } from "@/services/jobsPartner.service"
 
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 
@@ -42,8 +43,8 @@ export const fillSiretInfosForPartners = async () => {
       const { establishment_enseigne, establishment_raison_sociale, naf_code, naf_label, geo_coordinates, establishment_size, address } = formatEntrepriseData(data)
 
       const errors = document.errors
-      if (response?.data?.etat_administratif === "F") {
-        if (!errors.find((error) => error?.source === COMPUTED_ERROR_SOURCE.API_SIRET && error.error === BusinessErrorCodes.CLOSED)) {
+      if (data?.etat_administratif === "F") {
+        if (!errors.length || !isJobPartnerCompanyClosed(document)) {
           errors.push({
             source: COMPUTED_ERROR_SOURCE.API_SIRET,
             error: BusinessErrorCodes.CLOSED,
