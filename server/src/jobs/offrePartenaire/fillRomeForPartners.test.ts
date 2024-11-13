@@ -1,13 +1,14 @@
 import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-import { ObjectId } from "mongodb"
 import nock from "nock"
 import { IRomeoAPIResponse } from "shared/models/cacheRomeo.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { nockFranceTravailRomeo } from "@/common/apis/franceTravail/franceTravail.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { cacheRomeFixture, cacheRomeResultFixture } from "../../../../shared/fixtures/cacheRome.fixture"
+import { nockFranceTravailTokenAccessRomeo } from "../../common/apis/franceTravail/franceTravail.client.fixture"
 
 import { fillRomeForPartners } from "./fillRomeForPartners"
 
@@ -75,12 +76,7 @@ describe("fillRomeForPartners", () => {
       },
     ])
     nock.cleanAll()
-    await getDbCollection("francetravail_access").insertOne({
-      _id: new ObjectId(),
-      access_token: "ft_token_romeo",
-      access_type: "ROMEO",
-      created_at: new Date(),
-    })
+    nockFranceTravailTokenAccessRomeo()
     const apiResponse: IRomeoAPIResponse = [
       {
         intitule: title,
@@ -98,18 +94,16 @@ describe("fillRomeForPartners", () => {
         ],
       },
     ]
-    nock("https://api.francetravail.io")
-      .post(`/partenaire/romeo/v2/predictionMetiers`, {
-        appellations: [
-          {
-            intitule: title,
-            identifiant: "0",
-            contexte: nafCode,
-          },
-        ],
-        options: { nomAppelant: "La bonne alternance" },
-      })
-      .reply(200, apiResponse)
+    nockFranceTravailRomeo(
+      [
+        {
+          intitule: title,
+          identifiant: "0",
+          contexte: nafCode,
+        },
+      ],
+      apiResponse
+    )
     // when
     await fillRomeForPartners()
     // then

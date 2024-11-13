@@ -19,9 +19,14 @@ const getRomesFromCache = async (queries: IRomeQuery[]): Promise<(string | null)
   })
 }
 
-export const getRomeInfo = async (query: IRomeQuery): Promise<string | null> => {
-  const results = await getRomesInfos([query])
-  return results[0]
+export const getRomeInfoSafe = async (query: IRomeQuery): Promise<string | null> => {
+  try {
+    const results = await getRomesInfos([query])
+    return results[0]
+  } catch (error) {
+    console.error("Error fetching or processing Romeo data:", error)
+    return null
+  }
 }
 
 export const getRomesInfos = async (queries: IRomeQuery[]): Promise<(string | null)[]> => {
