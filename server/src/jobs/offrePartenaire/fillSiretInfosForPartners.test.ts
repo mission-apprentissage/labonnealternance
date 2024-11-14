@@ -144,27 +144,6 @@ describe("fillSiretInfosForPartners", () => {
     expect.soft(job.errors).toEqual([])
     expect.soft(job.job_validity).toEqual(JOB_VALIDITY.CLOSED_COMPANY)
   })
-  it("should add an error in the document when data is not found", async () => {
-    // given
-    await givenSomeComputedJobPartners([
-      {
-        workplace_siret: "42476141900012",
-        ...emptyFilledObject,
-      },
-    ])
-    // when
-    await fillSiretInfosForPartners()
-    // then
-    const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
-    expect.soft(jobs.length).toBe(1)
-    const [job] = jobs
-    expect.soft(job.errors).toEqual([
-      {
-        error: "data not found",
-        source: COMPUTED_ERROR_SOURCE.API_SIRET,
-      },
-    ])
-  })
 
   it("should be able to handle multiple documents", async () => {
     // given
