@@ -3,7 +3,7 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import pick from "lodash-es/pick"
 import nock from "nock"
 import { generateCacheInfoSiretForSiret } from "shared/fixtures/cacheInfoSiret.fixture"
-import { COMPUTED_ERROR_SOURCE, JOB_VALIDITY } from "shared/models/jobsPartnersComputed.model"
+import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { entriesToTypedRecord } from "shared/utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -97,7 +97,7 @@ describe("fillSiretInfosForPartners", () => {
     expect.soft(jobs.length).toBe(1)
     const [job] = jobs
     expect.soft(job.errors).toEqual([])
-    expect.soft(job.job_validity).toEqual(JOB_VALIDITY.VALID)
+    expect.soft(job.business_error).toEqual(null)
     expect.soft(pick(job, filledFields)).toMatchSnapshot()
   })
   it("should add an error in the document when data is not found", async () => {
@@ -122,7 +122,7 @@ describe("fillSiretInfosForPartners", () => {
     ])
   })
 
-  it("should add job_validity closed_company to document when company is closed", async () => {
+  it("should add business_error closed_company to document when company is closed", async () => {
     // given
     const siret = "73282932000074"
     await givenSomeComputedJobPartners([
@@ -142,7 +142,7 @@ describe("fillSiretInfosForPartners", () => {
     expect.soft(jobs.length).toBe(1)
     const [job] = jobs
     expect.soft(job.errors).toEqual([])
-    expect.soft(job.job_validity).toEqual(JOB_VALIDITY.CLOSED_COMPANY)
+    expect.soft(job.business_error).toEqual(JOB_PARTNER_BUSINESS_ERROR.CLOSED_COMPANY)
   })
 
   it("should be able to handle multiple documents", async () => {

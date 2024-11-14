@@ -1,6 +1,6 @@
 import { createComputedJobPartner, createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-import { JOB_VALIDITY } from "shared/models/jobsPartnersComputed.model"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -24,7 +24,7 @@ describe("Importing computed_jobs_partners into jobs_partners", () => {
     await createComputedJobPartner({ partner_job_id: "computed_2", validated: false })
     await createComputedJobPartner({ partner_job_id: "existing_3", offer_description: newDesc, validated: true })
     await createComputedJobPartner({ partner_job_id: "computed_4", validated: false })
-    await createComputedJobPartner({ partner_job_id: "computed_5", validated: true, job_validity: JOB_VALIDITY.CLOSED_COMPANY })
+    await createComputedJobPartner({ partner_job_id: "computed_5", validated: true, business_error: JOB_PARTNER_BUSINESS_ERROR.CLOSED_COMPANY })
 
     return async () => {
       await getDbCollection("computed_jobs_partners").deleteMany({})
@@ -32,10 +32,10 @@ describe("Importing computed_jobs_partners into jobs_partners", () => {
     }
   })
 
-  it("La transition de computed_jobs_partners vers jobs_partners fonctionne comme attendue : \n- les éléments non validated ou avec une mauvaise job_validity ne doivent pas se retrouver dans jobs partners\n- les éléments validated et absents initialement de jobs partners doivent se rerouver dans jobs partners\n- les éléments validated et déjà dans jobs partners doivent toujours y être avec les data modifiées à jour", async () => {
+  it("La transition de computed_jobs_partners vers jobs_partners fonctionne comme attendue : \n- les éléments non validated ou avec business_error ne doivent pas se retrouver dans jobs partners\n- les éléments validated et absents initialement de jobs partners doivent se rerouver dans jobs partners\n- les éléments validated et déjà dans jobs partners doivent toujours y être avec les data modifiées à jour", async () => {
     await importFromComputedToJobsPartners()
 
-    // les éléments non validated ou avec mauvaise job_validity ne doivent pas se retrouver dans jobs partners
+    // les éléments non validated ou avec business_error ne doivent pas se retrouver dans jobs partners
     const countNonValidatedInJobsPartners = await getDbCollection("jobs_partners").countDocuments({ partner_job_id: { $in: ["computed_2", "computed_4", "computed_5"] } })
     expect.soft(countNonValidatedInJobsPartners).toEqual(0)
 

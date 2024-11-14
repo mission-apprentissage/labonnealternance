@@ -1,6 +1,6 @@
 import { oleoduc, writeData } from "oleoduc"
 import jobsPartnersModel from "shared/models/jobsPartners.model"
-import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners, JOB_VALIDITY } from "shared/models/jobsPartnersComputed.model"
+import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -15,9 +15,7 @@ export const validateComputedJobPartners = async () => {
   logger.info(`${toUpdateCount} documents à traiter`)
   const counters = { total: 0, success: 0, error: 0 }
   await oleoduc(
-    getDbCollection("computed_jobs_partners")
-      .find({ job_validity: { $in: [JOB_VALIDITY.VALID, JOB_VALIDITY.UNKNOWN] } })
-      .stream(),
+    getDbCollection("computed_jobs_partners").find({ business_error: null }).stream(),
     streamGroupByCount(groupSize),
     writeData(
       async (documents: IComputedJobsPartners[]) => {
@@ -55,7 +53,7 @@ export const validateComputedJobPartners = async () => {
               },
             })
           } else {
-       counters.success++
+            counters.success++
           }
         })
         if (setOperations?.length) {

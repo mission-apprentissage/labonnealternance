@@ -4,12 +4,12 @@ exports[`importHelloWork > should test the import of hellowork data into compute
 [
   {
     "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162035&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F41990977.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D41990977%26utm_content%3Dfluxexample",
+    "business_error": null,
     "contract_duration": null,
     "contract_remote": "onsite",
     "contract_start": null,
     "contract_type": null,
     "errors": [],
-    "job_validity": "UNKNOWN",
     "offer_access_conditions": [],
     "offer_creation": 2024-01-30T22:21:39.000Z,
     "offer_description": "Vous développerez l'innovation pour créer les conditions favorables à l'émergence de nouveaux usages dans nos pratiques de conseil et dans le cadre des projets clients. Vous participerez au processus de recrutement et à la montée en compétences des consultants.
@@ -64,12 +64,12 @@ Vous contribuez au développement commercial en concevant des nouvelles offres, 
   },
   {
     "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162036&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F41995446.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D41995446%26utm_content%3Dfluxexample",
+    "business_error": null,
     "contract_duration": null,
     "contract_remote": null,
     "contract_start": null,
     "contract_type": null,
     "errors": [],
-    "job_validity": "UNKNOWN",
     "offer_access_conditions": [],
     "offer_creation": 2024-01-30T22:11:59.000Z,
     "offer_description": "Votre futur poste
@@ -156,12 +156,12 @@ Fondé en 1933 par André Besnier à Laval, le Groupe Lactalis est une entrepris
   },
   {
     "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162037&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F42014902.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D42014902%26utm_content%3Dfluxexample",
+    "business_error": null,
     "contract_duration": null,
     "contract_remote": "hybrid",
     "contract_start": null,
     "contract_type": null,
     "errors": [],
-    "job_validity": "UNKNOWN",
     "offer_access_conditions": [],
     "offer_creation": 2024-01-31T22:09:13.000Z,
     "offer_description": "Nous recherchons notre futur(e) Directeur Marketing.
@@ -254,12 +254,12 @@ Prêt à rejoindre la Team CGR ?",
   },
   {
     "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162038&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F42016309.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D42016309%26utm_content%3Dfluxexample",
+    "business_error": null,
     "contract_duration": null,
     "contract_remote": "onsite",
     "contract_start": null,
     "contract_type": null,
     "errors": [],
-    "job_validity": "UNKNOWN",
     "offer_access_conditions": [],
     "offer_creation": 2024-01-31T22:11:11.000Z,
     "offer_description": "La révolution robotique portée par Exotec ne fait que commencer, vous en êtes ?
@@ -333,12 +333,12 @@ Rejoindre Exotec, c'est l'opportunité de donner du sens à vos compétences. Gr
   },
   {
     "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162039&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F42018480.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D42018480%26utm_content%3Dfluxexample",
+    "business_error": null,
     "contract_duration": null,
     "contract_remote": "onsite",
     "contract_start": null,
     "contract_type": null,
     "errors": [],
-    "job_validity": "UNKNOWN",
     "offer_access_conditions": [],
     "offer_creation": 2024-01-31T22:22:17.000Z,
     "offer_description": "Prendre en charge plusieurs projets de développement de produits sous la responsabilité d'un responsable de gamme.
@@ -419,12 +419,12 @@ exports[`importHelloWork > should test the whole import 1`] = `
 [
   {
     "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162035&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F41990977.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D41990977%26utm_content%3Dfluxexample",
+    "business_error": null,
     "contract_duration": null,
     "contract_remote": "onsite",
     "contract_start": null,
     "contract_type": null,
     "errors": [],
-    "job_validity": "UNKNOWN",
     "offer_access_conditions": [],
     "offer_creation": 2024-01-30T22:21:39.000Z,
     "offer_description": "Vous développerez l'innovation pour créer les conditions favorables à l'émergence de nouveaux usages dans nos pratiques de conseil et dans le cadre des projets clients. Vous participerez au processus de recrutement et à la montée en compétences des consultants.
@@ -472,12 +472,12 @@ Vous contribuez au développement commercial en concevant des nouvelles offres, 
   },
   {
     "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162036&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F41995446.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D41995446%26utm_content%3Dfluxexample",
+    "business_error": null,
     "contract_duration": null,
     "contract_remote": null,
     "contract_start": null,
     "contract_type": null,
     "errors": [],
-    "job_validity": "UNKNOWN",
     "offer_access_conditions": [],
     "offer_creation": 2024-01-30T22:11:59.000Z,
     "offer_description": "Votre futur poste
@@ -557,12 +557,12 @@ Fondé en 1933 par André Besnier à Laval, le Groupe Lactalis est une entrepris
   },
   {
     "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162037&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F42014902.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D42014902%26utm_content%3Dfluxexample",
+    "business_error": null,
     "contract_duration": null,
     "contract_remote": "hybrid",
     "contract_start": null,
     "contract_type": null,
     "errors": [],
-    "job_validity": "UNKNOWN",
     "offer_access_conditions": [],
     "offer_creation": 2024-01-31T22:09:13.000Z,
     "offer_description": "Nous recherchons notre futur(e) Directeur Marketing.
@@ -648,12 +648,12 @@ Prêt à rejoindre la Team CGR ?",
   },
   {
     "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162038&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F42016309.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D42016309%26utm_content%3Dfluxexample",
+    "business_error": null,
     "contract_duration": null,
     "contract_remote": "onsite",
     "contract_start": null,
     "contract_type": null,
     "errors": [],
-    "job_validity": "UNKNOWN",
     "offer_access_conditions": [],
     "offer_creation": 2024-01-31T22:11:11.000Z,
     "offer_description": "La révolution robotique portée par Exotec ne fait que commencer, vous en êtes ?
@@ -720,12 +720,12 @@ Rejoindre Exotec, c'est l'opportunité de donner du sens à vos compétences. Gr
   },
   {
     "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162039&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F42018480.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D42018480%26utm_content%3Dfluxexample",
+    "business_error": null,
     "contract_duration": null,
     "contract_remote": "onsite",
     "contract_start": null,
     "contract_type": null,
     "errors": [],
-    "job_validity": "UNKNOWN",
     "offer_access_conditions": [],
     "offer_creation": 2024-01-31T22:22:17.000Z,
     "offer_description": "Prendre en charge plusieurs projets de développement de produits sous la responsabilité d'un responsable de gamme.
