@@ -91,7 +91,7 @@ services:
 
   metabase:
     <<: *default
-    image: metabase/metabase:v0.49.10
+    image: metabase/metabase:v0.51.2
     deploy:
       <<: *deploy-default
       resources:
@@ -101,7 +101,7 @@ services:
       JAVA_TIMEZONE: Europe/Paris
       MB_SITE_LOCALE: fr
       MB_SITE_URL: "{{dns_name}}/metabase"
-      MB_DB_TYPE: mysql
+      MB_DB_TYPE: postgres
       MB_DB_CONNECTION_URI: "{{vault[env_type].LBA_METABASE_URI}}"
       MB_ENCRYPTION_SECRET_KEY: "{{vault[env_type].LBA_METABASE_ENCRYPTION_SECRET_KEY}}"
       MB_PASSWORD_COMPLEXITY: strong

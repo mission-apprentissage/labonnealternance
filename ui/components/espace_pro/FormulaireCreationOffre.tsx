@@ -16,7 +16,6 @@ import {
   SimpleGrid,
   Stack,
   Text,
-  Textarea,
 } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import { Formik } from "formik"
@@ -107,7 +106,6 @@ const FormikCreationOffre = ({
         rome_code: offre?.rome_code ?? [],
         job_level_label: offre?.job_level_label ?? "Indifférent",
         job_start_date: offre?.job_start_date ? dayjs(offre.job_start_date).format(ISO_DATE_FORMAT) : "",
-        job_description: offre?.job_description ?? undefined,
         job_creation_date: offre?.job_creation_date ?? dayjs().format(ISO_DATE_FORMAT),
         job_expiration_date: offre?.job_expiration_date ?? dayjs().add(2, "month").format(ISO_DATE_FORMAT),
         job_status: offre?.job_status ?? JOB_STATUS.ACTIVE,
@@ -264,16 +262,6 @@ const FormikCreationOffre = ({
               </FormControl>
             )}
             <Divider mt={5} />
-            {(values.job_description || organisation?.includes("akto")) && (
-              <FormControl mt={6}>
-                <FormLabel>Description</FormLabel>
-                {/* @ts-expect-error: TODO */}
-                <Textarea rows="6" name="job_description" defaultValue={values.job_description} onChange={handleChange} />
-                <FormHelperText>
-                  Insérer ici une description de l'offre d'apprentissage, un lien vers la fiche de poste ou tout élément permettant de présenter le poste à pourvoir.
-                </FormHelperText>
-              </FormControl>
-            )}
             <Flex justify="flex-end" my={8}>
               <Button variant="secondary" onClick={() => router.back()} mr={4}>
                 Annuler
