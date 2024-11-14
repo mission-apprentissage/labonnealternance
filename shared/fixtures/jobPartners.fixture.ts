@@ -2,7 +2,7 @@ import { ObjectId } from "bson"
 
 import { JOB_STATUS_ENGLISH } from "../models"
 import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "../models/jobsPartners.model"
-import { IComputedJobsPartners } from "../models/jobsPartnersComputed.model"
+import { IComputedJobsPartners, JOB_VALIDITY } from "../models/jobsPartnersComputed.model"
 
 export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOfferPrivate> = {}): IJobsPartnersOfferPrivate {
   return {
@@ -61,6 +61,7 @@ export function generateComputedJobsPartnersFixture(data: Partial<IComputedJobsP
   return {
     errors: [],
     validated: false,
+    job_validity: JOB_VALIDITY.UNKNOWN,
     _id: new ObjectId(),
     workplace_siret: null,
     workplace_website: null,

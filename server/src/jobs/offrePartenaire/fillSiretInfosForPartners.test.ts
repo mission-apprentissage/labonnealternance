@@ -3,7 +3,7 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import pick from "lodash-es/pick"
 import nock from "nock"
 import { generateCacheInfoSiretForSiret } from "shared/fixtures/cacheInfoSiret.fixture"
-import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
+import { COMPUTED_ERROR_SOURCE, JOB_VALIDITY } from "shared/models/jobsPartnersComputed.model"
 import { entriesToTypedRecord } from "shared/utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -97,6 +97,7 @@ describe("fillSiretInfosForPartners", () => {
     expect.soft(jobs.length).toBe(1)
     const [job] = jobs
     expect.soft(job.errors).toEqual([])
+    expect.soft(job.job_validity).toEqual(JOB_VALIDITY.VALID)
     expect.soft(pick(job, filledFields)).toMatchSnapshot()
   })
   it("should add an error in the document when data is not found", async () => {
@@ -120,6 +121,51 @@ describe("fillSiretInfosForPartners", () => {
       },
     ])
   })
+
+  it("should add job_validity closed_company to document when company is closed", async () => {
+    // given
+    const siret = "73282932000074"
+    await givenSomeComputedJobPartners([
+      {
+        workplace_siret: siret,
+        ...emptyFilledObject,
+      },
+    ])
+
+    nock.cleanAll()
+    nock("https://entreprise.api.gouv.fr/v3/insee").get(`/sirene/etablissements/diffusibles/${siret}`).query(true).reply(200, generateCacheInfoSiretForSiret(siret, "F").data!)
+
+    // when
+    await fillSiretInfosForPartners()
+    // then
+    const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
+    expect.soft(jobs.length).toBe(1)
+    const [job] = jobs
+    expect.soft(job.errors).toEqual([])
+    expect.soft(job.job_validity).toEqual(JOB_VALIDITY.CLOSED_COMPANY)
+  })
+  it("should add an error in the document when data is not found", async () => {
+    // given
+    await givenSomeComputedJobPartners([
+      {
+        workplace_siret: "42476141900012",
+        ...emptyFilledObject,
+      },
+    ])
+    // when
+    await fillSiretInfosForPartners()
+    // then
+    const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
+    expect.soft(jobs.length).toBe(1)
+    const [job] = jobs
+    expect.soft(job.errors).toEqual([
+      {
+        error: "data not found",
+        source: COMPUTED_ERROR_SOURCE.API_SIRET,
+      },
+    ])
+  })
+
   it("should be able to handle multiple documents", async () => {
     // given
     const [initJob1, initJob2] = await givenSomeComputedJobPartners([
