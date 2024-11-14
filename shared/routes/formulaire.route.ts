@@ -239,7 +239,7 @@ export const zFormulaireRoute = {
       path: "/formulaire/offre/:jobId/cancel",
       params: z.object({ jobId: zObjectId }).strict(),
       response: {
-        "2xx": z.object({}).strict(),
+        "200": z.object({}).strict(),
       },
       securityScheme: {
         auth: "access-token",
