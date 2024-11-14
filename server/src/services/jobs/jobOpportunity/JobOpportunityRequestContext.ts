@@ -3,8 +3,8 @@ import { IRouteSchema } from "shared/routes/common.routes"
 // Messages are not constants but the codes are
 export const IJobOpportunityWarningMap = {
   FRANCE_TRAVAIL_API_ERROR: "Unable to retrieve job offers from France Travail API",
-  JOB_OFFER_FORMATING_ERROR: "Some jobs offers are invalid. Unexpected error on some job, they are excluded from the result",
-  RECRUITERS_FORMATING_ERROR: "Some recruiters are invalid. Unexpected error on some recruiters, they are excluded from the result",
+  JOB_OFFER_FORMATING_ERROR: "Some job offers are invalid and have been excluded due to unexpected errors.",
+  RECRUITERS_FORMATING_ERROR: "Some recruiters are invalid and have been excluded due to unexpected errors.",
 } as const satisfies Record<string, string>
 
 export type IJobOpportunityWarningCode = keyof typeof IJobOpportunityWarningMap
