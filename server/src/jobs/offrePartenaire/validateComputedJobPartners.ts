@@ -55,11 +55,7 @@ export const validateComputedJobPartners = async () => {
               },
             })
           } else {
-            if (validated) {
-              counters.success++
-            } else {
-              counters.error++
-            }
+       counters.success++
           }
         })
         if (setOperations?.length) {
