@@ -65,7 +65,7 @@ const postToBrevo = async (contacts) => {
   requestContactImport.fileBody =
     "EMAIL;PRENOM;NOM;USER_ORIGIN;ROLE_AUTHORIZED_TYPE;ROLE_CREATEDAT;ENTREPRISE_ENSEIGNE;ENTREPRISE_RAISON_SOCIALE;CFA_ENSEIGNE;CFA_RAISON_SOCIALE;JOB_COUNT\n"
   contacts.forEach((contact) => {
-    requestContactImport.fileBody += `${contact.user_email};${contact.user_first_name};${contact.user_last_name};${contact.user_origin};${contact.role_authorized_type};${dayjs(contact.role_createdAt).format("YYYY-MM-DD")};${contact.entreprise_enseigne};${contact.entreprise_raison_sociale};${contact.cfa_enseigne};${contact.cfa_raison_sociale};0\n`
+    requestContactImport.fileBody += `${contact.user_email};${contact.user_first_name};${contact.user_last_name};${contact.user_origin ?? ""};${contact.role_authorized_type ?? ""};${dayjs(contact.role_createdAt).format("YYYY-MM-DD")};${contact.entreprise_enseigne ?? ""};${contact.entreprise_raison_sociale ?? ""};${contact.cfa_enseigne ?? ""};${contact.cfa_raison_sociale ?? ""};0\n`
   })
   requestContactImport.listIds = [5]
   requestContactImport.updateExistingContacts = true
