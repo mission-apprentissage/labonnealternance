@@ -121,7 +121,6 @@ describe("createJob", () => {
     ]
     expect.soft(() => createJob({ user, establishment_id: recruiter.establishment_id, job })).rejects.toThrow("compétences invalides")
   })
-  // it("do nothing", async () => {})
   it("should raise a bad request when rome_label do not match referentiel rome", async () => {
     const job = generateValidJobWritable()
     job.rome_label = "test"
