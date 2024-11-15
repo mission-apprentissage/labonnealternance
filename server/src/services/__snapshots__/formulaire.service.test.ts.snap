@@ -85,8 +85,10 @@ exports[`createJob > should insert a job 2`] = `
     "Apprentissage",
   ],
   "managed_by": "670ce1ded6ce30c3c90a0e1d",
+  "rome_appellation_label": "Agent administratif / Agente administrative",
   "rome_code": [
     "M1602",
   ],
+  "rome_label": "Opérations administratives",
 }
 `;

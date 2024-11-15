@@ -216,7 +216,7 @@ const isAuthorizedToPublishJob = async ({ userId, entrepriseId }: { userId: Obje
  * @description Create job offer for formulaire
  */
 export const createJob = async ({ job, establishment_id, user }: { job: IJobCreate; establishment_id: string; user: IUserWithAccount }): Promise<IRecruiter> => {
-  await controlEditableRomeDetail(job)
+  await validateFieldsFromReferentielRome(job)
 
   const userId = user._id
   const recruiter = await getDbCollection("recruiters").findOne({ establishment_id: establishment_id })
@@ -563,7 +563,7 @@ export async function updateOffre(id: string | ObjectId, payload: UpdateFilter<I
  * @returns {Promise<IRecruiter>}
  */
 export const patchOffre = async (id: IJob["_id"], payload: Partial<IJob>): Promise<IRecruiter> => {
-  await controlEditableRomeDetail(payload)
+  await validateFieldsFromReferentielRome(payload)
   const fields = {}
   for (const key in payload) {
     fields[`jobs.$.${key}`] = payload[key]
@@ -872,15 +872,31 @@ const filterRomeDetails = (romeDetails, competencesRome) => {
   return filteredRome
 }
 
-const controlEditableRomeDetail = async (job) => {
-  const { competences_rome, rome_code } = job
+const validateFieldsFromReferentielRome = async (job) => {
+  const { competences_rome, rome_code, rome_appellation_label, rome_label } = job
   const romeDetails = await getRomeDetailsFromDB(rome_code[0])
 
   if (!romeDetails) {
     throw internal("unexpected: rome details not found")
   }
 
-  const filteredRome = filterRomeDetails(romeDetails.competences, competences_rome)
+  const {
+    competences,
+    rome: { intitule },
+    appellations,
+  } = romeDetails
+
+  if (intitule !== rome_label) {
+    throw badRequest(`L'intitulé du code ROME ne correspond pas au référentiel : ${intitule}, reçu ${rome_label}`)
+  }
+
+  const matchingAppellation = appellations.some((appellation) => appellation.libelle === rome_appellation_label)
+
+  if (!matchingAppellation) {
+    throw badRequest(`L'appellation du code ROME ne correspond pas au référentiel : reçu ${rome_appellation_label}`)
+  }
+
+  const filteredRome = filterRomeDetails(competences, competences_rome)
   const isValid = equal(filteredRome, competences_rome)
 
   if (!isValid) {

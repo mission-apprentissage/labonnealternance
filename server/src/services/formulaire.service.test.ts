@@ -48,6 +48,8 @@ describe("createJob", () => {
     return generateJobFixture({
       managed_by: user._id.toString(),
       rome_code: [referentielRome.rome.code_rome],
+      rome_label: referentielRome.rome.intitule,
+      rome_appellation_label: referentielRome.appellations[0].libelle,
       competences_rome: {
         savoir_etre_professionnel: referentielRome.competences.savoir_etre_professionnel?.slice(0, 1),
         savoir_faire: referentielRome.competences.savoir_faire?.slice(0, 1),
@@ -106,5 +108,20 @@ describe("createJob", () => {
       },
     ]
     expect.soft(() => createJob({ user, establishment_id: recruiter.establishment_id, job })).rejects.toThrow("compétences invalides")
+  })
+  // it("do nothing", async () => {})
+  it("should raise a bad request when rome_label do not match referentiel rome", async () => {
+    const job = generateValidJobWritable()
+    job.rome_label = "test"
+    expect
+      .soft(() => createJob({ user, establishment_id: recruiter.establishment_id, job }))
+      .rejects.toThrow(`L'intitulé du code ROME ne correspond pas au référentiel : ${referentielRome.rome.intitule}, reçu ${job.rome_label}`)
+  })
+  it("should raise a bad request when rome_appellation_label do not match referentiel rome", async () => {
+    const job = generateValidJobWritable()
+    job.rome_appellation_label = "test"
+    expect
+      .soft(() => createJob({ user, establishment_id: recruiter.establishment_id, job }))
+      .rejects.toThrow(`L'appellation du code ROME ne correspond pas au référentiel : reçu ${job.rome_appellation_label}`)
   })
 })
