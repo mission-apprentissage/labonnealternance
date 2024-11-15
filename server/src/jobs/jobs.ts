@@ -15,6 +15,7 @@ import { anonimizeUsers } from "./anonymization/anonymizeUserRecruteurs"
 import { anonymizeOldUsers } from "./anonymization/anonymizeUsers"
 import fixApplications from "./applications/fixApplications"
 import { processApplications } from "./applications/processApplications"
+import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
 import { obfuscateCollections } from "./database/obfuscateCollections"
 import { recreateIndexes } from "./database/recreateIndexes"
 import { validateModels } from "./database/schemaValidation"
@@ -220,6 +221,10 @@ export async function setupJobProcessor() {
             cron_string: "0 15 * * SUN",
             handler: updateReferentielCommune,
           },
+          "Emission des contacts vers Brevo": {
+            cron_string: "30 22 * * *",
+            handler: sendContactsToBrevo,
+          },
         },
     jobs: {
       "remove:duplicates:recruiters": {
@@ -347,6 +352,9 @@ export async function setupJobProcessor() {
       },
       "brevo:blocked:sync": {
         handler: async (job) => updateBrevoBlockedEmails(job.payload as any),
+      },
+      "brevo:contacts:sync": {
+        handler: async () => sendContactsToBrevo(),
       },
       "applications:anonymize": {
         handler: async () => anonymizeOldApplications(),

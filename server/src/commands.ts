@@ -457,6 +457,12 @@ program
   .action(createJobAction("brevo:blocked:sync"))
 
 program
+  .command("brevo:contacts:sync")
+  .description("Envoi à Brevo la liste des contacts")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("brevo:contacts:sync"))
+
+program
   .command("anonymize-applications")
   .description("Anonymise toutes les candidatures de plus de an qui ne sont pas déjà anonymisées")
   .option("-q, --queued", "Run job asynchronously", false)
