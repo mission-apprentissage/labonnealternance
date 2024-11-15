@@ -1,9 +1,12 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
-import { saveEntrepriseUserTest } from "@tests/utils/user.test.utils"
 import omit from "lodash/omit"
 import { ObjectId } from "mongodb"
-import { generateJobFixture } from "shared/fixtures/recruiter.fixture"
+import { RECRUITER_STATUS } from "shared/constants"
+import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
+import { generateJobFixture, generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
+import { generateRoleManagementFixture } from "shared/fixtures/roleManagement.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
+import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import { IRecruiter, IReferentielRome, IUserWithAccount } from "shared/models"
 import { beforeEach, describe, expect, it } from "vitest"
 
@@ -20,20 +23,29 @@ describe("createJob", () => {
 
   beforeEach(async () => {
     const email = "entreprise@mail.fr"
-    const response = await saveEntrepriseUserTest(
-      {
-        _id: new ObjectId("670ce1ded6ce30c3c90a0e1d"),
-        email,
-      },
-      {},
-      {},
-      { jobs: [], email, _id: new ObjectId("670ce30b57a50d6875c141f9"), establishment_creation_date: new Date("2024-10-14T09:23:21.588Z") }
-    )
-    user = response.user
-    recruiter = response.recruiter
-
+    const entreprise = generateEntrepriseFixture()
+    const role = generateRoleManagementFixture()
+    user = generateUserWithAccountFixture({
+      _id: new ObjectId("670ce1ded6ce30c3c90a0e1d"),
+      email,
+    })
+    recruiter = generateRecruiterFixture({
+      is_delegated: false,
+      cfa_delegated_siret: null,
+      status: RECRUITER_STATUS.ACTIF,
+      establishment_siret: entreprise.siret,
+      opco: entreprise.opco,
+      jobs: [],
+      email,
+      _id: new ObjectId("670ce30b57a50d6875c141f9"),
+      establishment_creation_date: new Date("2024-10-14T09:23:21.588Z"),
+    })
     referentielRome = generateReferentielRome()
+    await getDbCollection("userswithaccounts").insertOne(user)
     await getDbCollection("referentielromes").insertOne(referentielRome)
+    await getDbCollection("rolemanagements").insertOne(role)
+    await getDbCollection("entreprises").insertOne(entreprise)
+    await getDbCollection("recruiters").insertOne(recruiter)
 
     return async () => {
       await getDbCollection("userswithaccounts").deleteMany({})
