@@ -311,9 +311,13 @@ export const sendApplicationV2 = async ({
 
 /**
  * Build url to access item detail on LBA ui
+ * email PJ contient un virus
+ * email candidat et recruteur lors d'une candidature
  */
-const buildUrlsOfDetail = (publicUrl: string, application: IApplication) => {
+const buildUrlsOfDetail = (publicUrl: string, application: IApplication, utm?: { utm_source?: string; utm_medium?: string; utm_campaign?: string }) => {
   const { job_id, company_siret } = application
+  const defaultUtm = { utm_source: "lba", utm_medium: "email", utm_campaign: "je-candidate" }
+  const { utm_campaign, utm_medium, utm_source } = { ...defaultUtm, ...utm }
   const type = job_id ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA : LBA_ITEM_TYPE.RECRUTEURS_LBA
   const urlSearchParams = new URLSearchParams()
   urlSearchParams.append("display", "list")
@@ -322,9 +326,14 @@ const buildUrlsOfDetail = (publicUrl: string, application: IApplication) => {
   urlSearchParams.append("itemId", job_id || company_siret)
   const paramsWithoutUtm = urlSearchParams.toString()
   if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
-    urlSearchParams.append("utm_source", "lba")
-    urlSearchParams.append("utm_medium", "email")
-    urlSearchParams.append("utm_campaign", "je-candidate-recruteur")
+    urlSearchParams.append("utm_source", utm_source)
+    urlSearchParams.append("utm_medium", utm_medium)
+    urlSearchParams.append("utm_campaign", utm_campaign)
+  }
+  if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
+    urlSearchParams.append("utm_source", utm_source)
+    urlSearchParams.append("utm_medium", utm_medium)
+    urlSearchParams.append("utm_campaign", `${utm_campaign}-spontanement`)
   }
   const params = urlSearchParams.toString()
   return {
@@ -348,15 +357,23 @@ const buildUserForToken = (application: IApplication, user?: IUserWithAccount): 
 }
 
 const buildReplyLink = (application: IApplication, intention: ApplicantIntention, userForToken: UserForAccessToken) => {
+  const type = application.job_id ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA : LBA_ITEM_TYPE.RECRUTEURS_LBA
   const applicationId = application._id.toString()
   const searchParams = new URLSearchParams()
   searchParams.append("company_recruitment_intention", intention)
   searchParams.append("id", applicationId)
   searchParams.append("fn", application.applicant_first_name)
   searchParams.append("ln", application.applicant_last_name)
-  searchParams.append("utm_source", "lba")
-  searchParams.append("utm_medium", "email")
-  searchParams.append("utm_campaign", "je-candidate-recruteur")
+  if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
+    searchParams.append("utm_source", "lba")
+    searchParams.append("utm_medium", "email")
+    searchParams.append("utm_campaign", "je-candidate-recruteur")
+  }
+  if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
+    searchParams.append("utm_source", "lba")
+    searchParams.append("utm_medium", "email")
+    searchParams.append("utm_campaign", "je-candidate-spontanement-recruteur")
+  }
   const token = generateApplicationReplyToken(userForToken, applicationId)
   searchParams.append("token", token)
   return `${config.publicUrl}/formulaire-intention?${searchParams.toString()}`
@@ -377,6 +394,7 @@ export const getUser2ManagingOffer = async (job: Pick<IJob, "managed_by" | "_id"
 
 /**
  * Build urls to add in email messages sent to the recruiter
+ * email recruteur uniquement
  */
 const buildRecruiterEmailUrls = async (application: IApplication) => {
   const { job_id } = application
@@ -397,10 +415,10 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
     meetCandidateUrl: buildReplyLink(application, ApplicantIntention.ENTRETIEN, userForToken),
     waitCandidateUrl: buildReplyLink(application, ApplicantIntention.NESAISPAS, userForToken),
     refuseCandidateUrl: buildReplyLink(application, ApplicantIntention.REFUS, userForToken),
-    lbaRecruiterUrl: `${config.publicUrl}/acces-recruteur?${utmRecruiterData}`,
-    unsubscribeUrl: `${config.publicUrl}/desinscription?application_id=${createToken({ application_id: application._id }, "30d", "desinscription")}${utmRecruiterData}`,
-    lbaUrl: `${config.publicUrl}?${utmRecruiterData}`,
-    faqUrl: `${config.publicUrl}/faq?${utmRecruiterData}`,
+    lbaRecruiterUrl: `${config.publicUrl}/acces-recruteur?${utmRecruiterData}-acces-recruteur`,
+    unsubscribeUrl: `${config.publicUrl}/desinscription?application_id=${createToken({ application_id: application._id }, "30d", "desinscription")}${utmRecruiterData}-desinscription`,
+    lbaUrl: `${config.publicUrl}?${utmRecruiterData}-home`,
+    faqUrl: `${config.publicUrl}/faq?${utmRecruiterData}-faq`,
     jobProvidedUrl: "",
     cancelJobUrl: "",
   }
@@ -929,7 +947,7 @@ export const processApplicationScanForVirus = async (application: IApplication) 
   )
 
   if (hasVirus) {
-    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, application)
+    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, application, { utm_campaign: "je-candidate-virus-pj" })
     await mailer.sendEmail({
       to: application.applicant_email,
       subject: "Echec d'envoi de votre candidature",
@@ -964,7 +982,7 @@ export const processApplicationEmails = {
   async sendRecruteurEmail(application: IApplication, attachmentContent: string) {
     const { job_id } = application
     const type = job_id ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA : LBA_ITEM_TYPE.RECRUTEURS_LBA
-    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, application)
+    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, application, { utm_campaign: "je-candidate-recruteur" })
     const recruiterEmailUrls = await buildRecruiterEmailUrls(application)
 
     const emailCompany = await mailer.sendEmail({
