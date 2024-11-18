@@ -16,6 +16,14 @@ let hardBounceWebhook = new SibApiV3Sdk.CreateWebhook()
 
 export const enum BrevoEventStatus {
   HARD_BOUNCE = "hard_bounce",
+  HARDBOUNCE_WEBHOOK_INIT = "hardBounce",
+  BLOCKED = "blocked",
+  SPAM = "spam",
+  UNSUBSCRIBED = "unsubscribed",
+  DELIVRE = "delivered",
+  ENVOYE = "requete",
+  UNIQUE_OPENED = "unique_opened",
+  CLIQUE = "click",
 }
 
 emailWebhook = {
@@ -27,7 +35,7 @@ emailWebhook = {
 hardBounceWebhook = {
   description: "Hardbounce des emails de candidatures ou de rendez-vous ou de marketing",
   url: `${config.publicUrl}/api/emails/webhookHardbounce?apiKey=${config.smtp.brevoWebhookApiKey}`,
-  events: ["hardBounce"],
+  events: [BrevoEventStatus.HARDBOUNCE_WEBHOOK_INIT, BrevoEventStatus.BLOCKED, BrevoEventStatus.SPAM, BrevoEventStatus.UNSUBSCRIBED],
 }
 
 /**
@@ -56,12 +64,18 @@ export const initBrevoWebhooks = () => {
     }
   )
 
-  apiInstance.createWebhook({ ...hardBounceWebhook, events: ["hardBounce"], type: "marketing" }).then(
-    function (data) {
-      logger.info("Brevo webhook API called successfully for campaign hardbounce detection. Returned data: " + JSON.stringify(data))
-    },
-    function (error) {
-      logger.error("Brevo webhook API Error for campaign hardbounce detection. Returned data: " + error.response.res.text)
-    }
-  )
+  apiInstance
+    .createWebhook({
+      ...hardBounceWebhook,
+      events: [BrevoEventStatus.HARDBOUNCE_WEBHOOK_INIT, BrevoEventStatus.SPAM, BrevoEventStatus.UNSUBSCRIBED],
+      type: "marketing",
+    })
+    .then(
+      function (data) {
+        logger.info("Brevo webhook API called successfully for campaign hardbounce detection. Returned data: " + JSON.stringify(data))
+      },
+      function (error) {
+        logger.error("Brevo webhook API Error for campaign hardbounce detection. Returned data: " + error.response.res.text)
+      }
+    )
 }

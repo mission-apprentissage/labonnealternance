@@ -103,6 +103,7 @@ describe("helloWorkJobToJobsPartners", () => {
       apply_url: "https://www.url.com/redirect?poc=2&op=5989883668&o=1",
       errors: [],
       validated: false,
+      business_error: null,
     })
   })
 })

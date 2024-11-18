@@ -2891,7 +2891,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "idcc": {
             "description": "Identifiant de la convention collective de l'établissement",
             "type": [
-              "string",
+              "number",
               "null",
             ],
           },
@@ -2986,6 +2986,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "email",
           "jobs",
           "opco",
+          "idcc",
         ],
         "type": "object",
       },
@@ -8068,66 +8069,6 @@ Limite : 5 appel(s) / 1 seconde(s)
                     "peJobs",
                   ],
                   "type": "object",
-                },
-              },
-            },
-            "description": "",
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                    {
-                      "$ref": "#/components/schemas/ApiError",
-                    },
-                  ],
-                },
-              },
-            },
-            "description": "",
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                    {
-                      "$ref": "#/components/schemas/ApiError",
-                    },
-                  ],
-                },
-              },
-            },
-            "description": "",
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                    {
-                      "$ref": "#/components/schemas/ApiError",
-                    },
-                  ],
                 },
               },
             },

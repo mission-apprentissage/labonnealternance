@@ -18,7 +18,7 @@ import { TLbaItemResult } from "./jobOpportunity.service.types"
 import { ILbaItemCompany, ILbaItemContact, ILbaItemFtJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
 
-const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i", "openclassrooms", "mewo", "ief2i"]
+const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i", "ief2i", "institut f2i", "openclassrooms", "mewo", "acp interim et recrutement", "jour j recrutement"]
 
 const correspondancesNatureContrat = {
   "Cont. professionnalisation": TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION,
@@ -372,10 +372,9 @@ export const getSomeFtJobs = async ({ romes, insee, radius, latitude, longitude,
 /**
  * @description Retourne un tableau contenant la seule offre France Travail identifiée
  */
-export const getFtJobFromId = async ({ id, caller }: { id: string; caller: string | undefined }): Promise<IApiError | { peJobs: ILbaItemFtJob[] }> => {
+export const getFtJobFromId = async ({ id, caller }: { id: string; caller: string | undefined }): Promise<{ peJobs: ILbaItemFtJob[] }> => {
   try {
     const job = await getFtJob(id)
-
     if (job.status === 204 || job.data === "") {
       throw notFound()
     }
@@ -397,8 +396,9 @@ export const getFtJobFromId = async ({ id, caller }: { id: string; caller: strin
   } catch (error: any) {
     if (!error.isBoom) {
       sentryCaptureException(error)
+      manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from FT" })
     }
-    return manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from FT" })
+    throw error
   }
 }
 /**

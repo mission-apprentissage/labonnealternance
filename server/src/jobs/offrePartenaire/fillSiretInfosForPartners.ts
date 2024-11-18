@@ -1,6 +1,5 @@
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { IGeoPoint } from "shared/models"
-import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { isEnum } from "shared/utils"
 
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
@@ -19,6 +18,7 @@ export const fillSiretInfosForPartners = async () => {
     "workplace_naf_label",
     "workplace_brand",
     "workplace_legal_name",
+    "business_error",
   ] as const satisfies (keyof IComputedJobsPartners)[]
   return fillFieldsForPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.API_SIRET,
@@ -29,9 +29,8 @@ export const fillSiretInfosForPartners = async () => {
       const [document] = documents
       const { workplace_siret: siret } = document
 
-      const workplace_geopoint: IGeoPoint | null = "workplace_geopoint" in document ? (document.workplace_geopoint as IGeoPoint) : null
-      const workplace_address_label: string | null = "workplace_address_label" in document ? (document.workplace_address_label as string) : null
       const response = await getSiretInfos(siret)
+
       if (!response) {
         return []
       }
@@ -42,15 +41,18 @@ export const fillSiretInfosForPartners = async () => {
       const { data } = response
       const { establishment_enseigne, establishment_raison_sociale, naf_code, naf_label, geo_coordinates, establishment_size, address } = formatEntrepriseData(data)
 
+      const business_error = data?.etat_administratif === "F" ? JOB_PARTNER_BUSINESS_ERROR.CLOSED_COMPANY : null
+
       const result: Pick<IComputedJobsPartners, (typeof filledFields)[number]> = {
-        workplace_size: establishment_size,
-        workplace_legal_name: establishment_raison_sociale,
-        workplace_brand: establishment_enseigne,
-        workplace_name: establishment_enseigne ?? establishment_raison_sociale,
-        workplace_address_label: (address || workplace_address_label) ?? undefined,
-        workplace_naf_code: naf_code,
-        workplace_naf_label: naf_label,
-        workplace_geopoint: workplace_geopoint || (geo_coordinates ? convertStringCoordinatesToGeoPoint(geo_coordinates) : undefined),
+        workplace_size: document.workplace_size ?? establishment_size,
+        workplace_legal_name: document.workplace_legal_name ?? establishment_raison_sociale,
+        workplace_brand: document.workplace_brand ?? establishment_enseigne,
+        workplace_name: document.workplace_name ?? establishment_enseigne ?? establishment_raison_sociale,
+        workplace_address_label: document.workplace_address_label ?? address,
+        workplace_naf_code: document.workplace_naf_code ?? naf_code,
+        workplace_naf_label: document.workplace_naf_label ?? naf_label,
+        workplace_geopoint: document.workplace_geopoint ?? (geo_coordinates ? convertStringCoordinatesToGeoPoint(geo_coordinates) : null),
+        business_error,
       }
 
       return [result]

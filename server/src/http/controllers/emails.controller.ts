@@ -2,7 +2,7 @@ import { forbidden } from "@hapi/boom"
 import { zRoutes } from "shared/index"
 
 import config from "@/config"
-import { processHardBounceWebhookEvent, processWebhookEvent } from "@/services/emails.service"
+import { IBrevoWebhookEvent, processHardBounceWebhookEvent, processWebhookEvent } from "@/services/emails.service"
 
 import { Server } from "../server"
 
@@ -41,7 +41,7 @@ export default (server: Server) => {
         throw forbidden()
       }
 
-      await processHardBounceWebhookEvent(req.body)
+      await processHardBounceWebhookEvent(req.body as IBrevoWebhookEvent)
 
       return res.status(200).send({})
     }

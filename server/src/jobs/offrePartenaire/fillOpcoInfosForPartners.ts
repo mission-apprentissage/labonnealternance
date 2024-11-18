@@ -20,21 +20,14 @@ export const fillOpcoInfosForPartners = async () => {
         const opcoData = opcosData.find((data) => data.siret === document.workplace_siret)
         if (!opcoData) {
           return {
-            workplace_idcc: null,
-            workplace_opco: OPCOS_LABEL.UNKNOWN_OPCO,
+            workplace_idcc: document.workplace_idcc ?? null,
+            workplace_opco: document.workplace_opco ?? OPCOS_LABEL.UNKNOWN_OPCO,
           }
         }
-        const { opco, idcc } = opcoData
-        let parsedIdcc: number | null = null
-        if (idcc !== null && idcc !== undefined) {
-          parsedIdcc = parseInt(idcc, 10)
-          if (isNaN(parsedIdcc)) {
-            parsedIdcc = null
-          }
-        }
+
         const result: Pick<IComputedJobsPartners, (typeof filledFields)[number]> = {
-          workplace_idcc: parsedIdcc,
-          workplace_opco: opco,
+          workplace_idcc: document.workplace_idcc ?? opcoData.idcc,
+          workplace_opco: document.workplace_opco ?? opcoData.opco,
         }
         return result
       })

@@ -24,7 +24,6 @@ import {
   patchJobDelegation,
   patchOffre,
   provideOffre,
-  updateFormulaire,
 } from "../../services/formulaire.service"
 import { Server } from "../server"
 
@@ -123,21 +122,6 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * Put form
-   */
-  server.put(
-    "/formulaire/:establishment_id",
-    {
-      schema: zRoutes.put["/formulaire/:establishment_id"],
-      onRequest: [server.auth(zRoutes.put["/formulaire/:establishment_id"])],
-    },
-    async (req, res) => {
-      const result = await updateFormulaire(req.params.establishment_id, req.body)
-      return res.status(200).send(result)
-    }
-  )
-
   server.delete(
     "/formulaire/:establishment_id",
     {
@@ -189,7 +173,6 @@ export default (server: Server) => {
         job_type,
         delegations,
         job_count,
-        job_description,
         job_duration,
         job_level_label,
         job_rythm,
@@ -205,7 +188,6 @@ export default (server: Server) => {
           job_type,
           delegations,
           job_count,
-          job_description,
           job_duration,
           job_level_label,
           job_rythm,

@@ -2,13 +2,13 @@ fileignoreconfig:
 - filename: .infra/files/configs/mongodb/mongod.conf
   checksum: 718bee5f44edc101636be8f11173ede5b728f2858abc3c26466ff9435f0d11de
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 3f0d8ae2363f070c797b680b0fb5f5e1007a3f90f0f3d2635ff6f109100132e1
+  checksum: 183a82c08eca1f53d2d258b71abc36e5b352286f46912fcb022859b52f9fb0cc
 - filename: .infra/files/scripts/seed.sh
   checksum: b1361c237cee243b74fc9e66fd59af80c538d6884b8f94c3659d25cdc2b873c2
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: c6c880488c5f0bf8978f3e1a0647ea3ed278f034ace0b12c47fc4553404a4b2d
+  checksum: 2905c16886220d7b6a6f283bf9ba3d3ffc0ab4d0dcfbfe7611e31505a9b324e4
 - filename: cypress/e2e/check-admin-algo-company.cy.ts
   checksum: 6a898ee25c84ce2c41da5666aa4f84e6e4aaf0a614dbc0a00153abe99e3617c1
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
@@ -63,6 +63,8 @@ fileignoreconfig:
   checksum: 3cd111d8c109cfec357bae48af70d0cf5644d02cd2c4b9afc5b8aa07bccbd535
 - filename: server/src/jobs/offrePartenaire/importFromUrlInXml.ts
   checksum: 18bd149922151536ad0e239b082309697cee6046b33512d5eecc54b2d25b465a
+- filename: server/src/jobs/offrePartenaire/importHelloWork.test.input.xml
+  checksum: 6f28aee7664d1ec1e4b4da34b96b63e23781538b3fe3e8d50dddbdad3884fa3f
 - filename: server/src/jobs/offrePartenaire/importHelloWork.ts
   checksum: 26caf0b5a97ce2ff7451cc2717a3b36f38b20f94db6beb490b98b8311debfd25
 - filename: server/src/migrations/20241022093834-remove-multi-published.ts
@@ -81,6 +83,8 @@ fileignoreconfig:
   checksum: 38021ae663db3a146c848a8d691c0c1bc9bb262a80a6f2dedf9fcdb372eef3ac
 - filename: server/src/services/eligibleTrainingsForAppointment.service.ts
   checksum: 45f0984c6a79320da8aa2fa03c8ea001de0176b88c7ca05e35e385da8f98e218
+- filename: server/src/services/emails.service.test.ts
+  checksum: b06fe36c0000e1ab1e45617b6cd402267d0492eb7867fbf8f4b817161fe671d9
 - filename: server/src/services/formulaire.service.test.ts
   checksum: 0b57b45fbf40bdbee16a3b61ad6d725532fa067a8c7baf3710352fbeb2ab059a
 - filename: server/src/services/formulaire.service.ts
@@ -133,12 +137,16 @@ fileignoreconfig:
   checksum: 27b6e1af0a5e079720d525534486bb02552431fe4cff9560ebf2cc9e16468b7b
 - filename: shared/constants/recruteur.ts
   checksum: af4631fe998b78b13691dbc821a8ffa71ffc2f4cb6967361cb5ef19965dc95cb
+- filename: shared/fixtures/application.fixture.ts
+  checksum: ebd678b230621541b92c8193fb71c909359cf7050a36e34430347a794eb2a2f8
 - filename: shared/fixtures/appointment.fixture.ts
-  checksum: 9090cddf673370dec0a6196d368ac1e99f8922feb1e55ada277c1e0339bdb016
+  checksum: 8b894b4059d8f7531e26f249901b83dbec433d4e660c0eca193c8e61572b3ae0
 - filename: shared/fixtures/recruiter.fixture.ts
   checksum: c540cb13c2235d69c13e1964e3391b9c935bf7991dafe2cc21e9965c974378e6
 - filename: shared/fixtures/referentiel/onisep.fixture.ts
   checksum: 3f54d57761ea54731e3cfa80013d3f8b300a5f275beb8a29cfca235b6a8d44f7
+- filename: shared/fixtures/user.fixture.ts
+  checksum: 8665b4a014d02f3d36e3c537524f31e39c9b1e123d9116f5ebca3a3e8b9f6033
 - filename: shared/fixtures/userWithAccount.fixture.ts
   checksum: bf864b963375d5836150faf3e343e482a8612552581bd39be21b4f1e8f566971
 - filename: shared/helpers/generateUri.ts
@@ -181,13 +189,13 @@ fileignoreconfig:
   checksum: 1fcc0442306f83b5e45bf7da67304527598d7749b9e2642c6d4628d3b4f15a9c
 - filename: ui/components/ItemDetail/LbaJobComponents/LbaJobCompetences.tsx
   checksum: 6f16b6a45bfa356372f8dbac680bb41d0f403585f08b640449701f83826568c5
+- filename: ui/components/ItemDetail/LbaJobComponents/LbaJobDetail.tsx
+  checksum: 74951335936fd8df7dbbda0dfcb9fd36d01ec96a34d04d61761e5b081ac2bd96
 - filename: ui/components/ItemDetail/LbaJobComponents/LbaJobQualites.tsx
   checksum: ea8a44288ade31e5f8940091bad543e229376f11ed972262f7bcaf7947b5228c
 - filename: ui/components/ItemDetail/LbaJobComponents/LbaJobTechniques.tsx
   checksum: 553720667140e5bbf7cef1969c02cbcd3c234defc30bb08208398c1900e29e3b
 - filename: ui/components/ItemDetail/LbaJobDetail.tsx
-  checksum: 74951335936fd8df7dbbda0dfcb9fd36d01ec96a34d04d61761e5b081ac2bd96
-- filename: ui/components/ItemDetail/LbaJobComponents/LbaJobDetail.tsx
   checksum: 74951335936fd8df7dbbda0dfcb9fd36d01ec96a34d04d61761e5b081ac2bd96
 - filename: ui/components/ItemDetail/LbaRecruteurComponents/LbaRecruteurDetail.tsx
   checksum: 6e552b66f9238645f70705a0c43c81905e8dbee1c83d364cd89f951f80cb7ea0
