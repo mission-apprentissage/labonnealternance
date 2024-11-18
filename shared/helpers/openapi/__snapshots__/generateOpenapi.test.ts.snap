@@ -7433,8 +7433,8 @@ Limite : 5 appel(s) / 1 seconde(s)
             "name": "limit",
             "required": false,
             "schema": {
-              "default": 150,
-              "maximum": 500,
+              "default": 10,
+              "maximum": 100,
               "type": [
                 "number",
                 "null",
