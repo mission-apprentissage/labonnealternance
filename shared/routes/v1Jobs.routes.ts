@@ -103,8 +103,8 @@ export const zV1JobsRoutes = {
             }),
           limit: z.coerce
             .number()
-            .max(500)
-            .default(150)
+            .max(100)
+            .default(10)
             .optional()
             .openapi({
               param: {

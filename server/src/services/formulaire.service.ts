@@ -191,7 +191,7 @@ export const getOffreAvecInfoMandataire = async (id: string | ObjectId): Promise
  * @param {number} payload.page
  * @param {number} payload.limit
  */
-export const getFormulaires = async (query: Filter<IRecruiter>, select: object, { page = 1, limit = 150 }: { page?: number; limit?: number }) => {
+export const getFormulaires = async (query: Filter<IRecruiter>, select: object, { page = 1, limit = 10 }: { page?: number; limit?: number }) => {
   const response = await getDbCollection("recruiters").find(query, { projection: select })
   const data =
     page && limit
