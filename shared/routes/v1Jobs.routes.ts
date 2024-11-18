@@ -94,8 +94,8 @@ export const zV1JobsRoutes = {
           page: z.coerce
             .number()
             .min(1)
-            .optional()
             .default(1)
+            .optional()
             .openapi({
               param: {
                 description: "the current page.",
@@ -104,6 +104,7 @@ export const zV1JobsRoutes = {
           limit: z.coerce
             .number()
             .max(500)
+            .default(150)
             .optional()
             .openapi({
               param: {
