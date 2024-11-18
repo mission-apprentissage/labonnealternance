@@ -325,14 +325,12 @@ const buildUrlsOfDetail = (publicUrl: string, application: IApplication, utm?: {
   urlSearchParams.append("type", newItemTypeToOldItemType(type))
   urlSearchParams.append("itemId", job_id || company_siret)
   const paramsWithoutUtm = urlSearchParams.toString()
+  urlSearchParams.append("utm_source", utm_source)
+  urlSearchParams.append("utm_medium", utm_medium)
   if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
-    urlSearchParams.append("utm_source", utm_source)
-    urlSearchParams.append("utm_medium", utm_medium)
     urlSearchParams.append("utm_campaign", utm_campaign)
   }
   if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    urlSearchParams.append("utm_source", utm_source)
-    urlSearchParams.append("utm_medium", utm_medium)
     urlSearchParams.append("utm_campaign", `${utm_campaign}-spontanement`)
   }
   const params = urlSearchParams.toString()
@@ -364,14 +362,12 @@ const buildReplyLink = (application: IApplication, intention: ApplicantIntention
   searchParams.append("id", applicationId)
   searchParams.append("fn", application.applicant_first_name)
   searchParams.append("ln", application.applicant_last_name)
+  searchParams.append("utm_source", "lba")
+  searchParams.append("utm_medium", "email")
   if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
-    searchParams.append("utm_source", "lba")
-    searchParams.append("utm_medium", "email")
     searchParams.append("utm_campaign", "je-candidate-recruteur")
   }
   if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    searchParams.append("utm_source", "lba")
-    searchParams.append("utm_medium", "email")
     searchParams.append("utm_campaign", "je-candidate-spontanement-recruteur")
   }
   const token = generateApplicationReplyToken(userForToken, applicationId)
