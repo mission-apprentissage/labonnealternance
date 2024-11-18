@@ -30,6 +30,7 @@ export const ZRawRHAlternance = z.object({
 })
 
 export type IRawRHAlternance = z.output<typeof ZRawRHAlternance>
+export type IRawRHAlternanceJob = IRawRHAlternance["job"]
 
 export default {
   zod: ZRawRHAlternance,
