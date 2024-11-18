@@ -42,7 +42,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/user.controller.test.ts
   checksum: e01d1b9c54d1e6d0c98fd7984f32c3a93f3e9bde92887bdab320cb7af91fdd92
 - filename: server/src/http/controllers/v2/applications.controller.v2.test.ts
-  checksum: 91f4cb9a288d144a19596772bc8ceed1903476df3faeeac6f235162560de8e3b
+  checksum: 9147c705b5bdfe6eff6b1b75c467249ee1af783d57ff16d78722e48e60831c68
 - filename: server/src/http/controllers/v2/appointment.controller.v2.test.ts
   checksum: 72502c3acc46f9b6903b69095518c3d865cf437f311ed14585da04d8440b4ac0
 - filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts
@@ -137,8 +137,6 @@ fileignoreconfig:
   checksum: 27b6e1af0a5e079720d525534486bb02552431fe4cff9560ebf2cc9e16468b7b
 - filename: shared/constants/recruteur.ts
   checksum: af4631fe998b78b13691dbc821a8ffa71ffc2f4cb6967361cb5ef19965dc95cb
-- filename: shared/fixtures/application.fixture.ts
-  checksum: ebd678b230621541b92c8193fb71c909359cf7050a36e34430347a794eb2a2f8
 - filename: shared/fixtures/appointment.fixture.ts
   checksum: 8b894b4059d8f7531e26f249901b83dbec433d4e660c0eca193c8e61572b3ae0
 - filename: shared/fixtures/recruiter.fixture.ts
@@ -242,7 +240,7 @@ fileignoreconfig:
 - filename: server/src/jobs/offrePartenaire/importHelloWork.test.input.xml
   checksum: 6f28aee7664d1ec1e4b4da34b96b63e23781538b3fe3e8d50dddbdad3884fa3f
 - filename: shared/fixtures/application.fixture.ts
-  checksum: c7e694afcde9ceaa11ce455a48d2e3f3b018a6ec3118f4a88e666d85d32ffcad
+  checksum: 4c4590586b8c5683ce7aebb32d2286af3265bb9d3d39581f6d7a1f8ed1a2850d
 scopeconfig:
 - scope: node
 custom_patterns:
