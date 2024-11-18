@@ -70,7 +70,7 @@ export default function PrintableJobPage() {
         Rendez-vous sur La bonne alternance
       </Text>
       <QRCode
-        value={`${window.location.origin}${getDirectJobPath(jobId)}`}
+        value={`${window.location.origin}${getDirectJobPath(jobId)}&utm_source=lba-phygital&utm_medium=phygital&utm_campaign=offre-phygital`}
         size={128}
         style={{ margin: "auto", height: "auto", maxWidth: "128x", width: "128px" }}
         viewBox={`0 0 128 128`}
