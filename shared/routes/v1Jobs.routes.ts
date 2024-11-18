@@ -79,7 +79,7 @@ export const zV1JobsRoutes = {
             .optional()
             .openapi({
               param: {
-                description: "query mongodb query allowing specific filtering, JSON stringified",
+                description: "query mongodb query allowing specific filtering, JSON stringified : {'status':'Actif'}",
               },
             }), // mongo query
           select: z
@@ -89,11 +89,13 @@ export const zV1JobsRoutes = {
               param: {
                 description: "select fields to return",
               },
-              example: "{_id: 1, first_name:1, last_name:0}",
+              example: "{'_id': 1, 'first_name':1, 'last_name':0}",
             }), // mongo projection
           page: z.coerce
             .number()
+            .min(1)
             .optional()
+            .default(1)
             .openapi({
               param: {
                 description: "the current page.",
@@ -101,6 +103,7 @@ export const zV1JobsRoutes = {
             }),
           limit: z.coerce
             .number()
+            .max(500)
             .optional()
             .openapi({
               param: {
@@ -112,7 +115,7 @@ export const zV1JobsRoutes = {
       response: {
         "200": z
           .object({
-            data: z.array(ZRecruiter).optional(),
+            data: z.array(ZRecruiter.partial()).optional(),
             pagination: z
               .object({
                 page: z.number().optional(),
