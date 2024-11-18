@@ -1,5 +1,6 @@
 import { ObjectId } from "bson"
 
+import { Country } from "../constants/places"
 import { JOB_STATUS_ENGLISH } from "../models"
 import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "../models/jobsPartners.model"
 import { IComputedJobsPartners } from "../models/jobsPartnersComputed.model"
@@ -18,7 +19,7 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     workplace_address_zipcode: "75007",
     workplace_address_label: "126 RUE DE L'UNIVERSITE 75007 PARIS",
     workplace_address_street_label: "126 RUE DE L'UNIVERSITE",
-    workplace_address_country: null,
+    workplace_address_country: Country.FRANCE,
     workplace_geopoint: {
       coordinates: [0, 0],
       type: "Point",
@@ -77,7 +78,7 @@ export function generateComputedJobsPartnersFixture(data: Partial<IComputedJobsP
     workplace_address_zipcode: "75007",
     workplace_address_label: "126 RUE DE L'UNIVERSITE 75007 PARIS",
     workplace_address_street_label: "126 RUE DE L'UNIVERSITE",
-    workplace_address_country: null,
+    workplace_address_country: Country.FRANCE,
     workplace_geopoint: {
       coordinates: [0, 0],
       type: "Point",

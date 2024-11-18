@@ -4,7 +4,7 @@ exports[`fillSiretInfosForPartners > should enrich with api when siret is presen
 {
   "workplace_address_zipcode": "75001",
   "workplace_address_city": "Paris",
-  "workplace_address_country": null,
+  "workplace_address_country": "France",
   "workplace_address_label": "2 rue du loup 75001 Paris",
   "workplace_address_street_label": "2 rue du loup",
   "workplace_brand": "Plop brand",
@@ -21,7 +21,7 @@ exports[`fillSiretInfosForPartners > should enrich with cache when siret is pres
 {
   "workplace_address_zipcode": "75001",
   "workplace_address_city": "Paris",
-  "workplace_address_country": null,
+  "workplace_address_country": "France",
   "workplace_address_label": "2 rue du loup 75001 Paris",
   "workplace_address_street_label": "2 rue du loup",
   "workplace_brand": "Plop brand",

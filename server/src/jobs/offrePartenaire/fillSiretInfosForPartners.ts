@@ -1,4 +1,5 @@
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { Country } from "shared/constants/places"
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { isEnum } from "shared/utils"
 
@@ -55,7 +56,7 @@ export const fillSiretInfosForPartners = async () => {
         workplace_address_street_label: document.workplace_address_street_label ?? address_street_label ?? null,
         workplace_address_city: document.workplace_address_city ?? address_detail?.libelle_commune ?? null,
         workplace_address_zipcode: document.workplace_address_zipcode ?? address_detail?.code_postal ?? null,
-        workplace_address_country: document.workplace_address_country ?? address_detail?.libelle_pays_etranger ?? "France",
+        workplace_address_country: document.workplace_address_country ?? address_detail?.libelle_pays_etranger ?? Country.FRANCE,
         workplace_geopoint: document.workplace_geopoint ?? (geo_coordinates ? convertStringCoordinatesToGeoPoint(geo_coordinates) : null),
       }
 

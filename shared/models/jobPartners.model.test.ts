@@ -18,7 +18,7 @@ type IJobWorkplaceExpected = {
   workplace_address_zipcode: string | null
   workplace_address_label: string
   workplace_address_street_label: string | null
-  workplace_address_country: string | null
+  workplace_address_country: string
   workplace_geopoint: {
     type: "Point"
     coordinates: [number, number]
@@ -99,7 +99,7 @@ type IJobOfferWritableExpected = {
   workplace_address_zipcode: string | null
   workplace_address_label: string
   workplace_address_street_label: string | null
-  workplace_address_country: string | null
+  workplace_address_country: string
 }
 
 type IJobOfferWritableInputExpected = {

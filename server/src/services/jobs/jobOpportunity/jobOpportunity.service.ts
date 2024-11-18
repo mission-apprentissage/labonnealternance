@@ -5,6 +5,7 @@ import { Document, Filter, ObjectId } from "mongodb"
 import { IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS_ENGLISH, assertUnreachable, joinNonNullStrings, parseEnum, translateJobStatus } from "shared"
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
+import { Country } from "shared/constants/places"
 import {
   IJobsPartnersOfferApi,
   IJobsPartnersOfferPrivate,
@@ -267,7 +268,7 @@ export const convertLbaCompanyToJobPartnerRecruiterApi = (recruteursLba: ILbaCom
       workplace_address_street_label: joinNonNullStrings([recruteurLba.street_number, recruteurLba.street_name]),
       workplace_address_zipcode: recruteurLba.zip_code,
       workplace_address_city: recruteurLba.city,
-      workplace_address_country: "France",
+      workplace_address_country: Country.FRANCE,
       workplace_geopoint: recruteurLba.geopoint!,
       workplace_idcc: null,
       workplace_opco: convertOpco(recruteurLba),
@@ -360,7 +361,7 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IJobRes
           workplace_address_zipcode: recruiter.address_detail.code_postal,
           workplace_address_label: recruiter.address!,
           workplace_address_street_label: joinNonNullStrings([recruiter.address_detail.numero_voie, recruiter.address_detail.type_voie, recruiter.address_detail.nom_voie]),
-          workplace_address_country: "France",
+          workplace_address_country: Country.FRANCE,
           workplace_geopoint: recruiter.geopoint!,
           workplace_idcc: recruiter.idcc,
           workplace_opco: convertOpco(recruiter),
@@ -417,7 +418,7 @@ export const convertFranceTravailJobToJobPartnerOfferApi = (offresEmploiFranceTr
         workplace_address_label: offreFT.lieuTravail.libelle,
         workplace_address_street_label: offreFT.lieuTravail.libelle,
         workplace_address_zipcode: offreFT.lieuTravail.codePostal || null,
-        workplace_address_country: "France",
+        workplace_address_country: Country.FRANCE,
         workplace_geopoint: convertToGeopoint({
           longitude: parseFloat(offreFT.lieuTravail.longitude!),
           latitude: parseFloat(offreFT.lieuTravail.latitude!),
@@ -566,7 +567,7 @@ async function resolveWorkplaceGeoLocationFromAddress(
 
   return {
     workplace_geopoint: geopoint,
-    workplace_address_country: "France",
+    workplace_address_country: Country.FRANCE,
   }
 }
 
@@ -605,7 +606,7 @@ async function resolveWorkplaceDataFromSiret(workplace_siret: string, zodError: 
     workplace_address_label: entrepriseData.address!,
     workplace_address_street_label: entrepriseData.address_detail.l4,
     workplace_address_zipcode: entrepriseData.address_detail.code_postal,
-    workplace_address_country: entrepriseData.address_detail.libelle_pays_etranger ?? "France",
+    workplace_address_country: entrepriseData.address_detail.libelle_pays_etranger ?? Country.FRANCE,
     workplace_brand: entrepriseData.establishment_enseigne ?? null,
     workplace_legal_name: entrepriseData.establishment_raison_sociale ?? null,
     workplace_naf_label: entrepriseData.naf_label ?? null,

@@ -4,6 +4,7 @@ import { IApiAlternanceTokenData } from "api-alternance-sdk"
 import { ObjectId } from "mongodb"
 import nock from "nock"
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, RECRUITER_STATUS } from "shared/constants"
+import { Country } from "shared/constants/places"
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
@@ -1743,7 +1744,7 @@ describe("createJobOffer", () => {
     workplace_siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
     workplace_address_zipcode: null,
     workplace_address_city: null,
-    workplace_address_country: null,
+    workplace_address_country: Country.FRANCE,
     workplace_address_label: "address",
     workplace_address_street_label: null,
     workplace_description: null,
@@ -1795,7 +1796,7 @@ describe("createJobOffer", () => {
     expect(job?.workplace_address_street_label).toEqual("20 AVENUE DE SEGUR")
     expect(job?.workplace_address_zipcode).toEqual("75007")
     expect(job?.workplace_address_city).toEqual("PARIS")
-    expect(job?.workplace_address_country).toEqual(null)
+    expect(job?.workplace_address_country).toEqual(Country.FRANCE)
     expect(job).toMatchSnapshot({
       _id: expect.any(ObjectId),
     })
@@ -1828,7 +1829,7 @@ describe("createJobOffer", () => {
       workplace_address_street_label: "1T impasse Passoir",
       workplace_address_city: "Clichy",
       workplace_address_zipcode: clichyFixture.codesPostaux[0],
-      workplace_address_country: "France",
+      workplace_address_country: Country.FRANCE,
     })
     expect(result).toBeInstanceOf(ObjectId)
 
@@ -1837,7 +1838,7 @@ describe("createJobOffer", () => {
     expect(job?.workplace_address_street_label).toEqual("1T impasse Passoir")
     expect(job?.workplace_address_city).toEqual("Clichy")
     expect(job?.workplace_address_zipcode).toEqual("92110")
-    expect(job?.workplace_address_country).toEqual("France")
+    expect(job?.workplace_address_country).toEqual(Country.FRANCE)
     expect(job?.workplace_geopoint).toEqual(clichyFixture.centre)
     expect(nock.isDone()).toBeTruthy()
   })
@@ -1895,7 +1896,7 @@ describe("updateJobOffer", () => {
     workplace_address_street_label: null,
     workplace_address_city: null,
     workplace_address_zipcode: null,
-    workplace_address_country: null,
+    workplace_address_country: Country.FRANCE,
     workplace_description: null,
     workplace_website: null,
     workplace_name: null,
@@ -1947,7 +1948,7 @@ describe("updateJobOffer", () => {
     expect(job?.workplace_address_street_label).toEqual("20 AVENUE DE SEGUR")
     expect(job?.workplace_address_zipcode).toEqual("75007")
     expect(job?.workplace_address_city).toEqual("PARIS")
-    expect(job?.workplace_address_country).toEqual(null)
+    expect(job?.workplace_address_country).toEqual(Country.FRANCE)
 
     expect(job).toMatchSnapshot({
       _id: expect.any(ObjectId),
@@ -1981,7 +1982,7 @@ describe("updateJobOffer", () => {
       workplace_address_street_label: "1T impasse Passoir",
       workplace_address_city: "Clichy",
       workplace_address_zipcode: clichyFixture.codesPostaux[0],
-      workplace_address_country: "France",
+      workplace_address_country: Country.FRANCE,
     })
 
     const job = await getDbCollection("jobs_partners").findOne({ _id })
@@ -1989,7 +1990,7 @@ describe("updateJobOffer", () => {
     expect(job?.workplace_address_street_label).toEqual("1T impasse Passoir")
     expect(job?.workplace_address_city).toEqual("Clichy")
     expect(job?.workplace_address_zipcode).toEqual("92110")
-    expect(job?.workplace_address_country).toEqual("France")
+    expect(job?.workplace_address_country).toEqual(Country.FRANCE)
     expect(job?.workplace_geopoint).toEqual(clichyFixture.centre)
     expect(nock.isDone()).toBeTruthy()
   })
