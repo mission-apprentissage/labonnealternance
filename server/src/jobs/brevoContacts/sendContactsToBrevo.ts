@@ -25,7 +25,7 @@ type IBrevoContact = {
   job_count?: string | null | undefined
 }
 
-const CONTACT_LIST_RECETTE = 9 //5
+const CONTACT_LIST_RECETTE = 5
 const CONTACT_LIST = 6
 
 let contactCount = 0
