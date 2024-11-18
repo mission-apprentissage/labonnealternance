@@ -10,6 +10,7 @@ export async function createComputedJobPartner(data: Partial<IComputedJobsPartne
   const computedJobPartner = {
     errors: [],
     validated: true,
+    business_error: null,
     ...generateJobsPartnersOfferPrivate(),
     ...data,
   }

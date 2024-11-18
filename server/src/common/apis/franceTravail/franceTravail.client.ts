@@ -158,11 +158,16 @@ export const sendCsvToFranceTravail = async (csvPath: string): Promise<void> => 
       headers: {
         ...form.getHeaders(),
       },
+      timeout: 0,
     })
 
-    return data
+    if (data !== "Votre fichier a bien ete envoye\n") {
+      throw new Error(data)
+    }
   } catch (error: any) {
+    logger.error(error)
     sentryCaptureException(error, { extra: { responseData: error.response?.data } })
+    throw error
   }
 }
 

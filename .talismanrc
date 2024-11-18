@@ -84,7 +84,7 @@ fileignoreconfig:
 - filename: server/src/services/eligibleTrainingsForAppointment.service.ts
   checksum: 45f0984c6a79320da8aa2fa03c8ea001de0176b88c7ca05e35e385da8f98e218
 - filename: server/src/services/emails.service.test.ts
-  checksum: 9b7c80b04fddd1b90523a0178fe55b4787411af6f022730e28b75445a9f052fc
+  checksum: b06fe36c0000e1ab1e45617b6cd402267d0492eb7867fbf8f4b817161fe671d9
 - filename: server/src/services/formulaire.service.test.ts
   checksum: 0b57b45fbf40bdbee16a3b61ad6d725532fa067a8c7baf3710352fbeb2ab059a
 - filename: server/src/services/formulaire.service.ts
@@ -138,7 +138,7 @@ fileignoreconfig:
 - filename: shared/constants/recruteur.ts
   checksum: af4631fe998b78b13691dbc821a8ffa71ffc2f4cb6967361cb5ef19965dc95cb
 - filename: shared/fixtures/application.fixture.ts
-  checksum: c7e694afcde9ceaa11ce455a48d2e3f3b018a6ec3118f4a88e666d85d32ffcad
+  checksum: ebd678b230621541b92c8193fb71c909359cf7050a36e34430347a794eb2a2f8
 - filename: shared/fixtures/appointment.fixture.ts
   checksum: 8b894b4059d8f7531e26f249901b83dbec433d4e660c0eca193c8e61572b3ae0
 - filename: shared/fixtures/recruiter.fixture.ts

@@ -200,7 +200,7 @@ const getJobsToExport = async () => {
 
 const generateCsvFile = async (csvPath, jobs) => {
   const source = Readable.from(jobs)
-  const stringifier = stringify({ header: true, encoding: "utf8", delimiter: "|", quoted: true })
+  const stringifier = stringify({ header: true, encoding: "utf8", delimiter: "|" })
   const destination = createWriteStream(csvPath)
   const transform = new Transform({
     objectMode: true,
@@ -234,6 +234,5 @@ export const exportJobsToFranceTravail = async () => {
       message: `Echec de l'export des offres France Travail. ${err}`,
       error: true,
     })
-    throw err
   }
 }
