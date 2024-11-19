@@ -1,6 +1,4 @@
 import { badRequest, notFound } from "@hapi/boom"
-import { useMongo } from "@tests/utils/mongo.test.utils"
-import { saveRecruiter } from "@tests/utils/user.test.utils"
 import { ObjectId } from "bson"
 import dayjs from "dayjs"
 import { RECRUITER_STATUS } from "shared/constants"
@@ -12,6 +10,8 @@ import { IReferentielRome, JOB_STATUS } from "shared/models"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { saveRecruiter } from "@tests/utils/user.test.utils"
 
 import { sendApplicationV2 } from "./application.service"
 

@@ -1,5 +1,3 @@
-import { useMongo } from "@tests/utils/mongo.test.utils"
-import { saveAdminUserTest, saveCfaUserTest, saveEntrepriseUserTest, saveOpcoUserTest } from "@tests/utils/user.test.utils"
 import { FastifyRequest } from "fastify"
 import { ObjectId } from "mongodb"
 import { OPCOS_LABEL } from "shared/constants"
@@ -10,6 +8,8 @@ import { describe, expect, it } from "vitest"
 
 import { AccessUser2, AccessUserCredential, AccessUserToken } from "@/security/authenticationService"
 import { authorizationMiddleware } from "@/security/authorisationService"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { saveAdminUserTest, saveCfaUserTest, saveEntrepriseUserTest, saveOpcoUserTest } from "@tests/utils/user.test.utils"
 
 type MockedRequest = Pick<FastifyRequest, "params" | "query">
 const emptyRequest: MockedRequest = { params: {}, query: {} }

@@ -1,6 +1,3 @@
-import { givenAConnectedOpcoUser } from "@tests/fixture/connectedUser.fixture"
-import { useMongo } from "@tests/utils/mongo.test.utils"
-import { useServer } from "@tests/utils/server.test.utils"
 import { OPCOS_LABEL } from "shared/constants"
 import { generateJobFixture, generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
@@ -8,6 +5,9 @@ import { AccessEntityType, JOB_STATUS } from "shared/models"
 import { describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { givenAConnectedOpcoUser } from "@tests/fixture/connectedUser.fixture"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { useServer } from "@tests/utils/server.test.utils"
 
 import { generateEntrepriseFixture } from "../../../../shared/fixtures/entreprise.fixture"
 

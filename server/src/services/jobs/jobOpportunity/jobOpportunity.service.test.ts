@@ -1,5 +1,4 @@
 import { internal } from "@hapi/boom"
-import { useMongo } from "@tests/utils/mongo.test.utils"
 import { IApiAlternanceTokenData } from "api-alternance-sdk"
 import { ObjectId } from "mongodb"
 import nock from "nock"
@@ -22,6 +21,7 @@ import { getRomeoPredictions, searchForFtJobs } from "@/common/apis/franceTravai
 import { franceTravailRomeoFixture, generateFtJobFixture } from "@/common/apis/franceTravail/franceTravail.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
+import { useMongo } from "@tests/utils/mongo.test.utils"
 
 import { FTJob } from "../../ftjob.service.types"
 
