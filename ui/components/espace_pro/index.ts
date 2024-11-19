@@ -5,7 +5,6 @@ import Bandeau from "./Bandeau"
 import ConfirmationActivationUtilsateur from "./ConfirmationActivationUtilsateur"
 import ConfirmationDesactivationUtilisateur from "./ConfirmationDesactivationUtilisateur"
 import ConfirmationModificationOpco from "./ConfirmationModificationOpco"
-import ConfirmationSuppressionEntreprise from "./ConfirmationSuppressionEntreprise"
 import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
 import CustomInput from "./CustomInput"
 import DropdownCombobox from "./DropdownCombobox"
@@ -22,26 +21,25 @@ import TableNew from "./TableNew"
 import UserValidationHistory from "./UserValidationHistory"
 
 export {
-  Pagination,
-  Layout,
-  FormulaireCreationOffre,
-  DropdownCombobox,
   AdresseAutocomplete,
   AnimationContainer,
-  InfoTooltip,
-  LoadingEmptySpace,
-  InformationLegaleEntreprise,
-  ConfirmationSuppressionEntreprise,
-  ConfirmationSuppressionOffre,
-  CustomInput,
   AuthentificationLayout,
   Bandeau,
-  Table,
+  ConfirmationActivationUtilsateur,
+  ConfirmationDesactivationUtilisateur,
+  ConfirmationModificationOpco,
+  ConfirmationSuppressionOffre,
+  CustomInput,
+  DropdownCombobox,
+  FormulaireCreationOffre,
   InfoPopover,
+  InfoTooltip,
+  InformationLegaleEntreprise,
   InformationOpco,
+  Layout,
+  LoadingEmptySpace,
+  Pagination,
+  Table,
   TableNew,
   UserValidationHistory,
-  ConfirmationDesactivationUtilisateur,
-  ConfirmationActivationUtilsateur,
-  ConfirmationModificationOpco,
 }

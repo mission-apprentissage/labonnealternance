@@ -16,13 +16,13 @@ import { generateCfaCreationToken, generateDepotSimplifieToken } from "@/service
 import {
   entrepriseOnboardingWorkflow,
   etablissementUnsubscribeDemandeDelegation,
+  getCfaSiretInfos,
   getEntrepriseDataFromSiret,
   getOpcoData,
-  validateEligibiliteCfa,
   isCfaCreationValid,
   sendUserConfirmationEmail,
   validateCreationEntrepriseFromCfa,
-  getCfaSiretInfos,
+  validateEligibiliteCfa,
 } from "@/services/etablissement.service"
 import { Organization, upsertEntrepriseData, UserAndOrganization } from "@/services/organization.service"
 import { getMainRoleManagement, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
@@ -33,7 +33,6 @@ import {
   sendWelcomeEmailToUserRecruteur,
   setUserHasToBeManuallyValidated,
   updateLastConnectionDate,
-  updateUserWithAccountFields,
 } from "@/services/userRecruteur.service"
 import { emailHasActiveRole, getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
@@ -294,26 +293,6 @@ export default (server: Server) => {
     },
     async (req, res) => {
       await etablissementUnsubscribeDemandeDelegation(req.params.establishment_siret)
-      return res.status(200).send({ ok: true })
-    }
-  )
-
-  /**
-   * Mise à jour d'un partenaire
-   */
-
-  server.put(
-    "/etablissement/:id",
-    {
-      schema: zRoutes.put["/etablissement/:id"],
-      onRequest: [server.auth(zRoutes.put["/etablissement/:id"])],
-    },
-    async (req, res) => {
-      const { _id, ...rest } = req.body
-      const result = await updateUserWithAccountFields(req.params.id, rest)
-      if ("error" in result) {
-        throw badRequest("L'adresse mail est déjà associée à un compte La bonne alternance.")
-      }
       return res.status(200).send({ ok: true })
     }
   )

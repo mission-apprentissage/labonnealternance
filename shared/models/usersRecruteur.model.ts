@@ -35,7 +35,7 @@ export const ZUserRecruteurWritable = z
       .transform((value) => removeUrlsFromText(value))
       .describe("Prénom de l'utilisateur"),
     opco: extensions.buildEnum(OPCOS_LABEL).nullable().describe("Information sur l'opco de l'entreprise"),
-    idcc: z.string().nullish().describe("Identifiant convention collective de l'entreprise"),
+    idcc: z.number().nullable().describe("Identifiant convention collective de l'entreprise"),
     establishment_raison_sociale: z.string().nullish().describe("Raison social de l'établissement"),
     establishment_enseigne: z.string().nullish().describe("Enseigne de l'établissement"),
     establishment_siret: extensions.siret.describe("Siret de l'établissement"),
