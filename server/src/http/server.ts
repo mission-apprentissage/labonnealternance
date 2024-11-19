@@ -49,6 +49,7 @@ import userRoute from "./controllers/user.controller"
 import applicationRouteV2 from "./controllers/v2/application.controller.v2"
 import appointmentRequestRouteV2 from "./controllers/v2/appointment.controller.v2"
 import jobsRouteV2 from "./controllers/v2/jobs.controller.v2"
+import { jobsApiV3Routes } from "./controllers/v3/jobs/jobs.controller.v3"
 import version from "./controllers/version.controller"
 import { auth } from "./middlewares/authMiddleware"
 import { errorMiddleware } from "./middlewares/errorMiddleware"
@@ -160,6 +161,7 @@ export async function bind(app: Server) {
       etablissementsRecruteurRoute(typedSubApp)
 
       trainingLinks(typedSubApp)
+      jobsApiV3Routes(typedSubApp)
 
       done()
     },
