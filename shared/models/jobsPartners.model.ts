@@ -19,7 +19,6 @@ export enum JOBPARTNERS_LABEL {
 
 export const ZJobsPartnersRecruiterApi = z.object({
   _id: zObjectId,
-
   workplace_siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
   workplace_brand: z.string().nullable().describe("Nom d'enseigne de l'établissement"),
   workplace_legal_name: z.string().nullable().describe("Nom légal de l'entreprise"),
@@ -28,9 +27,6 @@ export const ZJobsPartnersRecruiterApi = z.object({
   workplace_description: z.string().nullable().describe("description de l'entreprise").default(null),
   workplace_size: z.string().nullable().describe("Taille de l'entreprise"),
   workplace_address_label: z.string().describe("Adresse complète provenant du SIRET ou du partenaire"),
-  workplace_address_street_label: z.string().nullable().describe("Numéro et voie, provenant du SIRET ou du partenaire"),
-  workplace_address_city: z.string().nullable().describe("Nom de ville, provenant du SIRET ou du partenaire"),
-  workplace_address_zipcode: extensions.zipCode().nullable().describe("Code postal, provenant du SIRET ou du partenaire"),
   workplace_geopoint: ZPointGeometry.describe("Geolocalisation de l'offre"),
   workplace_idcc: z.number().nullable().describe("Identifiant convention collective"),
   workplace_opco: zOpcoLabel.nullable().describe("Nom de l'OPCO"), // enum ?
@@ -83,6 +79,10 @@ const ZJobsPartnersRecruiterPrivateFields = z.object({
   apply_email: z.string().email().nullable().describe("Email de contact").default(null),
   offer_multicast: z.boolean().default(true).describe("Si l'offre peut être diffusé sur l'ensemble des plateformes partenaires"),
   offer_origin: z.string().nullable().describe("Origine de l'offre provenant d'un aggregateur").default(null),
+
+  workplace_address_street_label: z.string().nullable().describe("Numéro et voie, provenant du SIRET ou du partenaire"),
+  workplace_address_city: z.string().nullable().describe("Nom de ville, provenant du SIRET ou du partenaire"),
+  workplace_address_zipcode: extensions.zipCode().nullable().describe("Code postal, provenant du SIRET ou du partenaire"),
 
   created_at: z.date().describe("Date de creation de l'offre"),
   updated_at: z.date().describe("Date de mise à jour de l'offre"),

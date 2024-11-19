@@ -287,9 +287,9 @@ exports[`updateJobOffer > should update a job offer with the minimal data 1`] = 
   "partner_label": "Some organisation",
   "updated_at": 2024-06-18T00:00:00.000Z,
   "workplace_address_city": "PARIS",
-  "workplace_address_zipcode": "75007",
   "workplace_address_label": "20 AVENUE DE SEGUR 75007 PARIS",
   "workplace_address_street_label": "20 AVENUE DE SEGUR",
+  "workplace_address_zipcode": "75007",
   "workplace_brand": null,
   "workplace_description": null,
   "workplace_geopoint": {

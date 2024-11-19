@@ -264,9 +264,6 @@ export const convertLbaCompanyToJobPartnerRecruiterApi = (recruteursLba: ILbaCom
       workplace_description: null,
       workplace_size: recruteurLba.company_size,
       workplace_address_label: joinNonNullStrings([recruteurLba.street_number, recruteurLba.street_name, recruteurLba.zip_code, recruteurLba.city])!,
-      workplace_address_street_label: joinNonNullStrings([recruteurLba.street_number, recruteurLba.street_name]),
-      workplace_address_zipcode: recruteurLba.zip_code,
-      workplace_address_city: recruteurLba.city,
       workplace_geopoint: recruteurLba.geopoint!,
       workplace_idcc: null,
       workplace_opco: convertOpco(recruteurLba),
@@ -355,10 +352,7 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IJobRes
           workplace_legal_name: recruiter.establishment_raison_sociale ?? null,
           workplace_description: null,
           workplace_size: recruiter.establishment_size ?? null,
-          workplace_address_city: recruiter.address_detail.localite, //TODO, différents f,ormats possible, voir à utiliser helper construisant address
-          workplace_address_zipcode: recruiter.address_detail.code_postal,
           workplace_address_label: recruiter.address!,
-          workplace_address_street_label: joinNonNullStrings([recruiter.address_detail.numero_voie, recruiter.address_detail.type_voie, recruiter.address_detail.nom_voie]),
           workplace_geopoint: recruiter.geopoint!,
           workplace_idcc: recruiter.idcc,
           workplace_opco: convertOpco(recruiter),
@@ -411,10 +405,7 @@ export const convertFranceTravailJobToJobPartnerOfferApi = (offresEmploiFranceTr
         workplace_name: offreFT.entreprise.nom,
         workplace_description: offreFT.entreprise.description,
         workplace_size: null,
-        workplace_address_city: offreFT.lieuTravail.commune || null,
         workplace_address_label: offreFT.lieuTravail.libelle,
-        workplace_address_street_label: offreFT.lieuTravail.libelle,
-        workplace_address_zipcode: offreFT.lieuTravail.codePostal || null,
         workplace_geopoint: convertToGeopoint({
           longitude: parseFloat(offreFT.lieuTravail.longitude!),
           latitude: parseFloat(offreFT.lieuTravail.latitude!),
@@ -568,7 +559,7 @@ async function resolveWorkplaceGeoLocationFromAddress(
 
 // List of fields impacted by change of the siret
 type WorkplaceSiretData = Pick<
-  IJobsPartnersOfferApi,
+  IJobsPartnersOfferPrivate,
   | "workplace_geopoint"
   | "workplace_address_label"
   | "workplace_address_street_label"
@@ -596,9 +587,9 @@ async function resolveWorkplaceDataFromSiret(workplace_siret: string, zodError: 
 
   return {
     workplace_geopoint: entrepriseData.geopoint,
-    workplace_address_city: entrepriseData.address_detail.commune,
+    workplace_address_city: entrepriseData.address_detail.commune ?? entrepriseData.address_detail.libelle_commune,
     workplace_address_label: entrepriseData.address!,
-    workplace_address_street_label: entrepriseData.address_detail.l4,
+    workplace_address_street_label: entrepriseData.address_detail.acheminement_postal.l4,
     workplace_address_zipcode: entrepriseData.address_detail.code_postal,
     workplace_brand: entrepriseData.establishment_enseigne ?? null,
     workplace_legal_name: entrepriseData.establishment_raison_sociale ?? null,
