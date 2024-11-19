@@ -3,6 +3,7 @@
 exports[`import RH Alternance > rawRhAlternanceToComputedMapper > should test that the mapper works 1`] = `
 {
   "apply_url": "https://rhalternance.com/jobs/environnement/la-grande-motte/alternant-hse-h-f-913079004",
+  "business_error": null,
   "contract_type": [
     "Apprentissage",
     "Professionnalisation",

@@ -100,7 +100,6 @@ export const rawRhAlternanceToComputedMapper =
     const computedJob: IComputedJobsPartners = {
       partner_job_id: jobCode,
       partner_label: JOBPARTNERS_LABEL.RH_ALTERNANCE,
-      // TODO quid des autres cas ?
       contract_type: jobType === "Alternance" ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION] : [],
       offer_title: jobTitle,
       offer_description:
