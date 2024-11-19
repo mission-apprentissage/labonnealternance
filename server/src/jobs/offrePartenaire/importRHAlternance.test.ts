@@ -25,7 +25,17 @@ describe("import RH Alternance", () => {
 
   describe("rawRhAlternanceToComputedMapper", () => {
     it("should test that the mapper works", async () => {
-      expect.soft(rawRhAlternanceToComputedMapper(now)(generateRawRHAlternanceJobFixture())).toMatchSnapshot()
+      const mapped = rawRhAlternanceToComputedMapper(now)(generateRawRHAlternanceJobFixture())
+      expect.soft(mapped.business_error).toBeFalsy()
+      expect.soft(mapped).toMatchSnapshot()
+    })
+    it("should detect a business error", async () => {
+      const mapped = rawRhAlternanceToComputedMapper(now)(
+        generateRawRHAlternanceJobFixture({
+          jobType: "invalid",
+        })
+      )
+      expect.soft(mapped.business_error).toBeTruthy()
     })
   })
 })
