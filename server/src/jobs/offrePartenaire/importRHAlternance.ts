@@ -96,6 +96,7 @@ export const rawRhAlternanceToComputedMapper =
     jobUrl,
   }: IRawRHAlternance["job"]): IComputedJobsPartners => {
     const offer_creation = jobSubmitDateTime ? new Date(jobSubmitDateTime) : now
+    const isValid: boolean = jobType === "Alternance"
     const computedJob: IComputedJobsPartners = {
       partner_job_id: jobCode,
       partner_label: JOBPARTNERS_LABEL.RH_ALTERNANCE,
@@ -118,6 +119,7 @@ export const rawRhAlternanceToComputedMapper =
       apply_url: jobUrl,
       errors: [],
       validated: false,
+      business_error: isValid ? null : `expected jobType === "Alternance" but got ${jobType}`,
     }
     return computedJob
   }
