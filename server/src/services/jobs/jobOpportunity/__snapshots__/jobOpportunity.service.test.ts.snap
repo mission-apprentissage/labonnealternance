@@ -100,10 +100,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     ],
     "partner_job_id": null,
     "partner_label": "La bonne alternance",
-    "workplace_address_city": "Paris",
-    "workplace_address_zipcode": null,
     "workplace_address_label": "Paris",
-    "workplace_address_street_label": null,
     "workplace_brand": null,
     "workplace_description": null,
     "workplace_geopoint": {
@@ -144,10 +141,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "offer_to_be_acquired_skills": [],
     "partner_job_id": "1",
     "partner_label": "France Travail",
-    "workplace_address_city": "Paris",
-    "workplace_address_zipcode": null,
     "workplace_address_label": "Paris",
-    "workplace_address_street_label": null,
     "workplace_brand": null,
     "workplace_description": "",
     "workplace_geopoint": {
@@ -157,7 +151,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
       ],
       "type": "Point",
     },
-    "workplace_idcc": null,
+    "workplace_idcc": null,ue de l'
     "workplace_legal_name": null,
     "workplace_naf_code": null,
     "workplace_naf_label": null,
@@ -197,10 +191,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "partner_job_id": "job-id-1",
     "partner_label": "Hello work",
     "updated_at": 2021-01-28T15:00:00.000Z,
-    "workplace_address_city": "PARIS",
-    "workplace_address_zipcode": "75007",
     "workplace_address_label": "126 RUE DE L'UNIVERSITE 75007 PARIS",
-    "workplace_address_street_label": "126 RUE DE L'UNIVERSITE",
     "workplace_brand": null,
     "workplace_description": null,
     "workplace_geopoint": {
