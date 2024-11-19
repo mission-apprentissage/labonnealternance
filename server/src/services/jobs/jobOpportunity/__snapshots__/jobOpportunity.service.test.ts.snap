@@ -36,7 +36,6 @@ exports[`createJobOffer > should create a job offer with the minimal data 1`] = 
   "workplace_address_zipcode": "75007",
   "workplace_address_label": "20 AVENUE DE SEGUR 75007 PARIS",
   "workplace_address_street_label": "20 AVENUE DE SEGUR",
-  "workplace_address_country": "France",
   "workplace_brand": null,
   "workplace_description": null,
   "workplace_geopoint": {
@@ -105,7 +104,6 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "workplace_address_zipcode": null,
     "workplace_address_label": "Paris",
     "workplace_address_street_label": null,
-    "workplace_address_country": "France",
     "workplace_brand": null,
     "workplace_description": null,
     "workplace_geopoint": {
@@ -150,7 +148,6 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "workplace_address_zipcode": null,
     "workplace_address_label": "Paris",
     "workplace_address_street_label": null,
-    "workplace_address_country": "France",
     "workplace_brand": null,
     "workplace_description": "",
     "workplace_geopoint": {
@@ -204,7 +201,6 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "workplace_address_zipcode": "75007",
     "workplace_address_label": "126 RUE DE L'UNIVERSITE 75007 PARIS",
     "workplace_address_street_label": "126 RUE DE L'UNIVERSITE",
-    "workplace_address_country": "France",
     "workplace_brand": null,
     "workplace_description": null,
     "workplace_geopoint": {
@@ -236,7 +232,6 @@ exports[`findJobsOpportunities > should execute query 2`] = `
     "workplace_address_zipcode": null,
     "workplace_address_label": null,
     "workplace_address_street_label": null,
-    "workplace_address_country": "France",
     "workplace_brand": "ASSEMBLEE NATIONALE - La vraie",
     "workplace_description": null,
     "workplace_geopoint": {
@@ -295,7 +290,6 @@ exports[`updateJobOffer > should update a job offer with the minimal data 1`] = 
   "workplace_address_zipcode": "75007",
   "workplace_address_label": "20 AVENUE DE SEGUR 75007 PARIS",
   "workplace_address_street_label": "20 AVENUE DE SEGUR",
-  "workplace_address_country": "France",
   "workplace_brand": null,
   "workplace_description": null,
   "workplace_geopoint": {

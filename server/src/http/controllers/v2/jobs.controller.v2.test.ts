@@ -172,7 +172,6 @@ describe("GET /jobs/search", () => {
       "partner_label",
       "workplace_address_label",
       "workplace_address_street_label",
-      "workplace_address_country",
       "workplace_address_city",
       "workplace_address_zipcode",
       "workplace_brand",
@@ -195,7 +194,6 @@ describe("GET /jobs/search", () => {
       "apply_url",
       "workplace_address_label",
       "workplace_address_street_label",
-      "workplace_address_country",
       "workplace_address_city",
       "workplace_address_zipcode",
       "workplace_brand",
@@ -305,7 +303,6 @@ describe("POST /jobs", async () => {
     apply_email: "mail@mail.com",
 
     workplace_address_label: "adresse",
-    workplace_address_country: "country",
     workplace_siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
   }
 
@@ -439,7 +436,6 @@ describe("PUT /jobs/:id", async () => {
     offer_description: "Envie de devenir développeur web ? Rejoignez-nous !",
 
     apply_email: "mail@mail.com",
-    workplace_address_country: "country",
     workplace_address_label: "adresse",
 
     workplace_siret: apiEntrepriseEtablissementFixture.dinum.data.siret,

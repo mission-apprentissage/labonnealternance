@@ -1,6 +1,5 @@
 import { ObjectId } from "mongodb"
 import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "shared/constants"
-import { Country } from "shared/constants/places"
 import dayjs from "shared/helpers/dayjs"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
@@ -85,7 +84,6 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     url,
     updated_date,
     postal_code,
-    country,
   } = job
   const contractDuration: number | null = parseContractDuration(job)
   const { latitude, longitude } = geolocToLatLon(geoloc)
@@ -133,7 +131,6 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     workplace_website: null,
     workplace_address_zipcode: postal_code || null,
     workplace_address_city: city || null,
-    workplace_address_country: country || Country.FRANCE,
     workplace_address_label: joinNonNullStrings([city, postal_code]),
     workplace_address_street_label: null,
     workplace_geopoint:

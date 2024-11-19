@@ -50,7 +50,6 @@ export const importFromComputedToJobsPartners = async () => {
           workplace_address_street_label: computedJobPartner.workplace_address_street_label,
           workplace_address_zipcode: computedJobPartner.workplace_address_zipcode,
           workplace_address_city: computedJobPartner.workplace_address_city,
-          workplace_address_country: computedJobPartner.workplace_address_country,
           workplace_geopoint: computedJobPartner.workplace_geopoint,
           workplace_idcc: computedJobPartner.workplace_idcc ?? null,
           workplace_opco: computedJobPartner.workplace_opco ?? null,

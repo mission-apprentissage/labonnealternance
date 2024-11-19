@@ -1,5 +1,4 @@
 import { ObjectId } from "mongodb"
-import { Country } from "shared/constants/places"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { helloWorkJobToJobsPartners } from "./helloWorkMapper"
@@ -33,7 +32,7 @@ describe("helloWorkJobToJobsPartners", () => {
         region: "AUVERGNE RHONE ALPES",
         department: "RHONE",
         postal_code: "69100",
-        country: Country.FRANCE,
+        country: "France",
         publication_date: "2024-07-05 22:14:56",
         updated_date: "2024-07-21 04:49:06",
         contract: "Alternance",
@@ -99,7 +98,6 @@ describe("helloWorkJobToJobsPartners", () => {
       workplace_address_label: "Stem Propreté Lyon,Villeurbanne,69100 VILLEURBANNE",
       workplace_address_zipcode: "69100",
       workplace_address_city: "VILLEURBANNE",
-      workplace_address_country: Country.FRANCE,
       workplace_address_street_label: "",
       workplace_geopoint: {
         type: "Point",

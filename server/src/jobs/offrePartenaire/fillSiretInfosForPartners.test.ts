@@ -17,7 +17,6 @@ const filledFields = [
   "workplace_name",
   "workplace_address_label",
   "workplace_address_street_label",
-  "workplace_address_country",
   "workplace_address_city",
   "workplace_address_zipcode",
   "workplace_geopoint",
