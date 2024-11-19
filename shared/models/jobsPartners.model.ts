@@ -14,6 +14,7 @@ export enum JOBPARTNERS_LABEL {
   HELLOWORK = "Hello work",
   OFFRES_EMPLOI_LBA = "La bonne alternance",
   OFFRES_EMPLOI_FRANCE_TRAVAIL = "France Travail",
+  RH_ALTERNANCE = "RH Alternance",
 }
 
 export const ZJobsPartnersRecruiterApi = z.object({
