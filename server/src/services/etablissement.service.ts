@@ -754,7 +754,7 @@ export const entrepriseOnboardingWorkflow = {
     email: string
     cfa_delegated_siret: string
     opco?: OPCOS_LABEL
-    idcc?: string | null
+    idcc?: number | null
     managedBy: string
     origin: string
   }) => {
@@ -779,7 +779,7 @@ export const entrepriseOnboardingWorkflow = {
     const entreprise = await upsertEntrepriseData(siret, origin, siretResponse, isSiretInternalError)
     let opcoResult: { opco: OPCOS_LABEL | null; idcc: number | null } | null = null
     if (opco) {
-      opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: parseInt(idcc ?? "") || null })
+      opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: idcc ?? null })
     }
 
     const formulaireInfo = await createFormulaire(
