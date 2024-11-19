@@ -61,6 +61,11 @@ const sendingStateValues = {
     text: "Cette offre n'est plus active",
     dataTestId: "CandidatureSpontaneeFailedExpiredJob",
   },
+  [BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED]: {
+    title: "Type de fichier non pris en charge par le service",
+    text: "Le type de fichier fourni n'est pas accepté. Nous acceptons uniquement les fichiers aux formats PDF ou DOCX.",
+    dataTestId: "CandidatureSpontaneeFailedFileType",
+  },
 } satisfies Record<string, DataDisplayForError>
 
 const CandidatureLbaFailed = ({ sendingState }) => {
