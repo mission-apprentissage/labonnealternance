@@ -95,7 +95,7 @@ export const rawRhAlternanceToComputedMapper =
     jobType,
     jobUrl,
   }: IRawRHAlternance["job"]): IComputedJobsPartners => {
-    const offer_creation = jobSubmitDateTime ? new Date(jobSubmitDateTime) : now
+    const offer_creation = jobSubmitDateTime ? dayjs.tz(jobSubmitDateTime).toDate() : now
     const isValid: boolean = jobType === "Alternance"
     const computedJob: IComputedJobsPartners = {
       partner_job_id: jobCode,
