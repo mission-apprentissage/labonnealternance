@@ -1744,7 +1744,7 @@ describe("createJobOffer", () => {
     apply_phone: null,
 
     workplace_siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
-    workplace_address_label: "address",
+    workplace_address_label: null,
     workplace_description: null,
     workplace_website: null,
     workplace_name: null,
