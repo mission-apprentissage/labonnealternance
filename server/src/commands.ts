@@ -12,6 +12,7 @@ import config from "./config"
 import { bindProcessorServer } from "./http/jobProcessorServer"
 import { bindFastifyServer } from "./http/server"
 import { setupJobProcessor } from "./jobs/jobs"
+import { SimpleJobDefinition, simpleJobDefinitions } from "./jobs/simpleJobDefinitions"
 
 async function setupAndStartProcessor(signal: AbortSignal, shouldStartWorker: boolean) {
   logger.info("Setup job processor")
@@ -192,12 +193,6 @@ program
   .action(createJobAction("remove:duplicates:recruiters"))
 
 program
-  .command("lbajobs:export:s3")
-  .description("Export LBA jobs to JSON files on S3")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("lbajobs:export:s3"))
-
-program
   .command("anonymize-individual")
   .description("Anonymize elements based on id")
   .requiredOption("-c, --collection <string>", " <collection> est la collection sur laquelle s'applique la modification")
@@ -205,55 +200,11 @@ program
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("anonymize-individual"))
 
-program.command("db:obfuscate").description("Pseudonymisation des documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:obfuscate"))
-
-program.command("recruiters:delegations").description("Resend delegation email for all jobs created on November 2023").action(createJobAction("recruiters:delegations"))
 program.command("migrations:up").description("Run migrations up").action(createJobAction("migrations:up"))
 
 program.command("migrations:status").description("Check migrations status").action(createJobAction("migrations:status"))
 
 program.command("migrations:create").description("Run migrations create").requiredOption("-d, --description <string>", "description").action(createJobAction("migrations:create"))
-
-// Temporaire, one shot à executer en recette et prod
-program
-  .command("recruiters:set-missing-job-start-date")
-  .description("Récupération des geo_coordinates manquants dans la collection Recruiters")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("recruiters:set-missing-job-start-date"))
-// Temporaire, one shot à executer en recette et prod
-program
-  .command("recruiters:get-missing-geocoordinates")
-  .description("Récupération des geo_coordinates manquants dans la collection Recruiters")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("recruiters:get-missing-geocoordinates"))
-
-program
-  .command("recruiters:get-missing-address-detail")
-  .description("Récupération des address_detail manquants dans la collection Recruiters")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("recruiters:get-missing-address-detail"))
-
-program
-  .command("import:referentielrome")
-  .description("import référentiel rome v4 from XML")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("import:referentielrome"))
-
-// Temporaire, one shot à executer en recette et prod
-program
-  .command("migration:remove-version-key-from-all-collections")
-  .description("Supprime le champ __v de toutes les collections")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("migration:remove-version-key-from-all-collections"))
-
-// Temporaire, one shot à executer en recette et prod
-program
-  .command("migration:remove-delegated-from-jobs")
-  .description("Retirer le champ is_delegated des offres")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("migration:remove-delegated-from-jobs"))
-
-/********************/
 
 program
   .command("create-api-user")
@@ -289,40 +240,10 @@ program
   .action(createJobAction("formulaire:relance"))
 
 program
-  .command("annulation-formulaire")
-  .description("Annule les offres pour lesquels la date d'expiration est correspondante à la date actuelle")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("formulaire:annulation"))
-
-program
-  .command("metabase:jobs:collection")
-  .description("Permet de créer une collection dédiée aux offres pour metabase")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("metabase:jobs:collection"))
-
-program
-  .command("metabase:role-management:create")
-  .description("Crée une collection jointure entre userWithAccounts, roleManagements, cfas et entreprises pour metabase")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("metabase:role-management:create"))
-
-program
-  .command("relance-opco")
-  .description("Relance les opco avec le nombre d'utilisateur en attente de validation")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("opco:relance"))
-
-program
   .command("export-offre-pole-emploi")
   .description("Exporte les offres vers France Travail")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("pe:offre:export"))
-
-program
-  .command("update-siret-infos-in-error")
-  .description("Remplis les données venant du SIRET pour les utilisateurs ayant eu une erreur pendant l'inscription")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("siret:inError:update"))
 
 /**
  *
@@ -331,30 +252,6 @@ program
  *
  *
  */
-
-program
-  .command("activate-opt-out-etablissement-formations")
-  .description("Active tous les établissements qui ont souscrits à l'opt-out.")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("etablissement:formations:activate:opt-out"))
-
-program
-  .command("invite-etablissement-to-opt-out")
-  .description("Invite les établissements (via email décisionnaire) à l'opt-out.")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("etablissement:invite:opt-out"))
-
-program
-  .command("etablissement:invite:premium:parcoursup")
-  .description("Invite les établissements (via email décisionnaire) au premium (Parcoursup)")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("etablissement:invite:premium:parcoursup"))
-
-program
-  .command("etablissement:invite:premium:affelnet")
-  .description("Invite les établissements (via email décisionnaire) au premium (Affelnet)")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("etablissement:invite:premium:affelnet"))
 
 program
   .command("etablissement:invite:premium:follow-up")
@@ -370,65 +267,6 @@ program
   .option("-b, --bypassDate", "Run follow-up now without the 10 days waiting", false)
   .action(createJobAction("etablissement:invite:premium:affelnet:follow-up"))
 
-program
-  .command("premium:activated:reminder")
-  .description("Envoi un email à tous les établissements premium pour les informer de l'ouverture des voeux sur Parcoursup")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("premium:activated:reminder"))
-
-program
-  .command("premium:invite:one-shot")
-  .description("Envoi un email à tous les établissements pas encore premium pour les inviter de nouveau")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("premium:invite:one-shot"))
-
-program
-  .command("etablissements:formations:sync")
-  .description("Récupère la liste de toutes les formations du Catalogue et les enregistre.")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("etablissements:formations:sync"))
-
-program
-  .command("etablissements:formations:inverted:sync")
-  .description("Resynchronise les referrers en partant de la table ETFA")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("etablissements:formations:inverted:sync"))
-
-program
-  .command("sync:etablissement:dates")
-  .description("Resynchronise les dates de la collection Etablissement par siret gestionnaire")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("sync:etablissement:dates"))
-
-program
-  .command("appointments:anonimize")
-  .description("anonimisation des prises de rendez-vous de plus d'un an")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("appointments:anonimize"))
-
-program
-  .command("users:anonimize")
-  .description("anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus d'un an")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("users:anonimize"))
-program
-  .command("catalogue:trainings:appointments:archive:eligible")
-  .description("Historise l'egibilité d'une formation à la prise de rendez-vous avec le Catalogue des formations (RCO)")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("catalogue:trainings:appointments:archive:eligible"))
-
-program
-  .command("referentiel:onisep:import")
-  .description("Alimentation de la table de correspondance entre Id formation Onisep et Clé ME du catalogue RCO, utilisé pour diffuser la prise de RDV sur l’Onisep")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("referentiel:onisep:import"))
-
-program
-  .command("remove:duplicate:etablissements")
-  .description("Supprime les doublon de la collection Etablissements généré par le script de synchronisation (lié au parallélisme)")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("remove:duplicates:etablissements"))
-
 /**
  *
  *
@@ -438,35 +276,11 @@ program
  */
 
 program
-  .command("sync-catalogue-trainings")
-  .description("Importe les formations depuis le Catalogue")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("catalogue:trainings:sync"))
-
-program
-  .command("sync-catalogue-trainings-extra-data")
-  .description("Mise à jour des champs spécifiques de la collection formations catalogue")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("catalogue:trainings:sync:extra"))
-
-program
   .command("sync-sib-blocked")
   .description("Récupère auprès de Brevo la liste des adresses emails bloquées le jour précédent (défaut) ou toutes les adresses bloquées (option)")
   .option("-all-addresses, [AllAddresses]", "pour récupérer toutes les adresses bloquées", false)
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("brevo:blocked:sync"))
-
-program
-  .command("anonymize-applications")
-  .description("Anonymise toutes les candidatures de plus de an qui ne sont pas déjà anonymisées")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("applications:anonymize"))
-
-program
-  .command("rename-lbac-fields")
-  .description("Renomme les champs des collections LBAC")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("lbac:fields:rename"))
 
 program
   .command("update-companies")
@@ -516,42 +330,6 @@ program
   .action(createJobAction("diplomes-metiers:update"))
 
 program
-  .command("update-referentiel-rncp-romes")
-  .description("Procède à la mise à jour du référentiel RNCP codes ROME")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("referentiel:rncp-romes:update"))
-
-program
-  .command("fix-job-expiration-date")
-  .description("Répare les date d'expiration d'offre qui seraient trop dans le futur")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("recruiters:expiration-date:fix"))
-
-program
-  .command("fix-job-type")
-  .description("Répare les job_type d'offre qui contiennent la valeur enum 'Professionalisation' mal orthographiée")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("recruiters:job-type:fix"))
-
-program
-  .command("fix-applications")
-  .description("Répare les adresses emails comportant des caractères erronés dans la collection applications")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("fix-applications"))
-
-program
-  .command("fix-data-validation-recruiters")
-  .description("Répare les data de la collection recruiters")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("recruiters:data-validation:fix"))
-
-program
-  .command("anonymize-user-recruteurs")
-  .description("Anonymize les userrecruteurs qui ne se sont pas connectés depuis plus de 2 ans")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("user-recruteurs:anonymize"))
-
-program
   .command("import-referentiel-opco-constructys")
   .description("Importe les emails pour la collection ReferentielOpco depuis l'opco Constructys")
   .option("-q, --queued", "Run job asynchronously", false)
@@ -559,54 +337,16 @@ program
   .action(createJobAction("referentiel-opco:constructys:import"))
 
 program
-  .command("import-hellowork-raw")
-  .description("Importe les offres hellowork dans la collection raw")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("import-hellowork-raw"))
-
-program
-  .command("import-hellowork-to-computed")
-  .description("Importe les offres hellowork depuis raw vers computed")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("import-hellowork-to-computed"))
-
-program
-  .command("import-rhalternance")
-  .description("Importe les offres RHAlternance dans la collection raw")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("import-rhalternance"))
-
-program.command("import-kelio").description("Importe les offres kelio").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("import-kelio"))
-
-program
-  .command("import-computed-to-jobs-partners")
-  .description("Met à jour la collection jobs_partners à partir de computed_jobs_partners")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("import-computed-to-jobs-partners"))
-
-program
-  .command("cancel-removed-jobs-partners")
-  .description("Met à jour la collection jobs_partners en mettant à 'Annulé' les offres qui ne sont plus dans computed_jobs_partners")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("cancel-removed-jobs-partners"))
-
-program
-  .command("send-applications")
-  .description("Scanne les virus des pièces jointes et envoie les candidatures. Timeout à 8 minutes.")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("send-applications"))
-
-program
-  .command("fill-computed-jobs-partners")
-  .description("Enrichi la collection computed_jobs_partners avec les données provenant d'API externes")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("fill-computed-jobs-partners"))
-
-program
   .command("referentiel:commune:import")
   .description("Importe le référentiel des communes")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("referentiel:commune:import"))
+
+simpleJobDefinitions.forEach((jobDef) => {
+  const { description } = jobDef
+  const command = SimpleJobDefinition.getFctName(jobDef)
+  program.command(command).description(description).option("-q, --queued", "Run job asynchronously", false).action(createJobAction(command))
+})
 
 export async function startCLI() {
   await program.parseAsync(process.argv)

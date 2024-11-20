@@ -3,7 +3,7 @@ import { Button, Flex, Heading, Modal, ModalBody, ModalContent, ModalFooter, Mod
 import { ArrowRightLine, Close } from "../../theme/components/icons"
 import { archiveFormulaire } from "../../utils/api"
 
-export default function ConfirmationSuppressionEntreprise(props) {
+export function ConfirmationSuppressionEntreprise(props) {
   const { isOpen, onClose, establishment_raison_sociale, establishment_id } = props
   const toast = useToast()
 

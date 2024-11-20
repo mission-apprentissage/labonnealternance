@@ -1,5 +1,5 @@
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { isEnum } from "shared/utils"
 
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
@@ -18,6 +18,7 @@ export const fillSiretInfosForPartners = async () => {
     "workplace_naf_label",
     "workplace_brand",
     "workplace_legal_name",
+    "business_error",
   ] as const satisfies (keyof IComputedJobsPartners)[]
   return fillFieldsForPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.API_SIRET,
@@ -29,6 +30,7 @@ export const fillSiretInfosForPartners = async () => {
       const { workplace_siret: siret } = document
 
       const response = await getSiretInfos(siret)
+
       if (!response) {
         return []
       }
@@ -38,6 +40,8 @@ export const fillSiretInfosForPartners = async () => {
 
       const { data } = response
       const { establishment_enseigne, establishment_raison_sociale, naf_code, naf_label, geo_coordinates, establishment_size, address } = formatEntrepriseData(data)
+
+      const business_error = data?.etat_administratif === "F" ? JOB_PARTNER_BUSINESS_ERROR.CLOSED_COMPANY : null
 
       const result: Pick<IComputedJobsPartners, (typeof filledFields)[number] | "_id"> = {
         _id: document._id,
@@ -49,6 +53,7 @@ export const fillSiretInfosForPartners = async () => {
         workplace_naf_code: document.workplace_naf_code ?? naf_code,
         workplace_naf_label: document.workplace_naf_label ?? naf_label,
         workplace_geopoint: document.workplace_geopoint ?? (geo_coordinates ? convertStringCoordinatesToGeoPoint(geo_coordinates) : null),
+        business_error: document.business_error ?? business_error,
       }
 
       return [result]

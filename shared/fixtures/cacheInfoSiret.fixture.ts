@@ -3,7 +3,7 @@ import { ObjectId } from "bson"
 import { EDiffusibleStatus } from "../constants/diffusibleStatus"
 import { ICacheInfosSiret } from "../models/cacheInfosSiret.model"
 
-export function generateCacheInfoSiretFixture(data: Partial<ICacheInfosSiret> = {}): ICacheInfosSiret {
+export function generateCacheInfoSiretFixture(data: Partial<ICacheInfosSiret> = {}, etat_administratif: "A" | "F" = "A"): ICacheInfosSiret {
   return {
     _id: new ObjectId(),
     siret: "78430824900019",
@@ -28,7 +28,7 @@ export function generateCacheInfoSiretFixture(data: Partial<ICacheInfosSiret> = 
             l7: "Paris",
           },
         },
-        etat_administratif: "A",
+        etat_administratif,
         siret: "78430824900019",
         status_diffusion: EDiffusibleStatus.DIFFUSIBLE,
         unite_legale: {
@@ -52,13 +52,16 @@ export function generateCacheInfoSiretFixture(data: Partial<ICacheInfosSiret> = 
   }
 }
 
-export const generateCacheInfoSiretForSiret = (siret: string) =>
-  generateCacheInfoSiretFixture({
-    siret,
-    data: {
+export const generateCacheInfoSiretForSiret = (siret: string, etat_administratif: "A" | "F" = "A") =>
+  generateCacheInfoSiretFixture(
+    {
+      siret,
       data: {
-        ...generateCacheInfoSiretFixture()!.data!.data,
-        siret,
+        data: {
+          ...generateCacheInfoSiretFixture({}, etat_administratif)!.data!.data,
+          siret,
+        },
       },
     },
-  })
+    etat_administratif
+  )

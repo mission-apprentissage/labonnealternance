@@ -16,6 +16,10 @@ export enum COMPUTED_ERROR_SOURCE {
   VALIDATION = "validation",
 }
 
+export enum JOB_PARTNER_BUSINESS_ERROR {
+  CLOSED_COMPANY = "CLOSED_COMPANY",
+}
+
 export const ZComputedJobsPartners = extensions
   .optionalToNullish(ZJobsPartnersOfferPrivate.partial())
   .omit({
@@ -33,6 +37,7 @@ export const ZComputedJobsPartners = extensions
         .describe("Détail des erreurs rencontrées lors de la récupération des données obligatoires")
     ),
     validated: z.boolean().default(false).describe("Toutes les données nécessaires au passage vers jobs_partners sont présentes et valides"),
+    business_error: z.string().nullable().default(null),
   })
 export type IComputedJobsPartners = z.output<typeof ZComputedJobsPartners>
 

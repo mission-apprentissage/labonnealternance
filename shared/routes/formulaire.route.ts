@@ -1,7 +1,7 @@
 import { z } from "../helpers/zodWithOpenApi"
 import { zObjectId } from "../models/common"
-import { JOB_STATUS, ZJob, ZJobWrite } from "../models/job.model"
-import { ZRecruiter, ZRecruiterWithApplicationCount, ZRecruiterWritable } from "../models/recruiter.model"
+import { JOB_STATUS, ZJob, ZJobCreate } from "../models/job.model"
+import { ZRecruiter, ZRecruiterWithApplicationCount } from "../models/recruiter.model"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -80,7 +80,7 @@ export const zFormulaireRoute = {
           first_name: z.string(),
           phone: z.string(),
           opco: z.string().optional(),
-          idcc: z.string().nullish().optional(),
+          idcc: z.number().nullish().optional(),
         })
         .strict(),
       response: {
@@ -100,7 +100,7 @@ export const zFormulaireRoute = {
       // TODO_SECURITY_FIX limiter les champs autorisés à la modification. Utiliser un "ZRecruiterNew" (ou un autre nom du genre ZFormulaire)
       params: z.object({ establishment_id: z.string() }).strict(),
       // TODO nonstrict TO BE FIXED on the frontend
-      body: ZJobWrite.nonstrict(),
+      body: ZJobCreate.nonstrict(),
       response: {
         "200": z
           .object({
@@ -123,7 +123,7 @@ export const zFormulaireRoute = {
       // TODO_SECURITY_FIX limiter les champs autorisés à la modification. Utiliser un "ZRecruiterNew" (ou un autre nom du genre ZFormulaire)
       params: z.object({ establishment_id: z.string() }).strict(),
       // TODO nonstrict TO BE FIXED on the frontend
-      body: ZJobWrite.nonstrict(),
+      body: ZJobCreate.nonstrict(),
       response: {
         "200": z
           .object({
@@ -182,22 +182,6 @@ export const zFormulaireRoute = {
     },
   },
   put: {
-    "/formulaire/:establishment_id": {
-      method: "put",
-      path: "/formulaire/:establishment_id",
-      params: z.object({ establishment_id: z.string() }).strict(),
-      body: ZRecruiterWritable.partial(),
-      response: {
-        "200": ZRecruiter,
-      },
-      securityScheme: {
-        auth: "cookie-session",
-        access: "recruiter:manage",
-        resources: {
-          recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
-        },
-      },
-    },
     "/formulaire/offre/:jobId": {
       method: "put",
       path: "/formulaire/offre/:jobId",
@@ -207,7 +191,6 @@ export const zFormulaireRoute = {
         rome_appellation_label: true,
         rome_code: true,
         job_level_label: true,
-        job_description: true,
         job_status: true,
         job_type: true,
         delegations: true,
@@ -239,7 +222,7 @@ export const zFormulaireRoute = {
       path: "/formulaire/offre/:jobId/cancel",
       params: z.object({ jobId: zObjectId }).strict(),
       response: {
-        "2xx": z.object({}).strict(),
+        "200": z.object({}).strict(),
       },
       securityScheme: {
         auth: "access-token",

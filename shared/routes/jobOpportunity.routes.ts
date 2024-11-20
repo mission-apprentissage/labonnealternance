@@ -41,4 +41,10 @@ export const ZJobsOpportunityResponse = z.object({
   warnings: z.array(z.object({ message: z.string(), code: z.string() })),
 })
 
+export const ZJobSearchApiV3Response = z.object({
+  jobs: z.array(ZJobsPartnersOfferApi),
+  recruiters: z.array(ZJobsPartnersRecruiterApi),
+  warnings: z.array(z.object({ message: z.string(), code: z.string() })),
+})
+
 export type IJobsOpportunityResponse = z.output<typeof ZJobsOpportunityResponse>

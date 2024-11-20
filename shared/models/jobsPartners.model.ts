@@ -14,6 +14,7 @@ export enum JOBPARTNERS_LABEL {
   HELLOWORK = "Hello work",
   OFFRES_EMPLOI_LBA = "La bonne alternance",
   OFFRES_EMPLOI_FRANCE_TRAVAIL = "France Travail",
+  RH_ALTERNANCE = "RH Alternance",
 }
 
 export const ZJobsPartnersRecruiterApi = z.object({
@@ -105,7 +106,7 @@ export type IJobsPartnersOfferPrivateInput = z.input<typeof ZJobsPartnersOfferPr
 
 const TIME_CLOCK_TOLERANCE = 300_000
 
-const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
+export const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
   partner_job_id: true,
 
   contract_duration: true,
@@ -172,7 +173,7 @@ const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
 export const ZJobsPartnersWritableApi = ZJobsPartnersPostApiBodyBase.superRefine((data, ctx) => {
   const keys = ["apply_url", "apply_email", "apply_phone"] as const
   if (keys.every((key) => data[key] == null)) {
-    ;["apply_url", "apply_email", "apply_phone"].forEach((key) => {
+    keys.forEach((key) => {
       ctx.addIssue({
         code: "custom",
         message: "At least one of apply_url, apply_email, or apply_phone is required",

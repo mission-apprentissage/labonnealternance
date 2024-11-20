@@ -87,7 +87,7 @@ const getEffectif = (code: IEtablissementGouvData["data"]["unite_legale"]["tranc
  * @param {String} siret
  * @returns {Promise<Object>}
  */
-const getOpcoFromCfaDock = async (siret: string): Promise<{ opco: string; idcc?: string } | undefined> => {
+const getOpcoFromCfaDock = async (siret: string): Promise<{ opco: string; idcc: number | null } | undefined> => {
   try {
     const { data } = await getHttpClient({ timeout: 5000 }).get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${encodeURIComponent(siret)}`)
     if (!data) {
@@ -96,10 +96,10 @@ const getOpcoFromCfaDock = async (siret: string): Promise<{ opco: string; idcc?:
     const { searchStatus, opcoName, idcc } = data
     switch (searchStatus) {
       case "OK": {
-        return { opco: opcoName, idcc: idcc?.toString() }
+        return { opco: opcoName, idcc }
       }
       case "MULTIPLE_OPCO": {
-        return { opco: OPCOS_LABEL.MULTIPLE_OPCO, idcc: "OPCO multiple, IDCC non défini" }
+        return { opco: OPCOS_LABEL.MULTIPLE_OPCO, idcc: null }
       }
       default: {
         return undefined
@@ -382,7 +382,7 @@ const isCompanyValid = async (props: UserAndOrganization): Promise<{ isValid: bo
 
 const errorFactory = (message: string, errorCode?: BusinessErrorCodes): IBusinessError => ({ error: true, message, errorCode })
 
-const getOpcoFromCfaDockByIdcc = async (siret: string): Promise<{ opco: string; idcc?: string } | undefined> => {
+const getOpcoFromCfaDockByIdcc = async (siret: string): Promise<{ opco: string; idcc: number | null } | undefined> => {
   const idccResult = await getIdcc(siret)
   if (!idccResult) return undefined
   const convention = idccResult.conventions?.at(0)
@@ -390,25 +390,25 @@ const getOpcoFromCfaDockByIdcc = async (siret: string): Promise<{ opco: string; 
     const { num } = convention
     const opcoByIdccResult = await getOpcoByIdcc(num)
     if (opcoByIdccResult) {
-      return { opco: opcoByIdccResult.opcoName, idcc: opcoByIdccResult.idcc?.toString() }
+      return { opco: opcoByIdccResult.opcoName, idcc: opcoByIdccResult.idcc }
     }
   }
 }
 
-const getOpcoFromFranceCompetences = async (siret: string): Promise<{ opco: string } | undefined> => {
+const getOpcoFromFranceCompetences = async (siret: string): Promise<{ opco: string; idcc: null } | undefined> => {
   const opcoOpt = await FCGetOpcoInfos(siret)
-  return opcoOpt ? { opco: opcoOpt } : undefined
+  return opcoOpt ? { opco: opcoOpt, idcc: null } : undefined
 }
 
-const getOpcoDataRaw = async (siret: string): Promise<{ opco: string; idcc?: string } | undefined> => {
+const getOpcoDataRaw = async (siret: string): Promise<{ opco: string; idcc: number | null } | undefined> => {
   return (await getOpcoFromCfaDock(siret)) ?? (await getOpcoFromCfaDockByIdcc(siret)) ?? (await getOpcoFromFranceCompetences(siret))
 }
 
-export const getOpcoData = async (siret: string): Promise<{ opco: string; idcc: string | null } | null> => {
+export const getOpcoData = async (siret: string): Promise<{ opco: string; idcc: number | null } | null> => {
   const siren = siret.substring(0, 9)
   const opcoFromDB = await getOpcoBySirenFromDB(siren)
   if (opcoFromDB) {
-    return { opco: opcoFromDB.opco, idcc: opcoFromDB.idcc ?? null }
+    return { opco: opcoFromDB.opco, idcc: opcoFromDB.idcc }
   }
   const entreprise = await getDbCollection("entreprises").findOne({ siret })
   if (entreprise) {
@@ -422,13 +422,13 @@ export const getOpcoData = async (siret: string): Promise<{ opco: string; idcc: 
   if (result) {
     const { opco, idcc } = result
     await saveOpco({ opco, idcc, siren })
-    return { opco, idcc: idcc ?? null }
+    return { opco, idcc }
   }
 
   return null
 }
 
-export const getOpcosData = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc?: string; siret: string }[]> => {
+export const getOpcosData = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc: number | null; siret: string }[]> => {
   const opcoFromDB = await getOpcosBySiretFromDB(sirets)
   sirets = sirets.filter((requestedSiret) => !opcoFromDB.some(({ siret }) => siret === requestedSiret))
   const opcoFromEntreprises = await getOpcosDataFromEntreprises(sirets)
@@ -445,7 +445,7 @@ export const getOpcosData = async (sirets: string[]): Promise<{ opco: OPCOS_LABE
   return [...opcoFromDB, ...opcoFromEntreprises, ...opcoFromCfaDock, ...opcoFromFranceCompetences]
 }
 
-const getOpcosDataFromEntreprises = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc?: string; siret: string }[]> => {
+const getOpcosDataFromEntreprises = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc: number | null; siret: string }[]> => {
   if (!sirets.length) {
     return []
   }
@@ -456,11 +456,11 @@ const getOpcosDataFromEntreprises = async (sirets: string[]): Promise<{ opco: OP
     if (!opco) {
       return []
     }
-    return [{ siret, opco, idcc: idcc ?? undefined }]
+    return [{ siret, opco, idcc: idcc ?? null }]
   })
 }
 
-const getOpcosDataFromCfaDock = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc?: string; siret: string }[]> => {
+const getOpcosDataFromCfaDock = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc: number | null; siret: string }[]> => {
   try {
     if (!sirets.length) {
       return []
@@ -474,7 +474,7 @@ const getOpcosDataFromCfaDock = async (sirets: string[]): Promise<{ opco: OPCOS_
         return []
       }
       const { opcoName, idcc } = result
-      return [{ siret, opco: opcoName, idcc: idcc?.toString() ?? undefined }]
+      return [{ siret, opco: opcoName, idcc: idcc ?? null }]
     })
   } catch (err) {
     captureException(err)
@@ -482,17 +482,17 @@ const getOpcosDataFromCfaDock = async (sirets: string[]): Promise<{ opco: OPCOS_
   }
 }
 
-const getOpcosDataFromFranceCompetence = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc?: string; siret: string }[]> => {
+const getOpcosDataFromFranceCompetence = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc: null; siret: string }[]> => {
   if (!sirets.length) {
     return []
   }
-  const results = [] as { opco: OPCOS_LABEL; idcc?: string; siret: string }[]
+  const results = [] as { opco: OPCOS_LABEL; idcc: null; siret: string }[]
   await asyncForEach(sirets, async (siret) => {
     try {
       const result = await getOpcoFromFranceCompetences(siret)
       const opco = parseEnum(OPCOS_LABEL, result?.opco)
       if (opco) {
-        results.push({ siret, opco })
+        results.push({ siret, opco, idcc: null })
       }
     } catch (err) {
       captureException(err)
@@ -679,9 +679,7 @@ export const entrepriseOnboardingWorkflow = {
       sentryCaptureException(err)
     }
     const entreprise = await upsertEntrepriseData(siret, origin, siretResponse, isSiretInternalError)
-    const opcoResult = await updateEntrepriseOpco(siret, { opco, idcc })
-    opco = opcoResult.opco || OPCOS_LABEL.UNKNOWN_OPCO
-    idcc = opcoResult.idcc ?? undefined
+    const opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: parseInt(idcc ?? "") || null })
 
     let validated = false
     const managingUser = await createOrganizationUser({
@@ -723,8 +721,8 @@ export const entrepriseOnboardingWorkflow = {
         first_name,
         last_name,
         phone,
-        opco: opco || OPCOS_LABEL.UNKNOWN_OPCO,
-        idcc,
+        opco: opcoResult.opco || OPCOS_LABEL.UNKNOWN_OPCO,
+        idcc: opcoResult.idcc,
         origin,
         email: formatedEmail,
         status: RECRUITER_STATUS.ACTIF,
@@ -756,7 +754,7 @@ export const entrepriseOnboardingWorkflow = {
     email: string
     cfa_delegated_siret: string
     opco?: OPCOS_LABEL
-    idcc?: string | null
+    idcc?: number | null
     managedBy: string
     origin: string
   }) => {
@@ -779,10 +777,9 @@ export const entrepriseOnboardingWorkflow = {
       sentryCaptureException(err)
     }
     const entreprise = await upsertEntrepriseData(siret, origin, siretResponse, isSiretInternalError)
+    let opcoResult: { opco: OPCOS_LABEL | null; idcc: number | null } | null = null
     if (opco) {
-      const opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: idcc ?? undefined })
-      opco = opcoResult.opco || OPCOS_LABEL.UNKNOWN_OPCO
-      idcc = opcoResult.idcc
+      opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: idcc ?? null })
     }
 
     const formulaireInfo = await createFormulaire(
@@ -797,8 +794,8 @@ export const entrepriseOnboardingWorkflow = {
         cfa_delegated_siret,
         is_delegated: true,
         origin,
-        opco: opco || OPCOS_LABEL.UNKNOWN_OPCO,
-        idcc,
+        opco: (opcoResult && opcoResult.opco) || OPCOS_LABEL.UNKNOWN_OPCO,
+        idcc: (opcoResult && opcoResult.idcc) ?? null,
         naf_label: "naf_label" in siretResponse ? siretResponse.naf_label : undefined,
         naf_code: "naf_code" in siretResponse ? siretResponse.naf_code : undefined,
       },

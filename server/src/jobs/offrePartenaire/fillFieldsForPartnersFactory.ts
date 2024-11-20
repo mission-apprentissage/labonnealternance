@@ -20,7 +20,7 @@ import { streamGroupByCount } from "@/common/utils/streamUtils"
  * La fonction doit retourner un tableau d'objet contenant l'_id du document à mettre à jour et les nouvelles valeurs à mettre à jour.
  * Les valeurs retournées seront modifiées et écraseront les anciennes données.
  */
-export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJobsPartnersOfferPrivate, FilledFields extends keyof IJobsPartnersOfferPrivate>({
+export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJobsPartnersOfferPrivate, FilledFields extends keyof IJobsPartnersOfferPrivate | "business_error">({
   job,
   sourceFields,
   filledFields,
@@ -44,6 +44,9 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
       },
       {
         $or: filledFields.map((field) => ({ [field]: null })),
+      },
+      {
+        business_error: null,
       },
     ],
   }

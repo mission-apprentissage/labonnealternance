@@ -138,6 +138,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     apply_url: urlParsing.success ? urlParsing.data : null,
     errors: [],
     validated: false,
+    business_error: null,
   }
   return partnerJob
 }

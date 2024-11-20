@@ -1,4 +1,5 @@
 import { capitalize } from "lodash-es"
+import type { ZodEnum } from "zod"
 
 import { CODE_INSEE_REGEX, CODE_NAF_REGEX, CODE_ROME_REGEX, RNCP_REGEX, SIRET_REGEX, UAI_REGEX } from "../../constants/regex"
 import { validatePhone } from "../../validators/phoneValidator"
@@ -92,7 +93,7 @@ export const extensions = {
       key: z.string().nullish(),
       content: z.array(z.string()).nullish(),
     }),
-  buildEnum: <EnumValue extends string>(enumObject: Record<string, EnumValue>) => {
+  buildEnum: <EnumValue extends string>(enumObject: Record<string, EnumValue>): ZodEnum<[EnumValue, ...EnumValue[]]> => {
     const values = Object.values(enumObject)
     if (!values.length) {
       throw new Error("inattendu : enum vide")
