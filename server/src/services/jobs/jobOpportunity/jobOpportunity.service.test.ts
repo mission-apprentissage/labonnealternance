@@ -1744,10 +1744,7 @@ describe("createJobOffer", () => {
     apply_phone: null,
 
     workplace_siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
-    // workplace_address_zipcode: null,
-    // workplace_address_city: null,
     workplace_address_label: "address",
-    // workplace_address_street_label: null,
     workplace_description: null,
     workplace_website: null,
     workplace_name: null,
@@ -1763,8 +1760,18 @@ describe("createJobOffer", () => {
       .get("/search")
       .query({ q: "20 AVENUE DE SEGUR, 75007 PARIS", limit: "1" })
       .reply(200, {
-        features: [{ geometry: parisFixture.centre }],
+        features: [
+          {
+            geometry: parisFixture.centre,
+            properties: {
+              city: parisFixture.nom,
+              postcode: parisFixture.codesPostaux[0],
+              name: "20 AVENUE DE SEGUR",
+            },
+          },
+        ],
       })
+      .persist()
 
     await getDbCollection("opcos").insertOne({
       _id: new ObjectId(),
@@ -1818,17 +1825,23 @@ describe("createJobOffer", () => {
   it('should get workplace location from given "workplace_address_*" fields', async () => {
     nock("https://api-adresse.data.gouv.fr:443")
       .get("/search")
-      .query({ q: "1T impasse Passoir 92110 Clichy", limit: "1" })
+      .query({ q: "1T IMPASSE PASSOIR CLICHY", limit: "1" })
       .reply(200, {
-        features: [{ geometry: clichyFixture.centre }],
+        features: [
+          {
+            geometry: clichyFixture.centre,
+            properties: {
+              city: clichyFixture.nom,
+              postcode: clichyFixture.codesPostaux[0],
+              name: "1T impasse Passoir",
+            },
+          },
+        ],
       })
 
     const result = await createJobOffer(identity, {
       ...minimalData,
       workplace_address_label: "1T impasse Passoir Clichy",
-      // workplace_address_street_label: "1T impasse Passoir",
-      // workplace_address_city: "Clichy",
-      // workplace_address_zipcode: clichyFixture.codesPostaux[0],
     })
     expect(result).toBeInstanceOf(ObjectId)
 
@@ -1906,8 +1919,18 @@ describe("updateJobOffer", () => {
       .get("/search")
       .query({ q: "20 AVENUE DE SEGUR, 75007 PARIS", limit: "1" })
       .reply(200, {
-        features: [{ geometry: parisFixture.centre }],
+        features: [
+          {
+            geometry: parisFixture.centre,
+            properties: {
+              city: parisFixture.nom,
+              postcode: parisFixture.codesPostaux[0],
+              name: "20 AVENUE DE SEGUR",
+            },
+          },
+        ],
       })
+      .persist()
 
     await getDbCollection("jobs_partners").insertOne(originalJob)
 
@@ -1963,7 +1986,7 @@ describe("updateJobOffer", () => {
   it('should get workplace location from given "workplace_address_label" fields', async () => {
     nock("https://api-adresse.data.gouv.fr:443")
       .get("/search")
-      .query({ q: "1T impasse Passoir Clichy", limit: "1" })
+      .query({ q: "1T IMPASSE PASSOIR CLICHY", limit: "1" })
       .reply(200, {
         features: [
           {

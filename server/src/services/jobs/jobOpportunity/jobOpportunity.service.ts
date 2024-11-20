@@ -230,9 +230,9 @@ export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }
       ...filterStages,
       {
         $project: {
-          worplace_address_city: 0,
-          worplace_address_zipcode: 0,
-          worplace_address_street_label: 0,
+          workplace_address_city: 0,
+          workplace_address_zipcode: 0,
+          workplace_address_street_label: 0,
         },
       },
       {
@@ -627,23 +627,14 @@ type InvariantFields = "_id" | "created_at" | "partner_label"
 async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAlternanceTokenData, current: IJobsPartnersOfferPrivate | null): Promise<ObjectId> {
   const zodError = new ZodError([])
 
-  const {
-    offer_creation,
-    offer_expiration,
-    offer_rome_codes,
-    offer_status,
-    offer_target_diploma_european,
-    workplace_address_label,
-    // workplace_address_street_label,
-    // workplace_address_city,
-    // workplace_address_zipcode,
-    ...rest
-  } = data
+  const { offer_creation, offer_expiration, offer_rome_codes, offer_status, offer_target_diploma_european, workplace_address_label, ...rest } = data
 
   const [siretData, addressData] = await Promise.all([
     resolveWorkplaceDataFromSiret(data.workplace_siret as string, zodError),
     resolveWorkplaceGeoLocationFromAddress(workplace_address_label!, zodError),
   ])
+
+  console.log(siretData, addressData)
 
   const romeCode = await resolveRomeCodes(data, siretData, zodError)
 

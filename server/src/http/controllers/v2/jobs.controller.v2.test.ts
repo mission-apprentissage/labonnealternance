@@ -309,9 +309,18 @@ describe("POST /jobs", async () => {
 
     nock("https://api-adresse.data.gouv.fr:443")
       .get("/search")
-      .query({ q: "20 AVENUE DE SEGUR, 75007 PARIS", limit: "1" })
+      .query({ q: "20 AVENUE DE SEGUR, 75007 Paris", limit: "1" })
       .reply(200, {
-        features: [{ geometry: parisFixture.centre }],
+        features: [
+          {
+            geometry: parisFixture.centre,
+            properties: {
+              city: parisFixture.nom,
+              postcode: parisFixture.codesPostaux[0],
+              name: "20 AVENUE DE SEGUR",
+            },
+          },
+        ],
       })
       .persist()
 
@@ -445,16 +454,34 @@ describe("PUT /jobs/:id", async () => {
 
     nock("https://api-adresse.data.gouv.fr:443")
       .get("/search")
-      .query({ q: "75007 PARIS", limit: "1" })
+      .query({ q: "75007 Paris", limit: "1" })
       .reply(200, {
-        features: [{ geometry: parisFixture.centre }],
+        features: [
+          {
+            geometry: parisFixture.centre,
+            properties: {
+              city: parisFixture.nom,
+              postcode: parisFixture.codesPostaux[0],
+              name: null,
+            },
+          },
+        ],
       })
 
     nock("https://api-adresse.data.gouv.fr:443")
       .get("/search")
-      .query({ q: "20 AVENUE DE SEGUR, 75007 PARIS", limit: "1" })
+      .query({ q: "20 AVENUE DE SEGUR, 75007 Paris", limit: "1" })
       .reply(200, {
-        features: [{ geometry: parisFixture.centre }],
+        features: [
+          {
+            geometry: parisFixture.centre,
+            properties: {
+              city: parisFixture.nom,
+              postcode: parisFixture.codesPostaux[0],
+              name: "20 AVENUE DE SEGUR",
+            },
+          },
+        ],
       })
 
     await getDbCollection("opcos").insertOne({
