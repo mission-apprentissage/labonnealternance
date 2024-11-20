@@ -543,7 +543,7 @@ export async function findJobsOpportunities(payload: IJobOpportunityGetQuery, co
     }
     return parsedJob.success
   })
-  const recruiters = convertLbaCompanyToJobPartnerRecruiterApi(recruterLba).filter((recruteur) => {
+  const recruiters = convertLbaCompanyToJobPartnerRecruiterApi(recruteurLba).filter((recruteur) => {
     const parsedRecruiter = ZJobsPartnersRecruiterApi.safeParse(recruteur)
     if (!parsedRecruiter.success) {
       const error = internal("jobOpportunity.service.ts-findJobsOpportunities: invalid recruiter", { recruteur, error: parsedRecruiter.error.format() })
