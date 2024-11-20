@@ -213,9 +213,7 @@ export const getGeoPoint = async (adresse: string): Promise<IGeoPoint> => {
 export const getGeoFeature = async (adresse: string): Promise<IFeature> => {
   try {
     const response: AxiosResponse<IAPIAdresse> = await getHttpClient().get(`https://api-adresse.data.gouv.fr/search?q=${encodeURIComponent(adresse.toUpperCase())}&limit=1`)
-    console.log(response.data)
     const firstFeature = response.data?.features.at(0)
-    console.log(firstFeature)
     if (!firstFeature) {
       throw internal("getGeoPoint: addresse non trouvée", { adresse })
     }

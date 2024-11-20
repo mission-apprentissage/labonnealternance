@@ -14,10 +14,7 @@ type IJobWorkplaceApiExpected = {
   workplace_name: string | null
   workplace_description: string | null
   workplace_size: string | null
-  // workplace_address_city: string | null
-  // workplace_address_zipcode: string | null
   workplace_address_label: string
-  // workplace_address_street_label: string | null
   workplace_geopoint: {
     type: "Point"
     coordinates: [number, number]
@@ -94,10 +91,7 @@ type IJobOfferApiWritableExpected = {
   workplace_name: string | null
   workplace_website: string | null
   workplace_description: string | null
-  // workplace_address_city: string | null
-  // workplace_address_zipcode: string | null
   workplace_address_label: string | null
-  // workplace_address_street_label: string | null
 }
 
 type IJobOfferWritableInputExpected = {
@@ -130,10 +124,7 @@ type IJobOfferWritableInputExpected = {
   workplace_name?: string | null | undefined
   workplace_website?: string | null | undefined
   workplace_description?: string | null | undefined
-  // workplace_address_city?: string | null | undefined
-  // workplace_address_zipcode?: string | null | undefined
   workplace_address_label?: string | null | undefined
-  // workplace_address_street_label?: string | null | undefined
 }
 
 describe("IJobRecruiterExpected", () => {
