@@ -171,9 +171,6 @@ describe("GET /jobs/search", () => {
       "partner_job_id",
       "partner_label",
       "workplace_address_label",
-      "workplace_address_street_label",
-      "workplace_address_city",
-      "workplace_address_zipcode",
       "workplace_brand",
       "workplace_description",
       "workplace_geopoint",
@@ -193,9 +190,6 @@ describe("GET /jobs/search", () => {
       "apply_phone",
       "apply_url",
       "workplace_address_label",
-      "workplace_address_street_label",
-      "workplace_address_city",
-      "workplace_address_zipcode",
       "workplace_brand",
       "workplace_description",
       "workplace_geopoint",
@@ -302,7 +296,7 @@ describe("POST /jobs", async () => {
 
     apply_email: "mail@mail.com",
 
-    workplace_address_label: "adresse",
+    workplace_address_label: "20 AVENUE DE SEGUR, 75007 PARIS",
     workplace_siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
   }
 
@@ -319,6 +313,7 @@ describe("POST /jobs", async () => {
       .reply(200, {
         features: [{ geometry: parisFixture.centre }],
       })
+      .persist()
 
     await getDbCollection("opcos").insertOne({
       _id: new ObjectId(),
@@ -436,7 +431,7 @@ describe("PUT /jobs/:id", async () => {
     offer_description: "Envie de devenir développeur web ? Rejoignez-nous !",
 
     apply_email: "mail@mail.com",
-    workplace_address_label: "adresse",
+    workplace_address_label: "75007 PARIS",
 
     workplace_siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
   }
@@ -447,6 +442,13 @@ describe("PUT /jobs/:id", async () => {
     vi.setSystemTime(now)
 
     vi.mocked(getEtablissementFromGouvSafe).mockResolvedValue(apiEntrepriseEtablissementFixture.dinum)
+
+    nock("https://api-adresse.data.gouv.fr:443")
+      .get("/search")
+      .query({ q: "75007 PARIS", limit: "1" })
+      .reply(200, {
+        features: [{ geometry: parisFixture.centre }],
+      })
 
     nock("https://api-adresse.data.gouv.fr:443")
       .get("/search")

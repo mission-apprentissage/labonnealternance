@@ -54,6 +54,7 @@ describe("findJobsOpportunities", () => {
       rome_codes: ["M1602"],
       geopoint: parisFixture.centre,
       insee_city_code: parisFixture.code,
+      city: parisFixture.nom,
       phone: "0100000000",
       last_update_at: new Date("2021-01-01"),
     }),
@@ -63,6 +64,7 @@ describe("findJobsOpportunities", () => {
       rome_codes: ["M1602", "D1212"],
       geopoint: marseilleFixture.centre,
       insee_city_code: marseilleFixture.code,
+      city: marseilleFixture.nom,
       phone: "0200000000",
       last_update_at: new Date("2022-01-01"),
     }),
@@ -73,6 +75,7 @@ describe("findJobsOpportunities", () => {
       rome_codes: ["D1211"],
       geopoint: levalloisFixture.centre,
       insee_city_code: levalloisFixture.code,
+      city: levalloisFixture.nom,
       phone: "0100000001",
       last_update_at: new Date("2023-01-01"),
     }),
@@ -1815,7 +1818,7 @@ describe("createJobOffer", () => {
   it('should get workplace location from given "workplace_address_*" fields', async () => {
     nock("https://api-adresse.data.gouv.fr:443")
       .get("/search")
-      .query({ q: "1T impasse Passoir Clichy", limit: "1" })
+      .query({ q: "1T impasse Passoir 92110 Clichy", limit: "1" })
       .reply(200, {
         features: [{ geometry: clichyFixture.centre }],
       })
@@ -1963,7 +1966,7 @@ describe("updateJobOffer", () => {
   it('should get workplace location from given "workplace_address_*" fields', async () => {
     nock("https://api-adresse.data.gouv.fr:443")
       .get("/search")
-      .query({ q: "1T impasse Passoir Clichy", limit: "1" })
+      .query({ q: "1T impasse Passoir 92110 Clichy", limit: "1" })
       .reply(200, {
         features: [{ geometry: clichyFixture.centre }],
       })
