@@ -24,6 +24,8 @@ dayjs.extend(advancedFormat)
 dayjs.extend(isYesterday)
 dayjs.extend(localizedFormat)
 
+dayjs.tz.setDefault("Europe/Paris")
+
 export type TDayjs = dayjs.Dayjs
 
 export default dayjs

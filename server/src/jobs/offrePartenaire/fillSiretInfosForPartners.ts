@@ -1,5 +1,5 @@
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { isEnum } from "shared/utils"
 
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
@@ -21,6 +21,7 @@ export const fillSiretInfosForPartners = async () => {
     "workplace_naf_label",
     "workplace_brand",
     "workplace_legal_name",
+    "business_error",
   ] as const satisfies (keyof IComputedJobsPartners)[]
   return fillFieldsForPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.API_SIRET,
@@ -32,6 +33,7 @@ export const fillSiretInfosForPartners = async () => {
       const { workplace_siret: siret } = document
 
       const response = await getSiretInfos(siret)
+
       if (!response) {
         return []
       }
@@ -42,6 +44,8 @@ export const fillSiretInfosForPartners = async () => {
       const { data } = response
       const { establishment_enseigne, establishment_raison_sociale, naf_code, naf_label, geo_coordinates, establishment_size, address, address_detail } = formatEntrepriseData(data)
       const address_street_label = addressDetailToStreetLabel(address_detail)
+
+      const business_error = data?.etat_administratif === "F" ? JOB_PARTNER_BUSINESS_ERROR.CLOSED_COMPANY : null
 
       const result: Pick<IComputedJobsPartners, (typeof filledFields)[number]> = {
         workplace_size: document.workplace_size ?? establishment_size,
@@ -55,6 +59,7 @@ export const fillSiretInfosForPartners = async () => {
         workplace_address_city: document.workplace_address_city ?? address_detail?.libelle_commune ?? null,
         workplace_address_zipcode: document.workplace_address_zipcode ?? address_detail?.code_postal ?? null,
         workplace_geopoint: document.workplace_geopoint ?? (geo_coordinates ? convertStringCoordinatesToGeoPoint(geo_coordinates) : null),
+        business_error,
       }
 
       return [result]

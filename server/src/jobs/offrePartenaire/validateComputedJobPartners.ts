@@ -15,7 +15,7 @@ export const validateComputedJobPartners = async () => {
   logger.info(`${toUpdateCount} documents à traiter`)
   const counters = { total: 0, success: 0, error: 0 }
   await oleoduc(
-    getDbCollection("computed_jobs_partners").find({}).stream(),
+    getDbCollection("computed_jobs_partners").find({ business_error: null }).stream(),
     streamGroupByCount(groupSize),
     writeData(
       async (documents: IComputedJobsPartners[]) => {
@@ -27,6 +27,7 @@ export const validateComputedJobPartners = async () => {
         const pushOperations: Operation[] = []
         documents.map((document) => {
           const { success: validated, error } = zodModel.safeParse(document)
+
           setOperations.push({
             updateOne: {
               filter: { _id: document._id },

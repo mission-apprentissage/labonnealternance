@@ -12,6 +12,7 @@ import {
   IJobsPartnersWritableApi,
   INiveauDiplomeEuropeen,
   JOBPARTNERS_LABEL,
+  ZJobsPartnersOfferApi,
   ZJobsPartnersRecruiterApi,
 } from "shared/models/jobsPartners.model"
 import { zOpcoLabel } from "shared/models/opco.model"
@@ -22,6 +23,7 @@ import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { getRomeFromRomeo } from "@/services/cache.service"
 import { getEntrepriseDataFromSiret, getGeoFeature, getOpcoData } from "@/services/etablissement.service"
 
+import { logger } from "../../../common/logger"
 import { IApiError } from "../../../common/utils/errorManager"
 import { getDbCollection } from "../../../common/utils/mongodbUtils"
 import { trackApiCall } from "../../../common/utils/sendTrackingEvent"
@@ -531,9 +533,30 @@ export async function findJobsOpportunities(payload: IJobOpportunityGetQuery, co
     findFranceTravailOpportunities(resolvedQuery, context),
   ])
 
+  const jobs = [...offreEmploiLba, ...franceTravail, ...offreEmploiPartenaire].filter((job) => {
+    const parsedJob = ZJobsPartnersOfferApi.safeParse(job)
+    if (!parsedJob.success) {
+      const error = internal("jobOpportunity.service.ts-findJobsOpportunities: invalid job offer", { job, error: parsedJob.error.format() })
+      logger.error(error)
+      context.addWarning("JOB_OFFER_FORMATING_ERROR")
+      sentryCaptureException(error)
+    }
+    return parsedJob.success
+  })
+  const recruiters = convertLbaCompanyToJobPartnerRecruiterApi(recruterLba).filter((recruteur) => {
+    const parsedRecruiter = ZJobsPartnersRecruiterApi.safeParse(recruteur)
+    if (!parsedRecruiter.success) {
+      const error = internal("jobOpportunity.service.ts-findJobsOpportunities: invalid recruiter", { recruteur, error: parsedRecruiter.error.format() })
+      logger.error(error)
+      context.addWarning("RECRUITERS_FORMATING_ERROR")
+      sentryCaptureException(error)
+    }
+    return parsedRecruiter.success
+  })
+
   return {
-    jobs: [...offreEmploiLba, ...franceTravail, ...offreEmploiPartenaire],
-    recruiters: convertLbaCompanyToJobPartnerRecruiterApi(recruteurLba),
+    jobs,
+    recruiters,
     warnings: context.getWarnings(),
   }
 }

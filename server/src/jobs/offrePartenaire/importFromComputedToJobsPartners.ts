@@ -12,7 +12,10 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 
 export const importFromComputedToJobsPartners = async () => {
-  const stream = await getDbCollection("computed_jobs_partners").find({ validated: true }).project({ _id: 0, validated: 0, errors: 0 }).stream()
+  const stream = await getDbCollection("computed_jobs_partners")
+    .find({ validated: true, business_error: null })
+    .project({ _id: 0, validated: 0, business_error: 0, errors: 0 })
+    .stream()
 
   const counters = { total: 0, success: 0, error: 0 }
   const importDate = new Date()

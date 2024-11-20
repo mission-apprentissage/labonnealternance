@@ -80,7 +80,7 @@ export const zFormulaireRoute = {
           first_name: z.string(),
           phone: z.string(),
           opco: z.string().optional(),
-          idcc: z.string().nullish().optional(),
+          idcc: z.number().nullish().optional(),
         })
         .strict(),
       response: {
@@ -191,7 +191,6 @@ export const zFormulaireRoute = {
         rome_appellation_label: true,
         rome_code: true,
         job_level_label: true,
-        job_description: true,
         job_status: true,
         job_type: true,
         delegations: true,
@@ -223,7 +222,7 @@ export const zFormulaireRoute = {
       path: "/formulaire/offre/:jobId/cancel",
       params: z.object({ jobId: zObjectId }).strict(),
       response: {
-        "2xx": z.object({}).strict(),
+        "200": z.object({}).strict(),
       },
       securityScheme: {
         auth: "access-token",

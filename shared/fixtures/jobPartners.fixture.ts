@@ -64,6 +64,7 @@ export function generateComputedJobsPartnersFixture(data: Partial<IComputedJobsP
   return {
     errors: [],
     validated: false,
+    business_error: null,
     _id: new ObjectId(),
     workplace_siret: null,
     workplace_website: null,

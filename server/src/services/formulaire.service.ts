@@ -191,9 +191,15 @@ export const getOffreAvecInfoMandataire = async (id: string | ObjectId): Promise
  * @param {number} payload.page
  * @param {number} payload.limit
  */
-export const getFormulaires = async (query: Filter<IRecruiter>, select: object, { page, limit }: { page?: number; limit?: number }) => {
-  const response = getDbCollection("recruiters").find({ query }, { projection: select })
-  const data = page && limit ? await response.skip(page).limit(limit).toArray() : await response.toArray()
+export const getFormulaires = async (query: Filter<IRecruiter>, select: object, { page = 1, limit = 10 }: { page?: number; limit?: number }) => {
+  const response = await getDbCollection("recruiters").find(query, { projection: select })
+  const data =
+    page && limit
+      ? await response
+          .skip(page > 0 ? (page - 1) * limit : 0)
+          .limit(limit)
+          .toArray()
+      : await response.toArray()
   const total = await getDbCollection("recruiters").countDocuments(query)
   const number_of_page = limit ? Math.ceil(total / limit) : undefined
   return {
@@ -465,6 +471,9 @@ export const archiveFormulaireByEstablishmentId = async (id: IRecruiter["establi
 export const archiveFormulaire = async (recruiter: IRecruiter) => {
   recruiter.status = RECRUITER_STATUS.ARCHIVE
   recruiter.jobs.map((job) => {
+    if (job.job_status !== JOB_STATUS.ANNULEE) {
+      job.job_expiration_date = new Date()
+    }
     job.job_status = JOB_STATUS.ANNULEE
   })
   await getDbCollection("recruiters").findOneAndUpdate({ _id: recruiter._id }, { $set: { ...recruiter, updatedAt: new Date() } })
@@ -618,12 +627,14 @@ export const provideOffre = async (id: IJob["_id"]): Promise<boolean> => {
  * @returns {Promise<boolean>}
  */
 export const cancelOffre = async (id: IJob["_id"]): Promise<boolean> => {
+  const now = new Date()
   await getDbCollection("recruiters").findOneAndUpdate(
     { "jobs._id": id },
     {
       $set: {
         "jobs.$.job_status": JOB_STATUS.ANNULEE,
-        "jobs.$.job_update_date": new Date(),
+        "jobs.$.job_update_date": now,
+        "jobs.$.job_expiration_date": now,
       },
     }
   )
@@ -636,13 +647,15 @@ export const cancelOffre = async (id: IJob["_id"]): Promise<boolean> => {
  * @returns {Promise<boolean>}
  */
 export const cancelOffreFromAdminInterface = async (id: IJob["_id"], { job_status, job_status_comment }): Promise<boolean> => {
+  const now = new Date()
   await getDbCollection("recruiters").findOneAndUpdate(
     { "jobs._id": id },
     {
       $set: {
         "jobs.$[elem].job_status": job_status,
         "jobs.$[elem].job_status_comment": job_status_comment,
-        "jobs.$[elem].job_update_date": new Date(),
+        "jobs.$[elem].job_update_date": now,
+        "jobs.$[elem].job_expiration_date": now,
       },
     },
     { arrayFilters: [{ "elem._id": id }] }

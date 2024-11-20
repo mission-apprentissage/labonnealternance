@@ -1,25 +1,38 @@
 import { internal } from "@hapi/boom"
 import axios from "axios"
 import { ObjectId } from "mongodb"
-import { IRawRHAlternance } from "shared/models/rawRHAlternance.model"
+import { TRAINING_CONTRACT_TYPE } from "shared/constants"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import rawRHAlternanceModel, { IRawRHAlternance } from "shared/models/rawRHAlternance.model"
 import { z } from "zod"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
+import dayjs from "@/services/dayjs.service"
+
+import { rawToComputedJobsPartners } from "./rawToComputedJobsPartners"
+
+const ZRawRHAlternanceJob = rawRHAlternanceModel.zod.shape.job
 
 const ZRHAlternanceResponse = z
   .object({
-    jobs: z.array(z.unknown()),
+    jobs: z.array(ZRawRHAlternanceJob),
     pageCount: z.number(),
   })
   .passthrough()
 
-const destinationCollection = "raw_rhalternance"
+const rawCollectionName = rawRHAlternanceModel.collectionName
 
 export const importRHAlternance = async () => {
+  await importRaw()
+  await rawToComputed()
+}
+
+const importRaw = async () => {
   logger.info("deleting old data")
-  await getDbCollection(destinationCollection).deleteMany({})
+  await getDbCollection(rawCollectionName).deleteMany({})
   logger.info("import starting...")
 
   let shouldContinue = true
@@ -46,7 +59,7 @@ export const importRHAlternance = async () => {
     }
     const savedJobs: IRawRHAlternance[] = parsed.data.jobs.map((job) => ({ job, createdAt: importDate, _id: new ObjectId() }))
     if (savedJobs.length) {
-      await getDbCollection(destinationCollection).insertMany(savedJobs)
+      await getDbCollection(rawCollectionName).insertMany(savedJobs)
       currentPage++
       pageCount = parsed.data.pageCount
     } else {
@@ -56,3 +69,56 @@ export const importRHAlternance = async () => {
   }
   logger.info(`import done: ${jobCount} jobs imported`)
 }
+
+const rawToComputed = async () => {
+  const now = new Date()
+  await rawToComputedJobsPartners({
+    collectionSource: rawCollectionName,
+    partnerLabel: JOBPARTNERS_LABEL.RH_ALTERNANCE,
+    zodInput: ZRawRHAlternanceJob,
+    mapper: rawRhAlternanceToComputedMapper(now),
+    documentJobRoot: "job",
+  })
+}
+
+export const rawRhAlternanceToComputedMapper =
+  (now: Date) =>
+  ({
+    jobCode,
+    companyAddress,
+    companyName,
+    companySiret,
+    companyUrl,
+    jobTitle,
+    jobDescription,
+    jobSubmitDateTime,
+    jobType,
+    jobUrl,
+  }: IRawRHAlternance["job"]): IComputedJobsPartners => {
+    const offer_creation = jobSubmitDateTime ? dayjs.tz(jobSubmitDateTime).toDate() : now
+    const isValid: boolean = jobType === "Alternance"
+    const computedJob: IComputedJobsPartners = {
+      partner_job_id: jobCode,
+      partner_label: JOBPARTNERS_LABEL.RH_ALTERNANCE,
+      contract_type: jobType === "Alternance" ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION] : [],
+      offer_title: jobTitle,
+      offer_description:
+        (jobDescription ?? [])
+          .map(({ descriptionHeadline, descriptionText }) => [descriptionHeadline, descriptionText].join(" : "))
+          .filter((line) => line.length)
+          .join("\n") || null,
+      offer_creation,
+      offer_expiration: dayjs.tz(offer_creation).add(60, "days").toDate(),
+      offer_opening_count: 1,
+      offer_multicast: true,
+      workplace_siret: companySiret,
+      workplace_name: companyName,
+      workplace_website: companyUrl,
+      workplace_address_label: companyAddress,
+      apply_url: jobUrl,
+      errors: [],
+      validated: false,
+      business_error: isValid ? null : `expected jobType === "Alternance" but got ${jobType}`,
+    }
+    return computedJob
+  }
