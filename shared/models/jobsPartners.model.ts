@@ -2,7 +2,6 @@ import { z } from "zod"
 
 import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { joinNonNullStrings } from "../utils"
 
 import { ZPointGeometry } from "./address.model"
 import { IModelDescriptor, zObjectId } from "./common"
@@ -167,10 +166,7 @@ const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
     .describe("Status de l'offre (surtout utilisé pour les offres ajouté par API)"),
 
   workplace_siret: extensions.siret,
-  workplace_address_city: z.string().nullable().default(null),
-  workplace_address_zipcode: extensions.zipCode().nullable().default(null),
   workplace_address_label: z.string().nullable().default(null),
-  workplace_address_street_label: z.string().nullable().default(null),
   apply_url: ZJobsPartnersOfferApi.shape.apply_url.nullable().default(null),
   apply_phone: extensions.telephone.nullable().describe("Téléphone de contact").default(null),
 })
@@ -187,34 +183,35 @@ export const ZJobsPartnersWritableApi = ZJobsPartnersPostApiBodyBase.superRefine
     })
   }
 
-  if (data.workplace_address_street_label != null) {
-    if (data.workplace_address_zipcode == null) {
-      ctx.addIssue({
-        code: "custom",
-        message: "When workplace_address_street_label is provided then workplace_address_zipcode is required",
-        path: ["workplace_address_zipcode"],
-      })
-    }
-    if (data.workplace_address_city == null) {
-      ctx.addIssue({
-        code: "custom",
-        message: "When workplace_address_street_label is provided then workplace_address_city is required",
-        path: ["workplace_address_city"],
-      })
-    }
-  }
+  // TODO: useless car conservation uniquement de workplace_address_label
+  // if (data.workplace_address_street_label != null) {
+  //   if (data.workplace_address_zipcode == null) {
+  //     ctx.addIssue({
+  //       code: "custom",
+  //       message: "When workplace_address_street_label is provided then workplace_address_zipcode is required",
+  //       path: ["workplace_address_zipcode"],
+  //     })
+  //   }
+  //   if (data.workplace_address_city == null) {
+  //     ctx.addIssue({
+  //       code: "custom",
+  //       message: "When workplace_address_street_label is provided then workplace_address_city is required",
+  //       path: ["workplace_address_city"],
+  //     })
+  //   }
+  // }
 
-  if (data.workplace_address_city != null || data.workplace_address_zipcode != null) {
-    if (data.workplace_address_label != null) {
-      ctx.addIssue({
-        code: "custom",
-        message: "workplace_address_label is not allowed when address is provided via detailed fields",
-        path: ["workplace_address_label"],
-      })
-    }
+  // if (data.workplace_address_city != null || data.workplace_address_zipcode != null) {
+  //   if (data.workplace_address_label != null) {
+  //     ctx.addIssue({
+  //       code: "custom",
+  //       message: "workplace_address_label is not allowed when address is provided via detailed fields",
+  //       path: ["workplace_address_label"],
+  //     })
+  //   }
 
-    data.workplace_address_label = joinNonNullStrings([data.workplace_address_street_label, data.workplace_address_zipcode, data.workplace_address_city])
-  }
+  //   data.workplace_address_label = joinNonNullStrings([data.workplace_address_street_label, data.workplace_address_zipcode, data.workplace_address_city])
+  // }
 
   return data
 })

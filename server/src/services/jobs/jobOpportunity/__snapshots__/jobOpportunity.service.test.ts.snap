@@ -151,7 +151,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
       ],
       "type": "Point",
     },
-    "workplace_idcc": null,ue de l'
+    "workplace_idcc": null,
     "workplace_legal_name": null,
     "workplace_naf_code": null,
     "workplace_naf_label": null,

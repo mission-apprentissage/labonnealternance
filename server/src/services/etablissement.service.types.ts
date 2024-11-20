@@ -111,7 +111,7 @@ export interface IAPIAdresse {
   limit: number
 }
 
-interface IFeature {
+export interface IFeature {
   type: string
   geometry: IGeometry
   properties: IProperties

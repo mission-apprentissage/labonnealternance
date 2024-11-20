@@ -51,7 +51,7 @@ import { getCatalogueEtablissements } from "./catalogue.service"
 import { upsertCfa } from "./cfa.service"
 import { fetchOpcosFromCFADock } from "./cfadock.service"
 import dayjs from "./dayjs.service"
-import { IAPIAdresse, ICFADock, IFormatAPIEntreprise, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types"
+import { IAPIAdresse, ICFADock, IFeature, IFormatAPIEntreprise, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types"
 import { createFormulaire, getFormulaire } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getOpcoBySirenFromDB, getOpcosBySiretFromDB, insertOpcos, saveOpco } from "./opco.service"
@@ -205,6 +205,27 @@ export const getGeoPoint = async (adresse: string): Promise<IGeoPoint> => {
       throw error
     }
     const newError = internal(`getGeoPoint: erreur de récupération des geo coordonnées`, { adresse })
+    newError.cause = error
+    throw newError
+  }
+}
+
+export const getGeoFeature = async (adresse: string): Promise<IFeature> => {
+  try {
+    const response: AxiosResponse<IAPIAdresse> = await getHttpClient().get(`https://api-adresse.data.gouv.fr/search?q=${encodeURIComponent(adresse)}&limit=1`)
+    console.log(response.data)
+    const firstFeature = response.data?.features.at(0)
+    console.log(firstFeature)
+    if (!firstFeature) {
+      throw internal("getGeoPoint: addresse non trouvée", { adresse })
+    }
+
+    return firstFeature
+  } catch (error: any) {
+    if (isBoom(error)) {
+      throw error
+    }
+    const newError = internal(`getGeoFeature: erreur de récupération des geo coordonnées`, { adresse })
     newError.cause = error
     throw newError
   }

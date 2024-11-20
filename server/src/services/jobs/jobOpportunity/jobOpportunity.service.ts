@@ -2,7 +2,7 @@ import { badRequest, conflict, internal, notFound } from "@hapi/boom"
 import { IApiAlternanceTokenData } from "api-alternance-sdk"
 import { DateTime } from "luxon"
 import { Document, Filter, ObjectId } from "mongodb"
-import { IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS_ENGLISH, assertUnreachable, joinNonNullStrings, parseEnum, translateJobStatus } from "shared"
+import { IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS_ENGLISH, ZPointGeometry, assertUnreachable, joinNonNullStrings, parseEnum, translateJobStatus } from "shared"
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import {
@@ -20,7 +20,7 @@ import { ZodError } from "zod"
 
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { getRomeFromRomeo } from "@/services/cache.service"
-import { getEntrepriseDataFromSiret, getGeoPoint, getOpcoData } from "@/services/etablissement.service"
+import { getEntrepriseDataFromSiret, getGeoFeature, getOpcoData } from "@/services/etablissement.service"
 
 import { IApiError } from "../../../common/utils/errorManager"
 import { getDbCollection } from "../../../common/utils/mongodbUtils"
@@ -228,6 +228,13 @@ export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }
   const jobsPartners = await getDbCollection("jobs_partners")
     .aggregate<IJobsPartnersOfferPrivate>([
       ...filterStages,
+      {
+        $project: {
+          worplace_address_city: 0,
+          worplace_address_zipcode: 0,
+          worplace_address_street_label: 0,
+        },
+      },
       {
         $limit: 150,
       },
@@ -517,7 +524,7 @@ async function resolveQuery(query: IJobOpportunityGetQuery): Promise<IJobOpportu
 export async function findJobsOpportunities(payload: IJobOpportunityGetQuery, context: JobOpportunityRequestContext): Promise<IJobsOpportunityResponse> {
   const resolvedQuery = await resolveQuery(payload)
 
-  const [recruterLba, offreEmploiLba, offreEmploiPartenaire, franceTravail] = await Promise.all([
+  const [recruteurLba, offreEmploiLba, offreEmploiPartenaire, franceTravail] = await Promise.all([
     getRecruteursLbaFromDB(resolvedQuery),
     findLbaJobOpportunities(resolvedQuery),
     getJobsPartnersFromDB(resolvedQuery),
@@ -526,34 +533,30 @@ export async function findJobsOpportunities(payload: IJobOpportunityGetQuery, co
 
   return {
     jobs: [...offreEmploiLba, ...franceTravail, ...offreEmploiPartenaire],
-    recruiters: convertLbaCompanyToJobPartnerRecruiterApi(recruterLba),
+    recruiters: convertLbaCompanyToJobPartnerRecruiterApi(recruteurLba),
     warnings: context.getWarnings(),
   }
 }
 
-type WorkplaceAddressData = Pick<IJobsPartnersOfferApi, "workplace_geopoint">
+type WorkplaceAddressData = Pick<IJobsPartnersOfferPrivate, "workplace_geopoint" | "workplace_address_city" | "workplace_address_zipcode" | "workplace_address_street_label">
 
-async function resolveWorkplaceGeoLocationFromAddress(
-  workplace_address_label: string | null,
-  workplace_address_street_label: string | null,
-  workplace_address_city: string | null,
-  workplace_address_zipcode: string | null,
-  zodError: ZodError
-): Promise<WorkplaceAddressData | null> {
-  const consolidatedAddress = joinNonNullStrings([workplace_address_street_label, workplace_address_zipcode, workplace_address_city])
-  if (workplace_address_label === null && consolidatedAddress === null) {
+async function resolveWorkplaceGeoLocationFromAddress(workplace_address_label: string, zodError: ZodError): Promise<WorkplaceAddressData | null> {
+  if (workplace_address_label === null) {
     return null
   }
 
-  const geopoint = await getGeoPoint((consolidatedAddress || workplace_address_label)!)
+  const geoFeature = await getGeoFeature(workplace_address_label)
 
-  if (!geopoint) {
+  if (!geoFeature) {
     zodError.addIssue({ code: "custom", path: ["workplace_geopoint"], message: "Cannot resolve geo-coordinates for the given address" })
     return null
   }
 
   return {
-    workplace_geopoint: geopoint,
+    workplace_geopoint: ZPointGeometry.parse(geoFeature.geometry),
+    workplace_address_city: geoFeature.properties.city,
+    workplace_address_zipcode: geoFeature.properties.postcode,
+    workplace_address_street_label: geoFeature.properties.name,
   }
 }
 
@@ -631,15 +634,15 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAlte
     offer_status,
     offer_target_diploma_european,
     workplace_address_label,
-    workplace_address_street_label,
-    workplace_address_city,
-    workplace_address_zipcode,
+    // workplace_address_street_label,
+    // workplace_address_city,
+    // workplace_address_zipcode,
     ...rest
   } = data
 
   const [siretData, addressData] = await Promise.all([
     resolveWorkplaceDataFromSiret(data.workplace_siret as string, zodError),
-    resolveWorkplaceGeoLocationFromAddress(workplace_address_label, workplace_address_street_label, workplace_address_city, workplace_address_zipcode, zodError),
+    resolveWorkplaceGeoLocationFromAddress(workplace_address_label!, zodError),
   ])
 
   const romeCode = await resolveRomeCodes(data, siretData, zodError)
@@ -681,9 +684,9 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAlte
     // Data derived from workplace_address take priority over workplace_siret
     ...siretData,
     workplace_address_label: workplace_address_label ?? siretData?.workplace_address_label,
-    workplace_address_city: workplace_address_city ?? siretData?.workplace_address_city,
-    workplace_address_street_label: workplace_address_street_label ?? siretData?.workplace_address_street_label,
-    workplace_address_zipcode: workplace_address_zipcode ?? siretData?.workplace_address_zipcode,
+    workplace_address_city: siretData?.workplace_address_city,
+    workplace_address_street_label: siretData?.workplace_address_street_label,
+    workplace_address_zipcode: siretData?.workplace_address_zipcode,
     ...addressData,
   }
 
