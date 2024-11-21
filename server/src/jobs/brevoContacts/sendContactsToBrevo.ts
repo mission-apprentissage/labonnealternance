@@ -1,13 +1,14 @@
 import { Transform } from "stream"
 import { pipeline } from "stream/promises"
 
+import { ColumnOption, stringify } from "csv-stringify/sync"
 import dayjs from "dayjs"
 import { AccessEntityType, AccessStatus } from "shared/models"
 import { UserEventType } from "shared/models/userWithAccount.model"
 import SibApiV3Sdk from "sib-api-v3-sdk"
 
 import { logger } from "@/common/logger"
-import { ensureInitialization } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
@@ -36,16 +37,67 @@ const apiKey = defaultClient.authentications["api-key"]
 apiKey.apiKey = config.smtp.brevoApiKey
 const apiInstance = new SibApiV3Sdk.ContactsApi()
 
+const formatter = (value) => value ?? ""
+
 const postToBrevo = async (contacts: IBrevoContact[]) => {
   contactCount += contacts.length
 
   const requestContactImport = new SibApiV3Sdk.RequestContactImport()
 
-  requestContactImport.fileBody =
-    "EMAIL;PRENOM;NOM;USER_ORIGIN;ROLE_AUTHORIZED_TYPE;ROLE_CREATEDAT;ENTREPRISE_ENSEIGNE;ENTREPRISE_RAISON_SOCIALE;CFA_ENSEIGNE;CFA_RAISON_SOCIALE;JOB_COUNT\n"
-  contacts.forEach((contact) => {
-    requestContactImport.fileBody += `${contact.user_email};${contact.user_first_name};${contact.user_last_name};${contact.user_origin ?? ""};${contact.role_authorized_type ?? ""};${dayjs(contact.role_createdAt).format("YYYY-MM-DD")};${contact.entreprise_enseigne ?? ""};${contact.entreprise_raison_sociale ?? ""};${contact.cfa_enseigne ?? ""};${contact.cfa_raison_sociale ?? ""};${contact.role_authorized_type === AccessEntityType.CFA ? 0 : contact.job_count}\n`
+  const fileBody = stringify(contacts, {
+    delimiter: ";",
+    header: true,
+    columns: [
+      {
+        key: "user_email",
+        header: "EMAIL",
+      },
+      { key: "user_first_name", header: "PRENOM" },
+      { key: "user_last_name", header: "NOM" },
+      {
+        key: "user_origin",
+        header: "USER_ORIGIN",
+        formatter,
+      },
+      {
+        key: "role_authorized_type",
+        header: "ROLE_AUTHORIZED_TYPE",
+        formatter,
+      },
+      {
+        key: "role_createdAt",
+        header: "ROLE_CREATEDAT",
+        formatter: (value) => dayjs(value).format("YYYY-MM-DD"),
+      },
+      {
+        key: "entreprise_enseigne",
+        header: "ENTREPRISE_ENSEIGNE",
+        formatter,
+      },
+      {
+        key: "entreprise_raison_sociale",
+        header: "ENTREPRISE_RAISON_SOCIALE",
+        formatter,
+      },
+      {
+        key: "cfa_enseigne",
+        header: "CFA_ENSEIGNE",
+        formatter,
+      },
+      {
+        key: "cfa_raison_sociale",
+        header: "CFA_RAISON_SOCIALE",
+        formatter,
+      },
+      {
+        key: "job_count",
+        header: "JOB_COUNT",
+        formatter: (value) => value || 0,
+      },
+    ] as ColumnOption[],
   })
+
+  requestContactImport.fileBody = fileBody
   requestContactImport.listIds = [config.env === "production" ? CONTACT_LIST : CONTACT_LIST_RECETTE]
   requestContactImport.updateExistingContacts = true
   requestContactImport.emptyContactsAttributes = true
@@ -55,9 +107,7 @@ const postToBrevo = async (contacts: IBrevoContact[]) => {
 
 const getRoleManagement360Stream = async (type: AccessEntityType) => {
   if (type === AccessEntityType.CFA) {
-    return await ensureInitialization()
-      .db()
-      .collection("rolemanagement360")
+    return await getDbCollection("rolemanagement360")
       .find(
         { role_last_status: AccessStatus.GRANTED, user_last_status: UserEventType.ACTIF, role_authorized_type: AccessEntityType.CFA },
         {
@@ -78,9 +128,7 @@ const getRoleManagement360Stream = async (type: AccessEntityType) => {
       )
       .stream()
   } else {
-    return await ensureInitialization()
-      .db()
-      .collection("rolemanagement360")
+    return await getDbCollection("rolemanagement360")
       .aggregate([
         {
           $match: {
