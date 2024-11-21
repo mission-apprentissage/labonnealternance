@@ -1,7 +1,6 @@
 import { z } from "zod"
-import { zObjectId } from "zod-mongodb-schema"
 
-import { IModelDescriptor } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
 
 const collectionName = "recruteurslbalegacies" as const
 

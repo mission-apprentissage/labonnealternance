@@ -19,6 +19,9 @@ export const zJobsRoutesV3 = {
         access: null,
         resources: {},
       },
+      openapi: {
+        tags: ["V3 - Jobs"] as string[],
+      },
     },
   },
   post: {
@@ -27,12 +30,15 @@ export const zJobsRoutesV3 = {
       path: "/v3/jobs",
       body: zJobOfferApiWriteV3,
       response: {
-        "201": z.object({ id: zObjectId }),
+        "200": z.object({ id: zObjectId }),
       },
       securityScheme: {
         auth: "api-apprentissage",
         access: "api-apprentissage:jobs",
         resources: {},
+      },
+      openapi: {
+        tags: ["V3 - Jobs"] as string[],
       },
     },
   },
@@ -53,6 +59,9 @@ export const zJobsRoutesV3 = {
         resources: {
           jobPartner: [{ _id: { type: "params", key: "id" } }],
         },
+      },
+      openapi: {
+        tags: ["V3 - Jobs"] as string[],
       },
     },
   },
