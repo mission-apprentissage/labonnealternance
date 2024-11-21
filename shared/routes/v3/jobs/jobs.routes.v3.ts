@@ -19,6 +19,9 @@ export const zJobsRoutesV3 = {
         access: null,
         resources: {},
       },
+      openapi: {
+        tags: ["V3 - Jobs"] as string[],
+      },
     },
   },
   post: {
@@ -33,6 +36,9 @@ export const zJobsRoutesV3 = {
         auth: "api-apprentissage",
         access: "api-apprentissage:jobs",
         resources: {},
+      },
+      openapi: {
+        tags: ["V3 - Jobs"] as string[],
       },
     },
   },
@@ -53,6 +59,9 @@ export const zJobsRoutesV3 = {
         resources: {
           jobPartner: [{ _id: { type: "params", key: "id" } }],
         },
+      },
+      openapi: {
+        tags: ["V3 - Jobs"] as string[],
       },
     },
   },
