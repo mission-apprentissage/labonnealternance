@@ -92,7 +92,7 @@ const postToBrevo = async (contacts: IBrevoContact[]) => {
       {
         key: "job_count",
         header: "JOB_COUNT",
-        formatter: (value) => value || 0,
+        formatter: (value) => value || "0",
       },
     ] as ColumnOption[],
   })
@@ -155,18 +155,33 @@ const getRoleManagement360Stream = async (type: AccessEntityType) => {
         },
         {
           $lookup: {
-            from: "applications",
-            let: { siret: "$entreprises.siret", email: "$user_email" },
+            from: "recruiters",
+            let: {
+              siret: "$entreprises.siret",
+              email: "$user_email",
+            },
             pipeline: [
               {
                 $match: {
                   $expr: {
-                    $and: [{ $eq: ["$company_siret", "$$siret"] }, { $eq: ["$company_email", "$$email"] }],
+                    $and: [
+                      {
+                        $eq: ["$establishment_siret", "$$siret"],
+                      },
+                      {
+                        $eq: ["$email", "$$email"],
+                      },
+                    ],
                   },
                 },
               },
             ],
-            as: "applications",
+            as: "recruiters",
+          },
+        },
+        {
+          $unwind: {
+            path: "$recruiters",
           },
         },
         {
@@ -184,7 +199,11 @@ const getRoleManagement360Stream = async (type: AccessEntityType) => {
               cfa_enseigne: "$cfa_enseigne",
               cfa_raison_sociale: "$cfa_raison_sociale",
             },
-            application_count: { $sum: { $size: "$applications" } },
+            job_count: {
+              $sum: {
+                $size: "$recruiters.jobs",
+              },
+            },
           },
         },
         {
@@ -199,7 +218,7 @@ const getRoleManagement360Stream = async (type: AccessEntityType) => {
             entreprise_raison_sociale: "$_id.entreprise_raison_sociale",
             cfa_enseigne: "$_id.cfa_enseigne",
             cfa_raison_sociale: "$_id.cfa_raison_sociale",
-            application_count: 1,
+            job_count: 1,
             _id: 0,
           },
         },
