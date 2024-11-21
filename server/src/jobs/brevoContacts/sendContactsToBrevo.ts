@@ -8,6 +8,7 @@ import { UserEventType } from "shared/models/userWithAccount.model"
 import SibApiV3Sdk from "sib-api-v3-sdk"
 
 import { logger } from "@/common/logger"
+import { sleep } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
@@ -28,9 +29,10 @@ type IBrevoContact = {
   cfa_raison_sociale: string | null
   cfa_siret: string | null
   job_count?: string | null
+  establishment_size?: string | null
 }
 
-const CONTACT_LIST_RECETTE = 11
+const CONTACT_LIST_RECETTE = 12
 const CONTACT_LIST = 6
 
 let contactCount = 0
@@ -107,6 +109,11 @@ const postToBrevo = async (contacts: IBrevoContact[]) => {
         header: "JOB_COUNT",
         formatter: (value) => value || "0",
       },
+      {
+        key: "recruiter_establishment_size",
+        header: "EFFECTIFS",
+        formatter,
+      },
     ] as ColumnOption[],
   })
 
@@ -115,7 +122,21 @@ const postToBrevo = async (contacts: IBrevoContact[]) => {
   requestContactImport.updateExistingContacts = true
   requestContactImport.emptyContactsAttributes = true
 
-  await apiInstance.importContacts(requestContactImport)
+  let trys = 0
+  let sent = false
+  while (!sent && trys < 3) {
+    try {
+      trys++
+      await apiInstance.importContacts(requestContactImport)
+      sent = true
+    } catch (error: any) {
+      if (error.status == 429) {
+        await sleep(1000)
+      } else {
+        throw error
+      }
+    }
+  }
 }
 
 const getRoleManagement360Stream = async (type: AccessEntityType) => {
@@ -199,6 +220,7 @@ const getRoleManagement360Stream = async (type: AccessEntityType) => {
               cfa_enseigne: "$cfa_enseigne",
               cfa_raison_sociale: "$cfa_raison_sociale",
               cfa_siret: "$cfa_siret",
+              recruiter_establishment_size: "$recruiters.establishment_size",
             },
             job_count: {
               $sum: {
@@ -222,6 +244,7 @@ const getRoleManagement360Stream = async (type: AccessEntityType) => {
             cfa_raison_sociale: "$_id.cfa_raison_sociale",
             cfa_siret: "$_id.cfa_siret",
             job_count: 1,
+            recruiter_establishment_size: "$_id.recruiter_establishment_size",
             _id: 0,
           },
         },
