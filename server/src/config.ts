@@ -38,7 +38,7 @@ const config = {
     },
     brevoWebhookApiKey: env.get("LBA_BREVO_WEBHOOK_API_KEY").required().asString(),
     brevoApiKey: env.get("LBA_BREVO_API_KEY").required().asString(),
-    brevoContactListId: env.get("LBA_BREVO_CONTACT_LIST_ID").required().asString(),
+    brevoContactListId: env.get("LBA_BREVO_CONTACT_LIST_ID").asString(),
   },
   auth: {
     passwordHashRounds: env.get("LBA_AUTH_PASSWORD_HASH_ROUNDS").required().asInt(),
