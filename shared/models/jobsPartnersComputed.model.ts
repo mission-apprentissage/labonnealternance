@@ -21,6 +21,7 @@ export enum JOB_PARTNER_BUSINESS_ERROR {
 
 export const ZComputedJobPartnersDuplicateRef = z.object({
   otherOfferId: zObjectId,
+  collectionName: z.enum(["recruiters", collectionName]).describe("nom de la collection contenant l'offre avec _id=otherOfferId"),
   reason: z.string(),
 })
 
