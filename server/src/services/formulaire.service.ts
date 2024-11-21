@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto"
 import { badRequest, internal, notFound } from "@hapi/boom"
 import equal from "fast-deep-equal"
 import { Filter, ObjectId, UpdateFilter } from "mongodb"
-import { IDelegation, IJob, IJobCreate, IJobWithRomeDetail, IRecruiter, IRecruiterWithApplicationCount, IUserRecruteur, JOB_STATUS } from "shared"
+import { IDelegation, IJob, IJobCreate, IJobWithRomeDetail, IRecruiter, IRecruiterWithApplicationCount, IUserRecruteur, JOB_STATUS, removeAccents } from "shared"
 import { getDirectJobPath } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
@@ -886,14 +886,17 @@ const validateFieldsFromReferentielRome = async (job) => {
     appellations,
   } = romeDetails
 
-  if (intitule !== rome_label) {
-    throw badRequest(`L'intitulé du code ROME ne correspond pas au référentiel : ${intitule}, reçu ${rome_label}`)
+  const formatedIntituleFromRome = removeAccents(intitule.toLowerCase())
+  const formatedRomeLabelFromJob = removeAccents(rome_label.toLowerCase())
+
+  if (formatedIntituleFromRome !== formatedRomeLabelFromJob) {
+    throw badRequest(`L'intitulé du code ROME ne correspond pas au référentiel : ${formatedIntituleFromRome}, reçu ${formatedRomeLabelFromJob}`)
   }
 
-  const matchingAppellation = appellations.some((appellation) => appellation.libelle === rome_appellation_label)
+  const matchingAppellation = appellations.some((appellation) => removeAccents(appellation.libelle.toLowerCase()) === removeAccents(rome_appellation_label.toLowerCase()))
 
   if (!matchingAppellation) {
-    throw badRequest(`L'appellation du code ROME ne correspond pas au référentiel : reçu ${rome_appellation_label}`)
+    throw badRequest(`L'appellation du code ROME ne correspond pas au référentiel : reçu ${removeAccents(rome_appellation_label.toLowerCase())}`)
   }
 
   const filteredRome = filterRomeDetails(competences, competences_rome)
