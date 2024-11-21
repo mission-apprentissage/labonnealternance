@@ -32,21 +32,21 @@ describe("fillRomeForPartners", () => {
   })
 
   const title = "Chef de partie, second de cuisine H/F"
+  const nafLabel = "Commerce de détail d'habillement en magasin spécialisé"
 
   it("should enrich with cache", async () => {
     // given
-    const nafCode = "1105Z"
     const romeCode = "K1601"
     await givenSomeComputedJobPartners([
       {
         offer_title: title,
-        workplace_naf_code: nafCode,
+        workplace_naf_label: nafLabel,
         offer_rome_codes: null,
       },
     ])
     const cacheRomeo = cacheRomeFixture({
       intitule: title,
-      contexte: nafCode,
+      contexte: nafLabel,
       metiersRome: [
         cacheRomeResultFixture({
           codeRome: romeCode,
@@ -66,12 +66,11 @@ describe("fillRomeForPartners", () => {
   })
   it("should enrich with api", async () => {
     // given
-    const nafCode = "1105Z"
     const romeCode = "J1501"
     await givenSomeComputedJobPartners([
       {
         offer_title: title,
-        workplace_naf_code: nafCode,
+        workplace_naf_label: nafLabel,
         offer_rome_codes: null,
       },
     ])
@@ -81,7 +80,7 @@ describe("fillRomeForPartners", () => {
       {
         intitule: title,
         identifiant: "0",
-        contexte: nafCode,
+        contexte: nafLabel,
         metiersRome: [
           cacheRomeResultFixture({
             codeRome: romeCode,
@@ -99,7 +98,7 @@ describe("fillRomeForPartners", () => {
         {
           intitule: title,
           identifiant: "0",
-          contexte: nafCode,
+          contexte: nafLabel,
         },
       ],
       apiResponse
