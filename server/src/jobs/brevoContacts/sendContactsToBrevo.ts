@@ -11,6 +11,7 @@ import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
+import { streamGroupByCount } from "@/common/utils/streamUtils"
 import config from "@/config"
 
 type IBrevoContact = {
@@ -22,12 +23,14 @@ type IBrevoContact = {
   role_authorized_type: AccessEntityType.CFA | AccessEntityType.ENTREPRISE
   entreprise_enseigne: string | null
   entreprise_raison_sociale: string | null
+  entreprise_siret: string | null
   cfa_enseigne: string | null
   cfa_raison_sociale: string | null
+  cfa_siret: string | null
   job_count?: string | null
 }
 
-const CONTACT_LIST_RECETTE = 5
+const CONTACT_LIST_RECETTE = 11
 const CONTACT_LIST = 6
 
 let contactCount = 0
@@ -80,6 +83,11 @@ const postToBrevo = async (contacts: IBrevoContact[]) => {
         formatter,
       },
       {
+        key: "entreprise_siret",
+        header: "ENTREPRISE_SIRET",
+        formatter,
+      },
+      {
         key: "cfa_enseigne",
         header: "CFA_ENSEIGNE",
         formatter,
@@ -87,6 +95,11 @@ const postToBrevo = async (contacts: IBrevoContact[]) => {
       {
         key: "cfa_raison_sociale",
         header: "CFA_RAISON_SOCIALE",
+        formatter,
+      },
+      {
+        key: "cfa_siret",
+        header: "CFA_SIRET",
         formatter,
       },
       {
@@ -121,8 +134,10 @@ const getRoleManagement360Stream = async (type: AccessEntityType) => {
             role_authorized_type: 1,
             entreprise_enseigne: 1,
             entreprise_raison_sociale: 1,
+            entreprise_siret: 1,
             cfa_enseigne: 1,
             cfa_raison_sociale: 1,
+            cfa_siret: 1,
           },
         }
       )
@@ -138,26 +153,10 @@ const getRoleManagement360Stream = async (type: AccessEntityType) => {
           },
         },
         {
-          $addFields: {
-            role_authorized_object_id: { $convert: { input: "$role_authorized_id", to: "objectId" } },
-          },
-        },
-        {
-          $lookup: {
-            from: "entreprises",
-            localField: "role_authorized_object_id",
-            foreignField: "_id",
-            as: "entreprises",
-          },
-        },
-        {
-          $unwind: { path: "$entreprises" },
-        },
-        {
           $lookup: {
             from: "recruiters",
             let: {
-              siret: "$entreprises.siret",
+              siret: "$entreprise_siret",
               email: "$user_email",
             },
             pipeline: [
@@ -196,8 +195,10 @@ const getRoleManagement360Stream = async (type: AccessEntityType) => {
               role_authorized_type: "$role_authorized_type",
               entreprise_enseigne: "$entreprise_enseigne",
               entreprise_raison_sociale: "$entreprise_raison_sociale",
+              entrepris_siret: "$entreprise_siret",
               cfa_enseigne: "$cfa_enseigne",
               cfa_raison_sociale: "$cfa_raison_sociale",
+              cfa_siret: "$cfa_siret",
             },
             job_count: {
               $sum: {
@@ -216,8 +217,10 @@ const getRoleManagement360Stream = async (type: AccessEntityType) => {
             role_authorized_type: "$_id.role_authorized_type",
             entreprise_enseigne: "$_id.entreprise_enseigne",
             entreprise_raison_sociale: "$_id.entreprise_raison_sociale",
+            entreprise_siret: "$_id.entreprise_siret",
             cfa_enseigne: "$_id.cfa_enseigne",
             cfa_raison_sociale: "$_id.cfa_raison_sociale",
+            cfa_siret: "$_id.cfa_siret",
             job_count: 1,
             _id: 0,
           },
@@ -228,32 +231,17 @@ const getRoleManagement360Stream = async (type: AccessEntityType) => {
 }
 
 const sendContacts = async (type: AccessEntityType) => {
-  let batch: IBrevoContact[] = []
-
   const cursor = await getRoleManagement360Stream(type)
 
-  const chunkTransform = new Transform({
+  const postingTransform = new Transform({
     objectMode: true,
-    transform(contact, _, callback) {
-      batch.push(contact as IBrevoContact)
-
-      if (batch.length === 1000) {
-        postToBrevo(batch as IBrevoContact[])
-        callback()
-        batch = []
-      } else {
-        callback()
-      }
-    },
-    flush(callback) {
-      if (batch && batch.length > 0) {
-        postToBrevo(batch as IBrevoContact[])
-      }
+    transform(contacts, _, callback) {
+      postToBrevo(contacts as IBrevoContact[])
       callback()
     },
   })
 
-  await pipeline(cursor, chunkTransform)
+  await pipeline(cursor, streamGroupByCount(1000), postingTransform)
 }
 
 export const sendContactsToBrevo = async () => {
