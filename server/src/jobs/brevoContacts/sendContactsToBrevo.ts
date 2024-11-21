@@ -32,9 +32,6 @@ type IBrevoContact = {
   establishment_size?: string | null
 }
 
-const CONTACT_LIST_RECETTE = 12
-const CONTACT_LIST = 6
-
 let contactCount = 0
 
 const defaultClient = SibApiV3Sdk.ApiClient.instance
@@ -118,7 +115,7 @@ const postToBrevo = async (contacts: IBrevoContact[]) => {
   })
 
   requestContactImport.fileBody = fileBody
-  requestContactImport.listIds = [config.env === "production" ? CONTACT_LIST : CONTACT_LIST_RECETTE]
+  requestContactImport.listIds = [config.smtp.brevoContactListId]
   requestContactImport.updateExistingContacts = true
   requestContactImport.emptyContactsAttributes = true
 
