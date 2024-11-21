@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb"
 import { IApplicationApiJobId, IApplicationApiRecruteurId, JOB_STATUS } from "shared"
 import { NIVEAUX_POUR_LBA, RECRUITER_STATUS } from "shared/constants"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { applicationTestFile } from "shared/fixtures/application.fixture"
+import { applicationTestFile, wrongApplicationTestFile } from "shared/fixtures/application.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { generateLbaCompanyFixture } from "shared/fixtures/recruteurLba.fixture"
 import { parisFixture } from "shared/fixtures/referentiel/commune.fixture"
@@ -227,5 +227,26 @@ describe("POST /v2/application", () => {
     expect(s3Write).toHaveBeenCalledWith("applications", `cv-${application!._id}`, {
       Body: body.applicant_file_content,
     })
+  })
+  it("return 400 as file type is not supported", async () => {
+    const job = recruiter.jobs[0]
+    const body: IApplicationApiJobId = {
+      applicant_file_name: "cv.pdf",
+      applicant_file_content: wrongApplicationTestFile,
+      applicant_email: "jeam.dupont@mail.com",
+      applicant_first_name: "Jean",
+      applicant_last_name: "Dupont",
+      applicant_phone: "0101010101",
+      job_id: job._id.toString(),
+    }
+
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/v2/application",
+      body,
+      headers: { authorization: `Bearer ${token}` },
+    })
+    expect.soft(response.statusCode).toEqual(400)
+    expect.soft(response.json()).toEqual({ statusCode: 400, error: "Bad Request", message: "File type is not supported" })
   })
 })
