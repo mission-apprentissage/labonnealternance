@@ -14,7 +14,7 @@ export const getCookie = (cookieName) => {
 export const setCookie = (cookieName: string, value: string, msToExpire?: number) => {
   const expiryDate = new Date()
   expiryDate.setTime(new Date().getTime() + msToExpire)
-  document.cookie = cookieName + "=" + window.encodeURIComponent(value) + (msToExpire ? ";expires=" + expiryDate.toString() : "") + ";path=/;domain=;SameSite=Lax"
+  document.cookie = cookieName + "=" + window.encodeURIComponent(value) + (msToExpire ? ";expires=" + expiryDate.toString() : "") + ";path=/;domain=;SameSite=None; Secure"
 }
 export const removeCookie = (cookieName) => {
   setCookie(cookieName, "", COOKIE_REMOVE_TIME)

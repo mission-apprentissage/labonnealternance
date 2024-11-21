@@ -21,8 +21,8 @@ function getZodMessageError(error: ZodError, context: string): string {
   }, "")
 }
 
-function isApiV2(request: FastifyRequest): boolean {
-  return request.url.startsWith("/api/v2")
+function isApiV2OrV3(request: FastifyRequest): boolean {
+  return request.url.startsWith("/api/v2") || request.url.startsWith("/api/v3")
 }
 
 export function boomify(rawError: FastifyError | ValidationError | Boom<unknown> | Error | ZodError, request: FastifyRequest): Boom<unknown> {
@@ -42,7 +42,7 @@ export function boomify(rawError: FastifyError | ValidationError | Boom<unknown>
   }
 
   if (rawError instanceof ZodError) {
-    if (isApiV2(request)) {
+    if (isApiV2OrV3(request)) {
       return badRequest("Request validation failed", { validationError: rawError.format() })
     }
 

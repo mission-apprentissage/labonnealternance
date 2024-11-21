@@ -13,10 +13,8 @@ import anonymizeIndividual from "./anonymization/anonymizeIndividual"
 import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
 import { anonimizeUsers } from "./anonymization/anonymizeUserRecruteurs"
 import { anonymizeOldUsers } from "./anonymization/anonymizeUsers"
-import fixApplications from "./applications/fixApplications"
 import { processApplications } from "./applications/processApplications"
 import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
-import { obfuscateCollections } from "./database/obfuscateCollections"
 import { recreateIndexes } from "./database/recreateIndexes"
 import { validateModels } from "./database/schemaValidation"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
@@ -29,12 +27,6 @@ import { pocRomeo } from "./franceTravail/pocRomeo"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
-import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
-import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
-import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromComputedToJobsPartners"
-import { importHelloWorkRaw, importHelloWorkToComputed } from "./offrePartenaire/importHelloWork"
-import { importKelio } from "./offrePartenaire/importKelio"
-import { importRHAlternance } from "./offrePartenaire/importRHAlternance"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -45,26 +37,21 @@ import { inviteEtablissementAffelnetToPremiumFollowUp } from "./rdv/inviteEtabli
 import { inviteEtablissementParcoursupToPremium } from "./rdv/inviteEtablissementParcoursupToPremium"
 import { inviteEtablissementParcoursupToPremiumFollowUp } from "./rdv/inviteEtablissementParcoursupToPremiumFollowUp"
 import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
-import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
-import { premiumInviteOneShot } from "./rdv/premiumInviteOneShot"
 import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
 import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
 import { cancelOfferJob } from "./recruiters/cancelOfferJob"
 import { createApiUser } from "./recruiters/createApiUser"
 import { disableApiUser } from "./recruiters/disableApiUser"
-import { fixJobExpirationDate } from "./recruiters/fixJobExpirationDateJob"
-import { fixRecruiterDataValidation } from "./recruiters/fixRecruiterDataValidationJob"
 import { opcoReminderJob } from "./recruiters/opcoReminderJob"
 import { recruiterOfferExpirationReminderJob } from "./recruiters/recruiterOfferExpirationReminderJob"
 import { removeDuplicateRecruiters } from "./recruiters/removeDuplicatesRecruiters"
 import { resetApiKey } from "./recruiters/resetApiKey"
-import { updateMissingStartDate } from "./recruiters/updateMissingStartDateJob"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import updateGeoLocations from "./recruteurLba/updateGeoLocations"
 import updateOpcoCompanies from "./recruteurLba/updateOpcoCompanies"
 import updateLbaCompanies from "./recruteurLba/updateRecruteurLba"
-import { importReferentielRome } from "./referentielRome/referentielRome"
+import { SimpleJobDefinition, simpleJobDefinitions } from "./simpleJobDefinitions"
 import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 import { controlApplications } from "./verifications/controlApplications"
 import { controlAppointments } from "./verifications/controlAppointments"
@@ -239,15 +226,6 @@ export async function setupJobProcessor() {
       "recreate:indexes": {
         handler: async () => recreateIndexes(),
       },
-      "lbajobs:export:s3": {
-        handler: async () => exportLbaJobsToS3(),
-      },
-      "sync:etablissement:dates": {
-        handler: async () => syncEtablissementDates(),
-      },
-      "remove:duplicates:etablissements": {
-        handler: async () => removeDuplicateEtablissements(),
-      },
       "garbage-collector:run": {
         handler: async () => runGarbageCollector(),
       },
@@ -259,12 +237,6 @@ export async function setupJobProcessor() {
       },
       "control:appointments": {
         handler: async () => controlAppointments(),
-      },
-      "recruiters:set-missing-job-start-date": {
-        handler: async () => updateMissingStartDate(),
-      },
-      "import:referentielrome": {
-        handler: async () => importReferentielRome(),
       },
       "api:user:create": {
         handler: async (job) => {
@@ -290,35 +262,8 @@ export async function setupJobProcessor() {
           return
         },
       },
-      "formulaire:annulation": {
-        handler: async () => cancelOfferJob(),
-      },
-      "metabase:role-management:create": {
-        handler: async () => createRoleManagement360(),
-      },
-      "metabase:jobs:collection": {
-        handler: async () => createJobsCollectionForMetabase(),
-      },
-      "opco:relance": {
-        handler: async () => opcoReminderJob(),
-      },
       "pe:offre:export": {
         handler: async () => exportJobsToFranceTravail(),
-      },
-      "siret:inError:update": {
-        handler: async () => updateSiretInfosInError(),
-      },
-      "etablissement:formations:activate:opt-out": {
-        handler: async () => activateOptoutOnEtablissementAndUpdateReferrersOnETFA(),
-      },
-      "etablissement:invite:opt-out": {
-        handler: async () => inviteEtablissementToOptOut(),
-      },
-      "etablissement:invite:premium:parcoursup": {
-        handler: async () => inviteEtablissementParcoursupToPremium(),
-      },
-      "etablissement:invite:premium:affelnet": {
-        handler: async () => inviteEtablissementAffelnetToPremium(),
       },
       "etablissement:invite:premium:follow-up": {
         handler: async (job) => inviteEtablissementParcoursupToPremiumFollowUp(job.payload?.bypassDate as any),
@@ -326,41 +271,14 @@ export async function setupJobProcessor() {
       "etablissement:invite:premium:affelnet:follow-up": {
         handler: async (job) => inviteEtablissementAffelnetToPremiumFollowUp(job.payload?.bypassDate as any),
       },
-      "premium:activated:reminder": {
-        handler: async () => premiumActivatedReminder(),
-      },
-      "premium:invite:one-shot": {
-        handler: async () => premiumInviteOneShot(),
-      },
       "etablissements:formations:sync": {
         handler: async () => syncEtablissementsAndFormations(),
-      },
-      "users:anonimize": {
-        handler: async () => anonymizeOldUsers(),
-      },
-      "catalogue:trainings:appointments:archive:eligible": {
-        handler: async () => eligibleTrainingsForAppointmentsHistoryWithCatalogue(),
-      },
-      "referentiel:onisep:import": {
-        handler: async () => importReferentielOnisep(),
-      },
-      "catalogue:trainings:sync": {
-        handler: async () => importCatalogueFormationJob(),
-      },
-      "catalogue:trainings:sync:extra": {
-        handler: async () => updateParcoursupAndAffelnetInfoOnFormationCatalogue(),
       },
       "brevo:blocked:sync": {
         handler: async (job) => updateBrevoBlockedEmails(job.payload as any),
       },
       "brevo:contacts:sync": {
         handler: async () => sendContactsToBrevo(),
-      },
-      "applications:anonymize": {
-        handler: async () => anonymizeOldApplications(),
-      },
-      "user-recruteurs:anonymize": {
-        handler: async () => anonimizeUsers(),
       },
       "companies:update": {
         handler: async (job) => updateLbaCompanies(job.payload as any),
@@ -384,15 +302,6 @@ export async function setupJobProcessor() {
       "diplomes-metiers:update": {
         handler: async () => updateDiplomesMetiers(),
       },
-      "recruiters:expiration-date:fix": {
-        handler: async () => fixJobExpirationDate(),
-      },
-      "fix-applications": {
-        handler: async () => fixApplications(),
-      },
-      "recruiters:data-validation:fix": {
-        handler: async () => fixRecruiterDataValidation(),
-      },
       "anonymize-individual": {
         handler: async (job) => {
           const { collection, id } = job.payload as any
@@ -402,9 +311,6 @@ export async function setupJobProcessor() {
       },
       "db:validate": {
         handler: async () => validateModels(),
-      },
-      "db:obfuscate": {
-        handler: async () => obfuscateCollections(),
       },
       "migrations:up": {
         handler: async () => {
@@ -424,33 +330,21 @@ export async function setupJobProcessor() {
       "migrations:create": {
         handler: async (job) => createMigration(job.payload as any),
       },
-      "import-hellowork-raw": {
-        handler: async () => importHelloWorkRaw(),
-      },
-      "import-hellowork-to-computed": {
-        handler: async () => importHelloWorkToComputed(),
-      },
-      "import-rhalternance": {
-        handler: async () => importRHAlternance(),
-      },
-      "import-kelio": {
-        handler: async () => importKelio(),
-      },
-      "fill-computed-jobs-partners": {
-        handler: async () => fillComputedJobsPartners(),
-      },
-      "import-computed-to-jobs-partners": {
-        handler: async () => importFromComputedToJobsPartners(),
-      },
-      "cancel-removed-jobs-partners": {
-        handler: async () => cancelRemovedJobsPartners(),
-      },
-      "send-applications": {
-        handler: async () => processApplications(),
-      },
       "referentiel:commune:import": {
         handler: updateReferentielCommune,
       },
+      ...Object.fromEntries(
+        simpleJobDefinitions.map((jobDef) => {
+          const { fct } = jobDef
+          const command = SimpleJobDefinition.getFctName(jobDef)
+          return [
+            command,
+            {
+              handler: async () => fct(),
+            },
+          ]
+        })
+      ),
     },
   })
 }

@@ -30,7 +30,7 @@ export const ZComputedJobsPartners = extensions.optionalToNullish(ZJobsPartnersO
       .describe("Détail des erreurs rencontrées lors de la récupération des données obligatoires")
   ),
   validated: z.boolean().default(false).describe("Toutes les données nécessaires au passage vers jobs_partners sont présentes et valides"),
-  business_error: extensions.buildEnum(JOB_PARTNER_BUSINESS_ERROR).nullable().default(null),
+  business_error: z.string().nullable().default(null),
 })
 export type IComputedJobsPartners = z.output<typeof ZComputedJobsPartners>
 
