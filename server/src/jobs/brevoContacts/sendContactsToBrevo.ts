@@ -216,7 +216,7 @@ const getRoleManagement360Stream = async (type: AccessEntityType) => {
               role_authorized_type: "$role_authorized_type",
               entreprise_enseigne: "$entreprise_enseigne",
               entreprise_raison_sociale: "$entreprise_raison_sociale",
-              entrepris_siret: "$entreprise_siret",
+              entreprise_siret: "$entreprise_siret",
               cfa_enseigne: "$cfa_enseigne",
               cfa_raison_sociale: "$cfa_raison_sociale",
               cfa_siret: "$cfa_siret",
