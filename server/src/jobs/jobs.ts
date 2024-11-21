@@ -277,9 +277,6 @@ export async function setupJobProcessor() {
       "brevo:blocked:sync": {
         handler: async (job) => updateBrevoBlockedEmails(job.payload as any),
       },
-      "brevo:contacts:sync": {
-        handler: async () => sendContactsToBrevo(),
-      },
       "companies:update": {
         handler: async (job) => updateLbaCompanies(job.payload as any),
       },

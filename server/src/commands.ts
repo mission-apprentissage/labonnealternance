@@ -283,12 +283,6 @@ program
   .action(createJobAction("brevo:blocked:sync"))
 
 program
-  .command("brevo:contacts:sync")
-  .description("Envoi à Brevo la liste des contacts")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("brevo:contacts:sync"))
-
-program
   .command("update-companies")
   .description("Met à jour la liste des sociétés bonnes alternances")
   .option("-use-algo-file, [UseAlgoFile]", "télécharge et traite le fichier issu de l'algo", false)
