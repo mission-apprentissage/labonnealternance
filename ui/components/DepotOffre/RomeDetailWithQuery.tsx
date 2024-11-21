@@ -5,9 +5,8 @@ import Image from "next/image"
 import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
 
+import image from "@/public/assets/checkbox-list.webp"
 import { getRomeDetail } from "@/utils/api"
-
-import image from "../../public/assets/checkbox-list.webp"
 
 import { RomeDetail } from "./RomeDetail"
 
