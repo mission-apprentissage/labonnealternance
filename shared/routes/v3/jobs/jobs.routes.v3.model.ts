@@ -2,6 +2,7 @@ import { z } from "zod"
 
 import { TRAINING_CONTRACT_TYPE } from "../../../constants"
 import { extensions } from "../../../helpers/zodHelpers/zodPrimitives"
+import { JOB_STATUS_ENGLISH } from "../../../models"
 import {
   zDiplomaEuropeanLevel,
   ZJobsPartnersOfferApi,
@@ -179,6 +180,7 @@ export const zJobOfferApiWriteV3 = z.object({
     opening_count: ZJobsPartnersOfferPrivate.shape.offer_opening_count.default(1),
     origin: ZJobsPartnersOfferPrivate.shape.offer_origin,
     multicast: ZJobsPartnersOfferPrivate.shape.offer_multicast,
+    status: ZJobsPartnersOfferPrivate.shape.offer_status.default(JOB_STATUS_ENGLISH.ACTIVE),
   }),
   apply: z
     .object({

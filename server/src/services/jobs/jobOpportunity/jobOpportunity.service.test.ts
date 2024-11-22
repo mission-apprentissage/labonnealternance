@@ -11,7 +11,7 @@ import { generateLbaCompanyFixture } from "shared/fixtures/recruteurLba.fixture"
 import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
-import { ILbaCompany, IRecruiter, IReferentielRome, JOB_STATUS } from "shared/models"
+import { ILbaCompany, IRecruiter, IReferentielRome, JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models"
 import { IJobsPartnersOfferPrivate, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 import { zJobOfferApiWriteV3, zJobSearchApiV3Response, type IJobOfferApiWriteV3, type IJobOfferApiWriteV3Input } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
@@ -1905,6 +1905,18 @@ describe("createJobOffer", () => {
     expect(job?.workplace_geopoint).toEqual(clichyFixture.centre)
     expect(nock.isDone()).toBeTruthy()
   })
+
+  it("should support offer.status", async () => {
+    const data = generateJobOfferApiWriteV3({ ...minimalData, offer: { ...minimalData.offer, status: JOB_STATUS_ENGLISH.ANNULEE } })
+
+    const result = await createJobOffer(identity, data)
+    expect(result).toBeInstanceOf(ObjectId)
+
+    const job = await getDbCollection("jobs_partners").findOne({ _id: result })
+    expect(job?.offer_status).toEqual(JOB_STATUS_ENGLISH.ANNULEE)
+
+    expect(nock.isDone()).toBeTruthy()
+  })
 })
 
 describe("updateJobOffer", () => {
@@ -2040,6 +2052,17 @@ describe("updateJobOffer", () => {
     const job = await getDbCollection("jobs_partners").findOne({ _id })
     expect(job?.workplace_address_label).toEqual("1T impasse Passoir Clichy")
     expect(job?.workplace_geopoint).toEqual(clichyFixture.centre)
+    expect(nock.isDone()).toBeTruthy()
+  })
+
+  it("should support offer.status", async () => {
+    const data = generateJobOfferApiWriteV3({ ...minimalData, offer: { ...minimalData.offer, status: JOB_STATUS_ENGLISH.ANNULEE } })
+
+    await updateJobOffer(_id, identity, data)
+
+    const job = await getDbCollection("jobs_partners").findOne({ _id })
+    expect(job?.offer_status).toEqual(JOB_STATUS_ENGLISH.ANNULEE)
+
     expect(nock.isDone()).toBeTruthy()
   })
 })
