@@ -1044,10 +1044,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                   ],
                   "type": "object",
                 },
-                "type": [
-                  "array",
-                  "null",
-                ],
+                "type": "array",
               },
               "competences": {
                 "additionalProperties": false,
@@ -1309,6 +1306,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "required": [
               "numero",
               "rome",
+              "appellations",
               "definition",
               "acces_metier",
               "competences",
@@ -2004,10 +2002,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                   ],
                   "type": "object",
                 },
-                "type": [
-                  "array",
-                  "null",
-                ],
+                "type": "array",
               },
               "competences": {
                 "additionalProperties": false,
@@ -2269,6 +2264,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "required": [
               "numero",
               "rome",
+              "appellations",
               "definition",
               "acces_metier",
               "competences",
