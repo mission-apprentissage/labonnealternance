@@ -25,12 +25,7 @@ const ZRHAlternanceResponse = z
 
 const rawCollectionName = rawRHAlternanceModel.collectionName
 
-export const importRHAlternance = async () => {
-  await importRaw()
-  await rawToComputed()
-}
-
-const importRaw = async () => {
+export const importRHAlternanceRaw = async () => {
   logger.info("deleting old data")
   await getDbCollection(rawCollectionName).deleteMany({})
   logger.info("import starting...")
@@ -70,7 +65,7 @@ const importRaw = async () => {
   logger.info(`import done: ${jobCount} jobs imported`)
 }
 
-const rawToComputed = async () => {
+export const importRHAlternanceToComputed = async () => {
   const now = new Date()
   await rawToComputedJobsPartners({
     collectionSource: rawCollectionName,
