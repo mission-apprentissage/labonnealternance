@@ -1,10 +1,10 @@
 import { badRequest, notFound } from "@hapi/boom"
-import { useMongo } from "@tests/utils/mongo.test.utils"
-import { createApplicationTest, createRecruteurLbaTest } from "@tests/utils/user.test.utils"
 import { ERecruteurLbaUpdateEventType } from "shared/models"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { createApplicationTest, createRecruteurLbaTest } from "@tests/utils/user.test.utils"
 
 import { getCompanyContactInfo, updateContactInfo } from "./recruteurLba.service"
 

@@ -65,10 +65,10 @@ export const premiumActivatedReminder = async () => {
             replyTo: config.publicEmail,
             images: {
               logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-              logoParcoursup: `${config.publicUrl}/assets/logo-parcoursup.png?raw=true`,
-              logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
-              peopleLaptop: `${config.publicUrl}/assets/people-laptop.png?raw=true`,
-              integrationExample: `${config.publicUrl}/assets/exemple_integration_parcoursup.jpg?raw=true`,
+              logoParcoursup: `${config.publicUrl}/assets/logo-parcoursup.webp?raw=true`,
+              logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
+              peopleLaptop: `${config.publicUrl}/assets/people-laptop.webp?raw=true`,
+              integrationExample: `${config.publicUrl}/assets/exemple_integration_parcoursup.webp?raw=true`,
             },
             etablissement: {
               name: etablissement.raison_sociale,

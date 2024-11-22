@@ -1,5 +1,3 @@
-import { useMongo } from "@tests/utils/mongo.test.utils"
-import { useServer } from "@tests/utils/server.test.utils"
 import omit from "lodash/omit"
 import nock from "nock"
 import { ENTREPRISE, OPCOS_LABEL } from "shared/constants"
@@ -9,6 +7,8 @@ import { zRoutes } from "shared/routes"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { useServer } from "@tests/utils/server.test.utils"
 
 describe("POST /etablissement/creation", () => {
   useMongo()

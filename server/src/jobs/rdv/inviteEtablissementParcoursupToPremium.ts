@@ -84,7 +84,7 @@ export const inviteEtablissementParcoursupToPremium = async () => {
         isParcoursup: true,
         images: {
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-          exempleParcoursup: `${config.publicUrl}/assets/exemple_integration_parcoursup.jpg?raw=true`,
+          exempleParcoursup: `${config.publicUrl}/assets/exemple_integration_parcoursup.webp?raw=true`,
         },
         etablissement: {
           email: etablissement.gestionnaire_email,

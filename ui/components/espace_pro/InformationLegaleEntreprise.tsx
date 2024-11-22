@@ -89,7 +89,7 @@ const OrganizationInfoFields = ({
   is_qualiopi?: boolean
 }) => {
   const RAISON_SOCIALE =
-    establishment_raison_sociale && establishment_raison_sociale.length > 30 ? establishment_raison_sociale.substring(0, 30) + "..." : establishment_raison_sociale ?? ""
+    establishment_raison_sociale && establishment_raison_sociale.length > 30 ? establishment_raison_sociale.substring(0, 30) + "..." : (establishment_raison_sociale ?? "")
   const firstLineAddress = address
   return (
     <Stack direction="column" spacing={7}>

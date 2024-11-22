@@ -59,9 +59,9 @@ export const inviteEtablissementToOptOut = async () => {
         data: {
           images: {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
-            peopleLaptop: `${config.publicUrl}/assets/people-laptop.png?raw=true`,
-            optOutLbaIntegrationExample: `${config.publicUrl}/assets/exemple_integration_lba.png?raw=true`,
+            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
+            peopleLaptop: `${config.publicUrl}/assets/people-laptop.webp?raw=true`,
+            optOutLbaIntegrationExample: `${config.publicUrl}/assets/exemple_integration_lba.webp?raw=true`,
           },
           etablissement: {
             optOutActivatedAtDate: willBeActivatedAt.format("DD/MM/YYYY"),

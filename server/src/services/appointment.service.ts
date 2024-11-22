@@ -55,8 +55,8 @@ const getMailData = (candidate: IUser, appointment: IAppointment, eligibleTraini
     },
     images: {
       logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-      logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
-      peopleLaptop: `${config.publicUrl}/assets/people-laptop.png?raw=true`,
+      logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
+      peopleLaptop: `${config.publicUrl}/assets/people-laptop.webp?raw=true`,
     },
   }
   return mailData

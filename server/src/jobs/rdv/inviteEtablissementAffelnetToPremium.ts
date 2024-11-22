@@ -80,7 +80,7 @@ export const inviteEtablissementAffelnetToPremium = async () => {
         isAffelnet: true,
         images: {
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-          exempleParcoursup: `${config.publicUrl}/assets/exemple_integration_affelnet.png?raw=true`,
+          exempleParcoursup: `${config.publicUrl}/assets/exemple_integration_affelnet.webp?raw=true`,
         },
         etablissement: {
           email: etablissement.gestionnaire_email,

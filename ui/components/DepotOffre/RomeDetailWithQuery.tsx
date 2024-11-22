@@ -1,9 +1,11 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Flex, Heading, Link, Text, Image, Progress } from "@chakra-ui/react"
+import { Box, Flex, Heading, Link, Progress, Text } from "@chakra-ui/react"
 import styled from "@emotion/styled"
+import Image from "next/image"
 import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
 
+import image from "@/public/assets/checkbox-list.webp"
 import { getRomeDetail } from "@/utils/api"
 
 import { RomeDetail } from "./RomeDetail"
@@ -102,7 +104,7 @@ const LoadingBox = () => {
   return (
     <LoadingBoxDiv>
       <Flex alignItems="center" flexDirection="column" width="100%">
-        <Image src="/assets/checkbox-list.svg" width="66px" height="80px" alt="" />
+        <Image src={image} width={80} alt="" />
         <Text className="title">Génération du descriptif de l’offre</Text>
         <Progress width="80%" isIndeterminate size="sm" borderRadius="20px" />
       </Flex>

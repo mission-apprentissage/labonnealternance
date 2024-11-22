@@ -1,4 +1,3 @@
-import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "bson"
 import { parisFixture, levalloisFixture, clichyFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { IGeoPoint } from "shared/models"
@@ -6,6 +5,7 @@ import { expect, describe, it, vi, beforeEach } from "vitest"
 
 import { getCommuneParCodeDepartement, getDepartements, IGeoApiCommune } from "@/common/apis/geoApiGouv/geoApiGouv"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
 
 import { updateReferentielCommune, getNearestCommuneByGeoPoint } from "./commune.referentiel.service"
 

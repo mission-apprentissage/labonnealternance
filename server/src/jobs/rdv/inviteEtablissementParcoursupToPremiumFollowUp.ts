@@ -78,8 +78,8 @@ export const inviteEtablissementParcoursupToPremiumFollowUp = async (bypassDate:
         isParcoursup: true,
         images: {
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-          logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
-          integrationExample: `${config.publicUrl}/assets/exemple_integration_parcoursup.jpg?raw=true`,
+          logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
+          integrationExample: `${config.publicUrl}/assets/exemple_integration_parcoursup.webp?raw=true`,
         },
         etablissement: {
           email: etablissement.gestionnaire_email,

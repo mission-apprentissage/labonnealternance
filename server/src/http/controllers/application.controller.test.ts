@@ -1,5 +1,3 @@
-import { useMongo } from "@tests/utils/mongo.test.utils"
-import { useServer } from "@tests/utils/server.test.utils"
 import { ObjectId } from "mongodb"
 import { generateLbaCompanyFixture } from "shared/fixtures/recruteurLba.fixture"
 import { beforeEach, describe, expect, it, vi } from "vitest"
@@ -7,6 +5,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { s3Write } from "@/common/utils/awsUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { isInfected } from "@/services/clamav.service"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { useServer } from "@tests/utils/server.test.utils"
 
 vi.mock("@/common/utils/awsUtils", () => {
   return {

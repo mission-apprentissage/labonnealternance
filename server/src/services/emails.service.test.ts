@@ -1,4 +1,3 @@
-import { useMongo } from "@tests/utils/mongo.test.utils"
 import { EApplicantRole } from "shared/constants/rdva"
 import { generateApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateAppointmentFixture, generateEligibleTrainingEstablishmentFixture, generateEligibleTrainingFixture } from "shared/fixtures/appointment.fixture"
@@ -9,6 +8,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { BrevoBlockedReasons, saveBlacklistEmails } from "@/jobs/updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 import { BlackListOrigins } from "@/services/application.service"
+import { useMongo } from "@tests/utils/mongo.test.utils"
 
 import { BrevoEventStatus } from "./brevo.service"
 import { IBrevoWebhookEvent, processHardBounceWebhookEvent } from "./emails.service"
