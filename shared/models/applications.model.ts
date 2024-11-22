@@ -171,12 +171,29 @@ const ZApplicationV2Base = ZApplication.pick({
   applicant_last_name: true,
   applicant_email: true,
   applicant_phone: true,
+  applicant_attachment_name: true,
   caller: true,
 }).extend({
   applicant_message: ZApplication.shape.applicant_message_to_company.optional(),
-  applicant_file_name: ZApplication.shape.applicant_attachment_name,
-  applicant_file_content: z.string().max(4_215_276).describe("Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo."),
+  applicant_attachment_content: z.string().max(4_215_276).describe("Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo."),
 })
+
+type JobCollectionName = "recruteurslba" | "jobs_partners" | "recruiters"
+export const ZApplicationApiPayload = ZApplicationV2Base.extend({
+  recipient_id: z
+    .string()
+    .transform((recipientId) => {
+      const [collectionName, jobId] = recipientId.split("_")
+      if (!["recruteurslba", "jobs_parnters", "recruiters"].includes(collectionName)) {
+        throw new Error(`Invalid collection name: ${collectionName}`)
+      }
+      return { collectionName: collectionName as JobCollectionName, jobId }
+    })
+    .describe("Identifiant unique de la ressource vers laquelle la candidature est faite, préfixé par le nom de la collection"),
+  job_searched_by_user: ZApplication.shape.job_searched_by_user,
+})
+export type IApplicationApiPayloadOutput = z.output<typeof ZApplicationApiPayload>
+export type IApplicationApiPayload = z.input<typeof ZApplicationApiPayload>
 
 export const ZApplicationApiRecruteurId = ZApplicationV2Base.extend({
   recruteur_id: z.string().describe("Identifiant unique du recruteur issue de La bonne alternance"),
