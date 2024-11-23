@@ -114,7 +114,7 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
           }
         } catch (err) {
           counters.error += documents.length
-          const newError = internal(`error pour lors du traitement d'un groupe de documents`)
+          const newError = internal(`error lors du traitement d'un groupe de documents`)
           logger.error(newError.message, err)
           newError.cause = err
           sentryCaptureException(newError)
