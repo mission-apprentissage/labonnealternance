@@ -8,7 +8,7 @@ const ZAcademie = z
   })
   .strict()
 
-const Z2DCoord = z.tuple([extensions.longitude({ coerce: false }), extensions.latitude({ coerce: false })])
+export const Z2DCoord = z.tuple([extensions.longitude({ coerce: false }), extensions.latitude({ coerce: false })])
 
 export const ZPointGeometry = z
   .object({
