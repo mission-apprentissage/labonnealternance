@@ -26,7 +26,7 @@ export const jobsApiV3Routes = (server: Server) => {
       const user = getUserFromRequest(req, zRoutes.post["/v3/jobs"]).value
       const offer = jobsRouteApiv3Converters.convertToJobsPartnersWritableApi(req.body)
       const id = await createJobOffer(user, offer)
-      return res.status(201).send({ id })
+      return res.status(200).send({ id })
     }
   )
 
