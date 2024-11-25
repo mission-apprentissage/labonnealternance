@@ -1,8 +1,7 @@
 import { setTimeout } from "timers/promises"
 
-import { badRequest, internal, isBoom } from "@hapi/boom"
+import { badRequest, internal } from "@hapi/boom"
 import { captureException } from "@sentry/node"
-import { AxiosResponse } from "axios"
 import { Filter as MongoDBFilter, ObjectId } from "mongodb"
 import {
   IAdresseV3,
@@ -18,7 +17,6 @@ import {
   parseEnum,
   TrafficType,
   ZCfaReferentielData,
-  ZPointGeometry,
 } from "shared"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants"
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
@@ -51,8 +49,9 @@ import { getCatalogueEtablissements } from "./catalogue.service"
 import { upsertCfa } from "./cfa.service"
 import { fetchOpcosFromCFADock } from "./cfadock.service"
 import dayjs from "./dayjs.service"
-import { IAPIAdresse, ICFADock, IFeature, IFormatAPIEntreprise, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types"
+import { ICFADock, IFormatAPIEntreprise, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types"
 import { createFormulaire, getFormulaire } from "./formulaire.service"
+import { geometryToGeoCoord, getGeoCoordinates } from "./geolocation.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getOpcoBySirenFromDB, getOpcosBySiretFromDB, insertOpcos, saveOpco } from "./opco.service"
 import { updateEntrepriseOpco, upsertEntrepriseData, UserAndOrganization } from "./organization.service"
@@ -185,57 +184,6 @@ const getEtablissementFromReferentiel = async (siret: string): Promise<IReferent
   }
 }
 
-// when in string format: $latitude,$longitude
-export type GeoCoord = {
-  latitude: number
-  longitude: number
-}
-
-export const getGeoPoint = async (adresse: string): Promise<IGeoPoint> => {
-  try {
-    const response: AxiosResponse<IAPIAdresse> = await getHttpClient().get(`https://api-adresse.data.gouv.fr/search?q=${encodeURIComponent(adresse)}&limit=1`)
-    const firstFeature = response.data?.features.at(0)
-    if (!firstFeature) {
-      throw internal("getGeoPoint: addresse non trouvée", { adresse })
-    }
-
-    return ZPointGeometry.parse(firstFeature.geometry)
-  } catch (error: any) {
-    if (isBoom(error)) {
-      throw error
-    }
-    const newError = internal(`getGeoPoint: erreur de récupération des geo coordonnées`, { adresse })
-    newError.cause = error
-    throw newError
-  }
-}
-
-export const getGeoFeature = async (adresse: string): Promise<IFeature> => {
-  try {
-    const response: AxiosResponse<IAPIAdresse> = await getHttpClient().get(`https://api-adresse.data.gouv.fr/search?q=${encodeURIComponent(adresse.toUpperCase())}&limit=1`)
-    const firstFeature = response.data?.features.at(0)
-    if (!firstFeature) {
-      throw internal("getGeoPoint: addresse non trouvée", { adresse })
-    }
-
-    return firstFeature
-  } catch (error: any) {
-    if (isBoom(error)) {
-      throw error
-    }
-    const newError = internal(`getGeoFeature: erreur de récupération des geo coordonnées`, { adresse })
-    newError.cause = error
-    throw newError
-  }
-}
-
-export const getGeoCoordinates = async (adresse: string): Promise<GeoCoord> => {
-  const geopoint = await getGeoPoint(adresse)
-  const [longitude, latitude] = geopoint.coordinates
-
-  return { latitude, longitude }
-}
-
 type IGetAllEmailFromLbaCompanyLegacy = Pick<ILbaCompanyLegacy, "email">
 export const getAllEstablishmentFromLbaCompanyLegacy = async (query: MongoDBFilter<ILbaCompanyLegacy>) =>
   (await getDbCollection("recruteurslbalegacies").find(query).project({ email: 1, _id: 0 }).toArray()) as IGetAllEmailFromLbaCompanyLegacy[]
@@ -284,17 +232,6 @@ export const formatEntrepriseData = (data: IEtablissementGouvData["data"]): IFor
     naf_label: data.activite_principale.libelle,
     establishment_size: getEffectif(data.unite_legale.tranche_effectif_salarie.code),
     establishment_creation_date: data.unite_legale?.date_creation ? new Date(data.unite_legale.date_creation * 1000) : null,
-  }
-}
-
-function geometryToGeoCoord(geometry): [number, number] {
-  const { type } = geometry
-  if (type === "Point") {
-    return geometry.coordinates
-  } else if (type === "Polygon") {
-    return geometry.coordinates[0][0]
-  } else {
-    throw new Error(`Badly formatted geometry. type=${type}`)
   }
 }
 

@@ -5,7 +5,7 @@ import { IModelDescriptor, zObjectId } from "./common"
 
 const collectionName = "cache_geolocation" as const
 
-const ZPointGeometry = z.object({
+export const ZPointGeometry = z.object({
   type: z.literal("Point"),
   coordinates: Z2DCoord,
 })

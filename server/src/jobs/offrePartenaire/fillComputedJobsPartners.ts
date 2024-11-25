@@ -1,4 +1,4 @@
-import { fillLocationInfosForPartners } from "./fillLocationInfosForPartners copy"
+import { fillLocationInfosForPartners } from "./fillLocationInfosForPartners"
 import { fillOpcoInfosForPartners } from "./fillOpcoInfosForPartners"
 import { fillSiretInfosForPartners } from "./fillSiretInfosForPartners"
 import { validateComputedJobPartners } from "./validateComputedJobPartners"

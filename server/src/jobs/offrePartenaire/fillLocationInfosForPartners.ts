@@ -1,7 +1,7 @@
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { joinNonNullStrings } from "shared/utils"
 
-import { getGeolocation, getReverseGeolocationFromApiAdresse } from "@/services/geolocation.service"
+import { getCityFromProperties, getGeolocation, getReverseGeolocationFromApiAdresse, getStreetFromProperties } from "@/services/geolocation.service"
 
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 
@@ -34,9 +34,9 @@ export const fillLocationInfosForPartners = async () => {
       if (!geolocation) {
         return []
       } else {
-        const found_city = geolocation?.properties?.city ?? geolocation?.properties?.municipality ?? geolocation?.properties?.locality ?? null
+        const found_city = getCityFromProperties(geolocation)
         const found_zipcode = geolocation?.properties.postcode || null
-        const found_street_label = geolocation?.properties?.street ? geolocation?.properties?.name : null
+        const found_street_label = getStreetFromProperties(geolocation)
         const found_geopoint = geolocation?.geometry || null
         const found_address_label = joinNonNullStrings([found_street_label, found_zipcode, found_city])
 
