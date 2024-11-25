@@ -25,6 +25,8 @@ export const ZRawRHAlternance = z.object({
       companyUrl: z.string().nullish(),
       companyAddress: z.string().nullish(),
       jobUrl: z.string().nullish(),
+      jobCity: z.string().nullish(),
+      jobPostalCode: z.string().nullish(),
     })
     .passthrough(),
 })

@@ -5,6 +5,7 @@ import { TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import rawRHAlternanceModel, { IRawRHAlternance } from "shared/models/rawRHAlternance.model"
+import { joinNonNullStrings } from "shared/utils"
 import { z } from "zod"
 
 import { logger } from "@/common/logger"
@@ -80,7 +81,6 @@ export const rawRhAlternanceToComputedMapper =
   (now: Date) =>
   ({
     jobCode,
-    companyAddress,
     companyName,
     companySiret,
     companyUrl,
@@ -89,6 +89,8 @@ export const rawRhAlternanceToComputedMapper =
     jobSubmitDateTime,
     jobType,
     jobUrl,
+    jobCity,
+    jobPostalCode,
   }: IRawRHAlternance["job"]): IComputedJobsPartners => {
     const offer_creation = jobSubmitDateTime ? dayjs.tz(jobSubmitDateTime).toDate() : now
     const isValid: boolean = jobType === "Alternance"
@@ -109,7 +111,9 @@ export const rawRhAlternanceToComputedMapper =
       workplace_siret: companySiret,
       workplace_name: companyName,
       workplace_website: companyUrl,
-      workplace_address_label: companyAddress,
+      workplace_address_label: joinNonNullStrings([jobPostalCode, jobCity]),
+      workplace_address_city: jobCity,
+      workplace_address_zipcode: jobPostalCode,
       apply_url: jobUrl,
       errors: [],
       validated: false,
