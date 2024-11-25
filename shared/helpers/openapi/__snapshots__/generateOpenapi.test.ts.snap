@@ -118,7 +118,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "company_siret": {
             "description": "Le numéro de SIRET de l'établissement",
             "example": "78424186100011",
-            "pattern": "^[0-9]{14}$",
+            "pattern": "^\\d{14}$",
             "type": "string",
           },
           "company_type": {
@@ -397,7 +397,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                   "siret": {
                     "description": "Le numéro de SIRET de l'établissement",
                     "example": "78424186100011",
-                    "pattern": "^[0-9]{14}$",
+                    "pattern": "^\\d{14}$",
                     "type": [
                       "string",
                       "null",
@@ -486,7 +486,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "siret": {
                 "description": "Le numéro de SIRET de l'établissement",
                 "example": "78424186100011",
-                "pattern": "^[0-9]{14}$",
+                "pattern": "^\\d{14}$",
                 "type": [
                   "string",
                   "null",
@@ -1044,10 +1044,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                   ],
                   "type": "object",
                 },
-                "type": [
-                  "array",
-                  "null",
-                ],
+                "type": "array",
               },
               "competences": {
                 "additionalProperties": false,
@@ -1309,6 +1306,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "required": [
               "numero",
               "rome",
+              "appellations",
               "definition",
               "acces_metier",
               "competences",
@@ -1402,7 +1400,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                   "siret": {
                     "description": "Le numéro de SIRET de l'établissement",
                     "example": "78424186100011",
-                    "pattern": "^[0-9]{14}$",
+                    "pattern": "^\\d{14}$",
                     "type": [
                       "string",
                       "null",
@@ -1491,7 +1489,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "siret": {
                 "description": "Le numéro de SIRET de l'établissement",
                 "example": "78424186100011",
-                "pattern": "^[0-9]{14}$",
+                "pattern": "^\\d{14}$",
                 "type": [
                   "string",
                   "null",
@@ -1661,7 +1659,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                   "siret": {
                     "description": "Le numéro de SIRET de l'établissement",
                     "example": "78424186100011",
-                    "pattern": "^[0-9]{14}$",
+                    "pattern": "^\\d{14}$",
                     "type": [
                       "string",
                       "null",
@@ -1750,7 +1748,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "siret": {
                 "description": "Le numéro de SIRET de l'établissement",
                 "example": "78424186100011",
-                "pattern": "^[0-9]{14}$",
+                "pattern": "^\\d{14}$",
                 "type": [
                   "string",
                   "null",
@@ -2004,10 +2002,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                   ],
                   "type": "object",
                 },
-                "type": [
-                  "array",
-                  "null",
-                ],
+                "type": "array",
               },
               "competences": {
                 "additionalProperties": false,
@@ -2269,6 +2264,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "required": [
               "numero",
               "rome",
+              "appellations",
               "definition",
               "acces_metier",
               "competences",
@@ -2429,7 +2425,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                   "siret": {
                     "description": "Le numéro de SIRET de l'établissement",
                     "example": "78424186100011",
-                    "pattern": "^[0-9]{14}$",
+                    "pattern": "^\\d{14}$",
                     "type": [
                       "string",
                       "null",
@@ -2518,7 +2514,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "siret": {
                 "description": "Le numéro de SIRET de l'établissement",
                 "example": "78424186100011",
-                "pattern": "^[0-9]{14}$",
+                "pattern": "^\\d{14}$",
                 "type": [
                   "string",
                   "null",
@@ -3246,7 +3242,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                         "etablissement_formateur_siret": {
                           "description": "Le numéro de SIRET de l'établissement",
                           "example": "78424186100011",
-                          "pattern": "^[0-9]{14}$",
+                          "pattern": "^\\d{14}$",
                           "type": [
                             "string",
                             "null",
@@ -3493,7 +3489,7 @@ Limite : 7 appel(s) / 1 seconde(s)
                                   "siret": {
                                     "description": "Le numéro de SIRET de l'établissement",
                                     "example": "78424186100011",
-                                    "pattern": "^[0-9]{14}$",
+                                    "pattern": "^\\d{14}$",
                                     "type": [
                                       "string",
                                       "null",
@@ -3575,7 +3571,7 @@ Limite : 7 appel(s) / 1 seconde(s)
                               "siret": {
                                 "description": "Le numéro de SIRET de l'établissement",
                                 "example": "78424186100011",
-                                "pattern": "^[0-9]{14}$",
+                                "pattern": "^\\d{14}$",
                                 "type": [
                                   "string",
                                   "null",
@@ -3845,7 +3841,7 @@ Limite : 7 appel(s) / 1 seconde(s)
                                 "siret": {
                                   "description": "Le numéro de SIRET de l'établissement",
                                   "example": "78424186100011",
-                                  "pattern": "^[0-9]{14}$",
+                                  "pattern": "^\\d{14}$",
                                   "type": [
                                     "string",
                                     "null",
@@ -3927,7 +3923,7 @@ Limite : 7 appel(s) / 1 seconde(s)
                             "siret": {
                               "description": "Le numéro de SIRET de l'établissement",
                               "example": "78424186100011",
-                              "pattern": "^[0-9]{14}$",
+                              "pattern": "^\\d{14}$",
                               "type": [
                                 "string",
                                 "null",
@@ -4286,7 +4282,7 @@ Limite : 7 appel(s) / 1 seconde(s)
                                   "siret": {
                                     "description": "Le numéro de SIRET de l'établissement",
                                     "example": "78424186100011",
-                                    "pattern": "^[0-9]{14}$",
+                                    "pattern": "^\\d{14}$",
                                     "type": [
                                       "string",
                                       "null",
@@ -4368,7 +4364,7 @@ Limite : 7 appel(s) / 1 seconde(s)
                               "siret": {
                                 "description": "Le numéro de SIRET de l'établissement",
                                 "example": "78424186100011",
-                                "pattern": "^[0-9]{14}$",
+                                "pattern": "^\\d{14}$",
                                 "type": [
                                   "string",
                                   "null",
@@ -4709,7 +4705,7 @@ Limite : 7 appel(s) / 1 seconde(s)
                                   "siret": {
                                     "description": "Le numéro de SIRET de l'établissement",
                                     "example": "78424186100011",
-                                    "pattern": "^[0-9]{14}$",
+                                    "pattern": "^\\d{14}$",
                                     "type": [
                                       "string",
                                       "null",
@@ -4791,7 +4787,7 @@ Limite : 7 appel(s) / 1 seconde(s)
                               "siret": {
                                 "description": "Le numéro de SIRET de l'établissement",
                                 "example": "78424186100011",
-                                "pattern": "^[0-9]{14}$",
+                                "pattern": "^\\d{14}$",
                                 "type": [
                                   "string",
                                   "null",
@@ -5132,7 +5128,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "schema": {
               "description": "Le numéro de SIRET de l'établissement",
               "example": "78424186100011",
-              "pattern": "^[0-9]{14}$",
+              "pattern": "^\\d{14}$",
               "type": "string",
             },
           },
@@ -5264,7 +5260,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "schema": {
               "description": "Le numéro de SIRET de l'établissement",
               "example": "78424186100011",
-              "pattern": "^[0-9]{14}$",
+              "pattern": "^\\d{14}$",
               "type": "string",
             },
           },
@@ -7550,7 +7546,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "schema": {
               "description": "Le numéro de SIRET de l'établissement",
               "example": "78424186100011",
-              "pattern": "^[0-9]{14}$",
+              "pattern": "^\\d{14}$",
               "type": "string",
             },
           },
@@ -7903,7 +7899,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "schema": {
               "description": "Le numéro de SIRET de l'établissement",
               "example": "78424186100011",
-              "pattern": "^[0-9]{14}$",
+              "pattern": "^\\d{14}$",
               "type": "string",
             },
           },
@@ -7976,7 +7972,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                   "establishment_siret": {
                     "description": "Le numéro de SIRET de l'établissement",
                     "example": "78424186100011",
-                    "pattern": "^[0-9]{14}$",
+                    "pattern": "^\\d{14}$",
                     "type": "string",
                   },
                   "first_name": {
@@ -9650,6 +9646,1361 @@ Limite : 20 appel(s) / 1 seconde(s)
         "security": [],
         "tags": [
           "V1 - Metiers",
+        ],
+      },
+    },
+    "/v3/jobs": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "apply": {
+                    "properties": {
+                      "email": {
+                        "description": "Email de contact",
+                        "format": "email",
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "phone": {
+                        "description": "Téléphone de contact",
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "url": {
+                        "description": "URL pour candidater",
+                        "format": "uri",
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                    },
+                    "type": "object",
+                  },
+                  "contract": {
+                    "properties": {
+                      "duration": {
+                        "description": "Durée du contrat en mois",
+                        "minimum": 0,
+                        "type": [
+                          "integer",
+                          "null",
+                        ],
+                      },
+                      "remote": {
+                        "description": "Format de travail de l'offre",
+                        "enum": [
+                          "onsite",
+                          "remote",
+                          "hybrid",
+                        ],
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "start": {
+                        "format": "date-time",
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "type": {
+                        "default": [
+                          "Apprentissage",
+                          "Professionnalisation",
+                        ],
+                        "description": "type de contrat, formaté à l'insertion",
+                        "items": {
+                          "enum": [
+                            "Apprentissage",
+                            "Professionnalisation",
+                          ],
+                          "type": "string",
+                        },
+                        "type": "array",
+                      },
+                    },
+                    "type": "object",
+                  },
+                  "identifier": {
+                    "properties": {
+                      "partner_job_id": {
+                        "description": "Identifiant d'origine l'offre provenant du partenaire",
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                    },
+                    "type": "object",
+                  },
+                  "offer": {
+                    "properties": {
+                      "access_conditions": {
+                        "default": [],
+                        "description": "Conditions d'accès à l'offre",
+                        "items": {
+                          "type": "string",
+                        },
+                        "type": "array",
+                      },
+                      "description": {
+                        "description": "description de l'offre, soit définit par le partenaire, soit celle du ROME si pas suffisament grande",
+                        "minLength": 30,
+                        "type": "string",
+                      },
+                      "desired_skills": {
+                        "default": [],
+                        "description": "Compétence attendues par le candidat pour l'offre",
+                        "items": {
+                          "type": "string",
+                        },
+                        "type": "array",
+                      },
+                      "multicast": {
+                        "default": true,
+                        "description": "Si l'offre peut être diffusé sur l'ensemble des plateformes partenaires",
+                        "type": "boolean",
+                      },
+                      "opening_count": {
+                        "default": 1,
+                        "description": "Nombre de poste disponible",
+                        "type": "number",
+                      },
+                      "origin": {
+                        "description": "Origine de l'offre provenant d'un aggregateur",
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "publication": {
+                        "properties": {
+                          "creation": {
+                            "format": "date-time",
+                            "type": [
+                              "string",
+                              "null",
+                            ],
+                          },
+                          "expiration": {
+                            "format": "date-time",
+                            "type": [
+                              "string",
+                              "null",
+                            ],
+                          },
+                        },
+                        "type": "object",
+                      },
+                      "rome_codes": {
+                        "description": "Code rome de l'offre",
+                        "items": {
+                          "pattern": "^[A-Z]\\d{4}$",
+                          "type": "string",
+                        },
+                        "type": [
+                          "array",
+                          "null",
+                        ],
+                      },
+                      "target_diploma": {
+                        "properties": {
+                          "european": {
+                            "enum": [
+                              "3",
+                              "4",
+                              "5",
+                              "6",
+                              "7",
+                            ],
+                            "type": [
+                              "string",
+                              "null",
+                            ],
+                          },
+                        },
+                        "type": [
+                          "object",
+                          "null",
+                        ],
+                      },
+                      "title": {
+                        "description": "Titre de l'offre",
+                        "minLength": 3,
+                        "type": "string",
+                      },
+                      "to_be_acquired_skills": {
+                        "default": [],
+                        "description": "Compétence acuqises durant l'alternance",
+                        "items": {
+                          "type": "string",
+                        },
+                        "type": "array",
+                      },
+                    },
+                    "required": [
+                      "title",
+                      "description",
+                    ],
+                    "type": "object",
+                  },
+                  "workplace": {
+                    "properties": {
+                      "description": {
+                        "description": "description de l'entreprise",
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "location": {
+                        "properties": {
+                          "address": {
+                            "type": [
+                              "string",
+                              "null",
+                            ],
+                          },
+                        },
+                        "type": [
+                          "object",
+                          "null",
+                        ],
+                      },
+                      "name": {
+                        "description": "Nom customisé de l'entreprise",
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "siret": {
+                        "description": "Le numéro de SIRET de l'établissement",
+                        "example": "78424186100011",
+                        "pattern": "^\\d{14}$",
+                        "type": "string",
+                      },
+                      "website": {
+                        "description": "Site web de l'entreprise",
+                        "format": "uri",
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                    },
+                    "required": [
+                      "siret",
+                    ],
+                    "type": "object",
+                  },
+                },
+                "required": [
+                  "offer",
+                  "apply",
+                  "workplace",
+                ],
+                "type": "object",
+              },
+            },
+          },
+          "required": true,
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "description": "Identifiant unique",
+                    },
+                  },
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-apprentissage": [],
+          },
+        ],
+        "tags": [
+          "V3 - Jobs",
+        ],
+      },
+    },
+    "/v3/jobs/search": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "latitude",
+            "required": false,
+            "schema": {
+              "maximum": 90,
+              "minimum": -90,
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          {
+            "in": "query",
+            "name": "longitude",
+            "required": false,
+            "schema": {
+              "maximum": 180,
+              "minimum": -180,
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          {
+            "in": "query",
+            "name": "radius",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "maximum": 200,
+              "minimum": 0,
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          {
+            "in": "query",
+            "name": "target_diploma_level",
+            "required": false,
+            "schema": {
+              "enum": [
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+              ],
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "romes",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+          },
+          {
+            "in": "query",
+            "name": "rncp",
+            "required": false,
+            "schema": {
+              "pattern": "^RNCP\\d{3,5}$",
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "jobs": {
+                      "items": {
+                        "properties": {
+                          "apply": {
+                            "properties": {
+                              "phone": {
+                                "description": "Téléphone de contact",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "url": {
+                                "description": "URL pour candidater",
+                                "format": "uri",
+                                "type": "string",
+                              },
+                            },
+                            "required": [
+                              "url",
+                              "phone",
+                            ],
+                            "type": "object",
+                          },
+                          "contract": {
+                            "properties": {
+                              "duration": {
+                                "description": "Durée du contrat en mois",
+                                "minimum": 0,
+                                "type": [
+                                  "integer",
+                                  "null",
+                                ],
+                              },
+                              "remote": {
+                                "description": "Format de travail de l'offre",
+                                "enum": [
+                                  "onsite",
+                                  "remote",
+                                  "hybrid",
+                                ],
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "start": {
+                                "description": "Date de début de contrat",
+                                "format": "date-time",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "type": {
+                                "description": "type de contrat, formaté à l'insertion",
+                                "items": {
+                                  "enum": [
+                                    "Apprentissage",
+                                    "Professionnalisation",
+                                  ],
+                                  "type": "string",
+                                },
+                                "type": "array",
+                              },
+                            },
+                            "required": [
+                              "start",
+                              "duration",
+                              "type",
+                              "remote",
+                            ],
+                            "type": "object",
+                          },
+                          "identifier": {
+                            "properties": {
+                              "id": {
+                                "anyOf": [
+                                  {
+                                    "description": "Identifiant unique",
+                                  },
+                                  {
+                                    "type": "string",
+                                  },
+                                  {
+                                    "type": "null",
+                                  },
+                                ],
+                                "description": "Identifiant de l'offre",
+                              },
+                              "partner_job_id": {
+                                "description": "Identifiant d'origine l'offre provenant du partenaire",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "partner_label": {
+                                "description": "Référence du partenaire",
+                                "type": "string",
+                              },
+                            },
+                            "required": [
+                              "id",
+                              "partner_label",
+                              "partner_job_id",
+                            ],
+                            "type": "object",
+                          },
+                          "offer": {
+                            "properties": {
+                              "access_conditions": {
+                                "description": "Conditions d'accès à l'offre",
+                                "items": {
+                                  "type": "string",
+                                },
+                                "type": "array",
+                              },
+                              "description": {
+                                "description": "description de l'offre, soit définit par le partenaire, soit celle du ROME si pas suffisament grande",
+                                "type": "string",
+                              },
+                              "desired_skills": {
+                                "description": "Compétence attendues par le candidat pour l'offre",
+                                "items": {
+                                  "type": "string",
+                                },
+                                "type": "array",
+                              },
+                              "opening_count": {
+                                "description": "Nombre de poste disponible",
+                                "type": "number",
+                              },
+                              "publication": {
+                                "properties": {
+                                  "creation": {
+                                    "description": "Date de creation de l'offre",
+                                    "format": "date-time",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "expiration": {
+                                    "description": "Date d'expiration de l'offre. Si pas présente, mettre à creation_date + 60j",
+                                    "format": "date-time",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                },
+                                "required": [
+                                  "creation",
+                                  "expiration",
+                                ],
+                                "type": "object",
+                              },
+                              "rome_codes": {
+                                "description": "Code rome de l'offre",
+                                "items": {
+                                  "pattern": "^[A-Z]\\d{4}$",
+                                  "type": "string",
+                                },
+                                "type": "array",
+                              },
+                              "status": {
+                                "description": "Status de l'offre (surtout utilisé pour les offres ajouté par API)",
+                                "enum": [
+                                  "Active",
+                                  "Filled",
+                                  "Cancelled",
+                                  "Pending",
+                                ],
+                                "type": "string",
+                              },
+                              "target_diploma": {
+                                "properties": {
+                                  "european": {
+                                    "description": "Niveau de diplome visé en fin d'étude, transformé pour chaque partenaire",
+                                    "enum": [
+                                      "3",
+                                      "4",
+                                      "5",
+                                      "6",
+                                      "7",
+                                    ],
+                                    "type": "string",
+                                  },
+                                  "label": {
+                                    "description": "Libellé du niveau de diplome",
+                                    "type": "string",
+                                  },
+                                },
+                                "required": [
+                                  "european",
+                                  "label",
+                                ],
+                                "type": [
+                                  "object",
+                                  "null",
+                                ],
+                              },
+                              "title": {
+                                "description": "Titre de l'offre",
+                                "minLength": 3,
+                                "type": "string",
+                              },
+                              "to_be_acquired_skills": {
+                                "description": "Compétence acuqises durant l'alternance",
+                                "items": {
+                                  "type": "string",
+                                },
+                                "type": "array",
+                              },
+                            },
+                            "required": [
+                              "title",
+                              "rome_codes",
+                              "description",
+                              "target_diploma",
+                              "desired_skills",
+                              "to_be_acquired_skills",
+                              "access_conditions",
+                              "publication",
+                              "opening_count",
+                              "status",
+                            ],
+                            "type": "object",
+                          },
+                          "workplace": {
+                            "properties": {
+                              "brand": {
+                                "description": "Nom d'enseigne de l'établissement",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "description": {
+                                "description": "description de l'entreprise",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "domain": {
+                                "properties": {
+                                  "idcc": {
+                                    "description": "Identifiant convention collective",
+                                    "type": [
+                                      "number",
+                                      "null",
+                                    ],
+                                  },
+                                  "naf": {
+                                    "properties": {
+                                      "code": {
+                                        "type": "string",
+                                      },
+                                      "label": {
+                                        "description": "Libelle NAF",
+                                        "type": [
+                                          "string",
+                                          "null",
+                                        ],
+                                      },
+                                    },
+                                    "required": [
+                                      "code",
+                                      "label",
+                                    ],
+                                    "type": [
+                                      "object",
+                                      "null",
+                                    ],
+                                  },
+                                  "opco": {
+                                    "description": "Nom de l'OPCO",
+                                    "enum": [
+                                      "AFDAS",
+                                      "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
+                                      "ATLAS",
+                                      "Constructys",
+                                      "L'Opcommerce",
+                                      "OCAPIAT",
+                                      "OPCO 2i",
+                                      "Opco entreprises de proximité",
+                                      "Opco Mobilités",
+                                      "Opco Santé",
+                                      "Uniformation, l'Opco de la Cohésion sociale",
+                                      "inconnu",
+                                      "OPCO multiple",
+                                    ],
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                },
+                                "required": [
+                                  "idcc",
+                                  "opco",
+                                  "naf",
+                                ],
+                                "type": "object",
+                              },
+                              "legal_name": {
+                                "description": "Nom légal de l'entreprise",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "location": {
+                                "properties": {
+                                  "address": {
+                                    "description": "Adresse de l'offre, provenant du SIRET ou du partenaire",
+                                    "type": "string",
+                                  },
+                                  "geopoint": {
+                                    "additionalProperties": false,
+                                    "description": "Geolocalisation de l'offre",
+                                    "properties": {
+                                      "coordinates": {
+                                        "prefixItems": [
+                                          {
+                                            "maximum": 180,
+                                            "minimum": -180,
+                                            "type": "number",
+                                          },
+                                          {
+                                            "maximum": 90,
+                                            "minimum": -90,
+                                            "type": "number",
+                                          },
+                                        ],
+                                        "type": "array",
+                                      },
+                                      "type": {
+                                        "enum": [
+                                          "Point",
+                                        ],
+                                        "type": "string",
+                                      },
+                                    },
+                                    "required": [
+                                      "coordinates",
+                                      "type",
+                                    ],
+                                    "type": "object",
+                                  },
+                                },
+                                "required": [
+                                  "address",
+                                  "geopoint",
+                                ],
+                                "type": "object",
+                              },
+                              "name": {
+                                "description": "Nom customisé de l'entreprise",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "siret": {
+                                "description": "Le numéro de SIRET de l'établissement",
+                                "example": "78424186100011",
+                                "pattern": "^\\d{14}$",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "size": {
+                                "description": "Taille de l'entreprise",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "website": {
+                                "description": "Site web de l'entreprise",
+                                "format": "uri",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                            },
+                            "required": [
+                              "siret",
+                              "brand",
+                              "legal_name",
+                              "website",
+                              "name",
+                              "description",
+                              "size",
+                              "location",
+                              "domain",
+                            ],
+                            "type": "object",
+                          },
+                        },
+                        "required": [
+                          "identifier",
+                          "workplace",
+                          "apply",
+                          "contract",
+                          "offer",
+                        ],
+                        "type": "object",
+                      },
+                      "type": "array",
+                    },
+                    "recruiters": {
+                      "items": {
+                        "properties": {
+                          "apply": {
+                            "properties": {
+                              "phone": {
+                                "description": "Téléphone de contact",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "url": {
+                                "description": "URL pour candidater",
+                                "format": "uri",
+                                "type": "string",
+                              },
+                            },
+                            "required": [
+                              "url",
+                              "phone",
+                            ],
+                            "type": "object",
+                          },
+                          "identifier": {
+                            "properties": {
+                              "id": {
+                                "description": "Identifiant unique",
+                              },
+                            },
+                            "type": "object",
+                          },
+                          "workplace": {
+                            "properties": {
+                              "brand": {
+                                "description": "Nom d'enseigne de l'établissement",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "description": {
+                                "description": "description de l'entreprise",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "domain": {
+                                "properties": {
+                                  "idcc": {
+                                    "description": "Identifiant convention collective",
+                                    "type": [
+                                      "number",
+                                      "null",
+                                    ],
+                                  },
+                                  "naf": {
+                                    "properties": {
+                                      "code": {
+                                        "type": "string",
+                                      },
+                                      "label": {
+                                        "description": "Libelle NAF",
+                                        "type": [
+                                          "string",
+                                          "null",
+                                        ],
+                                      },
+                                    },
+                                    "required": [
+                                      "code",
+                                      "label",
+                                    ],
+                                    "type": [
+                                      "object",
+                                      "null",
+                                    ],
+                                  },
+                                  "opco": {
+                                    "description": "Nom de l'OPCO",
+                                    "enum": [
+                                      "AFDAS",
+                                      "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
+                                      "ATLAS",
+                                      "Constructys",
+                                      "L'Opcommerce",
+                                      "OCAPIAT",
+                                      "OPCO 2i",
+                                      "Opco entreprises de proximité",
+                                      "Opco Mobilités",
+                                      "Opco Santé",
+                                      "Uniformation, l'Opco de la Cohésion sociale",
+                                      "inconnu",
+                                      "OPCO multiple",
+                                    ],
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                },
+                                "required": [
+                                  "idcc",
+                                  "opco",
+                                  "naf",
+                                ],
+                                "type": "object",
+                              },
+                              "legal_name": {
+                                "description": "Nom légal de l'entreprise",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "location": {
+                                "properties": {
+                                  "address": {
+                                    "description": "Adresse de l'offre, provenant du SIRET ou du partenaire",
+                                    "type": "string",
+                                  },
+                                  "geopoint": {
+                                    "additionalProperties": false,
+                                    "description": "Geolocalisation de l'offre",
+                                    "properties": {
+                                      "coordinates": {
+                                        "prefixItems": [
+                                          {
+                                            "maximum": 180,
+                                            "minimum": -180,
+                                            "type": "number",
+                                          },
+                                          {
+                                            "maximum": 90,
+                                            "minimum": -90,
+                                            "type": "number",
+                                          },
+                                        ],
+                                        "type": "array",
+                                      },
+                                      "type": {
+                                        "enum": [
+                                          "Point",
+                                        ],
+                                        "type": "string",
+                                      },
+                                    },
+                                    "required": [
+                                      "coordinates",
+                                      "type",
+                                    ],
+                                    "type": "object",
+                                  },
+                                },
+                                "required": [
+                                  "address",
+                                  "geopoint",
+                                ],
+                                "type": "object",
+                              },
+                              "name": {
+                                "description": "Nom customisé de l'entreprise",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "siret": {
+                                "description": "Le numéro de SIRET de l'établissement",
+                                "example": "78424186100011",
+                                "pattern": "^\\d{14}$",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "size": {
+                                "description": "Taille de l'entreprise",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "website": {
+                                "description": "Site web de l'entreprise",
+                                "format": "uri",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                            },
+                            "required": [
+                              "siret",
+                              "brand",
+                              "legal_name",
+                              "website",
+                              "name",
+                              "description",
+                              "size",
+                              "location",
+                              "domain",
+                            ],
+                            "type": "object",
+                          },
+                        },
+                        "required": [
+                          "identifier",
+                          "workplace",
+                          "apply",
+                        ],
+                        "type": "object",
+                      },
+                      "type": "array",
+                    },
+                    "warnings": {
+                      "items": {
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                          },
+                          "message": {
+                            "type": "string",
+                          },
+                        },
+                        "required": [
+                          "message",
+                          "code",
+                        ],
+                        "type": "object",
+                      },
+                      "type": "array",
+                    },
+                  },
+                  "required": [
+                    "jobs",
+                    "recruiters",
+                    "warnings",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-apprentissage": [],
+          },
+        ],
+        "tags": [
+          "V3 - Jobs",
+        ],
+      },
+    },
+    "/v3/jobs/{id}": {
+      "put": {
+        "parameters": [
+          {
+            "description": "Identifiant unique",
+            "in": "path",
+            "name": "id",
+            "required": false,
+            "schema": {
+              "description": "Identifiant unique",
+            },
+          },
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "apply": {
+                    "properties": {
+                      "email": {
+                        "description": "Email de contact",
+                        "format": "email",
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "phone": {
+                        "description": "Téléphone de contact",
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "url": {
+                        "description": "URL pour candidater",
+                        "format": "uri",
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                    },
+                    "type": "object",
+                  },
+                  "contract": {
+                    "properties": {
+                      "duration": {
+                        "description": "Durée du contrat en mois",
+                        "minimum": 0,
+                        "type": [
+                          "integer",
+                          "null",
+                        ],
+                      },
+                      "remote": {
+                        "description": "Format de travail de l'offre",
+                        "enum": [
+                          "onsite",
+                          "remote",
+                          "hybrid",
+                        ],
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "start": {
+                        "format": "date-time",
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "type": {
+                        "default": [
+                          "Apprentissage",
+                          "Professionnalisation",
+                        ],
+                        "description": "type de contrat, formaté à l'insertion",
+                        "items": {
+                          "enum": [
+                            "Apprentissage",
+                            "Professionnalisation",
+                          ],
+                          "type": "string",
+                        },
+                        "type": "array",
+                      },
+                    },
+                    "type": "object",
+                  },
+                  "identifier": {
+                    "properties": {
+                      "partner_job_id": {
+                        "description": "Identifiant d'origine l'offre provenant du partenaire",
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                    },
+                    "type": "object",
+                  },
+                  "offer": {
+                    "properties": {
+                      "access_conditions": {
+                        "default": [],
+                        "description": "Conditions d'accès à l'offre",
+                        "items": {
+                          "type": "string",
+                        },
+                        "type": "array",
+                      },
+                      "description": {
+                        "description": "description de l'offre, soit définit par le partenaire, soit celle du ROME si pas suffisament grande",
+                        "minLength": 30,
+                        "type": "string",
+                      },
+                      "desired_skills": {
+                        "default": [],
+                        "description": "Compétence attendues par le candidat pour l'offre",
+                        "items": {
+                          "type": "string",
+                        },
+                        "type": "array",
+                      },
+                      "multicast": {
+                        "default": true,
+                        "description": "Si l'offre peut être diffusé sur l'ensemble des plateformes partenaires",
+                        "type": "boolean",
+                      },
+                      "opening_count": {
+                        "default": 1,
+                        "description": "Nombre de poste disponible",
+                        "type": "number",
+                      },
+                      "origin": {
+                        "description": "Origine de l'offre provenant d'un aggregateur",
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "publication": {
+                        "properties": {
+                          "creation": {
+                            "format": "date-time",
+                            "type": [
+                              "string",
+                              "null",
+                            ],
+                          },
+                          "expiration": {
+                            "format": "date-time",
+                            "type": [
+                              "string",
+                              "null",
+                            ],
+                          },
+                        },
+                        "type": "object",
+                      },
+                      "rome_codes": {
+                        "description": "Code rome de l'offre",
+                        "items": {
+                          "pattern": "^[A-Z]\\d{4}$",
+                          "type": "string",
+                        },
+                        "type": [
+                          "array",
+                          "null",
+                        ],
+                      },
+                      "target_diploma": {
+                        "properties": {
+                          "european": {
+                            "enum": [
+                              "3",
+                              "4",
+                              "5",
+                              "6",
+                              "7",
+                            ],
+                            "type": [
+                              "string",
+                              "null",
+                            ],
+                          },
+                        },
+                        "type": [
+                          "object",
+                          "null",
+                        ],
+                      },
+                      "title": {
+                        "description": "Titre de l'offre",
+                        "minLength": 3,
+                        "type": "string",
+                      },
+                      "to_be_acquired_skills": {
+                        "default": [],
+                        "description": "Compétence acuqises durant l'alternance",
+                        "items": {
+                          "type": "string",
+                        },
+                        "type": "array",
+                      },
+                    },
+                    "required": [
+                      "title",
+                      "description",
+                    ],
+                    "type": "object",
+                  },
+                  "workplace": {
+                    "properties": {
+                      "description": {
+                        "description": "description de l'entreprise",
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "location": {
+                        "properties": {
+                          "address": {
+                            "type": [
+                              "string",
+                              "null",
+                            ],
+                          },
+                        },
+                        "type": [
+                          "object",
+                          "null",
+                        ],
+                      },
+                      "name": {
+                        "description": "Nom customisé de l'entreprise",
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "siret": {
+                        "description": "Le numéro de SIRET de l'établissement",
+                        "example": "78424186100011",
+                        "pattern": "^\\d{14}$",
+                        "type": "string",
+                      },
+                      "website": {
+                        "description": "Site web de l'entreprise",
+                        "format": "uri",
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                    },
+                    "required": [
+                      "siret",
+                    ],
+                    "type": "object",
+                  },
+                },
+                "required": [
+                  "offer",
+                  "apply",
+                  "workplace",
+                ],
+                "type": "object",
+              },
+            },
+          },
+          "required": true,
+        },
+        "responses": {
+          "204": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "null",
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-apprentissage": [],
+          },
+        ],
+        "tags": [
+          "V3 - Jobs",
         ],
       },
     },
