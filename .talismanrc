@@ -88,7 +88,7 @@ fileignoreconfig:
 - filename: server/src/services/emails.service.test.ts
   checksum: b06fe36c0000e1ab1e45617b6cd402267d0492eb7867fbf8f4b817161fe671d9
 - filename: server/src/services/formulaire.service.test.ts
-  checksum: 0b57b45fbf40bdbee16a3b61ad6d725532fa067a8c7baf3710352fbeb2ab059a
+  checksum: 16a7d096bc389e6e8a0811a22c18dd6dab3c2875397fb327a85a95fc4a05d044
 - filename: server/src/services/formulaire.service.ts
   checksum: e93ff7ce146d35e70eedcbe9b66097750e7754650468a5ada6b0ed72f0fdbc49
 - filename: server/src/services/jobs/jobOpportunity/jobOpportunity.service.test.ts
