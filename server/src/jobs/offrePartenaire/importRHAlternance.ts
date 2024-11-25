@@ -118,6 +118,10 @@ export const rawRhAlternanceToComputedMapper =
       errors: [],
       validated: false,
       business_error: isValid ? null : `expected jobType === "Alternance" but got ${jobType}`,
+      updated_at: now,
+      contract_start: null,
+      offer_rome_codes: null,
+      offer_target_diploma: null,
     }
     return computedJob
   }
