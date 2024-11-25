@@ -1,11 +1,13 @@
 import { internal, isBoom } from "@hapi/boom"
 import { AxiosResponse } from "axios"
+import FormData from "form-data"
 import { IPointFeature, IPointGeometry, ZPointGeometry } from "shared/models/cacheGeolocation.model"
 
 import { getHttpClient } from "@/common/utils/httpUtils"
 
 import { getGeolocationFromCache, saveGeolocationInCache } from "./cacheGeolocation.service"
 
+const API_ADRESSE_URL = "https://api-adresse.data.gouv.fr"
 export interface IAPIAdresse {
   type: string
   version: string
@@ -21,7 +23,7 @@ export const getGeolocationFromApiAdresse = async (address: string) => {
     let response: AxiosResponse<IAPIAdresse> | null = null
     let trys = 0
     while (trys < 3) {
-      response = await getHttpClient().get(`https://api-adresse.data.gouv.fr/search?q=${encodeURIComponent(address.toUpperCase())}&limit=1`)
+      response = await getHttpClient().get(`${API_ADRESSE_URL}/search?q=${encodeURIComponent(address.toUpperCase())}&limit=1`)
       if (response?.status === 429) {
         console.warn("429 ", new Date())
         trys++
@@ -50,7 +52,7 @@ export const getReverseGeolocationFromApiAdresse = async (lon: number, lat: numb
     let response: AxiosResponse<IAPIAdresse> | null = null
     let trys = 0
     while (trys < 3) {
-      response = await getHttpClient().get(`https://api-adresse.data.gouv.fr/reverse/?lon=${lon}&lat=${lat}&type=street&limit=1`)
+      response = await getHttpClient().get(`${API_ADRESSE_URL}/reverse/?lon=${lon}&lat=${lat}&type=street&limit=1`)
       if (response?.status === 429) {
         console.warn("429 ", new Date())
         trys++
@@ -141,3 +143,11 @@ export function geometryToGeoCoord(geometry): [number, number] {
 
 export const getCityFromProperties = (feature: IPointFeature | null) => feature?.properties?.city ?? feature?.properties?.municipality ?? feature?.properties?.locality ?? null
 export const getStreetFromProperties = (feature: IPointFeature | null) => (feature?.properties?.street ? feature?.properties?.name : null)
+
+export const getBulkGeoLocation = async (form: FormData) => {
+  return await getHttpClient().post("https://api-adresse.data.gouv.fr/search/csv/", form, {
+    headers: {
+      ...form.getHeaders(),
+    },
+  })
+}
