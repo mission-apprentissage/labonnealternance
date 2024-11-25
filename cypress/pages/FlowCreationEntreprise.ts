@@ -30,9 +30,6 @@ export const FlowCreationEntreprise = {
     submit() {
       cy.get("button[type='submit']").click()
     },
-    confirmAccountCreation() {
-      cy.get("[data-testid='confirm-account-creation']", { timeout: 20000 }).click()
-    },
   },
   offerPage: {
     assertUrl() {
