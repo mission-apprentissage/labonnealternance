@@ -39,7 +39,36 @@ export const getGeolocationFromApiAdresse = async (address: string) => {
     if (isBoom(error)) {
       throw error
     }
-    const newError = internal(`getGeoFeature: erreur de récupération des geo coordonnées`, { address })
+    const newError = internal(`getGeolocationFromApiAdresse: erreur de récupération des geo coordonnées`, { address })
+    newError.cause = error
+    throw newError
+  }
+}
+
+export const getReverseGeolocationFromApiAdresse = async (lon: number, lat: number): Promise<IPointFeature | null> => {
+  try {
+    let response: AxiosResponse<IAPIAdresse> | null = null
+    let trys = 0
+    while (trys < 3) {
+      response = await getHttpClient().get(`https://api-adresse.data.gouv.fr/reverse/?lon=${lon}&lat=${lat}&type=street&limit=1`)
+      if (response?.status === 429) {
+        console.warn("429 ", new Date())
+        trys++
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+      } else {
+        break
+      }
+    }
+    if (response?.data?.features?.length) {
+      return response.data.features.at(0)!
+    } else {
+      return null
+    }
+  } catch (error: any) {
+    if (isBoom(error)) {
+      throw error
+    }
+    const newError = internal(`getReverseGeolocationFromApiAdresse: erreur de récupération des geo coordonnées`, { lat, lon })
     newError.cause = error
     throw newError
   }
