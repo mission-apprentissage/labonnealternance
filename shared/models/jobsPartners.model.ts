@@ -156,7 +156,7 @@ export const ZJobsPartnersPostApiBodyBase = z.object({
   workplace_website: ZJobsPartnersOfferPrivate.shape.workplace_website.default(null),
   workplace_name: ZJobsPartnersOfferPrivate.shape.workplace_name.default(null),
   workplace_address_label: z.string().nullable().default(null),
-  pply_email: ZJobsPartnersOfferPrivate.shape.apply_email,
+  apply_email: ZJobsPartnersOfferPrivate.shape.apply_email,
   apply_url: ZJobsPartnersOfferApi.shape.apply_url.nullable().default(null),
   apply_phone: extensions.telephone.nullable().describe("Téléphone de contact").default(null),
 })
