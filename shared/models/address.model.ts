@@ -133,7 +133,7 @@ const ZPointProperties = z
   .passthrough()
 
 // only type="Point" feature
-const ZPointFeature = z.object({
+export const ZPointFeature = z.object({
   type: z.literal("Feature"),
   geometry: ZPointGeometry,
   properties: ZPointProperties,

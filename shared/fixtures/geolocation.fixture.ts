@@ -1,4 +1,4 @@
-import { IPointProperties } from "../models/cacheGeolocation.model"
+import { IPointProperties } from "../models"
 
 export function generateFeaturePropertyFixture(data: Partial<IPointProperties> = {}): IPointProperties {
   return {

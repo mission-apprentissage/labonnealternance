@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import { IPointFeature } from "shared/models/cacheGeolocation.model"
+import { IPointFeature } from "shared/models"
 
 import { getDbCollection } from "../common/utils/mongodbUtils"
 
