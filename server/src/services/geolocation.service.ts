@@ -1,7 +1,7 @@
 import { internal, isBoom } from "@hapi/boom"
 import { AxiosResponse } from "axios"
 import FormData from "form-data"
-import { IPointFeature, IPointGeometry, ZPointGeometry } from "shared/models/cacheGeolocation.model"
+import { IGeoPoint, IPointFeature, ZPointGeometry } from "shared/models"
 
 import { getHttpClient } from "@/common/utils/httpUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
@@ -105,7 +105,7 @@ export const getGeolocation = async (rawAddress: string): Promise<IPointFeature 
   }
 }
 
-export const getGeoPoint = async (adresse: string): Promise<IPointGeometry> => {
+export const getGeoPoint = async (adresse: string): Promise<IGeoPoint> => {
   try {
     const geolocation = await getGeolocation(adresse)
     if (!geolocation) {
