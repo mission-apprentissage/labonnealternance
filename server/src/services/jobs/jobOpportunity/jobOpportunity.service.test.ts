@@ -13,8 +13,8 @@ import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, ma
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import { ILbaCompany, IRecruiter, IReferentielRome, JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models"
-import { IJobsPartnersOfferPrivate, IJobsPartnersWritableApi, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
-import { ZJobsOpportunityResponse } from "shared/routes/jobOpportunity.routes"
+import { IJobsPartnersOfferPrivate, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
+import { zJobOfferApiWriteV3, zJobSearchApiV3Response, type IJobOfferApiWriteV3, type IJobOfferApiWriteV3Input } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
@@ -217,24 +217,32 @@ describe("findJobsOpportunities", () => {
     expect(results).toEqual({
       jobs: [
         expect.objectContaining({
-          _id: lbaJobs[0].jobs[0]._id.toString(),
-          workplace_geopoint: lbaJobs[0].geopoint,
+          identifier: { id: lbaJobs[0].jobs[0]._id, partner_job_id: null, partner_label: "La bonne alternance" },
+          workplace: expect.objectContaining({
+            location: expect.objectContaining({
+              geopoint: lbaJobs[0].geopoint,
+            }),
+          }),
         }),
         expect.objectContaining({
-          _id: null,
-          partner_job_id: ftJobs[0].id,
-          partner_label: "France Travail",
+          identifier: { id: null, partner_job_id: ftJobs[0].id, partner_label: "France Travail" },
         }),
         expect.objectContaining({
-          _id: partnerJobs[0]._id,
-          workplace_geopoint: partnerJobs[0].workplace_geopoint,
+          identifier: { id: partnerJobs[0]._id, partner_job_id: partnerJobs[0].partner_job_id, partner_label: partnerJobs[0].partner_label },
+          workplace: expect.objectContaining({
+            location: expect.objectContaining({
+              geopoint: partnerJobs[0].workplace_geopoint,
+            }),
+          }),
         }),
       ],
       recruiters: [
         expect.objectContaining({
-          _id: recruiters[0]._id,
-          workplace_geopoint: recruiters[0].geopoint,
-          workplace_name: recruiters[0].enseigne,
+          identifier: { id: recruiters[0]._id },
+          workplace: expect.objectContaining({
+            location: expect.objectContaining({ geopoint: recruiters[0].geopoint }),
+            name: recruiters[0].enseigne,
+          }),
         }),
       ],
       warnings: [],
@@ -255,13 +263,17 @@ describe("findJobsOpportunities", () => {
     )
 
     expect(
-      results.jobs.map(({ _id, apply_url, ...j }) => {
+      results.jobs.map((j) => {
+        j.identifier.id = ""
+        j.apply.url = ""
+
         return j
       })
     ).toMatchSnapshot()
     expect(
-      results.recruiters.map(({ _id, ...j }) => {
-        return j
+      results.recruiters.map((r) => {
+        r.identifier.id = new ObjectId("000000000000000000000000")
+        return r
       })
     ).toMatchSnapshot()
   })
@@ -280,43 +292,61 @@ describe("findJobsOpportunities", () => {
       new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
     )
 
-    const parseResult = ZJobsOpportunityResponse.safeParse(results)
+    const parseResult = zJobSearchApiV3Response.safeParse(results)
     expect.soft(parseResult.success).toBeTruthy()
     expect(parseResult.error).toBeUndefined()
     expect(results).toEqual({
       jobs: [
         expect.objectContaining({
-          _id: lbaJobs[0].jobs[0]._id.toString(),
-          workplace_geopoint: lbaJobs[0].geopoint,
+          identifier: { id: lbaJobs[0].jobs[0]._id, partner_job_id: null, partner_label: "La bonne alternance" },
+          workplace: expect.objectContaining({
+            location: expect.objectContaining({
+              geopoint: lbaJobs[0].geopoint,
+            }),
+          }),
         }),
         expect.objectContaining({
-          _id: lbaJobs[2].jobs[0]._id.toString(),
-          workplace_geopoint: lbaJobs[2].geopoint,
+          identifier: { id: lbaJobs[2].jobs[0]._id, partner_job_id: null, partner_label: "La bonne alternance" },
+          workplace: expect.objectContaining({
+            location: expect.objectContaining({
+              geopoint: lbaJobs[2].geopoint,
+            }),
+          }),
         }),
         expect.objectContaining({
-          _id: null,
-          partner_job_id: ftJobs[0].id,
-          partner_label: "France Travail",
+          identifier: { id: null, partner_job_id: ftJobs[0].id, partner_label: "France Travail" },
         }),
         expect.objectContaining({
-          _id: partnerJobs[0]._id,
-          workplace_geopoint: partnerJobs[0].workplace_geopoint,
+          identifier: { id: partnerJobs[0]._id, partner_job_id: partnerJobs[0].partner_job_id, partner_label: partnerJobs[0].partner_label },
+          workplace: expect.objectContaining({
+            location: expect.objectContaining({
+              geopoint: partnerJobs[0].workplace_geopoint,
+            }),
+          }),
         }),
         expect.objectContaining({
-          _id: partnerJobs[2]._id,
-          workplace_geopoint: partnerJobs[2].workplace_geopoint,
+          identifier: { id: partnerJobs[2]._id, partner_job_id: partnerJobs[2].partner_job_id, partner_label: partnerJobs[2].partner_label },
+          workplace: expect.objectContaining({
+            location: expect.objectContaining({
+              geopoint: partnerJobs[2].workplace_geopoint,
+            }),
+          }),
         }),
       ],
       recruiters: [
         expect.objectContaining({
-          _id: recruiters[0]._id,
-          workplace_geopoint: recruiters[0].geopoint,
-          workplace_name: recruiters[0].enseigne,
+          identifier: { id: recruiters[0]._id },
+          workplace: expect.objectContaining({
+            location: expect.objectContaining({ geopoint: recruiters[0].geopoint }),
+            name: recruiters[0].enseigne,
+          }),
         }),
         expect.objectContaining({
-          _id: recruiters[2]._id,
-          workplace_geopoint: recruiters[2].geopoint,
-          workplace_name: recruiters[2].enseigne,
+          identifier: { id: recruiters[2]._id },
+          workplace: expect.objectContaining({
+            location: expect.objectContaining({ geopoint: recruiters[2].geopoint }),
+            name: recruiters[2].enseigne,
+          }),
         }),
       ],
       warnings: [],
@@ -349,7 +379,7 @@ describe("findJobsOpportunities", () => {
       },
       new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
     )
-    const parseResult = ZJobsOpportunityResponse.safeParse(results)
+    const parseResult = zJobSearchApiV3Response.safeParse(results)
     expect.soft(parseResult.success).toBeTruthy()
     expect(parseResult.error).toBeUndefined()
 
@@ -357,31 +387,33 @@ describe("findJobsOpportunities", () => {
     expect(results).toEqual({
       jobs: [
         expect.objectContaining({
-          _id: lbaJobs[1].jobs[0]._id.toString(),
+          identifier: { id: lbaJobs[1].jobs[0]._id, partner_job_id: null, partner_label: "La bonne alternance" },
         }),
         expect.objectContaining({
-          _id: lbaJobs[0].jobs[0]._id.toString(),
+          identifier: { id: lbaJobs[0].jobs[0]._id, partner_job_id: null, partner_label: "La bonne alternance" },
         }),
         expect.objectContaining({
-          _id: null,
-          partner_job_id: ftJobs[0].id,
-          partner_label: "France Travail",
+          identifier: { id: null, partner_job_id: ftJobs[0].id, partner_label: "France Travail" },
         }),
         expect.objectContaining({
-          _id: partnerJobs[1]._id,
+          identifier: { id: partnerJobs[1]._id, partner_job_id: partnerJobs[1].partner_job_id, partner_label: partnerJobs[1].partner_label },
         }),
         expect.objectContaining({
-          _id: partnerJobs[0]._id,
+          identifier: { id: partnerJobs[0]._id, partner_job_id: partnerJobs[0].partner_job_id, partner_label: partnerJobs[0].partner_label },
         }),
       ],
       recruiters: [
         expect.objectContaining({
-          _id: recruiters[1]._id,
-          workplace_name: recruiters[1].enseigne,
+          identifier: { id: recruiters[1]._id },
+          workplace: expect.objectContaining({
+            name: recruiters[1].enseigne,
+          }),
         }),
         expect.objectContaining({
-          _id: recruiters[0]._id,
-          workplace_name: recruiters[0].enseigne,
+          identifier: { id: recruiters[0]._id },
+          workplace: expect.objectContaining({
+            name: recruiters[0].enseigne,
+          }),
         }),
       ],
       warnings: [],
@@ -419,26 +451,38 @@ describe("findJobsOpportunities", () => {
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
-      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
 
       expect(results).toEqual({
         jobs: [
           expect.objectContaining({
-            _id: lbaJobs[2].jobs[0]._id.toString(),
-            workplace_geopoint: lbaJobs[2].geopoint,
+            identifier: { id: lbaJobs[2].jobs[0]._id, partner_job_id: null, partner_label: "La bonne alternance" },
+            workplace: expect.objectContaining({
+              location: expect.objectContaining({
+                geopoint: lbaJobs[2].geopoint,
+              }),
+            }),
           }),
           expect.objectContaining({
-            _id: partnerJobs[2]._id,
-            workplace_geopoint: partnerJobs[2].workplace_geopoint,
+            identifier: { id: partnerJobs[2]._id, partner_job_id: partnerJobs[2].partner_job_id, partner_label: partnerJobs[2].partner_label },
+            workplace: expect.objectContaining({
+              location: expect.objectContaining({
+                geopoint: partnerJobs[2].workplace_geopoint,
+              }),
+            }),
           }),
         ],
         recruiters: [
           expect.objectContaining({
-            _id: recruiters[2]._id,
-            workplace_geopoint: recruiters[2].geopoint,
-            workplace_name: recruiters[2].enseigne,
+            identifier: { id: recruiters[2]._id },
+            workplace: expect.objectContaining({
+              name: recruiters[2].enseigne,
+              location: expect.objectContaining({
+                geopoint: recruiters[2].geopoint,
+              }),
+            }),
           }),
         ],
         warnings: [],
@@ -547,25 +591,37 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
-      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
       expect(results).toEqual({
         jobs: [
           expect.objectContaining({
-            _id: lbaJobs[2].jobs[0]._id.toString(),
-            workplace_geopoint: lbaJobs[2].geopoint,
+            identifier: { id: lbaJobs[2].jobs[0]._id, partner_job_id: null, partner_label: "La bonne alternance" },
+            workplace: expect.objectContaining({
+              location: expect.objectContaining({
+                geopoint: lbaJobs[2].geopoint,
+              }),
+            }),
           }),
           expect.objectContaining({
-            _id: partnerJobs[2]._id,
-            workplace_geopoint: partnerJobs[2].workplace_geopoint,
+            identifier: { id: partnerJobs[2]._id, partner_job_id: partnerJobs[2].partner_job_id, partner_label: partnerJobs[2].partner_label },
+            workplace: expect.objectContaining({
+              location: expect.objectContaining({
+                geopoint: partnerJobs[2].workplace_geopoint,
+              }),
+            }),
           }),
         ],
         recruiters: [
           expect.objectContaining({
-            _id: recruiters[2]._id,
-            workplace_geopoint: recruiters[2].geopoint,
-            workplace_name: recruiters[2].enseigne,
+            identifier: { id: recruiters[2]._id },
+            workplace: expect.objectContaining({
+              name: recruiters[2].enseigne,
+              location: expect.objectContaining({
+                geopoint: recruiters[2].geopoint,
+              }),
+            }),
           }),
         ],
         warnings: [],
@@ -607,43 +663,61 @@ describe("findJobsOpportunities", () => {
       new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
     )
 
-    const parseResult = ZJobsOpportunityResponse.safeParse(results)
+    const parseResult = zJobSearchApiV3Response.safeParse(results)
     expect.soft(parseResult.success).toBeTruthy()
     expect(parseResult.error).toBeUndefined()
     expect(results).toEqual({
       jobs: [
         expect.objectContaining({
-          _id: lbaJobs[0].jobs[0]._id.toString(),
-          workplace_geopoint: lbaJobs[0].geopoint,
+          identifier: { id: lbaJobs[0].jobs[0]._id, partner_job_id: null, partner_label: "La bonne alternance" },
+          workplace: expect.objectContaining({
+            location: expect.objectContaining({
+              geopoint: lbaJobs[0].geopoint,
+            }),
+          }),
         }),
         expect.objectContaining({
-          _id: lbaJobs[2].jobs[0]._id.toString(),
-          workplace_geopoint: lbaJobs[2].geopoint,
+          identifier: { id: lbaJobs[2].jobs[0]._id, partner_job_id: null, partner_label: "La bonne alternance" },
+          workplace: expect.objectContaining({
+            location: expect.objectContaining({
+              geopoint: lbaJobs[2].geopoint,
+            }),
+          }),
         }),
         expect.objectContaining({
-          _id: null,
-          partner_job_id: ftJobs[0].id,
-          partner_label: "France Travail",
+          identifier: { id: null, partner_job_id: ftJobs[0].id, partner_label: "France Travail" },
         }),
         expect.objectContaining({
-          _id: partnerJobs[0]._id,
-          workplace_geopoint: partnerJobs[0].workplace_geopoint,
+          identifier: { id: partnerJobs[0]._id, partner_job_id: partnerJobs[0].partner_job_id, partner_label: partnerJobs[0].partner_label },
+          workplace: expect.objectContaining({
+            location: expect.objectContaining({
+              geopoint: partnerJobs[0].workplace_geopoint,
+            }),
+          }),
         }),
         expect.objectContaining({
-          _id: partnerJobs[2]._id,
-          workplace_geopoint: partnerJobs[2].workplace_geopoint,
+          identifier: { id: partnerJobs[2]._id, partner_job_id: partnerJobs[2].partner_job_id, partner_label: partnerJobs[2].partner_label },
+          workplace: expect.objectContaining({
+            location: expect.objectContaining({
+              geopoint: partnerJobs[2].workplace_geopoint,
+            }),
+          }),
         }),
       ],
       recruiters: [
         expect.objectContaining({
-          _id: recruiters[0]._id,
-          workplace_geopoint: recruiters[0].geopoint,
-          workplace_name: recruiters[0].enseigne,
+          identifier: { id: recruiters[0]._id },
+          workplace: expect.objectContaining({
+            location: expect.objectContaining({ geopoint: recruiters[0].geopoint }),
+            name: recruiters[0].enseigne,
+          }),
         }),
         expect.objectContaining({
-          _id: recruiters[2]._id,
-          workplace_geopoint: recruiters[2].geopoint,
-          workplace_name: recruiters[2].enseigne,
+          identifier: { id: recruiters[2]._id },
+          workplace: expect.objectContaining({
+            location: expect.objectContaining({ geopoint: recruiters[2].geopoint }),
+            name: recruiters[2].enseigne,
+          }),
         }),
       ],
       warnings: [],
@@ -692,7 +766,7 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
-      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
       expect(results.recruiters).toHaveLength(150)
@@ -774,7 +848,7 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
-      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(1)
@@ -842,7 +916,7 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
-      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(2)
@@ -890,11 +964,11 @@ describe("findJobsOpportunities", () => {
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
 
-        const parseResult = ZJobsOpportunityResponse.safeParse(results)
+        const parseResult = zJobSearchApiV3Response.safeParse(results)
         expect.soft(parseResult.success).toBeTruthy()
         expect(parseResult.error).toBeUndefined()
         expect.soft(results.jobs).toHaveLength(2)
-        expect.soft(results.jobs.map((j) => j.offer_target_diploma)).toEqual(
+        expect.soft(results.jobs.map((j) => j.offer.target_diploma)).toEqual(
           expect.arrayContaining([
             null,
             {
@@ -944,7 +1018,7 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
-      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(150)
@@ -984,7 +1058,7 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
-      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(0)
@@ -1002,7 +1076,7 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
-      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(0)
@@ -1042,7 +1116,7 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
-      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(2)
@@ -1105,33 +1179,33 @@ describe("findJobsOpportunities", () => {
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
 
-        const parseResult = ZJobsOpportunityResponse.safeParse(results)
+        const parseResult = zJobSearchApiV3Response.safeParse(results)
         expect.soft(parseResult.success).toBeTruthy()
         expect(parseResult.error).toBeUndefined()
         expect(results.jobs).toHaveLength(3)
         expect(
           results.jobs.map((j) => ({
-            _id: j._id,
-            workspace_siret: j.workplace_siret,
-            workplace_geopoint: j.workplace_geopoint,
-            apply_phone: j.apply_phone,
+            _id: j.identifier.id,
+            workspace_siret: j.workplace.siret,
+            workplace_geopoint: j.workplace.location.geopoint,
+            apply_phone: j.apply.phone,
           }))
         ).toEqual(
           expect.arrayContaining([
             {
-              _id: lbaJobs[0].jobs[0]._id.toString(),
+              _id: lbaJobs[0].jobs[0]._id,
               workplace_geopoint: lbaJobs[0].geopoint,
               workspace_siret: lbaJobs[0].establishment_siret,
               apply_phone: lbaJobs[0].phone,
             },
             {
-              _id: delegatedLbaJob.jobs[0]._id.toString(),
+              _id: delegatedLbaJob.jobs[0]._id,
               workplace_geopoint: delegatedLbaJob.geopoint,
               workspace_siret: cfa.siret,
               apply_phone: userWithAccount.phone,
             },
             {
-              _id: delegatedLbaJob.jobs[1]._id.toString(),
+              _id: delegatedLbaJob.jobs[1]._id,
               workplace_geopoint: delegatedLbaJob.geopoint,
               workspace_siret: cfa.siret,
               apply_phone: userWithAccount.phone,
@@ -1173,11 +1247,11 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
-      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(1)
-      expect(results.jobs[0]._id).toBe(lbaJobs[0].jobs[0]._id.toString())
+      expect(results.jobs[0].identifier.id).toEqual(lbaJobs[0].jobs[0]._id)
     })
 
     it("should ignore recruiters without geopoint", async () => {
@@ -1212,11 +1286,11 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
-      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(1)
-      expect(results.jobs[0]._id).toBe(lbaJobs[0].jobs[0]._id.toString())
+      expect(results.jobs[0].identifier.id).toEqual(lbaJobs[0].jobs[0]._id)
     })
   })
 
@@ -1246,7 +1320,7 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
-      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(150)
@@ -1266,7 +1340,7 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
-      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(0)
@@ -1294,7 +1368,7 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
-      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(1)
@@ -1332,11 +1406,11 @@ describe("findJobsOpportunities", () => {
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
 
-        const parseResult = ZJobsOpportunityResponse.safeParse(results)
+        const parseResult = zJobSearchApiV3Response.safeParse(results)
         expect.soft(parseResult.success).toBeTruthy()
         expect(parseResult.error).toBeUndefined()
         expect(results.jobs).toHaveLength(2)
-        expect(results.jobs.map((j) => j.offer_target_diploma)).toEqual([null, { european: "3", label: "CAP, BEP, autres formations niveau (CAP)" }])
+        expect(results.jobs.map((j) => j.offer.target_diploma)).toEqual([null, { european: "3", label: "CAP, BEP, autres formations niveau (CAP)" }])
       })
     })
   })
@@ -1362,7 +1436,7 @@ describe("findJobsOpportunities", () => {
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
 
-        const parseResult = ZJobsOpportunityResponse.safeParse(results)
+        const parseResult = zJobSearchApiV3Response.safeParse(results)
         expect.soft(parseResult.success).toBeTruthy()
         expect(parseResult.error).toBeUndefined()
         expect(results.jobs).toHaveLength(0)
@@ -1389,7 +1463,7 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
-      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(0)
@@ -1431,7 +1505,7 @@ describe("findJobsOpportunities", () => {
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
 
-        const parseResult = ZJobsOpportunityResponse.safeParse(results)
+        const parseResult = zJobSearchApiV3Response.safeParse(results)
         expect.soft(parseResult.success).toBeTruthy()
         expect(parseResult.error).toBeUndefined()
         expect(results.jobs).toHaveLength(0)
@@ -1499,12 +1573,12 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
-      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(1)
       expect(results.warnings).toHaveLength(0)
-      expect(results.jobs[0].partner_job_id).toEqual(ftJobs[0].id)
+      expect(results.jobs[0].identifier.partner_job_id).toEqual(ftJobs[0].id)
     })
   })
 
@@ -1597,38 +1671,43 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
-      const parseResult = ZJobsOpportunityResponse.safeParse(results)
+      const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
       expect({
-        jobs: results.jobs.map((j) => ({ _id: j._id, partner_job_id: j.partner_job_id, partner_label: j.partner_label, workplace_legal_name: j.workplace_legal_name })),
-        recruiters: results.recruiters.map((j) => ({ _id: j._id, workplace_legal_name: j.workplace_legal_name })),
+        jobs: results.jobs.map((j) => ({
+          _id: j.identifier.id,
+          partner_job_id: j.identifier.partner_job_id,
+          partner_label: j.identifier.partner_label,
+          workplace_legal_name: j.workplace.legal_name,
+        })),
+        recruiters: results.recruiters.map((j) => ({ _id: j.identifier.id, workplace_legal_name: j.workplace.legal_name })),
       }).toEqual({
         jobs: [
           {
             // Paris
-            _id: lbaJobs[0].jobs[0]._id.toString(),
+            _id: lbaJobs[0].jobs[0]._id,
             partner_label: "La bonne alternance",
             partner_job_id: null,
             workplace_legal_name: lbaJobs[0].establishment_raison_sociale,
           },
           {
             // Levallois - 2024-01-01
-            _id: extraLbaJob.jobs[1]._id.toString(),
+            _id: extraLbaJob.jobs[1]._id,
             partner_label: "La bonne alternance",
             partner_job_id: null,
             workplace_legal_name: extraLbaJob.establishment_raison_sociale,
           },
           {
             // Levallois - 2023-01-01
-            _id: lbaJobs[2].jobs[0]._id.toString(),
+            _id: lbaJobs[2].jobs[0]._id,
             partner_label: "La bonne alternance",
             partner_job_id: null,
             workplace_legal_name: lbaJobs[2].establishment_raison_sociale,
           },
           {
             // Levallois - 2021-01-01
-            _id: extraLbaJob.jobs[0]._id.toString(),
+            _id: extraLbaJob.jobs[0]._id,
             partner_label: "La bonne alternance",
             partner_job_id: null,
             workplace_legal_name: extraLbaJob.establishment_raison_sociale,
@@ -1708,6 +1787,10 @@ describe("findJobsOpportunities", () => {
   })
 })
 
+function generateJobOfferApiWriteV3(input: IJobOfferApiWriteV3Input): IJobOfferApiWriteV3 {
+  return zJobOfferApiWriteV3.parse(input)
+}
+
 describe("createJobOffer", () => {
   const identity = {
     email: "mail@mailType.com",
@@ -1719,37 +1802,24 @@ describe("createJobOffer", () => {
   const in2Month = new Date("2024-08-17T22:00:00.000Z")
   const inSept = new Date("2024-09-01T00:00:00.000Z")
 
-  const minimalData: IJobsPartnersWritableApi = {
-    partner_job_id: null,
+  const minimalData: IJobOfferApiWriteV3Input = {
+    contract: {
+      start: inSept.toJSON(),
+    },
 
-    contract_start: inSept,
-    contract_duration: null,
-    contract_type: ["Apprentissage", "Professionnalisation"],
-    contract_remote: null,
+    offer: {
+      title: "Apprentis en développement web",
+      rome_codes: ["M1602"],
+      description: "Envie de devenir développeur web ? Rejoignez-nous !",
+    },
 
-    offer_title: "Apprentis en développement web",
-    offer_rome_codes: ["M1602"],
-    offer_desired_skills: [],
-    offer_to_be_acquired_skills: [],
-    offer_access_conditions: [],
-    offer_creation: null,
-    offer_expiration: null,
-    offer_opening_count: 1,
-    offer_origin: null,
-    offer_multicast: true,
-    offer_description: "Envie de devenir développeur web ? Rejoignez-nous !",
-    offer_target_diploma_european: null,
-    offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+    apply: {
+      phone: "0600000000",
+    },
 
-    apply_url: null,
-    apply_email: null,
-    apply_phone: null,
-
-    workplace_siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
-    workplace_address_label: null,
-    workplace_description: null,
-    workplace_website: null,
-    workplace_name: null,
+    workplace: {
+      siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
+    },
   }
 
   beforeEach(async () => {
@@ -1790,7 +1860,9 @@ describe("createJobOffer", () => {
   })
 
   it("should create a job offer with the minimal data", async () => {
-    const result = await createJobOffer(identity, { ...minimalData, partner_job_id: "job-id-b" })
+    const data = generateJobOfferApiWriteV3({ ...minimalData, identifier: { partner_job_id: "job-id-b" } })
+
+    const result = await createJobOffer(identity, data)
     expect(result).toBeInstanceOf(ObjectId)
 
     const job = await getDbCollection("jobs_partners").findOne({ _id: result })
@@ -1816,7 +1888,8 @@ describe("createJobOffer", () => {
   it("should get default rome from ROMEO", async () => {
     vi.mocked(getRomeoPredictions).mockResolvedValue(franceTravailRomeoFixture["Software Engineer"])
 
-    const result = await createJobOffer(identity, { ...minimalData, offer_rome_codes: [] })
+    const data = generateJobOfferApiWriteV3({ ...minimalData, offer: { ...minimalData.offer, rome_codes: [] } })
+    const result = await createJobOffer(identity, data)
     expect(result).toBeInstanceOf(ObjectId)
 
     const job = await getDbCollection("jobs_partners").findOne({ _id: result })
@@ -1838,10 +1911,17 @@ describe("createJobOffer", () => {
       },
     ])
 
-    const result = await createJobOffer(identity, {
+    const data = generateJobOfferApiWriteV3({
       ...minimalData,
-      workplace_address_label: "1T impasse Passoir Clichy",
+      workplace: {
+        ...minimalData.workplace,
+        location: {
+          address: "1T impasse Passoir Clichy",
+        },
+      },
     })
+    const result = await createJobOffer(identity, data)
+
     expect(result).toBeInstanceOf(ObjectId)
 
     const job = await getDbCollection("jobs_partners").findOne({ _id: result })
@@ -1850,6 +1930,18 @@ describe("createJobOffer", () => {
     expect(job?.workplace_address_city).toEqual("Clichy")
     expect(job?.workplace_address_zipcode).toEqual("92110")
     expect(job?.workplace_geopoint).toEqual(clichyFixture.centre)
+    expect(nock.isDone()).toBeTruthy()
+  })
+
+  it("should support offer.status", async () => {
+    const data = generateJobOfferApiWriteV3({ ...minimalData, offer: { ...minimalData.offer, status: JOB_STATUS_ENGLISH.ANNULEE } })
+
+    const result = await createJobOffer(identity, data)
+    expect(result).toBeInstanceOf(ObjectId)
+
+    const job = await getDbCollection("jobs_partners").findOne({ _id: result })
+    expect(job?.offer_status).toEqual(JOB_STATUS_ENGLISH.ANNULEE)
+
     expect(nock.isDone()).toBeTruthy()
   })
 })
@@ -1875,37 +1967,24 @@ describe("updateJobOffer", () => {
     offer_expiration: originalCreatedAtPlus2Months,
   })
 
-  const minimalData: IJobsPartnersWritableApi = {
-    partner_job_id: null,
+  const minimalData: IJobOfferApiWriteV3Input = {
+    contract: {
+      start: inSept.toJSON(),
+    },
 
-    contract_start: inSept,
-    contract_duration: null,
-    contract_type: ["Apprentissage", "Professionnalisation"],
-    contract_remote: null,
+    offer: {
+      title: "Apprentis en développement web",
+      rome_codes: ["M1602"],
+      description: "Envie de devenir développeur web ? Rejoignez-nous !",
+    },
 
-    offer_title: "Apprentis en développement web",
-    offer_rome_codes: ["M1602"],
-    offer_desired_skills: [],
-    offer_to_be_acquired_skills: [],
-    offer_access_conditions: [],
-    offer_creation: null,
-    offer_expiration: null,
-    offer_opening_count: 1,
-    offer_origin: null,
-    offer_multicast: true,
-    offer_description: "Envie de devenir développeur web ? Rejoignez-nous !",
-    offer_target_diploma_european: null,
-    offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+    apply: {
+      phone: "0600000000",
+    },
 
-    apply_url: null,
-    apply_email: null,
-    apply_phone: null,
-
-    workplace_siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
-    workplace_address_label: null,
-    workplace_description: null,
-    workplace_website: null,
-    workplace_name: null,
+    workplace: {
+      siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
+    },
   }
 
   beforeEach(async () => {
@@ -1943,7 +2022,8 @@ describe("updateJobOffer", () => {
   })
 
   it("should update a job offer with the minimal data", async () => {
-    await updateJobOffer(_id, identity, { ...minimalData, partner_job_id: "job-id-9" })
+    const data = generateJobOfferApiWriteV3({ ...minimalData, identifier: { ...minimalData.identifier, partner_job_id: "job-id-9" } })
+    await updateJobOffer(_id, identity, data)
 
     const job = await getDbCollection("jobs_partners").findOne({ _id })
     expect(job?.created_at).toEqual(originalCreatedAt)
@@ -1970,7 +2050,15 @@ describe("updateJobOffer", () => {
   it("should get default rome from ROMEO", async () => {
     vi.mocked(getRomeoPredictions).mockResolvedValue(franceTravailRomeoFixture["Software Engineer"])
 
-    await updateJobOffer(_id, identity, { ...minimalData, partner_job_id: "job-id-10", offer_rome_codes: [] })
+    const data = generateJobOfferApiWriteV3({
+      ...minimalData,
+      identifier: { ...minimalData.identifier, partner_job_id: "job-id-10" },
+      offer: {
+        ...minimalData.offer,
+        rome_codes: [],
+      },
+    })
+    await updateJobOffer(_id, identity, data)
 
     const job = await getDbCollection("jobs_partners").findOne({ _id })
     expect(job?.offer_rome_codes).toEqual(["E1206"])
@@ -2003,11 +2091,16 @@ describe("updateJobOffer", () => {
       },
     ])
 
-    await updateJobOffer(_id, identity, {
+    const data = generateJobOfferApiWriteV3({
       ...minimalData,
-      partner_job_id: "job-id-11",
-      workplace_address_label: "1T impasse Passoir Clichy",
+      workplace: {
+        ...minimalData.workplace,
+        location: {
+          address: "1T impasse Passoir Clichy",
+        },
+      },
     })
+    await updateJobOffer(_id, identity, data)
 
     const job = await getDbCollection("jobs_partners").findOne({ _id })
     expect(job?.workplace_address_label).toEqual("1T impasse Passoir Clichy")
@@ -2015,6 +2108,17 @@ describe("updateJobOffer", () => {
     expect(job?.workplace_address_city).toEqual("Clichy")
     expect(job?.workplace_address_zipcode).toEqual("92110")
     expect(job?.workplace_geopoint).toEqual(clichyFixture.centre)
+    expect(nock.isDone()).toBeTruthy()
+  })
+
+  it("should support offer.status", async () => {
+    const data = generateJobOfferApiWriteV3({ ...minimalData, offer: { ...minimalData.offer, status: JOB_STATUS_ENGLISH.ANNULEE } })
+
+    await updateJobOffer(_id, identity, data)
+
+    const job = await getDbCollection("jobs_partners").findOne({ _id })
+    expect(job?.offer_status).toEqual(JOB_STATUS_ENGLISH.ANNULEE)
+
     expect(nock.isDone()).toBeTruthy()
   })
 })

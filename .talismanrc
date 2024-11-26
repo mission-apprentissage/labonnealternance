@@ -48,7 +48,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts
   checksum: a99bfdcb5a8f4c66e9d055b44160adbc7ec2bcaf87209ff76fa9a9f674b9ca86
 - filename: server/src/http/controllers/v3/jobs/jobs.controller.v3.test.ts
-  checksum: 0f1e48378ed0b1690cd802f43638db4a6353bbd4d4e980a2c4252098e9c410a8
+  checksum: 4b24ff09463f476fd0b64bef104da6e17153ffdfff2d628c96b16d3ea33779f7
 - filename: server/src/http/routes/appointmentRequest.controller.ts
   checksum: d2770daa97ae332eec0b66497fdb717229895583ac3bfd48af1a830b36504968
 - filename: server/src/http/routes/auth/password.controller.ts
@@ -139,6 +139,8 @@ fileignoreconfig:
   checksum: 27b6e1af0a5e079720d525534486bb02552431fe4cff9560ebf2cc9e16468b7b
 - filename: shared/constants/recruteur.ts
   checksum: af4631fe998b78b13691dbc821a8ffa71ffc2f4cb6967361cb5ef19965dc95cb
+- filename: shared/fixtures/application.fixture.ts
+  checksum: 4c4590586b8c5683ce7aebb32d2286af3265bb9d3d39581f6d7a1f8ed1a2850d
 - filename: shared/fixtures/appointment.fixture.ts
   checksum: 8b894b4059d8f7531e26f249901b83dbec433d4e660c0eca193c8e61572b3ae0
 - filename: shared/fixtures/recruiter.fixture.ts
@@ -172,7 +174,7 @@ fileignoreconfig:
 - filename: shared/routes/v1Jobs.routes.ts
   checksum: aa0fb2458520f24921a48af03ad05c3f4a92052374182851f24a3afa7421a5b8
 - filename: shared/routes/v3/jobs/jobs.routes.v3.model.test.ts
-  checksum: 17cd6781921e55e0f14ddfdfb48bfafad53021a211a89f89989b5d9050a5d968
+  checksum: f4f3e429e6a7871a218f19eead273c0477636ed3c19b9e4dfd9e55bde1bc7dc8
 - filename: shared/utils/objectUtils.ts
   checksum: cfd0e48e8762b43c6431dad873727f6ac091ca6f5c7555e37a8ee3fba03184d1
 - filename: ui/common/hooks/useAuth.ts
@@ -241,10 +243,6 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
-- filename: server/src/jobs/offrePartenaire/importHelloWork.test.input.xml
-  checksum: 6f28aee7664d1ec1e4b4da34b96b63e23781538b3fe3e8d50dddbdad3884fa3f
-- filename: shared/fixtures/application.fixture.ts
-  checksum: 4c4590586b8c5683ce7aebb32d2286af3265bb9d3d39581f6d7a1f8ed1a2850d
 scopeconfig:
 - scope: node
 custom_patterns:
