@@ -251,6 +251,7 @@ export const saveEntrepriseUserTest = async (
       status: RECRUITER_STATUS.ACTIF,
       establishment_siret: entreprise.siret,
       opco: entreprise.opco,
+      managed_by: user._id.toString(),
       jobs: [
         {
           managed_by: user._id.toString(),
@@ -276,6 +277,7 @@ export const saveCfaUserTest = async (userProps: Partial<IUserWithAccount> = {})
       is_delegated: true,
       cfa_delegated_siret: cfa.siret,
       status: RECRUITER_STATUS.ACTIF,
+      managed_by: user._id.toString(),
       jobs: [
         {
           managed_by: user._id.toString(),
