@@ -1,7 +1,6 @@
 import fs from "fs"
 import path from "path"
 
-import axios from "axios"
 import FormData from "form-data"
 import fsExtra from "fs-extra"
 import { ObjectId } from "mongodb"
@@ -9,6 +8,7 @@ import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
 import { ZGeoLocation } from "shared/models"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getBulkGeoLocation } from "@/services/geolocation.service"
 
 import __dirname from "../../common/dirname"
 import { logMessage } from "../../common/utils/logMessage"
@@ -132,11 +132,7 @@ export default async function updateGeoLocations({ ForceRecreate = false, Source
         const stream = fs.createReadStream(sourceFilePath)
         form.append("data", stream, `geolocatesource-${i}.csv`)
 
-        const res = await axios.post("https://api-adresse.data.gouv.fr/search/csv/", form, {
-          headers: {
-            ...form.getHeaders(),
-          },
-        })
+        const res = await getBulkGeoLocation(form)
 
         const destFilePath = path.join(currentDirname, `${tempDir}geolocated-${i}.csv`)
         fs.writeFileSync(destFilePath, res.data)

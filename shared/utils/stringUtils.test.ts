@@ -26,7 +26,7 @@ describe("stringUtils", () => {
 
   describe("joinNonNullStrings", () => {
     it("should return a single trimmed string when all values are non-null", () => {
-      expect(joinNonNullStrings([" Hello ", "world ", "Vitest"])).toBe("Hello world Vitest")
+      expect(joinNonNullStrings(["0", " Hello ", "world ", "Vitest"])).toBe("0 Hello world Vitest")
     })
 
     it("should ignore null values and return a single trimmed string", () => {

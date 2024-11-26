@@ -5,6 +5,7 @@ import { ObjectId } from "mongodb"
 import nock from "nock"
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, RECRUITER_STATUS } from "shared/constants"
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
+import { generateFeaturePropertyFixture } from "shared/fixtures/geolocation.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { generateLbaCompanyFixture } from "shared/fixtures/recruteurLba.fixture"
@@ -21,6 +22,7 @@ import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/a
 import { getRomeoPredictions, searchForFtJobs } from "@/common/apis/franceTravail/franceTravail.client"
 import { franceTravailRomeoFixture, generateFtJobFixture } from "@/common/apis/franceTravail/franceTravail.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { saveGeolocationInCache } from "@/services/cacheGeolocation.service"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
 
 import { FTJob } from "../../ftjob.service.types"
@@ -1763,11 +1765,11 @@ describe("createJobOffer", () => {
         features: [
           {
             geometry: parisFixture.centre,
-            properties: {
+            properties: generateFeaturePropertyFixture({
               city: parisFixture.nom,
               postcode: parisFixture.codesPostaux[0],
               name: "20 AVENUE DE SEGUR",
-            },
+            }),
           },
         ],
       })
@@ -1823,21 +1825,18 @@ describe("createJobOffer", () => {
   })
 
   it('should get workplace location from given "workplace_address_*" fields', async () => {
-    nock("https://api-adresse.data.gouv.fr:443")
-      .get("/search")
-      .query({ q: "1T IMPASSE PASSOIR CLICHY", limit: "1" })
-      .reply(200, {
-        features: [
-          {
-            geometry: clichyFixture.centre,
-            properties: {
-              city: clichyFixture.nom,
-              postcode: clichyFixture.codesPostaux[0],
-              name: "1T impasse Passoir",
-            },
-          },
-        ],
-      })
+    await saveGeolocationInCache("1T IMPASSE PASSOIR CLICHY", [
+      {
+        type: "Feature",
+        geometry: clichyFixture.centre,
+        properties: generateFeaturePropertyFixture({
+          city: clichyFixture.nom,
+          postcode: clichyFixture.codesPostaux[0],
+          name: "1T impasse Passoir",
+          street: "impasse Passoir",
+        }),
+      },
+    ])
 
     const result = await createJobOffer(identity, {
       ...minimalData,
@@ -1915,22 +1914,17 @@ describe("updateJobOffer", () => {
 
     vi.mocked(getEtablissementFromGouvSafe).mockResolvedValue(apiEntrepriseEtablissementFixture.dinum)
 
-    nock("https://api-adresse.data.gouv.fr:443")
-      .get("/search")
-      .query({ q: "20 AVENUE DE SEGUR, 75007 PARIS", limit: "1" })
-      .reply(200, {
-        features: [
-          {
-            geometry: parisFixture.centre,
-            properties: {
-              city: parisFixture.nom,
-              postcode: parisFixture.codesPostaux[0],
-              name: "20 AVENUE DE SEGUR",
-            },
-          },
-        ],
-      })
-      .persist()
+    await saveGeolocationInCache("20 AVENUE DE SEGUR, 75007 PARIS", [
+      {
+        type: "Feature",
+        geometry: parisFixture.centre,
+        properties: generateFeaturePropertyFixture({
+          city: parisFixture.nom,
+          postcode: parisFixture.codesPostaux[0],
+          name: "20 AVENUE DE SEGUR",
+        }),
+      },
+    ])
 
     await getDbCollection("jobs_partners").insertOne(originalJob)
 
@@ -1984,21 +1978,30 @@ describe("updateJobOffer", () => {
   })
 
   it('should get workplace location from given "workplace_address_label" fields', async () => {
-    nock("https://api-adresse.data.gouv.fr:443")
-      .get("/search")
-      .query({ q: "1T IMPASSE PASSOIR CLICHY", limit: "1" })
-      .reply(200, {
-        features: [
-          {
-            geometry: clichyFixture.centre,
-            properties: {
-              city: clichyFixture.nom,
-              postcode: clichyFixture.codesPostaux[0],
-              name: "1T impasse Passoir",
-            },
-          },
-        ],
-      })
+    await saveGeolocationInCache("20 AVENUE DE SEGUR, 75007 PARIS", [
+      {
+        type: "Feature",
+        geometry: parisFixture.centre,
+        properties: generateFeaturePropertyFixture({
+          city: parisFixture.nom,
+          postcode: parisFixture.codesPostaux[0],
+          name: "20 AVENUE DE SEGUR",
+          street: "AVENUE DE SEGUR",
+        }),
+      },
+    ])
+    await saveGeolocationInCache("1T IMPASSE PASSOIR CLICHY", [
+      {
+        type: "Feature",
+        geometry: clichyFixture.centre,
+        properties: generateFeaturePropertyFixture({
+          city: clichyFixture.nom,
+          postcode: clichyFixture.codesPostaux[0],
+          name: "1T impasse Passoir",
+          street: "impasse Passoir",
+        }),
+      },
+    ])
 
     await updateJobOffer(_id, identity, {
       ...minimalData,

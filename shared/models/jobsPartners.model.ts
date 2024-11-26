@@ -26,7 +26,7 @@ export const ZJobsPartnersRecruiterApi = z.object({
   workplace_name: z.string().nullable().describe("Nom customisé de l'entreprise"),
   workplace_description: z.string().nullable().describe("description de l'entreprise"),
   workplace_size: z.string().nullable().describe("Taille de l'entreprise"),
-  workplace_address_label: z.string().describe("Adresse complète provenant du SIRET ou du partenaire"),
+  workplace_address_label: z.string().describe("Adresse de l'offre, provenant du SIRET ou du partenaire"),
   workplace_geopoint: ZPointGeometry.describe("Geolocalisation de l'offre"),
   workplace_idcc: z.number().nullable().describe("Identifiant convention collective"),
   workplace_opco: zOpcoLabel.nullable().describe("Nom de l'OPCO"),
@@ -156,7 +156,7 @@ export const ZJobsPartnersPostApiBodyBase = z.object({
   workplace_website: ZJobsPartnersOfferPrivate.shape.workplace_website.default(null),
   workplace_name: ZJobsPartnersOfferPrivate.shape.workplace_name.default(null),
   workplace_address_label: z.string().nullable().default(null),
-  pply_email: ZJobsPartnersOfferPrivate.shape.apply_email,
+  apply_email: ZJobsPartnersOfferPrivate.shape.apply_email,
   apply_url: ZJobsPartnersOfferApi.shape.apply_url.nullable().default(null),
   apply_phone: extensions.telephone.nullable().describe("Téléphone de contact").default(null),
 })

@@ -3,6 +3,7 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
 import { ObjectId } from "mongodb"
 import nock from "nock"
+import { generateFeaturePropertyFixture } from "shared/fixtures/geolocation.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { generateLbaCompanyFixture } from "shared/fixtures/recruteurLba.fixture"
 import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
@@ -314,11 +315,11 @@ describe("POST /jobs", async () => {
         features: [
           {
             geometry: parisFixture.centre,
-            properties: {
+            properties: generateFeaturePropertyFixture({
               city: parisFixture.nom,
               postcode: parisFixture.codesPostaux[0],
               name: "20 AVENUE DE SEGUR",
-            },
+            }),
           },
         ],
       })
@@ -459,11 +460,11 @@ describe("PUT /jobs/:id", async () => {
         features: [
           {
             geometry: parisFixture.centre,
-            properties: {
+            properties: generateFeaturePropertyFixture({
               city: parisFixture.nom,
               postcode: parisFixture.codesPostaux[0],
-              name: null,
-            },
+              name: "",
+            }),
           },
         ],
       })
@@ -475,11 +476,11 @@ describe("PUT /jobs/:id", async () => {
         features: [
           {
             geometry: parisFixture.centre,
-            properties: {
+            properties: generateFeaturePropertyFixture({
               city: parisFixture.nom,
               postcode: parisFixture.codesPostaux[0],
               name: "20 AVENUE DE SEGUR",
-            },
+            }),
           },
         ],
       })

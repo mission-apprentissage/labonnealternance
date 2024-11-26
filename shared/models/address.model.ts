@@ -8,7 +8,7 @@ const ZAcademie = z
   })
   .strict()
 
-const Z2DCoord = z.tuple([extensions.longitude({ coerce: false }), extensions.latitude({ coerce: false })])
+export const Z2DCoord = z.tuple([extensions.longitude({ coerce: false }), extensions.latitude({ coerce: false })])
 
 export const ZPointGeometry = z
   .object({
@@ -107,6 +107,41 @@ export const ZAdresseV3 = z
   .openapi("AdresseV3")
 
 export const ZGlobalAddress = z.union([ZAdresseCFA, ZAdresseV2, ZAdresseV3])
+
+const ZPointProperties = z
+  .object({
+    label: z.string(),
+    score: z.number(),
+    housenumber: z.string().nullish(),
+    id: z.string(),
+    banId: z.string().nullish(),
+    type: z.string(),
+    name: z.string(),
+    postcode: z.string().nullish(),
+    citycode: z.string().nullish(),
+    x: z.number(),
+    y: z.number(),
+    city: z.string().nullish(),
+    municipality: z.string().nullish(),
+    population: z.number().nullish(),
+    district: z.string().nullish(),
+    locality: z.string().nullish(),
+    context: z.string(),
+    importance: z.number(),
+    street: z.string().nullish(),
+  })
+  .passthrough()
+
+// only type="Point" feature
+const ZPointFeature = z.object({
+  type: z.literal("Feature"),
+  geometry: ZPointGeometry,
+  properties: ZPointProperties,
+})
+
+export type IPointFeature = z.output<typeof ZPointFeature>
+export type IPointProperties = z.output<typeof ZPointProperties>
+export type IPointGeometry = z.output<typeof ZPointGeometry>
 
 export type IAdresseV3 = z.input<typeof ZAdresseV3>
 export type IAdresseCFA = z.input<typeof ZAdresseCFA>

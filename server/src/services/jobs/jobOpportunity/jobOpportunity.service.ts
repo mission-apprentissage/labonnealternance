@@ -21,7 +21,8 @@ import { ZodError } from "zod"
 
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { getRomeFromRomeo } from "@/services/cache.service"
-import { getEntrepriseDataFromSiret, getGeoFeature, getOpcoData } from "@/services/etablissement.service"
+import { getEntrepriseDataFromSiret, getOpcoData } from "@/services/etablissement.service"
+import { getCityFromProperties, getGeolocation, getStreetFromProperties } from "@/services/geolocation.service"
 
 import { logger } from "../../../common/logger"
 import { IApiError } from "../../../common/utils/errorManager"
@@ -568,7 +569,7 @@ async function resolveWorkplaceGeoLocationFromAddress(workplace_address_label: s
     return null
   }
 
-  const geoFeature = await getGeoFeature(workplace_address_label)
+  const geoFeature = await getGeolocation(workplace_address_label)
 
   if (!geoFeature) {
     zodError.addIssue({ code: "custom", path: ["workplace_geopoint"], message: "Cannot resolve geo-coordinates for the given address" })
@@ -577,9 +578,9 @@ async function resolveWorkplaceGeoLocationFromAddress(workplace_address_label: s
 
   return {
     workplace_geopoint: ZPointGeometry.parse(geoFeature.geometry),
-    workplace_address_city: geoFeature.properties.city,
-    workplace_address_zipcode: geoFeature.properties.postcode,
-    workplace_address_street_label: geoFeature.properties.name,
+    workplace_address_city: getCityFromProperties(geoFeature),
+    workplace_address_zipcode: geoFeature?.properties.postcode ?? null,
+    workplace_address_street_label: getStreetFromProperties(geoFeature),
   }
 }
 

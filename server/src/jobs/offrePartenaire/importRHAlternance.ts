@@ -5,6 +5,7 @@ import { TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import rawRHAlternanceModel, { IRawRHAlternance } from "shared/models/rawRHAlternance.model"
+import { joinNonNullStrings } from "shared/utils"
 import { z } from "zod"
 
 import { logger } from "@/common/logger"
@@ -25,12 +26,7 @@ const ZRHAlternanceResponse = z
 
 const rawCollectionName = rawRHAlternanceModel.collectionName
 
-export const importRHAlternance = async () => {
-  await importRaw()
-  await rawToComputed()
-}
-
-const importRaw = async () => {
+export const importRHAlternanceRaw = async () => {
   logger.info("deleting old data")
   await getDbCollection(rawCollectionName).deleteMany({})
   logger.info("import starting...")
@@ -70,7 +66,7 @@ const importRaw = async () => {
   logger.info(`import done: ${jobCount} jobs imported`)
 }
 
-const rawToComputed = async () => {
+export const importRHAlternanceToComputed = async () => {
   const now = new Date()
   await rawToComputedJobsPartners({
     collectionSource: rawCollectionName,
@@ -115,11 +111,17 @@ export const rawRhAlternanceToComputedMapper =
       workplace_siret: companySiret,
       workplace_name: companyName,
       workplace_website: companyUrl,
-      workplace_address_label: [jobPostalCode, jobCity].flatMap((x) => (x ? [x] : [])).join(" ") || null,
+      workplace_address_label: joinNonNullStrings([jobPostalCode, jobCity]),
+      workplace_address_city: jobCity,
+      workplace_address_zipcode: jobPostalCode,
       apply_url: jobUrl,
       errors: [],
       validated: false,
       business_error: isValid ? null : `expected jobType === "Alternance" but got ${jobType}`,
+      updated_at: now,
+      contract_start: null,
+      offer_rome_codes: null,
+      offer_target_diploma: null,
     }
     return computedJob
   }
