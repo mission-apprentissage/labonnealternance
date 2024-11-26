@@ -139,7 +139,14 @@ export const ZPointFeature = z.object({
   properties: ZPointProperties,
 })
 
+export const ZGeometryFeature = z.object({
+  type: z.literal("Feature"),
+  geometry: ZGeometry,
+  properties: ZPointProperties,
+})
+
 export type IPointFeature = z.output<typeof ZPointFeature>
+export type IGeometryFeature = z.output<typeof ZPointFeature>
 export type IPointProperties = z.output<typeof ZPointProperties>
 export type IPointGeometry = z.output<typeof ZPointGeometry>
 

@@ -1,7 +1,7 @@
 import { internal, isBoom } from "@hapi/boom"
 import { AxiosResponse } from "axios"
 import FormData from "form-data"
-import { IGeoPoint, IPointFeature, ZPointGeometry } from "shared/models"
+import { IGeometryFeature, IGeoPoint, IPointFeature, ZPointGeometry } from "shared/models"
 
 import { getHttpClient } from "@/common/utils/httpUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
@@ -12,7 +12,7 @@ const API_ADRESSE_URL = "https://api-adresse.data.gouv.fr"
 export interface IAPIAdresse {
   type: string
   version: string
-  features: IPointFeature[]
+  features: IGeometryFeature[]
   attribution: string
   licence: string
   query: string
@@ -92,8 +92,16 @@ export const getGeolocation = async (rawAddress: string): Promise<IPointFeature 
       return null
     }
 
+    const features = response.features
+    if (features?.at(0)?.geometry?.type && features.at(0)!.geometry.type !== "Point") {
+      features.at(0)!.geometry = {
+        type: "Point",
+        coordinates: features.at(0)?.geometry.coordinates[0][0],
+      }
+    }
+
     try {
-      await saveGeolocationInCache(address, response.features)
+      await saveGeolocationInCache(address, features)
     } catch (updateCacheError) {
       sentryCaptureException(updateCacheError, { extra: { cause: "error saving geolocation to cache", responseData: response.features, address } })
     }
