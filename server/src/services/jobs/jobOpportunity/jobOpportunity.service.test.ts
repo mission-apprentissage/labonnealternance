@@ -5,6 +5,7 @@ import { ObjectId } from "mongodb"
 import nock from "nock"
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, RECRUITER_STATUS } from "shared/constants"
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
+import { generateFeaturePropertyFixture } from "shared/fixtures/geolocation.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { generateLbaCompanyFixture } from "shared/fixtures/recruteurLba.fixture"
@@ -1763,11 +1764,11 @@ describe("createJobOffer", () => {
         features: [
           {
             geometry: parisFixture.centre,
-            properties: {
+            properties: generateFeaturePropertyFixture({
               city: parisFixture.nom,
               postcode: parisFixture.codesPostaux[0],
               name: "20 AVENUE DE SEGUR",
-            },
+            }),
           },
         ],
       })
@@ -1830,11 +1831,11 @@ describe("createJobOffer", () => {
         features: [
           {
             geometry: clichyFixture.centre,
-            properties: {
+            properties: generateFeaturePropertyFixture({
               city: clichyFixture.nom,
               postcode: clichyFixture.codesPostaux[0],
               name: "1T impasse Passoir",
-            },
+            }),
           },
         ],
       })
@@ -1922,11 +1923,11 @@ describe("updateJobOffer", () => {
         features: [
           {
             geometry: parisFixture.centre,
-            properties: {
+            properties: generateFeaturePropertyFixture({
               city: parisFixture.nom,
               postcode: parisFixture.codesPostaux[0],
               name: "20 AVENUE DE SEGUR",
-            },
+            }),
           },
         ],
       })
@@ -1991,11 +1992,11 @@ describe("updateJobOffer", () => {
         features: [
           {
             geometry: clichyFixture.centre,
-            properties: {
+            properties: generateFeaturePropertyFixture({
               city: clichyFixture.nom,
               postcode: clichyFixture.codesPostaux[0],
               name: "1T impasse Passoir",
-            },
+            }),
           },
         ],
       })
