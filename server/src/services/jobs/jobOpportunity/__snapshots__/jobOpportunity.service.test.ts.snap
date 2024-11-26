@@ -356,4 +356,3 @@ exports[`updateJobOffer > should update a job offer with the minimal data 1`] = 
   "workplace_website": null,
 }
 `;
-null null null null
