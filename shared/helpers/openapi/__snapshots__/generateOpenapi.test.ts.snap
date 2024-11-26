@@ -9816,6 +9816,17 @@ Limite : 20 appel(s) / 1 seconde(s)
                           "null",
                         ],
                       },
+                      "status": {
+                        "default": "Active",
+                        "description": "Status de l'offre (surtout utilisé pour les offres ajouté par API)",
+                        "enum": [
+                          "Active",
+                          "Filled",
+                          "Cancelled",
+                          "Pending",
+                        ],
+                        "type": "string",
+                      },
                       "target_diploma": {
                         "properties": {
                           "european": {
@@ -10885,6 +10896,17 @@ Limite : 20 appel(s) / 1 seconde(s)
                           "array",
                           "null",
                         ],
+                      },
+                      "status": {
+                        "default": "Active",
+                        "description": "Status de l'offre (surtout utilisé pour les offres ajouté par API)",
+                        "enum": [
+                          "Active",
+                          "Filled",
+                          "Cancelled",
+                          "Pending",
+                        ],
+                        "type": "string",
                       },
                       "target_diploma": {
                         "properties": {

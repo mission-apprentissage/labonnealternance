@@ -103,6 +103,7 @@ type IJobOfferApiWriteV3Expected = {
     opening_count?: number
     origin?: string | null
     multicast?: boolean
+    status?: JOB_STATUS_ENGLISH
   }
   apply: {
     url?: string | null
@@ -242,16 +243,16 @@ describe("IJobOfferApiWriteV3", () => {
     })
   })
 
-  // describe("offer_status", () => {
-  //   it("should be optional", () => {
-  //     const result = zJobOfferApiWriteV3.safeParse({
-  //       ...data,
-  //     })
+  describe("offer_status", () => {
+    it("should be optional", () => {
+      const result = zJobOfferApiWriteV3.safeParse({
+        ...data,
+      })
 
-  //     expect(result.success).toBe(true)
-  //     expect(result.data?.offer.status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
-  //   })
-  // })
+      expect(result.success).toBe(true)
+      expect(result.data?.offer.status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
+    })
+  })
 
   describe("offer_creation", () => {
     // Fallback is handled in jobOpportinityService

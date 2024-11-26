@@ -738,7 +738,7 @@ async function upsertJobOffer(data: IJobOfferApiWriteV3, identity: IApiAlternanc
     offer_expiration: data.offer.publication.expiration || defaultOfferExpiration,
     offer_opening_count: data.offer.opening_count,
     offer_origin: data.offer.origin,
-    offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+    offer_status: data.offer.status,
     offer_multicast: data.offer.multicast,
 
     workplace_siret: data.workplace.siret,
