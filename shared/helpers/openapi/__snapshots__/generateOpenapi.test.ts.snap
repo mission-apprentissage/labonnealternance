@@ -9685,6 +9685,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                     "type": "object",
                   },
                   "contract": {
+                    "default": {},
                     "properties": {
                       "duration": {
                         "description": "Durée du contrat en mois",
@@ -9732,6 +9733,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                     "type": "object",
                   },
                   "identifier": {
+                    "default": {},
                     "properties": {
                       "partner_job_id": {
                         "description": "Identifiant d'origine l'offre provenant du partenaire",
@@ -9784,6 +9786,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                         ],
                       },
                       "publication": {
+                        "default": {},
                         "properties": {
                           "creation": {
                             "format": "date-time",
@@ -9864,6 +9867,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                         ],
                       },
                       "location": {
+                        "default": {},
                         "properties": {
                           "address": {
                             "type": [
@@ -10751,6 +10755,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                     "type": "object",
                   },
                   "contract": {
+                    "default": {},
                     "properties": {
                       "duration": {
                         "description": "Durée du contrat en mois",
@@ -10798,6 +10803,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                     "type": "object",
                   },
                   "identifier": {
+                    "default": {},
                     "properties": {
                       "partner_job_id": {
                         "description": "Identifiant d'origine l'offre provenant du partenaire",
@@ -10850,6 +10856,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                         ],
                       },
                       "publication": {
+                        "default": {},
                         "properties": {
                           "creation": {
                             "format": "date-time",
@@ -10930,6 +10937,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                         ],
                       },
                       "location": {
+                        "default": {},
                         "properties": {
                           "address": {
                             "type": [
