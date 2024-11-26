@@ -4,6 +4,7 @@ import FormData from "form-data"
 import { IPointFeature, IPointGeometry, ZPointGeometry } from "shared/models/cacheGeolocation.model"
 
 import { getHttpClient } from "@/common/utils/httpUtils"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
 
 import { getGeolocationFromCache, saveGeolocationInCache } from "./cacheGeolocation.service"
 
@@ -52,7 +53,7 @@ export const getReverseGeolocationFromApiAdresse = async (lon: number, lat: numb
     let response: AxiosResponse<IAPIAdresse> | null = null
     let trys = 0
     while (trys < 3) {
-      response = await getHttpClient().get(`${API_ADRESSE_URL}/reverse/?lon=${lon}&lat=${lat}&type=street&limit=1`)
+      response = await getHttpClient().get(`${API_ADRESSE_URL}/reverse/?lon=${lon}&lat=${lat}&type=municipality&limit=1`)
       if (response?.status === 429) {
         console.warn("429 ", new Date())
         trys++
@@ -91,7 +92,11 @@ export const getGeolocation = async (rawAddress: string): Promise<IPointFeature 
       return null
     }
 
-    await saveGeolocationInCache(address, response.features)
+    try {
+      await saveGeolocationInCache(address, response.features)
+    } catch (updateCacheError) {
+      sentryCaptureException(updateCacheError, { extra: { cause: "error saving geolocation to cache", responseData: response.features, address } })
+    }
 
     return response.features.at(0)!
   } catch (error) {
