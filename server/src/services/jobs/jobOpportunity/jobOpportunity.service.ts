@@ -28,7 +28,7 @@ import {
 import { ZodError } from "zod"
 
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { getRomeFromRomeo } from "@/services/cache.service"
+import { getRomeInfoSafe } from "@/services/cacheRomeo.service"
 import { getEntrepriseDataFromSiret, getGeoPoint, getOpcoData } from "@/services/etablissement.service"
 
 import { logger } from "../../../common/logger"
@@ -670,7 +670,7 @@ async function resolveRomeCodes(data: IJobOfferApiWriteV3, siretData: WorkplaceS
     return null
   }
 
-  const romeoResponse = await getRomeFromRomeo({ intitule: data.offer.title, contexte: siretData.workplace_naf_label ?? undefined })
+  const romeoResponse = await getRomeInfoSafe({ intitule: data.offer.title, contexte: siretData.workplace_naf_label ?? undefined })
   if (!romeoResponse) {
     zodError.addIssue({ code: "custom", path: ["offer_rome_codes"], message: "ROME is not provided and we are unable to retrieve ROME code for the given job title" })
     return null
