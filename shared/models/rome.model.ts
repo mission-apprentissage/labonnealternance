@@ -137,7 +137,7 @@ export const ZReferentielRomeForJob = z
   .object({
     numero: z.string(),
     rome: ZRome,
-    appellations: z.array(ZRomeAppellation).nullish(),
+    appellations: z.array(ZRomeAppellation),
     definition: z.string(),
     acces_metier: z.string(),
     competences: ZRomeCompetence,

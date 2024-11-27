@@ -85,7 +85,6 @@ export const rawRhAlternanceToComputedMapper =
   (now: Date) =>
   ({
     jobCode,
-    companyAddress,
     companyName,
     companySiret,
     companyUrl,
@@ -94,6 +93,8 @@ export const rawRhAlternanceToComputedMapper =
     jobSubmitDateTime,
     jobType,
     jobUrl,
+    jobCity,
+    jobPostalCode,
   }: IRawRHAlternance["job"]): IComputedJobsPartners => {
     const offer_creation = jobSubmitDateTime ? dayjs.tz(jobSubmitDateTime).toDate() : now
     const isValid: boolean = jobType === "Alternance"
@@ -115,7 +116,7 @@ export const rawRhAlternanceToComputedMapper =
       workplace_siret: companySiret,
       workplace_name: companyName,
       workplace_website: companyUrl,
-      workplace_address_label: companyAddress,
+      workplace_address_label: [jobPostalCode, jobCity].flatMap((x) => (x ? [x] : [])).join(" ") || null,
       apply_url: jobUrl,
       errors: [],
       validated: false,

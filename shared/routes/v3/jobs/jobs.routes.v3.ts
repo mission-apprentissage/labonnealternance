@@ -1,23 +1,25 @@
 import { z } from "../../../helpers/zodWithOpenApi"
 import { zObjectId } from "../../../models/common"
 import { IRoutesDef } from "../../common.routes"
-import { ZJobOpportunityGetQuery } from "../../jobOpportunity.routes"
 
-import { zJobSearchApiV3, zJobOfferApiWriteV3 } from "./jobs.routes.v3.model"
+import { zJobSearchApiV3Response, zJobOfferApiWriteV3, zJobSearchApiV3Query } from "./jobs.routes.v3.model"
 
 export const zJobsRoutesV3 = {
   get: {
     "/v3/jobs/search": {
       method: "get",
       path: "/v3/jobs/search",
-      querystring: ZJobOpportunityGetQuery,
+      querystring: zJobSearchApiV3Query,
       response: {
-        "200": zJobSearchApiV3,
+        "200": zJobSearchApiV3Response,
       },
       securityScheme: {
         auth: "api-apprentissage",
         access: null,
         resources: {},
+      },
+      openapi: {
+        tags: ["V3 - Jobs"] as string[],
       },
     },
   },
@@ -27,12 +29,15 @@ export const zJobsRoutesV3 = {
       path: "/v3/jobs",
       body: zJobOfferApiWriteV3,
       response: {
-        "201": z.object({ id: zObjectId }),
+        "200": z.object({ id: zObjectId }),
       },
       securityScheme: {
         auth: "api-apprentissage",
         access: "api-apprentissage:jobs",
         resources: {},
+      },
+      openapi: {
+        tags: ["V3 - Jobs"] as string[],
       },
     },
   },
@@ -53,6 +58,9 @@ export const zJobsRoutesV3 = {
         resources: {
           jobPartner: [{ _id: { type: "params", key: "id" } }],
         },
+      },
+      openapi: {
+        tags: ["V3 - Jobs"] as string[],
       },
     },
   },
