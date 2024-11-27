@@ -1,12 +1,12 @@
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { joinNonNullStrings } from "shared/utils"
 
-import { getCityFromProperties, getGeolocation, getReverseGeolocationFromApiAdresse, getStreetFromProperties } from "@/services/geolocation.service"
+import { getCityFromProperties, getGeolocation, getStreetFromProperties } from "@/services/geolocation.service"
 
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 
 export const fillLocationInfosForPartners = async () => {
-  const sourceFields = ["workplace_geopoint", "workplace_address_label"] as const satisfies (keyof IComputedJobsPartners)[]
+  const sourceFields = ["workplace_address_label"] as const satisfies (keyof IComputedJobsPartners)[]
 
   const filledFields = [
     "partner_label",
@@ -24,11 +24,9 @@ export const fillLocationInfosForPartners = async () => {
     groupSize: 1,
     getData: async (documents) => {
       const [document] = documents
-      const { workplace_address_label, workplace_geopoint } = document
+      const { workplace_address_label } = document
 
-      const geolocation = workplace_address_label
-        ? await getGeolocation(workplace_address_label!)
-        : workplace_geopoint && (await getReverseGeolocationFromApiAdresse(workplace_geopoint.coordinates[0], workplace_geopoint.coordinates[1]))
+      const geolocation = await getGeolocation(workplace_address_label!)
 
       if (!geolocation) {
         return []
