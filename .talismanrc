@@ -7,8 +7,6 @@ fileignoreconfig:
   checksum: a263b92a95e69de7efb856d73122b8f05ef98140c96dd0212213f26dce85056e
 - filename: shared/routes/v3/jobs/jobs.routes.v3.model.ts
   checksum: 94f2736d7791571d7888a50f53e36e2af246f22c1c832b85477c34cb5328af0d
-version: ""
- 6a898ee25c84ce2c41da5666aa4f84e6e4aaf0a614dbc0a00153abe99e3617c1
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
   checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
 - filename: cypress/pages/FlowAdminPage.ts
@@ -254,13 +252,6 @@ allowed_patterns:
 - pass
 - apiKey
 - ApiKey
-- APIKey
-- versionKey
-- '@apprentissage.beta.gouv.fr'
-- adminusersview
-threshold: medium
-version: "1.0"
- ApiKey
 - APIKey
 - versionKey
 - '@apprentissage.beta.gouv.fr'
