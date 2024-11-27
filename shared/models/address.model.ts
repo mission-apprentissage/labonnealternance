@@ -145,8 +145,18 @@ export const ZGeometryFeature = z.object({
   properties: ZPointProperties,
 })
 
+export interface IAPIAdresse {
+  type: string
+  version: string
+  features: IPointFeature[]
+  attribution: string
+  licence: string
+  query: string
+  limit: number
+}
+
 export type IPointFeature = z.output<typeof ZPointFeature>
-export type IGeometryFeature = z.output<typeof ZPointFeature>
+export type IGeometryFeature = z.output<typeof ZGeometryFeature>
 export type IPointProperties = z.output<typeof ZPointProperties>
 export type IPointGeometry = z.output<typeof ZPointGeometry>
 

@@ -101,44 +101,6 @@ interface IUaiPotentiel {
   sources: string[]
   date_collecte: Date
 }
-export interface IAPIAdresse {
-  type: string
-  version: string
-  features: IFeature[]
-  attribution: string
-  licence: string
-  query: string
-  limit: number
-}
-
-export interface IFeature {
-  type: string
-  geometry: IGeometry
-  properties: IProperties
-}
-
-interface IGeometry {
-  type: string
-  coordinates: number[]
-}
-
-interface IProperties {
-  label: string
-  score: number
-  housenumber: string
-  id: string
-  type: string
-  name: string
-  postcode: string
-  citycode: string
-  x: number
-  y: number
-  city: string
-  context: string
-  importance: number
-  street: string
-}
-
 export interface ICFADock {
   filterNAFCode: string
   filterNAFType: string

@@ -4,7 +4,6 @@ import { badRequest, internal } from "@hapi/boom"
 import { captureException } from "@sentry/node"
 import { Filter as MongoDBFilter, ObjectId } from "mongodb"
 import {
-  IAdresseV3,
   IBusinessError,
   ICfaReferentielData,
   IEtablissement,
@@ -13,7 +12,6 @@ import {
   ILbaCompanyLegacy,
   IRecruiter,
   ITrackingCookies,
-  joinNonNullStrings,
   parseEnum,
   TrafficType,
   ZCfaReferentielData,
@@ -51,7 +49,7 @@ import { fetchOpcosFromCFADock } from "./cfadock.service"
 import dayjs from "./dayjs.service"
 import { ICFADock, IFormatAPIEntreprise, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types"
 import { createFormulaire, getFormulaire } from "./formulaire.service"
-import { convertGeometryToPoint, getGeoCoordinates } from "./geolocation.service"
+import { addressDetailToString, convertGeometryToPoint, getGeoCoordinates } from "./geolocation.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getOpcoBySirenFromDB, getOpcosBySiretFromDB, insertOpcos, saveOpco } from "./opco.service"
 import { updateEntrepriseOpco, upsertEntrepriseData, UserAndOrganization } from "./organization.service"
@@ -202,15 +200,6 @@ function getRaisonSocialeFromGouvResponse(d: IEtablissementGouvData["data"]): st
     const { prenom_usuel, nom_naissance, nom_usage } = personne_physique_attributs
     return `${prenom_usuel} ${nom_usage ?? nom_naissance}`
   }
-}
-
-const addressDetailToString = (address: IAdresseV3): string => {
-  const { l4 = "", l6 = "", l7 = "" } = address?.acheminement_postal ?? {}
-  return [l4, l6, l7 === "FRANCE" ? null : l7].filter((_) => _).join(" ")
-}
-
-export const addressDetailToStreetLabel = (address: IAdresseV3): string | null => {
-  return joinNonNullStrings([address.numero_voie, address.type_voie, address.libelle_voie])
 }
 
 /**

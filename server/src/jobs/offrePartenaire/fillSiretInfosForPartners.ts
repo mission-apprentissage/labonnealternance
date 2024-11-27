@@ -4,7 +4,8 @@ import { isEnum } from "shared/utils"
 
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
 import { getSiretInfos } from "@/services/cacheInfosSiret.service"
-import { addressDetailToStreetLabel, formatEntrepriseData } from "@/services/etablissement.service"
+import { formatEntrepriseData } from "@/services/etablissement.service"
+import { addressDetailToStreetLabel } from "@/services/geolocation.service"
 
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 

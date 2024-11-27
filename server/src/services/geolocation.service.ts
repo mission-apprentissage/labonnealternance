@@ -1,7 +1,8 @@
 import { internal, isBoom } from "@hapi/boom"
 import { AxiosResponse } from "axios"
 import FormData from "form-data"
-import { IGeometry, IGeometryFeature, IGeoPoint, IPointFeature, ZPointGeometry } from "shared/models"
+import { IAdresseV3, IAPIAdresse, IGeometry, IGeoPoint, IPointFeature, ZPointGeometry } from "shared/models"
+import { joinNonNullStrings } from "shared/utils"
 
 import { getHttpClient } from "@/common/utils/httpUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
@@ -9,15 +10,6 @@ import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { getGeolocationFromCache, saveGeolocationInCache } from "./cacheGeolocation.service"
 
 const API_ADRESSE_URL = "https://api-adresse.data.gouv.fr"
-export interface IAPIAdresse {
-  type: string
-  version: string
-  features: IGeometryFeature[]
-  attribution: string
-  licence: string
-  query: string
-  limit: number
-}
 
 export const getGeolocationFromApiAdresse = async (address: string) => {
   try {
@@ -156,6 +148,15 @@ export function convertGeometryToPoint(geometry: IGeometry): IGeoPoint {
 
 export const getCityFromProperties = (feature: IPointFeature | null) => feature?.properties?.city ?? feature?.properties?.municipality ?? feature?.properties?.locality ?? null
 export const getStreetFromProperties = (feature: IPointFeature | null) => (feature?.properties?.street ? feature?.properties?.name : null)
+
+export const addressDetailToString = (address: IAdresseV3): string => {
+  const { l4 = "", l6 = "", l7 = "" } = address?.acheminement_postal ?? {}
+  return [l4, l6, l7 === "FRANCE" ? null : l7].filter((_) => _).join(" ")
+}
+
+export const addressDetailToStreetLabel = (address: IAdresseV3): string | null => {
+  return joinNonNullStrings([address.numero_voie, address.type_voie, address.libelle_voie])
+}
 
 export const getBulkGeoLocation = async (form: FormData) => {
   return await getHttpClient().post("https://api-adresse.data.gouv.fr/search/csv/", form, {
