@@ -705,8 +705,6 @@ async function upsertJobOffer(data: IJobOfferApiWriteV3, identity: IApiAlternanc
     resolveWorkplaceGeoLocationFromAddress(data.workplace.location?.address ?? null, zodError),
   ])
 
-  console.log(siretData, addressData)
-
   const offer_rome_codes = await resolveRomeCodes(data, siretData, zodError)
 
   if (!zodError.isEmpty) {

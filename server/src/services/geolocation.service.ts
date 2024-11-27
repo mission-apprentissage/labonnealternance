@@ -1,7 +1,7 @@
 import { internal, isBoom } from "@hapi/boom"
 import { AxiosResponse } from "axios"
 import FormData from "form-data"
-import { IGeometryFeature, IGeoPoint, IPointFeature, ZPointGeometry } from "shared/models"
+import { IGeometry, IGeometryFeature, IGeoPoint, IPointFeature, ZPointGeometry } from "shared/models"
 
 import { getHttpClient } from "@/common/utils/httpUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
@@ -93,15 +93,8 @@ export const getGeolocation = async (rawAddress: string): Promise<IPointFeature 
     }
 
     const features = response.features
-    if (features?.at(0)?.geometry?.type && features.at(0)!.geometry.type !== "Point") {
-      features.at(0)!.geometry = {
-        type: "Point",
-        coordinates: features.at(0)?.geometry.coordinates[0][0],
-      }
-      sentryCaptureException(new Error("Polygon returned by api-adresse"), {
-        level: "warning",
-        extra: { cause: "api-adresse returned a Polygon, it usually returns a Point", address },
-      })
+    if (features?.at(0)?.geometry) {
+      features.at(0)!.geometry = convertGeometryToPoint(features.at(0)!.geometry)
     }
 
     try {
@@ -147,12 +140,15 @@ export const getGeoCoordinates = async (adresse: string): Promise<GeoCoord> => {
   return { latitude, longitude }
 }
 
-export function geometryToGeoCoord(geometry): [number, number] {
+export function convertGeometryToPoint(geometry: IGeometry): IGeoPoint {
   const { type } = geometry
   if (type === "Point") {
-    return geometry.coordinates
+    return geometry
   } else if (type === "Polygon") {
-    return geometry.coordinates[0][0]
+    return {
+      type: "Point",
+      coordinates: geometry.coordinates[0][0],
+    }
   } else {
     throw new Error(`Badly formatted geometry. type=${type}`)
   }

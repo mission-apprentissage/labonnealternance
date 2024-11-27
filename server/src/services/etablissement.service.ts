@@ -51,7 +51,7 @@ import { fetchOpcosFromCFADock } from "./cfadock.service"
 import dayjs from "./dayjs.service"
 import { ICFADock, IFormatAPIEntreprise, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types"
 import { createFormulaire, getFormulaire } from "./formulaire.service"
-import { geometryToGeoCoord, getGeoCoordinates } from "./geolocation.service"
+import { convertGeometryToPoint, getGeoCoordinates } from "./geolocation.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getOpcoBySirenFromDB, getOpcosBySiretFromDB, insertOpcos, saveOpco } from "./opco.service"
 import { updateEntrepriseOpco, upsertEntrepriseData, UserAndOrganization } from "./organization.service"
@@ -243,7 +243,7 @@ export const formatReferentielData = (d: IReferentiel): ICfaReferentielData => {
   if (!geojson) {
     throw internal("impossible de lire la geometry")
   }
-  const coords = geometryToGeoCoord(geojson.geometry)
+  const geopoint = convertGeometryToPoint(geojson.geometry)
 
   const referentielData: ICfaReferentielData = {
     establishment_state: d.etat_administratif,
@@ -253,11 +253,8 @@ export const formatReferentielData = (d: IReferentiel): ICfaReferentielData => {
     contacts: d.contacts,
     address_detail: d.adresse,
     address: d.adresse?.label,
-    geo_coordinates: `${coords[1]},${coords[0]}`,
-    geopoint: {
-      type: "Point",
-      coordinates: coords,
-    },
+    geo_coordinates: `${geopoint.coordinates[1]},${geopoint.coordinates[0]}`,
+    geopoint,
   } as ICfaReferentielData
   const validation = ZCfaReferentielData.safeParse(referentielData)
   if (!validation.success) {
