@@ -47,7 +47,8 @@ export const fillLocationInfosForPartners = async () => {
         const found_geopoint = geolocation?.geometry || null
         const found_address_label = joinNonNullStrings([found_street_label, found_zipcode, found_city])
 
-        const result: Pick<IComputedJobsPartners, (typeof filledFields)[number]> = {
+        const result: Pick<IComputedJobsPartners, (typeof filledFields)[number] | "_id"> = {
+          _id: document._id,
           workplace_address_label: found_address_label ?? null,
           workplace_address_street_label: found_street_label ?? null,
           workplace_address_city: found_city ?? null,
