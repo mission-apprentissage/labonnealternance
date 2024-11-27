@@ -14,6 +14,7 @@ import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
 import { anonimizeUsers } from "./anonymization/anonymizeUserRecruteurs"
 import { anonymizeOldUsers } from "./anonymization/anonymizeUsers"
 import { processApplications } from "./applications/processApplications"
+import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
 import { recreateIndexes } from "./database/recreateIndexes"
 import { validateModels } from "./database/schemaValidation"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
@@ -206,6 +207,10 @@ export async function setupJobProcessor() {
           "Mise à jour du référentiel commune": {
             cron_string: "0 15 * * SUN",
             handler: updateReferentielCommune,
+          },
+          "Emission des contacts vers Brevo": {
+            cron_string: "30 22 * * *",
+            handler: sendContactsToBrevo,
           },
         },
     jobs: {

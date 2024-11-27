@@ -48,7 +48,8 @@ export const fillSiretInfosForPartners = async () => {
 
       const business_error = data?.etat_administratif === "F" ? JOB_PARTNER_BUSINESS_ERROR.CLOSED_COMPANY : null
 
-      const result: Pick<IComputedJobsPartners, (typeof filledFields)[number]> = {
+      const result: Pick<IComputedJobsPartners, (typeof filledFields)[number] | "_id"> = {
+        _id: document._id,
         workplace_size: document.workplace_size ?? establishment_size,
         workplace_legal_name: document.workplace_legal_name ?? establishment_raison_sociale,
         workplace_brand: document.workplace_brand ?? establishment_enseigne,
@@ -60,7 +61,7 @@ export const fillSiretInfosForPartners = async () => {
         workplace_address_city: document.workplace_address_city ?? address_detail?.libelle_commune ?? null,
         workplace_address_zipcode: document.workplace_address_zipcode ?? address_detail?.code_postal ?? null,
         workplace_geopoint: document.workplace_geopoint ?? (geo_coordinates ? convertStringCoordinatesToGeoPoint(geo_coordinates) : null),
-        business_error,
+        business_error: document.business_error ?? business_error,
       }
 
       return [result]

@@ -37,6 +37,7 @@ import referentielOnisepModel from "./referentielOnisep.model"
 import referentielOpcoModel from "./referentielOpco.model"
 import reportedCompanyModel from "./reportedCompany.model"
 import roleManagementModel from "./roleManagement.model"
+import roleManagement360Model from "./roleManagement360.model"
 import romeModel from "./rome.model"
 import sessionModel from "./session.model"
 import siretDiffusibleStatusModel from "./siretDiffusibleStatus.model"
@@ -79,6 +80,7 @@ const modelDescriptorMap = {
   [referentielOpcoModel.collectionName]: referentielOpcoModel,
   [romeModel.collectionName]: romeModel,
   [roleManagementModel.collectionName]: roleManagementModel,
+  [roleManagement360Model.collectionName]: roleManagement360Model,
   [sessionModel.collectionName]: sessionModel,
   [siretDiffusibleStatusModel.collectionName]: siretDiffusibleStatusModel,
   [unsubscribedLbaCompanyModel.collectionName]: unsubscribedLbaCompanyModel,

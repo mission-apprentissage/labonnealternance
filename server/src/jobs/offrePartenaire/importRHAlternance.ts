@@ -95,6 +95,7 @@ export const rawRhAlternanceToComputedMapper =
     const offer_creation = jobSubmitDateTime ? dayjs.tz(jobSubmitDateTime).toDate() : now
     const isValid: boolean = jobType === "Alternance"
     const computedJob: IComputedJobsPartners = {
+      _id: new ObjectId(),
       partner_job_id: jobCode,
       partner_label: JOBPARTNERS_LABEL.RH_ALTERNANCE,
       contract_type: jobType === "Alternance" ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION] : [],

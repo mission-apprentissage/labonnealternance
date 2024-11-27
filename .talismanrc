@@ -1,16 +1,12 @@
 fileignoreconfig:
-- filename: .infra/files/configs/mongodb/mongod.conf
-  checksum: 718bee5f44edc101636be8f11173ede5b728f2858abc3c26466ff9435f0d11de
-- filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 183a82c08eca1f53d2d258b71abc36e5b352286f46912fcb022859b52f9fb0cc
-- filename: .infra/files/scripts/seed.sh
-  checksum: b1361c237cee243b74fc9e66fd59af80c538d6884b8f94c3659d25cdc2b873c2
-- filename: .infra/local/mongod.conf
-  checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: 2905c16886220d7b6a6f283bf9ba3d3ffc0ab4d0dcfbfe7611e31505a9b324e4
-- filename: cypress/e2e/check-admin-algo-company.cy.ts
-  checksum: 6a898ee25c84ce2c41da5666aa4f84e6e4aaf0a614dbc0a00153abe99e3617c1
+  checksum: 40717e8b277d9c9812c89d62fd3e09d0d70cdd0bb76a460f09486a31b6dd9cc7
+- filename: server/src/jobs/brevoContacts/sendContactsToBrevo.ts
+  checksum: cdb19cf5444adabf94cdac26c3f458415c633d35fdc523608ee0e1c0eab7feb1
+- filename: server/src/services/formulaire.service.test.ts
+  checksum: a263b92a95e69de7efb856d73122b8f05ef98140c96dd0212213f26dce85056e
+- filename: shared/routes/v3/jobs/jobs.routes.v3.model.ts
+  checksum: 94f2736d7791571d7888a50f53e36e2af246f22c1c832b85477c34cb5328af0d
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
   checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
 - filename: cypress/pages/FlowAdminPage.ts
@@ -88,7 +84,7 @@ fileignoreconfig:
 - filename: server/src/services/emails.service.test.ts
   checksum: b06fe36c0000e1ab1e45617b6cd402267d0492eb7867fbf8f4b817161fe671d9
 - filename: server/src/services/formulaire.service.test.ts
-  checksum: 16a7d096bc389e6e8a0811a22c18dd6dab3c2875397fb327a85a95fc4a05d044
+  checksum: a263b92a95e69de7efb856d73122b8f05ef98140c96dd0212213f26dce85056e
 - filename: server/src/services/formulaire.service.ts
   checksum: e93ff7ce146d35e70eedcbe9b66097750e7754650468a5ada6b0ed72f0fdbc49
 - filename: server/src/services/jobs/jobOpportunity/jobOpportunity.service.test.ts
