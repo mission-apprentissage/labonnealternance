@@ -98,12 +98,16 @@ export const getGeolocation = async (rawAddress: string): Promise<IPointFeature 
         type: "Point",
         coordinates: features.at(0)?.geometry.coordinates[0][0],
       }
+      sentryCaptureException(new Error("Polygon returned by api-adresse"), {
+        level: "warning",
+        extra: { cause: "api-adresse returned a Polygon, it usually returns a Point", address },
+      })
     }
 
     try {
       await saveGeolocationInCache(address, features)
     } catch (updateCacheError) {
-      sentryCaptureException(updateCacheError, { extra: { cause: "error saving geolocation to cache", responseData: response.features, address } })
+      sentryCaptureException(updateCacheError, { level: "warning", extra: { cause: "error saving geolocation to cache", responseData: response.features, address } })
     }
 
     return response.features.at(0)!
