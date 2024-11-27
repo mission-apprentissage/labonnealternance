@@ -115,7 +115,7 @@ const postToBrevo = async (contacts: IBrevoContact[]) => {
   })
 
   requestContactImport.fileBody = fileBody
-  requestContactImport.listIds = [config.smtp.brevoContactListId]
+  requestContactImport.listIds = [parseInt(config.smtp.brevoContactListId!)]
   requestContactImport.updateExistingContacts = true
   requestContactImport.emptyContactsAttributes = true
 
