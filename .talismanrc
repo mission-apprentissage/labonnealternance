@@ -1,6 +1,6 @@
 fileignoreconfig:
-- filename: .infra/files/configs/mongodb/mongod.conf
-  checksum: 718bee5f44edc101636be8f11173ede5b728f2858abc3c26466ff9435f0d11de
+- filename: .infra/vault/vault.yml
+  checksum: 40717e8b277d9c9812c89d62fd3e09d0d70cdd0bb76a460f09486a31b6dd9cc7
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: 183a82c08eca1f53d2d258b71abc36e5b352286f46912fcb022859b52f9fb0cc
 - filename: .infra/files/scripts/seed.sh
@@ -8,7 +8,7 @@ fileignoreconfig:
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: 2905c16886220d7b6a6f283bf9ba3d3ffc0ab4d0dcfbfe7611e31505a9b324e4
+  checksum: 40717e8b277d9c9812c89d62fd3e09d0d70cdd0bb76a460f09486a31b6dd9cc7
 - filename: cypress/e2e/check-admin-algo-company.cy.ts
   checksum: 6a898ee25c84ce2c41da5666aa4f84e6e4aaf0a614dbc0a00153abe99e3617c1
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
