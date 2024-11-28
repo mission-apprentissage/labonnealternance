@@ -38,6 +38,10 @@ const ZLbaItemPlace = z
         description: "La longitude du lieu",
       })
       .optional(), // formation -> lieu_formation_geo_coordonnees | pe -> lieuTravail.longitude | lbb/lba -> geo_coordinates | matcha -> geo_coordonnees
+    numberAndStreet: z.string().nullish().openapi({
+      example: "3, rue du loup",
+      description: "Numéro de rue et nom de rue",
+    }),
     city: z
       .string()
       .openapi({
@@ -235,6 +239,7 @@ const ZLbaItemJob = z
     contractDescription: z.string().nullish(), // pe -> typeContratLibelle
     duration: z.string().nullish(), // pe -> dureeTravailLibelle
     jobStartDate: z.date().nullish(), // matcha -> offres.date_debut_apprentissage
+    jobExpirationDate: z.date().nullish(),
     romeDetails: ZReferentielRomeForJob.nullish(), // matcha -> offres.rome_detail -> détail du code ROME
     rythmeAlternance: z.string().nullish(), // matcha -> offres.rythme_alternance
     elligibleHandicap: z.boolean().nullish(), // matcha -> offres.is_disabled_elligible
