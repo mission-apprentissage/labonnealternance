@@ -173,7 +173,7 @@ const CreationCompteForm = ({
               name="establishment_siret"
               handleSearch={(search: string) => searchEntreprise(search)}
               renderItem={({ raison_sociale, siret, adresse }, highlighted) => <EntrepriseCard {...{ raison_sociale, siret, adresse, highlighted }} />}
-              itemToString={({ raison_sociale, siret, adresse }) => `${raison_sociale} - ${siret} - ${adresse}`}
+              itemToString={({ siret }) => siret}
               onInputFieldChange={(value, hasError) => {
                 setSearchInput(value)
                 if (!hasError) return
