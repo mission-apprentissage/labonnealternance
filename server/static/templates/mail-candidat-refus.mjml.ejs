@@ -57,7 +57,7 @@
             <mj-section border-radius="0px" css-class="section" name="mj-section_group">
                 <mj-group>
                     <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="14.83%">
-                        <mj-image align="left" alt="Image" css-class="image" alt="" src="<%= data.images.logoRf %>" width="89px"></mj-image>
+                        <mj-image align="left" alt="Image" css-class="image" alt="" src="<%= data.images.logoRF %>" width="89px"></mj-image>
                     </mj-column>
                     <mj-column border-radius="0px" css-class="column" padding="0px 24px 0px 24px" vertical-align="middle" width="34.83%">
                         <mj-image align="left" alt="Image" css-class="image" href="https://labonnealternance.apprentissage.beta.gouv.fr" padding="17px 0px 17px 0px" src="<%= data.images.logoLba %>" alt="Lien vers le site de La bonne alternance" width="160px"></mj-image>
@@ -78,7 +78,7 @@
                     <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="99.64%">
                         <mj-text align="left" color="#161616" css-class="text" font-family="DM Sans, Times, Georgia, serif" font-size="16px" font-weight="400" line-height="24px">
                             <span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; font-weight: 700; color: #161616;"><%= data.company_name %></span>&nbsp;<span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">a bien reçu votre candidature </span>
-                            <span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 700;">[via Openclassrooms]</span>
+                            <% if (data.partner) { %> <span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 700;">via <%= data.partner %></span> <% } %>
                             <span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;"> et nous a fait part qu'elle ne donnerait pas suite à celle-ci.</span>
                             <br/>
                         </mj-text>

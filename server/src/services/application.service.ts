@@ -55,7 +55,7 @@ const publicUrl = config.publicUrl
 const imagePath = `${config.publicUrl}/images/emails/`
 
 const PARTNER_NAMES = {
-  oc: "Open Classrooms",
+  oc: "OpenClassrooms",
   "1jeune1solution": "1jeune1solution",
 }
 
