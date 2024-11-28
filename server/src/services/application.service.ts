@@ -712,7 +712,7 @@ export const sendMailToApplicant = async ({
     case ApplicantIntention.ENTRETIEN: {
       mailer.sendEmail({
         to: application.applicant_email,
-        subject: `Réponse positive de ${application.company_name}`,
+        subject: `Réponse positive de ${application.company_name} à ${application.applicant_first_name} ${application.applicant_last_name}`,
         template: getEmailTemplate("mail-candidat-entretien"),
         data: { ...sanitizeApplicationForEmail(application), ...images, email, phone: sanitizeForEmail(removeUrlsFromText(phone)), comment: sanitizeForEmail(company_feedback) },
       })
@@ -721,7 +721,7 @@ export const sendMailToApplicant = async ({
     case ApplicantIntention.NESAISPAS: {
       mailer.sendEmail({
         to: application.applicant_email,
-        subject: `Réponse de ${application.company_name}`,
+        subject: `Réponse de ${application.company_name} à ${application.applicant_first_name} ${application.applicant_last_name}`,
         template: getEmailTemplate("mail-candidat-nsp"),
         data: { ...sanitizeApplicationForEmail(application), ...images, email, phone: sanitizeForEmail(removeUrlsFromText(phone)), comment: sanitizeForEmail(company_feedback) },
       })
