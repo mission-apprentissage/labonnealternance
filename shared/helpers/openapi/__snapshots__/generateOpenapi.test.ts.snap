@@ -1963,6 +1963,12 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
+          "jobExpirationDate": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
           "jobStartDate": {
             "type": [
               "string",
@@ -2707,6 +2713,14 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "example": 2.3752,
             "type": [
               "number",
+              "null",
+            ],
+          },
+          "numberAndStreet": {
+            "description": "Numéro de rue et nom de rue",
+            "example": "3, rue du loup",
+            "type": [
+              "string",
               "null",
             ],
           },
