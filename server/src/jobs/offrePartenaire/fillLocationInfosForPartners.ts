@@ -31,7 +31,6 @@ export const fillLocationInfosForPartners = async () => {
       if (!geolocation) {
         return []
       } else {
-        // NOTE POUR REFLEXION SUR PR :
         /*
         A ce stade, nous avons trouvé un match via la ban.
         Ce match est basé sur les éléments d'adresse fournis initialement par le producteur de la donnée
