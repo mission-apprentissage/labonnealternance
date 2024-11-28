@@ -54,6 +54,11 @@ const publicUrl = config.publicUrl
 
 const imagePath = `${config.publicUrl}/images/emails/`
 
+const PARTNER_NAMES = {
+  oc: "Open Classrooms",
+  "1jeune1solution": "1jeune1solution",
+}
+
 const images: object = {
   images: {
     logoLba: `${imagePath}logo_LBA.png`,
@@ -708,11 +713,14 @@ export const sendMailToApplicant = async ({
   company_recruitment_intention: string
   company_feedback: string
 }): Promise<void> => {
+  const partner = (application.caller && PARTNER_NAMES[application.caller]) ?? null
+
   switch (company_recruitment_intention) {
     case ApplicantIntention.ENTRETIEN: {
       mailer.sendEmail({
         to: application.applicant_email,
-        subject: `Réponse positive de ${application.company_name} à ${application.applicant_first_name} ${application.applicant_last_name}`,
+        cc: email!,
+        subject: `Réponse positive de ${application.company_name} à la candidature de ${application.applicant_first_name} ${application.applicant_last_name}`,
         template: getEmailTemplate("mail-candidat-entretien"),
         data: { ...sanitizeApplicationForEmail(application), ...images, email, phone: sanitizeForEmail(removeUrlsFromText(phone)), comment: sanitizeForEmail(company_feedback) },
       })
@@ -721,18 +729,26 @@ export const sendMailToApplicant = async ({
     case ApplicantIntention.NESAISPAS: {
       mailer.sendEmail({
         to: application.applicant_email,
-        subject: `Réponse de ${application.company_name} à ${application.applicant_first_name} ${application.applicant_last_name}`,
+        cc: email!,
+        subject: `Réponse de ${application.company_name} à la candidature de ${application.applicant_first_name} ${application.applicant_last_name}`,
         template: getEmailTemplate("mail-candidat-nsp"),
-        data: { ...sanitizeApplicationForEmail(application), ...images, email, phone: sanitizeForEmail(removeUrlsFromText(phone)), comment: sanitizeForEmail(company_feedback) },
+        data: {
+          ...sanitizeApplicationForEmail(application),
+          partner,
+          ...images,
+          email,
+          phone: sanitizeForEmail(removeUrlsFromText(phone)),
+          comment: sanitizeForEmail(company_feedback),
+        },
       })
       break
     }
     case ApplicantIntention.REFUS: {
       mailer.sendEmail({
         to: application.applicant_email,
-        subject: `Réponse négative de ${application.company_name}`,
+        subject: `Réponse négative de ${application.company_name} à la candidature${partner ? ` ${partner}` : ""} de ${application.applicant_first_name} ${application.applicant_last_name}`,
         template: getEmailTemplate("mail-candidat-refus"),
-        data: { ...sanitizeApplicationForEmail(application), ...images, comment: sanitizeForEmail(company_feedback) },
+        data: { ...sanitizeApplicationForEmail(application), partner, ...images, comment: sanitizeForEmail(company_feedback) },
       })
       break
     }
