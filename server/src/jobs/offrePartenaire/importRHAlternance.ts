@@ -13,6 +13,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
 import dayjs from "@/services/dayjs.service"
 
+import { blankComputedJobPartner } from "./fillComputedJobsPartners"
 import { rawToComputedJobsPartners } from "./rawToComputedJobsPartners"
 
 const ZRawRHAlternanceJob = rawRHAlternanceModel.zod.shape.job
@@ -95,6 +96,7 @@ export const rawRhAlternanceToComputedMapper =
     const offer_creation = jobSubmitDateTime ? dayjs.tz(jobSubmitDateTime).toDate() : now
     const isValid: boolean = jobType === "Alternance"
     const computedJob: IComputedJobsPartners = {
+      ...blankComputedJobPartner,
       _id: new ObjectId(),
       partner_job_id: jobCode,
       partner_label: JOBPARTNERS_LABEL.RH_ALTERNANCE,
@@ -116,13 +118,8 @@ export const rawRhAlternanceToComputedMapper =
       workplace_address_city: jobCity,
       workplace_address_zipcode: jobPostalCode,
       apply_url: jobUrl,
-      errors: [],
-      validated: false,
       business_error: isValid ? null : `expected jobType === "Alternance" but got ${jobType}`,
       updated_at: now,
-      contract_start: null,
-      offer_rome_codes: null,
-      offer_target_diploma: null,
     }
     return computedJob
   }

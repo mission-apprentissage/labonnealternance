@@ -7,6 +7,8 @@ import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { joinNonNullStrings } from "shared/utils"
 import { z } from "zod"
 
+import { blankComputedJobPartner } from "./fillComputedJobsPartners"
+
 export const ZHelloWorkJob = z
   .object({
     job_id: z.string(),
@@ -94,6 +96,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
 
   const created_at = new Date()
   const partnerJob: IComputedJobsPartners = {
+    ...blankComputedJobPartner,
     _id: new ObjectId(),
     created_at,
     updated_at: updated_date ? parseDate(updated_date) : created_at,
@@ -115,24 +118,12 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
       .tz(creationDate || created_at)
       .add(2, "months")
       .toDate(),
-    offer_origin: null,
-    offer_opening_count: 1,
-    offer_multicast: false,
     workplace_siret: siretParsing.success ? siretParsing.data : null,
-    workplace_brand: null,
-    workplace_idcc: null,
-    workplace_legal_name: null,
-    workplace_opco: null,
-    workplace_naf_code: null,
-    workplace_naf_label: null,
     workplace_name: company_title,
     workplace_description: company_description && company_description.length >= 30 ? company_description : null,
-    workplace_size: null,
-    workplace_website: null,
     workplace_address_zipcode: postal_code || null,
     workplace_address_city: city || null,
     workplace_address_label: joinNonNullStrings([city, postal_code]),
-    workplace_address_street_label: null,
     workplace_geopoint:
       latitude && longitude
         ? {
@@ -141,9 +132,6 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
           }
         : undefined,
     apply_url: urlParsing.success ? urlParsing.data : null,
-    errors: [],
-    validated: false,
-    business_error: null,
   }
   return partnerJob
 }
