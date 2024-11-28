@@ -719,7 +719,7 @@ const activateAndExtendOffre = async (id: IJob["_id"]): Promise<IJob> => {
  */
 export const activateEntrepriseRecruiterForTheFirstTime = async (entrepriseRecruiter: IRecruiter) => {
   const firstJob = entrepriseRecruiter.jobs.at(0)
-  if (firstJob) {
+  if (firstJob && firstJob.job_status === JOB_STATUS.EN_ATTENTE) {
     const job = await activateAndExtendOffre(firstJob._id)
     // Send delegation if any
     if (job.delegations?.length) {
