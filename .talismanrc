@@ -96,7 +96,7 @@ fileignoreconfig:
 - filename: server/static/templates/mail-bienvenue.mjml.ejs
   checksum: 34eb30b463153df565aa89f8e42f08eb77633b6bfa4673f4d6ef5f40633c6101
 - filename: server/static/templates/mail-candidat-entretien.mjml.ejs
-  checksum: 55e635282f6a7ac57319c69cbc98f484b9c5d7e6c4ba0901e1e5395caac9e8cd
+  checksum: 53067858567e2878f5f65da06be9efc6902a691b36299167d54343ab30162e49
 - filename: server/static/templates/mail-candidat-nsp.mjml.ejs
   checksum: 203d57160c0cda492f4172d9651c2dea9b8d7b4b3ab0e25f80a24438e3f1e184
 - filename: server/static/templates/mail-candidat-offre-emploi-lba.mjml.ejs
