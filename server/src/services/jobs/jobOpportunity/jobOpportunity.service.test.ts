@@ -1941,6 +1941,9 @@ describe("updateJobOffer", () => {
   })
 
   const minimalData: IJobOfferApiWriteV3Input = {
+    identifier: {
+      partner_job_id: "job-id-9",
+    },
     contract: {
       start: inSept.toJSON(),
     },
@@ -1984,14 +1987,31 @@ describe("updateJobOffer", () => {
       url: null,
     })
 
-    return () => {
+    return async () => {
       vi.useRealTimers()
+      await getDbCollection("jobs_partners").deleteMany({})
     }
   })
 
+  it("should return 404 if not found", async () => {
+    expect.soft(() => updateJobOffer(new ObjectId(), identity, generateJobOfferApiWriteV3(minimalData))).rejects.toThrow("Job offer not found")
+  })
+  it("should return 400 if not active", async () => {
+    await updateJobOffer(_id, identity, generateJobOfferApiWriteV3({ ...minimalData, offer: { ...minimalData.offer, status: JOB_STATUS_ENGLISH.POURVUE } }))
+    expect.soft(() => updateJobOffer(_id, identity, generateJobOfferApiWriteV3(minimalData))).rejects.toThrow("Job must be active in order to be modified")
+  })
+  it.each(["job_id_in_conflict", null])("should return 409 if another offer exist with the same pair partner_label and partner_job_id=%s", async (partner_job_id) => {
+    // given
+    await getDbCollection("jobs_partners").updateOne({ _id }, { $set: { partner_job_id: "old_partner_id" } })
+    await getDbCollection("jobs_partners").insertOne({ ...originalJob, partner_job_id, _id: new ObjectId() })
+    // when
+    expect
+      .soft(() => updateJobOffer(_id, identity, generateJobOfferApiWriteV3({ ...minimalData, identifier: { partner_job_id } })))
+      .rejects.toThrow(`Another job offer with partner_job_id=${partner_job_id} already exists`)
+  })
+
   it("should update a job offer with the minimal data", async () => {
-    const data = generateJobOfferApiWriteV3({ ...minimalData, identifier: { ...minimalData.identifier, partner_job_id: "job-id-9" } })
-    await updateJobOffer(_id, identity, data)
+    await updateJobOffer(_id, identity, generateJobOfferApiWriteV3(minimalData))
 
     const job = await getDbCollection("jobs_partners").findOne({ _id })
     expect(job?.created_at).toEqual(originalCreatedAt)

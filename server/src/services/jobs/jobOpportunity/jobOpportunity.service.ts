@@ -783,5 +783,13 @@ export async function updateJobOffer(id: ObjectId, identity: IApiAlternanceToken
     throw badRequest("Job must be active in order to be modified")
   }
 
+  const offerWithPartnerId = await getDbCollection("jobs_partners").findOne<IJobsPartnersOfferPrivate>({
+    partner_label: current.partner_label,
+    partner_job_id: data.identifier.partner_job_id,
+  })
+  if (offerWithPartnerId && offerWithPartnerId._id.toString() !== current._id.toString()) {
+    throw conflict(`Another job offer with partner_job_id=${data.identifier.partner_job_id} already exists`)
+  }
+
   await upsertJobOffer(data, identity, current)
 }
