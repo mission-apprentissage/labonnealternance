@@ -3,6 +3,7 @@
 exports[`importHelloWork > should test the import of hellowork data into computed_job_partners 1`] = `
 [
   {
+    "apply_phone": null,
     "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162035&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F41990977.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D41990977%26utm_content%3Dfluxexample",
     "business_error": null,
     "contract_duration": null,
@@ -32,6 +33,7 @@ Vous contribuez au développement commercial en concevant des nouvelles offres, 
     "offer_opening_count": 1,
     "offer_origin": null,
     "offer_rome_codes": null,
+    "offer_status": "Active",
     "offer_target_diploma": {
       "european": "7",
       "label": "Master, titre ingénieur, autres formations niveau (Bac+5)",
@@ -66,6 +68,7 @@ Vous contribuez au développement commercial en concevant des nouvelles offres, 
     "workplace_website": null,
   },
   {
+    "apply_phone": null,
     "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162036&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F41995446.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D41995446%26utm_content%3Dfluxexample",
     "business_error": null,
     "contract_duration": null,
@@ -126,6 +129,7 @@ Rejoignez-nous et venez goûter à une expérience unique !",
     "offer_opening_count": 1,
     "offer_origin": null,
     "offer_rome_codes": null,
+    "offer_status": "Active",
     "offer_target_diploma": {
       "european": "5",
       "label": "BTS, DEUST, autres formations niveau (Bac+2)",
@@ -161,6 +165,7 @@ Fondé en 1933 par André Besnier à Laval, le Groupe Lactalis est une entrepris
     "workplace_website": null,
   },
   {
+    "apply_phone": null,
     "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162037&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F42014902.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D42014902%26utm_content%3Dfluxexample",
     "business_error": null,
     "contract_duration": null,
@@ -220,6 +225,7 @@ En tant que leader, vous dirigerez les équipes marketing et communication, coor
     "offer_opening_count": 1,
     "offer_origin": null,
     "offer_rome_codes": null,
+    "offer_status": "Active",
     "offer_target_diploma": {
       "european": "7",
       "label": "Master, titre ingénieur, autres formations niveau (Bac+5)",
@@ -262,6 +268,7 @@ Prêt à rejoindre la Team CGR ?",
     "workplace_website": null,
   },
   {
+    "apply_phone": null,
     "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162038&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F42016309.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D42016309%26utm_content%3Dfluxexample",
     "business_error": null,
     "contract_duration": null,
@@ -306,6 +313,7 @@ Chez Exotec, nous garantissons l'égalité des chances dans notre processus de r
     "offer_opening_count": 1,
     "offer_origin": null,
     "offer_rome_codes": null,
+    "offer_status": "Active",
     "offer_target_diploma": {
       "european": "7",
       "label": "Master, titre ingénieur, autres formations niveau (Bac+5)",
@@ -344,6 +352,7 @@ Rejoindre Exotec, c'est l'opportunité de donner du sens à vos compétences. Gr
     "workplace_website": null,
   },
   {
+    "apply_phone": null,
     "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162039&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F42018480.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D42018480%26utm_content%3Dfluxexample",
     "business_error": null,
     "contract_duration": null,
@@ -394,6 +403,7 @@ Ref : 1jvie4rokd",
     "offer_opening_count": 1,
     "offer_origin": null,
     "offer_rome_codes": null,
+    "offer_status": "Active",
     "offer_target_diploma": {
       "european": "3",
       "label": "Cap, autres formations niveau (Infrabac)",
@@ -433,6 +443,7 @@ Ref : 1jvie4rokd",
 exports[`importHelloWork > should test the whole import 1`] = `
 [
   {
+    "apply_phone": null,
     "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162035&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F41990977.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D41990977%26utm_content%3Dfluxexample",
     "contract_duration": null,
     "contract_remote": "onsite",
@@ -461,6 +472,7 @@ Vous contribuez au développement commercial en concevant des nouvelles offres, 
     "offer_opening_count": 1,
     "offer_origin": null,
     "offer_rome_codes": null,
+    "offer_status": "Active",
     "offer_target_diploma": {
       "european": "7",
       "label": "Master, titre ingénieur, autres formations niveau (Bac+5)",
@@ -488,6 +500,7 @@ Vous contribuez au développement commercial en concevant des nouvelles offres, 
     "workplace_website": null,
   },
   {
+    "apply_phone": null,
     "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162036&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F41995446.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D41995446%26utm_content%3Dfluxexample",
     "contract_duration": null,
     "contract_remote": null,
@@ -547,6 +560,7 @@ Rejoignez-nous et venez goûter à une expérience unique !",
     "offer_opening_count": 1,
     "offer_origin": null,
     "offer_rome_codes": null,
+    "offer_status": "Active",
     "offer_target_diploma": {
       "european": "5",
       "label": "BTS, DEUST, autres formations niveau (Bac+2)",
@@ -575,6 +589,7 @@ Fondé en 1933 par André Besnier à Laval, le Groupe Lactalis est une entrepris
     "workplace_website": null,
   },
   {
+    "apply_phone": null,
     "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162037&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F42014902.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D42014902%26utm_content%3Dfluxexample",
     "contract_duration": null,
     "contract_remote": "hybrid",
@@ -633,6 +648,7 @@ En tant que leader, vous dirigerez les équipes marketing et communication, coor
     "offer_opening_count": 1,
     "offer_origin": null,
     "offer_rome_codes": null,
+    "offer_status": "Active",
     "offer_target_diploma": {
       "european": "7",
       "label": "Master, titre ingénieur, autres formations niveau (Bac+5)",
@@ -668,6 +684,7 @@ Prêt à rejoindre la Team CGR ?",
     "workplace_website": null,
   },
   {
+    "apply_phone": null,
     "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162038&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F42016309.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D42016309%26utm_content%3Dfluxexample",
     "contract_duration": null,
     "contract_remote": "onsite",
@@ -711,6 +728,7 @@ Chez Exotec, nous garantissons l'égalité des chances dans notre processus de r
     "offer_opening_count": 1,
     "offer_origin": null,
     "offer_rome_codes": null,
+    "offer_status": "Active",
     "offer_target_diploma": {
       "european": "7",
       "label": "Master, titre ingénieur, autres formations niveau (Bac+5)",
@@ -742,6 +760,7 @@ Rejoindre Exotec, c'est l'opportunité de donner du sens à vos compétences. Gr
     "workplace_website": null,
   },
   {
+    "apply_phone": null,
     "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162039&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F42018480.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D42018480%26utm_content%3Dfluxexample",
     "contract_duration": null,
     "contract_remote": "onsite",
@@ -791,6 +810,7 @@ Ref : 1jvie4rokd",
     "offer_opening_count": 1,
     "offer_origin": null,
     "offer_rome_codes": null,
+    "offer_status": "Active",
     "offer_target_diploma": {
       "european": "3",
       "label": "Cap, autres formations niveau (Infrabac)",

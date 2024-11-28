@@ -61,6 +61,7 @@ describe("helloWorkJobToJobsPartners", () => {
       })
     ).toEqual({
       _id: expect.any(ObjectId),
+      apply_phone: null,
       created_at: now,
       updated_at: new Date("2024-07-21T04:49:06.000+02:00"),
       partner_label: "Hello work",
@@ -71,6 +72,7 @@ describe("helloWorkJobToJobsPartners", () => {
       contract_duration: 12,
       offer_title: "Gestionnaire Paie et ADP - Alternance H/F",
       offer_description: "ceci est une longue description qui a du sens et qui va passer la limite de 30 caractères",
+      offer_status: "Active",
       offer_target_diploma: {
         european: "6",
         label: "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
