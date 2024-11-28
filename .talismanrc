@@ -104,7 +104,7 @@ fileignoreconfig:
 - filename: server/static/templates/mail-candidat-recruteur-lba.mjml.ejs
   checksum: 0b806bca197dba97415902339e84f924cb45dae766cf8d3cfc47d80d2bdd203c
 - filename: server/static/templates/mail-candidat-refus.mjml.ejs
-  checksum: 3092254c776da7d5266f3dde68ed73a67d259844586607585ee07a8d04b36bca
+  checksum: 3fcfa9586df3283a3f50cf6751b735b646d3f3ac64e8e4a8453999e9e5aea881
 - filename: server/static/templates/mail-echec-envoi-candidature.mjml.ejs
   checksum: 9055c5495ced85a674770e7fb8a81b3bd84949f9ff8f6e6450989aa3b7cda326
 - filename: server/tests/fixture/connectedUser.fixture.ts
