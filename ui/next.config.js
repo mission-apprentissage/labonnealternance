@@ -92,20 +92,8 @@ const nextConfig = withImages({
         source: "/:path*",
         headers: [
           {
-            key: "X-Content-Type-Options",
-            value: "nosniff",
-          },
-          {
             key: "Content-Security-Policy",
             value: inline(contentSecurityPolicy + " frame-ancestors 'none';"),
-          },
-          {
-            key: "Referrer-Policy",
-            value: "unsafe-url",
-          },
-          {
-            key: "Strict-Transport-Security",
-            value: "max-age=31536000; includeSubDomains",
           },
         ],
       },
