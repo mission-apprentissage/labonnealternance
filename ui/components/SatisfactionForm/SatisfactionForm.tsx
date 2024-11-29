@@ -138,7 +138,7 @@ export const SatisfactionForm = ({
                 return (
                   <>
                     <Box pt={2} data-testid="fieldset-message">
-                      <CustomFormControl label="Motif de la suppression (obligatoire)" required name="company_feedback">
+                      <CustomFormControl label="Votre réponse :" required name="company_feedback">
                         <Textarea
                           id="company_feedback"
                           data-testid="company_feedback"
