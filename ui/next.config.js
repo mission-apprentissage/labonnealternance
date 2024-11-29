@@ -79,14 +79,12 @@ const nextConfig = withImages({
     widenClientFileUpload: true,
   },
   async rewrites() {
-    return process.env.NEXT_PUBLIC_ENV === "production"
-      ? [
-          {
-            source: "/robots.txt",
-            destination: "/api/robots",
-          },
-        ]
-      : []
+    return [
+      {
+        source: "/robots.txt",
+        destination: "/api/robots",
+      },
+    ]
   },
   async headers() {
     return [
