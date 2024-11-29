@@ -6,7 +6,7 @@
     "baseUrl": ".",
     "skipLibCheck": true,
     "strict": false,
-    // "strictNullChecks": true,
+    "strictNullChecks": false,
     // "strictBindCallApply": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
