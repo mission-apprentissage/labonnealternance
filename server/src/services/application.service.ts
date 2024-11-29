@@ -20,7 +20,7 @@ import {
 import { ApplicantIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, getDirectJobPath, newItemTypeToOldItemType } from "shared/constants/lbaitem"
-import { RECRUITER_STATUS } from "shared/constants/recruteur"
+import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 import { ITrackingCookies } from "shared/models/trafficSources.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
@@ -697,6 +697,16 @@ const checkUserApplicationCountV2 = async (applicantEmail: string, LbaJob: IJobO
   }
 }
 
+const getJobSourceType = async (application: IApplication) => {
+  if (LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA === application.job_origin && application.job_id) {
+    const recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": new ObjectId(application.job_id) })
+    if (recruiter?.cfa_delegated_siret) {
+      return CFA
+    }
+  }
+
+  return ENTREPRISE
+}
 /**
  * @description sends notification email to applicant
  */
@@ -715,6 +725,8 @@ export const sendMailToApplicant = async ({
 }): Promise<void> => {
   const partner = (application.caller && PARTNER_NAMES[application.caller]) ?? null
 
+  const jobSourceType: string = await getJobSourceType(application)
+
   switch (company_recruitment_intention) {
     case ApplicantIntention.ENTRETIEN: {
       mailer.sendEmail({
@@ -722,7 +734,15 @@ export const sendMailToApplicant = async ({
         cc: email!,
         subject: `Réponse positive de ${application.company_name} à la candidature de ${application.applicant_first_name} ${application.applicant_last_name}`,
         template: getEmailTemplate("mail-candidat-entretien"),
-        data: { ...sanitizeApplicationForEmail(application), ...images, email, phone: sanitizeForEmail(removeUrlsFromText(phone)), comment: sanitizeForEmail(company_feedback) },
+        data: {
+          ...sanitizeApplicationForEmail(application),
+          jobSourceType,
+          partner,
+          ...images,
+          email,
+          phone: sanitizeForEmail(removeUrlsFromText(phone)),
+          comment: sanitizeForEmail(company_feedback),
+        },
       })
       break
     }
@@ -748,7 +768,7 @@ export const sendMailToApplicant = async ({
         to: application.applicant_email,
         subject: `Réponse négative de ${application.company_name} à la candidature${partner ? ` ${partner}` : ""} de ${application.applicant_first_name} ${application.applicant_last_name}`,
         template: getEmailTemplate("mail-candidat-refus"),
-        data: { ...sanitizeApplicationForEmail(application), partner, ...images, comment: sanitizeForEmail(company_feedback) },
+        data: { ...sanitizeApplicationForEmail(application), jobSourceType, partner, ...images, comment: sanitizeForEmail(company_feedback) },
       })
       break
     }
