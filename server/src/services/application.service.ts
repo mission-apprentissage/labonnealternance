@@ -726,6 +726,11 @@ export const sendMailToApplicant = async ({
 
   const jobSourceType: string = await getJobSourceType(application)
 
+  console.log("brut : ", company_feedback)
+  console.log("sanitize : ", sanitizeForEmail(company_feedback))
+  console.log("prepare : ", prepareMessageForMail(company_feedback))
+  console.log("prepare + sanitiz: ", prepareMessageForMail(sanitizeForEmail(company_feedback)))
+
   switch (company_recruitment_intention) {
     case ApplicantIntention.ENTRETIEN: {
       mailer.sendEmail({
@@ -740,7 +745,7 @@ export const sendMailToApplicant = async ({
           ...images,
           email,
           phone: sanitizeForEmail(removeUrlsFromText(phone)),
-          comment: sanitizeForEmail(company_feedback),
+          comment: prepareMessageForMail(sanitizeForEmail(company_feedback)),
         },
       })
       break
@@ -757,7 +762,7 @@ export const sendMailToApplicant = async ({
           ...images,
           email,
           phone: sanitizeForEmail(removeUrlsFromText(phone)),
-          comment: sanitizeForEmail(company_feedback),
+          comment: prepareMessageForMail(sanitizeForEmail(company_feedback)),
         },
       })
       break
@@ -767,7 +772,7 @@ export const sendMailToApplicant = async ({
         to: application.applicant_email,
         subject: `Réponse négative de ${application.company_name} à la candidature${partner ? ` ${partner}` : ""} de ${application.applicant_first_name} ${application.applicant_last_name}`,
         template: getEmailTemplate("mail-candidat-refus"),
-        data: { ...sanitizeApplicationForEmail(application), jobSourceType, partner, ...images, comment: sanitizeForEmail(company_feedback) },
+        data: { ...sanitizeApplicationForEmail(application), jobSourceType, partner, ...images, comment: prepareMessageForMail(sanitizeForEmail(company_feedback)) },
       })
       break
     }
