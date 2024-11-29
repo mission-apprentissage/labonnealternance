@@ -723,7 +723,6 @@ export const sendMailToApplicant = async ({
   company_feedback: string
 }): Promise<void> => {
   const partner = (application.caller && PARTNER_NAMES[application.caller]) ?? null
-
   const jobSourceType: string = await getJobSourceType(application)
 
   switch (company_recruitment_intention) {
@@ -731,7 +730,7 @@ export const sendMailToApplicant = async ({
       mailer.sendEmail({
         to: application.applicant_email,
         cc: email!,
-        subject: `Réponse positive de ${application.company_name} à la candidature de ${application.applicant_first_name} ${application.applicant_last_name}`,
+        subject: `Réponse positive de ${application.company_name} à la candidature${partner ? ` ${partner}` : ""} de ${application.applicant_first_name} ${application.applicant_last_name}`,
         template: getEmailTemplate("mail-candidat-entretien"),
         data: {
           ...sanitizeApplicationForEmail(application),
