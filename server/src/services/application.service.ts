@@ -726,11 +726,6 @@ export const sendMailToApplicant = async ({
 
   const jobSourceType: string = await getJobSourceType(application)
 
-  console.log("brut : ", company_feedback)
-  console.log("sanitize : ", sanitizeForEmail(company_feedback))
-  console.log("prepare : ", prepareMessageForMail(company_feedback))
-  console.log("prepare + sanitiz: ", prepareMessageForMail(sanitizeForEmail(company_feedback)))
-
   switch (company_recruitment_intention) {
     case ApplicantIntention.ENTRETIEN: {
       mailer.sendEmail({
