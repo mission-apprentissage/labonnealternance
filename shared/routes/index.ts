@@ -31,6 +31,7 @@ import { zV1FormationsRoutes } from "./v1Formations.routes"
 import { zV1FormationsParRegion } from "./v1FormationsParRegion.routes"
 import { zV1JobsRoutes } from "./v1Jobs.routes"
 import { zV1JobsEtFormationsRoutes } from "./v1JobsEtFormations.routes"
+import { zJobsRoutesV3 } from "./v3/jobs/jobs.routes.v3"
 
 const zRoutesGetP1 = {
   ...zCoreRoutes.get,
@@ -68,6 +69,7 @@ const zRoutesGetP5 = {
   ...zFormulaireRoute.get,
   ...zRecruiterRoutes.get,
   ...zJobsRoutesV2.get,
+  ...zJobsRoutesV3.get,
 } as const
 
 const zRoutesGet: typeof zRoutesGetP1 & typeof zRoutesGetP2 & typeof zRoutesGetP3 & typeof zRoutesGetP4 & typeof zRoutesGetP5 = {
@@ -100,6 +102,7 @@ const zRoutesPost3 = {
   ...zEmailsRoutes.post,
   ...zJobsRoutesV2.post,
   ...zReportedCompanyRoutes.post,
+  ...zJobsRoutesV3.post,
 }
 
 const zRoutesPost = {
@@ -112,7 +115,7 @@ const zRoutesPut = {
   ...zUserRecruteurRoutes.put,
   ...zFormulaireRoute.put,
   ...zUpdateLbaCompanyRoutes.put,
-  ...zJobsRoutesV2.put,
+  ...zJobsRoutesV3.put,
 } as const
 
 const zRoutesDelete = {

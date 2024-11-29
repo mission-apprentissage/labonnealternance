@@ -173,7 +173,7 @@ const CreationCompteForm = ({
               name="establishment_siret"
               handleSearch={(search: string) => searchEntreprise(search)}
               renderItem={({ raison_sociale, siret, adresse }, highlighted) => <EntrepriseCard {...{ raison_sociale, siret, adresse, highlighted }} />}
-              itemToString={({ raison_sociale, siret, adresse }) => `${raison_sociale} - ${siret} - ${adresse}`}
+              itemToString={({ siret }) => siret}
               onInputFieldChange={(value, hasError) => {
                 setSearchInput(value)
                 if (!hasError) return
@@ -274,9 +274,9 @@ export default function CreationCompte({ type, isWidget = false, origin = "lba" 
                 Dépot simplifié d'offre en alternance
               </Text>
             )}
-            <Heading>Retrouvez votre établissement</Heading>
+            <Heading>Identifiez votre entreprise</Heading>
             <Text fontSize="20px" textAlign="justify" mt={2} mb={4}>
-              Nous avons besoin de votre numéro de SIRET ou de votre raison sociale afin de vous identifier.
+              Vous recrutez des alternants ? Précisez la raison sociale ou le numéro de SIRET de votre établissement.
             </Text>
             <CreationCompteForm organisationType={organisationType} setBandeau={setBandeau} origin={origin} isWidget={isWidget} onSelectOrganisation={onSelectOrganisation} />
           </Box>

@@ -1,4 +1,4 @@
-import { ILbaItemLbaCompany } from "@/../shared"
+import { ILbaItemLbaCompany, ILbaItemLbaJob } from "@/../shared"
 import { Box, Divider, Flex, Link, Text } from "@chakra-ui/react"
 import { useContext, useEffect, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
@@ -26,7 +26,7 @@ import getTags from "./ItemDetailServices/getTags"
 import ItemDetailApplicationsStatus, { hasApplied } from "./ItemDetailServices/ItemDetailApplicationStatus"
 import ItemDetailCard from "./ItemDetailServices/ItemDetailCard"
 import JobItemCardHeader from "./ItemDetailServices/JobItemCardHeader"
-import LbaJobDetail from "./LbaJobComponents/LbaJobDetail"
+import { LbaJobDetail } from "./LbaJobComponents/LbaJobDetail"
 import RecruteurLbaDetail from "./RecruteurLbaComponents/RecruteurLbaDetail"
 import ShareLink from "./ShareLink"
 import TrainingDetail from "./TrainingDetail"
@@ -50,7 +50,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
     /* @ts-expect-error: à cracker */
   }, [selectedItem?.id, selectedItem?.company?.siret, selectedItem?.job?.id])
 
-  const actualTitle = getActualTitle({ kind, selectedItem })
+  const actualTitle = getActualTitle({ kind, selectedItem }) || ""
 
   const { swipeHandlers, goNext, goPrev } = BuildSwipe({ jobs, trainings, extendedSearch, activeFilters, handleSelectItem, selectedItem })
 
@@ -135,7 +135,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
               wordBreak: "break-word",
             }}
           >
-            {actualTitle || ""}
+            {actualTitle}
           </Text>
 
           {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
@@ -176,7 +176,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
       </Box>
 
       {kind === LBA_ITEM_TYPE_OLD.PEJOB && <FTJobDetail job={selectedItem} />}
-      {kind === LBA_ITEM_TYPE_OLD.MATCHA && <LbaJobDetail job={selectedItem} />}
+      {kind === LBA_ITEM_TYPE_OLD.MATCHA && <LbaJobDetail title={actualTitle} job={selectedItem as ILbaItemLbaJob} />}
       {kind === LBA_ITEM_TYPE_OLD.LBA && <RecruteurLbaDetail recruteurLba={selectedItem as ILbaItemLbaCompany} />}
       {kind === LBA_ITEM_TYPE_OLD.FORMATION && <TrainingDetail training={selectedItem} />}
 

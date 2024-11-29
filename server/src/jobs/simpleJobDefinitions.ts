@@ -3,6 +3,7 @@ import { anonimizeUsers } from "./anonymization/anonymizeUserRecruteurs"
 import { anonymizeOldUsers } from "./anonymization/anonymizeUsers"
 import fixApplications from "./applications/fixApplications"
 import { processApplications } from "./applications/processApplications"
+import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
 import { obfuscateCollections } from "./database/obfuscateCollections"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
@@ -194,5 +195,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: detectDuplicateJobPartners,
     description: "Detect duplicate offers in the computed_jobs_partners collection",
+  },
+  {
+    fct: sendContactsToBrevo,
+    description: "Envoi à Brevo la liste des contacts",
   },
 ]

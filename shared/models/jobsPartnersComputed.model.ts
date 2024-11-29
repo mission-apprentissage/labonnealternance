@@ -1,8 +1,9 @@
 import { z } from "zod"
 
+import { IModelDescriptor, zObjectId } from "shared/models/common"
+
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 
-import { IModelDescriptor, zObjectId } from "./common"
 import { ZJobsPartnersOfferPrivate } from "./jobsPartners.model"
 
 const collectionName = "computed_jobs_partners" as const
@@ -29,7 +30,9 @@ export type IComputedJobPartnersDuplicateRef = z.output<typeof ZComputedJobPartn
 
 export const ZComputedJobsPartners = extensions
   .optionalToNullish(ZJobsPartnersOfferPrivate.partial())
-  .omit({ _id: true })
+  .omit({
+    _id: true,
+  })
   .extend({
     _id: zObjectId,
     errors: z.array(

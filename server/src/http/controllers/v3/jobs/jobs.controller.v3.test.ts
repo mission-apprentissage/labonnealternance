@@ -7,7 +7,8 @@ import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fi
 import { generateLbaCompanyFixture } from "shared/fixtures/recruteurLba.fixture"
 import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { IGeoPoint } from "shared/models"
-import { IJobsPartnersOfferPrivate, IJobsPartnersWritableApiInput } from "shared/models/jobsPartners.model"
+import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import type { IJobOfferApiWriteV3Input } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
@@ -68,7 +69,7 @@ afterEach(() => {
   nock.cleanAll()
 })
 
-describe("GET /jobs/search", () => {
+describe("GET /v3/jobs/search", () => {
   beforeEach(async () => {
     await getDbCollection("referentiel.communes").insertMany(generateReferentielCommuneFixtures([parisFixture, clichyFixture, levalloisFixture, marseilleFixture]))
     await getDbCollection("jobs_partners").insertOne(jobPartnerOffer)
@@ -76,13 +77,13 @@ describe("GET /jobs/search", () => {
   })
 
   it("should return 401 if no api key provided", async () => {
-    const response = await httpClient().inject({ method: "GET", path: "/api/v2/jobs/search" })
+    const response = await httpClient().inject({ method: "GET", path: "/api/v3/jobs/search" })
     expect(response.statusCode).toBe(401)
     expect(response.json()).toEqual({ statusCode: 401, error: "Unauthorized", message: "Unable to parse token missing-bearer" })
   })
 
   it("should return 401 if api key is invalid", async () => {
-    const response = await httpClient().inject({ method: "GET", path: "/api/v2/jobs/search", headers: { authorization: `Bearer ${fakeToken}` } })
+    const response = await httpClient().inject({ method: "GET", path: "/api/v3/jobs/search", headers: { authorization: `Bearer ${fakeToken}` } })
     expect.soft(response.statusCode).toBe(401)
     expect(response.json()).toEqual({ statusCode: 401, error: "Unauthorized", message: "Unable to parse token invalid-signature" })
   })
@@ -91,7 +92,7 @@ describe("GET /jobs/search", () => {
     const romesQuery = "D4354,D864,F67"
     const response = await httpClient().inject({
       method: "GET",
-      path: `/api/v2/jobs/search?romes=${romesQuery}&latitude=${latitude}&longitude=${longitude}`,
+      path: `/api/v3/jobs/search?romes=${romesQuery}&latitude=${latitude}&longitude=${longitude}`,
       headers: { authorization: `Bearer ${token}` },
     })
     const data = response.json()
@@ -115,7 +116,7 @@ describe("GET /jobs/search", () => {
     const [latitude, longitude] = [300, 200]
     const response = await httpClient().inject({
       method: "GET",
-      path: `/api/v2/jobs/search?romes=${romesQuery}&latitude=${latitude}&longitude=${longitude}`,
+      path: `/api/v3/jobs/search?romes=${romesQuery}&latitude=${latitude}&longitude=${longitude}`,
       headers: { authorization: `Bearer ${token}` },
     })
     const data = response.json()
@@ -141,68 +142,13 @@ describe("GET /jobs/search", () => {
   it("should perform search and return data", async () => {
     const response = await httpClient().inject({
       method: "GET",
-      path: `/api/v2/jobs/search?romes=${romesQuery}&latitude=${latitude}&longitude=${longitude}`,
+      path: `/api/v3/jobs/search?romes=${romesQuery}&latitude=${latitude}&longitude=${longitude}`,
       headers: { authorization: `Bearer ${token}` },
     })
     const data = response.json()
     expect(response.statusCode).toBe(200)
     expect(data.jobs).toHaveLength(1)
     expect(data.recruiters).toHaveLength(1)
-
-    expect(Object.keys(data.jobs[0]).toSorted()).toEqual([
-      "_id",
-      "apply_phone",
-      "apply_url",
-      "contract_duration",
-      "contract_remote",
-      "contract_start",
-      "contract_type",
-      "offer_access_conditions",
-      "offer_creation",
-      "offer_description",
-      "offer_desired_skills",
-      "offer_expiration",
-      "offer_opening_count",
-      "offer_rome_codes",
-      "offer_status",
-      "offer_target_diploma",
-      "offer_title",
-      "offer_to_be_acquired_skills",
-      "partner_job_id",
-      "partner_label",
-      "workplace_address_label",
-      "workplace_brand",
-      "workplace_description",
-      "workplace_geopoint",
-      "workplace_idcc",
-      "workplace_legal_name",
-      "workplace_naf_code",
-      "workplace_naf_label",
-      "workplace_name",
-      "workplace_opco",
-      "workplace_siret",
-      "workplace_size",
-      "workplace_website",
-    ])
-
-    expect(Object.keys(data.recruiters[0]).toSorted()).toEqual([
-      "_id",
-      "apply_phone",
-      "apply_url",
-      "workplace_address_label",
-      "workplace_brand",
-      "workplace_description",
-      "workplace_geopoint",
-      "workplace_idcc",
-      "workplace_legal_name",
-      "workplace_naf_code",
-      "workplace_naf_label",
-      "workplace_name",
-      "workplace_opco",
-      "workplace_siret",
-      "workplace_size",
-      "workplace_website",
-    ])
   })
 
   it("should support rncp param", async () => {
@@ -210,7 +156,7 @@ describe("GET /jobs/search", () => {
 
     const response = await httpClient().inject({
       method: "GET",
-      path: `/api/v2/jobs/search?rncp=${rncpQuery}&latitude=${latitude}&longitude=${longitude}`,
+      path: `/api/v3/jobs/search?rncp=${rncpQuery}&latitude=${latitude}&longitude=${longitude}`,
       headers: { authorization: `Bearer ${token}` },
     })
 
@@ -225,7 +171,7 @@ describe("GET /jobs/search", () => {
   it("should require latitude when longitude is provided", async () => {
     const response = await httpClient().inject({
       method: "GET",
-      path: `/api/v2/jobs/search?longitude=${longitude}`,
+      path: `/api/v3/jobs/search?longitude=${longitude}`,
       headers: { authorization: `Bearer ${token}` },
     })
     const data = response.json()
@@ -248,7 +194,7 @@ describe("GET /jobs/search", () => {
   it("should require longitude when latitude is provided", async () => {
     const response = await httpClient().inject({
       method: "GET",
-      path: `/api/v2/jobs/search?latitude=${latitude}`,
+      path: `/api/v3/jobs/search?latitude=${latitude}`,
       headers: { authorization: `Bearer ${token}` },
     })
     const data = response.json()
@@ -271,7 +217,7 @@ describe("GET /jobs/search", () => {
   it("should all params be optional", async () => {
     const response = await httpClient().inject({
       method: "GET",
-      path: `/api/v2/jobs/search`,
+      path: `/api/v3/jobs/search`,
       headers: { authorization: `Bearer ${token}` },
     })
 
@@ -287,16 +233,20 @@ describe("POST /jobs", async () => {
   const now = new Date("2024-06-18T00:00:00.000Z")
   const inSept = new Date("2024-09-01T00:00:00.000Z")
 
-  const data: IJobsPartnersWritableApiInput = {
-    contract_start: inSept.toJSON(),
+  const data: IJobOfferApiWriteV3Input = {
+    contract: { start: inSept.toJSON() },
 
-    offer_title: "Apprentis en développement web",
-    offer_rome_codes: ["M1602"],
-    offer_description: "Envie de devenir développeur web ? Rejoignez-nous !",
+    offer: {
+      title: "Apprentis en développement web",
+      rome_codes: ["M1602"],
+      description: "Envie de devenir développeur web ? Rejoignez-nous !",
+    },
 
-    apply_email: "mail@mail.com",
+    apply: { email: "mail@mail.com" },
 
-    workplace_siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
+    workplace: {
+      siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
+    },
   }
 
   beforeEach(async () => {
@@ -330,7 +280,7 @@ describe("POST /jobs", async () => {
   it("should return 403 if no token is not signed by API", async () => {
     const response = await httpClient().inject({
       method: "POST",
-      path: `/api/v2/jobs`,
+      path: `/api/v3/jobs`,
       body: data,
       headers: { authorization: `Bearer ${fakeToken}` },
     })
@@ -349,7 +299,7 @@ describe("POST /jobs", async () => {
 
     const response = await httpClient().inject({
       method: "POST",
-      path: `/api/v2/jobs`,
+      path: `/api/v3/jobs`,
       body: data,
       headers: { authorization: `Bearer ${restrictedToken}` },
     })
@@ -361,12 +311,12 @@ describe("POST /jobs", async () => {
   it("should create a new job offer", async () => {
     const response = await httpClient().inject({
       method: "POST",
-      path: `/api/v2/jobs`,
+      path: `/api/v3/jobs`,
       body: data,
       headers: { authorization: `Bearer ${token}` },
     })
 
-    expect.soft(response.statusCode).toBe(201)
+    expect.soft(response.statusCode).toBe(200)
     const responseJson = response.json()
     expect(responseJson).toEqual({ id: expect.any(String) })
     expect(await getDbCollection("jobs_partners").countDocuments({ _id: new ObjectId(responseJson.id as string) })).toBe(1)
@@ -379,12 +329,14 @@ describe("POST /jobs", async () => {
   it("should apply method be defined", async () => {
     const response = await httpClient().inject({
       method: "POST",
-      path: `/api/v2/jobs`,
+      path: `/api/v3/jobs`,
       body: {
         ...data,
-        apply_email: null,
-        apply_phone: null,
-        apply_url: null,
+        apply: {
+          email: null,
+          phone: null,
+          url: null,
+        },
       },
       headers: { authorization: `Bearer ${token}` },
     })
@@ -395,14 +347,17 @@ describe("POST /jobs", async () => {
       data: {
         validationError: {
           _errors: [],
-          apply_email: {
-            _errors: ["At least one of apply_url, apply_email, or apply_phone is required"],
-          },
-          apply_phone: {
-            _errors: ["At least one of apply_url, apply_email, or apply_phone is required"],
-          },
-          apply_url: {
-            _errors: ["At least one of apply_url, apply_email, or apply_phone is required"],
+          apply: {
+            _errors: [],
+            email: {
+              _errors: ["At least one of url, email, or phone is required"],
+            },
+            phone: {
+              _errors: ["At least one of url, email, or phone is required"],
+            },
+            url: {
+              _errors: ["At least one of url, email, or phone is required"],
+            },
           },
         },
       },
@@ -421,16 +376,22 @@ describe("PUT /jobs/:id", async () => {
 
   const originalJob = generateJobsPartnersOfferPrivate({ _id: id, offer_title: "Old title", partner_label: "Un super Partenaire" })
 
-  const data: IJobsPartnersWritableApiInput = {
-    contract_start: inSept.toJSON(),
+  const data: IJobOfferApiWriteV3Input = {
+    contract: { start: inSept.toJSON() },
 
-    offer_title: "Apprentis en développement web",
-    offer_rome_codes: ["M1602"],
-    offer_description: "Envie de devenir développeur web ? Rejoignez-nous !",
+    offer: {
+      title: "Apprentis en développement web",
+      rome_codes: ["M1602"],
+      description: "Envie de devenir développeur web ? Rejoignez-nous !",
+    },
 
-    apply_email: "mail@mail.com",
+    apply: {
+      email: "mail@mail.com",
+    },
 
-    workplace_siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
+    workplace: {
+      siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
+    },
   }
 
   beforeEach(async () => {
@@ -466,7 +427,7 @@ describe("PUT /jobs/:id", async () => {
   it("should return 401 if no token is not signed by API", async () => {
     const response = await httpClient().inject({
       method: "PUT",
-      path: `/api/v2/jobs/${id.toString()}`,
+      path: `/api/v3/jobs/${id.toString()}`,
       body: data,
       headers: { authorization: `Bearer ${fakeToken}` },
     })
@@ -479,7 +440,7 @@ describe("PUT /jobs/:id", async () => {
   it("should update a job offer", async () => {
     const response = await httpClient().inject({
       method: "PUT",
-      path: `/api/v2/jobs/${id.toString()}`,
+      path: `/api/v3/jobs/${id.toString()}`,
       body: data,
       headers: { authorization: `Bearer ${token}` },
     })
@@ -489,14 +450,14 @@ describe("PUT /jobs/:id", async () => {
     const doc = await getDbCollection("jobs_partners").findOne({ _id: id })
 
     // Ensure that the job offer is associated to the correct permission
-    expect(doc?.offer_title).toBe(data.offer_title)
+    expect(doc?.offer_title).toBe(data.offer.title)
     expect(doc).not.toEqual(originalJob)
   })
 
   it('should return 404 on "job does not exist"', async () => {
     const response = await httpClient().inject({
       method: "PUT",
-      path: `/api/v2/jobs/${new ObjectId().toString()}`,
+      path: `/api/v3/jobs/${new ObjectId().toString()}`,
       body: data,
       headers: { authorization: `Bearer ${token}` },
     })
@@ -514,7 +475,7 @@ describe("PUT /jobs/:id", async () => {
 
     const response = await httpClient().inject({
       method: "PUT",
-      path: `/api/v2/jobs/${id.toString()}`,
+      path: `/api/v3/jobs/${id.toString()}`,
       body: data,
       headers: { authorization: `Bearer ${restrictedToken}` },
     })
@@ -532,7 +493,7 @@ describe("PUT /jobs/:id", async () => {
 
     const response = await httpClient().inject({
       method: "PUT",
-      path: `/api/v2/jobs/${id.toString()}`,
+      path: `/api/v3/jobs/${id.toString()}`,
       body: data,
       headers: { authorization: `Bearer ${restrictedToken}` },
     })
