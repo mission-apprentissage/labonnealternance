@@ -13,8 +13,8 @@ const ConnexionCompte = () => {
     sendMagiclink(values)
       .then(() => {
         toast({
-          title: "Email valide.",
-          description: "Un lien d'accès personnalisé vous a été envoyé par mail.",
+          title: "Vérification de l'email.",
+          description: "Un lien d'accès personnalisé a été envoyé à votre adresse.",
           position: "top-right",
           status: "success",
           duration: 5000,
@@ -32,7 +32,7 @@ const ConnexionCompte = () => {
             )
             break
           case "UNKNOWN":
-            setFieldError("email", "L’adresse email renseignée n’existe pas")
+            setFieldError("email", "Adresse email invalide.")
             break
           case "VALIDATION":
             setFieldError("email", "Le compte utilisateur est en attente de validation")
