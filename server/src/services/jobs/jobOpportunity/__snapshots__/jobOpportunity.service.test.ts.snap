@@ -71,7 +71,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     },
     "identifier": {
       "id": "",
-      "partner_job_id": null,
+      "partner_job_id": "",
       "partner_label": "La bonne alternance",
     },
     "offer": {
@@ -147,7 +147,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     },
     "identifier": {
       "id": "",
-      "partner_job_id": "1",
+      "partner_job_id": "",
       "partner_label": "France Travail",
     },
     "offer": {
@@ -208,7 +208,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     },
     "identifier": {
       "id": "",
-      "partner_job_id": "job-id-1",
+      "partner_job_id": "",
       "partner_label": "Hello work",
     },
     "offer": {

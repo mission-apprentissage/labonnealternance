@@ -212,7 +212,7 @@ describe("findJobsOpportunities", () => {
     expect(results).toEqual({
       jobs: [
         expect.objectContaining({
-          identifier: { id: lbaJobs[0].jobs[0]._id, partner_job_id: null, partner_label: "La bonne alternance" },
+          identifier: { id: lbaJobs[0].jobs[0]._id, partner_job_id: lbaJobs[0].jobs[0]._id.toString(), partner_label: "La bonne alternance" },
           workplace: expect.objectContaining({
             location: expect.objectContaining({
               geopoint: lbaJobs[0].geopoint,
@@ -260,6 +260,7 @@ describe("findJobsOpportunities", () => {
     expect(
       results.jobs.map((j) => {
         j.identifier.id = ""
+        j.identifier.partner_job_id = ""
         j.apply.url = ""
 
         return j
@@ -293,7 +294,7 @@ describe("findJobsOpportunities", () => {
     expect(results).toEqual({
       jobs: [
         expect.objectContaining({
-          identifier: { id: lbaJobs[0].jobs[0]._id, partner_job_id: null, partner_label: "La bonne alternance" },
+          identifier: { id: lbaJobs[0].jobs[0]._id, partner_job_id: lbaJobs[0].jobs[0]._id.toString(), partner_label: "La bonne alternance" },
           workplace: expect.objectContaining({
             location: expect.objectContaining({
               geopoint: lbaJobs[0].geopoint,
@@ -301,7 +302,7 @@ describe("findJobsOpportunities", () => {
           }),
         }),
         expect.objectContaining({
-          identifier: { id: lbaJobs[2].jobs[0]._id, partner_job_id: null, partner_label: "La bonne alternance" },
+          identifier: { id: lbaJobs[2].jobs[0]._id, partner_job_id: lbaJobs[2].jobs[0]._id.toString(), partner_label: "La bonne alternance" },
           workplace: expect.objectContaining({
             location: expect.objectContaining({
               geopoint: lbaJobs[2].geopoint,
@@ -382,10 +383,10 @@ describe("findJobsOpportunities", () => {
     expect(results).toEqual({
       jobs: [
         expect.objectContaining({
-          identifier: { id: lbaJobs[1].jobs[0]._id, partner_job_id: null, partner_label: "La bonne alternance" },
+          identifier: { id: lbaJobs[1].jobs[0]._id, partner_job_id: lbaJobs[1].jobs[0]._id.toString(), partner_label: "La bonne alternance" },
         }),
         expect.objectContaining({
-          identifier: { id: lbaJobs[0].jobs[0]._id, partner_job_id: null, partner_label: "La bonne alternance" },
+          identifier: { id: lbaJobs[0].jobs[0]._id, partner_job_id: lbaJobs[0].jobs[0]._id.toString(), partner_label: "La bonne alternance" },
         }),
         expect.objectContaining({
           identifier: { id: null, partner_job_id: ftJobs[0].id, partner_label: "France Travail" },
@@ -453,7 +454,7 @@ describe("findJobsOpportunities", () => {
       expect(results).toEqual({
         jobs: [
           expect.objectContaining({
-            identifier: { id: lbaJobs[2].jobs[0]._id, partner_job_id: null, partner_label: "La bonne alternance" },
+            identifier: { id: lbaJobs[2].jobs[0]._id, partner_job_id: lbaJobs[2].jobs[0]._id.toString(), partner_label: "La bonne alternance" },
             workplace: expect.objectContaining({
               location: expect.objectContaining({
                 geopoint: lbaJobs[2].geopoint,
@@ -592,7 +593,7 @@ describe("findJobsOpportunities", () => {
       expect(results).toEqual({
         jobs: [
           expect.objectContaining({
-            identifier: { id: lbaJobs[2].jobs[0]._id, partner_job_id: null, partner_label: "La bonne alternance" },
+            identifier: { id: lbaJobs[2].jobs[0]._id, partner_job_id: lbaJobs[2].jobs[0]._id.toString(), partner_label: "La bonne alternance" },
             workplace: expect.objectContaining({
               location: expect.objectContaining({
                 geopoint: lbaJobs[2].geopoint,
@@ -664,7 +665,7 @@ describe("findJobsOpportunities", () => {
     expect(results).toEqual({
       jobs: [
         expect.objectContaining({
-          identifier: { id: lbaJobs[0].jobs[0]._id, partner_job_id: null, partner_label: "La bonne alternance" },
+          identifier: { id: lbaJobs[0].jobs[0]._id, partner_job_id: lbaJobs[0].jobs[0]._id.toString(), partner_label: "La bonne alternance" },
           workplace: expect.objectContaining({
             location: expect.objectContaining({
               geopoint: lbaJobs[0].geopoint,
@@ -672,7 +673,7 @@ describe("findJobsOpportunities", () => {
           }),
         }),
         expect.objectContaining({
-          identifier: { id: lbaJobs[2].jobs[0]._id, partner_job_id: null, partner_label: "La bonne alternance" },
+          identifier: { id: lbaJobs[2].jobs[0]._id, partner_job_id: lbaJobs[2].jobs[0]._id.toString(), partner_label: "La bonne alternance" },
           workplace: expect.objectContaining({
             location: expect.objectContaining({
               geopoint: lbaJobs[2].geopoint,
@@ -1683,28 +1684,28 @@ describe("findJobsOpportunities", () => {
             // Paris
             _id: lbaJobs[0].jobs[0]._id,
             partner_label: "La bonne alternance",
-            partner_job_id: null,
+            partner_job_id: lbaJobs[0].jobs[0]._id.toString(),
             workplace_legal_name: lbaJobs[0].establishment_raison_sociale,
           },
           {
             // Levallois - 2024-01-01
             _id: extraLbaJob.jobs[1]._id,
             partner_label: "La bonne alternance",
-            partner_job_id: null,
+            partner_job_id: extraLbaJob.jobs[1]._id.toString(),
             workplace_legal_name: extraLbaJob.establishment_raison_sociale,
           },
           {
             // Levallois - 2023-01-01
             _id: lbaJobs[2].jobs[0]._id,
             partner_label: "La bonne alternance",
-            partner_job_id: null,
+            partner_job_id: lbaJobs[2].jobs[0]._id.toString(),
             workplace_legal_name: lbaJobs[2].establishment_raison_sociale,
           },
           {
             // Levallois - 2021-01-01
             _id: extraLbaJob.jobs[0]._id,
             partner_label: "La bonne alternance",
-            partner_job_id: null,
+            partner_job_id: extraLbaJob.jobs[0]._id.toString(),
             workplace_legal_name: extraLbaJob.establishment_raison_sociale,
           },
           {
