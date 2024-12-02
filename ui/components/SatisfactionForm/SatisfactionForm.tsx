@@ -49,13 +49,8 @@ export const SatisfactionForm = ({
     [ApplicantIntention.ENTRETIEN]: {
       header: (
         <>
-          <Text pt={8}>Vous souhaitez rencontrer le/la candidat(e) ?</Text>
-          <Text fontWeight={700}>Répondez à {`${firstName} ${lastName}`} et proposez-lui une date de rencontre.</Text>
-          <Text pt={8}>Rédigez votre réponse personnalisée.</Text>
-          <Text>
-            <Text as="small" color="grey.425">
-              Le candidat recevra votre commentaire ainsi que vos coordonnées directement sur sa boîte mail.
-            </Text>
+          <Text fontWeight={700} fontSize="16px" pt={8}>
+            Personnalisez votre réponse pour apporter à {`${firstName}`} un message qui lui correspond vraiment.
           </Text>
         </>
       ),
@@ -68,11 +63,6 @@ export const SatisfactionForm = ({
           <Text pt={8}>La candidature de {`${firstName} ${lastName}`} vous intéresse, mais vous ne souhaitez pas prendre votre décision aujourd’hui ?</Text>
           <Text fontWeight={700}>Indiquez-lui que vous lui apporterez une réponse prochainement.</Text>
           <Text pt={8}>Rédigez votre réponse personnalisée.</Text>
-          <Text>
-            <Text as="small" color="grey.425">
-              Le candidat recevra votre commentaire ainsi que vos coordonnées directement sur sa boîte mail.
-            </Text>
-          </Text>
         </>
       ),
       placeholderTextArea: "Bonjour, Merci pour l'intérêt que vous portez à notre établissement. Votre candidature a retenu toute notre attention et nous vous répondrons ...",
@@ -80,13 +70,8 @@ export const SatisfactionForm = ({
     [ApplicantIntention.REFUS]: {
       header: (
         <>
-          <Text pt={8}>Vous souhaitez refuser la candidature ?</Text>
-          <Text fontWeight={700}>Indiquez au candidat {`${firstName} ${lastName}`} les raisons de ce refus. Une réponse personnalisée l’aidera pour ses futures recherches.</Text>
-          <Text pt={8}>Rédigez votre réponse personnalisée.</Text>
-          <Text>
-            <Text as="small" color="grey.425">
-              Le candidat recevra votre message directement sur sa boîte mail.
-            </Text>
+          <Text pt={8} fontWeight={700}>
+            Personnalisez votre réponse afin d’aider {`${firstName}`} à s’améliorer pour ses prochaines candidatures.
           </Text>
         </>
       ),
@@ -117,7 +102,7 @@ export const SatisfactionForm = ({
       <SatisfactionFormNavigation />
       {sendingState !== "ok_sent" && (
         <Flex direction="column" width="80%" maxWidth="992px" margin="auto" pt={12} alignItems="center" data-testid="SatisfactionFormSuccess">
-          <Box width="100%" maxWidth="800px" mb={8}>
+          <Box width="100%" maxWidth="800px" mb={4}>
             {intentionVariants[company_recruitment_intention].header}
           </Box>
           <Box width="100%" maxWidth="800px">
@@ -139,6 +124,9 @@ export const SatisfactionForm = ({
                   <>
                     <Box pt={2} data-testid="fieldset-message">
                       <CustomFormControl label="Votre réponse :" required name="company_feedback">
+                        <Text fontSize="12px" color="#666" mb={4}>
+                          Le candidat recevra le message suivant ainsi que vos coordonnées par courriel.
+                        </Text>
                         <Textarea
                           id="company_feedback"
                           data-testid="company_feedback"
