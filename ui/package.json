@@ -21,6 +21,7 @@
     "@socialgouv/matomo-next": "^1.8.0",
     "@turf/distance": "^6.5.0",
     "axios": "^1.7.4",
+    "csv-stringify": "^6.5.2",
     "dayjs": "^1.11.10",
     "downshift": "5.2.0",
     "email-misspelled": "^3.4.2",

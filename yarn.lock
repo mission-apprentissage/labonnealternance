@@ -9401,6 +9401,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"csv-stringify@npm:^6.5.2":
+  version: 6.5.2
+  resolution: "csv-stringify@npm:6.5.2"
+  checksum: b3b64d18866289d25bf2880c8d511cb685460f7a65f8ac8523ed45cb97a1fe792d52a1da0eb9ae238d1e7f83ae57dbc4ce1e3047333e24e4ec486b9e8bd3f9bf
+  languageName: node
+  linkType: hard
+
 "cyclist@npm:1.0.1":
   version: 1.0.1
   resolution: "cyclist@npm:1.0.1"
@@ -22345,6 +22352,7 @@ __metadata:
     "@types/node": ^20.7.1
     "@types/react": ^18.2.23
     axios: ^1.7.4
+    csv-stringify: ^6.5.2
     dayjs: ^1.11.10
     dotenv: ^16.3.1
     downshift: 5.2.0
