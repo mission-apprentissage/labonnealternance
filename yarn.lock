@@ -6581,6 +6581,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/string-similarity@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "@types/string-similarity@npm:4.0.2"
+  checksum: f23b4d176de52ba46b47b85c8895b2dc6e09dedf89efcc231cd03736daf0412fdf080bd7ba515a118a8ac0edff499963c3b5cad9dddbff91237f6f6b171c954c
+  languageName: node
+  linkType: hard
+
 "@types/superagent@npm:*":
   version: 8.1.7
   resolution: "@types/superagent@npm:8.1.7"
@@ -20523,6 +20530,7 @@ __metadata:
     "@types/node": 20.7.1
     "@types/nodemailer": ^6.4.11
     "@types/nodemailer-html-to-text": ^3.1.1
+    "@types/string-similarity": ^4.0.2
     "@types/supertest": ^2.0.13
     "@typescript-eslint/eslint-plugin": ^5.62.0
     api-alternance-sdk: ^1.3.1
@@ -20585,6 +20593,7 @@ __metadata:
     shared: "workspace:*"
     sib-api-v3-sdk: ^8.5.0
     stream-json: ^1.8.0
+    string-similarity: ^4.0.4
     supertest: ^6.3.3
     tsup: ^7.2.0
     type-fest: ^4.18.2
@@ -21201,6 +21210,13 @@ __metadata:
   version: 0.3.2
   resolution: "string-argv@npm:0.3.2"
   checksum: 8703ad3f3db0b2641ed2adbb15cf24d3945070d9a751f9e74a924966db9f325ac755169007233e8985a39a6a292f14d4fee20482989b89b96e473c4221508a0f
+  languageName: node
+  linkType: hard
+
+"string-similarity@npm:^4.0.4":
+  version: 4.0.4
+  resolution: "string-similarity@npm:4.0.4"
+  checksum: 797b41b24e1eb6b3b0ab896950b58c295a19a82933479c75f7b5279ffb63e0b456a8c8d10329c02f607ca1a50370e961e83d552aa468ff3b0fa15809abc9eff7
   languageName: node
   linkType: hard
 

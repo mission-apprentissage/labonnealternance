@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { zObjectId, IModelDescriptor } from "shared/models/common"
+import { IModelDescriptor, zObjectId } from "shared/models/common"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 
@@ -20,6 +20,14 @@ export enum JOB_PARTNER_BUSINESS_ERROR {
   CLOSED_COMPANY = "CLOSED_COMPANY",
 }
 
+export const ZComputedJobPartnersDuplicateRef = z.object({
+  otherOfferId: zObjectId,
+  collectionName: z.enum(["recruiters", collectionName]).describe("nom de la collection contenant l'offre avec _id=otherOfferId"),
+  reason: z.string(),
+})
+
+export type IComputedJobPartnersDuplicateRef = z.output<typeof ZComputedJobPartnersDuplicateRef>
+
 export const ZComputedJobsPartners = extensions
   .optionalToNullish(ZJobsPartnersOfferPrivate.partial())
   .omit({
@@ -38,6 +46,7 @@ export const ZComputedJobsPartners = extensions
     ),
     validated: z.boolean().default(false).describe("Toutes les données nécessaires au passage vers jobs_partners sont présentes et valides"),
     business_error: z.string().nullable().default(null),
+    duplicates: z.array(ZComputedJobPartnersDuplicateRef).nullish().describe("Référence les autres offres en duplicata avec celle-ci"),
   })
 export type IComputedJobsPartners = z.output<typeof ZComputedJobsPartners>
 
@@ -49,6 +58,8 @@ export default {
     [{ validated: 1 }, {}],
     [{ errors: 1 }, {}],
     [{ partner_label: 1, partner_job_id: 1 }, { unique: true }],
+    [{ workplace_siret: 1 }, {}],
+    [{ "duplicates.otherOfferId": 1 }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor
