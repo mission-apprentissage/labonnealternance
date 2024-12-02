@@ -32,9 +32,11 @@ export const ZComputedJobsPartners = extensions
   .optionalToNullish(ZJobsPartnersOfferPrivate.partial())
   .omit({
     _id: true,
+    partner_job_id: true,
   })
   .extend({
     _id: zObjectId,
+    partner_job_id: ZJobsPartnersOfferPrivate.shape.partner_job_id,
     errors: z.array(
       z
         .object({

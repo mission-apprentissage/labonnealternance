@@ -46,7 +46,7 @@ type IJobOfferExpected = {
   identifier: {
     id: ObjectId | string | null
     partner_label: string
-    partner_job_id: string | null
+    partner_job_id: string
   }
   workplace: IJobRecruiterExpected["workplace"]
   apply: IJobRecruiterExpected["apply"]
@@ -77,8 +77,8 @@ type IJobOfferExpected = {
 }
 
 type IJobOfferApiWriteV3Expected = {
-  identifier?: {
-    partner_job_id?: IJobOfferExpected["identifier"]["partner_job_id"]
+  identifier: {
+    partner_job_id: IJobOfferExpected["identifier"]["partner_job_id"]
   }
   contract?: {
     duration?: number | null
@@ -161,6 +161,9 @@ describe("IJobOfferApiWriteV3", () => {
   const inOneHour = new Date("2024-06-18T15:30:00.000Z")
 
   const data: IJobOfferApiWriteV3Input = {
+    identifier: {
+      partner_job_id: "partner_job_id",
+    },
     offer: {
       title: "Apprentis en développement web",
       rome_codes: ["M1602"],
@@ -510,7 +513,7 @@ describe("convertToJobOfferApiReadV3", () => {
         "Organisation: Contrôler la conformité des données ou des documents",
       ],
       partner_label: "La bonne alternance",
-      partner_job_id: null,
+      partner_job_id: "partner_job_id",
       workplace_address_label: "Paris",
       workplace_brand: "Brand",
       workplace_description: "Workplace Description",
@@ -533,7 +536,7 @@ describe("convertToJobOfferApiReadV3", () => {
       identifier: {
         id: id1,
         partner_label: "La bonne alternance",
-        partner_job_id: null,
+        partner_job_id: "partner_job_id",
       },
       workplace: {
         siret: "11000001500013",

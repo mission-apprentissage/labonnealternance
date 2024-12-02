@@ -345,7 +345,7 @@ export const convertLbaRecruiterToJobOfferApi = (offresEmploiLba: IJobResult[]):
       })
       .map(
         ({ recruiter, job }: IJobResult): IJobOfferApiReadV3 => ({
-          identifier: { id: job._id, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, partner_job_id: null },
+          identifier: { id: job._id, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, partner_job_id: job._id.toString() },
           contract: {
             start: job.job_start_date,
             duration: job.job_duration ?? null,

@@ -122,11 +122,9 @@ export type IJobSearchApiV3QueryResolved = Omit<IJobSearchApiV3Query, "latitude"
 }
 
 export const zJobOfferApiWriteV3 = z.object({
-  identifier: z
-    .object({
-      partner_job_id: ZJobsPartnersOfferPrivate.shape.partner_job_id.default(null),
-    })
-    .default({}),
+  identifier: z.object({
+    partner_job_id: ZJobsPartnersOfferPrivate.shape.partner_job_id,
+  }),
   contract: z
     .object({
       start: z

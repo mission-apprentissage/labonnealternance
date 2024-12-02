@@ -1798,6 +1798,9 @@ describe("createJobOffer", () => {
   const inSept = new Date("2024-09-01T00:00:00.000Z")
 
   const minimalData: IJobOfferApiWriteV3Input = {
+    identifier: {
+      partner_job_id: "partner_job_id",
+    },
     contract: {
       start: inSept.toJSON(),
     },
@@ -1941,6 +1944,9 @@ describe("updateJobOffer", () => {
   })
 
   const minimalData: IJobOfferApiWriteV3Input = {
+    identifier: {
+      partner_job_id: "partner_job_id",
+    },
     contract: {
       start: inSept.toJSON(),
     },
