@@ -9747,16 +9747,15 @@ Limite : 20 appel(s) / 1 seconde(s)
                     "type": "object",
                   },
                   "identifier": {
-                    "default": {},
                     "properties": {
                       "partner_job_id": {
                         "description": "Identifiant d'origine l'offre provenant du partenaire",
-                        "type": [
-                          "string",
-                          "null",
-                        ],
+                        "type": "string",
                       },
                     },
+                    "required": [
+                      "partner_job_id",
+                    ],
                     "type": "object",
                   },
                   "offer": {
@@ -9935,6 +9934,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                   },
                 },
                 "required": [
+                  "identifier",
                   "offer",
                   "apply",
                   "workplace",
@@ -10152,10 +10152,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                               },
                               "partner_job_id": {
                                 "description": "Identifiant d'origine l'offre provenant du partenaire",
-                                "type": [
-                                  "string",
-                                  "null",
-                                ],
+                                "type": "string",
                               },
                               "partner_label": {
                                 "description": "Référence du partenaire",
@@ -10828,16 +10825,15 @@ Limite : 20 appel(s) / 1 seconde(s)
                     "type": "object",
                   },
                   "identifier": {
-                    "default": {},
                     "properties": {
                       "partner_job_id": {
                         "description": "Identifiant d'origine l'offre provenant du partenaire",
-                        "type": [
-                          "string",
-                          "null",
-                        ],
+                        "type": "string",
                       },
                     },
+                    "required": [
+                      "partner_job_id",
+                    ],
                     "type": "object",
                   },
                   "offer": {
@@ -11016,6 +11012,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                   },
                 },
                 "required": [
+                  "identifier",
                   "offer",
                   "apply",
                   "workplace",
