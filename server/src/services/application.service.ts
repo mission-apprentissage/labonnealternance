@@ -66,7 +66,7 @@ const images: object = {
 type IJobOrCompany =
   | { type: LBA_ITEM_TYPE.RECRUTEURS_LBA; job: ILbaCompany; recruiter: null }
   | { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA; job: IJob; recruiter: IRecruiter }
-  | { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES; job: IJobsPartnersOfferPrivate /** TO BE DEFINED, TOO MANY ZOD MODEL */; recruiter: null }
+  | { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES; job: IJobsPartnersOfferPrivate; recruiter: null }
 
 export enum BlackListOrigins {
   CANDIDATURE_SPONTANEE_RECRUTEUR = "candidature_spontanee_recruteur",

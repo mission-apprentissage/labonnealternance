@@ -16,10 +16,10 @@ const CandidatureLbaMessage = ({ formik, kind }) => {
   const getFieldError = () => {
     let errorMsg = <></>
     if (kind === LBA_ITEM_TYPE_OLD.MATCHA) {
-      if (formik.touched.message && formik.errors.message) {
+      if (formik.touched.applicant_message && formik.errors.applicant_message) {
         errorMsg = (
           <Box fontSize="12px" color="#e10600">
-            {formik.errors.message}
+            {formik.errors.applicant_message}
           </Box>
         )
       } else {
@@ -43,10 +43,10 @@ const CandidatureLbaMessage = ({ formik, kind }) => {
         <Textarea
           id="message"
           data-testid="message"
-          name="message"
+          name="applicant_message"
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
-          value={formik.values.message}
+          value={formik.values.applicant_message}
           borderRadius="4px 4px 0px 0px"
           height="80px"
           width="97%"

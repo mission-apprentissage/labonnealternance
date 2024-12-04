@@ -475,6 +475,7 @@ export const ZLbaItemLbaJob = z
     applicationCount: z.number(), // calcul en fonction du nombre de candidatures enregistrées
     detailsLoaded: z.boolean().nullish(),
     token: z.string().nullish(), // KBA 2024_05_20 : for API V2 only, remove nullish when fully migrated
+    recipient_id: z.string().describe("Identifiant personnalisé (ID mongoDB préfixé du nom de la collection) envoyé au server pour la candidature"),
   })
   .strict()
   .openapi("LbaJob")
@@ -497,6 +498,7 @@ export const ZLbaItemLbaCompany = z
     applicationCount: z.number(), // calcul en fonction du nombre de candidatures enregistrées
     detailsLoaded: z.boolean().nullish(),
     token: z.string().nullish(), // KBA 2024_05_20 : for API V2 only, remove nullish when fully migrated
+    recipient_id: z.string().describe("Identifiant personnalisé (ID mongoDB préfixé du nom de la collection) envoyé au server pour la candidature"),
   })
   .strict()
   .openapi("LbaCompany")

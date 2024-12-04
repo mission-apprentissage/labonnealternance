@@ -1,10 +1,14 @@
 import { Box, Button, Flex, FormControl, FormErrorMessage, Image, Input, Spinner, Text } from "@chakra-ui/react"
 import * as Sentry from "@sentry/nextjs"
-import React, { useState } from "react"
+import { useState } from "react"
 import { useDropzone } from "react-dropzone"
 
 const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
-  const [fileData, setFileData] = useState(formik.values.fileName ? { fileName: formik.values.fileName, fileContent: formik.values.fileContent } : null)
+  const [fileData, setFileData] = useState<{ applicant_attachment_name: string; applicant_attachment_content: string | ArrayBuffer } | null>(
+    formik.values.applicant_attachment_name
+      ? { applicant_attachment_name: formik.values.applicant_attachment_name, applicant_attachment_content: formik.values.applicant_attachment_content }
+      : null
+  )
   const [fileLoading, setFileLoading] = useState(false)
   const [showUnacceptedFileMessages, setShowUnacceptedFileMessages] = useState(false)
 
@@ -14,15 +18,15 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   }
 
   const hasSelectedFile = () => {
-    return fileData?.fileName
+    return fileData?.applicant_attachment_name
   }
 
   const onDrop = (files) => {
     const reader = new FileReader()
-    let fileName = null
+    let applicant_attachment_name = null
 
     reader.onload = (e) => {
-      const readFileData = { fileName, fileContent: e.target.result }
+      const readFileData = { applicant_attachment_name, applicant_attachment_content: e.target.result }
       setFileData(readFileData)
       setFileValue(readFileData)
     }
@@ -39,7 +43,7 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
     }
 
     if (files.length) {
-      fileName = files[0].name
+      applicant_attachment_name = files[0].name
       reader.readAsDataURL(files[0])
     } else {
       setShowUnacceptedFileMessages(true)
@@ -77,7 +81,7 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
           </Flex>
         )}
         {showUnacceptedFileMessages && <FormErrorMessage ml={6}>⚠ Le fichier n&apos;est pas au bon format (autorisé : .docx ou .pdf, &lt;3mo, max 1 fichier)</FormErrorMessage>}
-        <FormErrorMessage ml={6}>{formik.errors.fileName}</FormErrorMessage>
+        <FormErrorMessage ml={6}>{formik.errors.applicant_attachment_name}</FormErrorMessage>
       </FormControl>
     )
   }
@@ -85,7 +89,7 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   const getSelectedFile = () => {
     return (
       <Box ml={6} fontSize="14px" fontWeight={700} color="grey.700" data-testid="selectedFile">
-        Pièce jointe : {fileData.fileName}
+        Pièce jointe : {fileData.applicant_attachment_name}
         {
           <Button
             onClick={onRemoveFile}
