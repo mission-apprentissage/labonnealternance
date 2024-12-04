@@ -1577,6 +1577,10 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "place": {
             "$ref": "#/components/schemas/Place",
           },
+          "recipient_id": {
+            "description": "Identifiant personnalisé (ID mongoDB préfixé du nom de la collection) envoyé au server pour la candidature",
+            "type": "string",
+          },
           "title": {
             "type": [
               "string",
@@ -1602,6 +1606,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "place",
           "company",
           "applicationCount",
+          "recipient_id",
         ],
         "type": "object",
       },
@@ -1839,6 +1844,10 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "place": {
             "$ref": "#/components/schemas/Place",
           },
+          "recipient_id": {
+            "description": "Identifiant personnalisé (ID mongoDB préfixé du nom de la collection) envoyé au server pour la candidature",
+            "type": "string",
+          },
           "romes": {
             "items": {
               "$ref": "#/components/schemas/Rome",
@@ -1875,6 +1884,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "company",
           "id",
           "applicationCount",
+          "recipient_id",
         ],
         "type": "object",
       },
