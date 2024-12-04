@@ -1973,6 +1973,12 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
+          "jobExpirationDate": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
           "jobStartDate": {
             "type": [
               "string",
@@ -2717,6 +2723,14 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "example": 2.3752,
             "type": [
               "number",
+              "null",
+            ],
+          },
+          "numberAndStreet": {
+            "description": "Numéro de rue et nom de rue",
+            "example": "3, rue du loup",
+            "type": [
+              "string",
               "null",
             ],
           },
@@ -9695,6 +9709,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                     "type": "object",
                   },
                   "contract": {
+                    "default": {},
                     "properties": {
                       "duration": {
                         "description": "Durée du contrat en mois",
@@ -9742,6 +9757,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                     "type": "object",
                   },
                   "identifier": {
+                    "default": {},
                     "properties": {
                       "partner_job_id": {
                         "description": "Identifiant d'origine l'offre provenant du partenaire",
@@ -9794,6 +9810,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                         ],
                       },
                       "publication": {
+                        "default": {},
                         "properties": {
                           "creation": {
                             "format": "date-time",
@@ -9822,6 +9839,17 @@ Limite : 20 appel(s) / 1 seconde(s)
                           "array",
                           "null",
                         ],
+                      },
+                      "status": {
+                        "default": "Active",
+                        "description": "Status de l'offre (surtout utilisé pour les offres ajouté par API)",
+                        "enum": [
+                          "Active",
+                          "Filled",
+                          "Cancelled",
+                          "Pending",
+                        ],
+                        "type": "string",
                       },
                       "target_diploma": {
                         "properties": {
@@ -9874,6 +9902,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                         ],
                       },
                       "location": {
+                        "default": {},
                         "properties": {
                           "address": {
                             "type": [
@@ -10761,6 +10790,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                     "type": "object",
                   },
                   "contract": {
+                    "default": {},
                     "properties": {
                       "duration": {
                         "description": "Durée du contrat en mois",
@@ -10808,6 +10838,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                     "type": "object",
                   },
                   "identifier": {
+                    "default": {},
                     "properties": {
                       "partner_job_id": {
                         "description": "Identifiant d'origine l'offre provenant du partenaire",
@@ -10860,6 +10891,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                         ],
                       },
                       "publication": {
+                        "default": {},
                         "properties": {
                           "creation": {
                             "format": "date-time",
@@ -10888,6 +10920,17 @@ Limite : 20 appel(s) / 1 seconde(s)
                           "array",
                           "null",
                         ],
+                      },
+                      "status": {
+                        "default": "Active",
+                        "description": "Status de l'offre (surtout utilisé pour les offres ajouté par API)",
+                        "enum": [
+                          "Active",
+                          "Filled",
+                          "Cancelled",
+                          "Pending",
+                        ],
+                        "type": "string",
                       },
                       "target_diploma": {
                         "properties": {
@@ -10940,6 +10983,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                         ],
                       },
                       "location": {
+                        "default": {},
                         "properties": {
                           "address": {
                             "type": [

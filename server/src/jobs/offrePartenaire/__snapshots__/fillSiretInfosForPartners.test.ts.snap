@@ -2,7 +2,10 @@
 
 exports[`fillSiretInfosForPartners > should enrich with api when siret is present 1`] = `
 {
+  "workplace_address_city": "Paris",
   "workplace_address_label": "2 rue du loup 75001 Paris",
+  "workplace_address_street_label": "2 rue du loup",
+  "workplace_address_zipcode": "75001",
   "workplace_brand": "Plop brand",
   "workplace_geopoint": null,
   "workplace_legal_name": "Plop company Inc",
@@ -15,7 +18,10 @@ exports[`fillSiretInfosForPartners > should enrich with api when siret is presen
 
 exports[`fillSiretInfosForPartners > should enrich with cache when siret is present 1`] = `
 {
+  "workplace_address_city": "Paris",
   "workplace_address_label": "2 rue du loup 75001 Paris",
+  "workplace_address_street_label": "2 rue du loup",
+  "workplace_address_zipcode": "75001",
   "workplace_brand": "Plop brand",
   "workplace_geopoint": null,
   "workplace_legal_name": "Plop company Inc",

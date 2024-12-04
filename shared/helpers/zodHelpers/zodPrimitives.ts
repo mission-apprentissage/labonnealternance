@@ -1,7 +1,7 @@
 import { capitalize } from "lodash-es"
 import type { ZodEnum } from "zod"
 
-import { CODE_INSEE_REGEX, CODE_NAF_REGEX, CODE_ROME_REGEX, RNCP_REGEX, SIRET_REGEX, UAI_REGEX } from "../../constants/regex"
+import { CODE_INSEE_REGEX, CODE_NAF_REGEX, CODE_POSTAL_REGEX, CODE_ROME_REGEX, RNCP_REGEX, SIRET_REGEX, UAI_REGEX } from "../../constants/regex"
 import { validatePhone } from "../../validators/phoneValidator"
 import { validateSIRET } from "../../validators/siretValidator"
 import { removeUrlsFromText } from "../common"
@@ -119,6 +119,7 @@ export const extensions = {
     return base.min(-180, "Longitude doit être comprise entre -180 et 180").max(180, "Longitude doit être comprise entre -180 et 180")
   },
   inseeCode: () => z.string().trim().regex(CODE_INSEE_REGEX, "Code INSEE invalide"),
+  zipCode: () => z.string().trim().regex(CODE_POSTAL_REGEX, "Code postal invalide"),
   url: () => z.string().regex(/^(https?:\/\/)?(http?:\/\/)?(www\.)?([a-zA-Z0-9-]+)(\.[a-zA-Z0-9-]+)+([a-zA-Z]{2,6})(:[0-9]{1,5})?(\/.*)?$/, "URL invalide"),
   optionalToNullish<Schema extends z.AnyZodObject>(schema: Schema) {
     // cf https://github.com/colinhacks/zod/discussions/2050

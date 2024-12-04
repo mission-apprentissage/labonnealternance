@@ -33,7 +33,6 @@ describe("create-recruiter-account-manual-validation", () => {
       email,
     })
     FlowCreationEntreprise.personalInfosPage.submit()
-    FlowCreationEntreprise.personalInfosPage.confirmAccountCreation()
     FlowCreationEntreprise.offerPage.assertUrl()
     FlowCreationEntreprise.offerPage.fillForm({
       romeLabel,
@@ -41,7 +40,7 @@ describe("create-recruiter-account-manual-validation", () => {
         Professionnalisation: true,
       },
       studyLevel,
-      startDate: "2028-12-23",
+      startDate: "2025-12-23",
       isDisabledElligible: true,
       jobCount: 6,
       jobDurationInMonths: 12,

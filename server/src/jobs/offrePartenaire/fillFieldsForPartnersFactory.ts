@@ -13,10 +13,12 @@ import { streamGroupByCount } from "@/common/utils/streamUtils"
  * Fonction permettant de facilement enrichir un computedJobPartner avec de nouvelles données provenant d'une source async
  *
  * @param job: nom du job
- * @param sourceFields: champs nécessaires à la récupération des données
- * @param filledFields: champs potentiellement modifiés par l'enrichissement
+ * @param sourceFields: champs nécessaires à la récupération des données (au moins un doit être renseigné)
+ * @param filledFields: champs potentiellement modifiés par l'enrichissement (au moins un doit être null)
  * @param groupSize: taille du packet de documents (utile pour optimiser les appels API et BDD)
- * @param getData: fonction récupérant les nouvelles données. Les champs retournés seront modifiés et écraseront les anciennes données
+ * @param getData: fonction récupérant les nouvelles données.
+ * La fonction doit retourner un tableau d'objet contenant l'_id du document à mettre à jour et les nouvelles valeurs à mettre à jour.
+ * Les valeurs retournées seront modifiées et écraseront les anciennes données.
  */
 export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJobsPartnersOfferPrivate, FilledFields extends keyof IJobsPartnersOfferPrivate | "business_error">({
   job,
@@ -28,7 +30,7 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
   job: COMPUTED_ERROR_SOURCE
   sourceFields: readonly SourceFields[]
   filledFields: readonly FilledFields[]
-  getData: (sourceFields: Pick<IComputedJobsPartners, SourceFields | FilledFields>[]) => Promise<Array<Pick<IComputedJobsPartners, FilledFields> | undefined>>
+  getData: (sourceFields: Pick<IComputedJobsPartners, SourceFields | FilledFields | "_id">[]) => Promise<Array<Pick<IComputedJobsPartners, FilledFields | "_id">>>
   groupSize: number
 }) => {
   const logger = globalLogger.child({
@@ -68,19 +70,14 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
         try {
           const responses = await getData(documents)
 
-          const dataToWrite = documents.flatMap((document, index) => {
-            const newFields = responses[index]
-            if (!newFields) {
-              return []
-            }
-            return [
-              {
-                updateOne: {
-                  filter: { _id: document._id },
-                  update: { $set: newFields },
-                },
+          const dataToWrite = responses.map((document) => {
+            const { _id, ...newFields } = document
+            return {
+              updateOne: {
+                filter: { _id },
+                update: { $set: newFields },
               },
-            ]
+            }
           })
           if (dataToWrite.length) {
             await getDbCollection("computed_jobs_partners").bulkWrite(dataToWrite, {
@@ -114,7 +111,7 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
           }
         } catch (err) {
           counters.error += documents.length
-          const newError = internal(`error pour lors du traitement d'un groupe de documents`)
+          const newError = internal(`error lors du traitement d'un groupe de documents`)
           logger.error(newError.message, err)
           newError.cause = err
           sentryCaptureException(newError)

@@ -28,6 +28,7 @@ export const rawToComputedJobsPartners = async <ZodInput extends AnyZodObject>({
   logger.info(`suppression de ${deletedCount} documents dans computed_jobs_partners pour partner_label=${partnerLabel}`)
   await getDbCollection("computed_jobs_partners").deleteMany({ partner_label: partnerLabel })
   const counters = { total: 0, success: 0, error: 0 }
+  const importDate = new Date()
   await oleoduc(
     getDbCollection(collectionSource).find({}).stream(),
     writeData(
@@ -41,6 +42,7 @@ export const rawToComputedJobsPartners = async <ZodInput extends AnyZodObject>({
             ...computedJobPartner,
             partner_label: partnerLabel,
             validated: ZJobsPartnersOfferPrivate.safeParse(computedJobPartner).success,
+            created_at: importDate,
           })
           counters.success++
         } catch (err) {

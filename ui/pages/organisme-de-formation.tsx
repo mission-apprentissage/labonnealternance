@@ -1,6 +1,5 @@
 import { Box, Container, Text } from "@chakra-ui/react"
 import { NextSeo } from "next-seo"
-import React from "react"
 
 import OffresAutoExposees from "@/components/HomeComponents/OffresAutoExposees"
 import PromoRessources from "@/components/Ressources/promoRessources"
@@ -59,7 +58,7 @@ const Organisme = () => {
         </Container>
       </Box>
 
-      <Footer ressources="cfa" />
+      <Footer />
     </Box>
   )
 }

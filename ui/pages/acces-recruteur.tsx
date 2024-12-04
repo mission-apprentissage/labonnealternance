@@ -61,7 +61,7 @@ const AccesRecruteur = () => (
       </Container>
       <Box mb={3}>&nbsp;</Box>
     </Box>
-    <Footer ressources="recruteur" />
+    <Footer />
   </Box>
 )
 

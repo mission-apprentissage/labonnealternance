@@ -368,6 +368,14 @@ const getCity = (recruiter) => {
   return city
 }
 
+const getNumberAndStreet = (addressDetail: IRecruiter["address_detail"]): string | null => {
+  const numero_voie = addressDetail?.numero_voie
+  const indice_repetition_voie = addressDetail?.indice_repetition_voie
+  const type_voie = addressDetail?.type_voie
+  const libelle_voie = addressDetail?.libelle_voie
+  return [numero_voie, indice_repetition_voie, type_voie, libelle_voie].flatMap((x) => (x ? [x] : [])).join(" ") || null
+}
+
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
  */
@@ -399,6 +407,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
         distance: recruiter.distance ?? false ? roundDistance((recruiter?.distance ?? 0) / 1000) : null,
         fullAddress: recruiter.is_delegated ? null : recruiter.address,
         address: recruiter.is_delegated ? null : recruiter.address,
+        numberAndStreet: recruiter.is_delegated ? null : getNumberAndStreet(recruiter.address_detail),
         latitude,
         longitude,
         city: getCity(recruiter),
@@ -428,6 +437,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
         creationDate: offre.job_creation_date ? new Date(offre.job_creation_date) : null,
         contractType: offre.job_type ? offre.job_type.join(", ") : null,
         jobStartDate: offre.job_start_date ? new Date(offre.job_start_date) : null,
+        jobExpirationDate: offre.job_expiration_date ? new Date(offre.job_expiration_date) : null,
         romeDetails: offre.rome_detail ? { ...offre.rome_detail, competences: offre?.competences_rome ?? offre.rome_detail?.competences } : null,
         rythmeAlternance: offre.job_rythm || null,
         dureeContrat: "" + offre.job_duration,

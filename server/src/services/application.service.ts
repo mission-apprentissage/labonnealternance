@@ -7,7 +7,7 @@ import { ApplicationScanStatus, IApplication, IApplicationApiPayloadOutput, IJob
 import { ApplicantIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, getDirectJobPath, newItemTypeToOldItemType } from "shared/constants/lbaitem"
-import { RECRUITER_STATUS } from "shared/constants/recruteur"
+import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { ITrackingCookies } from "shared/models/trafficSources.model"
@@ -41,6 +41,11 @@ const MAX_CANDIDATURES_PAR_CANDIDAT_PAR_JOUR = 100
 const publicUrl = config.publicUrl
 
 const imagePath = `${config.publicUrl}/images/emails/`
+
+const PARTNER_NAMES = {
+  oc: "OpenClassrooms",
+  "1jeune1solution": "1jeune1solution",
+}
 
 const images: object = {
   images: {
@@ -401,7 +406,6 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
   const urls = {
     jobUrl: "",
     meetCandidateUrl: buildReplyLink(application, ApplicantIntention.ENTRETIEN, userForToken),
-    waitCandidateUrl: buildReplyLink(application, ApplicantIntention.NESAISPAS, userForToken),
     refuseCandidateUrl: buildReplyLink(application, ApplicantIntention.REFUS, userForToken),
     lbaRecruiterUrl: `${config.publicUrl}/acces-recruteur?${utmRecruiterData}-acces-recruteur`,
     unsubscribeUrl: `${config.publicUrl}/desinscription?application_id=${createToken({ application_id: application._id }, "30d", "desinscription")}${utmRecruiterData}-desinscription`,
@@ -714,6 +718,16 @@ const checkUserApplicationCountV2 = async (applicantEmail: string, LbaJob: IJobO
   }
 }
 
+const getJobSourceType = async (application: IApplication) => {
+  if (LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA === application.job_origin && application.job_id) {
+    const recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": new ObjectId(application.job_id) })
+    if (recruiter?.cfa_delegated_siret) {
+      return CFA
+    }
+  }
+
+  return ENTREPRISE
+}
 /**
  * @description sends notification email to applicant
  */
@@ -730,31 +744,51 @@ export const sendMailToApplicant = async ({
   company_recruitment_intention: string
   company_feedback: string
 }): Promise<void> => {
+  const partner = (application.caller && PARTNER_NAMES[application.caller]) ?? null
+  const jobSourceType: string = await getJobSourceType(application)
+
   switch (company_recruitment_intention) {
     case ApplicantIntention.ENTRETIEN: {
       mailer.sendEmail({
         to: application.applicant_email,
-        subject: `Réponse positive de ${application.company_name}`,
+        cc: email!,
+        subject: `Réponse positive de ${application.company_name} à la candidature${partner ? ` ${partner}` : ""} de ${application.applicant_first_name} ${application.applicant_last_name}`,
         template: getEmailTemplate("mail-candidat-entretien"),
-        data: { ...sanitizeApplicationForEmail(application), ...images, email, phone: sanitizeForEmail(removeUrlsFromText(phone)), comment: sanitizeForEmail(company_feedback) },
+        data: {
+          ...sanitizeApplicationForEmail(application),
+          jobSourceType,
+          partner,
+          ...images,
+          email,
+          phone: sanitizeForEmail(removeUrlsFromText(phone)),
+          comment: prepareMessageForMail(sanitizeForEmail(company_feedback)),
+        },
       })
       break
     }
     case ApplicantIntention.NESAISPAS: {
       mailer.sendEmail({
         to: application.applicant_email,
-        subject: `Réponse de ${application.company_name}`,
+        cc: email!,
+        subject: `Réponse de ${application.company_name} à la candidature de ${application.applicant_first_name} ${application.applicant_last_name}`,
         template: getEmailTemplate("mail-candidat-nsp"),
-        data: { ...sanitizeApplicationForEmail(application), ...images, email, phone: sanitizeForEmail(removeUrlsFromText(phone)), comment: sanitizeForEmail(company_feedback) },
+        data: {
+          ...sanitizeApplicationForEmail(application),
+          partner,
+          ...images,
+          email,
+          phone: sanitizeForEmail(removeUrlsFromText(phone)),
+          comment: prepareMessageForMail(sanitizeForEmail(company_feedback)),
+        },
       })
       break
     }
     case ApplicantIntention.REFUS: {
       mailer.sendEmail({
         to: application.applicant_email,
-        subject: `Réponse négative de ${application.company_name}`,
+        subject: `Réponse négative de ${application.company_name} à la candidature${partner ? ` ${partner}` : ""} de ${application.applicant_first_name} ${application.applicant_last_name}`,
         template: getEmailTemplate("mail-candidat-refus"),
-        data: { ...sanitizeApplicationForEmail(application), ...images, comment: sanitizeForEmail(company_feedback) },
+        data: { ...sanitizeApplicationForEmail(application), jobSourceType, partner, ...images, comment: prepareMessageForMail(sanitizeForEmail(company_feedback)) },
       })
       break
     }
@@ -1005,7 +1039,9 @@ export const processApplicationEmails = {
 
     const emailCompany = await mailer.sendEmail({
       to: application.company_email,
-      subject: type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? `Candidature spontanée en alternance ${application.company_name}` : `Candidature en alternance - ${application.job_title}`,
+      subject:
+        (type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? `Candidature spontanée en alternance ${application.company_name}` : `Candidature en alternance - ${application.job_title}`) +
+        ` - ${application.applicant_first_name} ${application.applicant_last_name}`,
       template: getEmailTemplate(type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? "mail-candidature-spontanee" : "mail-candidature"),
       data: {
         ...sanitizeApplicationForEmail(application),

@@ -1,5 +1,6 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Accordion, Box, Flex, Image, Link, ListItem, Text, UnorderedList } from "@chakra-ui/react"
+import Head from "next/head"
 import React, { useEffect } from "react"
 import { ILbaItemLbaJob } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -14,9 +15,10 @@ import ItemGoogleSearchLink from "../ItemDetailServices/ItemGoogleSearchLink"
 import ItemLocalisation from "../ItemDetailServices/ItemLocalisation"
 import { ReportJobLink } from "../ReportJobLink"
 
+import { JobPostingSchema } from "./JobPostingSchema"
 import LbaJobAcces from "./LbaJobAcces"
 import LbaJobCompetences from "./LbaJobCompetences"
-import LbaJobDescription from "./LbaJobDescription"
+import { BAD_DESCRIPTION_LENGTH, LbaJobDescription } from "./LbaJobDescription"
 import LbaJobQualites from "./LbaJobQualites"
 import LbaJobTechniques from "./LbaJobTechniques"
 
@@ -24,17 +26,7 @@ const getContractTypes = (contractTypes) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
 }
 
-const getDescriptionContext = (job: ILbaItemLbaJob) => {
-  return (
-    <Accordion allowToggle>
-      <LbaJobCompetences job={job} />
-      <LbaJobTechniques job={job} />
-      <LbaJobAcces job={job} />
-    </Accordion>
-  )
-}
-
-const LbaJobDetail = ({ job }) => {
+export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJob; title: string }) => {
   useEffect(() => {
     // S'assurer que l'utilisateur voit bien le haut de la fiche au départ
     document.getElementsByClassName("choiceCol")[0].scrollTo(0, 0)
@@ -51,8 +43,47 @@ const LbaJobDetail = ({ job }) => {
 
   const { formValues } = React.useContext(DisplayContext)
 
+  const description = job?.job?.description
+  const validCustomDescription = description && description.length > BAD_DESCRIPTION_LENGTH ? description : null
+  const romeDescription = job?.job?.romeDetails?.definition
+
+  const jobPostingSchema: JobPostingSchema = {
+    "@context": "https://schema.org/",
+    "@type": "JobPosting",
+    title,
+    description: validCustomDescription || romeDescription || null,
+    directApply: true,
+
+    identifier: {
+      "@type": "PropertyValue",
+      name: "Google",
+      value: job?.job?.id,
+    },
+    datePosted: job?.job?.jobStartDate,
+    validThrough: job?.job?.jobExpirationDate,
+    employmentType: "FULL_TIME",
+    hiringOrganization: {
+      "@type": "Organization",
+      name: job?.company?.name,
+    },
+    jobLocation: {
+      "@type": "Place",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: job?.place?.numberAndStreet,
+        addressLocality: job?.place?.city,
+        addressRegion: null,
+        postalCode: job?.place?.zipCode,
+        addressCountry: "France",
+      },
+    },
+  }
+
   return (
     <>
+      <Head>
+        <script type="application/ld+json">{JSON.stringify(jobPostingSchema)}</script>
+      </Head>
       <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
         <Text as="h2" variant="itemDetailH2" mt={2} mb={4}>
           Description de l&apos;offre
@@ -76,9 +107,9 @@ const LbaJobDetail = ({ job }) => {
           )}
           <Flex direction="row" wrap="wrap">
             <strong>Niveau visé en fin d&apos;études : </strong>{" "}
-            {job?.diplomaLevel ? (
+            {job?.target_diploma_level ? (
               <Flex direction="row" wrap="wrap">
-                {job?.diplomaLevel.split(", ").map(function (d, idx) {
+                {job?.target_diploma_level.split(", ").map(function (d, idx) {
                   return (
                     <Text as="span" key={idx} fontSize="14px" textAlign="center" color="bluefrance.500" background="#e3e3fd" py={1} px={4} borderRadius="40px" ml={2} mb={1}>
                       {d}
@@ -164,7 +195,13 @@ const LbaJobDetail = ({ job }) => {
       <Box pb="0px" position="relative" background="white" padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
         <Text as="h2" variant="itemDetailH2" mt={2}>{`En savoir plus sur le métier ${job.title}`}</Text>
         <Box data-testid="lbb-component">
-          <Box mb={4}>{getDescriptionContext(job)}</Box>
+          <Box mb={4}>
+            <Accordion allowToggle>
+              <LbaJobCompetences job={job} />
+              <LbaJobTechniques job={job} />
+              <LbaJobAcces job={job} />
+            </Accordion>
+          </Box>
         </Box>
       </Box>
 
@@ -250,5 +287,3 @@ const LbaJobDetail = ({ job }) => {
     </>
   )
 }
-
-export default LbaJobDetail

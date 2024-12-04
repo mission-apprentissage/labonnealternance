@@ -19,7 +19,6 @@ export enum JOBPARTNERS_LABEL {
 
 export const ZJobsPartnersRecruiterApi = z.object({
   _id: zObjectId,
-
   workplace_siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
   workplace_brand: z.string().nullable().describe("Nom d'enseigne de l'établissement"),
   workplace_legal_name: z.string().nullable().describe("Nom légal de l'entreprise"),
@@ -77,6 +76,10 @@ const ZJobsPartnersRecruiterPrivateFields = z.object({
   apply_email: z.string().email().nullable().describe("Email de contact").default(null),
   offer_multicast: z.boolean().default(true).describe("Si l'offre peut être diffusé sur l'ensemble des plateformes partenaires"),
   offer_origin: z.string().nullable().describe("Origine de l'offre provenant d'un aggregateur").default(null),
+
+  workplace_address_street_label: z.string().nullable().describe("Numéro et voie, provenant du SIRET ou du partenaire"),
+  workplace_address_city: z.string().nullable().describe("Nom de ville, provenant du SIRET ou du partenaire"),
+  workplace_address_zipcode: extensions.zipCode().nullable().describe("Code postal, provenant du SIRET ou du partenaire"),
 
   created_at: z.date().describe("Date de creation de l'offre"),
   updated_at: z.date().describe("Date de mise à jour de l'offre"),
@@ -153,7 +156,6 @@ export const ZJobsPartnersPostApiBodyBase = z.object({
   workplace_website: ZJobsPartnersOfferPrivate.shape.workplace_website.default(null),
   workplace_name: ZJobsPartnersOfferPrivate.shape.workplace_name.default(null),
   workplace_address_label: z.string().nullable().default(null),
-
   apply_email: ZJobsPartnersOfferPrivate.shape.apply_email,
   apply_url: ZJobsPartnersOfferApi.shape.apply_url.nullable().default(null),
   apply_phone: extensions.telephone.nullable().describe("Téléphone de contact").default(null),
@@ -170,6 +172,36 @@ export const ZJobsPartnersWritableApi = ZJobsPartnersPostApiBodyBase.superRefine
       })
     })
   }
+
+  // TODO: useless car conservation uniquement de workplace_address_label
+  // if (data.workplace_address_street_label != null) {
+  //   if (data.workplace_address_zipcode == null) {
+  //     ctx.addIssue({
+  //       code: "custom",
+  //       message: "When workplace_address_street_label is provided then workplace_address_zipcode is required",
+  //       path: ["workplace_address_zipcode"],
+  //     })
+  //   }
+  //   if (data.workplace_address_city == null) {
+  //     ctx.addIssue({
+  //       code: "custom",
+  //       message: "When workplace_address_street_label is provided then workplace_address_city is required",
+  //       path: ["workplace_address_city"],
+  //     })
+  //   }
+  // }
+
+  // if (data.workplace_address_city != null || data.workplace_address_zipcode != null) {
+  //   if (data.workplace_address_label != null) {
+  //     ctx.addIssue({
+  //       code: "custom",
+  //       message: "workplace_address_label is not allowed when address is provided via detailed fields",
+  //       path: ["workplace_address_label"],
+  //     })
+  //   }
+
+  //   data.workplace_address_label = joinNonNullStrings([data.workplace_address_street_label, data.workplace_address_zipcode, data.workplace_address_city])
+  // }
 
   return data
 })

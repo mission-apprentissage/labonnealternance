@@ -3,17 +3,19 @@ import { anonimizeUsers } from "./anonymization/anonymizeUserRecruteurs"
 import { anonymizeOldUsers } from "./anonymization/anonymizeUsers"
 import fixApplications from "./applications/fixApplications"
 import { processApplications } from "./applications/processApplications"
+import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
 import { obfuscateCollections } from "./database/obfuscateCollections"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
+import { detectDuplicateJobPartners } from "./offrePartenaire/detectDuplicateJobPartners"
 import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
 import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromComputedToJobsPartners"
 import { importHelloWorkRaw, importHelloWorkToComputed } from "./offrePartenaire/importHelloWork"
 import { importKelio } from "./offrePartenaire/importKelio"
-import { importRHAlternance } from "./offrePartenaire/importRHAlternance"
+import { importRHAlternanceRaw, importRHAlternanceToComputed } from "./offrePartenaire/importRHAlternance"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
@@ -167,8 +169,12 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Importe les offres hellowork depuis raw vers computed",
   },
   {
-    fct: importRHAlternance,
+    fct: importRHAlternanceRaw,
     description: "Importe les offres RHAlternance dans la collection raw",
+  },
+  {
+    fct: importRHAlternanceToComputed,
+    description: "Importe les offres RHAlternance depuis raw vers computed",
   },
   {
     fct: importKelio,
@@ -189,5 +195,13 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: fillComputedJobsPartners,
     description: "Enrichit la collection computed_jobs_partners avec les données provenant d'API externes",
+  },
+  {
+    fct: detectDuplicateJobPartners,
+    description: "Detect duplicate offers in the computed_jobs_partners collection",
+  },
+  {
+    fct: sendContactsToBrevo,
+    description: "Envoi à Brevo la liste des contacts",
   },
 ]

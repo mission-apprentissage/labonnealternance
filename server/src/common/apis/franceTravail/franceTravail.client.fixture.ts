@@ -9,7 +9,7 @@ export const franceTravailRomeoFixture = {
   "Software Engineer": [
     {
       contexte: " ",
-      identifiant: "1",
+      identifiant: "0",
       intitule: "Software Engineer",
       metiersRome: [
         {
@@ -48,7 +48,6 @@ export const franceTravailRomeoFixture = {
           scorePrediction: 0.744,
         },
       ],
-      uuidInference: "180d530a-474a-496b-8d3b-f3d91928c663",
     },
   ],
 } as const satisfies Record<string, IRomeoAPIResponse>
