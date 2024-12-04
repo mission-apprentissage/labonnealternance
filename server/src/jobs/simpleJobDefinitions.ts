@@ -35,6 +35,7 @@ import { opcoReminderJob } from "./recruiters/opcoReminderJob"
 import { updateMissingStartDate } from "./recruiters/updateMissingStartDateJob"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import { importReferentielRome } from "./referentielRome/referentielRome"
+import { updateReferentielRomeForJobSearch } from "./referentielRome/updateReferentielRomeForJobSearch"
 
 type SimpleJobDefinition = {
   fct: () => Promise<unknown>
@@ -203,5 +204,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: sendContactsToBrevo,
     description: "Envoi à Brevo la liste des contacts",
+  },
+  {
+    fct: updateReferentielRomeForJobSearch,
+    description: "Ajout des champs pour le moteur de recherche d'ajout d'offre",
   },
 ]

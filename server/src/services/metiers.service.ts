@@ -1,7 +1,7 @@
 import { badRequest } from "@hapi/boom"
 import * as _ from "lodash-es"
 import { matchSorter } from "match-sorter"
-import { IDiplomesMetiers, IDomainesMetiers } from "shared"
+import { IDiplomesMetiers, IDomainesMetiers, IReferentielRome } from "shared"
 import { removeAccents, removeRegexChars } from "shared/utils"
 
 import { logger } from "@/common/logger"
@@ -17,6 +17,7 @@ let globalCacheMetiers: IDomainesMetiers[] = []
 let cacheMetierLoading = false
 let globalCacheDiplomas: IDiplomesMetiers[] = []
 let cacheDiplomaLoading = false
+let globalReferentielRomeCache: IReferentielRome[] = []
 
 const SEARCH_TERM_START_POSITION_BONUS_SCORE = 20 // valeur arbitraire
 
@@ -34,7 +35,6 @@ export const initializeCacheMetiers = async () => {
         error: false,
       })
     }
-    logger.info("cacheMetiers : ", roughObjSize)
   }
 }
 
@@ -52,15 +52,22 @@ export const initializeCacheDiplomas = async () => {
         error: false,
       })
     }
-    logger.info("cacheDiplomas : ", roughObjSize)
   }
+}
+
+const initializeReferentielRomeCache = async () => {
+  if (globalReferentielRomeCache.length) {
+    return globalReferentielRomeCache
+  }
+  globalReferentielRomeCache = await getDbCollection("referentielromes")
+    .find({}, { projection: { appellations_romes_sans_accent_computed: 1, couple_appellation_rome: 1, _id: 0 } })
+    .toArray()
 }
 
 const getCacheMetiers = async () => {
   if (globalCacheMetiers.length === 0) {
     await initializeCacheMetiers()
   }
-
   return globalCacheMetiers
 }
 
@@ -68,8 +75,14 @@ const getCacheDiplomes = async () => {
   if (globalCacheDiplomas.length === 0) {
     await initializeCacheDiplomas()
   }
-
   return globalCacheDiplomas
+}
+
+const getReferentielRomeCache = async () => {
+  if (!globalReferentielRomeCache.length) {
+    await initializeReferentielRomeCache()
+  }
+  return globalReferentielRomeCache
 }
 
 /**
@@ -104,10 +117,7 @@ const searchableWeightedMetiersFields = [
   { field: "sous_domaine_onisep_sans_accent_computed", score: 1 },
 ]
 
-const searchableWeightedAppellationFields = [
-  { field: "intitules_romes_sans_accent_computed", score: 1 },
-  { field: "appellations_romes_sans_accent_computed", score: 1 },
-]
+const searchableWeightedAppellationFields = [{ field: "appellations_romes_sans_accent_computed", score: 1 }]
 
 const filterMetiers = async ({
   regexes,
@@ -123,7 +133,6 @@ const filterMetiers = async ({
   searchableFields?: { field: string; score: number }[]
 }): Promise<(IDomainesMetiers & { score?: number })[]> => {
   const cacheMetiers = await getCacheMetiers()
-
   const results: (IDomainesMetiers & { score?: number })[] = []
 
   cacheMetiers.map((metier) => {
@@ -133,14 +142,12 @@ const filterMetiers = async ({
         return
       }
     }
-
     if (rncps) {
       const rncpList: string[] = rncps.split(", ")
       if (!rncpList.some((rncp) => metier.codes_rncps.includes(rncp))) {
         return
       }
     }
-
     if (!regexes.length && (romes || rncps)) {
       results.push(metier)
       return
@@ -153,6 +160,28 @@ const filterMetiers = async ({
     if (matchingMetier.sous_domaine_sans_accent_computed.toLowerCase().startsWith(searchTerm.toLowerCase())) {
       matchingMetier.score = (matchingMetier.score || 0) + SEARCH_TERM_START_POSITION_BONUS_SCORE
     }
+    if (matchingMetier.score) {
+      results.push(matchingMetier)
+    }
+  })
+
+  return results
+}
+
+const filterReferentielRome = async ({
+  regexes,
+  searchableFields = searchableWeightedAppellationFields,
+}: {
+  regexes: RegExp[]
+  searchableFields?: { field: string; score: number }[]
+}): Promise<IReferentielRome[]> => {
+  const cacheReferentielRome = await getReferentielRomeCache()
+
+  const results: (IReferentielRome & { score?: number })[] = []
+
+  cacheReferentielRome.map((metier) => {
+    const matchingMetier: IReferentielRome & { score?: number } = { ...metier }
+    computeScore(matchingMetier, searchableFields, regexes)
 
     if (matchingMetier.score) {
       results.push(matchingMetier)
@@ -295,9 +324,32 @@ export const getCoupleAppellationRomeIntitule = async (searchTerm: string): Prom
   })
   metiers = metiers.sort((a: IDomainesMetiers & { score?: number }, b: IDomainesMetiers & { score?: number }) => (b.score ?? 0) - (a.score ?? 0)).slice(0, 20)
 
-  const coupleAppellationRomeMetier = metiers.map(({ couples_appellations_rome_metier }) => couples_appellations_rome_metier)
-  const intitulesAndRomesUnique = _.uniqBy(_.flatten(coupleAppellationRomeMetier), "appellation")
+  const coupleAppellationRomeMetier = metiers.flatMap(({ couples_appellations_rome_metier }) => couples_appellations_rome_metier)
+  const intitulesAndRomesUnique = _.uniqBy(coupleAppellationRomeMetier, "appellation")
 
+  const sorted = matchSorter(intitulesAndRomesUnique, searchTerm, {
+    keys: ["appellation"],
+    threshold: matchSorter.rankings.NO_MATCH,
+  })
+
+  return { coupleAppellationRomeMetier: sorted.slice(0, 100) }
+}
+
+/**
+ * Retourne les appellations, intitulés et codes romes correspondant au terme de recherche
+ * @param {string} searchTerm un mot ou un préfixe sur lequel doit se baser la recherche
+ * @returns {Promise<IAppellationsRomes>}
+ */
+export const getCoupleAppellationRomeIntituleNew = async (searchTerm: string): Promise<IAppellationsRomes> => {
+  const regexes: RegExp[] = buildRegexes(searchTerm)
+
+  let metiers: (IReferentielRome & { score?: number })[] = await filterReferentielRome({
+    regexes,
+    searchableFields: searchableWeightedAppellationFields,
+  })
+  metiers = metiers.sort((a: IReferentielRome & { score?: number }, b: IReferentielRome & { score?: number }) => (b.score ?? 0) - (a.score ?? 0)).slice(0, 20)
+  const coupleAppellationRomeMetier = metiers.flatMap(({ couple_appellation_rome }) => couple_appellation_rome)
+  const intitulesAndRomesUnique = _.uniqBy(coupleAppellationRomeMetier, "appellation")
   const sorted = matchSorter(intitulesAndRomesUnique, searchTerm, {
     keys: ["appellation"],
     threshold: matchSorter.rankings.NO_MATCH,
