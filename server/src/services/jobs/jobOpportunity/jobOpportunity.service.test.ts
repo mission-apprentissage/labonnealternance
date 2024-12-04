@@ -5,6 +5,7 @@ import { ObjectId } from "mongodb"
 import nock from "nock"
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, RECRUITER_STATUS } from "shared/constants"
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
+import { generateFeaturePropertyFixture } from "shared/fixtures/geolocation.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { generateLbaCompanyFixture } from "shared/fixtures/recruteurLba.fixture"
@@ -21,6 +22,7 @@ import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/a
 import { getRomeoPredictions, searchForFtJobs } from "@/common/apis/franceTravail/franceTravail.client"
 import { franceTravailRomeoFixture, generateFtJobFixture } from "@/common/apis/franceTravail/franceTravail.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { saveGeolocationInCache } from "@/services/cacheGeolocation.service"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
 
 import { FTJob } from "../../ftjob.service.types"
@@ -54,6 +56,7 @@ describe("findJobsOpportunities", () => {
       rome_codes: ["M1602"],
       geopoint: parisFixture.centre,
       insee_city_code: parisFixture.code,
+      city: parisFixture.nom,
       phone: "0100000000",
       last_update_at: new Date("2021-01-01"),
     }),
@@ -63,6 +66,7 @@ describe("findJobsOpportunities", () => {
       rome_codes: ["M1602", "D1212"],
       geopoint: marseilleFixture.centre,
       insee_city_code: marseilleFixture.code,
+      city: marseilleFixture.nom,
       phone: "0200000000",
       last_update_at: new Date("2022-01-01"),
     }),
@@ -73,6 +77,7 @@ describe("findJobsOpportunities", () => {
       rome_codes: ["D1211"],
       geopoint: levalloisFixture.centre,
       insee_city_code: levalloisFixture.code,
+      city: levalloisFixture.nom,
       phone: "0100000001",
       last_update_at: new Date("2023-01-01"),
     }),
@@ -1827,8 +1832,18 @@ describe("createJobOffer", () => {
       .get("/search")
       .query({ q: "20 AVENUE DE SEGUR, 75007 PARIS", limit: "1" })
       .reply(200, {
-        features: [{ geometry: parisFixture.centre }],
+        features: [
+          {
+            geometry: parisFixture.centre,
+            properties: generateFeaturePropertyFixture({
+              city: parisFixture.nom,
+              postcode: parisFixture.codesPostaux[0],
+              name: "20 AVENUE DE SEGUR",
+            }),
+          },
+        ],
       })
+      .persist()
 
     await getDbCollection("opcos").insertOne({
       _id: new ObjectId(),
@@ -1860,7 +1875,9 @@ describe("createJobOffer", () => {
     expect(job?.offer_target_diploma).toEqual(null)
     expect(job?.workplace_geopoint).toEqual(parisFixture.centre)
     expect(job?.workplace_address_label).toEqual("20 AVENUE DE SEGUR 75007 PARIS")
-
+    expect(job?.workplace_address_street_label).toEqual("20 AVENUE DE SEGUR")
+    expect(job?.workplace_address_zipcode).toEqual("75007")
+    expect(job?.workplace_address_city).toEqual("PARIS")
     expect(job).toMatchSnapshot({
       _id: expect.any(ObjectId),
     })
@@ -1880,13 +1897,19 @@ describe("createJobOffer", () => {
     expect(nock.isDone()).toBeTruthy()
   })
 
-  it('should get workplace location from given "workplace_address_label"', async () => {
-    nock("https://api-adresse.data.gouv.fr:443")
-      .get("/search")
-      .query({ q: "1T impasse Passoir Clichy", limit: "1" })
-      .reply(200, {
-        features: [{ geometry: clichyFixture.centre }],
-      })
+  it('should get workplace location from given "workplace_address_*" fields', async () => {
+    await saveGeolocationInCache("1T IMPASSE PASSOIR CLICHY", [
+      {
+        type: "Feature",
+        geometry: clichyFixture.centre,
+        properties: generateFeaturePropertyFixture({
+          city: clichyFixture.nom,
+          postcode: clichyFixture.codesPostaux[0],
+          name: "1T impasse Passoir",
+          street: "impasse Passoir",
+        }),
+      },
+    ])
 
     const data = generateJobOfferApiWriteV3({
       ...minimalData,
@@ -1898,10 +1921,14 @@ describe("createJobOffer", () => {
       },
     })
     const result = await createJobOffer(identity, data)
+
     expect(result).toBeInstanceOf(ObjectId)
 
     const job = await getDbCollection("jobs_partners").findOne({ _id: result })
     expect(job?.workplace_address_label).toEqual("1T impasse Passoir Clichy")
+    expect(job?.workplace_address_street_label).toEqual("1T impasse Passoir")
+    expect(job?.workplace_address_city).toEqual("Clichy")
+    expect(job?.workplace_address_zipcode).toEqual("92110")
     expect(job?.workplace_geopoint).toEqual(clichyFixture.centre)
     expect(nock.isDone()).toBeTruthy()
   })
@@ -1966,12 +1993,17 @@ describe("updateJobOffer", () => {
 
     vi.mocked(getEtablissementFromGouvSafe).mockResolvedValue(apiEntrepriseEtablissementFixture.dinum)
 
-    nock("https://api-adresse.data.gouv.fr:443")
-      .get("/search")
-      .query({ q: "20 AVENUE DE SEGUR, 75007 PARIS", limit: "1" })
-      .reply(200, {
-        features: [{ geometry: parisFixture.centre }],
-      })
+    await saveGeolocationInCache("20 AVENUE DE SEGUR, 75007 PARIS", [
+      {
+        type: "Feature",
+        geometry: parisFixture.centre,
+        properties: generateFeaturePropertyFixture({
+          city: parisFixture.nom,
+          postcode: parisFixture.codesPostaux[0],
+          name: "20 AVENUE DE SEGUR",
+        }),
+      },
+    ])
 
     await getDbCollection("jobs_partners").insertOne(originalJob)
 
@@ -2004,6 +2036,9 @@ describe("updateJobOffer", () => {
     expect(job?.offer_target_diploma).toEqual(null)
     expect(job?.workplace_geopoint).toEqual(parisFixture.centre)
     expect(job?.workplace_address_label).toEqual("20 AVENUE DE SEGUR 75007 PARIS")
+    expect(job?.workplace_address_street_label).toEqual("20 AVENUE DE SEGUR")
+    expect(job?.workplace_address_zipcode).toEqual("75007")
+    expect(job?.workplace_address_city).toEqual("PARIS")
 
     expect(job).toMatchSnapshot({
       _id: expect.any(ObjectId),
@@ -2030,13 +2065,31 @@ describe("updateJobOffer", () => {
     expect(nock.isDone()).toBeTruthy()
   })
 
-  it('should get workplace location from given "workplace_address_label"', async () => {
-    nock("https://api-adresse.data.gouv.fr:443")
-      .get("/search")
-      .query({ q: "1T impasse Passoir Clichy", limit: "1" })
-      .reply(200, {
-        features: [{ geometry: clichyFixture.centre }],
-      })
+  it('should get workplace location from given "workplace_address_label" fields', async () => {
+    await saveGeolocationInCache("20 AVENUE DE SEGUR, 75007 PARIS", [
+      {
+        type: "Feature",
+        geometry: parisFixture.centre,
+        properties: generateFeaturePropertyFixture({
+          city: parisFixture.nom,
+          postcode: parisFixture.codesPostaux[0],
+          name: "20 AVENUE DE SEGUR",
+          street: "AVENUE DE SEGUR",
+        }),
+      },
+    ])
+    await saveGeolocationInCache("1T IMPASSE PASSOIR CLICHY", [
+      {
+        type: "Feature",
+        geometry: clichyFixture.centre,
+        properties: generateFeaturePropertyFixture({
+          city: clichyFixture.nom,
+          postcode: clichyFixture.codesPostaux[0],
+          name: "1T impasse Passoir",
+          street: "impasse Passoir",
+        }),
+      },
+    ])
 
     const data = generateJobOfferApiWriteV3({
       ...minimalData,
@@ -2051,6 +2104,9 @@ describe("updateJobOffer", () => {
 
     const job = await getDbCollection("jobs_partners").findOne({ _id })
     expect(job?.workplace_address_label).toEqual("1T impasse Passoir Clichy")
+    expect(job?.workplace_address_street_label).toEqual("1T impasse Passoir")
+    expect(job?.workplace_address_city).toEqual("Clichy")
+    expect(job?.workplace_address_zipcode).toEqual("92110")
     expect(job?.workplace_geopoint).toEqual(clichyFixture.centre)
     expect(nock.isDone()).toBeTruthy()
   })

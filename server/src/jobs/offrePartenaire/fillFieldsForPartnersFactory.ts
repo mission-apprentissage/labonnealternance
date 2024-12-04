@@ -13,8 +13,8 @@ import { streamGroupByCount } from "@/common/utils/streamUtils"
  * Fonction permettant de facilement enrichir un computedJobPartner avec de nouvelles données provenant d'une source async
  *
  * @param job: nom du job
- * @param sourceFields: champs nécessaires à la récupération des données
- * @param filledFields: champs potentiellement modifiés par l'enrichissement
+ * @param sourceFields: champs nécessaires à la récupération des données (au moins un doit être renseigné)
+ * @param filledFields: champs potentiellement modifiés par l'enrichissement (au moins un doit être null)
  * @param groupSize: taille du packet de documents (utile pour optimiser les appels API et BDD)
  * @param getData: fonction récupérant les nouvelles données.
  * La fonction doit retourner un tableau d'objet contenant l'_id du document à mettre à jour et les nouvelles valeurs à mettre à jour.
@@ -111,7 +111,7 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
           }
         } catch (err) {
           counters.error += documents.length
-          const newError = internal(`error pour lors du traitement d'un groupe de documents`)
+          const newError = internal(`error lors du traitement d'un groupe de documents`)
           logger.error(newError.message, err)
           newError.cause = err
           sentryCaptureException(newError)

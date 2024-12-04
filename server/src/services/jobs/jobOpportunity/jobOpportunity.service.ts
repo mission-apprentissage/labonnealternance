@@ -2,7 +2,7 @@ import { badRequest, conflict, internal, notFound } from "@hapi/boom"
 import { IApiAlternanceTokenData } from "api-alternance-sdk"
 import { DateTime } from "luxon"
 import { Document, Filter, ObjectId } from "mongodb"
-import { IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS_ENGLISH, assertUnreachable, parseEnum, translateJobStatus } from "shared"
+import { IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS_ENGLISH, ZPointGeometry, assertUnreachable, joinNonNullStrings, parseEnum, translateJobStatus } from "shared"
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import {
@@ -29,7 +29,8 @@ import { ZodError } from "zod"
 
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { getRomeInfoSafe } from "@/services/cacheRomeo.service"
-import { getEntrepriseDataFromSiret, getGeoPoint, getOpcoData } from "@/services/etablissement.service"
+import { getEntrepriseDataFromSiret, getOpcoData } from "@/services/etablissement.service"
+import { getCityFromProperties, getGeolocation, getStreetFromProperties } from "@/services/geolocation.service"
 
 import { logger } from "../../../common/logger"
 import { IApiError } from "../../../common/utils/errorManager"
@@ -239,6 +240,13 @@ export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }
     .aggregate<IJobsPartnersOfferPrivate>([
       ...filterStages,
       {
+        $project: {
+          workplace_address_city: 0,
+          workplace_address_zipcode: 0,
+          workplace_address_street_label: 0,
+        },
+      },
+      {
         $limit: 150,
       },
     ])
@@ -277,7 +285,7 @@ export const convertLbaCompanyToJobRecruiterApi = (recruteursLba: ILbaCompany[])
         description: null,
         size: recruteurLba.company_size,
         location: {
-          address: `${recruteurLba.street_number} ${recruteurLba.street_name} ${recruteurLba.zip_code} ${recruteurLba.city}`,
+          address: joinNonNullStrings([recruteurLba.street_number, recruteurLba.street_name, recruteurLba.zip_code, recruteurLba.city])!,
           geopoint: recruteurLba.geopoint!,
         },
         domain: {
@@ -568,7 +576,7 @@ async function resolveQuery(query: IJobSearchApiV3Query): Promise<IJobSearchApiV
 export async function findJobsOpportunities(payload: IJobSearchApiV3Query, context: JobOpportunityRequestContext): Promise<IJobSearchApiV3Response> {
   const resolvedQuery = await resolveQuery(payload)
 
-  const [recruterLba, offreEmploiLba, offreEmploiPartenaire, franceTravail] = await Promise.all([
+  const [recruteurLba, offreEmploiLba, offreEmploiPartenaire, franceTravail] = await Promise.all([
     getRecruteursLbaFromDB(resolvedQuery),
     findLbaJobOpportunities(resolvedQuery),
     getJobsPartnersFromDB(resolvedQuery),
@@ -585,7 +593,7 @@ export async function findJobsOpportunities(payload: IJobSearchApiV3Query, conte
     }
     return parsedJob.success
   })
-  const recruiters = convertLbaCompanyToJobRecruiterApi(recruterLba).filter((recruteur) => {
+  const recruiters = convertLbaCompanyToJobRecruiterApi(recruteurLba).filter((recruteur) => {
     const parsedRecruiter = zJobRecruiterApiReadV3.safeParse(recruteur)
     if (!parsedRecruiter.success) {
       const error = internal("jobOpportunity.service.ts-findJobsOpportunities: invalid recruiter", { recruteur, error: parsedRecruiter.error.format() })
@@ -603,31 +611,36 @@ export async function findJobsOpportunities(payload: IJobSearchApiV3Query, conte
   }
 }
 
-type WorkplaceAddressData = Pick<IJobsPartnersOfferApi, "workplace_geopoint" | "workplace_address_label">
+type WorkplaceAddressData = Pick<IJobsPartnersOfferPrivate, "workplace_geopoint" | "workplace_address_city" | "workplace_address_zipcode" | "workplace_address_street_label">
 
-async function resolveWorkplaceLocationFromAddress(workplace_address_label: string | null, zodError: ZodError): Promise<WorkplaceAddressData | null> {
+async function resolveWorkplaceGeoLocationFromAddress(workplace_address_label: string | null, zodError: ZodError): Promise<WorkplaceAddressData | null> {
   if (workplace_address_label === null) {
     return null
   }
 
-  const geopoint = await getGeoPoint(workplace_address_label)
+  const geoFeature = await getGeolocation(workplace_address_label)
 
-  if (!geopoint) {
-    zodError.addIssue({ code: "custom", path: ["workplace_address_label"], message: "Cannot resolve geo-coordinates for the given address" })
+  if (!geoFeature) {
+    zodError.addIssue({ code: "custom", path: ["workplace_geopoint"], message: "Cannot resolve geo-coordinates for the given address" })
     return null
   }
 
   return {
-    workplace_geopoint: geopoint,
-    workplace_address_label,
+    workplace_geopoint: ZPointGeometry.parse(geoFeature.geometry),
+    workplace_address_city: getCityFromProperties(geoFeature),
+    workplace_address_zipcode: geoFeature?.properties.postcode ?? null,
+    workplace_address_street_label: getStreetFromProperties(geoFeature),
   }
 }
 
 // List of fields impacted by change of the siret
 type WorkplaceSiretData = Pick<
-  IJobsPartnersOfferApi,
+  IJobsPartnersOfferPrivate,
   | "workplace_geopoint"
   | "workplace_address_label"
+  | "workplace_address_street_label"
+  | "workplace_address_city"
+  | "workplace_address_zipcode"
   | "workplace_legal_name"
   | "workplace_brand"
   | "workplace_naf_label"
@@ -650,7 +663,10 @@ async function resolveWorkplaceDataFromSiret(workplace_siret: string, zodError: 
 
   return {
     workplace_geopoint: entrepriseData.geopoint,
+    workplace_address_city: entrepriseData.address_detail.commune ?? entrepriseData.address_detail.libelle_commune,
     workplace_address_label: entrepriseData.address!,
+    workplace_address_street_label: entrepriseData.address_detail.acheminement_postal.l4,
+    workplace_address_zipcode: entrepriseData.address_detail.code_postal,
     workplace_brand: entrepriseData.establishment_enseigne ?? null,
     workplace_legal_name: entrepriseData.establishment_raison_sociale ?? null,
     workplace_naf_label: entrepriseData.naf_label ?? null,
@@ -686,7 +702,7 @@ async function upsertJobOffer(data: IJobOfferApiWriteV3, identity: IApiAlternanc
 
   const [siretData, addressData] = await Promise.all([
     resolveWorkplaceDataFromSiret(data.workplace.siret, zodError),
-    resolveWorkplaceLocationFromAddress(data.workplace.location?.address ?? null, zodError),
+    resolveWorkplaceGeoLocationFromAddress(data.workplace.location?.address ?? null, zodError),
   ])
 
   const offer_rome_codes = await resolveRomeCodes(data, siretData, zodError)
@@ -751,8 +767,13 @@ async function upsertJobOffer(data: IJobOfferApiWriteV3, identity: IApiAlternanc
     apply_phone: data.apply.phone,
 
     updated_at: now,
+
     // Data derived from workplace_address_label take priority over workplace_siret
     ...siretData,
+    workplace_address_label: data.workplace?.location?.address ?? siretData?.workplace_address_label,
+    workplace_address_city: siretData?.workplace_address_city,
+    workplace_address_street_label: siretData?.workplace_address_street_label,
+    workplace_address_zipcode: siretData?.workplace_address_zipcode,
     ...addressData,
   }
 

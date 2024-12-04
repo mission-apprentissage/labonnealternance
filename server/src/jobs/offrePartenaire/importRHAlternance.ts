@@ -5,6 +5,7 @@ import { TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import rawRHAlternanceModel, { IRawRHAlternance } from "shared/models/rawRHAlternance.model"
+import { joinNonNullStrings } from "shared/utils"
 import { z } from "zod"
 
 import { logger } from "@/common/logger"
@@ -12,6 +13,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
 import dayjs from "@/services/dayjs.service"
 
+import { blankComputedJobPartner } from "./fillComputedJobsPartners"
 import { rawToComputedJobsPartners } from "./rawToComputedJobsPartners"
 
 const ZRawRHAlternanceJob = rawRHAlternanceModel.zod.shape.job
@@ -25,12 +27,7 @@ const ZRHAlternanceResponse = z
 
 const rawCollectionName = rawRHAlternanceModel.collectionName
 
-export const importRHAlternance = async () => {
-  await importRaw()
-  await rawToComputed()
-}
-
-const importRaw = async () => {
+export const importRHAlternanceRaw = async () => {
   logger.info("deleting old data")
   await getDbCollection(rawCollectionName).deleteMany({})
   logger.info("import starting...")
@@ -70,7 +67,7 @@ const importRaw = async () => {
   logger.info(`import done: ${jobCount} jobs imported`)
 }
 
-const rawToComputed = async () => {
+export const importRHAlternanceToComputed = async () => {
   const now = new Date()
   await rawToComputedJobsPartners({
     collectionSource: rawCollectionName,
@@ -99,6 +96,7 @@ export const rawRhAlternanceToComputedMapper =
     const offer_creation = jobSubmitDateTime ? dayjs.tz(jobSubmitDateTime).toDate() : now
     const isValid: boolean = jobType === "Alternance"
     const computedJob: IComputedJobsPartners = {
+      ...blankComputedJobPartner,
       _id: new ObjectId(),
       partner_job_id: jobCode,
       partner_label: JOBPARTNERS_LABEL.RH_ALTERNANCE,
@@ -116,11 +114,12 @@ export const rawRhAlternanceToComputedMapper =
       workplace_siret: companySiret,
       workplace_name: companyName,
       workplace_website: companyUrl,
-      workplace_address_label: [jobPostalCode, jobCity].flatMap((x) => (x ? [x] : [])).join(" ") || null,
+      workplace_address_label: joinNonNullStrings([jobPostalCode, jobCity]),
+      workplace_address_city: jobCity,
+      workplace_address_zipcode: jobPostalCode,
       apply_url: jobUrl,
-      errors: [],
-      validated: false,
       business_error: isValid ? null : `expected jobType === "Alternance" but got ${jobType}`,
+      updated_at: now,
     }
     return computedJob
   }

@@ -38,7 +38,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts
   checksum: a99bfdcb5a8f4c66e9d055b44160adbc7ec2bcaf87209ff76fa9a9f674b9ca86
 - filename: server/src/http/controllers/v3/jobs/jobs.controller.v3.test.ts
-  checksum: a48869d28ff084575d26350a410a22f4c1bdd4196ad9bf5f6ac6a611a479f271
+  checksum: 4b24ff09463f476fd0b64bef104da6e17153ffdfff2d628c96b16d3ea33779f7
 - filename: server/src/http/routes/appointmentRequest.controller.ts
   checksum: d2770daa97ae332eec0b66497fdb717229895583ac3bfd48af1a830b36504968
 - filename: server/src/http/routes/auth/password.controller.ts

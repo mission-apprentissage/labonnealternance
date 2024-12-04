@@ -11,8 +11,6 @@ export const ZRawRHAlternance = z.object({
       jobCode: z.string(),
       jobType: z.string().nullish(),
       jobTitle: z.string().nullish(),
-      jobCity: z.string().nullish(),
-      jobPostalCode: z.string().nullish(),
       jobDescription: z
         .array(
           z.object({
@@ -27,6 +25,8 @@ export const ZRawRHAlternance = z.object({
       companyUrl: z.string().nullish(),
       companyAddress: z.string().nullish(),
       jobUrl: z.string().nullish(),
+      jobCity: z.string().nullish(),
+      jobPostalCode: z.string().nullish(),
     })
     .passthrough(),
 })

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
 
-import { removeAccents } from "./stringUtils"
+import { joinNonNullStrings, removeAccents } from "./stringUtils"
 
 describe("stringUtils", () => {
   describe("removeAccents", () => {
@@ -21,6 +21,32 @@ describe("stringUtils", () => {
     it("should not change standard characters", () => {
       const unchanged = `&"'(-_)=$*µ$£%!§:/;.,?~#{}[]|^@\``
       expect(removeAccents(unchanged)).toBe(unchanged)
+    })
+  })
+
+  describe("joinNonNullStrings", () => {
+    it("should return a single trimmed string when all values are non-null", () => {
+      expect(joinNonNullStrings(["0", " Hello ", "world ", "Vitest"])).toBe("0 Hello world Vitest")
+    })
+
+    it("should ignore null values and return a single trimmed string", () => {
+      expect(joinNonNullStrings([" Hello ", null, "world", " ", null])).toBe("Hello world")
+    })
+
+    it("should return null if all values are null", () => {
+      expect(joinNonNullStrings([null, null, null])).toBe(null)
+    })
+
+    it("should return null if array is empty", () => {
+      expect(joinNonNullStrings([])).toBe(null)
+    })
+
+    it("should handle an array with mixed whitespace and nulls correctly", () => {
+      expect(joinNonNullStrings(["  ", null, " Hello ", " ", null, "world"])).toBe("Hello world")
+    })
+
+    it("should return a single word if only one non-null value is present", () => {
+      expect(joinNonNullStrings([null, " Vitest ", null])).toBe("Vitest")
     })
   })
 })
