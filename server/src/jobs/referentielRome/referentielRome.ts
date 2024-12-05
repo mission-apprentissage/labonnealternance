@@ -78,35 +78,24 @@ const getCompetences = (competences) => {
   }
 }
 
-const formatRawData = ({
-  appellations,
-  competences,
-  contextes_travail,
-  mobilites,
-  numero,
-  rome,
-  definition,
-  acces_metier,
-}: {
-  numero: string
-  rome: any
-  definition: string
-  acces_metier: string
-  appellations?: any
-  competences?: any
-  contextes_travail?: any
-  mobilites?: any
-}) => {
+type IXmlFormat = Pick<IReferentielRome, "numero" | "acces_metier" | "competences" | "contextes_travail" | "definition" | "rome"> & {
+  appellations: { appellation: IReferentielRome["appellations"] }
+  mobilites: { mobilite: IReferentielRome["mobilites"] }
+}
+
+const formatRawData = ({ appellations, competences, contextes_travail, mobilites, numero, rome, definition, acces_metier }: IXmlFormat): IReferentielRome => {
   const appellationsFormated = appellations.appellation instanceof Array ? appellations.appellation.map((x) => x) : [appellations.appellation]
+  const mobilitesFormated = mobilites && mobilites?.mobilite ? (mobilites.mobilite instanceof Array ? mobilites.mobilite.map((x) => x) : [mobilites.mobilite]) : null
   const appellationSet = appellationsFormated.flatMap(({ libelle }) => libelle.toLowerCase().split(/[\s,/;]+/))
   const couple_appellation_rome = appellationsFormated.map((appellation) => ({ code_rome: rome.code_rome, intitule: rome.intitule, appellation: appellation.libelle }))
   return {
+    _id: new ObjectId(),
     numero,
     rome,
     definition,
     acces_metier,
-    appellations,
-    mobilites: mobilites && mobilites?.mobilite ? (mobilites.mobilite instanceof Array ? mobilites.mobilite.map((x) => x) : [mobilites.mobilite]) : null,
+    appellations: appellationsFormated,
+    mobilites: mobilitesFormated,
     contextes_travail: getContextesTravail(contextes_travail),
     competences: getCompetences(competences),
     couple_appellation_rome,
@@ -135,11 +124,7 @@ export const importReferentielRome = async () => {
 
     await asyncForEach(data.fiches_metier.fiche_metier, async (ficheMetier: any) => {
       const fiche = formatRawData(ficheMetier)
-      const savedFiche: IReferentielRome = {
-        ...fiche,
-        _id: new ObjectId(),
-      }
-      await getDbCollection("referentielromes").insertOne(savedFiche)
+      await getDbCollection("referentielromes").insertOne(fiche)
     })
   } else {
     logger.info("Liste des ROMEs anormalement petite. Processus interrompu.")

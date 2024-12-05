@@ -79,7 +79,6 @@ export type IMetiersEnrichis = z.output<typeof ZMetiersEnrichis>
 
 export const ZAppellationRome = z
   .object({
-    codeRome: z.string().optional(),
     code_rome: z.string().optional(),
     intitule: z.string(),
     appellation: z.string(),
