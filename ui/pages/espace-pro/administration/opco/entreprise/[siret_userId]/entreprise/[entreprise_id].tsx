@@ -67,7 +67,7 @@ function DetailEntreprise() {
 
   const userMutation = useMutation(({ userId, values }: any) => updateEntrepriseAdmin(userId, values, userRecruteur.establishment_siret), {
     onSuccess: async () => {
-      client.invalidateQueries("user")
+      await router.push(getUserNavigationContext())
     },
   })
 
