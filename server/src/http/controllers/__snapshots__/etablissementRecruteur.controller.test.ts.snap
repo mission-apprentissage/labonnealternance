@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`POST /etablissement/creation > Vérifie que le recruteur est créé avec une offre 1`] = `
+exports[`POST /etablissement/creation > Création d'entreprise > Vérifie que le recruteur est créé avec une offre 1`] = `
 {
   "address": "20 AVENUE DE SEGUR 75007 PARIS",
   "address_detail": {
@@ -55,7 +55,17 @@ exports[`POST /etablissement/creation > Vérifie que le recruteur est créé ave
 }
 `;
 
-exports[`POST /etablissement/creation > Vérifie que le recruteur est créé avec une offre 2`] = `
+exports[`POST /etablissement/creation > Création d'entreprise > Vérifie que le recruteur est créé avec une offre 2`] = `
+{
+  "email": "email@email.com",
+  "first_name": "John",
+  "last_name": "Doe",
+  "origin": "lba",
+  "phone": "0612345678",
+}
+`;
+
+exports[`POST /etablissement/creation > Création de CFA > Vérifie que le CFA est créé 1`] = `
 {
   "email": "email@email.com",
   "first_name": "John",
