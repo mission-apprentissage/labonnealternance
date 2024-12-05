@@ -62,7 +62,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
   {
     "apply": {
       "phone": "0300000000",
-      "recipient_id": "recruiters_67520504dd088090dce3a795",
+      "recipient_id": "recruiters_67520beff00dd7b9073d5fdc",
       "url": "",
     },
     "contract": {
@@ -200,7 +200,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
   {
     "apply": {
       "phone": null,
-      "recipient_id": "jobs_partners_67520504dd088090dce3a79a",
+      "recipient_id": "jobs_partners_675209e704377be3d437bbb9",
       "url": "",
     },
     "contract": {
