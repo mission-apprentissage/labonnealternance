@@ -1,9 +1,9 @@
 import { removeAccents } from "shared"
 
-import { asyncForEach } from "../../common/utils/asyncUtils"
-import { getDbCollection } from "../../common/utils/mongodbUtils"
+import { asyncForEach } from "../common/utils/asyncUtils"
+import { getDbCollection } from "../common/utils/mongodbUtils"
 
-export const updateReferentielRomeForJobSearch = async () => {
+export const up = async () => {
   const referentielRome = await getDbCollection("referentielromes").find({}).toArray()
 
   await asyncForEach(referentielRome, async (rome) => {
