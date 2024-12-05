@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb"
 import { ENTREPRISE } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { CFA, OPCOS_LABEL } from "shared/constants/recruteur"
-import { IJob, IRecruiter, getUserStatus, parseEnumOrError, zRoutes } from "shared/index"
+import { IJob, IRecruiter, getUserStatus, parseEnum, parseEnumOrError, zRoutes } from "shared/index"
 import { ICFA } from "shared/models/cfa.model"
 import { IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
@@ -200,13 +200,6 @@ export default (server: Server) => {
       const requestUser = getUserFromRequest(req, zRoutes.get["/user/:userId/organization/:organizationId"]).value
       if (!requestUser) throw badRequest()
 
-      const opcoOrAdminRole = await getDbCollection("rolemanagements").findOne({
-        user_id: requestUser._id,
-        authorized_type: { $in: [AccessEntityType.ADMIN, AccessEntityType.OPCO] },
-      })
-
-      const opco: OPCOS_LABEL | null = opcoOrAdminRole?.authorized_type === AccessEntityType.OPCO ? parseEnum(OPCOS_LABEL, opcoOrAdminRole.authorized_id)) : null
-
       const { userId } = req.params
       const role = await getDbCollection("rolemanagements").findOne({
         user_id: new ObjectId(userId),
@@ -236,6 +229,13 @@ export default (server: Server) => {
 
       let jobs: IJob[] = []
       let formulaire: IRecruiter | null = null
+
+      const opcoOrAdminRole = await getDbCollection("rolemanagements").findOne({
+        user_id: requestUser._id,
+        authorized_type: { $in: [AccessEntityType.ADMIN, AccessEntityType.OPCO] },
+      })
+
+      const opco: OPCOS_LABEL | null = opcoOrAdminRole?.authorized_type === AccessEntityType.OPCO ? parseEnum(OPCOS_LABEL, opcoOrAdminRole.authorized_id) : null
 
       if (type === ENTREPRISE) {
         formulaire = opco ? await getFormulaireFromUserIdWithOpco(userId, opco) : await getFormulaireFromUserId(userId)
