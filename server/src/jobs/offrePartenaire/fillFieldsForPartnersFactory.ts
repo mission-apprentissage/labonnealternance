@@ -7,6 +7,7 @@ import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobs
 import { logger as globalLogger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 import { streamGroupByCount } from "@/common/utils/streamUtils"
 
 /**
@@ -47,6 +48,7 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
       },
       {
         business_error: null,
+        jobs_in_success: { $nin: [job] },
       },
     ],
   }
@@ -70,20 +72,32 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
         try {
           const responses = await getData(documents)
 
-          const dataToWrite = responses.map((document) => {
+          const dataToWrite = responses.flatMap((document) => {
             const { _id, ...newFields } = document
-            return {
-              updateOne: {
-                filter: { _id },
-                update: { $set: newFields },
+            return [
+              {
+                updateOne: {
+                  filter: { _id },
+                  update: { $set: newFields },
+                },
               },
-            }
+              {
+                updateOne: {
+                  filter: { _id },
+                  update: {
+                    $push: {
+                      jobs_in_success: job,
+                    },
+                  },
+                },
+              },
+            ]
           })
           if (dataToWrite.length) {
             await getDbCollection("computed_jobs_partners").bulkWrite(dataToWrite, {
               ordered: false,
             })
-            counters.success += dataToWrite.length
+            counters.success += responses.length
           }
           const documentsWithMissingData = documents.filter((_document, index) => !responses[index])
           if (documentsWithMissingData.length) {
@@ -142,5 +156,11 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
       { parallel: 1 }
     )
   )
-  logger.info(`job ${job} : enrichissement terminé`, counters)
+  const message = `job ${job} : enrichissement terminé. total=${counters.total}, success=${counters.success}, errors=${counters.error}`
+  logger.info(message)
+  await notifyToSlack({
+    subject: `computedJobPartners: enrichissement de données`,
+    message,
+    error: counters.error > 0,
+  })
 }

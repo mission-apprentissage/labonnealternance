@@ -11,6 +11,7 @@ exports[`importHelloWork > should test the import of hellowork data into compute
     "contract_start": null,
     "contract_type": null,
     "errors": [],
+    "jobs_in_success": [],
     "offer_access_conditions": [],
     "offer_creation": 2024-01-30T22:21:39.000Z,
     "offer_description": "Vous développerez l'innovation pour créer les conditions favorables à l'émergence de nouveaux usages dans nos pratiques de conseil et dans le cadre des projets clients. Vous participerez au processus de recrutement et à la montée en compétences des consultants.
@@ -76,6 +77,7 @@ Vous contribuez au développement commercial en concevant des nouvelles offres, 
     "contract_start": null,
     "contract_type": null,
     "errors": [],
+    "jobs_in_success": [],
     "offer_access_conditions": [],
     "offer_creation": 2024-01-30T22:11:59.000Z,
     "offer_description": "Votre futur poste
@@ -173,6 +175,7 @@ Fondé en 1933 par André Besnier à Laval, le Groupe Lactalis est une entrepris
     "contract_start": null,
     "contract_type": null,
     "errors": [],
+    "jobs_in_success": [],
     "offer_access_conditions": [],
     "offer_creation": 2024-01-31T22:09:13.000Z,
     "offer_description": "Nous recherchons notre futur(e) Directeur Marketing.
@@ -276,6 +279,7 @@ Prêt à rejoindre la Team CGR ?",
     "contract_start": null,
     "contract_type": null,
     "errors": [],
+    "jobs_in_success": [],
     "offer_access_conditions": [],
     "offer_creation": 2024-01-31T22:11:11.000Z,
     "offer_description": "La révolution robotique portée par Exotec ne fait que commencer, vous en êtes ?
@@ -360,6 +364,7 @@ Rejoindre Exotec, c'est l'opportunité de donner du sens à vos compétences. Gr
     "contract_start": null,
     "contract_type": null,
     "errors": [],
+    "jobs_in_success": [],
     "offer_access_conditions": [],
     "offer_creation": 2024-01-31T22:22:17.000Z,
     "offer_description": "Prendre en charge plusieurs projets de développement de produits sous la responsabilité d'un responsable de gamme.
