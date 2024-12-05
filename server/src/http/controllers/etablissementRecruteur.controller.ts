@@ -34,7 +34,7 @@ import {
   setUserHasToBeManuallyValidated,
   updateLastConnectionDate,
 } from "@/services/userRecruteur.service"
-import { emailHasActiveRole, getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
+import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
 import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
@@ -210,7 +210,7 @@ export default (server: Server) => {
           const origin = req.body.origin ?? "formulaire public de création"
           const formatedEmail = email.toLocaleLowerCase()
           // check if user already exist
-          if (await emailHasActiveRole(formatedEmail)) {
+          if (await getUserWithAccountByEmail(formatedEmail)) {
             throw forbidden("L'adresse mail est déjà associée à un compte La bonne alternance.")
           }
 
