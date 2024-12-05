@@ -2,7 +2,7 @@ import { readFileSync } from "fs"
 
 import iconv from "iconv-lite"
 import { ObjectId } from "mongodb"
-import { IReferentielRome } from "shared/index"
+import { IReferentielRome, removeAccents } from "shared/index"
 import * as xml2j from "xml2js"
 
 import { logger } from "@/common/logger"
@@ -89,7 +89,7 @@ const formatRawData = ({
   acces_metier,
 }: {
   numero: string
-  rome: string
+  rome: any
   definition: string
   acces_metier: string
   appellations?: any
@@ -97,15 +97,20 @@ const formatRawData = ({
   contextes_travail?: any
   mobilites?: any
 }) => {
+  const appellationsFormated = appellations.appellation instanceof Array ? appellations.appellation.map((x) => x) : [appellations.appellation]
+  const appellationSet = appellationsFormated.flatMap(({ libelle }) => libelle.toLowerCase().split(/[\s,/;]+/))
+  const couple_appellation_rome = appellationsFormated.map((appellation) => ({ code_rome: rome.code_rome, intitule: rome.intitule, appellation: appellation.libelle }))
   return {
     numero,
     rome,
     definition,
     acces_metier,
-    appellations: appellations.appellation instanceof Array ? appellations.appellation.map((x) => x) : [appellations.appellation],
+    appellations,
     mobilites: mobilites && mobilites?.mobilite ? (mobilites.mobilite instanceof Array ? mobilites.mobilite.map((x) => x) : [mobilites.mobilite]) : null,
     contextes_travail: getContextesTravail(contextes_travail),
     competences: getCompetences(competences),
+    couple_appellation_rome,
+    appellations_romes_sans_accent_computed: [...new Set(appellationSet.map(removeAccents))].join(", "),
   }
 }
 
@@ -130,7 +135,6 @@ export const importReferentielRome = async () => {
 
     await asyncForEach(data.fiches_metier.fiche_metier, async (ficheMetier: any) => {
       const fiche = formatRawData(ficheMetier)
-      // @ts-expect-error TODO lors du prochain import
       const savedFiche: IReferentielRome = {
         ...fiche,
         _id: new ObjectId(),
