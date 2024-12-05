@@ -15,7 +15,7 @@ import { activateUserRole, deactivateUserRole, roleToUserType, entrepriseIsNotMy
 import { createSuperUser } from "@/services/userWithAccount.service"
 
 import { getDbCollection } from "../../common/utils/mongodbUtils"
-import { deleteFormulaire, getFormulaireFromUserId } from "../../services/formulaire.service"
+import { deleteFormulaire, getFormulaireFromUserId, getFormulaireFromUserIdWithOpco } from "../../services/formulaire.service"
 import { getUserAndRecruitersDataForOpcoUser, getUserNamesFromIds as getUsersFromIds } from "../../services/user.service"
 import {
   getAdminUsers,
@@ -199,6 +199,14 @@ export default (server: Server) => {
     async (req, res) => {
       const requestUser = getUserFromRequest(req, zRoutes.get["/user/:userId/organization/:organizationId"]).value
       if (!requestUser) throw badRequest()
+
+      const opcoOrAdminRole = await getDbCollection("rolemanagements").findOne({
+        user_id: requestUser._id,
+        authorized_type: { $in: [AccessEntityType.ADMIN, AccessEntityType.OPCO] },
+      })
+
+      const opco: string | null = opcoOrAdminRole?.authorized_type === AccessEntityType.OPCO ? opcoOrAdminRole.authorized_id : null
+
       const { userId } = req.params
       const role = await getDbCollection("rolemanagements").findOne({
         user_id: new ObjectId(userId),
@@ -230,16 +238,11 @@ export default (server: Server) => {
       let formulaire: IRecruiter | null = null
 
       if (type === ENTREPRISE) {
-        formulaire = await getFormulaireFromUserId(userId)
+        formulaire = opco ? await getFormulaireFromUserIdWithOpco(userId, opco) : await getFormulaireFromUserId(userId)
         jobs = formulaire?.jobs ?? []
       }
 
       const userRecruteur = userAndRoleAndOrganizationToUserRecruteur(user, role, organization, formulaire)
-
-      const opcoOrAdminRole = await getDbCollection("rolemanagements").findOne({
-        user_id: requestUser._id,
-        authorized_type: { $in: [AccessEntityType.ADMIN, AccessEntityType.OPCO] },
-      })
 
       if (opcoOrAdminRole && getLastStatusEvent(opcoOrAdminRole.status)?.status === AccessStatus.GRANTED) {
         const userIds = userRecruteur.status.flatMap(({ user }) => (user ? [user] : []))
