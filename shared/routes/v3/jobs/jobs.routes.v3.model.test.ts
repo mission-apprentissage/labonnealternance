@@ -39,6 +39,7 @@ type IJobRecruiterExpected = {
   apply: {
     url: string
     phone: string | null
+    recipient_id?: string | null
   }
 }
 
@@ -562,6 +563,7 @@ describe("convertToJobOfferApiReadV3", () => {
       apply: {
         url: "https://postler.com",
         phone: "0300000000",
+        recipient_id: null,
       },
       contract: {
         start: startOfNextMonth,

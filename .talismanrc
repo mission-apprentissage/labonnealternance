@@ -241,6 +241,8 @@ fileignoreconfig:
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
 - filename: server/src/http/controllers/v2/jobs.controller.v2.ts
   checksum: da8baa573172fa97c21f9123e04032718249dcec1194a51d7a1f1757070594ce
+- filename: server/src/services/jobs/jobOpportunity/__snapshots__/jobOpportunity.service.test.ts.snap
+  checksum: cf7e0b75994c1af008e4a3638e96d71a8a31e11a7d604536d3b96ea65c1baa2f
 scopeconfig:
 - scope: node
 custom_patterns:
