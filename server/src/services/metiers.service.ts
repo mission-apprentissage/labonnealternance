@@ -1,7 +1,6 @@
 import { badRequest } from "@hapi/boom"
-import * as _ from "lodash-es"
 import { matchSorter } from "match-sorter"
-import { IDiplomesMetiers, IDomainesMetiers, IReferentielRome } from "shared"
+import { IAppellationRome, IAppellationsRomes, IDiplomesMetiers, IDomainesMetiers, IMetierEnrichi, IMetiers, IMetiersEnrichis } from "shared"
 import { removeAccents, removeRegexChars } from "shared/utils"
 
 import { logger } from "@/common/logger"
@@ -11,13 +10,12 @@ import config from "@/config"
 import { getDbCollection } from "../common/utils/mongodbUtils"
 
 import { getRomesFromCatalogue } from "./catalogue.service"
-import { IAppellationsRomes, IMetierEnrichi, IMetiers, IMetiersEnrichis } from "./metiers.service.types"
 
 let globalCacheMetiers: IDomainesMetiers[] = []
 let cacheMetierLoading = false
 let globalCacheDiplomas: IDiplomesMetiers[] = []
 let cacheDiplomaLoading = false
-let globalReferentielRomeCache: IReferentielRome[] = []
+let globalReferentielRomeCache: IAppellationRome[] = []
 
 const SEARCH_TERM_START_POSITION_BONUS_SCORE = 20 // valeur arbitraire
 
@@ -59,9 +57,14 @@ const initializeCacheReferentielRome = async () => {
   if (globalReferentielRomeCache.length) {
     return globalReferentielRomeCache
   }
-  globalReferentielRomeCache = await getDbCollection("referentielromes")
-    .find({}, { projection: { appellations_romes_sans_accent_computed: 1, couple_appellation_rome: 1, _id: 0 } })
-    .toArray()
+  const result = (await getDbCollection("referentielromes")
+    .aggregate([
+      { $unwind: "$couple_appellation_rome" },
+      { $group: { _id: null, couple_appellation_rome: { $push: "$couple_appellation_rome" } } },
+      { $project: { _id: 0, couple_appellation_rome: 1 } },
+    ])
+    .toArray()) as [{ couple_appellation_rome: IAppellationRome[] }]
+  globalReferentielRomeCache = result.length > 0 ? result[0].couple_appellation_rome : []
 }
 
 const getCacheMetiers = async () => {
@@ -117,8 +120,6 @@ const searchableWeightedMetiersFields = [
   { field: "sous_domaine_onisep_sans_accent_computed", score: 1 },
 ]
 
-const searchableWeightedAppellationFields = [{ field: "appellations_romes_sans_accent_computed", score: 1 }]
-
 const filterMetiers = async ({
   regexes,
   romes,
@@ -160,29 +161,6 @@ const filterMetiers = async ({
     if (matchingMetier.sous_domaine_sans_accent_computed.toLowerCase().startsWith(searchTerm.toLowerCase())) {
       matchingMetier.score = (matchingMetier.score || 0) + SEARCH_TERM_START_POSITION_BONUS_SCORE
     }
-    if (matchingMetier.score) {
-      results.push(matchingMetier)
-    }
-  })
-
-  return results
-}
-
-const filterReferentielRome = async ({
-  regexes,
-  searchableFields = searchableWeightedAppellationFields,
-}: {
-  regexes: RegExp[]
-  searchableFields?: { field: string; score: number }[]
-}): Promise<IReferentielRome[]> => {
-  const cacheReferentielRome = await getCacheReferentielRome()
-
-  const results: (IReferentielRome & { score?: number })[] = []
-
-  cacheReferentielRome.map((metier) => {
-    const matchingMetier: IReferentielRome & { score?: number } = { ...metier }
-    computeScore(matchingMetier, searchableFields, regexes)
-
     if (matchingMetier.score) {
       results.push(matchingMetier)
     }
@@ -315,21 +293,13 @@ const getLabelsAndRomesForDiplomas = async (searchTerm: string): Promise<{ label
  * @returns {Promise<IAppellationsRomes>}
  */
 export const getCoupleAppellationRomeIntitule = async (searchTerm: string): Promise<IAppellationsRomes> => {
-  const regexes: RegExp[] = buildRegexes(searchTerm)
-
-  let metiers: (IReferentielRome & { score?: number })[] = await filterReferentielRome({
-    regexes,
-    searchableFields: searchableWeightedAppellationFields,
-  })
-  metiers = metiers.sort((a: IReferentielRome & { score?: number }, b: IReferentielRome & { score?: number }) => (b.score ?? 0) - (a.score ?? 0))
-  const coupleAppellationRomeMetier = metiers.flatMap(({ couple_appellation_rome }) => couple_appellation_rome)
-  const intitulesAndRomesUnique = _.uniqBy(coupleAppellationRomeMetier, "appellation")
-  const sorted = matchSorter(intitulesAndRomesUnique, searchTerm, {
+  const metiers = await getCacheReferentielRome()
+  const sorted = matchSorter(metiers, searchTerm, {
     keys: ["appellation"],
     threshold: matchSorter.rankings.NO_MATCH,
   })
 
-  return { coupleAppellationRomeMetier: sorted.slice(0, 100) }
+  return { coupleAppellationRomeMetier: sorted.slice(0, 30) }
 }
 
 const removeDuplicateDiplomas = (diplomas) => {

@@ -7,7 +7,6 @@ export const getRomeDetailsFromDB = async (romeCode: string) =>
       projection: {
         _id: 0,
         couple_appellation_rome: 0,
-        appellations_romes_sans_accent_computed: 0,
       },
     }
   )

@@ -105,7 +105,6 @@ const romeDetailAndCandidatureCountAggregateStage = [
             referentielrome: 0,
             "jobs.rome_detail._id": 0,
             "jobs.rome_detail.couple_appellation_rome": 0,
-            "jobs.rome_detail.appellations_romes_sans_accent_computed": 0,
             "jobs.jobIdStr": 0,
             applications: 0,
           },

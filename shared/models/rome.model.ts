@@ -161,7 +161,6 @@ export const ZReferentielRome = ZReferentielRomeForJob.extend({
       })
     )
     .describe("Champ retourné lors de la recherche métier à la creation d'offre"),
-  appellations_romes_sans_accent_computed: z.string().describe("Index pour le moteur de recherche métier à la creation d'offre"),
 })
 
 export type IReferentielRome = z.output<typeof ZReferentielRome>

@@ -16,7 +16,6 @@ export function generateReferentielRome(data: Partial<IReferentielRome> = {}): I
     acces_metier:
       "Ce métier est accessible avec un diplôme de fin d'études secondaires (brevet des collèges) à Bac (professionnel, Brevet Professionnel, ...) dans le secteur tertiaire. Il est également accessible avec une expérience professionnelle sans diplôme particulier. La maîtrise de l'outil bureautique (traitement de texte, tableur, ...) peut être requise.",
     couple_appellation_rome: [],
-    appellations_romes_sans_accent_computed: "",
     competences: {
       savoir_faire: [
         {

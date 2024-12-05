@@ -2,7 +2,7 @@ import { readFileSync } from "fs"
 
 import iconv from "iconv-lite"
 import { ObjectId } from "mongodb"
-import { IReferentielRome, removeAccents } from "shared/index"
+import { IReferentielRome } from "shared/index"
 import * as xml2j from "xml2js"
 
 import { logger } from "@/common/logger"
@@ -86,7 +86,6 @@ type IXmlFormat = Pick<IReferentielRome, "numero" | "acces_metier" | "competence
 const formatRawData = ({ appellations, competences, contextes_travail, mobilites, numero, rome, definition, acces_metier }: IXmlFormat): IReferentielRome => {
   const appellationsFormated = appellations.appellation instanceof Array ? appellations.appellation.map((x) => x) : [appellations.appellation]
   const mobilitesFormated = mobilites && mobilites?.mobilite ? (mobilites.mobilite instanceof Array ? mobilites.mobilite.map((x) => x) : [mobilites.mobilite]) : null
-  const appellationSet = appellationsFormated.flatMap(({ libelle }) => libelle.toLowerCase().split(/[\s,/;]+/))
   const couple_appellation_rome = appellationsFormated.map((appellation) => ({ code_rome: rome.code_rome, intitule: rome.intitule, appellation: appellation.libelle }))
   return {
     _id: new ObjectId(),
@@ -99,7 +98,6 @@ const formatRawData = ({ appellations, competences, contextes_travail, mobilites
     contextes_travail: getContextesTravail(contextes_travail),
     competences: getCompetences(competences),
     couple_appellation_rome,
-    appellations_romes_sans_accent_computed: [...new Set(appellationSet.map(removeAccents))].join(", "),
   }
 }
 

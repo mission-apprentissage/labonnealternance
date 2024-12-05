@@ -84,13 +84,13 @@ export const ZAppellationRome = z
     appellation: z.string(),
   })
   .strict()
+export type IAppellationRome = z.output<typeof ZAppellationRome>
 
 export const ZAppellationsRomes = z
   .object({
     coupleAppellationRomeMetier: ZAppellationRome.array(),
   })
   .strict()
-
 export type IAppellationsRomes = z.output<typeof ZAppellationsRomes>
 
 const collectionName = "diplomesmetiers" as const
