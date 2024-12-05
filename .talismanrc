@@ -241,6 +241,8 @@ fileignoreconfig:
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
 - filename: server/src/http/controllers/v2/jobs.controller.v2.ts
   checksum: da8baa573172fa97c21f9123e04032718249dcec1194a51d7a1f1757070594ce
+- filename: .infra/files/configs/mongodb/seed.gpg
+  checksum: c0d065fd21e851774bfb4f6dad2d4af7e339d38d3c62241ae40491ff4f8b8543
 scopeconfig:
 - scope: node
 custom_patterns:

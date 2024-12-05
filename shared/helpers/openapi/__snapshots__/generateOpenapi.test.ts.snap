@@ -6289,7 +6289,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                           "appellation": {
                             "type": "string",
                           },
-                          "codeRome": {
+                          "code_rome": {
                             "type": "string",
                           },
                           "intitule": {
@@ -6297,7 +6297,6 @@ Limite : 20 appel(s) / 1 seconde(s)
                           },
                         },
                         "required": [
-                          "codeRome",
                           "intitule",
                           "appellation",
                         ],
@@ -9579,7 +9578,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                           "appellation": {
                             "type": "string",
                           },
-                          "codeRome": {
+                          "code_rome": {
                             "type": "string",
                           },
                           "intitule": {
@@ -9587,7 +9586,6 @@ Limite : 20 appel(s) / 1 seconde(s)
                           },
                         },
                         "required": [
-                          "codeRome",
                           "intitule",
                           "appellation",
                         ],
