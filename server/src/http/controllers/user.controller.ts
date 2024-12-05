@@ -205,7 +205,7 @@ export default (server: Server) => {
         authorized_type: { $in: [AccessEntityType.ADMIN, AccessEntityType.OPCO] },
       })
 
-      const opco: OPCOS_LABEL | null = opcoOrAdminRole?.authorized_type === AccessEntityType.OPCO ? (opcoOrAdminRole.authorized_id as OPCOS_LABEL) : null
+      const opco: OPCOS_LABEL | null = opcoOrAdminRole?.authorized_type === AccessEntityType.OPCO ? parseEnum(OPCOS_LABEL, opcoOrAdminRole.authorized_id)) : null
 
       const { userId } = req.params
       const role = await getDbCollection("rolemanagements").findOne({
