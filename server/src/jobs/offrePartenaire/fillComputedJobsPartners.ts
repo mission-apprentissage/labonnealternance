@@ -57,4 +57,5 @@ export const blankComputedJobPartner: Omit<IComputedJobsPartners, "_id" | "partn
   workplace_siret: null,
   workplace_size: null,
   workplace_website: null,
+  jobs_in_success: [],
 }
