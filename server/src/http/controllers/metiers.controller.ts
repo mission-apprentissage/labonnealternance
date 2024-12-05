@@ -1,6 +1,6 @@
 import { zRoutes } from "shared"
 
-import { getCoupleAppellationRomeIntituleNew, getMetiers, getMetiersPourCfd, getTousLesMetiers } from "../../services/metiers.service"
+import { getCoupleAppellationRomeIntitule, getMetiers, getMetiersPourCfd, getTousLesMetiers } from "../../services/metiers.service"
 import { Server } from "../server"
 
 const config = {
@@ -57,7 +57,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { label } = req.query
-      const result = await getCoupleAppellationRomeIntituleNew(label)
+      const result = await getCoupleAppellationRomeIntitule(label)
       return res.send(result)
     }
   )
