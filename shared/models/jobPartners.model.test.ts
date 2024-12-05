@@ -39,7 +39,7 @@ type IJobOfferApiExpected = IJobWorkplaceApiExpected &
   IJobApplyExpected & {
     _id: ObjectId | string | null
     partner_label: string
-    partner_job_id: string | null
+    partner_job_id: string
 
     contract_start: Date | null
     contract_duration: number | null

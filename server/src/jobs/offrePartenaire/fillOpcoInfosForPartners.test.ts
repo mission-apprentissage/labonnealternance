@@ -195,7 +195,7 @@ describe("fillOpcoInfosForPartners", () => {
     // when
     await fillOpcoInfosForPartners()
     // then
-    const jobs = (await getDbCollection("computed_jobs_partners").find({}).toArray()).sort((a, b) => (a.partner_job_id! < b.partner_job_id! ? -1 : 1))
+    const jobs = (await getDbCollection("computed_jobs_partners").find({}).toArray()).sort((a, b) => (a.partner_job_id < b.partner_job_id ? -1 : 1))
     expect.soft(jobs.length).toBe(4)
     const [job1, job2, job3, job4] = jobs
     expect.soft(job1.errors).toEqual([])
