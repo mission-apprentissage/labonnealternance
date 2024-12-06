@@ -5,7 +5,7 @@ import equal from "fast-deep-equal"
 import { Filter, ObjectId, UpdateFilter } from "mongodb"
 import { IDelegation, IJob, IJobCreate, IJobWithRomeDetail, IRecruiter, IRecruiterWithApplicationCount, IUserRecruteur, JOB_STATUS, removeAccents } from "shared"
 import { getDirectJobPath } from "shared/constants/lbaitem"
-import { RECRUITER_STATUS } from "shared/constants/recruteur"
+import { OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
@@ -837,6 +837,10 @@ export const getJobFromRecruiter = (recruiter: IRecruiter, jobId: string): IJob 
 
 export const getFormulaireFromUserId = async (userId: string) => {
   return getDbCollection("recruiters").findOne({ managed_by: userId })
+}
+
+export const getFormulaireFromUserIdWithOpco = async (userId: string, opco: OPCOS_LABEL) => {
+  return getDbCollection("recruiters").findOne({ managed_by: userId, opco })
 }
 
 export const getFormulaireFromUserIdOrError = async (userId: string) => {
