@@ -75,6 +75,11 @@ export const getJobs = async ({
     {
       $limit: JOB_SEARCH_LIMIT,
     },
+    {
+      $project: {
+        "jobs.rome_detail.couple_appellation_rome": 0, // Exclude this field from the response
+      },
+    },
   ]
 
   // TODO: add a limit stage in romeDetailAggregateStages to limit number of jobs (not only number of recruiters)
