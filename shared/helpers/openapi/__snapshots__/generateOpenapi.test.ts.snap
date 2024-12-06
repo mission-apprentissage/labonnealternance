@@ -10080,6 +10080,13 @@ Limite : 20 appel(s) / 1 seconde(s)
                                   "null",
                                 ],
                               },
+                              "recipient_id": {
+                                "description": "Identifiant permettant de candidaté via l'API, généré à la volé pour les offres LBA uniquement",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
                               "url": {
                                 "description": "URL pour candidater",
                                 "format": "uri",
@@ -10491,6 +10498,13 @@ Limite : 20 appel(s) / 1 seconde(s)
                             "properties": {
                               "phone": {
                                 "description": "Téléphone de contact",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "recipient_id": {
+                                "description": "Identifiant permettant de candidaté via l'API, généré à la volé pour les offres LBA uniquement",
                                 "type": [
                                   "string",
                                   "null",

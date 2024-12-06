@@ -62,6 +62,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
   {
     "apply": {
       "phone": "0300000000",
+      "recipient_id": "recruiters_67520beff00dd7b9073d5fdc",
       "url": "",
     },
     "contract": {
@@ -140,6 +141,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
   {
     "apply": {
       "phone": null,
+      "recipient_id": null,
       "url": "",
     },
     "contract": {
@@ -198,6 +200,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
   {
     "apply": {
       "phone": null,
+      "recipient_id": "jobs_partners_675209e704377be3d437bbb9",
       "url": "",
     },
     "contract": {
@@ -264,6 +267,7 @@ exports[`findJobsOpportunities > should execute query 2`] = `
   {
     "apply": {
       "phone": "0100000000",
+      "recipient_id": null,
       "url": "http://localhost:3000/recherche-apprentissage?type=lba&itemId=11000001500013",
     },
     "identifier": {

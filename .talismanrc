@@ -86,7 +86,7 @@ fileignoreconfig:
 - filename: server/src/services/formulaire.service.ts
   checksum: e93ff7ce146d35e70eedcbe9b66097750e7754650468a5ada6b0ed72f0fdbc49
 - filename: server/src/services/jobs/jobOpportunity/jobOpportunity.service.test.ts
-  checksum: 7c2a7f5d8ec1c82652296c3271bd435f5998e9c61f9ead2d528a5f2a7195a07d
+  checksum: 8dd77bbcf687b50239b4958fbb957c069dda342551b76cc797af5349e0bd7024
 - filename: server/src/services/recruteurLba.service.test.ts
   checksum: 38c947c87cfb508fec88cbce878f89725cbb6679e833a66bdb7fca60e3685a0a
 - filename: server/src/services/referrers.service.ts
@@ -241,6 +241,8 @@ fileignoreconfig:
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
 - filename: server/src/http/controllers/v2/jobs.controller.v2.ts
   checksum: da8baa573172fa97c21f9123e04032718249dcec1194a51d7a1f1757070594ce
+- filename: server/src/services/jobs/jobOpportunity/__snapshots__/jobOpportunity.service.test.ts.snap
+  checksum: da3aa00d2041f36cd4b24eb4c98d04eb236cc80eab82a4e5aaf2e7e82549c613
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: c0d065fd21e851774bfb4f6dad2d4af7e339d38d3c62241ae40491ff4f8b8543
 scopeconfig:
