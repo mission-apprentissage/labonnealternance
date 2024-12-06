@@ -25,8 +25,8 @@ const PostulerFooter = (props) => {
 
 const CandidatureLbaModalBody = ({ formik, sendingState, company, item, kind, fromWidget = false }) => {
   const setFileValue = (fileValue) => {
-    formik.values.fileName = fileValue?.fileName || null
-    formik.values.fileContent = fileValue?.fileContent || null
+    formik.values.applicant_attachment_name = fileValue?.applicant_attachment_name || null
+    formik.values.applicant_attachment_content = fileValue?.applicant_attachment_content || null
   }
 
   const [suggestedEmails, setSuggestedEmails] = useState([])
@@ -56,43 +56,52 @@ const CandidatureLbaModalBody = ({ formik, sendingState, company, item, kind, fr
         </Text>
 
         <Flex direction={["column", "column", "row"]} mt={6}>
-          <FormControl data-testid="fieldset-lastname" mt={{ base: 3, md: "0" }} isInvalid={formik.touched.lastName && formik.errors.lastName}>
+          <FormControl data-testid="fieldset-lastname" mt={{ base: 3, md: "0" }} isInvalid={formik.touched.applicant_last_name && formik.errors.applicant_last_name}>
             <FormLabel htmlFor="lastName">Nom *</FormLabel>
             <Input
               id="lastName"
               data-testid="lastName"
-              name="lastName"
+              name="applicant_last_name"
               type="text"
               width="95%"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              value={formik.values.lastName}
+              value={formik.values.applicant_last_name}
             />
-            <FormErrorMessage>{formik.errors.lastName}</FormErrorMessage>
+            <FormErrorMessage>{formik.errors.applicant_last_name}</FormErrorMessage>
           </FormControl>
 
-          <FormControl data-testid="fieldset-firstname" mt={{ base: 3, md: "0" }} isInvalid={formik.touched.firstName && formik.errors.firstName}>
+          <FormControl data-testid="fieldset-firstname" mt={{ base: 3, md: "0" }} isInvalid={formik.touched.applicant_first_name && formik.errors.applicant_first_name}>
             <FormLabel htmlFor="firstName">Prénom *</FormLabel>
             <Input
               id="firstName"
               data-testid="firstName"
-              name="firstName"
+              name="applicant_first_name"
               type="text"
               width="95%"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              value={formik.values.firstName}
+              value={formik.values.applicant_first_name}
             />
-            <FormErrorMessage>{formik.errors.firstName}</FormErrorMessage>
+            <FormErrorMessage>{formik.errors.applicant_first_name}</FormErrorMessage>
           </FormControl>
         </Flex>
 
         {testingParameters?.simulatedRecipient && <Text>Les emails seront envoyés à {testingParameters.simulatedRecipient}</Text>}
 
         <Flex direction={["column", "column", "row"]} mt={[null, null, 4]}>
-          <FormControl data-testid="fieldset-email" mt={{ base: 3, md: "0" }} isInvalid={formik.touched.email && formik.errors.email}>
+          <FormControl data-testid="fieldset-email" mt={{ base: 3, md: "0" }} isInvalid={formik.touched.applicant_email && formik.errors.applicant_email}>
             <FormLabel htmlFor="email">E-mail *</FormLabel>
-            <Input id="email" data-testid="email" name="email" type="text" width="95%" onChange={onEmailChange} onBlur={formik.handleBlur} value={formik.values.email} />
+            <Input
+              id="email"
+              data-testid="email"
+              name="applicant_email"
+              type="text"
+              width="95%"
+              onChange={onEmailChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.applicant_email}
+            />
             {suggestedEmails.length > 0 && (
               <Box mt={2} fontSize="12px" color="grey.600">
                 <Text as="span" mr={2}>
@@ -118,13 +127,22 @@ const CandidatureLbaModalBody = ({ formik, sendingState, company, item, kind, fr
                 ))}
               </Box>
             )}
-            <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
+            <FormErrorMessage>{formik.errors.applicant_email}</FormErrorMessage>
           </FormControl>
 
-          <FormControl data-testid="fieldset-phone" mt={{ base: 3, md: "0" }} isInvalid={formik.touched.phone && formik.errors.phone}>
+          <FormControl data-testid="fieldset-phone" mt={{ base: 3, md: "0" }} isInvalid={formik.touched.applicant_phone && formik.errors.applicant_phone}>
             <FormLabel htmlFor="email">Téléphone *</FormLabel>
-            <Input id="phone" data-testid="phone" name="phone" type="text" width="95%" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.phone} />
-            <FormErrorMessage>{formik.errors.phone}</FormErrorMessage>
+            <Input
+              id="phone"
+              data-testid="phone"
+              name="applicant_phone"
+              type="text"
+              width="95%"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.applicant_phone}
+            />
+            <FormErrorMessage>{formik.errors.applicant_phone}</FormErrorMessage>
           </FormControl>
         </Flex>
 
