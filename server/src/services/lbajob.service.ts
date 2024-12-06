@@ -77,7 +77,7 @@ export const getJobs = async ({
     },
     {
       $project: {
-        "jobs.rome_detail.couple_appellation_rome": 0, // Exclude this field from the response
+        "jobs.rome_detail.couple_appellation_rome": 0,
       },
     },
   ]
