@@ -22,6 +22,7 @@ export enum LBA_ITEM_TYPE_OLD {
   LBB = "lbb",
   PE = "offres",
   PEJOB = "peJob",
+  PARTNER_JOB = "partnerJob",
 }
 
 /**
