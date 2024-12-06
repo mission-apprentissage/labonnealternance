@@ -8,6 +8,7 @@ import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import {
   IJobsPartnersOfferApi,
   IJobsPartnersOfferPrivate,
+  IJobsPartnersOfferPrivateWithDistance,
   IJobsPartnersRecruiterApi,
   INiveauDiplomeEuropeen,
   JOBPARTNERS_LABEL,
@@ -208,7 +209,7 @@ export const getJobsQuery = async (
   return result
 }
 
-export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> => {
+export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivate[]> => {
   const query: Filter<IJobsPartnersOfferPrivate> = {
     offer_multicast: true,
   }
@@ -236,7 +237,7 @@ export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }
           { $sort: { distance: 1, offer_creation: -1 } },
         ]
 
-  const jobsPartners = await getDbCollection("jobs_partners")
+  return await getDbCollection("jobs_partners")
     .aggregate<IJobsPartnersOfferPrivate>([
       ...filterStages,
       {
@@ -251,6 +252,52 @@ export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }
       },
     ])
     .toArray()
+}
+
+export const getJobsPartnersFromDBForUI = async ({ romes, geo, target_diploma_level }: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivateWithDistance[]> => {
+  console.log("ici ", romes, geo, target_diploma_level)
+
+  //[ 'K1901', 'K1902', 'K1903', 'K1904', 'K1505' ] { latitude: 48.579831, longitude: 7.761454, radius: 30 }
+
+  const query: Filter<IJobsPartnersOfferPrivate> = {
+    offer_multicast: true,
+  }
+
+  if (romes) {
+    query.offer_rome_codes = { $in: romes }
+  }
+
+  if (target_diploma_level) {
+    query["offer_target_diploma.european"] = { $in: [target_diploma_level, null] }
+  }
+
+  const filterStages: Document[] =
+    geo === null
+      ? [{ $match: query }, { $sort: { offer_creation: -1 } }]
+      : [
+          {
+            $geoNear: {
+              near: { type: "Point", coordinates: [geo.longitude, geo.latitude] },
+              distanceField: "distance",
+              maxDistance: geo.radius * 1000,
+              query,
+            },
+          },
+          { $sort: { distance: 1, offer_creation: -1 } },
+        ]
+
+  return await getDbCollection("jobs_partners")
+    .aggregate<IJobsPartnersOfferPrivateWithDistance>([
+      ...filterStages,
+      {
+        $limit: 150,
+      },
+    ])
+    .toArray()
+}
+
+export const getJobsPartnersForApi = async ({ romes, geo, target_diploma_level }: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> => {
+  const jobsPartners = await getJobsPartnersFromDB({ romes, geo, target_diploma_level })
 
   return jobsPartners.map((j) =>
     jobsRouteApiv3Converters.convertToJobOfferApiReadV3({
@@ -259,6 +306,10 @@ export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }
       apply_url: j.apply_url ?? `${config.publicUrl}/recherche-apprentissage?type=partner&itemId=${j._id}`,
     })
   )
+}
+
+export const getJobsPartnersForUI = async ({ romes, geo, target_diploma_level }: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivateWithDistance[]> => {
+  return await getJobsPartnersFromDBForUI({ romes, geo, target_diploma_level })
 }
 
 const convertToGeopoint = ({ longitude, latitude }: { longitude: number; latitude: number }): IGeoPoint => ({ type: "Point", coordinates: [longitude, latitude] })
@@ -541,7 +592,7 @@ async function findLbaJobOpportunities(query: IJobSearchApiV3QueryResolved): Pro
   return convertLbaRecruiterToJobOfferApi(lbaJobs)
 }
 
-async function resolveQuery(query: IJobSearchApiV3Query): Promise<IJobSearchApiV3QueryResolved> {
+export async function resolveQuery(query: IJobSearchApiV3Query): Promise<IJobSearchApiV3QueryResolved> {
   const { romes, rncp, latitude, longitude, radius, ...rest } = query
 
   const geo = latitude === null || longitude === null ? null : { latitude, longitude, radius }
@@ -579,7 +630,7 @@ export async function findJobsOpportunities(payload: IJobSearchApiV3Query, conte
   const [recruteurLba, offreEmploiLba, offreEmploiPartenaire, franceTravail] = await Promise.all([
     getRecruteursLbaFromDB(resolvedQuery),
     findLbaJobOpportunities(resolvedQuery),
-    getJobsPartnersFromDB(resolvedQuery),
+    getJobsPartnersForApi(resolvedQuery),
     findFranceTravailOpportunities(resolvedQuery, context),
   ])
 

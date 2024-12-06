@@ -11,6 +11,7 @@ import {
   ZLbaItemLbaCompanyReturnedByAPI,
   ZLbaItemLbaJob,
   ZLbaItemLbaJobReturnedByAPI,
+  ZLbaItemPartnerJob,
 } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
 import { rateLimitDescription } from "../utils/rateLimitDescription"
@@ -260,7 +261,7 @@ export const zV1JobsRoutes = {
             matchas: z.union([
               z
                 .object({
-                  results: z.array(ZLbaItemLbaJob),
+                  results: z.array(z.union([ZLbaItemLbaJob, ZLbaItemPartnerJob])),
                 })
                 .strict()
                 .nullable(),
