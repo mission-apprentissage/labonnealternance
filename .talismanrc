@@ -1,4 +1,6 @@
 fileignoreconfig:
+- filename: .infra/files/configs/mongodb/seed.gpg
+  checksum: c0d065fd21e851774bfb4f6dad2d4af7e339d38d3c62241ae40491ff4f8b8543
 - filename: .infra/vault/vault.yml
   checksum: 40717e8b277d9c9812c89d62fd3e09d0d70cdd0bb76a460f09486a31b6dd9cc7
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
@@ -37,6 +39,8 @@ fileignoreconfig:
   checksum: 72502c3acc46f9b6903b69095518c3d865cf437f311ed14585da04d8440b4ac0
 - filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts
   checksum: a99bfdcb5a8f4c66e9d055b44160adbc7ec2bcaf87209ff76fa9a9f674b9ca86
+- filename: server/src/http/controllers/v2/jobs.controller.v2.ts
+  checksum: da8baa573172fa97c21f9123e04032718249dcec1194a51d7a1f1757070594ce
 - filename: server/src/http/controllers/v3/jobs/jobs.controller.v3.test.ts
   checksum: 4b24ff09463f476fd0b64bef104da6e17153ffdfff2d628c96b16d3ea33779f7
 - filename: server/src/http/routes/appointmentRequest.controller.ts
@@ -57,6 +61,8 @@ fileignoreconfig:
   checksum: 3cd111d8c109cfec357bae48af70d0cf5644d02cd2c4b9afc5b8aa07bccbd535
 - filename: server/src/jobs/offrePartenaire/__snapshots__/importRHAlternance.test.ts.snap
   checksum: 41e5eadcdaa0cb1eb95e4cb3859f4b7b1d176bbb95ee8451d46a6b2c9021c3fd
+- filename: server/src/jobs/offrePartenaire/detectDuplicateJobPartners.test.ts
+  checksum: 076db1a937ce623937f4efcbe9b464693c39edbd1b796bfcfa203a6643009e41
 - filename: server/src/jobs/offrePartenaire/importFromUrlInXml.ts
   checksum: 18bd149922151536ad0e239b082309697cee6046b33512d5eecc54b2d25b465a
 - filename: server/src/jobs/offrePartenaire/importHelloWork.test.input.xml
@@ -85,6 +91,8 @@ fileignoreconfig:
   checksum: a263b92a95e69de7efb856d73122b8f05ef98140c96dd0212213f26dce85056e
 - filename: server/src/services/formulaire.service.ts
   checksum: e93ff7ce146d35e70eedcbe9b66097750e7754650468a5ada6b0ed72f0fdbc49
+- filename: server/src/services/jobs/jobOpportunity/__snapshots__/jobOpportunity.service.test.ts.snap
+  checksum: da3aa00d2041f36cd4b24eb4c98d04eb236cc80eab82a4e5aaf2e7e82549c613
 - filename: server/src/services/jobs/jobOpportunity/jobOpportunity.service.test.ts
   checksum: 8dd77bbcf687b50239b4958fbb957c069dda342551b76cc797af5349e0bd7024
 - filename: server/src/services/recruteurLba.service.test.ts
@@ -239,12 +247,6 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
-- filename: server/src/http/controllers/v2/jobs.controller.v2.ts
-  checksum: da8baa573172fa97c21f9123e04032718249dcec1194a51d7a1f1757070594ce
-- filename: server/src/services/jobs/jobOpportunity/__snapshots__/jobOpportunity.service.test.ts.snap
-  checksum: da3aa00d2041f36cd4b24eb4c98d04eb236cc80eab82a4e5aaf2e7e82549c613
-- filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: c0d065fd21e851774bfb4f6dad2d4af7e339d38d3c62241ae40491ff4f8b8543
 scopeconfig:
 - scope: node
 custom_patterns:
