@@ -7,6 +7,7 @@ import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import fetchFtJobDetails from "@/services/fetchFtJobDetails"
 import fetchLbaCompanyDetails from "@/services/fetchLbaCompanyDetails"
 import fetchLbaJobDetails from "@/services/fetchLbaJobDetails"
+import fetchPartnerJobDetails from "@/services/fetchPartnerJobDetails"
 import { ApiError } from "@/utils/api.utils"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
@@ -50,6 +51,26 @@ const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSe
           }
           return v
         }),
+        partnerJobs: jobs.partnerJobs,
+      }
+
+      setJobsAndSelectedItem(updatedJobs, jobWithDetails)
+      break
+    }
+
+    case LBA_ITEM_TYPE_OLD.PARTNER_JOB: {
+      const jobWithDetails = await fetchPartnerJobDetails(selectedItem)
+      const updatedJobs = {
+        peJobs: jobs.peJobs,
+        lbaCompanies: jobs.lbaCompanies,
+        matchas: jobs.matchas,
+        partnerJobs: jobs.partnerJobs.map((v) => {
+          if (v.id === jobWithDetails.id) {
+            jobWithDetails.place.distance = v.place.distance
+            return jobWithDetails
+          }
+          return v
+        }),
       }
 
       setJobsAndSelectedItem(updatedJobs, jobWithDetails)
@@ -68,6 +89,7 @@ const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSe
           return v
         }),
         matchas: jobs.matchas,
+        partnerJobs: jobs.partnerJobs,
       }
 
       setJobsAndSelectedItem(updatedJobs, companyWithDetails)
@@ -86,6 +108,7 @@ const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSe
         }),
         lbaCompanies: jobs.lbaCompanies,
         matchas: jobs.matchas,
+        partnerJobs: jobs.partnerJobs,
       }
 
       setJobsAndSelectedItem(updatedJobs, jobWithDetails)
