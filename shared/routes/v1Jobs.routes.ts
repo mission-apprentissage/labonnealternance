@@ -186,6 +186,15 @@ export const zV1JobsRoutes = {
       response: {
         "200": z
           .object({
+            partnerJobs: z.union([
+              z
+                .object({
+                  results: z.array(ZLbaItemPartnerJob),
+                })
+                .strict()
+                .nullable(),
+              ZApiError,
+            ]),
             peJobs: z.union([
               z
                 .object({
@@ -249,6 +258,15 @@ export const zV1JobsRoutes = {
       response: {
         "200": z
           .object({
+            partnerJobs: z.union([
+              z
+                .object({
+                  results: z.array(ZLbaItemPartnerJob),
+                })
+                .strict()
+                .nullable(),
+              ZApiError,
+            ]),
             peJobs: z.union([
               z
                 .object({
@@ -261,7 +279,7 @@ export const zV1JobsRoutes = {
             matchas: z.union([
               z
                 .object({
-                  results: z.array(z.union([ZLbaItemLbaJob, ZLbaItemPartnerJob])),
+                  results: z.array(ZLbaItemLbaJob),
                 })
                 .strict()
                 .nullable(),
@@ -338,6 +356,38 @@ export const zV1JobsRoutes = {
       headers: zRefererHeaders,
       response: {
         "200": ZLbaItemLbaJobReturnedByAPI,
+        //"419": le code correspondant a disparu. ticket bug ouvert
+        "400": z.union([ZResError, ZLbacError, ZApiError]),
+        "500": z.union([ZResError, ZLbacError, ZApiError]),
+      },
+      securityScheme: null,
+      openapi: {
+        tags: ["V1 - Jobs"] as string[],
+        deprecated: true,
+        description: `Get one lba job identified by it's id\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
+      },
+    },
+    "/v1/jobs/partnerJob/:id": {
+      method: "get",
+      path: "/v1/jobs/partnerJob/:id",
+      params: z
+        .object({
+          id: zObjectId.openapi({
+            param: {
+              description: "the id the partner job looked for.",
+            },
+          }),
+        })
+        .strict(),
+      querystring: z
+        .object({
+          caller: zCallerParam,
+        })
+        .strict()
+        .passthrough(),
+      headers: zRefererHeaders,
+      response: {
+        "200": ZLbaItemPartnerJobReturnedByAPI,
         //"419": le code correspondant a disparu. ticket bug ouvert
         "400": z.union([ZResError, ZLbacError, ZApiError]),
         "500": z.union([ZResError, ZLbacError, ZApiError]),

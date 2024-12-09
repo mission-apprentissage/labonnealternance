@@ -518,6 +518,8 @@ export const ZLbaItemPartnerJob = z
   .openapi("PartnerJob")
 
 export type ILbaItemPartnerJob = z.output<typeof ZLbaItemPartnerJob>
+export const ZLbaItemPartnerJobReturnedByAPI = z.object({ partnerJobs: z.array(ZLbaItemPartnerJob) })
+export type ILbaItemPartnerJobReturnedByAPI = z.output<typeof ZLbaItemPartnerJobReturnedByAPI>
 
 export const ZLbaItemLbaCompany = z
   .object({
