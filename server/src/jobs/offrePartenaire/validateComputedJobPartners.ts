@@ -1,6 +1,7 @@
+import { AnyBulkWriteOperation } from "mongodb"
 import { oleoduc, writeData } from "oleoduc"
 import jobsPartnersModel from "shared/models/jobsPartners.model"
-import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -8,6 +9,8 @@ import { streamGroupByCount } from "@/common/utils/streamUtils"
 
 const groupSize = 100
 const zodModel = jobsPartnersModel.zod
+
+type BulkOperation = AnyBulkWriteOperation<IComputedJobsPartners>
 
 export const validateComputedJobPartners = async () => {
   logger.info(`validation des computed_job_partners`)
@@ -21,14 +24,11 @@ export const validateComputedJobPartners = async () => {
       async (documents: IComputedJobsPartners[]) => {
         counters.total += documents.length
         counters.total % 1000 === 0 && logger.info(`processing document ${counters.total}`)
-        const bulkWriteFunction = getDbCollection("computed_jobs_partners").bulkWrite
-        type Operation = Parameters<typeof bulkWriteFunction>[0][number]
-        const setOperations: Operation[] = []
-        const pushOperations: Operation[] = []
+        const operations: BulkOperation[] = []
         documents.map((document) => {
           const { success: validated, error } = zodModel.safeParse(document)
 
-          setOperations.push({
+          operations.push({
             updateOne: {
               filter: { _id: document._id },
               update: {
@@ -39,7 +39,7 @@ export const validateComputedJobPartners = async () => {
 
           if (error) {
             counters.error++
-            pushOperations.push({
+            operations.push({
               updateOne: {
                 filter: { _id: document._id },
                 update: {
@@ -52,17 +52,22 @@ export const validateComputedJobPartners = async () => {
                 },
               },
             })
+            operations.push({
+              updateOne: {
+                filter: { _id: document._id },
+                update: {
+                  $set: {
+                    business_error: JOB_PARTNER_BUSINESS_ERROR.ZOD_VALIDATION,
+                  },
+                },
+              },
+            })
           } else {
             counters.success++
           }
         })
-        if (setOperations?.length) {
-          await getDbCollection("computed_jobs_partners").bulkWrite(setOperations, {
-            ordered: false,
-          })
-        }
-        if (pushOperations?.length) {
-          await getDbCollection("computed_jobs_partners").bulkWrite(pushOperations, {
+        if (operations?.length) {
+          await getDbCollection("computed_jobs_partners").bulkWrite(operations, {
             ordered: false,
           })
         }

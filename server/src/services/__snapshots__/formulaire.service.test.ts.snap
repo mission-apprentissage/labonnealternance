@@ -3,6 +3,25 @@
 exports[`createJob > should insert a job 1`] = `
 {
   "_id": "670ce30b57a50d6875c141f9",
+  "address_detail": {
+    "acheminement_postal": {
+      "l1": null,
+      "l2": null,
+      "l3": null,
+      "l4": "15 RUE DES LOUPS",
+      "l5": null,
+      "l6": "75002 PARIS",
+      "l7": "FRANCE",
+    },
+    "cedex": null,
+    "code_insee_localite": "75002",
+    "code_postal": "75002",
+    "complement_adresse": null,
+    "localite": "PARIS",
+    "nom_voie": "DES LOUPS",
+    "numero_voie": "15",
+    "type_voie": "RUE",
+  },
   "cfa_delegated_siret": null,
   "createdAt": 2021-01-28T15:00:00.000Z,
   "email": "entreprise@mail.fr",
