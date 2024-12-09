@@ -298,7 +298,7 @@ export const convertLbaCompanyToJobRecruiterApi = (recruteursLba: ILbaCompany[])
       apply: {
         url: `${config.publicUrl}/recherche-apprentissage?type=lba&itemId=${recruteurLba.siret}`,
         phone: recruteurLba.phone,
-        recipient_id: recruteurLba.email ? `recruterslba_${recruteurLba._id}` : null,
+        recipient_id: recruteurLba.email ? `recruteurslba_${recruteurLba._id}` : null,
       },
     })
   )
