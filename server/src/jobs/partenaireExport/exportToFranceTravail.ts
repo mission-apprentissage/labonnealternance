@@ -174,7 +174,7 @@ const formatData = (offre) => {
 
 const getJobsToExport = async () => {
   const buffer: any[] = []
-  const threshold = dayjs().subtract(30, "days").toDate()
+  const threshold = dayjs().subtract(60, "days").toDate()
   const offres: any[] = await getDbCollection("jobs")
     .find({
       job_status: JOB_STATUS.ACTIVE,

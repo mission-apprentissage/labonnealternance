@@ -1,4 +1,4 @@
-import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
+import { generateComputedJobsPartnersFixture, generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { IJobsPartnersOfferPrivate, ZJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
@@ -8,10 +8,7 @@ import { saveDbEntity } from "./user.test.utils"
 
 export async function createComputedJobPartner(data: Partial<IComputedJobsPartners> = {}) {
   const computedJobPartner = {
-    errors: [],
-    validated: true,
-    business_error: null,
-    ...generateJobsPartnersOfferPrivate(),
+    ...generateComputedJobsPartnersFixture(),
     ...data,
   }
   await getDbCollection("computed_jobs_partners").insertOne(computedJobPartner)

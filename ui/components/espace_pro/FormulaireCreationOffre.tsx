@@ -145,8 +145,8 @@ const FormikCreationOffre = ({
                   setTimeout(async () => {
                     setFieldValue("rome_label", values.intitule)
                     setFieldValue("rome_appellation_label", values.appellation)
-                    setFieldValue("rome_code", [values.codeRome])
-                    onRomeChange(values.codeRome, values.appellation)
+                    setFieldValue("rome_code", [values.code_rome])
+                    onRomeChange(values.code_rome, values.appellation)
                   }, 0)
                 }}
                 name="rome_label"

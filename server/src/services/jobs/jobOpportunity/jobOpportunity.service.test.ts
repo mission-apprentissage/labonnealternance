@@ -91,6 +91,7 @@ describe("findJobsOpportunities", () => {
       status: RECRUITER_STATUS.ACTIF,
       jobs: [
         {
+          _id: new ObjectId("67520beff00dd7b9073d5fdc"),
           rome_code: ["M1602"],
           rome_label: "Opérations administratives",
           job_status: JOB_STATUS.ACTIVE,
@@ -112,6 +113,7 @@ describe("findJobsOpportunities", () => {
       status: RECRUITER_STATUS.ACTIF,
       jobs: [
         {
+          _id: new ObjectId("67520be51ca7e7ed499d2934"),
           rome_code: ["M1602", "D1212"],
           rome_label: "Opérations administratives",
           job_status: JOB_STATUS.ACTIVE,
@@ -133,6 +135,7 @@ describe("findJobsOpportunities", () => {
       status: RECRUITER_STATUS.ACTIF,
       jobs: [
         {
+          _id: new ObjectId("67520bdce348cd81a1f45197"),
           rome_code: ["D1209"],
           rome_label: "Opérations administratives",
           job_status: JOB_STATUS.ACTIVE,
@@ -150,18 +153,21 @@ describe("findJobsOpportunities", () => {
   ]
   const partnerJobs: IJobsPartnersOfferPrivate[] = [
     generateJobsPartnersOfferPrivate({
+      _id: new ObjectId("675209e704377be3d437bbb9"),
       offer_rome_codes: ["M1602"],
       workplace_geopoint: parisFixture.centre,
       offer_creation: new Date("2021-01-01"),
       partner_job_id: "job-id-1",
     }),
     generateJobsPartnersOfferPrivate({
+      _id: new ObjectId("67520b753761274f55ee1dbb"),
       offer_rome_codes: ["M1602", "D1214"],
       workplace_geopoint: marseilleFixture.centre,
       offer_creation: new Date("2022-01-01"),
       partner_job_id: "job-id-2",
     }),
     generateJobsPartnersOfferPrivate({
+      _id: new ObjectId("67520b8db04d1ef4ff79e1e5"),
       offer_rome_codes: ["D1212"],
       workplace_geopoint: levalloisFixture.centre,
       offer_creation: new Date("2023-01-01"),
