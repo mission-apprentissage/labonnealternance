@@ -32,10 +32,6 @@ const ResultLists = ({
   showSearchForm,
   partnerJobSearchError,
   trainingSearchError,
-  isTestMode = undefined,
-  stubbedExtendedSearch = undefined,
-  stubbedHasSearch = undefined,
-  stubbedIsFormVisible = undefined,
 }) => {
   const scopeContext = useContext(ScopeContext)
   const { formValues } = useContext(DisplayContext)
@@ -47,10 +43,6 @@ const ResultLists = ({
 
   const { jobs, trainings } = useContext(SearchResultContext)
   const { activeFilters } = useContext(DisplayContext)
-
-  if (isTestMode) {
-    ;[extendedSearch, hasSearch, isFormVisible] = [stubbedExtendedSearch, stubbedHasSearch, stubbedIsFormVisible]
-  }
 
   const getTrainingResult = () => {
     if (hasSearch && scopeContext.isTraining && activeFilters.includes("trainings")) {
@@ -86,7 +78,7 @@ const ResultLists = ({
           {trainings.map((training, idx) => {
             const isCfa = isCfaEntreprise(training?.company?.siret, training?.company?.headquarter?.siret)
 
-            return renderTraining(isTestMode, idx, training, handleSelectItem, searchForJobsOnNewCenter, isCfa)
+            return renderTraining(idx, training, handleSelectItem, searchForJobsOnNewCenter, isCfa)
           })}
         </>
       )
@@ -173,7 +165,7 @@ const ResultLists = ({
       return (
         <>
           {mandataireLbaJobs.map((job, idx) => {
-            return renderJob(isTestMode, idx, job, handleSelectItem, searchForTrainingsOnNewCenter)
+            return renderJob(idx, job, handleSelectItem, searchForTrainingsOnNewCenter)
           })}
         </>
       )
@@ -188,7 +180,7 @@ const ResultLists = ({
       return (
         <>
           {mergedJobs.map((job, idx) => {
-            return renderJob(isTestMode, idx, job, handleSelectItem, searchForTrainingsOnNewCenter)
+            return renderJob(idx, job, handleSelectItem, searchForTrainingsOnNewCenter)
           })}
         </>
       )
@@ -201,7 +193,7 @@ const ResultLists = ({
       return (
         <>
           {mergedLbaLbbCompanies.map((company, idx) => {
-            return renderLbb(isTestMode, idx, company, handleSelectItem, searchForTrainingsOnNewCenter)
+            return renderLbb(idx, company, handleSelectItem, searchForTrainingsOnNewCenter)
           })}
         </>
       )
@@ -217,9 +209,9 @@ const ResultLists = ({
         <>
           {mergedOpportunities.map((opportunity, idx) => {
             if ([LBA_ITEM_TYPE_OLD.MATCHA, LBA_ITEM_TYPE_OLD.PEJOB, LBA_ITEM_TYPE_OLD.PARTNER_JOB].includes(opportunity.ideaType)) {
-              return renderJob(isTestMode, idx, opportunity, handleSelectItem, searchForTrainingsOnNewCenter)
+              return renderJob(idx, opportunity, handleSelectItem, searchForTrainingsOnNewCenter)
             } else {
-              return renderLbb(isTestMode, idx, opportunity, handleSelectItem, searchForTrainingsOnNewCenter)
+              return renderLbb(idx, opportunity, handleSelectItem, searchForTrainingsOnNewCenter)
             }
           })}
         </>
