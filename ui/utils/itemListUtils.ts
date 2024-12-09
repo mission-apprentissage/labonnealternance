@@ -13,6 +13,9 @@ export const mergeJobs = ({ jobs, activeFilters }) => {
     if (jobs.peJobs && jobs.peJobs.length) {
       mergedArray = mergedArray.concat(sortMergedSources(jobs.peJobs))
     }
+    if (jobs.partnerJobs && jobs.partnerJobs.length) {
+      mergedArray = mergedArray.concat(sortMergedSources(jobs.partnerJobs))
+    }
   }
 
   return mergedArray
@@ -25,6 +28,7 @@ export const mergeOpportunities = ({ jobs, onlyLbbLbaCompanies = undefined, acti
     const sources = [jobs.lbaCompanies]
     if (!onlyLbbLbaCompanies) {
       sources.push(jobs.peJobs)
+      sources.push(jobs.partnerJobs)
       sources.push(activeFilters.includes("duo") ? jobs?.matchas : jobs?.matchas?.filter((job) => !job.company.mandataire))
     }
 

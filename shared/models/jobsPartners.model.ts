@@ -98,11 +98,16 @@ export const ZJobsPartnersOfferPrivate = ZJobsPartnersOfferApi.omit({
     apply_url: ZJobsPartnersOfferApi.shape.apply_url.nullable().default(null),
   })
 
+export const ZJobsPartnersOfferPrivateWithDistance = ZJobsPartnersOfferPrivate.extend({
+  distance: z.number().nullish(),
+})
+
 export type IJobsPartnersRecruiterApi = z.output<typeof ZJobsPartnersRecruiterApi>
 export type IJobsPartnersOfferApi = z.output<typeof ZJobsPartnersOfferApi>
 
 export type IJobsPartnersRecruiterPrivate = z.output<typeof ZJobsPartnersRecruiterPrivate>
 export type IJobsPartnersOfferPrivate = z.output<typeof ZJobsPartnersOfferPrivate>
+export type IJobsPartnersOfferPrivateWithDistance = z.output<typeof ZJobsPartnersOfferPrivateWithDistance>
 export type IJobsPartnersOfferPrivateInput = z.input<typeof ZJobsPartnersOfferPrivate>
 
 const TIME_CLOCK_TOLERANCE = 300_000

@@ -14,14 +14,14 @@ const ZLbaItemPlace = z
         example: 3.5,
         description: "La distance du lieu par rapport au centre de recherche en kilomètres",
       })
-      .nullable(), // distance au centre de recherche en km. pe --> lieutTravail.distance recalculé par turf.js | formation --> sort[0] | lbb/lba -> distance | matcha -> sort[0]
+      .nullable(), // distance au centre de recherche en km. pe --> lieutTravail.distance recalculé par turf.js | formation --> sort[0] | lbb/lba -> distance | matcha -> sort[0] | partner -> distance
     fullAddress: z
       .string()
       .openapi({
         example: "4 RUE DES ROSIERS PARIS 4 75004",
         description: "L'adresse postale complète du lieu",
       })
-      .nullish(), // adresse postale reconstruite à partir des éléments d'adresse fournis | matcha -> adresse | formation -> lieu_formation_adresse + code_postal + localite OU etablissement_formateur_adresse + ...complement_adresse + ...code_postal + ...localite + ...cedex OU etablissement_gestionnaire_adresse + ...complement_adresse + ...localite + ...cedex
+      .nullish(), // adresse postale reconstruite à partir des éléments d'adresse fournis | matcha -> adresse | formation -> lieu_formation_adresse + code_postal + localite OU etablissement_formateur_adresse + ...complement_adresse + ...code_postal + ...localite + ...cedex OU etablissement_gestionnaire_adresse + ...complement_adresse + ...localite + ...cedex | partner -> workplace_address_label
     latitude: z
       .number()
       .nullable()
@@ -48,11 +48,11 @@ const ZLbaItemPlace = z
         example: "PARIS 4",
         description: "La ville",
       })
-      .nullish(), // pe -> lieuTravail.libelle | formation -> localite | pe -> city | lba -> city
+      .nullish(), // pe -> lieuTravail.libelle | formation -> localite | pe -> city | lba -> city | partner -> workplace_address_city
     address: z.string().nullish().openapi({
       example: "4 RUE DES ROSIERS",
       description: "L'adresse du lieu",
-    }), // formation -> etablissement_formateur_adresse, etablissement_formateur_complement_adresse | lbb / lba -> address -> street_number + street_name | matcha -> adresse
+    }), // formation -> etablissement_formateur_adresse, etablissement_formateur_complement_adresse | lbb / lba -> address -> street_number + street_name | matcha -> adresse | partner -> workplace_address_street_label
     cedex: z.string().nullish().openapi({
       example: null,
       description: "L'éventuel CEDEX de l'adresse",
@@ -63,7 +63,7 @@ const ZLbaItemPlace = z
         example: "75004",
         description: "Le code postal du lieu",
       })
-      .nullish(), // formation -> etablissement_formateur_code_postal | pe -> lieuTravail.codePostal | lba -> zip_code
+      .nullish(), // formation -> etablissement_formateur_code_postal | pe -> lieuTravail.codePostal | lba -> zip_code | partner -> workplace_address_zipcode
     insee: z
       .string()
       .openapi({
@@ -85,7 +85,7 @@ const ZLbaItemPlace = z
         description: "Région administrative",
       })
       .nullish(), // formation -> region
-    remoteOnly: z.boolean().openapi({}).nullish(), // formation
+    remoteOnly: z.boolean().openapi({}).nullish(), // formation | partner -> contract_remote
   })
   .strict()
   .openapi("Place", {
@@ -159,6 +159,7 @@ const ZLbaItemContact = z
         description: "Des informations complémentaires concernant le contact de référence",
       })
       .nullish(), // pe -> contact.coordonnees1+contact.coordonnees2+contact.coordonnees3
+    url: z.string().openapi({ type: "string", description: "L'url pour postuler" }).nullish(),
   })
   .strict()
   .openapi("Contact", { description: "Informations de contact" })
@@ -220,7 +221,7 @@ const ZLbaItemCompany = z
     mandataire: z.boolean().openapi({ description: "Indique si l'offre est déposée par un CFA mandataire (offres Matcha seulement)" }).nullish(), // matcha -> mandataire
     creationDate: z.date().nullish(), // matcha -> date_creation_etablissement
     headquarter: ZLbaItemCompanyHQ.nullish(), // uniquement pour formation
-    opco: ZLbaItemOpco.nullish(),
+    opco: ZLbaItemOpco.nullish(), // partner -> workplace_opco
   })
   .strict()
   .openapi({
@@ -231,22 +232,27 @@ export type ILbaItemCompany = z.output<typeof ZLbaItemCompany>
 
 const ZLbaItemJob = z
   .object({
-    description: z.string().nullish(), // pe -> description | matcha -> description
-    employeurDescription: z.string().nullish(), // matcha -> job.job_employer_description
-    creationDate: z.date().nullable(), // pe -> dateCreation | matcha -> createdAt
-    id: z.string().nullish(), // pe -> id | matcha -> id mongo offre
+    description: z.string().nullish(), // pe -> description | matcha -> description | partner -> offer_description
+    employeurDescription: z.string().nullish(), // matcha -> job.job_employer_description | partner -> workplace_description
+    creationDate: z.date().nullable(), // pe -> dateCreation | matcha -> createdAt |
+    id: z.string().nullish(), // pe -> id | matcha -> id mongo offre | partner -> partner_id
     contractType: z.string().nullish(), // pe -> typeContrat | matcha -> offres.type
     contractDescription: z.string().nullish(), // pe -> typeContratLibelle
-    duration: z.string().nullish(), // pe -> dureeTravailLibelle
-    jobStartDate: z.date().nullish(), // matcha -> offres.date_debut_apprentissage
-    jobExpirationDate: z.date().nullish(),
+    duration: z.string().nullish(), // pe -> dureeTravailLibelle | partner -> contract_duration
+    jobStartDate: z.date().nullish(), // matcha -> offres.date_debut_apprentissage | partner -> contract_start
+    jobExpirationDate: z.date().nullish(), // partner -> offer_expiration
     romeDetails: ZReferentielRomeForJob.nullish(), // matcha -> offres.rome_detail -> détail du code ROME
     rythmeAlternance: z.string().nullish(), // matcha -> offres.rythme_alternance
     elligibleHandicap: z.boolean().nullish(), // matcha -> offres.is_disabled_elligible
-    dureeContrat: z.string().nullish(), // matcha -> offres.duree_contrat
-    quantiteContrat: z.number().nullish(), // matcha -> offres.quantite
+    dureeContrat: z.string().nullish(), // matcha -> offres.duree_contrat | partner -> contract_duration
+    quantiteContrat: z.number().nullish(), // matcha -> offres.quantite | partner -> offer_opening_count
     status: z.enum(["Active", "Pourvue", "Annulée", "En attente"]).nullish(),
-    type: ZJobType.nullish(),
+    type: ZJobType.nullish(), // partner -> contract_type
+    partner_label: z.string().nullish(), // partner -> partner_label
+    origin: z.string().nullish(), // partner -> offer_origin
+    offer_desired_skills: z.array(z.string()).nullish(), // partner -> offer_desired_skills,
+    offer_to_be_acquired_skills: z.array(z.string()).nullish(), // partner -> offer_to_be_acquired_skills,
+    offer_access_conditions: z.array(z.string()).nullish(), // partner -> offer_access_conditions
   })
   .strict()
   .openapi("LbacJob") // uniquement pour pe et matcha
@@ -489,6 +495,33 @@ export type ILbaItemLbaJob = z.output<typeof ZLbaItemLbaJob>
 export const ZLbaItemLbaJobReturnedByAPI = z.object({ matchas: z.array(ZLbaItemLbaJob) })
 export type ILbaItemLbaJobReturnedByAPI = z.output<typeof ZLbaItemLbaJobReturnedByAPI>
 
+export const ZLbaItemPartnerJob = z
+  .object({
+    ideaType: z.literal(LBA_ITEM_TYPE_OLD.PARTNER_JOB),
+    title: z.string(), // partnerJob -> offer_title
+    contact: ZLbaItemContact.nullish(),
+    place: ZLbaItemPlace.nullable(),
+    company: ZLbaItemCompany.nullable(),
+    id: z.string(), // partnerJob -> _id
+    target_diploma_level: z // partnerJob -> offer_target_diploma
+      .string()
+      .openapi({
+        example: "3 (CAP...)",
+        description: "Le niveau de la formation.",
+      })
+      .nullish(), // matcha -> offres.niveau
+    job: ZLbaItemJob,
+    romes: z.array(ZLbaItemRome).nullish(),
+    nafs: z.array(ZLbaItemNaf).nullish(),
+    detailsLoaded: z.boolean().nullish(),
+  })
+  .strict()
+  .openapi("PartnerJob")
+
+export type ILbaItemPartnerJob = z.output<typeof ZLbaItemPartnerJob>
+export const ZLbaItemPartnerJobReturnedByAPI = z.object({ partnerJobs: z.array(ZLbaItemPartnerJob) })
+export type ILbaItemPartnerJobReturnedByAPI = z.output<typeof ZLbaItemPartnerJobReturnedByAPI>
+
 export const ZLbaItemLbaCompany = z
   .object({
     ideaType: z.literal(LBA_ITEM_TYPE_OLD.LBA),
@@ -498,7 +531,7 @@ export const ZLbaItemLbaCompany = z
     contact: ZLbaItemContact.nullish(),
     place: ZLbaItemPlace.nullable(),
     company: ZLbaItemCompany.nullable(),
-    url: z.string().nullish(),
+    url: z.string().nullish(), // partner -> workplace_website
     nafs: z.array(ZLbaItemNaf).nullish(),
     applicationCount: z.number(), // calcul en fonction du nombre de candidatures enregistrées
     detailsLoaded: z.boolean().nullish(),
