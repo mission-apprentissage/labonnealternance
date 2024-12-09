@@ -3,6 +3,7 @@ import dayjs from "dayjs"
 import { Document, Filter, ObjectId } from "mongodb"
 import { IJob, ILbaItemPartnerJob, IRecruiter, IReferentielRomeForJob, JOB_STATUS } from "shared"
 import { NIVEAUX_POUR_LBA } from "shared/constants"
+import { FRANCE_LATITUDE, FRANCE_LONGITUDE } from "shared/constants/geolocation"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { INiveauPourLbaLabel, RECRUITER_STATUS } from "shared/constants/recruteur"
 
@@ -17,15 +18,10 @@ import { sentryCaptureException } from "../common/utils/sentryUtils"
 import { IApplicationCount, getApplicationByJobCount } from "./application.service"
 import { generateApplicationToken } from "./appLinks.service"
 import { getOffreAvecInfoMandataire, romeDetailAggregateStages } from "./formulaire.service"
-import { getJobsPartnersForUI, resolveQuery } from "./jobs/jobOpportunity/jobOpportunity.service"
 import { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
-import { transformPartnerJobs } from "./partnerJob.service"
 
 const JOB_SEARCH_LIMIT = 250
-const FRANCE_LATITUDE = 46.227638
-const FRANCE_LONGITUDE = 2.213749
-
 /**
  * @description get filtered jobs with rome_detail from mongo
  * @param {Object} payload
@@ -254,16 +250,7 @@ export const getLbaJobs = async ({
       isMinimalData,
     }
 
-    const resolvedQuery = await resolveQuery({
-      latitude: params.lat,
-      longitude: params.lon,
-      radius: params.distance,
-      target_diploma_level: params.niveau,
-      romes: params.romes,
-      rncp: null,
-    })
-
-    const [jobs, rawPartnerJobs] = await Promise.all([getJobs(params), getJobsPartnersForUI(resolvedQuery)])
+    const jobs = await getJobs(params)
 
     //console.log("partnerJobs : ", rawPartnerJobs.length, rawPartnerJobs)
 
@@ -271,28 +258,16 @@ export const getLbaJobs = async ({
 
     const applicationCountByJob = await getApplicationByJobCount(ids)
 
-    const lbaJobs: { results: (Partial<ILbaItemLbaJob> | Partial<ILbaItemPartnerJob>)[] } = transformLbaJobs({ jobs, applicationCountByJob, isMinimalData })
-
-    let partnerJobs = transformPartnerJobs({ partnerJobs: rawPartnerJobs, isMinimalData })
+    const lbaJobs: { results: ILbaItemLbaJob[] } = transformLbaJobs({ jobs, applicationCountByJob, isMinimalData })
 
     // filtrage sur l'opco
     if (opco || opcoUrl) {
       lbaJobs.results = await filterJobsByOpco({ opco, opcoUrl, jobs: lbaJobs.results })
     }
-    if (opco && partnerJobs) {
-      partnerJobs = await filterJobsByOpco({ opco, opcoUrl, jobs: partnerJobs })
-    }
 
     if (!hasLocation) {
       sortLbaJobs(lbaJobs.results)
-      sortLbaJobs(partnerJobs)
     }
-
-    if (partnerJobs) {
-      lbaJobs.results = lbaJobs.results.concat(partnerJobs)
-    }
-
-    console.log(lbaJobs)
 
     return lbaJobs
   } catch (error) {
@@ -534,7 +509,7 @@ function transformLbaJobWithMinimalData({ recruiter, applicationCountByJob }: { 
 /**
  * tri des ofres selon l'ordre alphabétique du titre (primaire) puis du nom de société (secondaire)
  */
-function sortLbaJobs(jobs: Partial<ILbaItemLbaJob | ILbaItemPartnerJob>[]) {
+export function sortLbaJobs(jobs: Partial<ILbaItemLbaJob | ILbaItemPartnerJob>[]) {
   jobs.sort((a, b) => {
     if (a && b) {
       if (a.title && b.title) {

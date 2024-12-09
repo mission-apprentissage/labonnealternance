@@ -2,7 +2,19 @@ import { badRequest, conflict, internal, notFound } from "@hapi/boom"
 import { IApiAlternanceTokenData } from "api-alternance-sdk"
 import { DateTime } from "luxon"
 import { Document, Filter, ObjectId } from "mongodb"
-import { IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS_ENGLISH, ZPointGeometry, assertUnreachable, joinNonNullStrings, parseEnum, translateJobStatus } from "shared"
+import {
+  IGeoPoint,
+  IJob,
+  ILbaCompany,
+  ILbaItemPartnerJob,
+  IRecruiter,
+  JOB_STATUS_ENGLISH,
+  ZPointGeometry,
+  assertUnreachable,
+  joinNonNullStrings,
+  parseEnum,
+  translateJobStatus,
+} from "shared"
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import {
@@ -32,6 +44,7 @@ import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { getRomeInfoSafe } from "@/services/cacheRomeo.service"
 import { getEntrepriseDataFromSiret, getOpcoData } from "@/services/etablissement.service"
 import { getCityFromProperties, getGeolocation, getStreetFromProperties } from "@/services/geolocation.service"
+import { getPartnerJobs } from "@/services/partnerJob.service"
 
 import { logger } from "../../../common/logger"
 import { IApiError } from "../../../common/utils/errorManager"
@@ -85,7 +98,13 @@ export const getJobsFromApi = async ({
   isMinimalData: boolean
 }): Promise<
   | IApiError
-  | { peJobs: TLbaItemResult<ILbaItemFtJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
+  | {
+      peJobs: TLbaItemResult<ILbaItemFtJob> | null
+      matchas: TLbaItemResult<ILbaItemLbaJob> | null
+      lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null
+      lbbCompanies: null
+      partnerJobs: TLbaItemResult<ILbaItemPartnerJob> | null
+    }
 > => {
   try {
     const convertedSource = sources
@@ -110,7 +129,7 @@ export const getJobsFromApi = async ({
     const jobSources = !convertedSource ? allLbaItemType : convertedSource.split(",")
     const finalRadius = radius ?? 0
 
-    const [peJobs, lbaCompanies, matchas] = await Promise.all([
+    const [peJobs, lbaCompanies, matchas, partnerJobs] = await Promise.all([
       jobSources.includes(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES)
         ? getSomeFtJobs({
             romes: romes?.split(","),
@@ -154,9 +173,23 @@ export const getJobsFromApi = async ({
             isMinimalData,
           })
         : null,
+      jobSources.includes(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES)
+        ? getPartnerJobs({
+            romes,
+            latitude,
+            longitude,
+            radius: finalRadius,
+            api,
+            caller,
+            diploma,
+            opco,
+            opcoUrl,
+            isMinimalData,
+          })
+        : null,
     ])
 
-    return { peJobs, matchas, lbaCompanies, lbbCompanies: null }
+    return { peJobs, matchas, lbaCompanies, lbbCompanies: null, partnerJobs }
   } catch (err) {
     if (caller) {
       trackApiCall({ caller, api_path: api, response: "Error" })
@@ -173,7 +206,13 @@ export const getJobsQuery = async (
   query: TJobSearchQuery
 ): Promise<
   | IApiError
-  | { peJobs: TLbaItemResult<ILbaItemFtJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
+  | {
+      peJobs: TLbaItemResult<ILbaItemFtJob> | null
+      matchas: TLbaItemResult<ILbaItemLbaJob> | null
+      lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null
+      partnerJobs: TLbaItemResult<ILbaItemPartnerJob> | null
+      lbbCompanies: null
+    }
 > => {
   const parameterControl = await jobsQueryValidator(query)
 
@@ -200,6 +239,10 @@ export const getJobsQuery = async (
   if ("matchas" in result && result.matchas && "results" in result.matchas) {
     job_count += result.matchas.results.length
     await incrementLbaJobsViewCount(result.matchas.results.flatMap((job) => (job?.id ? [job.id] : [])))
+  }
+
+  if ("partnerJobs" in result && result.partnerJobs && "results" in result.partnerJobs) {
+    job_count += result.partnerJobs.results.length
   }
 
   if (query.caller) {
@@ -306,10 +349,6 @@ export const getJobsPartnersForApi = async ({ romes, geo, target_diploma_level }
       apply_url: j.apply_url ?? `${config.publicUrl}/recherche-apprentissage?type=partner&itemId=${j._id}`,
     })
   )
-}
-
-export const getJobsPartnersForUI = async ({ romes, geo, target_diploma_level }: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivateWithDistance[]> => {
-  return await getJobsPartnersFromDBForUI({ romes, geo, target_diploma_level })
 }
 
 const convertToGeopoint = ({ longitude, latitude }: { longitude: number; latitude: number }): IGeoPoint => ({ type: "Point", coordinates: [longitude, latitude] })

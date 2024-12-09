@@ -510,7 +510,7 @@ export const ZLbaItemPartnerJob = z
       })
       .nullish(), // matcha -> offres.niveau
     job: ZLbaItemJob,
-    romes: z.array(ZLbaItemRome),
+    romes: z.array(ZLbaItemRome).nullish(),
     nafs: z.array(ZLbaItemNaf).nullish(),
     detailsLoaded: z.boolean().nullish(),
   })

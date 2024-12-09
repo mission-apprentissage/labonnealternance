@@ -1,28 +1,30 @@
-import { TRAINING_REMOTE_TYPE } from "shared/constants"
+import { ObjectId } from "mongodb"
+import { NIVEAUX_POUR_LBA, TRAINING_REMOTE_TYPE } from "shared/constants"
+import { FRANCE_LATITUDE, FRANCE_LONGITUDE } from "shared/constants/geolocation"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { ILbaItemPartnerJob, traductionJobStatus } from "shared/models"
 import { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance } from "shared/models/jobsPartners.model"
 
+import { IApiError, manageApiError } from "@/common/utils/errorManager"
 import { roundDistance } from "@/common/utils/geolib"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { trackApiCall } from "@/common/utils/sendTrackingEvent"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+
+import { getJobsPartnersFromDBForUI, resolveQuery } from "./jobs/jobOpportunity/jobOpportunity.service"
+import { sortLbaJobs } from "./lbajob.service"
+import { filterJobsByOpco } from "./opco.service"
 
 /**
  * Converti les offres issues de la mongo en objet de type ILbaItem
  */
 export const transformPartnerJobs = ({ partnerJobs, isMinimalData }: { partnerJobs: IJobsPartnersOfferPrivate[]; isMinimalData: boolean }) =>
-  partnerJobs.flatMap((partnerJob) =>
-    isMinimalData
-      ? transformPartnerJobWithMinimalData({
-          partnerJob,
-        })
-      : transformPartnerJob({
-          partnerJob,
-        })
-  )
+  partnerJobs.flatMap((partnerJob) => (isMinimalData ? transformPartnerJobWithMinimalData(partnerJob) : transformPartnerJob(partnerJob)))
 
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
  */
-function transformPartnerJob({ partnerJob }: { partnerJob: IJobsPartnersOfferPrivateWithDistance }): ILbaItemPartnerJob {
+function transformPartnerJob(partnerJob: IJobsPartnersOfferPrivateWithDistance): ILbaItemPartnerJob {
   const romes = partnerJob.offer_rome_codes.map((code) => ({ code, label: null }))
 
   const latitude = partnerJob.workplace_geopoint?.coordinates[1] ?? 0
@@ -86,11 +88,11 @@ function transformPartnerJob({ partnerJob }: { partnerJob: IJobsPartnersOfferPri
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
  */
-function transformPartnerJobWithMinimalData({ partnerJob }: { partnerJob: IJobsPartnersOfferPrivateWithDistance }): Partial<ILbaItemPartnerJob> {
+function transformPartnerJobWithMinimalData(partnerJob: IJobsPartnersOfferPrivateWithDistance): ILbaItemPartnerJob {
   const latitude = partnerJob.workplace_geopoint?.coordinates[1] ?? 0
   const longitude = partnerJob.workplace_geopoint?.coordinates[0] ?? 0
 
-  const resultJob: Partial<ILbaItemPartnerJob> = {
+  const resultJob: ILbaItemPartnerJob = {
     ideaType: LBA_ITEM_TYPE_OLD.PARTNER_JOB,
     id: partnerJob._id.toString(),
     title: partnerJob.offer_title,
@@ -112,4 +114,100 @@ function transformPartnerJobWithMinimalData({ partnerJob }: { partnerJob: IJobsP
   }
 
   return resultJob
+}
+
+/**
+ * @description Retourne les offres d'emploi partner correspondantes aux critères de recherche
+ */
+export const getPartnerJobs = async ({
+  romes = "",
+  radius = 10,
+  latitude,
+  longitude,
+  api,
+  opco,
+  opcoUrl,
+  diploma,
+  caller,
+  isMinimalData,
+}: {
+  romes?: string
+  radius?: number
+  latitude?: number
+  longitude?: number
+  api: string
+  opco?: string
+  opcoUrl?: string
+  diploma?: string
+  caller?: string | null
+  isMinimalData: boolean
+}) => {
+  if (radius === 0) {
+    radius = 10
+  }
+  try {
+    const hasLocation = Boolean(latitude)
+
+    const distance = hasLocation ? radius : 21000
+
+    const params = {
+      caller,
+      romes: romes?.split(","),
+      distance,
+      lat: hasLocation ? (latitude as number) : FRANCE_LATITUDE,
+      lon: hasLocation ? (longitude as number) : FRANCE_LONGITUDE,
+      niveau: diploma ? NIVEAUX_POUR_LBA[diploma] : undefined,
+      isMinimalData,
+    }
+
+    const resolvedQuery = await resolveQuery({
+      latitude: params.lat,
+      longitude: params.lon,
+      radius: params.distance,
+      target_diploma_level: params.niveau,
+      romes: params.romes,
+      rncp: null,
+    })
+
+    const rawPartnerJobs = await getJobsPartnersFromDBForUI(resolvedQuery)
+
+    //console.log("partnerJobs : ", rawPartnerJobs.length, rawPartnerJobs)
+
+    let partnerJobs: ILbaItemPartnerJob[] = transformPartnerJobs({ partnerJobs: rawPartnerJobs, isMinimalData })
+
+    // filtrage sur l'opco
+    if (opco && partnerJobs) {
+      partnerJobs = await filterJobsByOpco({ opco, opcoUrl, jobs: partnerJobs })
+    }
+
+    if (!hasLocation) {
+      sortLbaJobs(partnerJobs)
+    }
+
+    return { results: partnerJobs }
+  } catch (error) {
+    sentryCaptureException(error)
+    return manageApiError({ error, api_path: api, caller, errorTitle: `getting jobs from partner job (${api})` })
+  }
+}
+
+export const getPartnerJobById = async ({ id, caller }: { id: ObjectId; caller?: string }): Promise<IApiError | { partnerJobs: ILbaItemPartnerJob[] }> => {
+  try {
+    const rawPartnerJob = await getDbCollection("jobs_partners").findOne({ _id: id })
+
+    if (!rawPartnerJob) {
+      return { error: "not_found" }
+    }
+
+    const partnerJob = transformPartnerJob(rawPartnerJob)
+
+    if (caller) {
+      trackApiCall({ caller: caller, job_count: 1, result_count: 1, api_path: "jobV1/partnerJob", response: "OK" })
+    }
+
+    return { partnerJobs: [partnerJob] }
+  } catch (error) {
+    sentryCaptureException(error)
+    return manageApiError({ error, api_path: "jobV1/matcha", caller, errorTitle: "getting job by id from partner jobs" })
+  }
 }

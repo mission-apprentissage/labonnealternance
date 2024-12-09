@@ -12,6 +12,7 @@ import {
   ZLbaItemLbaJob,
   ZLbaItemLbaJobReturnedByAPI,
   ZLbaItemPartnerJob,
+  ZLbaItemPartnerJobReturnedByAPI,
 } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
 import { rateLimitDescription } from "../utils/rateLimitDescription"
@@ -388,7 +389,6 @@ export const zV1JobsRoutes = {
       headers: zRefererHeaders,
       response: {
         "200": ZLbaItemPartnerJobReturnedByAPI,
-        //"419": le code correspondant a disparu. ticket bug ouvert
         "400": z.union([ZResError, ZLbacError, ZApiError]),
         "500": z.union([ZResError, ZLbacError, ZApiError]),
       },
