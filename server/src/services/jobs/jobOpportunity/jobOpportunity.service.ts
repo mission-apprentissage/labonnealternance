@@ -173,7 +173,7 @@ export const getJobsFromApi = async ({
             isMinimalData,
           })
         : null,
-      jobSources.includes(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES)
+      jobSources.includes(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA)
         ? getPartnerJobs({
             romes,
             latitude,
