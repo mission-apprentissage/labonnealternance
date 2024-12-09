@@ -69,6 +69,7 @@ export const searchForJobsFunction = async ({
       results = {
         matchas: response.data.matchas.result && response.data.matchas.result === "error" ? null : response.data.matchas.results,
         lbaCompanies: response.data.lbaCompanies.result && response.data.lbaCompanies.result === "error" ? null : response.data.lbaCompanies.results,
+        partnerJobs: response.data.partnerJobs.result && response.data.partnerJobs.result === "error" ? null : response.data.partnerJobs.results,
       }
 
       if (!showCombinedJob && results.matchas?.length) {
