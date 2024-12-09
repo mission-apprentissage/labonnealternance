@@ -109,7 +109,7 @@ const ResultLists = ({
         let consolidatedJobList = <></>
 
         if (!activeFilters.includes("jobs")) {
-          consolidatedJobList = getPartnerJobList()
+          consolidatedJobList = getMandataireJobList()
         } else if (extendedSearch) {
           consolidatedJobList = getMergedJobList()
         } else {
@@ -167,12 +167,12 @@ const ResultLists = ({
     return <></>
   }
 
-  const getPartnerJobList = () => {
-    const partnerJobs = jobs.matchas.filter((job) => job.company?.mandataire)
-    if (partnerJobs.length) {
+  const getMandataireJobList = () => {
+    const mandataireLbaJobs = jobs.matchas.filter((job) => job.company?.mandataire)
+    if (mandataireLbaJobs.length) {
       return (
         <>
-          {partnerJobs.map((job, idx) => {
+          {mandataireLbaJobs.map((job, idx) => {
             return renderJob(isTestMode, idx, job, handleSelectItem, searchForTrainingsOnNewCenter)
           })}
         </>
