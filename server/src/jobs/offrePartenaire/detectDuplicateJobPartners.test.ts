@@ -6,6 +6,7 @@ import { RECRUITER_STATUS } from "shared/constants"
 import { generateJobFixture, generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { JOB_STATUS } from "shared/models"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { getPairs } from "@/common/utils/array"
@@ -30,12 +31,14 @@ describe("detectDuplicateJobPartners", () => {
     // given
     await givenSomeComputedJobPartners([
       {
+        _id: new ObjectId("60646425184afd00e017c1ab"),
         partner_label: JOBPARTNERS_LABEL.HELLOWORK,
         workplace_siret: siret,
         offer_title: offerTitle,
         workplace_address_zipcode: "75007",
       },
       {
+        _id: new ObjectId("62646425184afd00e017c1ab"),
         partner_label: JOBPARTNERS_LABEL.RH_ALTERNANCE,
         workplace_siret: siret,
         offer_title: offerTitle,
@@ -54,6 +57,7 @@ describe("detectDuplicateJobPartners", () => {
         reason: "identical workplace_siret, identical offer_title",
       },
     ])
+    expect.soft(job.business_error).toEqual(null)
     expect.soft(job2.duplicates).toEqual([
       {
         otherOfferId: job._id,
@@ -61,11 +65,13 @@ describe("detectDuplicateJobPartners", () => {
         reason: "identical workplace_siret, identical offer_title",
       },
     ])
+    expect.soft(job2.business_error).toEqual(JOB_PARTNER_BUSINESS_ERROR.DUPLICATE)
   })
   it("should detect a duplicate with an exact match in the offer title and the siret (recruiter)", async () => {
     // given
     await givenSomeComputedJobPartners([
       {
+        _id: new ObjectId("60646425184afd00e017c1ab"),
         partner_label: JOBPARTNERS_LABEL.RH_ALTERNANCE,
         workplace_siret: siret,
         offer_title: offerTitle,
@@ -74,6 +80,7 @@ describe("detectDuplicateJobPartners", () => {
     ])
     const recruiter = await saveRecruiter(
       generateRecruiterFixture({
+        _id: new ObjectId("62646425184afd00e017c1ab"),
         establishment_siret: siret,
         status: RECRUITER_STATUS.ACTIF,
         address_detail: {
@@ -100,6 +107,7 @@ describe("detectDuplicateJobPartners", () => {
         reason: "identical workplace_siret, identical offer_title",
       },
     ])
+    expect.soft(job.business_error).toEqual(JOB_PARTNER_BUSINESS_ERROR.DUPLICATE)
   })
   it("should not detect a duplicate with an exact match in the offer title and the siret but a different zip code (job_partner)", async () => {
     // given

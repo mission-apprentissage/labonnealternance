@@ -62,7 +62,7 @@ fileignoreconfig:
 - filename: server/src/jobs/offrePartenaire/__snapshots__/importRHAlternance.test.ts.snap
   checksum: 41e5eadcdaa0cb1eb95e4cb3859f4b7b1d176bbb95ee8451d46a6b2c9021c3fd
 - filename: server/src/jobs/offrePartenaire/detectDuplicateJobPartners.test.ts
-  checksum: 076db1a937ce623937f4efcbe9b464693c39edbd1b796bfcfa203a6643009e41
+  checksum: 82d624da5034d7e482cb7b2a99a134796e3a2b3c3a2a89a10da2e49242854c79
 - filename: server/src/jobs/offrePartenaire/importFromUrlInXml.ts
   checksum: 18bd149922151536ad0e239b082309697cee6046b33512d5eecc54b2d25b465a
 - filename: server/src/jobs/offrePartenaire/importHelloWork.test.input.xml
