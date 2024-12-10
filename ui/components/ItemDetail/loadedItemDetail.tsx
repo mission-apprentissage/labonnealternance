@@ -142,21 +142,6 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
 
           {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
 
-          {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PEJOB && buttonJePostuleShouldBeDisplayed(selectedItem) && (
-            <Box my={4}>
-              <Link
-                data-tracking-id="postuler-offre-partenaire"
-                {...focusWithin}
-                variant="postuler"
-                href={selectedItem.url}
-                target="francetravail"
-                onClick={postuleSurFranceTravail}
-              >
-                Je postule sur France Travail
-              </Link>
-            </Box>
-          )}
-
           <Divider my={2} />
 
           <Flex flexDirection={{ base: "column", sm: "row" }}>
@@ -171,6 +156,21 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
               {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && <ItemDetailApplicationsStatus item={selectedItem} mt={2} mb={2} />}
 
               {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PARTNER_JOB && <PartnerJobPostuler job={selectedItem} />}
+
+              {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PEJOB && buttonJePostuleShouldBeDisplayed(selectedItem) && (
+                <Box my={4}>
+                  <Link
+                    data-tracking-id="postuler-offre-partenaire"
+                    {...focusWithin}
+                    variant="postuler"
+                    href={selectedItem.url}
+                    target="francetravail"
+                    onClick={postuleSurFranceTravail}
+                  >
+                    Je postule sur France Travail
+                  </Link>
+                </Box>
+              )}
             </Box>
             <Box pt={{ base: 0, sm: 4 }}>
               <ShareLink item={selectedItem} />
