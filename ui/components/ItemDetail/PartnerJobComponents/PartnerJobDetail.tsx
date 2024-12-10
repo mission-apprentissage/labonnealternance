@@ -8,11 +8,11 @@ import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { SendPlausibleEvent } from "../../../utils/plausible"
 import { formatDate } from "../../../utils/strutils"
 import { getCompanySize } from "../ItemDetailServices/getCompanySize"
+import { getJobPostingSchema } from "../ItemDetailServices/getJobPostingSchema"
 import ItemDistanceToCenter from "../ItemDetailServices/ItemDistanceToCenter"
 import ItemGoogleSearchLink from "../ItemDetailServices/ItemGoogleSearchLink"
 import ItemLocalisation from "../ItemDetailServices/ItemLocalisation"
 import ItemWebsiteLink from "../ItemDetailServices/ItemWebsiteLink"
-import { JobPostingSchema } from "../JobPostingSchema"
 
 import PartnerJobAccordion from "./PartnerJobAccordion"
 import { PartnerJobDescription } from "./PartnerJobDescription"
@@ -38,37 +38,7 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJob; titl
 
   const { formValues } = React.useContext(DisplayContext)
 
-  const jobPostingSchema: JobPostingSchema = {
-    "@context": "https://schema.org/",
-    "@type": "JobPosting",
-    title,
-    description: job?.job?.description || null,
-    directApply: false,
-
-    identifier: {
-      "@type": "PropertyValue",
-      name: "Google",
-      value: job?.id,
-    },
-    datePosted: job?.job?.jobStartDate,
-    validThrough: job?.job?.jobExpirationDate,
-    employmentType: "FULL_TIME",
-    hiringOrganization: {
-      "@type": "Organization",
-      name: job?.company?.name,
-    },
-    jobLocation: {
-      "@type": "Place",
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: job?.place?.numberAndStreet,
-        addressLocality: job?.place?.city,
-        addressRegion: null,
-        postalCode: job?.place?.zipCode,
-        addressCountry: "France",
-      },
-    },
-  }
+  const jobPostingSchema = getJobPostingSchema({ title, description: job?.job?.description || null, id: job?.id, job })
 
   return (
     <>

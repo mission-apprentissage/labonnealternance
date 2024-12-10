@@ -10,10 +10,10 @@ import { notifyLbaJobDetailView } from "../../../services/notifyLbaJobDetailView
 import { SendPlausibleEvent } from "../../../utils/plausible"
 import { formatDate } from "../../../utils/strutils"
 import { getCompanySize } from "../ItemDetailServices/getCompanySize"
+import { getJobPostingSchema } from "../ItemDetailServices/getJobPostingSchema"
 import ItemDistanceToCenter from "../ItemDetailServices/ItemDistanceToCenter"
 import ItemGoogleSearchLink from "../ItemDetailServices/ItemGoogleSearchLink"
 import ItemLocalisation from "../ItemDetailServices/ItemLocalisation"
-import { JobPostingSchema } from "../JobPostingSchema"
 import { ReportJobLink } from "../ReportJobLink"
 
 import LbaJobAcces from "./LbaJobAcces"
@@ -47,37 +47,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJob; title: strin
   const validCustomDescription = description && description.length > BAD_DESCRIPTION_LENGTH ? description : null
   const romeDescription = job?.job?.romeDetails?.definition
 
-  const jobPostingSchema: JobPostingSchema = {
-    "@context": "https://schema.org/",
-    "@type": "JobPosting",
-    title,
-    description: validCustomDescription || romeDescription || null,
-    directApply: true,
-
-    identifier: {
-      "@type": "PropertyValue",
-      name: "Google",
-      value: job?.job?.id,
-    },
-    datePosted: job?.job?.jobStartDate,
-    validThrough: job?.job?.jobExpirationDate,
-    employmentType: "FULL_TIME",
-    hiringOrganization: {
-      "@type": "Organization",
-      name: job?.company?.name,
-    },
-    jobLocation: {
-      "@type": "Place",
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: job?.place?.numberAndStreet,
-        addressLocality: job?.place?.city,
-        addressRegion: null,
-        postalCode: job?.place?.zipCode,
-        addressCountry: "France",
-      },
-    },
-  }
+  const jobPostingSchema = getJobPostingSchema({ title, description: validCustomDescription || romeDescription || null, id: job?.job?.id, job })
 
   return (
     <>
