@@ -1,3 +1,4 @@
+import { ObjectId } from "bson"
 import { Jsonify } from "type-fest"
 
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, allLbaItemType, allLbaItemTypeOLD } from "../constants/lbaitem"
@@ -21,18 +22,20 @@ export enum ApplicationScanStatus {
 export const ZApplication = z
   .object({
     _id: zObjectId,
-    applicant_email: z.string({ required_error: "⚠ L'adresse e-mail est obligatoire" }).email("⚠ Adresse e-mail invalide").describe("Email du candidat"),
+    applicant_email: z.string().email().describe("Email du candidat"),
     applicant_first_name: z
-      .string({ required_error: "⚠ Le prénom est obligatoire" })
+      .string()
+      .min(1)
       .max(50)
       .transform((value) => removeUrlsFromText(value))
       .describe("Prenom du candidat"),
     applicant_last_name: z
-      .string({ required_error: "⚠ Le nom est obligatoire" })
+      .string()
+      .min(1)
       .max(50)
       .transform((value) => removeUrlsFromText(value))
       .describe("Nom du candidat"),
-    applicant_phone: extensions.phone().describe("Téléphone du candidat"),
+    applicant_phone: extensions.telephone.describe("Téléphone du candidat"),
     applicant_attachment_name: z
       .string({ required_error: "⚠ La pièce jointe est obligatoire" })
       .regex(/((.*?))(\.)+(docx|pdf)$/i)
@@ -187,6 +190,9 @@ export const ZApplicationApiPayload = ZApplicationV2Base.extend({
     .string()
     .transform((recipientId) => {
       const [collectionName, jobId] = recipientId.split("_")
+      if (!ObjectId.isValid(jobId)) {
+        throw new Error(`Invalid job identifier: ${jobId}`)
+      }
       if (!["recruteurslba", "jobs_parnters", "recruiters"].includes(collectionName)) {
         throw new Error(`Invalid collection name: ${collectionName}`)
       }

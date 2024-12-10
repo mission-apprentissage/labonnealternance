@@ -1,4 +1,5 @@
 import { IApplicationApiPayloadJSON, ZApplicationApiPayload } from "shared"
+import { validatePhone } from "shared/validators/phoneValidator"
 import { z } from "zod"
 
 import { sessionStorageGet } from "@/utils/localStorage"
@@ -24,8 +25,5 @@ export const ApplicationFormikSchema = ZApplicationApiPayload.pick({
   applicant_email: true,
   applicant_attachment_name: true,
 }).extend({
-  applicant_phone: z
-    .string({ required_error: "⚠ Le numéro de téléphone est obligatoire" })
-    .min(10, "le téléphone est sur 10 chiffres")
-    .max(10, "le téléphone est sur 10 chiffres"), // KBA 2024-12-04: based application schema needs to be changed
+  applicant_phone: z.string().trim().refine(validatePhone, { message: "Téléphone non valide" }),
 })
