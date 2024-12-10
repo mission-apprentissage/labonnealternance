@@ -3,7 +3,7 @@ import { Box, Link } from "@chakra-ui/react"
 import { focusWithin } from "@/theme/theme-lba-tools"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
-export const PartnerJobPostuler = (job) => {
+export const PartnerJobPostuler = ({ job }) => {
   if (!job?.contact?.url && !job?.contact?.email) {
     return null
   }
@@ -25,7 +25,7 @@ export const PartnerJobPostuler = (job) => {
           target={job.job.partner_label}
           onClick={postuleSurOffrePartenaire}
         >
-          Je postule sur ${job.job.partner_label}
+          Je postule sur {job.job.partner_label}
         </Link>
       </Box>
     )

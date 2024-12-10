@@ -157,8 +157,6 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
             </Box>
           )}
 
-          {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PARTNER_JOB && <PartnerJobPostuler item={selectedItem} />}
-
           <Divider my={2} />
 
           <Flex flexDirection={{ base: "column", sm: "row" }}>
@@ -171,6 +169,8 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
                 <DemandeDeContact context={selectedItem.rdvContext} referrer="LBA" showInModal />
               )}
               {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && <ItemDetailApplicationsStatus item={selectedItem} mt={2} mb={2} />}
+
+              {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PARTNER_JOB && <PartnerJobPostuler job={selectedItem} />}
             </Box>
             <Box pt={{ base: 0, sm: 4 }}>
               <ShareLink item={selectedItem} />
