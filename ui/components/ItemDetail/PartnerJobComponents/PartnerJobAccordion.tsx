@@ -4,6 +4,8 @@ import React from "react"
 
 import { scrollToNestedElement } from "@/utils/tools"
 
+const getBullet = () => <>&bull;</>
+
 const PartnerJobAccordion = ({ title, items }: { title: string; items: string[] }) => {
   const onClick = (e) => {
     setTimeout(() => {
@@ -27,7 +29,8 @@ const PartnerJobAccordion = ({ title, items }: { title: string; items: string[] 
               <Box pl="12px" mt={4}>
                 {items.map((item, i) => (
                   <Box key={`accordion_${title}_${i}`}>
-                    <Text as="span" whiteSpace="pre-wrap">
+                    {items.length > 1 && getBullet()}
+                    <Text as="span" ml={items.length > 1 ? 3 : 0} mt={items.length > 1 ? 2 : 0} whiteSpace="pre-wrap">
                       {item}
                     </Text>
                   </Box>
