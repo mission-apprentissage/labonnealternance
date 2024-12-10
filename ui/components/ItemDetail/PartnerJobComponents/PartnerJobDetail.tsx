@@ -91,8 +91,15 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJob; titl
             </Box>
           )}
           <Box my={2}>
-            <strong>Nature du contrat : </strong> {getContractTypes(job?.job?.contractType)}
+            <strong>Nature du contrat : </strong> {getContractTypes(job?.job?.type)}
           </Box>
+
+          {job?.target_diploma_level && (
+            <Box my={2}>
+              <strong>Niveau visé en fin d'études : </strong> {job?.target_diploma_level}
+            </Box>
+          )}
+
           {job?.job?.quantiteContrat > 1 && (
             <Box my={2}>
               <strong>Nombre de postes disponibles : </strong> {job?.job?.quantiteContrat}

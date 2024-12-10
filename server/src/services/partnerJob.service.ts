@@ -52,7 +52,6 @@ function transformPartnerJob(partnerJob: IJobsPartnersOfferPrivateWithDistance):
       opco: { label: partnerJob.workplace_opco, url: null },
       url: partnerJob.workplace_website,
     },
-
     job: {
       id: partnerJob.partner_job_id,
       partner_label: partnerJob.partner_label,
