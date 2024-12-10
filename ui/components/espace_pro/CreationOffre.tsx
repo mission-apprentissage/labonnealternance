@@ -28,21 +28,18 @@ export default function CreationOffre() {
   const handleSave = async (values) => {
     // Updates an offer
     if (!isCreation) {
-      apiPut("/formulaire/offre/:jobId", { params: { jobId }, body: { ...values, job_update_date: new Date() } })
-        .then(() => {
-          toast({
-            title: "Offre mise à jour avec succès.",
-            position: "top-right",
-            status: "success",
-            duration: 2000,
-            isClosable: true,
-          })
+      await apiPut("/formulaire/offre/:jobId", { params: { jobId }, body: { ...values, job_update_date: new Date() } }).then(() => {
+        toast({
+          title: "Offre mise à jour avec succès.",
+          position: "top-right",
+          status: "success",
+          duration: 2000,
+          isClosable: true,
         })
-        .finally(() =>
-          user.type === "OPCO"
-            ? router.push(`/espace-pro/administration/opco/entreprise/${router.query.siret_userId}/entreprise/${establishment_id}`)
-            : router.push(`/espace-pro/administration/entreprise/${establishment_id}`)
-        )
+        user.type === "OPCO"
+          ? router.push(`/espace-pro/administration/opco/entreprise/${router.query.siret_userId}/entreprise/${establishment_id}`)
+          : router.push(`/espace-pro/administration/entreprise/${establishment_id}`)
+      })
     } else {
       const { recruiter: formulaire } = await createOffre(establishment_id, values)
       if (user.type === AUTHTYPE.ENTREPRISE) {

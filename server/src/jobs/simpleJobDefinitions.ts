@@ -15,7 +15,7 @@ import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPart
 import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromComputedToJobsPartners"
 import { importHelloWorkRaw, importHelloWorkToComputed } from "./offrePartenaire/importHelloWork"
 import { importKelio } from "./offrePartenaire/importKelio"
-import { importRHAlternance } from "./offrePartenaire/importRHAlternance"
+import { importRHAlternanceRaw, importRHAlternanceToComputed } from "./offrePartenaire/importRHAlternance"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
@@ -169,8 +169,12 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Importe les offres hellowork depuis raw vers computed",
   },
   {
-    fct: importRHAlternance,
+    fct: importRHAlternanceRaw,
     description: "Importe les offres RHAlternance dans la collection raw",
+  },
+  {
+    fct: importRHAlternanceToComputed,
+    description: "Importe les offres RHAlternance depuis raw vers computed",
   },
   {
     fct: importKelio,

@@ -1577,6 +1577,10 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "place": {
             "$ref": "#/components/schemas/Place",
           },
+          "recipient_id": {
+            "description": "Identifiant personnalisé (ID mongoDB préfixé du nom de la collection) envoyé au server pour la candidature",
+            "type": "string",
+          },
           "title": {
             "type": [
               "string",
@@ -1602,6 +1606,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "place",
           "company",
           "applicationCount",
+          "recipient_id",
         ],
         "type": "object",
       },
@@ -1839,6 +1844,10 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "place": {
             "$ref": "#/components/schemas/Place",
           },
+          "recipient_id": {
+            "description": "Identifiant personnalisé (ID mongoDB préfixé du nom de la collection) envoyé au server pour la candidature",
+            "type": "string",
+          },
           "romes": {
             "items": {
               "$ref": "#/components/schemas/Rome",
@@ -1875,6 +1884,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "company",
           "id",
           "applicationCount",
+          "recipient_id",
         ],
         "type": "object",
       },
@@ -6289,7 +6299,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                           "appellation": {
                             "type": "string",
                           },
-                          "codeRome": {
+                          "code_rome": {
                             "type": "string",
                           },
                           "intitule": {
@@ -6297,7 +6307,6 @@ Limite : 20 appel(s) / 1 seconde(s)
                           },
                         },
                         "required": [
-                          "codeRome",
                           "intitule",
                           "appellation",
                         ],
@@ -9579,7 +9588,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                           "appellation": {
                             "type": "string",
                           },
-                          "codeRome": {
+                          "code_rome": {
                             "type": "string",
                           },
                           "intitule": {
@@ -9587,7 +9596,6 @@ Limite : 20 appel(s) / 1 seconde(s)
                           },
                         },
                         "required": [
-                          "codeRome",
                           "intitule",
                           "appellation",
                         ],
@@ -10072,6 +10080,13 @@ Limite : 20 appel(s) / 1 seconde(s)
                                   "null",
                                 ],
                               },
+                              "recipient_id": {
+                                "description": "Identifiant permettant de candidaté via l'API, généré à la volé pour les offres LBA uniquement",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
                               "url": {
                                 "description": "URL pour candidater",
                                 "format": "uri",
@@ -10483,6 +10498,13 @@ Limite : 20 appel(s) / 1 seconde(s)
                             "properties": {
                               "phone": {
                                 "description": "Téléphone de contact",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "recipient_id": {
+                                "description": "Identifiant permettant de candidaté via l'API, généré à la volé pour les offres LBA uniquement",
                                 "type": [
                                   "string",
                                   "null",

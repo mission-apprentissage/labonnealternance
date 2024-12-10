@@ -38,7 +38,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts
   checksum: a99bfdcb5a8f4c66e9d055b44160adbc7ec2bcaf87209ff76fa9a9f674b9ca86
 - filename: server/src/http/controllers/v3/jobs/jobs.controller.v3.test.ts
-  checksum: a48869d28ff084575d26350a410a22f4c1bdd4196ad9bf5f6ac6a611a479f271
+  checksum: 4b24ff09463f476fd0b64bef104da6e17153ffdfff2d628c96b16d3ea33779f7
 - filename: server/src/http/routes/appointmentRequest.controller.ts
   checksum: d2770daa97ae332eec0b66497fdb717229895583ac3bfd48af1a830b36504968
 - filename: server/src/http/routes/auth/password.controller.ts
@@ -74,7 +74,7 @@ fileignoreconfig:
 - filename: server/src/services/__snapshots__/formulaire.service.test.ts.snap
   checksum: 71d9956fd03fcec52d37b3799fc5bc806d42ec40200254b1740819b3d5a2b0d1
 - filename: server/src/services/application.service.test.ts
-  checksum: 02c7f8874a880cc0f9913469d6ef097ad42bbea8df79d7f08451410f7b32e2c0
+  checksum: d11d73a73ed489475d6a2f7dd693787fc71a7dfd9150bb88cec4f88c92c19d02
 - filename: server/src/services/application.service.ts
   checksum: 38021ae663db3a146c848a8d691c0c1bc9bb262a80a6f2dedf9fcdb372eef3ac
 - filename: server/src/services/eligibleTrainingsForAppointment.service.ts
@@ -86,7 +86,7 @@ fileignoreconfig:
 - filename: server/src/services/formulaire.service.ts
   checksum: e93ff7ce146d35e70eedcbe9b66097750e7754650468a5ada6b0ed72f0fdbc49
 - filename: server/src/services/jobs/jobOpportunity/jobOpportunity.service.test.ts
-  checksum: 7c2a7f5d8ec1c82652296c3271bd435f5998e9c61f9ead2d528a5f2a7195a07d
+  checksum: 8dd77bbcf687b50239b4958fbb957c069dda342551b76cc797af5349e0bd7024
 - filename: server/src/services/recruteurLba.service.test.ts
   checksum: 38c947c87cfb508fec88cbce878f89725cbb6679e833a66bdb7fca60e3685a0a
 - filename: server/src/services/referrers.service.ts
@@ -241,6 +241,10 @@ fileignoreconfig:
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
 - filename: server/src/http/controllers/v2/jobs.controller.v2.ts
   checksum: da8baa573172fa97c21f9123e04032718249dcec1194a51d7a1f1757070594ce
+- filename: server/src/services/jobs/jobOpportunity/__snapshots__/jobOpportunity.service.test.ts.snap
+  checksum: da3aa00d2041f36cd4b24eb4c98d04eb236cc80eab82a4e5aaf2e7e82549c613
+- filename: .infra/files/configs/mongodb/seed.gpg
+  checksum: c0d065fd21e851774bfb4f6dad2d4af7e339d38d3c62241ae40491ff4f8b8543
 scopeconfig:
 - scope: node
 custom_patterns:

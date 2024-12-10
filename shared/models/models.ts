@@ -3,6 +3,7 @@ import { z } from "zod"
 import apicallsModel from "./apicalls.model"
 import applicationsModel from "./applications.model"
 import appointmentsModel from "./appointments.model"
+import cacheGeolocationModel from "./cacheGeolocation.model"
 import cacheInfosSiretModel from "./cacheInfosSiret.model"
 import cacheRomeoModel from "./cacheRomeo.model"
 import cfaModel from "./cfa.model"
@@ -52,6 +53,7 @@ const modelDescriptorMap = {
   [apicallsModel.collectionName]: apicallsModel,
   [applicationsModel.collectionName]: applicationsModel,
   [cacheRomeoModel.collectionName]: cacheRomeoModel,
+  [cacheGeolocationModel.collectionName]: cacheGeolocationModel,
   [cfaModel.collectionName]: cfaModel,
   [credentialsModel.collectionName]: credentialsModel,
   [customEmailETFAModel.collectionName]: customEmailETFAModel,
