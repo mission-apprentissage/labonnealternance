@@ -2,7 +2,7 @@ import { badRequest, conflict, internal, notFound } from "@hapi/boom"
 import { IApiAlternanceTokenData } from "api-alternance-sdk"
 import { DateTime } from "luxon"
 import { Document, Filter, ObjectId } from "mongodb"
-import { IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS_ENGLISH, ZPointGeometry, assertUnreachable, joinNonNullStrings, parseEnum, translateJobStatus } from "shared"
+import { IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS_ENGLISH, ZPointGeometry, assertUnreachable, joinNonNullStrings, parseEnum } from "shared"
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import {
@@ -375,7 +375,7 @@ export const convertLbaRecruiterToJobOfferApi = (offresEmploiLba: IJobResult[]):
               expiration: job.job_expiration_date ?? null,
             },
             opening_count: job.job_count ?? 1,
-            status: translateJobStatus(job.job_status),
+            status: JOB_STATUS_ENGLISH.ACTIVE, // we only return active offers
           },
 
           workplace: {
