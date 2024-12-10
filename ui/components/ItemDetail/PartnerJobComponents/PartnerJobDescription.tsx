@@ -1,18 +1,18 @@
 import { AddIcon, MinusIcon } from "@chakra-ui/icons"
 import { AccordionButton, AccordionItem, AccordionPanel, Box } from "@chakra-ui/react"
 import React from "react"
-import { ILbaItemLbaJob } from "shared"
+import { ILbaItemPartnerJob } from "shared"
 
 import { scrollToNestedElement } from "@/utils/tools"
 
 export const BAD_DESCRIPTION_LENGTH = 50
 
-export const PartnerJobDescription = ({ job }: { job: ILbaItemLbaJob }) => {
+export const PartnerJobDescription = ({ job }: { job: ILbaItemPartnerJob }) => {
   const { description, employeurDescription } = job.job
 
   const validCustomDescription = description && description.length > BAD_DESCRIPTION_LENGTH ? description : null
 
-  validCustomDescription || employeurDescription ? (
+  return validCustomDescription || employeurDescription ? (
     <>
       {validCustomDescription && <DescriptionAccordion title="Description du Métier">{validCustomDescription}</DescriptionAccordion>}
       {employeurDescription && <DescriptionAccordion title="Description de l'employeur">{employeurDescription}</DescriptionAccordion>}

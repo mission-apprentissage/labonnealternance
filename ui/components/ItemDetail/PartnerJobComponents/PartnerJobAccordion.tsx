@@ -4,7 +4,7 @@ import React from "react"
 
 import { scrollToNestedElement } from "@/utils/tools"
 
-const PartnerJobQualites = ({ job }) => {
+const PartnerJobAccordion = ({ title, items }: { title: string; items: string[] }) => {
   const onClick = (e) => {
     setTimeout(() => {
       scrollToNestedElement({ containerId: "itemDetailColumn", nestedElement: e.target, yOffsett: 220 })
@@ -12,24 +12,24 @@ const PartnerJobQualites = ({ job }) => {
   }
 
   return (
-    job?.job?.romeDetails?.competences.savoir_etre_professionnel?.length && (
+    items.length > 0 && (
       <AccordionItem borderBottom="1px solid #E5E5E5" onClick={onClick}>
         {({ isExpanded }) => (
           <>
             <AccordionButton fontSize="1rem" fontWeight={700} color="#161616">
               <Box as="span" flex="1" textAlign="left">
-                Qualités souhaitées pour ce métier
+                {title}
               </Box>
               {isExpanded ? <MinusIcon fontSize="10px" /> : <AddIcon fontSize="10px" />}
             </AccordionButton>
 
             <AccordionPanel pb={4}>
               <Box pl="12px" mt={4}>
-                {job.job.romeDetails.competences.savoir_etre_professionnel.map((competence) => (
-                  <Box key={competence.code} mt={2}>
+                {items.map((item, i) => (
+                  <Box key={`accordion_${title}_${i}`} mt={2}>
                     &bull;
-                    <Text as="span" ml={3}>
-                      {competence.libelle}
+                    <Text as="span" whiteSpace="pre-wrap" ml={3}>
+                      {item}
                     </Text>
                   </Box>
                 ))}
@@ -42,4 +42,4 @@ const PartnerJobQualites = ({ job }) => {
   )
 }
 
-export default PartnerJobQualites
+export default PartnerJobAccordion

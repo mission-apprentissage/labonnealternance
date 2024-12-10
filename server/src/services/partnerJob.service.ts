@@ -38,9 +38,9 @@ function transformPartnerJob(partnerJob: IJobsPartnersOfferPrivateWithDistance):
       //lieu de l'offre. contient ville de l'entreprise et geoloc de l'entreprise
       distance: partnerJob.distance ?? false ? roundDistance((partnerJob?.distance ?? 0) / 1000) : null,
       fullAddress: partnerJob.workplace_address_label,
-      address: partnerJob.workplace_address_street_label,
       latitude,
       longitude,
+      numberAndStreet: partnerJob.workplace_address_street_label,
       city: partnerJob.workplace_address_city,
       zipCode: partnerJob.workplace_address_zipcode,
       remoteOnly: partnerJob?.contract_remote === TRAINING_REMOTE_TYPE.remote ? true : false,

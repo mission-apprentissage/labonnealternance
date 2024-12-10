@@ -14,17 +14,16 @@ import ItemLocalisation from "../ItemDetailServices/ItemLocalisation"
 import ItemWebsiteLink from "../ItemDetailServices/ItemWebsiteLink"
 import { JobPostingSchema } from "../JobPostingSchema"
 
-// import LbaJobAcces from "./LbaJobAcces"
-// import LbaJobCompetences from "./LbaJobCompetences"
-// import LbaJobTechniques from "./LbaJobTechniques"
+import PartnerJobAccordion from "./PartnerJobAccordion"
 import { PartnerJobDescription } from "./PartnerJobDescription"
-import PartnerJobQualites from "./PartnerJobQualites"
 
 const getContractTypes = (contractTypes) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
 }
 
 export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJob; title: string }) => {
+  console.log(title, "job :", job)
+
   useEffect(() => {
     document.getElementsByClassName("choiceCol")[0].scrollTo(0, 0)
   }, [])
@@ -81,9 +80,11 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJob; titl
           Description de l&apos;offre
         </Text>
         <Box p={4} mb={6} borderRadius="8px" background="#f6f6f6">
-          <Box>
-            <strong>Début du contrat le : </strong> {jobStartDate}
-          </Box>
+          {jobStartDate && (
+            <Box>
+              <strong>Début du contrat le : </strong> {jobStartDate}
+            </Box>
+          )}
           {job?.job?.dureeContrat && (
             <Box my={2}>
               <strong>Durée du contrat : </strong> {job?.job?.dureeContrat}
@@ -101,7 +102,7 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJob; titl
 
         <Accordion allowToggle defaultIndex={0}>
           <PartnerJobDescription job={job} />
-          <PartnerJobQualites job={job} />
+          <PartnerJobAccordion title="Qualités souhaitées pour ce métier" items={job?.job?.offer_desired_skills} />
         </Accordion>
       </Box>
 
@@ -122,19 +123,19 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJob; titl
         </Box>
       </Flex>
 
-      <Box pb="0px" position="relative" background="white" padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
-        <Text as="h2" variant="itemDetailH2" mt={2}>{`En savoir plus sur le métier ${job.title}`}</Text>
-        <Box data-testid="lbb-component">
-          <Box mb={4}>
-            <Accordion allowToggle>
-              {/* <LbaJobCompetences job={job} />
-              <LbaJobTechniques job={job} />
-              <LbaJobAcces job={job} /> */}
-            </Accordion>
+      {(job?.job?.offer_to_be_acquired_skills?.length > 0 || job?.job?.offer_access_conditions?.length > 0) && (
+        <Box pb="0px" position="relative" background="white" padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
+          <Text as="h2" variant="itemDetailH2" mt={2}>{`En savoir plus sur le métier ${job.title}`}</Text>
+          <Box data-testid="lbb-component">
+            <Box mb={4}>
+              <Accordion allowToggle>
+                <PartnerJobAccordion title="Compétences qui seront acquises durant l'alternance" items={job?.job?.offer_to_be_acquired_skills} />
+                <PartnerJobAccordion title="À qui ce métier est-il accessible ?" items={job?.job?.offer_access_conditions} />
+              </Accordion>
+            </Box>
           </Box>
         </Box>
-      </Box>
-
+      )}
       <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
         <Text as="h2" variant="itemDetailH2" mt={2}>
           Quelques informations sur {job?.company?.mandataire ? "l'entreprise" : "l'établissement"}
