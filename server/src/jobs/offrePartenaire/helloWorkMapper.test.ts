@@ -109,6 +109,7 @@ describe("helloWorkJobToJobsPartners", () => {
       errors: [],
       validated: false,
       business_error: null,
+      jobs_in_success: [],
     })
   })
 })

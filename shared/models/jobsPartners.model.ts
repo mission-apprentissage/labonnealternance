@@ -35,6 +35,7 @@ export const ZJobsPartnersRecruiterApi = z.object({
 
   apply_url: z.string().url().describe("URL pour candidater"),
   apply_phone: z.string().nullable().describe("Téléphone de contact"),
+  apply_recipient_id: z.string().nullish().describe("Identifiant permettant de candidaté via l'API, généré à la volé pour les offres LBA uniquement"),
 })
 
 export const zDiplomaEuropeanLevel = z.enum(["3", "4", "5", "6", "7"])

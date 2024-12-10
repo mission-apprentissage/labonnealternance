@@ -44,6 +44,7 @@ export const zJobRecruiterApiReadV3 = z.object({
   apply: z.object({
     url: ZJobsPartnersRecruiterApi.shape.apply_url,
     phone: ZJobsPartnersRecruiterApi.shape.apply_phone,
+    recipient_id: ZJobsPartnersRecruiterApi.shape.apply_recipient_id,
   }),
 })
 
@@ -245,6 +246,7 @@ function convertToJobApplyReadV3(input: IJobsPartnersOfferApi | IJobsPartnersRec
   return {
     url: input.apply_url,
     phone: input.apply_phone,
+    recipient_id: input.apply_recipient_id || null,
   }
 }
 

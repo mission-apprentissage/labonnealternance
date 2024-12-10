@@ -35,6 +35,7 @@ export const ZComputedJobsPartners = extensions
   })
   .extend({
     _id: zObjectId,
+    jobs_in_success: z.array(extensions.buildEnum(COMPUTED_ERROR_SOURCE)),
     errors: z.array(
       z
         .object({
@@ -59,6 +60,7 @@ export default {
     [{ errors: 1 }, {}],
     [{ partner_label: 1, partner_job_id: 1 }, { unique: true }],
     [{ workplace_siret: 1 }, {}],
+    [{ jobs_in_success: 1 }, {}],
     [{ "duplicates.otherOfferId": 1 }, {}],
   ],
   collectionName,

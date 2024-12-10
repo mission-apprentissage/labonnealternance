@@ -73,6 +73,11 @@ export const getJobs = async ({
     {
       $limit: JOB_SEARCH_LIMIT,
     },
+    {
+      $project: {
+        "jobs.rome_detail.couple_appellation_rome": 0,
+      },
+    },
   ]
 
   // TODO: add a limit stage in romeDetailAggregateStages to limit number of jobs (not only number of recruiters)
@@ -308,16 +313,15 @@ export const getLbaJobById = async ({ id, caller }: { id: ObjectId; caller?: str
       return { error: "not_found" }
     }
 
-    const applicationCountByJob = await getApplicationByJobCount([id.toString()])
+    if (caller) {
+      trackApiCall({ caller: caller, job_count: 1, result_count: 1, api_path: "jobV1/matcha", response: "OK" })
+    }
 
+    const applicationCountByJob = await getApplicationByJobCount([id.toString()])
     const job = transformLbaJob({
       recruiter: rawJob.recruiter,
       applicationCountByJob,
     })
-
-    if (caller) {
-      trackApiCall({ caller: caller, job_count: 1, result_count: 1, api_path: "jobV1/matcha", response: "OK" })
-    }
 
     return { matchas: job }
   } catch (error) {
@@ -450,6 +454,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
       romes,
       applicationCount: applicationCountForCurrentJob?.count || 0,
       token: generateApplicationToken({ jobId: offre._id.toString() }),
+      recipient_id: `recruiters_${offre._id.toString()}`,
     }
 
     //TODO: remove when 1j1s switch to api V2
@@ -500,6 +505,7 @@ function transformLbaJobWithMinimalData({ recruiter, applicationCountByJob }: { 
       },
       applicationCount: applicationCountForCurrentJob?.count || 0,
       token: generateApplicationToken({ jobId: offre._id.toString() }),
+      recipient_id: `recruiters_${offre._id.toString()}`,
     }
 
     return resultJob

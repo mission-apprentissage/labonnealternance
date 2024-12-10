@@ -82,6 +82,15 @@ export type IRomeMobilite = z.output<typeof ZRomeMobilite>
 
 export const ZReferentielRome = ZReferentielRomeForJob.extend({
   _id: zObjectId,
+  couple_appellation_rome: z
+    .array(
+      z.object({
+        code_rome: z.string(),
+        intitule: z.string(),
+        appellation: z.string(),
+      })
+    )
+    .describe("Champ retourné lors de la recherche métier à la creation d'offre"),
 })
 
 export type IReferentielRome = z.output<typeof ZReferentielRome>

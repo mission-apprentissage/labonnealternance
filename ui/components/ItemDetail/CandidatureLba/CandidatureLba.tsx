@@ -3,6 +3,7 @@ import { useFormik } from "formik"
 import { useEffect, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { JOB_STATUS } from "shared/models/job.model"
+import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import LBAModalCloseButton from "@/components/lbaModalCloseButton"
 
@@ -13,7 +14,7 @@ import ItemDetailApplicationsStatus, { hasApplied } from "../ItemDetailServices/
 import CandidatureLbaFailed from "./CandidatureLbaFailed"
 import CandidatureLbaModalBody from "./CandidatureLbaModalBody"
 import CandidatureLbaWorked from "./CandidatureLbaWorked"
-import { getInitialSchemaValues, getValidationSchema } from "./services/getSchema"
+import { ApplicationFormikSchema, getInitialSchemaValues } from "./services/getSchema"
 import { useSubmitCandidature } from "./services/submitCandidature"
 
 export const NoCandidatureLba = () => {
@@ -53,7 +54,7 @@ const CandidatureLba = ({ item }) => {
 
   const formik = useFormik({
     initialValues: getInitialSchemaValues(),
-    validationSchema: getValidationSchema(),
+    validationSchema: toFormikValidationSchema(ApplicationFormikSchema),
     onSubmit: async (formValues) => {
       await submitCandidature({ formValues, setSendingState, LbaJob: item })
     },
@@ -95,7 +96,7 @@ const CandidatureLba = ({ item }) => {
                     {["not_sent", "currently_sending"].includes(sendingState) && (
                       <CandidatureLbaModalBody formik={formik} sendingState={sendingState} company={item?.company?.name} item={item} kind={kind} />
                     )}
-                    {sendingState === "ok_sent" && <CandidatureLbaWorked email={formik.values.email} company={item?.company?.name} />}
+                    {sendingState === "ok_sent" && <CandidatureLbaWorked email={formik.values.applicant_email} company={item?.company?.name} />}
                     {!["not_sent", "ok_sent", "currently_sending"].includes(sendingState) && <CandidatureLbaFailed sendingState={sendingState} />}
                   </form>
                 </ModalContent>
