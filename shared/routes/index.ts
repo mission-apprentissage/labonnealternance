@@ -23,6 +23,7 @@ import { zPartnersRoutes } from "./partners.routes"
 import { zRecruiterRoutes } from "./recruiters.routes"
 import { zReportedCompanyRoutes } from "./reportedCompany.routes"
 import { zRomeRoutes } from "./rome.routes"
+import { zSitemapRoutes } from "./sitemap.routes"
 import { zTrainingLinksRoutes } from "./trainingLinks.routes"
 import { zUnsubscribeRoute } from "./unsubscribe.routes"
 import { zUpdateLbaCompanyRoutes } from "./updateLbaCompany.routes"
@@ -45,6 +46,7 @@ const zRoutesGetP2 = {
   ...zV1JobsRoutes.get,
   ...zV1FormationsRoutes.get,
   ...zApplicationRoutes.get,
+  ...zSitemapRoutes.get,
 } as const
 
 const zRoutesGetP3 = {

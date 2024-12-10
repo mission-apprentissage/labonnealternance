@@ -42,6 +42,7 @@ import optoutRoute from "./controllers/optout.controller"
 import partnersRoute from "./controllers/partners.controller"
 import reportedCompanyController from "./controllers/reportedCompany.controller"
 import rome from "./controllers/rome.controller"
+import sitemapController from "./controllers/sitemap.controller"
 import trainingLinks from "./controllers/trainingLinks.controller"
 import unsubscribeLbaCompany from "./controllers/unsubscribeRecruteurLba.controller"
 import updateLbaCompany from "./controllers/updateRecruteurLba.controller"
@@ -119,6 +120,7 @@ export async function bind(app: Server) {
     (subApp, _, done) => {
       const typedSubApp = subApp.withTypeProvider<ZodTypeProvider>()
       coreRoutes(typedSubApp)
+      sitemapController(typedSubApp)
 
       /**
        * LBACandidat
