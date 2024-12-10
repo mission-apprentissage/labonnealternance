@@ -63,11 +63,13 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "applicant_first_name": {
             "description": "Prenom du candidat",
             "maxLength": 50,
+            "minLength": 1,
             "type": "string",
           },
           "applicant_last_name": {
             "description": "Nom du candidat",
             "maxLength": 50,
+            "minLength": 1,
             "type": "string",
           },
           "applicant_phone": {
