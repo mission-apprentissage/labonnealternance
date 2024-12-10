@@ -10,11 +10,11 @@ export const mergeJobs = ({ jobs, activeFilters }) => {
     if (jobs.matchas && jobs.matchas.length) {
       mergedArray = mergedArray.concat(sortMergedSources(jobs.matchas.filter((job) => (activeFilters.includes("duo") ? true : !job.company.mandataire))))
     }
-    if (jobs.peJobs && jobs.peJobs.length) {
-      mergedArray = mergedArray.concat(sortMergedSources(jobs.peJobs))
-    }
     if (jobs.partnerJobs && jobs.partnerJobs.length) {
       mergedArray = mergedArray.concat(sortMergedSources(jobs.partnerJobs))
+    }
+    if (jobs.peJobs && jobs.peJobs.length) {
+      mergedArray = mergedArray.concat(sortMergedSources(jobs.peJobs))
     }
   }
 
