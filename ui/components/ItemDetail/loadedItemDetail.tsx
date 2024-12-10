@@ -1,4 +1,4 @@
-import { ILbaItemLbaCompany, ILbaItemLbaJob } from "@/../shared"
+import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "@/../shared"
 import { Box, Divider, Flex, Link, Text } from "@chakra-ui/react"
 import { useContext, useEffect, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
@@ -27,6 +27,8 @@ import ItemDetailApplicationsStatus, { hasApplied } from "./ItemDetailServices/I
 import ItemDetailCard from "./ItemDetailServices/ItemDetailCard"
 import JobItemCardHeader from "./ItemDetailServices/JobItemCardHeader"
 import { LbaJobDetail } from "./LbaJobComponents/LbaJobDetail"
+import { PartnerJobDetail } from "./PartnerJobComponents/PartnerJobDetail"
+import { PartnerJobPostuler } from "./PartnerJobComponents/PartnerJobPostuler"
 import RecruteurLbaDetail from "./RecruteurLbaComponents/RecruteurLbaDetail"
 import ShareLink from "./ShareLink"
 import TrainingDetail from "./TrainingDetail"
@@ -155,6 +157,8 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
             </Box>
           )}
 
+          {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PARTNER_JOB && <PartnerJobPostuler item={selectedItem} />}
+
           <Divider my={2} />
 
           <Flex flexDirection={{ base: "column", sm: "row" }}>
@@ -179,6 +183,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
       {kind === LBA_ITEM_TYPE_OLD.MATCHA && <LbaJobDetail title={actualTitle} job={selectedItem as ILbaItemLbaJob} />}
       {kind === LBA_ITEM_TYPE_OLD.LBA && <RecruteurLbaDetail recruteurLba={selectedItem as ILbaItemLbaCompany} />}
       {kind === LBA_ITEM_TYPE_OLD.FORMATION && <TrainingDetail training={selectedItem} />}
+      {kind === LBA_ITEM_TYPE_OLD.PARTNER_JOB && <PartnerJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJob} />}
 
       <AideApprentissage />
 

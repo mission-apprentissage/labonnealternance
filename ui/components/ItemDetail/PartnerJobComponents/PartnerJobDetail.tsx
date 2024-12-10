@@ -1,63 +1,55 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Accordion, Box, Flex, Image, Link, ListItem, Text, UnorderedList } from "@chakra-ui/react"
+import { Accordion, Box, Flex, Image, Link, Text } from "@chakra-ui/react"
 import Head from "next/head"
 import React, { useEffect } from "react"
-import { ILbaItemLbaJob } from "shared"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { ILbaItemPartnerJob } from "shared"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
-import { notifyLbaJobDetailView } from "../../../services/notifyLbaJobDetailView"
 import { SendPlausibleEvent } from "../../../utils/plausible"
 import { formatDate } from "../../../utils/strutils"
 import { getCompanySize } from "../ItemDetailServices/getCompanySize"
 import ItemDistanceToCenter from "../ItemDetailServices/ItemDistanceToCenter"
 import ItemGoogleSearchLink from "../ItemDetailServices/ItemGoogleSearchLink"
 import ItemLocalisation from "../ItemDetailServices/ItemLocalisation"
+import ItemWebsiteLink from "../ItemDetailServices/ItemWebsiteLink"
 import { JobPostingSchema } from "../JobPostingSchema"
-import { ReportJobLink } from "../ReportJobLink"
 
-import LbaJobAcces from "./LbaJobAcces"
-import LbaJobCompetences from "./LbaJobCompetences"
-import { BAD_DESCRIPTION_LENGTH, LbaJobDescription } from "./LbaJobDescription"
-import LbaJobQualites from "./LbaJobQualites"
-import LbaJobTechniques from "./LbaJobTechniques"
+// import LbaJobAcces from "./LbaJobAcces"
+// import LbaJobCompetences from "./LbaJobCompetences"
+// import LbaJobTechniques from "./LbaJobTechniques"
+import { PartnerJobDescription } from "./PartnerJobDescription"
+import PartnerJobQualites from "./PartnerJobQualites"
 
 const getContractTypes = (contractTypes) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
 }
 
-export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJob; title: string }) => {
+export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJob; title: string }) => {
   useEffect(() => {
-    // S'assurer que l'utilisateur voit bien le haut de la fiche au départ
     document.getElementsByClassName("choiceCol")[0].scrollTo(0, 0)
-  }, []) // Utiliser le useEffect une seule fois : https://css-tricks.com/run-useeffect-only-once/
+  }, [])
 
   useEffect(() => {
-    SendPlausibleEvent("Affichage - Fiche entreprise Offre LBA", {
-      info_fiche: `${job?.job?.id}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
+    SendPlausibleEvent("Affichage - Fiche entreprise Partner Job", {
+      info_fiche: `${job?.id}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
     })
-    notifyLbaJobDetailView(job?.job?.id)
-  }, [job?.job?.id])
+  }, [job?.id])
 
   const jobStartDate = job?.job?.jobStartDate ? formatDate(job.job.jobStartDate) : undefined
 
   const { formValues } = React.useContext(DisplayContext)
 
-  const description = job?.job?.description
-  const validCustomDescription = description && description.length > BAD_DESCRIPTION_LENGTH ? description : null
-  const romeDescription = job?.job?.romeDetails?.definition
-
   const jobPostingSchema: JobPostingSchema = {
     "@context": "https://schema.org/",
     "@type": "JobPosting",
     title,
-    description: validCustomDescription || romeDescription || null,
-    directApply: true,
+    description: job?.job?.description || null,
+    directApply: false,
 
     identifier: {
       "@type": "PropertyValue",
       name: "Google",
-      value: job?.job?.id,
+      value: job?.id,
     },
     datePosted: job?.job?.jobStartDate,
     validThrough: job?.job?.jobExpirationDate,
@@ -94,7 +86,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJob; title: strin
           </Box>
           {job?.job?.dureeContrat && (
             <Box my={2}>
-              <strong>Durée du contrat : </strong> {job?.job?.dureeContrat} mois
+              <strong>Durée du contrat : </strong> {job?.job?.dureeContrat}
             </Box>
           )}
           <Box my={2}>
@@ -105,74 +97,12 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJob; title: strin
               <strong>Nombre de postes disponibles : </strong> {job?.job?.quantiteContrat}
             </Box>
           )}
-          <Flex direction="row" wrap="wrap">
-            <strong>Niveau visé en fin d&apos;études : </strong>{" "}
-            {job?.target_diploma_level ? (
-              <Flex direction="row" wrap="wrap">
-                {job?.target_diploma_level.split(", ").map(function (d, idx) {
-                  return (
-                    <Text as="span" key={idx} fontSize="14px" textAlign="center" color="bluefrance.500" background="#e3e3fd" py={1} px={4} borderRadius="40px" ml={2} mb={1}>
-                      {d}
-                    </Text>
-                  )
-                })}
-              </Flex>
-            ) : (
-              "Indifférent"
-            )}
-          </Flex>
-
-          {job?.job?.elligibleHandicap && (
-            <Flex mt={2} p={2} background="white" justifyContent="center" fontSize="12px" alignItems="center" direction="row">
-              <Box width="30px" minWidth="30px" mr={2}>
-                <Image mt="2px" src="/images/info.svg" alt="" aria-hidden={true} />
-              </Box>
-              <Box>À compétences égales, une attention particulière sera apportée aux personnes en situation de handicap.</Box>
-            </Flex>
-          )}
         </Box>
-        {job?.company?.mandataire && (
-          <Text>
-            Offre publiée par{" "}
-            <Text as="span" color="pinksoft.600" fontWeight={700}>
-              {job.company.name}
-            </Text>{" "}
-            pour une entreprise partenaire du centre de formation.
-          </Text>
-        )}
 
         <Accordion allowToggle defaultIndex={0}>
-          <LbaJobDescription job={job} />
-          <LbaJobQualites job={job} />
+          <PartnerJobDescription job={job} />
+          <PartnerJobQualites job={job} />
         </Accordion>
-        <Box marginTop="10px">
-          <ReportJobLink
-            width="480px"
-            itemId={job?.job?.id}
-            type={LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}
-            linkLabelNotReported="Signaler l'offre"
-            linkLabelReported="Offre signalée"
-            tooltip={
-              <Box>
-                <Text fontSize="16px" lineHeight="24px" fontWeight="700" marginBottom="8px" color="#161616">
-                  Cette offre vous semble inappropriée ? Voici les raisons pour lesquelles vous pouvez nous signaler une offre :
-                </Text>
-                <UnorderedList
-                  style={{
-                    color: "#383838",
-                    fontSize: "16px",
-                    lineHeight: "24px",
-                  }}
-                >
-                  <ListItem>Offre offensante ou discriminatoire</ListItem>
-                  <ListItem>Offre inexacte ou expirée</ListItem>
-                  <ListItem>Fausse offre provenant d’un centre de formation</ListItem>
-                  <ListItem>Tentative d'escroquerie</ListItem>
-                </UnorderedList>
-              </Box>
-            }
-          />
-        </Box>
       </Box>
 
       <Flex padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
@@ -197,9 +127,9 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJob; title: strin
         <Box data-testid="lbb-component">
           <Box mb={4}>
             <Accordion allowToggle>
-              <LbaJobCompetences job={job} />
+              {/* <LbaJobCompetences job={job} />
               <LbaJobTechniques job={job} />
-              <LbaJobAcces job={job} />
+              <LbaJobAcces job={job} /> */}
             </Accordion>
           </Box>
         </Box>
@@ -245,7 +175,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJob; title: strin
           </Text>
         )}
 
-        {!job?.company?.mandataire && job?.contact?.phone && (
+        {job?.contact?.phone && (
           <Text mt={1}>
             <Text as="span" fontWeight={700}>
               Téléphone :{" "}
@@ -257,33 +187,9 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJob; title: strin
             </Text>
           </Text>
         )}
-
-        {!job?.company?.mandataire && <ItemGoogleSearchLink item={job} />}
+        <ItemWebsiteLink item={job} />
+        <ItemGoogleSearchLink item={job} />
       </Box>
-
-      {job?.company?.mandataire && (
-        <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
-          <Text as="h2" variant="itemDetailH2" mt={2}>
-            Contactez le CFA pour avoir plus d’informations
-          </Text>
-
-          <Text my={2}>Le centre de formation peut vous renseigner sur les formations qu’il propose.</Text>
-          <ItemLocalisation item={job.company} />
-
-          {job?.contact?.phone && (
-            <Flex mt={2} mb={4}>
-              <Box fontWeight={700} pl="2px" mr={2}>
-                Téléphone :
-              </Box>
-              <Link ml="2px" isExternal variant="basicUnderlined" href={`tel:${job.contact.phone}`} aria-label="Contacter par téléphone - nouvelle fenêtre">
-                {job.contact.phone} <ExternalLinkIcon mx="2px" />
-              </Link>
-            </Flex>
-          )}
-
-          <ItemGoogleSearchLink item={job} />
-        </Box>
-      )}
     </>
   )
 }

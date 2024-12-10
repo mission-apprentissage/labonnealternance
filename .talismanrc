@@ -37,6 +37,8 @@ fileignoreconfig:
   checksum: 72502c3acc46f9b6903b69095518c3d865cf437f311ed14585da04d8440b4ac0
 - filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts
   checksum: a99bfdcb5a8f4c66e9d055b44160adbc7ec2bcaf87209ff76fa9a9f674b9ca86
+- filename: server/src/http/controllers/v2/jobs.controller.v2.ts
+  checksum: da8baa573172fa97c21f9123e04032718249dcec1194a51d7a1f1757070594ce
 - filename: server/src/http/controllers/v3/jobs/jobs.controller.v3.test.ts
   checksum: 4b24ff09463f476fd0b64bef104da6e17153ffdfff2d628c96b16d3ea33779f7
 - filename: server/src/http/routes/appointmentRequest.controller.ts
@@ -199,6 +201,8 @@ fileignoreconfig:
   checksum: 74951335936fd8df7dbbda0dfcb9fd36d01ec96a34d04d61761e5b081ac2bd96
 - filename: ui/components/ItemDetail/LbaRecruteurComponents/LbaRecruteurDetail.tsx
   checksum: 6e552b66f9238645f70705a0c43c81905e8dbee1c83d364cd89f951f80cb7ea0
+- filename: ui/components/ItemDetail/PartnerJobComponents/PartnerJobDetail.tsx
+  checksum: 88c8bf2cf48aa2c93a73eea7dcd9a040f44cbba3c82ae1b41b80d9939112d0c5
 - filename: ui/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaDetail.tsx
   checksum: 5d8d24178d6390f4745bcddcaca7e7ea3f8f6af79ef304bb48187a6bea7ccfa1
 - filename: ui/components/ItemDetail/TrainingDetail.tsx
@@ -239,8 +243,6 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
-- filename: server/src/http/controllers/v2/jobs.controller.v2.ts
-  checksum: da8baa573172fa97c21f9123e04032718249dcec1194a51d7a1f1757070594ce
 scopeconfig:
 - scope: node
 custom_patterns:
