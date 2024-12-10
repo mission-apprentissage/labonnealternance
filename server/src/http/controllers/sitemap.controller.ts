@@ -5,9 +5,6 @@ import { getSitemap } from "@/services/sitemap.service"
 
 import { Server } from "../server"
 
-/**
- * API romes
- */
 export default function (server: Server) {
   server.get(
     "/sitemap-offers.xml",
