@@ -5508,7 +5508,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             },
           },
           {
-            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob)",
+            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob, partnerJob)",
             "in": "query",
             "name": "sources",
             "required": false,
@@ -5713,7 +5713,7 @@ Limite : 5 appel(s) / 1 seconde(s)
         "operationId": "getLbaJob",
         "parameters": [
           {
-            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob)",
+            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob, partnerJob)",
             "in": "path",
             "name": "source",
             "required": false,
@@ -5885,7 +5885,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             },
           },
           {
-            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob)",
+            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob, partnerJob)",
             "in": "query",
             "name": "sources",
             "required": false,
@@ -7212,7 +7212,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             },
           },
           {
-            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob)",
+            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob, partnerJob)",
             "in": "query",
             "name": "sources",
             "required": false,
@@ -8442,7 +8442,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             },
           },
           {
-            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob)",
+            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob, partnerJob)",
             "in": "query",
             "name": "sources",
             "required": false,
@@ -9189,7 +9189,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             },
           },
           {
-            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob)",
+            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob, partnerJob)",
             "in": "query",
             "name": "sources",
             "required": false,
