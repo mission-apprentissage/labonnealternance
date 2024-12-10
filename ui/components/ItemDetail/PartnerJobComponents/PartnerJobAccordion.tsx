@@ -26,9 +26,8 @@ const PartnerJobAccordion = ({ title, items }: { title: string; items: string[] 
             <AccordionPanel pb={4}>
               <Box pl="12px" mt={4}>
                 {items.map((item, i) => (
-                  <Box key={`accordion_${title}_${i}`} mt={2}>
-                    &bull;
-                    <Text as="span" whiteSpace="pre-wrap" ml={3}>
+                  <Box key={`accordion_${title}_${i}`}>
+                    <Text as="span" whiteSpace="pre-wrap">
                       {item}
                     </Text>
                   </Box>
