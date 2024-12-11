@@ -3,9 +3,9 @@ import { randomUUID } from "node:crypto"
 import { badRequest, internal, notFound } from "@hapi/boom"
 import equal from "fast-deep-equal"
 import { Filter, ObjectId, UpdateFilter } from "mongodb"
-import { IDelegation, IJob, IJobCreate, IJobWithRomeDetail, IRecruiter, IRecruiterWithApplicationCount, IUserRecruteur, JOB_STATUS } from "shared"
+import { IDelegation, IJob, IJobCreate, IJobWithRomeDetail, IRecruiter, IRecruiterWithApplicationCount, IUserRecruteur, JOB_STATUS, removeAccents } from "shared"
 import { getDirectJobPath } from "shared/constants/lbaitem"
-import { RECRUITER_STATUS } from "shared/constants/recruteur"
+import { OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
@@ -104,6 +104,7 @@ const romeDetailAndCandidatureCountAggregateStage = [
           $project: {
             referentielrome: 0,
             "jobs.rome_detail._id": 0,
+            "jobs.rome_detail.couple_appellation_rome": 0,
             "jobs.jobIdStr": 0,
             applications: 0,
           },
@@ -161,7 +162,7 @@ export const romeDetailAggregateStages = [
     $replaceRoot: { newRoot: { $mergeObjects: ["$recruiters", { jobs: "$jobs" }] } },
   },
   {
-    $project: { referentielrome: 0, "jobs.rome_detail._id": 0 },
+    $project: { referentielrome: 0, "jobs.rome_detail._id": 0, "jobs.rome_detail.couple_appellation_rome": 0 },
   },
 ]
 
@@ -222,7 +223,7 @@ const isAuthorizedToPublishJob = async ({ userId, entrepriseId }: { userId: Obje
  * @description Create job offer for formulaire
  */
 export const createJob = async ({ job, establishment_id, user }: { job: IJobCreate; establishment_id: string; user: IUserWithAccount }): Promise<IRecruiter> => {
-  await controlEditableRomeDetail(job)
+  await validateFieldsFromReferentielRome(job)
 
   const userId = user._id
   const recruiter = await getDbCollection("recruiters").findOne({ establishment_id: establishment_id })
@@ -572,7 +573,7 @@ export async function updateOffre(id: string | ObjectId, payload: UpdateFilter<I
  * @returns {Promise<IRecruiter>}
  */
 export const patchOffre = async (id: IJob["_id"], payload: Partial<IJob>): Promise<IRecruiter> => {
-  await controlEditableRomeDetail(payload)
+  await validateFieldsFromReferentielRome(payload)
   const fields = {}
   for (const key in payload) {
     fields[`jobs.$.${key}`] = payload[key]
@@ -719,7 +720,7 @@ const activateAndExtendOffre = async (id: IJob["_id"]): Promise<IJob> => {
  */
 export const activateEntrepriseRecruiterForTheFirstTime = async (entrepriseRecruiter: IRecruiter) => {
   const firstJob = entrepriseRecruiter.jobs.at(0)
-  if (firstJob) {
+  if (firstJob && firstJob.job_status === JOB_STATUS.EN_ATTENTE) {
     const job = await activateAndExtendOffre(firstJob._id)
     // Send delegation if any
     if (job.delegations?.length) {
@@ -838,6 +839,10 @@ export const getFormulaireFromUserId = async (userId: string) => {
   return getDbCollection("recruiters").findOne({ managed_by: userId })
 }
 
+export const getFormulaireFromUserIdWithOpco = async (userId: string, opco: OPCOS_LABEL) => {
+  return getDbCollection("recruiters").findOne({ managed_by: userId, opco })
+}
+
 export const getFormulaireFromUserIdOrError = async (userId: string) => {
   const formulaire = await getFormulaireFromUserId(userId)
   if (!formulaire) {
@@ -885,15 +890,34 @@ const filterRomeDetails = (romeDetails, competencesRome) => {
   return filteredRome
 }
 
-const controlEditableRomeDetail = async (job) => {
-  const { competences_rome, rome_code } = job
+const validateFieldsFromReferentielRome = async (job) => {
+  const { competences_rome, rome_code, rome_appellation_label, rome_label } = job
   const romeDetails = await getRomeDetailsFromDB(rome_code[0])
 
   if (!romeDetails) {
     throw internal("unexpected: rome details not found")
   }
 
-  const filteredRome = filterRomeDetails(romeDetails.competences, competences_rome)
+  const {
+    competences,
+    rome: { intitule },
+    appellations,
+  } = romeDetails
+
+  const formatedIntituleFromRome = removeAccents(intitule.toLowerCase())
+  const formatedRomeLabelFromJob = removeAccents(rome_label.toLowerCase())
+
+  if (formatedIntituleFromRome !== formatedRomeLabelFromJob) {
+    throw badRequest(`L'intitulé du code ROME ne correspond pas au référentiel : ${formatedIntituleFromRome}, reçu ${formatedRomeLabelFromJob}`)
+  }
+
+  const matchingAppellation = appellations.some((appellation) => removeAccents(appellation.libelle.toLowerCase()) === removeAccents(rome_appellation_label.toLowerCase()))
+
+  if (!matchingAppellation) {
+    throw badRequest(`L'appellation du code ROME ne correspond pas au référentiel : reçu ${removeAccents(rome_appellation_label.toLowerCase())}`)
+  }
+
+  const filteredRome = filterRomeDetails(competences, competences_rome)
   const isValid = equal(filteredRome, competences_rome)
 
   if (!isValid) {

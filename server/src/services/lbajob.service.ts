@@ -75,6 +75,11 @@ export const getJobs = async ({
     {
       $limit: JOB_SEARCH_LIMIT,
     },
+    {
+      $project: {
+        "jobs.rome_detail.couple_appellation_rome": 0,
+      },
+    },
   ]
 
   // TODO: add a limit stage in romeDetailAggregateStages to limit number of jobs (not only number of recruiters)
@@ -308,16 +313,15 @@ export const getLbaJobById = async ({ id, caller }: { id: ObjectId; caller?: str
       return { error: "not_found" }
     }
 
-    const applicationCountByJob = await getApplicationByJobCount([id.toString()])
+    if (caller) {
+      trackApiCall({ caller: caller, job_count: 1, result_count: 1, api_path: "jobV1/matcha", response: "OK" })
+    }
 
+    const applicationCountByJob = await getApplicationByJobCount([id.toString()])
     const job = transformLbaJob({
       recruiter: rawJob.recruiter,
       applicationCountByJob,
     })
-
-    if (caller) {
-      trackApiCall({ caller: caller, job_count: 1, result_count: 1, api_path: "jobV1/matcha", response: "OK" })
-    }
 
     return { matchas: job }
   } catch (error) {
@@ -369,6 +373,14 @@ const getCity = (recruiter) => {
   return city
 }
 
+const getNumberAndStreet = (addressDetail: IRecruiter["address_detail"]): string | null => {
+  const numero_voie = addressDetail?.numero_voie
+  const indice_repetition_voie = addressDetail?.indice_repetition_voie
+  const type_voie = addressDetail?.type_voie
+  const libelle_voie = addressDetail?.libelle_voie
+  return [numero_voie, indice_repetition_voie, type_voie, libelle_voie].flatMap((x) => (x ? [x] : [])).join(" ") || null
+}
+
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
  */
@@ -400,6 +412,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
         distance: (recruiter.distance ?? false) ? roundDistance((recruiter?.distance ?? 0) / 1000) : null,
         fullAddress: recruiter.is_delegated ? null : recruiter.address,
         address: recruiter.is_delegated ? null : recruiter.address,
+        numberAndStreet: recruiter.is_delegated ? null : getNumberAndStreet(recruiter.address_detail),
         latitude,
         longitude,
         city: getCity(recruiter),
@@ -429,6 +442,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
         creationDate: offre.job_creation_date ? new Date(offre.job_creation_date) : null,
         contractType: offre.job_type ? offre.job_type.join(", ") : null,
         jobStartDate: offre.job_start_date ? new Date(offre.job_start_date) : null,
+        jobExpirationDate: offre.job_expiration_date ? new Date(offre.job_expiration_date) : null,
         romeDetails: offre.rome_detail ? { ...offre.rome_detail, competences: offre?.competences_rome ?? offre.rome_detail?.competences } : null,
         rythmeAlternance: offre.job_rythm || null,
         dureeContrat: "" + offre.job_duration,
@@ -440,6 +454,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
       romes,
       applicationCount: applicationCountForCurrentJob?.count || 0,
       token: generateApplicationToken({ jobId: offre._id.toString() }),
+      recipient_id: `recruiters_${offre._id.toString()}`,
     }
 
     //TODO: remove when 1j1s switch to api V2
@@ -490,6 +505,7 @@ function transformLbaJobWithMinimalData({ recruiter, applicationCountByJob }: { 
       },
       applicationCount: applicationCountForCurrentJob?.count || 0,
       token: generateApplicationToken({ jobId: offre._id.toString() }),
+      recipient_id: `recruiters_${offre._id.toString()}`,
     }
 
     return resultJob

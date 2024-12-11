@@ -6,7 +6,6 @@ import { find, sortBy } from "lodash"
 import NextLink from "next/link"
 import { useRouter } from "next/router"
 import { NextSeo } from "next-seo"
-import React from "react"
 
 import Breadcrumb from "../../components/breadcrumb"
 import Footer from "../../components/footer"
@@ -60,6 +59,7 @@ export default function ForJob(props) {
 
             <Text marginTop="0px" mb={[2, 2, 2, 0]}>
               <Text as="span">Emploi en alternance et formation en alternance en </Text>
+
               <NextLink legacyBehavior href={buildLinkForTownAndJob({ name: "France" }, currentJob)} passHref>
                 <Link
                   title={`Voir les emplois en alternance et formation en alternance en ${currentJob.name} sur l'ensemble du territoire`}
@@ -80,7 +80,6 @@ export default function ForJob(props) {
                       title={`Voir les emplois en alternance et formation en alternance en ${currentJob.name} à ${currentTown.name}`}
                       textDecoration="underline"
                       fontWeight={700}
-                      href={buildLinkForTownAndJob(currentTown, currentJob)}
                     >
                       {currentJob.name} à {currentTown.name}
                     </Link>

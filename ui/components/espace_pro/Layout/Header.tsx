@@ -28,7 +28,7 @@ const Header = () => {
 
   return (
     <Box>
-      <InfoBanner showInfo={true} />
+      <InfoBanner showInfo={false} />
       <Container maxW="full" px={[0, 4]} py={4} borderBottom={"1px solid"} borderColor="grey.400">
         <Container maxW="container.xl">
           <Flex alignItems="center" px={[0, 4]}>

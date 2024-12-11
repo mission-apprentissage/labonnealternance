@@ -9,6 +9,7 @@ import { AnyZodObject } from "zod"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 
 export const rawToComputedJobsPartners = async <ZodInput extends AnyZodObject>({
   collectionSource,
@@ -28,6 +29,7 @@ export const rawToComputedJobsPartners = async <ZodInput extends AnyZodObject>({
   logger.info(`suppression de ${deletedCount} documents dans computed_jobs_partners pour partner_label=${partnerLabel}`)
   await getDbCollection("computed_jobs_partners").deleteMany({ partner_label: partnerLabel })
   const counters = { total: 0, success: 0, error: 0 }
+  const importDate = new Date()
   await oleoduc(
     getDbCollection(collectionSource).find({}).stream(),
     writeData(
@@ -41,6 +43,7 @@ export const rawToComputedJobsPartners = async <ZodInput extends AnyZodObject>({
             ...computedJobPartner,
             partner_label: partnerLabel,
             validated: ZJobsPartnersOfferPrivate.safeParse(computedJobPartner).success,
+            created_at: importDate,
           })
           counters.success++
         } catch (err) {
@@ -54,5 +57,11 @@ export const rawToComputedJobsPartners = async <ZodInput extends AnyZodObject>({
       { parallel: 10 }
     )
   )
-  logger.info(`import dans computed_jobs_partners pour partner_label=${partnerLabel} terminé`, counters)
+  const message = `import dans computed_jobs_partners pour partner_label=${partnerLabel} terminé. total=${counters.total}, success=${counters.success}, errors=${counters.error}`
+  logger.info(message)
+  await notifyToSlack({
+    subject: `mapping Raw => computed_jobs_partners`,
+    message,
+    error: counters.error > 0,
+  })
 }

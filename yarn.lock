@@ -5648,6 +5648,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/string-similarity@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "@types/string-similarity@npm:4.0.2"
+  checksum: f23b4d176de52ba46b47b85c8895b2dc6e09dedf89efcc231cd03736daf0412fdf080bd7ba515a118a8ac0edff499963c3b5cad9dddbff91237f6f6b171c954c
+  languageName: node
+  linkType: hard
+
 "@types/superagent@npm:*":
   version: 8.1.9
   resolution: "@types/superagent@npm:8.1.9"
@@ -8527,10 +8534,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csv-stringify@npm:^6.5.1":
-  version: 6.5.1
-  resolution: "csv-stringify@npm:6.5.1"
-  checksum: 5eb8167ee944f5328c53c733d8c4b1eea88fb9e510abec430e2fcb4be6c4ce008b92e90da7825d424fe74d22c85405add7f89b9dcf82ffe2bf0a1cf31536057a
+"csv-stringify@npm:^6.5.1, csv-stringify@npm:^6.5.2":
+  version: 6.5.2
+  resolution: "csv-stringify@npm:6.5.2"
+  checksum: b3b64d18866289d25bf2880c8d511cb685460f7a65f8ac8523ed45cb97a1fe792d52a1da0eb9ae238d1e7f83ae57dbc4ce1e3047333e24e4ec486b9e8bd3f9bf
   languageName: node
   linkType: hard
 
@@ -12334,6 +12341,20 @@ __metadata:
   version: 1.1.0
   resolution: "hyphenate-style-name@npm:1.1.0"
   checksum: b9ed74e29181d96bd58a2d0e62fc4a19879db591dba268275829ff0ae595fcdf11faafaeaa63330a45c3004664d7db1f0fc7cdb372af8ee4615ed8260302c207
+  languageName: node
+  linkType: hard
+
+"i18next@npm:^24.0.5":
+  version: 24.0.5
+  resolution: "i18next@npm:24.0.5"
+  dependencies:
+    "@babel/runtime": ^7.23.2
+  peerDependencies:
+    typescript: ^5
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: ae5bc37682f14f4ee44450e10598d32edd324edba2d0980339aa232cdfd506174a2e2dd7b9204d2882c28ddc37261c26c6b7b153ff586e54be71e27599d3dbf8
   languageName: node
   linkType: hard
 
@@ -19751,6 +19772,7 @@ __metadata:
     "@types/node": 20.7.1
     "@types/nodemailer": ^6.4.11
     "@types/nodemailer-html-to-text": ^3.1.1
+    "@types/string-similarity": ^4.0.2
     "@types/supertest": ^2.0.13
     "@typescript-eslint/eslint-plugin": ^5.62.0
     api-alternance-sdk: ^1.3.1
@@ -19813,6 +19835,7 @@ __metadata:
     shared: "workspace:*"
     sib-api-v3-sdk: ^8.5.0
     stream-json: ^1.8.0
+    string-similarity: ^4.0.4
     supertest: ^6.3.3
     tsup: ^7.2.0
     type-fest: ^4.18.2
@@ -19897,6 +19920,7 @@ __metadata:
     bson: ^6.7.0
     dayjs: ^1.11.13
     eslint-plugin-zod: ^1.4.0
+    i18next: ^24.0.5
     libphonenumber-js: ^1.11.7
     lodash-es: ^4.17.21
     luhn: ^2.4.1
@@ -19905,6 +19929,7 @@ __metadata:
     type-fest: ^4.26.0
     typescript: ^5.4.5
     zod: 3.23.8
+    zod-i18n-map: ^2.27.0
     zod-mongodb-schema: ^1.0.2
   languageName: unknown
   linkType: soft
@@ -20518,6 +20543,13 @@ __metadata:
   version: 0.3.2
   resolution: "string-argv@npm:0.3.2"
   checksum: 8703ad3f3db0b2641ed2adbb15cf24d3945070d9a751f9e74a924966db9f325ac755169007233e8985a39a6a292f14d4fee20482989b89b96e473c4221508a0f
+  languageName: node
+  linkType: hard
+
+"string-similarity@npm:^4.0.4":
+  version: 4.0.4
+  resolution: "string-similarity@npm:4.0.4"
+  checksum: 797b41b24e1eb6b3b0ab896950b58c295a19a82933479c75f7b5279ffb63e0b456a8c8d10329c02f607ca1a50370e961e83d552aa468ff3b0fa15809abc9eff7
   languageName: node
   linkType: hard
 
@@ -21684,6 +21716,7 @@ __metadata:
     "@types/node": ^20.7.1
     "@types/react": ^18.2.23
     axios: ^1.7.4
+    csv-stringify: ^6.5.2
     dayjs: ^1.11.10
     dotenv: ^16.3.1
     downshift: 5.2.0
@@ -22832,6 +22865,16 @@ __metadata:
     formik: ^2.2.9
     zod: ^3.22.4
   checksum: 5c77666105b89c35255d42a85e60c30ee2b1546029a633fdc74f8d3ee2fba618ce6f6bb16ccf79c164fba33ca78fa72e94902590e2966b081b20c71ab7b05b9c
+  languageName: node
+  linkType: hard
+
+"zod-i18n-map@npm:^2.27.0":
+  version: 2.27.0
+  resolution: "zod-i18n-map@npm:2.27.0"
+  peerDependencies:
+    i18next: ">=21.3.0"
+    zod: ">=3.17.0"
+  checksum: 9c06867e6f8ee883ccde1b980477563409cf89759a7af345cafd2da5a3d241892f3372e37ddf482a7b7dc40602079292870b64c3c82263141feae341b80da1c1
   languageName: node
   linkType: hard
 

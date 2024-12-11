@@ -34,7 +34,7 @@ describe("create-entreprise-account-no-delegation", () => {
         Professionnalisation: true,
       },
       studyLevel,
-      startDate: "2028-12-23",
+      startDate: "2025-12-23",
       isDisabledElligible: true,
       jobCount: 6,
       jobDurationInMonths: 12,

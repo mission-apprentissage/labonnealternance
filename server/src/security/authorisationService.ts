@@ -322,12 +322,8 @@ function canAccessRecruiter(userAccess: ComputedUserAccess, resource: RecruiterR
   if (recruiterOpco && userAccess.opcos.includes(recruiterOpco)) {
     return true
   }
-  if (resource.type === ENTREPRISE) {
-    return userAccess.entreprises.includes(resource.entreprise._id.toString())
-  } else if (resource.type === CFA) {
-    return userAccess.cfas.includes(resource.cfa._id.toString())
-  }
-  return false
+  const { managed_by } = resource.recruiter
+  return Boolean(managed_by && userAccess.users.includes(managed_by))
 }
 
 function canAccessJob(userAccess: ComputedUserAccess, resource: JobResource): boolean {

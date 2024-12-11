@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import { IApplicationApiJobId, IApplicationApiRecruteurId, JOB_STATUS } from "shared"
+import { IApplicationApiPayload, JOB_STATUS } from "shared"
 import { NIVEAUX_POUR_LBA, RECRUITER_STATUS } from "shared/constants"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { applicationTestFile, wrongApplicationTestFile } from "shared/fixtures/application.fixture"
@@ -118,14 +118,14 @@ describe("POST /v2/application", () => {
   })
 
   it("Return 202 and create an application using a recruter lba", async () => {
-    const body: IApplicationApiRecruteurId = {
-      applicant_file_name: "cv.pdf",
-      applicant_file_content: applicationTestFile,
+    const body: IApplicationApiPayload = {
+      applicant_attachment_name: "cv.pdf",
+      applicant_attachment_content: applicationTestFile,
       applicant_email: "jeam.dupont@mail.com",
       applicant_first_name: "Jean",
       applicant_last_name: "Dupont",
       applicant_phone: "0101010101",
-      recruteur_id: recruteur._id.toString(),
+      recipient_id: `recruteurslba_${recruteur._id.toString()}`,
     }
 
     const response = await httpClient().inject({
@@ -142,7 +142,7 @@ describe("POST /v2/application", () => {
 
     expect(application).toEqual({
       _id: expect.any(ObjectId),
-      applicant_attachment_name: body.applicant_file_name,
+      applicant_attachment_name: body.applicant_attachment_name,
       applicant_email: body.applicant_email,
       applicant_first_name: body.applicant_first_name,
       applicant_last_name: body.applicant_last_name,
@@ -168,20 +168,20 @@ describe("POST /v2/application", () => {
     })
 
     expect(s3Write).toHaveBeenCalledWith("applications", `cv-${application!._id}`, {
-      Body: body.applicant_file_content,
+      Body: body.applicant_attachment_content,
     })
   })
 
   it("Return 202 and create an application using a recruiter", async () => {
     const job = recruiter.jobs[0]
-    const body: IApplicationApiJobId = {
-      applicant_file_name: "cv.pdf",
-      applicant_file_content: applicationTestFile,
+    const body: IApplicationApiPayload = {
+      applicant_attachment_name: "cv.pdf",
+      applicant_attachment_content: applicationTestFile,
       applicant_email: "jeam.dupont@mail.com",
       applicant_first_name: "Jean",
       applicant_last_name: "Dupont",
       applicant_phone: "0101010101",
-      job_id: job._id.toString(),
+      recipient_id: `recruiters_${job._id.toString()}`,
     }
 
     const response = await httpClient().inject({
@@ -198,7 +198,7 @@ describe("POST /v2/application", () => {
 
     expect(application).toEqual({
       _id: expect.any(ObjectId),
-      applicant_attachment_name: body.applicant_file_name,
+      applicant_attachment_name: body.applicant_attachment_name,
       applicant_email: body.applicant_email,
       applicant_first_name: body.applicant_first_name,
       applicant_last_name: body.applicant_last_name,
@@ -225,19 +225,19 @@ describe("POST /v2/application", () => {
     })
 
     expect(s3Write).toHaveBeenCalledWith("applications", `cv-${application!._id}`, {
-      Body: body.applicant_file_content,
+      Body: body.applicant_attachment_content,
     })
   })
   it("return 400 as file type is not supported", async () => {
     const job = recruiter.jobs[0]
-    const body: IApplicationApiJobId = {
-      applicant_file_name: "cv.pdf",
-      applicant_file_content: wrongApplicationTestFile,
+    const body: IApplicationApiPayload = {
+      applicant_attachment_name: "cv.pdf",
+      applicant_attachment_content: wrongApplicationTestFile,
       applicant_email: "jeam.dupont@mail.com",
       applicant_first_name: "Jean",
       applicant_last_name: "Dupont",
       applicant_phone: "0101010101",
-      job_id: job._id.toString(),
+      recipient_id: `recruiters_${job._id.toString()}`,
     }
 
     const response = await httpClient().inject({

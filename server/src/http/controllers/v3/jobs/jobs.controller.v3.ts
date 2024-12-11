@@ -1,5 +1,4 @@
 import { zRoutes } from "shared"
-import { jobsRouteApiv3Converters } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 
 import { getUserFromRequest } from "@/security/authenticationService"
 import { JobOpportunityRequestContext } from "@/services/jobs/jobOpportunity/JobOpportunityRequestContext"
@@ -24,9 +23,8 @@ export const jobsApiV3Routes = (server: Server) => {
     },
     async (req, res) => {
       const user = getUserFromRequest(req, zRoutes.post["/v3/jobs"]).value
-      const offer = jobsRouteApiv3Converters.convertToJobsPartnersWritableApi(req.body)
-      const id = await createJobOffer(user, offer)
-      return res.status(201).send({ id })
+      const id = await createJobOffer(user, req.body)
+      return res.status(200).send({ id })
     }
   )
 
@@ -39,14 +37,13 @@ export const jobsApiV3Routes = (server: Server) => {
     },
     async (req, res) => {
       const user = getUserFromRequest(req, zRoutes.put["/v3/jobs/:id"]).value
-      const offer = jobsRouteApiv3Converters.convertToJobsPartnersWritableApi(req.body)
-      await updateJobOffer(req.params.id, user, offer)
+      await updateJobOffer(req.params.id, user, req.body)
       return res.status(204).send()
     }
   )
 
   server.get("/v3/jobs/search", { schema: zRoutes.get["/v3/jobs/search"], onRequest: server.auth(zRoutes.get["/v3/jobs/search"]) }, async (req, res) => {
     const result = await findJobsOpportunities(req.query, new JobOpportunityRequestContext(zRoutes.get["/v3/jobs/search"], "api-apprentissage"))
-    return res.send(jobsRouteApiv3Converters.convertToJobSearchApiV3(result))
+    return res.send(result)
   })
 }

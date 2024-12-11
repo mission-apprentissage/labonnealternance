@@ -1,21 +1,12 @@
 import { ObjectId } from "bson"
-import type { RequiredDeep } from "type-fest"
 import { beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest"
 import type { z } from "zod"
 
 import { OPCOS_LABEL, TRAINING_REMOTE_TYPE } from "../../../constants"
 import { JOB_STATUS_ENGLISH } from "../../../models"
-import type { IJobsPartnersWritableApi } from "../../../models/jobsPartners.model"
-import type { IJobsOpportunityResponse } from "../../jobOpportunity.routes"
+import type { IJobsPartnersOfferApi } from "../../../models/jobsPartners.model"
 
-import {
-  jobsRouteApiv3Converters,
-  type IJobOfferApiWriteV3,
-  type IJobSearchApiV3,
-  type zJobOfferApiReadV3,
-  type zJobOfferApiWriteV3,
-  type zJobRecruiterApiReadV3,
-} from "./jobs.routes.v3.model"
+import { jobsRouteApiv3Converters, zJobOfferApiWriteV3, type IJobOfferApiReadV3, type zJobOfferApiReadV3, type zJobRecruiterApiReadV3 } from "./jobs.routes.v3.model"
 
 type IJobRecruiterExpected = {
   identifier: {
@@ -48,6 +39,7 @@ type IJobRecruiterExpected = {
   apply: {
     url: string
     phone: string | null
+    recipient_id?: string | null
   }
 }
 
@@ -112,6 +104,7 @@ type IJobOfferApiWriteV3Expected = {
     opening_count?: number
     origin?: string | null
     multicast?: boolean
+    status?: JOB_STATUS_ENGLISH
   }
   apply: {
     url?: string | null
@@ -161,6 +154,316 @@ describe("IJobOfferApiWriteV3", () => {
     expectTypeOf<IJobOfferApiWriteV3Input["apply"]>().toEqualTypeOf<IJobOfferApiWriteV3Expected["apply"]>()
     expectTypeOf<IJobOfferApiWriteV3Input>().toEqualTypeOf<IJobOfferApiWriteV3Expected>()
   })
+
+  const now = new Date("2024-06-18T14:30:00.000Z")
+  const oneMinuteAgo = new Date("2024-06-18T14:29:00.000Z")
+  const inOneMinute = new Date("2024-06-18T14:31:00.000Z")
+  const oneHourAgo = new Date("2024-06-18T13:30:00.000Z")
+  const inOneHour = new Date("2024-06-18T15:30:00.000Z")
+
+  const data: IJobOfferApiWriteV3Input = {
+    offer: {
+      title: "Apprentis en développement web",
+      rome_codes: ["M1602"],
+      description: "Envie de devenir développeur web ? Rejoignez-nous !",
+    },
+    apply: {
+      email: "mail@mail.com",
+    },
+
+    workplace: {
+      siret: "39837261500128",
+    },
+  }
+
+  beforeEach(async () => {
+    // Do not mock nextTick
+    vi.useFakeTimers({ toFake: ["Date"] })
+    vi.setSystemTime(now)
+
+    return () => {
+      vi.useRealTimers()
+    }
+  })
+
+  describe("contract_start", () => {
+    it("should be optional", () => {
+      const result = zJobOfferApiWriteV3.safeParse({
+        ...data,
+      })
+
+      expect.soft(result.success).toBe(true)
+      expect(result.data?.contract.start).toBe(null)
+    })
+
+    it("should be required ISO 8601 date string", () => {
+      const result = zJobOfferApiWriteV3.safeParse({
+        ...data,
+        contract: {
+          ...data.contract,
+          start: "2024-09-01",
+        },
+      })
+
+      expect.soft(result.success).toBe(false)
+      expect(result.error?.format()).toEqual({
+        _errors: [],
+        contract: {
+          _errors: [],
+          start: {
+            _errors: ["Expected ISO 8601 date string"],
+          },
+        },
+      })
+    })
+
+    it("should allow date in past", () => {
+      const result = zJobOfferApiWriteV3.safeParse({
+        ...data,
+        contract: {
+          ...data.contract,
+          start: oneHourAgo.toJSON(),
+        },
+      })
+
+      expect(result.success).toBe(true)
+      expect(result.data?.contract.start).toEqual(oneHourAgo)
+    })
+
+    it("should allow date in future", () => {
+      const result = zJobOfferApiWriteV3.safeParse({
+        ...data,
+        contract: {
+          ...data.contract,
+          start: inOneHour.toJSON(),
+        },
+      })
+
+      expect(result.success).toBe(true)
+      expect(result.data?.contract.start).toEqual(inOneHour)
+    })
+  })
+
+  describe("offer_status", () => {
+    it("should be optional", () => {
+      const result = zJobOfferApiWriteV3.safeParse({
+        ...data,
+      })
+
+      expect(result.success).toBe(true)
+      expect(result.data?.offer.status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
+    })
+  })
+
+  describe("offer_creation", () => {
+    // Fallback is handled in jobOpportinityService
+    it("should allow null", () => {
+      const result = zJobOfferApiWriteV3.safeParse({
+        ...data,
+        offer: {
+          ...data.offer,
+          publication: {
+            ...data.offer.publication,
+            creation: null,
+          },
+        },
+      })
+
+      expect(result.success).toBe(true)
+      expect(result.data?.offer.publication.creation).toEqual(null)
+    })
+
+    it("should be required ISO 8601 date string", () => {
+      const result = zJobOfferApiWriteV3.safeParse({
+        ...data,
+        offer: {
+          ...data.offer,
+          publication: {
+            ...data.offer.publication,
+            creation: "2024-09-01",
+          },
+        },
+      })
+
+      expect(result.success).toBe(false)
+      expect(result.error?.format()).toEqual({
+        _errors: [],
+        offer: {
+          _errors: [],
+          publication: {
+            _errors: [],
+            creation: {
+              _errors: ["Expected ISO 8601 date string"],
+            },
+          },
+        },
+      })
+    })
+
+    it("should allow date in past", () => {
+      const result = zJobOfferApiWriteV3.safeParse({
+        ...data,
+        offer: {
+          ...data.offer,
+          publication: {
+            ...data.offer.publication,
+            creation: oneHourAgo.toJSON(),
+          },
+        },
+      })
+
+      expect(result.success).toBe(true)
+      expect(result.data?.offer.publication.creation).toEqual(oneHourAgo)
+    })
+
+    it("should not allow date in future", () => {
+      const result = zJobOfferApiWriteV3.safeParse({
+        ...data,
+        offer: {
+          ...data.offer,
+          publication: {
+            ...data.offer.publication,
+            creation: inOneHour.toJSON(),
+          },
+        },
+      })
+
+      expect(result.success).toBe(false)
+      expect(result.error?.format()).toEqual({
+        _errors: [],
+        offer: {
+          _errors: [],
+          publication: {
+            _errors: [],
+            creation: {
+              _errors: ["Creation date cannot be in the future"],
+            },
+          },
+        },
+      })
+    })
+
+    it("should tolerate time clock sync", () => {
+      const result = zJobOfferApiWriteV3.safeParse({
+        ...data,
+        offer: {
+          ...data.offer,
+          publication: {
+            ...data.offer.publication,
+            creation: inOneMinute.toJSON(),
+          },
+        },
+      })
+
+      expect(result.success).toBe(true)
+      expect(result.data?.offer.publication.creation).toEqual(inOneMinute)
+    })
+  })
+
+  describe("offer_expiration", () => {
+    // Fallback is handled in jobOpportinityService
+    it("should allow null", () => {
+      const result = zJobOfferApiWriteV3.safeParse({
+        ...data,
+        offer: {
+          ...data.offer,
+          publication: {
+            ...data.offer.publication,
+            expiration: null,
+          },
+        },
+      })
+
+      expect(result.success).toBe(true)
+      expect(result.data?.offer.publication.expiration).toEqual(null)
+    })
+
+    it("should be required ISO 8601 date string", () => {
+      const result = zJobOfferApiWriteV3.safeParse({
+        ...data,
+        offer: {
+          ...data.offer,
+          publication: {
+            ...data.offer.publication,
+            expiration: "2024-09-01",
+          },
+        },
+      })
+
+      expect(result.success).toBe(false)
+      expect(result.error?.format()).toEqual({
+        _errors: [],
+        offer: {
+          _errors: [],
+          publication: {
+            _errors: [],
+            expiration: {
+              _errors: ["Expected ISO 8601 date string"],
+            },
+          },
+        },
+      })
+    })
+
+    it("should not allow date in future", () => {
+      const result = zJobOfferApiWriteV3.safeParse({
+        ...data,
+        offer: {
+          ...data.offer,
+          publication: {
+            ...data.offer.publication,
+            expiration: inOneHour.toJSON(),
+          },
+        },
+      })
+
+      expect(result.success).toBe(true)
+      expect(result.data?.offer.publication.expiration).toEqual(inOneHour)
+    })
+
+    it("should not allow date in past", () => {
+      const result = zJobOfferApiWriteV3.safeParse({
+        ...data,
+        offer: {
+          ...data.offer,
+          publication: {
+            ...data.offer.publication,
+            expiration: oneHourAgo.toJSON(),
+          },
+        },
+      })
+
+      expect(result.success).toBe(false)
+      expect(result.error?.format()).toEqual({
+        _errors: [],
+        offer: {
+          _errors: [],
+          publication: {
+            _errors: [],
+            expiration: {
+              _errors: ["Expiration date cannot be in the past"],
+            },
+          },
+        },
+      })
+    })
+
+    it("should tolerate time clock sync", () => {
+      const result = zJobOfferApiWriteV3.safeParse({
+        ...data,
+        offer: {
+          ...data.offer,
+          publication: {
+            ...data.offer.publication,
+            expiration: oneMinuteAgo.toJSON(),
+          },
+        },
+      })
+
+      expect(result.success).toBe(true)
+      expect(result.data?.offer.publication.expiration).toEqual(oneMinuteAgo)
+    })
+  })
 })
 
 const today = new Date("2024-11-19T00:00:00.000Z")
@@ -177,292 +480,90 @@ beforeEach(() => {
   }
 })
 
-describe("convertToJobSearchApiV3", () => {
+describe("convertToJobOfferApiReadV3", () => {
   const id1 = new ObjectId()
 
-  it("should convert job search response from LBA to API format", () => {
-    const lbaResponse: IJobsOpportunityResponse = {
-      jobs: [
-        {
-          _id: "1",
-          apply_phone: "0300000000",
-          apply_url: "https://postler.com",
-          contract_duration: 12,
-          contract_remote: TRAINING_REMOTE_TYPE.onsite,
-          contract_start: startOfNextMonth,
-          contract_type: ["Apprentissage"],
-          offer_access_conditions: ["Ce métier est accessible avec un diplôme de fin d'études secondaires"],
-          offer_creation: yesterday,
-          offer_description: "Exécute des travaux administratifs courants",
-          offer_desired_skills: ["Faire preuve de rigueur et de précision"],
-          offer_expiration: endOfNextMonth,
-          offer_opening_count: 1,
-          offer_rome_codes: ["M1602"],
-          offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-          offer_target_diploma: {
-            european: "4",
-            label: "BP, Bac, autres formations niveau (Bac)",
-          },
-          offer_title: "Opérations administratives",
-          offer_to_be_acquired_skills: [
-            "Production, Fabrication: Procéder à l'enregistrement, au tri, à l'affranchissement du courrier",
-            "Production, Fabrication: Réaliser des travaux de reprographie",
-            "Organisation: Contrôler la conformité des données ou des documents",
-          ],
-          partner_label: "La bonne alternance",
-          partner_job_id: null,
-          workplace_address_label: "Paris",
-          workplace_brand: "Brand",
-          workplace_description: "Workplace Description",
-          workplace_geopoint: {
-            coordinates: [2.347, 48.8589],
-            type: "Point",
-          },
-          workplace_idcc: 1242,
-          workplace_legal_name: "ASSEMBLEE NATIONALE",
-          workplace_naf_code: "84.11Z",
-          workplace_naf_label: "Autorité constitutionnelle",
-          workplace_name: "ASSEMBLEE NATIONALE",
-          workplace_opco: OPCOS_LABEL.AKTO,
-          workplace_siret: "11000001500013",
-          workplace_size: null,
-          workplace_website: null,
-        },
-      ],
-      recruiters: [
-        {
-          _id: id1,
-          apply_phone: "0100000000",
-          apply_url: "http://localhost:3000/recherche-apprentissage?type=lba&itemId=11000001500013",
-          workplace_address_label: "126 RUE DE L'UNIVERSITE 75007 PARIS",
-          workplace_brand: "ASSEMBLEE NATIONALE - La vraie",
-          workplace_description: null,
-          workplace_geopoint: {
-            coordinates: [2.347, 48.8589],
-            type: "Point",
-          },
-          workplace_idcc: null,
-          workplace_legal_name: "ASSEMBLEE NATIONALE",
-          workplace_naf_code: "8411Z",
-          workplace_naf_label: "Administration publique générale",
-          workplace_name: "ASSEMBLEE NATIONALE - La vraie",
-          workplace_opco: null,
-          workplace_siret: "11000001500013",
-          workplace_size: null,
-          workplace_website: null,
-        },
-      ],
-      warnings: [
-        {
-          code: "FRANCE_TRAVAIL_API_ERROR",
-          message: "Unable to retrieve job offers from France Travail API",
-        },
-      ],
-    }
-
-    const expectedApiResponse: IJobSearchApiV3 = {
-      jobs: [
-        {
-          identifier: {
-            id: "1",
-            partner_label: "La bonne alternance",
-            partner_job_id: null,
-          },
-          workplace: {
-            siret: "11000001500013",
-            brand: "Brand",
-            legal_name: "ASSEMBLEE NATIONALE",
-            website: null,
-            name: "ASSEMBLEE NATIONALE",
-            description: "Workplace Description",
-            size: null,
-            location: {
-              address: "Paris",
-              geopoint: {
-                coordinates: [2.347, 48.8589],
-                type: "Point",
-              },
-            },
-            domain: {
-              idcc: 1242,
-              opco: OPCOS_LABEL.AKTO,
-              naf: {
-                code: "84.11Z",
-                label: "Autorité constitutionnelle",
-              },
-            },
-          },
-          apply: {
-            url: "https://postler.com",
-            phone: "0300000000",
-          },
-          contract: {
-            start: startOfNextMonth,
-            duration: 12,
-            type: ["Apprentissage"],
-            remote: TRAINING_REMOTE_TYPE.onsite,
-          },
-          offer: {
-            title: "Opérations administratives",
-            rome_codes: ["M1602"],
-            description: "Exécute des travaux administratifs courants",
-            target_diploma: {
-              european: "4",
-              label: "BP, Bac, autres formations niveau (Bac)",
-            },
-            desired_skills: ["Faire preuve de rigueur et de précision"],
-            to_be_acquired_skills: [
-              "Production, Fabrication: Procéder à l'enregistrement, au tri, à l'affranchissement du courrier",
-              "Production, Fabrication: Réaliser des travaux de reprographie",
-              "Organisation: Contrôler la conformité des données ou des documents",
-            ],
-            access_conditions: ["Ce métier est accessible avec un diplôme de fin d'études secondaires"],
-            publication: {
-              creation: yesterday,
-              expiration: endOfNextMonth,
-            },
-            opening_count: 1,
-            status: JOB_STATUS_ENGLISH.ACTIVE,
-          },
-        },
-      ],
-      recruiters: [
-        {
-          identifier: {
-            id: id1,
-          },
-          workplace: {
-            siret: "11000001500013",
-            brand: "ASSEMBLEE NATIONALE - La vraie",
-            legal_name: "ASSEMBLEE NATIONALE",
-            website: null,
-            name: "ASSEMBLEE NATIONALE - La vraie",
-            description: null,
-            size: null,
-            location: {
-              address: "126 RUE DE L'UNIVERSITE 75007 PARIS",
-              geopoint: {
-                coordinates: [2.347, 48.8589],
-                type: "Point",
-              },
-            },
-            domain: {
-              idcc: null,
-              opco: null,
-              naf: {
-                code: "8411Z",
-                label: "Administration publique générale",
-              },
-            },
-          },
-          apply: {
-            url: "http://localhost:3000/recherche-apprentissage?type=lba&itemId=11000001500013",
-            phone: "0100000000",
-          },
-        },
-      ],
-      warnings: [
-        {
-          code: "FRANCE_TRAVAIL_API_ERROR",
-          message: "Unable to retrieve job offers from France Travail API",
-        },
-      ],
-    }
-
-    const apiResponse = jobsRouteApiv3Converters.convertToJobSearchApiV3(lbaResponse)
-    expect(apiResponse).toEqual(expectedApiResponse)
-  })
-})
-
-describe("convertToJobsPartnersWritableApi", () => {
-  it("should convert minimal job offer from API to LBA format", () => {
-    const apiOffer: IJobOfferApiWriteV3 = {
-      offer: {
-        title: "Opérations administratives",
-        description: "Exécute des travaux administratifs courants",
-      },
-      workplace: {
-        siret: "11000001500013",
-      },
-      apply: {
-        phone: "0600000000",
-      },
-    }
-
-    const expectedLbaOffer: IJobsPartnersWritableApi = {
-      partner_job_id: null,
-
-      offer_title: "Opérations administratives",
-      offer_rome_codes: null,
+  it("should convert job partner response from LBA to API format", () => {
+    const jobPartner: IJobsPartnersOfferApi = {
+      _id: id1,
+      apply_phone: "0300000000",
+      apply_url: "https://postler.com",
+      contract_duration: 12,
+      contract_remote: TRAINING_REMOTE_TYPE.onsite,
+      contract_start: startOfNextMonth,
+      contract_type: ["Apprentissage"],
+      offer_access_conditions: ["Ce métier est accessible avec un diplôme de fin d'études secondaires"],
+      offer_creation: yesterday,
       offer_description: "Exécute des travaux administratifs courants",
-      offer_target_diploma_european: null,
-      offer_desired_skills: [],
-      offer_to_be_acquired_skills: [],
-      offer_access_conditions: [],
-      offer_creation: null,
-      offer_expiration: null,
+      offer_desired_skills: ["Faire preuve de rigueur et de précision"],
+      offer_expiration: endOfNextMonth,
       offer_opening_count: 1,
+      offer_rome_codes: ["M1602"],
       offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-      offer_origin: null,
-      offer_multicast: true,
-
+      offer_target_diploma: {
+        european: "4",
+        label: "BP, Bac, autres formations niveau (Bac)",
+      },
+      offer_title: "Opérations administratives",
+      offer_to_be_acquired_skills: [
+        "Production, Fabrication: Procéder à l'enregistrement, au tri, à l'affranchissement du courrier",
+        "Production, Fabrication: Réaliser des travaux de reprographie",
+        "Organisation: Contrôler la conformité des données ou des documents",
+      ],
+      partner_label: "La bonne alternance",
+      partner_job_id: null,
+      workplace_address_label: "Paris",
+      workplace_brand: "Brand",
+      workplace_description: "Workplace Description",
+      workplace_geopoint: {
+        coordinates: [2.347, 48.8589],
+        type: "Point",
+      },
+      workplace_idcc: 1242,
+      workplace_legal_name: "ASSEMBLEE NATIONALE",
+      workplace_naf_code: "84.11Z",
+      workplace_naf_label: "Autorité constitutionnelle",
+      workplace_name: "ASSEMBLEE NATIONALE",
+      workplace_opco: OPCOS_LABEL.AKTO,
       workplace_siret: "11000001500013",
-      workplace_address_label: null,
-      workplace_description: null,
+      workplace_size: null,
       workplace_website: null,
-      workplace_name: null,
-
-      contract_start: null,
-      contract_duration: null,
-      contract_type: ["Apprentissage", "Professionnalisation"],
-      contract_remote: null,
-
-      apply_email: null,
-      apply_phone: "0600000000",
-      apply_url: null,
     }
 
-    expect(jobsRouteApiv3Converters.convertToJobsPartnersWritableApi(apiOffer)).toEqual(expectedLbaOffer)
-  })
-
-  it("should convert full job offer from API to LBA format", () => {
-    const apiOffer: RequiredDeep<IJobOfferApiWriteV3> = {
+    const expected: IJobOfferApiReadV3 = {
       identifier: {
-        partner_job_id: "1",
-      },
-      offer: {
-        title: "Opérations administratives",
-        description: "Exécute des travaux administratifs courants",
-        rome_codes: ["M1602"],
-        desired_skills: ["Faire preuve de rigueur et de précision"],
-        to_be_acquired_skills: [
-          "Production, Fabrication: Procéder à l'enregistrement, au tri, à l'affranchissement du courrier",
-          "Production, Fabrication: Réaliser des travaux de reprographie",
-          "Organisation: Contrôler la conformité des données ou des documents",
-        ],
-        target_diploma: {
-          european: "4",
-        },
-        access_conditions: ["Ce métier est accessible avec un diplôme de fin d'études secondaires"],
-        publication: {
-          creation: yesterday,
-          expiration: endOfNextMonth,
-        },
-        opening_count: 1,
-        multicast: true,
-        origin: "La bonne alternance",
+        id: id1,
+        partner_label: "La bonne alternance",
+        partner_job_id: null,
       },
       workplace: {
         siret: "11000001500013",
+        brand: "Brand",
+        legal_name: "ASSEMBLEE NATIONALE",
+        website: null,
         name: "ASSEMBLEE NATIONALE",
         description: "Workplace Description",
-        website: "https://assemblee-nationale.fr",
-        location: { address: "Paris" },
+        size: null,
+        location: {
+          address: "Paris",
+          geopoint: {
+            coordinates: [2.347, 48.8589],
+            type: "Point",
+          },
+        },
+        domain: {
+          idcc: 1242,
+          opco: OPCOS_LABEL.AKTO,
+          naf: {
+            code: "84.11Z",
+            label: "Autorité constitutionnelle",
+          },
+        },
       },
       apply: {
         url: "https://postler.com",
         phone: "0300000000",
-        email: "mail@mail.com",
+        recipient_id: null,
       },
       contract: {
         start: startOfNextMonth,
@@ -470,226 +571,30 @@ describe("convertToJobsPartnersWritableApi", () => {
         type: ["Apprentissage"],
         remote: TRAINING_REMOTE_TYPE.onsite,
       },
-    }
-
-    const expectedLbaOffer: Required<IJobsPartnersWritableApi> = {
-      partner_job_id: "1",
-      offer_title: "Opérations administratives",
-      offer_description: "Exécute des travaux administratifs courants",
-      offer_rome_codes: ["M1602"],
-      offer_desired_skills: ["Faire preuve de rigueur et de précision"],
-      offer_to_be_acquired_skills: [
-        "Production, Fabrication: Procéder à l'enregistrement, au tri, à l'affranchissement du courrier",
-        "Production, Fabrication: Réaliser des travaux de reprographie",
-        "Organisation: Contrôler la conformité des données ou des documents",
-      ],
-      offer_target_diploma_european: "4",
-      offer_access_conditions: ["Ce métier est accessible avec un diplôme de fin d'études secondaires"],
-      offer_creation: yesterday,
-      offer_expiration: endOfNextMonth,
-      offer_opening_count: 1,
-      offer_multicast: true,
-      offer_origin: "La bonne alternance",
-      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-      workplace_siret: "11000001500013",
-      workplace_name: "ASSEMBLEE NATIONALE",
-      workplace_description: "Workplace Description",
-      workplace_website: "https://assemblee-nationale.fr",
-      workplace_address_label: "Paris",
-      apply_url: "https://postler.com",
-      apply_phone: "0300000000",
-      apply_email: "mail@mail.com",
-      contract_start: startOfNextMonth,
-      contract_duration: 12,
-      contract_type: ["Apprentissage"],
-      contract_remote: TRAINING_REMOTE_TYPE.onsite,
-    }
-
-    expect(jobsRouteApiv3Converters.convertToJobsPartnersWritableApi(apiOffer)).toEqual(expectedLbaOffer)
-  })
-
-  it("should convert full job offer from API to LBA format", () => {
-    const apiOffer: RequiredDeep<IJobOfferApiWriteV3> = {
-      identifier: {
-        partner_job_id: "1",
-      },
       offer: {
         title: "Opérations administratives",
-        description: "Exécute des travaux administratifs courants",
         rome_codes: ["M1602"],
+        description: "Exécute des travaux administratifs courants",
+        target_diploma: {
+          european: "4",
+          label: "BP, Bac, autres formations niveau (Bac)",
+        },
         desired_skills: ["Faire preuve de rigueur et de précision"],
         to_be_acquired_skills: [
           "Production, Fabrication: Procéder à l'enregistrement, au tri, à l'affranchissement du courrier",
           "Production, Fabrication: Réaliser des travaux de reprographie",
           "Organisation: Contrôler la conformité des données ou des documents",
         ],
-        target_diploma: {
-          european: "4",
-        },
         access_conditions: ["Ce métier est accessible avec un diplôme de fin d'études secondaires"],
         publication: {
           creation: yesterday,
           expiration: endOfNextMonth,
         },
         opening_count: 1,
-        multicast: true,
-        origin: "La bonne alternance",
-      },
-      workplace: {
-        siret: "11000001500013",
-        name: "ASSEMBLEE NATIONALE",
-        description: "Workplace Description",
-        website: "https://assemblee-nationale.fr",
-        location: { address: "Paris" },
-      },
-      apply: {
-        url: "https://postler.com",
-        phone: "0300000000",
-        email: "mail@mail.com",
-      },
-      contract: {
-        start: startOfNextMonth,
-        duration: 12,
-        type: ["Apprentissage"],
-        remote: TRAINING_REMOTE_TYPE.onsite,
+        status: JOB_STATUS_ENGLISH.ACTIVE,
       },
     }
 
-    const expectedLbaOffer: Required<IJobsPartnersWritableApi> = {
-      partner_job_id: "1",
-      offer_title: "Opérations administratives",
-      offer_description: "Exécute des travaux administratifs courants",
-      offer_rome_codes: ["M1602"],
-      offer_desired_skills: ["Faire preuve de rigueur et de précision"],
-      offer_to_be_acquired_skills: [
-        "Production, Fabrication: Procéder à l'enregistrement, au tri, à l'affranchissement du courrier",
-        "Production, Fabrication: Réaliser des travaux de reprographie",
-        "Organisation: Contrôler la conformité des données ou des documents",
-      ],
-      offer_target_diploma_european: "4",
-      offer_access_conditions: ["Ce métier est accessible avec un diplôme de fin d'études secondaires"],
-      offer_creation: yesterday,
-      offer_expiration: endOfNextMonth,
-      offer_opening_count: 1,
-      offer_multicast: true,
-      offer_origin: "La bonne alternance",
-      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-      workplace_siret: "11000001500013",
-      workplace_name: "ASSEMBLEE NATIONALE",
-      workplace_description: "Workplace Description",
-      workplace_website: "https://assemblee-nationale.fr",
-      workplace_address_label: "Paris",
-      apply_url: "https://postler.com",
-      apply_phone: "0300000000",
-      apply_email: "mail@mail.com",
-      contract_start: startOfNextMonth,
-      contract_duration: 12,
-      contract_type: ["Apprentissage"],
-      contract_remote: TRAINING_REMOTE_TYPE.onsite,
-    }
-
-    expect(jobsRouteApiv3Converters.convertToJobsPartnersWritableApi(apiOffer)).toEqual(expectedLbaOffer)
-  })
-
-  it("should support null target_diploma", () => {
-    const apiOffer: IJobOfferApiWriteV3 = {
-      offer: {
-        title: "Opérations administratives",
-        description: "Exécute des travaux administratifs courants",
-        target_diploma: null,
-      },
-      workplace: {
-        siret: "11000001500013",
-      },
-      apply: {
-        phone: "0600000000",
-      },
-    }
-
-    const expectedLbaOffer: IJobsPartnersWritableApi = {
-      partner_job_id: null,
-
-      offer_title: "Opérations administratives",
-      offer_rome_codes: null,
-      offer_description: "Exécute des travaux administratifs courants",
-      offer_target_diploma_european: null,
-      offer_desired_skills: [],
-      offer_to_be_acquired_skills: [],
-      offer_access_conditions: [],
-      offer_creation: null,
-      offer_expiration: null,
-      offer_opening_count: 1,
-      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-      offer_origin: null,
-      offer_multicast: true,
-
-      workplace_siret: "11000001500013",
-      workplace_address_label: null,
-      workplace_description: null,
-      workplace_website: null,
-      workplace_name: null,
-
-      contract_start: null,
-      contract_duration: null,
-      contract_type: ["Apprentissage", "Professionnalisation"],
-      contract_remote: null,
-
-      apply_email: null,
-      apply_phone: "0600000000",
-      apply_url: null,
-    }
-
-    expect(jobsRouteApiv3Converters.convertToJobsPartnersWritableApi(apiOffer)).toEqual(expectedLbaOffer)
-  })
-
-  it("should support null workplace_location", () => {
-    const apiOffer: IJobOfferApiWriteV3 = {
-      offer: {
-        title: "Opérations administratives",
-        description: "Exécute des travaux administratifs courants",
-      },
-      workplace: {
-        siret: "11000001500013",
-        location: null,
-      },
-      apply: {
-        phone: "0600000000",
-      },
-    }
-
-    const expectedLbaOffer: IJobsPartnersWritableApi = {
-      partner_job_id: null,
-
-      offer_title: "Opérations administratives",
-      offer_rome_codes: null,
-      offer_description: "Exécute des travaux administratifs courants",
-      offer_target_diploma_european: null,
-      offer_desired_skills: [],
-      offer_to_be_acquired_skills: [],
-      offer_access_conditions: [],
-      offer_creation: null,
-      offer_expiration: null,
-      offer_opening_count: 1,
-      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-      offer_origin: null,
-      offer_multicast: true,
-
-      workplace_siret: "11000001500013",
-      workplace_address_label: null,
-      workplace_description: null,
-      workplace_website: null,
-      workplace_name: null,
-
-      contract_start: null,
-      contract_duration: null,
-      contract_type: ["Apprentissage", "Professionnalisation"],
-      contract_remote: null,
-
-      apply_email: null,
-      apply_phone: "0600000000",
-      apply_url: null,
-    }
-
-    expect(jobsRouteApiv3Converters.convertToJobsPartnersWritableApi(apiOffer)).toEqual(expectedLbaOffer)
+    expect(jobsRouteApiv3Converters.convertToJobOfferApiReadV3(jobPartner)).toEqual(expected)
   })
 })

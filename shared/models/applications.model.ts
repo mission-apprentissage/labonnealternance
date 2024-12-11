@@ -1,3 +1,6 @@
+import { ObjectId } from "bson"
+import { Jsonify } from "type-fest"
+
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, allLbaItemType, allLbaItemTypeOLD } from "../constants/lbaitem"
 import { removeUrlsFromText } from "../helpers/common"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
@@ -22,17 +25,20 @@ export const ZApplication = z
     applicant_email: z.string().email().describe("Email du candidat"),
     applicant_first_name: z
       .string()
+      .min(1)
       .max(50)
       .transform((value) => removeUrlsFromText(value))
       .describe("Prenom du candidat"),
     applicant_last_name: z
       .string()
+      .min(1)
       .max(50)
       .transform((value) => removeUrlsFromText(value))
       .describe("Nom du candidat"),
-    applicant_phone: extensions.phone().describe("Téléphone du candidat"),
+    applicant_phone: extensions.telephone.describe("Téléphone du candidat"),
     applicant_attachment_name: z
       .string()
+      .min(1)
       .regex(/((.*?))(\.)+(docx|pdf)$/i)
       .describe("Nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés."),
     applicant_message_to_company: z.string().nullable().describe("Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat."),
@@ -171,34 +177,33 @@ const ZApplicationV2Base = ZApplication.pick({
   applicant_last_name: true,
   applicant_email: true,
   applicant_phone: true,
+  applicant_attachment_name: true,
+  job_searched_by_user: true,
   caller: true,
 }).extend({
   applicant_message: ZApplication.shape.applicant_message_to_company.optional(),
-  applicant_file_name: ZApplication.shape.applicant_attachment_name,
-  applicant_file_content: z.string().max(4_215_276).describe("Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo."),
+  applicant_attachment_content: z.string().max(4_215_276).describe("Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo."),
 })
 
-export const ZApplicationApiRecruteurId = ZApplicationV2Base.extend({
-  recruteur_id: z.string().describe("Identifiant unique du recruteur issue de La bonne alternance"),
+type JobCollectionName = "recruteurslba" | "jobs_partners" | "recruiters"
+export const ZApplicationApiPayload = ZApplicationV2Base.extend({
+  recipient_id: z
+    .string()
+    .transform((recipientId) => {
+      const [collectionName, jobId] = recipientId.split("_")
+      if (!ObjectId.isValid(jobId)) {
+        throw new Error(`Invalid job identifier: ${jobId}`)
+      }
+      if (!["recruteurslba", "jobs_parnters", "recruiters"].includes(collectionName)) {
+        throw new Error(`Invalid collection name: ${collectionName}`)
+      }
+      return { collectionName: collectionName as JobCollectionName, jobId }
+    })
+    .describe("Identifiant unique de la ressource vers laquelle la candidature est faite, préfixé par le nom de la collection"),
 })
-export type IApplicationApiRecruteurId = z.output<typeof ZApplicationApiRecruteurId>
-
-export const ZApplicationApiJobId = ZApplicationV2Base.extend({
-  job_id: z.string().describe("Identifiant unique de l'offre d'emploi issue de La bonne alternance"),
-})
-export type IApplicationApiJobId = z.output<typeof ZApplicationApiJobId>
-
-export const ZApplicationPrivateCompanySiret = ZApplicationV2Base.extend({
-  company_siret: ZApplication.shape.company_siret,
-  job_searched_by_user: ZApplication.shape.job_searched_by_user,
-})
-export type IApplicationPrivateCompanySiret = z.output<typeof ZApplicationPrivateCompanySiret>
-
-export const ZApplicationPrivateJobId = ZApplicationV2Base.extend({
-  job_id: z.string().describe("Identifiant unique de l'offre LBA"),
-  job_searched_by_user: ZApplication.shape.job_searched_by_user,
-})
-export type IApplicationPrivateJobId = z.output<typeof ZApplicationPrivateJobId>
+export type IApplicationApiPayloadOutput = z.output<typeof ZApplicationApiPayload>
+export type IApplicationApiPayload = z.input<typeof ZApplicationApiPayload>
+export type IApplicationApiPayloadJSON = Jsonify<z.input<typeof ZApplicationV2Base>>
 
 export default {
   zod: ZApplication,

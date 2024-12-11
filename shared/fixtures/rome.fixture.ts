@@ -5,6 +5,17 @@ import { IReferentielRome } from "../models"
 export function generateReferentielRome(data: Partial<IReferentielRome> = {}): IReferentielRome {
   return {
     _id: new ObjectId(),
+    numero: "512",
+    rome: {
+      code_rome: "M1602",
+      intitule: "Opérations administratives",
+      code_ogr: "475",
+    },
+    definition:
+      "Exécute des travaux administratifs courants (vérification de documents, frappe et mise en forme de courriers pré-établis, suivi de dossier administratifs, ...) selon l'organisation de la structure ou du service. Peut être en charge d'activités de reprographie et d'archivage. Peut réaliser l'accueil de la structure.",
+    acces_metier:
+      "Ce métier est accessible avec un diplôme de fin d'études secondaires (brevet des collèges) à Bac (professionnel, Brevet Professionnel, ...) dans le secteur tertiaire. Il est également accessible avec une expérience professionnelle sans diplôme particulier. La maîtrise de l'outil bureautique (traitement de texte, tableur, ...) peut être requise.",
+    couple_appellation_rome: [],
     competences: {
       savoir_faire: [
         {
@@ -237,16 +248,6 @@ export function generateReferentielRome(data: Partial<IReferentielRome> = {}): I
         ordre_mobilite: "10",
       },
     ],
-    numero: "512",
-    rome: {
-      code_rome: "M1602",
-      intitule: "Opérations administratives",
-      code_ogr: "475",
-    },
-    definition:
-      "Exécute des travaux administratifs courants (vérification de documents, frappe et mise en forme de courriers pré-établis, suivi de dossier administratifs, ...) selon l'organisation de la structure ou du service. Peut être en charge d'activités de reprographie et d'archivage. Peut réaliser l'accueil de la structure.",
-    acces_metier:
-      "Ce métier est accessible avec un diplôme de fin d'études secondaires (brevet des collèges) à Bac (professionnel, Brevet Professionnel, ...) dans le secteur tertiaire. Il est également accessible avec une expérience professionnelle sans diplôme particulier. La maîtrise de l'outil bureautique (traitement de texte, tableur, ...) peut être requise.",
     ...data,
   }
 }

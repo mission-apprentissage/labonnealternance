@@ -1,6 +1,8 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Container, Divider, Flex, Grid, GridItem, Image, Link, ListItem, UnorderedList } from "@chakra-ui/react"
 import NextLink from "next/link"
+import { useRouter } from "next/router"
+import { useEffect, useState } from "react"
 
 import { publicConfig } from "../config.public"
 
@@ -24,7 +26,19 @@ const lastLink = {
   paddingLeft: { base: 0, lg: 4 },
 }
 
-const Footer = ({ ressources = "" }: { ressources?: string }) => {
+const Footer = () => {
+  const { pathname } = useRouter()
+  const [ressource, setRessource] = useState<string>()
+
+  useEffect(() => {
+    if (pathname === "/acces-recruteur") {
+      setRessource("recruter")
+    }
+    if (pathname === "/organisme-de-formation") {
+      setRessource("cfa")
+    }
+  }, [])
+
   return (
     <Box as="footer" borderTop="1px solid" borderTopColor="info" paddingTop={6} marginTop={12}>
       <Container variant={"responsiveContainer"}>
@@ -116,7 +130,7 @@ const Footer = ({ ressources = "" }: { ressources?: string }) => {
                 </NextLink>
               </ListItem>
               <ListItem {...basicLink}>
-                <NextLink legacyBehavior passHref href={`/ressources${ressources ? "#" + ressources : ""}`}>
+                <NextLink legacyBehavior passHref href={{ pathname: "/ressources", hash: ressource }}>
                   <Link aria-label="Accès à la page Ressources">Ressources</Link>
                 </NextLink>
               </ListItem>

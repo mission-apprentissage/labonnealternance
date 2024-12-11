@@ -2,7 +2,6 @@ import { LBA_ITEM_TYPE } from "../constants/lbaitem"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { zObjectId } from "../models/common"
-import { ZJobsPartnersWritableApi } from "../models/jobsPartners.model"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
 import { ZLbaItemFtJob, ZLbaItemLbaCompany, ZLbaItemLbaJob } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
@@ -23,7 +22,6 @@ import {
   zSourcesParams,
 } from "./_params"
 import { IRoutesDef, ZResError } from "./common.routes"
-import { ZJobOpportunityGetQuery, ZJobsOpportunityResponse } from "./jobOpportunity.routes"
 
 export const zJobsRoutesV2 = {
   get: {
@@ -295,34 +293,8 @@ export const zJobsRoutesV2 = {
         })}`,
       },
     },
-    "/jobs/search": {
-      method: "get",
-      path: "/jobs/search",
-      querystring: ZJobOpportunityGetQuery,
-      response: {
-        "200": ZJobsOpportunityResponse,
-      },
-      securityScheme: {
-        auth: "api-apprentissage",
-        access: null,
-        resources: {},
-      },
-    },
   },
   post: {
-    "/jobs": {
-      method: "post",
-      path: "/jobs",
-      body: ZJobsPartnersWritableApi,
-      response: {
-        "201": z.object({ id: zObjectId }),
-      },
-      securityScheme: {
-        auth: "api-apprentissage",
-        access: "api-apprentissage:jobs",
-        resources: {},
-      },
-    },
     "/jobs/provided/:id": {
       method: "post",
       path: "/jobs/provided/:id",
@@ -390,26 +362,6 @@ export const zJobsRoutesV2 = {
         tags: ["V2 - Jobs"] as string[],
         operationId: "statsViewLbaJob",
         description: `Notifies that the detail of a matcha job has been viewed\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
-      },
-    },
-  },
-  put: {
-    "/jobs/:id": {
-      method: "put",
-      path: "/jobs/:id",
-      params: z.object({
-        id: zObjectId,
-      }),
-      body: ZJobsPartnersWritableApi,
-      response: {
-        "204": z.null(),
-      },
-      securityScheme: {
-        auth: "api-apprentissage",
-        access: "api-apprentissage:jobs",
-        resources: {
-          jobPartner: [{ _id: { type: "params", key: "id" } }],
-        },
       },
     },
   },

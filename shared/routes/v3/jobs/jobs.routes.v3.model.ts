@@ -1,16 +1,18 @@
 import { z } from "zod"
 
+import { TRAINING_CONTRACT_TYPE } from "../../../constants"
+import { extensions } from "../../../helpers/zodHelpers/zodPrimitives"
+import { JOB_STATUS_ENGLISH } from "../../../models"
 import {
+  zDiplomaEuropeanLevel,
   ZJobsPartnersOfferApi,
-  ZJobsPartnersPostApiBodyBase,
+  ZJobsPartnersOfferPrivate,
   ZJobsPartnersRecruiterApi,
-  ZJobsPartnersWritableApi,
   type IJobsPartnersOfferApi,
   type IJobsPartnersRecruiterApi,
-  type IJobsPartnersWritableApi,
-  type IJobsPartnersWritableApiInput,
 } from "../../../models/jobsPartners.model"
-import type { IJobsOpportunityResponse } from "../../jobOpportunity.routes"
+
+const TIME_CLOCK_TOLERANCE = 300_000
 
 export const zJobRecruiterApiReadV3 = z.object({
   identifier: z.object({
@@ -42,6 +44,7 @@ export const zJobRecruiterApiReadV3 = z.object({
   apply: z.object({
     url: ZJobsPartnersRecruiterApi.shape.apply_url,
     phone: ZJobsPartnersRecruiterApi.shape.apply_phone,
+    recipient_id: ZJobsPartnersRecruiterApi.shape.apply_recipient_id,
   }),
 })
 
@@ -80,96 +83,143 @@ export const zJobOfferApiReadV3 = z.object({
 
 export type IJobOfferApiReadV3 = z.output<typeof zJobOfferApiReadV3>
 
-export const zJobSearchApiV3 = z.object({
+export const zJobSearchApiV3Response = z.object({
   jobs: zJobOfferApiReadV3.array(),
   recruiters: zJobRecruiterApiReadV3.array(),
   warnings: z.array(z.object({ message: z.string(), code: z.string() })),
 })
 
-export type IJobSearchApiV3 = z.output<typeof zJobSearchApiV3>
-
-export const zJobOfferApiWriteV3 = z
+export const zJobSearchApiV3Query = z
   .object({
-    identifier: z.object({
-      partner_job_id: ZJobsPartnersPostApiBodyBase.shape.partner_job_id,
-    }),
-    contract: z.object({
-      start: ZJobsPartnersPostApiBodyBase.shape.contract_start,
-      duration: ZJobsPartnersPostApiBodyBase.shape.contract_duration,
-      type: ZJobsPartnersPostApiBodyBase.shape.contract_type,
-      remote: ZJobsPartnersPostApiBodyBase.shape.contract_remote,
-    }),
-    offer: z
+    latitude: extensions.latitude({ coerce: true }).nullable().default(null),
+    longitude: extensions.longitude({ coerce: true }).nullable().default(null),
+    radius: z.coerce.number().min(0).max(200).default(30),
+    target_diploma_level: zDiplomaEuropeanLevel.optional(),
+    romes: extensions.romeCodeArray().nullable().default(null),
+    rncp: extensions.rncpCode().nullable().default(null),
+  })
+  .superRefine((data, ctx) => {
+    if (data.longitude == null && data.latitude != null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["longitude"],
+        message: "longitude is required when latitude is provided",
+      })
+    }
+
+    if (data.longitude != null && data.latitude == null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["latitude"],
+        message: "latitude is required when longitude is provided",
+      })
+    }
+  })
+
+export type IJobSearchApiV3Response = z.output<typeof zJobSearchApiV3Response>
+export type IJobSearchApiV3Query = z.output<typeof zJobSearchApiV3Query>
+export type IJobSearchApiV3QueryResolved = Omit<IJobSearchApiV3Query, "latitude" | "longitude" | "radius" | "rncp"> & {
+  geo: { latitude: number; longitude: number; radius: number } | null
+}
+
+export const zJobOfferApiWriteV3 = z.object({
+  identifier: z
+    .object({
+      partner_job_id: ZJobsPartnersOfferPrivate.shape.partner_job_id.default(null),
+    })
+    .default({}),
+  contract: z
+    .object({
+      start: z
+        .string({ message: "Expected ISO 8601 date string" })
+        .datetime({ offset: true, message: "Expected ISO 8601 date string" })
+        .pipe(z.coerce.date())
+        .nullable()
+        .default(null),
+      duration: ZJobsPartnersOfferPrivate.shape.contract_duration.default(null),
+      type: ZJobsPartnersOfferPrivate.shape.contract_type.default([TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION]),
+      remote: ZJobsPartnersOfferPrivate.shape.contract_remote.default(null),
+    })
+    .default({}),
+  offer: z.object({
+    title: ZJobsPartnersOfferPrivate.shape.offer_title,
+    rome_codes: ZJobsPartnersOfferPrivate.shape.offer_rome_codes.nullable().default(null),
+    description: ZJobsPartnersOfferPrivate.shape.offer_description.min(30, "Job description should be at least 30 characters"),
+    target_diploma: z
       .object({
-        title: ZJobsPartnersPostApiBodyBase.shape.offer_title,
-        rome_codes: ZJobsPartnersPostApiBodyBase.shape.offer_rome_codes,
-        description: ZJobsPartnersPostApiBodyBase.shape.offer_description,
-        target_diploma: z
-          .object({
-            european: ZJobsPartnersPostApiBodyBase.shape.offer_target_diploma_european,
-          })
+        european: zDiplomaEuropeanLevel.nullable().default(null),
+      })
+      .nullable()
+      .default(null),
+    desired_skills: ZJobsPartnersOfferPrivate.shape.offer_desired_skills.default([]),
+    to_be_acquired_skills: ZJobsPartnersOfferPrivate.shape.offer_to_be_acquired_skills.default([]),
+    access_conditions: ZJobsPartnersOfferPrivate.shape.offer_access_conditions.default([]),
+    publication: z
+      .object({
+        creation: z
+          .string({ message: "Expected ISO 8601 date string" })
+          .datetime({ offset: true, message: "Expected ISO 8601 date string" })
+          .pipe(
+            z.coerce.date().refine((value) => value.getTime() < Date.now() + TIME_CLOCK_TOLERANCE, {
+              message: "Creation date cannot be in the future",
+            })
+          )
           .nullable()
           .default(null),
-        desired_skills: ZJobsPartnersPostApiBodyBase.shape.offer_desired_skills,
-        to_be_acquired_skills: ZJobsPartnersPostApiBodyBase.shape.offer_to_be_acquired_skills,
-        access_conditions: ZJobsPartnersPostApiBodyBase.shape.offer_access_conditions,
-        publication: z
-          .object({
-            creation: ZJobsPartnersPostApiBodyBase.shape.offer_creation,
-            expiration: ZJobsPartnersPostApiBodyBase.shape.offer_expiration,
-          })
-          .partial(),
-        opening_count: ZJobsPartnersPostApiBodyBase.shape.offer_opening_count,
-        origin: ZJobsPartnersPostApiBodyBase.shape.offer_origin,
-        multicast: ZJobsPartnersPostApiBodyBase.shape.offer_multicast,
-      })
-      .partial()
-      .required({
-        title: true,
-        description: true,
-      }),
-    apply: z
-      .object({
-        email: ZJobsPartnersPostApiBodyBase.shape.apply_email,
-        phone: ZJobsPartnersPostApiBodyBase.shape.apply_phone,
-        url: ZJobsPartnersPostApiBodyBase.shape.apply_url,
-      })
-      .partial()
-      .superRefine((data, ctx) => {
-        const keys = ["url", "email", "phone"] as const
-        if (keys.every((key) => data[key] == null)) {
-          keys.forEach((key) => {
-            ctx.addIssue({
-              code: "custom",
-              message: "At least one of url, email, or phone is required",
-              path: [key],
+        expiration: z
+          .string({ message: "Expected ISO 8601 date string" })
+          .datetime({ offset: true, message: "Expected ISO 8601 date string" })
+          .pipe(
+            z.coerce.date().refine((value) => value === null || value.getTime() > Date.now() - TIME_CLOCK_TOLERANCE, {
+              message: "Expiration date cannot be in the past",
             })
-          })
-        }
-
-        return data
-      }),
-    workplace: z
-      .object({
-        siret: ZJobsPartnersPostApiBodyBase.shape.workplace_siret,
-        name: ZJobsPartnersPostApiBodyBase.shape.workplace_name,
-        website: ZJobsPartnersPostApiBodyBase.shape.workplace_website,
-        description: ZJobsPartnersPostApiBodyBase.shape.workplace_description,
-        location: z
-          .object({
-            address: ZJobsPartnersPostApiBodyBase.shape.workplace_address_label,
-          })
-          .nullish(),
+          )
+          .nullable()
+          .default(null),
       })
-      .partial()
-      .required({ siret: true }),
-  })
-  .partial({
-    identifier: true,
-    contract: true,
-  })
+      .default({}),
+    opening_count: ZJobsPartnersOfferPrivate.shape.offer_opening_count.default(1),
+    origin: ZJobsPartnersOfferPrivate.shape.offer_origin,
+    multicast: ZJobsPartnersOfferPrivate.shape.offer_multicast,
+    status: ZJobsPartnersOfferPrivate.shape.offer_status.default(JOB_STATUS_ENGLISH.ACTIVE),
+  }),
+  apply: z
+    .object({
+      email: ZJobsPartnersOfferPrivate.shape.apply_email,
+      phone: extensions.telephone.nullable().describe("Téléphone de contact").default(null),
+      url: ZJobsPartnersOfferApi.shape.apply_url.nullable().default(null),
+    })
+    .required()
+    .superRefine((data, ctx) => {
+      const keys = ["url", "email", "phone"] as const
+      if (keys.every((key) => data[key] == null)) {
+        keys.forEach((key) => {
+          ctx.addIssue({
+            code: "custom",
+            message: "At least one of url, email, or phone is required",
+            path: [key],
+          })
+        })
+      }
+
+      return data
+    }),
+  workplace: z.object({
+    siret: extensions.siret,
+    name: ZJobsPartnersOfferPrivate.shape.workplace_name.default(null),
+    website: ZJobsPartnersOfferPrivate.shape.workplace_website.default(null),
+    description: ZJobsPartnersOfferPrivate.shape.workplace_description.default(null),
+    location: z
+      .object({
+        address: z.string().nullable().default(null),
+      })
+      .nullable()
+      .default({}),
+  }),
+})
 
 export type IJobOfferApiWriteV3 = z.output<typeof zJobOfferApiWriteV3>
+export type IJobOfferApiWriteV3Input = z.input<typeof zJobOfferApiWriteV3>
 
 function convertToJobWorkplaceReadV3(input: IJobsPartnersOfferApi | IJobsPartnersRecruiterApi): IJobRecruiterApiReadV3["workplace"] {
   return {
@@ -196,18 +246,10 @@ function convertToJobApplyReadV3(input: IJobsPartnersOfferApi | IJobsPartnersRec
   return {
     url: input.apply_url,
     phone: input.apply_phone,
+    recipient_id: input.apply_recipient_id || null,
   }
 }
 
-function convertToJobRecruiterApiReadV3(input: IJobsPartnersRecruiterApi): IJobRecruiterApiReadV3 {
-  return {
-    identifier: {
-      id: input._id,
-    },
-    workplace: convertToJobWorkplaceReadV3(input),
-    apply: convertToJobApplyReadV3(input),
-  }
-}
 function convertToJobOfferApiReadV3(input: IJobsPartnersOfferApi): IJobOfferApiReadV3 {
   return {
     identifier: {
@@ -244,108 +286,6 @@ function convertToJobOfferApiReadV3(input: IJobsPartnersOfferApi): IJobOfferApiR
   }
 }
 
-function convertToJobSearchApiV3(input: IJobsOpportunityResponse): IJobSearchApiV3 {
-  return {
-    jobs: input.jobs.map(convertToJobOfferApiReadV3),
-    recruiters: input.recruiters.map(convertToJobRecruiterApiReadV3),
-    warnings: input.warnings,
-  }
-}
-
-function convertToJobsPartnersWritableApi(jobOffer: IJobOfferApiWriteV3): IJobsPartnersWritableApi {
-  const result: IJobsPartnersWritableApiInput = {
-    offer_title: jobOffer.offer.title,
-    offer_description: jobOffer.offer.description,
-    workplace_siret: jobOffer.workplace.siret,
-  }
-
-  if (jobOffer.identifier) {
-    if (jobOffer.identifier.partner_job_id != null) {
-      result.partner_job_id = jobOffer.identifier.partner_job_id
-    }
-  }
-
-  if (jobOffer.workplace.name != null) {
-    result.workplace_name = jobOffer.workplace.name
-  }
-  if (jobOffer.workplace.description != null) {
-    result.workplace_description = jobOffer.workplace.description
-  }
-  if (jobOffer.workplace.website != null) {
-    result.workplace_website = jobOffer.workplace.website
-  }
-  if (jobOffer.workplace.location != null) {
-    result.workplace_address_label = jobOffer.workplace.location.address
-  }
-
-  if (jobOffer.apply.url != null) {
-    result.apply_url = jobOffer.apply.url
-  }
-  if (jobOffer.apply.phone != null) {
-    result.apply_phone = jobOffer.apply.phone
-  }
-  if (jobOffer.apply.email != null) {
-    result.apply_email = jobOffer.apply.email
-  }
-
-  if (jobOffer.contract) {
-    if (jobOffer.contract.start != null) {
-      result.contract_start = jobOffer.contract.start.toJSON()
-    }
-    if (jobOffer.contract.duration != null) {
-      result.contract_duration = jobOffer.contract.duration
-    }
-    if (jobOffer.contract.type != null) {
-      result.contract_type = jobOffer.contract.type
-    }
-    if (jobOffer.contract.remote != null) {
-      result.contract_remote = jobOffer.contract.remote
-    }
-  }
-
-  if (jobOffer.offer) {
-    if (jobOffer.offer.rome_codes != null) {
-      result.offer_rome_codes = jobOffer.offer.rome_codes
-    }
-    if (jobOffer.offer.target_diploma != null) {
-      result.offer_target_diploma_european = jobOffer.offer.target_diploma != null ? jobOffer.offer.target_diploma.european : null
-    }
-    if (jobOffer.offer.desired_skills != null) {
-      result.offer_desired_skills = jobOffer.offer.desired_skills
-    }
-    if (jobOffer.offer.to_be_acquired_skills != null) {
-      result.offer_to_be_acquired_skills = jobOffer.offer.to_be_acquired_skills
-    }
-    if (jobOffer.offer.access_conditions != null) {
-      result.offer_access_conditions = jobOffer.offer.access_conditions
-    }
-    if (jobOffer.offer.publication != null) {
-      if (jobOffer.offer.publication.creation != null) {
-        result.offer_creation = jobOffer.offer.publication.creation.toJSON()
-      }
-      if (jobOffer.offer.publication.expiration != null) {
-        result.offer_expiration = jobOffer.offer.publication.expiration.toJSON()
-      }
-    }
-    if (jobOffer.offer.opening_count != null) {
-      result.offer_opening_count = jobOffer.offer.opening_count
-    }
-    if (jobOffer.offer.multicast != null) {
-      result.offer_multicast = jobOffer.offer.multicast
-    }
-    if (jobOffer.offer.origin != null) {
-      result.offer_origin = jobOffer.offer.origin
-    }
-    // TODO: offer_status to be implemented
-    // if (jobOffer.offer.status != null) {
-    //   result.offer_status = jobOffer.offer.status;
-    // }
-  }
-
-  return ZJobsPartnersWritableApi.parse(result)
-}
-
 export const jobsRouteApiv3Converters = {
-  convertToJobSearchApiV3,
-  convertToJobsPartnersWritableApi,
+  convertToJobOfferApiReadV3,
 }

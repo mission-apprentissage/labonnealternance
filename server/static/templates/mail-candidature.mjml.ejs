@@ -81,20 +81,19 @@
 <br/>
             </mj-text>
             <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 16px 0px">
-              <span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; font-weight: 700;"><%= data.applicant_first_name %> <%= data.applicant_last_name %></span> vous adresse sa candidature à
+              <span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; font-weight: 700;">
+                <%= data.applicant_first_name %> <%= data.applicant_last_name %></span> vous adresse sa candidature à
                 <a href="<%= data.jobUrl %>" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">votre offre</a>
-              sur le métier <span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; font-weight: 700;"><%= data.job_title %>.</span>
-<br/>
+                <% if (data.job_searched_by_user) { %> sur le métier <b><%= data.job_searched_by_user %></b> <% } %>
+                pour l’entreprise <%= data.company_name %>, SIRET <%= data.company_siret %>.
+                <br/>
             </mj-text>
             <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 16px 0px">
-              Nous vous invitons à répondre au candidat à l'aide de l'un de nos 3 formulaires de réponse rapide ci-dessous :
+              Nous vous invitons à répondre au candidat à l'aide de l'un de nos 2 formulaires de réponse accessibles via les liens ci-dessous :
 <br/>
             </mj-text>
             <mj-button href="<%= data.meetCandidateUrl %>" align="center" background-color="#18753c" border-radius="0px" color="#ffffff" css-class="button" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="700" inner-padding="4px 0px 4px 0px" line-height="24px" padding="0px 0px 16px 0px" width="184px">
-              Rencontrer le candidat
-            </mj-button>
-            <mj-button href="<%= data.waitCandidateUrl %>" align="center" background-color="#000091" border-radius="0px" color="#ffffff" css-class="button" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="700" inner-padding="4px 0px 4px 0px" line-height="24px" padding="0px 0px 16px 0px" width="181px">
-              En attente de décision
+              Contacter le candidat
             </mj-button>
             <mj-button href="<%= data.refuseCandidateUrl %>" align="center" background-color="#ce0500" border-radius="0px" color="#ffffff" css-class="button" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="700" inner-padding="4px 0px 4px 0px" line-height="24px" padding="0px 0px 16px 0px" width="184px">
               Refuser la candidature

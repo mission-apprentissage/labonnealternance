@@ -4,7 +4,6 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
-import { JobOpportunityRequestContext } from "@/services/jobs/jobOpportunity/JobOpportunityRequestContext"
 
 import { s3SignedUrl } from "../../../common/utils/awsUtils"
 import { trackApiCall } from "../../../common/utils/sendTrackingEvent"
@@ -12,7 +11,7 @@ import { sentryCaptureException } from "../../../common/utils/sentryUtils"
 import dayjs from "../../../services/dayjs.service"
 import { addExpirationPeriod, getFormulaires } from "../../../services/formulaire.service"
 import { getFtJobFromIdV2 } from "../../../services/ftjob.service"
-import { createJobOffer, findJobsOpportunities, getJobsQuery, updateJobOffer } from "../../../services/jobs/jobOpportunity/jobOpportunity.service"
+import { getJobsQuery } from "../../../services/jobs/jobOpportunity/jobOpportunity.service"
 import { addOffreDetailView, getLbaJobByIdV2 } from "../../../services/lbajob.service"
 import { getCompanyFromSiret } from "../../../services/recruteurLba.service"
 import { Server } from "../../server"
@@ -64,34 +63,6 @@ export default (server: Server) => {
 
       res.status(200)
       return res.send(jobs)
-    }
-  )
-
-  server.post(
-    "/jobs",
-    {
-      schema: zRoutes.post["/jobs"],
-      onRequest: server.auth(zRoutes.post["/jobs"]),
-      config,
-    },
-    async (req, res) => {
-      const user = getUserFromRequest(req, zRoutes.post["/jobs"]).value
-      const id = await createJobOffer(user, req.body)
-      return res.status(201).send({ id })
-    }
-  )
-
-  server.put(
-    "/jobs/:id",
-    {
-      schema: zRoutes.put["/jobs/:id"],
-      onRequest: server.auth(zRoutes.put["/jobs/:id"]),
-      config,
-    },
-    async (req, res) => {
-      const user = getUserFromRequest(req, zRoutes.put["/jobs/:id"]).value
-      await updateJobOffer(req.params.id, user, req.body)
-      return res.status(204).send()
     }
   )
 
@@ -298,9 +269,4 @@ export default (server: Server) => {
       }
     }
   )
-
-  server.get("/jobs/search", { schema: zRoutes.get["/jobs/search"], onRequest: server.auth(zRoutes.get["/jobs/search"]) }, async (req, res) => {
-    const result = await findJobsOpportunities(req.query, new JobOpportunityRequestContext(zRoutes.get["/jobs/search"], "api-apprentissage"))
-    return res.send(result)
-  })
 }

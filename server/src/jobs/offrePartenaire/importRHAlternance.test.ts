@@ -1,7 +1,8 @@
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import omit from "lodash-es/omit"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { useMongo } from "@tests/utils/mongo.test.utils"
 
 import { generateRawRHAlternanceJobFixture } from "../../../../shared/fixtures/rawRHAlternanceJob.fixture"
 
@@ -27,7 +28,7 @@ describe("import RH Alternance", () => {
     it("should test that the mapper works", async () => {
       const mapped = rawRhAlternanceToComputedMapper(now)(generateRawRHAlternanceJobFixture())
       expect.soft(mapped.business_error).toBeFalsy()
-      expect.soft(mapped).toMatchSnapshot()
+      expect.soft(omit(mapped, "_id")).toMatchSnapshot()
     })
     it("should detect a business error", async () => {
       const mapped = rawRhAlternanceToComputedMapper(now)(

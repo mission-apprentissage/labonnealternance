@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb"
 
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
+import { generateSitemap } from "@/services/sitemap.service"
 
 import { getLoggerWithContext, logger } from "../common/logger"
 import { getDatabase } from "../common/utils/mongodbUtils"
@@ -14,6 +15,7 @@ import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
 import { anonimizeUsers } from "./anonymization/anonymizeUserRecruteurs"
 import { anonymizeOldUsers } from "./anonymization/anonymizeUsers"
 import { processApplications } from "./applications/processApplications"
+import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
 import { recreateIndexes } from "./database/recreateIndexes"
 import { validateModels } from "./database/schemaValidation"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
@@ -206,6 +208,14 @@ export async function setupJobProcessor() {
           "Mise à jour du référentiel commune": {
             cron_string: "0 15 * * SUN",
             handler: updateReferentielCommune,
+          },
+          "Emission des contacts vers Brevo": {
+            cron_string: "30 22 * * *",
+            handler: sendContactsToBrevo,
+          },
+          "Génération du sitemap pour les offres": {
+            cron_string: "5 22 * * *",
+            handler: generateSitemap,
           },
         },
     jobs: {

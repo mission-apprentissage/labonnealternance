@@ -23,7 +23,14 @@ describe("formulaire.controller", () => {
     const recruiter = generateRecruiterFixture({
       establishment_siret: entreprise.siret,
       opco,
-      jobs: [generateJobFixture({ job_status: JOB_STATUS.ACTIVE, competences_rome: referentielRome.competences })],
+      jobs: [
+        generateJobFixture({
+          job_status: JOB_STATUS.ACTIVE,
+          competences_rome: referentielRome.competences,
+          rome_label: referentielRome.rome.intitule,
+          rome_appellation_label: referentielRome.appellations[0].libelle,
+        }),
+      ],
     })
     await getDbCollection("referentielromes").insertOne(referentielRome)
     await getDbCollection("entreprises").insertOne(entreprise)
