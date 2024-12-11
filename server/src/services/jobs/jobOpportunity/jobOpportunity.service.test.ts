@@ -1,6 +1,7 @@
 import { internal } from "@hapi/boom"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { IApiAlternanceTokenData } from "api-alternance-sdk"
+import omit from "lodash-es/omit"
 import { ObjectId } from "mongodb"
 import nock from "nock"
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, RECRUITER_STATUS } from "shared/constants"
@@ -1810,9 +1811,6 @@ describe("createJobOffer", () => {
   const inSept = new Date("2024-09-01T00:00:00.000Z")
 
   const minimalData: IJobOfferApiWriteV3Input = {
-    identifier: {
-      partner_job_id: "partner_job_id",
-    },
     contract: {
       start: inSept.toJSON(),
     },
@@ -1870,7 +1868,7 @@ describe("createJobOffer", () => {
   })
 
   it("should create a job offer with the minimal data", async () => {
-    const data = generateJobOfferApiWriteV3({ ...minimalData, identifier: { partner_job_id: "job-id-b" } })
+    const data = generateJobOfferApiWriteV3({ ...minimalData })
 
     const result = await createJobOffer(identity, data)
     expect(result).toBeInstanceOf(ObjectId)
@@ -1888,7 +1886,7 @@ describe("createJobOffer", () => {
     expect(job?.workplace_address_street_label).toEqual("20 AVENUE DE SEGUR")
     expect(job?.workplace_address_zipcode).toEqual("75007")
     expect(job?.workplace_address_city).toEqual("PARIS")
-    expect(job).toMatchSnapshot({
+    expect(omit(job, "partner_job_id")).toMatchSnapshot({
       _id: expect.any(ObjectId),
     })
 
@@ -1978,9 +1976,6 @@ describe("updateJobOffer", () => {
   })
 
   const minimalData: IJobOfferApiWriteV3Input = {
-    identifier: {
-      partner_job_id: "partner_job_id",
-    },
     contract: {
       start: inSept.toJSON(),
     },
@@ -2035,7 +2030,7 @@ describe("updateJobOffer", () => {
   })
 
   it("should update a job offer with the minimal data", async () => {
-    const data = generateJobOfferApiWriteV3({ ...minimalData, identifier: { ...minimalData.identifier, partner_job_id: "job-id-9" } })
+    const data = generateJobOfferApiWriteV3({ ...minimalData })
     await updateJobOffer(_id, identity, data)
 
     const job = await getDbCollection("jobs_partners").findOne({ _id })
@@ -2053,7 +2048,7 @@ describe("updateJobOffer", () => {
     expect(job?.workplace_address_zipcode).toEqual("75007")
     expect(job?.workplace_address_city).toEqual("PARIS")
 
-    expect(job).toMatchSnapshot({
+    expect(omit(job, "partner_job_id")).toMatchSnapshot({
       _id: expect.any(ObjectId),
     })
 
@@ -2065,7 +2060,6 @@ describe("updateJobOffer", () => {
 
     const data = generateJobOfferApiWriteV3({
       ...minimalData,
-      identifier: { ...minimalData.identifier, partner_job_id: "job-id-10" },
       offer: {
         ...minimalData.offer,
         rome_codes: [],

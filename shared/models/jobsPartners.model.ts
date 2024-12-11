@@ -108,7 +108,7 @@ export type IJobsPartnersOfferPrivateInput = z.input<typeof ZJobsPartnersOfferPr
 const TIME_CLOCK_TOLERANCE = 300_000
 
 export const ZJobsPartnersPostApiBodyBase = z.object({
-  partner_job_id: ZJobsPartnersOfferPrivate.shape.partner_job_id.default(null),
+  partner_job_id: ZJobsPartnersOfferPrivate.shape.partner_job_id,
 
   contract_start: z
     .string({ message: "Expected ISO 8601 date string" })

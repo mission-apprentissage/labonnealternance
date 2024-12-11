@@ -78,9 +78,6 @@ type IJobOfferExpected = {
 }
 
 type IJobOfferApiWriteV3Expected = {
-  identifier: {
-    partner_job_id: IJobOfferExpected["identifier"]["partner_job_id"]
-  }
   contract?: {
     duration?: number | null
     type?: Array<"Apprentissage" | "Professionnalisation">
@@ -146,7 +143,6 @@ describe("IJobOffer", () => {
 
 describe("IJobOfferApiWriteV3", () => {
   it("should have proper typing", () => {
-    expectTypeOf<IJobOfferApiWriteV3Input["identifier"]>().toEqualTypeOf<IJobOfferApiWriteV3Expected["identifier"]>()
     expectTypeOf<IJobOfferApiWriteV3Input["offer"]>().toEqualTypeOf<IJobOfferApiWriteV3Expected["offer"]>()
     expectTypeOf<IJobOfferApiWriteV3Input["offer"]["target_diploma"]>().toEqualTypeOf<IJobOfferApiWriteV3Expected["offer"]["target_diploma"]>()
     expectTypeOf<IJobOfferApiWriteV3Input["contract"]>().toEqualTypeOf<IJobOfferApiWriteV3Expected["contract"]>()
@@ -162,9 +158,6 @@ describe("IJobOfferApiWriteV3", () => {
   const inOneHour = new Date("2024-06-18T15:30:00.000Z")
 
   const data: IJobOfferApiWriteV3Input = {
-    identifier: {
-      partner_job_id: "partner_job_id",
-    },
     offer: {
       title: "Apprentis en développement web",
       rome_codes: ["M1602"],
