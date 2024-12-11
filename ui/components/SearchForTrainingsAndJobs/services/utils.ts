@@ -34,6 +34,9 @@ const getJobCount = (jobs) => {
     if (jobs.lbaCompanies) {
       jobCount += jobs.lbaCompanies.length
     }
+    if (jobs.partnerJobs) {
+      jobCount += jobs.partnerJobs.length
+    }
   }
 
   return jobCount

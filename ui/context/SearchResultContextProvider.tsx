@@ -1,4 +1,4 @@
-import { ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemTraining, ILbaItemTraining2 } from "@/../shared"
+import { ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob, ILbaItemTraining, ILbaItemTraining2 } from "@/../shared"
 import React, { createContext, useReducer } from "react"
 
 const initialState = {
@@ -88,7 +88,7 @@ export type IContextSearch = {
   setPartnerJobs: (b: any[]) => void
   itemToScrollTo: object
   setItemToScrollTo: (b: object) => void
-  selectedItem: ILbaItemFormation | ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob
+  selectedItem: ILbaItemFormation | ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob
   setSelectedItem: (b: object) => void
   extendedSearch: boolean
   setExtendedSearch: (b: boolean) => void

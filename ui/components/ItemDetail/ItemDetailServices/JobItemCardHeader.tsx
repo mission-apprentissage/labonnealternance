@@ -30,7 +30,7 @@ export default function JobItemCardHeader({ selectedItem, kind, isMandataire, is
       )
     }
 
-    if (kind === LBA_ITEM_TYPE_OLD.PEJOB || (kind === LBA_ITEM_TYPE_OLD.MATCHA && !isMandataire)) {
+    if ([LBA_ITEM_TYPE_OLD.PEJOB, LBA_ITEM_TYPE_OLD.MATCHA, LBA_ITEM_TYPE_OLD.PARTNER_JOB].includes(kind) && !isMandataire) {
       res = (
         // @ts-expect-error: TODO
         <Text as="p" {...detailActivityProperties} mt={2}>
