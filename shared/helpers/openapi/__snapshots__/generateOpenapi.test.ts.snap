@@ -9831,6 +9831,34 @@ Limite : 5 appel(s) / 1 seconde(s)
                                 },
                               ],
                             },
+                            "partnerJobs": {
+                              "anyOf": [
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "results": {
+                                      "items": {
+                                        "$ref": "#/components/schemas/PartnerJob",
+                                      },
+                                      "type": "array",
+                                    },
+                                  },
+                                  "required": [
+                                    "results",
+                                  ],
+                                  "type": "object",
+                                },
+                                {
+                                  "$ref": "#/components/schemas/ApiError",
+                                },
+                                {
+                                  "type": "null",
+                                },
+                                {
+                                  "type": "null",
+                                },
+                              ],
+                            },
                             "peJobs": {
                               "anyOf": [
                                 {
@@ -9865,6 +9893,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                             "matchas",
                             "lbaCompanies",
                             "lbbCompanies",
+                            "partnerJobs",
                           ],
                           "type": "object",
                         },

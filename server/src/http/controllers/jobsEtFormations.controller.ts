@@ -40,6 +40,8 @@ export default (server: Server) => {
         opcoUrl,
       })
 
+      console.log("ok")
+
       if ("error" in parameterControl) {
         if (parameterControl.error === "wrong_parameters") {
           res.status(400)
@@ -99,6 +101,10 @@ export default (server: Server) => {
 
         if (jobs && "matchas" in jobs && jobs.matchas && "results" in jobs.matchas) {
           job_count += jobs.matchas.results.length
+        }
+
+        if (jobs && "partnerJobs" in jobs && jobs.partnerJobs && "results" in jobs.partnerJobs) {
+          job_count += jobs.partnerJobs.results.length
         }
 
         const training_count = formations && "results" in formations ? formations.results.length : 0
