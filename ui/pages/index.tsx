@@ -75,7 +75,7 @@ const Home = () => {
         </Box>
         <Box {...blockCssProperties}>
           <AmeliorerLBA />
-        </Box>}
+        </Box>
       </Box>
 
       <Footer />
