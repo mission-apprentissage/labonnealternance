@@ -85,7 +85,7 @@ describe("helloWorkJobToJobsPartners", () => {
       offer_expiration: new Date("2024-09-05T20:14:56.000Z"),
       offer_origin: null,
       offer_opening_count: 1,
-      offer_multicast: true,
+      offer_multicast: false,
       workplace_siret: "39837261500128",
       workplace_name: "Stem Propreté Lyon",
       workplace_description: "ceci est une longue description de l'entreprise qui a du sens et qui va passer la limite de 30 caractères",
