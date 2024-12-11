@@ -104,7 +104,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     partner_job_id: job_id,
     contract_start: parseDate(contract_start_date),
     contract_type: contract.toLowerCase() === "alternance" ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION] : undefined,
-    contract_remote: remote ? teletravailMapping[remote] ?? null : null,
+    contract_remote: remote ? (teletravailMapping[remote] ?? null) : null,
     contract_duration: contractDuration,
     offer_title: title,
     offer_description: description && description.length >= 30 ? description : undefined,

@@ -19,10 +19,9 @@ export enum JOB_STATUS_ENGLISH {
   ACTIVE = "Active",
   POURVUE = "Filled",
   ANNULEE = "Cancelled",
-  EN_ATTENTE = "Pending",
 }
 
-export function translateJobStatus(status: JOB_STATUS): JOB_STATUS_ENGLISH {
+export function translateJobStatus(status: JOB_STATUS): JOB_STATUS_ENGLISH | undefined {
   switch (status) {
     case JOB_STATUS.ACTIVE:
       return JOB_STATUS_ENGLISH.ACTIVE
@@ -31,7 +30,7 @@ export function translateJobStatus(status: JOB_STATUS): JOB_STATUS_ENGLISH {
     case JOB_STATUS.ANNULEE:
       return JOB_STATUS_ENGLISH.ANNULEE
     case JOB_STATUS.EN_ATTENTE:
-      return JOB_STATUS_ENGLISH.EN_ATTENTE
+      return undefined
     default:
       assertUnreachable(status)
   }

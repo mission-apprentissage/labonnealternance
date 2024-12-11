@@ -1,4 +1,5 @@
-import { Box, Button, Flex, Image, SimpleGrid, Text } from "@chakra-ui/react"
+import { Box, Button, Flex, SimpleGrid, Text } from "@chakra-ui/react"
+import Image from "next/image"
 
 import { Edit2Fill, InfoCircle } from "../../theme/components/icons"
 
@@ -19,7 +20,7 @@ export const InformationOpco = ({ disabled, informationOpco, resetOpcoChoice }) 
             {informationOpco?.description}
           </Text>
           {/* eslint-disable-next-line jsx-a11y/alt-text */}
-          <Image src={informationOpco?.image} />
+          <Image src={informationOpco?.image} alt="" width={150} />
         </Flex>
         <Flex alignItems="flex-start">
           <InfoCircle w="20px" h="20px" mr={2} color="#000091" />

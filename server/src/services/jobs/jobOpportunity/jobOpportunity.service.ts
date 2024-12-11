@@ -459,7 +459,7 @@ export const convertLbaRecruiterToJobOfferApi = (offresEmploiLba: IJobResult[]):
               expiration: job.job_expiration_date ?? null,
             },
             opening_count: job.job_count ?? 1,
-            status: translateJobStatus(job.job_status),
+            status: translateJobStatus(job.job_status)!,
           },
 
           workplace: {

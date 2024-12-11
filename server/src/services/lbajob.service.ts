@@ -407,7 +407,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
       },
       place: {
         //lieu de l'offre. contient ville de l'entreprise et geoloc de l'entreprise
-        distance: recruiter.distance ?? false ? roundDistance((recruiter?.distance ?? 0) / 1000) : null,
+        distance: (recruiter.distance ?? false) ? roundDistance((recruiter?.distance ?? 0) / 1000) : null,
         fullAddress: recruiter.is_delegated ? null : recruiter.address,
         address: recruiter.is_delegated ? null : recruiter.address,
         numberAndStreet: recruiter.is_delegated ? null : getNumberAndStreet(recruiter.address_detail),
@@ -485,7 +485,7 @@ function transformLbaJobWithMinimalData({ recruiter, applicationCountByJob }: { 
       title: offre.rome_appellation_label ?? offre.rome_label,
       place: {
         //lieu de l'offre. contient ville de l'entreprise et geoloc de l'entreprise
-        distance: recruiter.distance ?? false ? roundDistance((recruiter?.distance ?? 0) / 1000) : null,
+        distance: (recruiter.distance ?? false) ? roundDistance((recruiter?.distance ?? 0) / 1000) : null,
         fullAddress: recruiter.is_delegated ? null : recruiter.address,
         address: recruiter.is_delegated ? null : recruiter.address,
         latitude,

@@ -1,6 +1,3 @@
-import { useMongo } from "@tests/utils/mongo.test.utils"
-import { useServer } from "@tests/utils/server.test.utils"
-import { saveUserWithAccount } from "@tests/utils/user.test.utils"
 import omit from "lodash/omit"
 import nock from "nock"
 import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants"
@@ -11,6 +8,9 @@ import { beforeEach, describe, expect, it } from "vitest"
 
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { useServer } from "@tests/utils/server.test.utils"
+import { saveUserWithAccount } from "@tests/utils/user.test.utils"
 
 describe("POST /etablissement/creation", () => {
   useMongo()

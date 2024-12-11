@@ -4,7 +4,7 @@ import { useContext } from "react"
 
 import { WidgetContext } from "../../../context/contextWidget"
 import { InfoCircle } from "../../../theme/components/icons"
-import { MailCloud } from "../../../theme/components/logos_pro"
+import { MailCloud } from "../../../theme/components/logos"
 import { AuthentificationLayout } from "../index"
 
 export default function CompteEnAttente() {

@@ -1,9 +1,9 @@
-import { createComputedJobPartner, createJobPartner } from "@tests/utils/jobsPartners.test.utils"
-import { useMongo } from "@tests/utils/mongo.test.utils"
 import { JOB_STATUS_ENGLISH } from "shared/models"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { createComputedJobPartner, createJobPartner } from "@tests/utils/jobsPartners.test.utils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
 
 import { cancelRemovedJobsPartners } from "./cancelRemovedJobsPartners"
 

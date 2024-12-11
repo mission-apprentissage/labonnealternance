@@ -1,8 +1,28 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Container, Divider, Grid, GridItem, Image, Link, ListItem, SimpleGrid, Text, UnorderedList } from "@chakra-ui/react"
+import { Box, Container, Divider, Grid, GridItem, Link, ListItem, SimpleGrid, Text, UnorderedList } from "@chakra-ui/react"
+import Image from "next/image"
 import NextLink from "next/link"
 import { NextSeo } from "next-seo"
-import React from "react"
+
+import j1s from "@/public/images/logosPartenaires/partenaire-1j1s.webp"
+import affelnet from "@/public/images/logosPartenaires/partenaire-affelnet.webp"
+import catalogue from "@/public/images/logosPartenaires/partenaire-catalogue.webp"
+import diagoriente from "@/public/images/logosPartenaires/partenaire-diagoriente.webp"
+import franceTravail from "@/public/images/logosPartenaires/partenaire-france-travail.webp"
+import onisep from "@/public/images/logosPartenaires/partenaire-onisep.webp"
+import opco2i from "@/public/images/logosPartenaires/partenaire-opco-2i.webp"
+import afdas from "@/public/images/logosPartenaires/partenaire-opco-afdas.webp"
+import akto from "@/public/images/logosPartenaires/partenaire-opco-akto.webp"
+import atlas from "@/public/images/logosPartenaires/partenaire-opco-atlas.webp"
+import commerce from "@/public/images/logosPartenaires/partenaire-opco-commerce.webp"
+import constructys from "@/public/images/logosPartenaires/partenaire-opco-constructys.webp"
+import ep from "@/public/images/logosPartenaires/partenaire-opco-ep.webp"
+import ocapiat from "@/public/images/logosPartenaires/partenaire-opco-ocapiat.webp"
+import sante from "@/public/images/logosPartenaires/partenaire-opco-sante.webp"
+import uniformation from "@/public/images/logosPartenaires/partenaire-opco-uniformation.webp"
+import parcoursup from "@/public/images/logosPartenaires/partenaire-parcoursup.webp"
+import portailAlternance from "@/public/images/logosPartenaires/partenaire-portail-alternance.webp"
+import tbd from "@/public/images/logosPartenaires/partenaire-tdb.webp"
 
 import Breadcrumb from "../components/breadcrumb"
 import Footer from "../components/footer"
@@ -127,25 +147,25 @@ const APropos = () => (
             </Text>
 
             <SimpleGrid gap={2} mb={4} columns={[2, 3, 4]}>
-              <Image src="/images/logosPartenaires/partenaire-France Travail.png" alt="France Travail" />
-              <Image src="/images/logosPartenaires/partenaire-Parcoursup.png" alt="Parcoursup" />
-              <Image src="/images/logosPartenaires/partenaire-onisep.png" alt="Onisep" />
-              <Image src="/images/logosPartenaires/partenaire-portail de lalternance.png" alt="Portail de l'alternance" />
-              <Image src="/images/logosPartenaires/partenaire-1j1s.png" alt="un jeune une solution" />
-              <Image src="/images/logosPartenaires/partenaire-affelnet.png" alt="affelnet" />
-              <Image src="/images/logosPartenaires/partenaire-opco-ocapiat.png" alt="opco ocapiat" />
-              <Image src="/images/logosPartenaires/partenaire-opco-2i.png" alt="opco 2i" />
-              <Image src="/images/logosPartenaires/partenaire-opco-sante.png" alt="opco santé" />
-              <Image src="/images/logosPartenaires/partenaire-opco-atlas.png" alt="opco atlas" />
-              <Image src="/images/logosPartenaires/partenaire-opco-afdas.png" alt="opco afdas" />
-              <Image src="/images/logosPartenaires/partenaire-opco-ep.png" alt="opco e p" />
-              <Image src="/images/logosPartenaires/partenaire-opco-commerce.png" alt="opco commerce" />
-              <Image src="/images/logosPartenaires/partenaire-opco-constructys.png" alt="opco constructys" />
-              <Image src="/images/logosPartenaires/partenaire-opco-uniformation.png" alt="opco uniformation" />
-              <Image src="/images/logosPartenaires/partenaire-opco-akto.png" alt="opco akto" />
-              <Image src="/images/logosPartenaires/partenaire-diagoriente.png" alt="Diagoriente" />
-              <Image src="/images/logosPartenaires/partenaire-tdb.png" alt="Tableau de bord de l'apprentissage" />
-              <Image src="/images/logosPartenaires/partenaire-catalogue.png" alt="Catalogue intercarif oref" />
+              <Image src={franceTravail} alt="France Travail" />
+              <Image src={parcoursup} alt="Parcoursup" />
+              <Image src={onisep} alt="Onisep" />
+              <Image src={portailAlternance} alt="Portail de l'alternance" />
+              <Image src={j1s} alt="un jeune une solution" />
+              <Image src={affelnet} alt="affelnet" />
+              <Image src={ocapiat} alt="opco ocapiat" />
+              <Image src={opco2i} alt="opco 2i" />
+              <Image src={sante} alt="opco santé" />
+              <Image src={atlas} alt="opco atlas" />
+              <Image src={afdas} alt="opco afdas" />
+              <Image src={ep} alt="opco ep" />
+              <Image src={commerce} alt="opco commerce" />
+              <Image src={constructys} alt="opco constructys" />
+              <Image src={uniformation} alt="opco uniformation" />
+              <Image src={akto} alt="opco akto" />
+              <Image src={diagoriente} alt="Diagoriente" />
+              <Image src={tbd} alt="Tableau de bord de l'apprentissage" />
+              <Image src={catalogue} alt="Catalogue intercarif oref" />
             </SimpleGrid>
 
             <Text variant="editorialContentH2" as="h2">
