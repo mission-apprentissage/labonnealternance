@@ -170,8 +170,6 @@ export const getPartnerJobs = async ({
 
     const rawPartnerJobs = await getJobsPartnersFromDBForUI(resolvedQuery)
 
-    //console.log("partnerJobs : ", rawPartnerJobs.length, rawPartnerJobs)
-
     let partnerJobs: ILbaItemPartnerJob[] = transformPartnerJobs({ partnerJobs: rawPartnerJobs, isMinimalData })
 
     // filtrage sur l'opco

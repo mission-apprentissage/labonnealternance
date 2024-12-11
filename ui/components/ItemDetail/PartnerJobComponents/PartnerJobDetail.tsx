@@ -22,8 +22,6 @@ const getContractTypes = (contractTypes) => {
 }
 
 export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJob; title: string }) => {
-  console.log(title, "job :", job)
-
   useEffect(() => {
     document.getElementsByClassName("choiceCol")[0].scrollTo(0, 0)
   }, [])

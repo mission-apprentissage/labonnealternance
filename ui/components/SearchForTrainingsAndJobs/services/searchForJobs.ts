@@ -76,7 +76,7 @@ export const searchForJobsFunction = async ({
         results.matchas = results.matchas.filter((matcha) => !matcha.company.mandataire)
       }
 
-      if (followUpItem && [LBA_ITEM_TYPE_OLD.MATCHA, LBA_ITEM_TYPE_OLD.LBA, LBA_ITEM_TYPE_OLD.PARTNER_JOB].includes(followUpItem.parameters.type)) {
+      if (followUpItem && LBA_ITEM_TYPE_OLD.FORMATION !== followUpItem.parameters.type) {
         selectFollowUpItem({
           itemId: followUpItem.parameters.itemId,
           type: followUpItem.parameters.type,

@@ -257,8 +257,6 @@ export const getLbaJobs = async ({
 
     const jobs = await getJobs(params)
 
-    //console.log("partnerJobs : ", rawPartnerJobs.length, rawPartnerJobs)
-
     const ids = jobs.flatMap((recruiter) => (recruiter?.jobs ? recruiter.jobs.map(({ _id }) => _id.toString()) : []))
 
     const applicationCountByJob = await getApplicationByJobCount(ids)
