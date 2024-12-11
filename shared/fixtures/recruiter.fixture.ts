@@ -24,7 +24,7 @@ type RecruiterFixtureInput = Partial<
   }
 >
 
-export function generateRecruiterFixture(data: RecruiterFixtureInput): IRecruiter {
+export function generateRecruiterFixture(data: RecruiterFixtureInput = {}): IRecruiter {
   return {
     _id: new ObjectId(),
     establishment_id: "xxxx-xxxx-xxxx-xxxx",
@@ -36,6 +36,25 @@ export function generateRecruiterFixture(data: RecruiterFixtureInput): IRecruite
     status: RECRUITER_STATUS.ACTIF,
     createdAt: new Date("2021-01-28T15:00:00.000Z"),
     updatedAt: new Date("2021-02-03T17:00:00.000Z"),
+    address_detail: {
+      numero_voie: "15",
+      type_voie: "RUE",
+      nom_voie: "DES LOUPS",
+      complement_adresse: null,
+      code_postal: "75002",
+      localite: "PARIS",
+      code_insee_localite: "75002",
+      cedex: null,
+      acheminement_postal: {
+        l1: null,
+        l2: null,
+        l3: null,
+        l4: "15 RUE DES LOUPS",
+        l5: null,
+        l6: "75002 PARIS",
+        l7: "FRANCE",
+      },
+    },
     ...data,
     jobs: data.jobs ? data.jobs.map((job) => generateJobFixture(job)) : [generateJobFixture({})],
   }

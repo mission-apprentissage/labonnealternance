@@ -13156,6 +13156,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"i18next@npm:^24.0.5":
+  version: 24.0.5
+  resolution: "i18next@npm:24.0.5"
+  dependencies:
+    "@babel/runtime": ^7.23.2
+  peerDependencies:
+    typescript: ^5
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: ae5bc37682f14f4ee44450e10598d32edd324edba2d0980339aa232cdfd506174a2e2dd7b9204d2882c28ddc37261c26c6b7b153ff586e54be71e27599d3dbf8
+  languageName: node
+  linkType: hard
+
 "iconv-lite@npm:0.4.24, iconv-lite@npm:^0.4.24":
   version: 0.4.24
   resolution: "iconv-lite@npm:0.4.24"
@@ -20678,6 +20692,7 @@ __metadata:
     bson: ^6.7.0
     dayjs: ^1.11.13
     eslint-plugin-zod: ^1.4.0
+    i18next: ^24.0.5
     libphonenumber-js: ^1.11.7
     lodash-es: ^4.17.21
     luhn: ^2.4.1
@@ -20686,6 +20701,7 @@ __metadata:
     type-fest: ^4.26.0
     typescript: ^5.4.5
     zod: 3.23.8
+    zod-i18n-map: ^2.27.0
     zod-mongodb-schema: ^1.0.2
   languageName: unknown
   linkType: soft
@@ -23453,6 +23469,16 @@ __metadata:
     formik: ^2.2.9
     zod: ^3.22.4
   checksum: 5c77666105b89c35255d42a85e60c30ee2b1546029a633fdc74f8d3ee2fba618ce6f6bb16ccf79c164fba33ca78fa72e94902590e2966b081b20c71ab7b05b9c
+  languageName: node
+  linkType: hard
+
+"zod-i18n-map@npm:^2.27.0":
+  version: 2.27.0
+  resolution: "zod-i18n-map@npm:2.27.0"
+  peerDependencies:
+    i18next: ">=21.3.0"
+    zod: ">=3.17.0"
+  checksum: 9c06867e6f8ee883ccde1b980477563409cf89759a7af345cafd2da5a3d241892f3372e37ddf482a7b7dc40602079292870b64c3c82263141feae341b80da1c1
   languageName: node
   linkType: hard
 

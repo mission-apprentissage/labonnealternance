@@ -1,6 +1,7 @@
 import { init } from "@socialgouv/matomo-next"
 import { useRouter } from "next/router"
 import { useEffect } from "react"
+import { setZodLanguage } from "shared/i18n/i18n"
 
 import { setIsTrackingEnabled, setTrackingCookies } from "@/common/utils/trackingCookieUtils"
 
@@ -18,6 +19,7 @@ export default function LaBonneAlternance({ Component, pageProps }) {
   const router = useRouter()
 
   useEffect(() => {
+    setZodLanguage("fr")
     init(publicConfig.matomo)
     setIsTrackingEnabled()
   }, [])
