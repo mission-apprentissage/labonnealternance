@@ -1,5 +1,5 @@
 import { z } from "../helpers/zodWithOpenApi"
-import { ZApplicationApiJobId, ZApplicationApiRecruteurId, ZApplicationPrivateCompanySiret, ZApplicationPrivateJobId } from "../models"
+import { ZApplicationApiPayload } from "../models"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -8,7 +8,7 @@ export const zApplicationRoutesV2 = {
     "/application": {
       path: "/application",
       method: "post",
-      body: z.union([ZApplicationApiRecruteurId, ZApplicationApiJobId]),
+      body: ZApplicationApiPayload,
       response: {
         "202": z.object({
           id: z.string(),
@@ -19,7 +19,7 @@ export const zApplicationRoutesV2 = {
     "/_private/application": {
       path: "/_private/application",
       method: "post",
-      body: z.union([ZApplicationPrivateCompanySiret, ZApplicationPrivateJobId]),
+      body: ZApplicationApiPayload,
       response: {
         "200": z.object({}),
       },

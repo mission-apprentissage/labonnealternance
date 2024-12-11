@@ -3,6 +3,7 @@ import { z } from "zod"
 import apicallsModel from "./apicalls.model"
 import applicationsModel from "./applications.model"
 import appointmentsModel from "./appointments.model"
+import cacheGeolocationModel from "./cacheGeolocation.model"
 import cacheInfosSiretModel from "./cacheInfosSiret.model"
 import cacheRomeoModel from "./cacheRomeo.model"
 import cfaModel from "./cfa.model"
@@ -40,6 +41,7 @@ import roleManagement360Model from "./roleManagement360.model"
 import romeModel from "./rome.model"
 import sessionModel from "./session.model"
 import siretDiffusibleStatusModel from "./siretDiffusibleStatus.model"
+import sitemapModel from "./sitemap.model"
 import trafficSourcesModel from "./trafficSources.model"
 import unsubscribedLbaCompanyModel from "./unsubscribedRecruteurLba.model"
 import unsubscribeOFModel from "./unsubscribeOF.model"
@@ -51,6 +53,7 @@ const modelDescriptorMap = {
   [apicallsModel.collectionName]: apicallsModel,
   [applicationsModel.collectionName]: applicationsModel,
   [cacheRomeoModel.collectionName]: cacheRomeoModel,
+  [cacheGeolocationModel.collectionName]: cacheGeolocationModel,
   [cfaModel.collectionName]: cfaModel,
   [credentialsModel.collectionName]: credentialsModel,
   [customEmailETFAModel.collectionName]: customEmailETFAModel,
@@ -91,6 +94,7 @@ const modelDescriptorMap = {
   [rawKelioModel.collectionName]: rawKelioModel,
   [rawRHAlternanceModel.collectionName]: rawRHAlternanceModel,
   [trafficSourcesModel.collectionName]: trafficSourcesModel,
+  [sitemapModel.collectionName]: sitemapModel,
 } as const satisfies Record<string, IModelDescriptor>
 
 export const modelDescriptors = Object.values(modelDescriptorMap) as (typeof modelDescriptorMap)[keyof typeof modelDescriptorMap][] satisfies IModelDescriptor[]

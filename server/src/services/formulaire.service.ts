@@ -5,7 +5,7 @@ import equal from "fast-deep-equal"
 import { Filter, ObjectId, UpdateFilter } from "mongodb"
 import { IDelegation, IJob, IJobCreate, IJobWithRomeDetail, IRecruiter, IRecruiterWithApplicationCount, IUserRecruteur, JOB_STATUS, removeAccents } from "shared"
 import { getDirectJobPath } from "shared/constants/lbaitem"
-import { RECRUITER_STATUS } from "shared/constants/recruteur"
+import { OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
@@ -104,6 +104,7 @@ const romeDetailAndCandidatureCountAggregateStage = [
           $project: {
             referentielrome: 0,
             "jobs.rome_detail._id": 0,
+            "jobs.rome_detail.couple_appellation_rome": 0,
             "jobs.jobIdStr": 0,
             applications: 0,
           },
@@ -161,7 +162,7 @@ export const romeDetailAggregateStages = [
     $replaceRoot: { newRoot: { $mergeObjects: ["$recruiters", { jobs: "$jobs" }] } },
   },
   {
-    $project: { referentielrome: 0, "jobs.rome_detail._id": 0 },
+    $project: { referentielrome: 0, "jobs.rome_detail._id": 0, "jobs.rome_detail.couple_appellation_rome": 0 },
   },
 ]
 
@@ -719,7 +720,7 @@ const activateAndExtendOffre = async (id: IJob["_id"]): Promise<IJob> => {
  */
 export const activateEntrepriseRecruiterForTheFirstTime = async (entrepriseRecruiter: IRecruiter) => {
   const firstJob = entrepriseRecruiter.jobs.at(0)
-  if (firstJob) {
+  if (firstJob && firstJob.job_status === JOB_STATUS.EN_ATTENTE) {
     const job = await activateAndExtendOffre(firstJob._id)
     // Send delegation if any
     if (job.delegations?.length) {
@@ -836,6 +837,10 @@ export const getJobFromRecruiter = (recruiter: IRecruiter, jobId: string): IJob 
 
 export const getFormulaireFromUserId = async (userId: string) => {
   return getDbCollection("recruiters").findOne({ managed_by: userId })
+}
+
+export const getFormulaireFromUserIdWithOpco = async (userId: string, opco: OPCOS_LABEL) => {
+  return getDbCollection("recruiters").findOne({ managed_by: userId, opco })
 }
 
 export const getFormulaireFromUserIdOrError = async (userId: string) => {

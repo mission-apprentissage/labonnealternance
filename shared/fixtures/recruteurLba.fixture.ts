@@ -15,7 +15,7 @@ export function generateLbaCompanyFixture(data: Partial<ILbaCompany>): ILbaCompa
     street_name: null,
     insee_city_code: null,
     zip_code: null,
-    city: null,
+    city: "Paris",
     geo_coordinates: "48.860825,2.318606",
     email: null,
     phone: null,

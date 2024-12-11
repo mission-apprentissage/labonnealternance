@@ -6,12 +6,12 @@ import { IFormationCatalogue } from "shared/models"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-import apiGeoAdresse from "../common/utils/apiGeoAdresse"
 import { asyncForEach } from "../common/utils/asyncUtils"
 import config from "../config.js"
 
 import { getRomesFromRncp } from "./external/api-alternance/certification.service"
 import { filterWrongRomes } from "./formation.service"
+import { getGeolocation } from "./geolocation.service"
 
 interface IWish {
   id: string
@@ -185,15 +185,15 @@ const getLBALink = async (wish: IWish): Promise<string> => {
   const postCode = wish.code_insee || wish.code_postal
   let wLat, wLon
   if (postCode) {
-    let responseApiAdresse = await apiGeoAdresse.search(postCode)
+    let geoFeature = await getGeolocation(postCode)
 
-    if (!responseApiAdresse || !responseApiAdresse.features.length) {
+    if (!geoFeature) {
       const generalPostCode = postCode.replace(/\d{3}$/, "000")
-      responseApiAdresse = await apiGeoAdresse.search(generalPostCode)
+      geoFeature = await getGeolocation(generalPostCode)
     }
 
-    if (responseApiAdresse && responseApiAdresse.features.length) {
-      ;[wLon, wLat] = responseApiAdresse.features[0].geometry.coordinates
+    if (geoFeature) {
+      ;[wLon, wLat] = geoFeature.geometry.coordinates
     }
   }
 

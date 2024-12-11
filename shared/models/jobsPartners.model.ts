@@ -19,7 +19,6 @@ export enum JOBPARTNERS_LABEL {
 
 export const ZJobsPartnersRecruiterApi = z.object({
   _id: zObjectId,
-
   workplace_siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
   workplace_brand: z.string().nullable().describe("Nom d'enseigne de l'établissement"),
   workplace_legal_name: z.string().nullable().describe("Nom légal de l'entreprise"),
@@ -36,6 +35,7 @@ export const ZJobsPartnersRecruiterApi = z.object({
 
   apply_url: z.string().url().describe("URL pour candidater"),
   apply_phone: z.string().nullable().describe("Téléphone de contact"),
+  apply_recipient_id: z.string().nullish().describe("Identifiant permettant de candidaté via l'API, généré à la volé pour les offres LBA uniquement"),
 })
 
 export const zDiplomaEuropeanLevel = z.enum(["3", "4", "5", "6", "7"])
@@ -78,6 +78,10 @@ const ZJobsPartnersRecruiterPrivateFields = z.object({
   offer_multicast: z.boolean().default(true).describe("Si l'offre peut être diffusé sur l'ensemble des plateformes partenaires"),
   offer_origin: z.string().nullable().describe("Origine de l'offre provenant d'un aggregateur").default(null),
 
+  workplace_address_street_label: z.string().nullable().describe("Numéro et voie, provenant du SIRET ou du partenaire"),
+  workplace_address_city: z.string().nullable().describe("Nom de ville, provenant du SIRET ou du partenaire"),
+  workplace_address_zipcode: extensions.zipCode().nullable().describe("Code postal, provenant du SIRET ou du partenaire"),
+
   created_at: z.date().describe("Date de creation de l'offre"),
   updated_at: z.date().describe("Date de mise à jour de l'offre"),
 })
@@ -99,6 +103,112 @@ export type IJobsPartnersOfferApi = z.output<typeof ZJobsPartnersOfferApi>
 
 export type IJobsPartnersRecruiterPrivate = z.output<typeof ZJobsPartnersRecruiterPrivate>
 export type IJobsPartnersOfferPrivate = z.output<typeof ZJobsPartnersOfferPrivate>
+export type IJobsPartnersOfferPrivateInput = z.input<typeof ZJobsPartnersOfferPrivate>
+
+const TIME_CLOCK_TOLERANCE = 300_000
+
+export const ZJobsPartnersPostApiBodyBase = z.object({
+  partner_job_id: ZJobsPartnersOfferPrivate.shape.partner_job_id.default(null),
+
+  contract_start: z
+    .string({ message: "Expected ISO 8601 date string" })
+    .datetime({ offset: true, message: "Expected ISO 8601 date string" })
+    .pipe(z.coerce.date())
+    .nullable()
+    .default(null),
+  contract_duration: ZJobsPartnersOfferPrivate.shape.contract_duration.default(null),
+  contract_type: ZJobsPartnersOfferPrivate.shape.contract_type.default([TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION]),
+  contract_remote: ZJobsPartnersOfferPrivate.shape.contract_remote.default(null),
+
+  offer_title: ZJobsPartnersOfferPrivate.shape.offer_title,
+  offer_rome_codes: ZJobsPartnersOfferPrivate.shape.offer_rome_codes.nullable().default(null),
+  offer_description: ZJobsPartnersOfferPrivate.shape.offer_description.min(30, "Job description should be at least 30 characters"),
+  offer_target_diploma_european: zDiplomaEuropeanLevel.nullable().default(null),
+  offer_desired_skills: ZJobsPartnersOfferPrivate.shape.offer_desired_skills.default([]),
+  offer_to_be_acquired_skills: ZJobsPartnersOfferPrivate.shape.offer_to_be_acquired_skills.default([]),
+  offer_access_conditions: ZJobsPartnersOfferPrivate.shape.offer_access_conditions.default([]),
+  offer_creation: z
+    .string({ message: "Expected ISO 8601 date string" })
+    .datetime({ offset: true, message: "Expected ISO 8601 date string" })
+    .pipe(
+      z.coerce.date().refine((value) => value.getTime() < Date.now() + TIME_CLOCK_TOLERANCE, {
+        message: "Creation date cannot be in the future",
+      })
+    )
+    .nullable()
+    .default(null),
+  offer_expiration: z
+    .string({ message: "Expected ISO 8601 date string" })
+    .datetime({ offset: true, message: "Expected ISO 8601 date string" })
+    .pipe(
+      z.coerce.date().refine((value) => value === null || value.getTime() > Date.now() - TIME_CLOCK_TOLERANCE, {
+        message: "Expiration date cannot be in the past",
+      })
+    )
+    .nullable()
+    .default(null),
+  offer_opening_count: ZJobsPartnersOfferPrivate.shape.offer_opening_count.default(1),
+  offer_origin: ZJobsPartnersOfferPrivate.shape.offer_origin,
+  offer_status: ZJobsPartnersOfferPrivate.shape.offer_status.default(JOB_STATUS_ENGLISH.ACTIVE),
+  offer_multicast: ZJobsPartnersOfferPrivate.shape.offer_multicast,
+
+  workplace_siret: extensions.siret,
+  workplace_description: ZJobsPartnersOfferPrivate.shape.workplace_description.default(null),
+  workplace_website: ZJobsPartnersOfferPrivate.shape.workplace_website.default(null),
+  workplace_name: ZJobsPartnersOfferPrivate.shape.workplace_name.default(null),
+  workplace_address_label: z.string().nullable().default(null),
+  apply_email: ZJobsPartnersOfferPrivate.shape.apply_email,
+  apply_url: ZJobsPartnersOfferApi.shape.apply_url.nullable().default(null),
+  apply_phone: extensions.telephone.nullable().describe("Téléphone de contact").default(null),
+})
+
+export const ZJobsPartnersWritableApi = ZJobsPartnersPostApiBodyBase.superRefine((data, ctx) => {
+  const keys = ["apply_url", "apply_email", "apply_phone"] as const
+  if (keys.every((key) => data[key] == null)) {
+    keys.forEach((key) => {
+      ctx.addIssue({
+        code: "custom",
+        message: "At least one of apply_url, apply_email, or apply_phone is required",
+        path: [key],
+      })
+    })
+  }
+
+  // TODO: useless car conservation uniquement de workplace_address_label
+  // if (data.workplace_address_street_label != null) {
+  //   if (data.workplace_address_zipcode == null) {
+  //     ctx.addIssue({
+  //       code: "custom",
+  //       message: "When workplace_address_street_label is provided then workplace_address_zipcode is required",
+  //       path: ["workplace_address_zipcode"],
+  //     })
+  //   }
+  //   if (data.workplace_address_city == null) {
+  //     ctx.addIssue({
+  //       code: "custom",
+  //       message: "When workplace_address_street_label is provided then workplace_address_city is required",
+  //       path: ["workplace_address_city"],
+  //     })
+  //   }
+  // }
+
+  // if (data.workplace_address_city != null || data.workplace_address_zipcode != null) {
+  //   if (data.workplace_address_label != null) {
+  //     ctx.addIssue({
+  //       code: "custom",
+  //       message: "workplace_address_label is not allowed when address is provided via detailed fields",
+  //       path: ["workplace_address_label"],
+  //     })
+  //   }
+
+  //   data.workplace_address_label = joinNonNullStrings([data.workplace_address_street_label, data.workplace_address_zipcode, data.workplace_address_city])
+  // }
+
+  return data
+})
+
+export type IJobsPartnersWritableApi = z.output<typeof ZJobsPartnersWritableApi>
+export type IJobsPartnersWritableApiInput = z.input<typeof ZJobsPartnersWritableApi>
 
 export default {
   zod: ZJobsPartnersOfferPrivate,

@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb"
 
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
+import { generateSitemap } from "@/services/sitemap.service"
 
 import { getLoggerWithContext, logger } from "../common/logger"
 import { getDatabase } from "../common/utils/mongodbUtils"
@@ -211,6 +212,10 @@ export async function setupJobProcessor() {
           "Emission des contacts vers Brevo": {
             cron_string: "30 22 * * *",
             handler: sendContactsToBrevo,
+          },
+          "Génération du sitemap pour les offres": {
+            cron_string: "5 22 * * *",
+            handler: generateSitemap,
           },
         },
     jobs: {

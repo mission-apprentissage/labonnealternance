@@ -79,18 +79,18 @@ export type IMetiersEnrichis = z.output<typeof ZMetiersEnrichis>
 
 export const ZAppellationRome = z
   .object({
-    codeRome: z.string(),
+    code_rome: z.string().optional(),
     intitule: z.string(),
     appellation: z.string(),
   })
   .strict()
+export type IAppellationRome = z.output<typeof ZAppellationRome>
 
 export const ZAppellationsRomes = z
   .object({
     coupleAppellationRomeMetier: ZAppellationRome.array(),
   })
   .strict()
-
 export type IAppellationsRomes = z.output<typeof ZAppellationsRomes>
 
 const collectionName = "diplomesmetiers" as const

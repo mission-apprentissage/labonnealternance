@@ -22,9 +22,9 @@ const fakeApplication = {
   applicant_last_name: "a",
   applicant_email: "test@test.fr",
   applicant_phone: "0125252525",
-  message: "some blahblahblah",
-  applicant_file_name: "cv.pdf",
-  applicant_file_content: applicationTestFile,
+  applicant_message: "applicant message",
+  applicant_attachment_name: "cv.pdf",
+  applicant_attachment_content: applicationTestFile,
 }
 describe("Sending application", () => {
   beforeEach(async () => {
@@ -93,7 +93,7 @@ describe("Sending application", () => {
       sendApplicationV2({
         newApplication: {
           ...fakeApplication,
-          job_id: "6081289803569600282e0000",
+          recipient_id: { collectionName: "recruiters", jobId: "6081289803569600282e0000" },
         },
       })
     ).rejects.toThrow(notFound(BusinessErrorCodes.NOTFOUND))
@@ -104,7 +104,7 @@ describe("Sending application", () => {
       sendApplicationV2({
         newApplication: {
           ...fakeApplication,
-          job_id: "6081289803569600282e0001",
+          recipient_id: { collectionName: "recruiters", jobId: "6081289803569600282e0001" },
         },
       })
     ).rejects.toThrow(badRequest(BusinessErrorCodes.EXPIRED))
@@ -115,7 +115,7 @@ describe("Sending application", () => {
       sendApplicationV2({
         newApplication: {
           ...fakeApplication,
-          job_id: "6081289803569600282e0002",
+          recipient_id: { collectionName: "recruiters", jobId: "6081289803569600282e0002" },
         },
       })
     ).rejects.toThrow(badRequest(BusinessErrorCodes.EXPIRED))
@@ -126,7 +126,7 @@ describe("Sending application", () => {
       sendApplicationV2({
         newApplication: {
           ...fakeApplication,
-          job_id: "6081289803569600282e0003",
+          recipient_id: { collectionName: "recruiters", jobId: "6081289803569600282e0003" },
         },
       })
     ).rejects.toThrow(badRequest(BusinessErrorCodes.EXPIRED))
@@ -137,7 +137,7 @@ describe("Sending application", () => {
       sendApplicationV2({
         newApplication: {
           ...fakeApplication,
-          company_siret: "34843069553553",
+          recipient_id: { collectionName: "recruteurslba", jobId: "6081289803569600282e0003" },
         },
       })
     ).rejects.toThrow(notFound(BusinessErrorCodes.NOTFOUND))

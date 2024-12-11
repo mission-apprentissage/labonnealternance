@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb"
 import { ENTREPRISE } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { CFA, OPCOS_LABEL } from "shared/constants/recruteur"
-import { IJob, IRecruiter, getUserStatus, parseEnumOrError, zRoutes } from "shared/index"
+import { IJob, IRecruiter, getUserStatus, parseEnum, parseEnumOrError, zRoutes } from "shared/index"
 import { ICFA } from "shared/models/cfa.model"
 import { IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
@@ -15,7 +15,7 @@ import { activateUserRole, deactivateUserRole, roleToUserType, entrepriseIsNotMy
 import { createSuperUser } from "@/services/userWithAccount.service"
 
 import { getDbCollection } from "../../common/utils/mongodbUtils"
-import { deleteFormulaire, getFormulaireFromUserId } from "../../services/formulaire.service"
+import { deleteFormulaire, getFormulaireFromUserId, getFormulaireFromUserIdWithOpco } from "../../services/formulaire.service"
 import { getUserAndRecruitersDataForOpcoUser, getUserNamesFromIds as getUsersFromIds } from "../../services/user.service"
 import {
   getAdminUsers,
@@ -162,7 +162,8 @@ export default (server: Server) => {
       }
 
       if (opco && entreprise) {
-        await getDbCollection("entreprises").findOneAndUpdate({ siret }, { $set: { opco, updatedAt: new Date() } }, { returnDocument: "after" })
+        await getDbCollection("entreprises").findOneAndUpdate({ siret }, { $set: { opco, updatedAt: new Date() } })
+        await getDbCollection("recruiters").updateMany({ establishment_siret: siret }, { $set: { opco, updatedAt: new Date() } })
       }
 
       return res.status(200).send({ ok: true })
@@ -198,6 +199,7 @@ export default (server: Server) => {
     async (req, res) => {
       const requestUser = getUserFromRequest(req, zRoutes.get["/user/:userId/organization/:organizationId"]).value
       if (!requestUser) throw badRequest()
+
       const { userId } = req.params
       const role = await getDbCollection("rolemanagements").findOne({
         user_id: new ObjectId(userId),
@@ -228,17 +230,19 @@ export default (server: Server) => {
       let jobs: IJob[] = []
       let formulaire: IRecruiter | null = null
 
-      if (type === ENTREPRISE) {
-        formulaire = await getFormulaireFromUserId(userId)
-        jobs = formulaire?.jobs ?? []
-      }
-
-      const userRecruteur = userAndRoleAndOrganizationToUserRecruteur(user, role, organization, formulaire)
-
       const opcoOrAdminRole = await getDbCollection("rolemanagements").findOne({
         user_id: requestUser._id,
         authorized_type: { $in: [AccessEntityType.ADMIN, AccessEntityType.OPCO] },
       })
+
+      const opco: OPCOS_LABEL | null = opcoOrAdminRole?.authorized_type === AccessEntityType.OPCO ? parseEnum(OPCOS_LABEL, opcoOrAdminRole.authorized_id) : null
+
+      if (type === ENTREPRISE) {
+        formulaire = opco ? await getFormulaireFromUserIdWithOpco(userId, opco) : await getFormulaireFromUserId(userId)
+        jobs = formulaire?.jobs ?? []
+      }
+
+      const userRecruteur = userAndRoleAndOrganizationToUserRecruteur(user, role, organization, formulaire)
 
       if (opcoOrAdminRole && getLastStatusEvent(opcoOrAdminRole.status)?.status === AccessStatus.GRANTED) {
         const userIds = userRecruteur.status.flatMap(({ user }) => (user ? [user] : []))
