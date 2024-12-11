@@ -1,6 +1,7 @@
 import { JOB_STATUS_ENGLISH } from "shared/models"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
+import { detectDuplicateJobPartners } from "./detectDuplicateJobPartners"
 import { fillLocationInfosForPartners } from "./fillLocationInfosForPartners"
 import { fillOpcoInfosForPartners } from "./fillOpcoInfosForPartners"
 import { fillRomeForPartners } from "./fillRomeForPartners"
@@ -12,6 +13,7 @@ export const fillComputedJobsPartners = async () => {
   await fillSiretInfosForPartners()
   await fillLocationInfosForPartners()
   await fillRomeForPartners()
+  await detectDuplicateJobPartners()
   await validateComputedJobPartners()
 }
 
