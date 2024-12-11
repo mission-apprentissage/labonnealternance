@@ -351,6 +351,10 @@ const factorJobsForMap = (lists, type) => {
     if (lists.matchas) {
       sortedList = sortedList.length ? sortedList.concat(lists.matchas) : lists.matchas
     }
+
+    if (lists.partnerJobs) {
+      sortedList = sortedList.length ? sortedList.concat(lists.partnerJobs) : lists.partnerJobs
+    }
   }
 
   // tri de la liste de tous les emplois selon les coordonnées geo (l'objectif est d'avoir les emplois au même lieu proches)
