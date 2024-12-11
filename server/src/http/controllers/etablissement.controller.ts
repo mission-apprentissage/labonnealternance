@@ -428,28 +428,24 @@ export default (server: Server) => {
 
       // If opt-out is already running but user unsubscribe, remove optout for all formations
       if (etablissement.optout_activation_date && dayjs(etablissement.optout_activation_date).isBefore(dayjs())) {
-        try {
-          await getDbCollection("eligible_trainings_for_appointments").updateMany(
+        await getDbCollection("eligible_trainings_for_appointments").updateMany(
+          {
+            etablissement_formateur_siret: etablissement.formateur_siret,
+          },
+          [
             {
-              etablissement_formateur_siret: etablissement.formateur_siret,
-            },
-            [
-              {
-                $set: {
-                  referrers: {
-                    $filter: {
-                      input: "$referrers",
-                      as: "referrer",
-                      cond: { $in: ["$$referrer", [referrers.PARCOURSUP.name, referrers.AFFELNET.name]] },
-                    },
+              $set: {
+                referrers: {
+                  $filter: {
+                    input: "$referrers",
+                    as: "referrer",
+                    cond: { $in: ["$$referrer", [referrers.PARCOURSUP.name, referrers.AFFELNET.name]] },
                   },
                 },
               },
-            ]
-          )
-        } catch (error) {
-          console.log(error)
-        }
+            },
+          ]
+        )
       }
 
       await getDbCollection("etablissements").findOneAndUpdate(
