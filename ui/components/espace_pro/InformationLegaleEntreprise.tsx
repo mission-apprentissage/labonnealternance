@@ -36,7 +36,7 @@ export const InformationLegaleEntreprise = ({ siret, type, opco }: InformationLe
       {raisonSociale && user?.type !== OPCO && (
         <Flex alignItems="flex-start" mb={10}>
           <InfoCircle mr={2} mt={1} />
-          <Text>Vérifiez que les informations pré-remplies soient correctes avant de continuer.</Text>
+          <Text>Vérifiez que les informations pré-remplies sont correctes avant de continuer.</Text>
         </Flex>
       )}
       {!raisonSociale && (
