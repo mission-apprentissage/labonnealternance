@@ -2,6 +2,7 @@ import { ObjectId } from "mongodb"
 import { RECRUITER_STATUS } from "shared/constants"
 import { IJob, IRecruiter, JOB_STATUS } from "shared/models"
 import { ISitemap } from "shared/models/sitemap.model"
+import { hashcode } from "shared/utils"
 import { generateSitemapFromUrlEntries } from "shared/utils/sitemapUtils"
 
 import { logger } from "@/common/logger"
@@ -14,9 +15,7 @@ type AggregateRecruiter = Pick<Omit<IRecruiter, "jobs">, "updatedAt"> & {
   jobs: Pick<IJob, "job_update_date" | "_id">
 }
 
-const SITEMAP_EXPIRATION_IN_HOURS = 6
-
-const generateSitemap = async (): Promise<string> => {
+const generateSitemapXml = async () => {
   const documents = (await getDbCollection("recruiters")
     .aggregate([
       { $match: { status: RECRUITER_STATUS.ACTIF, "jobs.job_status": JOB_STATUS.ACTIVE } },
@@ -40,29 +39,50 @@ const generateSitemap = async (): Promise<string> => {
       }
     })
   )
-  const sizeInMo = sitemap.length / (1024 * 1024)
-  const message = `Generated sitemap with ${documents.length} offers. size: ~${sizeInMo.toFixed(1)} Mo. Max 50 Mo`
-  logger.info(message)
-  notifyToSlack({
-    subject: "job de génération du sitemap des offres",
-    message,
-    error: documents.length === 0 || sizeInMo > 40,
-  })
-  return sitemap
+  return { xml: sitemap, count: documents.length }
+}
+
+export const generateSitemap = async () => {
+  const { xml, count } = await generateSitemapXml()
+  const hash = hashcode(xml)
+  let dbSitemap = await getDbCollection("sitemaps").findOne({ hashcode: hash.toString() })
+  if (!dbSitemap) {
+    await getDbCollection("sitemaps").deleteMany({})
+    dbSitemap = {
+      _id: new ObjectId(),
+      created_at: new Date(),
+      xml: xml,
+      hashcode: hash.toString(),
+    }
+    await getDbCollection("sitemaps").insertOne(dbSitemap)
+    const sizeInMo = xml.length / (1024 * 1024)
+    const message = `Generated sitemap with ${count} offers. size: ~${sizeInMo.toFixed(1)} Mo. Max 50 Mo`
+    logger.info(message)
+    await notifyToSlack({
+      subject: "job de génération du sitemap des offres",
+      message,
+      error: count === 0 || sizeInMo > 40,
+    })
+  }
 }
 
 export const getSitemap = async (): Promise<ISitemap> => {
-  const expirationDate = dayjs().subtract(SITEMAP_EXPIRATION_IN_HOURS, "hours")
-  let dbSitemap = await getDbCollection("sitemaps").findOne({ created_at: { $gt: expirationDate.toDate() } })
-  if (!dbSitemap || dayjs(dbSitemap.created_at).isBefore(expirationDate)) {
-    await getDbCollection("sitemaps").deleteMany({ created_at: { $lt: expirationDate.toDate() } })
-    const xml = await generateSitemap()
+  let dbSitemap = await getDbCollection("sitemaps").findOne({})
+  if (!dbSitemap) {
+    // should not happen but added for safety
+    const { xml } = await generateSitemapXml()
     dbSitemap = {
       _id: new ObjectId(),
       created_at: new Date(),
       xml,
+      hashcode: hashcode(xml).toString(),
     }
     await getDbCollection("sitemaps").insertOne(dbSitemap)
+    await notifyToSlack({
+      subject: "job de génération du sitemap des offres",
+      message: `Inattendu : génération du sitemap par le backend alors qu il aurait dû être généré par le job processor !`,
+      error: true,
+    })
   }
   return dbSitemap
 }

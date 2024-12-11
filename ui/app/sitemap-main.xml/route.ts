@@ -6,6 +6,7 @@ import { getHostFromHeader } from "@/utils/requestUtils"
 
 import { generateSitemapFromUrlEntries, SitemapUrlEntry } from "../../../shared/utils/sitemapUtils"
 
+// Attention ! Il faut mettre à jour cette date lorsque le sitemap généré par ce fichier change
 export const lastModificationDate = new Date("2024-12-04T14:06:47.696Z")
 
 export async function GET(request: Request) {
