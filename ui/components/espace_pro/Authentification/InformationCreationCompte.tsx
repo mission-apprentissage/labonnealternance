@@ -139,7 +139,6 @@ const FormulaireLayout = ({ left, right }) => {
               ? "Le numéro de téléphone et l'adresse postale de votre établissement seront visibles sur vos offres. L'email sera destinataire des candidatures."
               : "Le numéro de téléphone et l'adresse postale de votre établissement seront visibles sur les offres de vos entreprises partenaires. L'email sera destinataire des candidatures."}
           </Text>
-          <Text>Elles peuvent être modifiées ultérieurement.</Text>
         </Box>
         <Box>{left}</Box>
       </Box>
