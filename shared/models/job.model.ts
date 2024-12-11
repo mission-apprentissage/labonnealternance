@@ -3,6 +3,7 @@ import { Jsonify } from "type-fest"
 import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "../constants/recruteur"
 import dayjs from "../helpers/dayjs"
 import { z } from "../helpers/zodWithOpenApi"
+import { assertUnreachable } from "../utils"
 
 import { zObjectId } from "./common"
 import { ZReferentielRomeForJob, ZRomeCompetence } from "./rome.model"
@@ -18,6 +19,21 @@ export enum JOB_STATUS_ENGLISH {
   ACTIVE = "Active",
   POURVUE = "Filled",
   ANNULEE = "Cancelled",
+}
+
+export function translateJobStatus(status: JOB_STATUS): JOB_STATUS_ENGLISH | undefined {
+  switch (status) {
+    case JOB_STATUS.ACTIVE:
+      return JOB_STATUS_ENGLISH.ACTIVE
+    case JOB_STATUS.POURVUE:
+      return JOB_STATUS_ENGLISH.POURVUE
+    case JOB_STATUS.ANNULEE:
+      return JOB_STATUS_ENGLISH.ANNULEE
+    case JOB_STATUS.EN_ATTENTE:
+      return undefined
+    default:
+      assertUnreachable(status)
+  }
 }
 
 const allJobRythm = Object.values(TRAINING_RYTHM)
