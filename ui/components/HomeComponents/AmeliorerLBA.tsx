@@ -27,15 +27,15 @@ const AmeliorerLBA = () => {
           </Text>
           <Box mt="7">
             <Link
-              href="https://calendly.com/claire-arnaud-beta-gouv/la-bonne-alternance"
-              aria-label="Prendre rendez-vous - nouvelle fenêtre"
-              title="Je participe à l'étude"
+              href="https://app.livestorm.co/p/801f855c-f452-4817-881a-c76f1fd899d7/form"
+              aria-label=S'inscrire au webinaire - nouvelle fenêtre"
+              title="M'inscrire au webinaire"
               color="#000091"
               border="1px solid #000091"
               padding="10px 24px"
               isExternal
             >
-              Je participe à l'étude <ExternalLinkIcon mx="2px" />
+              M'inscrire au webinaire <ExternalLinkIcon mx="2px" />
             </Link>
           </Box>
           <Box mt="3">&nbsp;</Box>
