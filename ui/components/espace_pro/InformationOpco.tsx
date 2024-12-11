@@ -20,7 +20,7 @@ export const InformationOpco = ({ disabled, informationOpco, resetOpcoChoice }) 
             {informationOpco?.description}
           </Text>
           {/* eslint-disable-next-line jsx-a11y/alt-text */}
-          <Image src={informationOpco?.image} alt="" />
+          <Image src={informationOpco?.image} alt="" width={150} />
         </Flex>
         <Flex alignItems="flex-start">
           <InfoCircle w="20px" h="20px" mr={2} color="#000091" />
