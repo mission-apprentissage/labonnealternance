@@ -1,8 +1,8 @@
-import { useMongo } from "@tests/utils/mongo.test.utils"
-import { useServer } from "@tests/utils/server.test.utils"
 import { describe, expect, it } from "vitest"
 
 import { setupJobProcessor } from "@/jobs/jobs"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { useServer } from "@tests/utils/server.test.utils"
 
 import config from "../config"
 

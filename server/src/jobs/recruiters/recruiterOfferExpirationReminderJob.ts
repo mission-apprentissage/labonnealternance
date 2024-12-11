@@ -70,7 +70,7 @@ export const recruiterOfferExpirationReminderJob = async (threshold: number /* n
           images: {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
             logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
-            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
           },
           last_name: sanitizeForEmail(contactUser.last_name),
           first_name: sanitizeForEmail(contactUser.first_name),
