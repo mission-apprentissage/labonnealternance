@@ -112,7 +112,8 @@ export const rawRhAlternanceToComputedMapper =
         (jobDescription ?? [])
           .map(({ descriptionHeadline, descriptionText }) => [descriptionHeadline, descriptionText].join(" : "))
           .filter((line) => line.length)
-          .join("\n") || null,
+          .join("\n")
+          .replace(/<br\s*\/?>/g, "\r\n") || null,
       offer_creation,
       offer_expiration: dayjs.tz(offer_creation).add(60, "days").toDate(),
       offer_opening_count: 1,
