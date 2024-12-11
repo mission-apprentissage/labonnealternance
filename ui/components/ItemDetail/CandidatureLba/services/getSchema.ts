@@ -25,5 +25,5 @@ export const ApplicationFormikSchema = ZApplicationApiPayload.pick({
   applicant_email: true,
   applicant_attachment_name: true,
 }).extend({
-  applicant_phone: z.string().trim().refine(validatePhone, { message: "Téléphone non valide" }),
+  applicant_phone: z.string().trim().refine(validatePhone, { message: "Téléphone non valide : veuillez utiliser le format international (+33XXX...) ou national (06XXX...)" }),
 })
