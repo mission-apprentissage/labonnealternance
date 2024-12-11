@@ -298,13 +298,7 @@ export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }
 }
 
 export const getJobsPartnersFromDBForUI = async ({ romes, geo, target_diploma_level }: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivateWithDistance[]> => {
-  console.log("ici ", romes, geo, target_diploma_level)
-
-  //[ 'K1901', 'K1902', 'K1903', 'K1904', 'K1505' ] { latitude: 48.579831, longitude: 7.761454, radius: 30 }
-
-  const query: Filter<IJobsPartnersOfferPrivate> = {
-    offer_multicast: true,
-  }
+  const query: Filter<IJobsPartnersOfferPrivate> = {}
 
   if (romes) {
     query.offer_rome_codes = { $in: romes }
