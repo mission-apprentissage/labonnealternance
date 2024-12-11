@@ -37,7 +37,8 @@ export const ZApplication = z
       .describe("Nom du candidat"),
     applicant_phone: extensions.telephone.describe("Téléphone du candidat"),
     applicant_attachment_name: z
-      .string({ required_error: "⚠ La pièce jointe est obligatoire" })
+      .string()
+      .min(1)
       .regex(/((.*?))(\.)+(docx|pdf)$/i)
       .describe("Nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés."),
     applicant_message_to_company: z.string().nullable().describe("Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat."),
