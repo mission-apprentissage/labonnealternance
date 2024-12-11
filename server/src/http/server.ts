@@ -10,6 +10,7 @@ import { ZodTypeProvider, serializerCompiler, validatorCompiler } from "fastify-
 import { Netmask } from "netmask"
 import { OpenAPIV3_1 } from "openapi-types"
 import { generateOpenApiSchema } from "shared/helpers/openapi/generateOpenapi"
+import { setZodLanguage } from "shared/helpers/zodWithOpenApi"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 
 import { localOrigin } from "@/common/utils/isOriginLocal"
@@ -61,7 +62,7 @@ export interface Server
 
 export async function bind(app: Server) {
   initSentryFastify(app)
-
+  setZodLanguage("en")
   app.setValidatorCompiler(validatorCompiler)
   app.setSerializerCompiler(serializerCompiler)
 

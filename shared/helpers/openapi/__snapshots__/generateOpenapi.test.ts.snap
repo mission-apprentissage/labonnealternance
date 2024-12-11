@@ -57,6 +57,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "applicant_file_name": {
             "description": "Nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés.",
+            "minLength": 1,
             "pattern": "((.*?))(\\.)+(docx|pdf)$",
             "type": "string",
           },
