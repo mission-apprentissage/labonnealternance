@@ -235,9 +235,6 @@ describe("POST /jobs", async () => {
   const inSept = new Date("2024-09-01T00:00:00.000Z")
 
   const data: IJobOfferApiWriteV3Input = {
-    identifier: {
-      partner_job_id: "partner_job_id",
-    },
     contract: { start: inSept.toJSON() },
 
     offer: {
@@ -390,9 +387,6 @@ describe("PUT /jobs/:id", async () => {
   const originalJob = generateJobsPartnersOfferPrivate({ _id: id, offer_title: "Old title", partner_label: "Un super Partenaire" })
 
   const data: IJobOfferApiWriteV3Input = {
-    identifier: {
-      partner_job_id: "partner_job_id",
-    },
     contract: { start: inSept.toJSON() },
 
     offer: {
