@@ -1,7 +1,6 @@
 import { publicConfig } from "@/config.public"
+import { mainSitemapLastModificationDate } from "@/services/generateMainSitemap"
 import { getHostFromHeader } from "@/utils/requestUtils"
-
-import { lastModificationDate } from "../sitemap-main.xml/route"
 
 export async function GET(request: Request) {
   const sitemap = await generateSiteMap(request)
@@ -26,7 +25,7 @@ async function generateSiteMap(request: Request) {
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
    <sitemap>
       <loc>${host}/sitemap-main.xml</loc>
-      <lastmod>${lastModificationDate.toISOString()}</lastmod>
+      <lastmod>${mainSitemapLastModificationDate.toISOString()}</lastmod>
    </sitemap>
    <sitemap>
       <loc>${host}/sitemap-offers.xml</loc>
