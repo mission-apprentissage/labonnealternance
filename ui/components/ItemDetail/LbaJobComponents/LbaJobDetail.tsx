@@ -14,11 +14,11 @@ import { getJobPostingSchema } from "../ItemDetailServices/getJobPostingSchema"
 import ItemDistanceToCenter from "../ItemDetailServices/ItemDistanceToCenter"
 import ItemGoogleSearchLink from "../ItemDetailServices/ItemGoogleSearchLink"
 import ItemLocalisation from "../ItemDetailServices/ItemLocalisation"
+import { BAD_DESCRIPTION_LENGTH, JobDescription } from "../ItemDetailServices/JobDescription"
 import { ReportJobLink } from "../ReportJobLink"
 
 import LbaJobAcces from "./LbaJobAcces"
 import LbaJobCompetences from "./LbaJobCompetences"
-import { BAD_DESCRIPTION_LENGTH, LbaJobDescription } from "./LbaJobDescription"
 import LbaJobQualites from "./LbaJobQualites"
 import LbaJobTechniques from "./LbaJobTechniques"
 
@@ -112,7 +112,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJob; title: strin
         )}
 
         <Accordion allowToggle defaultIndex={0}>
-          <LbaJobDescription job={job} />
+          <JobDescription job={job} />
           <LbaJobQualites job={job} />
         </Accordion>
         <Box marginTop="10px">

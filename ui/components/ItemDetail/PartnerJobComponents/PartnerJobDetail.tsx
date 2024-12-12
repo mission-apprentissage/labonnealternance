@@ -13,9 +13,7 @@ import ItemDistanceToCenter from "../ItemDetailServices/ItemDistanceToCenter"
 import ItemGoogleSearchLink from "../ItemDetailServices/ItemGoogleSearchLink"
 import ItemLocalisation from "../ItemDetailServices/ItemLocalisation"
 import ItemWebsiteLink from "../ItemDetailServices/ItemWebsiteLink"
-
-import PartnerJobAccordion from "./PartnerJobAccordion"
-import { PartnerJobDescription } from "./PartnerJobDescription"
+import { JobDescriptionAccordion, JobDescription } from "../ItemDetailServices/JobDescription"
 
 const getContractTypes = (contractTypes) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
@@ -76,8 +74,8 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJob; titl
         </Box>
 
         <Accordion allowToggle defaultIndex={0}>
-          <PartnerJobDescription job={job} />
-          <PartnerJobAccordion title="Qualités souhaitées pour ce métier" items={job?.job?.offer_desired_skills} />
+          <JobDescription job={job} />
+          <JobDescriptionAccordion title="Qualités souhaitées pour ce métier" items={job?.job?.offer_desired_skills} />
         </Accordion>
       </Box>
 
@@ -104,8 +102,8 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJob; titl
           <Box data-testid="lbb-component">
             <Box mb={4}>
               <Accordion allowToggle>
-                <PartnerJobAccordion title="Compétences qui seront acquises durant l'alternance" items={job?.job?.offer_to_be_acquired_skills} />
-                <PartnerJobAccordion title="À qui ce métier est-il accessible ?" items={job?.job?.offer_access_conditions} />
+                <JobDescriptionAccordion title="Compétences qui seront acquises durant l'alternance" items={job?.job?.offer_to_be_acquired_skills} />
+                <JobDescriptionAccordion title="À qui ce métier est-il accessible ?" items={job?.job?.offer_access_conditions} />
               </Accordion>
             </Box>
           </Box>
