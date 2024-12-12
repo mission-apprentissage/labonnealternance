@@ -1,6 +1,4 @@
-import { Box, Flex, Heading, Image, Stack, Text } from "@chakra-ui/react"
-
-import { InfoCircle } from "@/theme/components/icons"
+import { Box, Heading, Image, Stack, Text } from "@chakra-ui/react"
 import { J1S, Parcoursup } from "@/theme/components/logos_pro"
 
 export const InfosDiffusionOffre = () => {
