@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: c0d065fd21e851774bfb4f6dad2d4af7e339d38d3c62241ae40491ff4f8b8543
+  checksum: 48548e14d0a795a0a2e594a28177c3bf6893dc2dcb395a83ee38e1ac167fb5d9
 - filename: .infra/vault/vault.yml
   checksum: 40717e8b277d9c9812c89d62fd3e09d0d70cdd0bb76a460f09486a31b6dd9cc7
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
