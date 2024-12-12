@@ -126,8 +126,14 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.put["/admin/users/:userId/organization/:siret"])],
     },
     async (req, res) => {
+      const { userAccess } = req
       const { userId, siret } = req.params
-      const { opco, ...userFields } = req.body
+      // eslint-disable-next-line prefer-const
+      let { opco, ...userFields } = req.body
+      // restreint la modification de l opco aux opcos et admin
+      if (!(userAccess?.admin || userAccess?.opcos.length)) {
+        opco = undefined
+      }
 
       const entreprise = await getDbCollection("entreprises").findOne({ siret })
 
@@ -158,7 +164,7 @@ export default (server: Server) => {
 
       const result = await updateUserWithAccountFields(userId, userFields)
       if ("error" in result) {
-        throw badRequest("L'email est déjà utilisé", { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS })
+        throw badRequest(result.error === BusinessErrorCodes.EMAIL_ALREADY_EXISTS ? "L'email est déjà utilisé" : "Erreur business", { error: result.error })
       }
 
       if (opco && entreprise) {
