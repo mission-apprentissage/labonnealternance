@@ -28,7 +28,7 @@ const AmeliorerLBA = () => {
           <Box mt="7">
             <Link
               href="https://app.livestorm.co/p/801f855c-f452-4817-881a-c76f1fd899d7/form"
-              aria-label=S'inscrire au webinaire - nouvelle fenêtre"
+              aria-label="S'inscrire au webinaire - nouvelle fenêtre"
               title="M'inscrire au webinaire"
               color="#000091"
               border="1px solid #000091"
