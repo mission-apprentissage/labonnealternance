@@ -9757,19 +9757,6 @@ Limite : 20 appel(s) / 1 seconde(s)
                     },
                     "type": "object",
                   },
-                  "identifier": {
-                    "default": {},
-                    "properties": {
-                      "partner_job_id": {
-                        "description": "Identifiant d'origine l'offre provenant du partenaire",
-                        "type": [
-                          "string",
-                          "null",
-                        ],
-                      },
-                    },
-                    "type": "object",
-                  },
                   "offer": {
                     "properties": {
                       "access_conditions": {
@@ -10168,11 +10155,8 @@ Limite : 20 appel(s) / 1 seconde(s)
                                 "description": "Identifiant de l'offre",
                               },
                               "partner_job_id": {
-                                "description": "Identifiant d'origine l'offre provenant du partenaire",
-                                "type": [
-                                  "string",
-                                  "null",
-                                ],
+                                "description": "Identifiant d'origine de l'offre provenant du partenaire",
+                                "type": "string",
                               },
                               "partner_label": {
                                 "description": "Référence du partenaire",
@@ -10846,19 +10830,6 @@ Limite : 20 appel(s) / 1 seconde(s)
                           "type": "string",
                         },
                         "type": "array",
-                      },
-                    },
-                    "type": "object",
-                  },
-                  "identifier": {
-                    "default": {},
-                    "properties": {
-                      "partner_job_id": {
-                        "description": "Identifiant d'origine l'offre provenant du partenaire",
-                        "type": [
-                          "string",
-                          "null",
-                        ],
                       },
                     },
                     "type": "object",
