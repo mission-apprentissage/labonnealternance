@@ -40,8 +40,6 @@ export default (server: Server) => {
         opcoUrl,
       })
 
-      console.log("ok")
-
       if ("error" in parameterControl) {
         if (parameterControl.error === "wrong_parameters") {
           res.status(400)
