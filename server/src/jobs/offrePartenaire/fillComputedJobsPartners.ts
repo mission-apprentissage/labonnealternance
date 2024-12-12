@@ -17,7 +17,7 @@ export const fillComputedJobsPartners = async () => {
   await validateComputedJobPartners()
 }
 
-export const blankComputedJobPartner: Omit<IComputedJobsPartners, "_id" | "partner_label"> = {
+export const blankComputedJobPartner: Omit<IComputedJobsPartners, "_id" | "partner_label" | "partner_job_id"> = {
   apply_phone: null,
   apply_url: null,
   business_error: null,
@@ -40,7 +40,6 @@ export const blankComputedJobPartner: Omit<IComputedJobsPartners, "_id" | "partn
   offer_target_diploma: null,
   offer_title: null,
   offer_to_be_acquired_skills: [],
-  partner_job_id: null,
   updated_at: null,
   validated: false,
   workplace_address_city: null,

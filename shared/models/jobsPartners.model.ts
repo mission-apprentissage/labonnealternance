@@ -48,7 +48,7 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   _id: z.union([zObjectId, z.string()]).nullable().describe("Identifiant de l'offre"),
 
   partner_label: z.string().describe("Référence du partenaire"),
-  partner_job_id: z.string().nullable().describe("Identifiant d'origine l'offre provenant du partenaire"),
+  partner_job_id: z.string().describe("Identifiant d'origine de l'offre provenant du partenaire"),
 
   contract_start: z.date().nullable().describe("Date de début de contrat").openapi({ format: "date-time" }),
   contract_duration: z.number().int().min(0).nullable().describe("Durée du contrat en mois"),
@@ -113,8 +113,6 @@ export type IJobsPartnersOfferPrivateInput = z.input<typeof ZJobsPartnersOfferPr
 const TIME_CLOCK_TOLERANCE = 300_000
 
 export const ZJobsPartnersPostApiBodyBase = z.object({
-  partner_job_id: ZJobsPartnersOfferPrivate.shape.partner_job_id.default(null),
-
   contract_start: z
     .string({ message: "Expected ISO 8601 date string" })
     .datetime({ offset: true, message: "Expected ISO 8601 date string" })

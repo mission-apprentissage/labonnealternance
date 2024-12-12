@@ -30,7 +30,7 @@ const withoutSensibleFields = (obj: unknown, seen: Set<unknown>) => {
     return Object.fromEntries(
       Object.entries(obj).map(([key, value]) => {
         const lower = key.toLowerCase()
-        if (lower.indexOf("token") !== -1 || ["authorization", "password", "applicant_file_content"].includes(lower)) {
+        if (lower.indexOf("token") !== -1 || ["authorization", "password", "applicant_file_content", "apiKey"].includes(lower)) {
           return [key, null]
         }
 
@@ -63,7 +63,7 @@ export function logMiddleware(): FastifyLoggerOptions | PinoLoggerOptions | fals
           remotePort: request.socket.remotePort,
           requestId: request.id,
           headers: withoutSensibleFields(request.headers, new Set()),
-          query: request.query,
+          query: withoutSensibleFields(request.query, new Set()),
           params: request.params,
           body: typeof request.body === "object" ? withoutSensibleFields(request.body, new Set()) : null,
         }
