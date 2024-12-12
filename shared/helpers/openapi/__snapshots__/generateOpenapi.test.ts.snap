@@ -57,17 +57,20 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "applicant_file_name": {
             "description": "Nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés.",
+            "minLength": 1,
             "pattern": "((.*?))(\\.)+(docx|pdf)$",
             "type": "string",
           },
           "applicant_first_name": {
             "description": "Prenom du candidat",
             "maxLength": 50,
+            "minLength": 1,
             "type": "string",
           },
           "applicant_last_name": {
             "description": "Nom du candidat",
             "maxLength": 50,
+            "minLength": 1,
             "type": "string",
           },
           "applicant_phone": {
@@ -9754,19 +9757,6 @@ Limite : 20 appel(s) / 1 seconde(s)
                     },
                     "type": "object",
                   },
-                  "identifier": {
-                    "default": {},
-                    "properties": {
-                      "partner_job_id": {
-                        "description": "Identifiant d'origine l'offre provenant du partenaire",
-                        "type": [
-                          "string",
-                          "null",
-                        ],
-                      },
-                    },
-                    "type": "object",
-                  },
                   "offer": {
                     "properties": {
                       "access_conditions": {
@@ -9845,7 +9835,6 @@ Limite : 20 appel(s) / 1 seconde(s)
                           "Active",
                           "Filled",
                           "Cancelled",
-                          "Pending",
                         ],
                         "type": "string",
                       },
@@ -10166,11 +10155,8 @@ Limite : 20 appel(s) / 1 seconde(s)
                                 "description": "Identifiant de l'offre",
                               },
                               "partner_job_id": {
-                                "description": "Identifiant d'origine l'offre provenant du partenaire",
-                                "type": [
-                                  "string",
-                                  "null",
-                                ],
+                                "description": "Identifiant d'origine de l'offre provenant du partenaire",
+                                "type": "string",
                               },
                               "partner_label": {
                                 "description": "Référence du partenaire",
@@ -10247,7 +10233,6 @@ Limite : 20 appel(s) / 1 seconde(s)
                                   "Active",
                                   "Filled",
                                   "Cancelled",
-                                  "Pending",
                                 ],
                                 "type": "string",
                               },
@@ -10849,19 +10834,6 @@ Limite : 20 appel(s) / 1 seconde(s)
                     },
                     "type": "object",
                   },
-                  "identifier": {
-                    "default": {},
-                    "properties": {
-                      "partner_job_id": {
-                        "description": "Identifiant d'origine l'offre provenant du partenaire",
-                        "type": [
-                          "string",
-                          "null",
-                        ],
-                      },
-                    },
-                    "type": "object",
-                  },
                   "offer": {
                     "properties": {
                       "access_conditions": {
@@ -10940,7 +10912,6 @@ Limite : 20 appel(s) / 1 seconde(s)
                           "Active",
                           "Filled",
                           "Cancelled",
-                          "Pending",
                         ],
                         "type": "string",
                       },

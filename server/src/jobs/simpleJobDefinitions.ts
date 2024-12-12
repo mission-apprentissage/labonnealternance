@@ -1,3 +1,5 @@
+import { generateSitemap } from "@/services/sitemap.service"
+
 import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
 import { anonimizeUsers } from "./anonymization/anonymizeUserRecruteurs"
 import { anonymizeOldUsers } from "./anonymization/anonymizeUsers"
@@ -203,5 +205,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: sendContactsToBrevo,
     description: "Envoi à Brevo la liste des contacts",
+  },
+  {
+    fct: generateSitemap,
+    description: "Génère le sitemap pour les offres",
   },
 ]

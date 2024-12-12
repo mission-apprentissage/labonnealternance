@@ -1,8 +1,9 @@
 import assert from "assert"
 
+import { describe, expect, it } from "vitest"
+
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
-import { describe, expect, it } from "vitest"
 
 describe("formationV1", () => {
   useMongo()
@@ -134,7 +135,7 @@ describe("formationV1", () => {
             {
               code: "invalid_type",
               expected: "number",
-              message: "Number attendu",
+              message: "Expected number, received nan",
               path: ["radius"],
               received: "nan",
             },
@@ -145,7 +146,7 @@ describe("formationV1", () => {
         },
       },
       error: "Bad Request",
-      message: "querystring.radius: Number attendu",
+      message: "querystring.radius: Expected number, received nan",
       statusCode: 400,
     })
   })
@@ -172,7 +173,7 @@ describe("formationV1", () => {
             {
               code: "invalid_type",
               expected: "number",
-              message: "Number attendu",
+              message: "Expected number, received nan",
               path: ["latitude"],
               received: "nan",
             },
@@ -183,7 +184,7 @@ describe("formationV1", () => {
         },
       },
       error: "Bad Request",
-      message: "querystring.latitude: Number attendu",
+      message: "querystring.latitude: Expected number, received nan",
       statusCode: 400,
     })
   })
@@ -210,7 +211,7 @@ describe("formationV1", () => {
             {
               code: "invalid_type",
               expected: "number",
-              message: "Number attendu",
+              message: "Expected number, received nan",
               path: ["longitude"],
               received: "nan",
             },
@@ -221,7 +222,7 @@ describe("formationV1", () => {
         },
       },
       error: "Bad Request",
-      message: "querystring.longitude: Number attendu",
+      message: "querystring.longitude: Expected number, received nan",
       statusCode: 400,
     })
   })

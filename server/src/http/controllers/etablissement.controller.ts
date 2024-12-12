@@ -109,8 +109,8 @@ export default (server: Server) => {
               replyTo: `${config.publicEmail}?subject=Email%20CFA%20Premium%20invite%20-%20MAJ%20contact%20formation`,
               images: {
                 logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-                logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
-                peopleLaptop: `${config.publicUrl}/assets/people-laptop.png?raw=true`,
+                logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
+                peopleLaptop: `${config.publicUrl}/assets/people-laptop.webp?raw=true`,
               },
               etablissement: {
                 email,
@@ -208,8 +208,8 @@ export default (server: Server) => {
               replyTo: `${config.publicEmail}?subject=Email%20CFA%20Premium%20invite%20-%20MAJ%20contact%20formation`,
               images: {
                 logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-                logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
-                peopleLaptop: `${config.publicUrl}/assets/people-laptop.png?raw=true`,
+                logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
+                peopleLaptop: `${config.publicUrl}/assets/people-laptop.webp?raw=true`,
               },
               etablissement: {
                 email,
@@ -283,9 +283,9 @@ export default (server: Server) => {
         data: {
           isAffelnet: true,
           images: {
-            informationIcon: `${config.publicUrl}/assets/icon-information-blue.png?raw=true`,
+            informationIcon: `${config.publicUrl}/assets/icon-information-blue.webp?raw=true`,
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
           },
           etablissement: {
             raison_sociale: etablissement.raison_sociale,
@@ -349,9 +349,9 @@ export default (server: Server) => {
         data: {
           isParcoursup: true,
           images: {
-            informationIcon: `${config.publicUrl}/assets/icon-information-blue.png?raw=true`,
+            informationIcon: `${config.publicUrl}/assets/icon-information-blue.webp?raw=true`,
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
           },
           etablissement: {
             raison_sociale: etablissement.raison_sociale,
@@ -410,7 +410,7 @@ export default (server: Server) => {
           data: {
             images: {
               logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-              logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+              logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
             },
             etablissement: {
               name: etablissement.raison_sociale,
@@ -462,7 +462,7 @@ export default (server: Server) => {
         data: {
           images: {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
           },
           etablissement: {
             name: etablissement.raison_sociale,

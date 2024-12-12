@@ -1,10 +1,10 @@
-import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "mongodb"
 import nock from "nock"
 import { describe, expect, it, vi } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
 
 import { getRomeoPredictions, searchForFtJobs } from "./franceTravail.client"
 import {

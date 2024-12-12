@@ -53,7 +53,7 @@ const transformCompany = ({
     title: company.enseigne,
     contact,
     place: {
-      distance: company.distance ? roundDistance(company.distance / 1000) ?? 0 : null,
+      distance: company.distance ? (roundDistance(company.distance / 1000) ?? 0) : null,
       fullAddress: address,
       latitude: parseFloat(company.geo_coordinates.split(",")[0]),
       longitude: parseFloat(company.geo_coordinates.split(",")[1]),
@@ -99,7 +99,7 @@ const transformCompanyWithMinimalData = ({ company, applicationCountByCompany }:
     id: company.siret,
     title: company.enseigne,
     place: {
-      distance: company.distance ? roundDistance(company.distance / 1000) ?? 0 : null,
+      distance: company.distance ? (roundDistance(company.distance / 1000) ?? 0) : null,
       fullAddress: address,
       latitude: parseFloat(company.geo_coordinates.split(",")[0]),
       longitude: parseFloat(company.geo_coordinates.split(",")[1]),

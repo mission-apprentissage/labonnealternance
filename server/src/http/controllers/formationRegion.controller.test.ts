@@ -1,10 +1,10 @@
-import { useMongo } from "@tests/utils/mongo.test.utils"
-import { useServer } from "@tests/utils/server.test.utils"
-import { saveDbEntity } from "@tests/utils/user.test.utils"
 import { IFormationCatalogue, zFormationCatalogueSchema } from "shared/models"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { useServer } from "@tests/utils/server.test.utils"
+import { saveDbEntity } from "@tests/utils/user.test.utils"
 
 useMongo()
 

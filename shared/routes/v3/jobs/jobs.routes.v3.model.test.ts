@@ -47,7 +47,7 @@ type IJobOfferExpected = {
   identifier: {
     id: ObjectId | string | null
     partner_label: string
-    partner_job_id: string | null
+    partner_job_id: string
   }
   workplace: IJobRecruiterExpected["workplace"]
   apply: IJobRecruiterExpected["apply"]
@@ -78,9 +78,6 @@ type IJobOfferExpected = {
 }
 
 type IJobOfferApiWriteV3Expected = {
-  identifier?: {
-    partner_job_id?: IJobOfferExpected["identifier"]["partner_job_id"]
-  }
   contract?: {
     duration?: number | null
     type?: Array<"Apprentissage" | "Professionnalisation">
@@ -146,7 +143,6 @@ describe("IJobOffer", () => {
 
 describe("IJobOfferApiWriteV3", () => {
   it("should have proper typing", () => {
-    expectTypeOf<IJobOfferApiWriteV3Input["identifier"]>().toEqualTypeOf<IJobOfferApiWriteV3Expected["identifier"]>()
     expectTypeOf<IJobOfferApiWriteV3Input["offer"]>().toEqualTypeOf<IJobOfferApiWriteV3Expected["offer"]>()
     expectTypeOf<IJobOfferApiWriteV3Input["offer"]["target_diploma"]>().toEqualTypeOf<IJobOfferApiWriteV3Expected["offer"]["target_diploma"]>()
     expectTypeOf<IJobOfferApiWriteV3Input["contract"]>().toEqualTypeOf<IJobOfferApiWriteV3Expected["contract"]>()
@@ -511,7 +507,7 @@ describe("convertToJobOfferApiReadV3", () => {
         "Organisation: Contrôler la conformité des données ou des documents",
       ],
       partner_label: "La bonne alternance",
-      partner_job_id: null,
+      partner_job_id: "partner_job_id",
       workplace_address_label: "Paris",
       workplace_brand: "Brand",
       workplace_description: "Workplace Description",
@@ -534,7 +530,7 @@ describe("convertToJobOfferApiReadV3", () => {
       identifier: {
         id: id1,
         partner_label: "La bonne alternance",
-        partner_job_id: null,
+        partner_job_id: "partner_job_id",
       },
       workplace: {
         siret: "11000001500013",
