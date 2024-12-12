@@ -53,7 +53,7 @@ const transformCompany = ({
     title: company.enseigne,
     contact,
     place: {
-      distance: company.distance ? roundDistance(company.distance / 1000) ?? 0 : null,
+      distance: company.distance ? (roundDistance(company.distance / 1000) ?? 0) : null,
       fullAddress: address,
       latitude: parseFloat(company.geo_coordinates.split(",")[0]),
       longitude: parseFloat(company.geo_coordinates.split(",")[1]),
@@ -79,6 +79,7 @@ const transformCompany = ({
     applicationCount: applicationCount?.count || 0,
     url: null,
     token: generateApplicationToken({ company_siret: company.siret }),
+    recipient_id: `recruteurslba_${company._id.toString()}`,
   }
 
   return resultCompany
@@ -98,7 +99,7 @@ const transformCompanyWithMinimalData = ({ company, applicationCountByCompany }:
     id: company.siret,
     title: company.enseigne,
     place: {
-      distance: company.distance ? roundDistance(company.distance / 1000) ?? 0 : null,
+      distance: company.distance ? (roundDistance(company.distance / 1000) ?? 0) : null,
       fullAddress: address,
       latitude: parseFloat(company.geo_coordinates.split(",")[0]),
       longitude: parseFloat(company.geo_coordinates.split(",")[1]),
@@ -116,6 +117,7 @@ const transformCompanyWithMinimalData = ({ company, applicationCountByCompany }:
     ],
     applicationCount: applicationCount?.count || 0,
     token: generateApplicationToken({ company_siret: company.siret }),
+    recipient_id: `recruteurslba_${company._id.toString()}`,
   }
 
   return resultCompany
@@ -361,28 +363,26 @@ export const getCompanyFromSiret = async ({
   try {
     const lbaCompany = await getDbCollection("recruteurslba").findOne({ siret })
 
-    if (lbaCompany) {
-      const applicationCountByCompany = await getApplicationByCompanyCount([lbaCompany.siret])
-
-      const company = transformCompany({
-        company: lbaCompany,
-        contactAllowedOrigin: isAllowedSource({ referer, caller }),
-        caller,
-        applicationCountByCompany,
-      })
-
-      if (caller) {
-        trackApiCall({ caller, api_path: "jobV1/company", job_count: 1, result_count: 1, response: "OK" })
-      }
-
-      return { lbaCompanies: [company] }
-    } else {
+    if (!lbaCompany) {
       if (caller) {
         trackApiCall({ caller, api_path: "jobV1/company", job_count: 0, result_count: 0, response: "OK" })
       }
-
       return { error: "not_found", status: 404, result: "not_found", message: "Société non trouvée" }
     }
+
+    if (caller) {
+      trackApiCall({ caller, api_path: "jobV1/company", job_count: 1, result_count: 1, response: "OK" })
+    }
+
+    const applicationCountByCompany = await getApplicationByCompanyCount([lbaCompany.siret])
+    const company = transformCompany({
+      company: lbaCompany,
+      contactAllowedOrigin: isAllowedSource({ referer, caller }),
+      caller,
+      applicationCountByCompany,
+    })
+
+    return { lbaCompanies: [company] }
   } catch (error) {
     sentryCaptureException(error)
     return manageApiError({

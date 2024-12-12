@@ -119,7 +119,7 @@ const formatData = (offre) => {
     COM_libelle: null,
     DEP_cle: adresse.code_postal ? adresse.code_postal.slice(0, 2) : "",
     DEP_libelle: null,
-    REG_cle: adresse.code_postal ? getDepartmentByZipCode(adresse.code_postal)?.region.code ?? "" : "",
+    REG_cle: adresse.code_postal ? (getDepartmentByZipCode(adresse.code_postal)?.region.code ?? "") : "",
     REG_libelle: null,
     Pay_cle: null,
     Pay_libelle: adresse.l7,
@@ -140,7 +140,7 @@ const formatData = (offre) => {
     OST_poste_restant_nb: offre.job_count,
     Off_client_final_siret: offre.establishment_siret,
     Off_client_final_nom: adresse.l7,
-    Off_etab_enseigne: offre.cfa ? offre.cfa?.establishment_raison_sociale : offre.establishment_raison_sociale ?? null,
+    Off_etab_enseigne: offre.cfa ? offre.cfa?.establishment_raison_sociale : (offre.establishment_raison_sociale ?? null),
     Col_cle: null,
     Col_nom: null,
     Col_URL_offre: null,
@@ -174,7 +174,7 @@ const formatData = (offre) => {
 
 const getJobsToExport = async () => {
   const buffer: any[] = []
-  const threshold = dayjs().subtract(30, "days").toDate()
+  const threshold = dayjs().subtract(60, "days").toDate()
   const offres: any[] = await getDbCollection("jobs")
     .find({
       job_status: JOB_STATUS.ACTIVE,

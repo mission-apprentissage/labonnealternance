@@ -1,6 +1,7 @@
 import { JOB_STATUS_ENGLISH } from "shared/models"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
+import { detectDuplicateJobPartners } from "./detectDuplicateJobPartners"
 import { fillLocationInfosForPartners } from "./fillLocationInfosForPartners"
 import { fillOpcoInfosForPartners } from "./fillOpcoInfosForPartners"
 import { fillRomeForPartners } from "./fillRomeForPartners"
@@ -12,10 +13,11 @@ export const fillComputedJobsPartners = async () => {
   await fillSiretInfosForPartners()
   await fillLocationInfosForPartners()
   await fillRomeForPartners()
+  await detectDuplicateJobPartners()
   await validateComputedJobPartners()
 }
 
-export const blankComputedJobPartner: Omit<IComputedJobsPartners, "_id" | "partner_label"> = {
+export const blankComputedJobPartner: Omit<IComputedJobsPartners, "_id" | "partner_label" | "partner_job_id"> = {
   apply_phone: null,
   apply_url: null,
   business_error: null,
@@ -38,7 +40,6 @@ export const blankComputedJobPartner: Omit<IComputedJobsPartners, "_id" | "partn
   offer_target_diploma: null,
   offer_title: null,
   offer_to_be_acquired_skills: [],
-  partner_job_id: null,
   updated_at: null,
   validated: false,
   workplace_address_city: null,
@@ -57,4 +58,5 @@ export const blankComputedJobPartner: Omit<IComputedJobsPartners, "_id" | "partn
   workplace_siret: null,
   workplace_size: null,
   workplace_website: null,
+  jobs_in_success: [],
 }

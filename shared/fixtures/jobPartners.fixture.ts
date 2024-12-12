@@ -30,7 +30,7 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     apply_url: "https://apply.com",
     apply_phone: null,
     partner_label: JOBPARTNERS_LABEL.HELLOWORK,
-    partner_job_id: null,
+    partner_job_id: "partner_job_id",
 
     contract_start: null,
     contract_duration: null,
@@ -65,6 +65,8 @@ export function generateComputedJobsPartnersFixture(data: Partial<IComputedJobsP
     errors: [],
     validated: false,
     business_error: null,
+    jobs_in_success: [],
+
     _id: new ObjectId(),
     workplace_siret: null,
     workplace_website: null,
@@ -89,7 +91,7 @@ export function generateComputedJobsPartnersFixture(data: Partial<IComputedJobsP
     apply_url: "https://apply.com",
     apply_phone: null,
     partner_label: JOBPARTNERS_LABEL.HELLOWORK,
-    partner_job_id: null,
+    partner_job_id: "partner_job_id",
 
     contract_start: null,
     contract_duration: null,
@@ -114,7 +116,6 @@ export function generateComputedJobsPartnersFixture(data: Partial<IComputedJobsP
 
     created_at: new Date("2021-01-28T15:00:00.000Z"),
     updated_at: new Date("2021-01-28T15:00:00.000Z"),
-
     ...data,
   }
 }

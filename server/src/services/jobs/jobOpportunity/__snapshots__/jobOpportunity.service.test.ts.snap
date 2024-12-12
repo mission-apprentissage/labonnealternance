@@ -29,7 +29,6 @@ exports[`createJobOffer > should create a job offer with the minimal data 1`] = 
   "offer_target_diploma": null,
   "offer_title": "Apprentis en développement web",
   "offer_to_be_acquired_skills": [],
-  "partner_job_id": "job-id-b",
   "partner_label": "Some organisation",
   "updated_at": 2024-06-18T00:00:00.000Z,
   "workplace_address_city": "PARIS",
@@ -62,6 +61,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
   {
     "apply": {
       "phone": "0300000000",
+      "recipient_id": "recruiters_67520beff00dd7b9073d5fdc",
       "url": "",
     },
     "contract": {
@@ -74,7 +74,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     },
     "identifier": {
       "id": "",
-      "partner_job_id": null,
+      "partner_job_id": "",
       "partner_label": "La bonne alternance",
     },
     "offer": {
@@ -140,6 +140,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
   {
     "apply": {
       "phone": null,
+      "recipient_id": null,
       "url": "",
     },
     "contract": {
@@ -150,7 +151,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     },
     "identifier": {
       "id": "",
-      "partner_job_id": "1",
+      "partner_job_id": "",
       "partner_label": "France Travail",
     },
     "offer": {
@@ -198,6 +199,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
   {
     "apply": {
       "phone": null,
+      "recipient_id": "jobs_partners_675209e704377be3d437bbb9",
       "url": "",
     },
     "contract": {
@@ -211,7 +213,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     },
     "identifier": {
       "id": "",
-      "partner_job_id": "job-id-1",
+      "partner_job_id": "",
       "partner_label": "Hello work",
     },
     "offer": {
@@ -264,6 +266,7 @@ exports[`findJobsOpportunities > should execute query 2`] = `
   {
     "apply": {
       "phone": "0100000000",
+      "recipient_id": null,
       "url": "http://localhost:3000/recherche-apprentissage?type=lba&itemId=11000001500013",
     },
     "identifier": {
@@ -329,7 +332,6 @@ exports[`updateJobOffer > should update a job offer with the minimal data 1`] = 
   "offer_target_diploma": null,
   "offer_title": "Apprentis en développement web",
   "offer_to_be_acquired_skills": [],
-  "partner_job_id": "job-id-9",
   "partner_label": "Some organisation",
   "updated_at": 2024-06-18T00:00:00.000Z,
   "workplace_address_city": "PARIS",

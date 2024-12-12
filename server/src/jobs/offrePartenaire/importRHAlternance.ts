@@ -10,6 +10,7 @@ import { z } from "zod"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
 import dayjs from "@/services/dayjs.service"
 
@@ -64,7 +65,12 @@ export const importRHAlternanceRaw = async () => {
     }
     jobCount += savedJobs.length
   }
-  logger.info(`import done: ${jobCount} jobs imported`)
+  const message = `import RH Alternance terminé : ${jobCount} offres importées`
+  logger.info(message)
+  await notifyToSlack({
+    subject: `import des offres RH Alternance dans raw`,
+    message,
+  })
 }
 
 export const importRHAlternanceToComputed = async () => {

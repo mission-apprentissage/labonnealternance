@@ -1,5 +1,3 @@
-import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
-import { useMongo } from "@tests/utils/mongo.test.utils"
 import pick from "lodash-es/pick"
 import { ObjectId } from "mongodb"
 import nock from "nock"
@@ -7,6 +5,8 @@ import { OPCOS_LABEL } from "shared/constants"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
+import { useMongo } from "@tests/utils/mongo.test.utils"
 
 import { fillOpcoInfosForPartners } from "./fillOpcoInfosForPartners"
 
@@ -195,7 +195,7 @@ describe("fillOpcoInfosForPartners", () => {
     // when
     await fillOpcoInfosForPartners()
     // then
-    const jobs = (await getDbCollection("computed_jobs_partners").find({}).toArray()).sort((a, b) => (a.partner_job_id! < b.partner_job_id! ? -1 : 1))
+    const jobs = (await getDbCollection("computed_jobs_partners").find({}).toArray()).sort((a, b) => (a.partner_job_id < b.partner_job_id ? -1 : 1))
     expect.soft(jobs.length).toBe(4)
     const [job1, job2, job3, job4] = jobs
     expect.soft(job1.errors).toEqual([])

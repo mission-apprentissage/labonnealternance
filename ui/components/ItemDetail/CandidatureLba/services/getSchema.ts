@@ -1,28 +1,29 @@
-import * as Yup from "yup"
+import { IApplicationApiPayloadJSON, ZApplicationApiPayload } from "shared"
+import { validatePhone } from "shared/validators/phoneValidator"
+import { z } from "zod"
 
 import { sessionStorageGet } from "@/utils/localStorage"
 
-import { phoneValidation } from "../../../../common/validation/fieldValidations"
+export type IApplicationSchemaInitValues = Omit<IApplicationApiPayloadJSON, "caller">
 
-export function getInitialSchemaValues() {
+export function getInitialSchemaValues(): IApplicationSchemaInitValues {
   const inSessionValue = JSON.parse(sessionStorageGet("application-form-values"))
   return {
-    firstName: inSessionValue?.applicant_first_name ?? "",
-    lastName: inSessionValue?.applicant_last_name ?? "",
-    email: inSessionValue?.applicant_email ?? "",
-    phone: inSessionValue?.applicant_phone ?? "",
-    fileName: inSessionValue?.applicant_file_name ?? "",
-    fileContent: inSessionValue?.applicant_file_content ?? "",
-    message: inSessionValue?.message ?? "",
+    applicant_first_name: inSessionValue?.applicant_first_name ?? "",
+    applicant_last_name: inSessionValue?.applicant_last_name ?? "",
+    applicant_email: inSessionValue?.applicant_email ?? "",
+    applicant_phone: inSessionValue?.applicant_phone ?? "",
+    applicant_attachment_name: inSessionValue?.applicant_attachment_name ?? "",
+    applicant_attachment_content: inSessionValue?.applicant_attachment_content ?? "",
+    applicant_message: inSessionValue?.message ?? "",
   }
 }
 
-export function getValidationSchema() {
-  return Yup.object({
-    fileName: Yup.string().nullable().required("⚠ La pièce jointe est obligatoire"),
-    firstName: Yup.string().max(50, "⚠ Doit avoir 50 caractères ou moins").required("⚠ Le prénom est obligatoire"),
-    lastName: Yup.string().max(50, "⚠ Doit avoir 50 caractères ou moins").required("⚠ Le nom est obligatoire"),
-    email: Yup.string().email("⚠ Adresse e-mail invalide").required("⚠ L'adresse e-mail est obligatoire"),
-    phone: phoneValidation().required("⚠ Le numéro de téléphone est obligatoire"),
-  })
-}
+export const ApplicationFormikSchema = ZApplicationApiPayload.pick({
+  applicant_first_name: true,
+  applicant_last_name: true,
+  applicant_email: true,
+  applicant_attachment_name: true,
+}).extend({
+  applicant_phone: z.string().trim().refine(validatePhone, { message: "Téléphone non valide : veuillez utiliser le format international (+33XXX...) ou national (06XXX...)" }),
+})

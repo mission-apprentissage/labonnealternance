@@ -5,7 +5,7 @@ import { useContext } from "react"
 
 import { WidgetContext } from "../../context/contextWidget"
 import { ArrowLeft } from "../../theme/components/icons"
-import { LbaNew } from "../../theme/components/logos_pro"
+import { LbaNew } from "../../theme/components/logos"
 import InfoBanner from "../InfoBanner/InfoBanner"
 
 export default function AuthentificationLayout(props) {
@@ -28,7 +28,7 @@ export default function AuthentificationLayout(props) {
 
   return (
     <Container maxW="container.xl" px={4} py={4}>
-      <InfoBanner showInfo={true} showAlert={false} />
+      <InfoBanner showInfo={false} showAlert={false} />
       <Flex direction="column" px={[0, 4]}>
         <Flex direction={["column", "row"]} justifyContent="space-between" align={["left", "center"]} justify={["left", "center"]} mb={["4", "0"]}>
           <Link href="/" aria-label="Retour à la page d'accueil">

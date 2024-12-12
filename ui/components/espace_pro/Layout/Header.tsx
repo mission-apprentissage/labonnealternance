@@ -11,7 +11,7 @@ import { apiGet } from "@/utils/api.utils"
 import { AUTHTYPE } from "../../../common/contants"
 import { LogoContext } from "../../../context/contextLogo"
 import { LockFill } from "../../../theme/components/icons"
-import { LbaNew } from "../../../theme/components/logos_pro"
+import { LbaNew } from "../../../theme/components/logos"
 import LogoAkto from "../assets/images/akto"
 
 const Header = () => {
@@ -28,7 +28,7 @@ const Header = () => {
 
   return (
     <Box>
-      <InfoBanner showInfo={true} />
+      <InfoBanner showInfo={false} />
       <Container maxW="full" px={[0, 4]} py={4} borderBottom={"1px solid"} borderColor="grey.400">
         <Container maxW="container.xl">
           <Flex alignItems="center" px={[0, 4]}>

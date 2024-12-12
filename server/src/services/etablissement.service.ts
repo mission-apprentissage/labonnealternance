@@ -31,7 +31,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
-import { emailHasActiveRole, isUserEmailChecked } from "@/services/userWithAccount.service"
+import { getUserWithAccountByEmail, isUserEmailChecked } from "@/services/userWithAccount.service"
 
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
@@ -589,7 +589,7 @@ export const entrepriseOnboardingWorkflow = {
     }
     const formatedEmail = email.toLocaleLowerCase()
     // Faut-il rajouter un contrôle sur l'existance du couple email/siret dans la collection recruiters ?
-    if (await emailHasActiveRole(formatedEmail)) {
+    if (await getUserWithAccountByEmail(formatedEmail)) {
       return errorFactory("L'adresse mail est déjà associée à un compte La bonne alternance.", BusinessErrorCodes.ALREADY_EXISTS)
     }
     let siretResponse: Awaited<ReturnType<typeof getEntrepriseDataFromSiret>>
@@ -836,7 +836,7 @@ export const sendMailCfaPremiumStart = (etablissement: IEtablissement, type: "af
       ...(type === "affelnet" ? { isAffelnet: true } : type === "parcoursup" ? { isParcoursup: true } : {}),
       images: {
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-        logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+        logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
       },
       etablissement: {
         name: etablissement.raison_sociale,
