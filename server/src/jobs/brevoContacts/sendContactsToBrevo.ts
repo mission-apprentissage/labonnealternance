@@ -39,8 +39,6 @@ const apiKey = defaultClient.authentications["api-key"]
 apiKey.apiKey = config.smtp.brevoApiKey
 const apiInstance = new SibApiV3Sdk.ContactsApi()
 
-const formatter = (value) => value ?? ""
-
 const postToBrevo = async (contacts: IBrevoContact[]) => {
   contactCount += contacts.length
 
@@ -59,59 +57,53 @@ const postToBrevo = async (contacts: IBrevoContact[]) => {
       {
         key: "user_origin",
         header: "USER_ORIGIN",
-        formatter,
       },
       {
         key: "role_authorized_type",
         header: "ROLE_AUTHORIZED_TYPE",
-        formatter,
       },
       {
         key: "role_createdAt",
         header: "ROLE_CREATEDAT",
-        formatter: (value) => dayjs(value).format("YYYY-MM-DD"),
       },
       {
         key: "entreprise_enseigne",
         header: "ENTREPRISE_ENSEIGNE",
-        formatter,
       },
       {
         key: "entreprise_raison_sociale",
         header: "ENTREPRISE_RAISON_SOCIALE",
-        formatter,
       },
       {
         key: "entreprise_siret",
         header: "ENTREPRISE_SIRET",
-        formatter,
       },
       {
         key: "cfa_enseigne",
         header: "CFA_ENSEIGNE",
-        formatter,
       },
       {
         key: "cfa_raison_sociale",
         header: "CFA_RAISON_SOCIALE",
-        formatter,
       },
       {
         key: "cfa_siret",
         header: "CFA_SIRET",
-        formatter,
       },
       {
         key: "job_count",
         header: "JOB_COUNT",
-        formatter: (value) => value || "0",
       },
       {
         key: "recruiter_establishment_size",
         header: "EFFECTIFS",
-        formatter,
       },
     ] as ColumnOption[],
+    cast: {
+      date: (value) => dayjs(value).format("YYYY-MM-DD"),
+      number: (value) => "" + value || "0",
+      string: (value) => value ?? "",
+    },
   })
 
   requestContactImport.fileBody = fileBody
