@@ -1,6 +1,6 @@
 import { Box, Heading, Image, Stack, Text } from "@chakra-ui/react"
 
-import { J1S, Parcoursup } from "@/theme/components/logos_pro"
+import { J1S, Parcoursup } from "@/theme/components/logos"
 
 export const InfosDiffusionOffre = () => {
   return (

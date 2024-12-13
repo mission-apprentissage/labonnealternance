@@ -1,6 +1,3 @@
-import { getApiApprentissageTestingToken, getApiApprentissageTestingTokenFromInvalidPrivateKey } from "@tests/utils/jwt.test.utils"
-import { useMongo } from "@tests/utils/mongo.test.utils"
-import { useServer } from "@tests/utils/server.test.utils"
 import { ObjectId } from "mongodb"
 import nock from "nock"
 import { generateFeaturePropertyFixture } from "shared/fixtures/geolocation.fixture"
@@ -17,6 +14,9 @@ import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/a
 import { searchForFtJobs } from "@/common/apis/franceTravail/franceTravail.client"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
+import { getApiApprentissageTestingToken, getApiApprentissageTestingTokenFromInvalidPrivateKey } from "@tests/utils/jwt.test.utils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { useServer } from "@tests/utils/server.test.utils"
 
 vi.mock("@/common/apis/franceTravail/franceTravail.client")
 vi.mock("@/common/apis/apiEntreprise/apiEntreprise.client")

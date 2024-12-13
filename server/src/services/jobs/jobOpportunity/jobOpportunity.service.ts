@@ -1,4 +1,4 @@
-import { badRequest, conflict, internal, notFound } from "@hapi/boom"
+import { badRequest, internal, notFound } from "@hapi/boom"
 import { IApiAlternanceTokenData } from "api-alternance-sdk"
 import { DateTime } from "luxon"
 import { Document, Filter, ObjectId } from "mongodb"
@@ -355,7 +355,7 @@ export const convertLbaRecruiterToJobOfferApi = (offresEmploiLba: IJobResult[]):
       })
       .map(
         ({ recruiter, job }: IJobResult): IJobOfferApiReadV3 => ({
-          identifier: { id: job._id, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, partner_job_id: null },
+          identifier: { id: job._id, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, partner_job_id: job._id.toString() },
           contract: {
             start: job.job_start_date,
             duration: job.job_duration ?? null,
@@ -375,7 +375,7 @@ export const convertLbaRecruiterToJobOfferApi = (offresEmploiLba: IJobResult[]):
               expiration: job.job_expiration_date ?? null,
             },
             opening_count: job.job_count ?? 1,
-            status: translateJobStatus(job.job_status),
+            status: translateJobStatus(job.job_status)!,
           },
 
           workplace: {
@@ -699,7 +699,7 @@ async function resolveRomeCodes(data: IJobOfferApiWriteV3, siretData: WorkplaceS
   return [romeoResponse]
 }
 
-type InvariantFields = "_id" | "created_at" | "partner_label"
+type InvariantFields = "_id" | "created_at" | "partner_label" | "partner_job_id"
 
 async function upsertJobOffer(data: IJobOfferApiWriteV3, identity: IApiAlternanceTokenData, current: IJobsPartnersOfferPrivate | null): Promise<ObjectId> {
   const zodError = new ZodError([])
@@ -721,10 +721,12 @@ async function upsertJobOffer(data: IJobOfferApiWriteV3, identity: IApiAlternanc
 
   const now = new Date()
 
+  const _id = current?._id ?? new ObjectId()
   const invariantData: Pick<IJobsPartnersOfferPrivate, InvariantFields> = {
-    _id: current?._id ?? new ObjectId(),
+    _id,
     created_at: current?.created_at ?? now,
     partner_label: identity.organisation!,
+    partner_job_id: _id.toString(),
   }
 
   const defaultOfferExpiration = current?.offer_expiration
@@ -734,8 +736,6 @@ async function upsertJobOffer(data: IJobOfferApiWriteV3, identity: IApiAlternanc
   const offer_target_diploma_european = data.offer.target_diploma?.european ?? null
 
   const writableData: Omit<IJobsPartnersOfferPrivate, InvariantFields> = {
-    partner_job_id: data.identifier.partner_job_id,
-
     contract_start: data.contract.start,
     contract_duration: data.contract.duration,
     contract_type: data.contract.type,
@@ -787,12 +787,6 @@ async function upsertJobOffer(data: IJobOfferApiWriteV3, identity: IApiAlternanc
 }
 
 export async function createJobOffer(identity: IApiAlternanceTokenData, data: IJobOfferApiWriteV3): Promise<ObjectId> {
-  const { partner_job_id } = data.identifier
-  const { organisation } = identity
-  const exist = await getDbCollection("jobs_partners").findOne<IJobsPartnersOfferPrivate>({ partner_label: organisation!, partner_job_id })
-  if (exist) {
-    throw conflict("Job already exist")
-  }
   return upsertJobOffer(data, identity, null)
 }
 

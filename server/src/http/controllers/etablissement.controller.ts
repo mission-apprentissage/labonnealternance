@@ -109,8 +109,8 @@ export default (server: Server) => {
               replyTo: `${config.publicEmail}?subject=Email%20CFA%20Premium%20invite%20-%20MAJ%20contact%20formation`,
               images: {
                 logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-                logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
-                peopleLaptop: `${config.publicUrl}/assets/people-laptop.png?raw=true`,
+                logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
+                peopleLaptop: `${config.publicUrl}/assets/people-laptop.webp?raw=true`,
               },
               etablissement: {
                 email,
@@ -208,8 +208,8 @@ export default (server: Server) => {
               replyTo: `${config.publicEmail}?subject=Email%20CFA%20Premium%20invite%20-%20MAJ%20contact%20formation`,
               images: {
                 logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-                logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
-                peopleLaptop: `${config.publicUrl}/assets/people-laptop.png?raw=true`,
+                logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
+                peopleLaptop: `${config.publicUrl}/assets/people-laptop.webp?raw=true`,
               },
               etablissement: {
                 email,
@@ -283,9 +283,9 @@ export default (server: Server) => {
         data: {
           isAffelnet: true,
           images: {
-            informationIcon: `${config.publicUrl}/assets/icon-information-blue.png?raw=true`,
+            informationIcon: `${config.publicUrl}/assets/icon-information-blue.webp?raw=true`,
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
           },
           etablissement: {
             raison_sociale: etablissement.raison_sociale,
@@ -349,9 +349,9 @@ export default (server: Server) => {
         data: {
           isParcoursup: true,
           images: {
-            informationIcon: `${config.publicUrl}/assets/icon-information-blue.png?raw=true`,
+            informationIcon: `${config.publicUrl}/assets/icon-information-blue.webp?raw=true`,
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
           },
           etablissement: {
             raison_sociale: etablissement.raison_sociale,
@@ -395,7 +395,7 @@ export default (server: Server) => {
     async (req, res) => {
       let etablissement = await getDbCollection("etablissements").findOne(
         { _id: new ObjectId(req.params.id.toString()) },
-        { projection: { ...etablissementProjection, gestionnaire_email: 1 } }
+        { projection: { ...etablissementProjection, gestionnaire_email: 1, optout_activation_date: 1, optout_refusal_date: 1 } }
       )
 
       if (!etablissement || etablissement.optout_refusal_date) {
@@ -410,7 +410,7 @@ export default (server: Server) => {
           data: {
             images: {
               logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-              logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+              logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
             },
             etablissement: {
               name: etablissement.raison_sociale,
@@ -426,21 +426,25 @@ export default (server: Server) => {
         return res.send(etablissement)
       }
 
-      // If opt-out is already running but user unsubscribe, disable all formations
-      /**
-       * WARNING KBA 2024-02-12 : ALL REFERRERS ARE REMOVED AND ITS BAD IF PREMIUM IS AVAILABLE
-       */
+      // If opt-out is already running but user unsubscribe, remove optout for all formations
       if (etablissement.optout_activation_date && dayjs(etablissement.optout_activation_date).isBefore(dayjs())) {
-        // Disable all formations
         await getDbCollection("eligible_trainings_for_appointments").updateMany(
           {
             etablissement_formateur_siret: etablissement.formateur_siret,
           },
-          {
-            $set: {
-              referrers: [],
+          [
+            {
+              $set: {
+                referrers: {
+                  $filter: {
+                    input: "$referrers",
+                    as: "referrer",
+                    cond: { $in: ["$$referrer", [referrers.PARCOURSUP.name, referrers.AFFELNET.name]] },
+                  },
+                },
+              },
             },
-          }
+          ]
         )
       }
 
@@ -462,7 +466,7 @@ export default (server: Server) => {
         data: {
           images: {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
           },
           etablissement: {
             name: etablissement.raison_sociale,

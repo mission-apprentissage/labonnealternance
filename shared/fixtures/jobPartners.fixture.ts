@@ -30,7 +30,7 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     apply_url: "https://apply.com",
     apply_phone: null,
     partner_label: JOBPARTNERS_LABEL.HELLOWORK,
-    partner_job_id: null,
+    partner_job_id: "partner_job_id",
 
     contract_start: null,
     contract_duration: null,
@@ -91,7 +91,7 @@ export function generateComputedJobsPartnersFixture(data: Partial<IComputedJobsP
     apply_url: "https://apply.com",
     apply_phone: null,
     partner_label: JOBPARTNERS_LABEL.HELLOWORK,
-    partner_job_id: null,
+    partner_job_id: "partner_job_id",
 
     contract_start: null,
     contract_duration: null,
