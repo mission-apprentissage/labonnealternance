@@ -437,7 +437,7 @@ export const FormulaireCreationOffre = ({
           </Text>
         )}
         <Heading>Votre offre</Heading>
-        <Box>
+        <Box mt={4}>
           <FormikCreationOffre onRomeChange={onRomeChange} onSubmit={onSubmit} offre={offre} competencesDirty={competencesDirty} />
         </Box>
       </Box>
