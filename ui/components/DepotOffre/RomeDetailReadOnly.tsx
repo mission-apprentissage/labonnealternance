@@ -46,9 +46,6 @@ export const RomeDetailReadOnly = ({
       <Heading fontSize="24px" mb="16px" lineHeight="32px">
         {appellation}
       </Heading>
-      <Text fontSize="14px" color="#3A3A3A" lineHeight="24px">
-        La fiche métier se base sur la classification ROME de France Travail
-      </Text>
       <Accordion defaultIndex={[0]} allowMultiple>
         <CustomAccordion id="metier" header={<AccordionHeader>Descriptif du métier</AccordionHeader>}>
           <ul style={{ marginLeft: 16 }}>
@@ -95,6 +92,9 @@ export const RomeDetailReadOnly = ({
           <span dangerouslySetInnerHTML={{ __html: accesFormatted }}></span>
         </CustomAccordion>
       </Accordion>
+      <Text fontSize="14px" color="#3A3A3A" lineHeight="24px">
+        La fiche métier se base sur la classification ROME de France Travail
+      </Text>
     </Box>
   )
 }

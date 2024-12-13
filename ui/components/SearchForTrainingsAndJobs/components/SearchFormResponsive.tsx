@@ -80,9 +80,6 @@ const SearchFormResponsive = (props) => {
               </Text>
               <Flex direction={{ base: "column", lg: "row" }}>
                 <Box mb={4}>
-                  <Text as="p" my={2} fontWeight={700}>
-                    Votre recherche
-                  </Text>
                   <Box {...focusWithin}>
                     <AutoCompleteField
                       id="searchFormJobField"
