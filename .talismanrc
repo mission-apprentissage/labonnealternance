@@ -79,6 +79,8 @@ fileignoreconfig:
   checksum: 0e6d208dc8de66d2a440ff40a1260a76e41bf69fb414ccbfc6d99396df3f3b91
 - filename: server/src/services/__snapshots__/formulaire.service.test.ts.snap
   checksum: 71d9956fd03fcec52d37b3799fc5bc806d42ec40200254b1740819b3d5a2b0d1
+- filename: server/src/services/__snapshots__/partnerJob.service.test.ts.snap
+  checksum: 4f9393678b2ba8ea72cfd832d6a33ede3bc4024382b624464481a5f09636e152
 - filename: server/src/services/application.service.test.ts
   checksum: d11d73a73ed489475d6a2f7dd693787fc71a7dfd9150bb88cec4f88c92c19d02
 - filename: server/src/services/application.service.ts
@@ -95,6 +97,8 @@ fileignoreconfig:
   checksum: 6ed0939b188ffec96f7698b353e87c660e77c802c4d03b24620125291e06334c
 - filename: server/src/services/jobs/jobOpportunity/jobOpportunity.service.test.ts
   checksum: e192df6796f90fd76e38f3d7218e95d7ff2ef4615b5199e99052feb39ce374ec
+- filename: server/src/services/partnerJob.service.test.ts
+  checksum: b488a3b67b801c3fa5b012d2ba2b120b21af4f459b966c6629e6e681ead97913
 - filename: server/src/services/recruteurLba.service.test.ts
   checksum: 38c947c87cfb508fec88cbce878f89725cbb6679e833a66bdb7fca60e3685a0a
 - filename: server/src/services/referrers.service.ts
