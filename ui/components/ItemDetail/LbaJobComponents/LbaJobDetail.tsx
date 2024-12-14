@@ -10,15 +10,15 @@ import { notifyLbaJobDetailView } from "../../../services/notifyLbaJobDetailView
 import { SendPlausibleEvent } from "../../../utils/plausible"
 import { formatDate } from "../../../utils/strutils"
 import { getCompanySize } from "../ItemDetailServices/getCompanySize"
+import { getJobPostingSchema } from "../ItemDetailServices/getJobPostingSchema"
 import ItemDistanceToCenter from "../ItemDetailServices/ItemDistanceToCenter"
 import ItemGoogleSearchLink from "../ItemDetailServices/ItemGoogleSearchLink"
 import ItemLocalisation from "../ItemDetailServices/ItemLocalisation"
+import { BAD_DESCRIPTION_LENGTH, JobDescription } from "../ItemDetailServices/JobDescription"
 import { ReportJobLink } from "../ReportJobLink"
 
-import { JobPostingSchema } from "./JobPostingSchema"
 import LbaJobAcces from "./LbaJobAcces"
 import LbaJobCompetences from "./LbaJobCompetences"
-import { BAD_DESCRIPTION_LENGTH, LbaJobDescription } from "./LbaJobDescription"
 import LbaJobQualites from "./LbaJobQualites"
 import LbaJobTechniques from "./LbaJobTechniques"
 
@@ -47,37 +47,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJob; title: strin
   const validCustomDescription = description && description.length > BAD_DESCRIPTION_LENGTH ? description : null
   const romeDescription = job?.job?.romeDetails?.definition
 
-  const jobPostingSchema: JobPostingSchema = {
-    "@context": "https://schema.org/",
-    "@type": "JobPosting",
-    title,
-    description: validCustomDescription || romeDescription || null,
-    directApply: true,
-
-    identifier: {
-      "@type": "PropertyValue",
-      name: "Google",
-      value: job?.job?.id,
-    },
-    datePosted: job?.job?.jobStartDate,
-    validThrough: job?.job?.jobExpirationDate,
-    employmentType: "FULL_TIME",
-    hiringOrganization: {
-      "@type": "Organization",
-      name: job?.company?.name,
-    },
-    jobLocation: {
-      "@type": "Place",
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: job?.place?.numberAndStreet,
-        addressLocality: job?.place?.city,
-        addressRegion: null,
-        postalCode: job?.place?.zipCode,
-        addressCountry: "France",
-      },
-    },
-  }
+  const jobPostingSchema = getJobPostingSchema({ title, description: validCustomDescription || romeDescription || null, id: job?.job?.id, job })
 
   return (
     <>
@@ -142,7 +112,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJob; title: strin
         )}
 
         <Accordion allowToggle defaultIndex={0}>
-          <LbaJobDescription job={job} />
+          <JobDescription job={job} />
           <LbaJobQualites job={job} />
         </Accordion>
         <Box marginTop="10px">

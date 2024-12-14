@@ -1,0 +1,170 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`partnerJob.service > should execute query with full data 1`] = `
+{
+  "results": [
+    {
+      "company": {
+        "name": "Enseigne inconnue",
+        "opco": {
+          "label": null,
+          "url": null,
+        },
+        "siret": null,
+        "size": null,
+        "url": null,
+      },
+      "contact": {
+        "email": null,
+        "phone": null,
+        "url": "https://apply.com",
+      },
+      "id": "675209e704377be3d437bbb9",
+      "ideaType": "partnerJob",
+      "job": {
+        "creationDate": 2021-01-01T00:00:00.000Z,
+        "description": "Attention il te faut une super motivation pour ce job",
+        "dureeContrat": null,
+        "employeurDescription": null,
+        "id": "job-id-1",
+        "jobExpirationDate": null,
+        "jobStartDate": null,
+        "offer_access_conditions": [],
+        "offer_desired_skills": [],
+        "offer_to_be_acquired_skills": [],
+        "origin": null,
+        "partner_label": "Hello work",
+        "quantiteContrat": 1,
+        "status": "Active",
+        "type": [
+          "Apprentissage",
+          "Professionnalisation",
+        ],
+      },
+      "nafs": [
+        {
+          "code": null,
+          "label": null,
+        },
+      ],
+      "place": {
+        "city": "PARIS",
+        "distance": null,
+        "fullAddress": "126 RUE DE L'UNIVERSITE 75007 PARIS",
+        "latitude": 48.8589,
+        "longitude": 2.347,
+        "numberAndStreet": "126 RUE DE L'UNIVERSITE",
+        "remoteOnly": false,
+        "zipCode": "75007",
+      },
+      "romes": [
+        {
+          "code": "M1602",
+          "label": null,
+        },
+      ],
+      "target_diploma_level": null,
+      "title": "Une super offre d'alternance",
+    },
+  ],
+}
+`;
+
+exports[`partnerJob.service > should execute query with minimalData 1`] = `
+{
+  "results": [
+    {
+      "company": {
+        "name": "Enseigne inconnue",
+        "opco": {
+          "label": null,
+          "url": null,
+        },
+        "siret": null,
+      },
+      "id": "675209e704377be3d437bbb9",
+      "ideaType": "partnerJob",
+      "job": {
+        "creationDate": 2021-01-01T00:00:00.000Z,
+      },
+      "place": {
+        "distance": null,
+        "fullAddress": "126 RUE DE L'UNIVERSITE 75007 PARIS",
+        "latitude": 48.8589,
+        "longitude": 2.347,
+      },
+      "title": "Une super offre d'alternance",
+    },
+  ],
+}
+`;
+
+exports[`partnerJob.service > should find offer by id 1`] = `
+{
+  "partnerJobs": [
+    {
+      "company": {
+        "name": "Enseigne inconnue",
+        "opco": {
+          "label": null,
+          "url": null,
+        },
+        "siret": null,
+        "size": null,
+        "url": null,
+      },
+      "contact": {
+        "email": null,
+        "phone": null,
+        "url": "https://apply.com",
+      },
+      "id": "67520b8db04d1ef4ff79e1e5",
+      "ideaType": "partnerJob",
+      "job": {
+        "creationDate": 2023-01-01T00:00:00.000Z,
+        "description": "Attention il te faut une super motivation pour ce job",
+        "dureeContrat": null,
+        "employeurDescription": null,
+        "id": "job-id-3",
+        "jobExpirationDate": null,
+        "jobStartDate": null,
+        "offer_access_conditions": [],
+        "offer_desired_skills": [],
+        "offer_to_be_acquired_skills": [],
+        "origin": null,
+        "partner_label": "Hello work",
+        "quantiteContrat": 1,
+        "status": "Active",
+        "type": [
+          "Apprentissage",
+          "Professionnalisation",
+        ],
+      },
+      "nafs": [
+        {
+          "code": null,
+          "label": null,
+        },
+      ],
+      "place": {
+        "city": "PARIS",
+        "distance": null,
+        "fullAddress": "126 RUE DE L'UNIVERSITE 75007 PARIS",
+        "latitude": 48.8946,
+        "longitude": 2.2874,
+        "numberAndStreet": "126 RUE DE L'UNIVERSITE",
+        "remoteOnly": false,
+        "zipCode": "75007",
+      },
+      "romes": [
+        {
+          "code": "D1212",
+          "label": null,
+        },
+      ],
+      "target_diploma_level": null,
+      "title": "Une super offre d'alternance",
+    },
+  ],
+}
+`;

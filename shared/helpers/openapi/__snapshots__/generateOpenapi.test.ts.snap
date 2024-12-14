@@ -133,6 +133,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "lbb",
               "offres",
               "peJob",
+              "partnerJob",
             ],
             "example": "lba",
             "type": "string",
@@ -241,6 +242,10 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "string",
               "null",
             ],
+          },
+          "url": {
+            "description": "L'url pour postuler",
+            "type": "string",
           },
         },
         "type": [
@@ -1818,7 +1823,17 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "type": "string",
           },
           "job": {
-            "$ref": "#/components/schemas/LbacJob",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LbacJob",
+              },
+              {
+                "type": [
+                  "object",
+                  "null",
+                ],
+              },
+            ],
           },
           "nafs": {
             "items": {
@@ -1983,6 +1998,45 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "jobStartDate": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "offer_access_conditions": {
+            "items": {
+              "type": "string",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
+          "offer_desired_skills": {
+            "items": {
+              "type": "string",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
+          "offer_to_be_acquired_skills": {
+            "items": {
+              "type": "string",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
+          "origin": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "partner_label": {
             "type": [
               "string",
               "null",
@@ -2329,10 +2383,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
         "required": [
           "creationDate",
         ],
-        "type": [
-          "object",
-          "null",
-        ],
+        "type": "object",
       },
       "MetierEnrichi": {
         "additionalProperties": false,
@@ -2390,6 +2441,265 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
         "required": [
           "label",
           "romes",
+        ],
+        "type": "object",
+      },
+      "PartnerJob": {
+        "additionalProperties": false,
+        "properties": {
+          "company": {
+            "additionalProperties": false,
+            "description": "Les informations de la société. Selon le contexte il peut s'agir du centre de formation ou de l'entreprise offrant une opportunité d'emploi.",
+            "properties": {
+              "creationDate": {
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "description": {
+                "description": "La description de l'entreprise",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "headquarter": {
+                "additionalProperties": false,
+                "properties": {
+                  "hasConvention": {
+                    "description": "Lieu de formation seulement : indique si l'établissement gestionnaire est conventionné",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "id": {
+                    "description": "Lieu de formation seulement : l'identifiant de l'établissement gestionnaire",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "name": {
+                    "description": "La raison sociale du centre de formation auquel est affilié la formation",
+                    "example": "ECOLE DE TRAVAIL ORT",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "place": {
+                    "$ref": "#/components/schemas/Place",
+                  },
+                  "siret": {
+                    "description": "Le numéro de SIRET de l'établissement",
+                    "example": "78424186100011",
+                    "pattern": "^\\d{14}$",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "type": {
+                    "description": "Lieu de formation seulement : le type de l'établissement gestionnaire",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "uai": {
+                    "description": "Lieu de formation seulement : l'uai de l'établissement gestionnaire",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                },
+                "required": [
+                  "siret",
+                ],
+                "type": [
+                  "object",
+                  "null",
+                ],
+              },
+              "id": {
+                "description": "Lieu de formation seulement : l'identifiant du lieu de formation",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "logo": {
+                "description": "L'url du logo de l'entreprise",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "mandataire": {
+                "description": "Indique si l'offre est déposée par un CFA mandataire (offres Matcha seulement)",
+                "type": [
+                  "boolean",
+                  "null",
+                ],
+              },
+              "name": {
+                "description": "La raison sociale de l'entreprise",
+                "example": "ECOLE DE TRAVAIL ORT",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "opco": {
+                "additionalProperties": false,
+                "properties": {
+                  "label": {
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "url": {
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                },
+                "required": [
+                  "label",
+                  "url",
+                ],
+                "type": [
+                  "object",
+                  "null",
+                ],
+              },
+              "place": {
+                "$ref": "#/components/schemas/Place",
+              },
+              "siret": {
+                "description": "Le numéro de SIRET de l'établissement",
+                "example": "78424186100011",
+                "pattern": "^\\d{14}$",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "size": {
+                "description": "La tranche d'effectifs de l'entreprise",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "socialNetwork": {
+                "description": "Un lien vers un réseau social présentant l'entreprise",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "uai": {
+                "description": "Lieu de formation seulement : l'uai du lieu de formation",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "url": {
+                "description": "Un lien vers le site de l'entreprise",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+            },
+            "type": [
+              "object",
+              "null",
+            ],
+          },
+          "contact": {
+            "$ref": "#/components/schemas/Contact",
+          },
+          "detailsLoaded": {
+            "type": [
+              "boolean",
+              "null",
+            ],
+          },
+          "id": {
+            "type": "string",
+          },
+          "ideaType": {
+            "enum": [
+              "partnerJob",
+            ],
+            "type": "string",
+          },
+          "job": {
+            "$ref": "#/components/schemas/LbacJob",
+          },
+          "nafs": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "code": {
+                  "type": [
+                    "string",
+                    "null",
+                  ],
+                },
+                "label": {
+                  "type": [
+                    "string",
+                    "null",
+                  ],
+                },
+              },
+              "type": "object",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
+          "place": {
+            "$ref": "#/components/schemas/Place",
+          },
+          "romes": {
+            "items": {
+              "$ref": "#/components/schemas/Rome",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
+          "target_diploma_level": {
+            "description": "Le niveau de la formation.",
+            "example": "3 (CAP...)",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "title": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "ideaType",
+          "title",
+          "place",
+          "company",
+          "id",
+          "job",
         ],
         "type": "object",
       },
@@ -2595,7 +2905,17 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "type": "string",
           },
           "job": {
-            "$ref": "#/components/schemas/LbacJob",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LbacJob",
+              },
+              {
+                "type": [
+                  "object",
+                  "null",
+                ],
+              },
+            ],
           },
           "nafs": {
             "items": {
@@ -5511,7 +5831,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             },
           },
           {
-            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob)",
+            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob, partnerJob)",
             "in": "query",
             "name": "sources",
             "required": false,
@@ -5716,7 +6036,7 @@ Limite : 5 appel(s) / 1 seconde(s)
         "operationId": "getLbaJob",
         "parameters": [
           {
-            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob)",
+            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob, partnerJob)",
             "in": "path",
             "name": "source",
             "required": false,
@@ -5888,7 +6208,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             },
           },
           {
-            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob)",
+            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob, partnerJob)",
             "in": "query",
             "name": "sources",
             "required": false,
@@ -7215,7 +7535,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             },
           },
           {
-            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob)",
+            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob, partnerJob)",
             "in": "query",
             "name": "sources",
             "required": false,
@@ -7327,6 +7647,31 @@ Limite : 5 appel(s) / 1 seconde(s)
                         },
                       ],
                     },
+                    "partnerJobs": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "results": {
+                              "items": {
+                                "$ref": "#/components/schemas/PartnerJob",
+                              },
+                              "type": "array",
+                            },
+                          },
+                          "required": [
+                            "results",
+                          ],
+                          "type": "object",
+                        },
+                        {
+                          "$ref": "#/components/schemas/ApiError",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
                     "peJobs": {
                       "anyOf": [
                         {
@@ -7354,6 +7699,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                     },
                   },
                   "required": [
+                    "partnerJobs",
                     "peJobs",
                     "matchas",
                     "lbaCompanies",
@@ -8445,7 +8791,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             },
           },
           {
-            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob)",
+            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob, partnerJob)",
             "in": "query",
             "name": "sources",
             "required": false,
@@ -8557,6 +8903,31 @@ Limite : 5 appel(s) / 1 seconde(s)
                         },
                       ],
                     },
+                    "partnerJobs": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "results": {
+                              "items": {
+                                "$ref": "#/components/schemas/PartnerJob",
+                              },
+                              "type": "array",
+                            },
+                          },
+                          "required": [
+                            "results",
+                          ],
+                          "type": "object",
+                        },
+                        {
+                          "$ref": "#/components/schemas/ApiError",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
                     "peJobs": {
                       "anyOf": [
                         {
@@ -8584,10 +8955,116 @@ Limite : 5 appel(s) / 1 seconde(s)
                     },
                   },
                   "required": [
+                    "partnerJobs",
                     "peJobs",
                     "matchas",
                     "lbaCompanies",
                     "lbbCompanies",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiError",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "",
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiError",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [],
+        "tags": [
+          "V1 - Jobs",
+        ],
+      },
+    },
+    "/v1/jobs/partnerJob/{id}": {
+      "get": {
+        "deprecated": true,
+        "description": "Get one lba job identified by it's id
+Limite : 5 appel(s) / 1 seconde(s)
+",
+        "parameters": [
+          {
+            "description": "the id the partner job looked for.",
+            "in": "path",
+            "name": "id",
+            "required": false,
+            "schema": {
+              "description": "Identifiant unique",
+            },
+          },
+          {
+            "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+            "in": "query",
+            "name": "caller",
+            "required": false,
+            "schema": {
+              "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+              "example": "contact@domaine nom_de_societe",
+              "type": "string",
+            },
+          },
+          {
+            "in": "header",
+            "name": "referer",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "partnerJobs": {
+                      "items": {
+                        "$ref": "#/components/schemas/PartnerJob",
+                      },
+                      "type": "array",
+                    },
+                  },
+                  "required": [
+                    "partnerJobs",
                   ],
                   "type": "object",
                 },
@@ -9192,7 +9669,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             },
           },
           {
-            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob)",
+            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob, partnerJob)",
             "in": "query",
             "name": "sources",
             "required": false,
@@ -9354,6 +9831,34 @@ Limite : 5 appel(s) / 1 seconde(s)
                                 },
                               ],
                             },
+                            "partnerJobs": {
+                              "anyOf": [
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "results": {
+                                      "items": {
+                                        "$ref": "#/components/schemas/PartnerJob",
+                                      },
+                                      "type": "array",
+                                    },
+                                  },
+                                  "required": [
+                                    "results",
+                                  ],
+                                  "type": "object",
+                                },
+                                {
+                                  "$ref": "#/components/schemas/ApiError",
+                                },
+                                {
+                                  "type": "null",
+                                },
+                                {
+                                  "type": "null",
+                                },
+                              ],
+                            },
                             "peJobs": {
                               "anyOf": [
                                 {
@@ -9388,6 +9893,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                             "matchas",
                             "lbaCompanies",
                             "lbbCompanies",
+                            "partnerJobs",
                           ],
                           "type": "object",
                         },

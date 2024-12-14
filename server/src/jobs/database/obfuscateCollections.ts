@@ -125,6 +125,42 @@ const obfuscateFormations = async () => {
   )
 }
 
+const fakeJobPartner = {
+  apply_phone: "0601010106",
+  apply_url: "https://labonnealternance-recette.apprentissage.beta.gouv.fr/faq",
+  offer_access_conditions: ["vert", "rouge", "bleu"],
+  offer_desired_skills: ["flûte", "violon", "contrebasse"],
+  offer_title: "Boucher en Alternance H/F",
+  offer_to_be_acquired_skills: ["gentillesse"],
+  offer_description:
+    "Les missions du poste : Vous avez envie de...\r\n- Connaitre, transformer les produits de votre marché. Vous mettez en oeuvre les découpes et recettes / process de transformation de vos produits. Vous êtes polyvalent à tous les postes de fabrication / découpe avec un haut niveau de professionnalisme. Vous évaluez la qualité et la fraîcheur des produits et d'écarter les produits non-conformes.\r\n- Contribuer à la bonne organisation de la production dans le respect des règles d'hygiène.  Vous organisez votre espace de travail (propreté, rangement, entretien du matériel) et veillez au respect des règles de sécurité alimentaire. Enfin, vous étalez la fabrication afin de garantir la fraîcheur des produits et de répondre à l'objectif de zéro rupture.\r\n- Mettre en valeurs vos produits et fidéliser vos clients. Vous approvisionnez et mettez en avant vos produits, dans le respect des règles d'étalagisme et de merchandising. Vous veillez à la mise en valeur de vos produits, dans le but d'attirer et fidéliser vos clients. Vous conseillez et répondez aux attentes de ces derniers.\r\n\r\nVous êtes...\r\n\r\nEn formation de niveau BP/CAP/Bac Pro en boucherie ou un CQP.",
+  workplace_brand: "Adadass",
+  workplace_name: "Adadass",
+  workplace_legal_name: "Adadass",
+  workplace_siret: "11000007200014",
+  workplace_website: "https://rhalternance.com/companies/societe",
+}
+
+const obfuscatePartnerJobs = async () => {
+  logger.info(`obfuscating formations`)
+  await getDbCollection("computed_jobs_partners").updateMany(
+    {},
+    {
+      $set: fakeJobPartner,
+    }
+  )
+
+  await getDbCollection("jobs_partners").updateMany(
+    {},
+    {
+      $set: fakeJobPartner,
+    }
+  )
+
+  await getDbCollection("raw_rhalternance").deleteMany({})
+  await getDbCollection("raw_hellowork").deleteMany({})
+}
+
 export const getFakeEmail = () => `${randomUUID()}@faux-domaine.fr`
 
 const keepSpecificUser = async (email: string, type: AccessEntityType) => {
@@ -252,6 +288,9 @@ export async function obfuscateCollections(): Promise<void> {
   await obfuscateRecruiter()
   await obfuscateUser()
   await obfuscateUsersWithAccounts()
+  await obfuscatePartnerJobs()
   await getDbCollection("optouts").deleteMany({})
-  // TODO recruteur LBA update event deleteMany ??
+  await getDbCollection("cache_geolocation").deleteMany({})
+  await getDbCollection("cache_romeo").deleteMany({})
+  await getDbCollection("cache_siret").deleteMany({})
 }
