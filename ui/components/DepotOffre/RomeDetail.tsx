@@ -82,9 +82,6 @@ export const RomeDetail = ({
       <Heading fontSize="24px" mb="16px" lineHeight="32px">
         {appellation}
       </Heading>
-      <Text fontSize="14px" color="#3A3A3A" lineHeight="24px">
-        La fiche métier se base sur la classification ROME de France Travail
-      </Text>
       <Text backgroundColor="#F5F5FE" padding="12px" color="#000091" fontSize="16px" lineHeight="24px" my="12px">
         Voici la description de l’offre qui sera consultable par les candidats.
         <br />
@@ -143,6 +140,9 @@ export const RomeDetail = ({
           <span dangerouslySetInnerHTML={{ __html: accesFormatted }}></span>
         </CustomAccordion>
       </Accordion>
+      <Text fontSize="14px" color="#3A3A3A" lineHeight="24px">
+        La fiche métier se base sur la classification ROME de France Travail
+      </Text>
     </Box>
   )
 }

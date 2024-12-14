@@ -1,5 +1,3 @@
-import { setTimeout } from "timers/promises"
-
 import { badRequest, internal } from "@hapi/boom"
 import { captureException } from "@sentry/node"
 import { Filter as MongoDBFilter, ObjectId } from "mongodb"
@@ -17,7 +15,6 @@ import {
   ZCfaReferentielData,
 } from "shared"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants"
-import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { IEtablissementGouvData } from "shared/models/cacheInfosSiret.model"
@@ -27,7 +24,7 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { getEtablissementDiffusionStatus, getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
+import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
 import { FCGetOpcoInfos } from "@/common/apis/franceCompetences/franceCompetencesClient"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
@@ -138,21 +135,6 @@ const getIdcc = async (siret: string): Promise<ISIRET2IDCC | null> => {
     return null
   }
 }
-
-const MAX_RETRY = 100
-const DELAY = 100
-
-export const getDiffusionStatus = async (siret: string, count = 1) => {
-  const isDiffusible = await getEtablissementDiffusionStatus(siret)
-  if (isDiffusible === "quota") {
-    if (count > MAX_RETRY) throw internal(`Api entreprise or cache entreprise not availabe. Tried ${MAX_RETRY} times`)
-    await setTimeout(DELAY, "result")
-    return await getDiffusionStatus(siret, count++)
-  }
-  return isDiffusible
-}
-
-export const checkIsDiffusible = async (siret: string) => (await getDiffusionStatus(siret)) === EDiffusibleStatus.DIFFUSIBLE
 
 /**
  * @description Get the establishment information from the ENTREPRISE API for a given SIRET
