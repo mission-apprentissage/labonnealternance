@@ -265,6 +265,8 @@ export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }
     query["offer_target_diploma.european"] = { $in: [target_diploma_level, null] }
   }
 
+  query["offer_expiration"] = { $gt: new Date() }
+
   const filterStages: Document[] =
     geo === null
       ? [{ $match: query }, { $sort: { offer_creation: -1 } }]
@@ -307,6 +309,8 @@ export const getJobsPartnersFromDBForUI = async ({ romes, geo, target_diploma_le
   if (target_diploma_level) {
     query["offer_target_diploma.european"] = { $in: [target_diploma_level, null] }
   }
+
+  query["offer_expiration"] = { $gt: new Date() }
 
   const filterStages: Document[] =
     geo === null
