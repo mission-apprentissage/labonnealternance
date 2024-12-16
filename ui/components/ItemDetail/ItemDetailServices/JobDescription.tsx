@@ -16,7 +16,7 @@ export const JobDescription = ({ job }: { job: ILbaItemPartnerJob | ILbaItemLbaJ
   if (validCustomDescription || employeurDescription) {
     return (
       <>
-        {validCustomDescription && <JobDescriptionAccordion title="Description du Métier">{validCustomDescription}</JobDescriptionAccordion>}
+        {validCustomDescription && <JobDescriptionAccordion title="Description du métier">{validCustomDescription}</JobDescriptionAccordion>}
         {employeurDescription && <JobDescriptionAccordion title="Description de l'employeur">{employeurDescription}</JobDescriptionAccordion>}
       </>
     )
