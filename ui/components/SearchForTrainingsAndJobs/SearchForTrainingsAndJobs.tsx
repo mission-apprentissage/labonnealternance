@@ -145,6 +145,9 @@ const SearchForTrainingsAndJobs = () => {
       case LBA_ITEM_TYPE_OLD.MATCHA: {
         return jobs?.matchas?.find((el) => el.id === itemId)
       }
+      case LBA_ITEM_TYPE_OLD.PARTNER_JOB: {
+        return jobs?.partnerJobs?.find((el) => el.id === itemId)
+      }
       default:
         return
     }

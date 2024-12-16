@@ -1,18 +1,16 @@
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 // retourne les offres issues du dépôt d'offre simplifié (ex Matcha) triées par ordre croissant de distance au centre de recherche
-
+// suivi des offres partner job triées par ordre croissant de distance au centre de recherche.
 // suivi des offres France travail triées par ordre croissant de distance au centre de recherche.
 export const mergeJobs = ({ jobs, activeFilters }) => {
   let mergedArray = []
 
   if (jobs) {
-    if (jobs.matchas && jobs.matchas.length) {
-      mergedArray = mergedArray.concat(sortMergedSources(jobs.matchas.filter((job) => (activeFilters.includes("duo") ? true : !job.company.mandataire))))
-    }
-    if (jobs.peJobs && jobs.peJobs.length) {
-      mergedArray = mergedArray.concat(sortMergedSources(jobs.peJobs))
-    }
+    mergedArray = mergedArray
+      .concat(sortMergedSources(jobs?.matchas?.length ? jobs.matchas.filter((job) => (activeFilters.includes("duo") ? true : !job.company.mandataire)) : []))
+      .concat(sortMergedSources(jobs.partnerJobs))
+      .concat(sortMergedSources(jobs.peJobs))
   }
 
   return mergedArray
@@ -25,6 +23,7 @@ export const mergeOpportunities = ({ jobs, onlyLbbLbaCompanies = undefined, acti
     const sources = [jobs.lbaCompanies]
     if (!onlyLbbLbaCompanies) {
       sources.push(jobs.peJobs)
+      sources.push(jobs.partnerJobs)
       sources.push(activeFilters.includes("duo") ? jobs?.matchas : jobs?.matchas?.filter((job) => !job.company.mandataire))
     }
 
@@ -48,7 +47,11 @@ const concatSources = (sources) => {
 }
 
 const sortMergedSources = (mergedArray) => {
-  mergedArray.sort((a, b) => {
+  if (!mergedArray?.length) {
+    return []
+  }
+
+  return mergedArray.sort((a, b) => {
     const dA = a.place.distance
     const dB = b.place.distance
 
@@ -63,14 +66,12 @@ const sortMergedSources = (mergedArray) => {
     }
     return 0
   })
-
-  return mergedArray
 }
 
 // détermine si l'offre France travail est liée au département avec une géoloc non précisée
 export const isDepartmentJob = (job) => {
   let isDepartmentJob = false
-  if (!job.place.distance && (!job.place.zipCode || job.place.zipCode.substring(0, 2) === job.place.city.substring(0, 2))) {
+  if (job.place.distance == null && (!job.place.zipCode || job.place.zipCode.substring(0, 2) === job.place.city.substring(0, 2))) {
     isDepartmentJob = true
   }
 

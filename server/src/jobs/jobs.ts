@@ -28,6 +28,7 @@ import { pocRomeo } from "./franceTravail/pocRomeo"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
+import { processJobPartners } from "./offrePartenaire/processJobPartners"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -216,6 +217,10 @@ export async function setupJobProcessor() {
           "Génération du sitemap pour les offres": {
             cron_string: "5 22 * * *",
             handler: generateSitemap,
+          },
+          "Traitement complet des jobs_partners": {
+            cron_string: "0 23 * * *",
+            handler: processJobPartners,
           },
         },
     jobs: {

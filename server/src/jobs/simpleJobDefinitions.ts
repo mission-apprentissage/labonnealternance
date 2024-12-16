@@ -18,6 +18,7 @@ import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromCo
 import { importHelloWorkRaw, importHelloWorkToComputed } from "./offrePartenaire/importHelloWork"
 import { importKelio } from "./offrePartenaire/importKelio"
 import { importRHAlternanceRaw, importRHAlternanceToComputed } from "./offrePartenaire/importRHAlternance"
+import { processJobPartners } from "./offrePartenaire/processJobPartners"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
@@ -209,5 +210,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: generateSitemap,
     description: "Génère le sitemap pour les offres",
+  },
+  {
+    fct: processJobPartners,
+    description: "Chaîne complète de traitement des jobs_partners",
   },
 ]
