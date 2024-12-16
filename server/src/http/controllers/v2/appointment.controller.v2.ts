@@ -1,4 +1,5 @@
 import { zRoutes } from "shared/index"
+import { IAppointmentContextCleMinistereEducatif, IAppointmentContextOnisep, IAppointmentContextParcoursup } from "shared/routes/appointments.routes.v2"
 
 import { findElligibleTrainingForAppointmentV2 } from "../../../services/eligibleTrainingsForAppointment.service"
 import { Server } from "../../server"
@@ -12,7 +13,8 @@ export default (server: Server) => {
       onRequest: server.auth(zRoutes.post["/appointment"]),
     },
     async (req, res) => {
-      res.status(200).send(await findElligibleTrainingForAppointmentV2(req.body))
+      const body = req.body as IAppointmentContextCleMinistereEducatif | IAppointmentContextOnisep | IAppointmentContextParcoursup
+      res.status(200).send(await findElligibleTrainingForAppointmentV2(body))
     }
   )
 }

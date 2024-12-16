@@ -1,3 +1,5 @@
+import { ZodError, ZodSchema } from "zod"
+
 import { referrers } from "../constants/referers"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
@@ -10,7 +12,6 @@ const ZAppointmentContextParcoursup = z
     referrer: z.literal(referrers.PARCOURSUP.name.toLowerCase()),
   })
   .strict()
-
 export type IAppointmentContextParcoursup = z.output<typeof ZAppointmentContextParcoursup>
 
 const ZAppointmentContextOnisep = z
@@ -19,7 +20,6 @@ const ZAppointmentContextOnisep = z
     referrer: z.literal(referrers.ONISEP.name.toLowerCase()),
   })
   .strict()
-
 export type IAppointmentContextOnisep = z.output<typeof ZAppointmentContextOnisep>
 
 const ZAppointmentContextCleMinistereEducatif = z
@@ -34,18 +34,7 @@ const ZAppointmentContextCleMinistereEducatif = z
     ]),
   })
   .strict()
-
 export type IAppointmentContextCleMinistereEducatif = z.output<typeof ZAppointmentContextCleMinistereEducatif>
-
-const ZAppointmentContextApi = z.union([
-  // Find through "idParcoursup"
-  ZAppointmentContextParcoursup,
-  // Find through "idActionFormation"
-  ZAppointmentContextOnisep,
-  // Find through "idCleMinistereEducatif"
-  ZAppointmentContextCleMinistereEducatif,
-])
-export type IAppointmentContextAPI = z.output<typeof ZAppointmentContextApi>
 
 const ZAppointmentResponseAvailable = z
   .object({
@@ -68,12 +57,53 @@ const ZAppointmentResponseUnavailable = z.object({
 const ZAppointmentResponseSchema = z.union([ZAppointmentResponseAvailable, ZAppointmentResponseUnavailable])
 export type IAppointmentResponseSchema = z.output<typeof ZAppointmentResponseSchema>
 
+const schemas: ZodSchema[] = [ZAppointmentContextParcoursup, ZAppointmentContextOnisep, ZAppointmentContextCleMinistereEducatif]
+
 export const zAppointmentsRouteV2 = {
   post: {
     "/appointment": {
       method: "post",
       path: "/appointment",
-      body: ZAppointmentContextApi,
+      // KBA 20241216 : union validation throw all schema errors. In order to have specific error based on the input, refine is used
+      body: z.any().superRefine((data, ctx) => {
+        let matchedSchema: ZodSchema | null = null
+        let highestScore = -1
+        let bestMatchError: ZodError | null = null
+        const hasRelevantKeys = ["parcoursup_id", "onisep_id", "cle_ministere_educatif"].some((key) => key in data)
+
+        if (!hasRelevantKeys || !data) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Invalid input: either parcoursup_id, onisep_id or cle_minister_educatif is expected along with the referrer",
+          })
+          return
+        }
+
+        for (const schema of schemas) {
+          const result = schema.safeParse(data)
+          if (result.success) {
+            matchedSchema = schema
+            break
+          } else {
+            // @ts-expect-error
+            const schemaKeys = Object.keys(schema._def.shape())
+            const dataKeys = Object.keys(data)
+            const score = schemaKeys.reduce((acc, key) => acc + (dataKeys.includes(key) ? 1 : 0), 0)
+
+            if (score > highestScore) {
+              highestScore = score
+              bestMatchError = result.error
+            }
+          }
+        }
+
+        if (!matchedSchema && bestMatchError) {
+          // Add issues from the best matching schema
+          for (const issue of bestMatchError.issues) {
+            ctx.addIssue(issue)
+          }
+        }
+      }),
       response: {
         "200": ZAppointmentResponseSchema,
       },
