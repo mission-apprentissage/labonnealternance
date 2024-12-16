@@ -206,21 +206,21 @@ describe("GET /v3/jobs/search", () => {
     const data = response.json()
     expect(response.statusCode).toBe(400)
     expect(data).toEqual({
+      statusCode: 400,
+      error: "Bad Request",
+      message: "querystring.latitude: latitude is required when longitude is provided",
       data: {
-        error: "Bad Request",
-        message: "querystring.latitude: latitude is required when longitude is provided",
-        statusCode: 400,
         validationError: {
-          code: "FST_ERR_VALIDATION",
           issues: [
             {
               code: "custom",
-              message: "latitude is required when longitude is provided",
               path: ["latitude"],
+              message: "latitude is required when longitude is provided",
             },
           ],
           name: "ZodError",
           statusCode: 400,
+          code: "FST_ERR_VALIDATION",
           validationContext: "querystring",
         },
       },
