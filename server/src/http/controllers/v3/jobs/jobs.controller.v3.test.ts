@@ -207,6 +207,9 @@ describe("GET /v3/jobs/search", () => {
     expect(response.statusCode).toBe(400)
     expect(data).toEqual({
       data: {
+        error: "Bad Request",
+        message: "querystring.latitude: latitude is required when longitude is provided",
+        statusCode: 400,
         validationError: {
           code: "FST_ERR_VALIDATION",
           issues: [
@@ -220,9 +223,6 @@ describe("GET /v3/jobs/search", () => {
           statusCode: 400,
           validationContext: "querystring",
         },
-        error: "Bad Request",
-        message: "querystring.latitude: latitude is required when longitude is provided",
-        statusCode: 400,
       },
     })
   })
