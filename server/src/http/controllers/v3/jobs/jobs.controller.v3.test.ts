@@ -1,3 +1,4 @@
+import dayjs from "dayjs"
 import { ObjectId } from "mongodb"
 import nock from "nock"
 import { generateFeaturePropertyFixture } from "shared/fixtures/geolocation.fixture"
@@ -44,12 +45,14 @@ const porteDeClichy: IGeoPoint = {
   coordinates: [2.313262, 48.894891],
 }
 const romesQuery = rome.join(",")
+const expirationDate = dayjs().add(1, "months").toDate()
 const [longitude, latitude] = porteDeClichy.coordinates
 const recruteurLba = generateLbaCompanyFixture({ rome_codes: rome, geopoint: clichyFixture.centre, siret: "58006820882692", email: "email@mail.com", website: "http://site.fr" })
 const jobPartnerOffer: IJobsPartnersOfferPrivate = generateJobsPartnersOfferPrivate({
   offer_rome_codes: ["D1214"],
   workplace_geopoint: parisFixture.centre,
   workplace_website: "http://site.fr",
+  offer_expiration: expirationDate,
 })
 
 const mockData = async () => {
