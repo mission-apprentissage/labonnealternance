@@ -11,26 +11,29 @@ import { getGeolocationFromCache, saveGeolocationInCache } from "./cacheGeolocat
 
 const API_ADRESSE_URL = "https://api-adresse.data.gouv.fr"
 
-export const getGeolocationFromApiAdresse = async (address: string) => {
+export const getGeolocationFromApiAdresse = async (address: string, trys = 0) => {
   try {
     let response: AxiosResponse<IAPIAdresse> | null = null
-    let trys = 0
-    while (trys < 3) {
-      response = await getHttpClient().get(`${API_ADRESSE_URL}/search?q=${encodeURIComponent(address.toUpperCase())}&limit=1`)
+
+    if (trys < 5) {
+      response = await getHttpClient({ timeout: 2000 }).get(`${API_ADRESSE_URL}/search?q=${encodeURIComponent(address.toUpperCase())}&limit=1`)
       if (response?.status === 429) {
-        console.warn("429 ", new Date())
-        trys++
         await new Promise((resolve) => setTimeout(resolve, 1000))
-      } else {
-        break
+        return await getGeolocationFromApiAdresse(address, trys++)
       }
     }
+
     if (response) {
       return response.data
     } else {
       return null
     }
   } catch (error: any) {
+    if (error.code === "ECONNABORTED" || error?.response?.status === 503) {
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      return await getGeolocationFromApiAdresse(address, trys++)
+    }
+
     if (isBoom(error)) {
       throw error
     }
