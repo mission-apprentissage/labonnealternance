@@ -11,6 +11,8 @@ export const cancelRemovedJobsPartners = async () => {
       $match: {
         partner_label: { $in: partnerLabelToCancel },
       },
+    },
+    {
       $lookup: {
         from: "computed_jobs_partners",
         let: { partnerLabel: "$partner_label", partnerJobId: "$partner_job_id" },
