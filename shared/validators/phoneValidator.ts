@@ -30,7 +30,7 @@ export const paysUE = [
   { code: "SE", nom: "Suède" },
 ]
 
-const forbiddenPhoneNumberTypes = ["PREMIUM_RATE", "PAGER", "VOICEMAIL", "SHARED_COST", undefined]
+const forbiddenPhoneNumberTypes = ["PREMIUM_RATE", "PAGER", "VOICEMAIL", "SHARED_COST"]
 
 const getCountryByCode = (country: string | undefined) => paysUE.some((euCountry) => euCountry.code === country)
 
@@ -45,11 +45,15 @@ export const validatePhone = (phone: string) => {
   }
 
   const phoneNumber = parseMax(phone)
-  const phoneNumberType = parseMax(phone)?.getType()
+  const phoneNumberType = phoneNumber?.getType()
 
-  if (!phoneNumber || !phoneNumber.isPossible() || !phoneNumber.isValid()) return false
+  console.log({ phoneNumber, phoneNumberType, phone, isPossbile: phoneNumber?.isPossible() })
 
-  if (forbiddenPhoneNumberTypes.includes(phoneNumberType)) return false
+  if (!phoneNumber || !phoneNumber.isPossible()) return false
+
+  if (phoneNumberType) {
+    if (forbiddenPhoneNumberTypes.includes(phoneNumberType)) return false
+  }
 
   if (!getCountryByCode(phoneNumber.country)) return false
 
