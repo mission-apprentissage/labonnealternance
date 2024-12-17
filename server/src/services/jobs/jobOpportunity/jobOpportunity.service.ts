@@ -458,7 +458,7 @@ export const convertFranceTravailJobToJobOfferApi = (offresEmploiFranceTravail: 
           brand: null,
           legal_name: null,
           website: null,
-          name: offreFT.entreprise.nom,
+          name: offreFT.entreprise.nom ?? null,
           description: offreFT.entreprise.description,
           size: null,
           location: {
