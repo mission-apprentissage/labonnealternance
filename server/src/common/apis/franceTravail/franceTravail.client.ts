@@ -27,7 +27,7 @@ const RomeoLimiter = apiRateLimiter("apiRomeo", {
 
 const OffreFranceTravailLimiter = apiRateLimiter("apiOffreFT", {
   nbRequests: 10,
-  durationInSeconds: 5,
+  durationInSeconds: 1,
   client: axiosClient,
 })
 
