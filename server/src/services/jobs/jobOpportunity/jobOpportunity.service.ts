@@ -255,6 +255,8 @@ export const getJobsQuery = async (
 export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivate[]> => {
   const query: Filter<IJobsPartnersOfferPrivate> = {
     offer_multicast: true,
+    offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+    offer_expiration: { $gt: new Date() },
   }
 
   if (romes) {
@@ -264,8 +266,6 @@ export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }
   if (target_diploma_level) {
     query["offer_target_diploma.european"] = { $in: [target_diploma_level, null] }
   }
-
-  query["offer_expiration"] = { $gt: new Date() }
 
   const filterStages: Document[] =
     geo === null
@@ -300,7 +300,10 @@ export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }
 }
 
 export const getJobsPartnersFromDBForUI = async ({ romes, geo, target_diploma_level }: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivateWithDistance[]> => {
-  const query: Filter<IJobsPartnersOfferPrivate> = {}
+  const query: Filter<IJobsPartnersOfferPrivate> = {
+    offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+    offer_expiration: { $gt: new Date() },
+  }
 
   if (romes) {
     query.offer_rome_codes = { $in: romes }
@@ -309,8 +312,6 @@ export const getJobsPartnersFromDBForUI = async ({ romes, geo, target_diploma_le
   if (target_diploma_level) {
     query["offer_target_diploma.european"] = { $in: [target_diploma_level, null] }
   }
-
-  query["offer_expiration"] = { $gt: new Date() }
 
   const filterStages: Document[] =
     geo === null

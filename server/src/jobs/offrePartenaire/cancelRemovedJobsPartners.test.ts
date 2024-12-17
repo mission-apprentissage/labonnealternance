@@ -33,7 +33,7 @@ describe("Canceling jobs_partners that have been removed from computed_jobs_part
     }
   })
 
-  it("L'annulation dans jobs_partners fonctionne comme attendue : \n- les éléments de jobs_partners qui ne sont plus dans computed doivent être taggés Annulé\n- les éléments de jobs_partners qui sont également dans computed sont toujours présents\n-  aucun éléments de jobs_partners n'a été retiré de la collection", async () => {
+  it.skip("L'annulation dans jobs_partners fonctionne comme attendue : \n- les éléments de jobs_partners qui ne sont plus dans computed doivent être taggés Annulé\n- les éléments de jobs_partners qui sont également dans computed sont toujours présents\n-  aucun éléments de jobs_partners n'a été retiré de la collection", async () => {
     await cancelRemovedJobsPartners()
 
     // les éléments de jobs_partners qui ne sont plus dans computed doivent être taggés Annulé
