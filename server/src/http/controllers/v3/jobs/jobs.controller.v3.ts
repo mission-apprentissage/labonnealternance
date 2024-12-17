@@ -8,7 +8,7 @@ import { Server } from "../../../server"
 
 const config = {
   rateLimit: {
-    max: 5,
+    max: 1,
     timeWindow: "1s",
   },
 }
