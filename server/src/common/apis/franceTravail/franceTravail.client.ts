@@ -12,11 +12,24 @@ import { FTResponse } from "@/services/ftjob.service.types"
 import { ZFTApiToken } from "@/services/rome.service.types"
 
 import { logger } from "../../logger"
+import { apiRateLimiter } from "../../utils/apiUtils"
 import { getDbCollection } from "../../utils/mongodbUtils"
 import { sentryCaptureException } from "../../utils/sentryUtils"
 import getApiClient from "../client"
 
 const axiosClient = getApiClient({}, { cache: false })
+
+const RomeoLimiter = apiRateLimiter("apiRomeo", {
+  nbRequests: 1,
+  durationInSeconds: 1,
+  client: axiosClient,
+})
+
+const OffreFranceTravailLimiter = apiRateLimiter("apiOffreFT", {
+  nbRequests: 10,
+  durationInSeconds: 5,
+  client: axiosClient,
+})
 
 const getFranceTravailTokenFromDB = async (access_type: IAccessParams): Promise<IFranceTravailAccess["access_token"] | undefined> => {
   const data = await getDbCollection("francetravail_access").findOne({ access_type }, { projection: { access_token: 1, _id: 0 } })
@@ -97,33 +110,34 @@ export const searchForFtJobs = async (
   }
 ): Promise<FTResponse | null | ""> => {
   const token = await getToken("OFFRE")
+  return OffreFranceTravailLimiter(async (client) => {
+    try {
+      const extendedParams = {
+        ...params,
+        // paramètres exclurant les offres LBA des résultats de l'api PE
+        partenaires: "LABONNEALTERNANCE",
+        modeSelectionPartenaires: "EXCLU",
+      }
 
-  try {
-    const extendedParams = {
-      ...params,
-      // paramètres exclurant les offres LBA des résultats de l'api PE
-      partenaires: "LABONNEALTERNANCE",
-      modeSelectionPartenaires: "EXCLU",
+      const { data } = await client.get(`${config.franceTravailIO.baseUrl}/offresdemploi/v2/offres/search`, {
+        params: extendedParams,
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      return data
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      if (options.throwOnError) {
+        throw error
+      }
+      sentryCaptureException(error, { extra: { responseData: error.response?.data } })
+      return null
     }
-
-    const { data } = await axiosClient.get(`${config.franceTravailIO.baseUrl}/offresdemploi/v2/offres/search`, {
-      params: extendedParams,
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-
-    return data
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    if (options.throwOnError) {
-      throw error
-    }
-    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
-    return null
-  }
+  })
 }
 
 /**
@@ -184,22 +198,24 @@ type IRomeoOptions = {
 export const getRomeoPredictions = async (payload: IRomeoPayload[], options: IRomeoOptions = { nomAppelant: "La bonne alternance" }): Promise<IRomeoAPIResponse | null> => {
   if (payload.length > 50) throw Error("Maximum recommanded array size is 50") // Louis feeback https://mna-matcha.atlassian.net/browse/LBA-2232?focusedCommentId=13000
   const token = await getToken("ROMEO")
-  try {
-    const result = await axiosClient.post(
-      `${config.franceTravailIO.baseUrl}/romeo/v2/predictionMetiers`,
-      { appellations: payload, options },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
-    return result.data
-  } catch (error: any) {
-    logger.error("error", error)
-    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
-    return null
-  }
+  return RomeoLimiter(async (client) => {
+    try {
+      const result = await client.post(
+        `${config.franceTravailIO.baseUrl}/romeo/v2/predictionMetiers`,
+        { appellations: payload, options },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      return result.data
+    } catch (error: any) {
+      logger.error("error", error)
+      sentryCaptureException(error, { extra: { responseData: error.response?.data } })
+      return null
+    }
+  })
 }
