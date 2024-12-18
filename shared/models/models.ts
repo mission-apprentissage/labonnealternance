@@ -1,6 +1,8 @@
 import { z } from "zod"
 
 import apicallsModel from "./apicalls.model"
+import applicantModel from "./applicant.model"
+import applicantEmailLogModel from "./applicantEmailLog.model"
 import applicationsModel from "./applications.model"
 import appointmentsModel from "./appointments.model"
 import cacheGeolocationModel from "./cacheGeolocation.model"
@@ -50,6 +52,8 @@ import userWithAccountModel from "./userWithAccount.model"
 const modelDescriptorMap = {
   [appointmentsModel.collectionName]: appointmentsModel,
   [apicallsModel.collectionName]: apicallsModel,
+  [applicantModel.collectionName]: applicantModel,
+  [applicantEmailLogModel.collectionName]: applicantEmailLogModel,
   [applicationsModel.collectionName]: applicationsModel,
   [cacheRomeoModel.collectionName]: cacheRomeoModel,
   [cacheGeolocationModel.collectionName]: cacheGeolocationModel,
