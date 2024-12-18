@@ -39,7 +39,7 @@ export const ZApplication = z
     applicant_attachment_name: z
       .string()
       .min(1)
-      .regex(/((.*?))(\.)+(docx|pdf)$/i)
+      .regex(/((.*?))(\.)+([Dd][Oo][Cc][Xx]|[Pp][Dd][Ff])$/i)
       .describe("Nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés."),
     applicant_message_to_company: z.string().nullable().describe("Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat."),
     job_searched_by_user: z.string().nullish().describe("Métier recherché par le candidat"),
