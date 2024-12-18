@@ -18,8 +18,15 @@ export const ZApplicant = z
     updatedAt: z.date(),
   })
   .strict()
-
 export type IApplicant = z.output<typeof ZApplicant>
+
+export const ZApplicantNew = ZApplicant.omit({
+  _id: true,
+  last_connection: true,
+  createdAt: true,
+  updatedAt: true,
+})
+export type IApplicantNew = z.output<typeof ZApplicantNew>
 
 export default {
   zod: ZApplicant,
