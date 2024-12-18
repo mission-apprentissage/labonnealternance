@@ -47,8 +47,6 @@ export const validatePhone = (phone: string) => {
   const phoneNumber = parseMax(phone)
   const phoneNumberType = phoneNumber?.getType()
 
-  console.log({ phoneNumber, phoneNumberType, phone, isPossbile: phoneNumber?.isPossible() })
-
   if (!phoneNumber || !phoneNumber.isPossible()) return false
 
   if (phoneNumberType) {

@@ -22,6 +22,7 @@ export enum ApplicationScanStatus {
 export const ZApplication = z
   .object({
     _id: zObjectId,
+    applicant_id: zObjectId,
     applicant_email: z.string().email().describe("Email du candidat"),
     applicant_first_name: z
       .string()

@@ -1,3 +1,4 @@
+import { removeUrlsFromText } from "../helpers/common"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
@@ -8,11 +9,11 @@ const collectionName = "applicants" as const
 export const ZApplicant = z
   .object({
     _id: zObjectId,
-    lastname: z.string(),
-    firstname: z.string(),
-    email: z.string().email(),
-    phone: extensions.telephone,
-    last_connection: z.date(),
+    firstname: z.string().min(1).transform(removeUrlsFromText).describe("Prenom du candidat"),
+    lastname: z.string().min(1).transform(removeUrlsFromText).describe("Nom du candidat"),
+    email: z.string().email().describe("Email du candidat"),
+    phone: extensions.telephone.describe("Téléphone du candidat"),
+    last_connection: z.date().describe("Date de dernière connexion du candidat"),
     createdAt: z.date(),
     updatedAt: z.date(),
   })

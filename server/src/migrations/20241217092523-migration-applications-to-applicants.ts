@@ -1,32 +1,59 @@
 import { ObjectId } from "bson"
-import { IApplicant, IApplication, ZApplicant } from "shared"
+import { IApplicant, ZApplicant } from "shared"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { asyncForEach } from "../common/utils/asyncUtils"
 
-type ApplicationAggregate = Pick<IApplication, "applicant_email" | "applicant_first_name" | "applicant_last_name" | "applicant_phone" | "_id">
+type ApplicationAggregate = {
+  _id: string
+  firstname: string
+  lastname: string
+  phone: string
+  email: string
+  ids: string[]
+  last_connection: Date
+}
+
 export const up = async () => {
   const applications = (await getDbCollection("applications")
-    .find({}, { projection: { applicant_first_name: 1, applicant_last_name: 1, applicant_email: 1, applicant_phone: 1, _id: 1 } })
+    .aggregate([
+      {
+        $group: {
+          _id: "$applicant_email",
+          firstname: { $first: "$applicant_first_name" },
+          lastname: { $first: "$applicant_last_name" },
+          phone: { $first: "$applicant_phone" },
+          email: { $first: "$applicant_email" },
+          ids: { $push: "$_id" },
+          last_connection: { $last: "$created_at" },
+        },
+      },
+    ])
     .toArray()) as ApplicationAggregate[]
+  const stat = { error: 0, success: 0, total: applications.length }
 
   await asyncForEach(applications, async (application) => {
-    const { applicant_first_name, applicant_email, applicant_last_name, applicant_phone, _id } = application
+    const { firstname, lastname, email, phone, last_connection, ids } = application
     const now = new Date()
     const applicant: IApplicant = {
       _id: new ObjectId(),
-      firstname: applicant_first_name,
-      lastname: applicant_last_name,
-      phone: applicant_phone,
-      email: applicant_email,
-      last_connection: null,
+      firstname,
+      lastname,
+      phone,
+      email,
+      last_connection,
       createdAt: now,
       updatedAt: now,
     }
     const validation = ZApplicant.safeParse(applicant)
-    if (!validation.success) {
-      console.log(validation)
+    if (validation.success) {
+      stat.success++
+      await getDbCollection("applicants").insertOne(applicant)
+      await getDbCollection("applications").updateMany({ _id: ids }, { $set: { applicant_id: applicant._id } })
+    } else {
+      stat.error++
     }
   })
+  console.log(stat)
 }
