@@ -5,10 +5,10 @@ import { notifyToSlack } from "../../common/utils/slackUtils"
 const anonymizeApplications = async () => {
   logger.info(`Début anonymisation`)
 
-  const lastYear = new Date()
-  lastYear.setFullYear(lastYear.getFullYear() - 2)
+  const period = new Date()
+  period.setFullYear(period.getFullYear() - 2)
 
-  const matchCondition = { created_at: { $lte: lastYear } }
+  const matchCondition = { created_at: { $lte: period } }
 
   await getDbCollection("applications")
     .aggregate([
