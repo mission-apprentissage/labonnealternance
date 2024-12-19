@@ -25,7 +25,7 @@ export const getJobPostingSchema = ({
       name: "Google",
       value: id,
     },
-    datePosted: job?.job?.jobStartDate,
+    datePosted: job?.job?.creationDate,
     validThrough: job?.job?.jobExpirationDate,
     employmentType: "FULL_TIME",
     hiringOrganization: {
