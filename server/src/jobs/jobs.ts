@@ -166,7 +166,7 @@ export async function setupJobProcessor() {
             cron_string: "0 5 * * 7",
             handler: () => updateLbaCompanies({ useAlgoFile: true, clearMongo: true }),
           },
-          "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus de 1 an": {
+          "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus de 2 ans": {
             cron_string: "5 1 * * *",
             handler: anonymizeOldUsers,
           },
@@ -182,7 +182,7 @@ export async function setupJobProcessor() {
             cron_string: "0 1 * * *",
             handler: anonimizeUsers,
           },
-          "Anonymisation des appointments de plus de 1 an": {
+          "Anonymisation des appointments de plus de 2 ans": {
             cron_string: "30 1 * * *",
             handler: anonymizeOldAppointments,
           },

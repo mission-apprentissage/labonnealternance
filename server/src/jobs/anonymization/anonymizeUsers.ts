@@ -8,9 +8,9 @@ import { notifyToSlack } from "@/common/utils/slackUtils"
 const anonymizeUsers = async () => {
   logger.info(`Début anonymisation`)
 
-  const lastYear = new Date()
-  lastYear.setFullYear(lastYear.getFullYear() - 1)
-  const matchCondition = { last_action_date: { $lte: lastYear } }
+  const period = new Date()
+  period.setFullYear(period.getFullYear() - 2)
+  const matchCondition = { last_action_date: { $lte: period } }
 
   await getDbCollection("users")
     .aggregate([
@@ -38,7 +38,7 @@ const anonymizeUsers = async () => {
 
 export const anonymizeOldUsers = async () => {
   try {
-    logger.info(" -- Anonymisation des utilisateurs non modifiés de plus de un (1) an -- ")
+    logger.info(" -- Anonymisation des utilisateurs non modifiés de plus de un (2) an -- ")
 
     const anonymizedUserCount = await anonymizeUsers()
 

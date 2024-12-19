@@ -39,11 +39,11 @@ export const anonymizeAppointments = async (filter: Filter<IAppointment>) => {
 
 export const anonymizeOldAppointments = async function () {
   try {
-    logger.info(" -- Anonymisation des appointments de plus de un (1) an -- ")
+    logger.info(" -- Anonymisation des appointments de plus de un (2) an -- ")
 
-    const lastYear = new Date()
-    lastYear.setFullYear(lastYear.getFullYear() - 1)
-    const anonymizedAppointmentCount = await anonymizeAppointments({ created_at: { $lte: lastYear } })
+    const period = new Date()
+    period.setFullYear(period.getFullYear() - 2)
+    const anonymizedAppointmentCount = await anonymizeAppointments({ created_at: { $lte: period } })
 
     logger.info(`Fin traitement ${anonymizedAppointmentCount}`)
 
