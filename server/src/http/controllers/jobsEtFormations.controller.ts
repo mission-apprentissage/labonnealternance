@@ -101,6 +101,10 @@ export default (server: Server) => {
           job_count += jobs.matchas.results.length
         }
 
+        if (jobs && "partnerJobs" in jobs && jobs.partnerJobs && "results" in jobs.partnerJobs) {
+          job_count += jobs.partnerJobs.results.length
+        }
+
         const training_count = formations && "results" in formations ? formations.results.length : 0
 
         trackApiCall({

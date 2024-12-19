@@ -1,12 +1,11 @@
-import { internal, Boom, isBoom, badRequest } from "@hapi/boom"
+import { badRequest, Boom, internal, isBoom } from "@hapi/boom"
 import { captureException } from "@sentry/node"
-import { FastifyError, FastifyRequest } from "fastify"
+import { FastifyError } from "fastify"
 import { ResponseValidationError } from "fastify-type-provider-zod"
 import joi, { ValidationError } from "joi"
 import { IResError } from "shared/routes/common.routes"
 import { ZodError } from "zod"
 
-// import { logger } from "@/common/logger"
 import config from "@/config"
 
 import { stopSession } from "../../common/utils/session.service"
@@ -21,11 +20,7 @@ function getZodMessageError(error: ZodError, context: string): string {
   }, "")
 }
 
-function isApiV2OrV3(request: FastifyRequest): boolean {
-  return request.url.startsWith("/api/v2") || request.url.startsWith("/api/v3")
-}
-
-export function boomify(rawError: FastifyError | ValidationError | Boom<unknown> | Error | ZodError, request: FastifyRequest): Boom<unknown> {
+export function boomify(rawError: FastifyError | ValidationError | Boom<unknown> | Error | ZodError): Boom<unknown> {
   if (isBoom(rawError)) {
     return rawError
   }
@@ -42,10 +37,6 @@ export function boomify(rawError: FastifyError | ValidationError | Boom<unknown>
   }
 
   if (rawError instanceof ZodError) {
-    if (isApiV2OrV3(request)) {
-      return badRequest("Request validation failed", { validationError: rawError.format() })
-    }
-
     return badRequest(getZodMessageError(rawError, (rawError as unknown as FastifyError).validationContext ?? ""), { validationError: rawError })
   }
 
@@ -67,7 +58,7 @@ export function boomify(rawError: FastifyError | ValidationError | Boom<unknown>
 
 export function errorMiddleware(server: Server) {
   server.setErrorHandler<FastifyError | ValidationError | Boom<unknown> | Error | ZodError, { Reply: IResError }>(async (rawError, request, reply) => {
-    const error = boomify(rawError, request)
+    const error = boomify(rawError)
 
     if (error.output.statusCode === 403) {
       await stopSession(request, reply)

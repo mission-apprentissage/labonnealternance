@@ -6,6 +6,7 @@ export default function getActualTitle({ selectedItem, kind }) {
     case LBA_ITEM_TYPE_OLD.FORMATION:
       return selectedItem?.title || selectedItem?.longTitle
     case LBA_ITEM_TYPE_OLD.MATCHA:
+    case LBA_ITEM_TYPE_OLD.PARTNER_JOB:
     case LBA_ITEM_TYPE_OLD.PEJOB:
       return selectedItem?.title
     case LBA_ITEM_TYPE_OLD.LBA:

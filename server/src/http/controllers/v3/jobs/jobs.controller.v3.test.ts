@@ -1,3 +1,4 @@
+import dayjs from "dayjs"
 import { ObjectId } from "mongodb"
 import nock from "nock"
 import { generateFeaturePropertyFixture } from "shared/fixtures/geolocation.fixture"
@@ -44,12 +45,14 @@ const porteDeClichy: IGeoPoint = {
   coordinates: [2.313262, 48.894891],
 }
 const romesQuery = rome.join(",")
+const expirationDate = dayjs().add(1, "months").toDate()
 const [longitude, latitude] = porteDeClichy.coordinates
 const recruteurLba = generateLbaCompanyFixture({ rome_codes: rome, geopoint: clichyFixture.centre, siret: "58006820882692", email: "email@mail.com", website: "http://site.fr" })
 const jobPartnerOffer: IJobsPartnersOfferPrivate = generateJobsPartnersOfferPrivate({
   offer_rome_codes: ["D1214"],
   workplace_geopoint: parisFixture.centre,
   workplace_website: "http://site.fr",
+  offer_expiration: expirationDate,
 })
 
 const mockData = async () => {
@@ -101,14 +104,21 @@ describe("GET /v3/jobs/search", () => {
     expect(data).toEqual({
       data: {
         validationError: {
-          _errors: [],
-          romes: {
-            _errors: ["One or more ROME codes are invalid. Expected format is 'D1234'."],
-          },
+          code: "FST_ERR_VALIDATION",
+          issues: [
+            {
+              code: "custom",
+              message: "One or more ROME codes are invalid. Expected format is 'D1234'.",
+              path: ["romes"],
+            },
+          ],
+          name: "ZodError",
+          statusCode: 400,
+          validationContext: "querystring",
         },
       },
       error: "Bad Request",
-      message: "Request validation failed",
+      message: "querystring.romes: One or more ROME codes are invalid. Expected format is 'D1234'.",
       statusCode: 400,
     })
   })
@@ -125,17 +135,35 @@ describe("GET /v3/jobs/search", () => {
     expect(data).toEqual({
       data: {
         validationError: {
-          _errors: [],
-          latitude: {
-            _errors: ["Latitude doit être comprise entre -90 et 90"],
-          },
-          longitude: {
-            _errors: ["Longitude doit être comprise entre -180 et 180"],
-          },
+          code: "FST_ERR_VALIDATION",
+          issues: [
+            {
+              code: "too_big",
+              exact: false,
+              inclusive: true,
+              maximum: 90,
+              message: "Latitude doit être comprise entre -90 et 90",
+              path: ["latitude"],
+              type: "number",
+            },
+
+            {
+              code: "too_big",
+              exact: false,
+              inclusive: true,
+              maximum: 180,
+              message: "Longitude doit être comprise entre -180 et 180",
+              path: ["longitude"],
+              type: "number",
+            },
+          ],
+          name: "ZodError",
+          statusCode: 400,
+          validationContext: "querystring",
         },
       },
       error: "Bad Request",
-      message: "Request validation failed",
+      message: "querystring.latitude: Latitude doit être comprise entre -90 et 90, querystring.longitude: Longitude doit être comprise entre -180 et 180",
       statusCode: 400,
     })
   })
@@ -178,17 +206,24 @@ describe("GET /v3/jobs/search", () => {
     const data = response.json()
     expect(response.statusCode).toBe(400)
     expect(data).toEqual({
+      statusCode: 400,
+      error: "Bad Request",
+      message: "querystring.latitude: latitude is required when longitude is provided",
       data: {
         validationError: {
-          _errors: [],
-          latitude: {
-            _errors: ["latitude is required when longitude is provided"],
-          },
+          issues: [
+            {
+              code: "custom",
+              path: ["latitude"],
+              message: "latitude is required when longitude is provided",
+            },
+          ],
+          name: "ZodError",
+          statusCode: 400,
+          code: "FST_ERR_VALIDATION",
+          validationContext: "querystring",
         },
       },
-      error: "Bad Request",
-      message: "Request validation failed",
-      statusCode: 400,
     })
   })
 
@@ -203,14 +238,21 @@ describe("GET /v3/jobs/search", () => {
     expect(data).toEqual({
       data: {
         validationError: {
-          _errors: [],
-          longitude: {
-            _errors: ["longitude is required when latitude is provided"],
-          },
+          code: "FST_ERR_VALIDATION",
+          issues: [
+            {
+              code: "custom",
+              message: "longitude is required when latitude is provided",
+              path: ["longitude"],
+            },
+          ],
+          name: "ZodError",
+          statusCode: 400,
+          validationContext: "querystring",
         },
       },
       error: "Bad Request",
-      message: "Request validation failed",
+      message: "querystring.longitude: longitude is required when latitude is provided",
       statusCode: 400,
     })
   })
@@ -356,23 +398,32 @@ describe("POST /jobs", async () => {
     expect(responseJson).toEqual({
       data: {
         validationError: {
-          _errors: [],
-          apply: {
-            _errors: [],
-            email: {
-              _errors: ["At least one of url, email, or phone is required"],
+          code: "FST_ERR_VALIDATION",
+          issues: [
+            {
+              code: "custom",
+              message: "At least one of url, email, or phone is required",
+              path: ["apply", "url"],
             },
-            phone: {
-              _errors: ["At least one of url, email, or phone is required"],
+            {
+              code: "custom",
+              message: "At least one of url, email, or phone is required",
+              path: ["apply", "email"],
             },
-            url: {
-              _errors: ["At least one of url, email, or phone is required"],
+            {
+              code: "custom",
+              message: "At least one of url, email, or phone is required",
+              path: ["apply", "phone"],
             },
-          },
+          ],
+          name: "ZodError",
+          statusCode: 400,
+          validationContext: "body",
         },
       },
       error: "Bad Request",
-      message: "Request validation failed",
+      message:
+        "body.apply.url: At least one of url, email, or phone is required, body.apply.email: At least one of url, email, or phone is required, body.apply.phone: At least one of url, email, or phone is required",
       statusCode: 400,
     })
     expect(await getDbCollection("jobs_partners").countDocuments({})).toBe(0)
