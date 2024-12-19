@@ -48,7 +48,7 @@ export const getJobPostingSchema = ({
       currency: "EUR",
       value: {
         "@type": "QuantitativeValue",
-        value: 469.0,
+        value: 486.49,
         unitText: "MONTH",
       },
     },
