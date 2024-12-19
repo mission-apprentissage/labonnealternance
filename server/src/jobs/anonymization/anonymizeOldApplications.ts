@@ -40,7 +40,7 @@ const anonymizeApplications = async () => {
 
 export const anonymizeOldApplications = async function () {
   try {
-    logger.info(" -- Anonymisation des candidatures de plus de un (2) an -- ")
+    logger.info(" -- Anonymisation des candidatures de plus de deux (2) ans -- ")
 
     const anonymizedApplicationCount = await anonymizeApplications()
 

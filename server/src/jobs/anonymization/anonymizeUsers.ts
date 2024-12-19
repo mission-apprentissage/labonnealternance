@@ -38,7 +38,7 @@ const anonymizeUsers = async () => {
 
 export const anonymizeOldUsers = async () => {
   try {
-    logger.info(" -- Anonymisation des utilisateurs non modifiés de plus de un (2) an -- ")
+    logger.info(" -- Anonymisation des utilisateurs non modifiés de plus de deux (2) ans -- ")
 
     const anonymizedUserCount = await anonymizeUsers()
 
