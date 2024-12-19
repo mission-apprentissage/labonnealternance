@@ -39,7 +39,9 @@ export type JobPostingSchema = {
     currency: string
     value: {
       "@type": "QuantitativeValue"
-      value: number
+      value?: number
+      minValue?: number
+      maxValue?: number
       unitText: string
     }
   }
