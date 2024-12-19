@@ -59,6 +59,10 @@ const processApplicationGroup = async (applicationFilter: Filter<IApplication>, 
       return
     }
     const applicant = await getApplicantFromDB({ _id: application.applicant_id })
+    if (!applicant) {
+      await getDbCollection("applications").findOneAndUpdate({ _id: application._id }, { $set: { scan_status: ApplicationScanStatus.ERROR_APPLICANT_NOT_FOUND } })
+      return
+    }
     try {
       let hasVirus: boolean = false
       if (application.scan_status !== ApplicationScanStatus.NO_VIRUS_DETECTED) {

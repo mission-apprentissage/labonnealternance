@@ -914,7 +914,7 @@ export const getApplicationByCompanyCount = async (sirets: ILbaCompany["siret"][
  *  if hardbounce event si related to an application sent to a compay then
  * warns the applicant and returns true otherwise returns false
  */
-export const processApplicationHardbounceEvent = async (payload, sendNotificationToApplicant = notifyHardbounceToApplicant) => {
+export const processApplicationHardbounceEvent = async (payload, sendNotificationToApplicant: any = notifyHardbounceToApplicant) => {
   const { email } = payload
   const messageId = payload["message-id"]
 
@@ -936,7 +936,7 @@ export const processApplicationCandidateHardbounceEvent = async (payload) => {
   const messageId = payload["message-id"]
 
   const applicant = await getDbCollection("applicants").findOne({ email })
-  const application = await getDbCollection("applications").findOne({ applicant_id: applicant!._id, to_applicant_message_id: messageId })
+  const application = await getDbCollection("applications").findOne({ applicant_id: applicant?._id, to_applicant_message_id: messageId })
 
   if (application) {
     return true

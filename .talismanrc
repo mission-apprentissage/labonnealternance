@@ -146,7 +146,7 @@ fileignoreconfig:
 - filename: shared/constants/recruteur.ts
   checksum: af4631fe998b78b13691dbc821a8ffa71ffc2f4cb6967361cb5ef19965dc95cb
 - filename: shared/fixtures/application.fixture.ts
-  checksum: 4c4590586b8c5683ce7aebb32d2286af3265bb9d3d39581f6d7a1f8ed1a2850d
+  checksum: 5f77b1127060f10911006a797590a7ff36f81ca61dbc0567049bc4e866e17c89
 - filename: shared/fixtures/appointment.fixture.ts
   checksum: 8b894b4059d8f7531e26f249901b83dbec433d4e660c0eca193c8e61572b3ae0
 - filename: shared/fixtures/recruiter.fixture.ts
