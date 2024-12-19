@@ -150,7 +150,7 @@ export async function setupJobProcessor() {
             cron_string: "5 0 * * *",
             handler: () => updateBrevoBlockedEmails({}),
           },
-          "Anonymise les candidatures de plus de un an": {
+          "Anonymise les candidatures de plus de deux an": {
             cron_string: "10 0 * * *",
             handler: anonymizeOldApplications,
           },
