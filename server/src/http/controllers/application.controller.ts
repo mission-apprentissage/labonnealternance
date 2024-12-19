@@ -4,6 +4,7 @@ import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import { zRoutes } from "shared/index"
 
 import { getDbCollection } from "../../common/utils/mongodbUtils"
+import { getApplicantFromDB } from "../../services/applicant.service"
 import { getCompanyEmailFromToken, sendApplication, sendMailToApplicant } from "../../services/application.service"
 import { Server } from "../server"
 
@@ -69,8 +70,15 @@ export default function (server: Server) {
         throw notFound()
       }
 
+      const applicant = await getApplicantFromDB({ _id: application.applicant_id })
+
+      if (!applicant) {
+        throw notFound(`unexpected: applicant not found for application ${application._id}`)
+      }
+
       await sendMailToApplicant({
         application,
+        applicant,
         email,
         phone,
         company_recruitment_intention,

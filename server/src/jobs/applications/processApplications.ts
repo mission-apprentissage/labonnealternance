@@ -9,6 +9,7 @@ import { deleteApplicationCvFile, processApplicationEmails, processApplicationSc
 import { isClamavAvailable } from "@/services/clamav.service"
 
 import { getDbCollection } from "../../common/utils/mongodbUtils"
+import { getApplicantFromDB } from "../../services/applicant.service"
 
 const maxDuration = 1000 * 60 * 8 // 8 minutes
 
@@ -57,11 +58,16 @@ const processApplicationGroup = async (applicationFilter: Filter<IApplication>, 
     if (new Date().getTime() >= timeoutTs) {
       return
     }
+    const applicant = await getApplicantFromDB({ _id: application.applicant_id })
+    if (!applicant) {
+      await getDbCollection("applications").findOneAndUpdate({ _id: application._id }, { $set: { scan_status: ApplicationScanStatus.ERROR_APPLICANT_NOT_FOUND } })
+      return
+    }
     try {
       let hasVirus: boolean = false
       if (application.scan_status !== ApplicationScanStatus.NO_VIRUS_DETECTED) {
         try {
-          hasVirus = await processApplicationScanForVirus(application)
+          hasVirus = await processApplicationScanForVirus(application, applicant)
           if (hasVirus) {
             results.virusDetected++
           }
@@ -71,7 +77,7 @@ const processApplicationGroup = async (applicationFilter: Filter<IApplication>, 
         }
       }
       if (!hasVirus) {
-        await processApplicationEmails.sendEmailsIfNeeded(application)
+        await processApplicationEmails.sendEmailsIfNeeded(application, applicant)
         results.success++
       }
       await deleteApplicationCvFile(application)
