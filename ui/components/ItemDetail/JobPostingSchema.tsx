@@ -34,4 +34,13 @@ export type JobPostingSchema = {
       addressCountry: string
     }
   }
+  baseSalary: {
+    "@type": "MonetaryAmount"
+    currency: string
+    value: {
+      "@type": "QuantitativeValue"
+      value: number
+      unitText: string
+    }
+  }
 }

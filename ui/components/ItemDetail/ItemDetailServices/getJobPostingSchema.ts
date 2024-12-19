@@ -36,11 +36,20 @@ export const getJobPostingSchema = ({
       "@type": "Place",
       address: {
         "@type": "PostalAddress",
-        streetAddress: job?.place?.numberAndStreet,
-        addressLocality: job?.place?.city,
+        streetAddress: job?.place?.numberAndStreet ?? null,
+        addressLocality: job?.place?.city ?? null,
         addressRegion: null,
-        postalCode: job?.place?.zipCode,
+        postalCode: job?.place?.zipCode ?? null,
         addressCountry: "France",
+      },
+    },
+    baseSalary: {
+      "@type": "MonetaryAmount",
+      currency: "EUR",
+      value: {
+        "@type": "QuantitativeValue",
+        value: 469.0,
+        unitText: "MONTH",
       },
     },
   }
