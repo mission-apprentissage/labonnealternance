@@ -357,8 +357,6 @@ const buildReplyLink = (application: IApplication, intention: ApplicantIntention
   const searchParams = new URLSearchParams()
   searchParams.append("company_recruitment_intention", intention)
   searchParams.append("id", applicationId)
-  searchParams.append("fn", application.applicant_first_name)
-  searchParams.append("ln", application.applicant_last_name)
   searchParams.append("utm_source", "lba")
   searchParams.append("utm_medium", "email")
   if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
@@ -1144,4 +1142,35 @@ export const getCompanyEmailFromToken = async (token: string) => {
   }
 
   throw notFound("Adresse non trouvée")
+}
+
+export const getApplicationDataForIntention = async (application_id: string) => {
+  const application = await getDbCollection("applications").findOne({ _id: new ObjectId(application_id) })
+
+  if (!application) throw notFound("Candidature non trouvée")
+
+  let company: ILbaCompany | IRecruiter | null
+  switch (application.job_origin) {
+    case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
+      company = await getDbCollection("recruiters").findOne({ "jobs._id": new ObjectId(application.job_id!) })
+      break
+    }
+    case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
+      company = await getDbCollection("recruteurslba").findOne({ siret: application.company_siret })
+      break
+    }
+    default:
+      throw internal("type de candidature anormal")
+  }
+
+  if (!company) throw internal(`Société pour ${application.job_origin} introuvable`)
+
+  const recruiter_phone = company.phone ?? ""
+
+  return {
+    recruiter_email: application.company_email,
+    recruiter_phone,
+    applicant_first_name: application.applicant_first_name,
+    applicant_last_name: application.applicant_last_name,
+  }
 }

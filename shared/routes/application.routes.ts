@@ -101,5 +101,25 @@ export const zApplicationRoutes = {
       },
       securityScheme: null,
     },
+    "/application/dataForIntention/:id": {
+      path: "/application/dataForIntention/:id",
+      method: "get",
+      params: z.object({ id: z.string() }).strict(),
+      response: {
+        "200": z
+          .object({
+            recruiter_email: z.string(),
+            recruiter_phone: z.string(),
+            applicant_first_name: z.string(),
+            applicant_last_name: z.string(),
+          })
+          .strict(),
+      },
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        resources: {},
+      },
+    },
   },
 } as const satisfies IRoutesDef
