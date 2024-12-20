@@ -181,6 +181,16 @@ export const getApplicationCompanyEmailAddress = async (token: string) => {
   return data
 }
 
+export const getApplicationDataForIntention = async (applicationId: string, token: string) => {
+  const data = await apiGet("/application/dataForIntention/:id", {
+    params: { id: applicationId },
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  })
+  return data
+}
+
 export const createEtablissement = (etablissement) => apiPost("/etablissement/creation", { body: etablissement })
 
 export const getRomeDetail = (rome: string) => apiGet("/rome/detail/:rome", { params: { rome } })
