@@ -326,6 +326,13 @@ export function generateApplicationReplyToken(tokenUser: UserForAccessToken, app
           querystring: undefined,
         },
       }),
+      generateScope({
+        schema: zRoutes.get["/application/dataForIntention/:id"],
+        options: {
+          params: { id: applicationId },
+          querystring: undefined,
+        },
+      }),
     ],
     {
       expiresIn: "30d",
