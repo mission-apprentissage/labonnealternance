@@ -2,7 +2,7 @@ import { Flex, Image, Link, Spacer } from "@chakra-ui/react"
 import NextLink from "next/link"
 import React from "react"
 
-const SatisfactionFormNavigation = () => {
+export const IntensionFormNavigation = () => {
   return (
     <Flex width="80%" maxWidth="800px" margin="auto" pt={12}>
       <NextLink legacyBehavior passHref href="/">
@@ -19,5 +19,3 @@ const SatisfactionFormNavigation = () => {
     </Flex>
   )
 }
-
-export default SatisfactionFormNavigation

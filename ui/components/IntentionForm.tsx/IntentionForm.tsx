@@ -12,8 +12,8 @@ import { apiPost } from "../../utils/api.utils"
 import { CustomInput, LoadingEmptySpace } from "../espace_pro"
 import { CustomFormControl } from "../espace_pro/CustomFormControl"
 
-import SatisfactionFormNavigation from "./SatisfactionFormNavigation"
-import { SatisfactionFormSuccess } from "./SatisfactionFormSuccess"
+import { IntensionFormNavigation } from "./IntensionFormNavigation"
+import { IntensionFormResult } from "./IntentionFormResult"
 
 const textAreaProperties = {
   border: "none",
@@ -72,13 +72,13 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
     onError: (error: { message: string }) => console.log(`Something went wrong: ${error.message}`),
   })
 
-  const [sendingState, setSendingState] = useState<"not_sent" | "ok_sent" | "not_sent_because_of_errors">("not_sent")
+  const [sendingState, setSendingState] = useState<"not_sent" | "ok_sent" | "not_sent_because_of_errors" | "canceled">("not_sent")
 
   const isRefusedState = company_recruitment_intention === ApplicantIntention.REFUS
 
   const submitForm = async ({ email, phone, company_feedback }: { email: string; phone: string; company_feedback: string }) => {
     apiPost("/application/intentionComment/:id", {
-      params: { id: "aa" },
+      params: { id },
       body: {
         phone,
         email,
@@ -93,10 +93,23 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
       .catch(() => setSendingState("not_sent_because_of_errors"))
   }
 
+  const cancelForm = async () => {
+    console.log("CANCEL !!!!")
+    setSendingState("canceled")
+    // apiPost("/application/cancelComment/:id", {
+    //   params: { id },
+    //   headers: {
+    //     authorization: `Bearer ${token}`,
+    //   },
+    // })
+    //   .then(() => setSendingState("canceled"))
+    //   .catch(() => setSendingState("not_sent_because_of_errors"))
+  }
+
   if (!data && !error) {
     return (
       <Box>
-        <SatisfactionFormNavigation />
+        <IntensionFormNavigation />
         <LoadingEmptySpace />
       </Box>
     )
@@ -105,7 +118,7 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
   if (error) {
     return (
       <Box>
-        <SatisfactionFormNavigation />
+        <IntensionFormNavigation />
         <Flex width="80%" maxWidth="800px" margin="auto" pt={20}>
           <Box fontSize="20px" margin="auto">
             {error.message}
@@ -119,8 +132,8 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
 
   return (
     <Box>
-      <SatisfactionFormNavigation />
-      {sendingState !== "ok_sent" && (
+      <IntensionFormNavigation />
+      {!["ok_sent", "canceled"].includes(sendingState) && (
         <Flex direction="column" width="80%" maxWidth="992px" margin="auto" pt={12} alignItems="center" data-testid="SatisfactionFormSuccess">
           <Box p={4} backgroundColor="#E1FEE8" fontWeight={700} color="#18753C" width="100%" maxWidth="800px">
             <SuccessCircle width="20px" fillHexaColor="#18753C" mr={2} />
@@ -145,6 +158,7 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
               onSubmit={(formikValues) => submitForm(formikValues)}
             >
               {({ values, handleChange, handleBlur, submitForm, dirty, isValid, isSubmitting }) => {
+                console.log(dirty, isValid, isSubmitting)
                 return (
                   <>
                     <Box pt={2} data-testid="fieldset-message">
@@ -195,11 +209,25 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
                           aria-label="Envoyer le message au candidat"
                           type="submit"
                           onClick={submitForm}
-                          disabled={!dirty || !isValid || isSubmitting}
+                          disabled={!isValid || isSubmitting}
                           isActive={isValid}
                           isLoading={isSubmitting}
                         >
                           Envoyer le message
+                        </Button>
+
+                        <Button
+                          mt={4}
+                          mr={4}
+                          variant="form"
+                          aria-label="Envoyer le message au candidat"
+                          type="button"
+                          onClick={cancelForm}
+                          disabled={!isValid || isSubmitting}
+                          isActive={isValid}
+                          isLoading={isSubmitting}
+                        >
+                          Annuler l'envoi de la réponse
                         </Button>
                       </Flex>
                     )}
@@ -210,7 +238,8 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
           </Box>
         </Flex>
       )}
-      {sendingState === "ok_sent" && <SatisfactionFormSuccess intention={company_recruitment_intention} />}
+      {sendingState === "ok_sent" && <IntensionFormResult intention={company_recruitment_intention} />}
+      {sendingState === "canceled" && <IntensionFormResult intention={company_recruitment_intention} canceled={true} />}
     </Box>
   )
 }
