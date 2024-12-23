@@ -3,8 +3,6 @@ import { IApplicant, ZApplicant } from "shared"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-import { asyncForEach } from "../common/utils/asyncUtils"
-
 type ApplicationAggregate = {
   _id: string
   firstname: string
@@ -33,7 +31,7 @@ export const up = async () => {
     .toArray()) as ApplicationAggregate[]
   const stat = { error: 0, success: 0, total: applications.length }
 
-  await asyncForEach(applications, async (application) => {
+  for await (const application of applications) {
     const { firstname, lastname, email, phone, last_connection, ids } = application
     const now = new Date()
     const applicant: IApplicant = {
@@ -54,6 +52,6 @@ export const up = async () => {
     } else {
       stat.error++
     }
-  })
+  }
   console.log(stat)
 }
