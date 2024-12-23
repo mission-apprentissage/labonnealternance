@@ -1,12 +1,12 @@
 import { ObjectId } from "bson"
-import { Filter } from "mongodb"
+import { Filter, MatchKeysAndValues } from "mongodb"
 import { IApplicant, IApplicantNew } from "shared"
 
 import { getDbCollection } from "../common/utils/mongodbUtils"
 
 export const getApplicantFromDB = (payload: Filter<IApplicant>) => getDbCollection("applicants").findOne({ payload })
 
-const updateApplicantLastConnectionDate = (applicantId: ObjectId) => getDbCollection("applicants").updateOne({ _id: applicantId }, { $set: { last_connection: new Date() } })
+const updateApplicant = (applicantId: ObjectId, update: MatchKeysAndValues<IApplicant>) => getDbCollection("applicants").updateOne({ _id: applicantId }, { $set: update })
 
 const createApplicant = async (applicant: IApplicantNew) => {
   const { firstname, lastname, phone, email } = applicant
@@ -16,7 +16,7 @@ const createApplicant = async (applicant: IApplicantNew) => {
     firstname,
     lastname,
     phone,
-    email,
+    email: email.toLowerCase(),
     last_connection: now,
     createdAt: now,
     updatedAt: now,
@@ -24,12 +24,13 @@ const createApplicant = async (applicant: IApplicantNew) => {
   await getDbCollection("applicants").insertOne(payload)
   return payload
 }
-export const getOrCreateApplicantAndUpdateLastConnection = async (applicant: IApplicantNew | IApplicant) => {
-  let user = await getApplicantFromDB({ email: applicant.email })
+
+export const getOrCreateApplicant = async (applicant: IApplicantNew | IApplicant) => {
+  let user = await getApplicantFromDB({ email: applicant?.email.toLowerCase() })
 
   if (user) {
     // update last_connection date on applicant collection (last application = last connection)
-    await updateApplicantLastConnectionDate(user._id)
+    await updateApplicant(user._id, { last_connection: new Date() })
   } else {
     user = await createApplicant(applicant)
   }

@@ -36,7 +36,7 @@ import { manageApiError } from "../common/utils/errorManager"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
 
-import { getApplicantFromDB, getOrCreateApplicantAndUpdateLastConnection } from "./applicant.service"
+import { getApplicantFromDB, getOrCreateApplicant } from "./applicant.service"
 import { createCancelJobLink, createProvidedJobLink, generateApplicationReplyToken } from "./appLinks.service"
 import { BrevoEventStatus } from "./brevo.service"
 import { isInfected } from "./clamav.service"
@@ -168,7 +168,7 @@ export const sendApplication = async ({
       return { error: validationResult }
     }
     // function to get or create applicant
-    const applicant = await getOrCreateApplicantAndUpdateLastConnection({
+    const applicant = await getOrCreateApplicant({
       email: applicant_email,
       firstname: applicant_first_name,
       lastname: applicant_last_name,
@@ -265,7 +265,7 @@ export const sendApplicationV2 = async ({
     throw badRequest(BusinessErrorCodes.BURNER)
   }
 
-  const applicant = await getOrCreateApplicantAndUpdateLastConnection({
+  const applicant = await getOrCreateApplicant({
     email: applicant_email,
     firstname: applicant_first_name,
     lastname: applicant_last_name,
