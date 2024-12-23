@@ -234,7 +234,7 @@ const ZLbaItemJob = z
   .object({
     description: z.string().nullish(), // pe -> description | matcha -> description | partner -> offer_description
     employeurDescription: z.string().nullish(), // matcha -> job.job_employer_description | partner -> workplace_description
-    creationDate: z.date().nullable(), // pe -> dateCreation | matcha -> createdAt |
+    creationDate: z.date().nullable(), // pe -> dateCreation | matcha -> createdAt | parnter -> offer_creation
     id: z.string().nullish(), // pe -> id | matcha -> id mongo offre | partner -> partner_id
     contractType: z.string().nullish(), // pe -> typeContrat | matcha -> offres.type
     contractDescription: z.string().nullish(), // pe -> typeContratLibelle
