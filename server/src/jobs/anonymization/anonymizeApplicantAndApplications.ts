@@ -69,6 +69,7 @@ const anonymize = async () => {
   const [resApplications, resApplicants] = await Promise.all([
     getDbCollection("applications").deleteMany({ _id: { $in: applicationsIdsToDelete } }),
     getDbCollection("applicants").deleteMany(matchCondition),
+    // we don't keep archive of applicants_email_logs
     getDbCollection("applicants_email_logs").deleteMany({ applicant_id: { $in: aggregatepplicantsIds } }),
   ])
 
