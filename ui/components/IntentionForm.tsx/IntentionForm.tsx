@@ -45,7 +45,7 @@ const getText = ({
           </>
         ),
         placeholderTextArea:
-          "Bonjour, Merci pour l'intérêt que vous portez à notre établissement. Votre candidature a retenu toute notre attention et nous souhaitons échanger avec vous. Pouvez-vous me recontacter au numéro de téléphone ou via l'email ci-dessous afin que nous puissions convenir d'un rendez-vous ?",
+          "Bonjour, \r\n\r\nMerci pour l'intérêt que vous portez à notre établissement. \r\n\r\nVotre candidature a retenu toute notre attention et nous souhaitons échanger avec vous. \r\n\r\nPouvez-vous me recontacter au numéro de téléphone ou via l'email ci-dessous afin que nous puissions convenir d'un rendez-vous ?",
         confirmation: `Votre réponse a été enregistrée et sera automatiquement envoyée à ${applicant_first_name} ${applicant_last_name}.`,
       }
     case ApplicantIntention.REFUS:
@@ -58,7 +58,7 @@ const getText = ({
           </>
         ),
         placeholderTextArea:
-          "Bonjour, Merci pour l'intérêt que vous portez à notre établissement. Nous avons étudié votre candidature avec attention. Nous ne sommes malheureusement pas en mesure de donner lui une suite favorable. Nous vous souhaitons bonne chance dans vos recherches. Bonne continuation",
+          "Bonjour, \r\n\r\nMerci pour l'intérêt que vous portez à notre établissement. Nous avons étudié votre candidature avec attention. Nous ne sommes malheureusement pas en mesure de donner lui une suite favorable. \r\n\r\nNous vous souhaitons bonne chance dans vos recherches. \r\n\r\nBonne continuation",
         confirmation: `Votre refus a été enregistré et sera automatiquement envoyé à ${applicant_first_name} ${applicant_last_name}.`,
       }
     default:
@@ -219,12 +219,11 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
                         <Button
                           mt={4}
                           mr={4}
-                          variant="form"
-                          aria-label="Envoyer le message au candidat"
+                          variant="cancelForm"
+                          aria-label="Annuler l’envoi de la réponse"
                           type="button"
                           onClick={cancelForm}
-                          disabled={!isValid || isSubmitting}
-                          isActive={isValid}
+                          disabled={isSubmitting}
                           isLoading={isSubmitting}
                         >
                           Annuler l'envoi de la réponse
