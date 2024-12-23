@@ -1,5 +1,5 @@
 import { useContext } from "react"
-import { IApplicationApiPrivate, ILbaItemLbaCompany, ILbaItemLbaJob } from "shared"
+import { IApplicationApiPublic, ILbaItemLbaCompany, ILbaItemLbaJob } from "shared"
 
 import { DisplayContext } from "@/context/DisplayContextProvider"
 import { getItemId } from "@/utils/getItemId"
@@ -40,7 +40,7 @@ export default async function submitCandidature({
 }) {
   setSendingState("currently_sending")
 
-  const payload: IApplicationApiPrivate = {
+  const payload: IApplicationApiPublic = {
     applicant_first_name: formValues.applicant_first_name,
     applicant_last_name: formValues.applicant_last_name,
     applicant_email: formValues.applicant_email,
