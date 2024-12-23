@@ -20,7 +20,7 @@ const textAreaProperties = {
   background: "grey.200",
   borderRadius: "4px 4px 0px 0px",
   width: "100%",
-  height: "110px",
+  height: "140px",
   paddingLeft: 4,
   borderBottom: "2px solid",
 }
@@ -149,11 +149,7 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
               validationSchema={Yup.object().shape({
                 company_feedback: Yup.string().nullable().required("Veuillez remplir le message"),
                 email: isRefusedState ? Yup.string() : Yup.string().email("Adresse e-mail invalide").required("L'adresse e-mail est obligatoire"),
-                phone: isRefusedState
-                  ? Yup.string()
-                  : Yup.string()
-                      .matches(/^[0-9]{10}$/, "Le numéro de téléphone doit avoir exactement 10 chiffres")
-                      .required("Le téléphone est obligatoire"),
+                phone: isRefusedState ? Yup.string() : Yup.string().matches(/^[0-9]{10}$/, "Le numéro de téléphone doit avoir exactement 10 chiffres"),
               })}
               onSubmit={(formikValues) => submitForm(formikValues)}
             >
@@ -189,7 +185,7 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
                             <CustomInput data-testid="email" name="email" required={true} label="E-mail" type="email" value={values.email} />
                           </Box>
                           <Box data-testid="fieldset-phone" flex={1}>
-                            <CustomInput data-testid="phone" name="phone" required={true} label="Téléphone" type="tel" value={values.phone} />
+                            <CustomInput data-testid="phone" name="phone" required={false} label="Téléphone" type="tel" value={values.phone} />
                           </Box>
                         </Flex>
                       </>
