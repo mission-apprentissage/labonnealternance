@@ -4,7 +4,7 @@ export const up = async (db: Db) => {
   // migrate data from anonymizeduserrecruteurs to anonymizeduserswithaccounts
   const anonymizeduserrecruteurs = await db.collection("anonymizeduserrecruteurs").find({})
   for await (const usrrecruteur of anonymizeduserrecruteurs) {
-    await db.collection("anonymizeduserswithaccounts").insertOne({ last_action_date: null, origin: "user migration", status: usrrecruteur.status || null })
+    await db.collection("anonymizeduserswithaccounts").insertOne({ last_action_date: usrrecruteur.last_connection, origin: "user migration", status: usrrecruteur.status || null })
   }
   // migrate data from anonymizeduserwithaccounts to anonymizeduserswithaccounts
   const anonymizeduserwithaccounts = await db
@@ -21,6 +21,8 @@ export const up = async (db: Db) => {
   await db.collection("anonymizedapplications").rename("anonymized_applications", { dropTarget: true })
   // rename anonymizedusers to anonymized_users
   await db.collection("anonymizedusers").rename("anonymized_users", { dropTarget: true })
+  // rename anonymizedrecruiters to anonymized_recruiters
+  await db.collection("anonymizedrecruiters").rename("anonymized_recruiters", { dropTarget: true })
 
   // drop anonymizeduserwithaccounts
   await db.dropCollection("anonymizeduserwithaccounts")

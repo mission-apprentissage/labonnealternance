@@ -9,11 +9,11 @@ import { getLoggerWithContext, logger } from "../common/logger"
 import { getDatabase } from "../common/utils/mongodbUtils"
 import config from "../config"
 
-import anonymizeOldAppointments from "./anonymization/anonymizeAppointments"
+import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
+import anonymizeAppointments from "./anonymization/anonymizeAppointments"
 import anonymizeIndividual from "./anonymization/anonymizeIndividual"
-import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
-import { anonimizeUsers } from "./anonymization/anonymizeUserRecruteurs"
-import { anonymizeOldUsers } from "./anonymization/anonymizeUsers"
+import { anonimizeUsersWithAccounts } from "./anonymization/anonymizeUserRecruteurs"
+import { anonymizeUsers } from "./anonymization/anonymizeUsers"
 import { processApplications } from "./applications/processApplications"
 import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
 import { recreateIndexes } from "./database/recreateIndexes"
@@ -152,7 +152,7 @@ export async function setupJobProcessor() {
           },
           "Anonymise les candidatures de plus de deux an": {
             cron_string: "10 0 * * *",
-            handler: anonymizeOldApplications,
+            handler: anonymizeApplicantsAndApplications,
           },
           "Géolocation de masse des sociétés issues de l'algo": {
             cron_string: "0 5 * * 6",
@@ -168,7 +168,7 @@ export async function setupJobProcessor() {
           },
           "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus de 2 ans": {
             cron_string: "5 1 * * *",
-            handler: anonymizeOldUsers,
+            handler: anonymizeUsers,
           },
           "Contrôle quotidien des candidatures": {
             cron_string: "0 10-19/1 * * 1-5",
@@ -180,11 +180,11 @@ export async function setupJobProcessor() {
           },
           "Anonymisation des user recruteurs de plus de 2 ans": {
             cron_string: "0 1 * * *",
-            handler: anonimizeUsers,
+            handler: anonimizeUsersWithAccounts,
           },
           "Anonymisation des appointments de plus de 2 ans": {
             cron_string: "30 1 * * *",
-            handler: anonymizeOldAppointments,
+            handler: anonymizeAppointments,
           },
           "Lancement du garbage collector": {
             cron_string: "30 3 * * *",
@@ -240,7 +240,7 @@ export async function setupJobProcessor() {
         handler: async () => runGarbageCollector(),
       },
       "anonymize:appointments": {
-        handler: async () => anonymizeOldAppointments(),
+        handler: async () => anonymizeAppointments(),
       },
       "control:applications": {
         handler: async () => controlApplications(),
