@@ -2,7 +2,7 @@ import { Box, Button, Flex, Text, Textarea } from "@chakra-ui/react"
 import { Formik } from "formik"
 import { useState } from "react"
 import { useQuery } from "react-query"
-import { ApplicantIntention } from "shared/constants/application"
+import { ApplicantIntention, ApplicationIntentionDefaultText } from "shared/constants/application"
 import * as Yup from "yup"
 
 import { SuccessCircle } from "@/theme/components/icons"
@@ -44,8 +44,7 @@ const getText = ({
             </Text>
           </>
         ),
-        placeholderTextArea:
-          "Bonjour, \r\n\r\nMerci pour l'intérêt que vous portez à notre établissement. \r\n\r\nVotre candidature a retenu toute notre attention et nous souhaitons échanger avec vous. \r\n\r\nPouvez-vous me recontacter au numéro de téléphone ou via l'email ci-dessous afin que nous puissions convenir d'un rendez-vous ?",
+        placeholderTextArea: ApplicationIntentionDefaultText.ENTRETIEN,
         confirmation: `Votre réponse a été enregistrée et sera automatiquement envoyée à ${applicant_first_name} ${applicant_last_name}.`,
       }
     case ApplicantIntention.REFUS:
@@ -57,8 +56,7 @@ const getText = ({
             </Text>
           </>
         ),
-        placeholderTextArea:
-          "Bonjour, \r\n\r\nMerci pour l'intérêt que vous portez à notre établissement. Nous avons étudié votre candidature avec attention. Nous ne sommes malheureusement pas en mesure de donner lui une suite favorable. \r\n\r\nNous vous souhaitons bonne chance dans vos recherches. \r\n\r\nBonne continuation",
+        placeholderTextArea: ApplicationIntentionDefaultText.REFUS,
         confirmation: `Votre refus a été enregistré et sera automatiquement envoyé à ${applicant_first_name} ${applicant_last_name}.`,
       }
     default:
