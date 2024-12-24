@@ -4,7 +4,7 @@ import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import { zRoutes } from "shared/index"
 
 import { getDbCollection } from "../../common/utils/mongodbUtils"
-import { getApplicationDataForIntention, getCompanyEmailFromToken, sendApplication, sendMailToApplicant } from "../../services/application.service"
+import { getApplicationDataForIntentionAndScheduleMessage, getCompanyEmailFromToken, sendApplication, sendMailToApplicant } from "../../services/application.service"
 import { Server } from "../server"
 
 const rateLimitConfig = {
@@ -91,7 +91,7 @@ export default function (server: Server) {
     async (req, res) => {
       const { id } = req.params
 
-      await getDbCollection("recruiter_intention_mails").deleteOne({ _id: new ObjectId(id) })
+      await getDbCollection("recruiter_intention_mails").deleteOne({ applicationId: new ObjectId(id) })
 
       return res.status(200).send({ result: "ok", message: "intention canceled" })
     }
@@ -137,7 +137,8 @@ export default function (server: Server) {
     },
     async (req, res) => {
       const { id } = req.params
-      const data = await getApplicationDataForIntention(id)
+      const { intention } = req.query
+      const data = await getApplicationDataForIntentionAndScheduleMessage(id, intention)
       return res.status(200).send({ ...data })
     }
   )

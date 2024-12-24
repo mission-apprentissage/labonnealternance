@@ -65,7 +65,7 @@ const getText = ({
 }
 
 export const IntentionForm = ({ company_recruitment_intention, id, token }: { company_recruitment_intention: ApplicantIntention; id: string; token: string | undefined }) => {
-  const { data, error } = useQuery("getApplicationDataForIntention", () => getApplicationDataForIntention(id, token), {
+  const { data, error } = useQuery("getApplicationDataForIntention", () => getApplicationDataForIntention(id, company_recruitment_intention, token), {
     retry: false,
     onError: (error: { message: string }) => console.log(`Something went wrong: ${error.message}`),
   })

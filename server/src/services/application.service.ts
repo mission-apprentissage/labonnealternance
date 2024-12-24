@@ -365,7 +365,7 @@ const buildReplyLink = (application: IApplication, intention: ApplicantIntention
   if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     searchParams.append("utm_campaign", "je-candidate-spontanement-recruteur")
   }
-  const token = generateApplicationReplyToken(userForToken, applicationId)
+  const token = generateApplicationReplyToken(userForToken, applicationId, intention)
   searchParams.append("token", token)
   return `${config.publicUrl}/formulaire-intention?${searchParams.toString()}`
 }
@@ -1144,7 +1144,7 @@ export const getCompanyEmailFromToken = async (token: string) => {
   throw notFound("Adresse non trouvée")
 }
 
-export const getApplicationDataForIntention = async (application_id: string) => {
+export const getApplicationDataForIntentionAndScheduleMessage = async (application_id: string, intention: ApplicantIntention) => {
   const application = await getDbCollection("applications").findOne({ _id: new ObjectId(application_id) })
 
   if (!application) throw notFound("Candidature non trouvée")
@@ -1166,6 +1166,20 @@ export const getApplicationDataForIntention = async (application_id: string) => 
   if (!company) throw internal(`Société pour ${application.job_origin} introuvable`)
 
   const recruiter_phone = company.phone ?? ""
+
+  await getDbCollection("recruiter_intention_mails").updateOne(
+    {
+      applicationId: application._id,
+    },
+    {
+      $setOnInsert: { _id: new ObjectId(), applicationId: application._id },
+      $set: {
+        createdAt: new Date(),
+        intention,
+      },
+    },
+    { upsert: true }
+  )
 
   return {
     recruiter_email: application.company_email,

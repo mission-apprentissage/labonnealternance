@@ -308,7 +308,7 @@ export function createRdvaShortRecapToken(email: string, appointmentId: string) 
   return token
 }
 
-export function generateApplicationReplyToken(tokenUser: UserForAccessToken, applicationId: string) {
+export function generateApplicationReplyToken(tokenUser: UserForAccessToken, applicationId: string, intention: ApplicantIntention) {
   return generateAccessToken(
     tokenUser,
     [
@@ -337,7 +337,7 @@ export function generateApplicationReplyToken(tokenUser: UserForAccessToken, app
         schema: zRoutes.get["/application/dataForIntention/:id"],
         options: {
           params: { id: applicationId },
-          querystring: undefined,
+          querystring: { intention },
         },
       }),
     ],

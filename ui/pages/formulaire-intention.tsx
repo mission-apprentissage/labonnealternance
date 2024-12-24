@@ -9,7 +9,7 @@ import { SatisfactionForm } from "@/components/SatisfactionForm/SatisfactionForm
 const FormulaireIntention = () => {
   const router = useRouter()
   const { company_recruitment_intention, id, fn, ln, token } = router.query as {
-    company_recruitment_intention: string
+    company_recruitment_intention: ApplicantIntention
     id: string
     fn: string | undefined
     ln: string | undefined
