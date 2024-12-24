@@ -38,7 +38,6 @@ export const zApplicationRoutes = {
       },
     },
     "/application/intention/:id": {
-      // TODO_SECURITY_FIX
       path: "/application/intention/:id",
       method: "post",
       params: z.object({ id: z.string() }).strict(),

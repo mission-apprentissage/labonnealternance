@@ -91,7 +91,7 @@ export default function (server: Server) {
     async (req, res) => {
       const { id } = req.params
 
-      await getDbCollection("applications").deleteOne({ _id: new ObjectId(id) })
+      await getDbCollection("recruiter_intention_mails").deleteOne({ _id: new ObjectId(id) })
 
       return res.status(200).send({ result: "ok", message: "intention canceled" })
     }
