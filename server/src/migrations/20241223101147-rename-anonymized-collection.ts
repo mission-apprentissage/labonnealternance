@@ -19,8 +19,6 @@ export const up = async (db: Db) => {
   await db.collection("anonymizedappointments").rename("anonymized_appointments", { dropTarget: true })
   // rename anonymizedapplications to anonymized_applications
   await db.collection("anonymizedapplications").rename("anonymized_applications", { dropTarget: true })
-  // rename anonymizedusers to anonymized_users
-  await db.collection("anonymizedusers").rename("anonymized_users", { dropTarget: true })
   // rename anonymizedrecruiters to anonymized_recruiters
   await db.collection("anonymizedrecruiters").rename("anonymized_recruiters", { dropTarget: true })
 
