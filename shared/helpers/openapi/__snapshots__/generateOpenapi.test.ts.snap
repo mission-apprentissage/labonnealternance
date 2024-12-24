@@ -58,7 +58,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "applicant_file_name": {
             "description": "Nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés.",
             "minLength": 1,
-            "pattern": "((.*?))(\\.)+(docx|pdf)$",
+            "pattern": "((.*?))(\\.)+([Dd][Oo][Cc][Xx]|[Pp][Dd][Ff])$",
             "type": "string",
           },
           "applicant_first_name": {
@@ -3472,6 +3472,276 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
   },
   "openapi": "3.1.0",
   "paths": {
+    "/application": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "applicant_attachment_content": {
+                    "description": "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
+                    "maxLength": 4215276,
+                    "type": "string",
+                  },
+                  "applicant_attachment_name": {
+                    "description": "Nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés.",
+                    "minLength": 1,
+                    "pattern": "((.*?))(\\.)+([Dd][Oo][Cc][Xx]|[Pp][Dd][Ff])$",
+                    "type": "string",
+                  },
+                  "applicant_email": {
+                    "description": "Email du candidat",
+                    "format": "email",
+                    "type": "string",
+                  },
+                  "applicant_first_name": {
+                    "description": "Prenom du candidat",
+                    "maxLength": 50,
+                    "minLength": 1,
+                    "type": "string",
+                  },
+                  "applicant_last_name": {
+                    "description": "Nom du candidat",
+                    "maxLength": 50,
+                    "minLength": 1,
+                    "type": "string",
+                  },
+                  "applicant_message": {
+                    "description": "Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat.",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "applicant_phone": {
+                    "description": "Téléphone du candidat",
+                    "type": "string",
+                  },
+                  "recipient_id": {
+                    "description": "Identifiant unique de la ressource vers laquelle la candidature est faite, préfixé par le nom de la collection",
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "applicant_first_name",
+                  "applicant_last_name",
+                  "applicant_email",
+                  "applicant_phone",
+                  "applicant_attachment_name",
+                  "applicant_attachment_content",
+                  "recipient_id",
+                ],
+                "type": "object",
+              },
+            },
+          },
+          "required": true,
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "id",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-apprentissage": [],
+          },
+        ],
+        "tags": [
+          "V2 - Application",
+        ],
+      },
+    },
+    "/appointment": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "parcoursup_id": {
+                        "type": "string",
+                      },
+                      "referrer": {
+                        "enum": [
+                          "parcoursup",
+                        ],
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "parcoursup_id",
+                      "referrer",
+                    ],
+                    "type": "object",
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "onisep_id": {
+                        "description": "Identifiant ONISEP utilisé avec le mapping de la collection referentielonisep",
+                        "type": "string",
+                      },
+                      "referrer": {
+                        "enum": [
+                          "onisep",
+                        ],
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "onisep_id",
+                      "referrer",
+                    ],
+                    "type": "object",
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "cle_ministere_educatif": {
+                        "type": "string",
+                      },
+                      "referrer": {
+                        "enum": [
+                          "parcoursup",
+                          "lba",
+                          "onisep",
+                          "jeune_1_solution",
+                          "affelnet",
+                        ],
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "cle_ministere_educatif",
+                      "referrer",
+                    ],
+                    "type": "object",
+                  },
+                ],
+              },
+            },
+          },
+          "required": true,
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "cfd": {
+                          "description": "Code formation diplôme de la formation",
+                          "type": "string",
+                        },
+                        "cle_ministere_educatif": {
+                          "description": "Identifiant unique de la formation au sein du ministère de l'éducation",
+                          "type": "string",
+                        },
+                        "code_postal": {
+                          "description": "Code postal du lieu de formation",
+                          "type": "string",
+                        },
+                        "etablissement_formateur_entreprise_raison_sociale": {
+                          "description": "Raison social de l'établissement formateur",
+                          "type": [
+                            "string",
+                            "null",
+                          ],
+                        },
+                        "etablissement_formateur_siret": {
+                          "description": "Le numéro de SIRET de l'établissement",
+                          "example": "78424186100011",
+                          "pattern": "^\\d{14}$",
+                          "type": [
+                            "string",
+                            "null",
+                          ],
+                        },
+                        "form_url": {
+                          "description": "Lien de prise de rendez-vous La bonne alternance",
+                          "type": "string",
+                        },
+                        "intitule_long": {
+                          "description": "Intitulé long de la formation",
+                          "type": "string",
+                        },
+                        "lieu_formation_adresse": {
+                          "description": "Adresse du lieu de formation",
+                          "type": "string",
+                        },
+                        "localite": {
+                          "description": "Localité du lieu de formation",
+                          "type": "string",
+                        },
+                      },
+                      "required": [
+                        "etablissement_formateur_entreprise_raison_sociale",
+                        "intitule_long",
+                        "lieu_formation_adresse",
+                        "code_postal",
+                        "etablissement_formateur_siret",
+                        "cfd",
+                        "localite",
+                        "cle_ministere_educatif",
+                        "form_url",
+                      ],
+                      "type": "object",
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "Appointment request not available",
+                          ],
+                          "type": "string",
+                        },
+                      },
+                      "required": [
+                        "error",
+                      ],
+                      "type": "object",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-apprentissage": [],
+          },
+        ],
+        "tags": [
+          "V2 - Appointment",
+        ],
+      },
+    },
     "/appointment-request/context/create": {
       "post": {
         "description": "Appointment request",

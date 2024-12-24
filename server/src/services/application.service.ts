@@ -7,7 +7,8 @@ import {
   ApplicationScanStatus,
   IApplicant,
   IApplication,
-  IApplicationApiPayloadOutput,
+  IApplicationApiPrivateOutput,
+  IApplicationApiPublicOutput,
   IJob,
   ILbaCompany,
   INewApplicationV1,
@@ -245,7 +246,7 @@ export const sendApplicationV2 = async ({
   caller,
   source,
 }: {
-  newApplication: IApplicationApiPayloadOutput
+  newApplication: IApplicationApiPublicOutput | IApplicationApiPrivateOutput
   caller?: string
   source?: ITrackingCookies
 }): Promise<{ _id: ObjectId }> => {
@@ -545,7 +546,12 @@ const newApplicationToApplicationDocument = async (newApplication: INewApplicati
  * @description Initialize application object from query parameters
  */
 // get data from applicant
-const newApplicationToApplicationDocumentV2 = async (newApplication: IApplicationApiPayloadOutput, applicant: IApplicant, LbaJob: IJobOrCompany, caller?: string) => {
+const newApplicationToApplicationDocumentV2 = async (
+  newApplication: IApplicationApiPublicOutput | IApplicationApiPrivateOutput,
+  applicant: IApplicant,
+  LbaJob: IJobOrCompany,
+  caller?: string
+) => {
   const now = new Date()
   const application: IApplication = {
     _id: new ObjectId(),
