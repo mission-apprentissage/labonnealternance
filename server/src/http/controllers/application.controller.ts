@@ -58,7 +58,7 @@ export default function (server: Server) {
     },
     async (req, res) => {
       const { id } = req.params
-      const { company_recruitment_intention, company_feedback, email, phone } = req.body
+      const { company_recruitment_intention, company_feedback, email, phone, refusal_reasons } = req.body
 
       const application = await getDbCollection("applications").findOneAndUpdate(
         { _id: new ObjectId(id) },
@@ -69,12 +69,15 @@ export default function (server: Server) {
         throw notFound()
       }
 
+      console.log("refusal_reasons", refusal_reasons)
+
       await sendMailToApplicant({
         application,
         email,
         phone,
         company_recruitment_intention,
         company_feedback,
+        refusal_reasons,
       })
 
       await getDbCollection("recruiter_intention_mails").deleteOne({ applicationId: new ObjectId(id) })

@@ -1,8 +1,8 @@
-import { Box, Button, Flex, Text, Textarea } from "@chakra-ui/react"
+import { Box, Button, Checkbox, CheckboxGroup, Flex, Stack, Text, Textarea } from "@chakra-ui/react"
 import { Formik } from "formik"
 import { useState } from "react"
 import { useQuery } from "react-query"
-import { ApplicantIntention, ApplicationIntentionDefaultText } from "shared/constants/application"
+import { ApplicationIntention, ApplicationIntentionDefaultText, RefusalReasons } from "shared/constants/application"
 import * as Yup from "yup"
 
 import { SuccessCircle } from "@/theme/components/icons"
@@ -32,10 +32,10 @@ const getText = ({
 }: {
   applicant_first_name: string
   applicant_last_name: string
-  company_recruitment_intention: ApplicantIntention
+  company_recruitment_intention: ApplicationIntention
 }): { placeholderTextArea: string; header: React.ReactNode; confirmation: string } => {
   switch (company_recruitment_intention) {
-    case ApplicantIntention.ENTRETIEN:
+    case ApplicationIntention.ENTRETIEN:
       return {
         header: (
           <>
@@ -47,7 +47,7 @@ const getText = ({
         placeholderTextArea: ApplicationIntentionDefaultText.ENTRETIEN,
         confirmation: `Votre réponse a été enregistrée et sera automatiquement envoyée à ${applicant_first_name} ${applicant_last_name}.`,
       }
-    case ApplicantIntention.REFUS:
+    case ApplicationIntention.REFUS:
       return {
         header: (
           <>
@@ -64,7 +64,7 @@ const getText = ({
   }
 }
 
-export const IntentionForm = ({ company_recruitment_intention, id, token }: { company_recruitment_intention: ApplicantIntention; id: string; token: string | undefined }) => {
+export const IntentionForm = ({ company_recruitment_intention, id, token }: { company_recruitment_intention: ApplicationIntention; id: string; token: string | undefined }) => {
   const { data, error } = useQuery("getApplicationDataForIntention", () => getApplicationDataForIntention(id, company_recruitment_intention, token), {
     retry: false,
     onError: (error: { message: string }) => console.log(`Something went wrong: ${error.message}`),
@@ -72,9 +72,9 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
 
   const [sendingState, setSendingState] = useState<"not_sent" | "ok_sent" | "not_sent_because_of_errors" | "canceled">("not_sent")
 
-  const isRefusedState = company_recruitment_intention === ApplicantIntention.REFUS
+  const isRefusedState = company_recruitment_intention === ApplicationIntention.REFUS
 
-  const submitForm = async ({ email, phone, company_feedback }: { email: string; phone: string; company_feedback: string }) => {
+  const submitForm = async ({ email, phone, company_feedback, refusal_reasons }: { email: string; phone: string; company_feedback: string; refusal_reasons: RefusalReasons[] }) => {
     apiPost("/application/intentionComment/:id", {
       params: { id },
       body: {
@@ -82,6 +82,7 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
         email,
         company_feedback,
         company_recruitment_intention,
+        refusal_reasons,
       },
       headers: {
         authorization: `Bearer ${token}`,
@@ -143,7 +144,7 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
           </Box>
           <Box width="100%" maxWidth="800px">
             <Formik
-              initialValues={{ company_feedback: text.placeholderTextArea, email: data.recruiter_email ?? "", phone: data.recruiter_phone ?? "" }}
+              initialValues={{ company_feedback: text.placeholderTextArea, email: data.recruiter_email ?? "", phone: data.recruiter_phone ?? "", refusal_reasons: [] }}
               validationSchema={Yup.object().shape({
                 company_feedback: Yup.string().nullable().required("Veuillez remplir le message"),
                 email: isRefusedState ? Yup.string() : Yup.string().email("Adresse e-mail invalide").required("L'adresse e-mail est obligatoire"),
@@ -151,14 +152,13 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
               })}
               onSubmit={(formikValues) => submitForm(formikValues)}
             >
-              {({ values, handleChange, handleBlur, submitForm, dirty, isValid, isSubmitting }) => {
-                console.log(dirty, isValid, isSubmitting)
+              {({ values, setFieldValue, handleChange, handleBlur, submitForm, isValid, isSubmitting }) => {
                 return (
                   <>
                     <Box pt={2} data-testid="fieldset-message">
                       <CustomFormControl label="Votre réponse :" required name="company_feedback">
                         <Text fontSize="12px" color="#666" mb={4}>
-                          Le candidat recevra le message suivant {company_recruitment_intention === ApplicantIntention.ENTRETIEN && "ainsi que vos coordonnées "}par courriel.
+                          Le candidat recevra le message suivant {company_recruitment_intention === ApplicationIntention.ENTRETIEN && "ainsi que vos coordonnées "}par courriel.
                         </Text>
                         <Textarea
                           id="company_feedback"
@@ -187,6 +187,26 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
                           </Box>
                         </Flex>
                       </>
+                    )}
+                    {isRefusedState && (
+                      <Box pt={2} data-testid="fieldset-message">
+                        <CustomFormControl label="Précisez la ou les raison(s) de votre refus :" required={false} name="refusal_reasons">
+                          <CheckboxGroup
+                            onChange={(value) => {
+                              console.log("value : ", value)
+                              setFieldValue("refusal_reasons", value)
+                            }}
+                          >
+                            <Stack direction="column" spacing={3} mt={1} ml={1}>
+                              {Object.values(RefusalReasons).map((key) => (
+                                <Checkbox key={key} size="lg" value={key}>
+                                  {key}
+                                </Checkbox>
+                              ))}
+                            </Stack>
+                          </CheckboxGroup>
+                        </CustomFormControl>
+                      </Box>
                     )}
 
                     {sendingState === "not_sent_because_of_errors" ? (

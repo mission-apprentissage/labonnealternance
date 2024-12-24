@@ -1,4 +1,4 @@
-import { ApplicantIntention } from "../constants/application"
+import { ApplicationIntention, RefusalReasons } from "../constants/application"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZLbacError } from "../models"
@@ -67,9 +67,10 @@ export const zApplicationRoutes = {
       body: z
         .object({
           company_feedback: z.string(),
-          company_recruitment_intention: extensions.buildEnum(ApplicantIntention),
+          company_recruitment_intention: extensions.buildEnum(ApplicationIntention),
           email: z.string().email().or(z.literal("")),
           phone: extensions.phone().or(z.literal("")),
+          refusal_reasons: z.array(extensions.buildEnum(RefusalReasons)),
         })
         .strict(),
       response: {
@@ -123,7 +124,7 @@ export const zApplicationRoutes = {
       path: "/application/dataForIntention/:id",
       method: "get",
       params: z.object({ id: z.string() }).strict(),
-      querystring: z.object({ intention: extensions.buildEnum(ApplicantIntention) }).strict(),
+      querystring: z.object({ intention: extensions.buildEnum(ApplicationIntention) }).strict(),
       response: {
         "200": z
           .object({

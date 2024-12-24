@@ -1,7 +1,7 @@
 import { captureException } from "@sentry/nextjs"
 import Axios from "axios"
 import { IJobCreate, INewDelegations, INewSuperUser, IRecruiterJson, IRoutes, IUserWithAccountFields, removeUndefinedFields } from "shared"
-import { ApplicantIntention } from "shared/constants/application"
+import { ApplicationIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { IEntrepriseJson } from "shared/models/entreprise.model"
@@ -182,7 +182,7 @@ export const getApplicationCompanyEmailAddress = async (token: string) => {
   return data
 }
 
-export const getApplicationDataForIntention = async (applicationId: string, intention: ApplicantIntention, token: string) => {
+export const getApplicationDataForIntention = async (applicationId: string, intention: ApplicationIntention, token: string) => {
   const data = await apiGet("/application/dataForIntention/:id", {
     params: { id: applicationId },
     querystring: { intention },

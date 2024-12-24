@@ -15,7 +15,7 @@ import {
   JOB_STATUS,
   assertUnreachable,
 } from "shared"
-import { ApplicantIntention, ApplicationIntentionDefaultText } from "shared/constants/application"
+import { ApplicationIntention, ApplicationIntentionDefaultText } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, getDirectJobPath, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
@@ -362,7 +362,7 @@ const buildUserForToken = (application: IApplication, user?: IUserWithAccount): 
   }
 }
 
-const buildReplyLink = (application: IApplication, intention: ApplicantIntention, userForToken: UserForAccessToken) => {
+const buildReplyLink = (application: IApplication, intention: ApplicationIntention, userForToken: UserForAccessToken) => {
   const type = application.job_id ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA : LBA_ITEM_TYPE.RECRUTEURS_LBA
   const applicationId = application._id.toString()
   const searchParams = new URLSearchParams()
@@ -414,8 +414,8 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
   const userForToken = buildUserForToken(application, user)
   const urls = {
     jobUrl: "",
-    meetCandidateUrl: buildReplyLink(application, ApplicantIntention.ENTRETIEN, userForToken),
-    refuseCandidateUrl: buildReplyLink(application, ApplicantIntention.REFUS, userForToken),
+    meetCandidateUrl: buildReplyLink(application, ApplicationIntention.ENTRETIEN, userForToken),
+    refuseCandidateUrl: buildReplyLink(application, ApplicationIntention.REFUS, userForToken),
     lbaRecruiterUrl: `${config.publicUrl}/acces-recruteur?${utmRecruiterData}-acces-recruteur`,
     unsubscribeUrl: `${config.publicUrl}/desinscription?application_id=${createToken({ application_id: application._id }, "30d", "desinscription")}${utmRecruiterData}-desinscription`,
     lbaUrl: `${config.publicUrl}?${utmRecruiterData}-home`,
@@ -746,18 +746,20 @@ export const sendMailToApplicant = async ({
   phone,
   company_recruitment_intention,
   company_feedback,
+  refusal_reasons,
 }: {
   application: IApplication
   email: string | null
   phone: string | null
-  company_recruitment_intention: string
+  company_recruitment_intention: ApplicationIntention
   company_feedback: string
+  refusal_reasons: string[]
 }): Promise<void> => {
   const partner = (application.caller && PARTNER_NAMES[application.caller]) ?? null
   const jobSourceType: string = await getJobSourceType(application)
 
   switch (company_recruitment_intention) {
-    case ApplicantIntention.ENTRETIEN: {
+    case ApplicationIntention.ENTRETIEN: {
       mailer.sendEmail({
         to: application.applicant_email,
         cc: email!,
@@ -775,7 +777,7 @@ export const sendMailToApplicant = async ({
       })
       break
     }
-    case ApplicantIntention.NESAISPAS: {
+    case ApplicationIntention.NESAISPAS: {
       mailer.sendEmail({
         to: application.applicant_email,
         cc: email!,
@@ -792,12 +794,19 @@ export const sendMailToApplicant = async ({
       })
       break
     }
-    case ApplicantIntention.REFUS: {
+    case ApplicationIntention.REFUS: {
       mailer.sendEmail({
         to: application.applicant_email,
         subject: `Réponse négative de ${application.company_name} à la candidature${partner ? ` ${partner}` : ""} de ${application.applicant_first_name} ${application.applicant_last_name}`,
         template: getEmailTemplate("mail-candidat-refus"),
-        data: { ...sanitizeApplicationForEmail(application), jobSourceType, partner, ...images, comment: prepareMessageForMail(sanitizeForEmail(company_feedback)) },
+        data: {
+          ...sanitizeApplicationForEmail(application),
+          jobSourceType,
+          partner,
+          ...images,
+          comment: prepareMessageForMail(sanitizeForEmail(company_feedback)),
+          reasons: refusal_reasons,
+        },
       })
       break
     }
@@ -1175,7 +1184,7 @@ const getPhoneForApplication = async (application: IApplication) => {
   return company.phone
 }
 
-export const getApplicationDataForIntentionAndScheduleMessage = async (application_id: string, intention: ApplicantIntention) => {
+export const getApplicationDataForIntentionAndScheduleMessage = async (application_id: string, intention: ApplicationIntention) => {
   const application = await getDbCollection("applications").findOne({ _id: new ObjectId(application_id) })
 
   if (!application) throw notFound("Candidature non trouvée")
@@ -1220,7 +1229,8 @@ export const processScheduledRecruiterIntentions = async () => {
         email: application.company_email,
         phone,
         company_recruitment_intention: intention.intention,
-        company_feedback: intention.intention === ApplicantIntention.REFUS ? ApplicationIntentionDefaultText.REFUS : ApplicationIntentionDefaultText.ENTRETIEN,
+        company_feedback: intention.intention === ApplicationIntention.REFUS ? ApplicationIntentionDefaultText.REFUS : ApplicationIntentionDefaultText.ENTRETIEN,
+        refusal_reasons: [],
       })
     }
     await getDbCollection("recruiter_intention_mails").deleteOne({ applicationId: intention.applicationId })
