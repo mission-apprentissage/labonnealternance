@@ -77,6 +77,8 @@ export default function (server: Server) {
         company_feedback,
       })
 
+      await getDbCollection("recruiter_intention_mails").deleteOne({ applicationId: new ObjectId(id) })
+
       return res.status(200).send({ result: "ok", message: "comment registered" })
     }
   )
