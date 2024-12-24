@@ -3519,20 +3519,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                     "description": "Téléphone du candidat",
                     "type": "string",
                   },
-                  "caller": {
-                    "description": "L'identification de la source d'émission de la candidature (pour widget et api)",
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "job_searched_by_user": {
-                    "description": "Métier recherché par le candidat",
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
                   "recipient_id": {
                     "description": "Identifiant unique de la ressource vers laquelle la candidature est faite, préfixé par le nom de la collection",
                     "type": "string",
