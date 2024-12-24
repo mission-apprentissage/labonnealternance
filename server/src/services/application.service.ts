@@ -3,7 +3,18 @@ import { isEmailBurner } from "burner-email-providers"
 import dayjs from "dayjs"
 import { fileTypeFromBuffer } from "file-type"
 import { ObjectId } from "mongodb"
-import { ApplicationScanStatus, IApplication, IApplicationApiPayloadOutput, IJob, ILbaCompany, INewApplicationV1, IRecruiter, JOB_STATUS, assertUnreachable } from "shared"
+import {
+  ApplicationScanStatus,
+  IApplication,
+  IApplicationApiPrivateOutput,
+  IApplicationApiPublicOutput,
+  IJob,
+  ILbaCompany,
+  INewApplicationV1,
+  IRecruiter,
+  JOB_STATUS,
+  assertUnreachable,
+} from "shared"
 import { ApplicantIntention, ApplicationIntentionDefaultText } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, getDirectJobPath, newItemTypeToOldItemType } from "shared/constants/lbaitem"
@@ -229,7 +240,7 @@ export const sendApplicationV2 = async ({
   caller,
   source,
 }: {
-  newApplication: IApplicationApiPayloadOutput
+  newApplication: IApplicationApiPublicOutput | IApplicationApiPrivateOutput
   caller?: string
   source?: ITrackingCookies
 }): Promise<{ _id: ObjectId }> => {
@@ -512,7 +523,7 @@ const newApplicationToApplicationDocument = async (newApplication: INewApplicati
 /**
  * @description Initialize application object from query parameters
  */
-const newApplicationToApplicationDocumentV2 = async (newApplication: IApplicationApiPayloadOutput, LbaJob: IJobOrCompany, caller?: string) => {
+const newApplicationToApplicationDocumentV2 = async (newApplication: IApplicationApiPublicOutput | IApplicationApiPrivateOutput, LbaJob: IJobOrCompany, caller?: string) => {
   const now = new Date()
   const application: IApplication = {
     ...offreOrCompanyToCompanyFields(LbaJob),
