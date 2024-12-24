@@ -327,6 +327,13 @@ export function generateApplicationReplyToken(tokenUser: UserForAccessToken, app
         },
       }),
       generateScope({
+        schema: zRoutes.post["/application/cancelIntention/:id"],
+        options: {
+          params: { id: applicationId },
+          querystring: undefined,
+        },
+      }),
+      generateScope({
         schema: zRoutes.get["/application/dataForIntention/:id"],
         options: {
           params: { id: applicationId },

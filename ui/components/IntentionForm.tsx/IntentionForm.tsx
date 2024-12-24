@@ -93,15 +93,15 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
 
   const cancelForm = async () => {
     console.log("CANCEL !!!!")
-    setSendingState("canceled")
-    // apiPost("/application/cancelComment/:id", {
-    //   params: { id },
-    //   headers: {
-    //     authorization: `Bearer ${token}`,
-    //   },
-    // })
-    //   .then(() => setSendingState("canceled"))
-    //   .catch(() => setSendingState("not_sent_because_of_errors"))
+
+    apiPost("/application/cancelIntention/:id", {
+      params: { id },
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    })
+      .then(() => setSendingState("canceled"))
+      .catch(() => setSendingState("not_sent_because_of_errors"))
   }
 
   if (!data && !error) {

@@ -82,6 +82,22 @@ export default function (server: Server) {
   )
 
   server.post(
+    "/application/cancelIntention/:id",
+    {
+      schema: zRoutes.post["/application/cancelIntention/:id"],
+      onRequest: server.auth(zRoutes.post["/application/cancelIntention/:id"]),
+      config: rateLimitConfig,
+    },
+    async (req, res) => {
+      const { id } = req.params
+
+      await getDbCollection("applications").deleteOne({ _id: new ObjectId(id) })
+
+      return res.status(200).send({ result: "ok", message: "intention canceled" })
+    }
+  )
+
+  server.post(
     "/application/intention/:id",
     {
       schema: zRoutes.post["/application/intention/:id"],

@@ -86,6 +86,24 @@ export const zApplicationRoutes = {
         resources: {},
       },
     },
+    "/application/cancelIntention/:id": {
+      path: "/application/cancelIntention/:id",
+      method: "post",
+      params: z.object({ id: z.string() }).strict(),
+      response: {
+        "200": z
+          .object({
+            result: z.literal("ok"),
+            message: z.literal("intention canceled"),
+          })
+          .strict(),
+      },
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        resources: {},
+      },
+    },
   },
   get: {
     "/application/company/email": {
