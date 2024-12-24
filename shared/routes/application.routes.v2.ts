@@ -1,5 +1,5 @@
 import { z } from "../helpers/zodWithOpenApi"
-import { ZApplicationApiPayload } from "../models"
+import { ZApplicationApiPrivate, ZApplicationApiPublic } from "../models"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -8,7 +8,7 @@ export const zApplicationRoutesV2 = {
     "/application": {
       path: "/application",
       method: "post",
-      body: ZApplicationApiPayload,
+      body: ZApplicationApiPublic,
       response: {
         "202": z.object({
           id: z.string(),
@@ -22,7 +22,7 @@ export const zApplicationRoutesV2 = {
     "/_private/application": {
       path: "/_private/application",
       method: "post",
-      body: ZApplicationApiPayload,
+      body: ZApplicationApiPrivate,
       response: {
         "200": z.object({}),
       },
