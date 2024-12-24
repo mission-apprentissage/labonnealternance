@@ -1,10 +1,10 @@
-import { IApplicationApiPublicJSON, ZApplicationApiPublic } from "shared"
+import { IApplicationApiPrivateJSON, ZApplicationApiPrivate } from "shared"
 import { validatePhone } from "shared/validators/phoneValidator"
 import { z } from "zod"
 
 import { sessionStorageGet } from "@/utils/localStorage"
 
-export type IApplicationSchemaInitValues = Omit<IApplicationApiPublicJSON, "caller">
+export type IApplicationSchemaInitValues = Omit<IApplicationApiPrivateJSON, "caller">
 
 export function getInitialSchemaValues(): IApplicationSchemaInitValues {
   const inSessionValue = JSON.parse(sessionStorageGet("application-form-values"))
@@ -19,7 +19,7 @@ export function getInitialSchemaValues(): IApplicationSchemaInitValues {
   }
 }
 
-export const ApplicationFormikSchema = ZApplicationApiPublic.pick({
+export const ApplicationFormikSchema = ZApplicationApiPrivate.pick({
   applicant_first_name: true,
   applicant_last_name: true,
   applicant_email: true,

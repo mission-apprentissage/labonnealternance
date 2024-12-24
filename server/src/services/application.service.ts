@@ -240,7 +240,7 @@ export const sendApplicationV2 = async ({
   caller,
   source,
 }: {
-  newApplication: IApplicationApiPrivateOutput | IApplicationApiPublicOutput
+  newApplication: IApplicationApiPublicOutput | IApplicationApiPrivateOutput
   caller?: string
   source?: ITrackingCookies
 }): Promise<{ _id: ObjectId }> => {
@@ -525,7 +525,7 @@ const newApplicationToApplicationDocument = async (newApplication: INewApplicati
 /**
  * @description Initialize application object from query parameters
  */
-const newApplicationToApplicationDocumentV2 = async (newApplication: IApplicationApiPrivateOutput | IApplicationApiPublicOutput, LbaJob: IJobOrCompany, caller?: string) => {
+const newApplicationToApplicationDocumentV2 = async (newApplication: IApplicationApiPublicOutput | IApplicationApiPrivateOutput, LbaJob: IJobOrCompany, caller?: string) => {
   const now = new Date()
   const application: IApplication = {
     ...offreOrCompanyToCompanyFields(LbaJob),

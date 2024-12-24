@@ -174,7 +174,7 @@ export type INewApplicationV1 = z.output<typeof ZNewApplicationTransitionToV2>
 
 type JobCollectionName = "recruteurslba" | "jobs_partners" | "recruiters"
 
-export const ZApplicationApiPublic = ZApplication.pick({
+export const ZApplicationApiPrivate = ZApplication.pick({
   applicant_first_name: true,
   applicant_last_name: true,
   applicant_email: true,
@@ -200,17 +200,17 @@ export const ZApplicationApiPublic = ZApplication.pick({
     .describe("Identifiant unique de la ressource vers laquelle la candidature est faite, préfixé par le nom de la collection"),
 })
 
-export const ZApplicationApiPrivate = ZApplicationApiPublic.omit({
+export const ZApplicationApiPublic = ZApplicationApiPrivate.omit({
   caller: true,
   job_searched_by_user: true,
 })
 
-export type IApplicationApiPrivateOutput = z.output<typeof ZApplicationApiPrivate>
 export type IApplicationApiPublicOutput = z.output<typeof ZApplicationApiPublic>
-export type IApplicationApiPrivate = z.input<typeof ZApplicationApiPrivate>
+export type IApplicationApiPrivateOutput = z.output<typeof ZApplicationApiPrivate>
 export type IApplicationApiPublic = z.input<typeof ZApplicationApiPublic>
-export type IApplicationApiPublicJSON = Jsonify<z.input<typeof ZApplicationApiPublic>>
+export type IApplicationApiPrivate = z.input<typeof ZApplicationApiPrivate>
 export type IApplicationApiPrivateJSON = Jsonify<z.input<typeof ZApplicationApiPrivate>>
+export type IApplicationApiPublicJSON = Jsonify<z.input<typeof ZApplicationApiPublic>>
 
 export default {
   zod: ZApplication,

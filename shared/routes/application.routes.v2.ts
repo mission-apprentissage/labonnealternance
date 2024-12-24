@@ -8,7 +8,7 @@ export const zApplicationRoutesV2 = {
     "/application": {
       path: "/application",
       method: "post",
-      body: ZApplicationApiPrivate,
+      body: ZApplicationApiPublic,
       response: {
         "202": z.object({
           id: z.string(),
@@ -22,7 +22,7 @@ export const zApplicationRoutesV2 = {
     "/_private/application": {
       path: "/_private/application",
       method: "post",
-      body: ZApplicationApiPublic,
+      body: ZApplicationApiPrivate,
       response: {
         "200": z.object({}),
       },
