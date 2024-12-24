@@ -33,6 +33,7 @@ export const up = async () => {
 
   for await (const application of applications) {
     const { firstname, lastname, email, phone, last_connection, ids } = application
+    const idsObjectId = ids.map((val) => new ObjectId(val))
     const now = new Date()
     const applicant: IApplicant = {
       _id: new ObjectId(),
@@ -48,7 +49,7 @@ export const up = async () => {
     if (validation.success) {
       stat.success++
       await getDbCollection("applicants").insertOne(applicant)
-      await getDbCollection("applications").updateMany({ _id: ids }, { $set: { applicant_id: applicant._id } })
+      await getDbCollection("applications").updateMany({ _id: { $in: idsObjectId } }, { $set: { applicant_id: applicant._id } }, { bypassDocumentValidation: true })
     } else {
       stat.error++
     }
