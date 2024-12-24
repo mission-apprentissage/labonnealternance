@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto"
 
 import { ObjectId } from "bson"
+import { chunk } from "lodash-es"
 import { getLastStatusEvent } from "shared"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { CollectionName } from "shared/models/models"
@@ -17,12 +18,14 @@ export const getFakeEmail = () => `${randomUUID()}@faux-domaine.fr`
 async function reduceModel(model: CollectionName, limit = 20000) {
   logger.info(`reducing collection ${model} to ${limit} latest documents`)
   try {
-    const aggregationPipeline = [{ $match: {} }, { $sort: { created_at: -1 } }, { $skip: limit }, { $limit: 1 }, { $project: { _id: 0, minDate: "$created_at" } }]
+    const aggregationPipeline = [{ $match: {} }, { $sort: { _id: -1 } }, { $skip: limit }, { $project: { _id: 1 } }]
 
     const result = await getDbCollection(model).aggregate(aggregationPipeline).toArray()
+    const idsToDelete = result.flatMap((val) => val._id)
+    const chunks = chunk(idsToDelete, 1_000)
 
     if (result.length) {
-      await getDbCollection(model).deleteMany({ created_at: { $lt: result[0].minDate } })
+      await Promise.all(chunks.map(async (chunk) => await getDbCollection(model).deleteMany({ _id: { $in: chunk } })))
     }
   } catch (err) {
     logger.error("Error reducing collection", err)
@@ -69,7 +72,6 @@ const obfuscateEmailBlackList = async () => {
     const replacement = { $set: { email } }
     await getDbCollection("emailblacklists").findOneAndUpdate({ _id: ebl._id }, replacement)
   }
-  logger.info(`obfuscating email blacklist done`)
 }
 
 const obfuscateAppointments = async () => {
@@ -111,6 +113,9 @@ const obfuscateElligibleTrainingsForAppointment = async () => {
     {},
     {
       $set: { lieu_formation_email: fakeEmail },
+    },
+    {
+      bypassDocumentValidation: true,
     }
   )
 }
@@ -218,7 +223,7 @@ const obfuscateRecruiter = async () => {
   const remainingUsers = getDbCollection("recruiters").find({ first_name: { $ne: "prenom" } })
   for await (const user of remainingUsers) {
     const replacement = { $set: { email: getFakeEmail(), phone: "0601010106", last_name: "nom_famille", first_name: "prenom" } }
-    getDbCollection("recruiters").findOneAndUpdate({ _id: user._id }, replacement)
+    getDbCollection("recruiters").findOneAndUpdate({ _id: user._id }, replacement, { bypassDocumentValidation: true })
   }
 
   const recruitersWithDelegations = getDbCollection("recruiters").find({ "jobs.delegations.0": { $exists: true } })
@@ -236,7 +241,7 @@ const obfuscateRecruiter = async () => {
       })
     }
     if (shouldSave) {
-      await getDbCollection("recruiters").updateOne({ _id: recruiter._id }, { $set: { ...recruiter, updatedAt: new Date() } })
+      await getDbCollection("recruiters").updateOne({ _id: recruiter._id }, { $set: { ...recruiter, updatedAt: new Date() } }, { bypassDocumentValidation: true })
     }
   }
 
@@ -286,12 +291,38 @@ export async function obfuscateCollections(): Promise<void> {
     // prévention :)
     return
   }
-  await reduceModel("apicalls", 20000)
-  await reduceModel("applications", 50000)
-  // await reduceModel("anonymizedapplications", 5000) // TODO
-  await reduceModel("appointments", 10000)
+
+  await getDbCollection("optouts").deleteMany({})
+  await getDbCollection("cache_geolocation").deleteMany({})
+  await getDbCollection("cache_romeo").deleteMany({})
+  await getDbCollection("cache_siret").deleteMany({})
+  await getDbCollection("unsubscribedrecruteurslba").deleteMany({})
+  await getDbCollection("unsubscribedofs").deleteMany({})
+  await getDbCollection("trafficsources").deleteMany({})
+  await getDbCollection("sessions").deleteMany({})
+  await getDbCollection("rolemanagement360").deleteMany({})
+  await getDbCollection("reported_companies").deleteMany({})
+  await getDbCollection("recruteurlbaupdateevents").deleteMany({})
+  await getDbCollection("jobs").deleteMany({})
+  await getDbCollection("eligible_trainings_for_appointments_histories").deleteMany({})
+  await getDbCollection("applicants_email_logs").deleteMany({})
+  await getDbCollection("anonymized_applicants").deleteMany({})
+  await getDbCollection("anonymized_applications").deleteMany({})
+  await getDbCollection("anonymized_appointments").deleteMany({})
+  await getDbCollection("anonymized_recruiters").deleteMany({})
+  await getDbCollection("anonymized_users").deleteMany({})
+  await getDbCollection("anonymized_userswithaccounts").deleteMany({})
+  await getDbCollection("recruteurslbalegacies").deleteMany({})
+
+  await reduceModel("apicalls", 5)
+  await reduceModel("applicants", 50)
+  await reduceModel("applications", 500)
+  await reduceModel("appointments", 100)
   await reduceModel("emailblacklists", 100)
-  await reduceModel("applicants", 1)
+  await reduceModel("applicants", 10)
+  await reduceModel("users", 10)
+  await reduceModel("opcos", 5000)
+
   await obfuscateApplicantsAndApplications()
   await obfuscateEmailBlackList()
   await obfuscateAppointments()
@@ -303,8 +334,4 @@ export async function obfuscateCollections(): Promise<void> {
   await obfuscateUser()
   await obfuscateUsersWithAccounts()
   await obfuscatePartnerJobs()
-  await getDbCollection("optouts").deleteMany({})
-  await getDbCollection("cache_geolocation").deleteMany({})
-  await getDbCollection("cache_romeo").deleteMany({})
-  await getDbCollection("cache_siret").deleteMany({})
 }
