@@ -1,3 +1,5 @@
+import anonymizedUsersModel from "shared/models/anonymizedUsers.model"
+
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
@@ -5,9 +7,7 @@ import { notifyToSlack } from "@/common/utils/slackUtils"
 /**
  * Anonymize users older than 1 year.
  */
-const anonymizeUsers = async () => {
-  logger.info(`Début anonymisation`)
-
+const anonymize = async () => {
   const period = new Date()
   period.setFullYear(period.getFullYear() - 2)
   const matchCondition = { last_action_date: { $lte: period } }
@@ -25,8 +25,7 @@ const anonymizeUsers = async () => {
         },
       },
       {
-        // @ts-ignore
-        $merge: "anonymized_users",
+        $merge: anonymizedUsersModel.collectionName,
       },
     ])
     .toArray()
@@ -36,21 +35,18 @@ const anonymizeUsers = async () => {
   return res.deletedCount
 }
 
-export const anonymizeOldUsers = async () => {
+export const anonymizeUsers = async () => {
+  logger.info("[START] Anonymisation des utilisateurs non modifiés de plus de deux (2) ans")
   try {
-    logger.info(" -- Anonymisation des utilisateurs non modifiés de plus de deux (2) ans -- ")
-
-    const anonymizedUserCount = await anonymizeUsers()
-
-    logger.info(`Fin traitement ${anonymizedUserCount}`)
+    const anonymizedUserCount = await anonymize()
 
     await notifyToSlack({
       subject: "ANONYMISATION USERS",
       message: `Anonymisation des users non modifiés depuis plus de un an terminée. ${anonymizedUserCount} user(s) anonymisée(s).`,
-      error: false,
     })
   } catch (err: any) {
     await notifyToSlack({ subject: "ANONYMISATION USERS", message: `ECHEC anonymisation des users`, error: true })
     throw err
   }
+  logger.info("[END] Anonymisation des utilisateurs non modifiés de plus de deux (2) ans")
 }

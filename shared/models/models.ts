@@ -1,5 +1,11 @@
 import { z } from "zod"
 
+import anonymizedApplicantModel from "./anonymizedApplicant.model"
+import anonymizedApplicationsModel from "./anonymizedApplications.model"
+import anonymizedAppointmentsModel from "./anonymizedAppointments.model"
+import anonymizedRecruitersModel from "./anonymizedRecruiters.model"
+import anonymizedUsersModel from "./anonymizedUsers.model"
+import anonymizedUsersWithAccountsModel from "./anonymizedUsersWithAccounts.model"
 import apicallsModel from "./apicalls.model"
 import applicantModel from "./applicant.model"
 import applicantEmailLogModel from "./applicantEmailLog.model"
@@ -50,6 +56,12 @@ import userModel from "./user.model"
 import userWithAccountModel from "./userWithAccount.model"
 
 const modelDescriptorMap = {
+  [anonymizedApplicantModel.collectionName]: anonymizedApplicantModel,
+  [anonymizedApplicationsModel.collectionName]: anonymizedApplicationsModel,
+  [anonymizedAppointmentsModel.collectionName]: anonymizedAppointmentsModel,
+  [anonymizedRecruitersModel.collectionName]: anonymizedRecruitersModel,
+  [anonymizedUsersModel.collectionName]: anonymizedUsersModel,
+  [anonymizedUsersWithAccountsModel.collectionName]: anonymizedUsersWithAccountsModel,
   [appointmentsModel.collectionName]: appointmentsModel,
   [apicallsModel.collectionName]: apicallsModel,
   [applicantModel.collectionName]: applicantModel,
