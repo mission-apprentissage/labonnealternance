@@ -64,13 +64,13 @@ const anonymize = async () => {
     ])
     .toArray()
 
-  const aggregatepplicantsIds = matchedApplicants.map((doc) => doc._id)
+  const applicantsIdsToDelete = matchedApplicants.map((doc) => doc._id)
   const applicationsIdsToDelete = matchedApplications.map((doc) => doc._id)
   const [resApplications, resApplicants] = await Promise.all([
     getDbCollection("applications").deleteMany({ _id: { $in: applicationsIdsToDelete } }),
-    getDbCollection("applicants").deleteMany(matchCondition),
+    getDbCollection("applicants").deleteMany({ _id: { $in: applicantsIdsToDelete } }),
     // we don't keep archive of applicants_email_logs
-    getDbCollection("applicants_email_logs").deleteMany({ applicant_id: { $in: aggregatepplicantsIds } }),
+    getDbCollection("applicants_email_logs").deleteMany({ applicant_id: { $in: applicantsIdsToDelete } }),
   ])
 
   return [resApplications, resApplicants]
