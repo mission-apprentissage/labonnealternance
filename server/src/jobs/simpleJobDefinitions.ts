@@ -1,3 +1,4 @@
+import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
 import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
@@ -214,5 +215,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processJobPartners,
     description: "Chaîne complète de traitement des jobs_partners",
+  },
+  {
+    fct: processScheduledRecruiterIntentions,
+    description: "Envoi les intentations des recruteurs programmées",
   },
 ]

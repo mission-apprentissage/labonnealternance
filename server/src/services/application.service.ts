@@ -1188,3 +1188,25 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
     applicant_last_name: application.applicant_last_name,
   }
 }
+
+export const processScheduledRecruiterIntentions = async () => {
+  // récupération des intentions en base
+  // émission des emails correspondants
+  // nettoyage
+  /*
+  pour chaque cas : 
+
+  const application = 
+
+  await sendMailToApplicant({
+        application,
+        email,
+        phone,
+        company_recruitment_intention,
+        company_feedback,
+      })
+
+      await getDbCollection("recruiter_intention_mails").deleteOne({ applicationId: new ObjectId(id) })
+
+  */
+}
