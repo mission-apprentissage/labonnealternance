@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto"
 
+import { ObjectId } from "bson"
 import { getLastStatusEvent } from "shared"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { CollectionName } from "shared/models/models"
@@ -11,6 +12,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
 
 const fakeEmail = "faux_email@faux-domaine-compagnie.com"
+export const getFakeEmail = () => `${randomUUID()}@faux-domaine.fr`
 
 async function reduceModel(model: CollectionName, limit = 20000) {
   logger.info(`reducing collection ${model} to ${limit} latest documents`)
@@ -27,13 +29,25 @@ async function reduceModel(model: CollectionName, limit = 20000) {
   }
 }
 
-const obfuscateApplications = async () => {
+const obfuscateApplicantsAndApplications = async () => {
+  logger.info(`obfuscating applicants`)
+  await getDbCollection("applicants").updateMany(
+    {},
+    {
+      $set: {
+        firstname: "prenom",
+        lastname: "nom",
+        phone: "0601010106",
+        email: getFakeEmail(),
+      },
+    }
+  )
   logger.info(`obfuscating applications`)
   await getDbCollection("applications").updateMany(
     {},
     {
       $set: {
-        applicant_email: "faux_email@faux-domaine.fr",
+        applicant_email: getFakeEmail(),
         applicant_phone: "0601010106",
         applicant_last_name: "nom_famille",
         applicant_first_name: "prenom",
@@ -41,6 +55,7 @@ const obfuscateApplications = async () => {
         applicant_message_to_company: "Cher recruteur, embauchez moi ...",
         company_feedback: "Cher candidat ...",
         company_email: fakeEmail,
+        applicant_id: new ObjectId(),
       },
     }
   )
@@ -161,8 +176,6 @@ const obfuscatePartnerJobs = async () => {
   await getDbCollection("raw_hellowork").deleteMany({})
 }
 
-export const getFakeEmail = () => `${randomUUID()}@faux-domaine.fr`
-
 const keepSpecificUser = async (email: string, type: AccessEntityType) => {
   const role = await getDbCollection("rolemanagements").findOne({ authorized_type: type })
   const replacement = {
@@ -278,7 +291,8 @@ export async function obfuscateCollections(): Promise<void> {
   // await reduceModel("anonymizedapplications", 5000) // TODO
   await reduceModel("appointments", 10000)
   await reduceModel("emailblacklists", 100)
-  await obfuscateApplications()
+  await reduceModel("applicants", 1)
+  await obfuscateApplicantsAndApplications()
   await obfuscateEmailBlackList()
   await obfuscateAppointments()
   await obfuscateLbaCompanies()
