@@ -4,7 +4,7 @@ import dayjs from "dayjs"
 import { fileTypeFromBuffer } from "file-type"
 import { ObjectId } from "mongodb"
 import { ApplicationScanStatus, IApplication, IApplicationApiPayloadOutput, IJob, ILbaCompany, INewApplicationV1, IRecruiter, JOB_STATUS, assertUnreachable } from "shared"
-import { ApplicantIntention } from "shared/constants/application"
+import { ApplicantIntention, ApplicationIntentionDefaultText } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, getDirectJobPath, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
@@ -1144,11 +1144,7 @@ export const getCompanyEmailFromToken = async (token: string) => {
   throw notFound("Adresse non trouvée")
 }
 
-export const getApplicationDataForIntentionAndScheduleMessage = async (application_id: string, intention: ApplicantIntention) => {
-  const application = await getDbCollection("applications").findOne({ _id: new ObjectId(application_id) })
-
-  if (!application) throw notFound("Candidature non trouvée")
-
+const getPhoneForApplication = async (application: IApplication) => {
   let company: ILbaCompany | IRecruiter | null
   switch (application.job_origin) {
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
@@ -1165,7 +1161,15 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
 
   if (!company) throw internal(`Société pour ${application.job_origin} introuvable`)
 
-  const recruiter_phone = company.phone ?? ""
+  return company.phone
+}
+
+export const getApplicationDataForIntentionAndScheduleMessage = async (application_id: string, intention: ApplicantIntention) => {
+  const application = await getDbCollection("applications").findOne({ _id: new ObjectId(application_id) })
+
+  if (!application) throw notFound("Candidature non trouvée")
+
+  const recruiter_phone = (await getPhoneForApplication(application)) ?? ""
 
   await getDbCollection("recruiter_intention_mails").updateOne(
     {
@@ -1190,23 +1194,24 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
 }
 
 export const processScheduledRecruiterIntentions = async () => {
-  // récupération des intentions en base
-  // émission des emails correspondants
-  // nettoyage
-  /*
-  pour chaque cas : 
+  const intentionCursor = await getDbCollection("recruiter_intention_mails").find({}).toArray()
 
-  const application = 
+  for await (const intention of intentionCursor) {
+    const application = await getDbCollection("applications").findOne({ _id: intention.applicationId })
 
-  await sendMailToApplicant({
+    if (!application) {
+      logger.warn("souci à notifier avec intention.applicationId")
+    } else {
+      const phone = (await getPhoneForApplication(application)) ?? ""
+
+      await sendMailToApplicant({
         application,
-        email,
+        email: application.company_email,
         phone,
-        company_recruitment_intention,
-        company_feedback,
+        company_recruitment_intention: intention.intention,
+        company_feedback: intention.intention === ApplicantIntention.REFUS ? ApplicationIntentionDefaultText.REFUS : ApplicationIntentionDefaultText.ENTRETIEN,
       })
-
-      await getDbCollection("recruiter_intention_mails").deleteOne({ applicationId: new ObjectId(id) })
-
-  */
+    }
+    await getDbCollection("recruiter_intention_mails").deleteOne({ applicationId: intention.applicationId })
+  }
 }
