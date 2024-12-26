@@ -23,7 +23,7 @@ const AmeliorerLBA = () => {
           </Text>
           <Box mt="7">
             <Link
-              href="https://app.livestorm.co/p/801f855c-f452-4817-881a-c76f1fd899d7/form"
+              href="https://app.livestorm.co/la-bonne-alternance/premiers-pas-sur-la-bonne-alternance-maximisez-votre-experience"
               aria-label="M'inscrire au webinaire - nouvelle fenêtre"
               title="M'inscrire au webinaire"
               color="#000091"
