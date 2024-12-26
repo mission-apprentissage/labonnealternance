@@ -10,25 +10,19 @@ const AmeliorerLBA = () => {
           <Image src="/images/home_pics/illu-support.svg" alt="" />
         </GridItem>
         <GridItem pl="8">
-          <Text fontWeight="700" my="5">
-            Donnez votre avis
-          </Text>
           <Text as="h2" color="#000091" fontSize="2rem" fontWeight="500" my="5">
-            Aidez-nous à améliorer La bonne alternance
+            Vous êtes une entreprise à la recherche d’alternants ?
           </Text>
-          <Text>Vous êtes un jeune candidat à l’apprentissage ?</Text>
-          <Text>Vous avez fait une recherche d’emploi ou de formation sur notre site ?</Text>
-          <Text>
-            <strong>Racontez-nous votre expérience !</strong>
+          <Text>Participez à une démonstration de La bonne alternance. Un <strong>service public gratuit pour publier facilement vos offres sur plusieurs plateformes</strong> : La bonne alternance, 1jeune1solution, Parcoursup, l'Onisep, et bien d'autres.
           </Text>
+          <Text><strong>Chaque semaine</strong>, nous organisons des webinaires spécialement conçus pour les recruteurs afin de vous présenter toutes les fonctionnalités de notre plateforme.</Text>
           <Text>
-            Nous vous invitions à participer à un échange vidéo avec un membre de notre équipe. Vous pourrez nous partager votre avis, et nous pourrons répondre à vos questions sur
-            l’utilisation du service.
+            <strong>Profitez-en pour poser vos questions en direct !</strong>
           </Text>
           <Box mt="7">
             <Link
               href="https://app.livestorm.co/p/801f855c-f452-4817-881a-c76f1fd899d7/form"
-              aria-label="S'inscrire au webinaire - nouvelle fenêtre"
+              aria-label="M'inscrire au webinaire - nouvelle fenêtre"
               title="M'inscrire au webinaire"
               color="#000091"
               border="1px solid #000091"
