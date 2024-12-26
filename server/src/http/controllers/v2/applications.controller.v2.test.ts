@@ -136,12 +136,14 @@ describe("POST /v2/application", () => {
     })
 
     const application = await getDbCollection("applications").findOne({ company_siret: recruteur.siret })
+    const applicant = await getDbCollection("applicants").findOne({ _id: application?.applicant_id })
 
     expect.soft(response.statusCode).toEqual(202)
     expect.soft(response.json()).toEqual({ id: application!._id.toString() })
 
     expect(application).toEqual({
       _id: expect.any(ObjectId),
+      applicant_id: applicant?._id,
       applicant_attachment_name: body.applicant_attachment_name,
       applicant_email: body.applicant_email,
       applicant_first_name: body.applicant_first_name,
@@ -192,12 +194,14 @@ describe("POST /v2/application", () => {
     })
 
     const application = await getDbCollection("applications").findOne({ job_id: job._id.toString() })
+    const applicant = await getDbCollection("applicants").findOne({ _id: application?.applicant_id })
 
     expect.soft(response.statusCode).toEqual(202)
     expect.soft(response.json()).toEqual({ id: application!._id.toString() })
 
     expect(application).toEqual({
       _id: expect.any(ObjectId),
+      applicant_id: applicant?._id,
       applicant_attachment_name: body.applicant_attachment_name,
       applicant_email: body.applicant_email,
       applicant_first_name: body.applicant_first_name,
