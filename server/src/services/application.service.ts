@@ -29,6 +29,7 @@ import { s3Delete, s3ReadAsString, s3Write } from "@/common/utils/awsUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { createToken, getTokenValue } from "@/common/utils/jwtUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 import { UserForAccessToken, userWithAccountToUserForToken } from "@/security/accessTokenService"
 
 import { logger } from "../common/logger"
@@ -1216,34 +1217,62 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
 }
 
 export const processScheduledRecruiterIntentions = async () => {
-  const intentionCursor = await getDbCollection("recruiter_intention_mails").find({}).toArray()
-  const company_feedback_date = new Date()
+  try {
+    const intentionCursor = await getDbCollection("recruiter_intention_mails").find({}).toArray()
+    const company_feedback_date = new Date()
 
-  for await (const intention of intentionCursor) {
-    const application = await getDbCollection("applications").findOne({ _id: intention.applicationId })
+    let intentionCounter = 0
+    let intentionErrorCounter = 0
+    let entretienCounter = 0
 
-    if (!application) {
-      logger.warn("souci à notifier avec intention.applicationId")
-    } else {
-      const phone = (await getPhoneForApplication(application)) ?? ""
-      const company_recruitment_intention = intention.intention
-      const company_feedback = intention.intention === ApplicationIntention.REFUS ? ApplicationIntentionDefaultText.REFUS : ApplicationIntentionDefaultText.ENTRETIEN
-      const refusal_reasons = []
+    for await (const intention of intentionCursor) {
+      intentionCounter++
+      try {
+        const application = await getDbCollection("applications").findOne({ _id: intention.applicationId })
 
-      await sendMailToApplicant({
-        application,
-        email: application.company_email,
-        phone,
-        company_recruitment_intention,
-        company_feedback,
-        refusal_reasons,
-      })
+        if (!application) {
+          logger.warn("souci à notifier avec intention.applicationId")
+        } else {
+          const phone = (await getPhoneForApplication(application)) ?? ""
+          const company_recruitment_intention = intention.intention
+          const company_feedback = intention.intention === ApplicationIntention.REFUS ? ApplicationIntentionDefaultText.REFUS : ApplicationIntentionDefaultText.ENTRETIEN
+          const refusal_reasons = []
 
-      await getDbCollection("applications").findOneAndUpdate(
-        { _id: application._id },
-        { $set: { company_recruitment_intention, company_feedback, company_feedback_reasons: refusal_reasons, company_feedback_date } }
-      )
+          await sendMailToApplicant({
+            application,
+            email: application.company_email,
+            phone,
+            company_recruitment_intention,
+            company_feedback,
+            refusal_reasons,
+          })
+
+          await getDbCollection("applications").findOneAndUpdate(
+            { _id: application._id },
+            { $set: { company_recruitment_intention, company_feedback, company_feedback_reasons: refusal_reasons, company_feedback_date } }
+          )
+        }
+        await getDbCollection("recruiter_intention_mails").deleteOne({ applicationId: intention.applicationId })
+
+        if (intention.intention === ApplicationIntention.ENTRETIEN) {
+          entretienCounter++
+        }
+      } catch (intentionErr) {
+        intentionErrorCounter++
+        sentryCaptureException(intentionErr)
+      }
     }
-    await getDbCollection("recruiter_intention_mails").deleteOne({ applicationId: intention.applicationId })
+    await notifyToSlack({
+      subject: "Envoi des intentions des recruteurs",
+      message: `${intentionCounter} intentions traitrées. ${intentionCounter - intentionErrorCounter} intentions envoyées. ${entretienCounter} proposition(s) d'entretien. ${intentionErrorCounter} erreurs.`,
+      error: false,
+    })
+  } catch (err) {
+    await notifyToSlack({
+      subject: "Envoi des intentions des recruteurs",
+      message: "Erreur technique dans le traitement des intentions des recruteurs",
+      error: true,
+    })
+    throw err
   }
 }
