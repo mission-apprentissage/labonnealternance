@@ -4,7 +4,7 @@ import { IApplicant, IApplicantNew } from "shared"
 
 import { getDbCollection } from "../common/utils/mongodbUtils"
 
-export const getApplicantFromDB = (payload: Filter<IApplicant>) => getDbCollection("applicants").findOne({ payload })
+export const getApplicantFromDB = (filter: Filter<IApplicant>) => getDbCollection("applicants").findOne(filter)
 
 const updateApplicant = (applicantId: ObjectId, update: MatchKeysAndValues<IApplicant>) => getDbCollection("applicants").updateOne({ _id: applicantId }, { $set: update })
 

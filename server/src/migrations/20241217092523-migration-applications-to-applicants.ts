@@ -17,6 +17,9 @@ export const up = async () => {
   const applications = (await getDbCollection("applications")
     .aggregate([
       {
+        $sort: { created_at: 1 },
+      },
+      {
         $group: {
           _id: "$applicant_email",
           firstname: { $first: "$applicant_first_name" },
