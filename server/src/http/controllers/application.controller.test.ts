@@ -98,6 +98,7 @@ describe("POST /v1/application", () => {
         company_address: "126 RUE DE L UNIVERSITE, 75007 Paris",
         company_email: recruteur.email,
         company_feedback: null,
+        company_feedback_reasons: null,
         company_naf: "Administration publique générale",
         company_name: "ASSEMBLEE NATIONALE",
         company_phone: null,

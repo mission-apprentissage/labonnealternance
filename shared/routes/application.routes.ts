@@ -44,7 +44,7 @@ export const zApplicationRoutes = {
       params: z.object({ id: z.string() }).strict(),
       body: z
         .object({
-          company_recruitment_intention: z.string(),
+          company_recruitment_intention: extensions.buildEnum(ApplicationIntention),
         })
         .strict(),
       response: {

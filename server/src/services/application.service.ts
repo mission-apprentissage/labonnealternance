@@ -15,7 +15,7 @@ import {
   JOB_STATUS,
   assertUnreachable,
 } from "shared"
-import { ApplicationIntention, ApplicationIntentionDefaultText } from "shared/constants/application"
+import { ApplicationIntention, ApplicationIntentionDefaultText, RefusalReasons } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, getDirectJobPath, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
@@ -509,6 +509,7 @@ const newApplicationToApplicationDocument = async (newApplication: INewApplicati
     company_email: recruteurEmail.toLowerCase(),
     company_recruitment_intention: null,
     company_feedback: null,
+    company_feedback_reasons: null,
     job_origin: newApplication.company_type,
     _id: new ObjectId(),
     created_at: now,
@@ -536,6 +537,7 @@ const newApplicationToApplicationDocumentV2 = async (newApplication: IApplicatio
     job_searched_by_user: "job_searched_by_user" in newApplication ? newApplication.job_searched_by_user : null,
     company_recruitment_intention: null,
     company_feedback: null,
+    company_feedback_reasons: null,
     caller: caller,
     job_origin: LbaJob.type,
     _id: new ObjectId(),
@@ -753,7 +755,7 @@ export const sendMailToApplicant = async ({
   phone: string | null
   company_recruitment_intention: ApplicationIntention
   company_feedback: string
-  refusal_reasons: string[]
+  refusal_reasons: RefusalReasons[]
 }): Promise<void> => {
   const partner = (application.caller && PARTNER_NAMES[application.caller]) ?? null
   const jobSourceType: string = await getJobSourceType(application)
@@ -1215,6 +1217,7 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
 
 export const processScheduledRecruiterIntentions = async () => {
   const intentionCursor = await getDbCollection("recruiter_intention_mails").find({}).toArray()
+  const company_feedback_date = new Date()
 
   for await (const intention of intentionCursor) {
     const application = await getDbCollection("applications").findOne({ _id: intention.applicationId })
@@ -1223,15 +1226,23 @@ export const processScheduledRecruiterIntentions = async () => {
       logger.warn("souci à notifier avec intention.applicationId")
     } else {
       const phone = (await getPhoneForApplication(application)) ?? ""
+      const company_recruitment_intention = intention.intention
+      const company_feedback = intention.intention === ApplicationIntention.REFUS ? ApplicationIntentionDefaultText.REFUS : ApplicationIntentionDefaultText.ENTRETIEN
+      const refusal_reasons = []
 
       await sendMailToApplicant({
         application,
         email: application.company_email,
         phone,
-        company_recruitment_intention: intention.intention,
-        company_feedback: intention.intention === ApplicationIntention.REFUS ? ApplicationIntentionDefaultText.REFUS : ApplicationIntentionDefaultText.ENTRETIEN,
-        refusal_reasons: [],
+        company_recruitment_intention,
+        company_feedback,
+        refusal_reasons,
       })
+
+      await getDbCollection("applications").findOneAndUpdate(
+        { _id: application._id },
+        { $set: { company_recruitment_intention, company_feedback, company_feedback_reasons: refusal_reasons, company_feedback_date } }
+      )
     }
     await getDbCollection("recruiter_intention_mails").deleteOne({ applicationId: intention.applicationId })
   }

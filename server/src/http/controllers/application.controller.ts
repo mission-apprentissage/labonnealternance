@@ -62,14 +62,12 @@ export default function (server: Server) {
 
       const application = await getDbCollection("applications").findOneAndUpdate(
         { _id: new ObjectId(id) },
-        { $set: { company_recruitment_intention, company_feedback, company_feedback_date: new Date() } }
+        { $set: { company_recruitment_intention, company_feedback, company_feedback_reasons: refusal_reasons, company_feedback_date: new Date() } }
       )
 
       if (!application) {
         throw notFound()
       }
-
-      console.log("refusal_reasons", refusal_reasons)
 
       await sendMailToApplicant({
         application,
