@@ -137,6 +137,7 @@ export default function (server: Server) {
     "/application/dataForIntention/:id",
     {
       schema: zRoutes.get["/application/dataForIntention/:id"],
+      onRequest: server.auth(zRoutes.get["/application/dataForIntention/:id"]),
     },
     async (req, res) => {
       const { id } = req.params
