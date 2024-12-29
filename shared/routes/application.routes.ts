@@ -120,8 +120,8 @@ export const zApplicationRoutes = {
       },
       securityScheme: null,
     },
-    "/application/dataForIntention/:id": {
-      path: "/application/dataForIntention/:id",
+    "/application/intention/schedule/:id": {
+      path: "/application/intention/schedule/:id",
       method: "get",
       params: z.object({ id: z.string() }).strict(),
       querystring: z.object({ intention: extensions.buildEnum(ApplicationIntention) }).strict(),

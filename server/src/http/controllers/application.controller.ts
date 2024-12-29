@@ -142,10 +142,10 @@ export default function (server: Server) {
   )
 
   server.get(
-    "/application/dataForIntention/:id",
+    "/application/intention/schedule/:id",
     {
-      schema: zRoutes.get["/application/dataForIntention/:id"],
-      onRequest: server.auth(zRoutes.get["/application/dataForIntention/:id"]),
+      schema: zRoutes.get["/application/intention/schedule/:id"],
+      onRequest: server.auth(zRoutes.get["/application/intention/schedule/:id"]),
     },
     async (req, res) => {
       const { id } = req.params

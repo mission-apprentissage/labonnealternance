@@ -335,7 +335,7 @@ export function generateApplicationReplyToken(tokenUser: UserForAccessToken, app
         },
       }),
       generateScope({
-        schema: zRoutes.get["/application/dataForIntention/:id"],
+        schema: zRoutes.get["/application/intention/schedule/:id"],
         options: {
           params: { id: applicationId },
           querystring: { intention },

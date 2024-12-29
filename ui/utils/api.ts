@@ -183,7 +183,7 @@ export const getApplicationCompanyEmailAddress = async (token: string) => {
 }
 
 export const getApplicationDataForIntention = async (applicationId: string, intention: ApplicationIntention, token: string) => {
-  const data = await apiGet("/application/dataForIntention/:id", {
+  const data = await apiGet("/application/intention/schedule/:id", {
     params: { id: applicationId },
     querystring: { intention },
     headers: {
