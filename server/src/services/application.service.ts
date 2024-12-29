@@ -1,3 +1,6 @@
+import { Transform } from "stream"
+import { pipeline } from "stream/promises"
+
 import { badRequest, internal, notFound, tooManyRequests } from "@hapi/boom"
 import { isEmailBurner } from "burner-email-providers"
 import dayjs from "dayjs"
@@ -22,6 +25,7 @@ import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, getDirectJobPath, newItemTypeToOldIte
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import { IRecruiterIntentionMail } from "shared/models/recruiterIntentionMail.model"
 import { ITrackingCookies } from "shared/models/trafficSources.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { z } from "zod"
@@ -1251,61 +1255,68 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
 
 export const processScheduledRecruiterIntentions = async () => {
   try {
-    const intentionCursor = await getDbCollection("recruiter_intention_mails").find({}).toArray()
+    const stream = await getDbCollection("recruiter_intention_mails")
+      .find({ created_at: { $gte: dayjs().subtract(3, "hours").toDate() } })
+      .stream()
     const company_feedback_date = new Date()
 
-    let intentionCounter = 0
-    let intentionErrorCounter = 0
-    let entretienCounter = 0
+    const counters = { total: 0, entretien: 0, error: 0 }
 
-    for await (const intention of intentionCursor) {
-      intentionCounter++
-      try {
-        const application = await getDbCollection("applications").findOne({ _id: intention.applicationId })
+    const transform = new Transform({
+      objectMode: true,
+      async transform(recruiterIntention: IRecruiterIntentionMail, encoding, callback: (error?: Error | null, data?: any) => void) {
+        counters.total++
+        try {
+          const application = await getDbCollection("applications").findOne({ _id: recruiterIntention.applicationId })
 
-        if (!application) {
-          throw new Error(`application not found when processing intentions. application_id=${intention.applicationId}`)
+          if (!application) {
+            throw new Error(`application not found when processing intentions. application_id=${recruiterIntention.applicationId}`)
+          }
+
+          const applicant = await getDbCollection("applicants").findOne({ _id: application.applicant_id })
+
+          if (!applicant) {
+            throw new Error(`applicant not found when processing intentions. applicant_id=${application.applicant_id}`)
+          }
+
+          const phone = (await getPhoneForApplication(application)) ?? ""
+          const company_recruitment_intention = recruiterIntention.intention
+          const company_feedback = recruiterIntention.intention === ApplicationIntention.REFUS ? ApplicationIntentionDefaultText.REFUS : ApplicationIntentionDefaultText.ENTRETIEN
+          const refusal_reasons = []
+
+          await sendMailToApplicant({
+            application,
+            applicant,
+            email: application.company_email,
+            phone,
+            company_recruitment_intention,
+            company_feedback,
+            refusal_reasons,
+          })
+
+          await getDbCollection("applications").findOneAndUpdate(
+            { _id: application._id },
+            { $set: { company_recruitment_intention, company_feedback, company_feedback_reasons: refusal_reasons, company_feedback_date } }
+          )
+
+          await getDbCollection("recruiter_intention_mails").deleteOne({ applicationId: recruiterIntention.applicationId })
+
+          if (recruiterIntention.intention === ApplicationIntention.ENTRETIEN) {
+            counters.entretien++
+          }
+        } catch (intentionErr) {
+          counters.error++
+          sentryCaptureException(intentionErr)
         }
+        callback(null)
+      },
+    })
 
-        const applicant = await getDbCollection("applicants").findOne({ _id: application.applicant_id })
+    await pipeline(stream, transform)
 
-        if (!applicant) {
-          throw new Error(`applicant not found when processing intentions. applicant_id=${application.applicant_id}`)
-        }
-
-        const phone = (await getPhoneForApplication(application)) ?? ""
-        const company_recruitment_intention = intention.intention
-        const company_feedback = intention.intention === ApplicationIntention.REFUS ? ApplicationIntentionDefaultText.REFUS : ApplicationIntentionDefaultText.ENTRETIEN
-        const refusal_reasons = []
-
-        await sendMailToApplicant({
-          application,
-          applicant,
-          email: application.company_email,
-          phone,
-          company_recruitment_intention,
-          company_feedback,
-          refusal_reasons,
-        })
-
-        await getDbCollection("applications").findOneAndUpdate(
-          { _id: application._id },
-          { $set: { company_recruitment_intention, company_feedback, company_feedback_reasons: refusal_reasons, company_feedback_date } }
-        )
-
-        await getDbCollection("recruiter_intention_mails").deleteOne({ applicationId: intention.applicationId })
-
-        if (intention.intention === ApplicationIntention.ENTRETIEN) {
-          entretienCounter++
-        }
-      } catch (intentionErr) {
-        intentionErrorCounter++
-        sentryCaptureException(intentionErr)
-      }
-    }
     await notifyToSlack({
       subject: "Envoi des intentions des recruteurs",
-      message: `${intentionCounter} intentions traitrées. ${intentionCounter - intentionErrorCounter} intentions envoyées. ${entretienCounter} proposition(s) d'entretien. ${intentionErrorCounter} erreurs.`,
+      message: `${counters.total} intentions traitrées. ${counters.total - counters.error} intentions envoyées. ${counters.entretien} proposition(s) d'entretien. ${counters.error} erreurs.`,
       error: false,
     })
   } catch (err) {
