@@ -93,9 +93,7 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
   }
 
   const cancelForm = async () => {
-    console.log("CANCEL !!!!")
-
-    apiPost("/application/cancelIntention/:id", {
+    apiPost("/application/intention/cancel/:id", {
       params: { id },
       headers: {
         authorization: `Bearer ${token}`,

@@ -93,10 +93,10 @@ export default function (server: Server) {
   )
 
   server.post(
-    "/application/cancelIntention/:id",
+    "/application/intention/cancel/:id",
     {
-      schema: zRoutes.post["/application/cancelIntention/:id"],
-      onRequest: server.auth(zRoutes.post["/application/cancelIntention/:id"]),
+      schema: zRoutes.post["/application/intention/cancel/:id"],
+      onRequest: server.auth(zRoutes.post["/application/intention/cancel/:id"]),
       config: rateLimitConfig,
     },
     async (req, res) => {

@@ -87,8 +87,8 @@ export const zApplicationRoutes = {
         resources: {},
       },
     },
-    "/application/cancelIntention/:id": {
-      path: "/application/cancelIntention/:id",
+    "/application/intention/cancel/:id": {
+      path: "/application/intention/cancel/:id",
       method: "post",
       params: z.object({ id: z.string() }).strict(),
       response: {
