@@ -1256,7 +1256,7 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
 export const processScheduledRecruiterIntentions = async () => {
   try {
     const stream = await getDbCollection("recruiter_intention_mails")
-      .find({ created_at: { $gte: dayjs().subtract(3, "hours").toDate() } })
+      .find({ createdAt: { $lte: dayjs().subtract(3, "hours").toDate() } })
       .stream()
     const company_feedback_date = new Date()
 
