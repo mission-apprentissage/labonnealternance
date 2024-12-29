@@ -1,4 +1,8 @@
 import { ObjectId } from "mongodb"
+import anonymizedApplicantsModel from "shared/models/anonymizedApplicant.model"
+import anonymizedApplicationsModel from "shared/models/anonymizedApplications.model"
+import anonymizedRecruitersModel from "shared/models/anonymizedRecruiters.model"
+import anonymizedUsersWithAccountsModel from "shared/models/anonymizedUsersWithAccounts.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -20,7 +24,7 @@ const anonimizeUserWithAccount = (_id: ObjectId) =>
         },
       },
       {
-        $merge: "anonymizeduserswithaccounts",
+        $merge: anonymizedUsersWithAccountsModel.collectionName,
       },
     ])
     .toArray()
@@ -54,7 +58,7 @@ const anonimizeRecruiterByUserId = (userId: ObjectId) =>
         },
       },
       {
-        $merge: "anonymizedrecruiteurs",
+        $merge: anonymizedRecruitersModel.collectionName,
       },
     ])
     .toArray()
@@ -63,10 +67,30 @@ const deleteRecruiter = (query) => getDbCollection("recruiters").deleteMany(quer
 const deleteUserWithAccount = (query) => getDbCollection("userswithaccounts").deleteMany(query)
 
 const anonymizeApplication = async (_id: ObjectId) => {
-  await getDbCollection("applications")
+  logger.info(`[START] Anonymized applicant & related applications`)
+  const applicant = await getDbCollection("applicants")
     .aggregate([
       {
         $match: { _id },
+      },
+      {
+        $project: {
+          _id: 0,
+          applicant_id: "$_id",
+          createdAt: 1,
+        },
+      },
+      {
+        $merge: anonymizedApplicantsModel.collectionName,
+      },
+    ])
+    .toArray()
+
+  const applicantId = applicant[0]._id
+  await getDbCollection("applications")
+    .aggregate([
+      {
+        $match: { applicant_id: applicantId },
       },
       {
         $project: {
@@ -78,20 +102,21 @@ const anonymizeApplication = async (_id: ObjectId) => {
           job_id: 1,
           caller: 1,
           created_at: 1,
+          applicant_id: 1,
         },
       },
       {
-        $merge: "anonymizedapplications",
+        $merge: anonymizedApplicationsModel.collectionName,
       },
     ])
     .toArray()
 
   await getDbCollection("applications").deleteOne({ _id })
-
-  logger.info(`Anonymized application ${_id}`)
+  logger.info(`[END] Anonymized applicant & related applications`)
 }
 
 const anonymizeUser = async (_id: ObjectId) => {
+  logger.info(`[START] Anonymized user`)
   await getDbCollection("users")
     .aggregate([
       {
@@ -112,17 +137,18 @@ const anonymizeUser = async (_id: ObjectId) => {
     .toArray()
 
   await getDbCollection("users").deleteOne({ _id })
-
-  logger.info(`Anonymized user ${_id}`)
+  logger.info(`[END] Anonymized user`)
 }
 
 const anonymizeUserWithAccountAndRecruiter = async (userId: ObjectId) => {
+  logger.info(`[START] Anonymized user with account & related recruiters`)
   const user = await getDbCollection("userswithaccounts").findOne({ _id: userId })
   if (!user) {
-    throw new Error("Anonymize user not found")
+    throw new Error("Anonymize user with account not found")
   }
   await Promise.all([anonimizeUserWithAccount(userId), anonimizeRecruiterByUserId(userId)])
   await Promise.all([deleteUserWithAccount({ _id: userId }), deleteRecruiter({ "jobs.managed_by": userId })])
+  logger.info(`[END] Anonymized user with account & related recruiters`)
 }
 
 export async function anonymizeIndividual({ collection, id }: { collection: string; id: ObjectId }): Promise<void> {

@@ -84,10 +84,12 @@ describe("POST /v1/application", () => {
     })
 
     const applications = await getDbCollection("applications").find({}).toArray()
+    const applicant = await getDbCollection("applicants").findOne({ _id: applications[0]?.applicant_id })
 
     expect(applications).toEqual([
       {
         _id: expect.any(ObjectId),
+        applicant_id: applicant?._id,
         applicant_attachment_name: body.applicant_file_name,
         applicant_email: body.applicant_email,
         applicant_first_name: body.applicant_first_name,

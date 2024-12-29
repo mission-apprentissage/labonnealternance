@@ -1,9 +1,9 @@
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
-import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
-import { anonimizeUsers } from "./anonymization/anonymizeUserRecruteurs"
-import { anonymizeOldUsers } from "./anonymization/anonymizeUsers"
+import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
+import { anonimizeUsersWithAccounts } from "./anonymization/anonymizeUserRecruteurs"
+import { anonymizeUsers } from "./anonymization/anonymizeUsers"
 import fixApplications from "./applications/fixApplications"
 import { processApplications } from "./applications/processApplications"
 import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
@@ -121,7 +121,7 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Resynchronise les dates de la collection Etablissement par siret gestionnaire",
   },
   {
-    fct: anonymizeOldUsers,
+    fct: anonymizeUsers,
     description: "anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus d'un an",
   },
   {
@@ -145,7 +145,7 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Mise à jour des champs spécifiques de la collection formations catalogue",
   },
   {
-    fct: anonymizeOldApplications,
+    fct: anonymizeApplicantsAndApplications,
     description: "Anonymise toutes les candidatures de plus de an qui ne sont pas déjà anonymisées",
   },
   {
@@ -161,7 +161,7 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Répare les data de la collection recruiters",
   },
   {
-    fct: anonimizeUsers,
+    fct: anonimizeUsersWithAccounts,
     description: "Anonymize les userrecruteurs qui ne se sont pas connectés depuis plus de 2 ans",
   },
   {

@@ -18,11 +18,13 @@ export enum ApplicationScanStatus {
   ERROR_CLAMAV = "ERROR_CLAMAV",
   NO_VIRUS_DETECTED = "NO_VIRUS_DETECTED",
   DO_NOT_SEND = "DO_NOT_SEND",
+  ERROR_APPLICANT_NOT_FOUND = "ERROR_APPLICANT_NOT_FOUND",
 }
 
 export const ZApplication = z
   .object({
     _id: zObjectId,
+    applicant_id: zObjectId,
     applicant_email: z.string().email().describe("Email du candidat"),
     applicant_first_name: z
       .string()
@@ -113,6 +115,7 @@ export const ZNewApplication = ZApplication.extend({
 })
   .omit({
     _id: true,
+    applicant_id: true,
     applicant_message_to_company: true,
     applicant_attachment_name: true,
     job_origin: true,
@@ -158,6 +161,7 @@ const ZNewApplicationTransitionToV2 = ZApplication.extend({
 })
   .omit({
     _id: true,
+    applicant_id: true,
     applicant_message_to_company: true,
     applicant_attachment_name: true,
     job_origin: true,
