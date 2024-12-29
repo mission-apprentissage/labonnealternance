@@ -380,9 +380,8 @@ const buildUserForToken = (application: IApplication, user?: IUserWithAccount): 
   }
 }
 
-
 // get data from applicant
-const buildReplyLink = (application: IApplication, applicant: IApplicant, intention: ApplicantIntention, userForToken: UserForAccessToken) => {
+const buildReplyLink = (application: IApplication, applicant: IApplicant, intention: ApplicationIntention, userForToken: UserForAccessToken) => {
   const type = application.job_id ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA : LBA_ITEM_TYPE.RECRUTEURS_LBA
   const applicationId = application._id.toString()
   const searchParams = new URLSearchParams()
@@ -434,8 +433,8 @@ const buildRecruiterEmailUrls = async (application: IApplication, applicant: IAp
   const userForToken = buildUserForToken(application, user)
   const urls = {
     jobUrl: "",
-    meetCandidateUrl: buildReplyLink(application, applicant, ApplicantIntention.ENTRETIEN, userForToken),
-    refuseCandidateUrl: buildReplyLink(application, applicant, ApplicantIntention.REFUS, userForToken),
+    meetCandidateUrl: buildReplyLink(application, applicant, ApplicationIntention.ENTRETIEN, userForToken),
+    refuseCandidateUrl: buildReplyLink(application, applicant, ApplicationIntention.REFUS, userForToken),
     lbaRecruiterUrl: `${config.publicUrl}/acces-recruteur?${utmRecruiterData}-acces-recruteur`,
     unsubscribeUrl: `${config.publicUrl}/desinscription?application_id=${createToken({ application_id: application._id }, "30d", "desinscription")}${utmRecruiterData}-desinscription`,
     lbaUrl: `${config.publicUrl}?${utmRecruiterData}-home`,
@@ -1187,24 +1186,38 @@ export const getCompanyEmailFromToken = async (token: string) => {
   throw notFound("Adresse non trouvée")
 }
 
-const getPhoneForApplication = async (application: IApplication) => {
-  let company: ILbaCompany | IRecruiter | null
+const getJobOrCompanyFromApplication = async (application: IApplication) => {
+  let recruiter: ILbaCompany | IRecruiter | null
+  let job: IJob | null | undefined
   switch (application.job_origin) {
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
-      company = await getDbCollection("recruiters").findOne({ "jobs._id": new ObjectId(application.job_id!) })
+      const jobId = new ObjectId(application.job_id!)
+      recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": jobId })
+      if (recruiter !== null) {
+        job = recruiter.jobs.find((job) => job._id === jobId)
+      }
+
       break
     }
     case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
-      company = await getDbCollection("recruteurslba").findOne({ siret: application.company_siret })
+      recruiter = await getDbCollection("recruteurslba").findOne({ siret: application.company_siret })
       break
     }
     default:
       throw internal("type de candidature anormal")
   }
 
-  if (!company) throw internal(`Société pour ${application.job_origin} introuvable`)
+  return {
+    type: application.job_origin,
+    job,
+    recruiter,
+  } as IJobOrCompany
+}
 
-  return company.phone
+const getPhoneForApplication = async (application: IApplication) => {
+  const jobOrCompany = await getJobOrCompanyFromApplication(application)
+  if (!jobOrCompany.recruiter) throw internal(`Société pour ${application.job_origin} introuvable`)
+  return jobOrCompany.recruiter.phone
 }
 
 export const getApplicationDataForIntentionAndScheduleMessage = async (application_id: string, intention: ApplicationIntention) => {
@@ -1251,27 +1264,35 @@ export const processScheduledRecruiterIntentions = async () => {
         const application = await getDbCollection("applications").findOne({ _id: intention.applicationId })
 
         if (!application) {
-          logger.warn("souci à notifier avec intention.applicationId")
-        } else {
-          const phone = (await getPhoneForApplication(application)) ?? ""
-          const company_recruitment_intention = intention.intention
-          const company_feedback = intention.intention === ApplicationIntention.REFUS ? ApplicationIntentionDefaultText.REFUS : ApplicationIntentionDefaultText.ENTRETIEN
-          const refusal_reasons = []
-
-          await sendMailToApplicant({
-            application,
-            email: application.company_email,
-            phone,
-            company_recruitment_intention,
-            company_feedback,
-            refusal_reasons,
-          })
-
-          await getDbCollection("applications").findOneAndUpdate(
-            { _id: application._id },
-            { $set: { company_recruitment_intention, company_feedback, company_feedback_reasons: refusal_reasons, company_feedback_date } }
-          )
+          throw new Error(`application not found when processing intentions. application_id=${intention.applicationId}`)
         }
+
+        const applicant = await getDbCollection("applicants").findOne({ _id: application.applicant_id })
+
+        if (!applicant) {
+          throw new Error(`applicant not found when processing intentions. applicant_id=${application.applicant_id}`)
+        }
+
+        const phone = (await getPhoneForApplication(application)) ?? ""
+        const company_recruitment_intention = intention.intention
+        const company_feedback = intention.intention === ApplicationIntention.REFUS ? ApplicationIntentionDefaultText.REFUS : ApplicationIntentionDefaultText.ENTRETIEN
+        const refusal_reasons = []
+
+        await sendMailToApplicant({
+          application,
+          applicant,
+          email: application.company_email,
+          phone,
+          company_recruitment_intention,
+          company_feedback,
+          refusal_reasons,
+        })
+
+        await getDbCollection("applications").findOneAndUpdate(
+          { _id: application._id },
+          { $set: { company_recruitment_intention, company_feedback, company_feedback_reasons: refusal_reasons, company_feedback_date } }
+        )
+
         await getDbCollection("recruiter_intention_mails").deleteOne({ applicationId: intention.applicationId })
 
         if (intention.intention === ApplicationIntention.ENTRETIEN) {
