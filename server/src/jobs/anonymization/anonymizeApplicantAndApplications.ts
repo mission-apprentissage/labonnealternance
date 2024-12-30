@@ -77,7 +77,7 @@ const anonymize = async () => {
 }
 
 export const anonymizeApplicantsAndApplications = async function () {
-  logger.info("[START] Anonymisation des candidatures de plus de deux (2) ans")
+  logger.info("[START] Anonymisation des candidats & leurs candidatures de plus de deux (2) ans")
   try {
     const [anonymizedApplication, anonymizedApplicant] = await anonymize()
 
@@ -89,5 +89,5 @@ export const anonymizeApplicantsAndApplications = async function () {
     await notifyToSlack({ subject: "ANONYMISATION CANDIDATS & CANDIDATURES", message: `ECHEC anonymisation des candidats & candidatures`, error: true })
     throw err
   }
-  logger.info("[END] Anonymisation des candidatures de plus de deux (2) ans")
+  logger.info("[FIN] Anonymisation des candidats & leurs candidatures de plus de deux (2) ans")
 }
