@@ -274,9 +274,9 @@ export default function CreationCompte({ type, isWidget = false, origin = "lba" 
                 Dépot simplifié d'offre en alternance
               </Text>
             )}
-            <Heading>Identifiez votre entreprise</Heading>
+            <Heading>Vous recrutez des alternants ?</Heading>
             <Text fontSize="20px" textAlign="justify" mt={2} mb={4}>
-              Vous recrutez des alternants ? Précisez la raison sociale ou le numéro de SIRET de votre établissement.
+              Précisez le nom ou le numéro de SIRET de votre établissement.
             </Text>
             <CreationCompteForm organisationType={organisationType} setBandeau={setBandeau} origin={origin} isWidget={isWidget} onSelectOrganisation={onSelectOrganisation} />
           </Box>

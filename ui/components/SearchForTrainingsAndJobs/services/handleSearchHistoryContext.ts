@@ -12,7 +12,7 @@ export const storeSearchResultInContext = ({
   formValues,
 }: {
   searchResultContext: IContextSearch
-  results: { trainings?: ILbaItemTraining2[]; jobs?: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null } }
+  results: { trainings?: ILbaItemTraining2[]; jobs?: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null; partnerJobs: [] | null } }
   searchTimestamp: number
   formValues?: any
 }): void => {
@@ -27,6 +27,7 @@ export const storeSearchResultInContext = ({
       peJobs: results?.jobs?.peJobs ?? search?.jobs?.peJobs,
       matchas: results?.jobs?.matchas ?? search?.jobs?.matchas,
       lbaCompanies: results?.jobs?.lbaCompanies ?? search?.jobs?.lbaCompanies,
+      partnerJobs: results?.jobs?.partnerJobs ?? search?.jobs?.partnerJobs,
     },
     formValues,
     index: searchTimestamp,

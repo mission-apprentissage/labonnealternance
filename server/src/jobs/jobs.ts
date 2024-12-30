@@ -9,11 +9,11 @@ import { getLoggerWithContext, logger } from "../common/logger"
 import { getDatabase } from "../common/utils/mongodbUtils"
 import config from "../config"
 
-import anonymizeOldAppointments from "./anonymization/anonymizeAppointments"
+import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
+import anonymizeAppointments from "./anonymization/anonymizeAppointments"
 import anonymizeIndividual from "./anonymization/anonymizeIndividual"
-import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
-import { anonimizeUsers } from "./anonymization/anonymizeUserRecruteurs"
-import { anonymizeOldUsers } from "./anonymization/anonymizeUsers"
+import { anonimizeUsersWithAccounts } from "./anonymization/anonymizeUserRecruteurs"
+import { anonymizeUsers } from "./anonymization/anonymizeUsers"
 import { processApplications } from "./applications/processApplications"
 import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
 import { recreateIndexes } from "./database/recreateIndexes"
@@ -28,6 +28,7 @@ import { pocRomeo } from "./franceTravail/pocRomeo"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
+import { processJobPartners } from "./offrePartenaire/processJobPartners"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -149,9 +150,9 @@ export async function setupJobProcessor() {
             cron_string: "5 0 * * *",
             handler: () => updateBrevoBlockedEmails({}),
           },
-          "Anonymise les candidatures de plus de un an": {
+          "Anonymise les candidatures de plus de deux an": {
             cron_string: "10 0 * * *",
-            handler: anonymizeOldApplications,
+            handler: anonymizeApplicantsAndApplications,
           },
           "Géolocation de masse des sociétés issues de l'algo": {
             cron_string: "0 5 * * 6",
@@ -165,9 +166,9 @@ export async function setupJobProcessor() {
             cron_string: "0 5 * * 7",
             handler: () => updateLbaCompanies({ useAlgoFile: true, clearMongo: true }),
           },
-          "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus de 1 an": {
+          "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus de 2 ans": {
             cron_string: "5 1 * * *",
-            handler: anonymizeOldUsers,
+            handler: anonymizeUsers,
           },
           "Contrôle quotidien des candidatures": {
             cron_string: "0 10-19/1 * * 1-5",
@@ -179,11 +180,11 @@ export async function setupJobProcessor() {
           },
           "Anonymisation des user recruteurs de plus de 2 ans": {
             cron_string: "0 1 * * *",
-            handler: anonimizeUsers,
+            handler: anonimizeUsersWithAccounts,
           },
-          "Anonymisation des appointments de plus de 1 an": {
+          "Anonymisation des appointments de plus de 2 ans": {
             cron_string: "30 1 * * *",
-            handler: anonymizeOldAppointments,
+            handler: anonymizeAppointments,
           },
           "Lancement du garbage collector": {
             cron_string: "30 3 * * *",
@@ -217,6 +218,10 @@ export async function setupJobProcessor() {
             cron_string: "5 22 * * *",
             handler: generateSitemap,
           },
+          "Traitement complet des jobs_partners": {
+            cron_string: "0 23 * * *",
+            handler: processJobPartners,
+          },
         },
     jobs: {
       "remove:duplicates:recruiters": {
@@ -235,7 +240,7 @@ export async function setupJobProcessor() {
         handler: async () => runGarbageCollector(),
       },
       "anonymize:appointments": {
-        handler: async () => anonymizeOldAppointments(),
+        handler: async () => anonymizeAppointments(),
       },
       "control:applications": {
         handler: async () => controlApplications(),

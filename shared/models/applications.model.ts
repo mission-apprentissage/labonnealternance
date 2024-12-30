@@ -17,11 +17,13 @@ export enum ApplicationScanStatus {
   ERROR_CLAMAV = "ERROR_CLAMAV",
   NO_VIRUS_DETECTED = "NO_VIRUS_DETECTED",
   DO_NOT_SEND = "DO_NOT_SEND",
+  ERROR_APPLICANT_NOT_FOUND = "ERROR_APPLICANT_NOT_FOUND",
 }
 
 export const ZApplication = z
   .object({
     _id: zObjectId,
+    applicant_id: zObjectId,
     applicant_email: z.string().email().describe("Email du candidat"),
     applicant_first_name: z
       .string()
@@ -39,7 +41,7 @@ export const ZApplication = z
     applicant_attachment_name: z
       .string()
       .min(1)
-      .regex(/((.*?))(\.)+(docx|pdf)$/i)
+      .regex(/((.*?))(\.)+([Dd][Oo][Cc][Xx]|[Pp][Dd][Ff])$/i)
       .describe("Nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés."),
     applicant_message_to_company: z.string().nullable().describe("Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat."),
     job_searched_by_user: z.string().nullish().describe("Métier recherché par le candidat"),
@@ -111,6 +113,7 @@ export const ZNewApplication = ZApplication.extend({
 })
   .omit({
     _id: true,
+    applicant_id: true,
     applicant_message_to_company: true,
     applicant_attachment_name: true,
     job_origin: true,
@@ -156,6 +159,7 @@ const ZNewApplicationTransitionToV2 = ZApplication.extend({
 })
   .omit({
     _id: true,
+    applicant_id: true,
     applicant_message_to_company: true,
     applicant_attachment_name: true,
     job_origin: true,
@@ -172,7 +176,9 @@ const ZNewApplicationTransitionToV2 = ZApplication.extend({
 // KBA 20241011 to remove once V2 is LIVE and V1 support has ended
 export type INewApplicationV1 = z.output<typeof ZNewApplicationTransitionToV2>
 
-const ZApplicationV2Base = ZApplication.pick({
+type JobCollectionName = "recruteurslba" | "jobs_partners" | "recruiters"
+
+export const ZApplicationApiPrivate = ZApplication.pick({
   applicant_first_name: true,
   applicant_last_name: true,
   applicant_email: true,
@@ -183,10 +189,6 @@ const ZApplicationV2Base = ZApplication.pick({
 }).extend({
   applicant_message: ZApplication.shape.applicant_message_to_company.optional(),
   applicant_attachment_content: z.string().max(4_215_276).describe("Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo."),
-})
-
-type JobCollectionName = "recruteurslba" | "jobs_partners" | "recruiters"
-export const ZApplicationApiPayload = ZApplicationV2Base.extend({
   recipient_id: z
     .string()
     .transform((recipientId) => {
@@ -201,9 +203,18 @@ export const ZApplicationApiPayload = ZApplicationV2Base.extend({
     })
     .describe("Identifiant unique de la ressource vers laquelle la candidature est faite, préfixé par le nom de la collection"),
 })
-export type IApplicationApiPayloadOutput = z.output<typeof ZApplicationApiPayload>
-export type IApplicationApiPayload = z.input<typeof ZApplicationApiPayload>
-export type IApplicationApiPayloadJSON = Jsonify<z.input<typeof ZApplicationV2Base>>
+
+export const ZApplicationApiPublic = ZApplicationApiPrivate.omit({
+  caller: true,
+  job_searched_by_user: true,
+})
+
+export type IApplicationApiPublicOutput = z.output<typeof ZApplicationApiPublic>
+export type IApplicationApiPrivateOutput = z.output<typeof ZApplicationApiPrivate>
+export type IApplicationApiPublic = z.input<typeof ZApplicationApiPublic>
+export type IApplicationApiPrivate = z.input<typeof ZApplicationApiPrivate>
+export type IApplicationApiPrivateJSON = Jsonify<z.input<typeof ZApplicationApiPrivate>>
+export type IApplicationApiPublicJSON = Jsonify<z.input<typeof ZApplicationApiPublic>>
 
 export default {
   zod: ZApplication,

@@ -65,20 +65,18 @@ const anonymize = async () => {
   return { userWithAccountCount, recruiterCount }
 }
 
-export async function anonimizeUsers() {
-  const subject = "ANONYMISATION DES USERWITHACCOUNT et RECRUITERS"
+export async function anonimizeUsersWithAccounts() {
+  logger.info("[START] Anonymisation des users de plus de 2 ans")
   try {
-    logger.info(" -- Anonymisation des users de plus de 2 ans -- ")
-
     const { recruiterCount, userWithAccountCount } = await anonymize()
 
     await notifyToSlack({
-      subject,
+      subject: "ANONYMISATION DES USERWITHACCOUNT et RECRUITERS",
       message: `Anonymisation des comptes recruteurs de plus de 2 ans terminée. ${userWithAccountCount} userWithAccount anonymisé(s). ${recruiterCount} recruiter(s) anonymisé(s)`,
-      error: false,
     })
   } catch (err: any) {
-    await notifyToSlack({ subject, message: `ECHEC anonymisation des comptes recruteurs`, error: true })
+    await notifyToSlack({ subject: "ANONYMISATION DES USERWITHACCOUNT et RECRUITERS", message: `ECHEC anonymisation des comptes recruteurs`, error: true })
     throw err
   }
+  logger.info("[END] Anonymisation des users de plus de 2 ans")
 }

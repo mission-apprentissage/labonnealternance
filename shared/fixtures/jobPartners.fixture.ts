@@ -5,6 +5,7 @@ import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "../models/jobsPart
 import { IComputedJobsPartners } from "../models/jobsPartnersComputed.model"
 
 export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOfferPrivate> = {}): IJobsPartnersOfferPrivate {
+  const offer_expiration = new Date("2050-01-01")
   return {
     _id: new ObjectId(),
     workplace_siret: null,
@@ -45,7 +46,7 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     offer_to_be_acquired_skills: [],
     offer_access_conditions: [],
     offer_creation: null,
-    offer_expiration: null,
+    offer_expiration,
     offer_opening_count: 1,
     offer_status: JOB_STATUS_ENGLISH.ACTIVE,
 

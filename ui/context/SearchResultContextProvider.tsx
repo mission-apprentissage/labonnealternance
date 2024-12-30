@@ -1,9 +1,9 @@
-import { ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemTraining, ILbaItemTraining2 } from "@/../shared"
+import { ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob, ILbaItemTraining, ILbaItemTraining2 } from "@/../shared"
 import React, { createContext, useReducer } from "react"
 
 const initialState = {
   trainings: [],
-  jobs: { peJobs: null, matchas: null, lbaCompanies: null },
+  jobs: { peJobs: null, matchas: null, lbaCompanies: null, partnerJobs: null },
   itemToScrollTo: null,
   selectedItem: null,
   extendedSearch: false,
@@ -75,20 +75,20 @@ const reducer = (state, action) => {
 export type IContextSearchHistory = {
   index: number
   trainings?: ILbaItemTraining2[]
-  jobs?: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null }
+  jobs?: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null; partnerJobs: [] | null }
   formValues?: any
 }
 
 export type IContextSearch = {
   trainings: any[]
   setTrainings: (b: any[]) => void
-  jobs: { peJobs: ILbaItemFtJob[] | null; lbaCompanies: ILbaItemLbaCompany[] | null; matchas: ILbaItemLbaJob[] | null }
-  setJobs: (b: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null }) => void
+  jobs: { peJobs: ILbaItemFtJob[] | null; lbaCompanies: ILbaItemLbaCompany[] | null; matchas: ILbaItemLbaJob[] | null; partnerJobs: ILbaItemPartnerJob[] }
+  setJobs: (b: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null; partnerJobs: [] | null }) => void
   setInternalJobs: (b: any[]) => void
   setPartnerJobs: (b: any[]) => void
   itemToScrollTo: object
   setItemToScrollTo: (b: object) => void
-  selectedItem: ILbaItemFormation | ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob
+  selectedItem: ILbaItemFormation | ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob
   setSelectedItem: (b: object) => void
   extendedSearch: boolean
   setExtendedSearch: (b: boolean) => void
@@ -97,7 +97,10 @@ export type IContextSearch = {
   selectedMapPopupItem: any
   setSelectedMapPopupItem: (b: object) => void
   setTrainingsAndSelectedItem: (trainings: ILbaItemTraining[], selectedItem: ILbaItemTraining) => void
-  setJobsAndSelectedItem: (jobs: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null }, selectedItem: ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob) => void
+  setJobsAndSelectedItem: (
+    jobs: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null; partnerJobs: [] | null },
+    selectedItem: ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob
+  ) => void
   searchHistory: IContextSearchHistory[]
   setSearchHistory: (searchHistory: IContextSearchHistory[]) => void
 }
@@ -130,7 +133,7 @@ const SearchResultContextProvider = ({ children }) => {
     setTrainingsAndSelectedItem: (trainings = [], selectedItem = null) => {
       dispatch({ type: actions.SET_TRAININGS_AND_SELECTED_ITEM, trainings, selectedItem })
     },
-    setJobsAndSelectedItem: (jobs = { peJobs: null, lbaCompanies: null, matchas: null }, selectedItem = null) => {
+    setJobsAndSelectedItem: (jobs = { peJobs: null, lbaCompanies: null, matchas: null, partnerJobs: null }, selectedItem = null) => {
       dispatch({ type: actions.SET_JOBS_AND_SELECTED_ITEM, jobs, selectedItem })
     },
     setItemToScrollTo: (itemToScrollTo = null) => {

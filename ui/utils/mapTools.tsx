@@ -340,17 +340,12 @@ const factorJobsForMap = (lists, type) => {
   let sortedList = []
 
   if (type === layerType.PARTNER) {
-    if (lists.peJobs) {
-      sortedList = lists.peJobs
-    }
+    sortedList = sortedList.concat(lists.peJobs ?? [])
   } else {
-    if (lists.lbaCompanies) {
-      sortedList = sortedList.length ? sortedList.concat(lists.lbaCompanies) : lists.lbaCompanies
-    }
-
-    if (lists.matchas) {
-      sortedList = sortedList.length ? sortedList.concat(lists.matchas) : lists.matchas
-    }
+    sortedList = sortedList
+      .concat(lists.lbaCompanies ?? [])
+      .concat(lists.matchas ?? [])
+      .concat(lists.partnerJobs ?? [])
   }
 
   // tri de la liste de tous les emplois selon les coordonnées geo (l'objectif est d'avoir les emplois au même lieu proches)

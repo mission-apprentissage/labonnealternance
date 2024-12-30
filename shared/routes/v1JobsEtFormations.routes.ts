@@ -1,6 +1,6 @@
 import { z } from "../helpers/zodWithOpenApi"
 import { ZApiError, ZLbacError } from "../models/lbacError.model"
-import { ZLbaItemFormation, ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemFtJob } from "../models/lbaItem.model"
+import { ZLbaItemFormation, ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemFtJob, ZLbaItemPartnerJob } from "../models/lbaItem.model"
 import { rateLimitDescription } from "../utils/rateLimitDescription"
 
 import {
@@ -84,6 +84,15 @@ export const zV1JobsEtFormationsRoutes = {
                   z.null(),
                 ]),
                 lbbCompanies: z.null(), // always null until removal
+                partnerJobs: z.union([
+                  z
+                    .object({
+                      results: z.array(ZLbaItemPartnerJob),
+                    })
+                    .strict(),
+                  ZApiError,
+                  z.null(),
+                ]),
               })
               .strict()
               .or(ZApiError)

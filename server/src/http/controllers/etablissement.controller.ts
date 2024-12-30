@@ -395,7 +395,7 @@ export default (server: Server) => {
     async (req, res) => {
       let etablissement = await getDbCollection("etablissements").findOne(
         { _id: new ObjectId(req.params.id.toString()) },
-        { projection: { ...etablissementProjection, gestionnaire_email: 1 } }
+        { projection: { ...etablissementProjection, gestionnaire_email: 1, optout_activation_date: 1, optout_refusal_date: 1 } }
       )
 
       if (!etablissement || etablissement.optout_refusal_date) {
@@ -426,21 +426,25 @@ export default (server: Server) => {
         return res.send(etablissement)
       }
 
-      // If opt-out is already running but user unsubscribe, disable all formations
-      /**
-       * WARNING KBA 2024-02-12 : ALL REFERRERS ARE REMOVED AND ITS BAD IF PREMIUM IS AVAILABLE
-       */
+      // If opt-out is already running but user unsubscribe, remove optout for all formations
       if (etablissement.optout_activation_date && dayjs(etablissement.optout_activation_date).isBefore(dayjs())) {
-        // Disable all formations
         await getDbCollection("eligible_trainings_for_appointments").updateMany(
           {
             etablissement_formateur_siret: etablissement.formateur_siret,
           },
-          {
-            $set: {
-              referrers: [],
+          [
+            {
+              $set: {
+                referrers: {
+                  $filter: {
+                    input: "$referrers",
+                    as: "referrer",
+                    cond: { $in: ["$$referrer", [referrers.PARCOURSUP.name, referrers.AFFELNET.name]] },
+                  },
+                },
+              },
             },
-          }
+          ]
         )
       }
 

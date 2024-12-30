@@ -35,6 +35,18 @@ export function translateJobStatus(status: JOB_STATUS): JOB_STATUS_ENGLISH | und
       assertUnreachable(status)
   }
 }
+export function traductionJobStatus(status: JOB_STATUS_ENGLISH): JOB_STATUS {
+  switch (status) {
+    case JOB_STATUS_ENGLISH.ACTIVE:
+      return JOB_STATUS.ACTIVE
+    case JOB_STATUS_ENGLISH.POURVUE:
+      return JOB_STATUS.POURVUE
+    case JOB_STATUS_ENGLISH.ANNULEE:
+      return JOB_STATUS.ANNULEE
+    default:
+      assertUnreachable(status)
+  }
+}
 
 const allJobRythm = Object.values(TRAINING_RYTHM)
 const allJobLevel = [...Object.values(NIVEAUX_POUR_LBA)] as const

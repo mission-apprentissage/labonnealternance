@@ -223,7 +223,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
       "opening_count": 1,
       "publication": {
         "creation": 2021-01-01T00:00:00.000Z,
-        "expiration": null,
+        "expiration": 2050-01-01T00:00:00.000Z,
       },
       "rome_codes": [
         "M1602",
