@@ -53,5 +53,5 @@ export const anonymizeApplications = async function () {
     await notifyToSlack({ subject: "ANONYMISATION CANDIDATURES", message: `ECHEC anonymisation des candidatures`, error: true })
     throw err
   }
-  logger.info("[FIN] Anonymisation des candidatures de plus de deux (2) ans")
+  logger.info("[END] Anonymisation des candidatures de plus de deux (2) ans")
 }
