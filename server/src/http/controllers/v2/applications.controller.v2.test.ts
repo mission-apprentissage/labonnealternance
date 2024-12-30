@@ -1,16 +1,20 @@
 import { ObjectId } from "mongodb"
 import { IApplicationApiPublic, JOB_STATUS } from "shared"
 import { NIVEAUX_POUR_LBA, RECRUITER_STATUS } from "shared/constants"
+import { ApplicationIntention } from "shared/constants/application"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { applicationTestFile, wrongApplicationTestFile } from "shared/fixtures/application.fixture"
+import { applicationTestFile, generateApplicantFixture, generateApplicationFixture, wrongApplicationTestFile } from "shared/fixtures/application.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { generateLbaCompanyFixture } from "shared/fixtures/recruteurLba.fixture"
 import { parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
+import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import { describe, expect, it, vi } from "vitest"
 
 import { s3Write } from "@/common/utils/awsUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { buildUserForToken } from "@/services/application.service"
+import { generateApplicationReplyToken } from "@/services/appLinks.service"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
 
@@ -63,14 +67,30 @@ const recruteur = generateLbaCompanyFixture({
   last_update_at: new Date("2024-07-04T23:24:58.995Z"),
 })
 
+const recruiterEmailFixture = "test-application@mail.fr"
+
+const user = generateUserWithAccountFixture({
+  _id: new ObjectId("670ce1ded6ce30c3c90a0e1d"),
+  email: recruiterEmailFixture,
+})
+
 const recruiter = generateRecruiterFixture({
   establishment_siret: "11000001500013",
   establishment_raison_sociale: "ASSEMBLEE NATIONALE",
   geopoint: parisFixture.centre,
   status: RECRUITER_STATUS.ACTIF,
-  email: "test-application@mail.fr",
+  email: recruiterEmailFixture,
   jobs: [
     {
+      rome_code: ["M1602"],
+      rome_label: "Opérations administratives",
+      job_status: JOB_STATUS.ACTIVE,
+      job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+      job_creation_date: new Date("2021-01-01"),
+      job_expiration_date: new Date("2050-01-01"),
+    },
+    {
+      _id: new ObjectId("64a43d28eeeb7c3b210faf59"),
       rome_code: ["M1602"],
       rome_label: "Opérations administratives",
       job_status: JOB_STATUS.ACTIVE,
@@ -94,10 +114,23 @@ const referentielRome = generateReferentielRome({
   },
 })
 
+const applicantFixture = generateApplicantFixture({})
+
+const applicationFixture = generateApplicationFixture({
+  _id: new ObjectId("6081289803569600282e0001"),
+  job_id: "64a43d28eeeb7c3b210faf59",
+  job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
+  applicant_id: applicantFixture._id,
+})
+
+const userToken = buildUserForToken(applicationFixture, user)
+const intentionToken = generateApplicationReplyToken(userToken, applicationFixture._id.toString(), ApplicationIntention.ENTRETIEN)
+
 const mockData = async () => {
   await getDbCollection("recruteurslba").insertOne(recruteur)
   await getDbCollection("recruiters").insertOne(recruiter)
   await getDbCollection("referentielromes").insertOne(referentielRome)
+  await getDbCollection("applications").insertOne(applicationFixture)
 }
 
 useMongo(mockData)
@@ -254,5 +287,18 @@ describe("POST /v2/application", () => {
     })
     expect.soft(response.statusCode).toEqual(400)
     expect.soft(response.json()).toEqual({ statusCode: 400, error: "Bad Request", message: "File type is not supported" })
+  })
+
+  it("save scheduled intention when link in email is followed", async () => {
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/application/intention/schedule/6081289803569600282e0001?intention=${ApplicationIntention.ENTRETIEN}`,
+      headers: { authorization: `Bearer ${intentionToken}` },
+    })
+
+    expect.soft(response.statusCode).toEqual(200)
+    expect
+      .soft(response.json())
+      .toEqual({ applicant_first_name: "a", applicant_last_name: "a", recruiter_email: "faux_email@faux-domaine-compagnie.com", recruiter_phone: "0300000000" })
   })
 })

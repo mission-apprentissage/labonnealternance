@@ -371,7 +371,7 @@ const buildUrlsOfDetail = (publicUrl: string, application: IApplication, utm?: {
   }
 }
 
-const buildUserForToken = (application: IApplication, user?: IUserWithAccount): UserForAccessToken => {
+export const buildUserForToken = (application: IApplication, user?: IUserWithAccount): UserForAccessToken => {
   const { job_origin, company_siret, company_email } = application
   if (job_origin === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     return { type: "lba-company", siret: company_siret, email: company_email }
