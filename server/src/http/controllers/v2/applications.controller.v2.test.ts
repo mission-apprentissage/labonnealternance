@@ -31,6 +31,14 @@ vi.mock("@/services/clamav.service", () => {
   }
 })
 
+vi.mock("@/services/mailer.service", async () => {
+  const actual = await vi.importActual("@/services/mailer.service")
+  return {
+    ...actual,
+    sendEmail: vi.fn().mockResolvedValue({}),
+  }
+})
+
 const token = getApiApprentissageTestingToken({
   email: "test@test.fr",
   organisation: "Un super Partenaire",
