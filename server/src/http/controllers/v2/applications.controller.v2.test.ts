@@ -130,6 +130,7 @@ const mockData = async () => {
   await getDbCollection("recruteurslba").insertOne(recruteur)
   await getDbCollection("recruiters").insertOne(recruiter)
   await getDbCollection("referentielromes").insertOne(referentielRome)
+  await getDbCollection("applicants").insertOne(applicantFixture)
   await getDbCollection("applications").insertOne(applicationFixture)
 }
 
@@ -300,5 +301,77 @@ describe("POST /v2/application", () => {
     expect
       .soft(response.json())
       .toEqual({ applicant_first_name: "a", applicant_last_name: "a", recruiter_email: "faux_email@faux-domaine-compagnie.com", recruiter_phone: "0300000000" })
+    const intentionInDb = await getDbCollection("recruiter_intention_mails").findOne({ applicationId: new ObjectId("6081289803569600282e0001") })
+    expect.soft(intentionInDb).not.toEqual(null)
+  })
+
+  it("Remove scheduled intention when cancel button", async () => {
+    await httpClient().inject({
+      method: "GET",
+      path: `/api/application/intention/schedule/6081289803569600282e0001?intention=${ApplicationIntention.ENTRETIEN}`,
+      headers: { authorization: `Bearer ${intentionToken}` },
+    })
+
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/application/intention/cancel/6081289803569600282e0001",
+      headers: { authorization: `Bearer ${intentionToken}` },
+    })
+
+    expect.soft(response.statusCode).toEqual(200)
+    expect.soft(response.json()).toEqual({ result: "ok", message: "intention canceled" })
+    const intentionInDb = await getDbCollection("recruiter_intention_mails").findOne({ applicationId: new ObjectId("6081289803569600282e0001") })
+    expect.soft(intentionInDb).toEqual(null)
+  })
+
+  it("Remove scheduled intention when cancel button", async () => {
+    await httpClient().inject({
+      method: "GET",
+      path: `/api/application/intention/schedule/6081289803569600282e0001?intention=${ApplicationIntention.ENTRETIEN}`,
+      headers: { authorization: `Bearer ${intentionToken}` },
+    })
+
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/application/intention/cancel/6081289803569600282e0001",
+      headers: { authorization: `Bearer ${intentionToken}` },
+    })
+
+    expect.soft(response.statusCode).toEqual(200)
+    expect.soft(response.json()).toEqual({ result: "ok", message: "intention canceled" })
+    const intentionInDb = await getDbCollection("recruiter_intention_mails").findOne({ applicationId: new ObjectId("6081289803569600282e0001") })
+    expect.soft(intentionInDb).toEqual(null)
+  })
+
+  it("Remove scheduled intention when Envoyer le message button", async () => {
+    await httpClient().inject({
+      method: "GET",
+      path: `/api/application/intention/schedule/6081289803569600282e0001?intention=${ApplicationIntention.ENTRETIEN}`,
+      headers: { authorization: `Bearer ${intentionToken}` },
+    })
+
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/application/intentionComment/6081289803569600282e0001",
+      body: {
+        company_feedback: "Bonjour",
+        company_recruitment_intention: ApplicationIntention.ENTRETIEN,
+        email: "faux_email@faux-domaine-compagnie.com",
+        phone: "",
+        refusal_reasons: [],
+      },
+      headers: { authorization: `Bearer ${intentionToken}` },
+    })
+
+    expect.soft(response.statusCode).toEqual(200)
+    expect.soft(response.json()).toEqual({ result: "ok", message: "comment registered" })
+    const intentionInDb = await getDbCollection("recruiter_intention_mails").findOne({ applicationId: new ObjectId("6081289803569600282e0001") })
+    expect.soft(intentionInDb).toEqual(null)
+    const application = await getDbCollection("applications").findOne({ _id: new ObjectId("6081289803569600282e0001") })
+    expect.soft(application!).toMatchObject({
+      company_feedback_reasons: [],
+      company_feedback: "Bonjour",
+      company_recruitment_intention: ApplicationIntention.ENTRETIEN,
+    })
   })
 })
