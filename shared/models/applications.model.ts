@@ -54,10 +54,7 @@ export const ZApplication = z
     company_name: z.string().describe("Nom de l'entreprise"),
     company_naf: z.string().nullish().describe("Code NAF de l'entreprise"),
     company_address: z.string().nullish().describe("Adresse de l'entreprise"),
-    job_origin: z
-      .enum([allLbaItemType[0], ...allLbaItemType.slice(1), ...allLbaItemTypeOLD.slice(1)]) // suppression intentionnelle du premier élément de allLbaItemTypeOLD pour éviter un duplicat
-      .nullable()
-      .describe("Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance."),
+    job_origin: extensions.buildEnum(LBA_ITEM_TYPE).nullable().describe("Origine de l'offre d'emploi"),
     job_title: z
       .string()
       .nullish()
