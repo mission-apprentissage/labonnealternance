@@ -6,4 +6,5 @@ export default {
   zod: z.any(),
   indexes: [],
   collectionName: "anonymized_recruiters",
+  authorizeAdditionalProperties: true,
 } as const satisfies IModelDescriptor
