@@ -1,6 +1,3 @@
-import anonymizedApplicantModel from "shared/models/anonymizedApplicant.model"
-import anonymizedApplicationsModel from "shared/models/anonymizedApplications.model"
-
 import { logger } from "../../common/logger"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
@@ -22,9 +19,6 @@ const anonymize = async () => {
           applicant_id: "$_id",
           createdAt: 1,
         },
-      },
-      {
-        $merge: anonymizedApplicantModel.collectionName,
       },
     ])
     .toArray()
@@ -58,32 +52,31 @@ const anonymize = async () => {
           applicant_id: 1,
         },
       },
-      {
-        $merge: anonymizedApplicationsModel.collectionName,
-      },
     ])
     .toArray()
 
-  const applicantsIdsToDelete = matchedApplicants.map((doc) => doc._id)
-  const applicationsIdsToDelete = matchedApplications.map((doc) => doc._id)
+  await getDbCollection("anonymized_applicants").insertMany(matchedApplicants)
+  await getDbCollection("anonymized_applications").insertMany(matchedApplications)
+  const applicantsIdsToDelete = matchedApplicants.map((doc) => doc.applicant_id)
+  const applicationsIdsToDelete = matchedApplications.map((doc) => doc.applicant_id)
   const [resApplications, resApplicants] = await Promise.all([
-    getDbCollection("applications").deleteMany({ _id: { $in: applicationsIdsToDelete } }),
+    getDbCollection("applications").deleteMany({ applicant_id: { $in: applicationsIdsToDelete } }),
     getDbCollection("applicants").deleteMany({ _id: { $in: applicantsIdsToDelete } }),
     // we don't keep archive of applicants_email_logs
     getDbCollection("applicants_email_logs").deleteMany({ applicant_id: { $in: applicantsIdsToDelete } }),
   ])
 
-  return [resApplications, resApplicants]
+  return { deletedApplication: resApplications.deletedCount, deletedApplicants: resApplicants.deletedCount }
 }
 
 export const anonymizeApplicantsAndApplications = async function () {
   logger.info("[START] Anonymisation des candidats & leurs candidatures de plus de deux (2) ans")
   try {
-    const [anonymizedApplication, anonymizedApplicant] = await anonymize()
+    const { deletedApplicants, deletedApplication } = await anonymize()
 
     await notifyToSlack({
       subject: "ANONYMISATION CANDIDATS & CANDIDATURES",
-      message: `Anonymisation des candidats de plus de deux ans terminée. ${anonymizedApplicant.deletedCount} candidat(s) et ${anonymizedApplication.deletedCount} candidature(s) anonymisée(s).`,
+      message: `Anonymisation des candidats de plus de deux ans terminée. ${deletedApplicants} candidat(s) et ${deletedApplication} candidature(s) anonymisée(s).`,
     })
   } catch (err: any) {
     await notifyToSlack({ subject: "ANONYMISATION CANDIDATS & CANDIDATURES", message: `ECHEC anonymisation des candidats & candidatures`, error: true })
