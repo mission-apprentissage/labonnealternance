@@ -461,7 +461,7 @@ const offreOrCompanyToCompanyFields = (
   const { type } = LbaJob
   if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     const { job } = LbaJob
-    const { siret, enseigne, naf_label, phone, email } = job
+    const { siret, enseigne, naf_label, phone, email, _id } = job
     const application = {
       company_siret: siret,
       company_name: enseigne,
@@ -470,6 +470,7 @@ const offreOrCompanyToCompanyFields = (
       company_email: email!,
       job_title: enseigne,
       company_address: buildLbaCompanyAddress(job),
+      job_id: _id.toString(),
     }
     return application
   } else if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
@@ -799,6 +800,7 @@ export const sendMailToApplicant = async ({
         template: getEmailTemplate("mail-candidat-entretien"),
         data: {
           ...sanitizeApplicationForEmail(application),
+          ...sanitizeApplicantForEmail(applicant),
           jobSourceType,
           partner,
           ...images,
@@ -817,7 +819,7 @@ export const sendMailToApplicant = async ({
         template: getEmailTemplate("mail-candidat-nsp"),
         data: {
           ...sanitizeApplicationForEmail(application),
-          ...sanitizeApplicantFromEmail(applicant),
+          ...sanitizeApplicantForEmail(applicant),
           partner,
           ...images,
           email,
@@ -834,7 +836,7 @@ export const sendMailToApplicant = async ({
         template: getEmailTemplate("mail-candidat-refus"),
         data: {
           ...sanitizeApplicationForEmail(application),
-          ...sanitizeApplicantFromEmail(applicant),
+          ...sanitizeApplicantForEmail(applicant),
           jobSourceType,
           partner,
           ...images,
@@ -857,7 +859,7 @@ const notifyHardbounceToApplicant = async ({ application }: { application: IAppl
     to: applicant!.email,
     subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
     template: getEmailTemplate("mail-candidat-hardbounce"),
-    data: { ...sanitizeApplicationForEmail(application), ...sanitizeApplicantFromEmail(applicant!), ...images },
+    data: { ...sanitizeApplicationForEmail(application), ...sanitizeApplicantForEmail(applicant!), ...images },
   })
 }
 
@@ -958,7 +960,7 @@ export const obfuscateLbaCompanyApplications = async (company_siret: string) => 
     { $set: { to_company_message_id: fakeEmail, company_email: fakeEmail } }
   )
 }
-const sanitizeApplicantFromEmail = (applicant: IApplicant) => {
+const sanitizeApplicantForEmail = (applicant: IApplicant) => {
   const { firstname, lastname, email, phone } = applicant
   return {
     applicant_email: sanitizeForEmail(email),
@@ -1037,7 +1039,7 @@ export const processApplicationScanForVirus = async (application: IApplication, 
       template: getEmailTemplate("mail-echec-envoi-candidature"),
       data: {
         ...sanitizeApplicationForEmail(application),
-        ...sanitizeApplicantFromEmail(applicant),
+        ...sanitizeApplicantForEmail(applicant),
         ...images,
         urlOfDetail,
         urlOfDetailNoUtm,
@@ -1078,7 +1080,7 @@ export const processApplicationEmails = {
       template: getEmailTemplate(type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? "mail-candidature-spontanee" : "mail-candidature"),
       data: {
         ...sanitizeApplicationForEmail(application),
-        ...sanitizeApplicantFromEmail(applicant),
+        ...sanitizeApplicantForEmail(applicant),
         ...images,
         ...recruiterEmailUrls,
         urlOfDetail,
@@ -1109,7 +1111,7 @@ export const processApplicationEmails = {
       template: getEmailTemplate(type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "mail-candidat-offre-emploi-lba" : "mail-candidat-recruteur-lba"),
       data: {
         ...sanitizeApplicationForEmail(application),
-        ...sanitizeApplicantFromEmail(applicant),
+        ...sanitizeApplicantForEmail(applicant),
         ...images,
         publicUrl,
         urlOfDetail,
