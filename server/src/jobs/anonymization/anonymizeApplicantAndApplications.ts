@@ -1,3 +1,4 @@
+import { ObjectId } from "bson"
 import anonymizedApplicantModel from "shared/models/anonymizedApplicant.model"
 import anonymizedApplicationsModel from "shared/models/anonymizedApplications.model"
 
@@ -64,8 +65,8 @@ const anonymize = async () => {
     ])
     .toArray()
 
-  const applicantsIdsToDelete = matchedApplicants.map((doc) => doc._id)
-  const applicationsIdsToDelete = matchedApplications.map((doc) => doc._id)
+  const applicantsIdsToDelete = matchedApplicants.map((doc) => new ObjectId(doc._id))
+  const applicationsIdsToDelete = matchedApplications.map((doc) => new ObjectId(doc._id))
   const [resApplications, resApplicants] = await Promise.all([
     getDbCollection("applications").deleteMany({ _id: { $in: applicationsIdsToDelete } }),
     getDbCollection("applicants").deleteMany({ _id: { $in: applicantsIdsToDelete } }),
