@@ -165,6 +165,8 @@ export async function bind(app: Server) {
 
       trainingLinks(typedSubApp)
       jobsApiV3Routes(typedSubApp)
+      applicationRouteV2(typedSubApp)
+      appointmentRequestRouteV2(typedSubApp)
 
       done()
     },
@@ -180,8 +182,6 @@ export async function bind(app: Server) {
       const typedSubApp = subApp.withTypeProvider<ZodTypeProvider>()
       metierv2(typedSubApp)
       jobsEtFormationsRouteV2(typedSubApp)
-      applicationRouteV2(typedSubApp)
-      appointmentRequestRouteV2(typedSubApp)
       formationsRouteV2(typedSubApp)
       jobsRouteV2(typedSubApp)
       done()

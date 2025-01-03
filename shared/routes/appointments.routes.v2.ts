@@ -70,9 +70,9 @@ export type IAppointmentResponseSchema = z.output<typeof ZAppointmentResponseSch
 
 export const zAppointmentsRouteV2 = {
   post: {
-    "/appointment": {
+    "/v2/appointment": {
       method: "post",
-      path: "/appointment",
+      path: "/v2/appointment",
       body: ZAppointmentContextApi,
       response: {
         "200": ZAppointmentResponseSchema,
