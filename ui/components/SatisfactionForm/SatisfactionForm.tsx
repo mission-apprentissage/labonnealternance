@@ -1,7 +1,7 @@
 import { Box, Button, Flex, Text, Textarea } from "@chakra-ui/react"
 import { Formik } from "formik"
 import { useEffect, useState } from "react"
-import { ApplicantIntention } from "shared/constants/application"
+import { ApplicationIntention } from "shared/constants/application"
 import * as Yup from "yup"
 
 import { apiPost } from "../../utils/api.utils"
@@ -28,7 +28,7 @@ export const SatisfactionForm = ({
   lastName,
   token,
 }: {
-  company_recruitment_intention: ApplicantIntention
+  company_recruitment_intention: ApplicationIntention
   id: string
   firstName: string
   lastName: string
@@ -43,10 +43,10 @@ export const SatisfactionForm = ({
     })
   }, [])
 
-  const isRefusedState = company_recruitment_intention === ApplicantIntention.REFUS
+  const isRefusedState = company_recruitment_intention === ApplicationIntention.REFUS
 
-  const intentionVariants: Record<ApplicantIntention, { placeholderTextArea: string; header: React.ReactNode }> = {
-    [ApplicantIntention.ENTRETIEN]: {
+  const intentionVariants: Record<ApplicationIntention, { placeholderTextArea: string; header: React.ReactNode }> = {
+    [ApplicationIntention.ENTRETIEN]: {
       header: (
         <>
           <Text fontWeight={700} fontSize="16px" pt={8}>
@@ -57,7 +57,7 @@ export const SatisfactionForm = ({
       placeholderTextArea:
         "Bonjour, Merci pour l'intérêt que vous portez à notre établissement. Votre candidature a retenu toute notre attention et nous souhaiterions échanger avec vous. Seriez-vous disponible le ... ",
     },
-    [ApplicantIntention.NESAISPAS]: {
+    [ApplicationIntention.NESAISPAS]: {
       header: (
         <>
           <Text pt={8}>La candidature de {`${firstName} ${lastName}`} vous intéresse, mais vous ne souhaitez pas prendre votre décision aujourd’hui ?</Text>
@@ -67,7 +67,7 @@ export const SatisfactionForm = ({
       ),
       placeholderTextArea: "Bonjour, Merci pour l'intérêt que vous portez à notre établissement. Votre candidature a retenu toute notre attention et nous vous répondrons ...",
     },
-    [ApplicantIntention.REFUS]: {
+    [ApplicationIntention.REFUS]: {
       header: (
         <>
           <Text pt={8} fontWeight={700}>

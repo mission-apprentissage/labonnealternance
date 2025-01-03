@@ -1,3 +1,4 @@
+import { ApplicationIntention, RefusalReasons } from "../constants/application"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZLbacError } from "../models"
@@ -38,13 +39,12 @@ export const zApplicationRoutes = {
       },
     },
     "/application/intention/:id": {
-      // TODO_SECURITY_FIX
       path: "/application/intention/:id",
       method: "post",
       params: z.object({ id: z.string() }).strict(),
       body: z
         .object({
-          company_recruitment_intention: z.string(),
+          company_recruitment_intention: extensions.buildEnum(ApplicationIntention),
         })
         .strict(),
       response: {
@@ -67,9 +67,10 @@ export const zApplicationRoutes = {
       body: z
         .object({
           company_feedback: z.string(),
-          company_recruitment_intention: z.string(),
+          company_recruitment_intention: extensions.buildEnum(ApplicationIntention),
           email: z.string().email().or(z.literal("")),
           phone: extensions.phone().or(z.literal("")),
+          refusal_reasons: z.array(extensions.buildEnum(RefusalReasons)),
         })
         .strict(),
       response: {
@@ -77,6 +78,24 @@ export const zApplicationRoutes = {
           .object({
             result: z.literal("ok"),
             message: z.literal("comment registered"),
+          })
+          .strict(),
+      },
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        resources: {},
+      },
+    },
+    "/application/intention/cancel/:id": {
+      path: "/application/intention/cancel/:id",
+      method: "post",
+      params: z.object({ id: z.string() }).strict(),
+      response: {
+        "200": z
+          .object({
+            result: z.literal("ok"),
+            message: z.literal("intention canceled"),
           })
           .strict(),
       },
@@ -100,6 +119,27 @@ export const zApplicationRoutes = {
           .strict(),
       },
       securityScheme: null,
+    },
+    "/application/intention/schedule/:id": {
+      path: "/application/intention/schedule/:id",
+      method: "get",
+      params: z.object({ id: z.string() }).strict(),
+      querystring: z.object({ intention: extensions.buildEnum(ApplicationIntention) }).strict(),
+      response: {
+        "200": z
+          .object({
+            recruiter_email: z.string(),
+            recruiter_phone: z.string(),
+            applicant_first_name: z.string(),
+            applicant_last_name: z.string(),
+          })
+          .strict(),
+      },
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        resources: {},
+      },
     },
   },
 } as const satisfies IRoutesDef

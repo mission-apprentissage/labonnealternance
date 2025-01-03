@@ -1,15 +1,22 @@
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { IModelDescriptor, zObjectId } from "./common"
 
 const collectionName = "applicants_email_logs" as const
 
+export enum EMAIL_LOG_TYPE {
+  RELANCE = "RELANCE",
+  NOTIFICATION = "NOTIFICATION",
+  INTENTION_ENTRETIEN = "INTENTION_ENTRETIEN",
+  INTENTION_REFUS = "INTENTION_REFUS",
+}
 export const ZApplicantEmailLog = z
   .object({
     _id: zObjectId,
     applicant_id: zObjectId,
-    type: z.enum(["RELANCE", "NOTIFICATION"]),
-    message_id: z.string(),
+    type: extensions.buildEnum(EMAIL_LOG_TYPE),
+    message_id: z.string().nullable(),
     createdAt: z.date(),
   })
   .strict()

@@ -1,6 +1,7 @@
 import { ObjectId } from "bson"
 import { Jsonify } from "type-fest"
 
+import { RefusalReasons } from "../constants/application"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, allLbaItemType, allLbaItemTypeOLD } from "../constants/lbaitem"
 import { removeUrlsFromText } from "../helpers/common"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
@@ -47,6 +48,7 @@ export const ZApplication = z
     job_searched_by_user: z.string().nullish().describe("Métier recherché par le candidat"),
     company_recruitment_intention: z.string().nullish().describe("L'intention de la société vis à vis du candidat"),
     company_feedback: z.string().nullish().describe("L'avis donné par la société"),
+    company_feedback_reasons: z.array(extensions.buildEnum(RefusalReasons)).nullish(),
     company_feedback_date: z.date().nullish().describe("Date d'intention/avis donnée"),
     company_siret: extensions.siret.describe("Siret de l'entreprise"),
     company_email: z.string().describe("Email de l'entreprise"),

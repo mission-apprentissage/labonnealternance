@@ -1,13 +1,13 @@
 import { Flex, Text } from "@chakra-ui/react"
-import { ApplicantIntention } from "shared/constants/application"
+import { ApplicationIntention } from "shared/constants/application"
 
-export const SatisfactionFormSuccess = ({ intention }: { intention: ApplicantIntention }) => {
+export const SatisfactionFormSuccess = ({ intention }: { intention: ApplicationIntention }) => {
   return (
     <Flex direction="column" width="80%" maxWidth="992px" margin="auto" pt={12} alignItems="center" textAlign="center" data-testid="SatisfactionFormSuccess">
       <Text as="h1" fontSize="24px" fontWeight={700}>
         Merci d&apos;avoir pris le temps d&apos;envoyer un message au candidat.
       </Text>
-      {intention === ApplicantIntention.NESAISPAS || intention === ApplicantIntention.ENTRETIEN ? (
+      {intention === ApplicationIntention.NESAISPAS || intention === ApplicationIntention.ENTRETIEN ? (
         <Text fontSize="20px" pt={4}>
           Il dispose désormais de vos coordonnées pour poursuivre l&apos;échange.
         </Text>

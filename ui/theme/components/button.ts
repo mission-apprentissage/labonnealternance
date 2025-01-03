@@ -23,6 +23,20 @@ const Button = {
         boxShadow: "none",
       },
     },
+    cancelForm: {
+      ...commonButtonStyle,
+      bg: "white",
+      border: "1px solid #CE0500",
+      color: "#CE0500",
+      _hover: {
+        bg: "grey.400",
+      },
+      _disabled: {
+        opacity: 1,
+        bg: "grey.400",
+        color: "#CE0500",
+      },
+    },
     form: {
       ...commonButtonStyle,
       bg: "grey.200",

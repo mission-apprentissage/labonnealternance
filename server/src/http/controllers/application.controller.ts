@@ -1,11 +1,9 @@
-import { notFound } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import { zRoutes } from "shared/index"
 
 import { getDbCollection } from "../../common/utils/mongodbUtils"
-import { getApplicantFromDB } from "../../services/applicant.service"
-import { getCompanyEmailFromToken, sendApplication, sendMailToApplicant } from "../../services/application.service"
+import { getApplicationDataForIntentionAndScheduleMessage, getCompanyEmailFromToken, sendApplication, sendRecruiterIntention } from "../../services/application.service"
 import { Server } from "../server"
 
 const rateLimitConfig = {
@@ -59,33 +57,34 @@ export default function (server: Server) {
     },
     async (req, res) => {
       const { id } = req.params
-      const { company_recruitment_intention, company_feedback, email, phone } = req.body
+      const { company_recruitment_intention, company_feedback, email, phone, refusal_reasons } = req.body
 
-      const application = await getDbCollection("applications").findOneAndUpdate(
-        { _id: new ObjectId(id) },
-        { $set: { company_recruitment_intention, company_feedback, company_feedback_date: new Date() } }
-      )
-
-      if (!application) {
-        throw notFound()
-      }
-
-      const applicant = await getApplicantFromDB({ _id: application.applicant_id })
-
-      if (!applicant) {
-        throw notFound(`unexpected: applicant not found for application ${application._id}`)
-      }
-
-      await sendMailToApplicant({
-        application,
-        applicant,
-        email,
-        phone,
+      await sendRecruiterIntention({
+        application_id: new ObjectId(id),
         company_recruitment_intention,
         company_feedback,
+        email,
+        phone,
+        refusal_reasons,
       })
 
       return res.status(200).send({ result: "ok", message: "comment registered" })
+    }
+  )
+
+  server.post(
+    "/application/intention/cancel/:id",
+    {
+      schema: zRoutes.post["/application/intention/cancel/:id"],
+      onRequest: server.auth(zRoutes.post["/application/intention/cancel/:id"]),
+      config: rateLimitConfig,
+    },
+    async (req, res) => {
+      const { id } = req.params
+
+      await getDbCollection("recruiter_intention_mails").deleteOne({ applicationId: new ObjectId(id) })
+
+      return res.status(200).send({ result: "ok", message: "intention canceled" })
     }
   )
 
@@ -119,6 +118,20 @@ export default function (server: Server) {
       const { token } = req.query
       const company_email = await getCompanyEmailFromToken(token)
       return res.status(200).send({ company_email })
+    }
+  )
+
+  server.get(
+    "/application/intention/schedule/:id",
+    {
+      schema: zRoutes.get["/application/intention/schedule/:id"],
+      onRequest: server.auth(zRoutes.get["/application/intention/schedule/:id"]),
+    },
+    async (req, res) => {
+      const { id } = req.params
+      const { intention } = req.query
+      const data = await getApplicationDataForIntentionAndScheduleMessage(id, intention)
+      return res.status(200).send({ ...data })
     }
   )
 }

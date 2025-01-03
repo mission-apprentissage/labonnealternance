@@ -1,3 +1,4 @@
+import { ApplicationIntention } from "shared/constants/application"
 import { IJob } from "shared/models"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { zRoutes } from "shared/routes"
@@ -308,7 +309,7 @@ export function createRdvaShortRecapToken(email: string, appointmentId: string) 
   return token
 }
 
-export function generateApplicationReplyToken(tokenUser: UserForAccessToken, applicationId: string) {
+export function generateApplicationReplyToken(tokenUser: UserForAccessToken, applicationId: string, intention: ApplicationIntention) {
   return generateAccessToken(
     tokenUser,
     [
@@ -324,6 +325,20 @@ export function generateApplicationReplyToken(tokenUser: UserForAccessToken, app
         options: {
           params: { id: applicationId },
           querystring: undefined,
+        },
+      }),
+      generateScope({
+        schema: zRoutes.post["/application/intention/cancel/:id"],
+        options: {
+          params: { id: applicationId },
+          querystring: undefined,
+        },
+      }),
+      generateScope({
+        schema: zRoutes.get["/application/intention/schedule/:id"],
+        options: {
+          params: { id: applicationId },
+          querystring: { intention },
         },
       }),
     ],
