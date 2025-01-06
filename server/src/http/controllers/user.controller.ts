@@ -132,7 +132,7 @@ export default (server: Server) => {
       let { opco, ...userFields } = req.body
       // restreint la modification de l opco aux opcos et admin
       if (!(userAccess?.admin || userAccess?.opcos.length)) {
-        opco = undefined
+        throw forbidden()
       }
 
       const entreprise = await getDbCollection("entreprises").findOne({ siret })
