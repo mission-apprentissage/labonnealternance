@@ -3,7 +3,7 @@ import { captureException } from "@sentry/node"
 import { parseApiAlternanceToken, type IApiAlternanceTokenData } from "api-alternance-sdk"
 import { FastifyRequest } from "fastify"
 import { JwtPayload } from "jsonwebtoken"
-import { ICredential, assertUnreachable } from "shared"
+import { ComputedUserAccess, ICredential, assertUnreachable } from "shared"
 import { PathParam, QueryString } from "shared/helpers/generateUri"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { ISecuredRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
@@ -28,6 +28,7 @@ export type IUserWithType = AccessUser2 | AccessUserCredential | AccessUserToken
 
 declare module "fastify" {
   interface FastifyRequest {
+    userAccess?: ComputedUserAccess
     user?: null | undefined | IUserWithType
     authorizationContext?: null | undefined | { role: Role | null; resources?: any }
   }
