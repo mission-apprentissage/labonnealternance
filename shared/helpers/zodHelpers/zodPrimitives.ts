@@ -40,7 +40,7 @@ export const extensions = {
       .string()
       .trim()
       .transform((value) => removeUrlsFromText(value)), /// is it a phone extensions still ??
-  telephone: z.string().trim().refine(validatePhone, { message: "Invalid Phone Number: please use international format (+33XXX...) or national format (06XXX...)" }),
+  telephone: z.string().trim().refine(validatePhone, { message: "Invalid Phone Number: please use international format (+XXXX...) or french national format (06XXX...)" }),
   code_naf: () =>
     z.preprocess(
       (v: unknown) => (typeof v === "string" ? v.replace(".", "") : v), // parfois, le code naf contient un point

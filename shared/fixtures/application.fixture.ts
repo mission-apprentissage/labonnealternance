@@ -1,12 +1,14 @@
 import { ObjectId } from "bson"
 
 import { LBA_ITEM_TYPE } from "../constants/lbaitem"
-import { ApplicationScanStatus, IApplication } from "../models"
+import { ApplicationScanStatus, IApplicant, IApplication } from "../models"
 
 export function generateApplicationFixture(data: Partial<IApplication>): IApplication {
+  const applicant = generateApplicantFixture()
   return {
     _id: new ObjectId(),
-    applicant_email: "test@test.fr",
+    applicant_id: applicant._id,
+    applicant_email: "applicant@mail.fr",
     applicant_first_name: "a",
     applicant_last_name: "a",
     applicant_phone: "0125252525",
@@ -29,6 +31,20 @@ export function generateApplicationFixture(data: Partial<IApplication>): IApplic
     scan_status: ApplicationScanStatus.NO_VIRUS_DETECTED,
     created_at: new Date("2024-07-28T03:05:34.187Z"),
     last_update_at: new Date("2024-07-28T03:05:34.187Z"),
+    ...data,
+  }
+}
+
+export function generateApplicantFixture(data: Partial<IApplicant> = {}): IApplicant {
+  return {
+    _id: new ObjectId(),
+    firstname: "applicant_firstname",
+    lastname: "applicant_lastname",
+    phone: "0123456789",
+    email: "applicant@mail.fr",
+    last_connection: new Date("2024-07-28T03:05:34.187Z"),
+    createdAt: new Date("2024-07-28T03:05:34.187Z"),
+    updatedAt: new Date("2024-07-28T03:05:34.187Z"),
     ...data,
   }
 }

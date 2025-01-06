@@ -1,6 +1,7 @@
 import { AccessEntityType, ZRoleManagement } from "shared/models"
 import cfaModel, { zCFA } from "shared/models/cfa.model"
 import entrepriseModel, { ZEntreprise } from "shared/models/entreprise.model"
+import roleManagement360Model from "shared/models/roleManagement360.model"
 import userWithAccountModel, { ZUserWithAccount } from "shared/models/userWithAccount.model"
 
 import { logger } from "@/common/logger"
@@ -9,7 +10,7 @@ import { notifyToSlack } from "@/common/utils/slackUtils"
 
 export const createRoleManagement360 = async () => {
   logger.info("Creating roleManagement360 collection...")
-  const destCollectionName = "rolemanagement360"
+  const destCollectionName = roleManagement360Model.collectionName
   await getDbCollection("rolemanagements")
     .aggregate([
       { $match: { authorized_type: { $in: [AccessEntityType.CFA, AccessEntityType.ENTREPRISE] } } },

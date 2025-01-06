@@ -2,7 +2,7 @@ import { logger } from "../../common/logger"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
-const anonymizeApplications = async () => {
+const anonymize = async () => {
   logger.info(`Début anonymisation`)
 
   const period = new Date()
@@ -25,6 +25,7 @@ const anonymizeApplications = async () => {
           job_id: 1,
           caller: 1,
           created_at: 1,
+          applicant_id: 1,
         },
       },
       {
@@ -38,23 +39,19 @@ const anonymizeApplications = async () => {
   return res.deletedCount
 }
 
-export const anonymizeOldApplications = async function () {
+export const anonymizeApplications = async function () {
   try {
-    logger.info(" -- Anonymisation des candidatures de plus de deux (2) ans -- ")
+    logger.info("[START] Anonymisation des candidatures de plus de deux (2) ans")
 
-    const anonymizedApplicationCount = await anonymizeApplications()
-
-    logger.info(`Fin traitement ${anonymizedApplicationCount}`)
+    const anonymizedApplicationCount = await anonymize()
 
     await notifyToSlack({
       subject: "ANONYMISATION CANDIDATURES",
-      message: `Anonymisation des candidatures de plus de un an terminée. ${anonymizedApplicationCount} candidature(s) anonymisée(s).`,
-      error: false,
+      message: `Anonymisation des candidatures de plus de deux (2) an terminée. ${anonymizedApplicationCount} candidature(s) anonymisée(s).`,
     })
   } catch (err: any) {
     await notifyToSlack({ subject: "ANONYMISATION CANDIDATURES", message: `ECHEC anonymisation des candidatures`, error: true })
     throw err
   }
+  logger.info("[END] Anonymisation des candidatures de plus de deux (2) ans")
 }
-
-export default anonymizeOldApplications
