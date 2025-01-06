@@ -17,11 +17,13 @@ export enum ApplicationScanStatus {
   ERROR_CLAMAV = "ERROR_CLAMAV",
   NO_VIRUS_DETECTED = "NO_VIRUS_DETECTED",
   DO_NOT_SEND = "DO_NOT_SEND",
+  ERROR_APPLICANT_NOT_FOUND = "ERROR_APPLICANT_NOT_FOUND",
 }
 
 export const ZApplication = z
   .object({
     _id: zObjectId,
+    applicant_id: zObjectId,
     applicant_email: z.string().email().describe("Email du candidat"),
     applicant_first_name: z
       .string()
@@ -52,10 +54,7 @@ export const ZApplication = z
     company_name: z.string().describe("Nom de l'entreprise"),
     company_naf: z.string().nullish().describe("Code NAF de l'entreprise"),
     company_address: z.string().nullish().describe("Adresse de l'entreprise"),
-    job_origin: z
-      .enum([allLbaItemType[0], ...allLbaItemType.slice(1), ...allLbaItemTypeOLD.slice(1)]) // suppression intentionnelle du premier élément de allLbaItemTypeOLD pour éviter un duplicat
-      .nullable()
-      .describe("Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance."),
+    job_origin: extensions.buildEnum(LBA_ITEM_TYPE).nullable().describe("Origine de l'offre d'emploi"),
     job_title: z
       .string()
       .nullish()
@@ -111,6 +110,7 @@ export const ZNewApplication = ZApplication.extend({
 })
   .omit({
     _id: true,
+    applicant_id: true,
     applicant_message_to_company: true,
     applicant_attachment_name: true,
     job_origin: true,
@@ -156,6 +156,7 @@ const ZNewApplicationTransitionToV2 = ZApplication.extend({
 })
   .omit({
     _id: true,
+    applicant_id: true,
     applicant_message_to_company: true,
     applicant_attachment_name: true,
     job_origin: true,

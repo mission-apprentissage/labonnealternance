@@ -9,11 +9,12 @@ import { getLoggerWithContext, logger } from "../common/logger"
 import { getDatabase } from "../common/utils/mongodbUtils"
 import config from "../config"
 
-import anonymizeOldAppointments from "./anonymization/anonymizeAppointments"
+import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
+import { anonymizeApplications } from "./anonymization/anonymizeApplications"
+import anonymizeAppointments from "./anonymization/anonymizeAppointments"
 import anonymizeIndividual from "./anonymization/anonymizeIndividual"
-import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
-import { anonimizeUsers } from "./anonymization/anonymizeUserRecruteurs"
-import { anonymizeOldUsers } from "./anonymization/anonymizeUsers"
+import { anonimizeUsersWithAccounts } from "./anonymization/anonymizeUserRecruteurs"
+import { anonymizeUsers } from "./anonymization/anonymizeUsers"
 import { processApplications } from "./applications/processApplications"
 import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
 import { recreateIndexes } from "./database/recreateIndexes"
@@ -150,10 +151,6 @@ export async function setupJobProcessor() {
             cron_string: "5 0 * * *",
             handler: () => updateBrevoBlockedEmails({}),
           },
-          "Anonymise les candidatures de plus de deux an": {
-            cron_string: "10 0 * * *",
-            handler: anonymizeOldApplications,
-          },
           "Géolocation de masse des sociétés issues de l'algo": {
             cron_string: "0 5 * * 6",
             handler: () => updateGeoLocations({}),
@@ -166,10 +163,6 @@ export async function setupJobProcessor() {
             cron_string: "0 5 * * 7",
             handler: () => updateLbaCompanies({ useAlgoFile: true, clearMongo: true }),
           },
-          "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus de 2 ans": {
-            cron_string: "5 1 * * *",
-            handler: anonymizeOldUsers,
-          },
           "Contrôle quotidien des candidatures": {
             cron_string: "0 10-19/1 * * 1-5",
             handler: config.env === "production" ? () => controlApplications() : () => Promise.resolve(0),
@@ -178,13 +171,25 @@ export async function setupJobProcessor() {
             cron_string: "0 11-19/2 * * 1-5",
             handler: config.env === "production" ? () => controlAppointments() : () => Promise.resolve(0),
           },
-          "Anonymisation des user recruteurs de plus de 2 ans": {
-            cron_string: "0 1 * * *",
-            handler: anonimizeUsers,
+          "Anonymisation des candidatures de plus de deux (2) ans": {
+            cron_string: "15 0 * * *",
+            handler: anonymizeApplications,
           },
-          "Anonymisation des appointments de plus de 2 ans": {
+          "Anonymisation des candidats & leurs candidatures de plus de deux (2) ans": {
+            cron_string: "10 0 * * *",
+            handler: anonymizeApplicantsAndApplications,
+          },
+          "Anonimisation des utilisateurs RDVA de plus de deux (2) ans": {
+            cron_string: "5 1 * * *",
+            handler: anonymizeUsers,
+          },
+          "Anonymisation des user recruteurs de plus de deux (2) ans": {
+            cron_string: "0 1 * * *",
+            handler: anonimizeUsersWithAccounts,
+          },
+          "Anonymisation des appointments de plus de deux (2) ans": {
             cron_string: "30 1 * * *",
-            handler: anonymizeOldAppointments,
+            handler: anonymizeAppointments,
           },
           "Lancement du garbage collector": {
             cron_string: "30 3 * * *",
@@ -240,7 +245,7 @@ export async function setupJobProcessor() {
         handler: async () => runGarbageCollector(),
       },
       "anonymize:appointments": {
-        handler: async () => anonymizeOldAppointments(),
+        handler: async () => anonymizeAppointments(),
       },
       "control:applications": {
         handler: async () => controlApplications(),

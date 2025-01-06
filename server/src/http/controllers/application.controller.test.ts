@@ -84,10 +84,12 @@ describe("POST /v1/application", () => {
     })
 
     const applications = await getDbCollection("applications").find({}).toArray()
+    const applicant = await getDbCollection("applicants").findOne({ _id: applications[0]?.applicant_id })
 
     expect(applications).toEqual([
       {
         _id: expect.any(ObjectId),
+        applicant_id: applicant?._id,
         applicant_attachment_name: body.applicant_file_name,
         applicant_email: body.applicant_email,
         applicant_first_name: body.applicant_first_name,
@@ -104,6 +106,7 @@ describe("POST /v1/application", () => {
         company_recruitment_intention: null,
         company_siret: recruteur.siret,
         created_at: expect.any(Date),
+        job_id: recruteur._id.toString(),
         job_origin: "recruteurs_lba",
         job_title: "ASSEMBLEE NATIONALE",
         last_update_at: expect.any(Date),

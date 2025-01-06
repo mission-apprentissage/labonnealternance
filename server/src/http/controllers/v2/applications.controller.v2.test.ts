@@ -136,12 +136,14 @@ describe("POST /v2/application", () => {
     })
 
     const application = await getDbCollection("applications").findOne({ company_siret: recruteur.siret })
+    const applicant = await getDbCollection("applicants").findOne({ _id: application?.applicant_id })
 
     expect.soft(response.statusCode).toEqual(202)
     expect.soft(response.json()).toEqual({ id: application!._id.toString() })
 
     expect(application).toEqual({
       _id: expect.any(ObjectId),
+      applicant_id: applicant?._id,
       applicant_attachment_name: body.applicant_attachment_name,
       applicant_email: body.applicant_email,
       applicant_first_name: body.applicant_first_name,
@@ -156,6 +158,7 @@ describe("POST /v2/application", () => {
       company_siret: recruteur.siret,
       company_naf: "Administration publique générale",
       company_address: "126 RUE DE L UNIVERSITE, 75007 Paris",
+      job_id: recruteur._id.toString(),
       created_at: expect.any(Date),
       job_searched_by_user: null,
       job_title: "ASSEMBLEE NATIONALE",
@@ -192,12 +195,14 @@ describe("POST /v2/application", () => {
     })
 
     const application = await getDbCollection("applications").findOne({ job_id: job._id.toString() })
+    const applicant = await getDbCollection("applicants").findOne({ _id: application?.applicant_id })
 
     expect.soft(response.statusCode).toEqual(202)
     expect.soft(response.json()).toEqual({ id: application!._id.toString() })
 
     expect(application).toEqual({
       _id: expect.any(ObjectId),
+      applicant_id: applicant?._id,
       applicant_attachment_name: body.applicant_attachment_name,
       applicant_email: body.applicant_email,
       applicant_first_name: body.applicant_first_name,
