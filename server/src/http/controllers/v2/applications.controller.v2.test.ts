@@ -31,11 +31,11 @@ vi.mock("@/services/clamav.service", () => {
   }
 })
 
-vi.mock("@/services/mailer.service", async () => {
-  const actual = await vi.importActual("@/services/mailer.service")
+vi.mock("@/services/application.service", async () => {
+  const actual = await vi.importActual("@/services/application.service")
   return {
     ...actual,
-    sendEmail: vi.fn().mockResolvedValue({}),
+    sendMailToApplicant: vi.fn().mockResolvedValue({}),
   }
 })
 
@@ -352,7 +352,7 @@ describe("POST /v2/application", () => {
     expect.soft(intentionInDb).toEqual(null)
   })
 
-  it.skip("Remove scheduled intention when Envoyer le message button", async () => {
+  it("Remove scheduled intention when Envoyer le message button", async () => {
     await httpClient().inject({
       method: "GET",
       path: `/api/application/intention/schedule/6081289803569600282e0001?intention=${ApplicationIntention.ENTRETIEN}`,
