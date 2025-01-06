@@ -10,4 +10,5 @@ export default {
   zod: ZJobs,
   indexes: [[{ jobId: 1 }, {}]],
   collectionName,
+  authorizeAdditionalProperties: true,
 } as const satisfies IModelDescriptor

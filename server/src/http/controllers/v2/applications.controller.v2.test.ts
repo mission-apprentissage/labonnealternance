@@ -201,6 +201,7 @@ describe("POST /v2/application", () => {
       company_siret: recruteur.siret,
       company_naf: "Administration publique générale",
       company_address: "126 RUE DE L UNIVERSITE, 75007 Paris",
+      job_id: recruteur._id.toString(),
       created_at: expect.any(Date),
       job_searched_by_user: null,
       job_title: "ASSEMBLEE NATIONALE",

@@ -107,6 +107,7 @@ describe("POST /v1/application", () => {
         company_recruitment_intention: null,
         company_siret: recruteur.siret,
         created_at: expect.any(Date),
+        job_id: recruteur._id.toString(),
         job_origin: "recruteurs_lba",
         job_title: "ASSEMBLEE NATIONALE",
         last_update_at: expect.any(Date),

@@ -10,4 +10,5 @@ export default {
   zod: ZRoleManagement360,
   indexes: [[{ role_last_status: 1, user_last_status: 1, role_authorized_type: 1 }, {}]],
   collectionName,
+  authorizeAdditionalProperties: true,
 } as const satisfies IModelDescriptor
