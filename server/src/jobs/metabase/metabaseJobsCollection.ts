@@ -1,3 +1,5 @@
+import jobsModel from "shared/models/jobs.model"
+
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { logger } from "../../common/logger"
@@ -86,7 +88,7 @@ export const createJobsCollectionForMetabase = async () => {
           "rome_detail._id": 0,
         },
       },
-      { $out: "jobs" },
+      { $out: jobsModel.collectionName },
     ])
     .toArray()
 

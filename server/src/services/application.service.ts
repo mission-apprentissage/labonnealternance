@@ -18,7 +18,7 @@ import {
 } from "shared"
 import { ApplicantIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, getDirectJobPath, newItemTypeToOldItemType } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE, getDirectJobPath, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
@@ -419,12 +419,10 @@ export const getUser2ManagingOffer = async (job: Pick<IJob, "managed_by" | "_id"
  * email recruteur uniquement
  */
 const buildRecruiterEmailUrls = async (application: IApplication, applicant: IApplicant) => {
-  const { job_id } = application
-  const type = job_id ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA : LBA_ITEM_TYPE.RECRUTEURS_LBA
   const utmRecruiterData = "&utm_source=lba&utm_medium=email&utm_campaign=je-candidate-recruteur"
 
   let user: IUserWithAccount | undefined
-  if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
+  if (application.job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     const jobOrCompany = await getJobOrCompany(application)
     if (jobOrCompany.type !== LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
       throw internal(`inattendu : type !== ${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}`)
@@ -461,7 +459,7 @@ const offreOrCompanyToCompanyFields = (
   const { type } = LbaJob
   if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     const { job } = LbaJob
-    const { siret, enseigne, naf_label, phone, email } = job
+    const { siret, enseigne, naf_label, phone, email, _id } = job
     const application = {
       company_siret: siret,
       company_name: enseigne,
@@ -470,6 +468,7 @@ const offreOrCompanyToCompanyFields = (
       company_email: email!,
       job_title: enseigne,
       company_address: buildLbaCompanyAddress(job),
+      job_id: _id.toString(),
     }
     return application
   } else if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
@@ -799,6 +798,7 @@ export const sendMailToApplicant = async ({
         template: getEmailTemplate("mail-candidat-entretien"),
         data: {
           ...sanitizeApplicationForEmail(application),
+          ...sanitizeApplicantForEmail(applicant),
           jobSourceType,
           partner,
           ...images,
@@ -817,7 +817,7 @@ export const sendMailToApplicant = async ({
         template: getEmailTemplate("mail-candidat-nsp"),
         data: {
           ...sanitizeApplicationForEmail(application),
-          ...sanitizeApplicantFromEmail(applicant),
+          ...sanitizeApplicantForEmail(applicant),
           partner,
           ...images,
           email,
@@ -834,7 +834,7 @@ export const sendMailToApplicant = async ({
         template: getEmailTemplate("mail-candidat-refus"),
         data: {
           ...sanitizeApplicationForEmail(application),
-          ...sanitizeApplicantFromEmail(applicant),
+          ...sanitizeApplicantForEmail(applicant),
           jobSourceType,
           partner,
           ...images,
@@ -857,7 +857,7 @@ const notifyHardbounceToApplicant = async ({ application }: { application: IAppl
     to: applicant!.email,
     subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
     template: getEmailTemplate("mail-candidat-hardbounce"),
-    data: { ...sanitizeApplicationForEmail(application), ...sanitizeApplicantFromEmail(applicant!), ...images },
+    data: { ...sanitizeApplicationForEmail(application), ...sanitizeApplicantForEmail(applicant!), ...images },
   })
 }
 
@@ -954,11 +954,11 @@ export const processApplicationCandidateHardbounceEvent = async (payload) => {
 export const obfuscateLbaCompanyApplications = async (company_siret: string) => {
   const fakeEmail = "faux_email@faux-domaine-compagnie.com"
   await getDbCollection("applications").updateMany(
-    { job_origin: { $in: [LBA_ITEM_TYPE_OLD.LBA, LBA_ITEM_TYPE.RECRUTEURS_LBA] }, company_siret },
+    { job_origin: { $in: [LBA_ITEM_TYPE.RECRUTEURS_LBA] }, company_siret },
     { $set: { to_company_message_id: fakeEmail, company_email: fakeEmail } }
   )
 }
-const sanitizeApplicantFromEmail = (applicant: IApplicant) => {
+const sanitizeApplicantForEmail = (applicant: IApplicant) => {
   const { firstname, lastname, email, phone } = applicant
   return {
     applicant_email: sanitizeForEmail(email),
@@ -1037,7 +1037,7 @@ export const processApplicationScanForVirus = async (application: IApplication, 
       template: getEmailTemplate("mail-echec-envoi-candidature"),
       data: {
         ...sanitizeApplicationForEmail(application),
-        ...sanitizeApplicantFromEmail(applicant),
+        ...sanitizeApplicantForEmail(applicant),
         ...images,
         urlOfDetail,
         urlOfDetailNoUtm,
@@ -1078,7 +1078,7 @@ export const processApplicationEmails = {
       template: getEmailTemplate(type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? "mail-candidature-spontanee" : "mail-candidature"),
       data: {
         ...sanitizeApplicationForEmail(application),
-        ...sanitizeApplicantFromEmail(applicant),
+        ...sanitizeApplicantForEmail(applicant),
         ...images,
         ...recruiterEmailUrls,
         urlOfDetail,
@@ -1109,7 +1109,7 @@ export const processApplicationEmails = {
       template: getEmailTemplate(type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "mail-candidat-offre-emploi-lba" : "mail-candidat-recruteur-lba"),
       data: {
         ...sanitizeApplicationForEmail(application),
-        ...sanitizeApplicantFromEmail(applicant),
+        ...sanitizeApplicantForEmail(applicant),
         ...images,
         publicUrl,
         urlOfDetail,
@@ -1143,24 +1143,37 @@ const getApplicationWebsiteOrigin = (caller: IApplication["caller"]) => {
 }
 
 const getJobOrCompany = async (application: IApplication): Promise<IJobOrCompany> => {
-  const { job_id, company_siret } = application
-  if (job_id) {
-    const recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": new ObjectId(job_id) })
-    if (!recruiter) {
-      throw internal(`inattendu: aucun recruiter avec jobs._id=${job_id}`)
-    }
-    const job = recruiter?.jobs?.find((job) => job._id.toString() === job_id)
-    if (!job) {
-      throw internal(`inattendu: aucun job avec id=${job_id}`)
-    }
-    return { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job, recruiter }
-  } else {
+  const { job_id, company_siret, job_origin } = application
+  if (!job_id) {
+    throw internal("getJobOrCompany-job_id manquant")
+  }
+  if (job_origin === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     const company = await getDbCollection("recruteurslba").findOne({ siret: company_siret })
     if (!company) {
       throw internal(`inattendu: aucun recruteur lba avec siret=${company_siret}`)
     }
     return { type: LBA_ITEM_TYPE.RECRUTEURS_LBA, job: company, recruiter: null }
   }
+  if (job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
+    const recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": new ObjectId(job_id) })
+    if (!recruiter) {
+      throw internal(`inattendu: aucun recruiter avec jobs._id=${job_id}`)
+    }
+    const job = recruiter?.jobs?.find((job) => job._id.toString() === job_id)
+    if (!job) {
+      throw internal(`inattendu: aucun job recruiter avec id=${job_id}`)
+    }
+    return { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job, recruiter }
+  }
+  if (job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) {
+    const job = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(job_id) })
+    if (!job) {
+      throw internal(`inattendu: aucun job partenaire avec id=${job_id}`)
+    }
+    return { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, job, recruiter: null }
+  }
+
+  throw internal(`inattendu: job_origin invalide ${job_origin}`)
 }
 
 export const getCompanyEmailFromToken = async (token: string) => {
