@@ -32,6 +32,22 @@ async function reduceModel(model: CollectionName, limit = 20000) {
   }
 }
 
+const obfuscateJobsPatners = async () => {
+  logger.info(`obfuscating jobs partners`)
+  await getDbCollection("jobs_partners").updateMany(
+    {},
+    {
+      $set: {
+        apply_url: "https://labonnealternance-recette.apprentissage.beta.gouv.fr",
+        apply_phone: "0601010106",
+        apply_email: fakeEmail,
+        offer_description: "offer_description",
+        workplace_description: "workplace_description",
+      },
+    }
+  )
+}
+
 const obfuscateApplicants = async () => {
   logger.info(`obfuscating applicants`)
   const applicants = await getDbCollection("applicants").find({}).toArray()
@@ -306,13 +322,19 @@ export async function obfuscateCollections(): Promise<void> {
   await getDbCollection("jobs").deleteMany({})
   await getDbCollection("eligible_trainings_for_appointments_histories").deleteMany({})
   await getDbCollection("applicants_email_logs").deleteMany({})
+  await getDbCollection("recruteurslbalegacies").deleteMany({})
+
   await getDbCollection("anonymized_applicants").deleteMany({})
   await getDbCollection("anonymized_applications").deleteMany({})
   await getDbCollection("anonymized_appointments").deleteMany({})
   await getDbCollection("anonymized_recruiters").deleteMany({})
   await getDbCollection("anonymized_users").deleteMany({})
   await getDbCollection("anonymized_userswithaccounts").deleteMany({})
-  await getDbCollection("recruteurslbalegacies").deleteMany({})
+
+  await getDbCollection("raw_hellowork").deleteMany({})
+  await getDbCollection("raw_kelio").deleteMany({})
+  await getDbCollection("raw_rhalternance").deleteMany({})
+  await getDbCollection("computed_jobs_partners").deleteMany({})
 
   await reduceModel("apicalls", 5)
   await reduceModel("applicants", 50)
@@ -325,6 +347,7 @@ export async function obfuscateCollections(): Promise<void> {
 
   await obfuscateApplicants()
   await obfuscateApplications()
+  await obfuscateJobsPatners()
   await obfuscateEmailBlackList()
   await obfuscateAppointments()
   await obfuscateLbaCompanies()
