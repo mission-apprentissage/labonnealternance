@@ -30,6 +30,7 @@ import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
 import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
 import { premiumInviteOneShot } from "./rdv/premiumInviteOneShot"
 import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
+import { resetInvitationDates } from "./rdv/resetInvitationDates"
 import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
 import { cancelOfferJob } from "./recruiters/cancelOfferJob"
@@ -219,5 +220,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processScheduledRecruiterIntentions,
     description: "Envoi les intentations des recruteurs programmées",
+  },
+  {
+    fct: resetInvitationDates,
+    description: "Permet de réinitialiser les dates d'invitation et de refus des établissements pour la prise de rendez-vous",
   },
 ]
