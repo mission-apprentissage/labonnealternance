@@ -10834,8 +10834,6 @@ Limite : 20 appel(s) / 1 seconde(s)
               "items": {
                 "enum": [
                   "Hello work",
-                  "La bonne alternance",
-                  "France Travail",
                   "RH Alternance",
                 ],
                 "type": "string",
