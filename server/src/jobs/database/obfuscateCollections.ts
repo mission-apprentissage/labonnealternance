@@ -32,31 +32,31 @@ async function reduceModel(model: CollectionName, limit = 20000) {
   }
 }
 
-const obfuscateApplicantsAndApplications = async () => {
+const obfuscateApplicants = async () => {
   logger.info(`obfuscating applicants`)
-  await getDbCollection("applicants").updateMany(
-    {},
-    {
-      $set: {
-        firstname: "prenom",
-        lastname: "nom",
-        phone: "0601010106",
-        email: getFakeEmail(),
-      },
-    }
-  )
+  const applicants = await getDbCollection("applicants").find({}).toArray()
+  const bulk = applicants.map((doc) => ({
+    updateOne: {
+      filter: { _id: doc._id },
+      update: { $set: { email: getFakeEmail(), firstname: "prenom", lastname: "lastname", phone: "0601010106" } },
+    },
+  }))
+  await getDbCollection("applicants").bulkWrite(bulk)
+}
+
+const obfuscateApplications = async () => {
   logger.info(`obfuscating applications`)
   await getDbCollection("applications").updateMany(
     {},
     {
       $set: {
-        applicant_email: getFakeEmail(),
+        applicant_email: fakeEmail,
         applicant_phone: "0601010106",
         applicant_last_name: "nom_famille",
         applicant_first_name: "prenom",
         applicant_attachment_name: "titre_cv.pdf",
-        applicant_message_to_company: "Cher recruteur, embauchez moi ...",
-        company_feedback: "Cher candidat ...",
+        applicant_message_to_company: "applicant_message_to_company",
+        company_feedback: "company_feedback",
         company_email: fakeEmail,
         applicant_id: new ObjectId(),
       },
@@ -323,7 +323,8 @@ export async function obfuscateCollections(): Promise<void> {
   await reduceModel("users", 10)
   await reduceModel("opcos", 5000)
 
-  await obfuscateApplicantsAndApplications()
+  await obfuscateApplicants()
+  await obfuscateApplications()
   await obfuscateEmailBlackList()
   await obfuscateAppointments()
   await obfuscateLbaCompanies()
