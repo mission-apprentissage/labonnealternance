@@ -151,7 +151,7 @@ export default function PremiumAffelnetForm() {
                 Non, je ne suis pas prêt
               </Button>
               <Box>
-                <Text mt="-7px">
+                <Text mt={5}>
                   Le service sera activé sur toutes les formations éligibles à être affichées sur Choisir son affectation après la 3e, liées à votre SIRET{" "}
                   <Text as="span" fontWeight="700">
                     {etablissement.gestionnaire_siret}

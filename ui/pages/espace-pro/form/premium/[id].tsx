@@ -150,7 +150,7 @@ export default function PremiumForm() {
                 Non, je ne suis pas prêt
               </Button>
               <Box>
-                <Text mt="-7px">
+                <Text mt={5}>
                   Le service sera activé sur toutes les formations éligibles à être affichées sur Parcoursup, liées à votre SIRET{" "}
                   <Text as="span" fontWeight="700">
                     {etablissement.gestionnaire_siret}
