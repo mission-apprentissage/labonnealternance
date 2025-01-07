@@ -51,6 +51,7 @@ const obfuscateJobsPatners = async () => {
 const obfuscateApplicants = async () => {
   logger.info(`obfuscating applicants`)
   const applicants = await getDbCollection("applicants").find({}).toArray()
+  if (!applicants.length) return
   const bulk = applicants.map((doc) => ({
     updateOne: {
       filter: { _id: doc._id },
