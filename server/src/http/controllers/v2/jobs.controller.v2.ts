@@ -11,9 +11,7 @@ import { sentryCaptureException } from "../../../common/utils/sentryUtils"
 import dayjs from "../../../services/dayjs.service"
 import { addExpirationPeriod, getFormulaires } from "../../../services/formulaire.service"
 import { getFtJobFromIdV2 } from "../../../services/ftjob.service"
-import { getJobsQuery } from "../../../services/jobs/jobOpportunity/jobOpportunity.service"
-import { addOffreDetailView, getLbaJobByIdV2 } from "../../../services/lbajob.service"
-import { getCompanyFromSiret } from "../../../services/recruteurLba.service"
+import { getLbaJobByIdV2 } from "../../../services/lbajob.service"
 import { Server } from "../../server"
 
 const config = {
@@ -136,55 +134,6 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/v2/jobs/min",
-    {
-      schema: zRoutes.get["/v2/jobs/min"],
-      config,
-    },
-    async (req, res) => {
-      const { referer } = req.headers
-      const { romes, rncp, caller, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl } = req.query
-      const result = await getJobsQuery({ romes, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, isMinimalData: true })
-
-      if ("error" in result) {
-        return res.status(500).send(result)
-      }
-      return res.status(200).send(result)
-    }
-  )
-
-  server.get(
-    "/v2/jobs/entreprise_lba/:siret",
-    {
-      schema: zRoutes.get["/v2/jobs/entreprise_lba/:siret"],
-      onRequest: server.auth(zRoutes.get["/v2/jobs/entreprise_lba/:siret"]),
-      config,
-    },
-    async (req, res) => {
-      const { siret } = req.params
-      const { referer } = req.headers
-      const { caller } = req.query
-      const result = await getCompanyFromSiret({
-        siret,
-        referer,
-        caller,
-      })
-
-      if ("error" in result) {
-        if (result.error === "wrong_parameters") {
-          res.status(400)
-        } else if (result.error === "not_found") {
-          res.status(404)
-        } else {
-          res.status(500)
-        }
-      }
-
-      return res.send(result)
-    }
-  )
-
-  server.get(
     "/v2/jobs/:source/:id",
     {
       schema: zRoutes.get["/v2/jobs/:source/:id"],
@@ -215,19 +164,6 @@ export default (server: Server) => {
           assertUnreachable(source as never)
       }
       return res.send(result)
-    }
-  )
-
-  server.post(
-    "/v2/jobs/matcha/:id/stats/view-details",
-    {
-      schema: zRoutes.post["/v2/jobs/matcha/:id/stats/view-details"],
-      config,
-    },
-    async (req, res) => {
-      const { id } = req.params
-      await addOffreDetailView(id)
-      return res.send({})
     }
   )
 

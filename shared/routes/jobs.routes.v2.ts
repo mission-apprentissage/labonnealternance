@@ -2,25 +2,12 @@ import { LBA_ITEM_TYPE } from "../constants/lbaitem"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { zObjectId } from "../models/common"
-import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
-import { ZLbaItemFtJob, ZLbaItemLbaCompany, ZLbaItemLbaJob } from "../models/lbaItem.model"
+import { ZLbarError } from "../models/lbacError.model"
+import { ZLbaItemFtJob, ZLbaItemLbaJob } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
 import { rateLimitDescription } from "../utils/rateLimitDescription"
 
-import {
-  zCallerParam,
-  zDiplomaParam,
-  zInseeParams,
-  ZLatitudeParam,
-  ZLongitudeParam,
-  zOpcoParams,
-  zOpcoUrlParams,
-  ZRadiusParam,
-  zRefererHeaders,
-  zRncpsParams,
-  zRomesParams,
-  zSourcesParams,
-} from "./_params"
+import { zCallerParam, zRefererHeaders, zSourcesParams } from "./_params"
 import { IRoutesDef, ZResError } from "./common.routes"
 
 export const zJobsRoutesV2 = {
@@ -123,108 +110,6 @@ export const zJobsRoutesV2 = {
         tags: ["V2 - Jobs"] as string[],
         description: `Get all jobs related to my organization\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
         operationId: "getJobs",
-      },
-    },
-    "/v2/jobs/min": {
-      method: "get",
-      path: "/v2/jobs/min",
-      querystring: z
-        .object({
-          romes: zRomesParams("rncp"),
-          rncp: zRncpsParams,
-          caller: zCallerParam.nullish(),
-          latitude: ZLatitudeParam,
-          longitude: ZLongitudeParam,
-          radius: ZRadiusParam,
-          insee: zInseeParams,
-          sources: zSourcesParams,
-          diploma: zDiplomaParam,
-          opco: zOpcoParams,
-          opcoUrl: zOpcoUrlParams,
-        })
-        .strict()
-        .passthrough(),
-      headers: zRefererHeaders,
-      response: {
-        "200": z
-          .object({
-            peJobs: z.union([
-              z
-                .object({
-                  results: z.array(ZLbaItemFtJob),
-                })
-                .strict()
-                .nullable(),
-              ZApiError,
-            ]),
-            matchas: z.union([
-              z
-                .object({
-                  results: z.array(ZLbaItemLbaJob),
-                })
-                .strict()
-                .nullable(),
-              ZApiError,
-            ]),
-            lbaCompanies: z.union([
-              z
-                .object({
-                  results: z.array(ZLbaItemLbaCompany),
-                })
-                .strict()
-                .nullable(),
-              ZApiError,
-            ]),
-          })
-          .strict(),
-        "400": z.union([ZResError, ZLbacError, ZApiError]),
-        "500": z.union([ZResError, ZLbacError, ZApiError]),
-      },
-      securityScheme: {
-        auth: "api-key",
-        access: null,
-        resources: {},
-      },
-      openapi: {
-        tags: ["V2 - Jobs - Min"] as string[],
-        operationId: "getJobOpportunities",
-        description: `Get job opportunities matching the query parameters and returns minimal data\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
-      },
-    },
-    "/v2/jobs/entreprise_lba/:siret": {
-      method: "get",
-      path: "/v2/jobs/entreprise_lba/:siret",
-      params: z
-        .object({
-          siret: extensions.siret,
-        })
-        .strict(),
-      querystring: z
-        .object({
-          caller: zCallerParam,
-        })
-        .strict()
-        .passthrough(),
-      headers: zRefererHeaders,
-      response: {
-        "200": z
-          .object({
-            lbaCompanies: z.array(ZLbaItemLbaCompany),
-          })
-          .strict(),
-        "400": z.union([ZResError, ZLbacError, ZApiError]),
-        "404": z.union([ZResError, ZLbacError, ZApiError]),
-        "500": z.union([ZResError, ZLbacError, ZApiError]),
-      },
-      securityScheme: {
-        auth: "api-key",
-        access: null,
-        resources: {},
-      },
-      openapi: {
-        tags: ["V2 - Jobs"] as string[],
-        operationId: "getCompany",
-        description: `Get one company identified by it's siret\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
     "/v2/jobs/:source/:id": {
@@ -344,24 +229,6 @@ export const zJobsRoutesV2 = {
         auth: "api-apprentissage",
         access: null,
         resources: {},
-      },
-    },
-    "/v2/jobs/matcha/:id/stats/view-details": {
-      method: "post",
-      path: "/v2/jobs/matcha/:id/stats/view-details",
-      params: z
-        .object({
-          id: zObjectId,
-        })
-        .strict(),
-      response: {
-        "200": z.object({}).strict(),
-      },
-      securityScheme: null,
-      openapi: {
-        tags: ["V2 - Jobs"] as string[],
-        operationId: "statsViewLbaJob",
-        description: `Notifies that the detail of a matcha job has been viewed\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
   },
