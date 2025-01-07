@@ -110,7 +110,7 @@ export default function PremiumAffelnetForm() {
                   Votre choix a bien été pris en compte
                 </Text>
                 <Text mt={4} color="grey.800" ml={2}>
-                  Le service RDV Apprentissage n'a pas été activé pour vos formations. Si vous changez d'avis, merci de nous contacter à l'adresse suivante:{" "}
+                  Le service RDV Apprentissage ne sera pas activé pour vos formations. Si vous changez d'avis, merci de nous contacter à l'adresse suivante:{" "}
                   <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Formulaire%20premium%20-%20Activer%20RDVA">labonnealternance@apprentissage.beta.gouv.fr</a>.
                 </Text>
               </Box>
@@ -125,8 +125,6 @@ export default function PremiumAffelnetForm() {
                 </Text>
                 <Text mt={4} color="grey.800" ml={2}>
                   Le service RDV Apprentissage est désormais activé sur Choisir son affectation après la 3e.
-                  <br />
-                  Afin de recevoir les demandes de RDV, assurez-vous que vos coordonnées de contact CARIF OREF sont à jour.
                 </Text>
               </Box>
             </Stack>
