@@ -418,7 +418,7 @@ export function generateOffreToken(user: IUserWithAccount, offre: IJob) {
 export function generateApplicationToken({ company_siret, jobId }: IApplicationTForUserToken) {
   return generateAccessToken(applicationToUserForToken({ company_siret, jobId }), [
     generateScope({
-      schema: zRoutes.post["/_private/application"],
+      schema: zRoutes.post["/v2/_private/application"],
       options: {
         params: undefined,
         querystring: undefined,
