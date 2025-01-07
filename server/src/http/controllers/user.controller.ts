@@ -11,7 +11,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { stopSession } from "@/common/utils/session.service"
 import { getUserFromRequest } from "@/security/authenticationService"
-import { activateUserRole, deactivateUserRole, roleToUserType, entrepriseIsNotMyOpco } from "@/services/roleManagement.service"
+import { activateUserRole, deactivateUserRole, entrepriseIsNotMyOpco, roleToUserType } from "@/services/roleManagement.service"
 import { createSuperUser } from "@/services/userWithAccount.service"
 
 import { getDbCollection } from "../../common/utils/mongodbUtils"
@@ -361,6 +361,12 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/user/:userId/organization/:organizationId/not-my-opco"])],
     },
     async (req, res) => {
+      const { userAccess } = req
+      // restreint la modification de l opco aux opcos et admin
+      if (!(userAccess?.admin || userAccess?.opcos.length)) {
+        throw forbidden()
+      }
+
       const { reason } = req.body
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { userId, organizationId } = req.params
