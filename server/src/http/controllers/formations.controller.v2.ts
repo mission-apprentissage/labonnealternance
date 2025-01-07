@@ -54,7 +54,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { id } = req.params
       const { caller } = req.query
-      const api_path = "/v2/v2/formations/formation/:id"
+      const api_path = "/v2/formations/formation/:id"
       try {
         const formationOpt = await getFormationv2({ id })
         if (formationOpt) {
