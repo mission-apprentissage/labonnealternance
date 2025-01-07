@@ -13,7 +13,7 @@ import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, ma
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import { ILbaCompany, IRecruiter, IReferentielRome, JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models"
-import { IJobsPartnersOfferPrivate, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
+import { FILTER_JOBPARTNERS_LABEL, IJobsPartnersOfferPrivate, INiveauDiplomeEuropeen, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { zJobOfferApiWriteV3, zJobSearchApiV3Response, type IJobOfferApiWriteV3, type IJobOfferApiWriteV3Input } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -159,6 +159,7 @@ describe("findJobsOpportunities", () => {
       workplace_geopoint: parisFixture.centre,
       offer_creation: new Date("2021-01-01"),
       partner_job_id: "job-id-1",
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
     }),
     generateJobsPartnersOfferPrivate({
       _id: new ObjectId("67520b753761274f55ee1dbb"),
@@ -166,6 +167,7 @@ describe("findJobsOpportunities", () => {
       workplace_geopoint: marseilleFixture.centre,
       offer_creation: new Date("2022-01-01"),
       partner_job_id: "job-id-2",
+      partner_label: JOBPARTNERS_LABEL.HELLOWORK,
     }),
     generateJobsPartnersOfferPrivate({
       _id: new ObjectId("67520b8db04d1ef4ff79e1e5"),
@@ -173,6 +175,7 @@ describe("findJobsOpportunities", () => {
       workplace_geopoint: levalloisFixture.centre,
       offer_creation: new Date("2023-01-01"),
       partner_job_id: "job-id-3",
+      partner_label: JOBPARTNERS_LABEL.RH_ALTERNANCE,
     }),
   ]
   const ftJobs: FTJob[] = [
@@ -1419,6 +1422,91 @@ describe("findJobsOpportunities", () => {
         expect(parseResult.error).toBeUndefined()
         expect(results.jobs).toHaveLength(2)
         expect(results.jobs.map((j) => j.offer.target_diploma)).toEqual([null, { european: "3", label: "CAP, BEP, autres formations niveau (CAP)" }])
+      })
+    })
+
+    describe("when filtered by partner_label", () => {
+      beforeEach(async () => {
+        await getDbCollection("jobs_partners").insertMany([
+          generateJobsPartnersOfferPrivate({
+            offer_rome_codes: ["D1104"],
+            workplace_geopoint: parisFixture.centre,
+            partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+            partner_job_id: "job-id-filter-1",
+          }),
+          generateJobsPartnersOfferPrivate({
+            offer_rome_codes: ["D1104"],
+            workplace_geopoint: parisFixture.centre,
+            partner_label: JOBPARTNERS_LABEL.HELLOWORK,
+            partner_job_id: "job-id-filter-2",
+          }),
+          generateJobsPartnersOfferPrivate({
+            offer_rome_codes: ["D1104"],
+            workplace_geopoint: parisFixture.centre,
+            partner_label: JOBPARTNERS_LABEL.HELLOWORK,
+            partner_job_id: "job-id-filter-3",
+          }),
+          generateJobsPartnersOfferPrivate({
+            offer_rome_codes: ["D1104"],
+            workplace_geopoint: parisFixture.centre,
+            partner_label: JOBPARTNERS_LABEL.RH_ALTERNANCE,
+            partner_job_id: "job-id-filter-4",
+          }),
+        ])
+        await getDbCollection("recruiters").deleteMany({})
+      })
+
+      it("should only return jobs without the excluded partner_labels", async () => {
+        let results = await findJobsOpportunities(
+          {
+            longitude: parisFixture.centre.coordinates[0],
+            latitude: parisFixture.centre.coordinates[1],
+            radius: 30,
+            romes: ["D1104"],
+            rncp: null,
+            partners_to_exclude: [FILTER_JOBPARTNERS_LABEL.HELLOWORK],
+          },
+          new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
+        )
+
+        const parseResult = zJobSearchApiV3Response.safeParse(results)
+        expect.soft(parseResult.success).toBeTruthy()
+        expect(parseResult.error).toBeUndefined()
+        expect.soft(results.jobs).toHaveLength(2)
+        expect.soft(results.jobs[0].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA)
+        expect.soft(results.jobs[1].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.RH_ALTERNANCE)
+
+        results = await findJobsOpportunities(
+          {
+            longitude: parisFixture.centre.coordinates[0],
+            latitude: parisFixture.centre.coordinates[1],
+            radius: 30,
+            romes: ["D1104"],
+            rncp: null,
+            partners_to_exclude: [FILTER_JOBPARTNERS_LABEL.RH_ALTERNANCE],
+          },
+          new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
+        )
+
+        expect.soft(results.jobs).toHaveLength(3)
+        expect.soft(results.jobs[0].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA)
+        expect.soft(results.jobs[1].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.HELLOWORK)
+        expect.soft(results.jobs[2].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.HELLOWORK)
+
+        results = await findJobsOpportunities(
+          {
+            longitude: parisFixture.centre.coordinates[0],
+            latitude: parisFixture.centre.coordinates[1],
+            radius: 30,
+            romes: ["D1104"],
+            rncp: null,
+            partners_to_exclude: [FILTER_JOBPARTNERS_LABEL.RH_ALTERNANCE, FILTER_JOBPARTNERS_LABEL.HELLOWORK],
+          },
+          new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
+        )
+
+        expect.soft(results.jobs).toHaveLength(1)
+        expect.soft(results.jobs[0].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA)
       })
     })
   })
