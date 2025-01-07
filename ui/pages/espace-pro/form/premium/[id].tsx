@@ -109,7 +109,10 @@ export default function PremiumForm() {
                 </Text>
                 <Text mt={4} color="grey.800" ml={2}>
                   Le service RDV Apprentissage ne sera pas activé pour vos formations. Si vous changez d'avis, merci de nous contacter à l'adresse suivante:{" "}
-                  <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Formulaire%20premium%20-%20Activer%20RDVA">labonnealternance@apprentissage.beta.gouv.fr</a>.
+                  <a style={{ textDecoration: "underline" }} href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Formulaire%20premium%20-%20Activer%20RDVA">
+                    labonnealternance@apprentissage.beta.gouv.fr
+                  </a>
+                  .
                 </Text>
               </Box>
             </Stack>
