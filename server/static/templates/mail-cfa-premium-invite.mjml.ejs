@@ -30,11 +30,11 @@
         <mj-text>
           En activant le service, un formulaire de contact est affiché sur vos formations dans 
           <% if(data.isParcoursup){ %>
-          <b>Parcoursup</b>
-          <% } %> <% if(data.isAffelnet){ %>
-          <b>Choisir son affectation après la 3e</b>
-          <% } %>
-          . Les candidats intéressés peuvent ainsi vous adresser leurs questions, que vous recevez par courriel.
+          <b>Parcoursup</b>.
+          <%}%>
+          <% if(data.isAffelnet){ %>
+          <b>Choisir son affectation après la 3e</b>.
+          <%}%> Les candidats intéressés peuvent ainsi vous adresser leurs questions, que vous recevez par courriel.
         </mj-text>
         <mj-button color="#ffffff" padding-top="20px" padding-bottom="20px" background-color="#000091" href="<%= data.etablissement.linkToForm %>">
           Je souhaite activer le service
