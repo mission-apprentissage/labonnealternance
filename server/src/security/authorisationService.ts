@@ -45,7 +45,7 @@ export type ResourceIds = {
 }
 
 // Specify what we need to simplify mocking in tests
-type IRequest = Pick<FastifyRequest, "user" | "params" | "query" | "authorizationContext">
+type IRequest = Pick<FastifyRequest, "user" | "params" | "query" | "authorizationContext" | "userAccess">
 
 // TODO: Unit test access control
 // TODO: job.delegations
@@ -419,6 +419,14 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
     grantedRoles = await getGrantedRoles(_id.toString())
     const isAdmin = grantedRoles.some((role) => role.authorized_type === AccessEntityType.ADMIN)
     if (isAdmin) {
+      req.userAccess = {
+        admin: true,
+        users: [],
+        cfas: [],
+        entreprises: [],
+        opcos: [],
+        partner_label: [],
+      }
       return
     }
     if (!grantedRoles.length) {
@@ -449,12 +457,14 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
     if (!isAuthorized(requestedAccess, userAccess, resources)) {
       throw forbidden("non autorisé")
     }
+    req.userAccess = userAccess
   } else if (userType === "IUser2") {
     const { _id } = userWithType.value
     const userAccess: ComputedUserAccess = getComputedUserAccess(_id.toString(), grantedRoles)
     if (!isAuthorized(requestedAccess, userAccess, resources)) {
       throw forbidden("non autorisé")
     }
+    req.userAccess = userAccess
   } else if (userType === "IApiApprentissage") {
     const { organisation, habilitations } = userWithType.value
     if (!organisation) {
@@ -474,6 +484,7 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
     if (!isAuthorized(requestedAccess, userAccess, resources)) {
       throw forbidden("Unauthorized")
     }
+    req.userAccess = userAccess
   } else {
     assertUnreachable(userType)
   }
