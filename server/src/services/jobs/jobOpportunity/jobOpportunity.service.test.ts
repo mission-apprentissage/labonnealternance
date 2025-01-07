@@ -159,7 +159,6 @@ describe("findJobsOpportunities", () => {
       workplace_geopoint: parisFixture.centre,
       offer_creation: new Date("2021-01-01"),
       partner_job_id: "job-id-1",
-      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
     }),
     generateJobsPartnersOfferPrivate({
       _id: new ObjectId("67520b753761274f55ee1dbb"),
@@ -167,7 +166,6 @@ describe("findJobsOpportunities", () => {
       workplace_geopoint: marseilleFixture.centre,
       offer_creation: new Date("2022-01-01"),
       partner_job_id: "job-id-2",
-      partner_label: JOBPARTNERS_LABEL.HELLOWORK,
     }),
     generateJobsPartnersOfferPrivate({
       _id: new ObjectId("67520b8db04d1ef4ff79e1e5"),
@@ -175,7 +173,6 @@ describe("findJobsOpportunities", () => {
       workplace_geopoint: levalloisFixture.centre,
       offer_creation: new Date("2023-01-01"),
       partner_job_id: "job-id-3",
-      partner_label: JOBPARTNERS_LABEL.RH_ALTERNANCE,
     }),
   ]
   const ftJobs: FTJob[] = [
