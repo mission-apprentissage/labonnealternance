@@ -1,5 +1,4 @@
-import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Button, Container, Flex, Stack, Text } from "@chakra-ui/react"
+import { Box, Button, Container, Stack, Text } from "@chakra-ui/react"
 import Head from "next/head"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
@@ -8,7 +7,7 @@ import { IEtablissementJson } from "shared"
 import { apiGet, apiPost } from "@/utils/api.utils"
 
 import { Layout } from "../../../../components/espace_pro"
-import { InfoCircleFilled, SuccessCircle } from "../../../../theme/components/icons"
+import { SuccessCircle } from "../../../../theme/components/icons"
 
 type IPremiumEtablissement = {
   raison_sociale: string
@@ -135,9 +134,7 @@ export default function PremiumForm() {
                   Activation du service “RDV Apprentissage” sur Parcoursup
                 </Text>
               </Box>
-              <Text mt={6}>
-                En activant le service RDV Apprentissage, je m'engage auprès de Parcoursup à :
-              </Text>
+              <Text mt={6}>En activant le service RDV Apprentissage, je m'engage auprès de Parcoursup à :</Text>
               <Stack direction="row" align="center">
                 <SuccessCircle fillHexaColor="#00AC8C" />
                 <Text fontWeight="700">Répondre par email ou téléphone à tous les candidats qui me contacteront</Text>
