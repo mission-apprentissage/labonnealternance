@@ -25,11 +25,11 @@ const config = {
 
 export default (server: Server) => {
   server.get(
-    "/jobs/establishment",
+    "/v2/jobs/establishment",
     {
-      schema: zRoutes.get["/jobs/establishment"],
+      schema: zRoutes.get["/v2/jobs/establishment"],
       config,
-      onRequest: server.auth(zRoutes.get["/jobs/establishment"]),
+      onRequest: server.auth(zRoutes.get["/v2/jobs/establishment"]),
     },
     async (req, res) => {
       const { establishment_siret, email } = req.query
@@ -45,16 +45,16 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/jobs/bulk",
+    "/v2/jobs/bulk",
     {
-      schema: zRoutes.get["/jobs/bulk"],
+      schema: zRoutes.get["/v2/jobs/bulk"],
       config,
-      onRequest: server.auth(zRoutes.get["/jobs/bulk"]),
+      onRequest: server.auth(zRoutes.get["/v2/jobs/bulk"]),
     },
     async (req, res) => {
       const { query, select, page, limit } = req.query
 
-      const user = getUserFromRequest(req, zRoutes.get["/jobs/bulk"]).value
+      const user = getUserFromRequest(req, zRoutes.get["/v2/jobs/bulk"]).value
 
       const qs = query ? JSON.parse(query) : {}
       const slt = select ? JSON.parse(select) : {}
@@ -67,10 +67,10 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/jobs/provided/:id",
+    "/v2/jobs/provided/:id",
     {
-      schema: zRoutes.post["/jobs/provided/:id"],
-      onRequest: server.auth(zRoutes.post["/jobs/provided/:id"]),
+      schema: zRoutes.post["/v2/jobs/provided/:id"],
+      onRequest: server.auth(zRoutes.post["/v2/jobs/provided/:id"]),
       config,
     },
     async (req, res) => {
@@ -89,10 +89,10 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/jobs/canceled/:id",
+    "/v2/jobs/canceled/:id",
     {
-      schema: zRoutes.post["/jobs/canceled/:id"],
-      onRequest: server.auth(zRoutes.post["/jobs/canceled/:id"]),
+      schema: zRoutes.post["/v2/jobs/canceled/:id"],
+      onRequest: server.auth(zRoutes.post["/v2/jobs/canceled/:id"]),
       config,
     },
     async (req, res) => {
@@ -111,10 +111,10 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/jobs/extend/:id",
+    "/v2/jobs/extend/:id",
     {
-      schema: zRoutes.post["/jobs/extend/:id"],
-      onRequest: server.auth(zRoutes.post["/jobs/extend/:id"]),
+      schema: zRoutes.post["/v2/jobs/extend/:id"],
+      onRequest: server.auth(zRoutes.post["/v2/jobs/extend/:id"]),
       config,
     },
     async (req, res) => {
@@ -136,9 +136,9 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/jobs/min",
+    "/v2/jobs/min",
     {
-      schema: zRoutes.get["/jobs/min"],
+      schema: zRoutes.get["/v2/jobs/min"],
       config,
     },
     async (req, res) => {
@@ -154,10 +154,10 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/jobs/entreprise_lba/:siret",
+    "/v2/jobs/entreprise_lba/:siret",
     {
-      schema: zRoutes.get["/jobs/entreprise_lba/:siret"],
-      onRequest: server.auth(zRoutes.get["/jobs/entreprise_lba/:siret"]),
+      schema: zRoutes.get["/v2/jobs/entreprise_lba/:siret"],
+      onRequest: server.auth(zRoutes.get["/v2/jobs/entreprise_lba/:siret"]),
       config,
     },
     async (req, res) => {
@@ -185,10 +185,10 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/jobs/:source/:id",
+    "/v2/jobs/:source/:id",
     {
-      schema: zRoutes.get["/jobs/:source/:id"],
-      onRequest: server.auth(zRoutes.get["/jobs/:source/:id"]),
+      schema: zRoutes.get["/v2/jobs/:source/:id"],
+      onRequest: server.auth(zRoutes.get["/v2/jobs/:source/:id"]),
       config,
     },
     async (req, res) => {
@@ -219,9 +219,9 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/jobs/matcha/:id/stats/view-details",
+    "/v2/jobs/matcha/:id/stats/view-details",
     {
-      schema: zRoutes.post["/jobs/matcha/:id/stats/view-details"],
+      schema: zRoutes.post["/v2/jobs/matcha/:id/stats/view-details"],
       config,
     },
     async (req, res) => {
@@ -232,10 +232,10 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/jobs/export",
+    "/v2/jobs/export",
     {
-      schema: zRoutes.get["/jobs/export"],
-      onRequest: server.auth(zRoutes.get["/jobs/export"]),
+      schema: zRoutes.get["/v2/jobs/export"],
+      onRequest: server.auth(zRoutes.get["/v2/jobs/export"]),
       config: {
         rateLimit: {
           max: 1,
@@ -244,13 +244,13 @@ export default (server: Server) => {
       },
     },
     async (req, res) => {
-      const user = getUserFromRequest(req, zRoutes.get["/jobs/export"]).value
+      const user = getUserFromRequest(req, zRoutes.get["/v2/jobs/export"]).value
       const { source } = req.query
       if (source === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
         try {
           const key = `${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}.json`
           const url = await s3SignedUrl("storage", key, { expiresIn: 120 })
-          trackApiCall({ caller: user._id.toString(), api_path: `${zRoutes.get["/jobs/export"].path}/${source}`, response: "OK" })
+          trackApiCall({ caller: user._id.toString(), api_path: `${zRoutes.get["/v2/jobs/export"].path}/${source}`, response: "OK" })
           return res.send(url)
         } catch (error) {
           sentryCaptureException(error)
@@ -260,7 +260,7 @@ export default (server: Server) => {
         try {
           const key = `${LBA_ITEM_TYPE.RECRUTEURS_LBA}.json`
           const url = await s3SignedUrl("storage", key, { expiresIn: 120 })
-          trackApiCall({ caller: user._id.toString(), api_path: `${zRoutes.get["/jobs/export"].path}/${source}`, response: "OK" })
+          trackApiCall({ caller: user._id.toString(), api_path: `${zRoutes.get["/v2/jobs/export"].path}/${source}`, response: "OK" })
           return res.send(url)
         } catch (error) {
           sentryCaptureException(error)

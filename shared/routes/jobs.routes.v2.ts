@@ -25,9 +25,9 @@ import { IRoutesDef, ZResError } from "./common.routes"
 
 export const zJobsRoutesV2 = {
   get: {
-    "/jobs/establishment": {
+    "/v2/jobs/establishment": {
       method: "get",
-      path: "/jobs/establishment",
+      path: "/v2/jobs/establishment",
       querystring: z
         .object({
           establishment_siret: extensions.siret,
@@ -59,9 +59,9 @@ export const zJobsRoutesV2 = {
         description: `Get existing establishment id from siret & email\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
-    "/jobs/bulk": {
+    "/v2/jobs/bulk": {
       method: "get",
-      path: "/jobs/bulk",
+      path: "/v2/jobs/bulk",
       querystring: z
         .object({
           query: z
@@ -125,9 +125,9 @@ export const zJobsRoutesV2 = {
         operationId: "getJobs",
       },
     },
-    "/jobs/min": {
+    "/v2/jobs/min": {
       method: "get",
-      path: "/jobs/min",
+      path: "/v2/jobs/min",
       querystring: z
         .object({
           romes: zRomesParams("rncp"),
@@ -191,9 +191,9 @@ export const zJobsRoutesV2 = {
         description: `Get job opportunities matching the query parameters and returns minimal data\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
-    "/jobs/entreprise_lba/:siret": {
+    "/v2/jobs/entreprise_lba/:siret": {
       method: "get",
-      path: "/jobs/entreprise_lba/:siret",
+      path: "/v2/jobs/entreprise_lba/:siret",
       params: z
         .object({
           siret: extensions.siret,
@@ -227,9 +227,9 @@ export const zJobsRoutesV2 = {
         description: `Get one company identified by it's siret\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
-    "/jobs/:source/:id": {
+    "/v2/jobs/:source/:id": {
       method: "get",
-      path: "/jobs/:source/:id",
+      path: "/v2/jobs/:source/:id",
       params: z
         .object({
           source: zSourcesParams,
@@ -268,9 +268,9 @@ export const zJobsRoutesV2 = {
         description: `Get one lba job identified by it's id\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
-    "/jobs/export": {
+    "/v2/jobs/export": {
       method: "get",
-      path: "/jobs/export",
+      path: "/v2/jobs/export",
       querystring: z
         .object({
           source: z.enum([LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, LBA_ITEM_TYPE.RECRUTEURS_LBA]),
@@ -295,9 +295,9 @@ export const zJobsRoutesV2 = {
     },
   },
   post: {
-    "/jobs/provided/:id": {
+    "/v2/jobs/provided/:id": {
       method: "post",
-      path: "/jobs/provided/:id",
+      path: "/v2/jobs/provided/:id",
       params: z
         .object({
           id: zObjectId,
@@ -312,9 +312,9 @@ export const zJobsRoutesV2 = {
         resources: {},
       },
     },
-    "/jobs/canceled/:id": {
+    "/v2/jobs/canceled/:id": {
       method: "post",
-      path: "/jobs/canceled/:id",
+      path: "/v2/jobs/canceled/:id",
       params: z
         .object({
           id: zObjectId,
@@ -329,9 +329,9 @@ export const zJobsRoutesV2 = {
         resources: {},
       },
     },
-    "/jobs/extend/:id": {
+    "/v2/jobs/extend/:id": {
       method: "post",
-      path: "/jobs/extend/:id",
+      path: "/v2/jobs/extend/:id",
       params: z
         .object({
           id: zObjectId,
@@ -346,9 +346,9 @@ export const zJobsRoutesV2 = {
         resources: {},
       },
     },
-    "/jobs/matcha/:id/stats/view-details": {
+    "/v2/jobs/matcha/:id/stats/view-details": {
       method: "post",
-      path: "/jobs/matcha/:id/stats/view-details",
+      path: "/v2/jobs/matcha/:id/stats/view-details",
       params: z
         .object({
           id: zObjectId,
