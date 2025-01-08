@@ -10150,6 +10150,24 @@ Limite : 5 appel(s) / 1 seconde(s)
               ],
             },
           },
+          {
+            "in": "query",
+            "name": "partners_to_exclude",
+            "required": false,
+            "schema": {
+              "items": {
+                "enum": [
+                  "Hello work",
+                  "RH Alternance",
+                ],
+                "type": "string",
+              },
+              "type": [
+                "array",
+                "null",
+              ],
+            },
+          },
         ],
         "responses": {
           "200": {

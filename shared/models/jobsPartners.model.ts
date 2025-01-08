@@ -17,6 +17,11 @@ export enum JOBPARTNERS_LABEL {
   RH_ALTERNANCE = "RH Alternance",
 }
 
+export enum FILTER_JOBPARTNERS_LABEL {
+  HELLOWORK = JOBPARTNERS_LABEL.HELLOWORK,
+  RH_ALTERNANCE = JOBPARTNERS_LABEL.RH_ALTERNANCE,
+}
+
 export const ZJobsPartnersRecruiterApi = z.object({
   _id: zObjectId,
   workplace_siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
