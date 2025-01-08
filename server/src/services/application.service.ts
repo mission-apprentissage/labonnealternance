@@ -164,7 +164,7 @@ export const sendApplication = async ({
   if (!validateCaller({ caller: newApplication.caller, referer })) {
     return { error: "missing_caller" }
   } else {
-    let validationResult = validatePermanentEmail(newApplication.applicant_email)
+    let validationResult = validatePermanentEmail(applicant_email)
     if (validationResult !== "ok") {
       return { error: validationResult }
     }
@@ -555,12 +555,8 @@ const newApplicationToApplicationDocumentV2 = async (
   const application: IApplication = {
     _id: new ObjectId(),
     applicant_id: applicant._id,
-    applicant_first_name: newApplication.applicant_first_name,
-    applicant_last_name: newApplication.applicant_last_name,
     applicant_attachment_name: newApplication.applicant_attachment_name,
-    applicant_email: newApplication.applicant_email.toLowerCase(),
     applicant_message_to_company: prepareMessageForMail(newApplication.applicant_message),
-    applicant_phone: newApplication.applicant_phone,
     job_searched_by_user: "job_searched_by_user" in newApplication ? newApplication.job_searched_by_user : null,
     company_recruitment_intention: null,
     company_feedback: null,
@@ -788,11 +784,12 @@ export const sendMailToApplicant = async ({
 }): Promise<void> => {
   const partner = (application.caller && PARTNER_NAMES[application.caller]) ?? null
   const jobSourceType: string = await getJobSourceType(application)
+  const { email: applicantEmail } = applicant
 
   switch (company_recruitment_intention) {
     case ApplicantIntention.ENTRETIEN: {
       mailer.sendEmail({
-        to: applicant.email,
+        to: applicantEmail,
         cc: email!,
         subject: `Réponse positive de ${application.company_name} à la candidature${partner ? ` ${partner}` : ""} de ${applicant.firstname} ${applicant.lastname}`,
         template: getEmailTemplate("mail-candidat-entretien"),
@@ -811,7 +808,7 @@ export const sendMailToApplicant = async ({
     }
     case ApplicantIntention.NESAISPAS: {
       mailer.sendEmail({
-        to: application.applicant_email,
+        to: applicantEmail,
         cc: email!,
         subject: `Réponse de ${application.company_name} à la candidature de ${applicant.firstname} ${applicant.lastname}`,
         template: getEmailTemplate("mail-candidat-nsp"),
@@ -829,7 +826,7 @@ export const sendMailToApplicant = async ({
     }
     case ApplicantIntention.REFUS: {
       mailer.sendEmail({
-        to: application.applicant_email,
+        to: applicantEmail,
         subject: `Réponse négative de ${application.company_name} à la candidature${partner ? ` ${partner}` : ""} de ${applicant.firstname} ${applicant.lastname}`,
         template: getEmailTemplate("mail-candidat-refus"),
         data: {
@@ -1024,6 +1021,7 @@ const getApplicationAttachmentContent = async (application: IApplication): Promi
 export const processApplicationScanForVirus = async (application: IApplication, applicant: IApplicant) => {
   const fileContent = await getApplicationAttachmentContent(application)
   const hasVirus = await isInfected(fileContent)
+  const { email: applicantEmail } = applicant
   await getDbCollection("applications").findOneAndUpdate(
     { _id: application._id },
     { $set: { scan_status: hasVirus ? ApplicationScanStatus.VIRUS_DETECTED : ApplicationScanStatus.NO_VIRUS_DETECTED } }
@@ -1032,7 +1030,7 @@ export const processApplicationScanForVirus = async (application: IApplication, 
   if (hasVirus) {
     const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, application, { utm_campaign: "je-candidate-virus-pj" })
     await mailer.sendEmail({
-      to: application.applicant_email,
+      to: applicantEmail,
       subject: "Echec d'envoi de votre candidature",
       template: getEmailTemplate("mail-echec-envoi-candidature"),
       data: {
@@ -1074,7 +1072,7 @@ export const processApplicationEmails = {
       to: application.company_email,
       subject:
         (type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? `Candidature spontanée en alternance ${application.company_name}` : `Candidature en alternance - ${application.job_title}`) +
-        ` - ${application.applicant_first_name} ${application.applicant_last_name}`,
+        ` - ${applicant.firstname} ${applicant.lastname}`,
       template: getEmailTemplate(type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? "mail-candidature-spontanee" : "mail-candidature"),
       data: {
         ...sanitizeApplicationForEmail(application),
@@ -1094,7 +1092,7 @@ export const processApplicationEmails = {
     if (emailCompany?.accepted?.length) {
       await getDbCollection("applications").findOneAndUpdate({ _id: application._id }, { $set: { to_company_message_id: emailCompany.messageId } })
     } else {
-      logger.error(`Application email rejected. applicant_email=${application.applicant_email} company_email=${application.company_email}`)
+      logger.error(`Application email rejected. applicant_email=${applicant.email} company_email=${application.company_email}`)
       throw internal("Email entreprise destinataire rejeté.")
     }
   },

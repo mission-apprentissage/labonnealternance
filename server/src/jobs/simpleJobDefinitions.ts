@@ -3,7 +3,6 @@ import { generateSitemap } from "@/services/sitemap.service"
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonymizeUserRecruteurs"
 import { anonymizeUsers } from "./anonymization/anonymizeUsers"
-import fixApplications from "./applications/fixApplications"
 import { processApplications } from "./applications/processApplications"
 import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
 import { obfuscateCollections } from "./database/obfuscateCollections"
@@ -151,10 +150,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: fixJobExpirationDate,
     description: "Répare les date d'expiration d'offre qui seraient trop dans le futur",
-  },
-  {
-    fct: fixApplications,
-    description: "Répare les adresses emails comportant des caractères erronés dans la collection applications",
   },
   {
     fct: fixRecruiterDataValidation,
