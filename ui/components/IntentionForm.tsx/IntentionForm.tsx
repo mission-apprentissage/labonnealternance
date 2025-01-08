@@ -20,7 +20,7 @@ const textAreaProperties = {
   background: "grey.200",
   borderRadius: "4px 4px 0px 0px",
   width: "100%",
-  height: "140px",
+  height: "250px",
   paddingLeft: 4,
   borderBottom: "2px solid",
 }
