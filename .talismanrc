@@ -119,6 +119,8 @@ fileignoreconfig:
   checksum: 0b806bca197dba97415902339e84f924cb45dae766cf8d3cfc47d80d2bdd203c
 - filename: server/static/templates/mail-candidat-refus.mjml.ejs
   checksum: 3fcfa9586df3283a3f50cf6751b735b646d3f3ac64e8e4a8453999e9e5aea881
+- filename: server/static/templates/mail-cfa-delegation.mjml.ejs
+  checksum: 569e084a81ffdfbd3b427a60c0712ec2f1af2031fe120572e55235691e84dc5b
 - filename: server/static/templates/mail-echec-envoi-candidature.mjml.ejs
   checksum: 9055c5495ced85a674770e7fb8a81b3bd84949f9ff8f6e6450989aa3b7cda326
 - filename: server/tests/fixture/connectedUser.fixture.ts

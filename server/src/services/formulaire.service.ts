@@ -18,7 +18,7 @@ import { getDbCollection } from "../common/utils/mongodbUtils"
 import config from "../config"
 
 import { getUser2ManagingOffer } from "./application.service"
-import { createCfaUnsubscribeToken, createViewDelegationLink } from "./appLinks.service"
+import { createViewDelegationLink } from "./appLinks.service"
 import { getCatalogueFormations } from "./catalogue.service"
 import dayjs from "./dayjs.service"
 import { sendEmailConfirmationEntreprise } from "./etablissement.service"
@@ -768,7 +768,7 @@ export const getJobWithRomeDetail = async (id: string | ObjectId): Promise<IJobW
 export async function sendDelegationMailToCFA(email: string, offre: IJob, recruiter: IRecruiter, siret_code: string) {
   const unsubscribeOF = await getDbCollection("unsubscribedofs").findOne({ establishment_siret: siret_code })
   if (unsubscribeOF) return
-  const unsubscribeToken = createCfaUnsubscribeToken(email, siret_code)
+  //const unsubscribeToken = createCfaUnsubscribeToken(email, siret_code)
   await mailer.sendEmail({
     to: email,
     subject: `Une entreprise recrute dans votre domaine`,
@@ -783,10 +783,13 @@ export async function sendDelegationMailToCFA(email: string, offre: IJob, recrui
       trainingLevel: offre.job_level_label,
       startDate: dayjs(offre.job_start_date).format("DD/MM/YYYY"),
       duration: offre.job_duration,
-      rhythm: offre.job_rythm,
-      offerButton: createViewDelegationLink(email, recruiter.establishment_id, offre._id.toString(), siret_code),
-      createAccountButton: `${config.publicUrl}/espace-pro/creation/cfa`,
-      unsubscribeUrl: `${config.publicUrl}/espace-pro/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}/unsubscribe?token=${unsubscribeToken}`,
+      origin: recruiter.origin,
+      offerButton:
+        createViewDelegationLink(email, recruiter.establishment_id, offre._id.toString(), siret_code) +
+        "&utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_consulter-coord-entreprise",
+      createAccountButton: `${config.publicUrl}/organisme-de-formation?utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_creer-compte`,
+      policyUrl: `${config.publicUrl}/politique-de-confidentialite?utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_politique-confidentialite`,
+      //unsubscribeUrl: `${config.publicUrl}/espace-pro/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}/unsubscribe?token=${unsubscribeToken}`,
     },
   })
 }
