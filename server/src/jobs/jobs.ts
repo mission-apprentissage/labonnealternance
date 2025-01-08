@@ -41,6 +41,7 @@ import { inviteEtablissementParcoursupToPremium } from "./rdv/inviteEtablissemen
 import { inviteEtablissementParcoursupToPremiumFollowUp } from "./rdv/inviteEtablissementParcoursupToPremiumFollowUp"
 import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
 import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
+import { resetInvitationDates } from "./rdv/resetInvitationDates"
 import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
 import { cancelOfferJob } from "./recruiters/cancelOfferJob"
@@ -130,6 +131,10 @@ export async function setupJobProcessor() {
           "Synchronise les dates des etablissements eligible à la prise de rendez-vous": {
             cron_string: "0 5 * * *",
             handler: syncEtablissementDates,
+          },
+          "Supprime les dates d'invitation et de refus au premium (PARCOURSUP & AFFELNET) des etablissements": {
+            cron_string: "0 0 20 11 *",
+            handler: resetInvitationDates,
           },
           "Historisation des formations éligibles à la prise de rendez-vous": {
             cron_string: "55 2 * * *",
