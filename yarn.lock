@@ -7846,7 +7846,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cli-table3@npm:^0.6.1, cli-table3@npm:^0.6.3, cli-table3@npm:~0.6.1":
+"cli-table3@npm:^0.6.3, cli-table3@npm:~0.6.1":
   version: 0.6.5
   resolution: "cli-table3@npm:0.6.5"
   dependencies:
@@ -8084,7 +8084,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^9.1.0, commander@npm:^9.5.0":
+"commander@npm:^9.5.0":
   version: 9.5.0
   resolution: "commander@npm:9.5.0"
   checksum: c7a3e27aa59e913b54a1bafd366b88650bc41d6651f0cbe258d4ff09d43d6a7394232a4dadd0bf518b3e696fdf595db1028a0d82c785b88bd61f8a440cecfade
@@ -8707,7 +8707,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^2.15.0, date-fns@npm:^2.28.0, date-fns@npm:^2.30.0":
+"date-fns@npm:^2.15.0, date-fns@npm:^2.30.0":
   version: 2.30.0
   resolution: "date-fns@npm:2.30.0"
   dependencies:
@@ -11102,13 +11102,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fn-args@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "fn-args@npm:5.0.0"
-  checksum: 51af66d5188a6243a33a9afc7309bcf24908331b16d8df2c10afad8dea0f39985e50ab9b53fd4bc4dfebcdc3cf7e1cb80cd46c76d69d34e4fd9deaa170b19765
-  languageName: node
-  linkType: hard
-
 "focus-lock@npm:^1.3.5":
   version: 1.3.5
   resolution: "focus-lock@npm:1.3.5"
@@ -11306,17 +11299,6 @@ __metadata:
     inherits: ^2.0.1
     readable-stream: ^2.0.0
   checksum: 6080eba0793dce32f475141fb3d54cc15f84ee52e420ee22ac3ab0ad639dc95a1875bc6eb9c0e1140e94972a36a89dc5542491b85f1ab8df0c126241e0f1a61b
-  languageName: node
-  linkType: hard
-
-"fs-extra@npm:^10.0.1":
-  version: 10.1.0
-  resolution: "fs-extra@npm:10.1.0"
-  dependencies:
-    graceful-fs: ^4.2.0
-    jsonfile: ^6.0.1
-    universalify: ^2.0.0
-  checksum: dc94ab37096f813cc3ca12f0f1b5ad6744dfed9ed21e953d72530d103cea193c2f81584a39e9dee1bea36de5ee66805678c0dddc048e8af1427ac19c00fffc50
   languageName: node
   linkType: hard
 
@@ -14988,25 +14970,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"migrate-mongo@npm:^11.0.0":
-  version: 11.0.0
-  resolution: "migrate-mongo@npm:11.0.0"
-  dependencies:
-    cli-table3: ^0.6.1
-    commander: ^9.1.0
-    date-fns: ^2.28.0
-    fn-args: ^5.0.0
-    fs-extra: ^10.0.1
-    lodash: ^4.17.21
-    p-each-series: ^2.2.0
-  peerDependencies:
-    mongodb: ^4.4.1 || ^5.0.0 || ^6.0.0
-  bin:
-    migrate-mongo: bin/migrate-mongo.js
-  checksum: 63d96214b5c8796e5bddf653b80524daf3a6d8511e7076f3bb1a8e18146a4b9366763aa3ce0474d7072022456ea8cbedf760d1e45146e7a0aac333e37505bc2c
-  languageName: node
-  linkType: hard
-
 "mime-db@npm:1.52.0":
   version: 1.52.0
   resolution: "mime-db@npm:1.52.0"
@@ -16904,13 +16867,6 @@ __metadata:
   version: 1.0.0
   resolution: "p-defer@npm:1.0.0"
   checksum: 4271b935c27987e7b6f229e5de4cdd335d808465604644cb7b4c4c95bef266735859a93b16415af8a41fd663ee9e3b97a1a2023ca9def613dba1bad2a0da0c7b
-  languageName: node
-  linkType: hard
-
-"p-each-series@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "p-each-series@npm:2.2.0"
-  checksum: 5fbe2f1f1966f55833bd401fe36f7afe410707d5e9fb6032c6dde8aa716d50521c3bb201fdb584130569b5941d5e84993e09e0b3f76a474288e0ede8f632983c
   languageName: node
   linkType: hard
 
@@ -19825,7 +19781,6 @@ __metadata:
     luxon: ^3.5.0
     match-sorter: ^6.3.1
     memoizee: ^0.4.15
-    migrate-mongo: ^11.0.0
     miniget: ^4.2.3
     mjml: ^4.14.1
     mongodb: ^6.7.0

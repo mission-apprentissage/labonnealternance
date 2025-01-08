@@ -339,8 +339,12 @@ export async function setupJobProcessor() {
       },
       "migrations:status": {
         handler: async () => {
-          const pendingMigrations = await statusMigration()
-          console.info(`migrations-status=${pendingMigrations === 0 ? "synced" : "pending"}`)
+          const { count, requireShutdown } = await statusMigration()
+          if (count === 0) {
+            console.log("migrations-status=synced")
+          } else {
+            console.log(`migrations-status=${requireShutdown ? "require-shutdown" : "pending"}`)
+          }
           return
         },
       },
