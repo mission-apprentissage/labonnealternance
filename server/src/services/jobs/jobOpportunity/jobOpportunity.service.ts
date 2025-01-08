@@ -252,11 +252,15 @@ export const getJobsQuery = async (
   return result
 }
 
-export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivate[]> => {
+export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level, partners_to_exclude }: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivate[]> => {
   const query: Filter<IJobsPartnersOfferPrivate> = {
     offer_multicast: true,
     offer_status: JOB_STATUS_ENGLISH.ACTIVE,
     offer_expiration: { $gt: new Date() },
+  }
+
+  if (partners_to_exclude?.length) {
+    query.partner_label = { $not: { $in: partners_to_exclude } }
   }
 
   if (romes) {
@@ -338,8 +342,8 @@ export const getJobsPartnersFromDBForUI = async ({ romes, geo, target_diploma_le
     .toArray()
 }
 
-export const getJobsPartnersForApi = async ({ romes, geo, target_diploma_level }: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> => {
-  const jobsPartners = await getJobsPartnersFromDB({ romes, geo, target_diploma_level })
+export const getJobsPartnersForApi = async ({ romes, geo, target_diploma_level, partners_to_exclude }: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> => {
+  const jobsPartners = await getJobsPartnersFromDB({ romes, geo, target_diploma_level, partners_to_exclude })
 
   return jobsPartners.map((j) =>
     jobsRouteApiv3Converters.convertToJobOfferApiReadV3({
