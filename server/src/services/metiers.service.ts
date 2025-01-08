@@ -294,10 +294,9 @@ const getLabelsAndRomesForDiplomas = async (searchTerm: string): Promise<{ label
  */
 export const getCoupleAppellationRomeIntitule = async (searchTerm: string): Promise<IAppellationsRomes> => {
   const metiers = await getCacheReferentielRome()
-
   const sorted = matchSorter(metiers, searchTerm, {
     keys: ["appellation", "intitule"],
-    threshold: matchSorter.rankings.NO_MATCH,
+    threshold: matchSorter.rankings.ACRONYM,
   })
 
   return { coupleAppellationRomeMetier: sorted.slice(0, 30) }
