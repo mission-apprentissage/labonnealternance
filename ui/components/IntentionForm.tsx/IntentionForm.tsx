@@ -208,13 +208,13 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
                     )}
 
                     {sendingState === "not_sent_because_of_errors" ? (
-                      <Box mt={8} fontWeight={700}>
+                      <Box mt={8} mb={8} fontWeight={700}>
                         <Box mb={2} lineHeight="20px" fontSize="12px" color="#e10600">
                           Une erreur technique s'est produite
                         </Box>
                       </Box>
                     ) : (
-                      <Flex direction="row-reverse">
+                      <Flex direction={{ base: "column-reverse", md: "row-reverse" }} mb={8}>
                         <Button
                           mt={4}
                           variant="form"
@@ -230,7 +230,7 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
 
                         <Button
                           mt={4}
-                          mr={4}
+                          mr={{ base: 0, md: 4 }}
                           variant="cancelForm"
                           aria-label="Annuler l’envoi de la réponse"
                           type="button"
