@@ -15,40 +15,40 @@ const config = {
 
 export default (server: Server) => {
   server.get(
-    "/formations",
+    "/v2/formations",
     {
-      schema: zRoutes.get["/formations"],
-      onRequest: server.auth(zRoutes.get["/formations"]),
+      schema: zRoutes.get["/v2/formations"],
+      onRequest: server.auth(zRoutes.get["/v2/formations"]),
       config,
     },
     async (req, res) => {
       const { referer } = req.headers
       const { romes, romeDomain, caller, latitude, longitude, radius, diploma, options } = req.query
-      const result = await getFormationsV2({ api: "/formations", romes, longitude, latitude, radius, diploma, romeDomain, caller, options, referer, isMinimalData: false })
+      const result = await getFormationsV2({ api: "/v2/formations", romes, longitude, latitude, radius, diploma, romeDomain, caller, options, referer, isMinimalData: false })
       return res.send(result)
     }
   )
 
   server.get(
-    "/formations/min",
+    "/v2/formations/min",
     {
-      schema: zRoutes.get["/formations/min"],
-      onRequest: server.auth(zRoutes.get["/formations/min"]),
+      schema: zRoutes.get["/v2/formations/min"],
+      onRequest: server.auth(zRoutes.get["/v2/formations/min"]),
       config,
     },
     async (req, res) => {
       const { referer } = req.headers
       const { romes, romeDomain, caller, latitude, longitude, radius, diploma, options } = req.query
-      const result = await getFormationsV2({ api: "/formations/min", romes, longitude, latitude, radius, diploma, romeDomain, caller, options, referer, isMinimalData: true })
+      const result = await getFormationsV2({ api: "/v2/formations/min", romes, longitude, latitude, radius, diploma, romeDomain, caller, options, referer, isMinimalData: true })
       return res.send(result)
     }
   )
 
   server.get(
-    "/formations/formation/:id",
+    "/v2/formations/formation/:id",
     {
-      schema: zRoutes.get["/formations/formation/:id"],
-      onRequest: server.auth(zRoutes.get["/formations/formation/:id"]),
+      schema: zRoutes.get["/v2/formations/formation/:id"],
+      onRequest: server.auth(zRoutes.get["/v2/formations/formation/:id"]),
       config,
     },
     async (req, res) => {
@@ -80,17 +80,17 @@ export default (server: Server) => {
     }
   )
   server.get(
-    "/formationsParRegion",
+    "/v2/formationsParRegion",
     {
-      schema: zRoutes.get["/formationsParRegion"],
-      onRequest: server.auth(zRoutes.get["/formationsParRegion"]),
+      schema: zRoutes.get["/v2/formationsParRegion"],
+      onRequest: server.auth(zRoutes.get["/v2/formationsParRegion"]),
       config,
     },
     async (req, res) => {
       const { romes, romeDomain, caller, departement, region, diploma, options } = req.query
       const { referer } = req.headers
       const result = await getFormationsParRegionV2({
-        apiPath: "/formationsParRegion",
+        apiPath: "/v2/formationsParRegion",
         romes,
         departement,
         region,

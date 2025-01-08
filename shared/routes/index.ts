@@ -16,7 +16,6 @@ import { zFormulaireRoute } from "./formulaire.route"
 import { zJobsRoutesV2 } from "./jobs.routes.v2"
 import { zLoginRoutes } from "./login.routes"
 import { zMetiersRoutes } from "./metiers.routes"
-import { zMetiersRoutesV2 } from "./metiers.routes.v2"
 import { zMetiersDAvenirRoutes } from "./metiersdavenir.routes"
 import { zOptoutRoutes } from "./optout.routes"
 import { zPartnersRoutes } from "./partners.routes"
@@ -39,7 +38,6 @@ const zRoutesGetP1 = {
   ...zEtablissementRoutes.get,
   ...zMetiersDAvenirRoutes.get,
   ...zMetiersRoutes.get,
-  ...zMetiersRoutesV2.get,
 } as const
 
 const zRoutesGetP2 = {

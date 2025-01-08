@@ -22,9 +22,9 @@ import { IRoutesDef, ZResError } from "./common.routes"
 
 export const zFormationsRoutesV2 = {
   get: {
-    "/formations": {
+    "/v2/formations": {
       method: "get",
-      path: "/formations",
+      path: "/v2/formations",
       querystring: z
         .object({
           romes: zRomesParams("romeDomain"),
@@ -65,9 +65,9 @@ export const zFormationsRoutesV2 = {
         })}`,
       },
     },
-    "/formations/min": {
+    "/v2/formations/min": {
       method: "get",
-      path: "/formations/min",
+      path: "/v2/formations/min",
       querystring: z
         .object({
           romes: zRomesParams("romeDomain"),
@@ -107,9 +107,9 @@ export const zFormationsRoutesV2 = {
         )}`,
       },
     },
-    "/formations/formation/:id": {
+    "/v2/formations/formation/:id": {
       method: "get",
-      path: "/formations/formation/:id",
+      path: "/v2/formations/formation/:id",
       querystring: z
         .object({
           caller: zCallerParam,
@@ -134,9 +134,9 @@ export const zFormationsRoutesV2 = {
         description: `Get one formation identified by it's clé ministère éducatif\n${rateLimitDescription({ max: 7, timeWindow: "1s" })}`,
       },
     },
-    "/formationsParRegion": {
+    "/v2/formationsParRegion": {
       method: "get",
-      path: "/formationsParRegion",
+      path: "/v2/formationsParRegion",
       querystring: z
         .object({
           romes: z
@@ -198,9 +198,9 @@ export const zFormationsRoutesV2 = {
         operationId: "getFormations",
       },
     },
-    "/jobsEtFormations": {
+    "/v2/jobsEtFormations": {
       method: "get",
-      path: "/jobsEtFormations",
+      path: "/v2/jobsEtFormations",
       querystring: z
         .object({
           romes: zRomesParams("rncp"),

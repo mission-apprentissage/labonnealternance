@@ -8,7 +8,7 @@ import { publicConfig } from "./config.public"
 
 init({
   dsn: publicConfig.sentry_dsn,
-  tracesSampleRate: publicConfig.env === "production" ? 0.1 : 1.0,
+  tracesSampleRate: publicConfig.env === "production" ? 0.01 : 1.0,
   tracePropagationTargets: [/^https:\/\/[^/]*\.apprentissage\.beta\.gouv\.fr/, publicConfig.baseUrl, publicConfig.apiEndpoint],
   environment: publicConfig.env,
   enabled: !publicConfig.sentryDisabled,

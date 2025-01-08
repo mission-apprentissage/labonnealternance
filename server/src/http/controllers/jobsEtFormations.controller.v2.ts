@@ -16,10 +16,10 @@ const config = {
 
 export default (server: Server) => {
   server.get(
-    "/jobsEtFormations",
+    "/v2/jobsEtFormations",
     {
-      schema: zRoutes.get["/jobsEtFormations"],
-      onRequest: server.auth(zRoutes.get["/jobsEtFormations"]),
+      schema: zRoutes.get["/v2/jobsEtFormations"],
+      onRequest: server.auth(zRoutes.get["/v2/jobsEtFormations"]),
       config,
     },
     async (req, res) => {
