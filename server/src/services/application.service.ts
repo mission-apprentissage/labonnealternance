@@ -1072,17 +1072,16 @@ export const processApplicationEmails = {
   },
   // get data from applicant
   async sendRecruteurEmail(application: IApplication, applicant: IApplicant, attachmentContent: string) {
-    const { job_id } = application
-    const type = job_id ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA : LBA_ITEM_TYPE.RECRUTEURS_LBA
+    const { job_origin } = application
     const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, application, { utm_campaign: "je-candidate-recruteur" })
     const recruiterEmailUrls = await buildRecruiterEmailUrls(application, applicant)
 
     const emailCompany = await mailer.sendEmail({
       to: application.company_email,
       subject:
-        (type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? `Candidature spontanée en alternance ${application.company_name}` : `Candidature en alternance - ${application.job_title}`) +
+        (job_origin === LBA_ITEM_TYPE.RECRUTEURS_LBA ? `Candidature spontanée en alternance ${application.company_name}` : `Candidature en alternance - ${application.job_title}`) +
         ` - ${application.applicant_first_name} ${application.applicant_last_name}`,
-      template: getEmailTemplate(type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? "mail-candidature-spontanee" : "mail-candidature"),
+      template: getEmailTemplate(job_origin === LBA_ITEM_TYPE.RECRUTEURS_LBA ? "mail-candidature-spontanee" : "mail-candidature"),
       data: {
         ...sanitizeApplicationForEmail(application),
         ...sanitizeApplicantForEmail(applicant),
@@ -1107,13 +1106,12 @@ export const processApplicationEmails = {
   },
   // get data from applicant
   async sendCandidatEmail(application: IApplication, applicant: IApplicant) {
-    const { job_id } = application
-    const type = job_id ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA : LBA_ITEM_TYPE.RECRUTEURS_LBA
+    const { job_origin } = application
     const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, application)
     const emailCandidat = await mailer.sendEmail({
       to: applicant.email,
       subject: `Votre candidature chez ${application.company_name}`,
-      template: getEmailTemplate(type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "mail-candidat-offre-emploi-lba" : "mail-candidat-recruteur-lba"),
+      template: getEmailTemplate(job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "mail-candidat-offre-emploi-lba" : "mail-candidat-recruteur-lba"),
       data: {
         ...sanitizeApplicationForEmail(application),
         ...sanitizeApplicantForEmail(applicant),
