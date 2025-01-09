@@ -246,7 +246,11 @@ fileignoreconfig:
 - filename: ui/public/images/home_pics/illu-offreformation.svg
   checksum: 7ad0f32e8c39866d9f4a76dde67f66a90c022f98e9f1a4932c9013e264c35b86
 - filename: ui/public/images/home_pics/illu-plateformesjeunes.svg
-  checksum: 9b2847599887988c02e13055aef1488349aca1808b22fa9f24aa8d98dc4468d1
+  checksum: f281c48b5b3d7d0bd92c49262174f6683686161ad9401ee7cf76cba75d54268b
+- filename: ui/public/images/home_pics/illu-votrebesoin.svg
+  checksum: e9d099cee55ceeb269f5383afe850c54e86f4832aef2dae56cc5fb5005655b43
+- filename: ui/public/images/home_pics/illu-votrebesoin.svg
+  checksum: e9d099cee55ceeb269f5383afe850c54e86f4832aef2dae56cc5fb5005655b43
 - filename: ui/utils/api.utils.test.ts
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
