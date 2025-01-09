@@ -52,9 +52,9 @@ export const zV1FormationsRoutes = {
         })}`,
       },
     },
-    "/v1/formations/min": {
+    "/v1/_private/formations/min": {
       method: "get",
-      path: "/v1/formations/min",
+      path: "/v1/_private/formations/min",
       querystring: z
         .object({
           romes: zRomesParams("romeDomain"),

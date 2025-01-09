@@ -3660,6 +3660,502 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
         ],
       },
     },
+    "/v1/_private/formations/min": {
+      "get": {
+        "description": "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique. Retour de données minimales
+Limite : 7 appel(s) / 1 seconde(s)
+",
+        "parameters": [
+          {
+            "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et romeDomain sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
+            "in": "query",
+            "name": "romes",
+            "required": false,
+            "schema": {
+              "example": "F1603,I1308",
+              "type": "string",
+            },
+          },
+          {
+            "description": "Un domaine ROME (1 lettre et deux chiffres) ou un grand domaine ROME (1 lettre). <br />rome et romeDomain sont incompatibles.<br /><strong>Au moins un des deux doit être renseigné.</strong>",
+            "in": "query",
+            "name": "romeDomain",
+            "required": false,
+            "schema": {
+              "example": "F ou I13",
+              "type": "string",
+            },
+          },
+          {
+            "description": "La latitude du centre de recherche. Nécessaire avec insee et longitude pour une recherche localisée.",
+            "in": "query",
+            "name": "latitude",
+            "required": false,
+            "schema": {
+              "example": 48.845,
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          {
+            "description": "La longitude du centre de recherche. Nécessaire avec latitude et insee pour une recherche localisée.",
+            "in": "query",
+            "name": "longitude",
+            "required": false,
+            "schema": {
+              "example": 2.3752,
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          {
+            "description": "Le rayon de recherche en kilomètres",
+            "in": "query",
+            "name": "radius",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "example": 30,
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          {
+            "description": "Le niveau de diplôme visé en fin d'études",
+            "in": "query",
+            "name": "diploma",
+            "required": false,
+            "schema": {
+              "enum": [
+                "INDIFFERENT",
+                "3 (CAP...)",
+                "4 (BAC...)",
+                "5 (BTS, DEUST...)",
+                "6 (Licence, BUT...)",
+                "7 (Master, titre ingénieur...)",
+              ],
+              "type": "string",
+            },
+          },
+          {
+            "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+            "in": "query",
+            "name": "caller",
+            "required": false,
+            "schema": {
+              "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+              "example": "contact@domaine nom_de_societe",
+              "type": "string",
+            },
+          },
+          {
+            "description": "Ajoute la description au résultat de retour",
+            "in": "query",
+            "name": "options",
+            "required": false,
+            "schema": {
+              "enum": [
+                "with_description",
+              ],
+              "example": "with_description",
+              "type": "string",
+            },
+          },
+          {
+            "in": "header",
+            "name": "referer",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "description": "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
+                  "properties": {
+                    "results": {
+                      "description": "Un tableau de formations correspondantes aux critères",
+                      "items": {
+                        "$ref": "#/components/schemas/Formation",
+                      },
+                      "type": "array",
+                    },
+                  },
+                  "required": [
+                    "results",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                  ],
+                  "description": "Bad Request",
+                },
+              },
+            },
+            "description": "Bad Request",
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                  ],
+                  "description": "Internal Server Error",
+                },
+              },
+            },
+            "description": "Internal Server Error",
+          },
+        },
+        "security": [],
+        "tags": [
+          "V1 - Formations",
+        ],
+      },
+    },
+    "/v1/_private/jobs/min": {
+      "get": {
+        "deprecated": true,
+        "description": "Get job opportunities matching the query parameters
+Limite : 5 appel(s) / 1 seconde(s)
+",
+        "parameters": [
+          {
+            "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et rncp sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
+            "in": "query",
+            "name": "romes",
+            "required": false,
+            "schema": {
+              "example": "F1603,I1308",
+              "type": "string",
+            },
+          },
+          {
+            "description": "Un code RNCP. <br />rome et rncp sont incompatibles.<br /><strong>Au moins un des deux doit être renseigné.</strong>",
+            "in": "query",
+            "name": "rncp",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+            "in": "query",
+            "name": "caller",
+            "required": false,
+            "schema": {
+              "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+              "example": "contact@domaine nom_de_societe",
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+          },
+          {
+            "description": "La latitude du centre de recherche. Nécessaire avec insee et longitude pour une recherche localisée.",
+            "in": "query",
+            "name": "latitude",
+            "required": false,
+            "schema": {
+              "example": 48.845,
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          {
+            "description": "La longitude du centre de recherche. Nécessaire avec latitude et insee pour une recherche localisée.",
+            "in": "query",
+            "name": "longitude",
+            "required": false,
+            "schema": {
+              "example": 2.3752,
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          {
+            "description": "Le rayon de recherche en kilomètres",
+            "in": "query",
+            "name": "radius",
+            "required": false,
+            "schema": {
+              "example": 30,
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          {
+            "description": "search center insee code",
+            "in": "query",
+            "name": "insee",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob, partnerJob)",
+            "in": "query",
+            "name": "sources",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "description": "Le niveau de diplôme visé en fin d'études",
+            "in": "query",
+            "name": "diploma",
+            "required": false,
+            "schema": {
+              "enum": [
+                "INDIFFERENT",
+                "3 (CAP...)",
+                "4 (BAC...)",
+                "5 (BTS, DEUST...)",
+                "6 (Licence, BUT...)",
+                "7 (Master, titre ingénieur...)",
+              ],
+              "type": "string",
+            },
+          },
+          {
+            "description": "filter opportunities on opco name",
+            "in": "query",
+            "name": "opco",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "description": "filter opportunities on opco url",
+            "in": "query",
+            "name": "opcoUrl",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "header",
+            "name": "referer",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "lbaCompanies": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "results": {
+                              "items": {
+                                "$ref": "#/components/schemas/LbaCompany",
+                              },
+                              "type": "array",
+                            },
+                          },
+                          "required": [
+                            "results",
+                          ],
+                          "type": "object",
+                        },
+                        {
+                          "$ref": "#/components/schemas/ApiError",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "lbbCompanies": {
+                      "type": "null",
+                    },
+                    "matchas": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "results": {
+                              "items": {
+                                "$ref": "#/components/schemas/LbaJob",
+                              },
+                              "type": "array",
+                            },
+                          },
+                          "required": [
+                            "results",
+                          ],
+                          "type": "object",
+                        },
+                        {
+                          "$ref": "#/components/schemas/ApiError",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "partnerJobs": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "results": {
+                              "items": {
+                                "$ref": "#/components/schemas/PartnerJob",
+                              },
+                              "type": "array",
+                            },
+                          },
+                          "required": [
+                            "results",
+                          ],
+                          "type": "object",
+                        },
+                        {
+                          "$ref": "#/components/schemas/ApiError",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "peJobs": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "results": {
+                              "items": {
+                                "$ref": "#/components/schemas/PeJob",
+                              },
+                              "type": "array",
+                            },
+                          },
+                          "required": [
+                            "results",
+                          ],
+                          "type": "object",
+                        },
+                        {
+                          "$ref": "#/components/schemas/ApiError",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                  },
+                  "required": [
+                    "partnerJobs",
+                    "peJobs",
+                    "matchas",
+                    "lbaCompanies",
+                    "lbbCompanies",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiError",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "",
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiError",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [],
+        "tags": [
+          "V1 - Jobs",
+        ],
+      },
+    },
     "/v1/application": {
       "post": {
         "description": "Envoi d'un email de candidature à une offre postée sur La bonne alternance recruteur ou une candidature spontanée à une entreprise identifiée par La bonne alternance.
@@ -4036,190 +4532,6 @@ Limite : 7 appel(s) / 1 seconde(s)
               },
             },
             "description": "",
-          },
-        },
-        "security": [],
-        "tags": [
-          "V1 - Formations",
-        ],
-      },
-    },
-    "/v1/formations/min": {
-      "get": {
-        "description": "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique. Retour de données minimales
-Limite : 7 appel(s) / 1 seconde(s)
-",
-        "parameters": [
-          {
-            "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et romeDomain sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
-            "in": "query",
-            "name": "romes",
-            "required": false,
-            "schema": {
-              "example": "F1603,I1308",
-              "type": "string",
-            },
-          },
-          {
-            "description": "Un domaine ROME (1 lettre et deux chiffres) ou un grand domaine ROME (1 lettre). <br />rome et romeDomain sont incompatibles.<br /><strong>Au moins un des deux doit être renseigné.</strong>",
-            "in": "query",
-            "name": "romeDomain",
-            "required": false,
-            "schema": {
-              "example": "F ou I13",
-              "type": "string",
-            },
-          },
-          {
-            "description": "La latitude du centre de recherche. Nécessaire avec insee et longitude pour une recherche localisée.",
-            "in": "query",
-            "name": "latitude",
-            "required": false,
-            "schema": {
-              "example": 48.845,
-              "type": [
-                "number",
-                "null",
-              ],
-            },
-          },
-          {
-            "description": "La longitude du centre de recherche. Nécessaire avec latitude et insee pour une recherche localisée.",
-            "in": "query",
-            "name": "longitude",
-            "required": false,
-            "schema": {
-              "example": 2.3752,
-              "type": [
-                "number",
-                "null",
-              ],
-            },
-          },
-          {
-            "description": "Le rayon de recherche en kilomètres",
-            "in": "query",
-            "name": "radius",
-            "required": false,
-            "schema": {
-              "default": 30,
-              "example": 30,
-              "type": [
-                "number",
-                "null",
-              ],
-            },
-          },
-          {
-            "description": "Le niveau de diplôme visé en fin d'études",
-            "in": "query",
-            "name": "diploma",
-            "required": false,
-            "schema": {
-              "enum": [
-                "INDIFFERENT",
-                "3 (CAP...)",
-                "4 (BAC...)",
-                "5 (BTS, DEUST...)",
-                "6 (Licence, BUT...)",
-                "7 (Master, titre ingénieur...)",
-              ],
-              "type": "string",
-            },
-          },
-          {
-            "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
-            "in": "query",
-            "name": "caller",
-            "required": false,
-            "schema": {
-              "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
-              "example": "contact@domaine nom_de_societe",
-              "type": "string",
-            },
-          },
-          {
-            "description": "Ajoute la description au résultat de retour",
-            "in": "query",
-            "name": "options",
-            "required": false,
-            "schema": {
-              "enum": [
-                "with_description",
-              ],
-              "example": "with_description",
-              "type": "string",
-            },
-          },
-          {
-            "in": "header",
-            "name": "referer",
-            "required": false,
-            "schema": {
-              "type": "string",
-            },
-          },
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": false,
-                  "description": "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
-                  "properties": {
-                    "results": {
-                      "description": "Un tableau de formations correspondantes aux critères",
-                      "items": {
-                        "$ref": "#/components/schemas/Formation",
-                      },
-                      "type": "array",
-                    },
-                  },
-                  "required": [
-                    "results",
-                  ],
-                  "type": "object",
-                },
-              },
-            },
-            "description": "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                  ],
-                  "description": "Bad Request",
-                },
-              },
-            },
-            "description": "Bad Request",
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                  ],
-                  "description": "Internal Server Error",
-                },
-              },
-            },
-            "description": "Internal Server Error",
           },
         },
         "security": [],
@@ -5636,318 +5948,6 @@ Limite : 5 appel(s) / 1 seconde(s)
                   "additionalProperties": false,
                   "properties": {},
                   "type": "object",
-                },
-              },
-            },
-            "description": "",
-          },
-        },
-        "security": [],
-        "tags": [
-          "V1 - Jobs",
-        ],
-      },
-    },
-    "/v1/jobs/min": {
-      "get": {
-        "deprecated": true,
-        "description": "Get job opportunities matching the query parameters
-Limite : 5 appel(s) / 1 seconde(s)
-",
-        "parameters": [
-          {
-            "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et rncp sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
-            "in": "query",
-            "name": "romes",
-            "required": false,
-            "schema": {
-              "example": "F1603,I1308",
-              "type": "string",
-            },
-          },
-          {
-            "description": "Un code RNCP. <br />rome et rncp sont incompatibles.<br /><strong>Au moins un des deux doit être renseigné.</strong>",
-            "in": "query",
-            "name": "rncp",
-            "required": false,
-            "schema": {
-              "type": "string",
-            },
-          },
-          {
-            "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
-            "in": "query",
-            "name": "caller",
-            "required": false,
-            "schema": {
-              "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
-              "example": "contact@domaine nom_de_societe",
-              "type": [
-                "string",
-                "null",
-              ],
-            },
-          },
-          {
-            "description": "La latitude du centre de recherche. Nécessaire avec insee et longitude pour une recherche localisée.",
-            "in": "query",
-            "name": "latitude",
-            "required": false,
-            "schema": {
-              "example": 48.845,
-              "type": [
-                "number",
-                "null",
-              ],
-            },
-          },
-          {
-            "description": "La longitude du centre de recherche. Nécessaire avec latitude et insee pour une recherche localisée.",
-            "in": "query",
-            "name": "longitude",
-            "required": false,
-            "schema": {
-              "example": 2.3752,
-              "type": [
-                "number",
-                "null",
-              ],
-            },
-          },
-          {
-            "description": "Le rayon de recherche en kilomètres",
-            "in": "query",
-            "name": "radius",
-            "required": false,
-            "schema": {
-              "example": 30,
-              "type": [
-                "number",
-                "null",
-              ],
-            },
-          },
-          {
-            "description": "search center insee code",
-            "in": "query",
-            "name": "insee",
-            "required": false,
-            "schema": {
-              "type": "string",
-            },
-          },
-          {
-            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob, partnerJob)",
-            "in": "query",
-            "name": "sources",
-            "required": false,
-            "schema": {
-              "type": "string",
-            },
-          },
-          {
-            "description": "Le niveau de diplôme visé en fin d'études",
-            "in": "query",
-            "name": "diploma",
-            "required": false,
-            "schema": {
-              "enum": [
-                "INDIFFERENT",
-                "3 (CAP...)",
-                "4 (BAC...)",
-                "5 (BTS, DEUST...)",
-                "6 (Licence, BUT...)",
-                "7 (Master, titre ingénieur...)",
-              ],
-              "type": "string",
-            },
-          },
-          {
-            "description": "filter opportunities on opco name",
-            "in": "query",
-            "name": "opco",
-            "required": false,
-            "schema": {
-              "type": "string",
-            },
-          },
-          {
-            "description": "filter opportunities on opco url",
-            "in": "query",
-            "name": "opcoUrl",
-            "required": false,
-            "schema": {
-              "type": "string",
-            },
-          },
-          {
-            "in": "header",
-            "name": "referer",
-            "required": false,
-            "schema": {
-              "type": "string",
-            },
-          },
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "lbaCompanies": {
-                      "anyOf": [
-                        {
-                          "additionalProperties": false,
-                          "properties": {
-                            "results": {
-                              "items": {
-                                "$ref": "#/components/schemas/LbaCompany",
-                              },
-                              "type": "array",
-                            },
-                          },
-                          "required": [
-                            "results",
-                          ],
-                          "type": "object",
-                        },
-                        {
-                          "$ref": "#/components/schemas/ApiError",
-                        },
-                        {
-                          "type": "null",
-                        },
-                      ],
-                    },
-                    "lbbCompanies": {
-                      "type": "null",
-                    },
-                    "matchas": {
-                      "anyOf": [
-                        {
-                          "additionalProperties": false,
-                          "properties": {
-                            "results": {
-                              "items": {
-                                "$ref": "#/components/schemas/LbaJob",
-                              },
-                              "type": "array",
-                            },
-                          },
-                          "required": [
-                            "results",
-                          ],
-                          "type": "object",
-                        },
-                        {
-                          "$ref": "#/components/schemas/ApiError",
-                        },
-                        {
-                          "type": "null",
-                        },
-                      ],
-                    },
-                    "partnerJobs": {
-                      "anyOf": [
-                        {
-                          "additionalProperties": false,
-                          "properties": {
-                            "results": {
-                              "items": {
-                                "$ref": "#/components/schemas/PartnerJob",
-                              },
-                              "type": "array",
-                            },
-                          },
-                          "required": [
-                            "results",
-                          ],
-                          "type": "object",
-                        },
-                        {
-                          "$ref": "#/components/schemas/ApiError",
-                        },
-                        {
-                          "type": "null",
-                        },
-                      ],
-                    },
-                    "peJobs": {
-                      "anyOf": [
-                        {
-                          "additionalProperties": false,
-                          "properties": {
-                            "results": {
-                              "items": {
-                                "$ref": "#/components/schemas/PeJob",
-                              },
-                              "type": "array",
-                            },
-                          },
-                          "required": [
-                            "results",
-                          ],
-                          "type": "object",
-                        },
-                        {
-                          "$ref": "#/components/schemas/ApiError",
-                        },
-                        {
-                          "type": "null",
-                        },
-                      ],
-                    },
-                  },
-                  "required": [
-                    "partnerJobs",
-                    "peJobs",
-                    "matchas",
-                    "lbaCompanies",
-                    "lbbCompanies",
-                  ],
-                  "type": "object",
-                },
-              },
-            },
-            "description": "",
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                    {
-                      "$ref": "#/components/schemas/ApiError",
-                    },
-                  ],
-                },
-              },
-            },
-            "description": "",
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                    {
-                      "$ref": "#/components/schemas/ApiError",
-                    },
-                  ],
                 },
               },
             },
