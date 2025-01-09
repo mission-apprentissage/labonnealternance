@@ -21,7 +21,7 @@ export default function GetFranceTravailButton(offreFT: ILbaItemFtJob) {
       <>
         <Box my={4}>
           <Link data-tracking-id="postuler-offre-partenaire" {...focusWithin} variant="postuler" href={urlPostulation} target="_blank" onClick={setModalOpen}>
-            J'envoie ma candidature
+            Contacter le recruteur
           </Link>
         </Box>
         <ModalReadOnly isOpen={isModalOpen} onClose={onModalClose}>
