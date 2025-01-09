@@ -52,10 +52,10 @@ async function getAppliedMigrations(): Promise<Map<string, Date>> {
   const db = getDatabase()
   const appliedMigrations = await db
     .collection("changelog")
-    .find({}, { sort: { filename: 1 } })
+    .find({}, { sort: { fileName: 1 } })
     .toArray()
 
-  return new Map(appliedMigrations.map(({ filename, appliedAt }) => [filename, appliedAt]))
+  return new Map(appliedMigrations.map(({ fileName, appliedAt }) => [fileName, appliedAt]))
 }
 
 export async function up(): Promise<number> {
@@ -69,7 +69,7 @@ export async function up(): Promise<number> {
       try {
         const { up } = await import(path.join(myConfig.migrationsDir, migrationFile))
         await up(getDatabase(), getMongodbClient())
-        await getDatabase().collection(myConfig.changelogCollectionName).insertOne({ filename: migrationFile, appliedAt: new Date() })
+        await getDatabase().collection(myConfig.changelogCollectionName).insertOne({ fileName: migrationFile, appliedAt: new Date() })
         console.log(`${migrationFile} : APPLIED`)
       } catch (e) {
         throw withCause(internal("Error applying migration", { migrationFile }), e as Error)
