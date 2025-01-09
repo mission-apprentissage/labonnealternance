@@ -505,14 +505,10 @@ const offreOrCompanyToCompanyFields = (
   }
 }
 
-const cleanApplicantFields = (newApplication: INewApplicationV1, applicant: IApplicant) => {
+const cleanApplicantFields = (newApplication: INewApplicationV1) => {
   return {
-    applicant_first_name: applicant.firstname,
-    applicant_last_name: applicant.lastname,
     applicant_attachment_name: newApplication.applicant_file_name,
-    applicant_email: newApplication.applicant_email.toLowerCase(),
     applicant_message_to_company: prepareMessageForMail(newApplication.message),
-    applicant_phone: newApplication.applicant_phone,
     caller: newApplication.caller,
   }
 }
@@ -525,7 +521,7 @@ const newApplicationToApplicationDocument = async (newApplication: INewApplicati
   const now = new Date()
   const application: IApplication = {
     ...offreOrCompanyToCompanyFields(offreOrCompany),
-    ...cleanApplicantFields(newApplication, applicant),
+    ...cleanApplicantFields(newApplication),
     applicant_id: applicant._id,
     company_email: recruteurEmail.toLowerCase(),
     company_recruitment_intention: null,
