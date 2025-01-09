@@ -26,7 +26,7 @@ export const up = async () => {
         $project: anonymizeApplicationProjection,
       },
       {
-        $merge: "anonymizedapplications",
+        $merge: "anonymized_applications",
       },
     ])
     .toArray()
