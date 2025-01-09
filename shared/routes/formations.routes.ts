@@ -7,7 +7,7 @@ import { rateLimitDescription } from "../utils/rateLimitDescription"
 import { zCallerParam, zDiplomaParam, zGetFormationOptions, ZLatitudeParam, ZLongitudeParam, ZRadiusParam, zRefererHeaders, zRomesParams } from "./_params"
 import { IRoutesDef, ZResError } from "./common.routes"
 
-export const zV1FormationsRoutes = {
+export const zFormationsRoutes = {
   get: {
     "/admin/formations": {
       method: "get",

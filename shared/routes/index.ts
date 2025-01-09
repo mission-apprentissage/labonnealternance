@@ -8,8 +8,11 @@ import { zCoreRoutes } from "./core.routes"
 import { zEligibleTrainingsForAppointmentRoutes } from "./eligibleTrainingsForAppointment.routes"
 import { zEmailsRoutes } from "./emails.routes"
 import { zEtablissementRoutes } from "./etablissement.routes"
-import { zFormationRoute } from "./formations.routes"
+import { zFormationsRoutes } from "./formations.routes"
+import { zV1FormationsParRegion } from "./formationsParRegion.routes"
 import { zFormulaireRoute } from "./formulaire.route"
+import { zV1JobsRoutes } from "./jobs.routes"
+import { zV1JobsEtFormationsRoutes } from "./jobsEtFormations.routes"
 import { zLoginRoutes } from "./login.routes"
 import { zMetiersRoutes } from "./metiers.routes"
 import { zMetiersDAvenirRoutes } from "./metiersdavenir.routes"
@@ -23,10 +26,6 @@ import { zTrainingLinksRoutes } from "./trainingLinks.routes"
 import { zUnsubscribeRoute } from "./unsubscribe.routes"
 import { zUpdateLbaCompanyRoutes } from "./updateLbaCompany.routes"
 import { zUserRecruteurRoutes } from "./user.routes"
-import { zV1FormationsRoutes } from "./v1Formations.routes"
-import { zV1FormationsParRegion } from "./v1FormationsParRegion.routes"
-import { zV1JobsRoutes } from "./v1Jobs.routes"
-import { zV1JobsEtFormationsRoutes } from "./v1JobsEtFormations.routes"
 import { zApplicationRoutesV2 } from "./v2/application.routes.v2"
 import { zAppointmentsRouteV2 } from "./v2/appointments.routes.v2"
 import { zJobsRoutesV2 } from "./v2/jobs.routes.v2"
@@ -41,7 +40,6 @@ const zRoutesGetP1 = {
 
 const zRoutesGetP2 = {
   ...zV1JobsRoutes.get,
-  ...zV1FormationsRoutes.get,
   ...zApplicationRoutes.get,
   ...zSitemapRoutes.get,
 } as const
@@ -49,7 +47,7 @@ const zRoutesGetP2 = {
 const zRoutesGetP3 = {
   ...zAppointmentsRoute.get,
   ...zEligibleTrainingsForAppointmentRoutes.get,
-  ...zFormationRoute.get,
+  ...zFormationsRoutes.get,
   ...zOptoutRoutes.get,
 } as const
 
