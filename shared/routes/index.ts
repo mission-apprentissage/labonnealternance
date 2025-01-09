@@ -11,7 +11,6 @@ import { zEligibleTrainingsForAppointmentRoutes } from "./eligibleTrainingsForAp
 import { zEmailsRoutes } from "./emails.routes"
 import { zEtablissementRoutes } from "./etablissement.routes"
 import { zFormationRoute } from "./formations.routes"
-import { zFormationsRoutesV2 } from "./formations.routes.v2"
 import { zFormulaireRoute } from "./formulaire.route"
 import { zJobsRoutesV2 } from "./jobs.routes.v2"
 import { zLoginRoutes } from "./login.routes"
@@ -52,7 +51,6 @@ const zRoutesGetP3 = {
   ...zEligibleTrainingsForAppointmentRoutes.get,
   ...zFormationRoute.get,
   ...zOptoutRoutes.get,
-  ...zFormationsRoutesV2.get,
 } as const
 
 const zRoutesGetP4 = {
