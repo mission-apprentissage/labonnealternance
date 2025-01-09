@@ -148,7 +148,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
 
               {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PARTNER_JOB && <PartnerJobPostuler job={selectedItem} />}
 
-              {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PEJOB && GetFranceTravailButton(selectedItem)}
+              {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PEJOB && GetFranceTravailButton({ offreFT: selectedItem })}
             </Box>
             <Box pt={{ base: 0, sm: 4 }}>
               <ShareLink item={selectedItem} />
