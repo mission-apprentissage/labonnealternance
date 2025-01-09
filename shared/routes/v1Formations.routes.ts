@@ -1,4 +1,5 @@
 import { z } from "../helpers/zodWithOpenApi"
+import { zFormationCatalogueSchema } from "../models/formation.model"
 import { ZLbacError } from "../models/lbacError.model"
 import { ZLbaItemFormationResult } from "../models/lbaItem.model"
 import { rateLimitDescription } from "../utils/rateLimitDescription"
@@ -8,6 +9,25 @@ import { IRoutesDef, ZResError } from "./common.routes"
 
 export const zV1FormationsRoutes = {
   get: {
+    "/admin/formations": {
+      method: "get",
+      path: "/admin/formations",
+      querystring: z.object({ search_item: z.string() }).strict(),
+      response: {
+        "2xx": z.array(zFormationCatalogueSchema),
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        access: "admin",
+        resources: {
+          formationCatalogue: [
+            {
+              cle_ministere_educatif: { type: "query", key: "search_item" },
+            },
+          ],
+        },
+      },
+    },
     "/v1/formations": {
       method: "get",
       path: "/v1/formations",
