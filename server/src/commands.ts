@@ -245,6 +245,12 @@ program
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("pe:offre:export"))
 
+program
+  .command("francetravail:jobs")
+  .description("Récupération des offres de France Travail")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("francetravail:jobs"))
+
 /**
  *
  *
