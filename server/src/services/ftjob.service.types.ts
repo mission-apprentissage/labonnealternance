@@ -57,13 +57,14 @@ export type FTJob = {
   natureContrat: string
   experienceExige: string
   experienceLibelle: string
-  competences?: [][]
+  competences?: object[]
+  permis?: object[]
   salaire: object[] | object
   dureeTravailLibelle?: string
   dureeTravailLibelleConverti?: string
   alternance: boolean
   contact?: FTContact
-  agence?: object[]
+  agence?: object[] | object
   nombrePostes: number
   accessibleTH: boolean
   deplacementCode?: string
@@ -73,7 +74,7 @@ export type FTJob = {
   codeNAF?: string
   secteurActivite?: string
   secteurActiviteLibelle?: string
-  qualitesProfessionnelles?: [][]
+  qualitesProfessionnelles?: object[]
   origineOffre: FTOrigineOffre
   offresManqueCandidats?: boolean
   formations?: FTFormation[]

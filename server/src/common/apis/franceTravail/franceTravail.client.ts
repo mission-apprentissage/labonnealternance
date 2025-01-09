@@ -98,6 +98,7 @@ export const searchForFtJobs = async (
   params: {
     codeROME?: string
     commune?: string
+    departement?: string
     region?: string
     sort?: number
     natureContrat: string
