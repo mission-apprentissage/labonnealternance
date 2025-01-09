@@ -140,6 +140,7 @@ describe("email blaklist events", () => {
 
     await getDbCollection("emailblacklists").deleteMany({})
     await getDbCollection("applications").deleteMany({})
+    await getDbCollection("applicants").deleteMany({})
     await getDbCollection("users").insertOne(generateUserFixture({ email: blacklistedEmail, role: EApplicantRole.CANDIDAT }))
     baseBlockedAddress[0].reason.code = BrevoBlockedReasons.UNSUBSCRIBED_VIA_MA
 

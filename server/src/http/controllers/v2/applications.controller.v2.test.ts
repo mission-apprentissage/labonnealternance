@@ -1,3 +1,4 @@
+import { omit } from "lodash-es"
 import { ObjectId } from "mongodb"
 import { IApplicationApiPublic, JOB_STATUS } from "shared"
 import { NIVEAUX_POUR_LBA, RECRUITER_STATUS } from "shared/constants"
@@ -141,15 +142,19 @@ describe("POST /v2/application", () => {
     expect.soft(response.statusCode).toEqual(202)
     expect.soft(response.json()).toEqual({ id: application!._id.toString() })
 
+    expect.soft(omit(applicant, ["createdAt", "last_connection", "updatedAt"])).toEqual({
+      _id: applicant?._id,
+      email: body.applicant_email,
+      firstname: body.applicant_first_name,
+      lastname: body.applicant_last_name,
+      phone: body.applicant_phone,
+    })
+
     expect(application).toEqual({
       _id: expect.any(ObjectId),
       applicant_id: applicant?._id,
       applicant_attachment_name: body.applicant_attachment_name,
-      applicant_email: body.applicant_email,
-      applicant_first_name: body.applicant_first_name,
-      applicant_last_name: body.applicant_last_name,
       applicant_message_to_company: "",
-      applicant_phone: body.applicant_phone,
       company_email: recruteur.email,
       company_feedback: null,
       company_name: "ASSEMBLEE NATIONALE",
@@ -200,15 +205,19 @@ describe("POST /v2/application", () => {
     expect.soft(response.statusCode).toEqual(202)
     expect.soft(response.json()).toEqual({ id: application!._id.toString() })
 
+    expect.soft(omit(applicant, ["createdAt", "last_connection", "updatedAt"])).toEqual({
+      _id: applicant?._id,
+      email: body.applicant_email,
+      firstname: body.applicant_first_name,
+      lastname: body.applicant_last_name,
+      phone: body.applicant_phone,
+    })
+
     expect(application).toEqual({
       _id: expect.any(ObjectId),
       applicant_id: applicant?._id,
       applicant_attachment_name: body.applicant_attachment_name,
-      applicant_email: body.applicant_email,
-      applicant_first_name: body.applicant_first_name,
-      applicant_last_name: body.applicant_last_name,
       applicant_message_to_company: "",
-      applicant_phone: body.applicant_phone,
       company_address: "Paris",
       company_email: "test-application@mail.fr",
       company_feedback: null,
