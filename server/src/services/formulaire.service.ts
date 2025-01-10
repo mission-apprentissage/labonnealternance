@@ -598,7 +598,7 @@ export const patchJobDelegation = async (id: IJob["_id"], delegations: IJob["del
   await getDbCollection("recruiters").findOneAndUpdate(
     { "jobs._id": id },
     {
-      $set: { delegations, "jobs.$.job_update_date": new Date(), updatedAt: new Date() },
+      $set: { "jobs.$.delegations": delegations, "jobs.$.job_update_date": new Date(), updatedAt: new Date() },
     },
     { returnDocument: "after" }
   )
