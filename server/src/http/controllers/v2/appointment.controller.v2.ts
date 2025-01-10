@@ -1,5 +1,8 @@
+import { unauthorized } from "@hapi/boom"
+import { ReferrerEnum } from "shared/constants/referers"
 import { zRoutes } from "shared/index"
 
+import { getUserFromRequest } from "../../../security/authenticationService"
 import { findElligibleTrainingForAppointmentV2 } from "../../../services/eligibleTrainingsForAppointment.service"
 import { Server } from "../../server"
 
@@ -12,7 +15,12 @@ export default (server: Server) => {
       onRequest: server.auth(zRoutes.post["/v2/appointment"]),
     },
     async (req, res) => {
-      res.status(200).send(await findElligibleTrainingForAppointmentV2(req.body))
+      const user = getUserFromRequest(req, zRoutes.post["/v2/appointment"]).value
+      const referrer = user.organisation as ReferrerEnum
+      if (!referrer) {
+        throw unauthorized("Organisation not found")
+      }
+      res.status(200).send(await findElligibleTrainingForAppointmentV2({ ...req.body, referrer }))
     }
   )
 }

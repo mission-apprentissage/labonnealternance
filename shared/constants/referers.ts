@@ -37,3 +37,11 @@ export const referrers = {
     url: "https://affectation3e.phm.education.gouv.fr/pna-public",
   },
 }
+
+// Referrer enum values lowercased for Public API compatibility, LBA is not included
+export enum ReferrerEnum {
+  PARCOURSUP = "parcoursup",
+  ONISEP = "onisep",
+  JEUNE_1_SOLUTION = "jeune_1_solution",
+  AFFELNET = "affelnet",
+}
