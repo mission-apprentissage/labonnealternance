@@ -1,5 +1,5 @@
 import { unauthorized } from "@hapi/boom"
-import { ReferrerEnum } from "shared/constants/referers"
+import { isValidReferrerApi, ReferrerApiEnum } from "shared/constants/referers"
 import { zRoutes } from "shared/index"
 
 import { getUserFromRequest } from "../../../security/authenticationService"
@@ -16,9 +16,12 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const user = getUserFromRequest(req, zRoutes.post["/v2/appointment"]).value
-      const referrer = user.organisation as ReferrerEnum
+      const referrer = user.organisation as ReferrerApiEnum
       if (!referrer) {
         throw unauthorized("Organisation not found")
+      }
+      if (!isValidReferrerApi(referrer)) {
+        throw unauthorized("Invalid organisation")
       }
       res.status(200).send(await findElligibleTrainingForAppointmentV2({ ...req.body, referrer }))
     }

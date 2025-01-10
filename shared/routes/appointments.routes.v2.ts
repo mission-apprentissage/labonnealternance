@@ -1,4 +1,4 @@
-import { ReferrerEnum } from "../constants/referers"
+import { ReferrerApiEnum } from "../constants/referers"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
@@ -37,7 +37,7 @@ const ZAppointmentContextApi = z.union([
   ZAppointmentContextCleMinistereEducatif,
 ])
 
-const ZAppointmentContextApiWithReferrer = z.intersection(ZAppointmentContextApi, z.object({ referrer: extensions.buildEnum(ReferrerEnum) }))
+const ZAppointmentContextApiWithReferrer = z.intersection(ZAppointmentContextApi, z.object({ referrer: extensions.buildEnum(ReferrerApiEnum) }))
 export type IAppointmentContextAPI = z.output<typeof ZAppointmentContextApiWithReferrer>
 
 const ZAppointmentResponseAvailable = z

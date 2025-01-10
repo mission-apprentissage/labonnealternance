@@ -39,9 +39,13 @@ export const referrers = {
 }
 
 // Referrer enum values lowercased for Public API compatibility, LBA is not included
-export enum ReferrerEnum {
+export enum ReferrerApiEnum {
   PARCOURSUP = "parcoursup",
   ONISEP = "onisep",
   JEUNE_1_SOLUTION = "jeune_1_solution",
   AFFELNET = "affelnet",
+}
+// Type guad
+export function isValidReferrerApi(referrer: string): referrer is ReferrerApiEnum {
+  return Object.values(ReferrerApiEnum).includes(referrer as ReferrerApiEnum)
 }
