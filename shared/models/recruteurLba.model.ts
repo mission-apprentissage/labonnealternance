@@ -52,7 +52,7 @@ export type ILbaCompanyForContactUpdate = z.output<typeof ZLbaCompanyForContactU
 export default {
   zod: ZLbaCompany,
   indexes: [
-    [{ geopoint: "2dsphere" }, {}],
+    [{ geopoint: "2dsphere", rome_codes: 1 }, {}],
     [{ siret: 1 }, {}],
     [{ opco: 1 }, {}],
     [{ opco_short_name: 1 }, {}],
