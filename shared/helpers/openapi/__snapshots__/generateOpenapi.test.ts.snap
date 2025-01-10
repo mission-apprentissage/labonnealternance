@@ -7236,16 +7236,9 @@ Limite : 20 appel(s) / 1 seconde(s)
                       "parcoursup_id": {
                         "type": "string",
                       },
-                      "referrer": {
-                        "enum": [
-                          "parcoursup",
-                        ],
-                        "type": "string",
-                      },
                     },
                     "required": [
                       "parcoursup_id",
-                      "referrer",
                     ],
                     "type": "object",
                   },
@@ -7256,16 +7249,9 @@ Limite : 20 appel(s) / 1 seconde(s)
                         "description": "Identifiant ONISEP utilisé avec le mapping de la collection referentielonisep",
                         "type": "string",
                       },
-                      "referrer": {
-                        "enum": [
-                          "onisep",
-                        ],
-                        "type": "string",
-                      },
                     },
                     "required": [
                       "onisep_id",
-                      "referrer",
                     ],
                     "type": "object",
                   },
@@ -7275,20 +7261,9 @@ Limite : 20 appel(s) / 1 seconde(s)
                       "cle_ministere_educatif": {
                         "type": "string",
                       },
-                      "referrer": {
-                        "enum": [
-                          "parcoursup",
-                          "lba",
-                          "onisep",
-                          "jeune_1_solution",
-                          "affelnet",
-                        ],
-                        "type": "string",
-                      },
                     },
                     "required": [
                       "cle_ministere_educatif",
-                      "referrer",
                     ],
                     "type": "object",
                   },
