@@ -170,7 +170,7 @@ const getPrdvLink = async (wish: IWish): Promise<string> => {
   return ""
 }
 
-const getLBALink = async (wish: IWish): Promise<string> => {
+export const getLBALink = async (wish: IWish): Promise<string> => {
   // Try getting formations first
   const formations = await getTrainingsFromParameters(wish)
 

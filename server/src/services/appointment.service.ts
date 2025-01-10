@@ -11,6 +11,7 @@ import { getDbCollection } from "../common/utils/mongodbUtils"
 
 import { createRdvaAppointmentIdPageLink } from "./appLinks.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
+import { getLBALink } from "./trainingLinks.service"
 
 const createAppointment = async (params: Omit<IAppointment, "_id" | "created_at">) => {
   const appointment: IAppointment = { ...params, _id: new ObjectId(), created_at: new Date() }
@@ -28,7 +29,8 @@ const findOneAndUpdate = (conditions: Filter<IAppointment>, values) => getDbColl
 
 export { createAppointment, find, findById, findOne, findOneAndUpdate }
 
-const getMailData = (candidate: IUser, appointment: IAppointment, eligibleTrainingsForAppointment: IEligibleTrainingsForAppointment, referrerObj: ReferrerObject) => {
+const getMailData = async (candidate: IUser, appointment: IAppointment, eligibleTrainingsForAppointment: IEligibleTrainingsForAppointment, referrerObj: ReferrerObject) => {
+  const lbaLink = await getLBALink({ id: "0", cle_ministere_educatif: appointment.cle_ministere_educatif })
   const mailData = {
     appointmentId: appointment._id,
     user: {
@@ -47,6 +49,7 @@ const getMailData = (candidate: IUser, appointment: IAppointment, eligibleTraini
     },
     formation: {
       intitule: eligibleTrainingsForAppointment.training_intitule_long,
+      searchLink: lbaLink,
     },
     appointment: {
       reasons: appointment.applicant_reasons,
@@ -73,7 +76,7 @@ export const sendCandidateAppointmentEmail = async (
     to: candidate.email,
     subject: `${subjectPrefix ?? ""}Votre demande de RDV auprès de ${eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale}`,
     template: getStaticFilePath("./templates/mail-candidat-confirmation-rdv.mjml.ejs"),
-    data: getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj),
+    data: await getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj),
   })
   await findOneAndUpdate(
     { _id: appointment._id },
@@ -107,7 +110,7 @@ export const sendFormateurAppointmentEmail = async (
     subject: `${subjectPrefix ?? ""} ${referrerObj.full_name} - un candidat a un message pour vous`,
     template: getStaticFilePath("./templates/mail-cfa-demande-de-contact.mjml.ejs"),
     data: {
-      ...getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj),
+      ...(await getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj)),
       link: createRdvaAppointmentIdPageLink(appointment.cfa_recipient_email, etablissement.formateur_siret, etablissement._id.toString(), appointment._id.toString()),
     },
   })
