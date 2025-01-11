@@ -66,6 +66,7 @@ export const getJobs = async ({
       $geoNear: {
         near: { type: "Point", coordinates: [lon, lat] },
         distanceField: "distance",
+        key: "geopoint",
         maxDistance: distance * 1000,
         query,
       },
