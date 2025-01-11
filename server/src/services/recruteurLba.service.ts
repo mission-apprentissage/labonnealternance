@@ -248,6 +248,7 @@ export const getCompanies = async ({
             $geoNear: {
               near: { type: "Point", coordinates: [longitude, latitude] },
               distanceField: "distance",
+              key: "geopoint",
               maxDistance: distance * 1000,
               query,
             },
