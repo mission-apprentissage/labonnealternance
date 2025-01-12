@@ -87,12 +87,8 @@ const getFormations = async ({
   isMinimalData: boolean
 }): Promise<IFormationCatalogue[]> => {
   const distance = radius || 30
-
   const latitude = coords?.at(1)
   const longitude = coords?.at(0)
-
-  const now = new Date()
-
   const query: any = {}
 
   if (romes) {
@@ -104,11 +100,6 @@ const getFormations = async ({
       $regex: new RegExp(`^${romeDomain}`, "i"),
     }
   }
-
-  // tags contient les années de démarrage des sessions. règle métier : année en cours, année à venir et année passée OU année + 2 selon qu'on
-  // est en septembre ou plus tôt dans l'année
-  const tags = [now.getFullYear(), now.getFullYear() + 1, now.getFullYear() + (now.getMonth() < 8 ? -1 : 2)]
-  query.tags = { $in: tags.map((tag) => tag.toString()) }
 
   if (diploma) {
     query.niveau = getDiplomaIndexName(diploma)
@@ -133,6 +124,7 @@ const getFormations = async ({
       $geoNear: {
         near: { type: "Point", coordinates: [Number(longitude), Number(latitude)] },
         distanceField: "distance",
+        key: "lieu_formation_geopoint",
         maxDistance: distance * 1000,
         query,
       },

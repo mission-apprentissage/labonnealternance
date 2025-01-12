@@ -66,6 +66,7 @@ export const getJobs = async ({
       $geoNear: {
         near: { type: "Point", coordinates: [lon, lat] },
         distanceField: "distance",
+        key: "geopoint",
         maxDistance: distance * 1000,
         query,
       },
@@ -164,6 +165,7 @@ export const getLbaJobsV2 = async ({
             $geoNear: {
               near: { type: "Point", coordinates: [geo.longitude, geo.latitude] },
               distanceField: "distance",
+              key: "geopoint",
               maxDistance: geo.radius * 1000,
               query,
             },
