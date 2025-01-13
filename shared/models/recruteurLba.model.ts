@@ -52,12 +52,13 @@ export type ILbaCompanyForContactUpdate = z.output<typeof ZLbaCompanyForContactU
 export default {
   zod: ZLbaCompany,
   indexes: [
-    [{ geopoint: "2dsphere" }, {}],
+    [{ geopoint: "2dsphere", rome_codes: 1 }, {}],
+    [{ geopoint: "2dsphere", rome_codes: 1, opco_short_name: 1 }, {}],
+    [{ geopoint: "2dsphere", rome_codes: 1, opco_url: 1 }, {}],
+    [{ geopoint: "2dsphere", rome_codes: 1, opco_url: 1, opco_short_name: 1 }, {}],
     [{ siret: 1 }, {}],
-    [{ opco: 1 }, {}],
     [{ opco_short_name: 1 }, {}],
     [{ rome_codes: 1, size: 1 }, {}],
-    [{ opco_url: 1 }, {}],
 
     // Support API v2 by ROME code without location
     [{ rome_codes: 1, last_update_at: -1 }, {}],

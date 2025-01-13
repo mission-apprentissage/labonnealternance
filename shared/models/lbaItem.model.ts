@@ -151,7 +151,7 @@ const ZLbaItemContact = z
         example: "0X XX XX XX XX",
         description: "Le numéro de téléphone du contact de référence",
       })
-      .nullish(), // lbb/lba --> phone | matcha -> telephone
+      .nullish(), // lbb/lba --> phone | matcha -> telephone | pe -> contact.telephone
     info: z
       .string()
       .openapi({
@@ -159,7 +159,7 @@ const ZLbaItemContact = z
         description: "Des informations complémentaires concernant le contact de référence",
       })
       .nullish(), // pe -> contact.coordonnees1+contact.coordonnees2+contact.coordonnees3
-    url: z.string().openapi({ type: "string", description: "L'url pour postuler" }).nullish(),
+    url: z.string().openapi({ type: "string", description: "L'url pour postuler" }).nullish(), // pe -> contact.urlPostulation
   })
   .strict()
   .openapi("Contact", { description: "Informations de contact" })

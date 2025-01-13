@@ -160,28 +160,24 @@ const initializeMap = ({ mapContainer, unselectItem, selectItemOnMap, onMapHasMo
 
     if (!map.hasImage("training")) {
       map.loadImage("/images/icons/book.png", function (error, image) {
-        if (error) throw error
         map.addImage("training", image)
       })
     }
 
     if (!map.hasImage("job")) {
       map.loadImage("/images/icons/job.png", function (error, image) {
-        if (error) throw error
         map.addImage("job", image)
       })
     }
 
     if (!map.hasImage("training-large")) {
       map.loadImage("/images/icons/book_large_shadow.png", function (error, image) {
-        if (error) throw error
         map.addImage("training-large", image)
       })
     }
 
     if (!map.hasImage("job-large")) {
       map.loadImage("/images/icons/job_large_shadow.png", function (error, image) {
-        if (error) throw error
         map.addImage("job-large", image)
       })
     }
@@ -626,8 +622,8 @@ export {
   closeMapPopups,
   computeMissingPositionAndDistance,
   coordinatesOfFrance,
-  factorPartnerJobsForMap,
   factorInternalJobsForMap,
+  factorPartnerJobsForMap,
   factorTrainingsForMap,
   filterLayers,
   flyToLocation,
@@ -635,6 +631,7 @@ export {
   getZoomLevelForDistance,
   initializeMap,
   isMapInitialized,
+  layerType,
   map,
   refreshLocationMarkers,
   resizeMap,
@@ -644,5 +641,4 @@ export {
   setSelectedTrainingMarker,
   setTrainingMarkers,
   waitForMapReadiness,
-  layerType,
 }
