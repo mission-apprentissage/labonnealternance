@@ -2,7 +2,7 @@
 // The config you add here will be used whenever the server handles a request.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
-import { captureConsoleIntegration, extraErrorDataIntegration, httpClientIntegration, httpIntegration, init } from "@sentry/nextjs"
+import { captureConsoleIntegration, extraErrorDataIntegration, init } from "@sentry/nextjs"
 
 import { publicConfig } from "./config.public"
 
@@ -14,5 +14,5 @@ init({
   enabled: !publicConfig.sentryDisabled,
   release: publicConfig.version,
   normalizeDepth: 8,
-  integrations: [httpIntegration({ tracing: true }), captureConsoleIntegration({ levels: ["error"] }), extraErrorDataIntegration({ depth: 8 }), httpClientIntegration({})],
+  integrations: [captureConsoleIntegration({ levels: ["error"] }), extraErrorDataIntegration({ depth: 8 })],
 })
