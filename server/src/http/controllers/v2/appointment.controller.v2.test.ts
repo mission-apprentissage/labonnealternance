@@ -25,7 +25,7 @@ const lbaToken = getApiApprentissageTestingToken({
   habilitations: { "applications:write": false, "appointments:write": true, "jobs:write": false },
 })
 
-const cleMinistereEducatifToken = getApiApprentissageTestingToken({
+const affelnetToken = getApiApprentissageTestingToken({
   email: "test@test.fr",
   organisation: "affelnet",
   habilitations: { "applications:write": false, "appointments:write": true, "jobs:write": false },
@@ -137,7 +137,7 @@ describe("POST /v2/appointment", () => {
       body: {
         cle_ministere_educatif: eligibleTraining.cle_ministere_educatif,
       },
-      headers: { authorization: `Bearer ${cleMinistereEducatifToken}` },
+      headers: { authorization: `Bearer ${affelnetToken}` },
     })
 
     expect.soft(response.statusCode).toEqual(200)
