@@ -126,7 +126,7 @@ fileignoreconfig:
 - filename: server/static/templates/mail-cfa-demande-de-contact.mjml.ejs
   checksum: 6e15fdba953753e2d4f249c3a289615dea942ac18c0a95241309ab15ad7f60a2
 - filename: server/static/templates/mail-cfa-notification-hardbounce-cfa.mjml.ejs
-  checksum: e587fd864a1648426118ddebc27f8be259fb09b6b72711bf288cfc684a2f1bf1
+  checksum: ad25d72b5287060499c4e44bfe93eacd8dbfb7b40122b912eb9c3cf657f6aed7
 - filename: server/static/templates/mail-echec-envoi-candidature.mjml.ejs
   checksum: 9055c5495ced85a674770e7fb8a81b3bd84949f9ff8f6e6450989aa3b7cda326
 - filename: server/static/templates/mail-reponse-cfa.mjml.ejs

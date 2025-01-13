@@ -5,12 +5,14 @@ import { mailType } from "shared/constants/appointment"
 import { ReferrerObject } from "shared/constants/referers"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
 
 import { getDbCollection } from "../common/utils/mongodbUtils"
 
 import { createRdvaAppointmentIdPageLink } from "./appLinks.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
+import { getReferrerByKeyName } from "./referrers.service"
 import { getLBALink } from "./trainingLinks.service"
 
 const createAppointment = async (params: Omit<IAppointment, "_id" | "created_at">) => {
@@ -55,6 +57,7 @@ const getMailData = async (candidate: IUser, appointment: IAppointment, eligible
       reasons: appointment.applicant_reasons,
       referrerLink: referrerObj.url,
       appointment_origin: sanitizeForEmail(referrerObj.full_name),
+      created_at: appointment.created_at,
     },
     images: {
       logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
@@ -201,11 +204,57 @@ export const isHardbounceEventFromAppointmentApplicant = async (payload) => {
   }
   return false
 }
+
+export const sendCandidateAppointmentHardbounceEmail = async (appointment: IAppointment) => {
+  const { cle_ministere_educatif, applicant_id } = appointment
+  const training = await getDbCollection("eligible_trainings_for_appointments").findOne({ cle_ministere_educatif })
+
+  if (!training) {
+    sentryCaptureException(new Error("Elligible training not found while processing appointment hardbounce"), { extra: { cle_ministere_educatif, applicant_id } })
+    return
+  }
+
+  const formation = await getDbCollection("formationcatalogues").findOne({ cle_ministere_educatif })
+  if (!formation) {
+    sentryCaptureException(new Error("Catalogue formation not found while processing appointment hardbounce"), { extra: { cle_ministere_educatif, applicant_id } })
+    return
+  }
+
+  const user = await getDbCollection("users").findOne({ _id: applicant_id })
+  if (!user) {
+    sentryCaptureException(new Error("Applicant not found while processing appointment hardbounce"), { extra: { cle_ministere_educatif, applicant_id } })
+    return
+  }
+
+  const email = await mailer.sendEmail({
+    to: user.email,
+    subject: `Le centre de formation ${training?.etablissement_formateur_raison_sociale} n’a pas reçu votre demande`,
+    template: getStaticFilePath("./templates/mail-cfa-notification-hardbounce-cfa.mjml.ejs"),
+    data: { phone: formation.num_tel, ...(await getMailData(user, appointment, training, getReferrerByKeyName(appointment.appointment_origin))) },
+  })
+
+  await findOneAndUpdate(
+    { _id: appointment._id },
+    {
+      $push: {
+        to_applicant_mails: {
+          campaign: mailType.CFA_HARDBOUNCE,
+          status: null,
+          message_id: email.messageId,
+          email_sent_at: dayjs().toDate(),
+        },
+      },
+    }
+  )
+}
+
 export const isHardbounceEventFromAppointmentCfa = async (payload) => {
   const messageId = payload["message-id"]
 
   const appointment = await findOne({ "to_cfa_mails.message_id": messageId })
+
   if (appointment) {
+    await sendCandidateAppointmentHardbounceEmail(appointment)
     return true
   }
   return false
