@@ -1,4 +1,5 @@
 import { Box, Flex } from "@chakra-ui/react"
+import dynamic from "next/dynamic"
 import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
@@ -24,13 +25,16 @@ import {
 } from "../../utils/mapTools"
 import pushHistory from "../../utils/pushHistory"
 import { logError } from "../../utils/tools"
-import Map from "../Map"
 import { InitWidgetSearchParameters, WidgetHeader } from "../WidgetHeader"
 
 import { ChoiceColumn, MapListSwitchButton } from "./components"
 import { loadItem } from "./services/loadItem"
 import { searchForJobsFunction, searchForPartnerJobsFunction } from "./services/searchForJobs"
 import { searchForTrainingsFunction } from "./services/searchForTrainings"
+
+const DynamicMap = dynamic(() => import("../Map"), {
+  loading: () => <p>Loading...</p>,
+})
 
 const SearchForTrainingsAndJobs = () => {
   const scopeContext = useContext(ScopeContext)
@@ -409,7 +413,7 @@ const SearchForTrainingsAndJobs = () => {
         </Box>
         {displayMap ? (
           <Box p="0" flex={{ base: 4, xl: 5 }} display={mapDisplayParameters} position="relative">
-            <Map handleSearchSubmit={handleSearchSubmit} showSearchForm={showSearchForm} selectItemOnMap={selectItemOnMap} />
+            <DynamicMap handleSearchSubmit={handleSearchSubmit} showSearchForm={showSearchForm} selectItemOnMap={selectItemOnMap} />
           </Box>
         ) : (
           ""

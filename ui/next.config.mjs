@@ -73,6 +73,7 @@ const nextConfig = {
   poweredByHeader: false,
   experimental: {
     typedRoutes: true,
+    fallbackNodePolyfills: false,
   },
   output: "standalone",
   eslint: {
