@@ -1,13 +1,15 @@
 import { Box, Flex, Text } from "@chakra-ui/react"
 import { includes } from "lodash"
+import dynamic from "next/dynamic"
 import { useRouter } from "next/router"
 import React, { useContext } from "react"
 
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
-import InfoBanner from "../InfoBanner/InfoBanner"
-import LogoLBA from "../LogoLBA/LogoLBA"
 import SearchForm from "../SearchForm/SearchForm"
-import ResultFilterAndCounter from "../SearchForTrainingsAndJobs/components/ResultFilterAndCounter"
+
+const InfoBanner = dynamic(() => import("@/components/InfoBanner/InfoBanner"))
+const LogoLBA = dynamic(() => import("@/components/LogoLBA/LogoLBA"))
+const ResultFilterAndCounter = dynamic(() => import("../SearchForTrainingsAndJobs/components/ResultFilterAndCounter"))
 
 const WidgetHeader = ({
   handleSearchSubmit,
