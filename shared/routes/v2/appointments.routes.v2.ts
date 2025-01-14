@@ -1,4 +1,4 @@
-import { referrers } from "../../constants/referers"
+import { ReferrerApiEnum } from "../../constants/referers"
 import { extensions } from "../../helpers/zodHelpers/zodPrimitives"
 import { z } from "../../helpers/zodWithOpenApi"
 import { IRoutesDef } from "../common.routes"
@@ -6,7 +6,6 @@ import { IRoutesDef } from "../common.routes"
 const ZAppointmentContextParcoursup = z
   .object({
     parcoursup_id: z.string(),
-    referrer: z.literal(referrers.PARCOURSUP.name.toLowerCase()),
   })
   .strict()
 
@@ -15,7 +14,6 @@ export type IAppointmentContextParcoursup = z.output<typeof ZAppointmentContextP
 const ZAppointmentContextOnisep = z
   .object({
     onisep_id: z.string().describe("Identifiant ONISEP utilisé avec le mapping de la collection referentielonisep"),
-    referrer: z.literal(referrers.ONISEP.name.toLowerCase()),
   })
   .strict()
 
@@ -24,13 +22,6 @@ export type IAppointmentContextOnisep = z.output<typeof ZAppointmentContextOnise
 const ZAppointmentContextCleMinistereEducatif = z
   .object({
     cle_ministere_educatif: z.string(),
-    referrer: z.enum([
-      referrers.PARCOURSUP.name.toLowerCase(),
-      referrers.LBA.name.toLowerCase(),
-      referrers.ONISEP.name.toLowerCase(),
-      referrers.JEUNE_1_SOLUTION.name.toLowerCase(),
-      referrers.AFFELNET.name.toLowerCase(),
-    ]),
   })
   .strict()
 
@@ -44,7 +35,9 @@ const ZAppointmentContextApi = z.union([
   // Find through "idCleMinistereEducatif"
   ZAppointmentContextCleMinistereEducatif,
 ])
-export type IAppointmentContextAPI = z.output<typeof ZAppointmentContextApi>
+
+const ZAppointmentContextApiWithReferrer = z.intersection(ZAppointmentContextApi, z.object({ referrer: extensions.buildEnum(ReferrerApiEnum) }))
+export type IAppointmentContextAPI = z.output<typeof ZAppointmentContextApiWithReferrer>
 
 const ZAppointmentResponseAvailable = z
   .object({
