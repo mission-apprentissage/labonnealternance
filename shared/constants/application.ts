@@ -11,10 +11,8 @@ export enum ApplicationIntentionDefaultText {
 
 export enum RefusalReasons {
   COMPETENCE = "Compétences insuffisantes ou non adaptées",
-  DISTANCE = "Localisation géographique trop lointaine",
   CANDIDATURE_NON_PERSONNALISEE = "Manque de personnalisation de la candidature",
   ORTHOGRAPHE = "Fautes d'orthographe",
-  AGE = "Âge du candidat inadapté",
   CV_PEU_CLAIR = "Manque de clarté du CV",
   ECOLE = "Avis négatif sur l’école/la formation",
   CONTRAT_INADAPTE = "Type de contrat inadapté",
