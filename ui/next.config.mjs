@@ -70,6 +70,8 @@ const nextConfig = {
     defaultLocale: "fr",
   },
   productionBrowserSourceMaps: true,
+  bundlePagesRouterDependencies: true,
+  serverExternalPackages: ["react-pdf"],
   poweredByHeader: false,
   experimental: {
     typedRoutes: true,
