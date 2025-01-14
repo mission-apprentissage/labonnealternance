@@ -79,6 +79,14 @@ const nextConfig = {
   eslint: {
     dirs: ["."],
   },
+  images: {
+    localPatterns: [
+      {
+        pathname: "/images/**",
+        search: "",
+      },
+    ],
+  },
   webpack: (config) => {
     // Bson is using top-level await, which is not supported by default in Next.js in client side
     // Probably related to https://github.com/vercel/next.js/issues/54282
