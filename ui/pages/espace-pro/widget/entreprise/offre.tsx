@@ -13,7 +13,7 @@ export const WidgetEntrepriseOffre = () => {
       <Bandeau
         type="success"
         header={`Votre compte a été créé avec succès${displayBanner === "true" ? " et est en attente de vérification" : ""}.`}
-        description="Vous pouvez d’ores et déjà créer une offre de recrutement."
+        description="Déposez votre offre dès maintenant."
       />
       <Box mt={10}>
         <FormulaireCreationOffre />

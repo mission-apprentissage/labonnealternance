@@ -1,5 +1,4 @@
-import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Button, Container, Flex, Stack, Text } from "@chakra-ui/react"
+import { Box, Button, Container, Stack, Text } from "@chakra-ui/react"
 import Head from "next/head"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
@@ -8,7 +7,7 @@ import { IEtablissementJson } from "shared"
 import { apiGet, apiPost } from "@/utils/api.utils"
 
 import { Layout } from "../../../../components/espace_pro"
-import { InfoCircleFilled, SuccessCircle } from "../../../../theme/components/icons"
+import { SuccessCircle } from "../../../../theme/components/icons"
 
 type IPremiumEtablissement = {
   raison_sociale: string
@@ -109,8 +108,11 @@ export default function PremiumForm() {
                   Votre choix a bien été pris en compte
                 </Text>
                 <Text mt={4} color="grey.800" ml={2}>
-                  Le service RDV Apprentissage n'a pas été activé pour vos formations. Si vous changez d'avis, merci de nous contacter à l'adresse suivante:{" "}
-                  <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Formulaire%20premium%20-%20Activer%20RDVA">labonnealternance@apprentissage.beta.gouv.fr</a>.
+                  Le service RDV Apprentissage ne sera pas activé pour vos formations. Si vous changez d'avis, merci de nous contacter à l'adresse suivante:{" "}
+                  <a style={{ textDecoration: "underline" }} href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Formulaire%20premium%20-%20Activer%20RDVA">
+                    labonnealternance@apprentissage.beta.gouv.fr
+                  </a>
+                  .
                 </Text>
               </Box>
             </Stack>
@@ -124,8 +126,6 @@ export default function PremiumForm() {
                 </Text>
                 <Text mt={4} color="grey.800" ml={2}>
                   Le service RDV Apprentissage est désormais activé sur Parcoursup.
-                  <br />
-                  Afin de recevoir les demandes de RDV, assurez-vous que vos coordonnées de contact CARIF OREF sont à jour.
                 </Text>
               </Box>
             </Stack>
@@ -137,49 +137,23 @@ export default function PremiumForm() {
                   Activation du service “RDV Apprentissage” sur Parcoursup
                 </Text>
               </Box>
-              <Text fontWeight="700" my={5}>
-                Afin de bénéficier de l'activation du service RDV Apprentissage, je m'engage auprès de Parcoursup à:
-              </Text>
+              <Text mt={6}>En activant le service RDV Apprentissage, je m'engage auprès de Parcoursup à :</Text>
               <Stack direction="row" align="center">
                 <SuccessCircle fillHexaColor="#00AC8C" />
-                <Text fontWeight="700">Contacter par email ou téléphone tous les candidats qui feront une demande sur cette plateforme</Text>
+                <Text fontWeight="700">Répondre par email ou téléphone à tous les candidats qui me contacteront</Text>
               </Stack>
               <Stack direction="row" align="center">
                 <SuccessCircle fillHexaColor="#00AC8C" />
-                <Text fontWeight="700">Répondre dans un délai de 4 jours ouvrés après réception de la demande par e-mail</Text>
+                <Text fontWeight="700">Dans un délai de 4 jours ouvrés après réception de la demande par e-mail</Text>
               </Stack>
-              <Text mt={6}>
-                Je prends acte du fait que la{" "}
-                <a
-                  style={{ textDecoration: "underline", cursor: "pointer" }}
-                  href="https://beta.gouv.fr/incubateurs/mission-apprentissage.html"
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label="Mission interministérielle pour l’apprentissage - nouvelle fenêtre"
-                >
-                  Mission interministérielle pour l’apprentissage <ExternalLinkIcon mx="2px" />
-                </a>{" "}
-                pourra prendre toutes les mesures utiles pour mesurer le fait que cet engagement soit tenu (dont enquêtes en ligne ou orales auprès des candidats et des CFA).
-              </Text>
-              <Text mt={6}>
-                En cas de non-respect de mon engagement, je bénéficierai d’un avertissement m’invitant à remédier à cette défaillance puis d’une éventuelle suspension du service.
-              </Text>
               <Button mt={5} mr={6} variant="primary" onClick={accept}>
-                J’accepte les conditions
+                Oui, j’accepte les conditions
               </Button>
               <Button mt={5} variant="secondary" onClick={refuse}>
-                Non je ne suis pas prêt
+                Non, je ne suis pas prêt
               </Button>
-              <Flex align="center" borderColor="pinksoft.400" borderLeftWidth="4px" bg="grey.100" py={4} my={8}>
-                <Text fontSize="14px">
-                  <Box float="left" pr={3} pl={3}>
-                    <InfoCircleFilled fillHexaColor="#FF8D7E" />
-                  </Box>{" "}
-                  Cette action n’aura aucun impact sur le référencement de vos formations dans Parcoursup
-                </Text>
-              </Flex>
               <Box>
-                <Text mt="-7px">
+                <Text mt={5}>
                   Le service sera activé sur toutes les formations éligibles à être affichées sur Parcoursup, liées à votre SIRET{" "}
                   <Text as="span" fontWeight="700">
                     {etablissement.gestionnaire_siret}

@@ -12,7 +12,7 @@ import { AUTHTYPE } from "../../../common/contants"
 import { phoneValidation } from "../../../common/validation/fieldValidations"
 import { WidgetContext } from "../../../context/contextWidget"
 import { ArrowRightLine } from "../../../theme/components/icons"
-import logosOpco from "../../../theme/components/logos_pro/logosOpco"
+import logosOpco from "../../../theme/components/logos/opcos"
 import { createEtablissement } from "../../../utils/api"
 import { OpcoSelect } from "../CreationRecruteur/OpcoSelect"
 import { AnimationContainer, AuthentificationLayout, CustomInput, InformationLegaleEntreprise, InformationOpco } from "../index"
@@ -136,10 +136,9 @@ const FormulaireLayout = ({ left, right }) => {
         <Box fontSize="20px" mb={4}>
           <Text textAlign="justify" mt={2}>
             {type === AUTHTYPE.ENTREPRISE
-              ? "Les informations de contact et l'adresse postale de votre établissement seront visibles sur vos offres et permettront de recevoir les candidatures."
-              : "Les informations de contact et l'adresse postale de votre établissement seront visibles sur les offres de vos entreprises partenaires"}
+              ? "Le numéro de téléphone et l'adresse postale de votre établissement seront visibles sur vos offres. L'email sera destinataire des candidatures."
+              : "Le numéro de téléphone et l'adresse postale de votre établissement seront visibles sur les offres de vos entreprises partenaires. L'email sera destinataire des candidatures."}
           </Text>
-          <Text>Elles peuvent être modifiées ultérieurement.</Text>
         </Box>
         <Box>{left}</Box>
       </Box>

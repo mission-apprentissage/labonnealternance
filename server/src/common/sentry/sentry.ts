@@ -5,10 +5,22 @@ import config from "../../config"
 
 function getOptions(): Sentry.NodeOptions {
   return {
-    tracesSampleRate: config.env === "production" ? 0.01 : 1.0,
+    tracesSampler: (samplingContext) => {
+      // Continue trace decision, if there is any parentSampled information
+      if (samplingContext.parentSampled != null) {
+        return samplingContext.parentSampled
+      }
+
+      if (samplingContext.attributes?.["sentry.op"] === "processor.job") {
+        // Sample 100% of processor jobs
+        return 1.0
+      }
+
+      return config.env === "production" ? 0.01 : 1.0
+    },
     tracePropagationTargets: [/^https:\/\/[^/]*\.apprentissage\.beta\.gouv\.fr/],
-    // profilesSampleRate is relative to tracesSampleRate --> 1% of 1% = 0.01% of requests
-    profilesSampleRate: 0.01,
+    // profilesSampleRate is relative to tracesSampleRate
+    profilesSampleRate: 0.001,
     environment: config.env,
     release: config.version,
     enabled: config.env !== "local",

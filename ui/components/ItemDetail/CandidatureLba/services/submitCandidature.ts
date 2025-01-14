@@ -1,5 +1,5 @@
 import { useContext } from "react"
-import { IApplicationApiPayload, ILbaItemLbaCompany, ILbaItemLbaJob } from "shared"
+import { IApplicationApiPrivate, ILbaItemLbaCompany, ILbaItemLbaJob } from "shared"
 
 import { DisplayContext } from "@/context/DisplayContextProvider"
 import { getItemId } from "@/utils/getItemId"
@@ -40,7 +40,7 @@ export default async function submitCandidature({
 }) {
   setSendingState("currently_sending")
 
-  const payload: IApplicationApiPayload = {
+  const payload: IApplicationApiPrivate = {
     applicant_first_name: formValues.applicant_first_name,
     applicant_last_name: formValues.applicant_last_name,
     applicant_email: formValues.applicant_email,
@@ -54,7 +54,7 @@ export default async function submitCandidature({
   }
 
   try {
-    await apiPost("/_private/application", { body: payload, headers: { authorization: `Bearer ${LbaJob.token}` } }, {}, "V2")
+    await apiPost("/v2/_private/application", { body: payload, headers: { authorization: `Bearer ${LbaJob.token}` } }, {})
     sessionStorageSet("application-form-values", payload)
     localStorageSet(`application-${LbaJob.ideaType}-${getItemId(LbaJob)}`, Date.now().toString())
     setSendingState("ok_sent")

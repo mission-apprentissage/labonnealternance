@@ -5,6 +5,7 @@ import { OPCOS_LABEL } from "shared/constants"
 import { getSourceFromCookies } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
+import { getPartnerJobById } from "@/services/partnerJob.service"
 import { Appellation } from "@/services/rome.service.types"
 import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
 
@@ -357,9 +358,9 @@ export default (server: Server) => {
     }
   )
   server.get(
-    "/v1/jobs/min",
+    "/v1/_private/jobs/min",
     {
-      schema: zRoutes.get["/v1/jobs/min"],
+      schema: zRoutes.get["/v1/_private/jobs/min"],
       config,
     },
     async (req, res) => {
@@ -414,6 +415,45 @@ export default (server: Server) => {
       const { id } = req.params
       const { caller } = req.query
       const result = await getLbaJobById({
+        id,
+        caller,
+      })
+
+      if ("error" in result) {
+        switch (result.error) {
+          case "wrong_parameters": {
+            res.status(400)
+            break
+          }
+          case "not_found": {
+            res.status(404)
+            break
+          }
+          case "expired_job": {
+            res.status(419)
+            break
+          }
+          default: {
+            res.status(500)
+            break
+          }
+        }
+      }
+
+      return res.send(result)
+    }
+  )
+
+  server.get(
+    "/v1/jobs/partnerJob/:id",
+    {
+      schema: zRoutes.get["/v1/jobs/partnerJob/:id"],
+      config,
+    },
+    async (req, res) => {
+      const { id } = req.params
+      const { caller } = req.query
+      const result = await getPartnerJobById({
         id,
         caller,
       })

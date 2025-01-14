@@ -44,7 +44,7 @@ export const searchForJobsFunction = async ({
       rncp,
       opco: opcoFilter,
       opcoUrl: opcoUrlFilter,
-      sources: "lba,matcha",
+      sources: "lba,matcha,partnerJob",
     }
     if (values?.location?.value) {
       params.longitude = values.location.value.coordinates[0]
@@ -69,13 +69,14 @@ export const searchForJobsFunction = async ({
       results = {
         matchas: response.data.matchas.result && response.data.matchas.result === "error" ? null : response.data.matchas.results,
         lbaCompanies: response.data.lbaCompanies.result && response.data.lbaCompanies.result === "error" ? null : response.data.lbaCompanies.results,
+        partnerJobs: response.data.partnerJobs.result && response.data.partnerJobs.result === "error" ? null : response.data.partnerJobs.results,
       }
 
       if (!showCombinedJob && results.matchas?.length) {
         results.matchas = results.matchas.filter((matcha) => !matcha.company.mandataire)
       }
 
-      if (followUpItem && [LBA_ITEM_TYPE_OLD.MATCHA, LBA_ITEM_TYPE_OLD.LBA].includes(followUpItem.parameters.type)) {
+      if (followUpItem && LBA_ITEM_TYPE_OLD.FORMATION !== followUpItem.parameters.type) {
         selectFollowUpItem({
           itemId: followUpItem.parameters.itemId,
           type: followUpItem.parameters.type,

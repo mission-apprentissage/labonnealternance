@@ -28,14 +28,13 @@
           <% } %>
         </mj-text>
         <mj-text>
-          Le service RDV Apprentissage vous permet de recevoir des demandes d'informations de la part de candidats à l'alternance.
-        </mj-text>
-        <mj-text>
+          En activant le service, un formulaire de contact est affiché sur vos formations dans 
           <% if(data.isParcoursup){ %>
-          <b>Pour recevoir des demandes depuis Parcoursup, vous pouvez dès aujourd’hui activer le service RDV Apprentissage.</b>
-          <% } %> <% if(data.isAffelnet){ %>
-          <b>Pour recevoir des demandes depuis Choisir son affectation après la 3e, vous pouvez dès aujourd’hui activer le service RDV Apprentissage.</b>
-          <% } %>
+          <b>Parcoursup</b>.
+          <%}%>
+          <% if(data.isAffelnet){ %>
+          <b>Choisir son affectation après la 3e</b>.
+          <%}%> Les candidats intéressés peuvent ainsi vous adresser leurs questions, que vous recevez par courriel.
         </mj-text>
         <mj-button color="#ffffff" padding-top="20px" padding-bottom="20px" background-color="#000091" href="<%= data.etablissement.linkToForm %>">
           Je souhaite activer le service
@@ -91,7 +90,7 @@
     </mj-section>
     <mj-section padding-top="5px" text-align="left">
       <mj-column width="250px">
-        <mj-image src="https://labonnealternance.apprentissage.beta.gouv.fr/assets/logo-republique-francaise.png" width="200px" align="left"></mj-image>
+        <mj-image src="https://labonnealternance.apprentissage.beta.gouv.fr/assets/logo-republique-francaise.webp" width="200px" align="left"></mj-image>
       </mj-column>
       <mj-column width="350px">
         <mj-text font-size="12px"> Cet email a été envoyé à <u><%= data.etablissement.email %></u> </mj-text>

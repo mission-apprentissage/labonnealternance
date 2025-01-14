@@ -1,11 +1,11 @@
 import { Button, Image, Text } from "@chakra-ui/react"
 import { useContext, useEffect, useState } from "react"
-import { ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "shared"
+import { ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
 import { LBA_ITEM_TYPE_OLD, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 
 import { DisplayContext } from "@/context/DisplayContextProvider"
 
-const ShareLink = ({ item }: { item: ILbaItemFormation | ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob }) => {
+const ShareLink = ({ item }: { item: ILbaItemFormation | ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob }) => {
   const [copied, setCopied] = useState(false)
 
   const { formValues } = useContext(DisplayContext)

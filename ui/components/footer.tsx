@@ -135,7 +135,7 @@ const Footer = () => {
                 </NextLink>
               </ListItem>
               <ListItem {...basicLink}>
-                <NextLink legacyBehavior passHref href="https://mission-apprentissage.notion.site/Blog-f583f6fb051843bc8e3097b2e8bab9e3?pvs=25">
+                <NextLink legacyBehavior passHref href="https://labonnealternance.sites.beta.gouv.fr?utm_source=lba&utm_medium=website&utm_campaign=lba_footer">
                   <Link isExternal aria-label="Accès au blog de La bonne alternance">
                     Blog
                   </Link>

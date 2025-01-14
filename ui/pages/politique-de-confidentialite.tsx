@@ -13,7 +13,7 @@ import {
   optUserOut,
   removeCookie,
   setCookie,
-} from "@/common/utils/trackingCookieUtils"
+} from "@/tracking/trackingCookieUtils"
 
 import Breadcrumb from "../components/breadcrumb"
 import Footer from "../components/footer"

@@ -78,8 +78,8 @@ export const inviteEtablissementAffelnetToPremiumFollowUp = async (bypassDate: b
         isAffelnet: true,
         images: {
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-          logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
-          integrationExample: `${config.publicUrl}/assets/exemple_integration_affelnet.png?raw=true`,
+          logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
+          integrationExample: `${config.publicUrl}/assets/exemple_integration_affelnet.webp?raw=true`,
         },
         etablissement: {
           email: etablissement.gestionnaire_email,

@@ -10,6 +10,7 @@ import { ZodTypeProvider, serializerCompiler, validatorCompiler } from "fastify-
 import { Netmask } from "netmask"
 import { OpenAPIV3_1 } from "openapi-types"
 import { generateOpenApiSchema } from "shared/helpers/openapi/generateOpenapi"
+import { setZodLanguage } from "shared/helpers/zodWithOpenApi"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 
 import { localOrigin } from "@/common/utils/isOriginLocal"
@@ -29,19 +30,17 @@ import etablissementRoute from "./controllers/etablissement.controller"
 import etablissementsRecruteurRoute from "./controllers/etablissementRecruteur.controller"
 import formationsRegionV1Route from "./controllers/formationRegion.controller"
 import formationsV1Route from "./controllers/formations.controller"
-import formationsRouteV2 from "./controllers/formations.controller.v2"
 import formulaireRoute from "./controllers/formulaire.controller"
 import jobsV1Route from "./controllers/jobs.controller"
 import jobsEtFormationsV1Route from "./controllers/jobsEtFormations.controller"
-import jobsEtFormationsRouteV2 from "./controllers/jobsEtFormations.controller.v2"
 import login from "./controllers/login.controller"
 import metiers from "./controllers/metiers.controller"
-import metierv2 from "./controllers/metiers.controller.v2"
 import metiersDAvenirRoute from "./controllers/metiersDAvenir.controller"
 import optoutRoute from "./controllers/optout.controller"
 import partnersRoute from "./controllers/partners.controller"
 import reportedCompanyController from "./controllers/reportedCompany.controller"
 import rome from "./controllers/rome.controller"
+import sitemapController from "./controllers/sitemap.controller"
 import trainingLinks from "./controllers/trainingLinks.controller"
 import unsubscribeLbaCompany from "./controllers/unsubscribeRecruteurLba.controller"
 import updateLbaCompany from "./controllers/updateRecruteurLba.controller"
@@ -60,7 +59,7 @@ export interface Server
 
 export async function bind(app: Server) {
   initSentryFastify(app)
-
+  setZodLanguage("en")
   app.setValidatorCompiler(validatorCompiler)
   app.setSerializerCompiler(serializerCompiler)
 
@@ -119,6 +118,7 @@ export async function bind(app: Server) {
     (subApp, _, done) => {
       const typedSubApp = subApp.withTypeProvider<ZodTypeProvider>()
       coreRoutes(typedSubApp)
+      sitemapController(typedSubApp)
 
       /**
        * LBACandidat
@@ -159,31 +159,16 @@ export async function bind(app: Server) {
       formulaireRoute(typedSubApp)
       optoutRoute(typedSubApp)
       etablissementsRecruteurRoute(typedSubApp)
+      jobsRouteV2(typedSubApp)
 
       trainingLinks(typedSubApp)
       jobsApiV3Routes(typedSubApp)
+      applicationRouteV2(typedSubApp)
+      appointmentRequestRouteV2(typedSubApp)
 
       done()
     },
     { prefix: "/api" }
-  )
-
-  /**
-   * API V2
-   * Routé dédié à la passerelle API Apprentissage
-   */
-  app.register(
-    (subApp, _, done) => {
-      const typedSubApp = subApp.withTypeProvider<ZodTypeProvider>()
-      metierv2(typedSubApp)
-      jobsEtFormationsRouteV2(typedSubApp)
-      applicationRouteV2(typedSubApp)
-      appointmentRequestRouteV2(typedSubApp)
-      formationsRouteV2(typedSubApp)
-      jobsRouteV2(typedSubApp)
-      done()
-    },
-    { prefix: "/api/v2" }
   )
 
   initBrevoWebhooks()

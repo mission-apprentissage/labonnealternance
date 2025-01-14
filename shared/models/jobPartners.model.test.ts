@@ -39,7 +39,7 @@ type IJobOfferApiExpected = IJobWorkplaceApiExpected &
   IJobApplyExpected & {
     _id: ObjectId | string | null
     partner_label: string
-    partner_job_id: string | null
+    partner_job_id: string
 
     contract_start: Date | null
     contract_duration: number | null
@@ -63,8 +63,6 @@ type IJobOfferApiExpected = IJobWorkplaceApiExpected &
   }
 
 type IJobOfferApiWritableExpected = {
-  partner_job_id: IJobOfferApiExpected["partner_job_id"]
-
   contract_duration: IJobOfferApiExpected["contract_duration"]
   contract_type: IJobOfferApiExpected["contract_type"]
   contract_remote: IJobOfferApiExpected["contract_remote"] | undefined
@@ -95,8 +93,6 @@ type IJobOfferApiWritableExpected = {
 }
 
 type IJobOfferWritableInputExpected = {
-  partner_job_id?: string | null | undefined
-
   contract_duration?: number | null | undefined
   contract_type?: Array<"Apprentissage" | "Professionnalisation"> | undefined
   contract_remote?: IJobOfferApiExpected["contract_remote"] | undefined

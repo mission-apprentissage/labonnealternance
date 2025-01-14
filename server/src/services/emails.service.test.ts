@@ -1,6 +1,5 @@
-import { useMongo } from "@tests/utils/mongo.test.utils"
 import { EApplicantRole } from "shared/constants/rdva"
-import { generateApplicationFixture } from "shared/fixtures/application.fixture"
+import { generateApplicantFixture, generateApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateAppointmentFixture, generateEligibleTrainingEstablishmentFixture, generateEligibleTrainingFixture } from "shared/fixtures/appointment.fixture"
 import { generateUserFixture } from "shared/fixtures/user.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
@@ -9,6 +8,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { BrevoBlockedReasons, saveBlacklistEmails } from "@/jobs/updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 import { BlackListOrigins } from "@/services/application.service"
+import { useMongo } from "@tests/utils/mongo.test.utils"
 
 import { BrevoEventStatus } from "./brevo.service"
 import { IBrevoWebhookEvent, processHardBounceWebhookEvent } from "./emails.service"
@@ -16,6 +16,7 @@ import { IBrevoWebhookEvent, processHardBounceWebhookEvent } from "./emails.serv
 async function cleanTest() {
   await getDbCollection("emailblacklists").deleteMany({})
   await getDbCollection("applications").deleteMany({})
+  await getDbCollection("applicants").deleteMany({})
   await getDbCollection("recruteurslba").deleteMany({})
   await getDbCollection("etablissements").deleteMany({})
   await getDbCollection("users").deleteMany({})
@@ -25,15 +26,7 @@ async function cleanTest() {
 
 describe("email blaklist events", () => {
   useMongo()
-
-  beforeEach(async () => {
-    return async () => {
-      await cleanTest()
-    }
-  })
-
   const blacklistedEmail = "blacklisted@email.com"
-
   const fakeMessageId_1 = "<fake_id@domain.net>"
 
   const baseWebHookPayload: IBrevoWebhookEvent = {
@@ -59,6 +52,12 @@ describe("email blaklist events", () => {
     },
   ]
 
+  beforeEach(async () => {
+    return async () => {
+      await cleanTest()
+    }
+  })
+
   it("Non 'blocked' event shoud throw an error", async () => {
     baseWebHookPayload.event = BrevoEventStatus.DELIVRE
     await expect.soft(processHardBounceWebhookEvent(baseWebHookPayload)).rejects.toThrow("Non hardbounce event received on hardbounce webhook route")
@@ -66,6 +65,8 @@ describe("email blaklist events", () => {
 
   it("Unidentified hardbounce should register campaign origin", async () => {
     baseWebHookPayload.event = BrevoEventStatus.HARD_BOUNCE
+    const applicant = generateApplicantFixture({ email: blacklistedEmail })
+    await getDbCollection("applicants").insertOne(applicant)
     await processHardBounceWebhookEvent(baseWebHookPayload)
 
     const blEvent = await getDbCollection("emailblacklists").findOne({ email: blacklistedEmail })
@@ -90,7 +91,11 @@ describe("email blaklist events", () => {
   })
 
   it("Applicant blocked should register candidature_spontanee_candidat (blocked)", async () => {
-    await getDbCollection("applications").insertOne(generateApplicationFixture({ applicant_email: blacklistedEmail, to_applicant_message_id: fakeMessageId_1 }))
+    const applicant = generateApplicantFixture({ email: blacklistedEmail })
+    await getDbCollection("applicants").insertOne(applicant)
+    await getDbCollection("applications").insertOne(
+      generateApplicationFixture({ applicant_id: applicant._id, applicant_email: blacklistedEmail, to_applicant_message_id: fakeMessageId_1 })
+    )
     baseWebHookPayload.event = BrevoEventStatus.BLOCKED
     baseWebHookPayload["message-id"] = fakeMessageId_1
 
@@ -107,6 +112,8 @@ describe("email blaklist events", () => {
 
   it("Unsubscribed variation events should register correct origin with (unsubscribed) reason", async () => {
     baseBlockedAddress[0].reason.code = BrevoBlockedReasons.UNSUBSCRIBED_VIA_API
+    const applicant = generateApplicantFixture({ email: blacklistedEmail })
+    await getDbCollection("applicants").insertOne(applicant)
     await getDbCollection("applications").insertOne(generateApplicationFixture({ applicant_email: blacklistedEmail }))
 
     await saveBlacklistEmails(baseBlockedAddress)
@@ -179,6 +186,8 @@ describe("email blaklist events", () => {
   })
 
   it("Recruteur LBA with SPAM (plainte) should register candidature_spontanee_recruteur (spam)", async () => {
+    const applicant = generateApplicantFixture({ email: blacklistedEmail })
+    await getDbCollection("applicants").insertOne(applicant)
     await getDbCollection("applications").insertOne(generateApplicationFixture({ company_email: blacklistedEmail, to_company_message_id: fakeMessageId_1 }))
     baseWebHookPayload.event = BrevoEventStatus.SPAM
     baseWebHookPayload["message-id"] = fakeMessageId_1

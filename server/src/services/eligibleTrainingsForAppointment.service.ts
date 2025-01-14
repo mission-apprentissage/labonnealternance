@@ -3,7 +3,7 @@ import { Filter, ObjectId } from "mongodb"
 import { IEligibleTrainingsForAppointment, IFormationCatalogue } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { IAppointmentRequestContextCreateResponseSchema } from "shared/routes/appointments.routes"
-import { IAppointmentContextAPI, IAppointmentResponseSchema } from "shared/routes/appointments.routes.v2"
+import { IAppointmentContextAPI, IAppointmentResponseSchema } from "shared/routes/v2/appointments.routes.v2"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -71,7 +71,7 @@ const findEligibleTrainingByActionFormation = async (idActionFormation: string) 
   const referentielOnisepIdActionFormation = await getDbCollection("referentieloniseps").findOne({ id_action_ideo2: idActionFormation })
 
   if (!referentielOnisepIdActionFormation) {
-    throw notFound("Formation not found")
+    throw notFound("Training not found")
   }
 
   return await getDbCollection("eligible_trainings_for_appointments").findOne({
@@ -152,7 +152,7 @@ const getAppointmentContext = async (
 export const findElligibleTrainingForAppointmentV2 = async (context: IAppointmentContextAPI): Promise<IAppointmentResponseSchema> => {
   const { referrer } = context
   const referrerObj = getReferrerByKeyName(referrer)
-  let eligibleTrainingsForAppointment: IEligibleTrainingsForAppointment | null
+  let eligibleTrainingsForAppointment: IEligibleTrainingsForAppointment | null = null
 
   if ("cle_ministere_educatif" in context) {
     eligibleTrainingsForAppointment = await findEligibleTrainingByMinisterialKey(context.cle_ministere_educatif)
@@ -160,8 +160,6 @@ export const findElligibleTrainingForAppointmentV2 = async (context: IAppointmen
     eligibleTrainingsForAppointment = await findEligibleTrainingByParcoursupId(context.parcoursup_id)
   } else if ("onisep_id" in context) {
     eligibleTrainingsForAppointment = await findEligibleTrainingByActionFormation(context.onisep_id)
-  } else {
-    throw badRequest("Critère de recherche non conforme.")
   }
 
   if (!eligibleTrainingsForAppointment) {

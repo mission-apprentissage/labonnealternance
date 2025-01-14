@@ -1,13 +1,12 @@
 import { Filter } from "mongodb"
 import { IAppointment } from "shared/models"
+import anonymizedAppointmentsModel from "shared/models/anonymizedAppointments.model"
 
 import { logger } from "../../common/logger"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
 export const anonymizeAppointments = async (filter: Filter<IAppointment>) => {
-  logger.info(`Début anonymisation`)
-
   await getDbCollection("appointments")
     .aggregate([
       {
@@ -27,7 +26,7 @@ export const anonymizeAppointments = async (filter: Filter<IAppointment>) => {
         },
       },
       {
-        $merge: "anonymizedappointments",
+        $merge: anonymizedAppointmentsModel.collectionName,
       },
     ])
     .toArray()
@@ -38,24 +37,21 @@ export const anonymizeAppointments = async (filter: Filter<IAppointment>) => {
 }
 
 export const anonymizeOldAppointments = async function () {
+  logger.info("[START] Anonymisation des appointments de plus de deux (2) ans")
   try {
-    logger.info(" -- Anonymisation des appointments de plus de un (1) an -- ")
-
-    const lastYear = new Date()
-    lastYear.setFullYear(lastYear.getFullYear() - 1)
-    const anonymizedAppointmentCount = await anonymizeAppointments({ created_at: { $lte: lastYear } })
-
-    logger.info(`Fin traitement ${anonymizedAppointmentCount}`)
+    const period = new Date()
+    period.setFullYear(period.getFullYear() - 2)
+    const anonymizedAppointmentCount = await anonymizeAppointments({ created_at: { $lte: period } })
 
     await notifyToSlack({
       subject: "ANONYMISATION APPOINTMENTS",
       message: `Anonymisation des appointments de plus de un an terminée. ${anonymizedAppointmentCount} appointment(s) anonymisée(s).`,
-      error: false,
     })
   } catch (err: any) {
     await notifyToSlack({ subject: "ANONYMISATION APPOINTMENTS", message: `ECHEC anonymisation des appointments`, error: true })
     throw err
   }
+  logger.info("[END] Anonymisation des appointments de plus de deux (2) ans")
 }
 
 export default anonymizeOldAppointments

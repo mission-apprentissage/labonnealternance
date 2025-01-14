@@ -436,11 +436,8 @@ export const FormulaireCreationOffre = ({
             Dépot simplifié d'offre en alternance
           </Text>
         )}
-        <Heading>Votre besoin de recrutement</Heading>
-        <Text fontSize="20px" textAlign="justify" mt={2} mb={4}>
-          Merci de renseigner les champs ci-dessous pour créer votre offre
-        </Text>
-        <Box>
+        <Heading>Votre offre</Heading>
+        <Box mt={4}>
           <FormikCreationOffre onRomeChange={onRomeChange} onSubmit={onSubmit} offre={offre} competencesDirty={competencesDirty} />
         </Box>
       </Box>

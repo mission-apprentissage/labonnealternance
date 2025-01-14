@@ -1,6 +1,3 @@
-import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
-import { useMongo } from "@tests/utils/mongo.test.utils"
-import { saveRecruiter } from "@tests/utils/user.test.utils"
 import { ObjectId } from "bson"
 import { RECRUITER_STATUS } from "shared/constants"
 import { generateJobFixture, generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
@@ -11,6 +8,9 @@ import { beforeEach, describe, expect, it } from "vitest"
 
 import { getPairs } from "@/common/utils/array"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { saveRecruiter } from "@tests/utils/user.test.utils"
 
 import { checkSimilarity, detectDuplicateJobPartners, isCanonicalForDuplicate, OfferRef } from "./detectDuplicateJobPartners"
 

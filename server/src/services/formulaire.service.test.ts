@@ -1,4 +1,3 @@
-import { useMongo } from "@tests/utils/mongo.test.utils"
 import omit from "lodash/omit"
 import { ObjectId } from "mongodb"
 import { removeAccents } from "shared"
@@ -12,6 +11,7 @@ import { IRecruiter, IReferentielRome, IUserWithAccount } from "shared/models"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
 
 import { createJob } from "./formulaire.service"
 

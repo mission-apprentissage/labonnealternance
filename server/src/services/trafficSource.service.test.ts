@@ -1,9 +1,9 @@
-import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "mongodb"
 import { TrafficType } from "shared/models"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
 
 import { hashEmail, saveApplicationTrafficSourceIfAny, saveUserTrafficSourceIfAny } from "./trafficSource.service"
 

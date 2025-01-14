@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: c0d065fd21e851774bfb4f6dad2d4af7e339d38d3c62241ae40491ff4f8b8543
+  checksum: c0279ec41ea7c516c2eb88dff23ef328a82a466bc2ffde2f169ea370f8430b34
 - filename: .infra/vault/vault.yml
   checksum: 40717e8b277d9c9812c89d62fd3e09d0d70cdd0bb76a460f09486a31b6dd9cc7
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
@@ -22,13 +22,13 @@ fileignoreconfig:
 - filename: server/src/db/migrations/202405230000000-migrate-fix-missing-date-blacklist.ts
   checksum: 0c1b814245a58b8ca788fbfab9899206edbddaae795d56963f86c5aa83ea555f
 - filename: server/src/http/controllers/__snapshots__/etablissementRecruteur.controller.test.ts.snap
-  checksum: 1844a9ad314c3074adc11bd09ec0aac528802aed67d05e9e3da788545be88c92
+  checksum: e8a35e591adb1447d1b6e796b063f435ac389e9ffe619c68185f348beae71215
 - filename: server/src/http/controllers/application.controller.test.ts
   checksum: 00cac67c8e138098126ae98702e2bdc3e1092e1bbf188d9a437197e9ca94e16a
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
   checksum: dc77c04efc26dcd8ca4816f392ab24a32a92cb45ca4b94adb593a08e7a2d231e
 - filename: server/src/http/controllers/etablissementRecruteur.controller.test.ts
-  checksum: 6e187972b61616791476704a51dcbd97404489e66db72c00912e7aa1436966e5
+  checksum: f5c2d22aee8332a7f308a5ef088cc8ff7a5725f7f2a8f5eda6d1365cf833d3ca
 - filename: server/src/http/controllers/updateRecruteurLba.controller.test.ts
   checksum: 71dd55af4f1f44fd2b69dee91f0fc8006f3b9e0bd80d40271c73697d4eea9ea2
 - filename: server/src/http/controllers/user.controller.test.ts
@@ -36,7 +36,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/v2/applications.controller.v2.test.ts
   checksum: 9147c705b5bdfe6eff6b1b75c467249ee1af783d57ff16d78722e48e60831c68
 - filename: server/src/http/controllers/v2/appointment.controller.v2.test.ts
-  checksum: 72502c3acc46f9b6903b69095518c3d865cf437f311ed14585da04d8440b4ac0
+  checksum: 52a0f730bc8feed13f4f1371c16a332872bec77ca31f0732422b7ca90b322df9
 - filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts
   checksum: a99bfdcb5a8f4c66e9d055b44160adbc7ec2bcaf87209ff76fa9a9f674b9ca86
 - filename: server/src/http/controllers/v2/jobs.controller.v2.ts
@@ -79,6 +79,8 @@ fileignoreconfig:
   checksum: 0e6d208dc8de66d2a440ff40a1260a76e41bf69fb414ccbfc6d99396df3f3b91
 - filename: server/src/services/__snapshots__/formulaire.service.test.ts.snap
   checksum: 71d9956fd03fcec52d37b3799fc5bc806d42ec40200254b1740819b3d5a2b0d1
+- filename: server/src/services/__snapshots__/partnerJob.service.test.ts.snap
+  checksum: 4f9393678b2ba8ea72cfd832d6a33ede3bc4024382b624464481a5f09636e152
 - filename: server/src/services/application.service.test.ts
   checksum: d11d73a73ed489475d6a2f7dd693787fc71a7dfd9150bb88cec4f88c92c19d02
 - filename: server/src/services/application.service.ts
@@ -92,9 +94,11 @@ fileignoreconfig:
 - filename: server/src/services/formulaire.service.ts
   checksum: e93ff7ce146d35e70eedcbe9b66097750e7754650468a5ada6b0ed72f0fdbc49
 - filename: server/src/services/jobs/jobOpportunity/__snapshots__/jobOpportunity.service.test.ts.snap
-  checksum: da3aa00d2041f36cd4b24eb4c98d04eb236cc80eab82a4e5aaf2e7e82549c613
+  checksum: 6ed0939b188ffec96f7698b353e87c660e77c802c4d03b24620125291e06334c
 - filename: server/src/services/jobs/jobOpportunity/jobOpportunity.service.test.ts
-  checksum: 8dd77bbcf687b50239b4958fbb957c069dda342551b76cc797af5349e0bd7024
+  checksum: e192df6796f90fd76e38f3d7218e95d7ff2ef4615b5199e99052feb39ce374ec
+- filename: server/src/services/partnerJob.service.test.ts
+  checksum: b488a3b67b801c3fa5b012d2ba2b120b21af4f459b966c6629e6e681ead97913
 - filename: server/src/services/recruteurLba.service.test.ts
   checksum: 38c947c87cfb508fec88cbce878f89725cbb6679e833a66bdb7fca60e3685a0a
 - filename: server/src/services/referrers.service.ts
@@ -142,7 +146,7 @@ fileignoreconfig:
 - filename: shared/constants/recruteur.ts
   checksum: af4631fe998b78b13691dbc821a8ffa71ffc2f4cb6967361cb5ef19965dc95cb
 - filename: shared/fixtures/application.fixture.ts
-  checksum: 4c4590586b8c5683ce7aebb32d2286af3265bb9d3d39581f6d7a1f8ed1a2850d
+  checksum: 5f77b1127060f10911006a797590a7ff36f81ca61dbc0567049bc4e866e17c89
 - filename: shared/fixtures/appointment.fixture.ts
   checksum: 8b894b4059d8f7531e26f249901b83dbec433d4e660c0eca193c8e61572b3ae0
 - filename: shared/fixtures/recruiter.fixture.ts
@@ -156,13 +160,13 @@ fileignoreconfig:
 - filename: shared/helpers/generateUri.ts
   checksum: 6542db0d3eca959c6e81d574f8b71d4b18d2f1af21042ca5ed4dff319cd39555
 - filename: shared/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap
-  checksum: caa1131ffe2f23d62ba2d4370173cce74ffa05a17330c8d342c41c4b971c6f9f
+  checksum: aa01a8388e2accb53cc88b46750fea7487998584a107059e3149695c0d219ae6
 - filename: shared/helpers/openapi/generateOpenapi.test.ts
   checksum: d7b85c3dff488cec523d78f0926e15dbea41071a1864bda62b4d6caeb2541df3
 - filename: shared/models/applications.model.ts
   checksum: 0db1feff739fda6ff77b2a460e214c03bbeb0451c2e4cf44556f5314c1896bd7
 - filename: shared/models/jobPartners/jobPartners.model.test.ts
-  checksum: 0a83cdb4c968e270d2e6bd8593b6941bb68f1e0c0df55f43b6cbc94a781a233c
+  checksum: 6c2ec97a1cb5d523af4bd805d6540774ccbcc0145bc48268732548163796de05
 - filename: shared/models/lbaItem.model.ts
   checksum: 144ab34674299cdac89d96ffa6ed834814135c54e1621e1fa47ec5012924f862
 - filename: shared/routes/appointments.routes.ts
@@ -207,6 +211,8 @@ fileignoreconfig:
   checksum: 74951335936fd8df7dbbda0dfcb9fd36d01ec96a34d04d61761e5b081ac2bd96
 - filename: ui/components/ItemDetail/LbaRecruteurComponents/LbaRecruteurDetail.tsx
   checksum: 6e552b66f9238645f70705a0c43c81905e8dbee1c83d364cd89f951f80cb7ea0
+- filename: ui/components/ItemDetail/PartnerJobComponents/PartnerJobDetail.tsx
+  checksum: 88c8bf2cf48aa2c93a73eea7dcd9a040f44cbba3c82ae1b41b80d9939112d0c5
 - filename: ui/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaDetail.tsx
   checksum: 5d8d24178d6390f4745bcddcaca7e7ea3f8f6af79ef304bb48187a6bea7ccfa1
 - filename: ui/components/ItemDetail/TrainingDetail.tsx

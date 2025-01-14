@@ -4,6 +4,7 @@ import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import fetchFtJobDetails from "@/services/fetchFtJobDetails"
 import fetchLbaCompanyDetails from "@/services/fetchLbaCompanyDetails"
 import fetchLbaJobDetails from "@/services/fetchLbaJobDetails"
+import fetchPartnerJobDetails from "@/services/fetchPartnerJobDetails"
 import { fetchTrainingDetails } from "@/services/fetchTrainingDetails"
 import pushHistory from "@/utils/pushHistory"
 
@@ -105,6 +106,7 @@ export const loadItem = async ({
         peJobs: null,
         lbaCompanies: null,
         matchas: null,
+        partnerJobs: null,
       }
 
       try {
@@ -127,6 +129,12 @@ export const loadItem = async ({
             const lbaCompany = await fetchLbaCompanyDetails({ id: item.itemId })
             results.lbaCompanies = [lbaCompany]
             loadedItem = lbaCompany
+            break
+          }
+          case LBA_ITEM_TYPE_OLD.PARTNER_JOB: {
+            const partnerJob = await fetchPartnerJobDetails({ id: item.itemId })
+            results.partnerJobs = [partnerJob]
+            loadedItem = partnerJob
             break
           }
           default: {

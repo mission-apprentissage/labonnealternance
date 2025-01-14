@@ -1,3 +1,4 @@
+import { ObjectId } from "bson"
 import { Jsonify } from "type-fest"
 
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, allLbaItemType, allLbaItemTypeOLD } from "../constants/lbaitem"
@@ -16,26 +17,31 @@ export enum ApplicationScanStatus {
   ERROR_CLAMAV = "ERROR_CLAMAV",
   NO_VIRUS_DETECTED = "NO_VIRUS_DETECTED",
   DO_NOT_SEND = "DO_NOT_SEND",
+  ERROR_APPLICANT_NOT_FOUND = "ERROR_APPLICANT_NOT_FOUND",
 }
 
 export const ZApplication = z
   .object({
     _id: zObjectId,
-    applicant_email: z.string({ required_error: "⚠ L'adresse e-mail est obligatoire" }).email("⚠ Adresse e-mail invalide").describe("Email du candidat"),
+    applicant_id: zObjectId,
+    applicant_email: z.string().email().describe("Email du candidat"),
     applicant_first_name: z
-      .string({ required_error: "⚠ Le prénom est obligatoire" })
+      .string()
+      .min(1)
       .max(50)
       .transform((value) => removeUrlsFromText(value))
       .describe("Prenom du candidat"),
     applicant_last_name: z
-      .string({ required_error: "⚠ Le nom est obligatoire" })
+      .string()
+      .min(1)
       .max(50)
       .transform((value) => removeUrlsFromText(value))
       .describe("Nom du candidat"),
-    applicant_phone: extensions.phone().describe("Téléphone du candidat"),
+    applicant_phone: extensions.telephone.describe("Téléphone du candidat"),
     applicant_attachment_name: z
-      .string({ required_error: "⚠ La pièce jointe est obligatoire" })
-      .regex(/((.*?))(\.)+(docx|pdf)$/i)
+      .string()
+      .min(1)
+      .regex(/((.*?))(\.)+([Dd][Oo][Cc][Xx]|[Pp][Dd][Ff])$/i)
       .describe("Nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés."),
     applicant_message_to_company: z.string().nullable().describe("Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat."),
     job_searched_by_user: z.string().nullish().describe("Métier recherché par le candidat"),
@@ -48,10 +54,7 @@ export const ZApplication = z
     company_name: z.string().describe("Nom de l'entreprise"),
     company_naf: z.string().nullish().describe("Code NAF de l'entreprise"),
     company_address: z.string().nullish().describe("Adresse de l'entreprise"),
-    job_origin: z
-      .enum([allLbaItemType[0], ...allLbaItemType.slice(1), ...allLbaItemTypeOLD.slice(1)]) // suppression intentionnelle du premier élément de allLbaItemTypeOLD pour éviter un duplicat
-      .nullable()
-      .describe("Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance."),
+    job_origin: extensions.buildEnum(LBA_ITEM_TYPE).nullable().describe("Origine de l'offre d'emploi"),
     job_title: z
       .string()
       .nullish()
@@ -107,6 +110,7 @@ export const ZNewApplication = ZApplication.extend({
 })
   .omit({
     _id: true,
+    applicant_id: true,
     applicant_message_to_company: true,
     applicant_attachment_name: true,
     job_origin: true,
@@ -152,6 +156,7 @@ const ZNewApplicationTransitionToV2 = ZApplication.extend({
 })
   .omit({
     _id: true,
+    applicant_id: true,
     applicant_message_to_company: true,
     applicant_attachment_name: true,
     job_origin: true,
@@ -168,7 +173,9 @@ const ZNewApplicationTransitionToV2 = ZApplication.extend({
 // KBA 20241011 to remove once V2 is LIVE and V1 support has ended
 export type INewApplicationV1 = z.output<typeof ZNewApplicationTransitionToV2>
 
-const ZApplicationV2Base = ZApplication.pick({
+type JobCollectionName = "recruteurslba" | "jobs_partners" | "recruiters"
+
+export const ZApplicationApiPrivate = ZApplication.pick({
   applicant_first_name: true,
   applicant_last_name: true,
   applicant_email: true,
@@ -179,14 +186,13 @@ const ZApplicationV2Base = ZApplication.pick({
 }).extend({
   applicant_message: ZApplication.shape.applicant_message_to_company.optional(),
   applicant_attachment_content: z.string().max(4_215_276).describe("Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo."),
-})
-
-type JobCollectionName = "recruteurslba" | "jobs_partners" | "recruiters"
-export const ZApplicationApiPayload = ZApplicationV2Base.extend({
   recipient_id: z
     .string()
     .transform((recipientId) => {
       const [collectionName, jobId] = recipientId.split("_")
+      if (!ObjectId.isValid(jobId)) {
+        throw new Error(`Invalid job identifier: ${jobId}`)
+      }
       if (!["recruteurslba", "jobs_parnters", "recruiters"].includes(collectionName)) {
         throw new Error(`Invalid collection name: ${collectionName}`)
       }
@@ -194,27 +200,31 @@ export const ZApplicationApiPayload = ZApplicationV2Base.extend({
     })
     .describe("Identifiant unique de la ressource vers laquelle la candidature est faite, préfixé par le nom de la collection"),
 })
-export type IApplicationApiPayloadOutput = z.output<typeof ZApplicationApiPayload>
-export type IApplicationApiPayload = z.input<typeof ZApplicationApiPayload>
-export type IApplicationApiPayloadJSON = Jsonify<z.input<typeof ZApplicationV2Base>>
+
+export const ZApplicationApiPublic = ZApplicationApiPrivate.omit({
+  caller: true,
+  job_searched_by_user: true,
+})
+
+export type IApplicationApiPublicOutput = z.output<typeof ZApplicationApiPublic>
+export type IApplicationApiPrivateOutput = z.output<typeof ZApplicationApiPrivate>
+export type IApplicationApiPublic = z.input<typeof ZApplicationApiPublic>
+export type IApplicationApiPrivate = z.input<typeof ZApplicationApiPrivate>
+export type IApplicationApiPrivateJSON = Jsonify<z.input<typeof ZApplicationApiPrivate>>
+export type IApplicationApiPublicJSON = Jsonify<z.input<typeof ZApplicationApiPublic>>
 
 export default {
   zod: ZApplication,
   indexes: [
-    [{ applicant_email: 1 }, {}],
-    [{ applicant_first_name: 1 }, {}],
-    [{ applicant_last_name: 1 }, {}],
-    [{ applicant_phone: 1 }, {}],
-    [{ company_recruitment_intention: 1 }, {}],
-    [{ company_siret: 1 }, {}],
-    [{ company_email: 1 }, {}],
-    [{ company_name: 1 }, {}],
-    [{ company_naf: 1 }, {}],
-    [{ job_origin: 1 }, {}],
     [{ job_id: 1 }, {}],
-    [{ caller: 1 }, {}],
+    [{ company_siret: 1 }, {}],
+    [{ applicant_email: 1 }, {}],
     [{ created_at: 1 }, {}],
+    [{ company_email: 1 }, {}],
+    [{ job_origin: 1 }, {}],
+    [{ caller: 1 }, {}],
     [{ scan_status: 1 }, {}],
+    [{ applicant_id: 1, to_applicant_message_id: 1 }, {}],
     [{ scan_status: 1, to_applicant_message_id: 1 }, {}],
   ],
   collectionName,

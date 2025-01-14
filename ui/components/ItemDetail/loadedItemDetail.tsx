@@ -1,16 +1,14 @@
-import { ILbaItemLbaCompany, ILbaItemLbaJob } from "@/../shared"
-import { Box, Divider, Flex, Link, Text } from "@chakra-ui/react"
+import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "@/../shared"
+import { Box, Divider, Flex, Text } from "@chakra-ui/react"
 import { useContext, useEffect, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import DemandeDeContact from "@/components/RDV/DemandeDeContact"
-import { focusWithin } from "@/theme/theme-lba-tools"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import { isCfaEntreprise } from "../../services/cfaEntreprise"
 import { filterLayers } from "../../utils/mapTools"
-import { SendPlausibleEvent } from "../../utils/plausible"
 import InfoBanner from "../InfoBanner/InfoBanner"
 
 import AideApprentissage from "./AideApprentissage"
@@ -21,12 +19,15 @@ import FTJobDetail from "./FTJobDetail"
 import GoingToContactQuestion, { getGoingtoId } from "./GoingToContactQuestion"
 import getActualTitle from "./ItemDetailServices/getActualTitle"
 import { BuildSwipe, buttonJePostuleShouldBeDisplayed, buttonRdvShouldBeDisplayed, getNavigationButtons } from "./ItemDetailServices/getButtons"
+import GetFranceTravailButton from "./ItemDetailServices/getFranceTravailButton"
 import getJobPublishedTimeAndApplications from "./ItemDetailServices/getJobPublishedTimeAndApplications"
 import getTags from "./ItemDetailServices/getTags"
 import ItemDetailApplicationsStatus, { hasApplied } from "./ItemDetailServices/ItemDetailApplicationStatus"
 import ItemDetailCard from "./ItemDetailServices/ItemDetailCard"
 import JobItemCardHeader from "./ItemDetailServices/JobItemCardHeader"
 import { LbaJobDetail } from "./LbaJobComponents/LbaJobDetail"
+import { PartnerJobDetail } from "./PartnerJobComponents/PartnerJobDetail"
+import { PartnerJobPostuler } from "./PartnerJobComponents/PartnerJobPostuler"
 import RecruteurLbaDetail from "./RecruteurLbaComponents/RecruteurLbaDetail"
 import ShareLink from "./ShareLink"
 import TrainingDetail from "./TrainingDetail"
@@ -60,14 +61,6 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
     let currentScroll = document.querySelector("#itemDetailColumn").scrollTop
     currentScroll += isCollapsedHeader ? 100 : -100
     setIsCollapsedHeader(currentScroll > maxScroll)
-  }
-
-  const postuleSurFranceTravail = () => {
-    if (selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PEJOB) {
-      SendPlausibleEvent("Clic Postuler - Fiche entreprise Offre FT", {
-        info_fiche: selectedItem.job.id,
-      })
-    }
   }
 
   const stickyHeaderProperties = isCollapsedHeader
@@ -140,21 +133,6 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
 
           {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
 
-          {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PEJOB && buttonJePostuleShouldBeDisplayed(selectedItem) && (
-            <Box my={4}>
-              <Link
-                data-tracking-id="postuler-offre-partenaire"
-                {...focusWithin}
-                variant="postuler"
-                href={selectedItem.url}
-                target="francetravail"
-                onClick={postuleSurFranceTravail}
-              >
-                Je postule sur France Travail
-              </Link>
-            </Box>
-          )}
-
           <Divider my={2} />
 
           <Flex flexDirection={{ base: "column", sm: "row" }}>
@@ -167,6 +145,10 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
                 <DemandeDeContact context={selectedItem.rdvContext} referrer="LBA" showInModal />
               )}
               {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && <ItemDetailApplicationsStatus item={selectedItem} mt={2} mb={2} />}
+
+              {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PARTNER_JOB && <PartnerJobPostuler job={selectedItem} />}
+
+              {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PEJOB && GetFranceTravailButton({ offreFT: selectedItem })}
             </Box>
             <Box pt={{ base: 0, sm: 4 }}>
               <ShareLink item={selectedItem} />
@@ -179,6 +161,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
       {kind === LBA_ITEM_TYPE_OLD.MATCHA && <LbaJobDetail title={actualTitle} job={selectedItem as ILbaItemLbaJob} />}
       {kind === LBA_ITEM_TYPE_OLD.LBA && <RecruteurLbaDetail recruteurLba={selectedItem as ILbaItemLbaCompany} />}
       {kind === LBA_ITEM_TYPE_OLD.FORMATION && <TrainingDetail training={selectedItem} />}
+      {kind === LBA_ITEM_TYPE_OLD.PARTNER_JOB && <PartnerJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJob} />}
 
       <AideApprentissage />
 

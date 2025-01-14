@@ -160,28 +160,24 @@ const initializeMap = ({ mapContainer, unselectItem, selectItemOnMap, onMapHasMo
 
     if (!map.hasImage("training")) {
       map.loadImage("/images/icons/book.png", function (error, image) {
-        if (error) throw error
         map.addImage("training", image)
       })
     }
 
     if (!map.hasImage("job")) {
       map.loadImage("/images/icons/job.png", function (error, image) {
-        if (error) throw error
         map.addImage("job", image)
       })
     }
 
     if (!map.hasImage("training-large")) {
       map.loadImage("/images/icons/book_large_shadow.png", function (error, image) {
-        if (error) throw error
         map.addImage("training-large", image)
       })
     }
 
     if (!map.hasImage("job-large")) {
       map.loadImage("/images/icons/job_large_shadow.png", function (error, image) {
-        if (error) throw error
         map.addImage("job-large", image)
       })
     }
@@ -340,17 +336,12 @@ const factorJobsForMap = (lists, type) => {
   let sortedList = []
 
   if (type === layerType.PARTNER) {
-    if (lists.peJobs) {
-      sortedList = lists.peJobs
-    }
+    sortedList = sortedList.concat(lists.peJobs ?? [])
   } else {
-    if (lists.lbaCompanies) {
-      sortedList = sortedList.length ? sortedList.concat(lists.lbaCompanies) : lists.lbaCompanies
-    }
-
-    if (lists.matchas) {
-      sortedList = sortedList.length ? sortedList.concat(lists.matchas) : lists.matchas
-    }
+    sortedList = sortedList
+      .concat(lists.lbaCompanies ?? [])
+      .concat(lists.matchas ?? [])
+      .concat(lists.partnerJobs ?? [])
   }
 
   // tri de la liste de tous les emplois selon les coordonnées geo (l'objectif est d'avoir les emplois au même lieu proches)
@@ -631,8 +622,8 @@ export {
   closeMapPopups,
   computeMissingPositionAndDistance,
   coordinatesOfFrance,
-  factorPartnerJobsForMap,
   factorInternalJobsForMap,
+  factorPartnerJobsForMap,
   factorTrainingsForMap,
   filterLayers,
   flyToLocation,
@@ -640,6 +631,7 @@ export {
   getZoomLevelForDistance,
   initializeMap,
   isMapInitialized,
+  layerType,
   map,
   refreshLocationMarkers,
   resizeMap,
@@ -649,5 +641,4 @@ export {
   setSelectedTrainingMarker,
   setTrainingMarkers,
   waitForMapReadiness,
-  layerType,
 }

@@ -1,13 +1,26 @@
-import { badRequest, conflict, internal, notFound } from "@hapi/boom"
+import { badRequest, internal, notFound } from "@hapi/boom"
 import { IApiAlternanceTokenData } from "api-alternance-sdk"
 import { DateTime } from "luxon"
 import { Document, Filter, ObjectId } from "mongodb"
-import { IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS_ENGLISH, ZPointGeometry, assertUnreachable, joinNonNullStrings, parseEnum, translateJobStatus } from "shared"
+import {
+  IGeoPoint,
+  IJob,
+  ILbaCompany,
+  ILbaItemPartnerJob,
+  IRecruiter,
+  JOB_STATUS_ENGLISH,
+  ZPointGeometry,
+  assertUnreachable,
+  joinNonNullStrings,
+  parseEnum,
+  translateJobStatus,
+} from "shared"
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import {
   IJobsPartnersOfferApi,
   IJobsPartnersOfferPrivate,
+  IJobsPartnersOfferPrivateWithDistance,
   IJobsPartnersRecruiterApi,
   INiveauDiplomeEuropeen,
   JOBPARTNERS_LABEL,
@@ -31,6 +44,7 @@ import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { getRomeInfoSafe } from "@/services/cacheRomeo.service"
 import { getEntrepriseDataFromSiret, getOpcoData } from "@/services/etablissement.service"
 import { getCityFromProperties, getGeolocation, getStreetFromProperties } from "@/services/geolocation.service"
+import { getPartnerJobs } from "@/services/partnerJob.service"
 
 import { logger } from "../../../common/logger"
 import { IApiError } from "../../../common/utils/errorManager"
@@ -84,7 +98,13 @@ export const getJobsFromApi = async ({
   isMinimalData: boolean
 }): Promise<
   | IApiError
-  | { peJobs: TLbaItemResult<ILbaItemFtJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
+  | {
+      peJobs: TLbaItemResult<ILbaItemFtJob> | null
+      matchas: TLbaItemResult<ILbaItemLbaJob> | null
+      lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null
+      lbbCompanies: null
+      partnerJobs: TLbaItemResult<ILbaItemPartnerJob> | null
+    }
 > => {
   try {
     const convertedSource = sources
@@ -109,7 +129,7 @@ export const getJobsFromApi = async ({
     const jobSources = !convertedSource ? allLbaItemType : convertedSource.split(",")
     const finalRadius = radius ?? 0
 
-    const [peJobs, lbaCompanies, matchas] = await Promise.all([
+    const [peJobs, lbaCompanies, matchas, partnerJobs] = await Promise.all([
       jobSources.includes(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES)
         ? getSomeFtJobs({
             romes: romes?.split(","),
@@ -153,9 +173,23 @@ export const getJobsFromApi = async ({
             isMinimalData,
           })
         : null,
+      jobSources.includes(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA)
+        ? getPartnerJobs({
+            romes,
+            latitude,
+            longitude,
+            radius: finalRadius,
+            api,
+            caller,
+            diploma,
+            opco,
+            opcoUrl,
+            isMinimalData,
+          })
+        : null,
     ])
 
-    return { peJobs, matchas, lbaCompanies, lbbCompanies: null }
+    return { peJobs, matchas, lbaCompanies, lbbCompanies: null, partnerJobs }
   } catch (err) {
     if (caller) {
       trackApiCall({ caller, api_path: api, response: "Error" })
@@ -172,7 +206,13 @@ export const getJobsQuery = async (
   query: TJobSearchQuery
 ): Promise<
   | IApiError
-  | { peJobs: TLbaItemResult<ILbaItemFtJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
+  | {
+      peJobs: TLbaItemResult<ILbaItemFtJob> | null
+      matchas: TLbaItemResult<ILbaItemLbaJob> | null
+      lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null
+      partnerJobs: TLbaItemResult<ILbaItemPartnerJob> | null
+      lbbCompanies: null
+    }
 > => {
   const parameterControl = await jobsQueryValidator(query)
 
@@ -201,6 +241,10 @@ export const getJobsQuery = async (
     await incrementLbaJobsViewCount(result.matchas.results.flatMap((job) => (job?.id ? [job.id] : [])))
   }
 
+  if ("partnerJobs" in result && result.partnerJobs && "results" in result.partnerJobs) {
+    job_count += result.partnerJobs.results.length
+  }
+
   if (query.caller) {
     trackApiCall({ caller: query.caller, job_count, result_count: job_count, api_path: "jobV1/jobs", response: "OK" })
   }
@@ -208,9 +252,15 @@ export const getJobsQuery = async (
   return result
 }
 
-export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> => {
+export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level, partners_to_exclude }: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivate[]> => {
   const query: Filter<IJobsPartnersOfferPrivate> = {
     offer_multicast: true,
+    offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+    offer_expiration: { $gt: new Date() },
+  }
+
+  if (partners_to_exclude?.length) {
+    query.partner_label = { $not: { $in: partners_to_exclude } }
   }
 
   if (romes) {
@@ -229,6 +279,7 @@ export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }
             $geoNear: {
               near: { type: "Point", coordinates: [geo.longitude, geo.latitude] },
               distanceField: "distance",
+              key: "workplace_geopoint",
               maxDistance: geo.radius * 1000,
               query,
             },
@@ -236,7 +287,7 @@ export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }
           { $sort: { distance: 1, offer_creation: -1 } },
         ]
 
-  const jobsPartners = await getDbCollection("jobs_partners")
+  return await getDbCollection("jobs_partners")
     .aggregate<IJobsPartnersOfferPrivate>([
       ...filterStages,
       {
@@ -251,6 +302,50 @@ export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level }
       },
     ])
     .toArray()
+}
+
+export const getJobsPartnersFromDBForUI = async ({ romes, geo, target_diploma_level }: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivateWithDistance[]> => {
+  const query: Filter<IJobsPartnersOfferPrivate> = {
+    offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+    offer_expiration: { $gt: new Date() },
+  }
+
+  if (romes) {
+    query.offer_rome_codes = { $in: romes }
+  }
+
+  if (target_diploma_level) {
+    query["offer_target_diploma.european"] = { $in: [target_diploma_level, null] }
+  }
+
+  const filterStages: Document[] =
+    geo === null
+      ? [{ $match: query }, { $sort: { offer_creation: -1 } }]
+      : [
+          {
+            $geoNear: {
+              near: { type: "Point", coordinates: [geo.longitude, geo.latitude] },
+              distanceField: "distance",
+              key: "workplace_geopoint",
+              maxDistance: geo.radius * 1000,
+              query,
+            },
+          },
+          { $sort: { distance: 1, offer_creation: -1 } },
+        ]
+
+  return await getDbCollection("jobs_partners")
+    .aggregate<IJobsPartnersOfferPrivateWithDistance>([
+      ...filterStages,
+      {
+        $limit: 150,
+      },
+    ])
+    .toArray()
+}
+
+export const getJobsPartnersForApi = async ({ romes, geo, target_diploma_level, partners_to_exclude }: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> => {
+  const jobsPartners = await getJobsPartnersFromDB({ romes, geo, target_diploma_level, partners_to_exclude })
 
   return jobsPartners.map((j) =>
     jobsRouteApiv3Converters.convertToJobOfferApiReadV3({
@@ -355,7 +450,7 @@ export const convertLbaRecruiterToJobOfferApi = (offresEmploiLba: IJobResult[]):
       })
       .map(
         ({ recruiter, job }: IJobResult): IJobOfferApiReadV3 => ({
-          identifier: { id: job._id, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, partner_job_id: null },
+          identifier: { id: job._id, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, partner_job_id: job._id.toString() },
           contract: {
             start: job.job_start_date,
             duration: job.job_duration ?? null,
@@ -375,7 +470,7 @@ export const convertLbaRecruiterToJobOfferApi = (offresEmploiLba: IJobResult[]):
               expiration: job.job_expiration_date ?? null,
             },
             opening_count: job.job_count ?? 1,
-            status: translateJobStatus(job.job_status),
+            status: translateJobStatus(job.job_status)!,
           },
 
           workplace: {
@@ -458,8 +553,8 @@ export const convertFranceTravailJobToJobOfferApi = (offresEmploiFranceTravail: 
           brand: null,
           legal_name: null,
           website: null,
-          name: offreFT.entreprise.nom,
-          description: offreFT.entreprise.description,
+          name: offreFT.entreprise.nom ?? null,
+          description: offreFT.entreprise.description ?? null,
           size: null,
           location: {
             address: offreFT.lieuTravail.libelle,
@@ -545,7 +640,7 @@ async function findLbaJobOpportunities(query: IJobSearchApiV3QueryResolved): Pro
   return convertLbaRecruiterToJobOfferApi(lbaJobs)
 }
 
-async function resolveQuery(query: IJobSearchApiV3Query): Promise<IJobSearchApiV3QueryResolved> {
+export async function resolveQuery(query: IJobSearchApiV3Query): Promise<IJobSearchApiV3QueryResolved> {
   const { romes, rncp, latitude, longitude, radius, ...rest } = query
 
   const geo = latitude === null || longitude === null ? null : { latitude, longitude, radius }
@@ -583,7 +678,7 @@ export async function findJobsOpportunities(payload: IJobSearchApiV3Query, conte
   const [recruteurLba, offreEmploiLba, offreEmploiPartenaire, franceTravail] = await Promise.all([
     getRecruteursLbaFromDB(resolvedQuery),
     findLbaJobOpportunities(resolvedQuery),
-    getJobsPartnersFromDB(resolvedQuery),
+    getJobsPartnersForApi(resolvedQuery),
     findFranceTravailOpportunities(resolvedQuery, context),
   ])
 
@@ -699,7 +794,7 @@ async function resolveRomeCodes(data: IJobOfferApiWriteV3, siretData: WorkplaceS
   return [romeoResponse]
 }
 
-type InvariantFields = "_id" | "created_at" | "partner_label"
+type InvariantFields = "_id" | "created_at" | "partner_label" | "partner_job_id"
 
 async function upsertJobOffer(data: IJobOfferApiWriteV3, identity: IApiAlternanceTokenData, current: IJobsPartnersOfferPrivate | null): Promise<ObjectId> {
   const zodError = new ZodError([])
@@ -721,10 +816,12 @@ async function upsertJobOffer(data: IJobOfferApiWriteV3, identity: IApiAlternanc
 
   const now = new Date()
 
+  const _id = current?._id ?? new ObjectId()
   const invariantData: Pick<IJobsPartnersOfferPrivate, InvariantFields> = {
-    _id: current?._id ?? new ObjectId(),
+    _id,
     created_at: current?.created_at ?? now,
     partner_label: identity.organisation!,
+    partner_job_id: _id.toString(),
   }
 
   const defaultOfferExpiration = current?.offer_expiration
@@ -734,8 +831,6 @@ async function upsertJobOffer(data: IJobOfferApiWriteV3, identity: IApiAlternanc
   const offer_target_diploma_european = data.offer.target_diploma?.european ?? null
 
   const writableData: Omit<IJobsPartnersOfferPrivate, InvariantFields> = {
-    partner_job_id: data.identifier.partner_job_id,
-
     contract_start: data.contract.start,
     contract_duration: data.contract.duration,
     contract_type: data.contract.type,
@@ -787,12 +882,6 @@ async function upsertJobOffer(data: IJobOfferApiWriteV3, identity: IApiAlternanc
 }
 
 export async function createJobOffer(identity: IApiAlternanceTokenData, data: IJobOfferApiWriteV3): Promise<ObjectId> {
-  const { partner_job_id } = data.identifier
-  const { organisation } = identity
-  const exist = await getDbCollection("jobs_partners").findOne<IJobsPartnersOfferPrivate>({ partner_label: organisation!, partner_job_id })
-  if (exist) {
-    throw conflict("Job already exist")
-  }
   return upsertJobOffer(data, identity, null)
 }
 

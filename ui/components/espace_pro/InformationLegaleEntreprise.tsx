@@ -36,7 +36,7 @@ export const InformationLegaleEntreprise = ({ siret, type, opco }: InformationLe
       {raisonSociale && user?.type !== OPCO && (
         <Flex alignItems="flex-start" mb={10}>
           <InfoCircle mr={2} mt={1} />
-          <Text>Vérifiez que les informations pré-remplies soient correctes avant de continuer.</Text>
+          <Text>Vérifiez que les informations pré-remplies sont correctes avant de continuer.</Text>
         </Flex>
       )}
       {!raisonSociale && (
@@ -89,7 +89,7 @@ const OrganizationInfoFields = ({
   is_qualiopi?: boolean
 }) => {
   const RAISON_SOCIALE =
-    establishment_raison_sociale && establishment_raison_sociale.length > 30 ? establishment_raison_sociale.substring(0, 30) + "..." : establishment_raison_sociale ?? ""
+    establishment_raison_sociale && establishment_raison_sociale.length > 30 ? establishment_raison_sociale.substring(0, 30) + "..." : (establishment_raison_sociale ?? "")
   const firstLineAddress = address
   return (
     <Stack direction="column" spacing={7}>

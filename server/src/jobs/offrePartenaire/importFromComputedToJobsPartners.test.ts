@@ -1,9 +1,9 @@
-import { createComputedJobPartner, createJobPartner } from "@tests/utils/jobsPartners.test.utils"
-import { useMongo } from "@tests/utils/mongo.test.utils"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { createComputedJobPartner, createJobPartner } from "@tests/utils/jobsPartners.test.utils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
 
 import { importFromComputedToJobsPartners } from "./importFromComputedToJobsPartners"
 

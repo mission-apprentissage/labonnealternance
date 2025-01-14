@@ -17,6 +17,11 @@ export enum JOBPARTNERS_LABEL {
   RH_ALTERNANCE = "RH Alternance",
 }
 
+export enum FILTER_JOBPARTNERS_LABEL {
+  HELLOWORK = JOBPARTNERS_LABEL.HELLOWORK,
+  RH_ALTERNANCE = JOBPARTNERS_LABEL.RH_ALTERNANCE,
+}
+
 export const ZJobsPartnersRecruiterApi = z.object({
   _id: zObjectId,
   workplace_siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
@@ -48,7 +53,7 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   _id: z.union([zObjectId, z.string()]).nullable().describe("Identifiant de l'offre"),
 
   partner_label: z.string().describe("Référence du partenaire"),
-  partner_job_id: z.string().nullable().describe("Identifiant d'origine l'offre provenant du partenaire"),
+  partner_job_id: z.string().describe("Identifiant d'origine de l'offre provenant du partenaire"),
 
   contract_start: z.date().nullable().describe("Date de début de contrat").openapi({ format: "date-time" }),
   contract_duration: z.number().int().min(0).nullable().describe("Durée du contrat en mois"),
@@ -98,18 +103,21 @@ export const ZJobsPartnersOfferPrivate = ZJobsPartnersOfferApi.omit({
     apply_url: ZJobsPartnersOfferApi.shape.apply_url.nullable().default(null),
   })
 
+export const ZJobsPartnersOfferPrivateWithDistance = ZJobsPartnersOfferPrivate.extend({
+  distance: z.number().nullish(),
+})
+
 export type IJobsPartnersRecruiterApi = z.output<typeof ZJobsPartnersRecruiterApi>
 export type IJobsPartnersOfferApi = z.output<typeof ZJobsPartnersOfferApi>
 
 export type IJobsPartnersRecruiterPrivate = z.output<typeof ZJobsPartnersRecruiterPrivate>
 export type IJobsPartnersOfferPrivate = z.output<typeof ZJobsPartnersOfferPrivate>
+export type IJobsPartnersOfferPrivateWithDistance = z.output<typeof ZJobsPartnersOfferPrivateWithDistance>
 export type IJobsPartnersOfferPrivateInput = z.input<typeof ZJobsPartnersOfferPrivate>
 
 const TIME_CLOCK_TOLERANCE = 300_000
 
 export const ZJobsPartnersPostApiBodyBase = z.object({
-  partner_job_id: ZJobsPartnersOfferPrivate.shape.partner_job_id.default(null),
-
   contract_start: z
     .string({ message: "Expected ISO 8601 date string" })
     .datetime({ offset: true, message: "Expected ISO 8601 date string" })
@@ -213,7 +221,8 @@ export type IJobsPartnersWritableApiInput = z.input<typeof ZJobsPartnersWritable
 export default {
   zod: ZJobsPartnersOfferPrivate,
   indexes: [
-    [{ workplace_geopoint: "2dsphere", offer_multicast: 1, offer_rome_codes: 1 }, {}],
+    [{ workplace_geopoint: "2dsphere", offer_multicast: 1, offer_rome_codes: 1, offer_status: 1, offer_expiration: 1, "offer_target_diploma.european": 1 }, {}],
+    [{ workplace_geopoint: "2dsphere", offer_multicast: 1, offer_rome_codes: 1, offer_status: 1, offer_expiration: 1, partner_label: 1, "offer_target_diploma.european": 1 }, {}],
     [{ offer_multicast: 1, offer_rome_codes: 1, offer_creation: -1 }, {}],
     [{ offer_multicast: 1, "offer_target_diploma.european": 1, offer_creation: -1 }, {}],
     [{ offer_multicast: 1, offer_rome_codes: 1, "offer_target_diploma.european": 1, offer_creation: -1 }, {}],

@@ -1,12 +1,12 @@
-import { init } from "@socialgouv/matomo-next"
 import { useRouter } from "next/router"
 import { useEffect } from "react"
+import { setZodLanguage } from "shared/helpers/zodWithOpenApi"
 
-import { setIsTrackingEnabled, setTrackingCookies } from "@/common/utils/trackingCookieUtils"
+import { setIsTrackingEnabled, setTrackingCookies } from "@/tracking/trackingCookieUtils"
+import { initMatomo } from "@/tracking/trackingMatomo"
 
 import HeadLaBonneAlternance from "../components/head"
 import PageTracker from "../components/pageTracker"
-import { publicConfig } from "../config.public"
 import Providers from "../context/Providers"
 
 import "../public/styles/application.css"
@@ -18,7 +18,8 @@ export default function LaBonneAlternance({ Component, pageProps }) {
   const router = useRouter()
 
   useEffect(() => {
-    init(publicConfig.matomo)
+    setZodLanguage("fr")
+    initMatomo()
     setIsTrackingEnabled()
   }, [])
   useEffect(() => {

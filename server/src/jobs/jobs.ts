@@ -3,16 +3,18 @@ import { ObjectId } from "mongodb"
 
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
+import { generateSitemap } from "@/services/sitemap.service"
 
 import { getLoggerWithContext, logger } from "../common/logger"
 import { getDatabase } from "../common/utils/mongodbUtils"
 import config from "../config"
 
-import anonymizeOldAppointments from "./anonymization/anonymizeAppointments"
+import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
+import { anonymizeApplications } from "./anonymization/anonymizeApplications"
+import anonymizeAppointments from "./anonymization/anonymizeAppointments"
 import anonymizeIndividual from "./anonymization/anonymizeIndividual"
-import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
-import { anonimizeUsers } from "./anonymization/anonymizeUserRecruteurs"
-import { anonymizeOldUsers } from "./anonymization/anonymizeUsers"
+import { anonimizeUsersWithAccounts } from "./anonymization/anonymizeUserRecruteurs"
+import { anonymizeUsers } from "./anonymization/anonymizeUsers"
 import { processApplications } from "./applications/processApplications"
 import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
 import { recreateIndexes } from "./database/recreateIndexes"
@@ -27,6 +29,7 @@ import { pocRomeo } from "./franceTravail/pocRomeo"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
+import { processJobPartners } from "./offrePartenaire/processJobPartners"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -38,6 +41,7 @@ import { inviteEtablissementParcoursupToPremium } from "./rdv/inviteEtablissemen
 import { inviteEtablissementParcoursupToPremiumFollowUp } from "./rdv/inviteEtablissementParcoursupToPremiumFollowUp"
 import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
 import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
+import { resetInvitationDates } from "./rdv/resetInvitationDates"
 import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
 import { cancelOfferJob } from "./recruiters/cancelOfferJob"
@@ -128,6 +132,10 @@ export async function setupJobProcessor() {
             cron_string: "0 5 * * *",
             handler: syncEtablissementDates,
           },
+          "Supprime les dates d'invitation et de refus au premium (PARCOURSUP & AFFELNET) des etablissements": {
+            cron_string: "0 0 20 11 *",
+            handler: resetInvitationDates,
+          },
           "Historisation des formations éligibles à la prise de rendez-vous": {
             cron_string: "55 2 * * *",
             handler: eligibleTrainingsForAppointmentsHistoryWithCatalogue,
@@ -148,10 +156,6 @@ export async function setupJobProcessor() {
             cron_string: "5 0 * * *",
             handler: () => updateBrevoBlockedEmails({}),
           },
-          "Anonymise les candidatures de plus de un an": {
-            cron_string: "10 0 * * *",
-            handler: anonymizeOldApplications,
-          },
           "Géolocation de masse des sociétés issues de l'algo": {
             cron_string: "0 5 * * 6",
             handler: () => updateGeoLocations({}),
@@ -164,10 +168,6 @@ export async function setupJobProcessor() {
             cron_string: "0 5 * * 7",
             handler: () => updateLbaCompanies({ useAlgoFile: true, clearMongo: true }),
           },
-          "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus de 1 an": {
-            cron_string: "5 1 * * *",
-            handler: anonymizeOldUsers,
-          },
           "Contrôle quotidien des candidatures": {
             cron_string: "0 10-19/1 * * 1-5",
             handler: config.env === "production" ? () => controlApplications() : () => Promise.resolve(0),
@@ -176,13 +176,25 @@ export async function setupJobProcessor() {
             cron_string: "0 11-19/2 * * 1-5",
             handler: config.env === "production" ? () => controlAppointments() : () => Promise.resolve(0),
           },
-          "Anonymisation des user recruteurs de plus de 2 ans": {
-            cron_string: "0 1 * * *",
-            handler: anonimizeUsers,
+          "Anonymisation des candidatures de plus de deux (2) ans": {
+            cron_string: "15 0 * * *",
+            handler: anonymizeApplications,
           },
-          "Anonymisation des appointments de plus de 1 an": {
+          "Anonymisation des candidats & leurs candidatures de plus de deux (2) ans": {
+            cron_string: "10 0 * * *",
+            handler: anonymizeApplicantsAndApplications,
+          },
+          "Anonimisation des utilisateurs RDVA de plus de deux (2) ans": {
+            cron_string: "5 1 * * *",
+            handler: anonymizeUsers,
+          },
+          "Anonymisation des user recruteurs de plus de deux (2) ans": {
+            cron_string: "0 1 * * *",
+            handler: anonimizeUsersWithAccounts,
+          },
+          "Anonymisation des appointments de plus de deux (2) ans": {
             cron_string: "30 1 * * *",
-            handler: anonymizeOldAppointments,
+            handler: anonymizeAppointments,
           },
           "Lancement du garbage collector": {
             cron_string: "30 3 * * *",
@@ -212,6 +224,14 @@ export async function setupJobProcessor() {
             cron_string: "30 22 * * *",
             handler: sendContactsToBrevo,
           },
+          "Génération du sitemap pour les offres": {
+            cron_string: "20 0 * * *",
+            handler: generateSitemap,
+          },
+          "Traitement complet des jobs_partners": {
+            cron_string: "40 3 * * *",
+            handler: processJobPartners,
+          },
         },
     jobs: {
       "remove:duplicates:recruiters": {
@@ -230,7 +250,7 @@ export async function setupJobProcessor() {
         handler: async () => runGarbageCollector(),
       },
       "anonymize:appointments": {
-        handler: async () => anonymizeOldAppointments(),
+        handler: async () => anonymizeAppointments(),
       },
       "control:applications": {
         handler: async () => controlApplications(),

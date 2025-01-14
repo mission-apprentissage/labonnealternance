@@ -1,6 +1,7 @@
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
+})
 const { withSentryConfig } = require("@sentry/nextjs")
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const withImages = require("next-images")
 
 /**
  * supprime les espacements inutiles pour remettre la séquence sur une seule ligne
@@ -55,7 +56,7 @@ const contentSecurityPolicy = `
 `
 
 /** @type {import('next').NextConfig} */
-const nextConfig = withImages({
+const nextConfig = {
   // reactStrictMode: true,
   transpilePackages: ["shared"],
   i18n: {
@@ -109,9 +110,9 @@ const nextConfig = withImages({
       },
     ]
   },
-})
+}
 
-module.exports = withSentryConfig(nextConfig, {
+const withSentry = withSentryConfig(nextConfig, {
   // For all available options, see:
   // https://github.com/getsentry/sentry-webpack-plugin#options
 
@@ -155,3 +156,5 @@ module.exports = withSentryConfig(nextConfig, {
     instrumentationHook: true,
   },
 })
+
+module.exports = withBundleAnalyzer(withSentry)

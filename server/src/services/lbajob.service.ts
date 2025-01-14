@@ -1,8 +1,9 @@
 import { badRequest, internal } from "@hapi/boom"
 import dayjs from "dayjs"
 import { Document, Filter, ObjectId } from "mongodb"
-import { IJob, IRecruiter, IReferentielRomeForJob, JOB_STATUS } from "shared"
+import { IJob, ILbaItemPartnerJob, IRecruiter, IReferentielRomeForJob, JOB_STATUS } from "shared"
 import { NIVEAUX_POUR_LBA } from "shared/constants"
+import { FRANCE_LATITUDE, FRANCE_LONGITUDE } from "shared/constants/geolocation"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { INiveauPourLbaLabel, RECRUITER_STATUS } from "shared/constants/recruteur"
 
@@ -21,9 +22,6 @@ import { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
 
 const JOB_SEARCH_LIMIT = 250
-const FRANCE_LATITUDE = 46.227638
-const FRANCE_LONGITUDE = 2.213749
-
 /**
  * @description get filtered jobs with rome_detail from mongo
  * @param {Object} payload
@@ -68,6 +66,7 @@ export const getJobs = async ({
       $geoNear: {
         near: { type: "Point", coordinates: [lon, lat] },
         distanceField: "distance",
+        key: "geopoint",
         maxDistance: distance * 1000,
         query,
       },
@@ -166,6 +165,7 @@ export const getLbaJobsV2 = async ({
             $geoNear: {
               near: { type: "Point", coordinates: [geo.longitude, geo.latitude] },
               distanceField: "distance",
+              key: "geopoint",
               maxDistance: geo.radius * 1000,
               query,
             },
@@ -263,15 +263,15 @@ export const getLbaJobs = async ({
 
     const applicationCountByJob = await getApplicationByJobCount(ids)
 
-    const lbaJobs = transformLbaJobs({ jobs, applicationCountByJob, isMinimalData })
+    const lbaJobs: { results: ILbaItemLbaJob[] } = transformLbaJobs({ jobs, applicationCountByJob, isMinimalData })
 
     // filtrage sur l'opco
     if (opco || opcoUrl) {
       lbaJobs.results = await filterJobsByOpco({ opco, opcoUrl, jobs: lbaJobs.results })
     }
 
-    if (!hasLocation && lbaJobs.results) {
-      sortLbaJobs(lbaJobs)
+    if (!hasLocation) {
+      sortLbaJobs(lbaJobs.results)
     }
 
     return lbaJobs
@@ -409,7 +409,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
       },
       place: {
         //lieu de l'offre. contient ville de l'entreprise et geoloc de l'entreprise
-        distance: recruiter.distance ?? false ? roundDistance((recruiter?.distance ?? 0) / 1000) : null,
+        distance: (recruiter.distance ?? false) ? roundDistance((recruiter?.distance ?? 0) / 1000) : null,
         fullAddress: recruiter.is_delegated ? null : recruiter.address,
         address: recruiter.is_delegated ? null : recruiter.address,
         numberAndStreet: recruiter.is_delegated ? null : getNumberAndStreet(recruiter.address_detail),
@@ -487,7 +487,7 @@ function transformLbaJobWithMinimalData({ recruiter, applicationCountByJob }: { 
       title: offre.rome_appellation_label ?? offre.rome_label,
       place: {
         //lieu de l'offre. contient ville de l'entreprise et geoloc de l'entreprise
-        distance: recruiter.distance ?? false ? roundDistance((recruiter?.distance ?? 0) / 1000) : null,
+        distance: (recruiter.distance ?? false) ? roundDistance((recruiter?.distance ?? 0) / 1000) : null,
         fullAddress: recruiter.is_delegated ? null : recruiter.address,
         address: recruiter.is_delegated ? null : recruiter.address,
         latitude,
@@ -515,8 +515,8 @@ function transformLbaJobWithMinimalData({ recruiter, applicationCountByJob }: { 
 /**
  * tri des ofres selon l'ordre alphabétique du titre (primaire) puis du nom de société (secondaire)
  */
-function sortLbaJobs(jobs: { results: ILbaItemLbaJob[] }) {
-  jobs.results.sort((a, b) => {
+export function sortLbaJobs(jobs: Partial<ILbaItemLbaJob | ILbaItemPartnerJob>[]) {
+  jobs.sort((a, b) => {
     if (a && b) {
       if (a.title && b.title) {
         if (a?.title?.toLowerCase() < b?.title?.toLowerCase()) {
