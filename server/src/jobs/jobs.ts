@@ -226,11 +226,11 @@ export async function setupJobProcessor() {
             handler: sendContactsToBrevo,
           },
           "Génération du sitemap pour les offres": {
-            cron_string: "5 22 * * *",
+            cron_string: "20 0 * * *",
             handler: generateSitemap,
           },
           "Traitement complet des jobs_partners": {
-            cron_string: "0 23 * * *",
+            cron_string: "40 3 * * *",
             handler: processJobPartners,
           },
           "Emission des intentions des recruteurs": {
