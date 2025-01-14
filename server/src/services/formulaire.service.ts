@@ -5,7 +5,7 @@ import equal from "fast-deep-equal"
 import { Filter, ObjectId, UpdateFilter } from "mongodb"
 import { IDelegation, IJob, IJobCreate, IJobWithRomeDetail, IRecruiter, IRecruiterWithApplicationCount, IUserRecruteur, JOB_STATUS, removeAccents } from "shared"
 import { getDirectJobPath } from "shared/constants/lbaitem"
-import { OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/recruteur"
+import { OPCOS_LABEL, RECRUITER_STATUS, RECRUITER_USER_ORIGIN } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
@@ -762,6 +762,11 @@ export const getJobWithRomeDetail = async (id: string | ObjectId): Promise<IJobW
   }
 }
 
+const getJobOrigin = async (recruiter: IRecruiter) => {
+  const userWithAccount = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(recruiter.managed_by!) })
+  return (userWithAccount && userWithAccount.origin && RECRUITER_USER_ORIGIN[userWithAccount.origin]) ?? "La bonne alternance"
+}
+
 /**
  * @description Sends the mail informing the CFA that a company wants the CFA to handle the offer.
  */
@@ -769,6 +774,9 @@ export async function sendDelegationMailToCFA(email: string, offre: IJob, recrui
   const unsubscribeOF = await getDbCollection("unsubscribedofs").findOne({ establishment_siret: siret_code })
   if (unsubscribeOF) return
   //const unsubscribeToken = createCfaUnsubscribeToken(email, siret_code)
+
+  const jobOrigin = await getJobOrigin(recruiter)
+
   await mailer.sendEmail({
     to: email,
     subject: `Une entreprise recrute dans votre domaine`,
@@ -783,7 +791,7 @@ export async function sendDelegationMailToCFA(email: string, offre: IJob, recrui
       trainingLevel: offre.job_level_label,
       startDate: dayjs(offre.job_start_date).format("DD/MM/YYYY"),
       duration: offre.job_duration,
-      origin: recruiter.origin,
+      jobOrigin,
       offerButton:
         createViewDelegationLink(email, recruiter.establishment_id, offre._id.toString(), siret_code) +
         "&utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_consulter-coord-entreprise",
