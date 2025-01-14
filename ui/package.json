@@ -49,7 +49,7 @@
     "react-hooks-global-state": "^2.1.0",
     "react-html-parser": "^2.0.2",
     "react-icons": "^4.11.0",
-    "react-notion-x": "^4.19.8",
+    "react-notion-x": "^7.2.6",
     "react-qr-code": "^2.0.15",
     "react-query": "^3.39.3",
     "react-swipeable": "^6.2.2",
