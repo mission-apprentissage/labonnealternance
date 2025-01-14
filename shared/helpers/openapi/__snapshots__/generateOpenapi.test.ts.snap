@@ -3660,6 +3660,502 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
         ],
       },
     },
+    "/v1/_private/formations/min": {
+      "get": {
+        "description": "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique. Retour de données minimales
+Limite : 7 appel(s) / 1 seconde(s)
+",
+        "parameters": [
+          {
+            "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et romeDomain sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
+            "in": "query",
+            "name": "romes",
+            "required": false,
+            "schema": {
+              "example": "F1603,I1308",
+              "type": "string",
+            },
+          },
+          {
+            "description": "Un domaine ROME (1 lettre et deux chiffres) ou un grand domaine ROME (1 lettre). <br />rome et romeDomain sont incompatibles.<br /><strong>Au moins un des deux doit être renseigné.</strong>",
+            "in": "query",
+            "name": "romeDomain",
+            "required": false,
+            "schema": {
+              "example": "F ou I13",
+              "type": "string",
+            },
+          },
+          {
+            "description": "La latitude du centre de recherche. Nécessaire avec insee et longitude pour une recherche localisée.",
+            "in": "query",
+            "name": "latitude",
+            "required": false,
+            "schema": {
+              "example": 48.845,
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          {
+            "description": "La longitude du centre de recherche. Nécessaire avec latitude et insee pour une recherche localisée.",
+            "in": "query",
+            "name": "longitude",
+            "required": false,
+            "schema": {
+              "example": 2.3752,
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          {
+            "description": "Le rayon de recherche en kilomètres",
+            "in": "query",
+            "name": "radius",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "example": 30,
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          {
+            "description": "Le niveau de diplôme visé en fin d'études",
+            "in": "query",
+            "name": "diploma",
+            "required": false,
+            "schema": {
+              "enum": [
+                "INDIFFERENT",
+                "3 (CAP...)",
+                "4 (BAC...)",
+                "5 (BTS, DEUST...)",
+                "6 (Licence, BUT...)",
+                "7 (Master, titre ingénieur...)",
+              ],
+              "type": "string",
+            },
+          },
+          {
+            "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+            "in": "query",
+            "name": "caller",
+            "required": false,
+            "schema": {
+              "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+              "example": "contact@domaine nom_de_societe",
+              "type": "string",
+            },
+          },
+          {
+            "description": "Ajoute la description au résultat de retour",
+            "in": "query",
+            "name": "options",
+            "required": false,
+            "schema": {
+              "enum": [
+                "with_description",
+              ],
+              "example": "with_description",
+              "type": "string",
+            },
+          },
+          {
+            "in": "header",
+            "name": "referer",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "description": "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
+                  "properties": {
+                    "results": {
+                      "description": "Un tableau de formations correspondantes aux critères",
+                      "items": {
+                        "$ref": "#/components/schemas/Formation",
+                      },
+                      "type": "array",
+                    },
+                  },
+                  "required": [
+                    "results",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                  ],
+                  "description": "Bad Request",
+                },
+              },
+            },
+            "description": "Bad Request",
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                  ],
+                  "description": "Internal Server Error",
+                },
+              },
+            },
+            "description": "Internal Server Error",
+          },
+        },
+        "security": [],
+        "tags": [
+          "V1 - Formations",
+        ],
+      },
+    },
+    "/v1/_private/jobs/min": {
+      "get": {
+        "deprecated": true,
+        "description": "Get job opportunities matching the query parameters
+Limite : 5 appel(s) / 1 seconde(s)
+",
+        "parameters": [
+          {
+            "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et rncp sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
+            "in": "query",
+            "name": "romes",
+            "required": false,
+            "schema": {
+              "example": "F1603,I1308",
+              "type": "string",
+            },
+          },
+          {
+            "description": "Un code RNCP. <br />rome et rncp sont incompatibles.<br /><strong>Au moins un des deux doit être renseigné.</strong>",
+            "in": "query",
+            "name": "rncp",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+            "in": "query",
+            "name": "caller",
+            "required": false,
+            "schema": {
+              "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+              "example": "contact@domaine nom_de_societe",
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+          },
+          {
+            "description": "La latitude du centre de recherche. Nécessaire avec insee et longitude pour une recherche localisée.",
+            "in": "query",
+            "name": "latitude",
+            "required": false,
+            "schema": {
+              "example": 48.845,
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          {
+            "description": "La longitude du centre de recherche. Nécessaire avec latitude et insee pour une recherche localisée.",
+            "in": "query",
+            "name": "longitude",
+            "required": false,
+            "schema": {
+              "example": 2.3752,
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          {
+            "description": "Le rayon de recherche en kilomètres",
+            "in": "query",
+            "name": "radius",
+            "required": false,
+            "schema": {
+              "example": 30,
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          {
+            "description": "search center insee code",
+            "in": "query",
+            "name": "insee",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob, partnerJob)",
+            "in": "query",
+            "name": "sources",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "description": "Le niveau de diplôme visé en fin d'études",
+            "in": "query",
+            "name": "diploma",
+            "required": false,
+            "schema": {
+              "enum": [
+                "INDIFFERENT",
+                "3 (CAP...)",
+                "4 (BAC...)",
+                "5 (BTS, DEUST...)",
+                "6 (Licence, BUT...)",
+                "7 (Master, titre ingénieur...)",
+              ],
+              "type": "string",
+            },
+          },
+          {
+            "description": "filter opportunities on opco name",
+            "in": "query",
+            "name": "opco",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "description": "filter opportunities on opco url",
+            "in": "query",
+            "name": "opcoUrl",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "header",
+            "name": "referer",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "lbaCompanies": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "results": {
+                              "items": {
+                                "$ref": "#/components/schemas/LbaCompany",
+                              },
+                              "type": "array",
+                            },
+                          },
+                          "required": [
+                            "results",
+                          ],
+                          "type": "object",
+                        },
+                        {
+                          "$ref": "#/components/schemas/ApiError",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "lbbCompanies": {
+                      "type": "null",
+                    },
+                    "matchas": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "results": {
+                              "items": {
+                                "$ref": "#/components/schemas/LbaJob",
+                              },
+                              "type": "array",
+                            },
+                          },
+                          "required": [
+                            "results",
+                          ],
+                          "type": "object",
+                        },
+                        {
+                          "$ref": "#/components/schemas/ApiError",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "partnerJobs": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "results": {
+                              "items": {
+                                "$ref": "#/components/schemas/PartnerJob",
+                              },
+                              "type": "array",
+                            },
+                          },
+                          "required": [
+                            "results",
+                          ],
+                          "type": "object",
+                        },
+                        {
+                          "$ref": "#/components/schemas/ApiError",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "peJobs": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "results": {
+                              "items": {
+                                "$ref": "#/components/schemas/PeJob",
+                              },
+                              "type": "array",
+                            },
+                          },
+                          "required": [
+                            "results",
+                          ],
+                          "type": "object",
+                        },
+                        {
+                          "$ref": "#/components/schemas/ApiError",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                  },
+                  "required": [
+                    "partnerJobs",
+                    "peJobs",
+                    "matchas",
+                    "lbaCompanies",
+                    "lbbCompanies",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiError",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "",
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiError",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [],
+        "tags": [
+          "V1 - Jobs",
+        ],
+      },
+    },
     "/v1/application": {
       "post": {
         "description": "Envoi d'un email de candidature à une offre postée sur La bonne alternance recruteur ou une candidature spontanée à une entreprise identifiée par La bonne alternance.
@@ -4036,190 +4532,6 @@ Limite : 7 appel(s) / 1 seconde(s)
               },
             },
             "description": "",
-          },
-        },
-        "security": [],
-        "tags": [
-          "V1 - Formations",
-        ],
-      },
-    },
-    "/v1/formations/min": {
-      "get": {
-        "description": "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique. Retour de données minimales
-Limite : 7 appel(s) / 1 seconde(s)
-",
-        "parameters": [
-          {
-            "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et romeDomain sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
-            "in": "query",
-            "name": "romes",
-            "required": false,
-            "schema": {
-              "example": "F1603,I1308",
-              "type": "string",
-            },
-          },
-          {
-            "description": "Un domaine ROME (1 lettre et deux chiffres) ou un grand domaine ROME (1 lettre). <br />rome et romeDomain sont incompatibles.<br /><strong>Au moins un des deux doit être renseigné.</strong>",
-            "in": "query",
-            "name": "romeDomain",
-            "required": false,
-            "schema": {
-              "example": "F ou I13",
-              "type": "string",
-            },
-          },
-          {
-            "description": "La latitude du centre de recherche. Nécessaire avec insee et longitude pour une recherche localisée.",
-            "in": "query",
-            "name": "latitude",
-            "required": false,
-            "schema": {
-              "example": 48.845,
-              "type": [
-                "number",
-                "null",
-              ],
-            },
-          },
-          {
-            "description": "La longitude du centre de recherche. Nécessaire avec latitude et insee pour une recherche localisée.",
-            "in": "query",
-            "name": "longitude",
-            "required": false,
-            "schema": {
-              "example": 2.3752,
-              "type": [
-                "number",
-                "null",
-              ],
-            },
-          },
-          {
-            "description": "Le rayon de recherche en kilomètres",
-            "in": "query",
-            "name": "radius",
-            "required": false,
-            "schema": {
-              "default": 30,
-              "example": 30,
-              "type": [
-                "number",
-                "null",
-              ],
-            },
-          },
-          {
-            "description": "Le niveau de diplôme visé en fin d'études",
-            "in": "query",
-            "name": "diploma",
-            "required": false,
-            "schema": {
-              "enum": [
-                "INDIFFERENT",
-                "3 (CAP...)",
-                "4 (BAC...)",
-                "5 (BTS, DEUST...)",
-                "6 (Licence, BUT...)",
-                "7 (Master, titre ingénieur...)",
-              ],
-              "type": "string",
-            },
-          },
-          {
-            "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
-            "in": "query",
-            "name": "caller",
-            "required": false,
-            "schema": {
-              "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
-              "example": "contact@domaine nom_de_societe",
-              "type": "string",
-            },
-          },
-          {
-            "description": "Ajoute la description au résultat de retour",
-            "in": "query",
-            "name": "options",
-            "required": false,
-            "schema": {
-              "enum": [
-                "with_description",
-              ],
-              "example": "with_description",
-              "type": "string",
-            },
-          },
-          {
-            "in": "header",
-            "name": "referer",
-            "required": false,
-            "schema": {
-              "type": "string",
-            },
-          },
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": false,
-                  "description": "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
-                  "properties": {
-                    "results": {
-                      "description": "Un tableau de formations correspondantes aux critères",
-                      "items": {
-                        "$ref": "#/components/schemas/Formation",
-                      },
-                      "type": "array",
-                    },
-                  },
-                  "required": [
-                    "results",
-                  ],
-                  "type": "object",
-                },
-              },
-            },
-            "description": "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                  ],
-                  "description": "Bad Request",
-                },
-              },
-            },
-            "description": "Bad Request",
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                  ],
-                  "description": "Internal Server Error",
-                },
-              },
-            },
-            "description": "Internal Server Error",
           },
         },
         "security": [],
@@ -5636,318 +5948,6 @@ Limite : 5 appel(s) / 1 seconde(s)
                   "additionalProperties": false,
                   "properties": {},
                   "type": "object",
-                },
-              },
-            },
-            "description": "",
-          },
-        },
-        "security": [],
-        "tags": [
-          "V1 - Jobs",
-        ],
-      },
-    },
-    "/v1/jobs/min": {
-      "get": {
-        "deprecated": true,
-        "description": "Get job opportunities matching the query parameters
-Limite : 5 appel(s) / 1 seconde(s)
-",
-        "parameters": [
-          {
-            "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et rncp sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
-            "in": "query",
-            "name": "romes",
-            "required": false,
-            "schema": {
-              "example": "F1603,I1308",
-              "type": "string",
-            },
-          },
-          {
-            "description": "Un code RNCP. <br />rome et rncp sont incompatibles.<br /><strong>Au moins un des deux doit être renseigné.</strong>",
-            "in": "query",
-            "name": "rncp",
-            "required": false,
-            "schema": {
-              "type": "string",
-            },
-          },
-          {
-            "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
-            "in": "query",
-            "name": "caller",
-            "required": false,
-            "schema": {
-              "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
-              "example": "contact@domaine nom_de_societe",
-              "type": [
-                "string",
-                "null",
-              ],
-            },
-          },
-          {
-            "description": "La latitude du centre de recherche. Nécessaire avec insee et longitude pour une recherche localisée.",
-            "in": "query",
-            "name": "latitude",
-            "required": false,
-            "schema": {
-              "example": 48.845,
-              "type": [
-                "number",
-                "null",
-              ],
-            },
-          },
-          {
-            "description": "La longitude du centre de recherche. Nécessaire avec latitude et insee pour une recherche localisée.",
-            "in": "query",
-            "name": "longitude",
-            "required": false,
-            "schema": {
-              "example": 2.3752,
-              "type": [
-                "number",
-                "null",
-              ],
-            },
-          },
-          {
-            "description": "Le rayon de recherche en kilomètres",
-            "in": "query",
-            "name": "radius",
-            "required": false,
-            "schema": {
-              "example": 30,
-              "type": [
-                "number",
-                "null",
-              ],
-            },
-          },
-          {
-            "description": "search center insee code",
-            "in": "query",
-            "name": "insee",
-            "required": false,
-            "schema": {
-              "type": "string",
-            },
-          },
-          {
-            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob, partnerJob)",
-            "in": "query",
-            "name": "sources",
-            "required": false,
-            "schema": {
-              "type": "string",
-            },
-          },
-          {
-            "description": "Le niveau de diplôme visé en fin d'études",
-            "in": "query",
-            "name": "diploma",
-            "required": false,
-            "schema": {
-              "enum": [
-                "INDIFFERENT",
-                "3 (CAP...)",
-                "4 (BAC...)",
-                "5 (BTS, DEUST...)",
-                "6 (Licence, BUT...)",
-                "7 (Master, titre ingénieur...)",
-              ],
-              "type": "string",
-            },
-          },
-          {
-            "description": "filter opportunities on opco name",
-            "in": "query",
-            "name": "opco",
-            "required": false,
-            "schema": {
-              "type": "string",
-            },
-          },
-          {
-            "description": "filter opportunities on opco url",
-            "in": "query",
-            "name": "opcoUrl",
-            "required": false,
-            "schema": {
-              "type": "string",
-            },
-          },
-          {
-            "in": "header",
-            "name": "referer",
-            "required": false,
-            "schema": {
-              "type": "string",
-            },
-          },
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "lbaCompanies": {
-                      "anyOf": [
-                        {
-                          "additionalProperties": false,
-                          "properties": {
-                            "results": {
-                              "items": {
-                                "$ref": "#/components/schemas/LbaCompany",
-                              },
-                              "type": "array",
-                            },
-                          },
-                          "required": [
-                            "results",
-                          ],
-                          "type": "object",
-                        },
-                        {
-                          "$ref": "#/components/schemas/ApiError",
-                        },
-                        {
-                          "type": "null",
-                        },
-                      ],
-                    },
-                    "lbbCompanies": {
-                      "type": "null",
-                    },
-                    "matchas": {
-                      "anyOf": [
-                        {
-                          "additionalProperties": false,
-                          "properties": {
-                            "results": {
-                              "items": {
-                                "$ref": "#/components/schemas/LbaJob",
-                              },
-                              "type": "array",
-                            },
-                          },
-                          "required": [
-                            "results",
-                          ],
-                          "type": "object",
-                        },
-                        {
-                          "$ref": "#/components/schemas/ApiError",
-                        },
-                        {
-                          "type": "null",
-                        },
-                      ],
-                    },
-                    "partnerJobs": {
-                      "anyOf": [
-                        {
-                          "additionalProperties": false,
-                          "properties": {
-                            "results": {
-                              "items": {
-                                "$ref": "#/components/schemas/PartnerJob",
-                              },
-                              "type": "array",
-                            },
-                          },
-                          "required": [
-                            "results",
-                          ],
-                          "type": "object",
-                        },
-                        {
-                          "$ref": "#/components/schemas/ApiError",
-                        },
-                        {
-                          "type": "null",
-                        },
-                      ],
-                    },
-                    "peJobs": {
-                      "anyOf": [
-                        {
-                          "additionalProperties": false,
-                          "properties": {
-                            "results": {
-                              "items": {
-                                "$ref": "#/components/schemas/PeJob",
-                              },
-                              "type": "array",
-                            },
-                          },
-                          "required": [
-                            "results",
-                          ],
-                          "type": "object",
-                        },
-                        {
-                          "$ref": "#/components/schemas/ApiError",
-                        },
-                        {
-                          "type": "null",
-                        },
-                      ],
-                    },
-                  },
-                  "required": [
-                    "partnerJobs",
-                    "peJobs",
-                    "matchas",
-                    "lbaCompanies",
-                    "lbbCompanies",
-                  ],
-                  "type": "object",
-                },
-              },
-            },
-            "description": "",
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                    {
-                      "$ref": "#/components/schemas/ApiError",
-                    },
-                  ],
-                },
-              },
-            },
-            "description": "",
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                    {
-                      "$ref": "#/components/schemas/ApiError",
-                    },
-                  ],
                 },
               },
             },
@@ -7396,1665 +7396,6 @@ Limite : 20 appel(s) / 1 seconde(s)
         ],
       },
     },
-    "/v2/formations": {
-      "get": {
-        "description": "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique
-Limite : 7 appel(s) / 1 seconde(s)
-",
-        "operationId": "getFormations",
-        "parameters": [
-          {
-            "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et romeDomain sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
-            "in": "query",
-            "name": "romes",
-            "required": false,
-            "schema": {
-              "example": "F1603,I1308",
-              "type": "string",
-            },
-          },
-          {
-            "description": "Un domaine ROME (1 lettre et deux chiffres) ou un grand domaine ROME (1 lettre). <br />rome et romeDomain sont incompatibles.<br /><strong>Au moins un des deux doit être renseigné.</strong>",
-            "in": "query",
-            "name": "romeDomain",
-            "required": false,
-            "schema": {
-              "example": "F ou I13",
-              "type": "string",
-            },
-          },
-          {
-            "description": "La latitude du centre de recherche. Nécessaire avec insee et longitude pour une recherche localisée.",
-            "in": "query",
-            "name": "latitude",
-            "required": false,
-            "schema": {
-              "example": 48.845,
-              "type": [
-                "number",
-                "null",
-              ],
-            },
-          },
-          {
-            "description": "La longitude du centre de recherche. Nécessaire avec latitude et insee pour une recherche localisée.",
-            "in": "query",
-            "name": "longitude",
-            "required": false,
-            "schema": {
-              "example": 2.3752,
-              "type": [
-                "number",
-                "null",
-              ],
-            },
-          },
-          {
-            "description": "Le rayon de recherche en kilomètres",
-            "in": "query",
-            "name": "radius",
-            "required": false,
-            "schema": {
-              "default": 30,
-              "example": 30,
-              "type": [
-                "number",
-                "null",
-              ],
-            },
-          },
-          {
-            "description": "Le niveau de diplôme visé en fin d'études",
-            "in": "query",
-            "name": "diploma",
-            "required": false,
-            "schema": {
-              "enum": [
-                "INDIFFERENT",
-                "3 (CAP...)",
-                "4 (BAC...)",
-                "5 (BTS, DEUST...)",
-                "6 (Licence, BUT...)",
-                "7 (Master, titre ingénieur...)",
-              ],
-              "type": "string",
-            },
-          },
-          {
-            "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
-            "in": "query",
-            "name": "caller",
-            "required": false,
-            "schema": {
-              "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
-              "example": "contact@domaine nom_de_societe",
-              "type": "string",
-            },
-          },
-          {
-            "description": "Ajoute la description au résultat de retour",
-            "in": "query",
-            "name": "options",
-            "required": false,
-            "schema": {
-              "enum": [
-                "with_description",
-              ],
-              "example": "with_description",
-              "type": "string",
-            },
-          },
-          {
-            "in": "header",
-            "name": "referer",
-            "required": false,
-            "schema": {
-              "type": "string",
-            },
-          },
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/Formation",
-                      },
-                      {
-                        "properties": {
-                          "company": {
-                            "additionalProperties": false,
-                            "properties": {
-                              "creationDate": {
-                                "type": [
-                                  "string",
-                                  "null",
-                                ],
-                              },
-                              "description": {
-                                "description": "La description de l'entreprise",
-                                "type": [
-                                  "string",
-                                  "null",
-                                ],
-                              },
-                              "headquarter": {
-                                "additionalProperties": false,
-                                "properties": {
-                                  "hasConvention": {
-                                    "description": "Lieu de formation seulement : indique si l'établissement gestionnaire est conventionné",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "id": {
-                                    "description": "Lieu de formation seulement : l'identifiant de l'établissement gestionnaire",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "name": {
-                                    "description": "La raison sociale du centre de formation auquel est affilié la formation",
-                                    "example": "ECOLE DE TRAVAIL ORT",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "place": {
-                                    "$ref": "#/components/schemas/Place",
-                                  },
-                                  "siret": {
-                                    "description": "Le numéro de SIRET de l'établissement",
-                                    "example": "78424186100011",
-                                    "pattern": "^\\d{14}$",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "type": {
-                                    "description": "Lieu de formation seulement : le type de l'établissement gestionnaire",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "uai": {
-                                    "description": "Lieu de formation seulement : l'uai de l'établissement gestionnaire",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                },
-                                "required": [
-                                  "siret",
-                                ],
-                                "type": [
-                                  "object",
-                                  "null",
-                                ],
-                              },
-                              "logo": {
-                                "description": "L'url du logo de l'entreprise",
-                                "type": [
-                                  "string",
-                                  "null",
-                                ],
-                              },
-                              "mandataire": {
-                                "description": "Indique si l'offre est déposée par un CFA mandataire (offres Matcha seulement)",
-                                "type": [
-                                  "boolean",
-                                  "null",
-                                ],
-                              },
-                              "name": {
-                                "description": "La raison sociale de l'entreprise",
-                                "example": "ECOLE DE TRAVAIL ORT",
-                                "type": [
-                                  "string",
-                                  "null",
-                                ],
-                              },
-                              "opco": {
-                                "additionalProperties": false,
-                                "properties": {
-                                  "label": {
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "url": {
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                },
-                                "required": [
-                                  "label",
-                                  "url",
-                                ],
-                                "type": [
-                                  "object",
-                                  "null",
-                                ],
-                              },
-                              "place": {
-                                "$ref": "#/components/schemas/Place",
-                              },
-                              "siret": {
-                                "description": "Le numéro de SIRET de l'établissement",
-                                "example": "78424186100011",
-                                "pattern": "^\\d{14}$",
-                                "type": [
-                                  "string",
-                                  "null",
-                                ],
-                              },
-                              "size": {
-                                "description": "La tranche d'effectifs de l'entreprise",
-                                "type": [
-                                  "string",
-                                  "null",
-                                ],
-                              },
-                              "uai": {
-                                "description": "Lieu de formation seulement : l'uai du lieu de formation",
-                                "type": [
-                                  "string",
-                                  "null",
-                                ],
-                              },
-                            },
-                            "type": [
-                              "object",
-                              "null",
-                            ],
-                          },
-                          "contact": {
-                            "$ref": "#/components/schemas/Contact",
-                          },
-                          "place": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/Place",
-                              },
-                              {
-                                "description": "Le lieu de formation",
-                              },
-                            ],
-                          },
-                          "training": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/Training",
-                              },
-                              {
-                                "properties": {
-                                  "cfd": {
-                                    "description": "Le code formation diplôme de l'éducation nationale.",
-                                    "example": "50023324",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "cleMinistereEducatif": {
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "description": {
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "diploma": {
-                                    "description": "Le diplôme délivré par la formation.",
-                                    "example": "CERTIFICAT D'APTITUDES PROFESSIONNELLES",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "duration": {
-                                    "$ref": "#/components/schemas/Durée de session en jours",
-                                  },
-                                  "idRco": {
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "objectif": {
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "onisepUrl": {
-                                    "description": "Le lien vers la description de la formation sur le site de l'ONISEP",
-                                    "example": "http://www.onisep.fr/http/redirection/formation/identifiant/7872",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "rncpCode": {
-                                    "description": "Le code RNCP.",
-                                    "example": "RNCP31899",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "rncpLabel": {
-                                    "description": "L'intitulé RNCP.",
-                                    "example": "Intégrateur - Développeur Web",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "romes": {
-                                    "items": {
-                                      "$ref": "#/components/schemas/Rome",
-                                    },
-                                    "type": [
-                                      "array",
-                                      "null",
-                                    ],
-                                  },
-                                  "sessions": {
-                                    "items": {
-                                      "$ref": "#/components/schemas/Session de formation",
-                                    },
-                                    "type": [
-                                      "array",
-                                      "null",
-                                    ],
-                                  },
-                                  "target_diploma_level": {
-                                    "description": "Le niveau de la formation.",
-                                    "example": "3 (CAP...)",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "title": {
-                                    "description": "Le titre de la formation",
-                                    "example": "CAP Monteur en Installation Thermique",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                },
-                              },
-                            ],
-                          },
-                          "type": {
-                            "description": "Le type labonnealternance d'objet, ici la seule valeur possible est 'formation'",
-                            "enum": [
-                              "formation",
-                            ],
-                            "example": "formation",
-                            "type": "string",
-                          },
-                        },
-                        "required": [
-                          "type",
-                          "place",
-                          "company",
-                        ],
-                      },
-                    ],
-                  },
-                  "type": "array",
-                },
-              },
-            },
-            "description": "",
-          },
-        },
-        "security": [
-          {
-            "api-apprentissage": [],
-          },
-        ],
-        "tags": [
-          "V2 - Formations",
-        ],
-      },
-    },
-    "/v2/formations/formation/{id}": {
-      "get": {
-        "description": "Get one formation identified by it's clé ministère éducatif
-Limite : 7 appel(s) / 1 seconde(s)
-",
-        "operationId": "getFormation",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string",
-            },
-          },
-          {
-            "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
-            "in": "query",
-            "name": "caller",
-            "required": false,
-            "schema": {
-              "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
-              "example": "contact@domaine nom_de_societe",
-              "type": "string",
-            },
-          },
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Formation",
-                    },
-                    {
-                      "properties": {
-                        "company": {
-                          "additionalProperties": false,
-                          "properties": {
-                            "creationDate": {
-                              "type": [
-                                "string",
-                                "null",
-                              ],
-                            },
-                            "description": {
-                              "description": "La description de l'entreprise",
-                              "type": [
-                                "string",
-                                "null",
-                              ],
-                            },
-                            "headquarter": {
-                              "additionalProperties": false,
-                              "properties": {
-                                "hasConvention": {
-                                  "description": "Lieu de formation seulement : indique si l'établissement gestionnaire est conventionné",
-                                  "type": [
-                                    "string",
-                                    "null",
-                                  ],
-                                },
-                                "id": {
-                                  "description": "Lieu de formation seulement : l'identifiant de l'établissement gestionnaire",
-                                  "type": [
-                                    "string",
-                                    "null",
-                                  ],
-                                },
-                                "name": {
-                                  "description": "La raison sociale du centre de formation auquel est affilié la formation",
-                                  "example": "ECOLE DE TRAVAIL ORT",
-                                  "type": [
-                                    "string",
-                                    "null",
-                                  ],
-                                },
-                                "place": {
-                                  "$ref": "#/components/schemas/Place",
-                                },
-                                "siret": {
-                                  "description": "Le numéro de SIRET de l'établissement",
-                                  "example": "78424186100011",
-                                  "pattern": "^\\d{14}$",
-                                  "type": [
-                                    "string",
-                                    "null",
-                                  ],
-                                },
-                                "type": {
-                                  "description": "Lieu de formation seulement : le type de l'établissement gestionnaire",
-                                  "type": [
-                                    "string",
-                                    "null",
-                                  ],
-                                },
-                                "uai": {
-                                  "description": "Lieu de formation seulement : l'uai de l'établissement gestionnaire",
-                                  "type": [
-                                    "string",
-                                    "null",
-                                  ],
-                                },
-                              },
-                              "required": [
-                                "siret",
-                              ],
-                              "type": [
-                                "object",
-                                "null",
-                              ],
-                            },
-                            "logo": {
-                              "description": "L'url du logo de l'entreprise",
-                              "type": [
-                                "string",
-                                "null",
-                              ],
-                            },
-                            "mandataire": {
-                              "description": "Indique si l'offre est déposée par un CFA mandataire (offres Matcha seulement)",
-                              "type": [
-                                "boolean",
-                                "null",
-                              ],
-                            },
-                            "name": {
-                              "description": "La raison sociale de l'entreprise",
-                              "example": "ECOLE DE TRAVAIL ORT",
-                              "type": [
-                                "string",
-                                "null",
-                              ],
-                            },
-                            "opco": {
-                              "additionalProperties": false,
-                              "properties": {
-                                "label": {
-                                  "type": [
-                                    "string",
-                                    "null",
-                                  ],
-                                },
-                                "url": {
-                                  "type": [
-                                    "string",
-                                    "null",
-                                  ],
-                                },
-                              },
-                              "required": [
-                                "label",
-                                "url",
-                              ],
-                              "type": [
-                                "object",
-                                "null",
-                              ],
-                            },
-                            "place": {
-                              "$ref": "#/components/schemas/Place",
-                            },
-                            "siret": {
-                              "description": "Le numéro de SIRET de l'établissement",
-                              "example": "78424186100011",
-                              "pattern": "^\\d{14}$",
-                              "type": [
-                                "string",
-                                "null",
-                              ],
-                            },
-                            "size": {
-                              "description": "La tranche d'effectifs de l'entreprise",
-                              "type": [
-                                "string",
-                                "null",
-                              ],
-                            },
-                            "uai": {
-                              "description": "Lieu de formation seulement : l'uai du lieu de formation",
-                              "type": [
-                                "string",
-                                "null",
-                              ],
-                            },
-                          },
-                          "type": [
-                            "object",
-                            "null",
-                          ],
-                        },
-                        "contact": {
-                          "$ref": "#/components/schemas/Contact",
-                        },
-                        "place": {
-                          "allOf": [
-                            {
-                              "$ref": "#/components/schemas/Place",
-                            },
-                            {
-                              "description": "Le lieu de formation",
-                            },
-                          ],
-                        },
-                        "training": {
-                          "allOf": [
-                            {
-                              "$ref": "#/components/schemas/Training",
-                            },
-                            {
-                              "properties": {
-                                "cfd": {
-                                  "description": "Le code formation diplôme de l'éducation nationale.",
-                                  "example": "50023324",
-                                  "type": [
-                                    "string",
-                                    "null",
-                                  ],
-                                },
-                                "cleMinistereEducatif": {
-                                  "type": [
-                                    "string",
-                                    "null",
-                                  ],
-                                },
-                                "description": {
-                                  "type": [
-                                    "string",
-                                    "null",
-                                  ],
-                                },
-                                "diploma": {
-                                  "description": "Le diplôme délivré par la formation.",
-                                  "example": "CERTIFICAT D'APTITUDES PROFESSIONNELLES",
-                                  "type": [
-                                    "string",
-                                    "null",
-                                  ],
-                                },
-                                "duration": {
-                                  "$ref": "#/components/schemas/Durée de session en jours",
-                                },
-                                "idRco": {
-                                  "type": [
-                                    "string",
-                                    "null",
-                                  ],
-                                },
-                                "objectif": {
-                                  "type": [
-                                    "string",
-                                    "null",
-                                  ],
-                                },
-                                "onisepUrl": {
-                                  "description": "Le lien vers la description de la formation sur le site de l'ONISEP",
-                                  "example": "http://www.onisep.fr/http/redirection/formation/identifiant/7872",
-                                  "type": [
-                                    "string",
-                                    "null",
-                                  ],
-                                },
-                                "rncpCode": {
-                                  "description": "Le code RNCP.",
-                                  "example": "RNCP31899",
-                                  "type": [
-                                    "string",
-                                    "null",
-                                  ],
-                                },
-                                "rncpLabel": {
-                                  "description": "L'intitulé RNCP.",
-                                  "example": "Intégrateur - Développeur Web",
-                                  "type": [
-                                    "string",
-                                    "null",
-                                  ],
-                                },
-                                "romes": {
-                                  "items": {
-                                    "$ref": "#/components/schemas/Rome",
-                                  },
-                                  "type": [
-                                    "array",
-                                    "null",
-                                  ],
-                                },
-                                "sessions": {
-                                  "items": {
-                                    "$ref": "#/components/schemas/Session de formation",
-                                  },
-                                  "type": [
-                                    "array",
-                                    "null",
-                                  ],
-                                },
-                                "target_diploma_level": {
-                                  "description": "Le niveau de la formation.",
-                                  "example": "3 (CAP...)",
-                                  "type": [
-                                    "string",
-                                    "null",
-                                  ],
-                                },
-                                "title": {
-                                  "description": "Le titre de la formation",
-                                  "example": "CAP Monteur en Installation Thermique",
-                                  "type": [
-                                    "string",
-                                    "null",
-                                  ],
-                                },
-                              },
-                            },
-                          ],
-                        },
-                        "type": {
-                          "description": "Le type labonnealternance d'objet, ici la seule valeur possible est 'formation'",
-                          "enum": [
-                            "formation",
-                          ],
-                          "example": "formation",
-                          "type": "string",
-                        },
-                      },
-                      "required": [
-                        "type",
-                        "place",
-                        "company",
-                      ],
-                    },
-                  ],
-                },
-              },
-            },
-            "description": "",
-          },
-        },
-        "security": [
-          {
-            "api-key": [],
-          },
-        ],
-        "tags": [
-          "V2 - Formations",
-        ],
-      },
-    },
-    "/v2/formations/min": {
-      "get": {
-        "description": "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique. Récupération des données minimales.
-Limite : 7 appel(s) / 1 seconde(s)
-",
-        "operationId": "getFormations",
-        "parameters": [
-          {
-            "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et romeDomain sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
-            "in": "query",
-            "name": "romes",
-            "required": false,
-            "schema": {
-              "example": "F1603,I1308",
-              "type": "string",
-            },
-          },
-          {
-            "description": "Un domaine ROME (1 lettre et deux chiffres) ou un grand domaine ROME (1 lettre). <br />rome et romeDomain sont incompatibles.<br /><strong>Au moins un des deux doit être renseigné.</strong>",
-            "in": "query",
-            "name": "romeDomain",
-            "required": false,
-            "schema": {
-              "example": "F ou I13",
-              "type": "string",
-            },
-          },
-          {
-            "description": "La latitude du centre de recherche. Nécessaire avec insee et longitude pour une recherche localisée.",
-            "in": "query",
-            "name": "latitude",
-            "required": false,
-            "schema": {
-              "example": 48.845,
-              "type": [
-                "number",
-                "null",
-              ],
-            },
-          },
-          {
-            "description": "La longitude du centre de recherche. Nécessaire avec latitude et insee pour une recherche localisée.",
-            "in": "query",
-            "name": "longitude",
-            "required": false,
-            "schema": {
-              "example": 2.3752,
-              "type": [
-                "number",
-                "null",
-              ],
-            },
-          },
-          {
-            "description": "Le rayon de recherche en kilomètres",
-            "in": "query",
-            "name": "radius",
-            "required": false,
-            "schema": {
-              "default": 30,
-              "example": 30,
-              "type": [
-                "number",
-                "null",
-              ],
-            },
-          },
-          {
-            "description": "Le niveau de diplôme visé en fin d'études",
-            "in": "query",
-            "name": "diploma",
-            "required": false,
-            "schema": {
-              "enum": [
-                "INDIFFERENT",
-                "3 (CAP...)",
-                "4 (BAC...)",
-                "5 (BTS, DEUST...)",
-                "6 (Licence, BUT...)",
-                "7 (Master, titre ingénieur...)",
-              ],
-              "type": "string",
-            },
-          },
-          {
-            "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
-            "in": "query",
-            "name": "caller",
-            "required": false,
-            "schema": {
-              "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
-              "example": "contact@domaine nom_de_societe",
-              "type": "string",
-            },
-          },
-          {
-            "description": "Ajoute la description au résultat de retour",
-            "in": "query",
-            "name": "options",
-            "required": false,
-            "schema": {
-              "enum": [
-                "with_description",
-              ],
-              "example": "with_description",
-              "type": "string",
-            },
-          },
-          {
-            "in": "header",
-            "name": "referer",
-            "required": false,
-            "schema": {
-              "type": "string",
-            },
-          },
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/Formation",
-                      },
-                      {
-                        "properties": {
-                          "company": {
-                            "additionalProperties": false,
-                            "properties": {
-                              "creationDate": {
-                                "type": [
-                                  "string",
-                                  "null",
-                                ],
-                              },
-                              "description": {
-                                "description": "La description de l'entreprise",
-                                "type": [
-                                  "string",
-                                  "null",
-                                ],
-                              },
-                              "headquarter": {
-                                "additionalProperties": false,
-                                "properties": {
-                                  "hasConvention": {
-                                    "description": "Lieu de formation seulement : indique si l'établissement gestionnaire est conventionné",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "id": {
-                                    "description": "Lieu de formation seulement : l'identifiant de l'établissement gestionnaire",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "name": {
-                                    "description": "La raison sociale du centre de formation auquel est affilié la formation",
-                                    "example": "ECOLE DE TRAVAIL ORT",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "place": {
-                                    "$ref": "#/components/schemas/Place",
-                                  },
-                                  "siret": {
-                                    "description": "Le numéro de SIRET de l'établissement",
-                                    "example": "78424186100011",
-                                    "pattern": "^\\d{14}$",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "type": {
-                                    "description": "Lieu de formation seulement : le type de l'établissement gestionnaire",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "uai": {
-                                    "description": "Lieu de formation seulement : l'uai de l'établissement gestionnaire",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                },
-                                "required": [
-                                  "siret",
-                                ],
-                                "type": [
-                                  "object",
-                                  "null",
-                                ],
-                              },
-                              "logo": {
-                                "description": "L'url du logo de l'entreprise",
-                                "type": [
-                                  "string",
-                                  "null",
-                                ],
-                              },
-                              "mandataire": {
-                                "description": "Indique si l'offre est déposée par un CFA mandataire (offres Matcha seulement)",
-                                "type": [
-                                  "boolean",
-                                  "null",
-                                ],
-                              },
-                              "name": {
-                                "description": "La raison sociale de l'entreprise",
-                                "example": "ECOLE DE TRAVAIL ORT",
-                                "type": [
-                                  "string",
-                                  "null",
-                                ],
-                              },
-                              "opco": {
-                                "additionalProperties": false,
-                                "properties": {
-                                  "label": {
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "url": {
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                },
-                                "required": [
-                                  "label",
-                                  "url",
-                                ],
-                                "type": [
-                                  "object",
-                                  "null",
-                                ],
-                              },
-                              "place": {
-                                "$ref": "#/components/schemas/Place",
-                              },
-                              "siret": {
-                                "description": "Le numéro de SIRET de l'établissement",
-                                "example": "78424186100011",
-                                "pattern": "^\\d{14}$",
-                                "type": [
-                                  "string",
-                                  "null",
-                                ],
-                              },
-                              "size": {
-                                "description": "La tranche d'effectifs de l'entreprise",
-                                "type": [
-                                  "string",
-                                  "null",
-                                ],
-                              },
-                              "uai": {
-                                "description": "Lieu de formation seulement : l'uai du lieu de formation",
-                                "type": [
-                                  "string",
-                                  "null",
-                                ],
-                              },
-                            },
-                            "type": [
-                              "object",
-                              "null",
-                            ],
-                          },
-                          "contact": {
-                            "$ref": "#/components/schemas/Contact",
-                          },
-                          "place": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/Place",
-                              },
-                              {
-                                "description": "Le lieu de formation",
-                              },
-                            ],
-                          },
-                          "training": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/Training",
-                              },
-                              {
-                                "properties": {
-                                  "cfd": {
-                                    "description": "Le code formation diplôme de l'éducation nationale.",
-                                    "example": "50023324",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "cleMinistereEducatif": {
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "description": {
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "diploma": {
-                                    "description": "Le diplôme délivré par la formation.",
-                                    "example": "CERTIFICAT D'APTITUDES PROFESSIONNELLES",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "duration": {
-                                    "$ref": "#/components/schemas/Durée de session en jours",
-                                  },
-                                  "idRco": {
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "objectif": {
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "onisepUrl": {
-                                    "description": "Le lien vers la description de la formation sur le site de l'ONISEP",
-                                    "example": "http://www.onisep.fr/http/redirection/formation/identifiant/7872",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "rncpCode": {
-                                    "description": "Le code RNCP.",
-                                    "example": "RNCP31899",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "rncpLabel": {
-                                    "description": "L'intitulé RNCP.",
-                                    "example": "Intégrateur - Développeur Web",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "romes": {
-                                    "items": {
-                                      "$ref": "#/components/schemas/Rome",
-                                    },
-                                    "type": [
-                                      "array",
-                                      "null",
-                                    ],
-                                  },
-                                  "sessions": {
-                                    "items": {
-                                      "$ref": "#/components/schemas/Session de formation",
-                                    },
-                                    "type": [
-                                      "array",
-                                      "null",
-                                    ],
-                                  },
-                                  "target_diploma_level": {
-                                    "description": "Le niveau de la formation.",
-                                    "example": "3 (CAP...)",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "title": {
-                                    "description": "Le titre de la formation",
-                                    "example": "CAP Monteur en Installation Thermique",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                },
-                              },
-                            ],
-                          },
-                          "type": {
-                            "description": "Le type labonnealternance d'objet, ici la seule valeur possible est 'formation'",
-                            "enum": [
-                              "formation",
-                            ],
-                            "example": "formation",
-                            "type": "string",
-                          },
-                        },
-                        "required": [
-                          "type",
-                          "place",
-                          "company",
-                        ],
-                      },
-                    ],
-                  },
-                  "type": "array",
-                },
-              },
-            },
-            "description": "",
-          },
-        },
-        "security": [
-          {
-            "api-key": [],
-          },
-        ],
-        "tags": [
-          "V2 - Formations",
-        ],
-      },
-    },
-    "/v2/formationsParRegion": {
-      "get": {
-        "description": "Rechercher des formations en alternance dans un département ou dans une région ou dans la France entière pour un métier ou un ensemble de métiers
-Limite : 7 appel(s) / 1 seconde(s)
-",
-        "operationId": "getFormations",
-        "parameters": [
-          {
-            "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et romeDomain sont incompatibles.<br /><strong>Au moins un des deux doit être renseigné dans le cas d'une recherche France entière.</strong>",
-            "in": "query",
-            "name": "romes",
-            "required": false,
-            "schema": {
-              "example": "F1603,I1308",
-              "type": "string",
-            },
-          },
-          {
-            "in": "query",
-            "name": "romeDomain",
-            "required": false,
-            "schema": {
-              "description": "Un domaine ROME (1 lettre et deux chiffres) ou un grand domaine ROME (1 lettre).<br />rome et romeDomain sont incompatibles.<br /><strong>Au moins un des deux doit être renseigné dans le cas d'une recherche France entière.</strong>",
-              "example": "F ou I13",
-              "type": "string",
-            },
-          },
-          {
-            "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
-            "in": "query",
-            "name": "caller",
-            "required": false,
-            "schema": {
-              "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
-              "example": "contact@domaine nom_de_societe",
-              "type": "string",
-            },
-          },
-          {
-            "description": "Le numéro à 2 chiffres d'un département français ou à 3 chiffres pour un département d'outre-mer.<br />region et departement sont incompatibles.<br /><strong>Si aucun des deux n'est renseigné la recherche portera sur France entière.</strong><br /><strong>France entière ne peut être utilisé sans rome ou romeDomain.</strong>",
-            "in": "query",
-            "name": "departement",
-            "required": false,
-            "schema": {
-              "example": "09 ou 974",
-              "type": "string",
-            },
-          },
-          {
-            "description": "Le code Insee d'une région française.<br />region et departement sont incompatibles.<br /><strong>Si aucun des deux n'est renseigné la recherche portera sur France entière.</strong><br /><strong>France entière ne peut être utilisé sans rome ou romeDomain.</strong><br /><ul><li>84 : Auvergne-Rhône-Alpes</li><li>27 : Bourgogne-Franche-Comté</li><li>53 : Bretagne</li><li>24 : Centre-Val de Loire</li><li>94 : Corse</li><li>44 : Grand Est</li><li>32 : Hauts-de-France</li><li>11 : Île-de-France</li><li>28 : Normandie</li><li>75 : Nouvelle-Aquitaine</li><li>76 : Occitanie</li><li>52 : Pays de la Loire</li><li>93 : Provence-Alpes-Côte d'Azur</li><li>01 : Guadeloupe</li><li>02 : Martinique</li><li>03 : Guyane</li><li>04 : La Réunion</li><li>06 : Mayotte</li></ul>",
-            "in": "query",
-            "name": "region",
-            "required": false,
-            "schema": {
-              "example": "84",
-              "type": "string",
-            },
-          },
-          {
-            "description": "Le niveau de diplôme visé en fin d'études",
-            "in": "query",
-            "name": "diploma",
-            "required": false,
-            "schema": {
-              "enum": [
-                "INDIFFERENT",
-                "3 (CAP...)",
-                "4 (BAC...)",
-                "5 (BTS, DEUST...)",
-                "6 (Licence, BUT...)",
-                "7 (Master, titre ingénieur...)",
-              ],
-              "type": "string",
-            },
-          },
-          {
-            "description": "Ajoute la description au résultat de retour",
-            "in": "query",
-            "name": "options",
-            "required": false,
-            "schema": {
-              "enum": [
-                "with_description",
-              ],
-              "example": "with_description",
-              "type": "string",
-            },
-          },
-          {
-            "in": "header",
-            "name": "referer",
-            "required": false,
-            "schema": {
-              "type": "string",
-            },
-          },
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/Formation",
-                      },
-                      {
-                        "properties": {
-                          "company": {
-                            "additionalProperties": false,
-                            "properties": {
-                              "creationDate": {
-                                "type": [
-                                  "string",
-                                  "null",
-                                ],
-                              },
-                              "description": {
-                                "description": "La description de l'entreprise",
-                                "type": [
-                                  "string",
-                                  "null",
-                                ],
-                              },
-                              "headquarter": {
-                                "additionalProperties": false,
-                                "properties": {
-                                  "hasConvention": {
-                                    "description": "Lieu de formation seulement : indique si l'établissement gestionnaire est conventionné",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "id": {
-                                    "description": "Lieu de formation seulement : l'identifiant de l'établissement gestionnaire",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "name": {
-                                    "description": "La raison sociale du centre de formation auquel est affilié la formation",
-                                    "example": "ECOLE DE TRAVAIL ORT",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "place": {
-                                    "$ref": "#/components/schemas/Place",
-                                  },
-                                  "siret": {
-                                    "description": "Le numéro de SIRET de l'établissement",
-                                    "example": "78424186100011",
-                                    "pattern": "^\\d{14}$",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "type": {
-                                    "description": "Lieu de formation seulement : le type de l'établissement gestionnaire",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "uai": {
-                                    "description": "Lieu de formation seulement : l'uai de l'établissement gestionnaire",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                },
-                                "required": [
-                                  "siret",
-                                ],
-                                "type": [
-                                  "object",
-                                  "null",
-                                ],
-                              },
-                              "logo": {
-                                "description": "L'url du logo de l'entreprise",
-                                "type": [
-                                  "string",
-                                  "null",
-                                ],
-                              },
-                              "mandataire": {
-                                "description": "Indique si l'offre est déposée par un CFA mandataire (offres Matcha seulement)",
-                                "type": [
-                                  "boolean",
-                                  "null",
-                                ],
-                              },
-                              "name": {
-                                "description": "La raison sociale de l'entreprise",
-                                "example": "ECOLE DE TRAVAIL ORT",
-                                "type": [
-                                  "string",
-                                  "null",
-                                ],
-                              },
-                              "opco": {
-                                "additionalProperties": false,
-                                "properties": {
-                                  "label": {
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "url": {
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                },
-                                "required": [
-                                  "label",
-                                  "url",
-                                ],
-                                "type": [
-                                  "object",
-                                  "null",
-                                ],
-                              },
-                              "place": {
-                                "$ref": "#/components/schemas/Place",
-                              },
-                              "siret": {
-                                "description": "Le numéro de SIRET de l'établissement",
-                                "example": "78424186100011",
-                                "pattern": "^\\d{14}$",
-                                "type": [
-                                  "string",
-                                  "null",
-                                ],
-                              },
-                              "size": {
-                                "description": "La tranche d'effectifs de l'entreprise",
-                                "type": [
-                                  "string",
-                                  "null",
-                                ],
-                              },
-                              "uai": {
-                                "description": "Lieu de formation seulement : l'uai du lieu de formation",
-                                "type": [
-                                  "string",
-                                  "null",
-                                ],
-                              },
-                            },
-                            "type": [
-                              "object",
-                              "null",
-                            ],
-                          },
-                          "contact": {
-                            "$ref": "#/components/schemas/Contact",
-                          },
-                          "place": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/Place",
-                              },
-                              {
-                                "description": "Le lieu de formation",
-                              },
-                            ],
-                          },
-                          "training": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/Training",
-                              },
-                              {
-                                "properties": {
-                                  "cfd": {
-                                    "description": "Le code formation diplôme de l'éducation nationale.",
-                                    "example": "50023324",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "cleMinistereEducatif": {
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "description": {
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "diploma": {
-                                    "description": "Le diplôme délivré par la formation.",
-                                    "example": "CERTIFICAT D'APTITUDES PROFESSIONNELLES",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "duration": {
-                                    "$ref": "#/components/schemas/Durée de session en jours",
-                                  },
-                                  "idRco": {
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "objectif": {
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "onisepUrl": {
-                                    "description": "Le lien vers la description de la formation sur le site de l'ONISEP",
-                                    "example": "http://www.onisep.fr/http/redirection/formation/identifiant/7872",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "rncpCode": {
-                                    "description": "Le code RNCP.",
-                                    "example": "RNCP31899",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "rncpLabel": {
-                                    "description": "L'intitulé RNCP.",
-                                    "example": "Intégrateur - Développeur Web",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "romes": {
-                                    "items": {
-                                      "$ref": "#/components/schemas/Rome",
-                                    },
-                                    "type": [
-                                      "array",
-                                      "null",
-                                    ],
-                                  },
-                                  "sessions": {
-                                    "items": {
-                                      "$ref": "#/components/schemas/Session de formation",
-                                    },
-                                    "type": [
-                                      "array",
-                                      "null",
-                                    ],
-                                  },
-                                  "target_diploma_level": {
-                                    "description": "Le niveau de la formation.",
-                                    "example": "3 (CAP...)",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                  "title": {
-                                    "description": "Le titre de la formation",
-                                    "example": "CAP Monteur en Installation Thermique",
-                                    "type": [
-                                      "string",
-                                      "null",
-                                    ],
-                                  },
-                                },
-                              },
-                            ],
-                          },
-                          "type": {
-                            "description": "Le type labonnealternance d'objet, ici la seule valeur possible est 'formation'",
-                            "enum": [
-                              "formation",
-                            ],
-                            "example": "formation",
-                            "type": "string",
-                          },
-                        },
-                        "required": [
-                          "type",
-                          "place",
-                          "company",
-                        ],
-                      },
-                    ],
-                  },
-                  "type": "array",
-                },
-              },
-            },
-            "description": "",
-          },
-        },
-        "security": [
-          {
-            "api-key": [],
-          },
-        ],
-        "tags": [
-          "V2 - Formations",
-        ],
-      },
-    },
     "/v2/jobs/bulk": {
       "get": {
         "description": "Get all jobs related to my organization
@@ -9401,356 +7742,6 @@ Limite : 5 appel(s) / 1 seconde(s)
         ],
         "tags": [
           "V2 - Jobs",
-        ],
-      },
-    },
-    "/v2/jobsEtFormations": {
-      "get": {
-        "description": "Limite : 5 appel(s) / 1 seconde(s)
-",
-        "parameters": [
-          {
-            "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et rncp sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
-            "in": "query",
-            "name": "romes",
-            "required": false,
-            "schema": {
-              "example": "F1603,I1308",
-              "type": "string",
-            },
-          },
-          {
-            "description": "Un code RNCP. <br />rome et rncp sont incompatibles.<br /><strong>Au moins un des deux doit être renseigné.</strong>",
-            "in": "query",
-            "name": "rncp",
-            "required": false,
-            "schema": {
-              "type": "string",
-            },
-          },
-          {
-            "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
-            "in": "query",
-            "name": "caller",
-            "required": false,
-            "schema": {
-              "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
-              "example": "contact@domaine nom_de_societe",
-              "type": "string",
-            },
-          },
-          {
-            "description": "La latitude du centre de recherche. Nécessaire avec insee et longitude pour une recherche localisée.",
-            "in": "query",
-            "name": "latitude",
-            "required": false,
-            "schema": {
-              "example": 48.845,
-              "type": [
-                "number",
-                "null",
-              ],
-            },
-          },
-          {
-            "description": "La longitude du centre de recherche. Nécessaire avec latitude et insee pour une recherche localisée.",
-            "in": "query",
-            "name": "longitude",
-            "required": false,
-            "schema": {
-              "example": 2.3752,
-              "type": [
-                "number",
-                "null",
-              ],
-            },
-          },
-          {
-            "description": "Le rayon de recherche en kilomètres",
-            "in": "query",
-            "name": "radius",
-            "required": false,
-            "schema": {
-              "example": 30,
-              "type": [
-                "number",
-                "null",
-              ],
-            },
-          },
-          {
-            "description": "search center insee code",
-            "in": "query",
-            "name": "insee",
-            "required": false,
-            "schema": {
-              "type": "string",
-            },
-          },
-          {
-            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob, partnerJob)",
-            "in": "query",
-            "name": "sources",
-            "required": false,
-            "schema": {
-              "type": "string",
-            },
-          },
-          {
-            "description": "Le niveau de diplôme visé en fin d'études",
-            "in": "query",
-            "name": "diploma",
-            "required": false,
-            "schema": {
-              "enum": [
-                "INDIFFERENT",
-                "3 (CAP...)",
-                "4 (BAC...)",
-                "5 (BTS, DEUST...)",
-                "6 (Licence, BUT...)",
-                "7 (Master, titre ingénieur...)",
-              ],
-              "type": "string",
-            },
-          },
-          {
-            "description": "filter opportunities on opco name",
-            "in": "query",
-            "name": "opco",
-            "required": false,
-            "schema": {
-              "type": "string",
-            },
-          },
-          {
-            "description": "filter opportunities on opco url",
-            "in": "query",
-            "name": "opcoUrl",
-            "required": false,
-            "schema": {
-              "type": "string",
-            },
-          },
-          {
-            "in": "query",
-            "name": "options",
-            "required": false,
-            "schema": {
-              "enum": [
-                "with_description",
-              ],
-              "type": "string",
-            },
-          },
-          {
-            "in": "header",
-            "name": "referer",
-            "required": false,
-            "schema": {
-              "type": "string",
-            },
-          },
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "formations": {
-                      "anyOf": [
-                        {
-                          "additionalProperties": false,
-                          "properties": {
-                            "results": {
-                              "items": {
-                                "$ref": "#/components/schemas/Formation",
-                              },
-                              "type": "array",
-                            },
-                          },
-                          "required": [
-                            "results",
-                          ],
-                          "type": "object",
-                        },
-                        {
-                          "$ref": "#/components/schemas/ApiError",
-                        },
-                        {
-                          "type": "null",
-                        },
-                        {
-                          "type": "null",
-                        },
-                      ],
-                    },
-                    "jobs": {
-                      "anyOf": [
-                        {
-                          "additionalProperties": false,
-                          "properties": {
-                            "lbaCompanies": {
-                              "anyOf": [
-                                {
-                                  "additionalProperties": false,
-                                  "properties": {
-                                    "results": {
-                                      "items": {
-                                        "$ref": "#/components/schemas/LbaCompany",
-                                      },
-                                      "type": "array",
-                                    },
-                                  },
-                                  "required": [
-                                    "results",
-                                  ],
-                                  "type": "object",
-                                },
-                                {
-                                  "$ref": "#/components/schemas/ApiError",
-                                },
-                                {
-                                  "type": "null",
-                                },
-                                {
-                                  "type": "null",
-                                },
-                              ],
-                            },
-                            "lbbCompanies": {
-                              "type": "null",
-                            },
-                            "matchas": {
-                              "anyOf": [
-                                {
-                                  "additionalProperties": false,
-                                  "properties": {
-                                    "results": {
-                                      "items": {
-                                        "$ref": "#/components/schemas/LbaJob",
-                                      },
-                                      "type": "array",
-                                    },
-                                  },
-                                  "required": [
-                                    "results",
-                                  ],
-                                  "type": "object",
-                                },
-                                {
-                                  "$ref": "#/components/schemas/ApiError",
-                                },
-                                {
-                                  "type": "null",
-                                },
-                                {
-                                  "type": "null",
-                                },
-                              ],
-                            },
-                            "peJobs": {
-                              "anyOf": [
-                                {
-                                  "additionalProperties": false,
-                                  "properties": {
-                                    "results": {
-                                      "items": {
-                                        "$ref": "#/components/schemas/PeJob",
-                                      },
-                                      "type": "array",
-                                    },
-                                  },
-                                  "required": [
-                                    "results",
-                                  ],
-                                  "type": "object",
-                                },
-                                {
-                                  "$ref": "#/components/schemas/ApiError",
-                                },
-                                {
-                                  "type": "null",
-                                },
-                                {
-                                  "type": "null",
-                                },
-                              ],
-                            },
-                          },
-                          "required": [
-                            "peJobs",
-                            "matchas",
-                            "lbaCompanies",
-                            "lbbCompanies",
-                          ],
-                          "type": "object",
-                        },
-                        {
-                          "$ref": "#/components/schemas/ApiError",
-                        },
-                        {
-                          "type": "null",
-                        },
-                        {
-                          "type": "null",
-                        },
-                      ],
-                    },
-                  },
-                  "required": [
-                    "formations",
-                    "jobs",
-                  ],
-                  "type": "object",
-                },
-              },
-            },
-            "description": "",
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                  ],
-                },
-              },
-            },
-            "description": "",
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                  ],
-                },
-              },
-            },
-            "description": "",
-          },
-        },
-        "security": [
-          {
-            "api-key": [],
-          },
-        ],
-        "tags": [
-          "V2 - Jobs et formations",
         ],
       },
     },
