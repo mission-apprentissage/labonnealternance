@@ -23,6 +23,8 @@ const anonymize = async () => {
     ])
     .toArray()
 
+  if (!matchedApplicants.length) return { deletedApplication: 0, deletedApplicants: 0 }
+
   const matchedApplications = await getDbCollection("applications")
     .aggregate([
       {
