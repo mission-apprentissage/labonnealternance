@@ -58,21 +58,17 @@ const StartForm = () => {
   const { setFormValues } = useContext(DisplayContext)
   const { setShouldExecuteSearch } = useContext(ParameterContext)
 
-  const handleSearchSubmit = ({ values }) => {
+  const handleSearchSubmit = (values) => {
     const { job, location, radius, diploma } = values
     setFormValues({ job, location, radius, diploma })
     setShouldExecuteSearch(true)
     router.push("/recherche-apprentissage")
   }
 
-  const handleSearchSubmitFunction = (values) => {
-    return handleSearchSubmit({ values })
-  }
-
   return (
     <>
       <Show below="lg">
-        <DynamicSearchFormResponsive handleSearchSubmit={handleSearchSubmitFunction} isHome={true} showResultList={() => {}} />
+        <DynamicSearchFormResponsive handleSearchSubmit={handleSearchSubmit} isHome={true} showResultList={() => {}} />
       </Show>
       <Show above="lg">
         <DynamicWidgetHeader handleSearchSubmit={handleSearchSubmit} isHome={true} />

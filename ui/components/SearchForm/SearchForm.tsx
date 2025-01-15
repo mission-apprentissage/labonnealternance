@@ -63,7 +63,7 @@ const SearchForm = ({ handleSearchSubmit, isHome }) => {
         enableReinitialize
         validate={(values) => validateFormik(values, widgetParameters)}
         initialValues={{ job: formValues?.job ?? {}, location: formValues?.location ?? {}, radius: formValues?.radius ?? 30, diploma: formValues?.diploma ?? "" }}
-        onSubmit={handleSearchSubmit}
+        onSubmit={(values) => handleSearchSubmit(values)}
       >
         {({ isSubmitting, setFieldValue, errors }) => (
           <Form data-testid="widget-form">
