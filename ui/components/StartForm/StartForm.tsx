@@ -1,13 +1,56 @@
-import { Box, Show } from "@chakra-ui/react"
+import { Box, Flex, Show, Skeleton, SkeletonText } from "@chakra-ui/react"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/router"
-import React, { useContext } from "react"
+import { useContext } from "react"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { ParameterContext } from "../../context/ParameterContextProvider"
 
-const SearchFormResponsive = dynamic(() => import("../SearchForTrainingsAndJobs/components/SearchFormResponsive"))
-const WidgetHeader = dynamic(() => import("../WidgetHeader/WidgetHeader"))
+const RenderSearchFormResponsive = () => {
+  return (
+    <Box p="0">
+      <SkeletonText noOfLines={1} mb={0} skeletonHeight="40px" />
+      <Box my="1"></Box>
+      <Flex direction="column">
+        <Box mb={3}>
+          <Skeleton height="60px" />
+        </Box>
+        <Box mb={3}>
+          <Skeleton height="60px" />
+        </Box>
+        <Box mb={3}>
+          <Skeleton height="60px" />
+        </Box>
+        <Box mb={10}>
+          <Skeleton height="60px" />
+        </Box>
+        <Box>
+          <Skeleton height="48px" />
+        </Box>
+      </Flex>
+    </Box>
+  )
+}
+
+const RenderWidgetHeader = () => {
+  return (
+    <Box p="8px">
+      <SkeletonText noOfLines={1} mb={3} skeletonHeight="40px" />
+      <Flex direction="column">
+        <Box mb={4}>
+          <Skeleton height="60px" />
+        </Box>
+      </Flex>
+    </Box>
+  )
+}
+
+const SearchFormResponsive = dynamic(() => import("../SearchForTrainingsAndJobs/components/SearchFormResponsive"), {
+  loading: () => <RenderSearchFormResponsive />,
+})
+const WidgetHeader = dynamic(() => import("../WidgetHeader/WidgetHeader"), {
+  loading: () => <RenderWidgetHeader />,
+})
 
 const StartForm = () => {
   const router = useRouter()
