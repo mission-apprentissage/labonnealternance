@@ -1200,6 +1200,9 @@ export const getCompanyEmailFromToken = async (token: string) => {
 
 const addUtmParamsToSendOtherApplications = (type: LBA_ITEM_TYPE, searchParams: URLSearchParams) => {
   const utmCampaign = type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "je-candidate-accuse-envoi-lien-home" : "je-candidate-spontanement-accuse-envoi-lien-home"
+  searchParams.delete("utm_source")
+  searchParams.delete("utm_source")
+  searchParams.delete("utm_campaign")
   searchParams.append("utm_source", "lba")
   searchParams.append("utm_source", "email")
   searchParams.append("utm_campaign", utmCampaign)
