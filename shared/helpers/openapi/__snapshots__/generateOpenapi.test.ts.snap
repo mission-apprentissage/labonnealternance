@@ -77,6 +77,13 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "description": "Téléphone du candidat",
             "type": "string",
           },
+          "application_url": {
+            "description": "URL où a été créé la candidature. Uniquement pour les candidatures venant de LBA.",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
           "caller": {
             "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
             "example": "contact@domaine nom_de_societe",
@@ -7190,6 +7197,13 @@ Limite : 20 appel(s) / 1 seconde(s)
                   "applicant_phone": {
                     "description": "Téléphone du candidat",
                     "type": "string",
+                  },
+                  "application_url": {
+                    "description": "URL où a été créé la candidature. Uniquement pour les candidatures venant de LBA.",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "recipient_id": {
                     "description": "Identifiant unique de la ressource vers laquelle la candidature est faite, préfixé par le nom de la collection",
