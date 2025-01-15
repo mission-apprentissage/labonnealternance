@@ -1,5 +1,4 @@
 import { Box, Show } from "@chakra-ui/react"
-import { pick } from "lodash"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/router"
 import React, { useContext } from "react"
@@ -17,7 +16,8 @@ const StartForm = () => {
   const { setShouldExecuteSearch } = useContext(ParameterContext)
 
   const handleSearchSubmit = ({ values }) => {
-    setFormValues(pick(values, ["job", "location", "radius", "diploma"]))
+    const { job, location, radius, diploma } = values
+    setFormValues({ job, location, radius, diploma })
     setShouldExecuteSearch(true)
     router.push("/recherche-apprentissage")
   }
