@@ -16,6 +16,7 @@ import anonymizeIndividual from "./anonymization/anonymizeIndividual"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonymizeUserRecruteurs"
 import { anonymizeUsers } from "./anonymization/anonymizeUsers"
 import { processApplications } from "./applications/processApplications"
+import { processRecruiterIntentions } from "./applications/processRecruiterIntentions"
 import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
 import { recreateIndexes } from "./database/recreateIndexes"
 import { validateModels } from "./database/schemaValidation"
@@ -231,6 +232,10 @@ export async function setupJobProcessor() {
           "Traitement complet des jobs_partners": {
             cron_string: "40 3 * * *",
             handler: processJobPartners,
+          },
+          "Emission des intentions des recruteurs": {
+            cron_string: "30 20 * * *",
+            handler: processRecruiterIntentions,
           },
         },
     jobs: {
