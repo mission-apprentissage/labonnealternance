@@ -69,117 +69,115 @@ const SearchFormResponsive = (props) => {
       >
         {({ isSubmitting, setFieldValue, errors }) => (
           <Form>
-            <Box p="0">
-              <Text as="h1" fontSize={["26px", "29px"]} fontWeight={700}>
-                <Text as="span">Trouvez emploi et formation </Text>
-                <Text as="span" color="info">
-                  en alternance
-                </Text>
+            <Text as="h1" fontSize={["26px", "29px"]} fontWeight={700}>
+              <Text as="span">Trouvez emploi et formation </Text>
+              <Text as="span" color="info">
+                en alternance
               </Text>
-              <Flex direction={{ base: "column", lg: "row" }}>
-                <Box mb={4}>
-                  <Box {...focusWithin}>
-                    <AutoCompleteField
-                      id="searchFormJobField"
-                      kind="Métier ou diplôme *"
-                      items={[]}
-                      hasError={errors.job}
-                      initialSelectedItem={formValues?.job ?? null}
-                      itemToStringFunction={autoCompleteToStringFunction}
-                      onSelectedItemChangeFunction={updateValuesFromJobAutoComplete}
-                      compareItemFunction={compareAutoCompleteValues}
-                      onInputValueChangeFunction={jobChanged}
-                      name="jobField"
-                      placeholder="Indiquez un métier ou diplôme"
-                      inputVariant="homeAutocomplete"
-                      searchPlaceholder="Indiquez un métier ou diplôme ci-dessus"
-                      // @ts-expect-error: TODO
-                      isDisabled={widgetParameters?.parameters?.jobName && widgetParameters?.parameters?.romes && widgetParameters?.parameters?.frozenJob}
-                      splitItemsByTypes={[
-                        { type: "job", typeLabel: "Métiers", size: 4 },
-                        { type: "diploma", typeLabel: "Diplômes", size: 4 },
-                        { typeLabel: "...autres métiers et diplômes" },
-                      ]}
-                    />
-                    <ErrorMessage name="job" className="onErrorFieldColumn" component="div" />
-                  </Box>
-                </Box>
-                <Box mb={4} {...focusWithin}>
+            </Text>
+            <Flex direction={{ base: "column", lg: "row" }}>
+              <Box mb={4}>
+                <Box {...focusWithin}>
                   <AutoCompleteField
-                    id="searchFormPlaceField"
-                    kind="Lieu"
+                    id="searchFormJobField"
+                    kind="Métier ou diplôme *"
                     items={[]}
-                    hasError={errors.location}
-                    initialSelectedItem={formValues?.location ?? null}
+                    hasError={errors.job}
+                    initialSelectedItem={formValues?.job ?? null}
                     itemToStringFunction={autoCompleteToStringFunction}
-                    onSelectedItemChangeFunction={updateValuesFromPlaceAutoComplete /*partialRight(formikUpdateValue, "location")*/}
+                    onSelectedItemChangeFunction={updateValuesFromJobAutoComplete}
                     compareItemFunction={compareAutoCompleteValues}
-                    onInputValueChangeFunction={addressChanged}
-                    name="placeField"
-                    placeholder="Adresse, ville ou code postal"
+                    onInputValueChangeFunction={jobChanged}
+                    name="jobField"
+                    placeholder="Indiquez un métier ou diplôme"
                     inputVariant="homeAutocomplete"
-                    searchPlaceholder="Indiquez le lieu recherché ci-dessus"
+                    searchPlaceholder="Indiquez un métier ou diplôme ci-dessus"
+                    // @ts-expect-error: TODO
+                    isDisabled={widgetParameters?.parameters?.jobName && widgetParameters?.parameters?.romes && widgetParameters?.parameters?.frozenJob}
+                    splitItemsByTypes={[
+                      { type: "job", typeLabel: "Métiers", size: 4 },
+                      { type: "diploma", typeLabel: "Diplômes", size: 4 },
+                      { typeLabel: "...autres métiers et diplômes" },
+                    ]}
                   />
-                  <ErrorMessage name="location" className="onErrorFieldColumn" component="div" />
+                  <ErrorMessage name="job" className="onErrorFieldColumn" component="div" />
                 </Box>
-                <Box mb={4} {...focusWithin}>
-                  <Box {...focusWithin} display={["none", "none", "block"]} border="1px solid" borderColor="grey.300" padding="0.1rem">
-                    <Text as="label" htmlFor="locationRadius-search" variant="defaultAutocomplete">
-                      Rayon
-                    </Text>
-                    <Box>
-                      <Select
-                        aria-label="Rayon de recherche"
-                        onChange={(evt) => handleSelectChange(evt, setFieldValue, setLocationRadius, "radius")}
-                        value={locationRadius}
-                        id="locationRadius-search"
-                        data-testid="locationRadius"
-                        {...selectProperties}
-                      >
-                        {buildRayonsOptions()}
-                      </Select>
-                    </Box>
-                  </Box>
-                  <Box display={["block", "block", "none"]}>
-                    <Text as="p" my={2} fontWeight={700}>
-                      Rayon
-                    </Text>
-                    <Box>{buildRayonsButtons(locationRadius, (evt) => handleSelectChange(evt, setFieldValue, setLocationRadius, "radius"))}</Box>
-                  </Box>
-                </Box>
-                <Box {...focusWithin} mb={10} border="1px solid" borderColor="grey.300" padding="0.1rem">
-                  <Text as="label" htmlFor="diploma-search" variant="defaultAutocomplete">
-                    Niveau d&apos;études visé
+              </Box>
+              <Box mb={4} {...focusWithin}>
+                <AutoCompleteField
+                  id="searchFormPlaceField"
+                  kind="Lieu"
+                  items={[]}
+                  hasError={errors.location}
+                  initialSelectedItem={formValues?.location ?? null}
+                  itemToStringFunction={autoCompleteToStringFunction}
+                  onSelectedItemChangeFunction={updateValuesFromPlaceAutoComplete /*partialRight(formikUpdateValue, "location")*/}
+                  compareItemFunction={compareAutoCompleteValues}
+                  onInputValueChangeFunction={addressChanged}
+                  name="placeField"
+                  placeholder="Adresse, ville ou code postal"
+                  inputVariant="homeAutocomplete"
+                  searchPlaceholder="Indiquez le lieu recherché ci-dessus"
+                />
+                <ErrorMessage name="location" className="onErrorFieldColumn" component="div" />
+              </Box>
+              <Box mb={4} {...focusWithin}>
+                <Box {...focusWithin} display={["none", "none", "block"]} border="1px solid" borderColor="grey.300" padding="0.1rem">
+                  <Text as="label" htmlFor="locationRadius-search" variant="defaultAutocomplete">
+                    Rayon
                   </Text>
-                  <Select
-                    aria-label="Liste des diplômes"
-                    onChange={(evt) => handleSelectChange(evt, setFieldValue, setDiploma, "diploma")}
-                    value={diploma}
-                    id="diploma-search"
-                    {...selectProperties}
-                  >
-                    {buildAvailableDiplomasOptions(diplomas)}
-                  </Select>
+                  <Box>
+                    <Select
+                      aria-label="Rayon de recherche"
+                      onChange={(evt) => handleSelectChange(evt, setFieldValue, setLocationRadius, "radius")}
+                      value={locationRadius}
+                      id="locationRadius-search"
+                      data-testid="locationRadius"
+                      {...selectProperties}
+                    >
+                      {buildRayonsOptions()}
+                    </Select>
+                  </Box>
                 </Box>
-                <Box>
-                  <Button
-                    type="submit"
-                    py="0.35rem"
-                    height="3rem"
-                    fontSize="18px"
-                    textDecoration="none"
-                    fontWeight={700}
-                    width="100%"
-                    margin="auto"
-                    variant="blackButton"
-                    borderRadius="unset"
-                    disabled={isSubmitting}
-                  >
-                    C&apos;est parti
-                  </Button>
+                <Box display={["block", "block", "none"]}>
+                  <Text as="p" mb={2} fontWeight={700}>
+                    Rayon
+                  </Text>
+                  <Box>{buildRayonsButtons(locationRadius, (evt) => handleSelectChange(evt, setFieldValue, setLocationRadius, "radius"))}</Box>
                 </Box>
-              </Flex>
-            </Box>
+              </Box>
+              <Box {...focusWithin} mb={10} border="1px solid" borderColor="grey.300" padding="0.1rem">
+                <Text as="label" htmlFor="diploma-search" variant="defaultAutocomplete">
+                  Niveau d&apos;études visé
+                </Text>
+                <Select
+                  aria-label="Liste des diplômes"
+                  onChange={(evt) => handleSelectChange(evt, setFieldValue, setDiploma, "diploma")}
+                  value={diploma}
+                  id="diploma-search"
+                  {...selectProperties}
+                >
+                  {buildAvailableDiplomasOptions(diplomas)}
+                </Select>
+              </Box>
+              <Box>
+                <Button
+                  type="submit"
+                  py="0.35rem"
+                  height="3rem"
+                  fontSize="18px"
+                  textDecoration="none"
+                  fontWeight={700}
+                  width="100%"
+                  margin="auto"
+                  variant="blackButton"
+                  borderRadius="unset"
+                  disabled={isSubmitting}
+                >
+                  C&apos;est parti
+                </Button>
+              </Box>
+            </Flex>
           </Form>
         )}
       </Formik>
