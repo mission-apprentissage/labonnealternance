@@ -287,7 +287,7 @@ export const sendApplicationV2 = async ({
     }
     const { recruiter, job } = recruiterResult
     // la vérification sur la date accepte une période de grâce de 1j
-    if (recruiter.status !== RECRUITER_STATUS.ACTIF || job.job_status !== JOB_STATUS.ACTIVE || dayjs(job.job_expiration_date).isBefore(dayjs().add(1, "day"))) {
+    if (recruiter.status !== RECRUITER_STATUS.ACTIF || job.job_status !== JOB_STATUS.ACTIVE || dayjs(job.job_expiration_date).add(1, "day").isBefore(dayjs())) {
       throw badRequest(BusinessErrorCodes.EXPIRED)
     }
 

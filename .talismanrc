@@ -36,7 +36,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/v2/applications.controller.v2.test.ts
   checksum: 9147c705b5bdfe6eff6b1b75c467249ee1af783d57ff16d78722e48e60831c68
 - filename: server/src/http/controllers/v2/appointment.controller.v2.test.ts
-  checksum: 72502c3acc46f9b6903b69095518c3d865cf437f311ed14585da04d8440b4ac0
+  checksum: bbbf100d65bae0d840c715f4b1d893986df7423f470f3ee300545959105f6ca4
 - filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts
   checksum: a99bfdcb5a8f4c66e9d055b44160adbc7ec2bcaf87209ff76fa9a9f674b9ca86
 - filename: server/src/http/controllers/v2/jobs.controller.v2.ts
@@ -160,7 +160,7 @@ fileignoreconfig:
 - filename: shared/helpers/generateUri.ts
   checksum: 6542db0d3eca959c6e81d574f8b71d4b18d2f1af21042ca5ed4dff319cd39555
 - filename: shared/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap
-  checksum: caa1131ffe2f23d62ba2d4370173cce74ffa05a17330c8d342c41c4b971c6f9f
+  checksum: 903006c87a12fbb97070f96ee40d5acca427e46a00a3f4221cb0c7d351ede26b
 - filename: shared/helpers/openapi/generateOpenapi.test.ts
   checksum: d7b85c3dff488cec523d78f0926e15dbea41071a1864bda62b4d6caeb2541df3
 - filename: shared/models/applications.model.ts

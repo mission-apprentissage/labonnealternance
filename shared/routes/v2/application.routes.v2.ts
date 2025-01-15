@@ -1,12 +1,11 @@
-import { z } from "../helpers/zodWithOpenApi"
-import { ZApplicationApiPrivate, ZApplicationApiPublic } from "../models"
-
-import { IRoutesDef } from "./common.routes"
+import { z } from "../../helpers/zodWithOpenApi"
+import { ZApplicationApiPrivate, ZApplicationApiPublic } from "../../models"
+import { IRoutesDef } from "../common.routes"
 
 export const zApplicationRoutesV2 = {
   post: {
-    "/application": {
-      path: "/application",
+    "/v2/application": {
+      path: "/v2/application",
       method: "post",
       body: ZApplicationApiPublic,
       response: {
@@ -19,8 +18,8 @@ export const zApplicationRoutesV2 = {
         tags: ["V2 - Application"] as string[],
       },
     },
-    "/_private/application": {
-      path: "/_private/application",
+    "/v2/_private/application": {
+      path: "/v2/_private/application",
       method: "post",
       body: ZApplicationApiPrivate,
       response: {

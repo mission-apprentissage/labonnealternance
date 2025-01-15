@@ -110,7 +110,10 @@ export default function PremiumAffelnetForm() {
                 </Text>
                 <Text mt={4} color="grey.800" ml={2}>
                   Le service RDV Apprentissage ne sera pas activé pour vos formations. Si vous changez d'avis, merci de nous contacter à l'adresse suivante:{" "}
-                  <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Formulaire%20premium%20-%20Activer%20RDVA">labonnealternance@apprentissage.beta.gouv.fr</a>.
+                  <a style={{ textDecoration: "underline" }} href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Formulaire%20premium%20-%20Activer%20RDVA">
+                    labonnealternance@apprentissage.beta.gouv.fr
+                  </a>
+                  .
                 </Text>
               </Box>
             </Stack>
@@ -151,7 +154,7 @@ export default function PremiumAffelnetForm() {
                 Non, je ne suis pas prêt
               </Button>
               <Box>
-                <Text mt="-7px">
+                <Text mt={5}>
                   Le service sera activé sur toutes les formations éligibles à être affichées sur Choisir son affectation après la 3e, liées à votre SIRET{" "}
                   <Text as="span" fontWeight="700">
                     {etablissement.gestionnaire_siret}

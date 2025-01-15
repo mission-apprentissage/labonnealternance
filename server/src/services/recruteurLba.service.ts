@@ -181,6 +181,7 @@ export const getRecruteursLbaFromDB = async ({ geo, romes }: IRecruteursLbaSearc
             $geoNear: {
               near: { type: "Point", coordinates: [geo.longitude, geo.latitude] },
               distanceField: "distance",
+              key: "geopoint",
               maxDistance: geo.radius * 1000,
               query,
             },
@@ -248,6 +249,7 @@ export const getCompanies = async ({
             $geoNear: {
               near: { type: "Point", coordinates: [longitude, latitude] },
               distanceField: "distance",
+              key: "geopoint",
               maxDistance: distance * 1000,
               query,
             },

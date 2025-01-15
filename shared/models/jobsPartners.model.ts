@@ -17,6 +17,11 @@ export enum JOBPARTNERS_LABEL {
   RH_ALTERNANCE = "RH Alternance",
 }
 
+export enum FILTER_JOBPARTNERS_LABEL {
+  HELLOWORK = JOBPARTNERS_LABEL.HELLOWORK,
+  RH_ALTERNANCE = JOBPARTNERS_LABEL.RH_ALTERNANCE,
+}
+
 export const ZJobsPartnersRecruiterApi = z.object({
   _id: zObjectId,
   workplace_siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
@@ -216,7 +221,8 @@ export type IJobsPartnersWritableApiInput = z.input<typeof ZJobsPartnersWritable
 export default {
   zod: ZJobsPartnersOfferPrivate,
   indexes: [
-    [{ workplace_geopoint: "2dsphere", offer_multicast: 1, offer_rome_codes: 1 }, {}],
+    [{ workplace_geopoint: "2dsphere", offer_multicast: 1, offer_rome_codes: 1, offer_status: 1, offer_expiration: 1, "offer_target_diploma.european": 1 }, {}],
+    [{ workplace_geopoint: "2dsphere", offer_multicast: 1, offer_rome_codes: 1, offer_status: 1, offer_expiration: 1, partner_label: 1, "offer_target_diploma.european": 1 }, {}],
     [{ offer_multicast: 1, offer_rome_codes: 1, offer_creation: -1 }, {}],
     [{ offer_multicast: 1, "offer_target_diploma.european": 1, offer_creation: -1 }, {}],
     [{ offer_multicast: 1, offer_rome_codes: 1, "offer_target_diploma.european": 1, offer_creation: -1 }, {}],

@@ -1,4 +1,3 @@
-import { referrers } from "shared/constants/referers"
 import { generateEligibleTrainingEstablishmentFixture, generateEligibleTrainingFixture } from "shared/fixtures/appointment.fixture"
 import { generateReferentielOnisepFixture } from "shared/fixtures/referentiel/onisep.fixture"
 import { describe, expect, it } from "vitest"
@@ -8,11 +7,30 @@ import { useMongo } from "../../../../tests/utils/mongo.test.utils"
 import { useServer } from "../../../../tests/utils/server.test.utils"
 import { getDbCollection } from "../../../common/utils/mongodbUtils"
 
-const token = getApiApprentissageTestingToken({
+const parcousupToken = getApiApprentissageTestingToken({
   email: "test@test.fr",
-  organisation: "Un super Partenaire",
+  organisation: "parcoursup",
   habilitations: { "applications:write": false, "appointments:write": true, "jobs:write": false },
 })
+
+const onisepToken = getApiApprentissageTestingToken({
+  email: "test@test.fr",
+  organisation: "onisep",
+  habilitations: { "applications:write": false, "appointments:write": true, "jobs:write": false },
+})
+
+const lbaToken = getApiApprentissageTestingToken({
+  email: "test@test.fr",
+  organisation: "lba",
+  habilitations: { "applications:write": false, "appointments:write": true, "jobs:write": false },
+})
+
+const affelnetToken = getApiApprentissageTestingToken({
+  email: "test@test.fr",
+  organisation: "affelnet",
+  habilitations: { "applications:write": false, "appointments:write": true, "jobs:write": false },
+})
+
 const fakeToken = getApiApprentissageTestingTokenFromInvalidPrivateKey({
   email: "mail@mail.com",
   organisation: "Un super Partenaire",
@@ -55,9 +73,8 @@ describe("POST /v2/appointment", () => {
       path: "/api/v2/appointment",
       body: {
         parcoursup_id: notEligibleTraining.parcoursup_id,
-        referrer: referrers.PARCOURSUP.name.toLocaleLowerCase(),
       },
-      headers: { authorization: `Bearer ${token}` },
+      headers: { authorization: `Bearer ${parcousupToken}` },
     })
 
     expect.soft(response.statusCode).toEqual(200)
@@ -72,9 +89,8 @@ describe("POST /v2/appointment", () => {
       path: "/api/v2/appointment",
       body: {
         parcoursup_id: eligibleTraining.parcoursup_id,
-        referrer: referrers.PARCOURSUP.name.toLocaleLowerCase(),
       },
-      headers: { authorization: `Bearer ${token}` },
+      headers: { authorization: `Bearer ${parcousupToken}` },
     })
 
     expect.soft(response.statusCode).toEqual(200)
@@ -96,9 +112,8 @@ describe("POST /v2/appointment", () => {
       path: "/api/v2/appointment",
       body: {
         onisep_id: referentielOnisep.id_action_ideo2,
-        referrer: referrers.ONISEP.name.toLocaleLowerCase(),
       },
-      headers: { authorization: `Bearer ${token}` },
+      headers: { authorization: `Bearer ${onisepToken}` },
     })
 
     expect.soft(response.statusCode).toEqual(200)
@@ -121,9 +136,8 @@ describe("POST /v2/appointment", () => {
       path: "/api/v2/appointment",
       body: {
         cle_ministere_educatif: eligibleTraining.cle_ministere_educatif,
-        referrer: referrers.AFFELNET.name.toLocaleLowerCase(),
       },
-      headers: { authorization: `Bearer ${token}` },
+      headers: { authorization: `Bearer ${affelnetToken}` },
     })
 
     expect.soft(response.statusCode).toEqual(200)
@@ -138,5 +152,18 @@ describe("POST /v2/appointment", () => {
       lieu_formation_adresse: "64 Avenue de la Plaine de France",
       localite: "Tremblay-en-France",
     })
+  })
+
+  it("Return 400 using LBA referrer", async () => {
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/v2/appointment",
+      body: {
+        cle_ministere_educatif: eligibleTraining.cle_ministere_educatif,
+      },
+      headers: { authorization: `Bearer ${lbaToken}` },
+    })
+
+    expect.soft(response.statusCode).toEqual(401)
   })
 })

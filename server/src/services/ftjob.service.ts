@@ -61,6 +61,8 @@ const transformFtJob = ({ job, latitude = null, longitude = null }: { job: FTJob
         info: job.contact.coordonnees1
           ? `${job.contact.coordonnees1}${job.contact.coordonnees2 ? "\n" + job.contact.coordonnees2 : ""}${job.contact.coordonnees3 ? "\n" + job.contact.coordonnees3 : ""}`
           : "",
+        phone: job.contact.telephone,
+        url: job.contact.urlPostulation,
       }
     : null
 
