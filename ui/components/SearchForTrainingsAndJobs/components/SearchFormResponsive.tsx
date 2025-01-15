@@ -1,6 +1,5 @@
 import { Box, Button, Flex, Select, Text } from "@chakra-ui/react"
 import { ErrorMessage, Form, Formik } from "formik"
-import { partialRight } from "lodash"
 import React, { useContext, useEffect, useState } from "react"
 
 import { focusWithin } from "@/theme/theme-lba-tools"
@@ -14,9 +13,8 @@ import { fetchAddresses } from "../../../services/baseAdresse"
 import { buildAvailableDiplomasOptions } from "../../../services/buildAvailableDiplomas"
 import { buildRayonsButtons, buildRayonsOptions } from "../../../services/buildRayons"
 import domainChanged from "../../../services/domainChanged"
-import formikUpdateValue from "../../../services/formikUpdateValue"
 import handleSelectChange from "../../../services/handleSelectChange"
-import updateValuesFromJobAutoComplete from "../../../services/updateValuesFromJobAutoComplete"
+import updateValuesFromJobAutoComplete, { updateValuesFromPlaceAutoComplete } from "../../../services/updateValuesFromJobAutoComplete"
 import validateFormik from "../../../services/validateFormik"
 import { AutoCompleteField } from "../../AutoCompleteField/AutoCompleteField"
 
@@ -114,7 +112,7 @@ const SearchFormResponsive = (props) => {
                     hasError={errors.location}
                     initialSelectedItem={formValues?.location ?? null}
                     itemToStringFunction={autoCompleteToStringFunction}
-                    onSelectedItemChangeFunction={partialRight(formikUpdateValue, "location")}
+                    onSelectedItemChangeFunction={updateValuesFromPlaceAutoComplete /*partialRight(formikUpdateValue, "location")*/}
                     compareItemFunction={compareAutoCompleteValues}
                     onInputValueChangeFunction={addressChanged}
                     name="placeField"

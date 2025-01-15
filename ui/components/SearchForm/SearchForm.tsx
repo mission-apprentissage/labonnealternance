@@ -1,6 +1,5 @@
 import { Box, Button, Flex, Image, Select, Text } from "@chakra-ui/react"
 import { Form, Formik } from "formik"
-import { partialRight } from "lodash"
 import React, { useEffect, useState } from "react"
 
 import { focusWithin } from "@/theme/theme-lba-tools"
@@ -13,9 +12,8 @@ import { fetchAddresses } from "../../services/baseAdresse"
 import { buildAvailableDiplomasOptions } from "../../services/buildAvailableDiplomas"
 import { buildRayonsOptions } from "../../services/buildRayons"
 import domainChanged from "../../services/domainChanged"
-import formikUpdateValue from "../../services/formikUpdateValue"
 import handleSelectChange from "../../services/handleSelectChange"
-import updateValuesFromJobAutoComplete from "../../services/updateValuesFromJobAutoComplete"
+import updateValuesFromJobAutoComplete, { updateValuesFromPlaceAutoComplete } from "../../services/updateValuesFromJobAutoComplete"
 import validateFormik from "../../services/validateFormik"
 
 const selectProperties = {
@@ -101,7 +99,7 @@ const SearchForm = ({ handleSearchSubmit, isHome }) => {
                   hasError={errors.location}
                   initialSelectedItem={formValues?.location ?? null}
                   itemToStringFunction={autoCompleteToStringFunction}
-                  onSelectedItemChangeFunction={partialRight(formikUpdateValue, "location")}
+                  onSelectedItemChangeFunction={updateValuesFromPlaceAutoComplete /*partialRight(formikUpdateValue, "location")*/}
                   compareItemFunction={compareAutoCompleteValues}
                   onInputValueChangeFunction={addressChanged}
                   name="placeField"
