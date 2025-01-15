@@ -296,7 +296,7 @@ export const getCoupleAppellationRomeIntitule = async (searchTerm: string): Prom
   const metiers = await getCacheReferentielRome()
   const sorted = matchSorter(metiers, searchTerm, {
     keys: ["appellation"],
-    threshold: matchSorter.rankings.NO_MATCH,
+    threshold: matchSorter.rankings.ACRONYM,
   })
 
   return { coupleAppellationRomeMetier: sorted.slice(0, 30) }
