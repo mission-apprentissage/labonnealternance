@@ -14,10 +14,13 @@ const AmeliorerLBA = () => {
             Vous êtes une entreprise à la recherche d’alternants ?
           </Text>
           <Text>
-            Participez à une démonstration de La bonne alternance. Un <strong>service public gratuit pour publier facilement vos offres sur plusieurs plateformes</strong> : La bonne alternance, 1jeune1solution, Parcoursup, l'Onisep, et bien d'autres.
+            Participez à une démonstration de La bonne alternance. Un <strong>service public gratuit pour publier facilement vos offres sur plusieurs plateformes</strong> : La
+            bonne alternance, 1jeune1solution, Parcoursup, l'Onisep, et bien d'autres.
           </Text>
           <Text>
-            <strong>Chaque semaine</strong>, nous organisons des webinaires spécialement conçus pour les recruteurs afin de vous présenter toutes les fonctionnalités de notre plateforme.</Text>
+            <strong>Chaque semaine</strong>, nous organisons des webinaires spécialement conçus pour les recruteurs afin de vous présenter toutes les fonctionnalités de notre
+            plateforme.
+          </Text>
           <Text>
             <strong>Profitez-en pour poser vos questions en direct !</strong>
           </Text>
