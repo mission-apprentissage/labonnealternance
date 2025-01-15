@@ -104,10 +104,8 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "items": {
               "enum": [
                 "Compétences insuffisantes ou non adaptées",
-                "Localisation géographique trop lointaine",
                 "Manque de personnalisation de la candidature",
                 "Fautes d'orthographe",
-                "Âge du candidat inadapté",
                 "Manque de clarté du CV",
                 "Avis négatif sur l’école/la formation",
                 "Type de contrat inadapté",
