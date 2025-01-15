@@ -260,7 +260,7 @@ const createCatalogueMeAPI = async (): Promise<AxiosInstance> => {
   const instance = axios.create({ baseURL: "https://catalogue.apprentissage.education.gouv.fr/api" })
 
   try {
-    const response = await axios.post("https://catalogue.apprentissage.education.gouv.fr/api/v1/auth/login", {
+    const response = await instance.post("/v1/auth/login", {
       username: config.catalogueMe.username,
       password: config.catalogueMe.password,
     })
