@@ -5,7 +5,7 @@ export const up = async () => {
     {},
     {
       $set: {
-        reason: "vide (migration)",
+        reason: "migration",
         reasonDetails: null,
         siret: null,
         partnerLabel: null,
