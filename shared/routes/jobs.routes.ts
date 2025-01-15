@@ -236,9 +236,9 @@ export const zV1JobsRoutes = {
         description: `Get job opportunities matching the query parameters\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
-    "/v1/jobs/min": {
+    "/v1/_private/jobs/min": {
       method: "get",
-      path: "/v1/jobs/min",
+      path: "/v1/_private/jobs/min",
       querystring: z
         .object({
           romes: zRomesParams("rncp"),

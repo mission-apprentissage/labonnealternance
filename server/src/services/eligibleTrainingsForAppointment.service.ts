@@ -3,7 +3,7 @@ import { Filter, ObjectId } from "mongodb"
 import { IEligibleTrainingsForAppointment, IFormationCatalogue } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { IAppointmentRequestContextCreateResponseSchema } from "shared/routes/appointments.routes"
-import { IAppointmentContextAPI, IAppointmentResponseSchema } from "shared/routes/appointments.routes.v2"
+import { IAppointmentContextAPI, IAppointmentResponseSchema } from "shared/routes/v2/appointments.routes.v2"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"

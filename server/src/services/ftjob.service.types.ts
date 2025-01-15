@@ -3,6 +3,8 @@
 type FTContact = {
   nom: string
   courriel: string
+  telephone: string
+  urlPostulation: string
   coordonnees1: string
   coordonnees2: string
   coordonnees3: string

@@ -1675,7 +1675,7 @@ describe("findJobsOpportunities", () => {
     })
   })
 
-  describe("when seaching with location", () => {
+  describe("when searching with location", () => {
     it("should sort by source, distance and then by creation date", async () => {
       vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: ftJobs })
 
