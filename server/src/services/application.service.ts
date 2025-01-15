@@ -339,7 +339,7 @@ export const sendApplicationV2 = async ({
  * email PJ contient un virus
  * email candidat et recruteur lors d'une candidature
  */
-const buildUrlsOfDetail = (publicUrl: string, application: IApplication, utm?: { utm_source?: string; utm_medium?: string; utm_campaign?: string }) => {
+const buildUrlsOfDetail = (application: IApplication, utm?: { utm_source?: string; utm_medium?: string; utm_campaign?: string }) => {
   const { job_id, company_siret } = application
   const defaultUtm = { utm_source: "lba", utm_medium: "email", utm_campaign: "je-candidate" }
   const { utm_campaign, utm_medium, utm_source } = { ...defaultUtm, ...utm }
@@ -571,6 +571,7 @@ const newApplicationToApplicationDocumentV2 = async (
     to_applicant_message_id: null,
     to_company_message_id: null,
     scan_status: ApplicationScanStatus.WAITING_FOR_SCAN,
+    application_url: newApplication.application_url,
     ...offreOrCompanyToCompanyFields(LbaJob),
   }
   return application
@@ -1030,7 +1031,7 @@ export const processApplicationScanForVirus = async (application: IApplication, 
   )
 
   if (hasVirus) {
-    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, application, { utm_campaign: "je-candidate-virus-pj" })
+    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(application, { utm_campaign: "je-candidate-virus-pj" })
     await mailer.sendEmail({
       to: application.applicant_email,
       subject: "Echec d'envoi de votre candidature",
@@ -1067,7 +1068,7 @@ export const processApplicationEmails = {
   async sendRecruteurEmail(application: IApplication, applicant: IApplicant, attachmentContent: string) {
     const { job_id } = application
     const type = job_id ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA : LBA_ITEM_TYPE.RECRUTEURS_LBA
-    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, application, { utm_campaign: "je-candidate-recruteur" })
+    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(application, { utm_campaign: "je-candidate-recruteur" })
     const recruiterEmailUrls = await buildRecruiterEmailUrls(application, applicant)
 
     const emailCompany = await mailer.sendEmail({
@@ -1102,7 +1103,8 @@ export const processApplicationEmails = {
   async sendCandidatEmail(application: IApplication, applicant: IApplicant) {
     const { job_id } = application
     const type = job_id ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA : LBA_ITEM_TYPE.RECRUTEURS_LBA
-    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, application)
+    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(application)
+
     const emailCandidat = await mailer.sendEmail({
       to: applicant.email,
       subject: `Votre candidature chez ${application.company_name}`,
@@ -1118,6 +1120,7 @@ export const processApplicationEmails = {
         applicationDate: dayjs(application.created_at).format("DD/MM/YYYY"),
         reminderDate: dayjs(application.created_at).add(10, "days").format("DD/MM/YYYY"),
         attachmentName: application.applicant_attachment_name,
+        sendOtherApplicationsUrl: buildSendOtherApplicationsUrl(application, type),
       },
     })
     if (emailCandidat?.accepted?.length) {
@@ -1193,4 +1196,30 @@ export const getCompanyEmailFromToken = async (token: string) => {
   }
 
   throw notFound("Adresse non trouvée")
+}
+
+const addUtmParamsToSendOtherApplications = (type: LBA_ITEM_TYPE, searchParams: URLSearchParams) => {
+  const utmCampaign = type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "je-candidate-accuse-envoi-lien-home" : "je-candidate-spontanement-accuse-envoi-lien-home"
+  searchParams.append("utm_source", "lba")
+  searchParams.append("utm_source", "email")
+  searchParams.append("utm_campaign", utmCampaign)
+}
+
+const buildSendOtherApplicationsUrl = (application: IApplication, type: LBA_ITEM_TYPE) => {
+  const { application_url } = application
+
+  if (application_url) {
+    const url = new URL(application_url)
+    const newParams = url.searchParams
+    if (newParams.get("job_name")) {
+      newParams.delete("page")
+      newParams.delete("type")
+      newParams.delete("itemId")
+      addUtmParamsToSendOtherApplications(type, newParams)
+      return `${publicUrl}${url.pathname}?${newParams.toString()}`
+    }
+  }
+  const searchParams = new URLSearchParams()
+  addUtmParamsToSendOtherApplications(type, searchParams)
+  return `${publicUrl}/?${searchParams.toString()}`
 }
