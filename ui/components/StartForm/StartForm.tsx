@@ -8,7 +8,7 @@ import { ParameterContext } from "../../context/ParameterContextProvider"
 
 const RenderSearchFormResponsive = () => {
   return (
-    <Box p="0">
+    <Box boxShadow="0 4px 12px 2px rgb(0 0 0 / 21%)" pb={6} pt={[2, 2, 2, 6]} px={4} bg="white" backgroundClip="border-box" borderRadius="10px">
       <SkeletonText noOfLines={1} mb={0} skeletonHeight="40px" />
       <Box my="1"></Box>
       <Flex direction="column">
@@ -34,21 +34,21 @@ const RenderSearchFormResponsive = () => {
 
 const RenderWidgetHeader = () => {
   return (
-    <Box p="8px">
-      <SkeletonText noOfLines={1} mb={3} skeletonHeight="40px" />
-      <Flex direction="column">
-        <Box mb={4}>
+    <Box boxShadow="0 4px 12px 2px rgb(0 0 0 / 21%)" pb={4} pt={[2, 2, 2, 6]} px={4} bg="white" backgroundClip="border-box" borderRadius="10px">
+      <Box p="4px">
+        <SkeletonText noOfLines={1} mb={3} skeletonHeight="40px" />
+        <Flex direction="column">
           <Skeleton height="60px" />
-        </Box>
-      </Flex>
+        </Flex>
+      </Box>
     </Box>
   )
 }
 
-const SearchFormResponsive = dynamic(() => import("../SearchForTrainingsAndJobs/components/SearchFormResponsive"), {
+const DynamicSearchFormResponsive = dynamic(() => import("../SearchForTrainingsAndJobs/components/SearchFormResponsiveHomePage"), {
   loading: () => <RenderSearchFormResponsive />,
 })
-const WidgetHeader = dynamic(() => import("../WidgetHeader/WidgetHeader"), {
+const DynamicWidgetHeader = dynamic(() => import("../WidgetHeader/WidgetHeaderHomePage"), {
   loading: () => <RenderWidgetHeader />,
 })
 
@@ -72,14 +72,10 @@ const StartForm = () => {
   return (
     <>
       <Show below="lg">
-        <Box marginBottom="24px">
-          <SearchFormResponsive handleSearchSubmit={handleSearchSubmitFunction} isHome={true} showResultList={() => {}} />
-        </Box>
+        <DynamicSearchFormResponsive handleSearchSubmit={handleSearchSubmitFunction} isHome={true} showResultList={() => {}} />
       </Show>
       <Show above="lg">
-        <Box>
-          <WidgetHeader handleSearchSubmit={handleSearchSubmit} isHome={true} />
-        </Box>
+        <DynamicWidgetHeader handleSearchSubmit={handleSearchSubmit} isHome={true} />
       </Show>
     </>
   )
