@@ -1,5 +1,4 @@
 import { Box, Flex, Text } from "@chakra-ui/react"
-import { includes } from "lodash"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/router"
 import React, { useContext } from "react"
@@ -29,7 +28,7 @@ const WidgetHeader = ({
     return handleSearchSubmit({ values })
   }
 
-  const isFicheDetail = selectedItem && includes(router.asPath, "page=fiche") ? true : false
+  const isFicheDetail = selectedItem && router.asPath.includes("page=fiche") ? true : false
   const formDisplayValue = isFicheDetail ? "none" : isHome ? "block" : ["none", "none", "block"]
 
   return (
