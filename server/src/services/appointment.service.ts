@@ -32,7 +32,11 @@ const findOneAndUpdate = (conditions: Filter<IAppointment>, values) => getDbColl
 export { createAppointment, find, findById, findOne, findOneAndUpdate }
 
 const getMailData = async (candidate: IUser, appointment: IAppointment, eligibleTrainingsForAppointment: IEligibleTrainingsForAppointment, referrerObj: ReferrerObject) => {
-  const lbaLink = await getLBALink({ id: "0", cle_ministere_educatif: appointment.cle_ministere_educatif })
+  const lbaLink = await getLBALink({
+    id: "0",
+    cle_ministere_educatif: appointment.cle_ministere_educatif,
+    utm_data: { utm_source: "lba-brevo-transactionnel", utm_medium: "email", utm_campaign: "lba_candidat-rdva-accuse-envoi_promo-emplois" },
+  })
   const mailData = {
     appointmentId: appointment._id,
     user: {
