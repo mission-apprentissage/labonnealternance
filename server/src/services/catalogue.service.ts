@@ -287,7 +287,7 @@ export const getParcoursupAndAffelnetPerimetreFromCatalogueME = async (): Promis
   try {
     const response = await api.get(`/perimetre-prise-rdv.json`)
     return response.data
-  } catch (error) {
+  } catch (error: any) {
     sentryCaptureException(error)
   }
 }
