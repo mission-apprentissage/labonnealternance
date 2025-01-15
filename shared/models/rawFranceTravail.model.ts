@@ -3,29 +3,33 @@ import { z } from "zod"
 import { IModelDescriptor, zObjectId } from "./common"
 
 const ZFTContact = z.object({
-  nom: z.string(),
-  courriel: z.string(),
-  coordonnees1: z.string(),
-  coordonnees2: z.string(),
-  coordonnees3: z.string(),
+  nom: z.string().optional(),
+  courriel: z.string().optional(),
+  telephone: z.string().optional(),
+  urlPostulation: z.string().optional(),
+  coordonnees1: z.string().optional(),
+  coordonnees2: z.string().optional(),
+  coordonnees3: z.string().optional(),
 })
 
 export type IFTContact = z.output<typeof ZFTContact>
 
 const ZFTEntreprise = z.object({
-  nom: z.string(),
+  nom: z.string().optional(),
+  url: z.string().optional(),
   logo: z.string().optional(),
-  description: z.string(),
+  description: z.string().optional(),
   siret: z.string().optional(),
   entrepriseAdaptee: z.boolean().optional(),
 })
 export type IFTEntreprise = z.output<typeof ZFTEntreprise>
 
 const ZFTFormation = z.object({
-  codeFormatio: z.string(),
-  domaineLibelle: z.string(),
-  niveauLibelle: z.string(),
-  exigence: z.string(),
+  codeFormation: z.string().optional(),
+  domaineLibelle: z.string().optional(),
+  niveauLibelle: z.string().optional(),
+  exigence: z.string().optional(),
+  commentaire: z.string().optional(),
 })
 export type IFTFormation = z.output<typeof ZFTFormation>
 
@@ -39,7 +43,7 @@ export type IFTPartenaire = z.output<typeof ZFTPartenaire>
 const ZFTOrigineOffre = z.object({
   origine: z.string(),
   urlOrigine: z.string(),
-  partenaires: z.array(ZFTPartenaire),
+  partenaires: z.array(ZFTPartenaire).optional(),
 })
 export type IFTOrigineOffre = z.output<typeof ZFTOrigineOffre>
 
@@ -55,14 +59,14 @@ const ZFTJob = z
     dateActualisation: z.string(),
     lieuTravail: z.object({
       libelle: z.string(),
-      latitude: z.string().optional(),
-      longitude: z.string().optional(),
+      latitude: z.number().optional(),
+      longitude: z.number().optional(),
       codePostal: z.string().optional(),
       commune: z.string().optional(),
     }),
     romeCode: z.string(),
     romeLibelle: z.string(),
-    appellationlibelle: z.string(),
+    appellationlibelle: z.string().optional(),
     entreprise: ZFTEntreprise,
     typeContrat: z.string(),
     typeContratLibelle: z.string(),
@@ -76,7 +80,7 @@ const ZFTJob = z
     dureeTravailLibelleConverti: z.string().optional(),
     alternance: z.boolean(),
     contact: ZFTContact.optional(),
-    agence: z.union([z.array(z.object({}).passthrough()), z.object({}).passthrough()]),
+    agence: z.union([z.array(z.object({}).passthrough()), z.object({}).passthrough()]).optional(),
     nombrePostes: z.number(),
     accessibleTH: z.boolean(),
     deplacementCode: z.string().optional(),
@@ -92,7 +96,6 @@ const ZFTJob = z
     formations: z.array(ZFTFormation).optional(),
     langues: z.array(z.object({}).passthrough()).optional(),
     complementExercice: z.string().optional(),
-    appellationLibelle: z.string(),
   })
   .passthrough()
 

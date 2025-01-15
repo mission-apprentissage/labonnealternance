@@ -1,18 +1,19 @@
 import { ApiClient } from "api-alternance-sdk"
+import { ObjectId } from "bson"
+import type { IFTJob } from "shared/models"
 
 import { searchForFtJobs } from "@/common/apis/franceTravail/franceTravail.client"
 import { logger } from "@/common/logger"
 import { sleep } from "@/common/utils/asyncUtils"
-// import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
-import { FTJob } from "@/services/ftjob.service.types"
 
 async function getAllFTJobs(departement: string) {
   const jobLimit = 150
   let start = 0
   let total = 1
 
-  let allJobs = [] as FTJob[]
+  let allJobs = [] as Omit<IFTJob, "_id" | "createdAt">[]
 
   while (start < total) {
     // Construct the range for this "page"
@@ -23,13 +24,13 @@ async function getAllFTJobs(departement: string) {
       natureContrat: "E2,FS", // E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
       range,
       departement,
-      publieeDepuis: 7,
+      // publieeDepuis: 7,
       sort: 1, // making sure we get the most recent jobs first
     }
 
     try {
       const response = await searchForFtJobs(params, { throwOnError: true })
-      await sleep(500)
+      await sleep(1000)
       if (!response) {
         throw new Error("No response from FranceTravail")
       }
@@ -41,7 +42,7 @@ async function getAllFTJobs(departement: string) {
         break
       }
 
-      allJobs = [...allJobs, ...jobs.resultats]
+      allJobs = [...allJobs, ...(jobs.resultats as Omit<IFTJob, "_id" | "createdAt">[])]
 
       // Safely parse out the total
       // Usually, contentRange might look like "offres 0-149/9981"
@@ -74,14 +75,20 @@ export const getFranceTravailJobs = async () => {
   const departements = await apiClient.geographie.listDepartements()
   const codesDepartements = departements.map((d) => d.codeInsee)
 
-  let allJobs = [] as FTJob[]
+  let allJobs = [] as Omit<IFTJob, "_id" | "createdAt">[]
   for (const codeDepartement of codesDepartements) {
     const jobs = await getAllFTJobs(codeDepartement)
     allJobs = [...allJobs, ...jobs]
   }
   logger.info(allJobs.length)
 
-  // const rawFranceTravailDocuments = await getDbCollection("raw_francetravail").find({}).toArray()
+  for (const rawFtJob of allJobs) {
+    await getDbCollection("raw_francetravail").findOneAndUpdate(
+      { id: rawFtJob.id as string },
+      { $set: rawFtJob, $setOnInsert: { _id: new ObjectId(), createdAt: new Date() } },
+      { upsert: true }
+    )
+  }
 }
 
 // TODO

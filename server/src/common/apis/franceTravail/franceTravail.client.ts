@@ -131,7 +131,7 @@ export const searchForFtJobs = async (
         },
       })
 
-      return { data, contentRange: headers["content-range"] } //   'content-range': 'offres 0-149/9981',
+      return { data, contentRange: headers["content-range"] } //  fyi: 'content-range': 'offres 0-149/9981',
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       if (options.throwOnError) {
