@@ -1,5 +1,4 @@
-import kebabCase from "lodash-es/kebabCase"
-import uniq from "lodash-es/uniq"
+import { kebabCase, uniq } from "lodash-es"
 
 export const extractFromFile = (path, fs, txtDirectory, fileName) => {
   const filePath = path.join(txtDirectory, fileName)

@@ -31,7 +31,7 @@
     "framer-motion": "^6.5.1",
     "isomorphic-dompurify": "^1.9.0",
     "jose": "^4.14.6",
-    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "mapbox-gl": "^2.15.0",
     "markdown-it": "^12.0.4",
     "match-sorter": "^6.3.1",

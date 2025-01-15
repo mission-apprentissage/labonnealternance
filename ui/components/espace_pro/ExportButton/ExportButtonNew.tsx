@@ -1,7 +1,7 @@
 import { Button, Link } from "@chakra-ui/react"
 import { stringify } from "csv-stringify/sync"
 import dayjs from "dayjs"
-import omit from "lodash-es/omit"
+import { omit } from "lodash-es"
 import { useMemo } from "react"
 import { CSVLink } from "react-csv"
 

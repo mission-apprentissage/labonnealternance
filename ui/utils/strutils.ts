@@ -1,6 +1,6 @@
-import _ from "lodash"
+import { isString } from "lodash-es"
 
-const isNonEmptyString = (val) => _.isString(val) && val.trim().length > 0
+const isNonEmptyString = (val) => isString(val) && val.trim().length > 0
 
 const capitalizeFirstLetter = (s) => {
   let res = ""

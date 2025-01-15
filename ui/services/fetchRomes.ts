@@ -1,5 +1,5 @@
 import axios from "axios"
-import _ from "lodash"
+import { capitalize, get, includes, noop } from "lodash"
 
 import { apiEndpoint } from "../config/config"
 import memoize from "../utils/memoize"
@@ -9,7 +9,7 @@ import { logError } from "../utils/tools"
 
 let cancelToken
 
-export const fetchRomes = memoize(async (value, errorCallbackFn = _.noop, _apiEndpoint = apiEndpoint, _axios = axios, _window = window, _logError = logError) => {
+export const fetchRomes = memoize(async (value, errorCallbackFn = noop, _apiEndpoint = apiEndpoint, _axios = axios, _window = window, _logError = logError) => {
   let res = []
 
   //Check if there are any previous pending requests
@@ -28,9 +28,9 @@ export const fetchRomes = memoize(async (value, errorCallbackFn = _.noop, _apiEn
     const reqParams = { title: value }
     const response = await _axios.get(romeApi, { params: reqParams, cancelToken: cancelToken.token })
 
-    const isAxiosError = !!_.get(response, "data.error")
-    const hasNoLabelsAndRomes = !_.get(response, "data.labelsAndRomes") && !_.get(response, "data.labelsAndRomesForDiplomas")
-    const isSimulatedError = _.includes(_.get(_window, "location.href", ""), "romeError=true")
+    const isAxiosError = !!get(response, "data.error")
+    const hasNoLabelsAndRomes = !get(response, "data.labelsAndRomes") && !get(response, "data.labelsAndRomesForDiplomas")
+    const isSimulatedError = includes(get(_window, "location.href", ""), "romeError=true")
 
     const isError = isAxiosError || hasNoLabelsAndRomes || isSimulatedError
 
@@ -48,7 +48,7 @@ export const fetchRomes = memoize(async (value, errorCallbackFn = _.noop, _apiEn
       let diplomas = []
 
       if (response?.data?.labelsAndRomesForDiplomas?.length) {
-        diplomas = response.data.labelsAndRomesForDiplomas.map((diploma) => (diploma = { ...diploma, label: _.capitalize(diploma.label) }))
+        diplomas = response.data.labelsAndRomesForDiplomas.map((diploma) => (diploma = { ...diploma, label: capitalize(diploma.label) }))
       }
 
       // on affiche d'abord jusqu'à 4 métiers puis jusqu'à 4 diplômes puis le reste s'il y a

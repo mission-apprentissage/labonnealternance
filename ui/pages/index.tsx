@@ -12,7 +12,7 @@ import { initParametersFromQuery } from "../services/config"
 const HomeCircleImageDecoration = dynamic(() => import("@/components/HomeComponents/HomeCircleImageDecoration").then((mod) => mod.HomeCircleImageDecoration), { ssr: false })
 const AlgoHome = dynamic(() => import("@/components/HomeComponents/AlgoHome"))
 const PromoRessources = dynamic(() => import("@/components/Ressources/promoRessources"))
-const HowTo = dynamic(() => import("@/components/HowTo"))
+const HowTo = dynamic(() => import("@/components/HowTo/HowTo"))
 const Footer = dynamic(() => import("@/components/footer"))
 
 const blockCssProperties = {
