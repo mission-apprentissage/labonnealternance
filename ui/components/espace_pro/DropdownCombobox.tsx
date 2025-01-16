@@ -5,6 +5,14 @@ import { useState } from "react"
 
 import CustomInput from "./CustomInput"
 
+const neutralItemProps = {
+  padding: "0.4rem 0.8rem 0.4rem 0.8rem",
+  width: "100%",
+  color: "grey.500",
+  marginTop: "0",
+  fontSize: "14px",
+}
+
 export default function DropdownCombobox(props) {
   const [inputItems, setInputJobItems] = useState([])
 
@@ -73,6 +81,11 @@ export default function DropdownCombobox(props) {
               </Text>
             </li>
           ))}
+        {isOpen && inputItems.length === 0 && (
+          <Box key="nomatch" {...neutralItemProps}>
+            Nous ne parvenons pas à identifier le métier que vous cherchez, veuillez reformuler votre recherche
+          </Box>
+        )}
       </Box>
     </div>
   )
