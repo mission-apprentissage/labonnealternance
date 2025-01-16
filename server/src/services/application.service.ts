@@ -69,7 +69,7 @@ const PARTNER_NAMES = {
 const images: object = {
   images: {
     logoLba: `${imagePath}logo_LBA.png`,
-    logoRF: `${imagePath}logo_rf.png`,
+    logoRf: `${imagePath}logo_rf.png`,
     logoGrimp: `${imagePath}logo_grimp.png`,
     icoInfo: `${imagePath}icone_info.png`,
     icoCandidat: `${imagePath}icone_candidat.png`,
