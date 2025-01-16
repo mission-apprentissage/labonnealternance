@@ -100,6 +100,24 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
+          "company_feedback_reasons": {
+            "items": {
+              "enum": [
+                "Compétences insuffisantes ou non adaptées",
+                "Manque de personnalisation de la candidature",
+                "Fautes d'orthographe",
+                "Manque de clarté du CV",
+                "Avis négatif sur l’école/la formation",
+                "Type de contrat inadapté",
+                "Notre entreprise ne recrute pas sur le métier recherché",
+              ],
+              "type": "string",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
           "company_naf": {
             "description": "Code NAF de l'entreprise",
             "type": [
