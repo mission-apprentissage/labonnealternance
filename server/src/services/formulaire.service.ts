@@ -784,6 +784,7 @@ export async function sendDelegationMailToCFA(email: string, offre: IJob, recrui
     data: {
       images: {
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+        logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
       },
       enterpriseName: recruiter.establishment_raison_sociale,
       jobName: offre.rome_appellation_label,

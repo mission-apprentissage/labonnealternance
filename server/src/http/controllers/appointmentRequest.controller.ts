@@ -290,7 +290,7 @@ export default (server: Server) => {
             cfa_phone: formationCatalogue?.num_tel,
             images: {
               logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-              logoRF: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+              logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
             },
           },
         })
