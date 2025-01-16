@@ -260,7 +260,7 @@ const createCatalogueMeAPI = async (): Promise<AxiosInstance> => {
   const instance = axios.create({ baseURL: "https://catalogue.apprentissage.education.gouv.fr/api" })
 
   try {
-    const response = await axios.post("https://catalogue.apprentissage.education.gouv.fr/api/v1/auth/login", {
+    const response = await instance.post("/v1/auth/login", {
       username: config.catalogueMe.username,
       password: config.catalogueMe.password,
     })
@@ -273,7 +273,6 @@ const createCatalogueMeAPI = async (): Promise<AxiosInstance> => {
   return instance
 }
 
-let api: AxiosInstance | null = null
 export const getParcoursupAndAffelnetPerimetreFromCatalogueME = async (): Promise<
   | Array<{
       cle_ministere_educatif: string
@@ -283,15 +282,13 @@ export const getParcoursupAndAffelnetPerimetreFromCatalogueME = async (): Promis
     }>
   | undefined
 > => {
-  if (api === null) {
-    api = await createCatalogueMeAPI()
-  }
+  const api = await createCatalogueMeAPI()
 
   try {
     const response = await api.get(`/perimetre-prise-rdv.json`)
     return response.data
-  } catch (error) {
-    logger.error(error)
+  } catch (error: any) {
+    sentryCaptureException(error)
   }
 }
 

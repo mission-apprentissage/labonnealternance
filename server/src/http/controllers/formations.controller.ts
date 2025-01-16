@@ -47,9 +47,9 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/v1/formations/min",
+    "/v1/_private/formations/min",
     {
-      schema: zRoutes.get["/v1/formations/min"],
+      schema: zRoutes.get["/v1/_private/formations/min"],
       config,
     },
     async (req, res) => {

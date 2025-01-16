@@ -30,11 +30,9 @@ import etablissementRoute from "./controllers/etablissement.controller"
 import etablissementsRecruteurRoute from "./controllers/etablissementRecruteur.controller"
 import formationsRegionV1Route from "./controllers/formationRegion.controller"
 import formationsV1Route from "./controllers/formations.controller"
-import formationsRouteV2 from "./controllers/formations.controller.v2"
 import formulaireRoute from "./controllers/formulaire.controller"
 import jobsV1Route from "./controllers/jobs.controller"
 import jobsEtFormationsV1Route from "./controllers/jobsEtFormations.controller"
-import jobsEtFormationsRouteV2 from "./controllers/jobsEtFormations.controller.v2"
 import login from "./controllers/login.controller"
 import metiers from "./controllers/metiers.controller"
 import metiersDAvenirRoute from "./controllers/metiersDAvenir.controller"
@@ -137,8 +135,6 @@ export async function bind(app: Server) {
       formationsRegionV1Route(typedSubApp)
       jobsEtFormationsV1Route(typedSubApp)
       reportedCompanyController(typedSubApp)
-      jobsEtFormationsRouteV2(typedSubApp)
-      formationsRouteV2(typedSubApp)
 
       /**
        * Admin / Auth

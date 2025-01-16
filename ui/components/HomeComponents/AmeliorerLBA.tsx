@@ -10,32 +10,31 @@ const AmeliorerLBA = () => {
           <Image src="/images/home_pics/illu-support.svg" alt="" />
         </GridItem>
         <GridItem pl="8">
-          <Text fontWeight="700" my="5">
-            Donnez votre avis
-          </Text>
           <Text as="h2" color="#000091" fontSize="2rem" fontWeight="500" my="5">
-            Aidez-nous à améliorer La bonne alternance
-          </Text>
-          <Text>Vous êtes un jeune candidat à l’apprentissage ?</Text>
-          <Text>Vous avez fait une recherche d’emploi ou de formation sur notre site ?</Text>
-          <Text>
-            <strong>Racontez-nous votre expérience !</strong>
+            Vous êtes une entreprise à la recherche d’alternants ?
           </Text>
           <Text>
-            Nous vous invitions à participer à un échange vidéo avec un membre de notre équipe. Vous pourrez nous partager votre avis, et nous pourrons répondre à vos questions sur
-            l’utilisation du service.
+            Participez à une démonstration de La bonne alternance. Un <strong>service public gratuit pour publier facilement vos offres sur plusieurs plateformes</strong> : La
+            bonne alternance, 1jeune1solution, Parcoursup, l'Onisep, et bien d'autres.
+          </Text>
+          <Text>
+            <strong>Chaque semaine</strong>, nous organisons des webinaires spécialement conçus pour les recruteurs afin de vous présenter toutes les fonctionnalités de notre
+            plateforme.
+          </Text>
+          <Text>
+            <strong>Profitez-en pour poser vos questions en direct !</strong>
           </Text>
           <Box mt="7">
             <Link
-              href="https://calendly.com/claire-arnaud-beta-gouv/la-bonne-alternance"
-              aria-label="Prendre rendez-vous - nouvelle fenêtre"
-              title="Je participe à l'étude"
+              href="https://app.livestorm.co/la-bonne-alternance/premiers-pas-sur-la-bonne-alternance-maximisez-votre-experience"
+              aria-label="M'inscrire au webinaire - nouvelle fenêtre"
+              title="M'inscrire au webinaire"
               color="#000091"
               border="1px solid #000091"
               padding="10px 24px"
               isExternal
             >
-              Je participe à l'étude <ExternalLinkIcon mx="2px" />
+              M'inscrire au webinaire <ExternalLinkIcon mx="2px" />
             </Link>
           </Box>
           <Box mt="3">&nbsp;</Box>

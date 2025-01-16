@@ -14,6 +14,7 @@ const AlgoHome = dynamic(() => import("@/components/HomeComponents/AlgoHome"))
 const PromoRessources = dynamic(() => import("@/components/Ressources/promoRessources"))
 const HowTo = dynamic(() => import("@/components/HowTo/HowTo"))
 const Footer = dynamic(() => import("@/components/footer"))
+const AmeliorerLBA = dynamic(() => import("@/components/HomeComponents/AmeliorerLBA"))
 
 const blockCssProperties = {
   position: "relative",
@@ -55,10 +56,9 @@ const Home = () => {
           <PromoRessources target="candidat" />
         </Box>
 
-        {/* @ts-expect-error: TODO 
-        <Box {...blockCssProperties}>
+        <Box sx={blockCssProperties}>
           <AmeliorerLBA />
-        </Box>*/}
+        </Box>
       </Box>
 
       <Footer />
