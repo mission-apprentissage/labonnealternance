@@ -1,4 +1,4 @@
-import omit from "lodash/omit"
+import { omit } from "lodash-es"
 import { ObjectId } from "mongodb"
 import { removeAccents } from "shared"
 import { RECRUITER_STATUS } from "shared/constants"

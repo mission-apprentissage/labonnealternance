@@ -1,7 +1,14 @@
-const withBundleAnalyzer = require("@next/bundle-analyzer")({
+// @ts-check
+import path from "path"
+import { fileURLToPath } from "url"
+
+import createWithBundleAnalyzer from "@next/bundle-analyzer"
+import { withSentryConfig } from "@sentry/nextjs"
+import { Config } from "next-recompose-plugins"
+
+const withBundleAnalyzer = createWithBundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
 })
-const { withSentryConfig } = require("@sentry/nextjs")
 
 /**
  * supprime les espacements inutiles pour remettre la séquence sur une seule ligne
@@ -54,7 +61,6 @@ const contentSecurityPolicy = `
   block-all-mixed-content;
   upgrade-insecure-requests;
 `
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // reactStrictMode: true,
@@ -64,20 +70,60 @@ const nextConfig = {
     defaultLocale: "fr",
   },
   productionBrowserSourceMaps: true,
+  bundlePagesRouterDependencies: true,
+  serverExternalPackages: ["react-pdf"],
   poweredByHeader: false,
-  swcMinify: true,
   experimental: {
     typedRoutes: true,
+    fallbackNodePolyfills: false,
   },
   output: "standalone",
   eslint: {
     dirs: ["."],
   },
-  sentry: {
-    disableServerWebpackPlugin: true,
-    disableClientWebpackPlugin: true,
-    hideSourceMaps: false,
-    widenClientFileUpload: true,
+  images: {
+    localPatterns: [
+      {
+        pathname: "/images/**",
+        search: "",
+      },
+    ],
+  },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      // To optmize homepage loading, would be deleted when switching to App router
+      config.optimization.splitChunks.cacheGroups.priorityChunks = {
+        name: "high-priority",
+        test: (module) => {
+          if (
+            [
+              "./components/StartForm/StartForm.tsx",
+              "./components/SearchForm/SearchForm.tsx",
+              "./components/SearchForTrainingsAndJobs/components/SearchFormResponsive.tsx",
+              "./components/WidgetHeader/WidgetHeaderHomePage.tsx",
+              "./components/SearchForTrainingsAndJobs/components/SearchFormResponsiveHomePage.tsx",
+            ].includes(module?.resourceResolveData?.relativePath)
+          ) {
+            return true
+          }
+          return false
+        },
+        priority: 35,
+        chunks: "all",
+        minChunks: 1,
+        reuseExistingChunk: true,
+      }
+    }
+    // Bson is using top-level await, which is not supported by default in Next.js in client side
+    // Probably related to https://github.com/vercel/next.js/issues/54282
+    config.resolve.alias.bson = path.join(path.dirname(fileURLToPath(import.meta.resolve("bson"))), "bson.cjs")
+
+    config.resolve.extensionAlias = {
+      ".js": [".ts", ".tsx", ".js", ".jsx"],
+      ".mjs": [".mts", ".mjs"],
+      ".cjs": [".cts", ".cjs"],
+    }
+    return config
   },
   async headers() {
     return [
@@ -112,7 +158,7 @@ const nextConfig = {
   },
 }
 
-const withSentry = withSentryConfig(nextConfig, {
+const sentryConfig = {
   // For all available options, see:
   // https://github.com/getsentry/sentry-webpack-plugin#options
 
@@ -145,16 +191,11 @@ const withSentry = withSentryConfig(nextConfig, {
 
   // Automatically tree-shake Sentry logger statements to reduce bundle size
   disableLogger: true,
+}
 
-  // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
-  // See the following for more information:
-  // https://docs.sentry.io/product/crons/
-  // https://vercel.com/docs/cron-jobs
-  // automaticVercelMonitors: true,
+const NextJConfig = new Config(nextConfig)
+  .applyPlugin((phase, args, config) => withSentryConfig(config, sentryConfig))
+  .applyPlugin((phase, args, config) => withBundleAnalyzer(config))
+  .build()
 
-  experimental: {
-    instrumentationHook: true,
-  },
-})
-
-module.exports = withBundleAnalyzer(withSentry)
+export default NextJConfig

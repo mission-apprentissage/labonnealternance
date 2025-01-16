@@ -1,4 +1,4 @@
-import omit from "lodash/omit"
+import { omit } from "lodash-es"
 import nock from "nock"
 import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants"
 import { z } from "shared/helpers/zodWithOpenApi"
