@@ -2,6 +2,8 @@ import { Box, Container, Image } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import React, { useEffect } from "react"
 
+import AmeliorerLBA from "@/components/HomeComponents/AmeliorerLBA"
+
 import Footer from "../components/footer"
 import AlgoHome from "../components/HomeComponents/AlgoHome"
 import HowTo from "../components/HowTo"
@@ -73,11 +75,10 @@ const Home = () => {
         <Box {...blockCssProperties} pb={12}>
           <PromoRessources target="candidat" />
         </Box>
-
-        {/* @ts-expect-error: TODO 
+        {/* @ts-expect-error: TODO */}
         <Box {...blockCssProperties}>
           <AmeliorerLBA />
-        </Box>*/}
+        </Box>
       </Box>
 
       <Footer />

@@ -14,20 +14,6 @@ import * as eligibleTrainingsForAppointmentService from "../../services/eligible
 import mailer, { sanitizeForEmail } from "../../services/mailer.service"
 import { Server } from "../server"
 
-const etablissementProjection = {
-  optout_refusal_date: 1,
-  raison_sociale: 1,
-  formateur_siret: 1,
-  formateur_address: 1,
-  formateur_zip_code: 1,
-  formateur_city: 1,
-  premium_refusal_date: 1,
-  premium_activation_date: 1,
-  gestionnaire_siret: 1,
-  premium_affelnet_refusal_date: 1,
-  premium_affelnet_activation_date: 1,
-}
-
 /**
  * @description Etablissement server.
  */
@@ -42,10 +28,27 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/etablissements/:id"])],
     },
     async (req, res) => {
-      const etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id.toString()) }, { projection: etablissementProjection })
+      const etablissement = await getDbCollection("etablissements").findOne(
+        { _id: new ObjectId(req.params.id.toString()) },
+        {
+          projection: {
+            optout_refusal_date: 1,
+            raison_sociale: 1,
+            formateur_siret: 1,
+            formateur_address: 1,
+            formateur_zip_code: 1,
+            formateur_city: 1,
+            premium_refusal_date: 1,
+            premium_activation_date: 1,
+            gestionnaire_siret: 1,
+            premium_affelnet_refusal_date: 1,
+            premium_affelnet_activation_date: 1,
+          },
+        }
+      )
 
       if (!etablissement) {
-        throw notFound()
+        throw notFound("Etablissement not found.")
       }
 
       return res.send(etablissement)
@@ -62,7 +65,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/etablissements/:id/premium/affelnet/accept"])],
     },
     async (req, res) => {
-      const etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id.toString()) })
+      let etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id.toString()) })
 
       if (!etablissement) {
         throw badRequest("Etablissement not found.")
@@ -78,23 +81,23 @@ export default (server: Server) => {
 
       await sendMailCfaPremiumStart(etablissement, "affelnet")
 
-      const [eligibleTrainingsForAppointmentsAffelnetFound, etablissementAffelnetUpdated] = await Promise.all([
-        eligibleTrainingsForAppointmentService.find({
-          etablissement_formateur_siret: etablissement.formateur_siret,
-          affelnet_visible: true,
-        }),
-        getDbCollection("etablissements").findOneAndUpdate(
-          { _id: etablissement._id },
-          {
-            $set: { premium_affelnet_activation_date: dayjs().toDate() },
-          },
-          { returnDocument: "after" }
-        ),
-      ])
+      // update establishment with premium activation date
+      etablissement = await getDbCollection("etablissements").findOneAndUpdate(
+        { _id: etablissement._id },
+        {
+          $set: { premium_affelnet_activation_date: new Date() },
+        },
+        { returnDocument: "after" }
+      )
+
+      const eligibleTrainingsForAppointmentsAffelnetFound = await eligibleTrainingsForAppointmentService.find({
+        etablissement_formateur_siret: etablissement!.formateur_siret,
+        affelnet_visible: true,
+      })
 
       // Gets all mails (formation email + formateur email), excepted "email_decisionnaire"
       let emailsAffelnet = eligibleTrainingsForAppointmentsAffelnetFound.map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
-      emailsAffelnet = [...new Set(emailsAffelnet.filter((email) => !_.isNil(email) && email !== etablissement.gestionnaire_email))]
+      emailsAffelnet = [...new Set(emailsAffelnet.filter((email) => !_.isNil(email) && email !== etablissement!.gestionnaire_email))]
 
       await Promise.all(
         emailsAffelnet.map((email) =>
@@ -114,13 +117,13 @@ export default (server: Server) => {
               },
               etablissement: {
                 email,
-                name: etablissement.raison_sociale,
-                formateur_address: etablissement.formateur_address,
-                formateur_zip_code: etablissement.formateur_zip_code,
-                formateur_city: etablissement.formateur_city,
-                siret: etablissement.formateur_siret,
-                premiumAffelnetActivatedDate: dayjs(etablissementAffelnetUpdated?.premium_affelnet_activation_date).format("DD/MM/YYYY"),
-                emailGestionnaire: etablissement.gestionnaire_email,
+                name: etablissement!.raison_sociale,
+                formateur_address: etablissement!.formateur_address,
+                formateur_zip_code: etablissement!.formateur_zip_code,
+                formateur_city: etablissement!.formateur_city,
+                siret: etablissement!.formateur_siret,
+                premiumAffelnetActivatedDate: dayjs(etablissement!.premium_affelnet_activation_date).format("DD/MM/YYYY"),
+                emailGestionnaire: etablissement!.gestionnaire_email,
               },
               user: {
                 destinataireEmail: email,
@@ -130,21 +133,14 @@ export default (server: Server) => {
         )
       )
 
-      const [resultAffelnet] = await Promise.all([
-        await getDbCollection("etablissements").findOne({ _id: req.params.id }, { projection: etablissementProjection }),
-        ...eligibleTrainingsForAppointmentsAffelnetFound.map((eligibleTrainingsForAppointment) =>
-          getDbCollection("eligible_trainings_for_appointments").updateOne(
-            { _id: eligibleTrainingsForAppointment._id, lieu_formation_email: { $nin: [null, ""] } },
-            {
-              $set: { referrers: [...new Set([...eligibleTrainingsForAppointment.referrers, referrers.AFFELNET.name])] },
-            }
-          )
-        ),
-      ])
-      if (!resultAffelnet) {
-        throw new Error(`unexpected: could not find etablissement with id=${req.params.id}`)
-      }
-      return res.send(resultAffelnet)
+      // update all eligible trainings for appointments with referrer AFFELNET
+      const eligibleTrainingsForAppointmentsIdsToUpdate = eligibleTrainingsForAppointmentsAffelnetFound.map((doc) => doc._id)
+      await getDbCollection("eligible_trainings_for_appointments").updateMany(
+        { _id: { $in: eligibleTrainingsForAppointmentsIdsToUpdate } },
+        { $push: { referrers: referrers.AFFELNET.name } }
+      )
+
+      return res.send(etablissement!)
     }
   )
 
@@ -158,7 +154,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/etablissements/:id/premium/accept"])],
     },
     async (req, res) => {
-      const etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id.toString()) })
+      let etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id.toString()) })
 
       if (!etablissement) {
         throw badRequest("Etablissement not found.")
@@ -174,26 +170,26 @@ export default (server: Server) => {
 
       await sendMailCfaPremiumStart(etablissement, "parcoursup")
 
-      const [eligibleTrainingsForAppointmentsParcoursupFound, etablissementParcoursupUpdated] = await Promise.all([
-        eligibleTrainingsForAppointmentService.find({
-          etablissement_formateur_siret: etablissement.formateur_siret,
-          parcoursup_id: {
-            $ne: null,
-          },
-          parcoursup_visible: true,
-        }),
-        getDbCollection("etablissements").findOneAndUpdate(
-          { _id: etablissement._id },
-          {
-            $set: { premium_activation_date: dayjs().toDate() },
-          },
-          { returnDocument: "after" }
-        ),
-      ])
+      // update establishment with premium activation date
+      etablissement = await getDbCollection("etablissements").findOneAndUpdate(
+        { _id: etablissement._id },
+        {
+          $set: { premium_activation_date: new Date() },
+        },
+        { returnDocument: "after" }
+      )
+
+      const eligibleTrainingsForAppointmentsParcoursupFound = await eligibleTrainingsForAppointmentService.find({
+        etablissement_formateur_siret: etablissement!.formateur_siret,
+        parcoursup_id: {
+          $ne: null,
+        },
+        parcoursup_visible: true,
+      })
 
       // Gets all mails (formation email + formateur email), excepted "email_decisionnaire"
       let emailsParcoursup = eligibleTrainingsForAppointmentsParcoursupFound.map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
-      emailsParcoursup = [...new Set(emailsParcoursup.filter((email) => !_.isNil(email) && email !== etablissement.gestionnaire_email))]
+      emailsParcoursup = [...new Set(emailsParcoursup.filter((email) => !_.isNil(email) && email !== etablissement!.gestionnaire_email))]
 
       await Promise.all(
         emailsParcoursup.map((email) =>
@@ -213,14 +209,14 @@ export default (server: Server) => {
               },
               etablissement: {
                 email,
-                name: etablissement.raison_sociale,
-                formateur_address: etablissement.formateur_address,
-                formateur_zip_code: etablissement.formateur_zip_code,
-                formateur_city: etablissement.formateur_city,
-                siret: etablissement.formateur_siret,
-                premiumActivatedDate: dayjs(etablissementParcoursupUpdated?.premium_activation_date).format("DD/MM/YYYY"),
-                premiumAffelnetActivatedDate: dayjs(etablissementParcoursupUpdated?.premium_affelnet_activation_date).format("DD/MM/YYYY"),
-                emailGestionnaire: etablissement.gestionnaire_email,
+                name: etablissement!.raison_sociale,
+                formateur_address: etablissement!.formateur_address,
+                formateur_zip_code: etablissement!.formateur_zip_code,
+                formateur_city: etablissement!.formateur_city,
+                siret: etablissement!.formateur_siret,
+                premiumActivatedDate: dayjs(etablissement!.premium_activation_date).format("DD/MM/YYYY"),
+                premiumAffelnetActivatedDate: dayjs(etablissement!.premium_affelnet_activation_date).format("DD/MM/YYYY"),
+                emailGestionnaire: etablissement!.gestionnaire_email,
               },
               user: {
                 destinataireEmail: email,
@@ -230,21 +226,14 @@ export default (server: Server) => {
         )
       )
 
-      const [result] = await Promise.all([
-        await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id.toString()) }),
-        ...eligibleTrainingsForAppointmentsParcoursupFound.map((eligibleTrainingsForAppointment) =>
-          eligibleTrainingsForAppointmentService.findOneAndUpdate(
-            { _id: eligibleTrainingsForAppointment._id, lieu_formation_email: { $nin: [null, ""] } },
-            {
-              $set: { referrers: [...new Set([...eligibleTrainingsForAppointment.referrers, referrers.PARCOURSUP.name])] },
-            }
-          )
-        ),
-      ])
-      if (!result) {
-        throw new Error(`unexpected: could not find etablissement with id=${req.params.id}`)
-      }
-      return res.send(result)
+      // update all eligible trainings for appointments with referrer PARCOURSUP
+      const eligibleTrainingsForAppointmentsIdsToUpdate = eligibleTrainingsForAppointmentsParcoursupFound.map((doc) => doc._id)
+      await getDbCollection("eligible_trainings_for_appointments").updateMany(
+        { _id: { $in: eligibleTrainingsForAppointmentsIdsToUpdate } },
+        { $push: { referrers: referrers.PARCOURSUP.name } }
+      )
+
+      return res.send(etablissement!)
     }
   )
 
@@ -258,7 +247,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/etablissements/:id/premium/affelnet/refuse"])],
     },
     async (req, res) => {
-      const etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id) })
+      let etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id) })
 
       if (!etablissement) {
         throw badRequest("Etablissement not found.")
@@ -299,18 +288,16 @@ export default (server: Server) => {
         },
       })
 
-      await await getDbCollection("etablissements").findOneAndUpdate(
+      // update establishment with premium refusal date
+      etablissement = await getDbCollection("etablissements").findOneAndUpdate(
         { _id: etablissement._id },
         {
-          projection: { premium_affelnet_refusal_date: dayjs().toDate() },
-        }
+          $set: { premium_affelnet_refusal_date: new Date() },
+        },
+        { returnDocument: "after" }
       )
 
-      const etablissementAffelnetUpdated = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id) }, { projection: etablissementProjection })
-      if (!etablissementAffelnetUpdated) {
-        throw new Error(`unexpected: could not find etablissement with id=${req.params.id}`)
-      }
-      return res.send(etablissementAffelnetUpdated)
+      return res.send(etablissement!)
     }
   )
 
@@ -324,7 +311,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/etablissements/:id/premium/refuse"])],
     },
     async (req, res) => {
-      const etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id) })
+      let etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id) })
 
       if (!etablissement) {
         throw badRequest("Etablissement not found.")
@@ -365,21 +352,16 @@ export default (server: Server) => {
         },
       })
 
-      await getDbCollection("etablissements").findOneAndUpdate(
+      // update establishment with premium refusal date
+      etablissement = await getDbCollection("etablissements").findOneAndUpdate(
         { _id: etablissement._id },
         {
-          $set: { premium_refusal_date: dayjs().toDate() },
-        }
+          $set: { premium_refusal_date: new Date() },
+        },
+        { returnDocument: "after" }
       )
 
-      const etablissementParcoursupUpdated = await getDbCollection("etablissements").findOne(
-        { _id: new ObjectId(req.params.id.toString()) },
-        { projection: etablissementProjection }
-      )
-      if (!etablissementParcoursupUpdated) {
-        throw new Error(`unexpected: could not find etablissement with id=${req.params.id}`)
-      }
-      return res.send(etablissementParcoursupUpdated)
+      return res.send(etablissement!)
     }
   )
 
@@ -393,13 +375,10 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/etablissements/:id/opt-out/unsubscribe"])],
     },
     async (req, res) => {
-      let etablissement = await getDbCollection("etablissements").findOne(
-        { _id: new ObjectId(req.params.id.toString()) },
-        { projection: { ...etablissementProjection, gestionnaire_email: 1, optout_activation_date: 1, optout_refusal_date: 1 } }
-      )
+      let etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id.toString()) })
 
-      if (!etablissement || etablissement.optout_refusal_date) {
-        throw notFound()
+      if (!etablissement) {
+        throw notFound("Etablissement not found.")
       }
 
       if ("opt_out_question" in req.body) {
@@ -448,19 +427,21 @@ export default (server: Server) => {
         )
       }
 
-      await getDbCollection("etablissements").findOneAndUpdate(
+      // update establishment with optout refusal date
+      etablissement = await getDbCollection("etablissements").findOneAndUpdate(
         { _id: new ObjectId(req.params.id.toString()) },
         {
-          $set: { optout_refusal_date: dayjs().toDate() },
-        }
+          $set: { optout_refusal_date: new Date() },
+        },
+        { returnDocument: "after" }
       )
 
-      if (!etablissement.gestionnaire_email) {
+      if (!etablissement!.gestionnaire_email) {
         throw badRequest("Gestionnaire email not found")
       }
 
       await mailer.sendEmail({
-        to: etablissement.gestionnaire_email,
+        to: etablissement!.gestionnaire_email,
         subject: `La prise de RDV ne sera pas activée pour votre CFA sur La bonne alternance`,
         template: getStaticFilePath("./templates/mail-cfa-optout-unsubscription.mjml.ejs"),
         data: {
@@ -469,21 +450,16 @@ export default (server: Server) => {
             logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
           },
           etablissement: {
-            name: etablissement.raison_sociale,
-            formateur_address: etablissement.formateur_address,
-            formateur_zip_code: etablissement.formateur_zip_code,
-            formateur_city: etablissement.formateur_city,
-            siret: etablissement.formateur_siret,
+            name: etablissement!.raison_sociale,
+            formateur_address: etablissement!.formateur_address,
+            formateur_zip_code: etablissement!.formateur_zip_code,
+            formateur_city: etablissement!.formateur_city,
+            siret: etablissement!.formateur_siret,
           },
         },
       })
 
-      etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id) }, { projection: etablissementProjection })
-      if (!etablissement) {
-        throw new Error(`unexpected: could not find appointment with id=${req.params.id}`)
-      }
-
-      return res.send(etablissement)
+      return res.send(etablissement!)
     }
   )
 }

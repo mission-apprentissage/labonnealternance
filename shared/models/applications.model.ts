@@ -1,6 +1,7 @@
 import { ObjectId } from "bson"
 import { Jsonify } from "type-fest"
 
+import { RefusalReasons } from "../constants/application"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, allLbaItemType, allLbaItemTypeOLD } from "../constants/lbaitem"
 import { removeUrlsFromText } from "../helpers/common"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
@@ -47,6 +48,7 @@ export const ZApplication = z
     job_searched_by_user: z.string().nullish().describe("Métier recherché par le candidat"),
     company_recruitment_intention: z.string().nullish().describe("L'intention de la société vis à vis du candidat"),
     company_feedback: z.string().nullish().describe("L'avis donné par la société"),
+    company_feedback_reasons: z.array(extensions.buildEnum(RefusalReasons)).nullish(),
     company_feedback_date: z.date().nullish().describe("Date d'intention/avis donnée"),
     company_siret: extensions.siret.describe("Siret de l'entreprise"),
     company_email: z.string().describe("Email de l'entreprise"),
@@ -216,20 +218,15 @@ export type IApplicationApiPublicJSON = Jsonify<z.input<typeof ZApplicationApiPu
 export default {
   zod: ZApplication,
   indexes: [
-    [{ applicant_email: 1 }, {}],
-    [{ applicant_first_name: 1 }, {}],
-    [{ applicant_last_name: 1 }, {}],
-    [{ applicant_phone: 1 }, {}],
-    [{ company_recruitment_intention: 1 }, {}],
-    [{ company_siret: 1 }, {}],
-    [{ company_email: 1 }, {}],
-    [{ company_name: 1 }, {}],
-    [{ company_naf: 1 }, {}],
-    [{ job_origin: 1 }, {}],
     [{ job_id: 1 }, {}],
-    [{ caller: 1 }, {}],
+    [{ company_siret: 1 }, {}],
+    [{ applicant_email: 1 }, {}],
     [{ created_at: 1 }, {}],
+    [{ company_email: 1 }, {}],
+    [{ job_origin: 1 }, {}],
+    [{ caller: 1 }, {}],
     [{ scan_status: 1 }, {}],
+    [{ applicant_id: 1, to_applicant_message_id: 1 }, {}],
     [{ scan_status: 1, to_applicant_message_id: 1 }, {}],
   ],
   collectionName,

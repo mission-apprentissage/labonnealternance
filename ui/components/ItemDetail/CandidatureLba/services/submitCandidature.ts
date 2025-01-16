@@ -54,7 +54,7 @@ export default async function submitCandidature({
   }
 
   try {
-    await apiPost("/_private/application", { body: payload, headers: { authorization: `Bearer ${LbaJob.token}` } }, {}, "V2")
+    await apiPost("/v2/_private/application", { body: payload, headers: { authorization: `Bearer ${LbaJob.token}` } }, {})
     sessionStorageSet("application-form-values", payload)
     localStorageSet(`application-${LbaJob.ideaType}-${getItemId(LbaJob)}`, Date.now().toString())
     setSendingState("ok_sent")

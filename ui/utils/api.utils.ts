@@ -1,4 +1,4 @@
-import { IApiVersion, IDeleteRoutes, IGetRoutes, IPatchRoutes, IPostRoutes, IPutRoutes, IRequest, IRequestFetchOptions, IResponse } from "shared"
+import { IDeleteRoutes, IGetRoutes, IPatchRoutes, IPostRoutes, IPutRoutes, IRequest, IRequestFetchOptions, IResponse } from "shared"
 import { PathParam, QueryString, WithQueryStringAndPathParam, generateUri } from "shared/helpers/generateUri"
 import { IResErrorJson, IRouteSchema, IRouteSchemaWrite } from "shared/routes/common.routes"
 import type { EmptyObject } from "type-fest"
@@ -79,10 +79,10 @@ async function getHeaders(options: IRequestOptions) {
 
 const removeAtEnd = (url: string, removed: string): string => (url.endsWith(removed) ? url.slice(0, -removed.length) : url)
 
-export function generateUrl(path: string, options: WithQueryStringAndPathParam = {}, apiVersion: IApiVersion): string {
+export function generateUrl(path: string, options: WithQueryStringAndPathParam = {}): string {
   const params = "params" in options ? options.params : {}
   const querystring = "querystring" in options ? options.querystring : {}
-  const baseUrl = apiVersion === "V1" ? publicConfig.apiEndpoint : publicConfig.apiEndpointV2
+  const baseUrl = publicConfig.apiEndpoint
   return removeAtEnd(baseUrl, "/") + generateUri(path, { params, querystring })
 }
 
@@ -151,11 +151,10 @@ export class ApiError extends Error {
 export async function apiPost<P extends keyof IPostRoutes, S extends IPostRoutes[P] = IPostRoutes[P]>(
   path: P,
   options: IRequest<S>,
-  fetchOptions: IRequestFetchOptions = {},
-  apiVersion: IApiVersion = "V1"
+  fetchOptions: IRequestFetchOptions = {}
 ): Promise<IResponse<S>> {
   const { requestInit, headers } = await optionsToFetchParams("POST", options, fetchOptions)
-  const res = await fetch(generateUrl(path, options, apiVersion), requestInit)
+  const res = await fetch(generateUrl(path, options), requestInit)
   if (!res.ok) {
     throw await ApiError.build(path, headers, options, res)
   }
@@ -165,11 +164,10 @@ export async function apiPost<P extends keyof IPostRoutes, S extends IPostRoutes
 export async function apiGet<P extends keyof IGetRoutes, S extends IGetRoutes[P] = IGetRoutes[P]>(
   path: P,
   options: IRequest<S>,
-  fetchOptions: IRequestFetchOptions = {},
-  apiVersion: IApiVersion = "V1"
+  fetchOptions: IRequestFetchOptions = {}
 ): Promise<IResponse<S>> {
   const { requestInit, headers } = await optionsToFetchParams("GET", options, fetchOptions)
-  const res = await fetch(generateUrl(path, options, apiVersion), requestInit)
+  const res = await fetch(generateUrl(path, options), requestInit)
   if (!res.ok) {
     throw await ApiError.build(path, headers, options, res)
   }
@@ -179,11 +177,10 @@ export async function apiGet<P extends keyof IGetRoutes, S extends IGetRoutes[P]
 export async function apiPut<P extends keyof IPutRoutes, S extends IPutRoutes[P] = IPutRoutes[P]>(
   path: P,
   options: IRequest<S>,
-  fetchOptions: IRequestFetchOptions = {},
-  apiVersion: IApiVersion = "V1"
+  fetchOptions: IRequestFetchOptions = {}
 ): Promise<IResponse<S>> {
   const { requestInit, headers } = await optionsToFetchParams("PUT", options, fetchOptions)
-  const res = await fetch(generateUrl(path, options, apiVersion), requestInit)
+  const res = await fetch(generateUrl(path, options), requestInit)
   if (!res.ok) {
     throw await ApiError.build(path, headers, options, res)
   }
@@ -193,11 +190,10 @@ export async function apiPut<P extends keyof IPutRoutes, S extends IPutRoutes[P]
 export async function apiPatch<P extends keyof IPatchRoutes, S extends IPatchRoutes[P] = IPatchRoutes[P]>(
   path: P,
   options: IRequest<S>,
-  fetchOptions: IRequestFetchOptions = {},
-  apiVersion: IApiVersion = "V1"
+  fetchOptions: IRequestFetchOptions = {}
 ): Promise<IResponse<S>> {
   const { requestInit, headers } = await optionsToFetchParams("PATCH", options, fetchOptions)
-  const res = await fetch(generateUrl(path, options, apiVersion), requestInit)
+  const res = await fetch(generateUrl(path, options), requestInit)
   if (!res.ok) {
     throw await ApiError.build(path, headers, options, res)
   }
@@ -207,11 +203,10 @@ export async function apiPatch<P extends keyof IPatchRoutes, S extends IPatchRou
 export async function apiDelete<P extends keyof IDeleteRoutes, S extends IDeleteRoutes[P] = IDeleteRoutes[P]>(
   path: P,
   options: IRequest<S>,
-  fetchOptions: IRequestFetchOptions = {},
-  apiVersion: IApiVersion = "V1"
+  fetchOptions: IRequestFetchOptions = {}
 ): Promise<IResponse<S>> {
   const { requestInit, headers } = await optionsToFetchParams("DELETE", options, fetchOptions)
-  const res = await fetch(generateUrl(path, options, apiVersion), requestInit)
+  const res = await fetch(generateUrl(path, options), requestInit)
   if (!res.ok) {
     throw await ApiError.build(path, headers, options, res)
   }

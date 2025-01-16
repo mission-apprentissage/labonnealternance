@@ -16,6 +16,7 @@ import anonymizeIndividual from "./anonymization/anonymizeIndividual"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonymizeUserRecruteurs"
 import { anonymizeUsers } from "./anonymization/anonymizeUsers"
 import { processApplications } from "./applications/processApplications"
+import { processRecruiterIntentions } from "./applications/processRecruiterIntentions"
 import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
 import { recreateIndexes } from "./database/recreateIndexes"
 import { validateModels } from "./database/schemaValidation"
@@ -41,6 +42,7 @@ import { inviteEtablissementParcoursupToPremium } from "./rdv/inviteEtablissemen
 import { inviteEtablissementParcoursupToPremiumFollowUp } from "./rdv/inviteEtablissementParcoursupToPremiumFollowUp"
 import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
 import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
+import { resetInvitationDates } from "./rdv/resetInvitationDates"
 import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
 import { cancelOfferJob } from "./recruiters/cancelOfferJob"
@@ -131,6 +133,10 @@ export async function setupJobProcessor() {
             cron_string: "0 5 * * *",
             handler: syncEtablissementDates,
           },
+          "Supprime les dates d'invitation et de refus au premium (PARCOURSUP & AFFELNET) des etablissements": {
+            cron_string: "0 0 20 11 *",
+            handler: resetInvitationDates,
+          },
           "Historisation des formations éligibles à la prise de rendez-vous": {
             cron_string: "55 2 * * *",
             handler: eligibleTrainingsForAppointmentsHistoryWithCatalogue,
@@ -220,12 +226,16 @@ export async function setupJobProcessor() {
             handler: sendContactsToBrevo,
           },
           "Génération du sitemap pour les offres": {
-            cron_string: "5 22 * * *",
+            cron_string: "20 0 * * *",
             handler: generateSitemap,
           },
           "Traitement complet des jobs_partners": {
-            cron_string: "0 23 * * *",
+            cron_string: "40 3 * * *",
             handler: processJobPartners,
+          },
+          "Emission des intentions des recruteurs": {
+            cron_string: "30 20 * * *",
+            handler: processRecruiterIntentions,
           },
         },
     jobs: {

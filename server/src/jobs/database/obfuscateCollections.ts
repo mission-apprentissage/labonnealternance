@@ -32,31 +32,48 @@ async function reduceModel(model: CollectionName, limit = 20000) {
   }
 }
 
-const obfuscateApplicantsAndApplications = async () => {
-  logger.info(`obfuscating applicants`)
-  await getDbCollection("applicants").updateMany(
+const obfuscateJobsPatners = async () => {
+  logger.info(`obfuscating jobs partners`)
+  await getDbCollection("jobs_partners").updateMany(
     {},
     {
       $set: {
-        firstname: "prenom",
-        lastname: "nom",
-        phone: "0601010106",
-        email: getFakeEmail(),
+        apply_url: "https://labonnealternance-recette.apprentissage.beta.gouv.fr",
+        apply_phone: "0601010106",
+        apply_email: fakeEmail,
+        offer_description: "offer_description",
+        workplace_description: "workplace_description",
       },
     }
   )
+}
+
+const obfuscateApplicants = async () => {
+  logger.info(`obfuscating applicants`)
+  const applicants = await getDbCollection("applicants").find({}).toArray()
+  if (!applicants.length) return
+  const bulk = applicants.map((doc) => ({
+    updateOne: {
+      filter: { _id: doc._id },
+      update: { $set: { email: getFakeEmail(), firstname: "prenom", lastname: "lastname", phone: "0601010106" } },
+    },
+  }))
+  await getDbCollection("applicants").bulkWrite(bulk)
+}
+
+const obfuscateApplications = async () => {
   logger.info(`obfuscating applications`)
   await getDbCollection("applications").updateMany(
     {},
     {
       $set: {
-        applicant_email: getFakeEmail(),
+        applicant_email: fakeEmail,
         applicant_phone: "0601010106",
         applicant_last_name: "nom_famille",
         applicant_first_name: "prenom",
         applicant_attachment_name: "titre_cv.pdf",
-        applicant_message_to_company: "Cher recruteur, embauchez moi ...",
-        company_feedback: "Cher candidat ...",
+        applicant_message_to_company: "applicant_message_to_company",
+        company_feedback: "company_feedback",
         company_email: fakeEmail,
         applicant_id: new ObjectId(),
       },
@@ -306,13 +323,19 @@ export async function obfuscateCollections(): Promise<void> {
   await getDbCollection("jobs").deleteMany({})
   await getDbCollection("eligible_trainings_for_appointments_histories").deleteMany({})
   await getDbCollection("applicants_email_logs").deleteMany({})
+  await getDbCollection("recruteurslbalegacies").deleteMany({})
+
   await getDbCollection("anonymized_applicants").deleteMany({})
   await getDbCollection("anonymized_applications").deleteMany({})
   await getDbCollection("anonymized_appointments").deleteMany({})
   await getDbCollection("anonymized_recruiters").deleteMany({})
   await getDbCollection("anonymized_users").deleteMany({})
   await getDbCollection("anonymized_userswithaccounts").deleteMany({})
-  await getDbCollection("recruteurslbalegacies").deleteMany({})
+
+  await getDbCollection("raw_hellowork").deleteMany({})
+  await getDbCollection("raw_kelio").deleteMany({})
+  await getDbCollection("raw_rhalternance").deleteMany({})
+  await getDbCollection("computed_jobs_partners").deleteMany({})
 
   await reduceModel("apicalls", 5)
   await reduceModel("applicants", 50)
@@ -323,7 +346,9 @@ export async function obfuscateCollections(): Promise<void> {
   await reduceModel("users", 10)
   await reduceModel("opcos", 5000)
 
-  await obfuscateApplicantsAndApplications()
+  await obfuscateApplicants()
+  await obfuscateApplications()
+  await obfuscateJobsPatners()
   await obfuscateEmailBlackList()
   await obfuscateAppointments()
   await obfuscateLbaCompanies()

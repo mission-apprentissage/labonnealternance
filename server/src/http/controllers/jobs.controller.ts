@@ -358,9 +358,9 @@ export default (server: Server) => {
     }
   )
   server.get(
-    "/v1/jobs/min",
+    "/v1/_private/jobs/min",
     {
-      schema: zRoutes.get["/v1/jobs/min"],
+      schema: zRoutes.get["/v1/_private/jobs/min"],
       config,
     },
     async (req, res) => {
