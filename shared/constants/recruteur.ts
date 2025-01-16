@@ -118,3 +118,16 @@ export enum TRAINING_REMOTE_TYPE {
   remote = "remote",
   hybrid = "hybrid",
 }
+
+export const RECRUITER_USER_ORIGIN = {
+  sante: "Opco Santé",
+  atlas: "Opco Atlas",
+  opco2i: "Opco 2i",
+  constructys: "Opco Constructys",
+  "opcoep-CRM": "Opco EP",
+  akto: "Opco Akto",
+  "lesentreprises-sengagent": "Les entreprises s'engagent",
+  "opcoep-HUBE": "Opco EP",
+  portailalternance: "Portail de l'alternance",
+  "1J1S": "1 jeune 1 solution",
+}
