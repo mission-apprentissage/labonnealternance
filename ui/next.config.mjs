@@ -89,7 +89,31 @@ const nextConfig = {
       },
     ],
   },
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      // To optmize homepage loading, would be deleted when switching to App router
+      config.optimization.splitChunks.cacheGroups.priorityChunks = {
+        name: "high-priority",
+        test: (module) => {
+          if (
+            [
+              "./components/StartForm/StartForm.tsx",
+              "./components/SearchForm/SearchForm.tsx",
+              "./components/SearchForTrainingsAndJobs/components/SearchFormResponsive.tsx",
+              "./components/WidgetHeader/WidgetHeaderHomePage.tsx",
+              "./components/SearchForTrainingsAndJobs/components/SearchFormResponsiveHomePage.tsx",
+            ].includes(module?.resourceResolveData?.relativePath)
+          ) {
+            return true
+          }
+          return false
+        },
+        priority: 35,
+        chunks: "all",
+        minChunks: 1,
+        reuseExistingChunk: true,
+      }
+    }
     // Bson is using top-level await, which is not supported by default in Next.js in client side
     // Probably related to https://github.com/vercel/next.js/issues/54282
     config.resolve.alias.bson = path.join(path.dirname(fileURLToPath(import.meta.resolve("bson"))), "bson.cjs")
