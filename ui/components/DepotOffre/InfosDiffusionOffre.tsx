@@ -8,12 +8,12 @@ export const InfosDiffusionOffre = () => {
       <Heading fontSize="24px" mb={6}>
         Profitez d'une visibilité accrue
       </Heading>
-      <Text mb={6}>
-        <Box as="span" mr={1}>
-          <InfoCircle color="#000091" boxSize={13} />
+      <Flex alignItems="flex-start" gap={1}>
+        <Box as="span" fontSize="15px">
+          <InfoCircle color="#000091" w="20px" h="20px" />
         </Box>
-        Cela permettra à votre offre d’être visible des candidats intéressés.
-      </Text>
+        <Text mb={6}>Cela permettra à votre offre d’être visible des candidats intéressés.</Text>
+      </Flex>
       <Text>
         Une fois créée, votre offre d’emploi sera immédiatement mise en ligne sur les sites suivants,&nbsp;
         <Link
