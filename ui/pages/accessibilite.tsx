@@ -1,7 +1,7 @@
 import { Box, Container, Divider, SimpleGrid, Text } from "@chakra-ui/react"
+import dynamic from "next/dynamic"
 import { NextSeo } from "next-seo"
 import React from "react"
-import { NotionRenderer } from "react-notion-x"
 
 import Breadcrumb from "../components/breadcrumb"
 import Footer from "../components/footer"
@@ -9,6 +9,8 @@ import Navigation from "../components/navigation"
 import ScrollToTop from "../components/ScrollToTop"
 import { publicConfig } from "../config.public"
 import { fetchNotionPage } from "../services/fetchNotionPage"
+
+const NotionRenderer = dynamic(() => import("react-notion-x").then((mod) => mod.NotionRenderer), { ssr: false })
 
 export async function getStaticProps() {
   const recordMap = await fetchNotionPage("e1d22fdf90974d20af39d960d0b2901a")

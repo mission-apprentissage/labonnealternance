@@ -1,4 +1,4 @@
-import { includes, kebabCase, uniq } from "lodash"
+import { kebabCase, uniq } from "lodash-es"
 
 export const extractFromFile = (path, fs, txtDirectory, fileName) => {
   const filePath = path.join(txtDirectory, fileName)
@@ -15,7 +15,7 @@ export const getStaticMetiers = (path, fs, txtDirectory, stubbedExtractionFuncti
   const dataJobs = arrayOfJobLines.map(function (singleLine) {
     const splitted = singleLine.split("[")
     const actualName = splitted[0].trim()
-    const romes = includes(splitted[1], ",") ? uniq(splitted[1].slice(0, -1).split(",")) : [splitted[1].slice(0, -1)]
+    const romes = splitted[1].includes(",") ? uniq(splitted[1].slice(0, -1).split(",")) : [splitted[1].slice(0, -1)]
 
     return {
       name: actualName,
