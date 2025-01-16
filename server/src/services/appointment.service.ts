@@ -5,12 +5,15 @@ import { mailType } from "shared/constants/appointment"
 import { ReferrerObject } from "shared/constants/referers"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
 
 import { getDbCollection } from "../common/utils/mongodbUtils"
 
 import { createRdvaAppointmentIdPageLink } from "./appLinks.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
+import { getReferrerByKeyName } from "./referrers.service"
+import { getLBALink } from "./trainingLinks.service"
 
 const createAppointment = async (params: Omit<IAppointment, "_id" | "created_at">) => {
   const appointment: IAppointment = { ...params, _id: new ObjectId(), created_at: new Date() }
@@ -28,7 +31,12 @@ const findOneAndUpdate = (conditions: Filter<IAppointment>, values) => getDbColl
 
 export { createAppointment, find, findById, findOne, findOneAndUpdate }
 
-const getMailData = (candidate: IUser, appointment: IAppointment, eligibleTrainingsForAppointment: IEligibleTrainingsForAppointment, referrerObj: ReferrerObject) => {
+const getMailData = async (candidate: IUser, appointment: IAppointment, eligibleTrainingsForAppointment: IEligibleTrainingsForAppointment, referrerObj: ReferrerObject) => {
+  const lbaLink = await getLBALink({
+    id: "0",
+    cle_ministere_educatif: appointment.cle_ministere_educatif,
+    utm_data: { utm_source: "lba-brevo-transactionnel", utm_medium: "email", utm_campaign: "lba_candidat-rdva-accuse-envoi_promo-emplois" },
+  })
   const mailData = {
     appointmentId: appointment._id,
     user: {
@@ -47,16 +55,20 @@ const getMailData = (candidate: IUser, appointment: IAppointment, eligibleTraini
     },
     formation: {
       intitule: eligibleTrainingsForAppointment.training_intitule_long,
+      searchLink: lbaLink,
     },
     appointment: {
       reasons: appointment.applicant_reasons,
       referrerLink: referrerObj.url,
       appointment_origin: sanitizeForEmail(referrerObj.full_name),
+      created_at: appointment.created_at,
     },
     images: {
       logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+      logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
       logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
       peopleLaptop: `${config.publicUrl}/assets/people-laptop.webp?raw=true`,
+      idee: `${config.publicUrl}/images/emails/icone_idee.png?raw=true`,
     },
   }
   return mailData
@@ -73,7 +85,7 @@ export const sendCandidateAppointmentEmail = async (
     to: candidate.email,
     subject: `${subjectPrefix ?? ""}Votre demande de RDV auprès de ${eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale}`,
     template: getStaticFilePath("./templates/mail-candidat-confirmation-rdv.mjml.ejs"),
-    data: getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj),
+    data: await getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj),
   })
   await findOneAndUpdate(
     { _id: appointment._id },
@@ -107,7 +119,7 @@ export const sendFormateurAppointmentEmail = async (
     subject: `${subjectPrefix ?? ""} ${referrerObj.full_name} - un candidat a un message pour vous`,
     template: getStaticFilePath("./templates/mail-cfa-demande-de-contact.mjml.ejs"),
     data: {
-      ...getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj),
+      ...(await getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj)),
       link: createRdvaAppointmentIdPageLink(appointment.cfa_recipient_email, etablissement.formateur_siret, etablissement._id.toString(), appointment._id.toString()),
     },
   })
@@ -198,11 +210,57 @@ export const isHardbounceEventFromAppointmentApplicant = async (payload) => {
   }
   return false
 }
+
+export const sendCandidateAppointmentHardbounceEmail = async (appointment: IAppointment) => {
+  const { cle_ministere_educatif, applicant_id } = appointment
+  const training = await getDbCollection("eligible_trainings_for_appointments").findOne({ cle_ministere_educatif })
+
+  if (!training) {
+    sentryCaptureException(new Error("Elligible training not found while processing appointment hardbounce"), { extra: { cle_ministere_educatif, applicant_id } })
+    return
+  }
+
+  const formation = await getDbCollection("formationcatalogues").findOne({ cle_ministere_educatif })
+  if (!formation) {
+    sentryCaptureException(new Error("Catalogue formation not found while processing appointment hardbounce"), { extra: { cle_ministere_educatif, applicant_id } })
+    return
+  }
+
+  const user = await getDbCollection("users").findOne({ _id: applicant_id })
+  if (!user) {
+    sentryCaptureException(new Error("Applicant not found while processing appointment hardbounce"), { extra: { cle_ministere_educatif, applicant_id } })
+    return
+  }
+
+  const email = await mailer.sendEmail({
+    to: user.email,
+    subject: `Le centre de formation ${training?.etablissement_formateur_raison_sociale} n’a pas reçu votre demande`,
+    template: getStaticFilePath("./templates/mail-cfa-notification-hardbounce-cfa.mjml.ejs"),
+    data: { phone: formation.num_tel, ...(await getMailData(user, appointment, training, getReferrerByKeyName(appointment.appointment_origin))) },
+  })
+
+  await findOneAndUpdate(
+    { _id: appointment._id },
+    {
+      $push: {
+        to_applicant_mails: {
+          campaign: mailType.CFA_HARDBOUNCE,
+          status: null,
+          message_id: email.messageId,
+          email_sent_at: dayjs().toDate(),
+        },
+      },
+    }
+  )
+}
+
 export const isHardbounceEventFromAppointmentCfa = async (payload) => {
   const messageId = payload["message-id"]
 
   const appointment = await findOne({ "to_cfa_mails.message_id": messageId })
+
   if (appointment) {
+    await sendCandidateAppointmentHardbounceEmail(appointment)
     return true
   }
   return false
