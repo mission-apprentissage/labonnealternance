@@ -246,10 +246,15 @@ program
   .action(createJobAction("pe:offre:export"))
 
 program
-  .command("francetravail:jobs")
+  .command("francetravail:jobs:get")
   .description("Récupération des offres de France Travail")
   .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("francetravail:jobs"))
+  .action(createJobAction("francetravail:jobs:get"))
+program
+  .command("francetravail:jobs:classify")
+  .description("Classification des offres de France Travail")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("francetravail:jobs:classify"))
 
 /**
  *

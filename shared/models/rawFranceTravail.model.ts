@@ -96,6 +96,12 @@ const ZFTJob = z
     formations: z.array(ZFTFormation).optional(),
     langues: z.array(z.object({}).passthrough()).optional(),
     complementExercice: z.string().optional(),
+    _metadata: z
+      .object({
+        classification: z.enum(["entreprise", "CFA", "entreprise_CFA"]).optional(),
+      })
+      .passthrough()
+      .optional(),
   })
   .passthrough()
 
