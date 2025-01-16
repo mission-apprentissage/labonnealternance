@@ -7,6 +7,7 @@ import { zRoutes } from "shared/routes"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
+import { apiReferentielCatalogueFixture } from "@/common/apis/apiReferentielCatalogue.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
@@ -21,8 +22,12 @@ describe("POST /etablissement/creation", () => {
       .persist()
       .get(new RegExp("/sirene/etablissements/diffusibles/", "g"))
       .reply(200, apiEntrepriseEtablissementFixture.dinum)
+
+    const mockCfa = nock("https://referentiel.apprentissage.beta.gouv.fr").persist().get(new RegExp("/api/v1/organismes/[0-9]+", "g")).reply(200, apiReferentielCatalogueFixture)
+
     return async () => {
       mockEntreprise.persist(false)
+      mockCfa.persist(false)
       await getDbCollection("recruiters").deleteMany()
       await getDbCollection("rolemanagements").deleteMany()
       await getDbCollection("entreprises").deleteMany()

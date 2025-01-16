@@ -196,13 +196,13 @@ export async function saveRecruiter(data: Partial<IRecruiter>) {
 }
 
 export async function createApplicationTest(data: Partial<IApplication>) {
-  const u: IApplication = {
+  const application: IApplication = {
     ...getFixture().fromSchema(ZApplication),
     applicant_attachment_name: "my-cv.pdf",
     ...data,
   }
-  await getDbCollection("applications").insertOne(u)
-  return u
+  await getDbCollection("applications").insertOne(application)
+  return application
 }
 
 export async function createEmailBlacklistTest(data: Partial<IEmailBlacklist>) {

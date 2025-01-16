@@ -93,9 +93,7 @@ describe("email blaklist events", () => {
   it("Applicant blocked should register candidature_spontanee_candidat (blocked)", async () => {
     const applicant = generateApplicantFixture({ email: blacklistedEmail })
     await getDbCollection("applicants").insertOne(applicant)
-    await getDbCollection("applications").insertOne(
-      generateApplicationFixture({ applicant_id: applicant._id, applicant_email: blacklistedEmail, to_applicant_message_id: fakeMessageId_1 })
-    )
+    await getDbCollection("applications").insertOne(generateApplicationFixture({ applicant_id: applicant._id, to_applicant_message_id: fakeMessageId_1 }))
     baseWebHookPayload.event = BrevoEventStatus.BLOCKED
     baseWebHookPayload["message-id"] = fakeMessageId_1
 
@@ -114,7 +112,7 @@ describe("email blaklist events", () => {
     baseBlockedAddress[0].reason.code = BrevoBlockedReasons.UNSUBSCRIBED_VIA_API
     const applicant = generateApplicantFixture({ email: blacklistedEmail })
     await getDbCollection("applicants").insertOne(applicant)
-    await getDbCollection("applications").insertOne(generateApplicationFixture({ applicant_email: blacklistedEmail }))
+    await getDbCollection("applications").insertOne(generateApplicationFixture({ applicant_id: applicant._id }))
 
     await saveBlacklistEmails(baseBlockedAddress)
 
@@ -142,6 +140,7 @@ describe("email blaklist events", () => {
 
     await getDbCollection("emailblacklists").deleteMany({})
     await getDbCollection("applications").deleteMany({})
+    await getDbCollection("applicants").deleteMany({})
     await getDbCollection("users").insertOne(generateUserFixture({ email: blacklistedEmail, role: EApplicantRole.CANDIDAT }))
     baseBlockedAddress[0].reason.code = BrevoBlockedReasons.UNSUBSCRIBED_VIA_MA
 
