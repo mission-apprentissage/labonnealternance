@@ -14682,13 +14682,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"match-sorter@npm:^6.0.2, match-sorter@npm:^6.3.1":
+"match-sorter@npm:^6.0.2":
   version: 6.3.4
   resolution: "match-sorter@npm:6.3.4"
   dependencies:
     "@babel/runtime": ^7.23.8
     remove-accents: 0.5.0
   checksum: 950c1600173a639e216947559a389b64258d52f33aea3a6ddb97500589888b83c976a028f731f40bc08d9d8af20de7916992fabb403f38330183a1df44c7634b
+  languageName: node
+  linkType: hard
+
+"match-sorter@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "match-sorter@npm:8.0.0"
+  dependencies:
+    "@babel/runtime": ^7.23.8
+    remove-accents: 0.5.0
+  checksum: 282aca13d45ffd93f858e8a0f558a405855c4e6cb80eef7f95f3ddf9e67d2fa492278f96f5fa7bda7be5f95cc10dfebb9e04781b9f59de1c92cf94f9c57a68bb
   languageName: node
   linkType: hard
 
@@ -19756,7 +19766,7 @@ __metadata:
     lil-http-terminator: ^1.2.3
     lodash-es: ^4.17.21
     luxon: ^3.5.0
-    match-sorter: ^6.3.1
+    match-sorter: ^8.0.0
     memoizee: ^0.4.15
     migrate-mongo: ^11.0.0
     miniget: ^4.2.3
@@ -21661,7 +21671,7 @@ __metadata:
     lodash-es: ^4.17.21
     mapbox-gl: ^2.15.0
     markdown-it: ^12.0.4
-    match-sorter: ^6.3.1
+    match-sorter: ^8.0.0
     next: latest
     next-images: 1.8.5
     next-plausible: ^3.11.1

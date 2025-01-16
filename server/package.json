@@ -76,7 +76,7 @@
     "lil-http-terminator": "^1.2.3",
     "lodash-es": "^4.17.21",
     "luxon": "^3.5.0",
-    "match-sorter": "^6.3.1",
+    "match-sorter": "^8.0.0",
     "memoizee": "^0.4.15",
     "migrate-mongo": "^11.0.0",
     "miniget": "^4.2.3",
