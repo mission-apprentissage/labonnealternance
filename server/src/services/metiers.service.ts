@@ -299,16 +299,7 @@ export const getCoupleAppellationRomeIntitule = async (searchTerm: string): Prom
     threshold: matchSorter.rankings.MATCHES,
   }).slice(0, 30)
 
-  let sortedNoMatch: { intitule: string; appellation: string }[] = []
-  if (sortedMatch.length < 15) {
-    sortedNoMatch = matchSorter(metiers, searchTerm, {
-      keys: ["appellation", "intitule"],
-      threshold: matchSorter.rankings.NO_MATCH,
-    }).slice(0, 30)
-  }
-  const sorted = [...new Set([...sortedMatch, ...sortedNoMatch])]
-
-  return { coupleAppellationRomeMetier: sorted.slice(0, 30) }
+  return { coupleAppellationRomeMetier: sortedMatch.slice(0, 30) }
 }
 
 const removeDuplicateDiplomas = (diplomas) => {
