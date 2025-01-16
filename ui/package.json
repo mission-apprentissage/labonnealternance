@@ -34,7 +34,7 @@
     "lodash-es": "^4.17.21",
     "mapbox-gl": "^2.15.0",
     "markdown-it": "^12.0.4",
-    "match-sorter": "^6.3.1",
+    "match-sorter": "^8.0.0",
     "next": "latest",
     "next-images": "1.8.5",
     "next-plausible": "^3.11.1",
