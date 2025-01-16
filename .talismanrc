@@ -187,6 +187,8 @@ fileignoreconfig:
   checksum: cfd0e48e8762b43c6431dad873727f6ac091ca6f5c7555e37a8ee3fba03184d1
 - filename: ui/common/hooks/useAuth.ts
   checksum: 7cce935653407e000b35e98bd365a003e538aed4fed432a9a404d4f2412dd2df
+- filename: ui/components/DepotOffre/InfosDiffusionOffre.tsx
+  checksum: ec65d8b4b6ece2c97527e090ea5042c3d82cce0ed9a98ccf1936f9b28f366688
 - filename: ui/components/DepotOffre/RomeDetail.tsx
   checksum: 3e8962cc324174f8934d5a9da10bfc0d233ea6b32d036d459195d32166154282
 - filename: ui/components/DepotOffre/RomeDetailWithQuery.tsx
