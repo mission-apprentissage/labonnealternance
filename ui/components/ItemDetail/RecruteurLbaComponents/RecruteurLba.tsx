@@ -1,5 +1,4 @@
 import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
-import { get } from "lodash"
 import React, { useState } from "react"
 
 import { focusWithin } from "@/theme/theme-lba-tools"
@@ -138,7 +137,7 @@ const RecruteurLba = ({ company, handleSelectItem, showTextOnly = undefined, sea
           </Flex>
 
           <Box as="h3" pt={2} fontWeight={500} fontSize="14px">
-            Secteur d'activité : {get(company, "nafs[0].label", "")}
+            Secteur d'activité : {company?.nafs[0]?.label ?? ""}
           </Box>
           <Box pt={2} fontWeight={500} fontSize="12px">
             {company.place.fullAddress}

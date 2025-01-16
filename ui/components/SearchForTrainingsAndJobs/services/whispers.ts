@@ -1,4 +1,4 @@
-import { chunk, forEach, includes, reject } from "lodash"
+import { chunk, forEach, includes, reject } from "lodash-es"
 
 import { astuces } from "../../../config/astuces"
 

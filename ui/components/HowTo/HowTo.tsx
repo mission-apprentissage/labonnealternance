@@ -1,5 +1,4 @@
 import { Box, Container, Grid, GridItem, Image, Show, Text } from "@chakra-ui/react"
-import React from "react"
 
 const HowTo = () => {
   return (
@@ -7,9 +6,9 @@ const HowTo = () => {
       <Container variant="responsiveContainer">
         <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap={{ base: "10", md: "24" }}>
           <GridItem position="relative" width={{ base: "200px", md: "auto" }} mx="auto">
-            <Image src="/images/howto1.svg" alt="" zIndex="2" position="inherit" />
+            <Image fetchPriority="low" src="/images/howto1.svg" alt="" zIndex="2" position="inherit" />
             <Show above="md">
-              <Image src="/images/howtoline1.svg" alt="" position="absolute" top="85px" left="-162px" />
+              <Image fetchPriority="low" src="/images/howtoline1.svg" alt="" position="absolute" top="85px" left="-162px" />
             </Show>
             <Box>
               <Text as="h3" fontSize="1.25rem" fontWeight="500" mb="3">
@@ -19,9 +18,9 @@ const HowTo = () => {
             </Box>
           </GridItem>
           <GridItem position="relative" width={{ base: "200px", md: "auto" }} mx="auto">
-            <Image src="/images/howto2.svg" alt="" zIndex="2" position="inherit" />
+            <Image fetchPriority="low" src="/images/howto2.svg" alt="" zIndex="2" position="inherit" />
             <Show above="md">
-              <Image src="/images/howtoline2a.svg" alt="" position="absolute" top="47px" left="-208px" />
+              <Image fetchPriority="low" src="/images/howtoline2a.svg" alt="" position="absolute" top="47px" left="-208px" />
             </Show>
             <Box>
               <Text as="h3" fontSize="1.25rem" fontWeight="500" mb="3">
@@ -31,10 +30,10 @@ const HowTo = () => {
             </Box>
           </GridItem>
           <GridItem position="relative" width={{ base: "200px", md: "auto" }} mx="auto" mb="12">
-            <Image src="/images/howto3.svg" alt="" zIndex="2" position="inherit" />
+            <Image fetchPriority="low" src="/images/howto3.svg" alt="" zIndex="2" position="inherit" />
             <Show above="md">
-              <Image src="/images/howtoline3a.svg" alt="" position="absolute" top="47px" left="-200px" />
-              <Image src="/images/howtoline3b.svg" alt="" position="absolute" top="47px" left="158px" />
+              <Image fetchPriority="low" src="/images/howtoline3a.svg" alt="" position="absolute" top="47px" left="-200px" />
+              <Image fetchPriority="low" src="/images/howtoline3b.svg" alt="" position="absolute" top="47px" left="158px" />
             </Show>
             <Box>
               <Text as="h3" fontSize="1.25rem" fontWeight="500" mb="3">

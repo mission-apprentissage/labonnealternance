@@ -1,8 +1,8 @@
 import { Box, Container, Divider, Grid, GridItem, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/react"
+import dynamic from "next/dynamic"
 import { useRouter } from "next/router"
 import { NextSeo } from "next-seo"
 import React, { useEffect, useState } from "react"
-import { NotionRenderer } from "react-notion-x"
 
 import Breadcrumb from "../components/breadcrumb"
 import Footer from "../components/footer"
@@ -10,6 +10,8 @@ import Navigation from "../components/navigation"
 import ScrollToTop from "../components/ScrollToTop"
 import { publicConfig } from "../config.public"
 import { fetchNotionPage } from "../services/fetchNotionPage"
+
+const NotionRenderer = dynamic(() => import("react-notion-x").then((mod) => mod.NotionRenderer), { ssr: false })
 
 export async function getStaticProps() {
   const [notionFAQrecruteur, notionFAQorganisme, notionFAQcandidat] = await Promise.all([
