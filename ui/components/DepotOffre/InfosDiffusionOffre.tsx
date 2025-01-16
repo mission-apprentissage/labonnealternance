@@ -1,4 +1,6 @@
-import { Box, Flex, Grid, Heading, Image, Text } from "@chakra-ui/react"
+import { Box, Flex, Grid, Heading, Image, Link, Text } from "@chakra-ui/react"
+
+import { InfoCircle } from "@/theme/components/icons"
 
 export const InfosDiffusionOffre = () => {
   return (
@@ -6,7 +8,24 @@ export const InfosDiffusionOffre = () => {
       <Heading fontSize="24px" mb={6}>
         Profitez d'une visibilité accrue
       </Heading>
-      <Text>Une fois créée, votre offre d’emploi sera immédiatement mise en ligne sur les sites suivants : </Text>
+      <Text mb={6}>
+        <Box as="span" mr={1}>
+          <InfoCircle color="#000091" boxSize={13} />
+        </Box>
+        Cela permettra à votre offre d’être visible des candidats intéressés.
+      </Text>
+      <Text>
+        Une fois créée, votre offre d’emploi sera immédiatement mise en ligne sur les sites suivants,&nbsp;
+        <Link
+          aria-label="Liste des partenaires - nouvelle fenêtre"
+          isExternal
+          textDecoration="underline"
+          href="https://mission-apprentissage.notion.site/Liste-des-partenaires-de-La-bonne-alternance-3e9aadb0170e41339bac486399ec4ac1"
+        >
+          et bien d’autres
+        </Link>
+        &nbsp;!
+      </Text>
       <Grid
         templateColumns={["repeat(2, 1fr)", "repeat(2, 1fr)", "repeat(3, 1fr)", "repeat(3, 1fr)"]}
         gap={4}
