@@ -308,9 +308,12 @@ describe("POST /v2/application", () => {
     })
 
     expect.soft(response.statusCode).toEqual(200)
-    expect
-      .soft(response.json())
-      .toEqual({ applicant_first_name: "a", applicant_last_name: "a", recruiter_email: "faux_email@faux-domaine-compagnie.com", recruiter_phone: "0300000000" })
+    expect.soft(response.json()).toEqual({
+      applicant_first_name: "applicant_firstname",
+      applicant_last_name: "applicant_lastname",
+      recruiter_email: "faux_email@faux-domaine-compagnie.com",
+      recruiter_phone: "0300000000",
+    })
     const intentionInDb = await getDbCollection("recruiter_intention_mails").findOne({ applicationId: new ObjectId("6081289803569600282e0001") })
     expect.soft(intentionInDb).not.toEqual(null)
   })
