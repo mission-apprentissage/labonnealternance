@@ -16852,9 +16852,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openai@npm:^4.77.3":
-  version: 4.77.3
-  resolution: "openai@npm:4.77.3"
+"openai@npm:^4.78.1":
+  version: 4.78.1
+  resolution: "openai@npm:4.78.1"
   dependencies:
     "@types/node": ^18.11.18
     "@types/node-fetch": ^2.6.4
@@ -16870,7 +16870,7 @@ __metadata:
       optional: true
   bin:
     openai: bin/cli
-  checksum: 9be7ec9db8b9baa5e0e8c08f49188135254448f629f6d167b3b1a0b839a1268a191658a7484431840b977c91cb7e947cae22f7ee8a3edbfe1cb5091b87ecf926
+  checksum: 3d782037bf02183b77ee9d6c062d8da74692c3931cca2435db0d1d6a86b039b63ceb5dc1d1931cf0bd5fc7c683d9a70b3a04c931ea838e7f0b8a065b4ca29905
   languageName: node
   linkType: hard
 
@@ -19899,7 +19899,7 @@ __metadata:
     nodemailer: ^6.9.5
     nodemailer-html-to-text: ^3.2.0
     oleoduc: ^0.7.0
-    openai: ^4.77.3
+    openai: ^4.78.1
     openapi-types: ^12.1.3
     pino-pretty: ^10.2.0
     pretty-ms: ^7.0.1

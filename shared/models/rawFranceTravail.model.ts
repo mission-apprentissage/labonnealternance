@@ -98,7 +98,11 @@ const ZFTJob = z
     complementExercice: z.string().optional(),
     _metadata: z
       .object({
-        classification: z.enum(["entreprise", "CFA", "entreprise_CFA"]).optional(),
+        openai: z.object({
+          type: z.enum(["entreprise", "CFA", "entreprise_CFA"]),
+          cfa: z.string().optional(),
+          human_verification: z.enum(["entreprise", "CFA", "entreprise_CFA"]).optional(),
+        }),
       })
       .passthrough()
       .optional(),

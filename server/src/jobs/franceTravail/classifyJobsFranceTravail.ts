@@ -1,10 +1,6 @@
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sendMessages } from "@/services/openai/openai.service"
 
-// ): Promise<{
-//   type: string
-//   name: string
-// }> => {
 export const checkFTOffer = async (data: any): Promise<any> => {
   const messages = [
     {
@@ -23,21 +19,24 @@ Une fois que tu as déterminé si les offres sont de type CFA, Entreprise ou Ent
 {offres: [{
   type: "CFA" | "entreprise" | "entreprise_CFA",
   id: "ID",
-  tauxConfiance:
+  cfa: "Nom du CFA" // si l'offre est de type entreprise_CFA ou CFA
   },
   ...
     ]}
+
+    ## Below some examples of the data already classified
+    ${JSON.stringify(data.examples)}
   `,
     },
     {
       role: "user",
       content: `
-Voici plusierus offres: ${JSON.stringify(data)}.
+Voici plusierus offres: ${JSON.stringify({ offres: data.offres })}.
 Une fois que tu as déterminé si les offres sont de type CFA, Entreprise ou Entreprise_CFA tu répondras au format JSON:
 {offres: [{
   type: "CFA" | "entreprise" | "entreprise_CFA",
   id: "ID",
-  tauxConfiance:
+   cfa: "Nom du CFA" // si l'offre est de type entreprise_CFA ou CFA
   },
   ...
     ]}
@@ -59,21 +58,28 @@ Une fois que tu as déterminé si les offres sont de type CFA, Entreprise ou Ent
   }
 }
 
+function mapDocument(rawFTDocuments: any) {
+  const offres = rawFTDocuments.map((doc) => ({
+    id: doc.id,
+    description: doc.description,
+    entreprise: doc.entreprise,
+    appellationlibelle: doc.appellationlibelle,
+    intitule: doc.intitule,
+    type: doc._metadata.classification_verification,
+  }))
+  return offres
+}
+
 export const classifyFranceTravailJobs = async () => {
-  const rawFTDocuments = await getDbCollection("raw_francetravail")
-    .find({ _metadata: { $exists: false } })
+  const rawFTDocumentsVerified = await getDbCollection("raw_francetravail")
+    .find({ "_metadata.openai.human_verification": { $exists: true } })
     .toArray()
-  // for (const { _id, createdAd, ...rawFtJob } of rawFTDocuments) {
-  //   const response = await checkFTOffer({ description: rawFtJob.description, entreprise: rawFtJob.entreprise, appellationlibelle: rawFtJob.appellationlibelle })
-  //   await getDbCollection("raw_francetravail").findOneAndUpdate(
-  //     { id: rawFtJob.id as string },
-  //     {
-  //       $set: {
-  //         "_metadata.classification": response.type,
-  //       },
-  //     }
-  //   )
-  // }
+
+  const examples = mapDocument(rawFTDocumentsVerified) // get
+
+  const rawFTDocuments = await getDbCollection("raw_francetravail")
+    .find({ "_metadata.openai.human_verification": { $exists: false } })
+    .toArray()
 
   // loop through all rawFTDocuments by chunks of 100
   const chunkSize = 10
@@ -84,17 +90,18 @@ export const classifyFranceTravailJobs = async () => {
       id: doc.id,
       description: doc.description,
       entreprise: doc.entreprise,
-      // appellationlibelle: doc.appellationlibelle,
+      appellationlibelle: doc.appellationlibelle,
+      intitule: doc.intitule,
     }))
-    const response = await checkFTOffer({ offres })
+    const response = await checkFTOffer({ offres, examples })
     console.log(response.offres)
     for (const rsp of response.offres) {
       await getDbCollection("raw_francetravail").findOneAndUpdate(
         { id: rsp.id as string },
         {
           $set: {
-            "_metadata.classification": rsp.type === "Entreprise_CFA" ? "entreprise_CFA" : rsp.type,
-            "_metadata.tauxConfiance": rsp.tauxConfiance,
+            "_metadata.openai.type": rsp.type === "Entreprise_CFA" ? "entreprise_CFA" : rsp.type,
+            ...(rsp.cfa ? { "_metadata.openai.cfa": rsp.cfa } : {}),
           },
         }
       )
