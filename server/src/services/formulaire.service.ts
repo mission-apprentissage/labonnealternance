@@ -773,7 +773,6 @@ const getJobOrigin = async (recruiter: IRecruiter) => {
 export async function sendDelegationMailToCFA(email: string, offre: IJob, recruiter: IRecruiter, siret_code: string) {
   const unsubscribeOF = await getDbCollection("unsubscribedofs").findOne({ establishment_siret: siret_code })
   if (unsubscribeOF) return
-  //const unsubscribeToken = createCfaUnsubscribeToken(email, siret_code)
 
   const jobOrigin = await getJobOrigin(recruiter)
 
@@ -798,7 +797,6 @@ export async function sendDelegationMailToCFA(email: string, offre: IJob, recrui
         "&utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_consulter-coord-entreprise",
       createAccountButton: `${config.publicUrl}/organisme-de-formation?utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_creer-compte`,
       policyUrl: `${config.publicUrl}/politique-de-confidentialite?utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_politique-confidentialite`,
-      //unsubscribeUrl: `${config.publicUrl}/espace-pro/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}/unsubscribe?token=${unsubscribeToken}`,
     },
   })
 }
