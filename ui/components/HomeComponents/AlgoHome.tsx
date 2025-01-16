@@ -1,4 +1,5 @@
-import { Container, Divider, Grid, GridItem, Image, ListItem, Text, UnorderedList } from "@chakra-ui/react"
+import { Container, Divider, Grid, GridItem, ListItem, Text, UnorderedList } from "@chakra-ui/react"
+import Image from "next/image"
 import React from "react"
 
 import TagCandidatureSpontanee from "../ItemDetail/TagCandidatureSpontanee"
@@ -37,8 +38,8 @@ const AlgoHome = () => {
             </ListItem>
           </UnorderedList>
         </GridItem>
-        <GridItem colSpan={4} display="flex" justifyContent="center" alignItems="center">
-          <Image src="/images/icons/algo_home.svg" alt="" mt="5" />
+        <GridItem colSpan={4} display="flex" justifyContent="center" alignItems="center" pt="5">
+          <Image src="/images/icons/algo_home.png" alt="" width={324} height={387} />
         </GridItem>
       </Grid>
     </Container>

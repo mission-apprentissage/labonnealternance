@@ -279,6 +279,7 @@ export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level, 
             $geoNear: {
               near: { type: "Point", coordinates: [geo.longitude, geo.latitude] },
               distanceField: "distance",
+              key: "workplace_geopoint",
               maxDistance: geo.radius * 1000,
               query,
             },
@@ -325,6 +326,7 @@ export const getJobsPartnersFromDBForUI = async ({ romes, geo, target_diploma_le
             $geoNear: {
               near: { type: "Point", coordinates: [geo.longitude, geo.latitude] },
               distanceField: "distance",
+              key: "workplace_geopoint",
               maxDistance: geo.radius * 1000,
               query,
             },

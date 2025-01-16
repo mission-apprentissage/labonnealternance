@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import { Formik } from "formik"
-import omit from "lodash/omit"
+import { omit } from "lodash-es"
 import { useRouter } from "next/router"
 import { useContext, useState } from "react"
 import { useQuery } from "react-query"

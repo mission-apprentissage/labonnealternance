@@ -1,9 +1,9 @@
 import { Box, Container } from "@chakra-ui/react"
 import React from "react"
 
+import Footer from "@/components/footer"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
 
-import Footer from "./Footer"
 import Header from "./Header"
 import NavigationMenu from "./NavigationMenu"
 

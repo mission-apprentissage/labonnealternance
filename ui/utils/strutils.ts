@@ -1,11 +1,9 @@
-import _ from "lodash"
-
-const isNonEmptyString = (val) => _.isString(val) && val.trim().length > 0
+const isNonEmptyString = (val) => typeof val === "string" && val.trim().length > 0
 
 const capitalizeFirstLetter = (s) => {
   let res = ""
   if (isNonEmptyString(s)) {
-    res = s.charAt(0).toUpperCase() + s.slice(1)
+    res = s.charAt(0).toUpperCase() + s.toLowerCase().slice(1)
   }
   return res
 }

@@ -42,8 +42,7 @@ const RessourcesRecruteur = () => {
           </Link>
         </ListItem>
         <ListItem mb={4}>
-          En janvier dernier, le Gouvernement a annoncé son nouveau plan d’aide aux entreprises, allant jusqu’à 6000 euros pour toutes les embauches d'alternants en 2023 et 2024.
-          Ces aides sont valables jusqu'en 2027.{" "}
+          En janvier dernier, le Gouvernement a annoncé son nouveau plan d’aide aux entreprises pour 2025.{" "}
           <Link href="https://entreprendre.service-public.fr/vosdroits/F23556" aria-label="Accéder au site des aides du gouvernement" isExternal variant="basicUnderlinedBlue">
             En savoir plus <ExternalLinkIcon mb="3px" ml="2px" />
           </Link>

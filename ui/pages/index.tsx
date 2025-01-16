@@ -1,16 +1,20 @@
-import { Box, Container, Image } from "@chakra-ui/react"
+import { Box, Container, Show } from "@chakra-ui/react"
+import dynamic from "next/dynamic"
 import { useRouter } from "next/router"
 import React, { useEffect } from "react"
 
-import Footer from "../components/footer"
-import AlgoHome from "../components/HomeComponents/AlgoHome"
-import HowTo from "../components/HowTo"
 import Navigation from "../components/navigation"
-import PromoRessources from "../components/Ressources/promoRessources"
 import ScrollToTop from "../components/ScrollToTop"
 import StartForm from "../components/StartForm/StartForm"
 import { ParameterContext } from "../context/ParameterContextProvider"
 import { initParametersFromQuery } from "../services/config"
+
+const HomeCircleImageDecoration = dynamic(() => import("@/components/HomeComponents/HomeCircleImageDecoration").then((mod) => mod.HomeCircleImageDecoration), { ssr: false })
+const AlgoHome = dynamic(() => import("@/components/HomeComponents/AlgoHome"))
+const PromoRessources = dynamic(() => import("@/components/Ressources/promoRessources"))
+const HowTo = dynamic(() => import("@/components/HowTo/HowTo"))
+const Footer = dynamic(() => import("@/components/footer"))
+const AmeliorerLBA = dynamic(() => import("@/components/HomeComponents/AmeliorerLBA"))
 
 const blockCssProperties = {
   position: "relative",
@@ -18,15 +22,6 @@ const blockCssProperties = {
   marginLeft: "auto",
   marginRight: "auto",
   maxWidth: "1310px",
-}
-
-const circleImgCssProperties = {
-  position: "absolute",
-  zIndex: 0,
-  display: {
-    base: "none",
-    lg: "block",
-  },
 }
 
 const Home = () => {
@@ -43,41 +38,27 @@ const Home = () => {
       <ScrollToTop />
       <Navigation />
       <Box as="main">
-        {/* @ts-expect-error: TODO */}
-        <Box background="beige" {...blockCssProperties}>
-          {/* @ts-expect-error: TODO */}
-          <Image src="/images/howtocircle1.svg" {...circleImgCssProperties} top="60px" left="50px" alt="" />
-          {/* @ts-expect-error: TODO */}
-          <Image src="/images/howtocircle2.svg" {...circleImgCssProperties} bottom="-28px" left="444px" alt="" />
-          {/* @ts-expect-error: TODO */}
-          <Image src="/images/howtocircle3.svg" {...circleImgCssProperties} top="182px" right="512px" alt="" />
-          {/* @ts-expect-error: TODO */}
-          <Image src="/images/howtocircle4.svg" {...circleImgCssProperties} top="12px" right="312px" alt="" />
-          {/* @ts-expect-error: TODO */}
-          <Image src="/images/howtocircle5.svg" {...circleImgCssProperties} bottom="112px" right="-12px" alt="" />
-          <Box backgroundSize="contain" backgroundRepeat="no-repeat">
-            <Container variant="responsiveContainer" pt={{ base: 3, sm: 12 }} pb={12} position="relative">
-              <Box boxShadow="0 4px 12px 2px rgb(0 0 0 / 21%)" pb={6} pt={[2, 2, 2, 6]} px={4} bg="white" backgroundClip="border-box" borderRadius="10px">
-                <StartForm />
-              </Box>
-            </Container>
-          </Box>
+        <Box background="beige" sx={blockCssProperties}>
+          <Show above="lg">
+            <HomeCircleImageDecoration />
+          </Show>
+          <Container variant="responsiveContainer" pt={{ base: 3, sm: 12 }} pb={12} position="relative">
+            <StartForm />
+          </Container>
           <HowTo />
         </Box>
-        {/* @ts-expect-error: TODO */}
-        <Box {...blockCssProperties} py={12}>
+
+        <Box sx={blockCssProperties} py={12}>
           <AlgoHome />
         </Box>
 
-        {/* @ts-expect-error: TODO */}
-        <Box {...blockCssProperties} pb={12}>
+        <Box sx={blockCssProperties} pb={12}>
           <PromoRessources target="candidat" />
         </Box>
 
-        {/* @ts-expect-error: TODO 
-        <Box {...blockCssProperties}>
+        <Box sx={blockCssProperties}>
           <AmeliorerLBA />
-        </Box>*/}
+        </Box>
       </Box>
 
       <Footer />

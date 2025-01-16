@@ -1,15 +1,14 @@
 import axios from "axios"
-import _ from "lodash"
 
 import { apiEndpoint } from "../config/config"
 import memoize from "../utils/memoize"
 import { SendPlausibleEvent } from "../utils/plausible"
-import { isNonEmptyString } from "../utils/strutils"
+import { isNonEmptyString, capitalizeFirstLetter } from "../utils/strutils"
 import { logError } from "../utils/tools"
 
 let cancelToken
 
-export const fetchRomes = memoize(async (value, errorCallbackFn = _.noop, _apiEndpoint = apiEndpoint, _axios = axios, _window = window, _logError = logError) => {
+export const fetchRomes = memoize(async (value, errorCallbackFn) => {
   let res = []
 
   //Check if there are any previous pending requests
@@ -22,33 +21,30 @@ export const fetchRomes = memoize(async (value, errorCallbackFn = _.noop, _apiEn
 
   if (!isNonEmptyString(value)) return res
 
-  const romeApi = _apiEndpoint + "/rome"
+  const romeApi = apiEndpoint + "/rome"
 
   try {
     const reqParams = { title: value }
-    const response = await _axios.get(romeApi, { params: reqParams, cancelToken: cancelToken.token })
+    const response = await axios.get(romeApi, { params: reqParams, cancelToken: cancelToken.token })
 
-    const isAxiosError = !!_.get(response, "data.error")
-    const hasNoLabelsAndRomes = !_.get(response, "data.labelsAndRomes") && !_.get(response, "data.labelsAndRomesForDiplomas")
-    const isSimulatedError = _.includes(_.get(_window, "location.href", ""), "romeError=true")
+    const isAxiosError = !!response?.data?.error
+    const hasNoLabelsAndRomes = !response?.data?.labelsAndRomes && !response?.data?.labelsAndRomesForDiplomas
 
-    const isError = isAxiosError || hasNoLabelsAndRomes || isSimulatedError
+    const isError = isAxiosError || hasNoLabelsAndRomes
 
     if (isError) {
       errorCallbackFn()
       if (isAxiosError) {
-        _logError("Rome API error", `Rome API error ${response.data.error}`)
+        logError("Rome API error", `Rome API error ${response.data.error}`)
       } else if (hasNoLabelsAndRomes) {
-        _logError("Rome API error : API call worked, but returned unexpected data")
-      } else if (isSimulatedError) {
-        _logError("Rome API error simulated with a query param :)")
+        logError("Rome API error : API call worked, but returned unexpected data")
       }
     } else {
       // transformation des textes des diplômes
       let diplomas = []
 
       if (response?.data?.labelsAndRomesForDiplomas?.length) {
-        diplomas = response.data.labelsAndRomesForDiplomas.map((diploma) => (diploma = { ...diploma, label: _.capitalize(diploma.label) }))
+        diplomas = response.data.labelsAndRomesForDiplomas.map((diploma) => (diploma = { ...diploma, label: capitalizeFirstLetter(diploma.label) }))
       }
 
       // on affiche d'abord jusqu'à 4 métiers puis jusqu'à 4 diplômes puis le reste s'il y a

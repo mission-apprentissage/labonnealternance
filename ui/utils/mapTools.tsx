@@ -1,5 +1,4 @@
 import distance from "@turf/distance"
-import { round } from "lodash"
 import * as mapboxgl from "mapbox-gl"
 import "mapbox-gl/dist/mapbox-gl.css"
 import { createRoot } from "react-dom/client"
@@ -160,28 +159,24 @@ const initializeMap = ({ mapContainer, unselectItem, selectItemOnMap, onMapHasMo
 
     if (!map.hasImage("training")) {
       map.loadImage("/images/icons/book.png", function (error, image) {
-        if (error) throw error
         map.addImage("training", image)
       })
     }
 
     if (!map.hasImage("job")) {
       map.loadImage("/images/icons/job.png", function (error, image) {
-        if (error) throw error
         map.addImage("job", image)
       })
     }
 
     if (!map.hasImage("training-large")) {
       map.loadImage("/images/icons/book_large_shadow.png", function (error, image) {
-        if (error) throw error
         map.addImage("training-large", image)
       })
     }
 
     if (!map.hasImage("job-large")) {
       map.loadImage("/images/icons/job_large_shadow.png", function (error, image) {
-        if (error) throw error
         map.addImage("job-large", image)
       })
     }
@@ -426,7 +421,7 @@ const computeMissingPositionAndDistance = async (searchCenter, jobs) => {
           job.place.longitude = addresses[0].value.coordinates[0]
           job.place.latitude = addresses[0].value.coordinates[1]
           if (searchCenter) {
-            job.place.distance = round(distance(searchCenter, [job.place.longitude, job.place.latitude]))
+            job.place.distance = Math.round(distance(searchCenter, [job.place.longitude, job.place.latitude]))
           }
         }
       }
@@ -626,8 +621,8 @@ export {
   closeMapPopups,
   computeMissingPositionAndDistance,
   coordinatesOfFrance,
-  factorPartnerJobsForMap,
   factorInternalJobsForMap,
+  factorPartnerJobsForMap,
   factorTrainingsForMap,
   filterLayers,
   flyToLocation,
@@ -635,6 +630,7 @@ export {
   getZoomLevelForDistance,
   initializeMap,
   isMapInitialized,
+  layerType,
   map,
   refreshLocationMarkers,
   resizeMap,
@@ -644,5 +640,4 @@ export {
   setSelectedTrainingMarker,
   setTrainingMarkers,
   waitForMapReadiness,
-  layerType,
 }
