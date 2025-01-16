@@ -1,9 +1,9 @@
+import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonymizeUserRecruteurs"
 import { anonymizeUsers } from "./anonymization/anonymizeUsers"
-import fixApplications from "./applications/fixApplications"
 import { processApplications } from "./applications/processApplications"
 import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
 import { obfuscateCollections } from "./database/obfuscateCollections"
@@ -153,10 +153,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Répare les date d'expiration d'offre qui seraient trop dans le futur",
   },
   {
-    fct: fixApplications,
-    description: "Répare les adresses emails comportant des caractères erronés dans la collection applications",
-  },
-  {
     fct: fixRecruiterDataValidation,
     description: "Répare les data de la collection recruiters",
   },
@@ -215,6 +211,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processJobPartners,
     description: "Chaîne complète de traitement des jobs_partners",
+  },
+  {
+    fct: processScheduledRecruiterIntentions,
+    description: "Envoi les intentations des recruteurs programmées",
   },
   {
     fct: resetInvitationDates,
