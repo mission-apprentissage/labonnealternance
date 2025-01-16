@@ -14,7 +14,7 @@ fileignoreconfig:
 - filename: server/.env.test
   checksum: e03b5dac5c70accc532a744505fb928c9b2da6b233f360fe95ad127dbc0a5d6d
 - filename: server/src/common/apis/apiReferentielCatalogue.fixture.ts
-  checksum: 6f7eaf12652d52ff82154eb01addacbf07db3912cd195860b8f95da907c1e69e
+  checksum: 845d2420a673b7fcb76c834ac58509ff5634c9910d8ed0f8304554835d6fd224
 - filename: server/src/common/utils/awsUtils.ts
   checksum: d7d550a8852127bd6838bd7c3f4aee9bba06731d932cff880ff2c1033578fdbd
 - filename: server/src/config.ts

@@ -108,8 +108,8 @@ export const apiReferentielCatalogueFixture = {
     },
   ],
   contacts: [
-    { email: "administration@ibsa-formation.com", confirmé: false, sources: ["catalogue"], date_collecte: "2025-01-16T04:30:06.597Z" },
-    { email: "delphine.pellegrinelli@ibsa-formation.com", confirmé: false, sources: ["acce"], date_collecte: "2025-01-15T05:47:52.786Z" },
+    { email: "admin@cfa.com", confirmé: false, sources: ["catalogue"], date_collecte: "2025-01-16T04:30:06.597Z" },
+    { email: "john.doe@cfa.com", confirmé: false, sources: ["acce"], date_collecte: "2025-01-15T05:47:52.786Z" },
   ],
   diplomes: [
     { type: "cfd", code: "44633506", niveau: "446", label: "BP JEPS", sources: ["catalogue"], date_collecte: "2025-01-16T04:45:46.290Z" },
