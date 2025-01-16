@@ -65,7 +65,7 @@ const getMailData = async (candidate: IUser, appointment: IAppointment, eligible
     },
     images: {
       logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-      logoRF: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+      logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
       logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
       peopleLaptop: `${config.publicUrl}/assets/people-laptop.webp?raw=true`,
       idee: `${config.publicUrl}/images/emails/icone_idee.png?raw=true`,
