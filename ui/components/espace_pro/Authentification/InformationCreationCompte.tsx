@@ -64,11 +64,6 @@ const Formulaire = ({ submitForm }) => {
                     type="tel"
                     pattern="[0-9]{10}"
                     maxLength="10"
-                    helper={
-                      type === AUTHTYPE.ENTREPRISE
-                        ? "Le numéro de téléphone sera visible sur l'offre d'emploi"
-                        : "Le numéro de téléphone sera visible sur l’offre d’emploi de vos entreprises partenaires"
-                    }
                     value={values.phone}
                   />
                   <CustomInput
@@ -82,7 +77,7 @@ const Formulaire = ({ submitForm }) => {
                     info={
                       email
                         ? "L’email que nous utilisons est fourni par votre Carif Oref, et permet de vous connecter. Vous pourrez le modifier dans votre espace personnel."
-                        : "Il s’agit de l’adresse qui vous permettra de vous connecter à votre compte. Privilégiez votre adresse professionnelle"
+                        : "Privilégiez votre adresse professionnelle"
                     }
                   />
                   {shouldSelectOpco && (
