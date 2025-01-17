@@ -269,11 +269,6 @@ export default function CreationCompte({ type, isWidget = false, origin = "lba" 
         {bandeau && <Bandeau {...bandeau} />}
         <SimpleGrid columns={[1, 1, 1, 2]} spacing={[0, 0, 0, "75px"]} mt={wid.isWidget ? 0 : { base: 4, md: 12 }}>
           <Box>
-            {wid.isWidget && (
-              <Text textTransform="uppercase" fontSize="20px" color="#666666">
-                Dépot simplifié d'offre en alternance
-              </Text>
-            )}
             <Heading>Vous recrutez des alternants ?</Heading>
             <Text fontSize="20px" textAlign="justify" mt={2} mb={4}>
               Précisez le nom ou le numéro de SIRET de votre établissement.
