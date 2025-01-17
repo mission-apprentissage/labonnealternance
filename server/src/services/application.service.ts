@@ -366,8 +366,8 @@ const buildUrlsOfDetail = (publicUrl: string, application: IApplication, utm?: {
   }
   const params = urlSearchParams.toString()
   return {
-    urlWithoutUtm: `${publicUrl}/recherche-apprentissage?${paramsWithoutUtm}`,
-    url: `${publicUrl}/recherche-apprentissage?${params}`,
+    urlWithoutUtm: `${publicUrl}/recherche?${paramsWithoutUtm}`,
+    url: `${publicUrl}/recherche?${params}`,
   }
 }
 

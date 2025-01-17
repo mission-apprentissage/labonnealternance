@@ -62,7 +62,7 @@ const StartForm = () => {
     const { job, location, radius, diploma } = values
     setFormValues({ job, location, radius, diploma })
     setShouldExecuteSearch(true)
-    router.push("/recherche-apprentissage")
+    router.push("/recherche")
   }
 
   return (

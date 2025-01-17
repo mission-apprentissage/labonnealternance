@@ -94,7 +94,7 @@ const Training = ({ training, handleSelectItem, showTextOnly = undefined, search
     }
   }
 
-  const actualLink = `/recherche-apprentissage?display=list&page=fiche&${getItemQueryParameters(training)}&${getSearchQueryParameters(formValues)}`
+  const actualLink = `/recherche?display=list&page=fiche&${getItemQueryParameters(training)}&${getSearchQueryParameters(formValues)}`
 
   const cardProperties = {
     display: "block",

@@ -218,7 +218,7 @@ export const OffresTabs = ({ recruiter, establishmentId, showStats = false }: { 
                     <MenuItem>
                       <Link
                         isExternal
-                        href={`${publicConfig.baseUrl}/recherche-apprentissage?&type=${LBA_ITEM_TYPE_OLD.MATCHA}&itemId=${row._id}`}
+                        href={`${publicConfig.baseUrl}/recherche?&type=${LBA_ITEM_TYPE_OLD.MATCHA}&itemId=${row._id}`}
                         aria-label="Lien vers l'offre - nouvelle fenêtre"
                       >
                         Voir l'offre en ligne
@@ -241,7 +241,7 @@ export const OffresTabs = ({ recruiter, establishmentId, showStats = false }: { 
                         onClick={(e) => {
                           e.preventDefault()
                           e.stopPropagation()
-                          navigator.clipboard.writeText(`${publicConfig.baseUrl}/recherche-apprentissage?&type=${LBA_ITEM_TYPE_OLD.MATCHA}&itemId=${row._id}`).then(function () {
+                          navigator.clipboard.writeText(`${publicConfig.baseUrl}/recherche?&type=${LBA_ITEM_TYPE_OLD.MATCHA}&itemId=${row._id}`).then(function () {
                             setCopied(true)
                           })
                         }}

@@ -20,7 +20,7 @@ const RechercheApprentissage = () => {
   return (
     <>
       <NextSeo title={getSeoTitle({ parameterContext, page: "Offres" })} description={getSeoDescription({ parameterContext, page: "Offres" })} />
-      <ScopeContextProvider value={{ isJob: true, isTraining: true, path: "/recherche-apprentissage" }}>
+      <ScopeContextProvider value={{ isJob: true, isTraining: true, path: "/recherche" }}>
         <SearchForTrainingsAndJobs />
       </ScopeContextProvider>
     </>

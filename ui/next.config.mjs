@@ -137,7 +137,7 @@ const nextConfig = {
         ],
       },
       {
-        source: "/:slug(recherche-apprentissage|recherche-emploi|recherche-apprentissage-formation|postuler)",
+        source: "/:slug(recherche|recherche-emploi|recherche-formation|postuler)",
         headers: [
           {
             key: "Content-Security-Policy",

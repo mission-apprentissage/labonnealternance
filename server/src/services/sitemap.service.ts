@@ -31,7 +31,7 @@ const generateSitemapXml = async () => {
       const { jobs: job, updatedAt } = document
       const { job_update_date, _id } = job
       const lastMod = job_update_date && dayjs(updatedAt).isBefore(job_update_date) ? job_update_date : updatedAt
-      const url = `${config.publicUrl}/recherche-apprentissage?type=matcha&itemId=${_id}`
+      const url = `${config.publicUrl}/recherche?type=matcha&itemId=${_id}`
       return {
         loc: url,
         lastmod: lastMod,

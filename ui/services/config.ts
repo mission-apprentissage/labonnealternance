@@ -202,7 +202,7 @@ export const initParametersFromQuery = ({ router, shouldPush = undefined, parame
   initTestingParameters()
 
   if (hasParameters && shouldPush) {
-    router.push("/recherche-apprentissage")
+    router.push("/recherche")
   }
 }
 

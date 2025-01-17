@@ -100,7 +100,7 @@ const Job = ({ job, handleSelectItem, showTextOnly = undefined, searchForTrainin
     }
   }
 
-  const actualLink = `/recherche-apprentissage?display=list&page=fiche&${getItemQueryParameters(job)}&${getSearchQueryParameters(formValues)}`
+  const actualLink = `/recherche?display=list&page=fiche&${getItemQueryParameters(job)}&${getSearchQueryParameters(formValues)}`
 
   const cardProperties = {
     display: "block",

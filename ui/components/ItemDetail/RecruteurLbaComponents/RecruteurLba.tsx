@@ -89,7 +89,7 @@ const RecruteurLba = ({ company, handleSelectItem, showTextOnly = undefined, sea
     }
   }
 
-  const actualLink = `/recherche-apprentissage?display=list&page=fiche&${getItemQueryParameters(company)}&${getSearchQueryParameters(formValues)}`
+  const actualLink = `/recherche?display=list&page=fiche&${getItemQueryParameters(company)}&${getSearchQueryParameters(formValues)}`
 
   const cardProperties = {
     display: "block",
