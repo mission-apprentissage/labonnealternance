@@ -431,11 +431,6 @@ export const FormulaireCreationOffre = ({
   return (
     <SimpleGrid columns={[1, 1, 1, 2]} spacing={["35px", "35px", "35px", "75px"]}>
       <Box>
-        {widget.isWidget && (
-          <Text textTransform="uppercase" fontSize="20px" color="#666666">
-            Dépot simplifié d'offre en alternance
-          </Text>
-        )}
         <Heading>Votre offre</Heading>
         <Box mt={4}>
           <FormikCreationOffre onRomeChange={onRomeChange} onSubmit={onSubmit} offre={offre} competencesDirty={competencesDirty} />
