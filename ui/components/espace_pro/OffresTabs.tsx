@@ -261,7 +261,7 @@ export const OffresTabs = ({ recruiter, establishmentId, showStats = false }: { 
                       <MenuItem>
                         <Link
                           isExternal
-                          href={`${publicConfig.baseUrl}/recherche-apprentissage-formation?&caller=lba_recruteur&romes=${row.rome_code}&lon=${lon}&lat=${lat}`}
+                          href={`${publicConfig.baseUrl}/recherche-formation?&caller=lba_recruteur&romes=${row.rome_code}&lon=${lon}&lat=${lat}`}
                           aria-label="Lien vers les formations - nouvelle fenêtre"
                         >
                           Voir les centres de formations <ExternalLinkIcon mx="2px" />
