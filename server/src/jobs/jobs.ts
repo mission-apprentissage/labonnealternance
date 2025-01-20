@@ -235,6 +235,10 @@ export async function setupJobProcessor() {
             cron_string: "40 3 * * *",
             handler: processJobPartners,
           },
+          "Import complet des offres France Travail": {
+            cron_string: "0 6 * * *",
+            handler: importFranceTravailJobs,
+          },
           "Emission des intentions des recruteurs": {
             cron_string: "30 20 * * *",
             handler: processRecruiterIntentions,
