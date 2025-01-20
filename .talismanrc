@@ -13,6 +13,8 @@ fileignoreconfig:
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
   checksum: e03b5dac5c70accc532a744505fb928c9b2da6b233f360fe95ad127dbc0a5d6d
+- filename: server/src/common/apis/apiReferentielCatalogue.fixture.ts
+  checksum: 845d2420a673b7fcb76c834ac58509ff5634c9910d8ed0f8304554835d6fd224
 - filename: server/src/common/utils/awsUtils.ts
   checksum: d7d550a8852127bd6838bd7c3f4aee9bba06731d932cff880ff2c1033578fdbd
 - filename: server/src/config.ts
@@ -22,7 +24,7 @@ fileignoreconfig:
 - filename: server/src/db/migrations/202405230000000-migrate-fix-missing-date-blacklist.ts
   checksum: 0c1b814245a58b8ca788fbfab9899206edbddaae795d56963f86c5aa83ea555f
 - filename: server/src/http/controllers/__snapshots__/etablissementRecruteur.controller.test.ts.snap
-  checksum: e8a35e591adb1447d1b6e796b063f435ac389e9ffe619c68185f348beae71215
+  checksum: 7bf9d206d0ed729df96134d4238d2cecc5b87ce2f8273bc32d95a7609a23afab
 - filename: server/src/http/controllers/application.controller.test.ts
   checksum: 00cac67c8e138098126ae98702e2bdc3e1092e1bbf188d9a437197e9ca94e16a
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
@@ -34,7 +36,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/user.controller.test.ts
   checksum: e01d1b9c54d1e6d0c98fd7984f32c3a93f3e9bde92887bdab320cb7af91fdd92
 - filename: server/src/http/controllers/v2/applications.controller.v2.test.ts
-  checksum: b8ad1b1358ec75a87f5815fc5a87d73fd9975b0c3cb6322b46529b4299be240b
+  checksum: 1cc47a3fd50e4e9951468bd12e1a4dff9cde76ab4aac2b1f94ee191aa508739c
 - filename: server/src/http/controllers/v2/appointment.controller.v2.test.ts
   checksum: 52a0f730bc8feed13f4f1371c16a332872bec77ca31f0732422b7ca90b322df9
 - filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts

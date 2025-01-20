@@ -25,15 +25,16 @@ const createApplicant = async (applicant: IApplicantNew) => {
   return payload
 }
 
-export const getOrCreateApplicant = async (applicant: IApplicantNew | IApplicant) => {
-  let user = await getApplicantFromDB({ email: applicant?.email.toLowerCase() })
+export const getApplicantByEmail = (email: string) => getApplicantFromDB({ email: email.toLowerCase() })
 
-  if (user) {
+export const getOrCreateApplicant = async (applicant: IApplicantNew | IApplicant) => {
+  let dbApplicantOpt = await getApplicantByEmail(applicant.email.toLowerCase())
+  if (dbApplicantOpt) {
     // update last_connection date on applicant collection (last application = last connection)
-    await updateApplicant(user._id, { last_connection: new Date() })
+    await updateApplicant(dbApplicantOpt._id, { last_connection: new Date() })
   } else {
-    user = await createApplicant(applicant)
+    dbApplicantOpt = await createApplicant(applicant)
   }
 
-  return user
+  return dbApplicantOpt
 }

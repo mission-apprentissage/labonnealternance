@@ -21,7 +21,7 @@ export enum ApplicationScanStatus {
   ERROR_APPLICANT_NOT_FOUND = "ERROR_APPLICANT_NOT_FOUND",
 }
 
-export const ZApplication = z
+const ZApplicationOld = z
   .object({
     _id: zObjectId,
     applicant_id: zObjectId,
@@ -80,12 +80,19 @@ export const ZApplication = z
   .strict()
   .openapi("Application")
 
+export const ZApplication = ZApplicationOld.omit({
+  applicant_email: true,
+  applicant_first_name: true,
+  applicant_last_name: true,
+  applicant_phone: true,
+})
+
 export type IApplication = z.output<typeof ZApplication>
 
 // KBA 20241011 to remove once V2 is LIVE and V1 support has ended
-export const ZNewApplication = ZApplication.extend({
-  message: ZApplication.shape.applicant_message_to_company.optional(),
-  applicant_file_name: ZApplication.shape.applicant_attachment_name,
+export const ZNewApplication = ZApplicationOld.extend({
+  message: ZApplicationOld.shape.applicant_message_to_company.optional(),
+  applicant_file_name: ZApplicationOld.shape.applicant_attachment_name,
   applicant_file_content: z.string().max(4215276).openapi({
     description: "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
     example: "data:application/pdf;base64,JVBERi0xLjQKJ...",
@@ -105,7 +112,7 @@ export const ZNewApplication = ZApplication.extend({
   }),
   crypted_company_email: z.string().nullish(),
   caller: zCallerParam.nullish(),
-  job_id: ZApplication.shape.job_id.optional(),
+  job_id: ZApplicationOld.shape.job_id.optional(),
   searched_for_job_label: z.string().nullish().openapi({
     description: "Le métier recherché par le candidat envoyant une candidature spontanée.",
     example: "Vente de fleurs, végétaux",
@@ -129,9 +136,9 @@ export const ZNewApplication = ZApplication.extend({
   .openapi("ApplicationUi")
 
 // KBA 20241011 to remove once V2 is LIVE and V1 support has ended
-const ZNewApplicationTransitionToV2 = ZApplication.extend({
-  message: ZApplication.shape.applicant_message_to_company.optional(),
-  applicant_file_name: ZApplication.shape.applicant_attachment_name,
+const ZNewApplicationTransitionToV2 = ZApplicationOld.extend({
+  message: ZApplicationOld.shape.applicant_message_to_company.optional(),
+  applicant_file_name: ZApplicationOld.shape.applicant_attachment_name,
   applicant_file_content: z.string().max(4_215_276).openapi({
     description: "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
     example: "data:application/pdf;base64,JVBERi0xLjQKJ...",
@@ -151,7 +158,7 @@ const ZNewApplicationTransitionToV2 = ZApplication.extend({
   }),
   crypted_company_email: z.string().nullish(),
   caller: zCallerParam.nullish(),
-  job_id: ZApplication.shape.job_id.optional(),
+  job_id: ZApplicationOld.shape.job_id.optional(),
   searched_for_job_label: z.string().nullish().openapi({
     description: "Le métier recherché par le candidat envoyant une candidature spontanée.",
     example: "Vente de fleurs, végétaux",
@@ -178,7 +185,7 @@ export type INewApplicationV1 = z.output<typeof ZNewApplicationTransitionToV2>
 
 type JobCollectionName = "recruteurslba" | "jobs_partners" | "recruiters"
 
-export const ZApplicationApiPrivate = ZApplication.pick({
+export const ZApplicationApiPrivate = ZApplicationOld.pick({
   applicant_first_name: true,
   applicant_last_name: true,
   applicant_email: true,
@@ -188,7 +195,7 @@ export const ZApplicationApiPrivate = ZApplication.pick({
   caller: true,
   application_url: true,
 }).extend({
-  applicant_message: ZApplication.shape.applicant_message_to_company.optional(),
+  applicant_message: ZApplicationOld.shape.applicant_message_to_company.optional(),
   applicant_attachment_content: z.string().max(4_215_276).describe("Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo."),
   recipient_id: z
     .string()
@@ -220,6 +227,9 @@ export type IApplicationApiPublicJSON = Jsonify<z.input<typeof ZApplicationApiPu
 export default {
   zod: ZApplication,
   indexes: [
+    [{ company_recruitment_intention: 1 }, {}],
+    [{ company_name: 1 }, {}],
+    [{ company_naf: 1 }, {}],
     [{ job_id: 1 }, {}],
     [{ company_siret: 1 }, {}],
     [{ applicant_email: 1 }, {}],
@@ -230,6 +240,7 @@ export default {
     [{ scan_status: 1 }, {}],
     [{ applicant_id: 1, to_applicant_message_id: 1 }, {}],
     [{ scan_status: 1, to_applicant_message_id: 1 }, {}],
+    [{ applicant_id: 1 }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor
