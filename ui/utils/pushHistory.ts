@@ -1,8 +1,10 @@
+import { paramCase } from "param-case"
+
 import { getCampaignParameters } from "./campaignParameters"
 import { getItemQueryParameters } from "./getItemId"
 import { getSearchQueryParameters } from "./getSearchParameters"
 
-const buildQueryParams = ({ display, page, item, searchParameters, searchTimestamp, displayMap }) => {
+const buildQueryParams = ({ display, page, item, searchParameters, searchTimestamp, displayMap, path }) => {
   const queryParams = [
     display ? `display=${display}` : "",
     page ? `page=${page}` : "",
@@ -11,6 +13,7 @@ const buildQueryParams = ({ display, page, item, searchParameters, searchTimesta
     searchTimestamp ? `s=${searchTimestamp}` : "",
     getCampaignParameters(),
     displayMap === true ? "displayMap=true" : "",
+    `path=${path ?? "/recherche"}`,
   ]
 
   return queryParams.filter(Boolean).join("&")
@@ -18,7 +21,6 @@ const buildQueryParams = ({ display, page, item, searchParameters, searchTimesta
 
 const pushHistory = ({
   router,
-  scopeContext,
   item = undefined,
   page = undefined,
   display = undefined,
@@ -26,6 +28,7 @@ const pushHistory = ({
   searchTimestamp = undefined,
   isReplace = false,
   displayMap = false,
+  path = "/recherche",
 }) => {
   const params = buildQueryParams({
     display,
@@ -34,13 +37,22 @@ const pushHistory = ({
     searchParameters,
     searchTimestamp,
     displayMap,
+    path,
   })
 
   const navigationMethod = isReplace ? router.replace : router.push
 
-  navigationMethod(`${scopeContext.path}${params ? `?${params}` : ""}`, undefined, {
-    shallow: true,
-  })
+  if (page === "fiche") {
+    const title = paramCase(item?.title)
+    const link = `/${item?.ideaType === "formation" ? "" : "emploi/"}${item?.ideaType}/${encodeURIComponent(item?.id)}/${title}`
+    navigationMethod(`${link}${params ? `?${params}` : ""}`, undefined, {
+      shallow: true,
+    })
+  } else if (page === "list") {
+    navigationMethod(`${path}${params ? `?${params}` : ""}`, undefined, {
+      shallow: true,
+    })
+  }
 }
 
 export default pushHistory
