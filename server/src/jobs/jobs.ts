@@ -24,9 +24,9 @@ import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
 import updateDomainesMetiersFile from "./domainesMetiers/updateDomainesMetiersFile"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
-import { classifyFranceTravailJobs } from "./franceTravail/ClassifyJobsFranceTravail"
+import { classifyFranceTravailJobs } from "./franceTravail/classifyJobsFranceTravail"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
-import { getFranceTravailJobs } from "./franceTravail/getJobsFranceTravail"
+import { importFranceTravailJobs } from "./franceTravail/importJobsFranceTravail"
 import { pocRomeo } from "./franceTravail/pocRomeo"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
@@ -245,8 +245,8 @@ export async function setupJobProcessor() {
       "francetravail:token-offre": {
         handler: async () => generateFranceTravailAccess(),
       },
-      "francetravail:jobs:get": {
-        handler: async () => getFranceTravailJobs(),
+      "francetravail:jobs:import": {
+        handler: async () => importFranceTravailJobs(),
       },
       "francetravail:jobs:classify": {
         handler: async () => classifyFranceTravailJobs(),

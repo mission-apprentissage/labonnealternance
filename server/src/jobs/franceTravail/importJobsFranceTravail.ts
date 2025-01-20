@@ -6,7 +6,11 @@ import { searchForFtJobs } from "@/common/apis/franceTravail/franceTravail.clien
 import { logger } from "@/common/logger"
 import { sleep } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
+
+// Documentation https://francetravail.io/produits-partages/catalogue/offres-emploi/documentation#/api-reference/operations/recupererListeOffre
 
 async function getAllFTJobs(departement: string) {
   const jobLimit = 150
@@ -24,13 +28,13 @@ async function getAllFTJobs(departement: string) {
       natureContrat: "E2,FS", // E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
       range,
       departement,
-      // publieeDepuis: 7,
+      // publieeDepuis: 7, // Il vaut mieux ne pas mettre de date de publication pour avoir le plus de résultats possible
       sort: 1, // making sure we get the most recent jobs first
     }
 
     try {
       const response = await searchForFtJobs(params, { throwOnError: true })
-      await sleep(1000)
+      await sleep(1500)
       if (!response) {
         throw new Error("No response from FranceTravail")
       }
@@ -57,6 +61,16 @@ async function getAllFTJobs(departement: string) {
       // Move to the next "page"
       start += jobLimit
     } catch (error: any) {
+      // handle 3000 limit page reach
+      if (error.response?.data?.message === "La position de début doit être inférieure ou égale à 3000.") {
+        sentryCaptureException(error)
+        await notifyToSlack({
+          subject: "Import Offres France Travail",
+          message: `Limite des 3000 offres par département dépassée! dept: ${departement} total: ${total}`,
+          error: true,
+        })
+        throw error
+      }
       if (error.response?.data?.message === "Valeur du paramètre « region » incorrecte." || error.response?.data?.message === "Valeur du paramètre « departement » incorrecte.") {
         // code region or departement not found
         break
@@ -64,11 +78,10 @@ async function getAllFTJobs(departement: string) {
       logger.error("Error while fetching jobs", error)
     }
   }
-  logger.info(departement, allJobs.length, total)
   return allJobs
 }
 
-export const getFranceTravailJobs = async () => {
+export const importFranceTravailJobs = async () => {
   const apiClient = new ApiClient({
     key: config.apiApprentissage.apiKey,
   })
@@ -80,18 +93,20 @@ export const getFranceTravailJobs = async () => {
     const jobs = await getAllFTJobs(codeDepartement)
     allJobs = [...allJobs, ...jobs]
   }
-  logger.info(allJobs.length)
+
+  await getDbCollection("raw_francetravail").updateMany(
+    { id: { $nin: allJobs.map(({ id }) => id) } as any, unpublishedAt: { $exists: false } },
+    { $set: { unpublishedAt: new Date(), updatedAt: new Date() } }
+  )
 
   for (const rawFtJob of allJobs) {
     await getDbCollection("raw_francetravail").findOneAndUpdate(
       { id: rawFtJob.id as string },
-      { $set: rawFtJob, $setOnInsert: { _id: new ObjectId(), createdAt: new Date() } },
+      {
+        $set: { ...rawFtJob, updatedAt: new Date() },
+        $setOnInsert: { _id: new ObjectId(), createdAt: new Date() },
+      },
       { upsert: true }
     )
   }
 }
-
-// TODO
-// fall safe 30 jours if we have an error
-// TOTAL RANGE - 30 jours
-// Throw 3000 jobs

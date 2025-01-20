@@ -100,7 +100,7 @@ export const classifyFranceTravailJobs = async () => {
         { id: rsp.id as string },
         {
           $set: {
-            "_metadata.openai.type": rsp.type === "Entreprise_CFA" ? "entreprise_CFA" : rsp.type,
+            "_metadata.openai.type": rsp.type.toLowerCase(),
             ...(rsp.cfa ? { "_metadata.openai.cfa": rsp.cfa } : {}),
           },
         }

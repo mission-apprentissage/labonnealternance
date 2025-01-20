@@ -51,6 +51,8 @@ const ZFTJob = z
   .object({
     _id: zObjectId,
     createdAt: z.date(),
+    updatedAt: z.date(),
+    unpublishedAt: z.date().optional(),
 
     id: z.string(),
     intitule: z.string(),
@@ -81,8 +83,8 @@ const ZFTJob = z
     alternance: z.boolean(),
     contact: ZFTContact.optional(),
     agence: z.union([z.array(z.object({}).passthrough()), z.object({}).passthrough()]).optional(),
-    nombrePostes: z.number(),
-    accessibleTH: z.boolean(),
+    nombrePostes: z.number().optional(),
+    accessibleTH: z.boolean().optional(),
     deplacementCode: z.string().optional(),
     deplacementLibelle: z.string().optional(),
     qualificationCode: z.string().optional(),
@@ -98,11 +100,13 @@ const ZFTJob = z
     complementExercice: z.string().optional(),
     _metadata: z
       .object({
-        openai: z.object({
-          type: z.enum(["entreprise", "CFA", "entreprise_CFA"]),
-          cfa: z.string().optional(),
-          human_verification: z.enum(["entreprise", "CFA", "entreprise_CFA"]).optional(),
-        }),
+        openai: z
+          .object({
+            type: z.enum(["entreprise", "cfa", "entreprise_cfa"]),
+            cfa: z.string().optional(),
+            human_verification: z.enum(["entreprise", "cfa", "entreprise_cfa"]).optional(),
+          })
+          .optional(),
       })
       .passthrough()
       .optional(),
