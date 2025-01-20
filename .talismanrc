@@ -199,12 +199,16 @@ fileignoreconfig:
   checksum: cfd0e48e8762b43c6431dad873727f6ac091ca6f5c7555e37a8ee3fba03184d1
 - filename: ui/common/hooks/useAuth.ts
   checksum: 7cce935653407e000b35e98bd365a003e538aed4fed432a9a404d4f2412dd2df
+- filename: ui/components/DepotOffre/InfosDiffusionOffre.tsx
+  checksum: 351c99c9ec80fc6765e8456738655b71153358fe6ae7fb1f3895d21351817fc5
 - filename: ui/components/DepotOffre/RomeDetail.tsx
   checksum: 3e8962cc324174f8934d5a9da10bfc0d233ea6b32d036d459195d32166154282
 - filename: ui/components/DepotOffre/RomeDetailWithQuery.tsx
   checksum: 477c08911f43c273ad8b257c3885ae98b92e6a74c8ad096c7023201762907414
 - filename: ui/components/HomeComponents/FacilitezRDVA.tsx
   checksum: cdeae2ef94431bbe8fd1bb0f1bc0c007c938c1a1d4513316cc44cb966b7f4268
+- filename: ui/components/HomeComponents/OffresGratuites.tsx
+  checksum: b3fe019fc77f7bcc6a83a4624c8e5235e3ae1429cde1599acf4c676abb178f92
 - filename: ui/components/InfoBanner/InfoBanner.tsx
   checksum: e5f8bd78ea46335fbb8784eabc01391be68922960f7d04ce9e8755484d10ce32
 - filename: ui/components/ItemDetail/DidYouKnow.tsx
@@ -258,7 +262,9 @@ fileignoreconfig:
 - filename: ui/public/images/home_pics/illu-offreformation.svg
   checksum: 7ad0f32e8c39866d9f4a76dde67f66a90c022f98e9f1a4932c9013e264c35b86
 - filename: ui/public/images/home_pics/illu-plateformesjeunes.svg
-  checksum: 9b2847599887988c02e13055aef1488349aca1808b22fa9f24aa8d98dc4468d1
+  checksum: f281c48b5b3d7d0bd92c49262174f6683686161ad9401ee7cf76cba75d54268b
+- filename: ui/public/images/home_pics/illu-votrebesoin.svg
+  checksum: ca9aa90b45043f8164d96e76e3f42906bcf597186394b1f81cf14c47814ebb33
 - filename: ui/utils/api.utils.test.ts
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
