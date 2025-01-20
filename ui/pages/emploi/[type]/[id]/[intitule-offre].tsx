@@ -12,20 +12,19 @@ import { currentSearch, setCurrentPage } from "@/utils/currentPage"
 import { closeMapPopups, flyToMarker, setSelectedMarker } from "@/utils/mapTools"
 import pushHistory from "@/utils/pushHistory"
 
-export default function DetailFormation() {
+export default function DetailEmploi() {
   const router = useRouter()
 
-  const searchParams = useSearchParams()
   const { /*extendedSearch, jobs,*/ selectedItem, setSelectedItem, setItemToScrollTo /*setJobsAndSelectedItem, setTrainingsAndSelectedItem, trainings*/ } =
     useContext(SearchResultContext)
   const { formValues } = useContext(DisplayContext)
   const { displayMap } = useContext(ParameterContext)
+  const searchParams = useSearchParams()
 
   // const intituleOffre = router.query["intitule-offre"]
   // const type = router.query.type
   // const id = router.query.id
   const path = searchParams.get("path")
-
   const unSelectItem = (doNotSaveToHistory) => {
     setCurrentPage("")
     setSelectedItem(null)
@@ -72,6 +71,20 @@ export default function DetailFormation() {
       path,
     })
   }
+
+  /*
+  TODO:
+  - mettre à jour tous les push history
+  - éviter les rechargements de requêtes lors d'un close sur détail
+  - charger les data sur accès direct
+  - gérer l'affichage de la map
+
+
+
+
+
+
+  */
 
   return (
     selectedItem && (
