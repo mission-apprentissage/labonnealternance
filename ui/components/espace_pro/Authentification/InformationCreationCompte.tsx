@@ -57,15 +57,7 @@ const Formulaire = ({ submitForm }) => {
                 <>
                   <CustomInput required={false} name="last_name" label="Nom" type="text" value={values.last_name} />
                   <CustomInput required={false} name="first_name" label="Prénom" type="text" value={values.first_name} />
-                  <CustomInput
-                    required={false}
-                    name="phone"
-                    label="Numéro de téléphone"
-                    type="tel"
-                    pattern="[0-9]{10}"
-                    maxLength="10"
-                    value={values.phone}
-                  />
+                  <CustomInput required={false} name="phone" label="Numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
                   <CustomInput
                     sx={{ textTransform: "lowercase" }}
                     required={false}
