@@ -857,7 +857,7 @@ const notifyHardbounceToApplicant = async ({ application }: { application: IAppl
   const applicant = await getApplicantFromDB({ _id: application.applicant_id })
   if (applicant) {
     await mailer.sendEmail({
-      to: applicant!.email,
+      to: applicant.email,
       subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
       template: getEmailTemplate("mail-candidat-hardbounce"),
       data: { ...sanitizeApplicationForEmail(application), ...sanitizeApplicantForEmail(applicant!), ...images },
