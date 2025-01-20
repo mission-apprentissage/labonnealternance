@@ -25,6 +25,11 @@ interface IWish {
   uai_formateur?: string | null
   uai_formateur_responsable?: string | null
   code_insee?: string | null
+  utm_data?: {
+    utm_source: string
+    utm_medium: string
+    utm_campaign: string
+  }
 }
 
 interface ILinks {
@@ -33,7 +38,7 @@ interface ILinks {
   lien_lba: string
 }
 
-const utmData = { utm_source: "lba", utm_medium: "email", utm_campaign: "promotion-emploi-jeunes-voeux" }
+const defaultUtmData = { utm_source: "lba", utm_medium: "email", utm_campaign: "promotion-emploi-jeunes-voeux" }
 
 const buildEmploiUrl = ({ baseUrl = `${config.publicUrl}/recherche-emploi`, params }: { baseUrl?: string; params: Record<string, string | string[]> }) => {
   const url = new URL(baseUrl)
@@ -148,6 +153,8 @@ const getPrdvLink = async (wish: IWish): Promise<string> => {
     return ""
   }
 
+  const utmParams = wish.utm_data ? wish.utm_data : defaultUtmData
+
   const elligibleFormation = await getDbCollection("eligible_trainings_for_appointments").findOne(
     {
       cle_ministere_educatif: wish.cle_ministere_educatif,
@@ -163,22 +170,24 @@ const getPrdvLink = async (wish: IWish): Promise<string> => {
   if (elligibleFormation) {
     return buildEmploiUrl({
       baseUrl: `${config.publicUrl}/espace-pro/form`,
-      params: { referrer: "lba", cleMinistereEducatif: wish.cle_ministere_educatif, ...utmData },
+      params: { referrer: "lba", cleMinistereEducatif: wish.cle_ministere_educatif, ...utmParams },
     })
   }
 
   return ""
 }
 
-const getLBALink = async (wish: IWish): Promise<string> => {
+export const getLBALink = async (wish: IWish): Promise<string> => {
   // Try getting formations first
   const formations = await getTrainingsFromParameters(wish)
+
+  const utmParams = wish.utm_data ? wish.utm_data : defaultUtmData
 
   // Handle single formation case
   if (formations?.length === 1) {
     const { rome_codes, lieu_formation_geo_coordonnees } = formations[0]
     const [latitude, longitude] = lieu_formation_geo_coordonnees!.split(",")
-    return buildEmploiUrl({ params: { romes: rome_codes as string[], lat: latitude, lon: longitude, radius: "60", ...utmData } })
+    return buildEmploiUrl({ params: { romes: rome_codes as string[], lat: latitude, lon: longitude, radius: "60", ...utmParams } })
   }
 
   // Extract postcode and get coordinates if available
@@ -226,13 +235,13 @@ const getLBALink = async (wish: IWish): Promise<string> => {
       lat = formation.lieu_formation_geo_coordonnees?.split(",")[0] || wLat
       lon = formation.lieu_formation_geo_coordonnees?.split(",")[1] || wLon
     }
-    return buildEmploiUrl({ params: { ...(romes.length ? { romes } : {}), lat, lon, radius: "60", ...utmData } })
+    return buildEmploiUrl({ params: { ...(romes.length ? { romes } : {}), lat, lon, radius: "60", ...utmParams } })
   } else {
     // No formations found, use user coordinates if available
     if (romes.length) {
-      return buildEmploiUrl({ params: { romes, lat: wLat ?? undefined, lon: wLon ?? undefined, radius: "60", ...utmData } })
+      return buildEmploiUrl({ params: { romes, lat: wLat ?? undefined, lon: wLon ?? undefined, radius: "60", ...utmParams } })
     } else {
-      return buildEmploiUrl({ baseUrl: config.publicUrl, params: { ...utmData } })
+      return buildEmploiUrl({ baseUrl: config.publicUrl, params: { ...utmParams } })
     }
   }
 }
