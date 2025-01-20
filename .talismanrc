@@ -38,7 +38,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/v2/applications.controller.v2.test.ts
   checksum: 1cc47a3fd50e4e9951468bd12e1a4dff9cde76ab4aac2b1f94ee191aa508739c
 - filename: server/src/http/controllers/v2/appointment.controller.v2.test.ts
-  checksum: 52a0f730bc8feed13f4f1371c16a332872bec77ca31f0732422b7ca90b322df9
+  checksum: bbbf100d65bae0d840c715f4b1d893986df7423f470f3ee300545959105f6ca4
 - filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts
   checksum: a99bfdcb5a8f4c66e9d055b44160adbc7ec2bcaf87209ff76fa9a9f674b9ca86
 - filename: server/src/http/controllers/v2/jobs.controller.v2.ts
@@ -111,6 +111,8 @@ fileignoreconfig:
   checksum: 5fbdf21310d8dfaf259eb39a5ca1e72a53b15493cf3a59ed42c4cb5c8f3a62ab
 - filename: server/static/templates/mail-bienvenue.mjml.ejs
   checksum: 34eb30b463153df565aa89f8e42f08eb77633b6bfa4673f4d6ef5f40633c6101
+- filename: server/static/templates/mail-candidat-confirmation-rdv.mjml.ejs
+  checksum: 23f500afe4d0984a4680e387e6e67223bdbdc5d954e984f400451b26bac248ce
 - filename: server/static/templates/mail-candidat-entretien.mjml.ejs
   checksum: 53067858567e2878f5f65da06be9efc6902a691b36299167d54343ab30162e49
 - filename: server/static/templates/mail-candidat-nsp.mjml.ejs
@@ -121,8 +123,16 @@ fileignoreconfig:
   checksum: 0b806bca197dba97415902339e84f924cb45dae766cf8d3cfc47d80d2bdd203c
 - filename: server/static/templates/mail-candidat-refus.mjml.ejs
   checksum: 3fcfa9586df3283a3f50cf6751b735b646d3f3ac64e8e4a8453999e9e5aea881
+- filename: server/static/templates/mail-cfa-delegation.mjml.ejs
+  checksum: 569e084a81ffdfbd3b427a60c0712ec2f1af2031fe120572e55235691e84dc5b
+- filename: server/static/templates/mail-cfa-demande-de-contact.mjml.ejs
+  checksum: 6e15fdba953753e2d4f249c3a289615dea942ac18c0a95241309ab15ad7f60a2
+- filename: server/static/templates/mail-cfa-notification-hardbounce-cfa.mjml.ejs
+  checksum: ad25d72b5287060499c4e44bfe93eacd8dbfb7b40122b912eb9c3cf657f6aed7
 - filename: server/static/templates/mail-echec-envoi-candidature.mjml.ejs
   checksum: 9055c5495ced85a674770e7fb8a81b3bd84949f9ff8f6e6450989aa3b7cda326
+- filename: server/static/templates/mail-reponse-cfa.mjml.ejs
+  checksum: a5a36d078b7c75e6da58c06c032b52d0f57d89bf5913065bb1aaab098f3e80af
 - filename: server/tests/fixture/connectedUser.fixture.ts
   checksum: bfbb2f218580ce302d3bfcd9ba7494a46ff0a05ba02ca0f38a801ea8c6bf9be2
 - filename: server/tests/integration/http/formationV1.test.ts

@@ -95,7 +95,7 @@ export default function (server: Server) {
           data: {
             images: {
               logoLba: `${imagePath}logo_LBA.png`,
-              logoRF: `${imagePath}logo_rf.png`,
+              logoRf: `${imagePath}logo_rf.png`,
             },
           },
         })

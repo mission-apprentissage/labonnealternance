@@ -711,6 +711,9 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                 "description": "Identifiant unique",
               },
             },
+            "required": [
+              "_id",
+            ],
             "type": "object",
           },
         ],
@@ -5156,7 +5159,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "description": "Identifiant unique",
             "in": "path",
             "name": "jobId",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Identifiant unique",
             },
@@ -5325,7 +5328,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "description": "Identifiant unique",
             "in": "path",
             "name": "jobId",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Identifiant unique",
             },
@@ -5434,7 +5437,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "description": "Identifiant unique",
             "in": "path",
             "name": "jobId",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Identifiant unique",
             },
@@ -5498,6 +5501,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                             },
                           },
                           "required": [
+                            "_id",
                             "createdAt",
                             "updatedAt",
                           ],
@@ -5697,6 +5701,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                             },
                           },
                           "required": [
+                            "_id",
                             "createdAt",
                             "updatedAt",
                           ],
@@ -5749,7 +5754,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "description": "Identifiant unique",
             "in": "path",
             "name": "jobId",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Identifiant unique",
             },
@@ -5854,7 +5859,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "description": "the id the lba job looked for.",
             "in": "path",
             "name": "id",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Identifiant unique",
             },
@@ -5959,7 +5964,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "description": "Identifiant unique",
             "in": "path",
             "name": "id",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Identifiant unique",
             },
@@ -5996,7 +6001,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "description": "the id the partner job looked for.",
             "in": "path",
             "name": "id",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Identifiant unique",
             },
@@ -6101,7 +6106,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "description": "Identifiant unique",
             "in": "path",
             "name": "jobId",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Identifiant unique",
             },
@@ -6310,6 +6315,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                             },
                           },
                           "required": [
+                            "_id",
                             "createdAt",
                             "updatedAt",
                           ],
@@ -6362,7 +6368,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "description": "Identifiant unique",
             "in": "path",
             "name": "jobId",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Identifiant unique",
             },
@@ -6515,6 +6521,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                             },
                           },
                           "required": [
+                            "_id",
                             "createdAt",
                             "updatedAt",
                           ],
@@ -7494,6 +7501,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                                   },
                                 },
                                 "required": [
+                                  "_id",
                                   "createdAt",
                                   "updatedAt",
                                 ],
@@ -8030,6 +8038,9 @@ Limite : 5 appel(s) / 1 seconde(s)
                       "description": "Identifiant unique",
                     },
                   },
+                  "required": [
+                    "id",
+                  ],
                   "type": "object",
                 },
               },
@@ -8609,6 +8620,9 @@ Limite : 5 appel(s) / 1 seconde(s)
                                 "description": "Identifiant unique",
                               },
                             },
+                            "required": [
+                              "id",
+                            ],
                             "type": "object",
                           },
                           "workplace": {
@@ -8843,7 +8857,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "description": "Identifiant unique",
             "in": "path",
             "name": "id",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Identifiant unique",
             },

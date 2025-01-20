@@ -101,7 +101,7 @@ jobs:
 
       - name: Upload failure logs on failure
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cypress-on-error
           path: /tmp/cypressRun.log.gpg
@@ -116,7 +116,7 @@ jobs:
 
       - name: Upload screenshots on failure
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cypress-on-error
           path: /tmp/screenshots.zip.gpg
