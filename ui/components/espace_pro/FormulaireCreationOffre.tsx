@@ -300,7 +300,6 @@ export const FormulaireCreationOffre = ({
   )
   const { rome } = romeAndAppellation ?? {}
   const { user } = useAuth()
-  const { widget } = useContext(WidgetContext)
   const router = useRouter()
   const { establishment_id, email, userId, token } = router.query as { establishment_id: string; email: string; userId: string; type: string; token: string }
 
