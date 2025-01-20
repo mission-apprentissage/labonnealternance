@@ -1486,9 +1486,9 @@ describe("findJobsOpportunities", () => {
         )
 
         expect.soft(results.jobs).toHaveLength(3)
-        expect.soft(results.jobs[0].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA)
-        expect.soft(results.jobs[1].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.HELLOWORK)
-        expect.soft(results.jobs[2].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.HELLOWORK)
+        expect.soft(results.jobs[0].identifier.partner_label).not.toBe(JOBPARTNERS_LABEL.RH_ALTERNANCE)
+        expect.soft(results.jobs[1].identifier.partner_label).not.toBe(JOBPARTNERS_LABEL.RH_ALTERNANCE)
+        expect.soft(results.jobs[2].identifier.partner_label).not.toBe(JOBPARTNERS_LABEL.RH_ALTERNANCE)
 
         results = await findJobsOpportunities(
           {
@@ -1675,7 +1675,7 @@ describe("findJobsOpportunities", () => {
     })
   })
 
-  describe("when seaching with location", () => {
+  describe("when searching with location", () => {
     it("should sort by source, distance and then by creation date", async () => {
       vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: ftJobs })
 

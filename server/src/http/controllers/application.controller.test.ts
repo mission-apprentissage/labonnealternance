@@ -1,3 +1,4 @@
+import { omit } from "lodash-es"
 import { ObjectId } from "mongodb"
 import { generateLbaCompanyFixture } from "shared/fixtures/recruteurLba.fixture"
 import { beforeEach, describe, expect, it, vi } from "vitest"
@@ -86,20 +87,25 @@ describe("POST /v1/application", () => {
     const applications = await getDbCollection("applications").find({}).toArray()
     const applicant = await getDbCollection("applicants").findOne({ _id: applications[0]?.applicant_id })
 
+    expect(omit(applicant, ["createdAt", "last_connection", "updatedAt"])).toEqual({
+      _id: applicant?._id,
+      email: body.applicant_email,
+      firstname: body.applicant_first_name,
+      lastname: body.applicant_last_name,
+      phone: body.applicant_phone,
+    })
+
     expect(applications).toEqual([
       {
         _id: expect.any(ObjectId),
         applicant_id: applicant?._id,
         applicant_attachment_name: body.applicant_file_name,
-        applicant_email: body.applicant_email,
-        applicant_first_name: body.applicant_first_name,
-        applicant_last_name: body.applicant_last_name,
         applicant_message_to_company: "",
-        applicant_phone: body.applicant_phone,
         caller: body.caller,
         company_address: "126 RUE DE L UNIVERSITE, 75007 Paris",
         company_email: recruteur.email,
         company_feedback: null,
+        company_feedback_reasons: null,
         company_naf: "Administration publique générale",
         company_name: "ASSEMBLEE NATIONALE",
         company_phone: null,

@@ -1,120 +1,184 @@
 <mjml>
     <mj-head>
-        <mj-title><%= data.user.firstname %> <%= data.user.lastname %> souhaite des renseignements sur votre formation.</mj-title>
-        <mj-style inline="inline">
-            .grey {color: #1E1E1E;}
-        </mj-style>
-        <mj-attributes>
-            <mj-text color="#242424" font-family="Arial,sans-serif" font-size="16px" line-height="24px" />
-            <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Arial" height="40px" />
-        </mj-attributes>
+      <mj-preview></mj-preview>
+      <mj-breakpoint width="480px"></mj-breakpoint>
+      <mj-attributes>
+        <mj-all padding="0"></mj-all>
+      </mj-attributes>
+      <mj-style>
+        @media only screen and (max-width: 799px) {
+          .text > div {
+              text-align: inherit !important;
+          }
+      
+          .wrapper > table > tbody > tr > td {
+              padding-left: 0px !important;
+              padding-right: 0px !important;
+          }
+  
+          .section > table > tbody > tr > td {
+              padding-left: 20px !important;
+              padding-right: 20px !important;
+          }
+  
+          .column > table > tbody > tr > td {
+              padding-left: 0px !important;
+              padding-right: 0px !important;
+          }
+  
+          .padB40 {
+              padding-bottom: 40px !important;
+          }
+  
+          .image {
+              padding-left: 0px !important;
+              padding-right: 0px !important;
+          }
+  
+          .image > table {
+              text-align: center !important;
+              margin: 0 auto !important;
+          }
+  
+          .divider {
+              padding-left: 0px !important;
+              padding-right: 0px !important;
+          }
+  
+          .button > table {
+              width: 100% !important;
+          }
+  
+          .button > table > tbody > tr > td > a {
+              width: 80% !important;
+          }
+      }
+      </mj-style>
+      <mj-style inline="inline">
+        .column > table { border-collapse: separate; }
+      </mj-style>
+      <mj-font href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400&display=swap" name="DM Sans"></mj-font>
+      <mj-font href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@700&display=swap" name="Public Sans"></mj-font>
     </mj-head>
-    <mj-body background-color="#E5E5E5">
-        <mj-section>
-            <mj-column>
-                <mj-image src="<%= data.images.logoLba %>" width="150px" alt="Logo du site La bonne alternance" />
+    <mj-body background-color="#f5f5fe" name="CFA - rdva" width="800px">
+        <mj-wrapper border-radius="0px" css-class="wrapper" padding="32px 100px 32px 100px">
+        <mj-section border-radius="0px" css-class="section" name="mj-section_group">
+            <mj-group>
+            <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="14.83%">
+                <mj-image align="left" alt="Image" css-class="image" src="<%= data.images.logoRf %>" width="89px"></mj-image>
             </mj-column>
+            <mj-column border-radius="0px" css-class="column" padding="0px 24px 0px 24px" vertical-align="middle" width="34.83%">
+                <mj-image align="left" alt="Image" css-class="image" href="#" padding="17px 0px 17px 0px" src="<%= data.images.logoLba %>" width="160px"></mj-image>
+            </mj-column>
+            <mj-column border-radius="0px" css-class="column" vertical-align="top" width="50.33%"></mj-column>
+            </mj-group>
         </mj-section>
-        <mj-section padding-top="0">
-            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF"
-                padding="20px 10px">
-                <mj-text>
-                    Bonjour,
+        <mj-spacer height="24px"></mj-spacer>
+        <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="11px 23px 11px 23px">
+            <mj-group>
+            <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="-298.56%">
+                <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="10px 0px 24px 0px">
+                Bonjour,
+                <br/>
                 </mj-text>
-                <mj-text>
-                    <b><%= data.user.firstname %> <%= data.user.lastname %></b> souhaite des renseignements sur votre formation.
+                <mj-text align="left" color="#161616" css-class="text" font-family="DM Sans, Times, Georgia, serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 24px 0px">
+                <span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 700;"><%= data.user.firstname %> <%= data.user.lastname %> </span><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">souhaite des renseignements sur votre formation.</span>
+                <br/>
                 </mj-text>
-                <mj-button color="#ffffff" background-color="#000091" href="<%= data.link %>">
-                    Voir les coordonnées du contact
+                <mj-button href="<%= data.link %>&utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-rdva_consulter-coord-candidat" align="center" background-color="#000091" border-radius="0px" color="#ffffff" css-class="button" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="700" href="#" inner-padding="4px 0px 4px 0px" line-height="24px" padding="0px 0px 10px 0px" width="249px">
+                Voir les coordonnées du contact
                 </mj-button>
-                <mj-text margin-top="20px">
-                    Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant(s) :
-                    <ul style="padding: 0;margin-bottom: 0;">
+            </mj-column>
+            <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="99.64%">
+                <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="10px 0px 0px 0px">
+                Il ou elle souhaite aborder avec vous les sujets(s) suivant(s) :
+                <br/>
+                </mj-text>
+                <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="24px" padding="0px 0px 10px 0px">
+                    <ul style="margin: 0; padding-left: 32px;">
                         <% data.appointment.reasons.forEach((reason) => { %>
-                            <li style="margin-top: .25rem;">
-                                <strong>
-                                    <% if (reason == 'modalite') { %>
-                                        Modalités d'inscription
-                                    <% } else if (reason == 'place') { %>
-                                        Places disponibles
-                                    <% } else if (reason == 'accompagnement') { %>
-                                        Accompagnement dans la recherche d'entreprise
-                                    <% } else if (reason == 'frais') { %>
-                                        Frais d'inscription
-                                    <% } else if (reason == 'contenu') { %>
-                                        Contenu de la formation
-                                    <% } else if (reason == 'horaire') { %>
-                                        Horaires / rythme de la formation
-                                    <% } else if (reason == 'debouche') { %>
-                                        Situation des élèves en sortie de formation
-                                    <% } else if (reason == 'plus') { %>
-                                        En savoir plus sur l'alternance
-                                    <% } else if (reason == 'suivi') { %>
-                                        Suivi de ma candidature
-                                    <% } else if (reason == 'lieu') { %>
-                                        Lieu de la formation
-                                    <% } else if (reason == 'porte') { %>
-                                        Portes ouvertes
-                                    <% } else if (reason == 'autre') { %>
-                                        Autre :
-                                    <% } %>
-                                </strong>
-                            </li>
-                        <% }); %>
-                    </ul>
-                    <% if(data.user.applicant_message_to_cfa){ %>
-                        <p style="background-color: #F6F6F6;color:#2A2A2A;font-size: 16px;line-height: 24px;padding: 8px 4px;">
-                                <%= data.user.applicant_message_to_cfa %>
-                        </p>
-                    <% } else { %>
-                        <div style="margin-top: 12px;"> </div>
-                    <% } %>
-                    <p style="margin-top: 4px;margin-bottom: 0;">
-                        à propos de la formation : <strong>
-                            <%= data.formation.intitule %>
-                        </strong>
-                    </p>
-                    <p>
-                        dispensée par : <strong>
-                            <%= data.etablissement.name %>,
-                            <%= data.etablissement.formateur_address %>,
-                            <%= data.etablissement.formateur_zip_code %>
-                            <%= data.etablissement.formateur_city %>
-                        </strong>
-                    </p>
+                        <li style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; line-height: 24px; font-weight: 700; color: #161616;">
+                            <% if (reason == 'modalite') { %>
+                                Modalités d'inscription
+                            <% } else if (reason == 'place') { %>
+                                Places disponibles
+                            <% } else if (reason == 'accompagnement') { %>
+                                Accompagnement dans la recherche d'entreprise
+                            <% } else if (reason == 'frais') { %>
+                                Frais d'inscription
+                            <% } else if (reason == 'contenu') { %>
+                                Contenu de la formation
+                            <% } else if (reason == 'horaire') { %>
+                                Horaires / rythme de la formation
+                            <% } else if (reason == 'debouche') { %>
+                                Situation des élèves en sortie de formation
+                            <% } else if (reason == 'plus') { %>
+                                En savoir plus sur l'alternance
+                            <% } else if (reason == 'suivi') { %>
+                                Suivi de ma candidature
+                            <% } else if (reason == 'lieu') { %>
+                                Lieu de la formation
+                            <% } else if (reason == 'porte') { %>
+                                Portes ouvertes
+                            <% } else if (reason == 'autre') { %>
+                                Autre : 
+                                <mj-text font-weight="400">
+                                    <%= data.user.applicant_message_to_cfa %>
+                                </mj-text>
+                            <% } %>
+                        </li>
+                    <% }); %>                        
+                    </ul>                    
                 </mj-text>
             </mj-column>
+            <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="99.64%">
+                <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="10px 0px 0px 0px">
+                à propos de la formation :
+                <br/>
+                </mj-text>
+                <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="24px" padding="0px 0px 10px 0px">
+                <%= data.formation.intitule %>
+                <br/>
+                </mj-text>
+            </mj-column>
+            <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="99.64%">
+                <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="10px 0px 0px 0px">
+                dispensée par :
+                <br/>
+                </mj-text>
+                <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="24px" padding="0px 0px 10px 0px">
+                <%= data.etablissement.name %>,
+                <%= data.etablissement.formateur_address %>,
+                <%= data.etablissement.formateur_zip_code %>
+                <%= data.etablissement.formateur_city %>
+                <br/>
+                </mj-text>
+            </mj-column>
+            <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="99.64%">
+                <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px" padding="10px 0px 10px 0px">
+                Ce courriel est généré automatiquement, vous ne pouvez pas y répondre. Pour contacter le candidat, veuillez utiliser les coordonnées de contact accessibles via le lien ci-dessus.
+                <br/>
+                </mj-text>
+            </mj-column>
+            </mj-group>
         </mj-section>
-        <mj-section padding-top="30px">
-            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF"
-                padding="20px 10px">
-                <mj-text>
-                    Cordialement,<br />
-                    L'équipe <a class="grey"
-                        href="https://labonnealternance.apprentissage.beta.gouv.fr/organisme-de-formation">La bonne
-                        alternance</a>,<br />
-                    <a class="grey" href="https://beta.gouv.fr/incubateurs/mission-apprentissage.html">Mission interministérielle
-                        pour l'apprentissage</a>
+        <mj-spacer height="24px"></mj-spacer>
+        <mj-section border-radius="4px" css-class="section" name="mj-section_group">
+            <mj-group>
+            <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+                <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
+                La bonne alternance est un site développé par la Mission interministérielle pour l'apprentissage, au sein de l’État, conformément aux missions d’intérêt public du ministère du Travail, du Plein emploi et de l’Insertion.
+                <br/>
+                <br/>Nous vous contactons car un candidat à l'alternance souhaite des renseignements sur votre formation.
+                <br/>
+                <br/>Nous ne faisons aucune utilisation commerciale de vos adresses e-mail. Vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Droit%20opposition" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">labonnealternance@apprentissage.beta.gouv.fr</a>
+                <br/>
+                <br/>Si vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL. Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la <a href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite?utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-rdva_politique-confidentialite" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">politique de confidentialité</a> de La bonne alternance.
+                <br/>
                 </mj-text>
             </mj-column>
+            </mj-group>
         </mj-section>
-        <mj-section padding-top="5px" text-align="left">
-            <mj-column width="200px">
-                <mj-image padding-left="0" src="<%= data.images.logoFooter %>"></mj-image>
-            </mj-column>
-            <mj-column width="400px" padding-left="30px">
-                <mj-text padding-bottom="15px" padding-right="0" font-size="12px">
-                    Si vous avez des questions ou si vous souhaitez vous désinscrire du service, envoyez un email à <a
-                        class="grey"
-                        href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Email%20demande%20contact%20RDVA%20-%20Question">labonnealternance@apprentissage.beta.gouv.fr</a>.
-                </mj-text>
-                <mj-text padding-top="15px" padding-right="0" font-size="12px">
-                    Cette demande a été réalisée sur le site <a class="grey"
-                        href="<%= data.appointment.referrerLink %>">
-                        <%= data.appointment.referrer %>
-                    </a>.
-                </mj-text>
-            </mj-column>
-        </mj-section>
+        </mj-wrapper>
     </mj-body>
 </mjml>

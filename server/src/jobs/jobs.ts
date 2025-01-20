@@ -16,6 +16,7 @@ import anonymizeIndividual from "./anonymization/anonymizeIndividual"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonymizeUserRecruteurs"
 import { anonymizeUsers } from "./anonymization/anonymizeUsers"
 import { processApplications } from "./applications/processApplications"
+import { processRecruiterIntentions } from "./applications/processRecruiterIntentions"
 import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
 import { recreateIndexes } from "./database/recreateIndexes"
 import { validateModels } from "./database/schemaValidation"
@@ -227,12 +228,16 @@ export async function setupJobProcessor() {
             handler: sendContactsToBrevo,
           },
           "Génération du sitemap pour les offres": {
-            cron_string: "5 22 * * *",
+            cron_string: "20 0 * * *",
             handler: generateSitemap,
           },
           "Traitement complet des jobs_partners": {
-            cron_string: "0 23 * * *",
+            cron_string: "40 3 * * *",
             handler: processJobPartners,
+          },
+          "Emission des intentions des recruteurs": {
+            cron_string: "30 20 * * *",
+            handler: processRecruiterIntentions,
           },
         },
     jobs: {
@@ -347,8 +352,12 @@ export async function setupJobProcessor() {
       },
       "migrations:status": {
         handler: async () => {
-          const pendingMigrations = await statusMigration()
-          console.info(`migrations-status=${pendingMigrations === 0 ? "synced" : "pending"}`)
+          const { count, requireShutdown } = await statusMigration()
+          if (count === 0) {
+            console.log("migrations-status=synced")
+          } else {
+            console.log(`migrations-status=${requireShutdown ? "require-shutdown" : "pending"}`)
+          }
           return
         },
       },

@@ -3,8 +3,9 @@ import { Button, Modal, ModalBody, ModalContent, ModalOverlay, Text } from "@cha
 import { Close } from "@/theme/components/icons"
 
 export const ModalReadOnly = ({ children, isOpen, onClose }: { children: React.ReactNode; isOpen: boolean; onClose: () => void }) => {
+  const isMobile = () => window.innerWidth < 500
   return (
-    <Modal closeOnOverlayClick={true} blockScrollOnMount={true} size="sm" isOpen={isOpen} onClose={onClose}>
+    <Modal closeOnOverlayClick={true} blockScrollOnMount={true} size={isMobile() ? "full" : "sm"} isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent margin="auto" maxHeight="95%" maxWidth="95%" width="fit-content" borderRadius={0}>
         <Button display={"flex"} alignSelf={"flex-end"} color="bluefrance.500" fontSize={"epsilon"} onClick={onClose} variant="unstyled" p={6} fontWeight={400}>

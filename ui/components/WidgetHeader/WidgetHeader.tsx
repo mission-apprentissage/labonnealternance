@@ -1,13 +1,14 @@
-import { Box, Flex, Text } from "@chakra-ui/react"
-import { includes } from "lodash"
+import { Box, Flex } from "@chakra-ui/react"
+import dynamic from "next/dynamic"
 import { useRouter } from "next/router"
-import React, { useContext } from "react"
+import { useContext } from "react"
 
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
-import InfoBanner from "../InfoBanner/InfoBanner"
-import LogoLBA from "../LogoLBA/LogoLBA"
 import SearchForm from "../SearchForm/SearchForm"
-import ResultFilterAndCounter from "../SearchForTrainingsAndJobs/components/ResultFilterAndCounter"
+
+const InfoBanner = dynamic(() => import("@/components/InfoBanner/InfoBanner"))
+const LogoLBA = dynamic(() => import("@/components/LogoLBA/LogoLBA"))
+const ResultFilterAndCounter = dynamic(() => import("../SearchForTrainingsAndJobs/components/ResultFilterAndCounter"))
 
 const WidgetHeader = ({
   handleSearchSubmit,
@@ -27,7 +28,7 @@ const WidgetHeader = ({
     return handleSearchSubmit({ values })
   }
 
-  const isFicheDetail = selectedItem && includes(router.asPath, "page=fiche") ? true : false
+  const isFicheDetail = selectedItem && router.asPath.includes("page=fiche") ? true : false
   const formDisplayValue = isFicheDetail ? "none" : isHome ? "block" : ["none", "none", "block"]
 
   return (
@@ -40,17 +41,7 @@ const WidgetHeader = ({
       <Box margin="auto" maxWidth="1310px">
         <Flex alignItems="flex-start">
           {!isHome && <LogoLBA />}
-          <Box>
-            {isHome && (
-              <Text mb={3} as="h1" fontSize={["26px", "29px"]} fontWeight={700}>
-                <Text as="span">Trouvez emploi et formation </Text>
-                <Text as="span" color="info">
-                  en alternance
-                </Text>
-              </Text>
-            )}
-            <SearchForm handleSearchSubmit={handleSearchSubmitFunction} isHome={isHome} />
-          </Box>
+          <SearchForm handleSearchSubmit={handleSearchSubmitFunction} isHome={isHome} />
         </Flex>
         {!isHome && (
           <ResultFilterAndCounter

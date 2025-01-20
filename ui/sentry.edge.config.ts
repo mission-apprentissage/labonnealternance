@@ -3,7 +3,8 @@
 // Note that this config is unrelated to the Vercel Edge Runtime and is also required when running locally.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
-import { captureConsoleIntegration, extraErrorDataIntegration, httpClientIntegration, init } from "@sentry/nextjs"
+import { captureConsoleIntegration, extraErrorDataIntegration, httpClientIntegration } from "@sentry/browser"
+import { init } from "@sentry/nextjs"
 
 import { publicConfig } from "./config.public"
 
@@ -15,5 +16,6 @@ init({
   enabled: !publicConfig.sentryDisabled,
   release: publicConfig.version,
   normalizeDepth: 8,
-  integrations: [captureConsoleIntegration({ levels: ["error"] }), extraErrorDataIntegration({ depth: 8 }), httpClientIntegration({})],
+  sendDefaultPii: true,
+  integrations: [captureConsoleIntegration({ levels: ["error"] }), extraErrorDataIntegration({ depth: 8 }), httpClientIntegration()],
 })

@@ -38,6 +38,7 @@ import rawHelloWorkModel from "./rawHelloWork.model"
 import rawKelioModel from "./rawKelio.model"
 import rawRHAlternanceModel from "./rawRHAlternance.model"
 import recruiterModel from "./recruiter.model"
+import recruiterIntentionMailModel from "./recruiterIntentionMail.model"
 import lbaCompanyModel from "./recruteurLba.model"
 import lbaCompanyLegacyModel from "./recruteurLbaLegacy.model"
 import recruteurLbaUpdateEventModel from "./recruteurLbaUpdateEvent.model"
@@ -92,6 +93,7 @@ const modelDescriptorMap = {
   [optoutModel.collectionName]: optoutModel,
   [rawHelloWorkModel.collectionName]: rawHelloWorkModel,
   [recruiterModel.collectionName]: recruiterModel,
+  [recruiterIntentionMailModel.collectionName]: recruiterIntentionMailModel,
   [recruteurLbaUpdateEventModel.collectionName]: recruteurLbaUpdateEventModel,
   [referentielOnisepModel.collectionName]: referentielOnisepModel,
   [referentielOpcoModel.collectionName]: referentielOpcoModel,

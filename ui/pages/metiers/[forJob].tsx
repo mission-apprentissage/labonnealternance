@@ -2,7 +2,6 @@ import fs from "fs"
 import path from "path"
 
 import { Box, Container, Divider, Link, Text, VStack } from "@chakra-ui/react"
-import { find, sortBy } from "lodash"
 import NextLink from "next/link"
 import { useRouter } from "next/router"
 import { NextSeo } from "next-seo"
@@ -17,8 +16,8 @@ export default function ForJob(props) {
   const router = useRouter()
 
   const currentSlug = router.query.forJob
-  const currentJob = find(props.dataJobs, (e) => e.slug === currentSlug)
-  const sortedTowns = sortBy(props.dataTowns, (e) => e.slug)
+  const currentJob = props.dataJobs.find((job) => job.slug === currentSlug)
+  const sortedTowns = props.dataTowns.sort((t1, t2) => t1.slug.localeCompare(t2.slug))
 
   const navigationItems = [
     { title: "Métiers", path: "metiers" },

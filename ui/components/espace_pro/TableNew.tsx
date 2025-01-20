@@ -1,15 +1,7 @@
 import { Box, Flex, Input, InputGroup, InputRightElement, Text } from "@chakra-ui/react"
 import { matchSorter } from "match-sorter"
 import React, { useMemo } from "react"
-import {
-  // useAsyncDebounce,
-  useFilters,
-  useFlexLayout,
-  useGlobalFilter,
-  usePagination,
-  useSortBy,
-  useTable,
-} from "react-table"
+import { useFilters, useFlexLayout, useGlobalFilter, usePagination, useSortBy, useTable } from "react-table"
 
 import { ArrowDownLine, ArrowUpLine, SearchLine } from "../../theme/components/icons"
 
@@ -19,9 +11,6 @@ import PaginationReactQuery from "./PaginationReactQuery"
 // Define a default UI for filtering
 function GlobalFilter({ globalFilter, setGlobalFilter, searchPlaceholder }) {
   const [value, setValue] = React.useState(globalFilter)
-  // const onChange = useAsyncDebounce((value) => { // TODO_AB
-  //   setGlobalFilter(value || undefined)
-  // }, 200)
   const onChange = (value) => {
     setGlobalFilter(value || undefined)
   }
