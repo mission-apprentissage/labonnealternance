@@ -11,7 +11,6 @@ import { currentSearch, setCurrentPage, setCurrentSearch } from "../../../utils/
 import { closeMapPopups, filterLayers, flyToLocation, flyToMarker, setSelectedMarker } from "../../../utils/mapTools"
 import pushHistory from "../../../utils/pushHistory"
 import { getItemElement, scrollToElementInContainer, scrollToTop } from "../../../utils/tools"
-import ItemDetail from "../../ItemDetail/ItemDetail"
 import { defaultFilters } from "../services/utils"
 import { insertWhisper } from "../services/whispers"
 
@@ -20,7 +19,6 @@ import SearchFormResponsive from "./SearchFormResponsive"
 
 const ChoiceColumn = ({
   showResultList,
-  unSelectItem,
   showSearchForm,
   handleSearchSubmit,
   shouldShowWelcomeMessage,
@@ -70,27 +68,14 @@ const ChoiceColumn = ({
 
     pushHistory({
       router,
-      scopeContext,
       item,
       page: "fiche",
       display: "list",
       searchParameters: formValues,
       searchTimestamp: currentSearch,
       displayMap,
+      path: router.pathname,
     })
-  }
-
-  const handleClose = () => {
-    setCurrentPage("")
-    pushHistory({
-      router,
-      scopeContext,
-      display: "list",
-      searchParameters: formValues,
-      searchTimestamp: currentSearch,
-      displayMap,
-    })
-    unSelectItem("doNotSaveToHistory")
   }
 
   const showAllResults = () => {
@@ -119,11 +104,11 @@ const ChoiceColumn = ({
     const searchTimestamp = new Date().getTime()
     pushHistory({
       router,
-      scopeContext,
       display: "list",
       searchParameters: formValues,
       searchTimestamp,
       displayMap,
+      path: router.pathname,
     })
     setCurrentSearch(searchTimestamp)
     searchForJobs({ values: { ...formValues, radius: 20000 }, searchTimestamp })
@@ -149,11 +134,11 @@ const ChoiceColumn = ({
 
     pushHistory({
       router,
-      scopeContext,
       display: "list",
       searchParameters: formValues,
       searchTimestamp,
       displayMap,
+      path: router.pathname,
     })
     setCurrentSearch(searchTimestamp)
 
@@ -227,10 +212,6 @@ const ChoiceColumn = ({
     )
   }
 
-  const getSelectedItemDetail = () => {
-    return selectedItem ? <ItemDetail handleClose={handleClose} handleSelectItem={handleSelectItem} /> : <></>
-  }
-
   const columnBackgroundProperty = shouldShowWelcomeMessage ? ["white", "white", "beige"] : "grey.100"
 
   return (
@@ -238,7 +219,6 @@ const ChoiceColumn = ({
       {getInitialDesktopText()}
       {getSearchForm()}
       {getResultLists()}
-      {getSelectedItemDetail()}
     </Box>
   )
 }

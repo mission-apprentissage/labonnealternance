@@ -398,7 +398,6 @@ const SearchForTrainingsAndJobs = () => {
             handleSearchSubmit={handleSearchSubmit}
             showResultList={showResultList}
             showSearchForm={showSearchForm}
-            unSelectItem={unSelectItem}
             searchRadius={searchRadius}
             isTrainingSearchLoading={isTrainingSearchLoading}
             isFormVisible={isFormVisible}
