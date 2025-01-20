@@ -41,6 +41,7 @@
     "next-recompose-plugins": "^3.0.0",
     "next-seo": "^4.29.0",
     "notion-client": "6.16.0",
+    "param-case": "^4.0.0",
     "react": "latest",
     "react-csv": "^2.2.2",
     "react-dates": "^21.8.0",
