@@ -100,7 +100,6 @@ export default {
     [{ establishment_id: 1 }, {}],
     [{ establishment_siret: 1 }, {}],
     [{ cfa_delegated_siret: 1 }, {}],
-    [{ email: 1 }, {}],
     [{ email: 1, establishment_siret: 1 }, { unique: true }],
     [{ establishment_enseigne: 1 }, {}],
     [{ managed_by: 1 }, {}],

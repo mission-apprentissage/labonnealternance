@@ -54,9 +54,6 @@ export type IEntrepriseJson = Jsonify<z.input<typeof ZEntreprise>>
 
 export default {
   zod: ZEntreprise,
-  indexes: [
-    [{ siret: 1 }, { unique: true }],
-    [{ "status.status": 1 }, {}],
-  ],
+  indexes: [[{ siret: 1 }, { unique: true }]],
   collectionName,
 } as const satisfies IModelDescriptor

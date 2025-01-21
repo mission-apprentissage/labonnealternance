@@ -16,9 +16,6 @@ export type ILbaCompanyLegacy = z.output<typeof ZLbaCompanyLegacy>
 
 export default {
   zod: ZLbaCompanyLegacy,
-  indexes: [
-    [{ siret: 1 }, {}],
-    [{ siret: 1, email: 1 }, { unique: true }],
-  ],
+  indexes: [[{ siret: 1, email: 1 }, { unique: true }]],
   collectionName,
 } as const satisfies IModelDescriptor

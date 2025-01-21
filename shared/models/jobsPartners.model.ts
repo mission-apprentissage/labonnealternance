@@ -221,11 +221,9 @@ export type IJobsPartnersWritableApiInput = z.input<typeof ZJobsPartnersWritable
 export default {
   zod: ZJobsPartnersOfferPrivate,
   indexes: [
-    [{ workplace_geopoint: "2dsphere", offer_multicast: 1, offer_rome_codes: 1, offer_status: 1, offer_expiration: 1, "offer_target_diploma.european": 1 }, {}],
     [{ workplace_geopoint: "2dsphere", offer_multicast: 1, offer_rome_codes: 1, offer_status: 1, offer_expiration: 1, partner_label: 1, "offer_target_diploma.european": 1 }, {}],
     [{ offer_multicast: 1, offer_rome_codes: 1, offer_creation: -1 }, {}],
     [{ offer_multicast: 1, "offer_target_diploma.european": 1, offer_creation: -1 }, {}],
-    [{ offer_multicast: 1, offer_rome_codes: 1, "offer_target_diploma.european": 1, offer_creation: -1 }, {}],
     [{ partner_label: 1, partner_job_id: 1 }, { unique: true }],
   ],
   collectionName,
