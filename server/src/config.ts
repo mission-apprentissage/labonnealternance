@@ -151,6 +151,12 @@ const config = {
   rhalternance: {
     apiKey: env.get("RH_ALTERNANCE_API_KEY").required().asString(),
   },
+  openai: {
+    apiKey: env.get("OPENAI_API_KEY").required().asString(),
+  },
+  mistralai: {
+    apiKey: env.get("MISTALAI_API_KEY").required().asString(),
+  },
 }
 
 export default config
