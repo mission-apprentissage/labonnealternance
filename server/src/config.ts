@@ -154,6 +154,9 @@ const config = {
   openai: {
     apiKey: env.get("OPENAI_API_KEY").required().asString(),
   },
+  mistralai: {
+    apiKey: env.get("MISTALAI_API_KEY").required().asString(),
+  },
 }
 
 export default config

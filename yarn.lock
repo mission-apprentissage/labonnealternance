@@ -2457,6 +2457,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mistralai/mistralai@npm:^1.3.6":
+  version: 1.3.6
+  resolution: "@mistralai/mistralai@npm:1.3.6"
+  peerDependencies:
+    zod: ">= 3"
+  checksum: e434ac9cd6dc49f2cb9765ef25de7b1cbf52f44221147eb1829c40a91783655f1c98ddcbde790b94976f44498f0a2fd27305fef54b34f1ce594b625204809c35
+  languageName: node
+  linkType: hard
+
 "@mongodb-js/saslprep@npm:^1.1.9":
   version: 1.1.9
   resolution: "@mongodb-js/saslprep@npm:1.1.9"
@@ -20016,6 +20025,7 @@ __metadata:
     "@fastify/swagger": ^8.10.1
     "@fastify/swagger-ui": ^1.9.3
     "@hapi/boom": ^10.0.1
+    "@mistralai/mistralai": ^1.3.6
     "@sentry/node": ^8.48.0
     "@sentry/profiling-node": ^8.48.0
     "@sentry/types": ^8.19.0

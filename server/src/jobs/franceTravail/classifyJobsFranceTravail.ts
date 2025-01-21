@@ -44,6 +44,12 @@ Une fois que tu as déterminé si les offres sont de type CFA, Entreprise ou Ent
     },
   ]
   try {
+    // const responseStr = await mistralSendMessages({
+    //   messages,
+    //   seed: 45555,
+    //   max_tokens: 1024,
+    //   response_format: { type: "json_object" },
+    // })
     const responseStr = await sendMessages({
       messages,
       seed: 45555,
@@ -94,7 +100,8 @@ export const classifyFranceTravailJobs = async () => {
       intitule: doc.intitule,
     }))
     const response = await checkFTOffer({ offres, examples })
-    console.log(response.offres)
+
+    // TODO : Filter 60 days by dateActualisation
     for (const rsp of response.offres) {
       await getDbCollection("raw_francetravail").findOneAndUpdate(
         { id: rsp.id as string },
