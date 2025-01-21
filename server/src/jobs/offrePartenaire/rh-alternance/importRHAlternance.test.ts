@@ -1,10 +1,9 @@
 import omit from "lodash-es/omit"
+import { generateRawRHAlternanceJobFixture } from "shared/fixtures/rawRHAlternanceJob.fixture"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-
-import { generateRawRHAlternanceJobFixture } from "../../../../shared/fixtures/rawRHAlternanceJob.fixture"
 
 import { rawRhAlternanceToComputedMapper } from "./importRHAlternance"
 
