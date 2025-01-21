@@ -72,7 +72,7 @@ export const importFromStreamInXml = async ({
         const message = `import Hello work terminé : ${offerInsertCount} offres importées`
         logger.info(message)
         notifyToSlack({
-          subject: `import des offres RH Alternance dans raw`,
+          subject: `import des offres Hello work dans raw`,
           message,
         })
         resolve({
