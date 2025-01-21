@@ -37,7 +37,6 @@ export const loadItem = async ({
   setPartnerJobSearchError,
   searchResultContext,
   router,
-  scopeContext,
   displayMap,
 }) => {
   try {
@@ -168,7 +167,6 @@ export const loadItem = async ({
 
     pushHistory({
       router,
-      scopeContext,
       item: loadedItem,
       page: "fiche",
       display: "list",

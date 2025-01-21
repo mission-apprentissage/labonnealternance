@@ -123,7 +123,6 @@ const SearchForTrainingsAndJobs = () => {
       selectItem(item)
       pushHistory({
         router,
-        scopeContext,
         item: { id: itemId, ideaType: type === "training" ? LBA_ITEM_TYPE_OLD.FORMATION : type, directId: true },
         page: "fiche",
         display: "list",
@@ -188,7 +187,7 @@ const SearchForTrainingsAndJobs = () => {
       searchForJobs({ values, searchTimestamp, followUpItem, selectFollowUpItem })
     }
     setIsFormVisible(false)
-    pushHistory({ router, scopeContext, display: "list", searchParameters: values, searchTimestamp, displayMap })
+    pushHistory({ router, display: "list", searchParameters: values, searchTimestamp, displayMap })
     setCurrentSearch(searchTimestamp)
   }
 
@@ -284,7 +283,6 @@ const SearchForTrainingsAndJobs = () => {
       unSelectItem("doNotSaveToHistory")
       pushHistory({
         router,
-        scopeContext,
         display: "form",
         searchParameters: formValues,
         searchTimestamp: currentSearch,
@@ -311,7 +309,6 @@ const SearchForTrainingsAndJobs = () => {
     if (!doNotSaveToHistory) {
       pushHistory({
         router,
-        scopeContext,
         display: "map",
         searchParameters: formValues,
         searchTimestamp: currentSearch,
@@ -340,7 +337,6 @@ const SearchForTrainingsAndJobs = () => {
     if (!doNotSaveToHistory) {
       pushHistory({
         router,
-        scopeContext,
         display: "list",
         searchParameters: formValues,
         searchTimestamp: currentSearch,
@@ -354,7 +350,6 @@ const SearchForTrainingsAndJobs = () => {
     setCurrentPage("fiche")
     pushHistory({
       router,
-      scopeContext,
       item,
       page: "fiche",
       display: "list",
@@ -372,7 +367,7 @@ const SearchForTrainingsAndJobs = () => {
     }
 
     if (!doNotSaveToHistory) {
-      pushHistory({ router, scopeContext, searchParameters: formValues, searchTimestamp: currentSearch, displayMap })
+      pushHistory({ router, searchParameters: formValues, searchTimestamp: currentSearch, displayMap })
     }
   }
 

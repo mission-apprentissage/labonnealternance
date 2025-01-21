@@ -26,7 +26,6 @@ const DisplayMapButton = (props) => {
 
     pushHistory({
       router,
-      scopeContext,
       display: "list",
       searchParameters: formValues,
       searchTimestamp: currentSearch,
