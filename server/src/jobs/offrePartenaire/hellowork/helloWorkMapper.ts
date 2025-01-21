@@ -7,7 +7,7 @@ import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { joinNonNullStrings } from "shared/utils"
 import { z } from "zod"
 
-import { blankComputedJobPartner } from "./fillComputedJobsPartners"
+import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
 export const ZHelloWorkJob = z
   .object({

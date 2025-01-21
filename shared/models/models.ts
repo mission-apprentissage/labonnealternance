@@ -33,6 +33,7 @@ import jobsPartnersModel from "./jobsPartners.model"
 import jobsPartnersComputedModel from "./jobsPartnersComputed.model"
 import opcoModel from "./opco.model"
 import optoutModel from "./optout.model"
+import rawFranceTravail from "./rawFranceTravail.model"
 import rawHelloWorkModel from "./rawHelloWork.model"
 import rawKelioModel from "./rawKelio.model"
 import rawRHAlternanceModel from "./rawRHAlternance.model"
@@ -109,6 +110,7 @@ const modelDescriptorMap = {
   [referentielCommuneModel.collectionName]: referentielCommuneModel,
   [rawKelioModel.collectionName]: rawKelioModel,
   [rawRHAlternanceModel.collectionName]: rawRHAlternanceModel,
+  [rawFranceTravail.collectionName]: rawFranceTravail,
   [trafficSourcesModel.collectionName]: trafficSourcesModel,
   [sitemapModel.collectionName]: sitemapModel,
 } as const satisfies Record<string, IModelDescriptor>
