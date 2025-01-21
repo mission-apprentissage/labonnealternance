@@ -7,6 +7,8 @@ import * as xml2j from "xml2js"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
+import { notifyToSlack } from "../../common/utils/slackUtils"
+
 const xmlParser = new xml2j.Parser({ explicitArray: false, emptyTag: null })
 
 const xmlToJson = async (offerXml: string, index: number) => {
@@ -67,6 +69,12 @@ export const importFromStreamInXml = async ({
         reject(err)
       } else {
         logger.info("Pipeline succeeded.")
+        const message = `import Hello work terminé : ${offerInsertCount} offres importées`
+        logger.info(message)
+        notifyToSlack({
+          subject: `import des offres RH Alternance dans raw`,
+          message,
+        })
         resolve({
           offerInsertCount,
         })
