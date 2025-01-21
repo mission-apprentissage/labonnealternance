@@ -183,7 +183,13 @@ function createJobAction(name) {
   }
 }
 
-program.command("recreate:indexes").description("Recreate MongoDB indexes").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("recreate:indexes"))
+program
+  .command("recreate:indexes")
+  .description("Recreate MongoDB indexes")
+  .option("-d, --drop", "Drop all indexes before recreating them", false)
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("recreate:indexes"))
+
 program.command("db:validate").description("Validate Documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:validate"))
 
 program
