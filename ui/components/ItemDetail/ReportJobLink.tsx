@@ -34,13 +34,13 @@ const contentByItemType: Partial<
   >
 > = {
   [LBA_ITEM_TYPE.RECRUTEURS_LBA]: {
-    title: "Signaler l’offre",
+    title: "Signaler l’entreprise",
     introductionText:
       "Des contrôles sont réalisés pour vérifier la légalité et la conformité des entreprises exposées. Si malgré ces contrôles vous constatez des contenus inappropriés, signalez cette opportunité et une attention particulière y sera apportée.",
     motifs: ["Informations erronées", "Entreprise fermée", "Autre"],
   },
   [LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA]: {
-    title: "Signaler l’entreprise",
+    title: "Signaler l’offre",
     introductionText:
       "Des contrôles sont réalisés pour vérifier la légalité et la conformité des offres exposées. Si malgré ces contrôles vous constatez des contenus inappropriés, signalez cette opportunité et une attention particulière y sera apportée.",
     motifs: ["Offre offensante ou discriminatoire", "Offre inexacte ou expirée", "Fausse offre provenant d’un centre de formation", "Tentative d’escroquerie", "Autre"],
