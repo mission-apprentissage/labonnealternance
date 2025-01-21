@@ -91,7 +91,7 @@ describe("searchForFtJobs", () => {
         partenaires: "LABONNEALTERNANCE",
         modeSelectionPartenaires: "EXCLU",
       },
-      { resultats: jobs } //
+      { resultats: jobs }
     )
 
     expect(
