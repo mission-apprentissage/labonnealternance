@@ -16,6 +16,7 @@ import anonymizeIndividual from "./anonymization/anonymizeIndividual"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonymizeUserRecruteurs"
 import { anonymizeUsers } from "./anonymization/anonymizeUsers"
 import { processApplications } from "./applications/processApplications"
+import { processRecruiterIntentions } from "./applications/processRecruiterIntentions"
 import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
 import { recreateIndexes } from "./database/recreateIndexes"
 import { validateModels } from "./database/schemaValidation"
@@ -24,7 +25,9 @@ import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
 import updateDomainesMetiersFile from "./domainesMetiers/updateDomainesMetiersFile"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
+import { classifyFranceTravailJobs } from "./franceTravail/classifyJobsFranceTravail"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
+import { importFranceTravailJobs } from "./franceTravail/importJobsFranceTravail"
 import { pocRomeo } from "./franceTravail/pocRomeo"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
@@ -232,6 +235,14 @@ export async function setupJobProcessor() {
             cron_string: "40 3 * * *",
             handler: processJobPartners,
           },
+          "Import complet des offres France Travail": {
+            cron_string: "0 6 * * *",
+            handler: importFranceTravailJobs,
+          },
+          "Emission des intentions des recruteurs": {
+            cron_string: "30 20 * * *",
+            handler: processRecruiterIntentions,
+          },
         },
     jobs: {
       "remove:duplicates:recruiters": {
@@ -242,6 +253,12 @@ export async function setupJobProcessor() {
       },
       "francetravail:token-offre": {
         handler: async () => generateFranceTravailAccess(),
+      },
+      "francetravail:jobs:import": {
+        handler: async () => importFranceTravailJobs(),
+      },
+      "francetravail:jobs:classify": {
+        handler: async () => classifyFranceTravailJobs(),
       },
       "recreate:indexes": {
         handler: async () => recreateIndexes(),
@@ -339,8 +356,12 @@ export async function setupJobProcessor() {
       },
       "migrations:status": {
         handler: async () => {
-          const pendingMigrations = await statusMigration()
-          console.info(`migrations-status=${pendingMigrations === 0 ? "synced" : "pending"}`)
+          const { count, requireShutdown } = await statusMigration()
+          if (count === 0) {
+            console.log("migrations-status=synced")
+          } else {
+            console.log(`migrations-status=${requireShutdown ? "require-shutdown" : "pending"}`)
+          }
           return
         },
       },

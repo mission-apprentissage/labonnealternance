@@ -294,12 +294,12 @@ const getLabelsAndRomesForDiplomas = async (searchTerm: string): Promise<{ label
  */
 export const getCoupleAppellationRomeIntitule = async (searchTerm: string): Promise<IAppellationsRomes> => {
   const metiers = await getCacheReferentielRome()
-  const sorted = matchSorter(metiers, searchTerm, {
-    keys: ["appellation"],
-    threshold: matchSorter.rankings.NO_MATCH,
-  })
+  const sortedMatch = matchSorter(metiers, searchTerm, {
+    keys: ["appellation", "intitule"],
+    threshold: matchSorter.rankings.MATCHES,
+  }).slice(0, 30)
 
-  return { coupleAppellationRomeMetier: sorted.slice(0, 30) }
+  return { coupleAppellationRomeMetier: sortedMatch.slice(0, 30) }
 }
 
 const removeDuplicateDiplomas = (diplomas) => {

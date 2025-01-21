@@ -14,6 +14,7 @@ import { assertUnreachable, parseEnum } from "shared/utils"
 import { Primitive } from "type-fest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getApplicantFromDB } from "@/services/applicant.service"
 import { getComputedUserAccess, getGrantedRoles } from "@/services/roleManagement.service"
 import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked } from "@/services/userWithAccount.service"
 
@@ -241,8 +242,13 @@ async function getApplicationResource<S extends WithSecurityScheme>(schema: S, r
           return { application }
         }
         const jobResource = await jobToJobResource(job, recruiter)
-        const user = await getUserWithAccountByEmail(application.applicant_email)
-        return { application, jobResource, user }
+        const applicantOpt = await getApplicantFromDB({ _id: application.applicant_id })
+        if (applicantOpt) {
+          const user = await getUserWithAccountByEmail(applicantOpt.email)
+          return { application, jobResource, user }
+        } else {
+          return { application, jobResource }
+        }
       }
 
       assertUnreachable(applicationDef)

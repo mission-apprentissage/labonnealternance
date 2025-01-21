@@ -106,7 +106,7 @@ describe("searchForFtJobs", () => {
         },
         { throwOnError: true }
       )
-    ).toEqual({ resultats: jobs })
+    ).toEqual({ data: { resultats: jobs }, contentRange: undefined })
     expect(nock.isDone()).toBe(true)
     expect(await getDbCollection("francetravail_access").find().toArray()).toEqual([
       { _id: expect.any(ObjectId), access_token: "ft_token_offre", access_type: "OFFRE", created_at: expect.any(Date) },
@@ -129,7 +129,7 @@ describe("searchForFtJobs", () => {
         partenaires: "LABONNEALTERNANCE",
         modeSelectionPartenaires: "EXCLU",
       },
-      { resultats: jobs }
+      { resultats: jobs } //  contentRange: "offres 0-149/12114"
     )
 
     expect(
@@ -141,7 +141,7 @@ describe("searchForFtJobs", () => {
         },
         { throwOnError: true }
       )
-    ).toEqual({ resultats: jobs })
+    ).toEqual({ data: { resultats: jobs }, contentRange: undefined })
     expect(nock.isDone()).toBe(true)
   })
 

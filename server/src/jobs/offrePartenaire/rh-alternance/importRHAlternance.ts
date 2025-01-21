@@ -14,8 +14,8 @@ import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
 import dayjs from "@/services/dayjs.service"
 
-import { blankComputedJobPartner } from "./fillComputedJobsPartners"
-import { rawToComputedJobsPartners } from "./rawToComputedJobsPartners"
+import { blankComputedJobPartner } from "../fillComputedJobsPartners"
+import { rawToComputedJobsPartners } from "../rawToComputedJobsPartners"
 
 const ZRawRHAlternanceJob = rawRHAlternanceModel.zod.shape.job
 

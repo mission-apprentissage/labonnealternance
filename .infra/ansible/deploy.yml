@@ -31,7 +31,7 @@
         cmd: "sudo docker service scale lba_jobs_processor=0"
       when:
         - stack_status.stdout != ""
-        - '"migrations-status=synced" not in migration_status_output.stdout_lines'
+        - '"migrations-status=require-shutdown" not in migration_status_output.stdout_lines'
 
     - name: "Activation du mode maintenance pour effectuer la migration"
       shell:
@@ -47,7 +47,7 @@
         cmd: "sudo docker service scale lba_server=0"
       when:
         - stack_status.stdout != ""
-        - '"migrations-status=synced" not in migration_status_output.stdout_lines'
+        - '"migrations-status=require-shutdown" not in migration_status_output.stdout_lines'
 
     - name: Lancement des migrations
       shell:

@@ -1,9 +1,9 @@
+import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonymizeUserRecruteurs"
 import { anonymizeUsers } from "./anonymization/anonymizeUsers"
-import fixApplications from "./applications/fixApplications"
 import { processApplications } from "./applications/processApplications"
 import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
 import { obfuscateCollections } from "./database/obfuscateCollections"
@@ -14,11 +14,11 @@ import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
 import { detectDuplicateJobPartners } from "./offrePartenaire/detectDuplicateJobPartners"
 import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
+import { importHelloWorkRaw, importHelloWorkToComputed } from "./offrePartenaire/hellowork/importHelloWork"
 import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromComputedToJobsPartners"
-import { importHelloWorkRaw, importHelloWorkToComputed } from "./offrePartenaire/importHelloWork"
-import { importKelio } from "./offrePartenaire/importKelio"
-import { importRHAlternanceRaw, importRHAlternanceToComputed } from "./offrePartenaire/importRHAlternance"
+import { importKelio } from "./offrePartenaire/kelio/importKelio"
 import { processJobPartners } from "./offrePartenaire/processJobPartners"
+import { importRHAlternanceRaw, importRHAlternanceToComputed } from "./offrePartenaire/rh-alternance/importRHAlternance"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
@@ -153,10 +153,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Répare les date d'expiration d'offre qui seraient trop dans le futur",
   },
   {
-    fct: fixApplications,
-    description: "Répare les adresses emails comportant des caractères erronés dans la collection applications",
-  },
-  {
     fct: fixRecruiterDataValidation,
     description: "Répare les data de la collection recruiters",
   },
@@ -215,6 +211,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processJobPartners,
     description: "Chaîne complète de traitement des jobs_partners",
+  },
+  {
+    fct: processScheduledRecruiterIntentions,
+    description: "Envoi les intentations des recruteurs programmées",
   },
   {
     fct: resetInvitationDates,

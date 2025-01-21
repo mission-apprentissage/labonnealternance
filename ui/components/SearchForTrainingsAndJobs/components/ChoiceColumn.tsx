@@ -1,6 +1,5 @@
 import { Box, Flex, Image, Text } from "@chakra-ui/react"
 import distance from "@turf/distance"
-import { round } from "lodash"
 import { useRouter } from "next/router"
 import React, { useContext, useEffect } from "react"
 
@@ -167,8 +166,7 @@ const ChoiceColumn = ({
 
   const updateTrainingDistanceWithNewCenter = (coordinates) => {
     for (let i = 0; i < trainings.length; ++i) {
-      //const trainingCoords = [trainings[i].place.longitude, trainings[i].place.latitude];
-      trainings[i].place.distance = round(distance(coordinates, [trainings[i].place.longitude, trainings[i].place.latitude]), 2)
+      trainings[i].place.distance = Math.round(distance(coordinates, [trainings[i].place.longitude, trainings[i].place.latitude]) * 100) / 100
     }
     setTrainings(trainings)
   }

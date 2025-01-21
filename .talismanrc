@@ -2,7 +2,7 @@ fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: c0279ec41ea7c516c2eb88dff23ef328a82a466bc2ffde2f169ea370f8430b34
 - filename: .infra/vault/vault.yml
-  checksum: 40717e8b277d9c9812c89d62fd3e09d0d70cdd0bb76a460f09486a31b6dd9cc7
+  checksum: c7b85451db302eb73a03185f06cd6d153e7a835a2a518baa4495629972b44eae
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
   checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
 - filename: cypress/pages/FlowAdminPage.ts
@@ -13,6 +13,8 @@ fileignoreconfig:
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
   checksum: e03b5dac5c70accc532a744505fb928c9b2da6b233f360fe95ad127dbc0a5d6d
+- filename: server/src/common/apis/apiReferentielCatalogue.fixture.ts
+  checksum: 845d2420a673b7fcb76c834ac58509ff5634c9910d8ed0f8304554835d6fd224
 - filename: server/src/common/utils/awsUtils.ts
   checksum: d7d550a8852127bd6838bd7c3f4aee9bba06731d932cff880ff2c1033578fdbd
 - filename: server/src/config.ts
@@ -22,7 +24,7 @@ fileignoreconfig:
 - filename: server/src/db/migrations/202405230000000-migrate-fix-missing-date-blacklist.ts
   checksum: 0c1b814245a58b8ca788fbfab9899206edbddaae795d56963f86c5aa83ea555f
 - filename: server/src/http/controllers/__snapshots__/etablissementRecruteur.controller.test.ts.snap
-  checksum: e8a35e591adb1447d1b6e796b063f435ac389e9ffe619c68185f348beae71215
+  checksum: 7bf9d206d0ed729df96134d4238d2cecc5b87ce2f8273bc32d95a7609a23afab
 - filename: server/src/http/controllers/application.controller.test.ts
   checksum: 00cac67c8e138098126ae98702e2bdc3e1092e1bbf188d9a437197e9ca94e16a
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
@@ -34,9 +36,9 @@ fileignoreconfig:
 - filename: server/src/http/controllers/user.controller.test.ts
   checksum: e01d1b9c54d1e6d0c98fd7984f32c3a93f3e9bde92887bdab320cb7af91fdd92
 - filename: server/src/http/controllers/v2/applications.controller.v2.test.ts
-  checksum: 9147c705b5bdfe6eff6b1b75c467249ee1af783d57ff16d78722e48e60831c68
+  checksum: af3286368a305384cae3151698d863167d9f2b9e206d7063625c22595289ea3b
 - filename: server/src/http/controllers/v2/appointment.controller.v2.test.ts
-  checksum: 52a0f730bc8feed13f4f1371c16a332872bec77ca31f0732422b7ca90b322df9
+  checksum: bbbf100d65bae0d840c715f4b1d893986df7423f470f3ee300545959105f6ca4
 - filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts
   checksum: a99bfdcb5a8f4c66e9d055b44160adbc7ec2bcaf87209ff76fa9a9f674b9ca86
 - filename: server/src/http/controllers/v2/jobs.controller.v2.ts
@@ -109,6 +111,8 @@ fileignoreconfig:
   checksum: 5fbdf21310d8dfaf259eb39a5ca1e72a53b15493cf3a59ed42c4cb5c8f3a62ab
 - filename: server/static/templates/mail-bienvenue.mjml.ejs
   checksum: 34eb30b463153df565aa89f8e42f08eb77633b6bfa4673f4d6ef5f40633c6101
+- filename: server/static/templates/mail-candidat-confirmation-rdv.mjml.ejs
+  checksum: 23f500afe4d0984a4680e387e6e67223bdbdc5d954e984f400451b26bac248ce
 - filename: server/static/templates/mail-candidat-entretien.mjml.ejs
   checksum: 53067858567e2878f5f65da06be9efc6902a691b36299167d54343ab30162e49
 - filename: server/static/templates/mail-candidat-nsp.mjml.ejs
@@ -119,8 +123,16 @@ fileignoreconfig:
   checksum: 0b806bca197dba97415902339e84f924cb45dae766cf8d3cfc47d80d2bdd203c
 - filename: server/static/templates/mail-candidat-refus.mjml.ejs
   checksum: 3fcfa9586df3283a3f50cf6751b735b646d3f3ac64e8e4a8453999e9e5aea881
+- filename: server/static/templates/mail-cfa-delegation.mjml.ejs
+  checksum: 569e084a81ffdfbd3b427a60c0712ec2f1af2031fe120572e55235691e84dc5b
+- filename: server/static/templates/mail-cfa-demande-de-contact.mjml.ejs
+  checksum: 6e15fdba953753e2d4f249c3a289615dea942ac18c0a95241309ab15ad7f60a2
+- filename: server/static/templates/mail-cfa-notification-hardbounce-cfa.mjml.ejs
+  checksum: ad25d72b5287060499c4e44bfe93eacd8dbfb7b40122b912eb9c3cf657f6aed7
 - filename: server/static/templates/mail-echec-envoi-candidature.mjml.ejs
   checksum: 9055c5495ced85a674770e7fb8a81b3bd84949f9ff8f6e6450989aa3b7cda326
+- filename: server/static/templates/mail-reponse-cfa.mjml.ejs
+  checksum: a5a36d078b7c75e6da58c06c032b52d0f57d89bf5913065bb1aaab098f3e80af
 - filename: server/tests/fixture/connectedUser.fixture.ts
   checksum: bfbb2f218580ce302d3bfcd9ba7494a46ff0a05ba02ca0f38a801ea8c6bf9be2
 - filename: server/tests/integration/http/formationV1.test.ts
@@ -187,12 +199,16 @@ fileignoreconfig:
   checksum: cfd0e48e8762b43c6431dad873727f6ac091ca6f5c7555e37a8ee3fba03184d1
 - filename: ui/common/hooks/useAuth.ts
   checksum: 7cce935653407e000b35e98bd365a003e538aed4fed432a9a404d4f2412dd2df
+- filename: ui/components/DepotOffre/InfosDiffusionOffre.tsx
+  checksum: 351c99c9ec80fc6765e8456738655b71153358fe6ae7fb1f3895d21351817fc5
 - filename: ui/components/DepotOffre/RomeDetail.tsx
   checksum: 3e8962cc324174f8934d5a9da10bfc0d233ea6b32d036d459195d32166154282
 - filename: ui/components/DepotOffre/RomeDetailWithQuery.tsx
   checksum: 477c08911f43c273ad8b257c3885ae98b92e6a74c8ad096c7023201762907414
 - filename: ui/components/HomeComponents/FacilitezRDVA.tsx
   checksum: cdeae2ef94431bbe8fd1bb0f1bc0c007c938c1a1d4513316cc44cb966b7f4268
+- filename: ui/components/HomeComponents/OffresGratuites.tsx
+  checksum: b3fe019fc77f7bcc6a83a4624c8e5235e3ae1429cde1599acf4c676abb178f92
 - filename: ui/components/InfoBanner/InfoBanner.tsx
   checksum: e5f8bd78ea46335fbb8784eabc01391be68922960f7d04ce9e8755484d10ce32
 - filename: ui/components/ItemDetail/DidYouKnow.tsx
@@ -246,7 +262,9 @@ fileignoreconfig:
 - filename: ui/public/images/home_pics/illu-offreformation.svg
   checksum: 7ad0f32e8c39866d9f4a76dde67f66a90c022f98e9f1a4932c9013e264c35b86
 - filename: ui/public/images/home_pics/illu-plateformesjeunes.svg
-  checksum: 9b2847599887988c02e13055aef1488349aca1808b22fa9f24aa8d98dc4468d1
+  checksum: f281c48b5b3d7d0bd92c49262174f6683686161ad9401ee7cf76cba75d54268b
+- filename: ui/public/images/home_pics/illu-votrebesoin.svg
+  checksum: ca9aa90b45043f8164d96e76e3f42906bcf597186394b1f81cf14c47814ebb33
 - filename: ui/utils/api.utils.test.ts
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts

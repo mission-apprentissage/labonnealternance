@@ -2,6 +2,18 @@ import { logger } from "../../common/logger"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
+export const anonymizeApplicationProjection = {
+  company_recruitment_intention: 1,
+  company_feedback_date: 1,
+  company_siret: 1,
+  company_naf: 1,
+  job_origin: 1,
+  job_id: 1,
+  caller: 1,
+  created_at: 1,
+  applicant_id: 1,
+}
+
 const anonymize = async () => {
   logger.info(`Début anonymisation`)
 
@@ -16,17 +28,7 @@ const anonymize = async () => {
         $match: matchCondition,
       },
       {
-        $project: {
-          company_recruitment_intention: 1,
-          company_feedback_date: 1,
-          company_siret: 1,
-          company_naf: 1,
-          job_origin: 1,
-          job_id: 1,
-          caller: 1,
-          created_at: 1,
-          applicant_id: 1,
-        },
+        $project: anonymizeApplicationProjection,
       },
       {
         $merge: "anonymizedapplications",

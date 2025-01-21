@@ -1,8 +1,8 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Checkbox, Container, Divider, Link, SimpleGrid, Text } from "@chakra-ui/react"
+import dynamic from "next/dynamic"
 import { NextSeo } from "next-seo"
 import React, { useEffect, useState } from "react"
-import { NotionRenderer } from "react-notion-x"
 
 import {
   CONSENT_COOKIE_NAME,
@@ -21,6 +21,8 @@ import Navigation from "../components/navigation"
 import ScrollToTop from "../components/ScrollToTop"
 import { publicConfig } from "../config.public"
 import { fetchNotionPage } from "../services/fetchNotionPage"
+
+const NotionRenderer = dynamic(() => import("react-notion-x").then((mod) => mod.NotionRenderer), { ssr: false })
 
 export async function getStaticProps() {
   const recordMap = await fetchNotionPage("2d7d9cda6d9a4059baa84eacff592139")

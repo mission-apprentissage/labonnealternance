@@ -75,6 +75,11 @@ ENV COMMIT_HASH=$COMMIT_HASH
 ARG PUBLIC_ENV
 ENV NEXT_PUBLIC_ENV=$PUBLIC_ENV
 
+ENV __SENTRY_DEBUG__=false
+ENV __RRWEB_EXCLUDE_IFRAME__=true
+ENV __RRWEB_EXCLUDE_SHADOW_DOM__=true
+ENV __SENTRY_EXCLUDE_REPLAY_WORKER__=true
+
 RUN yarn --cwd ui build
 # RUN --mount=type=cache,target=/app/ui/.next/cache yarn --cwd ui build
 
@@ -98,7 +103,7 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # You only need to copy next.config.js if you are NOT using the default configuration
-COPY --from=builder_ui --chown=nextjs:nodejs /app/ui/next.config.js /app/
+COPY --from=builder_ui --chown=nextjs:nodejs /app/ui/next.config.mjs /app/
 COPY --from=builder_ui --chown=nextjs:nodejs /app/ui/public /app/ui/public
 COPY --from=builder_ui --chown=nextjs:nodejs /app/ui/package.json /app/ui/package.json
 

@@ -8,10 +8,6 @@ export function generateApplicationFixture(data: Partial<IApplication>): IApplic
   return {
     _id: new ObjectId(),
     applicant_id: applicant._id,
-    applicant_email: "applicant@mail.fr",
-    applicant_first_name: "a",
-    applicant_last_name: "a",
-    applicant_phone: "0125252525",
     applicant_message_to_company: "some blahblahblah",
     applicant_attachment_name: "cv.pdf",
     company_recruitment_intention: null,

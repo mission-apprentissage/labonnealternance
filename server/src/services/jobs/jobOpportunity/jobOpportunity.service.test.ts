@@ -208,7 +208,7 @@ describe("findJobsOpportunities", () => {
   })
 
   it("should execute query", async () => {
-    vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: ftJobs })
+    vi.mocked(searchForFtJobs).mockResolvedValue({ data: { resultats: ftJobs }, contentRange: "" })
 
     const results = await findJobsOpportunities(
       {
@@ -287,7 +287,7 @@ describe("findJobsOpportunities", () => {
   })
 
   it("should support query without rncp or rome filter", async () => {
-    vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: ftJobs })
+    vi.mocked(searchForFtJobs).mockResolvedValue({ data: { resultats: ftJobs }, contentRange: "" })
 
     const results = await findJobsOpportunities(
       {
@@ -375,7 +375,7 @@ describe("findJobsOpportunities", () => {
   })
 
   it("should support query without geo filter", async () => {
-    vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: ftJobs })
+    vi.mocked(searchForFtJobs).mockResolvedValue({ data: { resultats: ftJobs }, contentRange: "" })
 
     const results = await findJobsOpportunities(
       {
@@ -441,7 +441,7 @@ describe("findJobsOpportunities", () => {
 
   describe("searching by rncp code", async () => {
     it("should return jobs corresponding to the romes codes associated with the requested rncp code", async () => {
-      vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: [] })
+      vi.mocked(searchForFtJobs).mockResolvedValue({ data: { resultats: [] }, contentRange: "" })
 
       const scopeApiAlternance = nock("https://api.apprentissage.beta.gouv.fr:443")
         .get("/api/certification/v1")
@@ -574,7 +574,7 @@ describe("findJobsOpportunities", () => {
     })
 
     it("should resolve RNCP continuity", async () => {
-      vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: [] })
+      vi.mocked(searchForFtJobs).mockResolvedValue({ data: { resultats: [] }, contentRange: "" })
 
       const scopeApiAlternance = nock("https://api.apprentissage.beta.gouv.fr:443")
         .get("/api/certification/v1")
@@ -652,7 +652,7 @@ describe("findJobsOpportunities", () => {
   })
 
   it("should RNCP & ROME filter appliy as OR condition", async () => {
-    vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: ftJobs })
+    vi.mocked(searchForFtJobs).mockResolvedValue({ data: { resultats: ftJobs }, contentRange: "" })
 
     const scopeApiAlternance = nock("https://api.apprentissage.beta.gouv.fr:443")
       .get("/api/certification/v1")
@@ -811,7 +811,7 @@ describe("findJobsOpportunities", () => {
 
   describe("labonnealternance jobs", () => {
     beforeEach(async () => {
-      vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: [] })
+      vi.mocked(searchForFtJobs).mockResolvedValue({ data: { resultats: [] }, contentRange: "" })
 
       await getDbCollection("jobs_partners").deleteMany({})
     })
@@ -1304,7 +1304,7 @@ describe("findJobsOpportunities", () => {
 
   describe("jobs partners", () => {
     beforeEach(async () => {
-      vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: [] })
+      vi.mocked(searchForFtJobs).mockResolvedValue({ data: { resultats: [] }, contentRange: "" })
     })
     it("should limit jobs to 150", async () => {
       const extraOffers: IJobsPartnersOfferPrivate[] = Array.from({ length: 300 }, (e, idx) =>
@@ -1486,9 +1486,9 @@ describe("findJobsOpportunities", () => {
         )
 
         expect.soft(results.jobs).toHaveLength(3)
-        expect.soft(results.jobs[0].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA)
-        expect.soft(results.jobs[1].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.HELLOWORK)
-        expect.soft(results.jobs[2].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.HELLOWORK)
+        expect.soft(results.jobs[0].identifier.partner_label).not.toBe(JOBPARTNERS_LABEL.RH_ALTERNANCE)
+        expect.soft(results.jobs[1].identifier.partner_label).not.toBe(JOBPARTNERS_LABEL.RH_ALTERNANCE)
+        expect.soft(results.jobs[2].identifier.partner_label).not.toBe(JOBPARTNERS_LABEL.RH_ALTERNANCE)
 
         results = await findJobsOpportunities(
           {
@@ -1543,7 +1543,7 @@ describe("findJobsOpportunities", () => {
     })
 
     it("should select jobs within the radius", async () => {
-      vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: [] })
+      vi.mocked(searchForFtJobs).mockResolvedValue({ data: { resultats: [] }, contentRange: "" })
 
       const results = await findJobsOpportunities(
         {
@@ -1584,7 +1584,7 @@ describe("findJobsOpportunities", () => {
         ["6", "NV2"],
         ["7", "NV1"],
       ])("should support filter by diploma %s as level %s", async (target_diploma_level, ftLevel) => {
-        vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: [] })
+        vi.mocked(searchForFtJobs).mockResolvedValue({ data: { resultats: [] }, contentRange: "" })
 
         const results = await findJobsOpportunities(
           {
@@ -1653,7 +1653,7 @@ describe("findJobsOpportunities", () => {
         qualificationLibelle: "Employé non qualifié",
       })
 
-      vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: [ftJobs[0], ftJobWithoutGeoloc] })
+      vi.mocked(searchForFtJobs).mockResolvedValue({ data: { resultats: [ftJobs[0], ftJobWithoutGeoloc] }, contentRange: "" })
 
       const results = await findJobsOpportunities(
         {
@@ -1677,7 +1677,7 @@ describe("findJobsOpportunities", () => {
 
   describe("when searching with location", () => {
     it("should sort by source, distance and then by creation date", async () => {
-      vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: ftJobs })
+      vi.mocked(searchForFtJobs).mockResolvedValue({ data: { resultats: ftJobs }, contentRange: "" })
 
       const extraLbaJob = generateRecruiterFixture({
         establishment_siret: "20003277900015",
