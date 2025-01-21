@@ -251,7 +251,7 @@ export const getFtJobs = async ({
       return emptyPeResponse
     }
 
-    return jobs
+    return jobs.data
   } catch (error) {
     sentryCaptureException(error)
     return manageApiError({ error, api_path: api, caller, errorTitle: `getting jobs from PE (${api})` })
@@ -307,7 +307,7 @@ export const getFtJobsV2 = async ({
     return { resultats: [] }
   }
 
-  return jobs
+  return jobs.data
 }
 
 /**

@@ -98,17 +98,20 @@ export const searchForFtJobs = async (
   params: {
     codeROME?: string
     commune?: string
-    sort: number
+    departement?: string
+    region?: string
+    sort?: number
     natureContrat: string
     range: string
     niveauFormation?: string
     insee?: string
     distance?: number
+    publieeDepuis?: number
   },
   options: {
     throwOnError: boolean
   }
-): Promise<FTResponse | null | ""> => {
+): Promise<{ data: FTResponse; contentRange: string } | null | ""> => {
   const token = await getToken("OFFRE")
   return OffreFranceTravailLimiter(async (client) => {
     try {
@@ -119,7 +122,7 @@ export const searchForFtJobs = async (
         modeSelectionPartenaires: "EXCLU",
       }
 
-      const { data } = await client.get(`${config.franceTravailIO.baseUrl}/offresdemploi/v2/offres/search`, {
+      const { data, headers } = await client.get(`${config.franceTravailIO.baseUrl}/offresdemploi/v2/offres/search`, {
         params: extendedParams,
         headers: {
           "Content-Type": "application/json",
@@ -128,7 +131,7 @@ export const searchForFtJobs = async (
         },
       })
 
-      return data
+      return { data, contentRange: headers["content-range"] } //  fyi: 'content-range': 'offres 0-149/9981',
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       if (options.throwOnError) {
