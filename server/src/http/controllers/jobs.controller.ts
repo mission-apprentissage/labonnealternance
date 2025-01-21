@@ -7,7 +7,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { getPartnerJobById } from "@/services/partnerJob.service"
 import { Appellation } from "@/services/rome.service.types"
-import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
+import { getUserWithAccountByEmail, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
 import dayjs from "../../services/dayjs.service"
@@ -140,6 +140,7 @@ export default (server: Server) => {
       if (!user) {
         return res.status(400).send({ error: true, message: "User does not exist" })
       }
+      await validateUserWithAccountEmail(user._id, "Création par API v1")
 
       const romeDetails = await getFicheMetierFromDB({
         query: {

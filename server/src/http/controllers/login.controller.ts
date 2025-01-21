@@ -8,7 +8,7 @@ import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { createAuthMagicLink } from "@/services/appLinks.service"
 import { getComputedUserAccess, getGrantedRoles, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
-import { getUserWithAccountByEmail, isUserEmailChecked } from "@/services/userWithAccount.service"
+import { getUserWithAccountByEmail, isUserEmailChecked, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
 import { startSession, stopSession } from "../../common/utils/session.service"
 import config from "../../config"
@@ -108,6 +108,10 @@ export default (server: Server) => {
 
       if (userState?.error) {
         throw forbidden()
+      }
+
+      if (!isUserEmailChecked(user)) {
+        await validateUserWithAccountEmail(user._id)
       }
 
       await updateLastConnectionDate(formatedEmail)

@@ -1,6 +1,6 @@
 import { badRequest, internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
-import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS_LABEL, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { ComputedUserAccess, IUserRecruteurPublic, IUserWithAccount } from "shared/models"
 import { ICFA } from "shared/models/cfa.model"
 import { IEntreprise } from "shared/models/entreprise.model"
@@ -13,16 +13,10 @@ import config from "@/config"
 
 import { getDbCollection } from "../common/utils/mongodbUtils"
 
-import {
-  activateEntrepriseRecruiterForTheFirstTime,
-  archiveDelegatedFormulaire,
-  archiveFormulaire,
-  getFormulaireFromUserIdOrError,
-  reactivateRecruiter,
-} from "./formulaire.service"
+import { activateRecruiter, archiveDelegatedFormulaire, archiveFormulaire, checkForJobActivations, getFormulaireFromUserIdOrError } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { sendWelcomeEmailToUserRecruteur } from "./userRecruteur.service"
-import { activateUser, validateUserWithAccountEmail } from "./userWithAccount.service"
+import { activateUser } from "./userWithAccount.service"
 
 export const modifyPermissionToUser = async (
   props: Pick<IRoleManagement, "authorized_id" | "authorized_type" | "user_id" | "origin">,
@@ -340,20 +334,12 @@ export const activateUserRole = async ({ userId, requestedBy }: { userId: Object
      * - send email to delegation if available
      */
     const userFormulaire = await getFormulaireFromUserIdOrError(user._id.toString())
-    if (userFormulaire.status === RECRUITER_STATUS.ARCHIVE) {
-      // le recruiter étant archivé on se contente de le rendre de nouveau Actif
-      await reactivateRecruiter(userFormulaire._id)
-    } else if (userFormulaire.status === RECRUITER_STATUS.ACTIF) {
-      // le compte se trouve validé, on procède à l'activation de la première offre et à la notification aux CFAs
-      if (userFormulaire?.jobs?.length) {
-        await activateEntrepriseRecruiterForTheFirstTime(userFormulaire)
-      }
-    }
+    await activateRecruiter(userFormulaire._id)
+    await checkForJobActivations(userFormulaire)
   }
 
   await activateUser(user, requestedBy._id.toString())
 
   // validate user email addresse
-  await validateUserWithAccountEmail(user._id)
   await sendWelcomeEmailToUserRecruteur(user)
 }

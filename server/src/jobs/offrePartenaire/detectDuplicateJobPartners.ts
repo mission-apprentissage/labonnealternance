@@ -9,7 +9,7 @@ import { removeAccents } from "shared/utils"
 import * as stringSimilarity from "string-similarity"
 
 import { logger } from "@/common/logger"
-import { getPairs } from "@/common/utils/array"
+import { deduplicate, getPairs } from "@/common/utils/array"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -312,7 +312,5 @@ const cleanForSearch = (str: string): string => {
       part = part.toLowerCase()
       return part.length > Math.min(3, str.length / 5) ? [part] : []
     })
-  return deduplicateWords(words).join(" ")
+  return deduplicate(words).join(" ")
 }
-
-const deduplicateWords = (words: string[]): string[] => words.filter((word, index) => words.indexOf(word) === index)
