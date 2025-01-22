@@ -1,4 +1,5 @@
 import { paramCase } from "param-case"
+import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 
 import { getCampaignParameters } from "./campaignParameters"
 import { getItemQueryParameters } from "./getItemId"
@@ -28,8 +29,9 @@ const pushHistory = ({
   searchTimestamp = undefined,
   isReplace = false,
   displayMap = false,
-  path = "/recherche",
+  path,
 }) => {
+  console.log("PUSHHISTORY :", path, router.pathname)
   const params = buildQueryParams({
     display,
     page,
@@ -37,19 +39,18 @@ const pushHistory = ({
     searchParameters,
     searchTimestamp,
     displayMap,
-    path,
+    path: path ?? router.pathname,
   })
 
   const navigationMethod = isReplace ? router.replace : router.push
-
   if (page === "fiche") {
     const title = paramCase(item?.title)
-    const link = `/${item?.ideaType === "formation" ? "" : "emploi/"}${item?.ideaType}/${encodeURIComponent(item?.id)}/${title}`
+    const link = `/${item?.ideaType === "formation" ? "" : "emploi/"}${oldItemTypeToNewItemType(item?.ideaType)}/${encodeURIComponent(item?.id)}/${title}`
     navigationMethod(`${link}${params ? `?${params}` : ""}`, undefined, {
       shallow: true,
     })
-  } else if (page === "list") {
-    navigationMethod(`${path}${params ? `?${params}` : ""}`, undefined, {
+  } else {
+    navigationMethod(`${path ?? router.pathname}${params ? `?${params}` : ""}`, undefined, {
       shallow: true,
     })
   }
