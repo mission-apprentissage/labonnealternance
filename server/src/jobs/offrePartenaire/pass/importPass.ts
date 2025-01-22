@@ -10,12 +10,13 @@ import { passJobToJobsPartners, ZPassJob } from "./passMapper"
 const rawCollectionName = rawPassModel.collectionName
 const offerXmlTag = "item"
 
-export const importPassRaw = async () => await importFromUrlInXml({ destinationCollection: rawCollectionName, url: config.passUrl, offerXmlTag })
+export const importPassRaw = async () =>
+  await importFromUrlInXml({ destinationCollection: rawCollectionName, url: config.passUrl, offerXmlTag, partnerLabel: JOBPARTNERS_LABEL.PASS })
 
 export const importPassToComputed = async () => {
   await rawToComputedJobsPartners({
     collectionSource: rawCollectionName,
-    partnerLabel: JOBPARTNERS_LABEL.HELLOWORK,
+    partnerLabel: JOBPARTNERS_LABEL.PASS,
     zodInput: ZPassJob,
     mapper: passJobToJobsPartners,
     documentJobRoot: offerXmlTag,

@@ -13,9 +13,9 @@ const offerXmlTag = "job"
 
 export const importHelloWorkRaw = async (sourceStream?: NodeJS.ReadableStream) => {
   if (sourceStream) {
-    await importFromStreamInXml({ destinationCollection: rawCollectionName, offerXmlTag, stream: sourceStream })
+    await importFromStreamInXml({ destinationCollection: rawCollectionName, offerXmlTag, stream: sourceStream, partnerLabel: JOBPARTNERS_LABEL.HELLOWORK })
   } else {
-    await importFromUrlInXml({ destinationCollection: rawCollectionName, url: config.helloworkUrl, offerXmlTag })
+    await importFromUrlInXml({ destinationCollection: rawCollectionName, url: config.helloworkUrl, offerXmlTag, partnerLabel: JOBPARTNERS_LABEL.HELLOWORK })
   }
 }
 

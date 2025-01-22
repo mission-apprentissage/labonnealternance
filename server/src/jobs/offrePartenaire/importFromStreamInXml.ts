@@ -9,7 +9,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
-const xmlParser = new xml2j.Parser({ explicitArray: false, emptyTag: null })
+const xmlParser = new xml2j.Parser({ explicitArray: false, emptyTag: null, trim: true })
 
 const xmlToJson = async (offerXml: string, index: number) => {
   index % 1000 === 0 && logger.info("parsing offer", index)
@@ -21,10 +21,12 @@ export const importFromStreamInXml = async ({
   stream,
   destinationCollection,
   offerXmlTag,
+  partnerLabel,
 }: {
   stream: NodeJS.ReadableStream
   destinationCollection: CollectionName
   offerXmlTag: string
+  partnerLabel: string
 }) => {
   logger.info("deleting old data")
   await getDbCollection(destinationCollection).deleteMany({})
@@ -69,10 +71,10 @@ export const importFromStreamInXml = async ({
         reject(err)
       } else {
         logger.info("Pipeline succeeded.")
-        const message = `import Hello work terminé : ${offerInsertCount} offres importées`
+        const message = `import ${partnerLabel} terminé : ${offerInsertCount} offres importées`
         logger.info(message)
         notifyToSlack({
-          subject: `import des offres Hello work dans raw`,
+          subject: `import des offres ${partnerLabel} dans raw`,
           message,
         })
         resolve({
