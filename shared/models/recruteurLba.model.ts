@@ -23,7 +23,7 @@ export const ZLbaCompany = z
     city: z.string().nullable().describe("Ville"),
     geo_coordinates: z.string().describe("Latitude et longitude de l'établissement"),
     geopoint: ZPointGeometry.nullish().describe("Latitude et longitude de l'établissement"),
-    email: z.string().nullable().describe("Adresse email de contact"),
+    email: z.string().email().nullable().describe("Adresse email de contact"),
     phone: extensions.phone().nullable().describe("Numéro de téléphone de contact"),
     company_size: z.string().nullable().describe("Tranche effectif de l'entreprise"),
     website: z.string().nullable().describe("URL du site Internet"),

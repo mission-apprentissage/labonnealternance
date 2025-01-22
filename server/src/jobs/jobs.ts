@@ -57,7 +57,7 @@ import { resetApiKey } from "./recruiters/resetApiKey"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import updateGeoLocations from "./recruteurLba/updateGeoLocations"
 import updateOpcoCompanies from "./recruteurLba/updateOpcoCompanies"
-import updateLbaCompanies from "./recruteurLba/updateRecruteurLba"
+import importRecruteurLBAFromAlgoFile from "./recruteurLba/updateRecruteurLba"
 import { SimpleJobDefinition, simpleJobDefinitions } from "./simpleJobDefinitions"
 import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 import { controlApplications } from "./verifications/controlApplications"
@@ -169,7 +169,7 @@ export async function setupJobProcessor() {
           },
           "Mise à jour des sociétés issues de l'algo": {
             cron_string: "0 5 * * 7",
-            handler: () => updateLbaCompanies({ useAlgoFile: true, clearMongo: true }),
+            handler: () => importRecruteurLBAFromAlgoFile({ clearMongo: true }),
           },
           "Contrôle quotidien des candidatures": {
             cron_string: "0 10-19/1 * * 1-5",
@@ -314,8 +314,8 @@ export async function setupJobProcessor() {
       "brevo:blocked:sync": {
         handler: async (job) => updateBrevoBlockedEmails(job.payload as any),
       },
-      "companies:update": {
-        handler: async (job) => updateLbaCompanies(job.payload as any),
+      "recruteurslba:import": {
+        handler: async (job) => importRecruteurLBAFromAlgoFile(job.payload as any),
       },
       "geo-locations:update": {
         handler: async (job) => updateGeoLocations(job.payload as any),

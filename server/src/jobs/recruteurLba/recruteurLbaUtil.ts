@@ -95,6 +95,18 @@ export const countCompaniesInFile = async (): Promise<number> => {
   return count
 }
 
+export const verifyRecruteurLBAAlgoFileDataVolume = async () => {
+  const companyCount = await countCompaniesInFile()
+  if (companyCount < config.minRecruteurLBAAlgoData) {
+    await notifyToSlack({
+      subject: "IMPORT SOCIETES ISSUES DE L'ALGO",
+      message: `Import sociétés issues de l'algo avorté car le fichier ne comporte pas assez de sociétés. ${companyCount} sociétés / ${config.minRecruteurLBAAlgoData} minimum attendu`,
+      error: true,
+    })
+    throw new Error(`Nombre de sociétés insuffisant : ${companyCount}`)
+  }
+}
+
 /*
 Initialize bonneBoite from data, add missing data from maps,
 */

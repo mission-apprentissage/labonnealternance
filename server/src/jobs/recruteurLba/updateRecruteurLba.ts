@@ -7,10 +7,14 @@ import { logger } from "../../common/logger"
 import { logMessage } from "../../common/utils/logMessage"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
-import { checkIfAlgoFileIsNew, countCompaniesInFile, downloadAlgoCompanyFile, getCompanyMissingData, readCompaniesFromJson, removePredictionFile } from "./recruteurLbaUtil"
-
-// nombre minimal arbitraire de sociétés attendus dans le fichier
-const MIN_COMPANY_THRESHOLD = 200000
+import {
+  checkIfAlgoFileIsNew,
+  downloadAlgoCompanyFile,
+  getCompanyMissingData,
+  readCompaniesFromJson,
+  removePredictionFile,
+  verifyRecruteurLBAAlgoFileDataVolume,
+} from "./recruteurLbaUtil"
 
 let count = 0
 
@@ -60,7 +64,7 @@ const prepareCompany = async (rawCompany): Promise<ILbaCompany | null> => {
   return company
 }
 
-const processCompanies = async () => {
+const processAlgoCompanies = async () => {
   await oleoduc(
     await readCompaniesFromJson(),
     transformData((company) => prepareCompany(company), { parallel: 8 }),
@@ -77,50 +81,22 @@ const processCompanies = async () => {
   )
 }
 
-export default async function updateLbaCompanies({
-  useAlgoFile = false,
-  clearMongo = false,
-  forceRecreate = false,
-  sourceFile = null,
-}: {
-  useAlgoFile?: boolean
-  clearMongo?: boolean
-  forceRecreate?: boolean
-  sourceFile?: string | null
-}) {
+export default async function importRecruteurLBAFromAlgoFile({ clearMongo = false, sourceFile = null }: { clearMongo?: boolean; sourceFile?: string | null }) {
   try {
-    logger.info("Start updateLbaCompanies jobs ")
-    console.info({ useAlgoFile, clearMongo, forceRecreate })
-    if (useAlgoFile) {
-      if (!forceRecreate) {
-        await checkIfAlgoFileIsNew("algo companies")
-      }
-
-      await downloadAlgoCompanyFile(sourceFile)
-
-      if (!forceRecreate) {
-        const companyCount = await countCompaniesInFile()
-        if (companyCount < MIN_COMPANY_THRESHOLD) {
-          await notifyToSlack({
-            subject: "IMPORT SOCIETES ISSUES DE L'ALGO",
-            message: `Import sociétés issues de l'algo avorté car le fichier ne comporte pas assez de sociétés. ${companyCount} sociétés / ${MIN_COMPANY_THRESHOLD} minimum attendu`,
-            error: true,
-          })
-          throw new Error(`Nombre de sociétés insuffisant : ${companyCount}`)
-        }
-      }
-    }
+    logger.info("Start importRecruteurLBAFromAlgoFile jobs ")
+    console.info({ clearMongo })
 
     if (clearMongo) {
       logger.info("Clear recruteurlba collection")
       await getDbCollection("recruteurslba").deleteMany({})
     }
 
-    if (useAlgoFile) {
-      await processCompanies()
-    }
+    await checkIfAlgoFileIsNew("algo companies")
+    await downloadAlgoCompanyFile(sourceFile)
+    await verifyRecruteurLBAAlgoFileDataVolume()
+    await processAlgoCompanies()
 
-    logger.info("End updateLbaCompanies jobs ")
+    logger.info("End importRecruteurLBAFromAlgoFile jobs ")
 
     await notifyToSlack({ subject: "IMPORT SOCIETES ISSUES DE L'ALGO", message: `Import sociétés issues de l'algo terminé. ${count} sociétés importées`, error: false })
   } catch (err) {
