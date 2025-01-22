@@ -11,7 +11,7 @@ export const ZPassJob = z
     title: z.object({
       a: z
         .object({
-          _: z.string(),
+          _: z.string().nullish(),
         })
         .passthrough(),
     }),
@@ -42,13 +42,14 @@ export const passJobToJobsPartners = (job: IPassJob): IComputedJobsPartners => {
   const dcFormat = job["dc:format"]
   const dcCoverage = job["dc:coverage"]
 
-  const created_at = new Date()
+  const now = new Date()
   const creationDate = parseDate(pubDate)
   const contractDuration = parseDuration(dcFormat)
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner,
     _id: new ObjectId(),
-    created_at,
+    created_at: now,
+    updated_at: now,
     partner_label: JOBPARTNERS_LABEL.PASS,
     partner_job_id: dcIdentifier,
     contract_start: parseDate(dcDate),
@@ -58,7 +59,7 @@ export const passJobToJobsPartners = (job: IPassJob): IComputedJobsPartners => {
     offer_target_diploma: parseDiploma(dcType),
     offer_creation: creationDate,
     offer_expiration: dayjs
-      .tz(creationDate || created_at)
+      .tz(creationDate || now)
       .add(2, "months")
       .toDate(),
     offer_opening_count: 1,
