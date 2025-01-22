@@ -28,37 +28,13 @@ export default function DetailEmploi() {
 
   /*
   TODO:
-  - mettre à jour tous les push history
   - éviter les rechargements de requêtes lors d'un close sur détail
-  - charger les data sur accès direct
+  - pkoi rechargement sans cache sur useQuery ?
+  - charger les data des formations / jobs sur accès direct avec param sans rien dans contexte
+  - charger les data des jobs sur accès direct formation sans param
   - gérer l'affichage de la map
   - réparer le sticky
 
-
-
-  données dans le contexte : 
-  - selectedItem
-  - jobs / trainings
-
-  rien dans le contexte
-    - pas de params : 
-      > charger le détail
-    - des params :
-      > charger les offres
-      > charger les formations
-      > charger le détail
-  
-    > fixer le contexte
-
-  données dans le contexte
-    - des params
-      - params différents données
-        ???
-      - params ok avec contexte
-        - détail chargé
-          > utilisation directe
-        - détail à charger
-          > charger le détail
 
 
 
