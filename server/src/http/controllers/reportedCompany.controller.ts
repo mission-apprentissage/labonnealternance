@@ -1,7 +1,6 @@
-import { ObjectId } from "bson"
 import { zRoutes } from "shared"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { reportCompany } from "@/services/reportedCompany.service"
 
 import { Server } from "../server"
 
@@ -12,13 +11,9 @@ export default (server: Server) => {
       schema: zRoutes.post["/report-company"],
     },
     async (req, res) => {
+      const { reason, reasonDetails } = req.body
       const { itemId, type } = req.query
-      await getDbCollection("reported_companies").insertOne({
-        _id: new ObjectId(),
-        createdAt: new Date(),
-        type,
-        itemId,
-      })
+      await reportCompany({ itemId, type, reason, reasonDetails })
       return res.send({})
     }
   )

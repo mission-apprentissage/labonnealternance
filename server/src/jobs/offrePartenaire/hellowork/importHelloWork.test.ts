@@ -25,7 +25,7 @@ describe("importHelloWork", () => {
   })
 
   it("should test the import of hellowork data into computed_job_partners", async () => {
-    const fileStream = fs.createReadStream("server/src/jobs/offrePartenaire/importHelloWork.test.input.xml")
+    const fileStream = fs.createReadStream("server/src/jobs/offrePartenaire/hellowork/importHelloWork.test.input.xml")
     await importHelloWorkRaw(fileStream)
     expect.soft(await getDbCollection("raw_hellowork").countDocuments({})).toBe(5)
 
