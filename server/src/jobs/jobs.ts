@@ -261,7 +261,11 @@ export async function setupJobProcessor() {
         handler: async () => classifyFranceTravailJobs(),
       },
       "recreate:indexes": {
-        handler: async () => recreateIndexes(),
+        handler: async (job) => {
+          const { drop } = job.payload as any
+          await recreateIndexes({ drop })
+          return
+        },
       },
       "garbage-collector:run": {
         handler: async () => runGarbageCollector(),

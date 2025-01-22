@@ -43,6 +43,6 @@ export type IUnsubscribeCompanyData = z.output<typeof ZUnsubscribeCompanyData>
 
 export default {
   zod: ZUnsubscribedLbaCompany,
-  indexes: [[{ siret: 1 }, {}]],
+  indexes: [],
   collectionName,
 } as const satisfies IModelDescriptor

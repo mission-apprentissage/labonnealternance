@@ -23,10 +23,6 @@ export type IReportedCompany = z.output<typeof ZReportedCompany>
 
 export default {
   zod: ZReportedCompany,
-  indexes: [
-    [{ type: 1 }, {}],
-    [{ itemId: 1 }, {}],
-    [{ reason: 1 }, {}],
-  ],
+  indexes: [],
   collectionName: "reported_companies" as const,
 } as const satisfies IModelDescriptor
