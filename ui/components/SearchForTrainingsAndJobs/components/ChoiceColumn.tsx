@@ -34,6 +34,7 @@ const ChoiceColumn = ({
   partnerJobSearchError,
 }) => {
   const router = useRouter()
+  const path = router.pathname
   const scopeContext = useContext(ScopeContext)
   const { trainings, setTrainings, setJobs, setSelectedItem, selectedItem, itemToScrollTo, setItemToScrollTo, setExtendedSearch } = useContext(SearchResultContext)
   const { formValues, setFormValues, setActiveFilters } = useContext(DisplayContext)
@@ -74,6 +75,7 @@ const ChoiceColumn = ({
       searchParameters: formValues,
       searchTimestamp: currentSearch,
       displayMap,
+      path,
     })
   }
 
@@ -107,6 +109,7 @@ const ChoiceColumn = ({
       searchParameters: formValues,
       searchTimestamp,
       displayMap,
+      path,
     })
     setCurrentSearch(searchTimestamp)
     searchForJobs({ values: { ...formValues, radius: 20000 }, searchTimestamp })
@@ -136,6 +139,7 @@ const ChoiceColumn = ({
       searchParameters: formValues,
       searchTimestamp,
       displayMap,
+      path,
     })
     setCurrentSearch(searchTimestamp)
 

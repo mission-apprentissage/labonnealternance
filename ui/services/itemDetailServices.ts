@@ -6,7 +6,7 @@ export const getCloseAndSelectFunctions = ({ router, searchParams, searchResultC
   const { /*extendedSearch, jobs,*/ selectedItem, setSelectedItem, setItemToScrollTo /*setJobsAndSelectedItem, setTrainingsAndSelectedItem, trainings*/ } = searchResultContext
   const { formValues } = displayContext
   const { displayMap } = parameterContext
-  const path = searchParams.get("path")
+  const path = searchParams.get("path")?.startsWith("/recherche") ? searchParams.get("path") : "/recherche"
 
   const unSelectItem = (doNotSaveToHistory) => {
     setCurrentPage("")

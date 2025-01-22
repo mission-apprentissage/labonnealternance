@@ -58,6 +58,7 @@ const SearchForTrainingsAndJobs = () => {
   const [trainingSearchError, setTrainingSearchError] = useState("")
 
   const router = useRouter()
+  const path = router.pathname
 
   useEffect(() => {
     const handleRouteChange = (url) => {
@@ -130,6 +131,7 @@ const SearchForTrainingsAndJobs = () => {
         searchTimestamp,
         isReplace: true,
         displayMap,
+        path,
       })
     }
   }
@@ -187,11 +189,11 @@ const SearchForTrainingsAndJobs = () => {
       searchForJobs({ values, searchTimestamp, followUpItem, selectFollowUpItem })
     }
     setIsFormVisible(false)
-    pushHistory({ router, display: "list", searchParameters: values, searchTimestamp, displayMap })
+    pushHistory({ router, display: "list", searchParameters: values, searchTimestamp, displayMap, path })
     setCurrentSearch(searchTimestamp)
   }
 
-  const handleItemLoad = async ({ item, router, scopeContext, displayMap }) => {
+  const handleItemLoad = async ({ item, router, displayMap }) => {
     setShouldShowWelcomeMessage(false)
 
     setHasSearch(false)
@@ -209,7 +211,6 @@ const SearchForTrainingsAndJobs = () => {
       setPartnerJobSearchError,
       searchResultContext,
       router,
-      scopeContext,
       displayMap,
     })
     setIsFormVisible(false)
@@ -287,6 +288,7 @@ const SearchForTrainingsAndJobs = () => {
         searchParameters: formValues,
         searchTimestamp: currentSearch,
         displayMap,
+        path,
       })
     }
   }
@@ -313,6 +315,7 @@ const SearchForTrainingsAndJobs = () => {
         searchParameters: formValues,
         searchTimestamp: currentSearch,
         displayMap: true,
+        path,
       })
     }
 
@@ -341,6 +344,7 @@ const SearchForTrainingsAndJobs = () => {
         searchParameters: formValues,
         searchTimestamp: currentSearch,
         displayMap,
+        path,
       })
     }
   }
@@ -356,6 +360,7 @@ const SearchForTrainingsAndJobs = () => {
       searchParameters: formValues,
       searchTimestamp: currentSearch,
       displayMap,
+      path,
     })
   }
 
@@ -367,7 +372,7 @@ const SearchForTrainingsAndJobs = () => {
     }
 
     if (!doNotSaveToHistory) {
-      pushHistory({ router, searchParameters: formValues, searchTimestamp: currentSearch, displayMap })
+      pushHistory({ router, searchParameters: formValues, searchTimestamp: currentSearch, displayMap, path })
     }
   }
 
