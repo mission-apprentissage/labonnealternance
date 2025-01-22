@@ -1197,8 +1197,9 @@ export const getCompanyEmailFromToken = async (token: string) => {
   throw notFound("Adresse non trouvée")
 }
 
-const addUtmParamsToSendOtherApplications = (type: LBA_ITEM_TYPE, searchParams: URLSearchParams) => {
-  const utmCampaign = type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "je-candidate-accuse-envoi-lien-home" : "je-candidate-spontanement-accuse-envoi-lien-home"
+const addUtmParamsToSendOtherApplications = (type: LBA_ITEM_TYPE, searchParams: URLSearchParams, utmCampaignSuffix: string) => {
+  const typeBasedAddition = type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "" : "-spontanement"
+  const utmCampaign = `je-candidate${typeBasedAddition}-${utmCampaignSuffix}`
   searchParams.delete("utm_source")
   searchParams.delete("utm_medium")
   searchParams.delete("utm_campaign")
@@ -1217,12 +1218,12 @@ const buildSendOtherApplicationsUrl = (application: IApplication, type: LBA_ITEM
       newParams.delete("page")
       newParams.delete("type")
       newParams.delete("itemId")
-      addUtmParamsToSendOtherApplications(type, newParams)
+      addUtmParamsToSendOtherApplications(type, newParams, "accuse-envoi-lien-recherche")
       return `${publicUrl}${url.pathname}?${newParams.toString()}`
     }
   }
   const searchParams = new URLSearchParams()
-  addUtmParamsToSendOtherApplications(type, searchParams)
+  addUtmParamsToSendOtherApplications(type, searchParams, "accuse-envoi-lien-home")
   return `${publicUrl}/?${searchParams.toString()}`
 }
 
