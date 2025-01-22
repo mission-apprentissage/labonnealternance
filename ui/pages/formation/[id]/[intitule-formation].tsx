@@ -34,23 +34,29 @@ export default function DetailFormation() {
   useEffect(() => {
     if (isSuccess) {
       searchResultContext.setSelectedItem(data)
+      const updatedTrainings = searchResultContext.trainings.map((v) => {
+        if (v.id === data.id) {
+          data.place.distance = v.place.distance
+          return data
+        }
+        return v
+      })
+      searchResultContext.setTrainingsAndSelectedItem(updatedTrainings, data)
     }
   }, [data, isSuccess])
 
   return (
-    searchResultContext.selectedItem && (
-      <Box className="choiceCol">
-        <NextSeo
-          title={`TODO: change here and below Tous les emplois et formations en alternance | La bonne alternance | Trouvez votre alternance`}
-          description={`Liste de métiers où trouver une formation ou un emploi en alternance`}
-        />
-        {!hasError && searchResultContext.selectedItem?.detailsLoaded && <LoadedItemDetail handleClose={handleClose} handleSelectItem={handleSelectItem} />}
-        {hasError ? (
-          <ErrorMessage message={hasError === "not_found" ? "Fiche introuvable" : "Une erreur s'est produite. Détail de la fiche momentanément indisponible"} />
-        ) : (
-          !searchResultContext.selectedItem?.detailsLoaded && <ItemDetailLoading type={LBA_ITEM_TYPE.FORMATION} />
-        )}
-      </Box>
-    )
+    <Box className="choiceCol">
+      <NextSeo
+        title={`TODO: change here and below Tous les emplois et formations en alternance | La bonne alternance | Trouvez votre alternance`}
+        description={`Liste de métiers où trouver une formation ou un emploi en alternance`}
+      />
+      {!hasError && searchResultContext.selectedItem?.detailsLoaded && <LoadedItemDetail handleClose={handleClose} handleSelectItem={handleSelectItem} />}
+      {hasError ? (
+        <ErrorMessage message={hasError === "not_found" ? "Fiche introuvable" : "Une erreur s'est produite. Détail de la fiche momentanément indisponible"} />
+      ) : (
+        !searchResultContext.selectedItem?.detailsLoaded && <ItemDetailLoading type={LBA_ITEM_TYPE.FORMATION} />
+      )}
+    </Box>
   )
 }
