@@ -25,7 +25,7 @@ describe("importPass", () => {
   })
 
   it("should test the import of pass data into computed_job_partners", async () => {
-    const fileStream = fs.createReadStream("server/src/jobs/offrePartenaire/pass/importPass.test.input.xml")
+    const fileStream = fs.createReadStream("server/src/jobs/offrePartenaire/pass/importPass.test.input.rss")
     await importPassRaw(fileStream)
     expect.soft(await getDbCollection("raw_pass").countDocuments({})).toBe(5)
 
