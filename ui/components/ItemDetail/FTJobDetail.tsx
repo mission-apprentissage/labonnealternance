@@ -63,7 +63,7 @@ const FTJobDetail = ({ job }) => {
         )}
         <Box marginTop="10px">
           <ReportJobLink
-            width="490px"
+            tooltipWidth="490px"
             itemId={job?.job?.id}
             type={LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES}
             linkLabelNotReported="Signaler l’entreprise"

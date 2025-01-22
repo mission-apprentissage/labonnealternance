@@ -15,6 +15,12 @@ export const zReportedCompanyRoutes = {
           itemId: z.string(),
         })
         .strict(),
+      body: z
+        .object({
+          reason: z.string(),
+          reasonDetails: z.string().optional(),
+        })
+        .strict(),
       response: {
         "200": z.object({}),
       },
