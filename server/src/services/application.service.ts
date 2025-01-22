@@ -1101,8 +1101,7 @@ export const processApplicationEmails = {
   },
   // get data from applicant
   async sendCandidatEmail(application: IApplication, applicant: IApplicant) {
-    const { job_origin, job_id } = application
-    const type = job_id ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA : LBA_ITEM_TYPE.RECRUTEURS_LBA
+    const { job_origin } = application
     const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(application)
     const emailCandidat = await mailer.sendEmail({
       to: applicant.email,
@@ -1119,7 +1118,7 @@ export const processApplicationEmails = {
         applicationDate: dayjs(application.created_at).format("DD/MM/YYYY"),
         reminderDate: dayjs(application.created_at).add(10, "days").format("DD/MM/YYYY"),
         attachmentName: application.applicant_attachment_name,
-        sendOtherApplicationsUrl: buildSendOtherApplicationsUrl(application, type),
+        sendOtherApplicationsUrl: buildSendOtherApplicationsUrl(application, job_origin ?? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
       },
     })
     if (emailCandidat?.accepted?.length) {
