@@ -75,6 +75,7 @@ const ZApplicationOld = z
     created_at: z.date().nullable().describe("La date création de la demande"),
     last_update_at: z.date().nullable().describe("Date de dernières mise à jour"),
     scan_status: extensions.buildEnum(ApplicationScanStatus).describe("Status du processus de scan de virus"),
+    application_url: z.string().nullish().describe("URL où a été créé la candidature. Uniquement pour les candidatures venant de LBA."),
   })
   .strict()
   .openapi("Application")
@@ -192,6 +193,7 @@ export const ZApplicationApiPrivate = ZApplicationOld.pick({
   applicant_attachment_name: true,
   job_searched_by_user: true,
   caller: true,
+  application_url: true,
 }).extend({
   applicant_message: ZApplicationOld.shape.applicant_message_to_company.optional(),
   applicant_attachment_content: z.string().max(4_215_276).describe("Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo."),
