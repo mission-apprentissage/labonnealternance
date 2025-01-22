@@ -1,6 +1,7 @@
-import { assertUnreachable } from "@/../shared"
-import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
+import { assertUnreachable } from "shared/utils"
 
+import { IContextSearch } from "@/context/SearchResultContextProvider"
 import fetchFtJobDetails from "@/services/fetchFtJobDetails"
 import fetchLbaCompanyDetails from "@/services/fetchLbaCompanyDetails"
 import fetchLbaJobDetails from "@/services/fetchLbaJobDetails"
@@ -174,6 +175,7 @@ export const loadItem = async ({
       searchTimestamp,
       isReplace: true,
       displayMap,
+      path: router.pathname,
     })
   } catch (err) {
     console.error(`Erreur interne lors du chargement d'un élément (${err.response ? err.response.status : ""} : ${err?.response?.data ? err.response.data.error : ""})`)
@@ -185,4 +187,176 @@ export const loadItem = async ({
   setIsJobSearchLoading(false)
   setIsPartnerJobSearchLoading(false)
   return
+}
+
+export const fetchJobItemDetails = async ({ id, type, searchResultContext }) => {
+  if (
+    searchResultContext?.selectedItem?.id === id &&
+    oldItemTypeToNewItemType(searchResultContext.selectedItem.ideaType) === type &&
+    searchResultContext.selectedItem.detailsLoaded
+  ) {
+    return searchResultContext.selectedItem
+  }
+
+  switch (type) {
+    case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
+      const lbaJob = await fetchLbaJobDetails({ id })
+      const lbaJobs = await computeMissingPositionAndDistance(null, [lbaJob])
+      return lbaJobs[0]
+      break
+    }
+    case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
+      const lbaCompany = await fetchLbaCompanyDetails({ id })
+      return lbaCompany
+      break
+    }
+    case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES: {
+      const partnerJob = await fetchPartnerJobDetails({ id })
+      return partnerJob
+      break
+    }
+    default: {
+      assertUnreachable(type as never)
+    }
+  }
+}
+
+export const fetchTrainingItemDetails = async ({ id, searchResultContext }) => {
+  if (searchResultContext?.selectedItem?.id === id && searchResultContext.selectedItem.ideaType === LBA_ITEM_TYPE.FORMATION && searchResultContext.selectedItem.detailsLoaded) {
+    return searchResultContext.selectedItem
+  }
+
+  const training = await fetchTrainingDetails({ id })
+
+  if (!training) {
+    throw new Error("not_found")
+  }
+
+  return training
+}
+
+// export const fetchJobsAndTrainings = async ({ router, id, type, searchResultContext, searchParams, setHasError }) => {
+//   console.log("SEARCHPARAMS fetchJobsAndTrainings : ", searchParams, router.query)
+
+//   const loadItem = true
+
+//   if (searchParams) {
+//   }
+
+//   const jobResults = {
+//     peJobs: null,
+//     lbaCompanies: null,
+//     matchas: null,
+//     partnerJobs: null,
+//   }
+//   const trainingResults = []
+//   let loadedItem = null
+
+//   if (loadItem) {
+//     switch (type) {
+//       case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
+//         const lbaJob = await fetchLbaJobDetails({ id })
+//         const lbaJobs = await computeMissingPositionAndDistance(null, [lbaJob])
+//         jobResults.matchas = lbaJobs
+//         loadedItem = lbaJobs[0]
+//         break
+//       }
+//       case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
+//         const lbaCompany = await fetchLbaCompanyDetails({ id })
+//         jobResults.lbaCompanies = [lbaCompany]
+//         loadedItem = lbaCompany
+//         break
+//       }
+//       case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES: {
+//         const partnerJob = await fetchPartnerJobDetails({ id })
+//         jobResults.partnerJobs = [partnerJob]
+//         loadedItem = partnerJob
+//         break
+//       }
+//       case LBA_ITEM_TYPE.FORMATION: {
+//         const loadedItem = await fetchTrainingDetails({ id })
+//         jobResults.partnerJobs = [loadedItem]
+//         break
+//       }
+
+//       default: {
+//         assertUnreachable(type)
+//       }
+//     }
+//   }
+
+//   searchResultContext.setJobs(jobResults)
+//   searchResultContext.setSelectedItem(loadedItem)
+
+//   // const response = await apiGet(trainingsApi, { querystring })
+
+//   // const params: {
+//   //     romes?: string
+//   //     rncp?: string
+//   //     opco?: string
+//   //     opcoUrl?: string
+//   //     longitude?: number
+//   //     latitude?: number
+//   //     insee?: string
+//   //     radius?: number
+//   //     diploma?: string
+//   //     sources: string
+//   //   } = {
+//   //     romes,
+//   //     rncp,
+//   //     opco: opcoFilter,
+//   //     opcoUrl: opcoUrlFilter,
+//   //     sources: "lba,matcha,partnerJob",
+//   //   }
+//   //   if (values?.location?.value) {
+//   //     params.longitude = values.location.value.coordinates[0]
+//   //     params.latitude = values.location.value.coordinates[1]
+//   //     params.insee = values.location.insee
+//   //     params.radius = values.radius || 30
+//   //   }
+//   //   if (values.diploma) {
+//   //     params.diploma = values.diploma
+//   //   }
+
+//   //   const response = await axios.get(minimalDataJobsApi, {
+//   //     params,
+//   //   })
+
+//   // setTrainings(response.results)
+// }
+
+export const shouldFetchItemData = (itemId: string, itemType: LBA_ITEM_TYPE, searchContext: IContextSearch) => {
+  if (!itemId) {
+    return false
+  }
+  let itemToFind = null
+
+  switch (itemType) {
+    case LBA_ITEM_TYPE.FORMATION: {
+      itemToFind = searchContext?.trainings?.find((training) => training.id === itemId)
+      break
+    }
+    case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
+      itemToFind = searchContext?.jobs?.matchas?.find((job) => job.id === itemId)
+      break
+    }
+    case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES: {
+      itemToFind = searchContext?.jobs?.partnerJobs?.find((job) => job.id === itemId)
+      break
+    }
+    case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
+      itemToFind = searchContext?.jobs?.lbaCompanies?.find((job) => job.id === itemId)
+      break
+    }
+    default: {
+      assertUnreachable(itemType)
+    }
+  }
+  if (itemToFind) {
+    if (itemToFind.detailsLoaded) {
+      return false
+    }
+  }
+
+  return true
 }
