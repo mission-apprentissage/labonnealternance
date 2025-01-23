@@ -86,22 +86,24 @@ export async function s3Delete(bucket: Bucket, fileKey: string) {
 }
 
 export const s3SignedUrl = async (bucket: Bucket, key: string, options: RequestPresigningArguments = {}) => {
+  const bucketName = getBucketName(bucket)
   try {
-    const url = getSignedUrl(s3Client, new GetObjectCommand({ Bucket: bucket, Key: key }), options)
+    const url = getSignedUrl(s3Client, new GetObjectCommand({ Bucket: bucketName, Key: key }), options)
     return url
   } catch (error: any) {
-    const newError = internal(`error getting s3 file url`, { key, bucket })
+    const newError = internal(`error getting s3 file url`, { key, bucketName })
     newError.cause = error.message
     throw newError
   }
 }
 
 export const getS3FileLastUpdate = async (bucket: Bucket, key: string): Promise<Date | null> => {
+  const bucketName = getBucketName(bucket)
   try {
-    const headResponse = await s3Client.send(new HeadObjectCommand({ Bucket: bucket, Key: key }))
+    const headResponse = await s3Client.send(new HeadObjectCommand({ Bucket: bucketName, Key: key }))
     return headResponse.LastModified ? new Date(headResponse.LastModified) : null
   } catch (error: any) {
-    const newError = internal(`error getting s3 head object`, { key, bucket })
+    const newError = internal(`error getting s3 head object`, { key, bucketName })
     newError.cause = error.message
     throw newError
   }
