@@ -12,7 +12,7 @@ import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import { describe, expect, it, vi } from "vitest"
 
-import { s3Write } from "@/common/utils/awsUtils"
+import { s3WriteString } from "@/common/utils/awsUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { buildUserForToken } from "@/services/application.service"
 import { generateApplicationReplyToken } from "@/services/appLinks.service"
@@ -23,7 +23,7 @@ import { getApiApprentissageTestingToken, getApiApprentissageTestingTokenFromInv
 
 vi.mock("@/common/utils/awsUtils", () => {
   return {
-    s3Write: vi.fn().mockResolvedValue(undefined),
+    s3WriteString: vi.fn().mockResolvedValue(undefined),
   }
 })
 vi.mock("@/services/clamav.service", () => {
@@ -211,7 +211,7 @@ describe("POST /v2/application", () => {
       caller: "Un super Partenaire",
     })
 
-    expect(s3Write).toHaveBeenCalledWith("applications", `cv-${application!._id}`, {
+    expect(s3WriteString).toHaveBeenCalledWith("applications", `cv-${application!._id}`, {
       Body: body.applicant_attachment_content,
     })
   })
@@ -276,7 +276,7 @@ describe("POST /v2/application", () => {
       caller: "Un super Partenaire",
     })
 
-    expect(s3Write).toHaveBeenCalledWith("applications", `cv-${application!._id}`, {
+    expect(s3WriteString).toHaveBeenCalledWith("applications", `cv-${application!._id}`, {
       Body: body.applicant_attachment_content,
     })
   })

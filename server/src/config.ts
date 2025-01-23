@@ -30,6 +30,7 @@ const config = {
   allowedSources: env.get("LBA_ALLOWED_SOURCES").required().asString(),
   esdClientId: env.get("LBA_ESD_CLIENT_ID").required().asString(),
   esdClientSecret: env.get("LBA_ESD_CLIENT_SECRET").required().asString(),
+  worker: env.get("INSTANCE_ID").asString(),
   smtp: {
     host: env.get("LBA_SMTP_HOST").required().asString(),
     port: env.get("LBA_SMTP_PORT").required().asPortNumber(),
@@ -153,6 +154,7 @@ const config = {
     apiKey: env.get("RH_ALTERNANCE_API_KEY").required().asString(),
   },
   helloworkUrl: env.get("HELLOWORK_FLUX_URL").required().asString(),
+  passUrl: "https://www.pass.fonction-publique.gouv.fr/flux/offres",
   openai: {
     apiKey: env.get("OPENAI_API_KEY").required().asString(),
   },

@@ -25,7 +25,6 @@ export const referentielCommuneModel = {
   indexes: [
     [{ code: 1 }, { unique: true }],
     [{ centre: "2dsphere" }, {}],
-    [{ bbox: "2dsphere" }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor

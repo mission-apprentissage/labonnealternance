@@ -1,4 +1,5 @@
 import { DeleteObjectCommand, GetObjectCommand, HeadObjectCommand, PutObjectCommand, PutObjectRequest, S3Client, S3ClientConfig } from "@aws-sdk/client-s3"
+import { Upload } from "@aws-sdk/lib-storage"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { RequestPresigningArguments } from "@aws-sdk/types"
 import { internal } from "@hapi/boom"
@@ -46,7 +47,21 @@ export async function s3ReadAsString(bucket: Bucket, fileKey: string): Promise<s
   }
 }
 
-export async function s3Write(bucket: Bucket, fileKey: string, options: Omit<PutObjectRequest, "Body" | "Bucket" | "Key"> & { Body: StreamingBlobPayloadInputTypes }) {
+export async function s3WriteStream(bucket: Bucket, fileKey: string, options: Omit<Upload["params"], "Bucket" | "Key">) {
+  const bucketName = getBucketName(bucket)
+  try {
+    logger.info("writing s3 file:", { bucket: bucketName, key: fileKey })
+    const uploadResponse = new Upload({ client: s3Client, params: { Bucket: bucketName, Key: fileKey, ...options } })
+    uploadResponse.on("httpUploadProgress", (progress) => logger.info(`File upload ${fileKey} to S3 in progress: ${JSON.stringify(progress)}`))
+    await uploadResponse.done()
+  } catch (error: any) {
+    const newError = internal(`Error writing S3 file`, { key: fileKey, bucket: getBucketName(bucket) })
+    newError.cause = error.message
+    throw newError
+  }
+}
+
+export async function s3WriteString(bucket: Bucket, fileKey: string, options: Omit<PutObjectRequest, "Body" | "Bucket" | "Key"> & { Body: StreamingBlobPayloadInputTypes }) {
   const bucketName = getBucketName(bucket)
   try {
     logger.info("writing s3 file:", { bucket: bucketName, key: fileKey })

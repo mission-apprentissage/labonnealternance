@@ -31,7 +31,7 @@ import { ITrackingCookies } from "shared/models/trafficSources.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { z } from "zod"
 
-import { s3Delete, s3ReadAsString, s3Write } from "@/common/utils/awsUtils"
+import { s3Delete, s3ReadAsString, s3WriteString } from "@/common/utils/awsUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { createToken, getTokenValue } from "@/common/utils/jwtUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -41,6 +41,7 @@ import { UserForAccessToken, userWithAccountToUserForToken } from "@/security/ac
 import { logger } from "../common/logger"
 import { manageApiError } from "../common/utils/errorManager"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
+import { removeHtmlTagsFromString } from "../common/utils/stringUtils"
 import config from "../config"
 
 import { getApplicantFromDB, getOrCreateApplicant } from "./applicant.service"
@@ -48,7 +49,7 @@ import { createCancelJobLink, createProvidedJobLink, generateApplicationReplyTok
 import { BrevoEventStatus } from "./brevo.service"
 import { isInfected } from "./clamav.service"
 import { getOffreAvecInfoMandataire } from "./formulaire.service"
-import mailer, { sanitizeForEmail } from "./mailer.service"
+import mailer from "./mailer.service"
 import { validateCaller } from "./queryValidator.service"
 import { buildLbaCompanyAddress } from "./recruteurLba.service"
 import { saveApplicationTrafficSourceIfAny } from "./trafficSource.service"
@@ -204,7 +205,7 @@ export const sendApplication = async ({
         return { error: "email du recruteur manquant" }
       }
       const application = await newApplicationToApplicationDocument(newApplication, applicant, offreOrError, recruteurEmail)
-      await s3Write("applications", getApplicationCvS3Filename(application), {
+      await s3WriteString("applications", getApplicationCvS3Filename(application), {
         Body: newApplication.applicant_file_content,
       })
       await getDbCollection("applications").insertOne(application)
@@ -319,7 +320,7 @@ export const sendApplicationV2 = async ({
   try {
     // add applicant_id to application
     const application = await newApplicationToApplicationDocumentV2(newApplication, applicant, lbaJob, caller)
-    await s3Write("applications", getApplicationCvS3Filename(application), {
+    await s3WriteString("applications", getApplicationCvS3Filename(application), {
       Body: applicant_attachment_content,
     })
     await getDbCollection("applications").insertOne(application)
@@ -805,8 +806,8 @@ export const sendMailToApplicant = async ({
           partner,
           ...images,
           email,
-          phone: sanitizeForEmail(removeUrlsFromText(phone)),
-          comment: prepareMessageForMail(sanitizeForEmail(company_feedback)),
+          phone: removeHtmlTagsFromString(removeUrlsFromText(phone)),
+          comment: prepareMessageForMail(removeHtmlTagsFromString(company_feedback)),
         },
       })
       break
@@ -823,8 +824,8 @@ export const sendMailToApplicant = async ({
           partner,
           ...images,
           email,
-          phone: sanitizeForEmail(removeUrlsFromText(phone)),
-          comment: prepareMessageForMail(sanitizeForEmail(company_feedback)),
+          phone: removeHtmlTagsFromString(removeUrlsFromText(phone)),
+          comment: prepareMessageForMail(removeHtmlTagsFromString(company_feedback)),
         },
       })
       break
@@ -840,7 +841,7 @@ export const sendMailToApplicant = async ({
           jobSourceType,
           partner,
           ...images,
-          comment: prepareMessageForMail(sanitizeForEmail(company_feedback)),
+          comment: prepareMessageForMail(removeHtmlTagsFromString(company_feedback)),
           reasons: refusal_reasons,
         },
       })
@@ -962,10 +963,10 @@ export const obfuscateLbaCompanyApplications = async (company_siret: string) => 
 const sanitizeApplicantForEmail = (applicant: IApplicant) => {
   const { firstname, lastname, email, phone } = applicant
   return {
-    applicant_email: sanitizeForEmail(email),
-    applicant_first_name: sanitizeForEmail(firstname),
-    applicant_last_name: sanitizeForEmail(lastname),
-    applicant_phone: sanitizeForEmail(phone),
+    applicant_email: removeHtmlTagsFromString(email),
+    applicant_first_name: removeHtmlTagsFromString(firstname),
+    applicant_last_name: removeHtmlTagsFromString(lastname),
+    applicant_phone: removeHtmlTagsFromString(phone),
   }
 }
 // get data from applicant
@@ -991,22 +992,22 @@ const sanitizeApplicationForEmail = (application: IApplication) => {
     job_searched_by_user,
   } = application
   return {
-    applicant_attachment_name: sanitizeForEmail(applicant_attachment_name),
-    job_searched_by_user: sanitizeForEmail(job_searched_by_user),
-    applicant_message_to_company: sanitizeForEmail(applicant_message_to_company, "keepBr"),
-    company_recruitment_intention: sanitizeForEmail(company_recruitment_intention),
-    company_feedback: sanitizeForEmail(company_feedback),
+    applicant_attachment_name: removeHtmlTagsFromString(applicant_attachment_name),
+    job_searched_by_user: removeHtmlTagsFromString(job_searched_by_user),
+    applicant_message_to_company: removeHtmlTagsFromString(applicant_message_to_company, true),
+    company_recruitment_intention: removeHtmlTagsFromString(company_recruitment_intention),
+    company_feedback: removeHtmlTagsFromString(company_feedback),
     company_feedback_date: company_feedback_date,
     company_siret: company_siret,
-    company_email: sanitizeForEmail(company_email),
-    company_phone: sanitizeForEmail(company_phone),
+    company_email: removeHtmlTagsFromString(company_email),
+    company_phone: removeHtmlTagsFromString(company_phone),
     company_name: company_name,
     company_naf: company_naf,
     company_address: company_address,
     job_origin: job_origin,
-    job_title: sanitizeForEmail(job_title),
+    job_title: removeHtmlTagsFromString(job_title),
     job_id: job_id,
-    caller: sanitizeForEmail(caller),
+    caller: removeHtmlTagsFromString(caller),
     created_at: created_at,
     last_update_at: last_update_at,
   }
