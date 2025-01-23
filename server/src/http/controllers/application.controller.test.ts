@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb"
 import { generateLbaCompanyFixture } from "shared/fixtures/recruteurLba.fixture"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { s3Write } from "@/common/utils/awsUtils"
+import { s3WriteString } from "@/common/utils/awsUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { isInfected } from "@/services/clamav.service"
 import { useMongo } from "@tests/utils/mongo.test.utils"
@@ -11,7 +11,7 @@ import { useServer } from "@tests/utils/server.test.utils"
 
 vi.mock("@/common/utils/awsUtils", () => {
   return {
-    s3Write: vi.fn().mockResolvedValue(undefined),
+    s3WriteString: vi.fn().mockResolvedValue(undefined),
   }
 })
 vi.mock("@/services/clamav.service", () => {
@@ -122,7 +122,7 @@ describe("POST /v1/application", () => {
       },
     ])
 
-    expect(s3Write).toHaveBeenCalledWith("applications", `cv-${applications[0]._id}`, {
+    expect(s3WriteString).toHaveBeenCalledWith("applications", `cv-${applications[0]._id}`, {
       Body: body.applicant_file_content,
     })
 

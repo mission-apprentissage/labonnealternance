@@ -22,7 +22,7 @@ import { recreateIndexes } from "./database/recreateIndexes"
 import { validateModels } from "./database/schemaValidation"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
 import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
-import updateDomainesMetiersFile from "./domainesMetiers/updateDomainesMetiersFile"
+import { updateDomainesMetiersFile } from "./domainesMetiers/updateDomainesMetiersFile"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
 import { classifyFranceTravailJobs } from "./franceTravail/classifyJobsFranceTravail"
@@ -64,6 +64,7 @@ import { controlApplications } from "./verifications/controlApplications"
 import { controlAppointments } from "./verifications/controlAppointments"
 
 export async function setupJobProcessor() {
+  console.log("WORKER", config.worker)
   logger.info("Setup job processor")
   return initJobProcessor({
     db: getDatabase(),
@@ -261,7 +262,11 @@ export async function setupJobProcessor() {
         handler: async () => classifyFranceTravailJobs(),
       },
       "recreate:indexes": {
-        handler: async () => recreateIndexes(),
+        handler: async (job) => {
+          const { drop } = job.payload as any
+          await recreateIndexes({ drop })
+          return
+        },
       },
       "garbage-collector:run": {
         handler: async () => runGarbageCollector(),

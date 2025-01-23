@@ -12,9 +12,10 @@ import { createAuthMagicLink, createCancelJobLink, createProvidedJobLink } from 
 import { logger } from "../../common/logger"
 import { asyncForEach } from "../../common/utils/asyncUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
+import { removeHtmlTagsFromString } from "../../common/utils/stringUtils"
 import config from "../../config"
 import dayjs from "../../services/dayjs.service"
-import mailer, { sanitizeForEmail } from "../../services/mailer.service"
+import mailer from "../../services/mailer.service"
 
 export const recruiterOfferExpirationReminderJob = async (threshold: number /* number of days to expiration for the reminder email to be sent */) => {
   const recruiters = await getDbCollection("recruiters")
@@ -72,8 +73,8 @@ export const recruiterOfferExpirationReminderJob = async (threshold: number /* n
             logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
             logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
           },
-          last_name: sanitizeForEmail(contactUser.last_name),
-          first_name: sanitizeForEmail(contactUser.first_name),
+          last_name: removeHtmlTagsFromString(contactUser.last_name),
+          first_name: removeHtmlTagsFromString(contactUser.first_name),
           establishment_raison_sociale,
           is_delegated,
           offres: jobsWithRecruiter.map((job) => ({

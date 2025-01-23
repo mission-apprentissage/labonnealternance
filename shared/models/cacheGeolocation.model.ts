@@ -14,9 +14,6 @@ export type ICacheGeolocation = z.output<typeof ZCacheGeolocation>
 
 export default {
   zod: ZCacheGeolocation,
-  indexes: [
-    [{ address: 1 }, {}],
-    [{ "features.geometry": "2dsphere" }, {}],
-  ],
+  indexes: [[{ address: 1 }, {}]],
   collectionName,
 } as const satisfies IModelDescriptor

@@ -2,7 +2,7 @@ import { OPCOS_LABEL } from "../constants"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
-import { zObjectId, IModelDescriptor } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
 
 const collectionName = "opcos" as const
 
@@ -23,12 +23,6 @@ export type IOpco = z.output<typeof ZOpco>
 
 export default {
   zod: ZOpco,
-  indexes: [
-    [{ siren: 1 }, { unique: true }],
-    [{ opco: 1 }, {}],
-    [{ opco_short_name: 1 }, {}],
-    [{ idcc: 1 }, {}],
-    [{ url: 1 }, {}],
-  ],
+  indexes: [[{ siren: 1 }, { unique: true }]],
   collectionName,
 } as const satisfies IModelDescriptor

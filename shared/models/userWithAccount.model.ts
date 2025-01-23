@@ -69,7 +69,6 @@ export default {
   indexes: [
     [{ email: 1 }, { unique: true }],
     [{ last_action_date: 1 }, {}],
-    [{ "status.status": 1 }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor

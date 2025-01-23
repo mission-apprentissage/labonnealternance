@@ -16,9 +16,9 @@ jobs:
     steps:
       - name: Comment PR Preview
         if: github.event.pull_request.state != 'closed'
-        uses: thollander/actions-comment-pull-request@v2
+        uses: thollander/actions-comment-pull-request@v3
         with:
           message: |
             To deploy this PR just add a comment with a simple :rocket:
-          comment_tag: deployment_instructions
+          comment-tag: deployment_instructions
           mode: upsert

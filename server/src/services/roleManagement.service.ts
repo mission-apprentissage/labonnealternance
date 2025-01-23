@@ -12,9 +12,10 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import config from "@/config"
 
 import { getDbCollection } from "../common/utils/mongodbUtils"
+import { removeHtmlTagsFromString } from "../common/utils/stringUtils"
 
 import { activateRecruiter, archiveDelegatedFormulaire, archiveFormulaire, checkForJobActivations, getFormulaireFromUserIdOrError } from "./formulaire.service"
-import mailer, { sanitizeForEmail } from "./mailer.service"
+import mailer from "./mailer.service"
 import { sendWelcomeEmailToUserRecruteur } from "./userRecruteur.service"
 import { activateUser } from "./userWithAccount.service"
 
@@ -290,13 +291,13 @@ export const deactivateUserRole = async ({ reason, userId, requestedBy }: { reas
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
         logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
       },
-      last_name: sanitizeForEmail(last_name),
-      first_name: sanitizeForEmail(first_name),
-      reason: sanitizeForEmail(reason),
+      last_name: removeHtmlTagsFromString(last_name),
+      first_name: removeHtmlTagsFromString(first_name),
+      reason: removeHtmlTagsFromString(reason),
       email,
-      siret: sanitizeForEmail(siret),
-      raison_sociale: sanitizeForEmail(raison_sociale),
-      phone: sanitizeForEmail(phone),
+      siret: removeHtmlTagsFromString(siret),
+      raison_sociale: removeHtmlTagsFromString(raison_sociale),
+      phone: removeHtmlTagsFromString(phone),
       emailSupport: "mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Compte%20pro%20non%20validé",
     },
   })

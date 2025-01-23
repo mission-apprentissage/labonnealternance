@@ -10,6 +10,12 @@ export const ZReportedCompany = z
     type: extensions.buildEnum(LBA_ITEM_TYPE),
     itemId: z.string(),
     createdAt: z.coerce.date(),
+    reason: z.string(),
+    reasonDetails: z.string().nullish(),
+    siret: extensions.siret.nullish(),
+    partnerLabel: z.string().nullish(),
+    jobTitle: z.string().nullish(),
+    companyName: z.string().nullish(),
   })
   .strict()
 
@@ -17,6 +23,6 @@ export type IReportedCompany = z.output<typeof ZReportedCompany>
 
 export default {
   zod: ZReportedCompany,
-  indexes: [[{ itemId: 1 }, {}]],
+  indexes: [],
   collectionName: "reported_companies" as const,
 } as const satisfies IModelDescriptor
