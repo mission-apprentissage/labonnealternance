@@ -376,14 +376,19 @@ export const updateTrainingContext = (searchResultContext: IContextSearch, data)
   searchResultContext.setTrainingsAndSelectedItem(updatedTrainings, data)
 }
 
-const updateJobAndKeepDistance = (list, job) =>
-  list.map((v) => {
+const updateJobAndKeepDistance = (list, job) => {
+  if (!list) {
+    return [job]
+  }
+
+  return list.map((v) => {
     if (v.id === job.id) {
       job.place.distance = v.place.distance
       return job
     }
     return v
   })
+}
 
 export const updateJobContext = ({ searchResultContext, job }: { searchResultContext: IContextSearch; job }) => {
   //searchResultContext.setSelectedItem(data)
@@ -394,6 +399,8 @@ export const updateJobContext = ({ searchResultContext, job }: { searchResultCon
     lbaCompanies,
     matchas,
   }
+
+  console.log("toUpdateJobs : ", toUpdateJobs)
 
   switch (job?.ideaType) {
     case LBA_ITEM_TYPE_OLD.MATCHA: {
