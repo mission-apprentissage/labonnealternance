@@ -31,7 +31,7 @@ import { ITrackingCookies } from "shared/models/trafficSources.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { z } from "zod"
 
-import { s3Delete, s3ReadAsString, s3Write } from "@/common/utils/awsUtils"
+import { s3Delete, s3ReadAsString, s3WriteString } from "@/common/utils/awsUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { createToken, getTokenValue } from "@/common/utils/jwtUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -204,7 +204,7 @@ export const sendApplication = async ({
         return { error: "email du recruteur manquant" }
       }
       const application = await newApplicationToApplicationDocument(newApplication, applicant, offreOrError, recruteurEmail)
-      await s3Write("applications", getApplicationCvS3Filename(application), {
+      await s3WriteString("applications", getApplicationCvS3Filename(application), {
         Body: newApplication.applicant_file_content,
       })
       await getDbCollection("applications").insertOne(application)
@@ -319,7 +319,7 @@ export const sendApplicationV2 = async ({
   try {
     // add applicant_id to application
     const application = await newApplicationToApplicationDocumentV2(newApplication, applicant, lbaJob, caller)
-    await s3Write("applications", getApplicationCvS3Filename(application), {
+    await s3WriteString("applications", getApplicationCvS3Filename(application), {
       Body: applicant_attachment_content,
     })
     await getDbCollection("applications").insertOne(application)
