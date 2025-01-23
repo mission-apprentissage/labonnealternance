@@ -2,7 +2,6 @@ import { assertUnreachable } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { campaignParameters } from "../utils/campaignParameters"
-import { testingParameters } from "../utils/testingParameters"
 import { getValueFromPath } from "../utils/tools"
 
 type IConfigParameters = {
@@ -82,36 +81,6 @@ export const getWidgetParameters = () => {
   return widgetParameters
 }
 
-export const getItemParameters = () => {
-  const itemParameters = { parameters: null, mode: null, applyItemParameters: false }
-
-  if (getValueFromPath("itemId")) {
-    let parameters: {
-      itemId?: string
-      type?: string
-    } = {}
-    let applyItemParameters = true
-
-    parameters = {
-      itemId: getValueFromPath("itemId"),
-      type: undefined,
-    }
-
-    const p = getValueFromPath("type")
-    if (p) parameters.type = p
-    else applyItemParameters = false
-
-    itemParameters.parameters = parameters
-    itemParameters.applyItemParameters = applyItemParameters
-  }
-
-  if (getValueFromPath("mode")) {
-    itemParameters.mode = "debug"
-  }
-
-  return itemParameters
-}
-
 export const getOpcoFilter = ({ parameterContext }) => {
   const opcoFilter = getValueFromPath("opco")
   const opcoUrlFilter = getValueFromPath("opcoUrl")
@@ -133,20 +102,6 @@ export const setShowCombinedJob = ({ router, parameterContext }) => {
     parameterContext.setShowCombinedJob(showCombinedJob === "false" ? false : true)
   } else if (router.pathname === "/recherche-emploi") {
     parameterContext.setShowCombinedJob(false)
-  }
-}
-
-export const initTestingParameters = () => {
-  if (!testingParameters?.secret) {
-    let p = getValueFromPath("secret")
-    if (p) {
-      testingParameters.secret = p
-
-      p = getValueFromPath("simulatedRecipient")
-      if (p) {
-        testingParameters.simulatedRecipient = p
-      }
-    }
   }
 }
 
@@ -178,9 +133,7 @@ const buildFormValuesFromParameters = (params) => {
   return formValues
 }
 
-export const initParametersFromQuery = ({ router, shouldPush = undefined, parameterContext }) => {
-  let hasParameters = false
-
+export const initParametersFromQuery = ({ router, parameterContext }) => {
   const widgetParameters = getWidgetParameters()
   if (widgetParameters?.applyWidgetParameters) {
     if (widgetParameters.applyFormValues) {
@@ -192,18 +145,6 @@ export const initParametersFromQuery = ({ router, shouldPush = undefined, parame
   getOpcoFilter({ parameterContext })
   setDisplayMap({ parameterContext })
   setShowCombinedJob({ router, parameterContext })
-
-  const itemParameters = getItemParameters()
-  if (itemParameters && (itemParameters.applyItemParameters || itemParameters.mode)) {
-    parameterContext.setItemParameters(itemParameters)
-    hasParameters = true
-  }
-
-  initTestingParameters()
-
-  if (hasParameters && shouldPush) {
-    router.push("/recherche")
-  }
 }
 
 type QueryParameterType = "matcha" | "lbb" | "lba"
@@ -227,8 +168,6 @@ const convertTypeForMigration = (type: QueryParameterType) => {
 }
 
 export const initPostulerParametersFromQuery = () => {
-  initTestingParameters()
-
   const caller = getValueFromPath("caller") // ex : diagoriente
   const itemId = getValueFromPath("itemId")
   const type = getValueFromPath("type") as QueryParameterType
