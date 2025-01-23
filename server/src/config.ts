@@ -29,6 +29,7 @@ const config = {
   allowedSources: env.get("LBA_ALLOWED_SOURCES").required().asString(),
   esdClientId: env.get("LBA_ESD_CLIENT_ID").required().asString(),
   esdClientSecret: env.get("LBA_ESD_CLIENT_SECRET").required().asString(),
+  worker: env.get("INSTANCE_ID").asString(),
   smtp: {
     host: env.get("LBA_SMTP_HOST").required().asString(),
     port: env.get("LBA_SMTP_PORT").required().asPortNumber(),
