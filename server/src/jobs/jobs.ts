@@ -64,6 +64,7 @@ import { controlApplications } from "./verifications/controlApplications"
 import { controlAppointments } from "./verifications/controlAppointments"
 
 export async function setupJobProcessor() {
+  console.log("WORKER", config.worker)
   logger.info("Setup job processor")
   return initJobProcessor({
     db: getDatabase(),
