@@ -94,6 +94,7 @@
     "pretty-ms": "^7.0.1",
     "rate-limiter-flexible": "^2.4.2",
     "require-all": "^3.0.0",
+    "sanitize-html": "^2.14.0",
     "sha512crypt-node": "^0.1.0",
     "shared": "workspace:*",
     "sib-api-v3-sdk": "^8.5.0",
@@ -103,8 +104,7 @@
     "xlsx": "^0.18.5",
     "xml2js": "^0.6.2",
     "zod": "3.23.8",
-    "zod-mongodb-schema": "^1.0.2",
-    "sanitize-html": "^2.14.0"
+    "zod-mongodb-schema": "^1.0.2"
   },
   "devDependencies": {
     "@sentry/types": "^8.19.0",
