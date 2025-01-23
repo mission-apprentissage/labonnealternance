@@ -6,9 +6,8 @@ import { useContext, useEffect, useState } from "react"
 import { useQuery } from "react-query"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
-import { ErrorMessage } from "@/components"
+import { ErrorMessage, ItemDetail } from "@/components"
 import ItemDetailLoading from "@/components/ItemDetail/ItemDetailLoading"
-import LoadedItemDetail from "@/components/ItemDetail/loadedItemDetail"
 import { fetchTrainingItemDetails, shouldFetchItemData, updateTrainingContext } from "@/components/SearchForTrainingsAndJobs/services/loadItem"
 import { DisplayContext } from "@/context/DisplayContextProvider"
 import { ParameterContext } from "@/context/ParameterContextProvider"
@@ -43,7 +42,7 @@ export default function DetailFormation() {
         title={`TODO: change here and below Tous les emplois et formations en alternance | La bonne alternance | Trouvez votre alternance`}
         description={`Liste de métiers où trouver une formation ou un emploi en alternance`}
       />
-      {!hasError && searchResultContext.selectedItem?.detailsLoaded && <LoadedItemDetail handleClose={handleClose} handleSelectItem={handleSelectItem} />}
+      {!hasError && searchResultContext.selectedItem?.detailsLoaded && <ItemDetail handleClose={handleClose} handleSelectItem={handleSelectItem} />}
       {hasError ? (
         <ErrorMessage message={hasError === "not_found" ? "Fiche introuvable" : "Une erreur s'est produite. Détail de la fiche momentanément indisponible"} />
       ) : (
