@@ -72,4 +72,5 @@ export const newItemTypeToOldItemType = (lbaItemType: LBA_ITEM_TYPE): LBA_ITEM_T
 export const allLbaItemType = Object.values(LBA_ITEM_TYPE)
 export const allLbaItemTypeOLD = Object.values(LBA_ITEM_TYPE_OLD)
 
+// TODO: ajuster de sorte à n'avoir que des appels avec jobTitle
 export const getDirectJobPath = (jobId: string, jobTitle = "offre") => `/emploi/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${jobId}/${paramCase(jobTitle)}`
