@@ -1,3 +1,5 @@
+import { paramCase } from "param-case"
+
 import { assertUnreachable } from "../utils"
 
 /**
@@ -70,4 +72,4 @@ export const newItemTypeToOldItemType = (lbaItemType: LBA_ITEM_TYPE): LBA_ITEM_T
 export const allLbaItemType = Object.values(LBA_ITEM_TYPE)
 export const allLbaItemTypeOLD = Object.values(LBA_ITEM_TYPE_OLD)
 
-export const getDirectJobPath = (jobId: string) => `/recherche?display=list&page=fiche&type=matcha&itemId=${jobId}`
+export const getDirectJobPath = (jobId: string, jobTitle = "offre") => `/emploi/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${jobId}/${paramCase(jobTitle)}`
