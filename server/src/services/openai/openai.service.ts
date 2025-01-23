@@ -3,7 +3,8 @@ import OpenAI from "openai"
 import config from "@/config"
 
 const openai = new OpenAI({
-  apiKey: config.openai.apiKey,
+  apiKey: config.albert.apiKey,
+  baseURL: "https://albert.api.etalab.gouv.fr/v1",
 })
 
 export const sendMessages = async ({

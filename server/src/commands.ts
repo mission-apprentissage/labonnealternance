@@ -261,6 +261,7 @@ program
   .description("Classification des offres de France Travail")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("francetravail:jobs:classify"))
+program.command("albert:run").description("---").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("albert:run"))
 
 /**
  *

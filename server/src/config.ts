@@ -156,6 +156,9 @@ const config = {
   openai: {
     apiKey: env.get("OPENAI_API_KEY").required().asString(),
   },
+  albert: {
+    apiKey: env.get("ALBERT_API_KEY").required().asString(),
+  },
   mistralai: {
     apiKey: env.get("MISTALAI_API_KEY").required().asString(),
   },

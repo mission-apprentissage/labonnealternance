@@ -2,6 +2,7 @@ import { addJob, initJobProcessor } from "job-processor"
 import { ObjectId } from "mongodb"
 
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
+import { runAlbert } from "@/services/openai/albert.service"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
@@ -253,6 +254,9 @@ export async function setupJobProcessor() {
       },
       "francetravail:token-offre": {
         handler: async () => generateFranceTravailAccess(),
+      },
+      "albert:run": {
+        handler: async () => runAlbert(),
       },
       "francetravail:jobs:import": {
         handler: async () => importFranceTravailJobs(),
