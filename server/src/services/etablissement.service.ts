@@ -860,3 +860,5 @@ export const isHardbounceEventFromEtablissement = async (payload) => {
   }
   return false
 }
+
+export const doTasksWhenEntrepriseIsReadyToPublish = async () => {}

@@ -123,14 +123,7 @@ function FinComponent(props: ComponentProps) {
         <MailCloud style={{ paddingRight: "10px" }} />
         <Box pt={[3, 0]} ml={10}>
           <Heading fontSize="24px" mb={6} mt={widget?.mobile ? "10px" : "0px"}>
-            {shouldDisplayAccountInformation ? (
-              <>
-                Félicitations !<br />
-                Encore une étape avant la publication de votre offre...
-              </>
-            ) : (
-              <>Félicitations, votre offre est créée.</>
-            )}
+            {shouldDisplayAccountInformation ? <>Encore une étape avant la publication de votre offre...</> : <>Félicitations, votre offre est créée.</>}
           </Heading>
           {shouldDisplayAccountInformation ? (
             userIsValidated ? (
