@@ -223,7 +223,10 @@ export const fetchJobItemDetails = async ({ id, type, searchResultContext }) => 
 
 export const fetchTrainingItemDetails = async ({ id, searchResultContext }) => {
   if (searchResultContext?.selectedItem?.id === id && searchResultContext.selectedItem.ideaType === LBA_ITEM_TYPE.FORMATION && searchResultContext.selectedItem.detailsLoaded) {
+    console.log("DOES IT HAPPEN")
     return searchResultContext.selectedItem
+  } else {
+    console.log("HAPPEN PAS ", searchResultContext?.selectedItem?.id, searchResultContext?.selectedItem?.ideaType, searchResultContext?.selectedItem)
   }
 
   const training = await fetchTrainingDetails({ id })
@@ -359,4 +362,60 @@ export const shouldFetchItemData = (itemId: string, itemType: LBA_ITEM_TYPE, sea
   }
 
   return true
+}
+
+export const updateTrainingContext = (searchResultContext: IContextSearch, data) => {
+  //searchResultContext.setSelectedItem(data)
+  const updatedTrainings = searchResultContext.trainings.map((v) => {
+    if (v.id === data.id) {
+      data.place.distance = v.place.distance
+      return data
+    }
+    return v
+  })
+  searchResultContext.setTrainingsAndSelectedItem(updatedTrainings, data)
+}
+
+const updateJobAndKeepDistance = (list, job) =>
+  list.map((v) => {
+    if (v.id === job.id) {
+      job.place.distance = v.place.distance
+      return job
+    }
+    return v
+  })
+
+export const updateJobContext = ({ searchResultContext, job }: { searchResultContext: IContextSearch; job }) => {
+  //searchResultContext.setSelectedItem(data)
+  const { peJobs, partnerJobs, lbaCompanies, matchas } = searchResultContext.jobs
+  const toUpdateJobs = {
+    peJobs,
+    partnerJobs,
+    lbaCompanies,
+    matchas,
+  }
+
+  switch (job?.ideaType) {
+    case LBA_ITEM_TYPE_OLD.MATCHA: {
+      toUpdateJobs.matchas = updateJobAndKeepDistance(toUpdateJobs.matchas, job)
+      break
+    }
+    case LBA_ITEM_TYPE_OLD.PARTNER_JOB: {
+      toUpdateJobs.partnerJobs = updateJobAndKeepDistance(toUpdateJobs.partnerJobs, job)
+      break
+    }
+    case LBA_ITEM_TYPE_OLD.LBA: {
+      toUpdateJobs.lbaCompanies = updateJobAndKeepDistance(toUpdateJobs.lbaCompanies, job)
+      break
+    }
+    case LBA_ITEM_TYPE_OLD.PEJOB: {
+      toUpdateJobs.peJobs = updateJobAndKeepDistance(toUpdateJobs.peJobs, job)
+      break
+    }
+
+    default: {
+      assertUnreachable("shouldNotHappen" as never)
+    }
+  }
+  searchResultContext.setJobsAndSelectedItem(toUpdateJobs, job)
 }

@@ -9,7 +9,7 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { ErrorMessage } from "@/components"
 import ItemDetailLoading from "@/components/ItemDetail/ItemDetailLoading"
 import LoadedItemDetail from "@/components/ItemDetail/loadedItemDetail"
-import { fetchTrainingItemDetails, shouldFetchItemData } from "@/components/SearchForTrainingsAndJobs/services/loadItem"
+import { fetchTrainingItemDetails, shouldFetchItemData, updateTrainingContext } from "@/components/SearchForTrainingsAndJobs/services/loadItem"
 import { DisplayContext } from "@/context/DisplayContextProvider"
 import { ParameterContext } from "@/context/ParameterContextProvider"
 import { SearchResultContext } from "@/context/SearchResultContextProvider"
@@ -33,15 +33,7 @@ export default function DetailFormation() {
 
   useEffect(() => {
     if (isSuccess) {
-      searchResultContext.setSelectedItem(data)
-      const updatedTrainings = searchResultContext.trainings.map((v) => {
-        if (v.id === data.id) {
-          data.place.distance = v.place.distance
-          return data
-        }
-        return v
-      })
-      searchResultContext.setTrainingsAndSelectedItem(updatedTrainings, data)
+      updateTrainingContext(searchResultContext, data)
     }
   }, [data, isSuccess])
 
