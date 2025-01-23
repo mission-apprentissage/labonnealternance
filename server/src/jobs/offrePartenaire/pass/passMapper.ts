@@ -4,6 +4,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
 
+import { removeHtmlTagsFromString } from "../../../common/utils/stringUtils"
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
 export const ZPassJob = z
@@ -45,6 +46,23 @@ export const passJobToJobsPartners = (job: IPassJob): IComputedJobsPartners => {
   const now = new Date()
   const creationDate = parseDate(pubDate)
   const contractDuration = parseDuration(dcFormat)
+  const contractStart = parseDate(dcDate)
+  const offerExpiration = dayjs
+    .tz(creationDate || now)
+    .add(2, "months")
+    .toDate()
+  let businessError: null | JOB_PARTNER_BUSINESS_ERROR = null
+
+  if (contractDuration === 0) {
+    businessError = JOB_PARTNER_BUSINESS_ERROR.STAGE
+  }
+
+  if (contractStart) {
+    if (contractStart < offerExpiration) {
+      businessError = JOB_PARTNER_BUSINESS_ERROR.EXPIRED
+    }
+  }
+
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner,
     _id: new ObjectId(),
@@ -52,22 +70,20 @@ export const passJobToJobsPartners = (job: IPassJob): IComputedJobsPartners => {
     updated_at: now,
     partner_label: JOBPARTNERS_LABEL.PASS,
     partner_job_id: dcIdentifier,
-    contract_start: parseDate(dcDate),
+    contract_type: ["Apprentissage"],
+    contract_start: contractStart,
     contract_duration: contractDuration,
     offer_title: title,
-    offer_description: description,
+    offer_description: removeHtmlTagsFromString(description),
     offer_target_diploma: parseDiploma(dcType),
     offer_creation: creationDate,
-    offer_expiration: dayjs
-      .tz(creationDate || now)
-      .add(2, "months")
-      .toDate(),
+    offer_expiration: offerExpiration,
     offer_opening_count: 1,
     offer_multicast: true,
     workplace_name: author,
     workplace_address_label: `${dcCoverage} ${dcDescription}`,
     apply_url: link,
-    business_error: contractDuration === 0 ? JOB_PARTNER_BUSINESS_ERROR.STAGE : null,
+    business_error: businessError,
   }
   return partnerJob
 }

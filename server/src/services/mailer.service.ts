@@ -14,17 +14,6 @@ import config from "../config"
 const htmlToText = nodemailerHtmlToText.htmlToText
 const renderFile: (path: string, data: Data) => Promise<string> = promisify(ejs.renderFile)
 
-export const sanitizeForEmail = (text: string | null | undefined, keepBr?: "keepBr") => {
-  if (!text) return ""
-  if (keepBr === "keepBr") {
-    text = text.replaceAll(/<(?!br\s*\/?)[^>]+>/gi, "")
-  } else {
-    text = text.replaceAll(/(<([^>]+)>)/gi, "")
-  }
-  text = text.replaceAll(/\./g, "\u200B.\u200B")
-  return text
-}
-
 const createTransporter = (): Transporter => {
   const needAuthentication = config.env === "production" || config.env === "pentest"
 
