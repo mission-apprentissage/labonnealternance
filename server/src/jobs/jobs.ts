@@ -64,9 +64,9 @@ import { controlApplications } from "./verifications/controlApplications"
 import { controlAppointments } from "./verifications/controlAppointments"
 
 export async function setupJobProcessor() {
-  console.log("WORKER", config.worker)
   logger.info("Setup job processor")
   return initJobProcessor({
+    workerTags: config.worker === "runner-1" ? ["main"] : ["slave"],
     db: getDatabase(),
     logger: getLoggerWithContext("script"),
     crons: ["local", "preview", "pentest"].includes(config.env)
@@ -200,10 +200,11 @@ export async function setupJobProcessor() {
             cron_string: "30 1 * * *",
             handler: anonymizeAppointments,
           },
-          "Lancement du garbage collector": {
-            cron_string: "30 3 * * *",
-            handler: runGarbageCollector,
-          },
+          // KBA 20250225 : retrait du job pour monitoring avec 2 replicas.
+          // "Lancement du garbage collector": {
+          //   cron_string: "30 3 * * *",
+          //   handler: runGarbageCollector,
+          // },
           "export des offres LBA sur S3": {
             cron_string: "30 6 * * 1",
             handler: config.env === "production" ? () => exportLbaJobsToS3() : () => Promise.resolve(0),
