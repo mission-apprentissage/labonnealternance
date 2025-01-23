@@ -1,4 +1,5 @@
 import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
+import { paramCase } from "param-case"
 import React, { useContext, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
@@ -8,7 +9,6 @@ import { DisplayContext } from "../../context/DisplayContextProvider"
 import { ScopeContext } from "../../context/ScopeContext"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import { fetchAddresses } from "../../services/baseAdresse"
-import { getItemQueryParameters } from "../../utils/getItemId"
 import { getSearchQueryParameters } from "../../utils/getSearchParameters"
 import { setSelectedMarker } from "../../utils/mapTools"
 
@@ -94,7 +94,7 @@ const Training = ({ training, handleSelectItem, showTextOnly = undefined, search
     }
   }
 
-  const actualLink = `/recherche?display=list&page=fiche&${getItemQueryParameters(training)}&${getSearchQueryParameters(formValues)}`
+  const actualLink = `/formation/${training.id}/${paramCase(training.title)}?&${getSearchQueryParameters(formValues)}`
 
   const cardProperties = {
     display: "block",
