@@ -2,14 +2,12 @@ import { paramCase } from "param-case"
 import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 
 import { getCampaignParameters } from "./campaignParameters"
-import { getItemQueryParameters } from "./getItemId"
 import { getSearchQueryParameters } from "./getSearchParameters"
 
-const buildQueryParams = ({ display, page, item, searchParameters, searchTimestamp, displayMap, path }) => {
+const buildQueryParams = ({ display, page, searchParameters, searchTimestamp, displayMap, path }) => {
   const queryParams = [
     display ? `display=${display}` : "",
     page ? `page=${page}` : "",
-    item ? getItemQueryParameters(item) : "",
     searchParameters ? getSearchQueryParameters(searchParameters) : "",
     searchTimestamp ? `s=${searchTimestamp}` : "",
     getCampaignParameters(),
@@ -31,11 +29,9 @@ const pushHistory = ({
   displayMap = false,
   path,
 }) => {
-  console.log("PUSHHISTORY :", path, router.pathname)
   const params = buildQueryParams({
     display,
     page,
-    item,
     searchParameters,
     searchTimestamp,
     displayMap,

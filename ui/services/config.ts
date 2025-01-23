@@ -96,6 +96,7 @@ export const setDisplayMap = ({ parameterContext }) => {
   }
 }
 
+// TODO: checker la pertinence pour nettoyage
 export const setShowCombinedJob = ({ router, parameterContext }) => {
   const showCombinedJob = getValueFromPath("showCombinedJob")
   if (showCombinedJob !== null) {
@@ -105,7 +106,7 @@ export const setShowCombinedJob = ({ router, parameterContext }) => {
   }
 }
 
-const buildFormValuesFromParameters = (params) => {
+export const buildFormValuesFromParameters = (params) => {
   const location = params.lon
     ? {
         location: {

@@ -8,7 +8,7 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { ErrorMessage, ItemDetail } from "@/components"
 import ItemDetailLoading from "@/components/ItemDetail/ItemDetailLoading"
-import { fetchTrainingItemDetails, shouldFetchItemData, updateTrainingContext } from "@/components/SearchForTrainingsAndJobs/services/loadItem"
+import { fetchTrainingItemDetails, initContextFromQueryParameters, shouldFetchItemData, updateTrainingContext } from "@/components/SearchForTrainingsAndJobs/services/loadItem"
 import { DisplayContext } from "@/context/DisplayContextProvider"
 import { ParameterContext } from "@/context/ParameterContextProvider"
 import { SearchResultContext } from "@/context/SearchResultContextProvider"
@@ -33,6 +33,9 @@ export default function DetailFormation() {
   useEffect(() => {
     if (isSuccess) {
       updateTrainingContext(searchResultContext, data)
+      if (!displayContext?.formValues) {
+        initContextFromQueryParameters({ router, item: data, parameterContext, searchResultContext, displayContext })
+      }
     }
   }, [data, isSuccess])
 

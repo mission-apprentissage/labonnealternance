@@ -1,7 +1,11 @@
+import { NextRouter } from "next/router"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import { assertUnreachable } from "shared/utils"
 
+import { IContextDisplay } from "@/context/DisplayContextProvider"
+import { IContextParameter } from "@/context/ParameterContextProvider"
 import { IContextSearch } from "@/context/SearchResultContextProvider"
+import { buildFormValuesFromParameters, getWidgetParameters } from "@/services/config"
 import fetchFtJobDetails from "@/services/fetchFtJobDetails"
 import fetchLbaCompanyDetails from "@/services/fetchLbaCompanyDetails"
 import fetchLbaJobDetails from "@/services/fetchLbaJobDetails"
@@ -23,7 +27,7 @@ import {
 import { logError } from "../../../utils/tools"
 
 import { storeSearchResultInContext } from "./handleSearchHistoryContext"
-import { searchForJobsFunction, searchForPartnerJobsFunction } from "./searchForJobs"
+import { searchForJobsFunction, searchForJobsLightFunction, searchForPartnerJobsFunction, searchForPartnerJobsLightFunction } from "./searchForJobs"
 import { notFoundErrorText, partialJobSearchErrorText, trainingErrorText } from "./utils"
 
 export const loadItem = async ({
@@ -223,10 +227,7 @@ export const fetchJobItemDetails = async ({ id, type, searchResultContext }) => 
 
 export const fetchTrainingItemDetails = async ({ id, searchResultContext }) => {
   if (searchResultContext?.selectedItem?.id === id && searchResultContext.selectedItem.ideaType === LBA_ITEM_TYPE.FORMATION && searchResultContext.selectedItem.detailsLoaded) {
-    console.log("DOES IT HAPPEN")
     return searchResultContext.selectedItem
-  } else {
-    console.log("HAPPEN PAS ", searchResultContext?.selectedItem?.id, searchResultContext?.selectedItem?.ideaType, searchResultContext?.selectedItem)
   }
 
   const training = await fetchTrainingDetails({ id })
@@ -237,96 +238,6 @@ export const fetchTrainingItemDetails = async ({ id, searchResultContext }) => {
 
   return training
 }
-
-// export const fetchJobsAndTrainings = async ({ router, id, type, searchResultContext, searchParams, setHasError }) => {
-//   console.log("SEARCHPARAMS fetchJobsAndTrainings : ", searchParams, router.query)
-
-//   const loadItem = true
-
-//   if (searchParams) {
-//   }
-
-//   const jobResults = {
-//     peJobs: null,
-//     lbaCompanies: null,
-//     matchas: null,
-//     partnerJobs: null,
-//   }
-//   const trainingResults = []
-//   let loadedItem = null
-
-//   if (loadItem) {
-//     switch (type) {
-//       case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
-//         const lbaJob = await fetchLbaJobDetails({ id })
-//         const lbaJobs = await computeMissingPositionAndDistance(null, [lbaJob])
-//         jobResults.matchas = lbaJobs
-//         loadedItem = lbaJobs[0]
-//         break
-//       }
-//       case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
-//         const lbaCompany = await fetchLbaCompanyDetails({ id })
-//         jobResults.lbaCompanies = [lbaCompany]
-//         loadedItem = lbaCompany
-//         break
-//       }
-//       case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES: {
-//         const partnerJob = await fetchPartnerJobDetails({ id })
-//         jobResults.partnerJobs = [partnerJob]
-//         loadedItem = partnerJob
-//         break
-//       }
-//       case LBA_ITEM_TYPE.FORMATION: {
-//         const loadedItem = await fetchTrainingDetails({ id })
-//         jobResults.partnerJobs = [loadedItem]
-//         break
-//       }
-
-//       default: {
-//         assertUnreachable(type)
-//       }
-//     }
-//   }
-
-//   searchResultContext.setJobs(jobResults)
-//   searchResultContext.setSelectedItem(loadedItem)
-
-//   // const response = await apiGet(trainingsApi, { querystring })
-
-//   // const params: {
-//   //     romes?: string
-//   //     rncp?: string
-//   //     opco?: string
-//   //     opcoUrl?: string
-//   //     longitude?: number
-//   //     latitude?: number
-//   //     insee?: string
-//   //     radius?: number
-//   //     diploma?: string
-//   //     sources: string
-//   //   } = {
-//   //     romes,
-//   //     rncp,
-//   //     opco: opcoFilter,
-//   //     opcoUrl: opcoUrlFilter,
-//   //     sources: "lba,matcha,partnerJob",
-//   //   }
-//   //   if (values?.location?.value) {
-//   //     params.longitude = values.location.value.coordinates[0]
-//   //     params.latitude = values.location.value.coordinates[1]
-//   //     params.insee = values.location.insee
-//   //     params.radius = values.radius || 30
-//   //   }
-//   //   if (values.diploma) {
-//   //     params.diploma = values.diploma
-//   //   }
-
-//   //   const response = await axios.get(minimalDataJobsApi, {
-//   //     params,
-//   //   })
-
-//   // setTrainings(response.results)
-// }
 
 export const shouldFetchItemData = (itemId: string, itemType: LBA_ITEM_TYPE, searchContext: IContextSearch) => {
   if (!itemId) {
@@ -365,7 +276,6 @@ export const shouldFetchItemData = (itemId: string, itemType: LBA_ITEM_TYPE, sea
 }
 
 export const updateTrainingContext = (searchResultContext: IContextSearch, data) => {
-  //searchResultContext.setSelectedItem(data)
   const updatedTrainings = searchResultContext.trainings.map((v) => {
     if (v.id === data.id) {
       data.place.distance = v.place.distance
@@ -391,7 +301,6 @@ const updateJobAndKeepDistance = (list, job) => {
 }
 
 export const updateJobContext = ({ searchResultContext, job }: { searchResultContext: IContextSearch; job }) => {
-  //searchResultContext.setSelectedItem(data)
   const { peJobs, partnerJobs, lbaCompanies, matchas } = searchResultContext.jobs
   const toUpdateJobs = {
     peJobs,
@@ -399,8 +308,6 @@ export const updateJobContext = ({ searchResultContext, job }: { searchResultCon
     lbaCompanies,
     matchas,
   }
-
-  console.log("toUpdateJobs : ", toUpdateJobs)
 
   switch (job?.ideaType) {
     case LBA_ITEM_TYPE_OLD.MATCHA: {
@@ -425,4 +332,58 @@ export const updateJobContext = ({ searchResultContext, job }: { searchResultCon
     }
   }
   searchResultContext.setJobsAndSelectedItem(toUpdateJobs, job)
+}
+
+export const initContextFromQueryParameters = ({
+  router,
+  parameterContext,
+  searchResultContext,
+  displayContext,
+  item,
+}: {
+  router: NextRouter
+  parameterContext: IContextParameter
+  searchResultContext: IContextSearch
+  displayContext: IContextDisplay
+  item
+}) => {
+  console.log("parameterContext", parameterContext)
+
+  const widgetParameters = getWidgetParameters()
+  if (widgetParameters?.applyWidgetParameters) {
+    console.log(router)
+    if (widgetParameters.applyFormValues) {
+      widgetParameters.formValues = buildFormValuesFromParameters(widgetParameters.parameters)
+    }
+  } else if (item.ideaType === LBA_ITEM_TYPE.FORMATION) {
+    const values = {
+      job: {
+        romes: item.romes.map((rome) => rome.code),
+      },
+      location: {
+        value: {
+          coordinates: [item.place.longitude, item.place.latitude],
+        },
+        type: "Point",
+      },
+      radius: 30,
+      diploma: "",
+    }
+
+    const searchTimestamp = new Date().getTime()
+    searchForJobsLightFunction({
+      values,
+      widgetParameters,
+      searchResultContext,
+      searchTimestamp,
+    })
+    searchForPartnerJobsLightFunction({
+      values,
+      widgetParameters,
+      searchResultContext,
+      searchTimestamp,
+    })
+    storeSearchResultInContext({ searchResultContext, results: { trainings: [item] }, searchTimestamp, formValues: values })
+    displayContext.setFormValues(values)
+  }
 }
