@@ -56,7 +56,7 @@ services:
           memory: 2g
     command: ["yarn", "cli", "job_processor:start"]
     environment:
-      INSTANCE_ID: "runner-{{.Task.Slot}}"
+      INSTANCE_ID: "runner-{% raw %}{{.Task.Slot}}{% endraw %}"
     stop_grace_period: 5m
     volumes:
       - /opt/app/data/server:/data
