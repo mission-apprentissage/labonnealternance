@@ -326,7 +326,9 @@ export const getSomeFtJobs = async ({ romes, insee, radius, latitude, longitude,
   while (trys < 3) {
     ftResponse = await getFtJobs({ romes, insee, radius: currentRadius, jobLimit, caller, diploma, api })
 
-    if ("status" in ftResponse && ftResponse.status === 429) {
+    console.log({ ftResponse })
+
+    if (typeof ftResponse === "object" && ftResponse !== null && "status" in ftResponse && ftResponse.status === 429) {
       console.warn("PE jobs api quota exceeded. Retrying : ", trys + 1)
       // trois essais pour gérer les 429 quotas exceeded des apis PE.
       trys++
