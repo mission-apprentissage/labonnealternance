@@ -8,10 +8,10 @@ import Footer from "../components/footer"
 import Navigation from "../components/navigation"
 import ScrollToTop from "../components/ScrollToTop"
 
-const Developpeurs = () => (
+const EspaceDeveloppeurs = () => (
   <Box>
     <NextSeo
-      title="Nos Données | La bonne alternance | Trouvez votre alternance"
+      title="Espace développeurs | La bonne alternance | Trouvez votre alternance"
       description="Afin de faciliter l’accès aux informations pour les publics là où ils se trouvent, nous avons développé 4 API et un Widget"
     />
     <ScrollToTop />
@@ -22,7 +22,7 @@ const Developpeurs = () => (
         <Grid templateColumns="repeat(12, 1fr)">
           <GridItem px={4} colSpan={[12, 12, 12, 5]}>
             <Text variant="editorialContentH1" as="h1">
-              Nos Données
+              Espace développeurs
             </Text>
             <Divider variant="pageTitleDivider" my={12} />
           </GridItem>
@@ -125,4 +125,4 @@ const Developpeurs = () => (
   </Box>
 )
 
-export default Developpeurs
+export default EspaceDeveloppeurs
