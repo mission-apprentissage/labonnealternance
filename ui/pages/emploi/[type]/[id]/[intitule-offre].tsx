@@ -8,7 +8,7 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { ErrorMessage, ItemDetail } from "@/components"
 import ItemDetailLoading from "@/components/ItemDetail/ItemDetailLoading"
-import { fetchJobItemDetails, shouldFetchItemData, updateJobContext } from "@/components/SearchForTrainingsAndJobs/services/loadItem"
+import { fetchJobItemDetails, initContextFromQueryParameters, shouldFetchItemData, updateJobContext } from "@/components/SearchForTrainingsAndJobs/services/loadItem"
 import { DisplayContext } from "@/context/DisplayContextProvider"
 import { ParameterContext } from "@/context/ParameterContextProvider"
 import { SearchResultContext } from "@/context/SearchResultContextProvider"
@@ -27,18 +27,10 @@ export default function DetailEmploi() {
 
   /*
   TODO:
-  - fixer les résultats de load de détail job dans le contexte
-  - éviter les rechargements de requêtes lors d'un close sur détail ---> ctrl contexte vs. param ? enregistrer params avec contexte de résultat
-  - pkoi rechargement sans cache sur useQuery ?
-  - charger les data des formations / jobs sur accès direct avec param sans rien dans contexte
-  - charger les data des jobs sur accès direct formation sans param
+  - mauvaise initialisation des offres de formations et d'emplois lors d'un chargement direct sans paramètres
   - gérer l'affichage de la map
   - réparer le sticky
-  - réparer le double pushHistory et l'écrasement de l'historique quand retour sur la liste des offres
-
-
-
-
+  - réparer l'affichage formulaire par défaut si pas de résultat en version mobile
   */
 
   const { id, type } = router.query
@@ -51,6 +43,9 @@ export default function DetailEmploi() {
   useEffect(() => {
     if (isSuccess) {
       updateJobContext({ searchResultContext, job: data })
+      if (!displayContext?.formValues) {
+        initContextFromQueryParameters({ item: data, searchResultContext, displayContext })
+      }
     }
   }, [data, isSuccess])
 
