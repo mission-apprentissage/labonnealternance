@@ -1,5 +1,4 @@
 import axios from "axios"
-import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { computeMissingPositionAndDistance, factorInternalJobsForMap, factorPartnerJobsForMap, layerType, setJobMarkers } from "@/utils/mapTools"
 
@@ -15,8 +14,6 @@ export const searchForJobsFunction = async ({
   setJobSearchError,
   scopeContext,
   widgetParameters = undefined,
-  followUpItem = undefined,
-  selectFollowUpItem = undefined,
   opcoFilter = undefined,
   opcoUrlFilter = undefined,
   showCombinedJob = undefined,
@@ -74,15 +71,6 @@ export const searchForJobsFunction = async ({
 
       if (!showCombinedJob && results.matchas?.length) {
         results.matchas = results.matchas.filter((matcha) => !matcha.company.mandataire)
-      }
-
-      if (followUpItem && LBA_ITEM_TYPE_OLD.FORMATION !== followUpItem.parameters.type) {
-        selectFollowUpItem({
-          itemId: followUpItem.parameters.itemId,
-          type: followUpItem.parameters.type,
-          jobs: results,
-          formValues: values,
-        })
       }
     }
 
@@ -184,8 +172,6 @@ export const searchForPartnerJobsFunction = async ({
   computeMissingPositionAndDistance,
   scopeContext,
   widgetParameters = undefined,
-  followUpItem = undefined,
-  selectFollowUpItem = undefined,
   opcoFilter = undefined,
   opcoUrlFilter = undefined,
   searchResultContext,
@@ -243,15 +229,6 @@ export const searchForPartnerJobsFunction = async ({
 
       results = {
         peJobs: response.data.peJobs.result && response.data.peJobs.result === "error" ? null : peJobs,
-      }
-
-      if (followUpItem && followUpItem.parameters.type === LBA_ITEM_TYPE_OLD.PEJOB) {
-        selectFollowUpItem({
-          itemId: followUpItem.parameters.itemId,
-          type: followUpItem.parameters.type,
-          jobs: results,
-          formValues: values,
-        })
       }
     }
 

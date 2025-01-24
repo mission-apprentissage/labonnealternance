@@ -13,9 +13,8 @@ import { currentPage, currentSearch, setCurrentPage, setCurrentSearch } from "..
 import {
   closeMapPopups,
   computeMissingPositionAndDistance,
-  coordinatesOfFrance,
   factorTrainingsForMap,
-  flyToLocation,
+  flyToCenter,
   flyToMarker,
   isMapInitialized,
   refreshLocationMarkers,
@@ -28,7 +27,6 @@ import { logError } from "../../utils/tools"
 import { InitWidgetSearchParameters, WidgetHeader } from "../WidgetHeader"
 
 import { ChoiceColumn, MapListSwitchButton } from "./components"
-import { loadItem } from "./services/loadItem"
 import { searchForJobsFunction, searchForPartnerJobsFunction } from "./services/searchForJobs"
 import { searchForTrainingsFunction } from "./services/searchForTrainings"
 
@@ -117,25 +115,6 @@ const SearchForTrainingsAndJobs = () => {
     }
   }
 
-  const selectFollowUpItem = ({ itemId, type, jobs, trainings, searchTimestamp, formValues }) => {
-    const item = findItem({ itemId, type, jobs, trainings })
-
-    if (item) {
-      selectItem(item)
-      pushHistory({
-        router,
-        item: { id: itemId, ideaType: type === "training" ? LBA_ITEM_TYPE_OLD.FORMATION : type, directId: true },
-        page: "fiche",
-        display: "list",
-        searchParameters: formValues,
-        searchTimestamp,
-        isReplace: true,
-        displayMap,
-        path,
-      })
-    }
-  }
-
   const findItem = ({ itemId, type, jobs, trainings }) => {
     switch (type) {
       case "training": {
@@ -158,17 +137,7 @@ const SearchForTrainingsAndJobs = () => {
     }
   }
 
-  const flyToCenter = (values) => {
-    const searchCenter = values?.location?.value ? [values.location.value.coordinates[0], values.location.value.coordinates[1]] : null
-
-    if (searchCenter) {
-      flyToLocation({ center: searchCenter, zoom: 10 })
-    } else {
-      flyToLocation({ center: coordinatesOfFrance, zoom: 4 })
-    }
-  }
-
-  const handleSearchSubmit = async ({ values, followUpItem = null }) => {
+  const handleSearchSubmit = async ({ values }) => {
     // centrage de la carte sur le lieu de recherche
     const searchTimestamp = new Date().getTime()
     setShouldShowWelcomeMessage(false)
@@ -182,41 +151,18 @@ const SearchForTrainingsAndJobs = () => {
     setFormValues({ ...values })
 
     if (scopeContext.isTraining) {
-      searchForTrainings({ values, searchTimestamp, followUpItem, selectFollowUpItem })
+      searchForTrainings({ values, searchTimestamp })
     }
 
     if (scopeContext.isJob) {
-      searchForJobs({ values, searchTimestamp, followUpItem, selectFollowUpItem })
+      searchForJobs({ values, searchTimestamp })
     }
     setIsFormVisible(false)
     pushHistory({ router, display: "list", searchParameters: values, searchTimestamp, displayMap, path })
     setCurrentSearch(searchTimestamp)
   }
 
-  const handleItemLoad = async ({ item, router, displayMap }) => {
-    setShouldShowWelcomeMessage(false)
-
-    setHasSearch(false)
-    setExtendedSearch(true)
-
-    loadItem({
-      item,
-      setIsFormVisible,
-      setCurrentPage,
-      setTrainingSearchError,
-      setIsTrainingSearchLoading,
-      setIsJobSearchLoading,
-      setIsPartnerJobSearchLoading,
-      setJobSearchError,
-      setPartnerJobSearchError,
-      searchResultContext,
-      router,
-      displayMap,
-    })
-    setIsFormVisible(false)
-  }
-
-  const searchForTrainings = async ({ values, searchTimestamp, followUpItem, selectFollowUpItem }) => {
+  const searchForTrainings = async ({ values, searchTimestamp }) => {
     searchForTrainingsFunction({
       values,
       searchTimestamp,
@@ -227,13 +173,11 @@ const SearchForTrainingsAndJobs = () => {
       setTrainingMarkers,
       factorTrainingsForMap,
       widgetParameters,
-      followUpItem,
-      selectFollowUpItem,
       searchResultContext,
     })
   }
 
-  const searchForJobs = async ({ values, searchTimestamp, followUpItem, selectFollowUpItem }) => {
+  const searchForJobs = async ({ values, searchTimestamp }) => {
     searchForJobsFunction({
       values,
       searchTimestamp,
@@ -241,8 +185,6 @@ const SearchForTrainingsAndJobs = () => {
       setJobSearchError,
       widgetParameters,
       scopeContext,
-      followUpItem,
-      selectFollowUpItem,
       opcoFilter,
       opcoUrlFilter,
       showCombinedJob,
@@ -257,8 +199,6 @@ const SearchForTrainingsAndJobs = () => {
       computeMissingPositionAndDistance,
       widgetParameters,
       scopeContext,
-      followUpItem,
-      selectFollowUpItem,
       opcoFilter,
       opcoUrlFilter,
       searchResultContext,
@@ -381,7 +321,7 @@ const SearchForTrainingsAndJobs = () => {
 
   return (
     <Flex direction="column" sx={{ height: "100vh" }}>
-      <InitWidgetSearchParameters handleSearchSubmit={handleSearchSubmit} handleItemLoad={handleItemLoad} />
+      <InitWidgetSearchParameters />
       <WidgetHeader
         handleSearchSubmit={handleSearchSubmit}
         trainingSearchError={trainingSearchError}

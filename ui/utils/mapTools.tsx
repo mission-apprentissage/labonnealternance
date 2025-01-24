@@ -261,6 +261,16 @@ const flyToLocation = (location) => {
   }
 }
 
+const flyToCenter = (values) => {
+  const searchCenter = values?.location?.value ? [values.location.value.coordinates[0], values.location.value.coordinates[1]] : null
+
+  if (searchCenter) {
+    flyToLocation({ center: searchCenter, zoom: 10 })
+  } else {
+    flyToLocation({ center: coordinatesOfFrance, zoom: 4 })
+  }
+}
+
 const buildPopup = ({ item, type, selectItemOnMap, setSelectedItem, setSelectedMapPopupItem }) => {
   const popupNode = document.createElement("div")
   const root = createRoot(popupNode)
@@ -627,6 +637,7 @@ export {
   filterLayers,
   flyToLocation,
   flyToMarker,
+  flyToCenter,
   getZoomLevelForDistance,
   initializeMap,
   isMapInitialized,
