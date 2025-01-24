@@ -614,7 +614,6 @@ const refreshLocationMarkers = ({ jobs, trainings, scopeContext }) => {
   setTimeout(() => {
     if (scopeContext.isJob) {
       setJobMarkers({ jobList: factorInternalJobsForMap(jobs), type: layerType.INTERNAL, hasTrainings: !!trainings })
-      setJobMarkers({ jobList: factorPartnerJobsForMap(jobs), type: layerType.PARTNER, hasTrainings: !!trainings })
     }
     if (scopeContext.isTraining) {
       setTrainingMarkers({ trainingList: factorTrainingsForMap(trainings) })

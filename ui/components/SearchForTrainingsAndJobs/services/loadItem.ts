@@ -12,7 +12,7 @@ import { fetchTrainingDetails } from "@/services/fetchTrainingDetails"
 import { computeMissingPositionAndDistance } from "../../../utils/mapTools"
 
 import { storeSearchResultInContext } from "./handleSearchHistoryContext"
-import { searchForJobsLightFunction, searchForPartnerJobsLightFunction } from "./searchForJobs"
+import { searchForJobsLightFunction } from "./searchForJobs"
 import { searchForTrainingsLightFunction } from "./searchForTrainings"
 
 // export const loadItem = async ({
@@ -199,7 +199,6 @@ export const updateJobContext = ({ searchResultContext, job }: { searchResultCon
       toUpdateJobs.peJobs = updateJobAndKeepDistance(toUpdateJobs.peJobs, job)
       break
     }
-
     default: {
       assertUnreachable("shouldNotHappen" as never)
     }
@@ -214,12 +213,6 @@ export const initContextFromQueryParameters = ({ searchResultContext, displayCon
     if (widgetParameters.applyWidgetParameters) {
       widgetParameters.formValues = buildFormValuesFromParameters(widgetParameters.parameters)
       searchForJobsLightFunction({
-        values: widgetParameters.formValues,
-        widgetParameters,
-        searchResultContext,
-        searchTimestamp,
-      })
-      searchForPartnerJobsLightFunction({
         values: widgetParameters.formValues,
         widgetParameters,
         searchResultContext,
@@ -254,13 +247,54 @@ export const initContextFromQueryParameters = ({ searchResultContext, displayCon
       searchResultContext,
       searchTimestamp,
     })
-    searchForPartnerJobsLightFunction({
-      values,
-      widgetParameters,
+    storeSearchResultInContext({
       searchResultContext,
+      results: { trainings: [item] },
       searchTimestamp,
+      formValues: values,
     })
-    storeSearchResultInContext({ searchResultContext, results: { trainings: [item] }, searchTimestamp, formValues: values })
     displayContext.setFormValues(values)
+  } else {
+    const values = {
+      job: {
+        romes: item?.romes?.map((rome) => rome.code),
+      },
+      location: {
+        value: {
+          coordinates: [item.place.longitude, item.place.latitude],
+        },
+        type: "Point",
+      },
+      radius: 30,
+      diploma: "",
+    }
+
+    const results: {
+      jobs: { matchas: any[]; partnerJobs: any[]; lbaCompanies: any[]; peJobs: any[] }
+      trainings: any[]
+    } = {
+      jobs: { matchas: [], partnerJobs: [], lbaCompanies: [], peJobs: [] },
+      trainings: [],
+    }
+
+    switch (item.ideaType) {
+      case LBA_ITEM_TYPE_OLD.MATCHA: {
+        results.jobs.matchas = [item]
+        break
+      }
+      case LBA_ITEM_TYPE_OLD.PARTNER_JOB: {
+        results.jobs.partnerJobs = [item]
+        break
+      }
+      case LBA_ITEM_TYPE_OLD.LBA: {
+        results.jobs.lbaCompanies = [item]
+        break
+      }
+      default: {
+        assertUnreachable("shouldNotHappen" as never)
+      }
+    }
+
+    storeSearchResultInContext({ searchResultContext, results, searchTimestamp, formValues: values })
   }
 }

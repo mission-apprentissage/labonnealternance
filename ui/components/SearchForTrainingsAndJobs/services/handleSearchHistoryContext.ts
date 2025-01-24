@@ -2,7 +2,7 @@ import { ILbaItemTraining2 } from "@/../shared"
 
 import { IContextSearch, IContextSearchHistory } from "@/context/SearchResultContextProvider"
 
-import { factorInternalJobsForMap, factorPartnerJobsForMap, factorTrainingsForMap, layerType, setJobMarkers, setTrainingMarkers } from "../../../utils/mapTools"
+import { factorInternalJobsForMap, factorTrainingsForMap, layerType, setJobMarkers, setTrainingMarkers } from "../../../utils/mapTools"
 
 const SEARCH_HISTORY_LIMIT = 20 // arbitraire
 export const storeSearchResultInContext = ({
@@ -59,7 +59,6 @@ export const restoreSearchFromSearchHistoryContext = ({
   if (search?.jobs) {
     setJobs(search.jobs)
     setJobMarkers({ jobList: factorInternalJobsForMap(search.jobs), type: layerType.INTERNAL, hasTrainings: !!search?.trainings })
-    setJobMarkers({ jobList: factorPartnerJobsForMap(search.jobs), type: layerType.PARTNER, hasTrainings: !!search?.trainings })
   }
 
   if (search?.trainings) {
