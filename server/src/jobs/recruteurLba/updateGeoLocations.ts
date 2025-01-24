@@ -14,7 +14,7 @@ import __dirname from "../../common/dirname"
 import { logMessage } from "../../common/utils/logMessage"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
-import { checkIfAlgoFileIsNew, downloadAlgoCompanyFile, readCompaniesFromJson, removePredictionFile } from "./recruteurLbaUtil"
+import { checkIfAlgoFileIsNew, getRecruteursLbaFileFromS3, readCompaniesFromJson, removePredictionFile } from "./recruteurLbaUtil"
 
 const currentDirname = __dirname(import.meta.url)
 
@@ -92,7 +92,7 @@ export default async function updateGeoLocations({ ForceRecreate = false, Source
       adressesToGeolocate = `${geolocateCsvHeader}\r\n`
     }
 
-    await downloadAlgoCompanyFile(SourceFile)
+    await getRecruteursLbaFileFromS3(SourceFile)
 
     // extraction depuis les établissements des adresses à géolocaliser
     await oleoduc(

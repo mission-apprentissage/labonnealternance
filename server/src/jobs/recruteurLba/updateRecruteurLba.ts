@@ -9,8 +9,8 @@ import { notifyToSlack } from "../../common/utils/slackUtils"
 
 import {
   checkIfAlgoFileIsNew,
-  downloadAlgoCompanyFile,
   getCompanyMissingData,
+  getRecruteursLbaFileFromS3,
   readCompaniesFromJson,
   removePredictionFile,
   verifyRecruteurLBAAlgoFileDataVolume,
@@ -84,7 +84,7 @@ const processAlgoCompanies = async () => {
 export default async function importRecruteurLBAFromAlgoFile({ clearMongo = false, sourceFile = null }: { clearMongo?: boolean; sourceFile?: string | null }) {
   try {
     logger.info("Start importRecruteurLBAFromAlgoFile jobs ")
-    console.info({ clearMongo })
+    logger.info(`recruteurslba collection clear : ${clearMongo}`)
 
     if (clearMongo) {
       logger.info("Clear recruteurlba collection")
@@ -92,7 +92,7 @@ export default async function importRecruteurLBAFromAlgoFile({ clearMongo = fals
     }
 
     await checkIfAlgoFileIsNew("algo companies")
-    await downloadAlgoCompanyFile(sourceFile)
+    await getRecruteursLbaFileFromS3(sourceFile)
     await verifyRecruteurLBAAlgoFileDataVolume()
     await processAlgoCompanies()
 

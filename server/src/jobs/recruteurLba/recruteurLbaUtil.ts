@@ -1,8 +1,10 @@
-import fs from "fs"
+import { createReadStream, createWriteStream, existsSync, mkdirSync, unlinkSync } from "fs"
+import * as readline from "node:readline"
+import { Transform } from "node:stream"
+import { pipeline } from "node:stream/promises"
 import path from "path"
 
 import { ObjectId } from "mongodb"
-import { compose, oleoduc, writeData } from "oleoduc"
 import { ILbaCompany } from "shared/models"
 
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
@@ -23,15 +25,15 @@ const s3File = config.algoRecuteursLba.s3File
 
 export const createAssetsFolder = async () => {
   const assetsPath = path.join(currentDirname, "./assets")
-  if (!(await fs.existsSync(assetsPath))) {
-    await fs.mkdirSync(assetsPath)
+  if (!(await existsSync(assetsPath))) {
+    await mkdirSync(assetsPath)
   }
 }
 
 export const removePredictionFile = async () => {
   try {
     logger.info("Deleting downloaded file from assets")
-    await fs.unlinkSync(PREDICTION_FILE)
+    await unlinkSync(PREDICTION_FILE)
   } catch (err) {
     logger.error("Error removing company algo file", err)
   }
@@ -62,41 +64,78 @@ export const checkIfAlgoFileIsNew = async (reason: string) => {
  * Télécharge localement le fichier des sociétés issues de l'algo
  * @param {string | null} sourceFile un fichier source alternatif
  */
-export const downloadAlgoCompanyFile = async (sourceFile: string | null) => {
-  logger.info(`Downloading algo file ${sourceFile || s3File} from S3 Bucket...`)
-
-  await downloadFile({ from: sourceFile || s3File, to: PREDICTION_FILE })
+export const getRecruteursLbaFileFromS3 = async (sourceFile: string | null) => {
+  logger.info(`Downloading algo file ${sourceFile || s3File} from S3 Bucket`)
+  await saveRecruteursLbaFileOnDisk({ from: sourceFile || s3File, to: PREDICTION_FILE })
 }
 
-export const downloadFile = async ({ from, to }) => {
+export const saveRecruteursLbaFileOnDisk = async ({ from, to }) => {
   await createAssetsFolder()
-  await oleoduc(s3ReadAsStream("storage", from), fs.createWriteStream(to))
+  const readStream = await s3ReadAsStream("storage", from)
+  const writeStream = createWriteStream(to)
+
+  try {
+    await pipeline(readStream, writeStream)
+    logger.info("File transfer completed successfully")
+  } catch (error) {
+    logger.error("Error during file transfer:", error)
+    throw error
+  }
 }
 
 export const readCompaniesFromJson = async () => {
-  logger.info(`Reading bonnes boites json`)
+  logger.info(`Reading file`)
 
   const streamCompanies = async () => {
-    const response = fs.createReadStream(PREDICTION_FILE)
-    return compose(response, streamJsonArray())
+    const readStream = createReadStream(PREDICTION_FILE)
+    const jsonStream = streamJsonArray()
+
+    return pipeline(readStream, jsonStream)
   }
 
   return streamCompanies()
 }
 
+// KBA 20250124 : to test when file is OK, current invalid string length issue.
+export const countCompaniesFast = async (): Promise<number> => {
+  const readStream = createReadStream(PREDICTION_FILE)
+  const rl = readline.createInterface({ input: readStream, crlfDelay: Infinity })
+
+  let count = 0
+
+  for await (const line of rl) {
+    // Compter les lignes contenant une ouverture d'accolade indicative d'un objet JSON
+    count += (line.match(/{/g) || []).length
+  }
+
+  logger.info(`Count fichier : ${count}`)
+
+  return count
+}
+
 export const countCompaniesInFile = async (): Promise<number> => {
   let count = 0
-  await oleoduc(
-    await readCompaniesFromJson(),
-    writeData(() => {
+
+  const countTransform = new Transform({
+    objectMode: true,
+    transform(chunk, _encoding, callback) {
       count++
-    })
-  )
+      callback()
+    },
+  })
+
+  try {
+    await pipeline(await readCompaniesFromJson(), countTransform)
+  } catch (error) {
+    logger.error("Error counting companies:", error)
+    throw error
+  }
+
   return count
 }
 
 export const verifyRecruteurLBAAlgoFileDataVolume = async () => {
-  const companyCount = await countCompaniesInFile()
+  const companyCount = await countCompaniesFast()
   if (companyCount < config.minRecruteurLBAAlgoData) {
     await notifyToSlack({
       subject: "IMPORT SOCIETES ISSUES DE L'ALGO",
