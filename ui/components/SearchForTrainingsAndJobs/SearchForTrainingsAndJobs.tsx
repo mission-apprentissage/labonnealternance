@@ -90,6 +90,7 @@ const SearchForTrainingsAndJobs = () => {
       setShouldExecuteSearch(false)
       executeSearch(formValues)
     }
+    setIsFormVisible(false)
     /* eslint react-hooks/exhaustive-deps: 0 */
   }, [])
 
