@@ -237,7 +237,7 @@ const ResultLists = ({
   }
 
   return (
-    <Flex direction="column" height={"100%"} display={isFormVisible ? "none" : "flex"}>
+    <Flex direction="column" height={"100%"} display={isFormVisible ? ["none", "none", "flex"] : "flex"}>
       <Box bg="beige" display={shouldShowWelcomeMessage ? "none" : ""}>
         <Box display={["flex", "flex", "none"]}>
           <ResultFilterAndCounter

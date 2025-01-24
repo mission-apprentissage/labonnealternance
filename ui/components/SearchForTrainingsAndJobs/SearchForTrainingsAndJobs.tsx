@@ -81,8 +81,9 @@ const SearchForTrainingsAndJobs = () => {
       // provient du submit formulaire de la homepage
       setShouldExecuteSearch(false)
       executeSearch(formValues)
+      setIsFormVisible(false)
     }
-    setIsFormVisible(false)
+
     /* eslint react-hooks/exhaustive-deps: 0 */
   }, [])
 
