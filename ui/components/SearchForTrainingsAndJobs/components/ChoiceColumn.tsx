@@ -36,7 +36,7 @@ const ChoiceColumn = ({
   const router = useRouter()
   const path = router.pathname
   const scopeContext = useContext(ScopeContext)
-  const { trainings, setTrainings, setJobs, setSelectedItem, selectedItem, itemToScrollTo, setItemToScrollTo, setExtendedSearch } = useContext(SearchResultContext)
+  const { trainings, setTrainings, setJobs, setSelectedItem, itemToScrollTo, setItemToScrollTo, setExtendedSearch } = useContext(SearchResultContext)
   const { formValues, setFormValues, setActiveFilters } = useContext(DisplayContext)
   const { displayMap } = useContext(ParameterContext)
 
@@ -160,7 +160,6 @@ const ChoiceColumn = ({
   const getResultLists = () => {
     return (
       <ResultLists
-        selectedItem={selectedItem}
         handleSelectItem={handleSelectItem}
         showSearchForm={showSearchForm}
         isTrainingSearchLoading={isTrainingSearchLoading}

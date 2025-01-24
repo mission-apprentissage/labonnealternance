@@ -2,14 +2,13 @@ import { Box, Flex } from "@chakra-ui/react"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
-import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { ParameterContext } from "../../context/ParameterContextProvider"
 import { ScopeContext } from "../../context/ScopeContext"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import { updateUiFromHistory } from "../../services/updateUiFromHistory"
-import { currentPage, currentSearch, setCurrentPage, setCurrentSearch } from "../../utils/currentPage"
+import { currentSearch, setCurrentPage, setCurrentSearch } from "../../utils/currentPage"
 import {
   closeMapPopups,
   computeMissingPositionAndDistance,
@@ -60,12 +59,9 @@ const SearchForTrainingsAndJobs = () => {
 
   useEffect(() => {
     const handleRouteChange = (url) => {
+      console.log("HANDLE ROUTE CHANGE", url)
       updateUiFromHistory({
         url,
-        currentPage,
-        unSelectItem,
-        selectItemFromHistory,
-        setCurrentPage,
         showResultMap,
         showResultList,
         showSearchForm,
@@ -102,41 +98,42 @@ const SearchForTrainingsAndJobs = () => {
     }
   }
 
-  const selectItemFromHistory = (itemId, type) => {
-    const item = findItem({ itemId, type, jobs, trainings })
-    selectItem(item)
-  }
+  // TODO déport probable vers fiche
+  // const selectItemFromHistory = (itemId, type) => {
+  //   const item = findItem({ itemId, type, jobs, trainings })
+  //   selectItem(item)
+  // }
 
-  const selectItem = (item) => {
-    closeMapPopups()
-    if (item) {
-      flyToMarker(item, 12)
-      setSelectedItem(item)
-      setSelectedMarker(item)
-    }
-  }
+  // const selectItem = (item) => {
+  //   closeMapPopups()
+  //   if (item) {
+  //     flyToMarker(item, 12)
+  //     setSelectedItem(item)
+  //     setSelectedMarker(item)
+  //   }
+  // }
 
-  const findItem = ({ itemId, type, jobs, trainings }) => {
-    switch (type) {
-      case "training": {
-        return trainings?.find((el) => el.id === itemId)
-      }
-      case LBA_ITEM_TYPE_OLD.PEJOB: {
-        return jobs?.peJobs?.find((el) => el.id === itemId)
-      }
-      case LBA_ITEM_TYPE_OLD.LBA: {
-        return jobs?.lbaCompanies?.find((el) => el.id === itemId)
-      }
-      case LBA_ITEM_TYPE_OLD.MATCHA: {
-        return jobs?.matchas?.find((el) => el.id === itemId)
-      }
-      case LBA_ITEM_TYPE_OLD.PARTNER_JOB: {
-        return jobs?.partnerJobs?.find((el) => el.id === itemId)
-      }
-      default:
-        return
-    }
-  }
+  // const findItem = ({ itemId, type, jobs, trainings }) => {
+  //   switch (type) {
+  //     case "training": {
+  //       return trainings?.find((el) => el.id === itemId)
+  //     }
+  //     case LBA_ITEM_TYPE_OLD.PEJOB: {
+  //       return jobs?.peJobs?.find((el) => el.id === itemId)
+  //     }
+  //     case LBA_ITEM_TYPE_OLD.LBA: {
+  //       return jobs?.lbaCompanies?.find((el) => el.id === itemId)
+  //     }
+  //     case LBA_ITEM_TYPE_OLD.MATCHA: {
+  //       return jobs?.matchas?.find((el) => el.id === itemId)
+  //     }
+  //     case LBA_ITEM_TYPE_OLD.PARTNER_JOB: {
+  //       return jobs?.partnerJobs?.find((el) => el.id === itemId)
+  //     }
+  //     default:
+  //       return
+  //   }
+  // }
 
   const handleSearchSubmit = async ({ values }) => {
     // centrage de la carte sur le lieu de recherche

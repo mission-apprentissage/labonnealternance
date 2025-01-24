@@ -26,7 +26,6 @@ const ResultLists = ({
   jobSearchError,
   searchForJobsOnNewCenter,
   searchRadius,
-  selectedItem,
   searchForTrainingsOnNewCenter,
   shouldShowWelcomeMessage,
   showSearchForm,
@@ -45,6 +44,7 @@ const ResultLists = ({
   const { activeFilters } = useContext(DisplayContext)
 
   const getTrainingResult = () => {
+    console.log("ici")
     if (hasSearch && scopeContext.isTraining && activeFilters.includes("trainings")) {
       return (
         <Box bg="beige" id="trainingResult">
@@ -240,8 +240,8 @@ const ResultLists = ({
   }
 
   return (
-    <Flex direction="column" height={selectedItem ? "0%" : "100%"} display={isFormVisible ? "none" : "flex"}>
-      <Box bg="beige" display={shouldShowWelcomeMessage || selectedItem ? "none" : ""}>
+    <Flex direction="column" height={"100%"} display={isFormVisible ? "none" : "flex"}>
+      <Box bg="beige" display={shouldShowWelcomeMessage ? "none" : ""}>
         <Box display={["flex", "flex", "none"]}>
           <ResultFilterAndCounter
             jobSearchError={jobSearchError}
@@ -273,7 +273,7 @@ const ResultLists = ({
         overflow="auto"
         onScroll={handleScroll}
         id="resultList"
-        display={shouldShowWelcomeMessage || selectedItem ? "none" : ""}
+        display={shouldShowWelcomeMessage ? "none" : ""}
         bg="beige"
       >
         <Box margin="auto" maxWidth="1310px" pb={10}>

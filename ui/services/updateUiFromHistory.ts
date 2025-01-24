@@ -12,10 +12,6 @@ import { filterLayers } from "../utils/mapTools"
 
 export const updateUiFromHistory = ({
   url,
-  currentPage,
-  unSelectItem,
-  selectItemFromHistory,
-  setCurrentPage,
   showResultMap,
   showResultList,
   showSearchForm,
@@ -23,17 +19,12 @@ export const updateUiFromHistory = ({
   searchResultContext,
 }: {
   url: string
-  currentPage: any
-  unSelectItem: any
-  selectItemFromHistory: any
-  setCurrentPage: any
   showResultMap: any
   showResultList: any
   showSearchForm: any
   displayContext: any
   searchResultContext: IContextSearch
 }) => {
-  const { selectedItem } = searchResultContext
   const { activeFilters, setActiveFilters, visiblePane, isFormVisible } = displayContext
 
   // récupération des query parameters donnant des indications sur l'état de l'interface
@@ -42,9 +33,7 @@ export const updateUiFromHistory = ({
     urlParams = new URLSearchParams(url.substring(url.indexOf("?")))
   }
 
-  const pageFromUrl = urlParams ? urlParams.get("page") : ""
   const display = urlParams ? urlParams.get("display") : ""
-  const itemId = urlParams ? urlParams.get("itemId") : ""
   const searchTimestamp = urlParams ? urlParams.get("s") : ""
 
   if (!activeFilters) {
@@ -60,34 +49,6 @@ export const updateUiFromHistory = ({
   if (searchTimestamp && searchTimestamp !== currentSearch) {
     setCurrentSearch(searchTimestamp)
     restoreSearchFromSearchHistoryContext({ searchResultContext, searchTimestamp, displayContext })
-  }
-
-  // réconciliation entre le store et l'état attendu indiqué par les query parameters pour les éléments sélectionnés
-  if (currentPage !== pageFromUrl) {
-    switch (currentPage) {
-      case "fiche": {
-        if (!pageFromUrl) {
-          // désélection  de l'éventuel item sélectionné
-          unSelectItem("doNotSaveToHistory")
-        }
-        break
-      }
-
-      default: {
-        if (pageFromUrl === "fiche") {
-          // sélection de l'item correspondant à la fiche dans l'historique
-          selectItemFromHistory(itemId, urlParams.get("type"))
-        }
-        break
-      }
-    }
-
-    setCurrentPage(pageFromUrl ? pageFromUrl : "")
-  } else {
-    if (currentPage === "fiche" && (!selectedItem || itemId != selectedItem.id)) {
-      // sélection de l'item correspondant à la fiche dans l'historique
-      selectItemFromHistory(itemId, urlParams.get("type"))
-    }
   }
 
   // réconciliation entre le store et l'état attendu pour les panneaux d'affichage responsive
