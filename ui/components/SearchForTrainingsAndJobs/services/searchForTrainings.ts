@@ -25,7 +25,6 @@ export const searchForTrainingsFunction = async ({
     const { setHasSearch, setTrainings } = searchResultContext
     const hasLocation = values?.location?.value ? true : false
     const romes = getRomeFromParameters({ values, widgetParameters })
-
     const querystring: {
       romes?: string
       longitude?: number
