@@ -28,10 +28,8 @@ const ChoiceColumn = ({
   trainingSearchError,
   searchForJobs,
   isJobSearchLoading,
-  isPartnerJobSearchLoading,
   isFormVisible,
   jobSearchError,
-  partnerJobSearchError,
 }) => {
   const router = useRouter()
   const path = router.pathname
@@ -52,7 +50,7 @@ const ChoiceColumn = ({
   })
 
   useEffect(() => {
-    insertWhisper(document, isTrainingSearchLoading || isJobSearchLoading || isPartnerJobSearchLoading)
+    insertWhisper(document, isTrainingSearchLoading || isJobSearchLoading)
   })
 
   const handleSearchSubmitFunction = (values) => {
@@ -164,13 +162,11 @@ const ChoiceColumn = ({
         showSearchForm={showSearchForm}
         isTrainingSearchLoading={isTrainingSearchLoading}
         isJobSearchLoading={isJobSearchLoading}
-        isPartnerJobSearchLoading={isPartnerJobSearchLoading}
         searchRadius={searchRadius}
         handleExtendedSearch={searchForJobsWithLooseRadius}
         searchForJobsOnNewCenter={searchForJobsOnNewCenter}
         searchForTrainingsOnNewCenter={searchForTrainingsOnNewCenter}
         jobSearchError={jobSearchError}
-        partnerJobSearchError={partnerJobSearchError}
         trainingSearchError={trainingSearchError}
         shouldShowWelcomeMessage={shouldShowWelcomeMessage}
       />

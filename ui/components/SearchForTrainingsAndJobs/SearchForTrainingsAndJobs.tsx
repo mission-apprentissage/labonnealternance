@@ -48,9 +48,7 @@ const SearchForTrainingsAndJobs = () => {
   const [shouldShowWelcomeMessage, setShouldShowWelcomeMessage] = useState(hasSearch ? false : true)
 
   const [isJobSearchLoading, setIsJobSearchLoading] = useState(hasSearch || !scopeContext.isJob ? false : true)
-  const [isPartnerJobSearchLoading] = useState(hasSearch || !scopeContext.isJob ? false : true)
   const [jobSearchError, setJobSearchError] = useState("")
-  const [partnerJobSearchError] = useState("")
   const [trainingSearchError, setTrainingSearchError] = useState("")
 
   const router = useRouter()
@@ -314,10 +312,8 @@ const SearchForTrainingsAndJobs = () => {
         handleSearchSubmit={handleSearchSubmit}
         trainingSearchError={trainingSearchError}
         jobSearchError={jobSearchError}
-        partnerJobSearchError={partnerJobSearchError}
         isTrainingSearchLoading={isTrainingSearchLoading}
         isJobSearchLoading={isJobSearchLoading}
-        isPartnerJobSearchLoading={isPartnerJobSearchLoading}
       />
       <Flex direction="row" overflow="hidden" height="100%">
         <Box flex={{ base: 8, xl: 6 }} display={listDisplayParameters} height="100%" flexDirection="column">
@@ -333,9 +329,7 @@ const SearchForTrainingsAndJobs = () => {
             trainingSearchError={trainingSearchError}
             searchForJobs={searchForJobs}
             isJobSearchLoading={isJobSearchLoading}
-            isPartnerJobSearchLoading={isPartnerJobSearchLoading}
             jobSearchError={jobSearchError}
-            partnerJobSearchError={partnerJobSearchError}
           />
         </Box>
         {displayMap ? (

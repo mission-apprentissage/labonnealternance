@@ -14,10 +14,8 @@ const WidgetHeader = ({
   handleSearchSubmit,
   isHome = false,
   jobSearchError = undefined,
-  partnerJobSearchError = undefined,
   trainingSearchError = undefined,
   isJobSearchLoading = undefined,
-  isPartnerJobSearchLoading = undefined,
   isTrainingSearchLoading = undefined,
 }) => {
   const router = useRouter()
@@ -46,10 +44,8 @@ const WidgetHeader = ({
         {!isHome && (
           <ResultFilterAndCounter
             jobSearchError={jobSearchError}
-            partnerJobSearchError={partnerJobSearchError}
             trainingSearchError={trainingSearchError}
             isJobSearchLoading={isJobSearchLoading}
-            isPartnerJobSearchLoading={isPartnerJobSearchLoading}
             isTrainingSearchLoading={isTrainingSearchLoading}
             showSearchForm={() => {}}
           />
