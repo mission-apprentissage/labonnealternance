@@ -155,37 +155,11 @@ const ChoiceColumn = ({
     setTrainings(trainings)
   }
 
-  const getResultLists = () => {
-    return (
-      <ResultLists
-        handleSelectItem={handleSelectItem}
-        showSearchForm={showSearchForm}
-        isTrainingSearchLoading={isTrainingSearchLoading}
-        isJobSearchLoading={isJobSearchLoading}
-        searchRadius={searchRadius}
-        handleExtendedSearch={searchForJobsWithLooseRadius}
-        searchForJobsOnNewCenter={searchForJobsOnNewCenter}
-        searchForTrainingsOnNewCenter={searchForTrainingsOnNewCenter}
-        jobSearchError={jobSearchError}
-        trainingSearchError={trainingSearchError}
-        shouldShowWelcomeMessage={shouldShowWelcomeMessage}
-      />
-    )
-  }
+  const columnBackgroundProperty = shouldShowWelcomeMessage ? ["white", "white", "beige"] : "grey.100"
 
-  const getSearchForm = () => {
-    return (
-      <Box background="white" padding="0.5rem 1rem 2rem" display={isFormVisible ? ["block", "block", "none"] : "none"}>
-        <SearchFormResponsive showResultList={showResultList} handleSearchSubmit={handleSearchSubmitFunction} />
-      </Box>
-    )
-  }
-
-  const getInitialDesktopText = () => {
-    const displayProperty = shouldShowWelcomeMessage ? ["none", "none", "block"] : "none"
-
-    return (
-      <Box display={displayProperty} width={{ base: "75%", lg: "60%", xl: "50%" }} margin="auto" pt={12}>
+  return (
+    <Box id="choiceColumn" flex="1" overflow="auto" background={columnBackgroundProperty} className="choiceCol">
+      <Box display={shouldShowWelcomeMessage ? ["none", "none", "block"] : "none"} width={{ base: "75%", lg: "60%", xl: "50%" }} margin="auto" pt={12}>
         <Flex>
           <Image src="/images/dosearch.svg" alt="" aria-hidden="true" />
           <Box pl={12} pt={12}>
@@ -205,16 +179,22 @@ const ChoiceColumn = ({
           </Box>
         </Flex>
       </Box>
-    )
-  }
-
-  const columnBackgroundProperty = shouldShowWelcomeMessage ? ["white", "white", "beige"] : "grey.100"
-
-  return (
-    <Box id="choiceColumn" flex="1" overflow="auto" background={columnBackgroundProperty} className="choiceCol">
-      {getInitialDesktopText()}
-      {getSearchForm()}
-      {getResultLists()}
+      <Box background="white" padding="0.5rem 1rem 2rem" display={isFormVisible ? ["block", "block", "none"] : "none"}>
+        <SearchFormResponsive showResultList={showResultList} handleSearchSubmit={handleSearchSubmitFunction} />
+      </Box>
+      <ResultLists
+        handleSelectItem={handleSelectItem}
+        showSearchForm={showSearchForm}
+        isTrainingSearchLoading={isTrainingSearchLoading}
+        isJobSearchLoading={isJobSearchLoading}
+        searchRadius={searchRadius}
+        handleExtendedSearch={searchForJobsWithLooseRadius}
+        searchForJobsOnNewCenter={searchForJobsOnNewCenter}
+        searchForTrainingsOnNewCenter={searchForTrainingsOnNewCenter}
+        jobSearchError={jobSearchError}
+        trainingSearchError={trainingSearchError}
+        shouldShowWelcomeMessage={shouldShowWelcomeMessage}
+      />
     </Box>
   )
 }
