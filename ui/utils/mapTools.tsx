@@ -332,10 +332,6 @@ const factorTrainingsForMap = (list) => {
   return factorPlacesForMap(list)
 }
 
-const factorPartnerJobsForMap = (lists) => {
-  return factorJobsForMap(lists, layerType.PARTNER)
-}
-
 const factorInternalJobsForMap = (lists) => {
   return factorJobsForMap(lists, layerType.INTERNAL)
 }
@@ -632,7 +628,6 @@ export {
   computeMissingPositionAndDistance,
   coordinatesOfFrance,
   factorInternalJobsForMap,
-  factorPartnerJobsForMap,
   factorTrainingsForMap,
   filterLayers,
   flyToLocation,

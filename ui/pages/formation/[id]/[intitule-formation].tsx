@@ -34,7 +34,7 @@ export default function DetailFormation() {
     if (isSuccess) {
       updateTrainingContext(searchResultContext, data)
       if (!displayContext?.formValues) {
-        initContextFromQueryParameters({ router, item: data, parameterContext, searchResultContext, displayContext })
+        initContextFromQueryParameters({ item: data, searchResultContext, displayContext })
       }
     }
   }, [data, isSuccess])

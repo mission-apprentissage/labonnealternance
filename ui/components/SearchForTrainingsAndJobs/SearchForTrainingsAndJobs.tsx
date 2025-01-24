@@ -11,7 +11,6 @@ import { updateUiFromHistory } from "../../services/updateUiFromHistory"
 import { currentSearch, setCurrentPage, setCurrentSearch } from "../../utils/currentPage"
 import {
   closeMapPopups,
-  computeMissingPositionAndDistance,
   factorTrainingsForMap,
   flyToCenter,
   flyToMarker,
@@ -26,7 +25,7 @@ import { logError } from "../../utils/tools"
 import { InitWidgetSearchParameters, WidgetHeader } from "../WidgetHeader"
 
 import { ChoiceColumn, MapListSwitchButton } from "./components"
-import { searchForJobsFunction, searchForPartnerJobsFunction } from "./services/searchForJobs"
+import { searchForJobsFunction } from "./services/searchForJobs"
 import { searchForTrainingsFunction } from "./services/searchForTrainings"
 
 const DynamicMap = dynamic(() => import("../Map"), {
@@ -49,9 +48,9 @@ const SearchForTrainingsAndJobs = () => {
   const [shouldShowWelcomeMessage, setShouldShowWelcomeMessage] = useState(hasSearch ? false : true)
 
   const [isJobSearchLoading, setIsJobSearchLoading] = useState(hasSearch || !scopeContext.isJob ? false : true)
-  const [isPartnerJobSearchLoading, setIsPartnerJobSearchLoading] = useState(hasSearch || !scopeContext.isJob ? false : true)
+  const [isPartnerJobSearchLoading] = useState(hasSearch || !scopeContext.isJob ? false : true)
   const [jobSearchError, setJobSearchError] = useState("")
-  const [partnerJobSearchError, setPartnerJobSearchError] = useState("")
+  const [partnerJobSearchError] = useState("")
   const [trainingSearchError, setTrainingSearchError] = useState("")
 
   const router = useRouter()
@@ -59,7 +58,6 @@ const SearchForTrainingsAndJobs = () => {
 
   useEffect(() => {
     const handleRouteChange = (url) => {
-      console.log("HANDLE ROUTE CHANGE", url)
       updateUiFromHistory({
         url,
         showResultMap,
@@ -186,19 +184,6 @@ const SearchForTrainingsAndJobs = () => {
       opcoFilter,
       opcoUrlFilter,
       showCombinedJob,
-      searchResultContext,
-    })
-
-    searchForPartnerJobsFunction({
-      values,
-      searchTimestamp,
-      setIsPartnerJobSearchLoading,
-      setPartnerJobSearchError,
-      computeMissingPositionAndDistance,
-      widgetParameters,
-      scopeContext,
-      opcoFilter,
-      opcoUrlFilter,
       searchResultContext,
     })
   }
