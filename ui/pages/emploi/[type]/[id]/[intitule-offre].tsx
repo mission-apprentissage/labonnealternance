@@ -25,11 +25,7 @@ export default function DetailEmploi() {
 
   const [hasError, setHasError] = useState<string>("")
 
-  /*
-  TODO:
-  - gérer l'affichage de la map
-  - réparer le sticky
-  */
+  /* TODO: - gérer l'affichage de la map */
 
   const { id, type } = router.query
 

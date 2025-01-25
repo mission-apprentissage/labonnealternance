@@ -78,12 +78,11 @@ const ItemDetail = ({ handleClose, handleSelectItem }) => {
     <Box
       as="section"
       onScroll={handleScroll}
-      display={selectedItem ? "block" : "none"}
-      height="100%"
       id="itemDetailColumn"
       sx={{
         overflowY: "auto",
         position: "relative",
+        height: "100vh",
       }}
       {...swipeHandlers}
     >
@@ -99,7 +98,7 @@ const ItemDetail = ({ handleClose, handleSelectItem }) => {
         {...stickyHeaderProperties}
       >
         <Box width="100%" pl={["0", 4]} pb={isCollapsedHeader ? "0" : 2}>
-          <Flex mb={2} justifyContent="flex-end">
+          <Flex justifyContent="flex-end">
             {getTags({ kind, isCfa, isMandataire })}
             {getNavigationButtons({ goPrev, goNext, handleClose })}
           </Flex>
