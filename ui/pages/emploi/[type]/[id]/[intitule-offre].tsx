@@ -27,10 +27,8 @@ export default function DetailEmploi() {
 
   /*
   TODO:
-  - mauvaise initialisation des offres de formations et d'emplois lors d'un chargement direct sans paramètres
   - gérer l'affichage de la map
   - réparer le sticky
-  - réparer l'affichage formulaire par défaut si pas de résultat en version mobile
   */
 
   const { id, type } = router.query
