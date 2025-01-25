@@ -3,7 +3,7 @@ import { Box, Link } from "@chakra-ui/react"
 import { focusWithin } from "@/theme/theme-lba-tools"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
-export const PartnerJobPostuler = ({ job }) => {
+export const PartnerJobPostuler = ({ job, isCollapsedHeader }) => {
   if (!job?.contact?.url && !job?.contact?.email) {
     return null
   }
@@ -16,7 +16,7 @@ export const PartnerJobPostuler = ({ job }) => {
 
   if (job?.contact?.url) {
     return (
-      <Box my={4}>
+      <Box my={isCollapsedHeader ? 2 : 4}>
         <Link
           data-tracking-id="postuler-offre-job-partner"
           {...focusWithin}

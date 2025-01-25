@@ -7,9 +7,10 @@ import { ModalReadOnly } from "../../ModalReadOnly"
 
 interface GetFranceTravailButtonProps {
   offreFT: ILbaItemFtJob
+  isCollapsedHeader: boolean
 }
 
-export default function GetFranceTravailButton({ offreFT }: GetFranceTravailButtonProps) {
+export default function GetFranceTravailButton({ offreFT, isCollapsedHeader }: GetFranceTravailButtonProps) {
   const { isOpen, onClose, onOpen } = useDisclosure()
 
   const urlPostulation = offreFT?.contact?.url || null
@@ -29,7 +30,7 @@ export default function GetFranceTravailButton({ offreFT }: GetFranceTravailButt
 
   const renderContactPhone = () => (
     <>
-      <Box my={4}>
+      <Box my={isCollapsedHeader ? 2 : 4}>
         <Link data-tracking-id="postuler-offre-partenaire" {...focusWithin} variant="postuler" href={urlPostulation} target="_blank" onClick={onOpen}>
           Contacter le recruteur
         </Link>

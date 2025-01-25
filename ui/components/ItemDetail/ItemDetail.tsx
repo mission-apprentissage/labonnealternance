@@ -145,9 +145,9 @@ const ItemDetail = ({ handleClose, handleSelectItem }) => {
               )}
               {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && <ItemDetailApplicationsStatus item={selectedItem} mt={2} mb={2} />}
 
-              {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PARTNER_JOB && <PartnerJobPostuler job={selectedItem} />}
+              {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PARTNER_JOB && <PartnerJobPostuler isCollapsedHeader={isCollapsedHeader} job={selectedItem} />}
 
-              {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PEJOB && GetFranceTravailButton({ offreFT: selectedItem })}
+              {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PEJOB && GetFranceTravailButton({ offreFT: selectedItem, isCollapsedHeader })}
             </Box>
             <Box pt={{ base: 0, sm: 4 }}>
               <ShareLink item={selectedItem} />
