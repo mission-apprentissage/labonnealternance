@@ -30,8 +30,6 @@ const InitWidgetSearchParameters = ({ setShouldShowWelcomeMessage, setSearchRadi
   })
 
   const launchWidgetSearch = async () => {
-    console.log("launchWidgetSearch")
-
     // @ts-expect-error: TODO
     const p = widgetParameters.parameters
     try {

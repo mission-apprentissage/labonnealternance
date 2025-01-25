@@ -42,7 +42,6 @@ const ResultLists = ({
   const { activeFilters } = useContext(DisplayContext)
 
   const getTrainingResult = () => {
-    console.log("ici")
     if (hasSearch && scopeContext.isTraining && activeFilters.includes("trainings")) {
       return (
         <Box bg="beige" id="trainingResult">

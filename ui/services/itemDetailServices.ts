@@ -3,7 +3,7 @@ import { closeMapPopups, flyToMarker, setSelectedMarker } from "@/utils/mapTools
 import pushHistory from "@/utils/pushHistory"
 
 export const getCloseAndSelectFunctions = ({ router, searchParams, searchResultContext, displayContext, parameterContext }) => {
-  const { /*extendedSearch, jobs,*/ selectedItem, setSelectedItem, setItemToScrollTo /*setJobsAndSelectedItem, setTrainingsAndSelectedItem, trainings*/ } = searchResultContext
+  const { selectedItem, setSelectedItem, setItemToScrollTo } = searchResultContext
   const { formValues } = displayContext
   const { displayMap } = parameterContext
   const path = searchParams.get("path")?.startsWith("/recherche") ? searchParams.get("path") : "/recherche"

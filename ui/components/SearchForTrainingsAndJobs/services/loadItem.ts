@@ -149,13 +149,15 @@ export const shouldFetchItemData = (itemId: string, itemType: LBA_ITEM_TYPE, sea
 }
 
 export const updateTrainingContext = (searchResultContext: IContextSearch, data) => {
-  const updatedTrainings = searchResultContext.trainings.map((v) => {
-    if (v.id === data.id) {
-      data.place.distance = v.place.distance
-      return data
-    }
-    return v
-  })
+  const updatedTrainings = searchResultContext.trainings.length
+    ? searchResultContext.trainings.map((v) => {
+        if (v.id === data.id) {
+          data.place.distance = v.place.distance
+          return data
+        }
+        return v
+      })
+    : [data]
   searchResultContext.setTrainingsAndSelectedItem(updatedTrainings, data)
 }
 
@@ -254,6 +256,7 @@ export const initContextFromQueryParameters = ({ searchResultContext, displayCon
       formValues: values,
     })
     displayContext.setFormValues(values)
+    searchResultContext.setHasSearch(true)
   } else {
     const values = {
       job: {
@@ -294,7 +297,7 @@ export const initContextFromQueryParameters = ({ searchResultContext, displayCon
         assertUnreachable("shouldNotHappen" as never)
       }
     }
-
     storeSearchResultInContext({ searchResultContext, results, searchTimestamp, formValues: values })
+    searchResultContext.setHasSearch(true)
   }
 }
