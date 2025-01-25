@@ -104,7 +104,7 @@ const ItemDetail = ({ handleClose, handleSelectItem }) => {
           </Flex>
 
           {kind === LBA_ITEM_TYPE_OLD.FORMATION && (
-            <Text as="p" textAlign="left" color="grey.600" mt={4} mb={3} fontWeight={700} fontSize="1rem">
+            <Text as="p" textAlign="left" color="grey.600" mt={isCollapsedHeader ? 1 : 4} mb={isCollapsedHeader ? 1 : 3} fontWeight={700} fontSize="1rem">
               <Text as="span">{`${selectedItem?.company?.name || ""} (${selectedItem.company.place.city})`}</Text>
               <Text as="span" fontWeight={400}>
                 &nbsp;propose cette formation
@@ -121,7 +121,7 @@ const ItemDetail = ({ handleClose, handleSelectItem }) => {
             color={kind !== LBA_ITEM_TYPE_OLD.FORMATION ? "pinksoft.600" : "greensoft.500"}
             sx={{
               fontWeight: 700,
-              marginBottom: "11px",
+              marginBottom: isCollapsedHeader ? "4px" : "11px",
               paddingBottom: "0",
               textAlign: "left",
               wordBreak: "break-word",
@@ -132,7 +132,7 @@ const ItemDetail = ({ handleClose, handleSelectItem }) => {
 
           {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
 
-          <Divider my={2} />
+          {!isCollapsedHeader && <Divider my={2} />}
 
           <Flex flexDirection={{ base: "column", sm: "row" }}>
             <Box flex={1}>
@@ -141,7 +141,7 @@ const ItemDetail = ({ handleClose, handleSelectItem }) => {
               {kind === LBA_ITEM_TYPE_OLD.LBA && !isCandidatureLba(selectedItem) && <NoCandidatureLba />}
 
               {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && !hasApplied(selectedItem) && (
-                <DemandeDeContact context={selectedItem.rdvContext} referrer="LBA" showInModal />
+                <DemandeDeContact isCollapsedHeader={isCollapsedHeader} context={selectedItem.rdvContext} referrer="LBA" showInModal />
               )}
               {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && <ItemDetailApplicationsStatus item={selectedItem} mt={2} mb={2} />}
 
