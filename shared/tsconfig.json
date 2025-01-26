@@ -1,26 +1,27 @@
 {
-  "include": ["**/*.ts"],
-  "exclude": ["**/node_modules"],
+  "extends": "@tsconfig/node20/tsconfig.json",
   "compilerOptions": {
+    "declaration": true,
+    "sourceMap": true,
+    "declarationMap": true,
+    "composite": true,
     "incremental": true,
     "strictPropertyInitialization": false,
-    "declarationMap": true,
-    "listEmittedFiles": false,
-    "listFiles": false,
     "pretty": true,
     "isolatedModules": true,
-    "lib": ["ES2023"] /* Emit ECMAScript-standard-compliant class fields. */,
-    "module": "ESNext" /* Specify what module code is generated. */,
-    "moduleResolution": "bundler" /* Specify how TypeScript looks up a file from a given module specifier. */,
     "resolveJsonModule": true,
-    "target": "ES2022",
-    "outDir": "./dist" /* Specify an output folder for all emitted files. */,
-    "esModuleInterop": true /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables `allowSyntheticDefaultImports` for type compatibility. */,
-    "strict": true /* Enable all strict type-checking options. */,
-    "skipLibCheck": true,
-    "declaration": true,
-    "noEmit": true,
+    "outDir": "./dist",
+    "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "allowJs": false
+    "allowJs": false,
+    "jsx": "react",
+    "noErrorTruncation": true,
+    "noUncheckedSideEffectImports": true
+  },
+  "include": ["./src/**/*.ts"],
+  "exclude": ["**/node_modules"],
+  "typeAcquisition": {
+    "enable": true,
+    "include": ["@types/node"]
   }
 }
