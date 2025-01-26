@@ -1,8 +1,8 @@
-import dayjs from "dayjs"
 import { Jsonify } from "type-fest"
 import { zObjectId } from "zod-mongodb-schema"
 
 import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "../constants/recruteur.js"
+import dayjs from "../helpers/dayjs.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 import { assertUnreachable } from "../utils/assertUnreachable.js"
 
