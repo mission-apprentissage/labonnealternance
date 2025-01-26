@@ -1,6 +1,6 @@
-import { IModelDescriptor, zObjectId } from "shared/models/common"
+import { IModelDescriptor, zObjectId } from "shared/models/common.js"
 
-import { z } from "../helpers/zodWithOpenApi"
+import { z } from "../helpers/zodWithOpenApi.js"
 
 const ZRome = z
   .object({

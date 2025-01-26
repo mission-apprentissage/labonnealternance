@@ -1,13 +1,14 @@
-import { LBA_ITEM_TYPE } from "../../constants/lbaitem"
-import { extensions } from "../../helpers/zodHelpers/zodPrimitives"
-import { z } from "../../helpers/zodWithOpenApi"
-import { zObjectId } from "../../models/common"
-import { ZLbarError } from "../../models/lbacError.model"
-import { ZLbaItemFtJob, ZLbaItemLbaJob } from "../../models/lbaItem.model"
-import { ZRecruiter } from "../../models/recruiter.model"
-import { rateLimitDescription } from "../../utils/rateLimitDescription"
-import { zCallerParam, zRefererHeaders, zSourcesParams } from "../_params"
-import { IRoutesDef, ZResError } from "../common.routes"
+import { zObjectId } from "zod-mongodb-schema"
+
+import { LBA_ITEM_TYPE } from "../../constants/lbaitem.js"
+import { extensions } from "../../helpers/zodHelpers/zodPrimitives.js"
+import { z } from "../../helpers/zodWithOpenApi.js"
+import { ZLbarError } from "../../models/lbacError.model.js"
+import { ZLbaItemFtJob, ZLbaItemLbaJob } from "../../models/lbaItem.model.js"
+import { ZRecruiter } from "../../models/recruiter.model.js"
+import { rateLimitDescription } from "../../utils/rateLimitDescription.js"
+import { zCallerParam, zRefererHeaders, zSourcesParams } from "../_params.js"
+import { IRoutesDef, ZResError } from "../common.routes.js"
 
 export const zJobsRoutesV2 = {
   get: {

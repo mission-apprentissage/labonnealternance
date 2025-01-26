@@ -1,9 +1,9 @@
 import { Jsonify } from "type-fest"
 
-import { z } from "../helpers/zodWithOpenApi"
+import { z } from "../helpers/zodWithOpenApi.js"
 
-import { ZGlobalAddress } from "./address.model"
-import { IModelDescriptor, zObjectId } from "./common"
+import { ZGlobalAddress } from "./address.model.js"
+import { IModelDescriptor, zObjectId } from "./common.js"
 
 const collectionName = "cfas" as const
 

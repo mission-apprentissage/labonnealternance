@@ -1,7 +1,8 @@
 import { ObjectId } from "bson"
 
-import { LBA_ITEM_TYPE } from "../constants/lbaitem"
-import { ApplicationScanStatus, IApplicant, IApplication } from "../models"
+import { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
+import { IApplicant } from "../models/applicant.model.js"
+import { ApplicationScanStatus, IApplication } from "../models/applications.model.js"
 
 export function generateApplicationFixture(data: Partial<IApplication>): IApplication {
   const applicant = generateApplicantFixture()

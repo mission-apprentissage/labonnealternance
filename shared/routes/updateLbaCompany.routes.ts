@@ -1,8 +1,8 @@
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { z } from "../helpers/zodWithOpenApi"
-import { ZLbaCompanyForContactUpdate } from "../models"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { z } from "../helpers/zodWithOpenApi.js"
+import { ZLbaCompanyForContactUpdate } from "../models/recruteurLba.model.js"
 
-import { IRoutesDef } from "./common.routes"
+import { IRoutesDef } from "./common.routes.js"
 
 export const zUpdateLbaCompanyRoutes = {
   get: {

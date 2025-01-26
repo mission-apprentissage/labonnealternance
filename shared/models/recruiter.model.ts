@@ -2,13 +2,13 @@ import { randomUUID } from "crypto"
 
 import { Jsonify } from "type-fest"
 
-import { OPCOS_LABEL, RECRUITER_STATUS } from "../constants/recruteur"
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { z } from "../helpers/zodWithOpenApi"
+import { OPCOS_LABEL, RECRUITER_STATUS } from "../constants/recruteur.js"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { z } from "../helpers/zodWithOpenApi.js"
 
-import { ZPointGeometry } from "./address.model"
-import { IModelDescriptor, zObjectId } from "./common"
-import { ZJob } from "./job.model"
+import { ZPointGeometry } from "./address.model.js"
+import { IModelDescriptor, zObjectId } from "./common.js"
+import { ZJob } from "./job.model.js"
 
 const allRecruiterStatus = Object.values(RECRUITER_STATUS)
 

@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { IModelDescriptor, zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common.js"
 
 const ZFTContact = z.object({
   nom: z.string().optional(),

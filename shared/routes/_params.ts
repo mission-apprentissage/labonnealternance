@@ -1,6 +1,6 @@
-import { LBA_ITEM_TYPE_OLD } from "../constants/lbaitem"
-import { NIVEAUX_POUR_LBA } from "../constants/recruteur"
-import { z } from "../helpers/zodWithOpenApi"
+import { LBA_ITEM_TYPE_OLD } from "../constants/lbaitem.js"
+import { NIVEAUX_POUR_LBA } from "../constants/recruteur.js"
+import { z } from "../helpers/zodWithOpenApi.js"
 
 export const zCallerParam = z
   .string()

@@ -1,17 +1,17 @@
 import { z } from "zod"
 
-import { TRAINING_CONTRACT_TYPE } from "../../../constants"
-import { extensions } from "../../../helpers/zodHelpers/zodPrimitives"
-import { JOB_STATUS_ENGLISH } from "../../../models"
+import { TRAINING_CONTRACT_TYPE } from "../../../constants/recruteur.js"
+import { extensions } from "../../../helpers/zodHelpers/zodPrimitives.js"
+import { JOB_STATUS_ENGLISH } from "../../../models/job.model.js"
 import {
   FILTER_JOBPARTNERS_LABEL,
-  zDiplomaEuropeanLevel,
+  IJobsPartnersOfferApi,
+  IJobsPartnersRecruiterApi,
   ZJobsPartnersOfferApi,
   ZJobsPartnersOfferPrivate,
   ZJobsPartnersRecruiterApi,
-  type IJobsPartnersOfferApi,
-  type IJobsPartnersRecruiterApi,
-} from "../../../models/jobsPartners.model"
+  zDiplomaEuropeanLevel,
+} from "../../../models/jobsPartners.model.js"
 
 const TIME_CLOCK_TOLERANCE = 300_000
 

@@ -1,14 +1,14 @@
 import { ObjectId } from "bson"
 import { Jsonify } from "type-fest"
 
-import { RefusalReasons } from "../constants/application"
-import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, allLbaItemType, allLbaItemTypeOLD } from "../constants/lbaitem"
-import { removeUrlsFromText } from "../helpers/common"
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { z } from "../helpers/zodWithOpenApi"
-import { zCallerParam } from "../routes/_params"
+import { RefusalReasons } from "../constants/application.js"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, allLbaItemType, allLbaItemTypeOLD } from "../constants/lbaitem.js"
+import { removeUrlsFromText } from "../helpers/common.js"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { z } from "../helpers/zodWithOpenApi.js"
+import { zCallerParam } from "../routes/_params.js"
 
-import { IModelDescriptor, zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common.js"
 
 const collectionName = "applications" as const
 

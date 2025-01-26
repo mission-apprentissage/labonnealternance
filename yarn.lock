@@ -5259,6 +5259,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tsconfig/next@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "@tsconfig/next@npm:2.0.3"
+  checksum: 35a004bfca70e21f536aa7ef910d4ed0a09316ecc012952b0ba9ceb11ae333eb38f4c613fba79d91341a36db5af1b494dcadb0e35da0841ad47d08d65934f778
+  languageName: node
+  linkType: hard
+
 "@tsconfig/node10@npm:^1.0.7":
   version: 1.0.11
   resolution: "@tsconfig/node10@npm:1.0.11"
@@ -5284,6 +5291,13 @@ __metadata:
   version: 1.0.4
   resolution: "@tsconfig/node16@npm:1.0.4"
   checksum: 202319785901f942a6e1e476b872d421baec20cf09f4b266a1854060efbf78cde16a4d256e8bc949d31e6cd9a90f1e8ef8fb06af96a65e98338a2b6b0de0a0ff
+  languageName: node
+  linkType: hard
+
+"@tsconfig/node20@npm:^20.1.4":
+  version: 20.1.4
+  resolution: "@tsconfig/node20@npm:20.1.4"
+  checksum: 345dba8074647f6c11b8d78afa76d9c16e3436cb56a8e78fe2060014d33a09f3f4fd6ed81dc90e955d3509f926cd7fd61c6ddfd3d5a1d80758d7844f7cc3a99e
   languageName: node
   linkType: hard
 
@@ -5632,12 +5646,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*":
-  version: 22.10.7
-  resolution: "@types/node@npm:22.10.7"
+"@types/node@npm:*, @types/node@npm:^22.10.10":
+  version: 22.10.10
+  resolution: "@types/node@npm:22.10.10"
   dependencies:
     undici-types: ~6.20.0
-  checksum: 2dce6c75c607c6269744f1ea2b5296e8685cd71d0dd5c599c3029626f9d2dc8b037912495cf68b30d6f39f44d3fa8b025e179662ef16dc363e0658425bedfde8
+  checksum: 4906f63dd1dcee6acc096b3336353e04a15746b639bbf4f585e3093851a17852a9ea0e302caef2d782c836adb3812e6eb3305b8783809320013a1d77798816b3
   languageName: node
   linkType: hard
 
@@ -20245,6 +20259,8 @@ __metadata:
   dependencies:
     "@asteasolutions/zod-to-openapi": ^7.1.1
     "@fastify/swagger": ^8.15.0
+    "@tsconfig/node20": ^20.1.4
+    "@types/node": ^22.10.10
     bson: ^6.7.0
     dayjs: ^1.11.13
     eslint-plugin-zod: ^1.4.0
@@ -22119,6 +22135,7 @@ __metadata:
     "@sentry/nextjs": ^8.48.0
     "@socialgouv/matomo-next": ^1.8.0
     "@testing-library/react": ^13.4.0
+    "@tsconfig/next": ^2.0.3
     "@turf/distance": ^6.5.0
     "@types/node": ^20.7.1
     "@types/react": ^18.2.23

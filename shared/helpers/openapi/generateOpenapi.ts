@@ -3,8 +3,8 @@ import { formatParamUrl } from "@fastify/swagger"
 import type { SecurityRequirementObject } from "openapi3-ts/oas30"
 import { ZodEffects } from "zod"
 
-import { zRoutes } from "../../index"
-import { IRouteSchema } from "../../routes/common.routes"
+import { IRouteSchema } from "../../routes/common.routes.js"
+import { zRoutes } from "../../routes/index.js"
 
 function generateOpenApiResponsesObject<R extends IRouteSchema["response"]>(response: R): { [statusCode: string]: ResponseConfig } {
   return Object.keys(response).reduce(
@@ -87,7 +87,7 @@ export function generateOpenApiSchema(version: string, env: string, publicUrl: s
 
   for (const [method, pathRoutes] of Object.entries(zRoutes)) {
     for (const [path, route] of Object.entries(pathRoutes)) {
-      addOpenApiOperation(path, method as "get" | "put" | "post" | "delete", route, registry)
+      addOpenApiOperation(path, method as "get" | "put" | "post" | "delete", route as IRouteSchema, registry)
     }
   }
 

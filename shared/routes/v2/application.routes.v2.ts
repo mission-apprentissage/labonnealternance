@@ -1,6 +1,6 @@
-import { z } from "../../helpers/zodWithOpenApi"
-import { ZApplicationApiPrivate, ZApplicationApiPublic } from "../../models"
-import { IRoutesDef } from "../common.routes"
+import { z } from "../../helpers/zodWithOpenApi.js"
+import { ZApplicationApiPrivate, ZApplicationApiPublic } from "../../models/applications.model.js"
+import { IRoutesDef } from "../common.routes.js"
 
 export const zApplicationRoutesV2 = {
   post: {

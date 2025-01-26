@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { JOB_STATUS_ENGLISH } from "../job.model"
-import { IJobsPartnersWritableApiInput, ZJobsPartnersWritableApi } from "../jobsPartners.model"
+import { JOB_STATUS_ENGLISH } from "../job.model.js"
+import { IJobsPartnersWritableApiInput, ZJobsPartnersWritableApi } from "../jobsPartners.model.js"
 
 describe("ZJobsPartnersWritableApi", () => {
   const now = new Date("2024-06-18T14:30:00.000Z")

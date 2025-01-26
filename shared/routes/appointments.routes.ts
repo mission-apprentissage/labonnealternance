@@ -1,9 +1,12 @@
-import { referrers } from "../constants/referers"
-import { z } from "../helpers/zodWithOpenApi"
-import { EREASONS, ZAppointment, ZEtablissement, ZUser } from "../models"
-import { zObjectId } from "../models/common"
+import { zObjectId } from "zod-mongodb-schema"
 
-import { IRoutesDef } from "./common.routes"
+import { referrers } from "../constants/referers.js"
+import { z } from "../helpers/zodWithOpenApi.js"
+import { EREASONS, ZAppointment } from "../models/appointments.model.js"
+import { ZEtablissement } from "../models/etablissement.model.js"
+import { ZUser } from "../models/user.model.js"
+
+import { IRoutesDef } from "./common.routes.js"
 
 const zContextCreateSchemaParcoursup = z
   .object({

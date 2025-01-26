@@ -1,11 +1,11 @@
-import { ApplicationIntention, RefusalReasons } from "../constants/application"
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { z } from "../helpers/zodWithOpenApi"
-import { ZLbacError } from "../models"
-import { ZNewApplication } from "../models/applications.model"
-import { rateLimitDescription } from "../utils/rateLimitDescription"
+import { ApplicationIntention, RefusalReasons } from "../constants/application.js"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { z } from "../helpers/zodWithOpenApi.js"
+import { ZNewApplication } from "../models/applications.model.js"
+import { ZLbacError } from "../models/lbacError.model.js"
+import { rateLimitDescription } from "../utils/rateLimitDescription.js"
 
-import { IRoutesDef, ZResError } from "./common.routes"
+import { IRoutesDef, ZResError } from "./common.routes.js"
 
 export const zApplicationRoutes = {
   post: {
