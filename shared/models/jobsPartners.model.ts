@@ -1,12 +1,12 @@
 import { z } from "zod"
 
-import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants"
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
+import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 
-import { ZPointGeometry } from "./address.model"
-import { IModelDescriptor, zObjectId } from "./common"
-import { JOB_STATUS_ENGLISH } from "./job.model"
-import { zOpcoLabel } from "./opco.model"
+import { ZPointGeometry } from "./address.model.js"
+import { IModelDescriptor, zObjectId } from "./common.js"
+import { JOB_STATUS_ENGLISH } from "./job.model.js"
+import { zOpcoLabel } from "./opco.model.js"
 
 const collectionName = "jobs_partners" as const
 

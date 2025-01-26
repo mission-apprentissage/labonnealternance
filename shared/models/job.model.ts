@@ -1,12 +1,12 @@
+import dayjs from "dayjs"
 import { Jsonify } from "type-fest"
+import { zObjectId } from "zod-mongodb-schema"
 
-import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "../constants/recruteur"
-import dayjs from "../helpers/dayjs"
-import { z } from "../helpers/zodWithOpenApi"
-import { assertUnreachable } from "../utils"
+import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "../constants/recruteur.js"
+import { z } from "../helpers/zodWithOpenApi.js"
+import { assertUnreachable } from "../utils/assertUnreachable.js"
 
-import { zObjectId } from "./common"
-import { ZReferentielRomeForJob, ZRomeCompetence } from "./rome.model"
+import { ZReferentielRomeForJob, ZRomeCompetence } from "./rome.model.js"
 
 export enum JOB_STATUS {
   ACTIVE = "Active",

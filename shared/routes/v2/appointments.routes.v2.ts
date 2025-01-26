@@ -1,7 +1,7 @@
-import { ReferrerApiEnum } from "../../constants/referers"
-import { extensions } from "../../helpers/zodHelpers/zodPrimitives"
-import { z } from "../../helpers/zodWithOpenApi"
-import { IRoutesDef } from "../common.routes"
+import { ReferrerApiEnum } from "../../constants/referers.js"
+import { extensions } from "../../helpers/zodHelpers/zodPrimitives.js"
+import { z } from "../../helpers/zodWithOpenApi.js"
+import { IRoutesDef } from "../common.routes.js"
 
 const ZAppointmentContextParcoursup = z
   .object({

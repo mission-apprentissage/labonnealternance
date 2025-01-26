@@ -1,10 +1,10 @@
 import { z } from "zod"
 
-import { IModelDescriptor, zObjectId } from "shared/models/common"
+import { IModelDescriptor, zObjectId } from "shared/models/common.js"
 
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 
-import { ZJobsPartnersOfferPrivate } from "./jobsPartners.model"
+import { ZJobsPartnersOfferPrivate } from "./jobsPartners.model.js"
 
 const collectionName = "computed_jobs_partners" as const
 

@@ -1,9 +1,10 @@
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { z } from "../helpers/zodWithOpenApi"
-import { ZEtablissement } from "../models"
-import { zObjectId } from "../models/common"
+import { zObjectId } from "zod-mongodb-schema"
 
-import { IRoutesDef } from "./common.routes"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { z } from "../helpers/zodWithOpenApi.js"
+import { ZEtablissement } from "../models/etablissement.model.js"
+
+import { IRoutesDef } from "./common.routes.js"
 
 export const zEtablissementRoutes = {
   get: {

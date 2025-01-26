@@ -1,7 +1,7 @@
-import { z } from "../helpers/zodWithOpenApi"
+import { z } from "../helpers/zodWithOpenApi.js"
 
-import { ZPointFeature } from "./address.model"
-import { IModelDescriptor, zObjectId } from "./common"
+import { ZPointFeature } from "./address.model.js"
+import { IModelDescriptor, zObjectId } from "./common.js"
 
 const collectionName = "cache_geolocation" as const
 

@@ -1,4 +1,4 @@
-import { z } from "../helpers/zodWithOpenApi"
+import { z } from "../helpers/zodWithOpenApi.js"
 
 export const ZLbacError = z
   .object({

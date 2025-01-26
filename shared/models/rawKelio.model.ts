@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { IModelDescriptor } from "./common"
+import { IModelDescriptor } from "./common.js"
 
 export default {
   zod: z
