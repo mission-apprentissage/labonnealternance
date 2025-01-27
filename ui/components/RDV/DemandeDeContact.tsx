@@ -416,6 +416,7 @@ const DemandeDeContact = (props: Props) => {
           </Text>
         </Box>
       </Flex>
+  </Box>
   )
 
   return props.showInModal ? (
