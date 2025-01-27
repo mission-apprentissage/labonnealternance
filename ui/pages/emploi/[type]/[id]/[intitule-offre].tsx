@@ -28,6 +28,7 @@ export default function DetailEmploi() {
   /* TODO: - gérer l'affichage de la map */
 
   const { id, type } = router.query
+  const intituleOffre = router.query["intitule-offre"] as string
 
   const { isSuccess, data } = useQuery(["itemDetail-offre", id, type], () => fetchJobItemDetails({ id, type, searchResultContext }), {
     enabled: shouldFetchItemData(id as string, type as LBA_ITEM_TYPE, searchResultContext),
@@ -45,10 +46,7 @@ export default function DetailEmploi() {
 
   return (
     <Box className="choiceCol">
-      <NextSeo
-        title={`TODO: change here and below Tous les emplois et formations en alternance | La bonne alternance | Trouvez votre alternance`}
-        description={`Liste de métiers où trouver une formation ou un emploi en alternance`}
-      />
+      <NextSeo title={`Emploi en alternance | ${intituleOffre}`} description={`Offres de recrutement et entreprises pour trouver un contrat en alternance`} />
       {!hasError && searchResultContext.selectedItem?.detailsLoaded && <ItemDetail handleClose={handleClose} handleSelectItem={handleSelectItem} />}
       {hasError ? (
         <ErrorMessage message={hasError === "not_found" ? "Fiche introuvable" : "Une erreur s'est produite. Détail de la fiche momentanément indisponible"} />
