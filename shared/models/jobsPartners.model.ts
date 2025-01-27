@@ -13,7 +13,7 @@ const collectionName = "jobs_partners" as const
 export enum JOBPARTNERS_LABEL {
   HELLOWORK = "Hello work",
   OFFRES_EMPLOI_LBA = "La bonne alternance",
-  OFFRES_EMPLOI_FRANCE_TRAVAIL = "France Travail",
+  FRANCE_TRAVAIL = "France Travail",
   RH_ALTERNANCE = "RH Alternance",
   PASS = "Pass emploi",
 }
