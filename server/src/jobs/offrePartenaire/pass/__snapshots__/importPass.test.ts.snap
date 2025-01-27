@@ -5,7 +5,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
   {
     "apply_phone": null,
     "apply_url": "https://www.pass.fonction-publique.gouv.fr/offre/apprentissage-analyste-au-sein-dun-service-douanier-competence-nationale-pole-danalyse-des",
-    "business_error": "EXPIRED",
+    "business_error": null,
     "contract_duration": 12,
     "contract_remote": null,
     "contract_start": 2025-09-14T20:00:00.000Z,
@@ -54,7 +54,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
   {
     "apply_phone": null,
     "apply_url": "https://www.pass.fonction-publique.gouv.fr/offre/apprentissage-au-sein-dun-service-douanier-competence-nationale-pole-danalyse-strategique",
-    "business_error": "EXPIRED",
+    "business_error": null,
     "contract_duration": 12,
     "contract_remote": null,
     "contract_start": 2025-09-14T20:00:00.000Z,
@@ -103,7 +103,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
   {
     "apply_phone": null,
     "apply_url": "https://www.pass.fonction-publique.gouv.fr/offre/apprentissage-analyste-logistique-criminelle-et-stupefiants-au-sein-dun-service-douanier",
-    "business_error": "EXPIRED",
+    "business_error": null,
     "contract_duration": 12,
     "contract_remote": null,
     "contract_start": 2025-09-14T20:00:00.000Z,
@@ -152,7 +152,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
   {
     "apply_phone": null,
     "apply_url": "https://www.pass.fonction-publique.gouv.fr/offre/apprentissage-gestionnaire-ressources-humaines-au-sein-dun-service-douanier-competence",
-    "business_error": "EXPIRED",
+    "business_error": null,
     "contract_duration": 12,
     "contract_remote": null,
     "contract_start": 2025-09-14T20:00:00.000Z,
@@ -201,7 +201,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
   {
     "apply_phone": null,
     "apply_url": "https://www.pass.fonction-publique.gouv.fr/offre/apprentissage-assistant-e-de-prevention-au-sein-dun-service-douanier-competence-nationale",
-    "business_error": "EXPIRED",
+    "business_error": null,
     "contract_duration": 12,
     "contract_remote": null,
     "contract_start": 2025-09-14T20:00:00.000Z,
