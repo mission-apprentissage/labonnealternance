@@ -24,6 +24,7 @@ const DisplayMapButton = (props) => {
       refreshLocationMarkers({ jobs: props.jobs, trainings: props.trainings, scopeContext })
     }
 
+    // @ts-ignore
     pushHistory({
       router,
       display: "list",

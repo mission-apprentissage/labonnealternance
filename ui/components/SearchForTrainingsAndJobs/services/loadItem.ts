@@ -205,6 +205,7 @@ export const updateJobContext = ({ searchResultContext, job }: { searchResultCon
       assertUnreachable("shouldNotHappen" as never)
     }
   }
+  // @ts-ignore
   searchResultContext.setJobsAndSelectedItem(toUpdateJobs, job)
 }
 
@@ -297,6 +298,7 @@ export const initContextFromQueryParameters = ({ searchResultContext, displayCon
         assertUnreachable("shouldNotHappen" as never)
       }
     }
+    // @ts-ignore
     storeSearchResultInContext({ searchResultContext, results, searchTimestamp, formValues: values })
     searchResultContext.setHasSearch(true)
   }

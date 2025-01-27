@@ -10,7 +10,7 @@ interface GetFranceTravailButtonProps {
   isCollapsedHeader: boolean
 }
 
-export default function GetFranceTravailButton({ offreFT }: GetFranceTravailButtonProps) {
+export default function GetFranceTravailButton({ offreFT, isCollapsedHeader }: GetFranceTravailButtonProps) {
   const urlPostulation = offreFT?.contact?.url || null
   const contactPhone = offreFT?.contact?.phone || null
   const contactName = offreFT?.contact?.name || null
@@ -34,14 +34,27 @@ export default function GetFranceTravailButton({ offreFT }: GetFranceTravailButt
     </Box>
   )
 
-  if (contactPhone) return <ContactPhone contactName={contactName} companyName={companyName} contactPhone={contactPhone} urlPostulation={urlPostulation} />
+  if (contactPhone)
+    return <ContactPhone contactName={contactName} companyName={companyName} contactPhone={contactPhone} urlPostulation={urlPostulation} isCollapsedHeader={isCollapsedHeader} />
   if (urlPostulation) return renderLink(urlPostulation, "Je postule sur le site du recruteur", "Clic Postuler - Fiche entreprise Offre FT")
   if (url) return renderLink(url, "Je postule sur France Travail", "Clic Postuler - Fiche entreprise Offre FT")
 
   return null
 }
 
-const ContactPhone = ({ companyName, contactPhone, contactName, urlPostulation }: { companyName: string; contactPhone: string; contactName: string; urlPostulation?: string }) => {
+const ContactPhone = ({
+  companyName,
+  contactPhone,
+  contactName,
+  urlPostulation,
+  isCollapsedHeader,
+}: {
+  companyName: string
+  contactPhone: string
+  contactName: string
+  urlPostulation?: string
+  isCollapsedHeader: boolean
+}) => {
   const { isOpen, onClose, onOpen } = useDisclosure()
   return (
     <>
