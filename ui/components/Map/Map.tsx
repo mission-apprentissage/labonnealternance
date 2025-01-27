@@ -34,6 +34,7 @@ const Map = ({ handleSearchSubmit, showSearchForm, selectItemOnMap }) => {
     setSelectedMarker(null)
     if (currentPage === "fiche") {
       setCurrentPage("")
+      // @ts-ignore
       pushHistory({ router, searchParameters: formValues, searchTimestamp: currentSearch })
     }
   }
