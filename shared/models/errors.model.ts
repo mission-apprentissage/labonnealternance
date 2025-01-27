@@ -1,5 +1,5 @@
-import { BusinessErrorCodes } from "../constants/errorCodes"
-import { z } from "../helpers/zodWithOpenApi"
+import { BusinessErrorCodes } from "../constants/errorCodes.js"
+import { z } from "../helpers/zodWithOpenApi.js"
 
 const businessErrorCodeValues = Object.values(BusinessErrorCodes)
 

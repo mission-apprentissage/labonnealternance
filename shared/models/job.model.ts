@@ -1,4 +1,5 @@
 import { Jsonify } from "type-fest"
+import { zObjectId } from "zod-mongodb-schema"
 
 import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "../constants/recruteur"
 import dayjs from "../helpers/dayjs"
@@ -6,8 +7,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { assertUnreachable } from "../utils"
 
-import { zObjectId } from "./common"
-import { ZReferentielRomeForJob, ZRomeCompetence } from "./rome.model"
+import { ZReferentielRomeForJob, ZRomeCompetence } from "./rome.model.js"
 
 export enum JOB_STATUS {
   ACTIVE = "Active",

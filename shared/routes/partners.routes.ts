@@ -1,8 +1,8 @@
-import { ZEligibleTrainingsForAppointmentSchema } from "shared/models/elligibleTraining.model"
+import { ZEligibleTrainingsForAppointmentSchema } from "shared/models/elligibleTraining.model.js"
 
-import { z } from "../helpers/zodWithOpenApi"
+import { z } from "../helpers/zodWithOpenApi.js"
 
-import { IRoutesDef } from "./common.routes"
+import { IRoutesDef } from "./common.routes.js"
 
 export const zPartnersRoutes = {
   get: {

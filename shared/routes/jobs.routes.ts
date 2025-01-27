@@ -1,9 +1,10 @@
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { z } from "../helpers/zodWithOpenApi"
-import { ZEtablissementCatalogueProcheWithDistance } from "../interface/etablissement.types"
-import { ZJob, ZJobFields, ZJobStartDateCreate } from "../models"
-import { zObjectId } from "../models/common"
-import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
+import { zObjectId } from "zod-mongodb-schema"
+
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { z } from "../helpers/zodWithOpenApi.js"
+import { ZEtablissementCatalogueProcheWithDistance } from "../interface/etablissement.types.js"
+import { ZJob, ZJobFields, ZJobStartDateCreate } from "../models/job.model.js"
+import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model.js"
 import {
   ZLbaItemFtJob,
   ZLbaItemFtJobReturnedByAPI,
@@ -13,9 +14,9 @@ import {
   ZLbaItemLbaJobReturnedByAPI,
   ZLbaItemPartnerJob,
   ZLbaItemPartnerJobReturnedByAPI,
-} from "../models/lbaItem.model"
-import { ZRecruiter } from "../models/recruiter.model"
-import { rateLimitDescription } from "../utils/rateLimitDescription"
+} from "../models/lbaItem.model.js"
+import { ZRecruiter } from "../models/recruiter.model.js"
+import { rateLimitDescription } from "../utils/rateLimitDescription.js"
 
 import {
   zCallerParam,
@@ -30,8 +31,8 @@ import {
   zRncpsParams,
   zRomesParams,
   zSourcesParams,
-} from "./_params"
-import { IRoutesDef, ZResError } from "./common.routes"
+} from "./_params.js"
+import { IRoutesDef, ZResError } from "./common.routes.js"
 
 export const zV1JobsRoutes = {
   get: {

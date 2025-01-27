@@ -1,7 +1,7 @@
-import { z } from "../helpers/zodWithOpenApi"
-import { ZApiError, ZLbacError } from "../models/lbacError.model"
-import { ZLbaItemFormation, ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemFtJob, ZLbaItemPartnerJob } from "../models/lbaItem.model"
-import { rateLimitDescription } from "../utils/rateLimitDescription"
+import { z } from "../helpers/zodWithOpenApi.js"
+import { ZApiError, ZLbacError } from "../models/lbacError.model.js"
+import { ZLbaItemFormation, ZLbaItemFtJob, ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemPartnerJob } from "../models/lbaItem.model.js"
+import { rateLimitDescription } from "../utils/rateLimitDescription.js"
 
 import {
   zCallerParam,
@@ -16,8 +16,8 @@ import {
   zRncpsParams,
   zRomesParams,
   zSourcesParams,
-} from "./_params"
-import { IRoutesDef, ZResError } from "./common.routes"
+} from "./_params.js"
+import { IRoutesDef, ZResError } from "./common.routes.js"
 
 export const zV1JobsEtFormationsRoutes = {
   get: {

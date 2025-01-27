@@ -1,7 +1,8 @@
 import { z } from "zod"
+import { zObjectId } from "zod-mongodb-schema"
 
-import { ZGeometry, ZPointGeometry } from "../address.model"
-import { IModelDescriptor, zObjectId } from "../common"
+import { ZGeometry, ZPointGeometry } from "../address.model.js"
+import { IModelDescriptor } from "../common.js"
 
 const collectionName = "referentiel.communes" as const
 

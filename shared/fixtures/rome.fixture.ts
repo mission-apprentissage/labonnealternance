@@ -1,6 +1,6 @@
 import { ObjectId } from "bson"
 
-import { IReferentielRome } from "../models"
+import { IReferentielRome } from "../models/rome.model.js"
 
 export function generateReferentielRome(data: Partial<IReferentielRome> = {}): IReferentielRome {
   return {

@@ -1,7 +1,7 @@
 import dayjs from "dayjs"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { ZJobStartDateCreate } from "."
+import { ZJobStartDateCreate } from "./job.model.js"
 
 describe("job.model", () => {
   describe("job_start_date field", () => {

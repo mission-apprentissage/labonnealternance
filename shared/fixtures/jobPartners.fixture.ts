@@ -1,8 +1,8 @@
 import { ObjectId } from "bson"
 
-import { JOB_STATUS_ENGLISH } from "../models"
-import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "../models/jobsPartners.model"
-import { IComputedJobsPartners } from "../models/jobsPartnersComputed.model"
+import { JOB_STATUS_ENGLISH } from "../models/job.model.js"
+import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "../models/jobsPartners.model.js"
+import { IComputedJobsPartners } from "../models/jobsPartnersComputed.model.js"
 
 export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOfferPrivate> = {}): IJobsPartnersOfferPrivate {
   const offer_expiration = new Date("2050-01-01")

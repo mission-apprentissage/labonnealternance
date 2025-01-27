@@ -1,10 +1,10 @@
 import { Jsonify } from "type-fest"
 
-import { AppointmentUserType } from "../constants/appointment"
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { z } from "../helpers/zodWithOpenApi"
+import { AppointmentUserType } from "../constants/appointment.js"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { z } from "../helpers/zodWithOpenApi.js"
 
-import { IModelDescriptor, zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common.js"
 
 const collectionName = "appointments" as const
 

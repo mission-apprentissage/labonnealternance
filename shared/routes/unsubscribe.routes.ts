@@ -1,6 +1,6 @@
-import { ZUnsubscribeQueryParams, ZUnsubscribeQueryResponse } from "../models/unsubscribedRecruteurLba.model"
+import { ZUnsubscribeQueryParams, ZUnsubscribeQueryResponse } from "../models/unsubscribedRecruteurLba.model.js"
 
-import { IRoutesDef } from "./common.routes"
+import { IRoutesDef } from "./common.routes.js"
 
 export const zUnsubscribeRoute = {
   post: {
