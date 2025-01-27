@@ -89,8 +89,8 @@ const nextConfig = {
       },
     ],
   },
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
+  webpack: (config, { isServer, dev }) => {
+    if (!isServer && !dev) {
       // To optmize homepage loading, would be deleted when switching to App router
       config.optimization.splitChunks.cacheGroups.priorityChunks = {
         name: "high-priority",

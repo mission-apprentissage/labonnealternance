@@ -13,11 +13,12 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
 import { getDbCollection } from "../common/utils/mongodbUtils"
+import { removeHtmlTagsFromString } from "../common/utils/stringUtils"
 import config from "../config"
 
 import { createAuthMagicLink } from "./appLinks.service"
 import { getFormulaireFromUserIdOrError } from "./formulaire.service"
-import mailer, { sanitizeForEmail } from "./mailer.service"
+import mailer from "./mailer.service"
 import { Organization, UserAndOrganization } from "./organization.service"
 import { getOrganizationFromRole, modifyPermissionToUser } from "./roleManagement.service"
 import { createUser2IfNotExist, isUserEmailChecked } from "./userWithAccount.service"
@@ -376,10 +377,10 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) =>
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
         logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
       },
-      last_name: sanitizeForEmail(last_name),
-      first_name: sanitizeForEmail(first_name),
+      last_name: removeHtmlTagsFromString(last_name),
+      first_name: removeHtmlTagsFromString(first_name),
       confirmation_url: createAuthMagicLink(userWithAccountToUserForToken(user)),
-      email: sanitizeForEmail(user.email),
+      email: removeHtmlTagsFromString(user.email),
       establishment_name: organization.raison_sociale,
     },
   })

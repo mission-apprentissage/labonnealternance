@@ -13,7 +13,7 @@ import ItemDistanceToCenter from "../ItemDetailServices/ItemDistanceToCenter"
 import ItemGoogleSearchLink from "../ItemDetailServices/ItemGoogleSearchLink"
 import ItemLocalisation from "../ItemDetailServices/ItemLocalisation"
 import ItemWebsiteLink from "../ItemDetailServices/ItemWebsiteLink"
-import { JobDescriptionAccordion, JobDescription } from "../ItemDetailServices/JobDescription"
+import { JobDescription, JobDescriptionAccordion } from "../ItemDetailServices/JobDescription"
 
 const getContractTypes = (contractTypes) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
@@ -75,7 +75,7 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJob; titl
 
         <Accordion allowToggle defaultIndex={0}>
           <JobDescription job={job} />
-          <JobDescriptionAccordion title="Qualités souhaitées pour ce métier" items={job?.job?.offer_desired_skills} />
+          <JobDescriptionAccordion title="Qualités souhaitées pour ce poste" items={job?.job?.offer_desired_skills} />
         </Accordion>
       </Box>
 

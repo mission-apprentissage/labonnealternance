@@ -1,32 +1,19 @@
 {
+  "extends": "@tsconfig/next/tsconfig.json",
   "compilerOptions": {
-    "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "baseUrl": ".",
-    "skipLibCheck": true,
+    // need to be removed once fully switched to nextjs app router
     "strict": false,
     "strictNullChecks": false,
-    // "strictBindCallApply": true,
+
+    "baseUrl": ".",
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "incremental": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
     "paths": {
       "@/*": ["./*"],
       "shared": ["../shared"]
     },
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ]
+    "noErrorTruncation": true,
+    "target": "ES2017"
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "images.d.ts", "next.config.ts", "next.config.mjs"],
-  "exclude": ["node_modules", "public"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["**/node_modules", "public", ".next"]
 }

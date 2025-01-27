@@ -1,7 +1,7 @@
-import { z } from "../helpers/zodWithOpenApi"
-import { ZOptout } from "../models/optout.model"
+import { z } from "../helpers/zodWithOpenApi.js"
+import { ZOptout } from "../models/optout.model.js"
 
-import { IRoutesDef, ZResError } from "./common.routes"
+import { IRoutesDef, ZResError } from "./common.routes.js"
 
 export const zOptoutRoutes = {
   get: {

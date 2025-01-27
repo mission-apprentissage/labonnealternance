@@ -1,7 +1,7 @@
-import { z } from "../helpers/zodWithOpenApi"
+import { z } from "../helpers/zodWithOpenApi.js"
 
-import { ZPointFeature } from "./address.model"
-import { IModelDescriptor, zObjectId } from "./common"
+import { ZPointFeature } from "./address.model.js"
+import { IModelDescriptor, zObjectId } from "./common.js"
 
 const collectionName = "cache_geolocation" as const
 
@@ -14,9 +14,6 @@ export type ICacheGeolocation = z.output<typeof ZCacheGeolocation>
 
 export default {
   zod: ZCacheGeolocation,
-  indexes: [
-    [{ address: 1 }, {}],
-    [{ "features.geometry": "2dsphere" }, {}],
-  ],
+  indexes: [[{ address: 1 }, {}]],
   collectionName,
 } as const satisfies IModelDescriptor

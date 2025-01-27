@@ -1,6 +1,6 @@
 import { paramCase } from "param-case"
 
-import { assertUnreachable } from "../utils"
+import { assertUnreachable } from "../utils/assertUnreachable.js"
 
 /**
  * KBA 20240805

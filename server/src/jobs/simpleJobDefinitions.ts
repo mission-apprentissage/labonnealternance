@@ -14,11 +14,12 @@ import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
 import { detectDuplicateJobPartners } from "./offrePartenaire/detectDuplicateJobPartners"
 import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
+import { importHelloWorkRaw, importHelloWorkToComputed } from "./offrePartenaire/hellowork/importHelloWork"
 import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromComputedToJobsPartners"
-import { importHelloWorkRaw, importHelloWorkToComputed } from "./offrePartenaire/importHelloWork"
-import { importKelio } from "./offrePartenaire/importKelio"
-import { importRHAlternanceRaw, importRHAlternanceToComputed } from "./offrePartenaire/importRHAlternance"
+import { importKelio } from "./offrePartenaire/kelio/importKelio"
+import { importPassRaw, importPassToComputed } from "./offrePartenaire/pass/importPass"
 import { processJobPartners } from "./offrePartenaire/processJobPartners"
+import { importRHAlternanceRaw, importRHAlternanceToComputed } from "./offrePartenaire/rh-alternance/importRHAlternance"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
@@ -160,29 +161,50 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: anonimizeUsersWithAccounts,
     description: "Anonymize les userrecruteurs qui ne se sont pas connectés depuis plus de 2 ans",
   },
+  // IMPORT RAW JOBS PARTNERS
   {
     fct: importHelloWorkRaw,
     description: "Importe les offres hellowork dans la collection raw",
-  },
-  {
-    fct: importHelloWorkToComputed,
-    description: "Importe les offres hellowork depuis raw vers computed",
   },
   {
     fct: importRHAlternanceRaw,
     description: "Importe les offres RHAlternance dans la collection raw",
   },
   {
+    fct: importKelio,
+    description: "Importe les offres kelio dans la collection raw",
+  },
+  {
+    fct: importPassRaw,
+    description: "importe les offres Pass dans la collection raw",
+  },
+  // IMPORT RAW TO COMPUTED JOBS PARTNERS
+  {
+    fct: importHelloWorkToComputed,
+    description: "Importe les offres hellowork depuis raw vers computed",
+  },
+  {
     fct: importRHAlternanceToComputed,
     description: "Importe les offres RHAlternance depuis raw vers computed",
   },
   {
-    fct: importKelio,
-    description: "Importe les offres kelio",
+    fct: importPassToComputed,
+    description: "Importe les offres Pass depuis raw vers computed",
   },
+  // IMPORT COMPUTED TO JOBS PARTNERS
   {
     fct: importFromComputedToJobsPartners,
     description: "Met à jour la collection jobs_partners à partir de computed_jobs_partners",
+  },
+  // ENRICHIT COMPUTED JOBS PARTNERS
+  {
+    fct: fillComputedJobsPartners,
+    description: "Enrichit la collection computed_jobs_partners avec les données provenant d'API externes",
+  },
+  // FLOW GLOBAL JOBS PARTNERS
+  {
+    fct: processJobPartners,
+    description: "Chaîne complète de traitement des jobs_partners",
   },
   {
     fct: cancelRemovedJobsPartners,
@@ -191,10 +213,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processApplications,
     description: "Scanne les virus des pièces jointes et envoie les candidatures. Timeout à 8 minutes.",
-  },
-  {
-    fct: fillComputedJobsPartners,
-    description: "Enrichit la collection computed_jobs_partners avec les données provenant d'API externes",
   },
   {
     fct: detectDuplicateJobPartners,
@@ -207,10 +225,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: generateSitemap,
     description: "Génère le sitemap pour les offres",
-  },
-  {
-    fct: processJobPartners,
-    description: "Chaîne complète de traitement des jobs_partners",
   },
   {
     fct: processScheduledRecruiterIntentions,

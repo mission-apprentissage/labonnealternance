@@ -1,8 +1,8 @@
-import { OPCOS_LABEL } from "../constants/recruteur"
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { z } from "../helpers/zodWithOpenApi"
+import { OPCOS_LABEL } from "../constants/recruteur.js"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { z } from "../helpers/zodWithOpenApi.js"
 
-import { IModelDescriptor, zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common.js"
 
 const collectionName = "referentielopcos" as const
 
@@ -25,9 +25,6 @@ export type IReferentielOpco = z.output<typeof ZReferentielOpco>
 
 export default {
   zod: ZReferentielOpco,
-  indexes: [
-    [{ siret_code: 1 }, {}],
-    [{ emails: 1 }, {}],
-  ],
+  indexes: [[{ siret_code: 1 }, {}]],
   collectionName,
 } as const satisfies IModelDescriptor

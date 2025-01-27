@@ -7,6 +7,8 @@ import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { streamGroupByCount } from "@/common/utils/streamUtils"
 
+import { notifyToSlack } from "../../common/utils/slackUtils"
+
 const groupSize = 100
 const zodModel = jobsPartnersModel.zod
 
@@ -76,4 +78,8 @@ export const validateComputedJobPartners = async () => {
     )
   )
   logger.info(`validation terminé`, counters)
+  await notifyToSlack({
+    subject: `computedJobPartners: validation des offres`,
+    message: `validation terminé. total=${counters.total}, success=${counters.success}, errors=${counters.error}`,
+  })
 }

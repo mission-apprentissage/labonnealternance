@@ -10,9 +10,7 @@ interface GetFranceTravailButtonProps {
   isCollapsedHeader: boolean
 }
 
-export default function GetFranceTravailButton({ offreFT, isCollapsedHeader }: GetFranceTravailButtonProps) {
-  const { isOpen, onClose, onOpen } = useDisclosure()
-
+export default function GetFranceTravailButton({ offreFT }: GetFranceTravailButtonProps) {
   const urlPostulation = offreFT?.contact?.url || null
   const contactPhone = offreFT?.contact?.phone || null
   const contactName = offreFT?.contact?.name || null
@@ -28,14 +26,31 @@ export default function GetFranceTravailButton({ offreFT, isCollapsedHeader }: G
     }
   }
 
-  const renderContactPhone = () => (
+  const renderLink = (url: string, label: string, eventLabel: string) => (
+    <Box my={4}>
+      <Link data-tracking-id="postuler-offre-partenaire" {...focusWithin} variant="postuler" href={url} target="_blank" onClick={() => handleClick(eventLabel, { info_fiche: id })}>
+        {label}
+      </Link>
+    </Box>
+  )
+
+  if (contactPhone) return <ContactPhone contactName={contactName} companyName={companyName} contactPhone={contactPhone} urlPostulation={urlPostulation} />
+  if (urlPostulation) return renderLink(urlPostulation, "Je postule sur le site du recruteur", "Clic Postuler - Fiche entreprise Offre FT")
+  if (url) return renderLink(url, "Je postule sur France Travail", "Clic Postuler - Fiche entreprise Offre FT")
+
+  return null
+}
+
+const ContactPhone = ({ companyName, contactPhone, contactName, urlPostulation }: { companyName: string; contactPhone: string; contactName: string; urlPostulation?: string }) => {
+  const { isOpen, onClose, onOpen } = useDisclosure()
+  return (
     <>
       <Box my={isCollapsedHeader ? 2 : 4}>
         <Link data-tracking-id="postuler-offre-partenaire" {...focusWithin} variant="postuler" href={urlPostulation} target="_blank" onClick={onOpen}>
           Contacter le recruteur
         </Link>
       </Box>
-      <ModalReadOnly isOpen={isOpen} onClose={onClose}>
+      <ModalReadOnly isOpen={isOpen} onClose={onClose} modalContentProps={{ px: 6, pb: 6 }}>
         <Container size={{ base: "full", md: "container.md" }}>
           <Heading as="h2" fontSize="xl" mb={4}>
             Postuler à l'offre de {companyName}
@@ -57,18 +72,4 @@ export default function GetFranceTravailButton({ offreFT, isCollapsedHeader }: G
       </ModalReadOnly>
     </>
   )
-
-  const renderLink = (url: string, label: string, eventLabel: string) => (
-    <Box my={4}>
-      <Link data-tracking-id="postuler-offre-partenaire" {...focusWithin} variant="postuler" href={url} target="_blank" onClick={() => handleClick(eventLabel, { info_fiche: id })}>
-        {label}
-      </Link>
-    </Box>
-  )
-
-  if (contactPhone) return renderContactPhone()
-  if (urlPostulation) return renderLink(urlPostulation, "Je postule sur le site du recruteur", "Clic Postuler - Fiche entreprise Offre FT")
-  if (url) return renderLink(url, "Je postule sur France Travail", "Clic Postuler - Fiche entreprise Offre FT")
-
-  return null
 }

@@ -9,9 +9,10 @@ import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
 
 import { getDbCollection } from "../common/utils/mongodbUtils"
+import { removeHtmlTagsFromString } from "../common/utils/stringUtils"
 
 import { createRdvaAppointmentIdPageLink } from "./appLinks.service"
-import mailer, { sanitizeForEmail } from "./mailer.service"
+import mailer from "./mailer.service"
 import { getReferrerByKeyName } from "./referrers.service"
 import { getLBALink } from "./trainingLinks.service"
 
@@ -40,11 +41,11 @@ const getMailData = async (candidate: IUser, appointment: IAppointment, eligible
   const mailData = {
     appointmentId: appointment._id,
     user: {
-      firstname: sanitizeForEmail(candidate.firstname),
-      lastname: sanitizeForEmail(candidate.lastname),
-      phone: sanitizeForEmail(candidate.phone),
-      email: sanitizeForEmail(candidate.email),
-      applicant_message_to_cfa: sanitizeForEmail(appointment.applicant_message_to_cfa),
+      firstname: removeHtmlTagsFromString(candidate.firstname),
+      lastname: removeHtmlTagsFromString(candidate.lastname),
+      phone: removeHtmlTagsFromString(candidate.phone),
+      email: removeHtmlTagsFromString(candidate.email),
+      applicant_message_to_cfa: removeHtmlTagsFromString(appointment.applicant_message_to_cfa),
     },
     etablissement: {
       name: eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale,
@@ -60,7 +61,7 @@ const getMailData = async (candidate: IUser, appointment: IAppointment, eligible
     appointment: {
       reasons: appointment.applicant_reasons,
       referrerLink: referrerObj.url,
-      appointment_origin: sanitizeForEmail(referrerObj.full_name),
+      appointment_origin: removeHtmlTagsFromString(referrerObj.full_name),
       created_at: appointment.created_at,
     },
     images: {

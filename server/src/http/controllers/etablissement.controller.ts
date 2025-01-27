@@ -8,10 +8,11 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sendMailCfaPremiumStart } from "@/services/etablissement.service"
 
+import { removeHtmlTagsFromString } from "../../common/utils/stringUtils"
 import config from "../../config"
 import dayjs from "../../services/dayjs.service"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
-import mailer, { sanitizeForEmail } from "../../services/mailer.service"
+import mailer from "../../services/mailer.service"
 import { Server } from "../server"
 
 /**
@@ -396,7 +397,7 @@ export default (server: Server) => {
               formateur_address: etablissement.formateur_address,
               formateur_zip_code: etablissement.formateur_zip_code,
               formateur_city: etablissement.formateur_city,
-              opt_out_question: sanitizeForEmail(req.body.opt_out_question),
+              opt_out_question: removeHtmlTagsFromString(req.body.opt_out_question),
             },
           },
           from: config.transactionalEmail,

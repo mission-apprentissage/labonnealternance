@@ -22,10 +22,12 @@ import { recreateIndexes } from "./database/recreateIndexes"
 import { validateModels } from "./database/schemaValidation"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
 import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
-import updateDomainesMetiersFile from "./domainesMetiers/updateDomainesMetiersFile"
+import { updateDomainesMetiersFile } from "./domainesMetiers/updateDomainesMetiersFile"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
+import { classifyFranceTravailJobs } from "./franceTravail/classifyJobsFranceTravail"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
+import { importFranceTravailJobs } from "./franceTravail/importJobsFranceTravail"
 import { pocRomeo } from "./franceTravail/pocRomeo"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
@@ -62,6 +64,7 @@ import { controlApplications } from "./verifications/controlApplications"
 import { controlAppointments } from "./verifications/controlAppointments"
 
 export async function setupJobProcessor() {
+  console.log("WORKER", config.worker)
   logger.info("Setup job processor")
   return initJobProcessor({
     db: getDatabase(),
@@ -233,6 +236,10 @@ export async function setupJobProcessor() {
             cron_string: "40 3 * * *",
             handler: processJobPartners,
           },
+          "Import complet des offres France Travail": {
+            cron_string: "0 6 * * *",
+            handler: importFranceTravailJobs,
+          },
           "Emission des intentions des recruteurs": {
             cron_string: "30 20 * * *",
             handler: processRecruiterIntentions,
@@ -248,8 +255,18 @@ export async function setupJobProcessor() {
       "francetravail:token-offre": {
         handler: async () => generateFranceTravailAccess(),
       },
+      "francetravail:jobs:import": {
+        handler: async () => importFranceTravailJobs(),
+      },
+      "francetravail:jobs:classify": {
+        handler: async () => classifyFranceTravailJobs(),
+      },
       "recreate:indexes": {
-        handler: async () => recreateIndexes(),
+        handler: async (job) => {
+          const { drop } = job.payload as any
+          await recreateIndexes({ drop })
+          return
+        },
       },
       "garbage-collector:run": {
         handler: async () => runGarbageCollector(),

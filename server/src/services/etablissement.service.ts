@@ -35,6 +35,7 @@ import { getUserWithAccountByEmail, isUserEmailChecked } from "@/services/userWi
 
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
+import { removeHtmlTagsFromString } from "../common/utils/stringUtils"
 import config from "../config"
 
 import { createValidationMagicLink } from "./appLinks.service"
@@ -47,7 +48,7 @@ import dayjs from "./dayjs.service"
 import { ICFADock, IFormatAPIEntreprise, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types"
 import { createFormulaire, getFormulaire } from "./formulaire.service"
 import { addressDetailToString, convertGeometryToPoint, getGeoCoordinates } from "./geolocation.service"
-import mailer, { sanitizeForEmail } from "./mailer.service"
+import mailer from "./mailer.service"
 import { getOpcoBySirenFromDB, getOpcosBySiretFromDB, insertOpcos, saveOpco } from "./opco.service"
 import { updateEntrepriseOpco, upsertEntrepriseData, UserAndOrganization } from "./organization.service"
 import { modifyPermissionToUser } from "./roleManagement.service"
@@ -432,8 +433,11 @@ const getOpcosDataFromFranceCompetence = async (sirets: string[]): Promise<{ opc
 
 export type EntrepriseData = IFormatAPIEntreprise & { geo_coordinates: string; geopoint: IGeoPoint }
 
-export const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_siret }: { siret: string; cfa_delegated_siret?: string }) => {
+export const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_siret, nafCode }: { siret: string; cfa_delegated_siret?: string; nafCode?: string }) => {
   if (!cfa_delegated_siret) return
+  if (nafCode?.startsWith("85")) {
+    return errorFactory("L'entreprise partenaire ne doit pas relever du secteur de l'enseignement.", BusinessErrorCodes.IS_CFA)
+  }
   const recruteurOpt = await getFormulaire({
     establishment_siret: siret,
     cfa_delegated_siret,
@@ -581,8 +585,6 @@ export const entrepriseOnboardingWorkflow = {
     } = {}
   ): Promise<IBusinessError | { formulaire: IRecruiter; user: IUserWithAccount; validated: boolean }> => {
     origin = origin ?? ""
-    const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret })
-    if (cfaErrorOpt) return cfaErrorOpt
     const formulaireExist = await getFormulaire({ establishment_siret: siret, email })
     if (formulaireExist) {
       return errorFactory("Un compte est déjà associé à ce couple email/siret.", BusinessErrorCodes.ALREADY_EXISTS)
@@ -687,8 +689,6 @@ export const entrepriseOnboardingWorkflow = {
     managedBy: string
     origin: string
   }) => {
-    const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
-    if (cfaErrorOpt) return cfaErrorOpt
     const formatedEmail = email.toLocaleLowerCase()
     let siretResponse: Awaited<ReturnType<typeof getEntrepriseDataFromSiret>>
     let isSiretInternalError = false
@@ -710,6 +710,8 @@ export const entrepriseOnboardingWorkflow = {
     if (opco) {
       opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: idcc ?? null })
     }
+    const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret, nafCode: entreprise.naf_code ?? undefined })
+    if (cfaErrorOpt) return cfaErrorOpt
 
     const formulaireInfo = await createFormulaire(
       {
@@ -761,8 +763,8 @@ export const sendUserConfirmationEmail = async (user: IUserWithAccount) => {
       images: {
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
       },
-      last_name: sanitizeForEmail(user.last_name),
-      first_name: sanitizeForEmail(user.first_name),
+      last_name: removeHtmlTagsFromString(user.last_name),
+      first_name: removeHtmlTagsFromString(user.first_name),
       confirmation_url: url,
     },
   })
@@ -797,9 +799,9 @@ export const sendEmailConfirmationEntreprise = async (
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
           logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
         },
-        nom: sanitizeForEmail(user.last_name),
-        prenom: sanitizeForEmail(user.first_name),
-        email: sanitizeForEmail(user.email),
+        nom: removeHtmlTagsFromString(user.last_name),
+        prenom: removeHtmlTagsFromString(user.first_name),
+        email: removeHtmlTagsFromString(user.email),
         confirmation_url: url,
         offre: {
           rome_appellation_label: offre.rome_appellation_label,

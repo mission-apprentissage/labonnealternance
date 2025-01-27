@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { generateOpenApiSchema } from "./generateOpenapi"
+import { generateOpenApiSchema } from "./generateOpenapi.js"
 
 describe("generateOpenApiSchema", () => {
   it("should generate proper schema", async () => {

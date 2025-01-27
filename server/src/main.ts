@@ -1,6 +1,6 @@
 import { modelDescriptors } from "shared/models/models"
 
-import { connectToMongodb, configureDbSchemaValidation } from "@/common/utils/mongodbUtils"
+import { configureDbSchemaValidation, connectToMongodb } from "@/common/utils/mongodbUtils"
 
 import { startCLI } from "./commands"
 import { logger } from "./common/logger"
@@ -11,6 +11,7 @@ process.on("uncaughtException", (err) => logger.error(err, "uncaughtException"))
 
 try {
   logger.warn("starting application")
+  console.log("WORKER", config.worker)
   await connectToMongodb(config.mongodb.uri)
   await configureDbSchemaValidation(modelDescriptors)
   await startCLI()

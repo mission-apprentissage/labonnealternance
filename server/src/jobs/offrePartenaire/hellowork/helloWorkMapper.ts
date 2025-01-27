@@ -7,7 +7,7 @@ import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { joinNonNullStrings } from "shared/utils"
 import { z } from "zod"
 
-import { blankComputedJobPartner } from "./fillComputedJobsPartners"
+import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
 export const ZHelloWorkJob = z
   .object({
@@ -111,7 +111,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     offer_target_diploma: getDiplomaLevel(job),
     offer_desired_skills: profile == null ? [] : [profile],
     offer_access_conditions: [],
-    offer_multicast: false,
+    offer_multicast: true,
     offer_to_be_acquired_skills: [],
     offer_rome_codes: codeRomeParsing.success ? [codeRomeParsing.data] : undefined,
     offer_creation: creationDate,

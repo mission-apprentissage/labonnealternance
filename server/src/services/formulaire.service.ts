@@ -15,6 +15,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { asyncForEach } from "../common/utils/asyncUtils"
 import { getDbCollection } from "../common/utils/mongodbUtils"
+import { removeHtmlTagsFromString } from "../common/utils/stringUtils"
 import config from "../config"
 
 import { getUser2ManagingOffer } from "./application.service"
@@ -23,7 +24,7 @@ import { getCatalogueFormations } from "./catalogue.service"
 import dayjs from "./dayjs.service"
 import { sendEmailConfirmationEntreprise } from "./etablissement.service"
 import { replaceRecruiterFieldsWithCfaFields } from "./lbajob.service"
-import mailer, { sanitizeForEmail } from "./mailer.service"
+import mailer from "./mailer.service"
 import { getComputedUserAccess, getGrantedRoles } from "./roleManagement.service"
 import { getRomeDetailsFromDB } from "./rome.service"
 
@@ -818,8 +819,8 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, co
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
         logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
       },
-      nom: sanitizeForEmail(is_delegated ? contactCFA?.last_name : last_name),
-      prenom: sanitizeForEmail(is_delegated ? contactCFA?.first_name : first_name),
+      nom: removeHtmlTagsFromString(is_delegated ? contactCFA?.last_name : last_name),
+      prenom: removeHtmlTagsFromString(is_delegated ? contactCFA?.first_name : first_name),
       raison_sociale: establishmentTitle,
       mandataire: recruiter.is_delegated,
       offre: {

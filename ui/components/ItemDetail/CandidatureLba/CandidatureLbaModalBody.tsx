@@ -103,9 +103,9 @@ const CandidatureLbaModalBody = ({ formik, sendingState, company, item, kind, fr
                 <Text as="span" mr={2}>
                   Voulez vous dire ?
                 </Text>
-                {suggestedEmails.map((sE) => (
+                {suggestedEmails.map((suggestedEmail) => (
                   <Button
-                    key={sE.corrected}
+                    key={suggestedEmail.corrected}
                     onClick={clickSuggestion}
                     textAlign="center"
                     fontSize="12px"
@@ -118,7 +118,7 @@ const CandidatureLbaModalBody = ({ formik, sendingState, company, item, kind, fr
                     bg="#e3e3fd"
                     borderRadius="40px"
                   >
-                    {sE.corrected}
+                    {suggestedEmail.corrected}
                   </Button>
                 ))}
               </Box>

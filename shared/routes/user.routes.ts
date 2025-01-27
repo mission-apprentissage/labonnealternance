@@ -1,11 +1,11 @@
-import { z } from "../helpers/zodWithOpenApi"
-import { ZJob } from "../models"
-import { zObjectId } from "../models/common"
-import { AccessEntityType, ZRoleManagement, ZRoleManagementEvent } from "../models/roleManagement.model"
-import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin } from "../models/usersRecruteur.model"
-import { ZNewSuperUser, ZUserWithAccount, ZUserWithAccountFields } from "../models/userWithAccount.model"
+import { z } from "../helpers/zodWithOpenApi.js"
+import { zObjectId } from "../models/common.js"
+import { ZJob } from "../models/job.model.js"
+import { AccessEntityType, ZRoleManagement, ZRoleManagementEvent } from "../models/roleManagement.model.js"
+import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin } from "../models/usersRecruteur.model.js"
+import { ZNewSuperUser, ZUserWithAccount, ZUserWithAccountFields } from "../models/userWithAccount.model.js"
 
-import { IRoutesDef, ZResError } from "./common.routes"
+import { IRoutesDef, ZResError } from "./common.routes.js"
 
 const ZUserForOpco = ZUserRecruteur.pick({
   _id: true,

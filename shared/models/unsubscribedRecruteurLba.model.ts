@@ -1,9 +1,9 @@
-import { UNSUBSCRIBE_EMAIL_ERRORS } from "../constants/recruteur"
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { z } from "../helpers/zodWithOpenApi"
+import { UNSUBSCRIBE_EMAIL_ERRORS } from "../constants/recruteur.js"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { z } from "../helpers/zodWithOpenApi.js"
 
-import { IModelDescriptor } from "./common"
-import { ZLbaCompany } from "./recruteurLba.model"
+import { IModelDescriptor } from "./common.js"
+import { ZLbaCompany } from "./recruteurLba.model.js"
 
 const collectionName = "unsubscribedrecruteurslba" as const
 
@@ -43,6 +43,6 @@ export type IUnsubscribeCompanyData = z.output<typeof ZUnsubscribeCompanyData>
 
 export default {
   zod: ZUnsubscribedLbaCompany,
-  indexes: [[{ siret: 1 }, {}]],
+  indexes: [],
   collectionName,
 } as const satisfies IModelDescriptor

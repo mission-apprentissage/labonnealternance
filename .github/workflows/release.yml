@@ -24,11 +24,11 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
             **/node_modules
@@ -157,7 +157,7 @@ jobs:
         with:
           node-version: 20
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
             **/node_modules

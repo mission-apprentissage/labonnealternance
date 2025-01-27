@@ -32,7 +32,7 @@ const OneTimeJob_AddNAFDataToEntrepriseCacheDB = async () => {
     await getDbCollection("entreprises").updateOne({ siret }, { $set: { naf_code: recruiter?.naf_code, naf_label: recruiter?.naf_label } })
   })
   logger.info("OneTimeJob_AddNAFDataToEntrepriseCacheDB - END")
-  console.log({ total: entreprises.length, ok, needApiCall })
+  console.info({ total: entreprises.length, ok, needApiCall })
 }
 
 const OneTimeJob_AddNAFDataToEntrepriseCacheAPI = async () => {
@@ -61,7 +61,7 @@ const OneTimeJob_AddNAFDataToEntrepriseCacheAPI = async () => {
     ok++
   })
   logger.info("OneTimeJob_AddNAFDataToEntrepriseCacheAPI - END")
-  console.log({ total: entreprises.length, ok, fail })
+  console.info({ total: entreprises.length, ok, fail })
 }
 
 export const OneTimeJob_AddNAFDataToEntrepriseCache = async () => {

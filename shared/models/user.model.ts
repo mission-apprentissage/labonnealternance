@@ -1,7 +1,7 @@
-import { EApplicantRole, EApplicantType } from "../constants/rdva"
-import { z } from "../helpers/zodWithOpenApi"
+import { EApplicantRole, EApplicantType } from "../constants/rdva.js"
+import { z } from "../helpers/zodWithOpenApi.js"
 
-import { IModelDescriptor, zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common.js"
 
 const collectionName = "users" as const
 
