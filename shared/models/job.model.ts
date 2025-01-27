@@ -3,6 +3,7 @@ import { zObjectId } from "zod-mongodb-schema"
 
 import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "../constants/recruteur.js"
 import dayjs from "../helpers/dayjs.js"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 import { assertUnreachable } from "../utils/assertUnreachable.js"
 
@@ -43,16 +44,13 @@ export function traductionJobStatus(status: JOB_STATUS_ENGLISH): JOB_STATUS {
       return JOB_STATUS.POURVUE
     case JOB_STATUS_ENGLISH.ANNULEE:
       return JOB_STATUS.ANNULEE
-    default:
+    default: {
       assertUnreachable(status)
+    }
   }
 }
 
-const allJobRythm = Object.values(TRAINING_RYTHM)
-const allJobLevel = [...Object.values(NIVEAUX_POUR_LBA)] as const
-const allJobStatus = Object.values(JOB_STATUS)
-const allJobType = Object.values(TRAINING_CONTRACT_TYPE)
-export const ZJobType = z.array(z.enum([allJobType[0], ...allJobType.slice(1)])).describe("Type de contrat")
+export const ZJobType = z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)).describe("Type de contrat")
 
 export const ZDelegation = z
   .object({
@@ -67,10 +65,7 @@ export const ZJobFields = z
   .object({
     rome_label: z.string().nullish().describe("Libellé du métier concerné"),
     rome_appellation_label: z.string().nullish().describe("Libellé de l'appelation ROME"),
-    job_level_label: z
-      .enum([allJobLevel[0], ...allJobLevel.slice(1)])
-      .nullish()
-      .describe("Niveau de formation visé en fin de stage"),
+    job_level_label: extensions.buildEnum(NIVEAUX_POUR_LBA).nullish().describe("Niveau de formation visé en fin de stage"),
     job_start_date: z.coerce.date().describe("Date de début de l'alternance"),
     job_description: z.string().nullish().describe("Description de l'offre d'alternance - minimum 30 charactères si rempli"),
     job_employer_description: z.string().nullish().describe("Description de l'employer proposant l'offre d'alternance - minimum 30 charactères si rempli"),
@@ -82,7 +77,7 @@ export const ZJobFields = z
     job_last_prolongation_date: z.date().nullish().describe("Date de dernière prolongation de l'offre"),
     job_prolongation_count: z.number().nullish().describe("Nombre de fois où l'offre a été prolongée"),
     relance_mail_sent: z.boolean().nullish().describe("Statut de l'envoi du mail de relance avant expiration"),
-    job_status: z.enum([allJobStatus[0], ...allJobStatus.slice(1)]).describe("Statut de l'offre"),
+    job_status: extensions.buildEnum(JOB_STATUS).describe("Statut de l'offre"),
     job_status_comment: z.string().nullish().describe("Raison de la suppression de l'offre"),
     job_type: ZJobType,
     job_delegation_count: z.number().nullish().describe("Nombre de délégations"),
@@ -90,10 +85,7 @@ export const ZJobFields = z
     is_disabled_elligible: z.boolean().nullish().default(false).describe("Poste ouvert aux personnes en situation de handicap"),
     job_count: z.number().nullish().default(1).describe("Nombre de poste(s) ouvert(s) pour cette offre"),
     job_duration: z.number().min(6).max(36).nullish().describe("Durée du contrat en mois"),
-    job_rythm: z
-      .enum([allJobRythm[0], ...allJobRythm.slice(1)])
-      .nullish()
-      .describe("Répartition de la présence de l'alternant en formation/entreprise"),
+    job_rythm: extensions.buildEnum(TRAINING_RYTHM).nullish().describe("Répartition de la présence de l'alternant en formation/entreprise"),
     custom_address: z.string().nullish().describe("Adresse personnalisée de l'entreprise"),
     custom_geo_coordinates: z.string().nullish().describe("Latitude/Longitude de l'adresse personnalisée de l'entreprise"),
     custom_job_title: z.string().nullish().describe("Titre personnalisée de l'offre"),
