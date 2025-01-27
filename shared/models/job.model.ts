@@ -1,11 +1,11 @@
 import { Jsonify } from "type-fest"
 import { zObjectId } from "zod-mongodb-schema"
 
-import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "../constants/recruteur"
-import dayjs from "../helpers/dayjs"
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { z } from "../helpers/zodWithOpenApi"
-import { assertUnreachable } from "../utils"
+import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "../constants/recruteur.js"
+import dayjs from "../helpers/dayjs.js"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { z } from "../helpers/zodWithOpenApi.js"
+import { assertUnreachable } from "../utils/assertUnreachable.js"
 
 import { ZReferentielRomeForJob, ZRomeCompetence } from "./rome.model.js"
 
@@ -44,8 +44,9 @@ export function traductionJobStatus(status: JOB_STATUS_ENGLISH): JOB_STATUS {
       return JOB_STATUS.POURVUE
     case JOB_STATUS_ENGLISH.ANNULEE:
       return JOB_STATUS.ANNULEE
-    default:
+    default: {
       assertUnreachable(status)
+    }
   }
 }
 
