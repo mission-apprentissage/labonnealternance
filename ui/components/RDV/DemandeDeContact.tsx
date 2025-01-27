@@ -416,19 +416,6 @@ const DemandeDeContact = (props: Props) => {
           </Text>
         </Box>
       </Flex>
-      <Box borderBottom="1px solid #D0C9C4" mt={10} />
-      <Box my={10}>
-        {onSuccessSubmitResponse.formation?.lieu_formation_email && (
-          <Text fontSize="14px">
-            Vous souhaitez modifier ou annuler cette demande ? <br />
-            Envoyez un email à{" "}
-            <u>
-              <a href={`mailto:${onSuccessSubmitResponse.formation.lieu_formation_email}`}>{onSuccessSubmitResponse.formation.lieu_formation_email}</a>
-            </u>
-          </Text>
-        )}
-      </Box>
-    </Box>
   )
 
   return props.showInModal ? (
