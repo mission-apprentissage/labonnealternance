@@ -3,8 +3,6 @@ import { assertUnreachable, IEntreprise, toPublicUser, TrafficType, zRoutes } fr
 import { CFA, ENTREPRISE } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/recruteur"
-import { AccessStatus } from "shared/models/roleManagement.model"
-import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { getSourceFromCookies } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -25,7 +23,7 @@ import {
   validateEligibiliteCfa,
 } from "@/services/etablissement.service"
 import { Organization, upsertEntrepriseData, UserAndOrganization } from "@/services/organization.service"
-import { getMainRoleManagement, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
+import { getMainRoleManagement, getPublicUserRecruteurPropsOrError, isGrantedAndAutoValidatedRole } from "@/services/roleManagement.service"
 import { saveUserTrafficSourceIfAny } from "@/services/trafficSource.service"
 import {
   autoValidateUser,
@@ -315,10 +313,11 @@ export default (server: Server) => {
       }
       if (!isUserEmailChecked(user)) {
         await validateUserWithAccountEmail(user._id)
-      }
-      const mainRole = await getMainRoleManagement(user._id, true)
-      if (getLastStatusEvent(mainRole?.status)?.status === AccessStatus.GRANTED) {
-        await sendWelcomeEmailToUserRecruteur(user)
+
+        const mainRole = await getMainRoleManagement(user._id, true)
+        if (mainRole && isGrantedAndAutoValidatedRole(mainRole)) {
+          await sendWelcomeEmailToUserRecruteur(user)
+        }
       }
 
       await updateLastConnectionDate(email)

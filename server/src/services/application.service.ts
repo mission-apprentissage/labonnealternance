@@ -53,6 +53,7 @@ import mailer from "./mailer.service"
 import { validateCaller } from "./queryValidator.service"
 import { buildLbaCompanyAddress } from "./recruteurLba.service"
 import { saveApplicationTrafficSourceIfAny } from "./trafficSource.service"
+import { validateUserWithAccountEmail } from "./userWithAccount.service"
 
 const MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT = 3
 const MAX_MESSAGES_PAR_SIRET_PAR_CALLER = 20
@@ -397,8 +398,7 @@ const buildReplyLink = (application: IApplication, applicant: IApplicant, intent
   searchParams.append("utm_medium", "email")
   if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     searchParams.append("utm_campaign", "je-candidate-recruteur")
-  }
-  if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
+  } else if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     searchParams.append("utm_campaign", "je-candidate-spontanement-recruteur")
   }
   const token = generateApplicationReplyToken(userForToken, applicationId, intention)
@@ -1267,7 +1267,16 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
   const applicant = await getDbCollection("applicants").findOne({ _id: application.applicant_id })
   if (!applicant) throw notFound("Candidat non trouvé")
 
-  const recruiter_phone = (await getPhoneForApplication(application)) ?? ""
+  const jobOrCompany = await getJobOrCompanyFromApplication(application)
+  const { recruiter } = jobOrCompany ?? {}
+  if (!recruiter) throw internal(`Société pour ${application.job_origin} introuvable`)
+
+  const { managed_by } = recruiter
+  if (managed_by) {
+    await validateUserWithAccountEmail(new ObjectId(managed_by))
+  }
+
+  const recruiter_phone = recruiter.phone ?? ""
 
   await getDbCollection("recruiter_intention_mails").updateOne(
     {

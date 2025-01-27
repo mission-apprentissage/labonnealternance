@@ -7,9 +7,12 @@ import { AccessStatus } from "shared/models/roleManagement.model"
 import { IUserStatusEvent, IUserWithAccount, UserEventType } from "shared/models/userWithAccount.model"
 import { assertUnreachable, getLastStatusEvent } from "shared/utils"
 
+import { asyncForEach } from "@/common/utils/asyncUtils"
 import { createAdminUser, createOpcoUser } from "@/services/userRecruteur.service"
 
 import { getDbCollection } from "../common/utils/mongodbUtils"
+
+import { checkForJobActivations } from "./formulaire.service"
 
 export const createUser2IfNotExist = async (
   userProps: Omit<IUserWithAccount, "_id" | "createdAt" | "updatedAt" | "status">,
@@ -59,7 +62,7 @@ export const createUser2IfNotExist = async (
   return user
 }
 
-export const validateUserWithAccountEmail = async (id: IUserWithAccount["_id"]): Promise<IUserWithAccount> => {
+export const validateUserWithAccountEmail = async (id: IUserWithAccount["_id"], reason = "validation de l'email par l'utilisateur"): Promise<IUserWithAccount> => {
   const userOpt = await getDbCollection("userswithaccounts").findOne({ _id: id })
   if (!userOpt) {
     throw internal(`utilisateur avec id=${id} non trouvé`)
@@ -72,7 +75,7 @@ export const validateUserWithAccountEmail = async (id: IUserWithAccount["_id"]):
     status: UserEventType.VALIDATION_EMAIL,
     validation_type: VALIDATION_UTILISATEUR.MANUAL,
     granted_by: id.toString(),
-    reason: "validation de l'email par l'utilisateur",
+    reason,
   }
   const newUser = await getDbCollection("userswithaccounts").findOneAndUpdate(
     { _id: id },
@@ -82,6 +85,8 @@ export const validateUserWithAccountEmail = async (id: IUserWithAccount["_id"]):
   if (!newUser) {
     throw internal(`utilisateur avec id=${id} non trouvé`)
   }
+  const recruiters = await getDbCollection("recruiters").find({ managed_by: userOpt._id.toString() }).toArray()
+  await asyncForEach(recruiters, (recruiter) => checkForJobActivations(recruiter))
   return newUser
 }
 
