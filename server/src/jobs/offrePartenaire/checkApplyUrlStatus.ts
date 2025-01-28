@@ -1,8 +1,10 @@
 import { Transform, Writable } from "node:stream"
 import { pipeline } from "node:stream/promises"
 
-import { AnyBulkWriteOperation, FindCursor, WithId } from "mongodb"
+import { AnyBulkWriteOperation, FindCursor, type ObjectId } from "mongodb"
 import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+
+import { streamGroupByCount } from "@/common/utils/streamUtils"
 
 import { logger } from "../../common/logger"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
@@ -17,13 +19,28 @@ import { getDbCollection } from "../../common/utils/mongodbUtils"
 
 const BATCH_SIZE = 50
 
-const checkUrlStatus = async (url: string): Promise<number> => {
-  const res = await fetch(url)
-  if (res.status === 404) {
-    return res.status
+const checkUrlStatus = async (_id: ObjectId, url: string): Promise<AnyBulkWriteOperation<IComputedJobsPartners> | null> => {
+  const status = await fetch(url)
+    .then((res) => {
+      return res.status
+    })
+    .catch((error) => {
+      logger.error(`Erreur lors de la requête HTTP : ${error}`)
+      return 0
+    })
+
+  if (status >= 200 && status < 400) {
+    return null
   }
 
-  return 0
+  return {
+    updateOne: {
+      filter: { _id },
+      update: {
+        $set: { business_error: JOB_PARTNER_BUSINESS_ERROR.URL_UNAVAILABLE },
+      },
+    },
+  }
 }
 
 export const checkApplyUrlStatus = async () => {
@@ -36,7 +53,7 @@ export const checkApplyUrlStatus = async () => {
   })
   logger.info(`${count} URL(s) d'offre à traiter`)
 
-  const cursor: FindCursor<WithId<Pick<IComputedJobsPartners, "apply_url">>> = getDbCollection("computed_jobs_partners").find(
+  const cursor: FindCursor<{ _id: ObjectId; apply_url: string }> = getDbCollection("computed_jobs_partners").find<{ _id: ObjectId; apply_url: string }>(
     { business_error: null, apply_url: { $ne: null } },
     { projection: { _id: 1, apply_url: 1 } }
   )
@@ -45,51 +62,32 @@ export const checkApplyUrlStatus = async () => {
     cursor,
     new Transform({
       objectMode: true,
-      async transform(chunk, encoding, callback) {
+      highWaterMark: 50,
+      async transform(chunk: { _id: ObjectId; apply_url: string }, encoding, callback) {
         counters.total++
-        try {
-          const status = await checkUrlStatus(chunk.apply_url)
-          if (status >= 200 && status < 400) {
-            counters.success++
-            callback()
-          } else {
-            counters.error++
-            const op: AnyBulkWriteOperation<IComputedJobsPartners> = {
-              updateOne: {
-                filter: {
-                  _id: chunk._id,
-                },
-                update: {
-                  $set: { business_error: JOB_PARTNER_BUSINESS_ERROR.URL_UNAVAILABLE },
-                },
-              },
-            }
-            callback(null, op)
-          }
-        } catch (error) {
+        const op = await checkUrlStatus(chunk._id, chunk.apply_url)
+
+        if (op) {
           counters.error++
-          const op: AnyBulkWriteOperation<IComputedJobsPartners> = {
-            updateOne: {
-              filter: {
-                _id: chunk._id,
-              },
-              update: {
-                $set: { business_error: JOB_PARTNER_BUSINESS_ERROR.URL_UNAVAILABLE },
-              },
-            },
-          }
           callback(null, op)
+        } else {
+          counters.success++
+          callback()
         }
       },
     }),
+    streamGroupByCount(1_000),
     new Writable({
       objectMode: true,
-      async write(chunk, encoding, callback) {
+      async write(chunk: Array<AnyBulkWriteOperation<IComputedJobsPartners> | null>, encoding, callback) {
         if (counters.total % BATCH_SIZE === 0) {
           logger.info(`Progression : ${counters.total}/${count} URLs traitées (Succès : ${counters.success}, Erreurs : ${counters.error})`)
         }
-        if (chunk) {
-          await collection.bulkWrite([chunk])
+
+        const ops = chunk.filter((op) => op != null)
+
+        if (ops.length > 0) {
+          await collection.bulkWrite(ops)
         }
         callback()
       },
