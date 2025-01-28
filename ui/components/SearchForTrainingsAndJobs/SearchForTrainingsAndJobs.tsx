@@ -100,20 +100,6 @@ const SearchForTrainingsAndJobs = () => {
     }
   }
 
-  const selectItemFromHistory = (itemId, type) => {
-    const item = findItem({ itemId, type, jobs, trainings })
-    selectItem(item)
-  }
-
-  const selectItem = (item) => {
-    closeMapPopups()
-    if (item) {
-      flyToMarker(item, 12)
-      setSelectedItem(item)
-      setSelectedMarker(item)
-    }
-  }
-
   const selectFollowUpItem = ({ itemId, type, jobs, trainings, searchTimestamp, formValues }) => {
     const item = findItem({ itemId, type, jobs, trainings })
 
@@ -133,28 +119,6 @@ const SearchForTrainingsAndJobs = () => {
     }
   }
 
-  const findItem = ({ itemId, type, jobs, trainings }) => {
-    switch (type) {
-      case "training": {
-        return trainings?.find((el) => el.id === itemId)
-      }
-      case LBA_ITEM_TYPE_OLD.PEJOB: {
-        return jobs?.peJobs?.find((el) => el.id === itemId)
-      }
-      case LBA_ITEM_TYPE_OLD.LBA: {
-        return jobs?.lbaCompanies?.find((el) => el.id === itemId)
-      }
-      case LBA_ITEM_TYPE_OLD.MATCHA: {
-        return jobs?.matchas?.find((el) => el.id === itemId)
-      }
-      case LBA_ITEM_TYPE_OLD.PARTNER_JOB: {
-        return jobs?.partnerJobs?.find((el) => el.id === itemId)
-      }
-      default:
-        return
-    }
-  }
-
   const selectItemFromHistory = (itemId, type) => {
     const item = findItem({ itemId, type, jobs, trainings })
     selectItem(item)
@@ -191,7 +155,7 @@ const SearchForTrainingsAndJobs = () => {
     }
   }
 
-  const handleSearchSubmit = async ({ values }) => {
+  const handleSearchSubmit = async ({ values, followUpItem = null }) => {
     // centrage de la carte sur le lieu de recherche
     const searchTimestamp = new Date().getTime()
     setShouldShowWelcomeMessage(false)
