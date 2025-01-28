@@ -5,8 +5,9 @@ import { useContext, useEffect, useState } from "react"
 import { useQuery } from "react-query"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
-import { ErrorMessage, ItemDetail } from "@/components"
+import { ErrorMessage } from "@/components"
 import ItemDetailLoading from "@/components/ItemDetail/ItemDetailLoading"
+import LoadedItemDetail from "@/components/ItemDetail/loadedItemDetail"
 import { fetchTrainingItemDetails, initContextFromQueryParameters, shouldFetchItemData, updateTrainingContext } from "@/components/SearchForTrainingsAndJobs/services/loadItem"
 import { DisplayContext } from "@/context/DisplayContextProvider"
 import { ParameterContext } from "@/context/ParameterContextProvider"
@@ -41,7 +42,7 @@ export default function DetailFormation() {
   return (
     <Box className="choiceCol">
       <NextSeo title={`Formation en alternance | ${intituleFormation}`} description={`Offres de formations en alternance pour trouver une alternance`} />
-      {!hasError && searchResultContext.selectedItem?.detailsLoaded && <ItemDetail handleClose={handleClose} handleSelectItem={handleSelectItem} />}
+      {!hasError && searchResultContext.selectedItem?.detailsLoaded && <LoadedItemDetail handleClose={handleClose} handleSelectItem={handleSelectItem} />}
       {hasError ? (
         <ErrorMessage message={hasError === "not_found" ? "Fiche introuvable" : "Une erreur s'est produite. Détail de la fiche momentanément indisponible"} />
       ) : (

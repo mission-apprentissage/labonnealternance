@@ -76,11 +76,10 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
 
   return (
     <Box
-      flex={{ base: 8, xl: 6 }}
-      flexDirection="column"
       as="section"
       onScroll={handleScroll}
       id="itemDetailColumn"
+      display={selectedItem ? "block" : "none"}
       sx={{
         overflowY: "auto",
         position: "relative",
