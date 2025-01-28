@@ -43,7 +43,7 @@ const pushHistory = ({
     const title = paramCase(item?.title)
     const link = `/${item?.ideaType === "formation" ? "" : "emploi/"}${oldItemTypeToNewItemType(item?.ideaType)}/${encodeURIComponent(item?.id)}/${title}`
     navigationMethod(`${link}${params ? `?${params}` : ""}`, undefined, {
-      shallow: true,
+      shallow: false,
     })
   } else {
     navigationMethod(`${path ?? router.pathname}${params ? `?${params}` : ""}`, undefined, {

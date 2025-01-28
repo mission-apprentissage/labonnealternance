@@ -1,14 +1,17 @@
 import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "@/../shared"
-import { Box, Divider, Flex, Text } from "@chakra-ui/react"
+import { Box, Button, Divider, Flex, Image, Text } from "@chakra-ui/react"
 import { useContext, useEffect, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import DemandeDeContact from "@/components/RDV/DemandeDeContact"
+import { ParameterContext } from "@/context/ParameterContextProvider"
+import { ScopeContext } from "@/context/ScopeContext"
 
+import dynamic from "../../../node_modules/next/dynamic"
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import { isCfaEntreprise } from "../../services/cfaEntreprise"
-import { filterLayers } from "../../utils/mapTools"
+import { filterLayers, flyToMarker, refreshLocationMarkers, resizeMap } from "../../utils/mapTools"
 import InfoBanner from "../InfoBanner/InfoBanner"
 
 import AideApprentissage from "./AideApprentissage"
@@ -32,14 +35,55 @@ import RecruteurLbaDetail from "./RecruteurLbaComponents/RecruteurLbaDetail"
 import ShareLink from "./ShareLink"
 import TrainingDetail from "./TrainingDetail"
 
+const DynamicMap = dynamic(() => import("../Map"), {
+  loading: () => <p>Loading...</p>,
+})
+
+const buttonProperties = {
+  cursor: "pointer",
+  marginRight: "2rem",
+  backgroundColor: "grey.750",
+  fontSize: "14px",
+  fontWeight: 700,
+  color: "white",
+  borderRadius: "19px",
+  border: "none",
+  padding: "10px 20px",
+  minWidth: "110px",
+  _focus: {
+    boxShadow: "none",
+  },
+  _hover: {
+    backgroundColor: "grey.750",
+  },
+}
+
 const ItemDetail = ({ handleClose, handleSelectItem }) => {
   const { jobs, extendedSearch, selectedItem, trainings } = useContext(SearchResultContext)
+  const { displayMap, setDisplayMap } = useContext(ParameterContext)
   const { activeFilters } = useContext(DisplayContext)
+  //const { selectItemOnMap } = useContext(DisplayContext)
+  const scopeContext = useContext(ScopeContext)
 
   const kind: LBA_ITEM_TYPE_OLD = selectedItem?.ideaType
 
   const isCfa = isCfaEntreprise(selectedItem?.company?.siret, selectedItem?.company?.headquarter?.siret)
   const isMandataire = selectedItem?.company?.mandataire
+  const [showMapPane, setShowMapPane] = useState(false)
+
+  const showMap = () => {
+    setShowMapPane(true)
+    refreshLocationMarkers({ jobs, trainings, scopeContext })
+    resizeMap()
+    flyToMarker(selectedItem)
+    if (!displayMap) {
+      setDisplayMap(true)
+    }
+  }
+
+  const showDetail = () => {
+    setShowMapPane(false)
+  }
 
   useEffect(() => {
     try {
@@ -75,110 +119,154 @@ const ItemDetail = ({ handleClose, handleSelectItem }) => {
     : {}
 
   return (
-    <Box
-      as="section"
-      onScroll={handleScroll}
-      id="itemDetailColumn"
-      sx={{
-        overflowY: "auto",
-        position: "relative",
-        height: "100vh",
-      }}
-      {...swipeHandlers}
-    >
-      <InfoBanner />
-      {/* @ts-expect-error: TODO */}
+    <Flex direction="row" overflow="hidden" height="100%">
       <Box
-        as="header"
+        flex={{ base: 8, xl: 6 }}
+        display={showMapPane ? ["none", "none", "block"] : "block"}
+        flexDirection="column"
+        as="section"
+        onScroll={handleScroll}
+        id="itemDetailColumn"
         sx={{
-          filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
-          padding: "10px 20px 0px 10px",
+          overflowY: "auto",
+          position: "relative",
+          height: "100vh",
         }}
-        background="white"
-        {...stickyHeaderProperties}
+        {...swipeHandlers}
       >
-        <Box width="100%" pl={["0", 4]} pb={isCollapsedHeader ? "0" : 2}>
-          <Flex justifyContent="flex-end">
-            {getTags({ kind, isCfa, isMandataire })}
-            {getNavigationButtons({ goPrev, goNext, handleClose })}
-          </Flex>
+        <InfoBanner />
+        {/* @ts-expect-error: TODO */}
+        <Box
+          as="header"
+          sx={{
+            filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
+            padding: "10px 20px 0px 10px",
+          }}
+          background="white"
+          {...stickyHeaderProperties}
+        >
+          <Box width="100%" pl={["0", 4]} pb={isCollapsedHeader ? "0" : 2}>
+            <Flex justifyContent="flex-end">
+              {getTags({ kind, isCfa, isMandataire })}
+              {getNavigationButtons({ goPrev, goNext, handleClose })}
+            </Flex>
 
-          {kind === LBA_ITEM_TYPE_OLD.FORMATION && (
-            <Text as="p" textAlign="left" color="grey.600" mt={isCollapsedHeader ? 1 : 4} mb={isCollapsedHeader ? 1 : 3} fontWeight={700} fontSize="1rem">
-              <Text as="span">{`${selectedItem?.company?.name || ""} (${selectedItem.company.place.city})`}</Text>
-              <Text as="span" fontWeight={400}>
-                &nbsp;propose cette formation
+            {kind === LBA_ITEM_TYPE_OLD.FORMATION && (
+              <Text as="p" textAlign="left" color="grey.600" mt={isCollapsedHeader ? 1 : 4} mb={isCollapsedHeader ? 1 : 3} fontWeight={700} fontSize="1rem">
+                <Text as="span">{`${selectedItem?.company?.name || ""} (${selectedItem.company.place.city})`}</Text>
+                <Text as="span" fontWeight={400}>
+                  &nbsp;propose cette formation
+                </Text>
               </Text>
+            )}
+
+            {!isCollapsedHeader && getJobPublishedTimeAndApplications({ item: selectedItem })}
+            {!isCollapsedHeader && <JobItemCardHeader selectedItem={selectedItem} kind={kind} isMandataire={isMandataire} />}
+
+            <Text
+              as="h1"
+              fontSize={isCollapsedHeader ? "20px" : "28px"}
+              color={kind !== LBA_ITEM_TYPE_OLD.FORMATION ? "pinksoft.600" : "greensoft.500"}
+              sx={{
+                fontWeight: 700,
+                marginBottom: isCollapsedHeader ? "4px" : "11px",
+                paddingBottom: "0",
+                textAlign: "left",
+                wordBreak: "break-word",
+              }}
+            >
+              {actualTitle}
             </Text>
-          )}
 
-          {!isCollapsedHeader && getJobPublishedTimeAndApplications({ item: selectedItem })}
-          {!isCollapsedHeader && <JobItemCardHeader selectedItem={selectedItem} kind={kind} isMandataire={isMandataire} />}
+            {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
 
-          <Text
-            as="h1"
-            fontSize={isCollapsedHeader ? "20px" : "28px"}
-            color={kind !== LBA_ITEM_TYPE_OLD.FORMATION ? "pinksoft.600" : "greensoft.500"}
-            sx={{
-              fontWeight: 700,
-              marginBottom: isCollapsedHeader ? "4px" : "11px",
-              paddingBottom: "0",
-              textAlign: "left",
-              wordBreak: "break-word",
-            }}
-          >
-            {actualTitle}
-          </Text>
+            {!isCollapsedHeader && <Divider my={2} />}
 
-          {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
+            <Flex flexDirection={{ base: "column", sm: "row" }}>
+              <Box flex={1}>
+                {isCandidatureLba(selectedItem) && <CandidatureLba item={selectedItem} />}
 
-          {!isCollapsedHeader && <Divider my={2} />}
+                {kind === LBA_ITEM_TYPE_OLD.LBA && !isCandidatureLba(selectedItem) && <NoCandidatureLba />}
 
-          <Flex flexDirection={{ base: "column", sm: "row" }}>
-            <Box flex={1}>
-              {isCandidatureLba(selectedItem) && <CandidatureLba item={selectedItem} />}
+                {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && !hasApplied(selectedItem) && (
+                  <DemandeDeContact isCollapsedHeader={isCollapsedHeader} context={selectedItem.rdvContext} referrer="LBA" showInModal />
+                )}
+                {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && <ItemDetailApplicationsStatus item={selectedItem} mt={2} mb={2} />}
 
-              {kind === LBA_ITEM_TYPE_OLD.LBA && !isCandidatureLba(selectedItem) && <NoCandidatureLba />}
+                {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PARTNER_JOB && <PartnerJobPostuler isCollapsedHeader={isCollapsedHeader} job={selectedItem} />}
 
-              {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && !hasApplied(selectedItem) && (
-                <DemandeDeContact isCollapsedHeader={isCollapsedHeader} context={selectedItem.rdvContext} referrer="LBA" showInModal />
-              )}
-              {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && <ItemDetailApplicationsStatus item={selectedItem} mt={2} mb={2} />}
-
-              {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PARTNER_JOB && <PartnerJobPostuler isCollapsedHeader={isCollapsedHeader} job={selectedItem} />}
-
-              {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PEJOB && GetFranceTravailButton({ offreFT: selectedItem, isCollapsedHeader })}
-            </Box>
-            <Box pt={{ base: 0, sm: 4 }}>
-              <ShareLink item={selectedItem} />
-            </Box>
-          </Flex>
+                {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PEJOB && GetFranceTravailButton({ offreFT: selectedItem, isCollapsedHeader })}
+              </Box>
+              <Box pt={{ base: 0, sm: 4 }}>
+                <ShareLink item={selectedItem} />
+              </Box>
+            </Flex>
+          </Box>
         </Box>
+
+        {kind === LBA_ITEM_TYPE_OLD.PEJOB && <FTJobDetail job={selectedItem} />}
+        {kind === LBA_ITEM_TYPE_OLD.MATCHA && <LbaJobDetail title={actualTitle} job={selectedItem as ILbaItemLbaJob} />}
+        {kind === LBA_ITEM_TYPE_OLD.LBA && <RecruteurLbaDetail recruteurLba={selectedItem as ILbaItemLbaCompany} />}
+        {kind === LBA_ITEM_TYPE_OLD.FORMATION && <TrainingDetail training={selectedItem} />}
+        {kind === LBA_ITEM_TYPE_OLD.PARTNER_JOB && <PartnerJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJob} />}
+
+        <AideApprentissage />
+
+        {kind === LBA_ITEM_TYPE_OLD.PEJOB && (
+          <>
+            <DidYouKnow />
+            {!buttonJePostuleShouldBeDisplayed(selectedItem) && (
+              <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
+            )}
+          </>
+        )}
+        {kind === LBA_ITEM_TYPE_OLD.FORMATION && !buttonRdvShouldBeDisplayed(selectedItem) && (
+          <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
+        )}
+        {kind === LBA_ITEM_TYPE_OLD.LBA && !isCandidatureLba(selectedItem) && (
+          <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
+        )}
       </Box>
-
-      {kind === LBA_ITEM_TYPE_OLD.PEJOB && <FTJobDetail job={selectedItem} />}
-      {kind === LBA_ITEM_TYPE_OLD.MATCHA && <LbaJobDetail title={actualTitle} job={selectedItem as ILbaItemLbaJob} />}
-      {kind === LBA_ITEM_TYPE_OLD.LBA && <RecruteurLbaDetail recruteurLba={selectedItem as ILbaItemLbaCompany} />}
-      {kind === LBA_ITEM_TYPE_OLD.FORMATION && <TrainingDetail training={selectedItem} />}
-      {kind === LBA_ITEM_TYPE_OLD.PARTNER_JOB && <PartnerJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJob} />}
-
-      <AideApprentissage />
-
-      {kind === LBA_ITEM_TYPE_OLD.PEJOB && (
-        <>
-          <DidYouKnow />
-          {!buttonJePostuleShouldBeDisplayed(selectedItem) && (
-            <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
-          )}
-        </>
+      {displayMap ? (
+        <Box p="0" flex={{ base: 4, xl: 5 }} display={showMapPane ? "block" : ["none", "none", "block"]} position="relative">
+          <DynamicMap handleSearchSubmit={null} showSearchForm={null} selectItemOnMap={handleSelectItem} />
+        </Box>
+      ) : (
+        ""
       )}
-      {kind === LBA_ITEM_TYPE_OLD.FORMATION && !buttonRdvShouldBeDisplayed(selectedItem) && (
-        <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
-      )}
-      {kind === LBA_ITEM_TYPE_OLD.LBA && !isCandidatureLba(selectedItem) && (
-        <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
-      )}
-    </Box>
+      <Box
+        display={["block", "block", "none"]}
+        sx={{
+          position: "fixed",
+          bottom: ["2.5rem", "1.5rem"],
+          left: "50%",
+          right: ["unset", "40%"],
+          transform: "translateX(-40%)",
+          minWidth: "110px",
+        }}
+      >
+        {!showMapPane && (
+          <Button {...buttonProperties} onClick={showMap} title="Afficher la carte">
+            <Flex alignItems="center">
+              <Image src="/images/icons/toggleCard.svg" alt="" />
+              <Text as="span" marginLeft={2}>
+                Carte
+              </Text>
+            </Flex>
+          </Button>
+        )}
+        {showMapPane && (
+          <Button {...buttonProperties} onClick={showDetail} title="Afficher l'offre">
+            <Flex alignItems="center">
+              <Image src="/images/icons/toggleList.svg" alt="" />
+              <Text as="span" marginLeft={2}>
+                Détail de l'offre
+              </Text>
+            </Flex>
+          </Button>
+        )}
+      </Box>
+    </Flex>
   )
 }
 
