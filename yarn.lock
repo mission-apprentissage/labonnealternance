@@ -17478,6 +17478,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"p-queue@npm:^8.1.0":
+  version: 8.1.0
+  resolution: "p-queue@npm:8.1.0"
+  dependencies:
+    eventemitter3: ^5.0.1
+    p-timeout: ^6.1.2
+  checksum: b6602ef0f3bd22ebfd916e0fe42ae1388090c63d8fa667fd7b29137e44970653adc5a9f39bedcbb0980ad4ab2cca8c04dbfdd9085b241d12c13f1d9dd02c497e
+  languageName: node
+  linkType: hard
+
 "p-reduce@npm:^2.0.0":
   version: 2.1.0
   resolution: "p-reduce@npm:2.1.0"
@@ -20157,6 +20167,7 @@ __metadata:
     oleoduc: ^0.7.0
     openai: ^4.78.1
     openapi-types: ^12.1.3
+    p-queue: ^8.1.0
     pino-pretty: ^10.2.0
     pretty-ms: ^7.0.1
     rate-limiter-flexible: ^2.4.2
