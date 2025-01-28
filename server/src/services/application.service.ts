@@ -857,12 +857,16 @@ export const sendMailToApplicant = async ({
  */
 const notifyHardbounceToApplicant = async ({ application }: { application: IApplication }): Promise<void> => {
   const applicant = await getApplicantFromDB({ _id: application.applicant_id })
-  await mailer.sendEmail({
-    to: applicant!.email,
-    subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
-    template: getEmailTemplate("mail-candidat-hardbounce"),
-    data: { ...sanitizeApplicationForEmail(application), ...sanitizeApplicantForEmail(applicant!), ...images },
-  })
+  if (applicant) {
+    await mailer.sendEmail({
+      to: applicant.email,
+      subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
+      template: getEmailTemplate("mail-candidat-hardbounce"),
+      data: { ...sanitizeApplicationForEmail(application), ...sanitizeApplicantForEmail(applicant!), ...images },
+    })
+  } else {
+    sentryCaptureException(new Error("Applicant not found while processing applicantion hardbounce"), { extra: { applicant_id: application.applicant_id } })
+  }
 }
 
 export interface IApplicationCount {
@@ -944,10 +948,12 @@ export const processApplicationCandidateHardbounceEvent = async (payload) => {
   const messageId = payload["message-id"]
 
   const applicant = await getDbCollection("applicants").findOne({ email })
-  const application = await getDbCollection("applications").findOne({ applicant_id: applicant?._id, to_applicant_message_id: messageId })
 
-  if (application) {
-    return true
+  if (applicant) {
+    const application = await getDbCollection("applications").findOne({ applicant_id: applicant?._id, to_applicant_message_id: messageId })
+    if (application) {
+      return true
+    }
   }
 
   return false
