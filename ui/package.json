@@ -63,13 +63,13 @@
     "@next/bundle-analyzer": "^14.2.13",
     "@testing-library/react": "^13.4.0",
     "@tsconfig/next": "^2.0.3",
-    "@types/node": "^20.7.1",
+    "@types/node": "^20.17.16",
     "@types/react": "^18.2.23",
     "dotenv": "^16.3.1",
     "eslint": "^8.50.0",
     "eslint-config-next": "latest",
     "nock": "^14.0.0-beta.11",
     "type-fest": "^4.18.2",
-    "typescript": "^5.4.5"
+    "typescript": "^5.7.3"
   }
 }

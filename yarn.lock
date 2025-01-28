@@ -5655,17 +5655,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:20.17.16, @types/node@npm:^20.17.16":
+  version: 20.17.16
+  resolution: "@types/node@npm:20.17.16"
+  dependencies:
+    undici-types: ~6.19.2
+  checksum: dd19c04c592b602f20448187b4b6ab0293f22173a8bbe53aa3b559188f078b5261d748a107b84ee0580e2074cda760049b13d6e210f9850039bead01cb666a3f
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:20.5.1":
   version: 20.5.1
   resolution: "@types/node@npm:20.5.1"
   checksum: 3dbe611cd67afa987102c8558ee70f848949c5dcfee5f60abc073e55c0d7b048e391bf06bb1e0dc052cb7210ca97136ac496cbaf6e89123c989de6bd125fde82
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:20.7.1":
-  version: 20.7.1
-  resolution: "@types/node@npm:20.7.1"
-  checksum: 3140bd6c9130f1ed73a78ce7a1765ee43e155c1eea50eea45e18faeb31d11d97a84fffdc5e3a97582101d2f57d2652a50f510ede6c702780267bad74c822d56c
   languageName: node
   linkType: hard
 
@@ -5675,15 +5677,6 @@ __metadata:
   dependencies:
     undici-types: ~5.26.4
   checksum: 6ce382b659a03fb694b8af4bbf3a397c0f8b6448ab4c0f17fc58de8fe649c474146b88c0317ab0ccb50ce9e251464498b0aa43227f1626d4f65bd196cbae6764
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^20.12.12, @types/node@npm:^20.7.1":
-  version: 20.17.14
-  resolution: "@types/node@npm:20.17.14"
-  dependencies:
-    undici-types: ~6.19.2
-  checksum: a5a775f57271e5a73c9e1afc4f6ea0d24cb9b4856e3d7d1788ff9ba0cc3e3a90e7883383f183f193a36eed0c758809df626a9ad653458a06d4fc82644d89b6e0
   languageName: node
   linkType: hard
 
@@ -16080,7 +16073,7 @@ __metadata:
     "@semantic-release/exec": ^6.0.3
     "@semantic-release/git": ^10.0.1
     "@types/clamscan": ^2.0.8
-    "@types/node": ^20.12.12
+    "@types/node": ^20.17.16
     "@typescript-eslint/eslint-plugin": ^7.9.0
     "@typescript-eslint/parser": ^7.9.0
     cross-env: ^7.0.3
@@ -16106,7 +16099,7 @@ __metadata:
     semantic-release-slack-bot: ^4.0.2
     ts-node: ^10.9.1
     type-fest: ^4.18.2
-    typescript: ^5.4.5
+    typescript: ^5.7.3
     vite-tsconfig-paths: ^5.0.1
     vitest: ^2.0.5
   languageName: unknown
@@ -20105,7 +20098,7 @@ __metadata:
     "@types/memoizee": ^0.4.9
     "@types/mjml": ^4.7.2
     "@types/netmask": ^2.0.3
-    "@types/node": 20.7.1
+    "@types/node": 20.17.16
     "@types/nodemailer": ^6.4.11
     "@types/nodemailer-html-to-text": ^3.1.1
     "@types/string-similarity": ^4.0.2
@@ -20177,7 +20170,7 @@ __metadata:
     supertest: ^6.3.3
     tsup: ^7.2.0
     type-fest: ^4.18.2
-    typescript: ^5.4.5
+    typescript: ^5.7.3
     xlsx: ^0.18.5
     xml2js: ^0.6.2
     zod: 3.23.8
@@ -20271,7 +20264,7 @@ __metadata:
     mongodb: ^6.7.0
     openapi3-ts: ^4.4.0
     type-fest: ^4.26.0
-    typescript: ^5.4.5
+    typescript: ^5.7.3
     zod: 3.23.8
     zod-i18n-map: ^2.27.0
     zod-mongodb-schema: ^1.0.2
@@ -22085,7 +22078,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.6.4 || ^5.2.2, typescript@npm:^5.4.5":
+"typescript@npm:^4.6.4 || ^5.2.2, typescript@npm:^5.7.3":
   version: 5.7.3
   resolution: "typescript@npm:5.7.3"
   bin:
@@ -22095,7 +22088,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.6.4 || ^5.2.2#~builtin<compat/typescript>, typescript@patch:typescript@^5.4.5#~builtin<compat/typescript>":
+"typescript@patch:typescript@^4.6.4 || ^5.2.2#~builtin<compat/typescript>, typescript@patch:typescript@^5.7.3#~builtin<compat/typescript>":
   version: 5.7.3
   resolution: "typescript@patch:typescript@npm%3A5.7.3#~builtin<compat/typescript>::version=5.7.3&hash=14eedb"
   bin:
@@ -22137,7 +22130,7 @@ __metadata:
     "@testing-library/react": ^13.4.0
     "@tsconfig/next": ^2.0.3
     "@turf/distance": ^6.5.0
-    "@types/node": ^20.7.1
+    "@types/node": ^20.17.16
     "@types/react": ^18.2.23
     axios: ^1.7.4
     csv-stringify: ^6.5.2
@@ -22178,7 +22171,7 @@ __metadata:
     react-table: ^7.8.0
     shared: "workspace:*"
     type-fest: ^4.18.2
-    typescript: ^5.4.5
+    typescript: ^5.7.3
     yup: ^0.32.11
     zod: 3.23.8
     zod-formik-adapter: ^1.3.0

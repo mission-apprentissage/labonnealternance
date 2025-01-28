@@ -118,7 +118,7 @@
     "@types/luxon": "^3.4.2",
     "@types/memoizee": "^0.4.9",
     "@types/mjml": "^4.7.2",
-    "@types/node": "20.7.1",
+    "@types/node": "20.17.16",
     "@types/string-similarity": "^4.0.2",
     "@types/supertest": "^2.0.13",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
@@ -126,7 +126,7 @@
     "nock": "beta",
     "supertest": "^6.3.3",
     "tsup": "^7.2.0",
-    "typescript": "^5.4.5",
+    "typescript": "^5.7.3",
     "zod-fixture": "^2.5.0"
   },
   "files": [

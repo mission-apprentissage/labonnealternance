@@ -1,32 +1,29 @@
-import http from "http"
-import https from "https"
-import { URL } from "url"
+import { Transform, Writable } from "node:stream"
+import { pipeline } from "node:stream/promises"
 
-import { ObjectId } from "bson"
-import { oleoduc, writeData } from "oleoduc"
-import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import { AnyBulkWriteOperation, FindCursor, WithId } from "mongodb"
+import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 
 import { logger } from "../../common/logger"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
-import { streamGroupByCount } from "../../common/utils/streamUtils"
 
-type IJobApplyUrls = {
-  _id: ObjectId
-  apply_url: string
-}
+/**
+ * TODO :
+ *
+ * Check statut trop agressif :
+ * prendre en compte le rate limit (409/504/429)
+ * bulk write
+ */
 
-const checkUrlStatus = (url: string): Promise<number> => {
-  return new Promise((resolve) => {
-    const { protocol } = new URL(url)
-    const httpModule = protocol === "https:" ? https : http
+const BATCH_SIZE = 50
 
-    const req = httpModule.request(url, { method: "HEAD" }, (res) => {
-      resolve(res.statusCode || 0)
-    })
+const checkUrlStatus = async (url: string): Promise<number> => {
+  const res = await fetch(url)
+  if (res.status === 404) {
+    return res.status
+  }
 
-    req.on("error", () => resolve(0))
-    req.end()
-  })
+  return 0
 }
 
 export const checkApplyUrlStatus = async () => {
@@ -39,38 +36,101 @@ export const checkApplyUrlStatus = async () => {
   })
   logger.info(`${count} URL(s) d'offre à traiter`)
 
-  await oleoduc(
-    collection.find({ business_error: null, apply_url: { $ne: null } }, { projection: { _id: 1, apply_url: 1 } }).stream(),
-    streamGroupByCount(50),
-    writeData(
-      async (batch: IJobApplyUrls[]) => {
-        counters.total += batch.length
+  const cursor: FindCursor<WithId<Pick<IComputedJobsPartners, "apply_url">>> = getDbCollection("computed_jobs_partners").find(
+    { business_error: null, apply_url: { $ne: null } },
+    { projection: { _id: 1, apply_url: 1 } }
+  )
 
-        // Traitement des URL dans le batch avec `Promise.all`
-        await Promise.all(
-          batch.map(async (doc) => {
-            try {
-              const status = await checkUrlStatus(doc.apply_url)
-
-              if (status >= 200 && status < 400) {
-                counters.success++
-              } else {
-                counters.error++
-                await collection.updateOne({ _id: doc._id }, { $set: { business_error: JOB_PARTNER_BUSINESS_ERROR.URL_UNAVAILABLE } })
-              }
-            } catch (error) {
-              counters.error++
-              await collection.updateOne({ _id: doc._id }, { $set: { business_error: JOB_PARTNER_BUSINESS_ERROR.URL_UNAVAILABLE } })
+  await pipeline(
+    cursor,
+    new Transform({
+      objectMode: true,
+      async transform(chunk, encoding, callback) {
+        counters.total++
+        try {
+          const status = await checkUrlStatus(chunk.apply_url)
+          if (status >= 200 && status < 400) {
+            counters.success++
+            callback()
+          } else {
+            counters.error++
+            const op: AnyBulkWriteOperation<IComputedJobsPartners> = {
+              updateOne: {
+                filter: {
+                  _id: chunk._id,
+                },
+                update: {
+                  $set: { business_error: JOB_PARTNER_BUSINESS_ERROR.URL_UNAVAILABLE },
+                },
+              },
             }
-          })
-        )
-        if (counters.total % 100 === 0) {
-          logger.info(`Progression : ${counters.total}/${count} URLs traitées (Succès : ${counters.success}, Erreurs : ${counters.error})`)
+            callback(null, op)
+          }
+        } catch (error) {
+          counters.error++
+          const op: AnyBulkWriteOperation<IComputedJobsPartners> = {
+            updateOne: {
+              filter: {
+                _id: chunk._id,
+              },
+              update: {
+                $set: { business_error: JOB_PARTNER_BUSINESS_ERROR.URL_UNAVAILABLE },
+              },
+            },
+          }
+          callback(null, op)
         }
       },
-      { parallel: 1 } // Traite un batch à la fois
-    )
+    }),
+    new Writable({
+      objectMode: true,
+      async write(chunk, encoding, callback) {
+        if (counters.total % BATCH_SIZE === 0) {
+          logger.info(`Progression : ${counters.total}/${count} URLs traitées (Succès : ${counters.success}, Erreurs : ${counters.error})`)
+        }
+        if (chunk) {
+          await collection.bulkWrite([chunk])
+        }
+        callback()
+      },
+    })
   )
+
+  // await oleoduc(
+  //   collection.find({ business_error: null, apply_url: { $ne: null } }, { projection: { _id: 1, apply_url: 1 } }).stream(),
+  //   streamGroupByCount(BATCH_SIZE),
+  //   writeData(
+  //     async (batch: IJobApplyUrls[]) => {
+  //       // if http --> business_error URL_PROTOCOL
+  //       counters.total += batch.length
+
+  //       // Traitement des URL dans le batch avec `Promise.all`
+  //       const bulk = []
+  //       await Promise.all(
+  //         batch.map(async (doc) => {
+  //           try {
+  //             const status = await checkUrlStatus(doc.apply_url)
+
+  //             if (status >= 200 && status < 400) {
+  //               counters.success++
+  //             } else {
+  //               counters.error++
+  //               // bulk.push[{}] bulk op
+  //               await collection.updateOne({ _id: doc._id }, { $set: { business_error: JOB_PARTNER_BUSINESS_ERROR.URL_UNAVAILABLE } })
+  //             }
+  //           } catch (error) {
+  //             counters.error++
+  //             await collection.updateOne({ _id: doc._id }, { $set: { business_error: JOB_PARTNER_BUSINESS_ERROR.URL_UNAVAILABLE } })
+  //           }
+  //         })
+  //       )
+  //       if (counters.total % BATCH_SIZE === 0) {
+  //         logger.info(`Progression : ${counters.total}/${count} URLs traitées (Succès : ${counters.success}, Erreurs : ${counters.error})`)
+  //       }
+  //     },
+  //     { parallel: 1 }
+  //   )
+  // )
 
   logger.info(`Traitement terminé. Total: ${counters.total}, Succès: ${counters.success}, Erreurs: ${counters.error}`)
 }
