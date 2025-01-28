@@ -3,6 +3,7 @@ import { useRouter } from "next/router"
 import React, { useContext, useEffect, useRef, useState } from "react"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
+import { ScopeContext } from "../../context/ScopeContext"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import { fetchAddressFromCoordinates } from "../../services/baseAdresse"
 import { currentPage, currentSearch, setCurrentPage } from "../../utils/currentPage"
@@ -26,6 +27,8 @@ const Map = ({ handleSearchSubmit, showSearchForm, selectItemOnMap }) => {
 
   const router = useRouter()
 
+  const scopeContext = useContext(ScopeContext)
+
   const [mapInitialized, setMapInitialized] = useState(false)
   const mapContainer = useRef(null)
 
@@ -34,8 +37,7 @@ const Map = ({ handleSearchSubmit, showSearchForm, selectItemOnMap }) => {
     setSelectedMarker(null)
     if (currentPage === "fiche") {
       setCurrentPage("")
-      // @ts-ignore
-      pushHistory({ router, searchParameters: formValues, searchTimestamp: currentSearch })
+      pushHistory({ router, scopeContext, searchParameters: formValues, searchTimestamp: currentSearch })
     }
   }
 
