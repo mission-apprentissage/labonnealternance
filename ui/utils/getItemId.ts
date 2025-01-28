@@ -12,3 +12,8 @@ export const getItemIdAndType = (item) => {
 
   return { itemId, type }
 }
+
+export const getItemQueryParameters = (item) => {
+  const idAndType = getItemIdAndType(item)
+  return `type=${idAndType.type}&itemId=${encodeURIComponent(idAndType.itemId)}`
+}
