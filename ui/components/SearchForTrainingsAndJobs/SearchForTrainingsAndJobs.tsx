@@ -2,13 +2,14 @@ import { Box, Flex } from "@chakra-ui/react"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { ParameterContext } from "../../context/ParameterContextProvider"
 import { ScopeContext } from "../../context/ScopeContext"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import { updateUiFromHistory } from "../../services/updateUiFromHistory"
-import { currentSearch, setCurrentPage, setCurrentSearch } from "../../utils/currentPage"
+import { currentPage, currentSearch, setCurrentPage, setCurrentSearch } from "../../utils/currentPage"
 import {
   closeMapPopups,
   factorTrainingsForMap,
@@ -25,6 +26,7 @@ import { logError } from "../../utils/tools"
 import { InitWidgetSearchParameters, WidgetHeader } from "../WidgetHeader"
 
 import { ChoiceColumn, MapListSwitchButton } from "./components"
+import { loadItem } from "./services/loadItem"
 import { searchForJobsFunction } from "./services/searchForJobs"
 import { searchForTrainingsFunction } from "./services/searchForTrainings"
 
@@ -52,12 +54,16 @@ const SearchForTrainingsAndJobs = () => {
   const [trainingSearchError, setTrainingSearchError] = useState("")
 
   const router = useRouter()
-  const path = router.pathname
+  // const path = router.pathname
 
   useEffect(() => {
     const handleRouteChange = (url) => {
       updateUiFromHistory({
         url,
+        currentPage,
+        unSelectItem,
+        selectItemFromHistory,
+        setCurrentPage,
         showResultMap,
         showResultList,
         showSearchForm,
@@ -81,9 +87,8 @@ const SearchForTrainingsAndJobs = () => {
       // provient du submit formulaire de la homepage
       setShouldExecuteSearch(false)
       executeSearch(formValues)
-      setIsFormVisible(false)
+      //setIsFormVisible(false)
     }
-
     /* eslint react-hooks/exhaustive-deps: 0 */
   }, [])
 
@@ -95,42 +100,96 @@ const SearchForTrainingsAndJobs = () => {
     }
   }
 
-  // TODO déport probable vers fiche
-  // const selectItemFromHistory = (itemId, type) => {
-  //   const item = findItem({ itemId, type, jobs, trainings })
-  //   selectItem(item)
-  // }
+  const selectItemFromHistory = (itemId, type) => {
+    const item = findItem({ itemId, type, jobs, trainings })
+    selectItem(item)
+  }
 
-  // const selectItem = (item) => {
-  //   closeMapPopups()
-  //   if (item) {
-  //     flyToMarker(item, 12)
-  //     setSelectedItem(item)
-  //     setSelectedMarker(item)
-  //   }
-  // }
+  const selectItem = (item) => {
+    closeMapPopups()
+    if (item) {
+      flyToMarker(item, 12)
+      setSelectedItem(item)
+      setSelectedMarker(item)
+    }
+  }
 
-  // const findItem = ({ itemId, type, jobs, trainings }) => {
-  //   switch (type) {
-  //     case "training": {
-  //       return trainings?.find((el) => el.id === itemId)
-  //     }
-  //     case LBA_ITEM_TYPE_OLD.PEJOB: {
-  //       return jobs?.peJobs?.find((el) => el.id === itemId)
-  //     }
-  //     case LBA_ITEM_TYPE_OLD.LBA: {
-  //       return jobs?.lbaCompanies?.find((el) => el.id === itemId)
-  //     }
-  //     case LBA_ITEM_TYPE_OLD.MATCHA: {
-  //       return jobs?.matchas?.find((el) => el.id === itemId)
-  //     }
-  //     case LBA_ITEM_TYPE_OLD.PARTNER_JOB: {
-  //       return jobs?.partnerJobs?.find((el) => el.id === itemId)
-  //     }
-  //     default:
-  //       return
-  //   }
-  // }
+  const selectFollowUpItem = ({ itemId, type, jobs, trainings, searchTimestamp, formValues }) => {
+    const item = findItem({ itemId, type, jobs, trainings })
+
+    if (item) {
+      selectItem(item)
+      pushHistory({
+        router,
+        scopeContext,
+        item: { id: itemId, ideaType: type === "training" ? LBA_ITEM_TYPE_OLD.FORMATION : type, directId: true },
+        page: "fiche",
+        display: "list",
+        searchParameters: formValues,
+        searchTimestamp,
+        isReplace: true,
+        displayMap,
+      })
+    }
+  }
+
+  const findItem = ({ itemId, type, jobs, trainings }) => {
+    switch (type) {
+      case "training": {
+        return trainings?.find((el) => el.id === itemId)
+      }
+      case LBA_ITEM_TYPE_OLD.PEJOB: {
+        return jobs?.peJobs?.find((el) => el.id === itemId)
+      }
+      case LBA_ITEM_TYPE_OLD.LBA: {
+        return jobs?.lbaCompanies?.find((el) => el.id === itemId)
+      }
+      case LBA_ITEM_TYPE_OLD.MATCHA: {
+        return jobs?.matchas?.find((el) => el.id === itemId)
+      }
+      case LBA_ITEM_TYPE_OLD.PARTNER_JOB: {
+        return jobs?.partnerJobs?.find((el) => el.id === itemId)
+      }
+      default:
+        return
+    }
+  }
+
+  const selectItemFromHistory = (itemId, type) => {
+    const item = findItem({ itemId, type, jobs, trainings })
+    selectItem(item)
+  }
+
+  const selectItem = (item) => {
+    closeMapPopups()
+    if (item) {
+      flyToMarker(item, 12)
+      setSelectedItem(item)
+      setSelectedMarker(item)
+    }
+  }
+
+  const findItem = ({ itemId, type, jobs, trainings }) => {
+    switch (type) {
+      case "training": {
+        return trainings?.find((el) => el.id === itemId)
+      }
+      case LBA_ITEM_TYPE_OLD.PEJOB: {
+        return jobs?.peJobs?.find((el) => el.id === itemId)
+      }
+      case LBA_ITEM_TYPE_OLD.LBA: {
+        return jobs?.lbaCompanies?.find((el) => el.id === itemId)
+      }
+      case LBA_ITEM_TYPE_OLD.MATCHA: {
+        return jobs?.matchas?.find((el) => el.id === itemId)
+      }
+      case LBA_ITEM_TYPE_OLD.PARTNER_JOB: {
+        return jobs?.partnerJobs?.find((el) => el.id === itemId)
+      }
+      default:
+        return
+    }
+  }
 
   const handleSearchSubmit = async ({ values }) => {
     // centrage de la carte sur le lieu de recherche
@@ -146,18 +205,40 @@ const SearchForTrainingsAndJobs = () => {
     setFormValues({ ...values })
 
     if (scopeContext.isTraining) {
-      searchForTrainings({ values, searchTimestamp })
+      searchForTrainings({ values, searchTimestamp, followUpItem, selectFollowUpItem })
     }
 
     if (scopeContext.isJob) {
-      searchForJobs({ values, searchTimestamp })
+      searchForJobs({ values, searchTimestamp, followUpItem, selectFollowUpItem })
     }
     setIsFormVisible(false)
-    pushHistory({ router, display: "list", searchParameters: values, searchTimestamp, displayMap, path })
+    pushHistory({ router, scopeContext, display: "list", searchParameters: values, searchTimestamp, displayMap })
     setCurrentSearch(searchTimestamp)
   }
 
-  const searchForTrainings = async ({ values, searchTimestamp }) => {
+  const handleItemLoad = async ({ item, router, scopeContext, displayMap }) => {
+    setShouldShowWelcomeMessage(false)
+
+    setHasSearch(false)
+    setExtendedSearch(true)
+
+    loadItem({
+      item,
+      setIsFormVisible,
+      setCurrentPage,
+      setTrainingSearchError,
+      setIsTrainingSearchLoading,
+      setIsJobSearchLoading,
+      setJobSearchError,
+      searchResultContext,
+      router,
+      scopeContext,
+      displayMap,
+    })
+    setIsFormVisible(false)
+  }
+
+  const searchForTrainings = async ({ values, searchTimestamp, followUpItem, selectFollowUpItem }) => {
     searchForTrainingsFunction({
       values,
       searchTimestamp,
@@ -168,11 +249,13 @@ const SearchForTrainingsAndJobs = () => {
       setTrainingMarkers,
       factorTrainingsForMap,
       widgetParameters,
+      followUpItem,
+      selectFollowUpItem,
       searchResultContext,
     })
   }
 
-  const searchForJobs = async ({ values, searchTimestamp }) => {
+  const searchForJobs = async ({ values, searchTimestamp, followUpItem, selectFollowUpItem }) => {
     searchForJobsFunction({
       values,
       searchTimestamp,
@@ -180,6 +263,8 @@ const SearchForTrainingsAndJobs = () => {
       setJobSearchError,
       widgetParameters,
       scopeContext,
+      followUpItem,
+      selectFollowUpItem,
       opcoFilter,
       opcoUrlFilter,
       showCombinedJob,
@@ -206,11 +291,11 @@ const SearchForTrainingsAndJobs = () => {
       unSelectItem("doNotSaveToHistory")
       pushHistory({
         router,
+        scopeContext,
         display: "form",
         searchParameters: formValues,
         searchTimestamp: currentSearch,
         displayMap,
-        path,
       })
     }
   }
@@ -233,11 +318,11 @@ const SearchForTrainingsAndJobs = () => {
     if (!doNotSaveToHistory) {
       pushHistory({
         router,
+        scopeContext,
         display: "map",
         searchParameters: formValues,
         searchTimestamp: currentSearch,
         displayMap: true,
-        path,
       })
     }
 
@@ -262,11 +347,11 @@ const SearchForTrainingsAndJobs = () => {
     if (!doNotSaveToHistory) {
       pushHistory({
         router,
+        scopeContext,
         display: "list",
         searchParameters: formValues,
         searchTimestamp: currentSearch,
         displayMap,
-        path,
       })
     }
   }
@@ -276,13 +361,13 @@ const SearchForTrainingsAndJobs = () => {
     setCurrentPage("fiche")
     pushHistory({
       router,
+      scopeContext,
       item,
       page: "fiche",
       display: "list",
       searchParameters: formValues,
       searchTimestamp: currentSearch,
       displayMap,
-      path,
     })
   }
 
@@ -294,7 +379,7 @@ const SearchForTrainingsAndJobs = () => {
     }
 
     if (!doNotSaveToHistory) {
-      pushHistory({ router, searchParameters: formValues, searchTimestamp: currentSearch, displayMap, path })
+      pushHistory({ router, scopeContext, searchParameters: formValues, searchTimestamp: currentSearch, displayMap })
     }
   }
 
@@ -303,12 +388,13 @@ const SearchForTrainingsAndJobs = () => {
 
   return (
     <Flex direction="column" sx={{ height: "100vh" }}>
-      <InitWidgetSearchParameters
+      {/* <InitWidgetSearchParameters
         setShouldShowWelcomeMessage={setShouldShowWelcomeMessage}
         setSearchRadius={setSearchRadius}
         searchForJobs={searchForJobs}
         searchForTrainings={searchForTrainings}
-      />
+      /> */}
+      <InitWidgetSearchParameters handleSearchSubmit={handleSearchSubmit} handleItemLoad={handleItemLoad} />
       <WidgetHeader
         handleSearchSubmit={handleSearchSubmit}
         trainingSearchError={trainingSearchError}
@@ -323,6 +409,7 @@ const SearchForTrainingsAndJobs = () => {
             handleSearchSubmit={handleSearchSubmit}
             showResultList={showResultList}
             showSearchForm={showSearchForm}
+            unSelectItem={unSelectItem}
             searchRadius={searchRadius}
             isTrainingSearchLoading={isTrainingSearchLoading}
             isFormVisible={isFormVisible}
