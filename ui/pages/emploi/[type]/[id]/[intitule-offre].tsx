@@ -1,5 +1,4 @@
 import { Box } from "@chakra-ui/react"
-import { useSearchParams } from "next/navigation"
 import { useRouter } from "next/router"
 import { NextSeo } from "next-seo"
 import { useContext, useEffect, useState } from "react"
@@ -19,9 +18,8 @@ export default function DetailEmploi() {
   const searchResultContext = useContext(SearchResultContext)
   const displayContext = useContext(DisplayContext)
   const parameterContext = useContext(ParameterContext)
-  const searchParams = useSearchParams()
 
-  const { handleClose, handleSelectItem } = getCloseAndSelectFunctions({ router, searchParams, searchResultContext, displayContext, parameterContext })
+  const { handleClose, handleSelectItem } = getCloseAndSelectFunctions({ router, searchResultContext, displayContext, parameterContext })
 
   const [hasError, setHasError] = useState<string>("")
 

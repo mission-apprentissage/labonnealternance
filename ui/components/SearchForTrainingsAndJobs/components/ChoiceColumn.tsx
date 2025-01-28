@@ -32,7 +32,6 @@ const ChoiceColumn = ({
   jobSearchError,
 }) => {
   const router = useRouter()
-  const path = router.pathname
   const scopeContext = useContext(ScopeContext)
   const { trainings, setTrainings, setJobs, setSelectedItem, itemToScrollTo, setItemToScrollTo, setExtendedSearch } = useContext(SearchResultContext)
   const { formValues, setFormValues, setActiveFilters } = useContext(DisplayContext)
@@ -67,13 +66,14 @@ const ChoiceColumn = ({
 
     pushHistory({
       router,
+      scopeContext,
       item,
       page: "fiche",
       display: "list",
       searchParameters: formValues,
       searchTimestamp: currentSearch,
       displayMap,
-      path,
+      // path,
     })
   }
 
@@ -103,11 +103,12 @@ const ChoiceColumn = ({
     const searchTimestamp = new Date().getTime()
     pushHistory({
       router,
+      scopeContext,
       display: "list",
       searchParameters: formValues,
       searchTimestamp,
       displayMap,
-      path,
+      //path,
     })
     setCurrentSearch(searchTimestamp)
     searchForJobs({ values: { ...formValues, radius: 20000 }, searchTimestamp })
@@ -133,11 +134,12 @@ const ChoiceColumn = ({
 
     pushHistory({
       router,
+      scopeContext,
       display: "list",
       searchParameters: formValues,
       searchTimestamp,
       displayMap,
-      path,
+      // path,
     })
     setCurrentSearch(searchTimestamp)
 

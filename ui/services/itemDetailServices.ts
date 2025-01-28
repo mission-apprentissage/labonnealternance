@@ -2,11 +2,16 @@ import { currentSearch, setCurrentPage } from "@/utils/currentPage"
 import { closeMapPopups, flyToMarker, setSelectedMarker } from "@/utils/mapTools"
 import pushHistory from "@/utils/pushHistory"
 
-export const getCloseAndSelectFunctions = ({ router, searchParams, searchResultContext, displayContext, parameterContext }) => {
+export const getCloseAndSelectFunctions = ({ router, searchResultContext, displayContext, parameterContext }) => {
   const { selectedItem, setSelectedItem, setItemToScrollTo } = searchResultContext
   const { formValues } = displayContext
   const { displayMap } = parameterContext
-  const path = searchParams.get("path")?.startsWith("/recherche") ? searchParams.get("path") : "/recherche"
+
+  const scopeContext = {
+    isJob: true,
+    isTraining: true,
+    path: "/recherche",
+  }
 
   const unSelectItem = (doNotSaveToHistory) => {
     setCurrentPage("")
@@ -17,7 +22,7 @@ export const getCloseAndSelectFunctions = ({ router, searchParams, searchResultC
     }
 
     if (!doNotSaveToHistory) {
-      pushHistory({ router, searchParameters: formValues, searchTimestamp: currentSearch, displayMap, path })
+      pushHistory({ router, scopeContext, searchParameters: formValues, searchTimestamp: currentSearch, displayMap /*, path*/ })
     }
   }
 
@@ -25,12 +30,13 @@ export const getCloseAndSelectFunctions = ({ router, searchParams, searchResultC
     setCurrentPage("")
     pushHistory({
       router,
+      scopeContext,
       page: "list",
       display: "list",
       searchParameters: formValues,
       searchTimestamp: currentSearch,
       displayMap,
-      path,
+      // path,
     })
     unSelectItem("doNotSaveToHistory")
   }
@@ -45,13 +51,14 @@ export const getCloseAndSelectFunctions = ({ router, searchParams, searchResultC
 
     pushHistory({
       router,
+      scopeContext,
       item,
       page: "fiche",
       display: "list",
       searchParameters: formValues,
       searchTimestamp: currentSearch,
       displayMap,
-      path,
+      // path,
     })
   }
 
