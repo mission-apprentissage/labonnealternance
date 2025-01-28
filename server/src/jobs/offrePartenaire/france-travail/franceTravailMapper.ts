@@ -24,6 +24,7 @@ export const franceTravailJobsToJobsPartners = (job: IFTJobRaw): IComputedJobsPa
     offer_title: job.intitule,
     offer_rome_codes: [job.romeCode],
     offer_description: job.description,
+    offer_target_diploma: parseDiploma(job.formations?.[0].niveauLibelle),
     offer_access_conditions: job.formations ? job.formations?.map((formation) => `${formation.domaineLibelle} - ${formation.niveauLibelle}`) : [],
     offer_to_be_acquired_skills: job.competences ? job.competences.map((competence) => competence.libelle) : [],
     offer_creation: new Date(job.dateCreation),
@@ -46,4 +47,26 @@ export const franceTravailJobsToJobsPartners = (job: IFTJobRaw): IComputedJobsPa
 
     apply_url: job.origineOffre.partenaires?.[0]?.url || job.origineOffre.urlOrigine,
   }
+}
+type DiplomaEuropean = "3" | "4" | "5" | "6" | "7"
+type DiplomaResult = { european: DiplomaEuropean; label: string } | null
+
+function parseDiploma(field): DiplomaResult {
+  const diplomaMappings: { pattern: RegExp; european: DiplomaEuropean; label: string }[] = [
+    { pattern: /^CAP, BEP et équivalents$/, european: "3", label: "Cap, autres formations niveau (Infrabac)" },
+    { pattern: /^3ème achevée ou Brevet$/, european: "3", label: "Cap, autres formations niveau (Infrabac)" },
+    { pattern: /^Bac ou équivalent$/, european: "4", label: "BP, Bac, autres formations niveau (Bac)" },
+    { pattern: /^2nd ou 1ère achevée$/, european: "3", label: "Cap, autres formations niveau (Infrabac)" },
+    { pattern: /^Bac\+2 ou équivalents$/, european: "4", label: "BP, Bac, autres formations niveau (Bac)" },
+    { pattern: /^Bac\+3, Bac\+4 ou équivalents$/, european: "6", label: "Licence, Maîtrise, autres formations niveau (Bac+3 à Bac+4)" },
+    { pattern: /^Bac\+5 et plus ou équivalents$/, european: "7", label: "Master, titre ingénieur, autres formations niveau (Bac+5)" },
+  ]
+
+  for (const { pattern, european, label } of diplomaMappings) {
+    if (pattern.test(field)) {
+      return { european, label }
+    }
+  }
+
+  return null
 }
