@@ -11,6 +11,7 @@ import { currentSearch, setCurrentPage, setCurrentSearch } from "../../../utils/
 import { closeMapPopups, filterLayers, flyToLocation, flyToMarker, setSelectedMarker } from "../../../utils/mapTools"
 import pushHistory from "../../../utils/pushHistory"
 import { getItemElement, scrollToElementInContainer, scrollToTop } from "../../../utils/tools"
+import ItemDetail from "../../ItemDetail/ItemDetail"
 import { defaultFilters } from "../services/utils"
 import { insertWhisper } from "../services/whispers"
 
@@ -19,6 +20,7 @@ import SearchFormResponsive from "./SearchFormResponsive"
 
 const ChoiceColumn = ({
   showResultList,
+  unSelectItem,
   showSearchForm,
   handleSearchSubmit,
   shouldShowWelcomeMessage,
@@ -33,7 +35,7 @@ const ChoiceColumn = ({
 }) => {
   const router = useRouter()
   const scopeContext = useContext(ScopeContext)
-  const { trainings, setTrainings, setJobs, setSelectedItem, itemToScrollTo, setItemToScrollTo, setExtendedSearch } = useContext(SearchResultContext)
+  const { trainings, setTrainings, setJobs, setSelectedItem, selectedItem, itemToScrollTo, setItemToScrollTo, setExtendedSearch } = useContext(SearchResultContext)
   const { formValues, setFormValues, setActiveFilters } = useContext(DisplayContext)
   const { displayMap } = useContext(ParameterContext)
 
@@ -75,6 +77,19 @@ const ChoiceColumn = ({
       displayMap,
       // path,
     })
+  }
+
+  const handleClose = () => {
+    setCurrentPage("")
+    pushHistory({
+      router,
+      scopeContext,
+      display: "list",
+      searchParameters: formValues,
+      searchTimestamp: currentSearch,
+      displayMap,
+    })
+    unSelectItem("doNotSaveToHistory")
   }
 
   const showAllResults = () => {
@@ -181,22 +196,27 @@ const ChoiceColumn = ({
           </Box>
         </Flex>
       </Box>
-      <Box background="white" padding="0.5rem 1rem 2rem" display={isFormVisible ? ["block", "block", "none"] : "none"}>
-        <SearchFormResponsive showResultList={showResultList} handleSearchSubmit={handleSearchSubmitFunction} />
-      </Box>
-      <ResultLists
-        handleSelectItem={handleSelectItem}
-        showSearchForm={showSearchForm}
-        isTrainingSearchLoading={isTrainingSearchLoading}
-        isJobSearchLoading={isJobSearchLoading}
-        searchRadius={searchRadius}
-        handleExtendedSearch={searchForJobsWithLooseRadius}
-        searchForJobsOnNewCenter={searchForJobsOnNewCenter}
-        searchForTrainingsOnNewCenter={searchForTrainingsOnNewCenter}
-        jobSearchError={jobSearchError}
-        trainingSearchError={trainingSearchError}
-        shouldShowWelcomeMessage={shouldShowWelcomeMessage}
-      />
+      {!selectedItem && (
+        <>
+          <Box background="white" padding="0.5rem 1rem 2rem" display={isFormVisible ? ["block", "block", "none"] : "none"}>
+            <SearchFormResponsive showResultList={showResultList} handleSearchSubmit={handleSearchSubmitFunction} />
+          </Box>
+          <ResultLists
+            handleSelectItem={handleSelectItem}
+            showSearchForm={showSearchForm}
+            isTrainingSearchLoading={isTrainingSearchLoading}
+            isJobSearchLoading={isJobSearchLoading}
+            searchRadius={searchRadius}
+            handleExtendedSearch={searchForJobsWithLooseRadius}
+            searchForJobsOnNewCenter={searchForJobsOnNewCenter}
+            searchForTrainingsOnNewCenter={searchForTrainingsOnNewCenter}
+            jobSearchError={jobSearchError}
+            trainingSearchError={trainingSearchError}
+            shouldShowWelcomeMessage={shouldShowWelcomeMessage}
+          />
+        </>
+      )}
+      {selectedItem && <ItemDetail handleClose={handleClose} handleSelectItem={handleSelectItem} />}
     </Box>
   )
 }
