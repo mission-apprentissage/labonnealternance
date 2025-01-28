@@ -12,6 +12,7 @@ import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formation
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
+import { checkApplyUrlStatus } from "./offrePartenaire/checkApplyUrlStatus"
 import { detectDuplicateJobPartners } from "./offrePartenaire/detectDuplicateJobPartners"
 import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
 import { importHelloWorkRaw, importHelloWorkToComputed } from "./offrePartenaire/hellowork/importHelloWork"
@@ -199,6 +200,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   // ENRICHIT COMPUTED JOBS PARTNERS
   {
     fct: fillComputedJobsPartners,
+    description: "Enrichit la collection computed_jobs_partners avec les données provenant d'API externes",
+  },
+  {
+    fct: checkApplyUrlStatus,
     description: "Enrichit la collection computed_jobs_partners avec les données provenant d'API externes",
   },
   // FLOW GLOBAL JOBS PARTNERS

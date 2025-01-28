@@ -22,6 +22,7 @@ export enum JOB_PARTNER_BUSINESS_ERROR {
   ZOD_VALIDATION = "ZOD_VALIDATION",
   STAGE = "STAGE",
   EXPIRED = "EXPIRED",
+  URL_UNAVAILABLE = "URL_UNAVAILABLE",
 }
 
 export const ZComputedJobPartnersDuplicateRef = z.object({
