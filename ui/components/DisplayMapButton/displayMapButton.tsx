@@ -24,9 +24,9 @@ const DisplayMapButton = (props) => {
       refreshLocationMarkers({ jobs: props.jobs, trainings: props.trainings, scopeContext })
     }
 
-    // @ts-ignore
     pushHistory({
       router,
+      scopeContext,
       display: "list",
       searchParameters: formValues,
       searchTimestamp: currentSearch,
