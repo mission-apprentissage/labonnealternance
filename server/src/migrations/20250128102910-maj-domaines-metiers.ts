@@ -161,18 +161,6 @@ export const up = async () => {
   await asyncForEach(Object.entries(map), ([sousDomaine, codesRomes]) =>
     getDbCollection("domainesmetiers").updateOne({ sous_domaine_sans_accent_computed: sousDomaine }, { $set: { codes_romes: codesRomes } })
   )
-
-  //   await getDbCollection("domainesmetiers").updateOne(
-  //     {
-  //       sous_domaine_sans_accent_computed: "Magasinage, manutention, entreposage, peparation de commandes",
-  //     },
-  //     {
-  //       $set: {
-  //         sous_domaine_sans_accent_computed: "Magasinage, manutention, entreposage, preparation de commandes",
-  //         sous_domaine: "Magasinage, manutention, entreposage, préparation de commandes",
-  //       },
-  //     }
-  //   )
 }
 // set to false ONLY IF migration does not imply a breaking change (ex: update field value or add index)
 export const requireShutdown: boolean = false
