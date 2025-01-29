@@ -1,14 +1,17 @@
 import { Button, Image, Text } from "@chakra-ui/react"
-import { useContext, useEffect, useState } from "react"
+import { paramCase } from "param-case"
+import { useEffect, useState } from "react"
 import { ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
 import { LBA_ITEM_TYPE_OLD, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 
-import { DisplayContext } from "@/context/DisplayContextProvider"
+const getPath = (item) => {
+  return item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION
+    ? `/formation/${encodeURIComponent(item.id)}/${paramCase(item.title)}`
+    : `/emploi/${oldItemTypeToNewItemType(item.ideaType)}/${item.id}/${paramCase(item.title)}`
+}
 
 const ShareLink = ({ item }: { item: ILbaItemFormation | ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob }) => {
   const [copied, setCopied] = useState(false)
-
-  const { formValues } = useContext(DisplayContext)
 
   useEffect(() => {
     setCopied(false)
@@ -17,11 +20,7 @@ const ShareLink = ({ item }: { item: ILbaItemFormation | ILbaItemFtJob | ILbaIte
   const copyLink = (e) => {
     e.preventDefault()
 
-    //TODO ici
-    const link =
-      item.ideaType === LBA_ITEM_TYPE_OLD.LBA && !formValues?.location?.value
-        ? `${window.location.origin}${window.location.pathname}?display=list&page=fiche&type=lba&itemId=${item.id}`
-        : window.location.href
+    const link = `${window.location.origin}${getPath(item)}${window.location.search}`
     navigator.clipboard.writeText(link).then(function () {
       setCopied(true)
     })
