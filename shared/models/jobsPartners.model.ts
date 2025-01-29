@@ -15,7 +15,7 @@ export enum JOBPARTNERS_LABEL {
   OFFRES_EMPLOI_LBA = "La bonne alternance",
   OFFRES_EMPLOI_FRANCE_TRAVAIL = "France Travail",
   RH_ALTERNANCE = "RH Alternance",
-  PASS = "Pass emploi",
+  PASS = "PASS",
 }
 
 export enum FILTER_JOBPARTNERS_LABEL {
