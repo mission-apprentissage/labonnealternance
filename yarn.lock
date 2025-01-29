@@ -5215,6 +5215,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/react-virtual@npm:^3.11.3":
+  version: 3.11.3
+  resolution: "@tanstack/react-virtual@npm:3.11.3"
+  dependencies:
+    "@tanstack/virtual-core": 3.11.3
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: eb39f8a015f4dc98070f0c18bbb1f9c094b7182133554ef3ee31d2678cd3a66edd28ce854d533e830f88f1f0ad1d5b065de184438a08fe774a9acc1dc62da436
+  languageName: node
+  linkType: hard
+
+"@tanstack/virtual-core@npm:3.11.3":
+  version: 3.11.3
+  resolution: "@tanstack/virtual-core@npm:3.11.3"
+  checksum: 43dacdd27802de45c0ccdb34a4cba5f47c7b5aab1cc920a9851e382074fc9099419cc4b014afab74791672e4837afe0ef6ecf47e344267b457858dd982ffac57
+  languageName: node
+  linkType: hard
+
 "@testing-library/dom@npm:^8.5.0":
   version: 8.20.1
   resolution: "@testing-library/dom@npm:8.20.1"
@@ -22134,6 +22153,7 @@ __metadata:
     "@sentry/cli": ^2.40.0
     "@sentry/nextjs": ^8.48.0
     "@socialgouv/matomo-next": ^1.8.0
+    "@tanstack/react-virtual": ^3.11.3
     "@testing-library/react": ^13.4.0
     "@tsconfig/next": ^2.0.3
     "@turf/distance": ^6.5.0
