@@ -19,7 +19,6 @@ import FTJobDetail from "./FTJobDetail"
 import GoingToContactQuestion, { getGoingtoId } from "./GoingToContactQuestion"
 import getActualTitle from "./ItemDetailServices/getActualTitle"
 import { BuildSwipe, buttonJePostuleShouldBeDisplayed, buttonRdvShouldBeDisplayed, getNavigationButtons } from "./ItemDetailServices/getButtons"
-import GetFranceTravailButton from "./ItemDetailServices/getFranceTravailButton"
 import getJobPublishedTimeAndApplications from "./ItemDetailServices/getJobPublishedTimeAndApplications"
 import getTags from "./ItemDetailServices/getTags"
 import ItemDetailApplicationsStatus, { hasApplied } from "./ItemDetailServices/ItemDetailApplicationStatus"
@@ -147,8 +146,6 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
               {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && <ItemDetailApplicationsStatus item={selectedItem} mt={2} mb={2} />}
 
               {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PARTNER_JOB && <PartnerJobPostuler isCollapsedHeader={isCollapsedHeader} job={selectedItem} />}
-
-              {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PEJOB && GetFranceTravailButton({ offreFT: selectedItem, isCollapsedHeader })}
             </Box>
             <Box pt={{ base: 0, sm: 4 }}>
               <ShareLink item={selectedItem} />
