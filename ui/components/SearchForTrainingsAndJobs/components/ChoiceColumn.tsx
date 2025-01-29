@@ -3,12 +3,14 @@ import distance from "@turf/distance"
 import { useRouter } from "next/router"
 import React, { useContext, useEffect } from "react"
 
+import { getCloseAndSelectFunctions } from "@/services/itemDetailServices"
+
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { ParameterContext } from "../../../context/ParameterContextProvider"
 import { ScopeContext } from "../../../context/ScopeContext"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
-import { currentSearch, setCurrentPage, setCurrentSearch } from "../../../utils/currentPage"
-import { closeMapPopups, filterLayers, flyToLocation, flyToMarker, setSelectedMarker } from "../../../utils/mapTools"
+import { setCurrentSearch } from "../../../utils/currentPage"
+import { filterLayers, flyToLocation } from "../../../utils/mapTools"
 import pushHistory from "../../../utils/pushHistory"
 import { getItemElement, scrollToElementInContainer, scrollToTop } from "../../../utils/tools"
 import ItemDetail from "../../ItemDetail/ItemDetail"
@@ -20,7 +22,6 @@ import SearchFormResponsive from "./SearchFormResponsive"
 
 const ChoiceColumn = ({
   showResultList,
-  unSelectItem,
   showSearchForm,
   handleSearchSubmit,
   shouldShowWelcomeMessage,
@@ -35,9 +36,13 @@ const ChoiceColumn = ({
 }) => {
   const router = useRouter()
   const scopeContext = useContext(ScopeContext)
-  const { trainings, setTrainings, setJobs, setSelectedItem, selectedItem, itemToScrollTo, setItemToScrollTo, setExtendedSearch } = useContext(SearchResultContext)
-  const { formValues, setFormValues, setActiveFilters } = useContext(DisplayContext)
-  const { displayMap } = useContext(ParameterContext)
+  const searchResultContext = useContext(SearchResultContext)
+  const displayContext = useContext(DisplayContext)
+  const parameterContext = useContext(ParameterContext)
+  const { trainings, setTrainings, setJobs, selectedItem, itemToScrollTo, setItemToScrollTo, setExtendedSearch } = searchResultContext
+  const { formValues, setFormValues, setActiveFilters } = displayContext
+  const { displayMap } = parameterContext
+  const { handleClose, handleSelectItem } = getCloseAndSelectFunctions({ router, searchResultContext, displayContext, parameterContext, scopeContext })
 
   useEffect(() => {
     if (itemToScrollTo) {
@@ -56,40 +61,6 @@ const ChoiceColumn = ({
 
   const handleSearchSubmitFunction = (values) => {
     return handleSearchSubmit({ values })
-  }
-
-  const handleSelectItem = (item) => {
-    flyToMarker(item, 12)
-    closeMapPopups()
-    setSelectedItem(item)
-    setSelectedMarker(item)
-
-    setCurrentPage("fiche")
-
-    pushHistory({
-      router,
-      scopeContext,
-      item,
-      page: "fiche",
-      display: "list",
-      searchParameters: formValues,
-      searchTimestamp: currentSearch,
-      displayMap,
-      // path,
-    })
-  }
-
-  const handleClose = () => {
-    setCurrentPage("")
-    pushHistory({
-      router,
-      scopeContext,
-      display: "list",
-      searchParameters: formValues,
-      searchTimestamp: currentSearch,
-      displayMap,
-    })
-    unSelectItem("doNotSaveToHistory")
   }
 
   const showAllResults = () => {

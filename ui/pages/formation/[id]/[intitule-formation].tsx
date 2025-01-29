@@ -17,9 +17,6 @@ import { getCloseAndSelectFunctions } from "@/services/itemDetailServices"
 /*
 chargement direct sur nouvelle url avec paramètres de recherche : next / previous le formulaire de recherche est visible
 chargement direct sur ancienne url avec paramètres de recherche : pas de followUp sur l'item en paramètre
-partage url : l'url copiée n'est pas au nouveau format
-
-
 */
 
 export default function DetailFormation() {

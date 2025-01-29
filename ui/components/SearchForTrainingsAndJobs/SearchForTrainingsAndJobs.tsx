@@ -352,12 +352,6 @@ const SearchForTrainingsAndJobs = () => {
 
   return (
     <Flex direction="column" sx={{ height: "100vh" }}>
-      {/* <InitWidgetSearchParameters
-        setShouldShowWelcomeMessage={setShouldShowWelcomeMessage}
-        setSearchRadius={setSearchRadius}
-        searchForJobs={searchForJobs}
-        searchForTrainings={searchForTrainings}
-      /> */}
       <InitWidgetSearchParameters handleSearchSubmit={handleSearchSubmit} handleItemLoad={handleItemLoad} />
       <WidgetHeader
         handleSearchSubmit={handleSearchSubmit}
@@ -373,7 +367,6 @@ const SearchForTrainingsAndJobs = () => {
             handleSearchSubmit={handleSearchSubmit}
             showResultList={showResultList}
             showSearchForm={showSearchForm}
-            unSelectItem={unSelectItem}
             searchRadius={searchRadius}
             isTrainingSearchLoading={isTrainingSearchLoading}
             isFormVisible={isFormVisible}

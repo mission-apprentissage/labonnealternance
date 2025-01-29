@@ -1,17 +1,36 @@
+import { NextRouter } from "next/router"
+
+import { IContextDisplay } from "@/context/DisplayContextProvider"
+import { IContextParameter } from "@/context/ParameterContextProvider"
+import { IContextSearch } from "@/context/SearchResultContextProvider"
 import { currentSearch, setCurrentPage } from "@/utils/currentPage"
 import { closeMapPopups, flyToMarker, setSelectedMarker } from "@/utils/mapTools"
 import pushHistory from "@/utils/pushHistory"
 
-export const getCloseAndSelectFunctions = ({ router, searchResultContext, displayContext, parameterContext }) => {
-  const { selectedItem, setSelectedItem, setItemToScrollTo } = searchResultContext
-  const { formValues } = displayContext
-  const { displayMap } = parameterContext
-
-  const scopeContext = {
+export const getCloseAndSelectFunctions = ({
+  router,
+  searchResultContext,
+  displayContext,
+  parameterContext,
+  scopeContext = {
     isJob: true,
     isTraining: true,
     path: "/recherche",
+  },
+}: {
+  router: NextRouter
+  searchResultContext: IContextSearch
+  displayContext: IContextDisplay
+  parameterContext: IContextParameter
+  scopeContext?: {
+    isJob: boolean
+    isTraining: boolean
+    path?: string
   }
+}) => {
+  const { selectedItem, setSelectedItem, setItemToScrollTo } = searchResultContext
+  const { formValues } = displayContext
+  const { displayMap } = parameterContext
 
   const unSelectItem = (doNotSaveToHistory) => {
     setCurrentPage("")
@@ -22,7 +41,7 @@ export const getCloseAndSelectFunctions = ({ router, searchResultContext, displa
     }
 
     if (!doNotSaveToHistory) {
-      pushHistory({ router, scopeContext, searchParameters: formValues, searchTimestamp: currentSearch, displayMap /*, path*/ })
+      pushHistory({ router, scopeContext, searchParameters: formValues, searchTimestamp: currentSearch, displayMap })
     }
   }
 
@@ -36,7 +55,6 @@ export const getCloseAndSelectFunctions = ({ router, searchResultContext, displa
       searchParameters: formValues,
       searchTimestamp: currentSearch,
       displayMap,
-      // path,
     })
     unSelectItem("doNotSaveToHistory")
   }
@@ -58,7 +76,6 @@ export const getCloseAndSelectFunctions = ({ router, searchResultContext, displa
       searchParameters: formValues,
       searchTimestamp: currentSearch,
       displayMap,
-      // path,
     })
   }
 
