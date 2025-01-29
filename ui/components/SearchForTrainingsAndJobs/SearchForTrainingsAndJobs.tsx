@@ -180,6 +180,7 @@ const SearchForTrainingsAndJobs = () => {
     setCurrentSearch(searchTimestamp)
   }
 
+  // chargement d'un item depuis une url de type /recherche?itemId=123&type=training sans param de recherche
   const handleItemLoad = async ({ item, router, scopeContext, displayMap }) => {
     setShouldShowWelcomeMessage(false)
 

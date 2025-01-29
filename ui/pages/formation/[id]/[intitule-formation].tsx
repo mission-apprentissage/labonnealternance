@@ -14,11 +14,6 @@ import { ParameterContext } from "@/context/ParameterContextProvider"
 import { SearchResultContext } from "@/context/SearchResultContextProvider"
 import { getCloseAndSelectFunctions } from "@/services/itemDetailServices"
 
-/*
-chargement direct sur ancienne url avec paramètres de recherche : pas de followUp sur l'item en paramètres
-gestion de l'historique pétée
-*/
-
 export default function DetailFormation() {
   const router = useRouter()
   const searchResultContext = useContext(SearchResultContext)
