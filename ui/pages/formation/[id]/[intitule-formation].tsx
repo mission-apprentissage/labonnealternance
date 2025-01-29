@@ -15,8 +15,8 @@ import { SearchResultContext } from "@/context/SearchResultContextProvider"
 import { getCloseAndSelectFunctions } from "@/services/itemDetailServices"
 
 /*
-chargement direct sur nouvelle url avec paramètres de recherche : next / previous le formulaire de recherche est visible
-chargement direct sur ancienne url avec paramètres de recherche : pas de followUp sur l'item en paramètre
+chargement direct sur ancienne url avec paramètres de recherche : pas de followUp sur l'item en paramètres
+gestion de l'historique pétée
 */
 
 export default function DetailFormation() {
