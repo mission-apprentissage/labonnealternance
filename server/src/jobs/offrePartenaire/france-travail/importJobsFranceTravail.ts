@@ -8,9 +8,13 @@ import { getAllFTJobsByDepartments } from "@/common/apis/franceTravail/franceTra
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
 
+import { logger } from "../../../common/logger"
+import { notifyToSlack } from "../../../common/utils/slackUtils"
 import { rawToComputedJobsPartners } from "../rawToComputedJobsPartners"
 
 import { franceTravailJobsToJobsPartners } from "./franceTravailMapper"
+
+logger
 
 export const importFranceTravailRaw = async () => {
   const apiClient = new ApiClient({
@@ -40,6 +44,12 @@ export const importFranceTravailRaw = async () => {
       { upsert: true }
     )
   }
+  const message = `import France Travail terminé : ${allJobs.length} offres importées`
+  logger.info(message)
+  await notifyToSlack({
+    subject: `import des offres France Travail dans raw`,
+    message,
+  })
 }
 
 export const importFranceTravailToComputed = async () => {
