@@ -64,7 +64,7 @@ describe("helloWorkJobToJobsPartners", () => {
       apply_phone: null,
       created_at: now,
       updated_at: new Date("2024-07-21T04:49:06.000+02:00"),
-      partner_label: "Hello work",
+      partner_label: "Hellowork",
       partner_job_id: "73228597",
       contract_start: new Date("2024-12-01T00:00:00.000+01:00"),
       contract_type: ["Apprentissage", "Professionnalisation"],

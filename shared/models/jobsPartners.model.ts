@@ -11,11 +11,11 @@ import { zOpcoLabel } from "./opco.model.js"
 const collectionName = "jobs_partners" as const
 
 export enum JOBPARTNERS_LABEL {
-  HELLOWORK = "Hello work",
+  HELLOWORK = "Hellowork",
   OFFRES_EMPLOI_LBA = "La bonne alternance",
   OFFRES_EMPLOI_FRANCE_TRAVAIL = "France Travail",
   RH_ALTERNANCE = "RH Alternance",
-  PASS = "Pass emploi",
+  PASS = "PASS",
 }
 
 export enum FILTER_JOBPARTNERS_LABEL {
