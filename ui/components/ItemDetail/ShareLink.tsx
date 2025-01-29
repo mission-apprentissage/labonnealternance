@@ -17,6 +17,7 @@ const ShareLink = ({ item }: { item: ILbaItemFormation | ILbaItemFtJob | ILbaIte
   const copyLink = (e) => {
     e.preventDefault()
 
+    //TODO ici
     const link =
       item.ideaType === LBA_ITEM_TYPE_OLD.LBA && !formValues?.location?.value
         ? `${window.location.origin}${window.location.pathname}?display=list&page=fiche&type=lba&itemId=${item.id}`
