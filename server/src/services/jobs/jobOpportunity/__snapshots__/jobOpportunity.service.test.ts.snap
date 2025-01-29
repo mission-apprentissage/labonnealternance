@@ -214,7 +214,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "identifier": {
       "id": "",
       "partner_job_id": "",
-      "partner_label": "Hello work",
+      "partner_label": "Hellowork",
     },
     "offer": {
       "access_conditions": [],
