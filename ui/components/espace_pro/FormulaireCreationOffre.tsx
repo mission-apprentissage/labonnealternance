@@ -47,13 +47,13 @@ const FR_DATE_FORMAT = "DD/MM/YYYY"
 
 const ChampNombre = ({ value, max, name, handleChange, label, dataTestId }) => {
   return (
-    <Flex align="center" data-testid={dataTestId}>
+    <Flex align="center" data-testid={dataTestId} gap={6}>
       <Text flexGrow={2}>{label}</Text>
       <Stack direction="row" align="center">
         <Button onClick={() => handleChange(name, value - 1)} isDisabled={value === 1} variant="secondary" data-testid="-">
           <Minus />
         </Button>
-        <Text minW="50px" my={3} textAlign="center" data-testid={`${dataTestId}-value`}>
+        <Text minW="24px" my={3} textAlign="center" data-testid={`${dataTestId}-value`}>
           {value}
         </Text>
         <Button onClick={() => handleChange(name, value + 1)} isDisabled={value === max} variant="secondary" data-testid="+">
@@ -180,14 +180,22 @@ const FormikCreationOffre = ({
                 }}
                 value={values.job_type}
                 defaultValue={["Apprentissage"]}
+                data-testid="offre-job-type"
               >
-                <Stack direction="row" spacing={5} data-testid="offre-job-type">
-                  {Object.values(TRAINING_CONTRACT_TYPE).map((label) => (
-                    <Checkbox key={label} value={label}>
-                      <span data-testid={label}>{label}</span>
-                    </Checkbox>
-                  ))}
-                </Stack>
+                {Object.values(TRAINING_CONTRACT_TYPE).map((label) => (
+                  <Checkbox
+                    key={label}
+                    value={label}
+                    sx={{
+                      ml: 5,
+                      "&:first": {
+                        ml: 0,
+                      },
+                    }}
+                  >
+                    <span data-testid={label}>{label}</span>
+                  </Checkbox>
+                ))}
               </CheckboxGroup>
             </FormControl>
             <FormControl mt={6} isRequired>
@@ -223,15 +231,15 @@ const FormikCreationOffre = ({
                 </Checkbox>
               </FormControl>
             )}
-            <FormControl mt={6}>
+            <FormControl mt={6} maxWidth={["400px", "400px", "400px", "450px"]}>
               <ChampNombre max={10} name="job_count" value={values.job_count} label="Nombre de poste(s) disponible(s)" handleChange={setFieldValue} dataTestId="offre-job-count" />
             </FormControl>
             {/* @ts-expect-error: TODO */}
-            <FormControl mt={6} isInvalid={errors.job_duration}>
+            <FormControl mt={6} isInvalid={errors.job_duration} maxWidth={["400px", "400px", "400px", "450px"]}>
               <Flex align="center">
                 <Text flexGrow={2}>Durée du contrat (mois)</Text>
                 <Input
-                  maxW="27%"
+                  maxWidth="128px"
                   name="job_duration"
                   value={values.job_duration}
                   onChange={(e) => (parseInt(e.target.value) > 0 ? setFieldValue("job_duration", parseInt(e.target.value)) : setFieldValue("job_duration", null))}
@@ -429,14 +437,14 @@ export const FormulaireCreationOffre = ({
   }
 
   return (
-    <SimpleGrid columns={[1, 1, 1, 2]} spacing={["35px", "35px", "35px", "75px"]}>
+    <SimpleGrid columns={[1, 1, 2, 2]} spacing={4}>
       <Box>
         {widget.isWidget && (
           <Text textTransform="uppercase" fontSize="20px" color="#666666">
             Dépot simplifié d'offre en alternance
           </Text>
         )}
-        <Heading>Votre offre</Heading>
+        <Heading className="big">Votre offre</Heading>
         <Box mt={4}>
           <FormikCreationOffre onRomeChange={onRomeChange} onSubmit={onSubmit} offre={offre} competencesDirty={competencesDirty} />
         </Box>

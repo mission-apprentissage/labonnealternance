@@ -2,12 +2,12 @@ import { Box, Flex, Grid, Heading, Image, Link, Text } from "@chakra-ui/react"
 
 import { InfoCircle } from "@/theme/components/icons"
 
+import { BorderedBox } from "../espace_pro/common/components/BorderedBox"
+
 export const InfosDiffusionOffre = () => {
   return (
-    <Box border="1px solid #000091" p={5}>
-      <Heading fontSize="24px" mb={6}>
-        Profitez d'une visibilité accrue
-      </Heading>
+    <BorderedBox>
+      <Heading mb={3}>Profitez d'une visibilité accrue</Heading>
       <Flex alignItems="flex-start" gap={1}>
         <Box as="span" fontSize="15px">
           <InfoCircle color="#000091" w="20px" h="20px" />
@@ -49,6 +49,6 @@ export const InfosDiffusionOffre = () => {
         <Image src="/images/logosPartenaires/minimal/parcoursup.svg" alt="" />
         <Image src="/images/logosPartenaires/minimal/france-travail.svg" alt="" padding="14px !important" />
       </Grid>
-    </Box>
+    </BorderedBox>
   )
 }

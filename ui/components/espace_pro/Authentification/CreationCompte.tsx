@@ -4,6 +4,7 @@ import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 
+import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
 import { searchEntreprise } from "@/services/searchEntreprises"
 import { ApiError } from "@/utils/api.utils"
 
@@ -11,10 +12,9 @@ import { AUTHTYPE } from "../../../common/contants"
 import { LogoContext } from "../../../context/contextLogo"
 import { WidgetContext } from "../../../context/contextWidget"
 import { getEntrepriseInformation, getEntrepriseOpco, validateCfaCreation } from "../../../utils/api"
-import { BandeauProps } from "../Bandeau"
-import { Section } from "../common/components/Section"
+import { Bandeau, BandeauProps } from "../Bandeau"
 import { InformationsSiret } from "../CreationRecruteur/InformationsSiret"
-import { AnimationContainer, AuthentificationLayout, Bandeau } from "../index"
+import { AnimationContainer, AuthentificationLayout } from "../index"
 
 import { SiretAutocomplete } from "./SiretAutocomplete"
 
@@ -81,6 +81,11 @@ const CreationCompteForm = ({
               const { reason } = errorData
               if (reason === BusinessErrorCodes.ALREADY_EXISTS) {
                 setFieldError("establishment_siret", "Ce numéro siret est déjà associé à un compte utilisateur.")
+                setBandeau({
+                  type: "error",
+                  header: "Ce numéro siret est déjà associé à un compte utilisateur.",
+                  description: "",
+                })
               } else if (reason === BusinessErrorCodes.NOT_QUALIOPI) {
                 setFieldError("establishment_siret", "L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi")
                 setBandeau({
@@ -187,24 +192,22 @@ export default function CreationCompte({ type, isWidget = false, origin = "lba" 
     <AuthentificationLayout>
       <AnimationContainer>
         {bandeau && <Bandeau {...bandeau} />}
-        <SimpleGrid columns={[1, 1, 1, 2]} spacing={[0, 0, 0, "75px"]} mt={wid.isWidget ? 0 : { base: 4, md: 12 }}>
-          <Box>
+        <SimpleGrid columns={[1, 1, 2, 2]} spacing={[0, 0, 4, 4]} mt={wid.isWidget ? 0 : { base: 4, md: 12 }}>
+          <Box mb={4}>
             {wid.isWidget && (
               <Text textTransform="uppercase" fontSize="20px" color="#666666">
                 Dépot simplifié d'offre en alternance
               </Text>
             )}
-            <Heading>Vous recrutez des alternants ?</Heading>
-            <Text fontSize="20px" textAlign="justify" mt={2} mb={4}>
+            <Heading className="big">Vous recrutez des alternants ?</Heading>
+            <Text className="big" mt={2} mb={4}>
               Précisez le nom ou le numéro de SIRET de votre établissement.
             </Text>
             <CreationCompteForm organisationType={organisationType} setBandeau={setBandeau} origin={origin} isWidget={isWidget} onSelectOrganisation={onSelectOrganisation} />
           </Box>
-          <Box mt={[4, 4, 4, 0]}>
-            <Section>
-              <InformationsSiret currentTab={selectedTab} onCurrentTabChange={setSelectedTab} />
-            </Section>
-          </Box>
+          <BorderedBox>
+            <InformationsSiret currentTab={selectedTab} onCurrentTabChange={setSelectedTab} />
+          </BorderedBox>
         </SimpleGrid>
       </AnimationContainer>
     </AuthentificationLayout>

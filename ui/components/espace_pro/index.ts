@@ -1,7 +1,6 @@
 import AdresseAutocomplete from "./AdresseAutocomplete"
 import AnimationContainer from "./AnimationContainer"
 import AuthentificationLayout from "./AuthentificationLayout"
-import Bandeau from "./Bandeau"
 import ConfirmationActivationUtilsateur from "./ConfirmationActivationUtilsateur"
 import ConfirmationDesactivationUtilisateur from "./ConfirmationDesactivationUtilisateur"
 import ConfirmationModificationOpco from "./ConfirmationModificationOpco"
@@ -24,7 +23,6 @@ export {
   AdresseAutocomplete,
   AnimationContainer,
   AuthentificationLayout,
-  Bandeau,
   ConfirmationActivationUtilsateur,
   ConfirmationDesactivationUtilisateur,
   ConfirmationModificationOpco,
