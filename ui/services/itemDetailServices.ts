@@ -50,7 +50,6 @@ export const getCloseAndSelectFunctions = ({
     pushHistory({
       router,
       scopeContext,
-      page: "list",
       display: "list",
       searchParameters: formValues,
       searchTimestamp: currentSearch,

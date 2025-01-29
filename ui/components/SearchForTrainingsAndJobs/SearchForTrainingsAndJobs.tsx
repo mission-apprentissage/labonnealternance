@@ -54,7 +54,6 @@ const SearchForTrainingsAndJobs = () => {
   const [trainingSearchError, setTrainingSearchError] = useState("")
 
   const router = useRouter()
-  // const path = router.pathname
 
   useEffect(() => {
     const handleRouteChange = (url) => {
@@ -87,7 +86,6 @@ const SearchForTrainingsAndJobs = () => {
       // provient du submit formulaire de la homepage
       setShouldExecuteSearch(false)
       executeSearch(formValues)
-      //setIsFormVisible(false)
     }
     /* eslint react-hooks/exhaustive-deps: 0 */
   }, [])

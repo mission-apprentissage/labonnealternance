@@ -94,7 +94,6 @@ const ChoiceColumn = ({
       searchParameters: formValues,
       searchTimestamp,
       displayMap,
-      //path,
     })
     setCurrentSearch(searchTimestamp)
     searchForJobs({ values: { ...formValues, radius: 20000 }, searchTimestamp })
@@ -125,7 +124,6 @@ const ChoiceColumn = ({
       searchParameters: formValues,
       searchTimestamp,
       displayMap,
-      // path,
     })
     setCurrentSearch(searchTimestamp)
 
