@@ -81,11 +81,6 @@ const CreationCompteForm = ({
               const { reason } = errorData
               if (reason === BusinessErrorCodes.ALREADY_EXISTS) {
                 setFieldError("establishment_siret", "Ce numéro siret est déjà associé à un compte utilisateur.")
-                setBandeau({
-                  type: "error",
-                  header: "Ce numéro siret est déjà associé à un compte utilisateur.",
-                  description: "",
-                })
               } else if (reason === BusinessErrorCodes.NOT_QUALIOPI) {
                 setFieldError("establishment_siret", "L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi")
                 setBandeau({
