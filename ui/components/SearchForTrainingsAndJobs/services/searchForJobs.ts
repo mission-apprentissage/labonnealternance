@@ -1,4 +1,5 @@
 import axios from "axios"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { factorInternalJobsForMap, layerType, setJobMarkers } from "@/utils/mapTools"
 
@@ -14,6 +15,8 @@ export const searchForJobsFunction = async ({
   setJobSearchError,
   scopeContext,
   widgetParameters = undefined,
+  followUpItem = undefined,
+  selectFollowUpItem = undefined,
   opcoFilter = undefined,
   opcoUrlFilter = undefined,
   showCombinedJob = undefined,
@@ -71,6 +74,15 @@ export const searchForJobsFunction = async ({
 
       if (!showCombinedJob && results.matchas?.length) {
         results.matchas = results.matchas.filter((matcha) => !matcha.company.mandataire)
+      }
+
+      if (followUpItem && LBA_ITEM_TYPE_OLD.FORMATION !== followUpItem.parameters.type) {
+        selectFollowUpItem({
+          itemId: followUpItem.parameters.itemId,
+          type: followUpItem.parameters.type,
+          jobs: results,
+          formValues: values,
+        })
       }
     }
 

@@ -81,6 +81,36 @@ export const getWidgetParameters = () => {
   return widgetParameters
 }
 
+export const getItemParameters = () => {
+  const itemParameters = { parameters: null, mode: null, applyItemParameters: false }
+
+  if (getValueFromPath("itemId")) {
+    let parameters: {
+      itemId?: string
+      type?: string
+    } = {}
+    let applyItemParameters = true
+
+    parameters = {
+      itemId: getValueFromPath("itemId"),
+      type: undefined,
+    }
+
+    const p = getValueFromPath("type")
+    if (p) parameters.type = p
+    else applyItemParameters = false
+
+    itemParameters.parameters = parameters
+    itemParameters.applyItemParameters = applyItemParameters
+  }
+
+  if (getValueFromPath("mode")) {
+    itemParameters.mode = "debug"
+  }
+
+  return itemParameters
+}
+
 export const getOpcoFilter = ({ parameterContext }) => {
   const opcoFilter = getValueFromPath("opco")
   const opcoUrlFilter = getValueFromPath("opcoUrl")
@@ -146,6 +176,11 @@ export const initParametersFromQuery = ({ router, parameterContext }) => {
   getOpcoFilter({ parameterContext })
   setDisplayMap({ parameterContext })
   setShowCombinedJob({ router, parameterContext })
+
+  const itemParameters = getItemParameters()
+  if (itemParameters && (itemParameters.applyItemParameters || itemParameters.mode)) {
+    parameterContext.setItemParameters(itemParameters)
+  }
 }
 
 type QueryParameterType = "matcha" | "lbb" | "lba"

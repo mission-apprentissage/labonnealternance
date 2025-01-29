@@ -16,6 +16,8 @@ export const searchForTrainingsFunction = async ({
   setTrainingMarkers,
   factorTrainingsForMap,
   widgetParameters,
+  followUpItem,
+  selectFollowUpItem,
   searchResultContext,
 }) => {
   setIsTrainingSearchLoading(true)
@@ -56,6 +58,15 @@ export const searchForTrainingsFunction = async ({
         options: {
           centerMapOnTraining: hasLocation,
         },
+      })
+    }
+
+    if (followUpItem?.parameters.type === "training") {
+      selectFollowUpItem({
+        itemId: followUpItem.parameters.itemId,
+        type: followUpItem.parameters.type,
+        trainings: response.results,
+        formValues: values,
       })
     }
   } catch (err) {
