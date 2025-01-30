@@ -106,13 +106,17 @@ const ResultLists = ({
     }
   }
 
+  //consolidatedItemList = consolidatedItemList.slice(0, 10)
+
   const columnVirtualizer = useVirtualizer({
-    horizontal: true,
     count: consolidatedItemList.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 220,
-    overscan: 5,
   })
+
+  const virtualItems = columnVirtualizer.getVirtualItems()
+
+  console.log("virtualItems", virtualItems)
 
   return (
     <Flex direction="column" height={selectedItem ? "0%" : "100%"} display={isFormVisible ? "none" : "flex"}>
@@ -165,7 +169,7 @@ const ResultLists = ({
       >
         <Box
           style={{
-            height: `${columnVirtualizer.getTotalSize()}px`,
+            height: "100vh",
           }}
           margin="auto"
           maxWidth="1310px"
@@ -182,9 +186,11 @@ const ResultLists = ({
             </Box>
           )}
 
-          {hasSearch && consolidatedItemList.length && (
+          {hasSearch && virtualItems.length && (
             <Box bg="beige" id="trainingResult">
-              {consolidatedItemList.map((item, idx) => {
+              {virtualItems.map((virtualRow, idx) => {
+                const item = consolidatedItemList[virtualRow.index]
+
                 switch (item.ideaType) {
                   case LBA_ITEM_TYPE_OLD.LBA:
                     return <RecruteurLba key={idx} company={item} handleSelectItem={handleSelectItem} searchForTrainingsOnNewCenter={searchForTrainingsOnNewCenter} />
@@ -203,7 +209,6 @@ const ResultLists = ({
             </Box>
           )}
 
-          {/*getJobResult()*/}
           <ListFooter handleExtendedSearch={handleExtendedSearch} isJobSearchLoading={isJobSearchLoading} isPartnerJobSearchLoading={isPartnerJobSearchLoading} />
         </Box>
       </Box>
