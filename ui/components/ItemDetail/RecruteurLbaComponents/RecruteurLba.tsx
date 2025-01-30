@@ -1,7 +1,7 @@
 import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
 import React, { useState } from "react"
-import { buildJobUrl } from "shared"
 import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
+import { buildJobUrl } from "shared/metier/lbaitemutils"
 
 import { focusWithin } from "@/theme/theme-lba-tools"
 

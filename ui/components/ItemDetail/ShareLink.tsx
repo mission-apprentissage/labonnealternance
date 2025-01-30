@@ -1,7 +1,8 @@
 import { Button, Image, Text } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
-import { buildJobUrl, buildTrainingUrl, ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
+import { ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
 import { LBA_ITEM_TYPE_OLD, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
+import { buildJobUrl, buildTrainingUrl } from "shared/metier/lbaitemutils"
 
 const getPath = (item) => {
   return item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION ? buildTrainingUrl(item.id, item.title) : buildJobUrl(oldItemTypeToNewItemType(item.ideaType), item.id, item.title)
