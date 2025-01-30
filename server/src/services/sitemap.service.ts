@@ -33,7 +33,7 @@ const generateSitemapXml = async () => {
       const { job_update_date, _id, rome_label, rome_appellation_label } = job
       const lastMod = job_update_date && dayjs(updatedAt).isBefore(job_update_date) ? job_update_date : updatedAt
       const jobTitle = rome_appellation_label ?? rome_label
-      const url = `${config.publicUrl}${buildJobUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, _id, jobTitle)}`
+      const url = `${config.publicUrl}${buildJobUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, _id.toString(), jobTitle!)}`
       return {
         loc: url,
         lastmod: lastMod,
