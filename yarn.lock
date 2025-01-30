@@ -16152,7 +16152,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb@npm:^6.7.0":
+"mongodb@npm:^6.12.0, mongodb@npm:^6.7.0":
   version: 6.12.0
   resolution: "mongodb@npm:6.12.0"
   dependencies:
@@ -20116,7 +20116,7 @@ __metadata:
     axios: ^1.7.4
     axios-cache-interceptor: ^1.5.3
     basic-ftp: ^5.0.3
-    bson: ^6.7.0
+    bson: ^6.10.1
     bunyan: ^1.8.15
     bunyan-slack: ^0.0.10
     burner-email-providers: ^1.0.67
@@ -20156,7 +20156,7 @@ __metadata:
     memoizee: ^0.4.15
     miniget: ^4.2.3
     mjml: ^4.14.1
-    mongodb: ^6.7.0
+    mongodb: ^6.12.0
     netmask: ^2.0.2
     nock: beta
     nodemailer: ^6.9.5
