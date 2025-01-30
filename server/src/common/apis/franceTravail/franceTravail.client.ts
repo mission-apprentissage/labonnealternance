@@ -36,7 +36,7 @@ const getFranceTravailTokenFromDB = async (access_type: IAccessParams): Promise<
   return data?.access_token
 }
 const updateFranceTravailTokenInDB = async ({ access_type, access_token }: { access_type: IFranceTravailAccessType; access_token: string }) =>
-  await getDbCollection("francetravail_access").findOneAndUpdate(
+  await getDbCollection("francetravail_access").updateOne(
     { access_type },
     { $set: { access_token }, $setOnInsert: { _id: new ObjectId(), created_at: new Date() } },
     { upsert: true }
@@ -72,12 +72,12 @@ export const getFranceTravailTokenFromAPI = async (access: IAccessParams): Promi
   try {
     logger.info(`requesting new FT token for access=${access}`)
     const tokenParams = ACCESS_PARAMS[access]
-    const response = await axiosClient.post(`${config.franceTravailIO.authUrl}?realm=partenaire`, tokenParams, {
+    const { data } = await axiosClient.post(`${config.franceTravailIO.authUrl}?realm=partenaire`, tokenParams, {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       timeout: 3000,
     })
 
-    const validation = ZFTApiToken.safeParse(response.data)
+    const validation = ZFTApiToken.safeParse(data)
     if (!validation.success) {
       throw internal("inattendu: FT api token format non valide", { error: validation.error })
     }
