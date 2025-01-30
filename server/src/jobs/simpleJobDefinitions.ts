@@ -19,6 +19,7 @@ import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromCo
 import { importKelio } from "./offrePartenaire/kelio/importKelio"
 import { importPassRaw, importPassToComputed } from "./offrePartenaire/pass/importPass"
 import { processJobPartners } from "./offrePartenaire/processJobPartners"
+import { rankJobPartners } from "./offrePartenaire/rankJobPartners"
 import { importRHAlternanceRaw, importRHAlternanceToComputed } from "./offrePartenaire/rh-alternance/importRHAlternance"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -233,5 +234,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: resetInvitationDates,
     description: "Permet de réinitialiser les dates d'invitation et de refus des établissements pour la prise de rendez-vous",
+  },
+  {
+    fct: rankJobPartners,
+    description: "Calcule le rank des computed job partners",
   },
 ]

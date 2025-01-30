@@ -14,6 +14,7 @@ export enum COMPUTED_ERROR_SOURCE {
   API_ADRESSE = "api_adresse",
   API_ROMEO = "api_romeo",
   VALIDATION = "validation",
+  RANKING = "RANKING",
 }
 
 export enum JOB_PARTNER_BUSINESS_ERROR {

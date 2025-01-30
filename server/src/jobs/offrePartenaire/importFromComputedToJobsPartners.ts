@@ -24,7 +24,7 @@ export const importFromComputedToJobsPartners = async () => {
     async transform(computedJobPartner: Omit<IJobsPartnersOfferPrivate, "_id" | "created_at">, encoding, callback: (error?: Error | null, data?: any) => void) {
       try {
         counters.total++
-        const partnerJobToUpsert = {
+        const partnerJobToUpsert: Partial<IJobsPartnersOfferPrivate> = {
           partner_label: computedJobPartner.partner_label,
           partner_job_id: computedJobPartner.partner_job_id,
           contract_start: computedJobPartner.contract_start ?? null,
@@ -63,6 +63,7 @@ export const importFromComputedToJobsPartners = async () => {
           apply_email: computedJobPartner.apply_email ?? null,
           offer_multicast: computedJobPartner.offer_multicast ?? true,
           offer_origin: computedJobPartner.offer_origin ?? null,
+          rank: computedJobPartner.rank ?? null,
         }
 
         await getDbCollection("jobs_partners").updateOne(

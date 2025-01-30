@@ -27,18 +27,20 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
   filledFields,
   getData,
   groupSize,
+  sourceFilter,
 }: {
   job: COMPUTED_ERROR_SOURCE
   sourceFields: readonly SourceFields[]
   filledFields: readonly FilledFields[]
   getData: (sourceFields: Pick<IComputedJobsPartners, SourceFields | FilledFields | "_id">[]) => Promise<Array<Pick<IComputedJobsPartners, FilledFields | "_id">>>
   groupSize: number
+  sourceFilter?: Filter<IComputedJobsPartners>
 }) => {
   const logger = globalLogger.child({
     job,
   })
   logger.info(`job ${job} : début d'enrichissement des données`)
-  const queryFilter: Filter<IComputedJobsPartners> = {
+  const queryFilter: Filter<IComputedJobsPartners> = sourceFilter ?? {
     $and: [
       {
         $or: sourceFields.map((field) => ({ [field]: { $ne: null } })),
