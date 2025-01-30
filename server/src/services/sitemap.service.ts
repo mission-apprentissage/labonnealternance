@@ -1,10 +1,9 @@
 import { ObjectId } from "mongodb"
-import { paramCase } from "param-case"
 import { RECRUITER_STATUS } from "shared/constants"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { IJob, IRecruiter, JOB_STATUS } from "shared/models"
 import { ISitemap } from "shared/models/sitemap.model"
-import { hashcode } from "shared/utils"
+import { buildJobUrl, hashcode } from "shared/utils"
 import { generateSitemapFromUrlEntries } from "shared/utils/sitemapUtils"
 
 import { logger } from "@/common/logger"
@@ -34,7 +33,7 @@ const generateSitemapXml = async () => {
       const { job_update_date, _id, rome_label, rome_appellation_label } = job
       const lastMod = job_update_date && dayjs(updatedAt).isBefore(job_update_date) ? job_update_date : updatedAt
       const jobTitle = rome_appellation_label ?? rome_label
-      const url = `${config.publicUrl}/emploi/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${_id}/${paramCase(jobTitle)}`
+      const url = `${config.publicUrl}${buildJobUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, _id, jobTitle)}`
       return {
         loc: url,
         lastmod: lastMod,

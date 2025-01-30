@@ -1,6 +1,6 @@
 import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
-import { paramCase } from "param-case"
 import React, { useState } from "react"
+import { buildJobUrl } from "shared"
 import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 
 import { focusWithin } from "@/theme/theme-lba-tools"
@@ -90,7 +90,7 @@ const RecruteurLba = ({ company, handleSelectItem, showTextOnly = undefined, sea
     }
   }
 
-  const actualLink = `/emploi/${oldItemTypeToNewItemType(company.ideaType)}/${company.id}/${paramCase(company.title)}?&${getSearchQueryParameters(formValues)}`
+  const actualLink = `${buildJobUrl(oldItemTypeToNewItemType(company.ideaType), company.id, company.title)}?${getSearchQueryParameters(formValues)}`
 
   const cardProperties = {
     display: "block",

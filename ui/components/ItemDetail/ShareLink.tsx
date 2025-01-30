@@ -1,13 +1,10 @@
 import { Button, Image, Text } from "@chakra-ui/react"
-import { paramCase } from "param-case"
 import { useEffect, useState } from "react"
-import { ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
+import { buildJobUrl, buildTrainingUrl, ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
 import { LBA_ITEM_TYPE_OLD, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 
 const getPath = (item) => {
-  return item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION
-    ? `/formation/${encodeURIComponent(item.id)}/${paramCase(item.title)}`
-    : `/emploi/${oldItemTypeToNewItemType(item.ideaType)}/${item.id}/${paramCase(item.title)}`
+  return item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION ? buildTrainingUrl(item.id, item.title) : buildJobUrl(oldItemTypeToNewItemType(item.ideaType), item.id, item.title)
 }
 
 const ShareLink = ({ item }: { item: ILbaItemFormation | ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob }) => {

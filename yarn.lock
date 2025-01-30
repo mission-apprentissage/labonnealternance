@@ -7890,6 +7890,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"change-case@npm:5.4.4":
+  version: 5.4.4
+  resolution: "change-case@npm:5.4.4"
+  checksum: a22a25a763719658424ffbcd41e931d2d19cc22399cc765dca447fbe1eaf13e179d5e8ab1677af75f2e814dbddf74e42ffdecb526cd5bc906cc859f62aa154b2
+  languageName: node
+  linkType: hard
+
 "character-entities-legacy@npm:^1.0.0":
   version: 1.1.4
   resolution: "character-entities-legacy@npm:1.1.4"
@@ -20171,7 +20178,6 @@ __metadata:
     oleoduc: ^0.7.0
     openai: ^4.78.1
     openapi-types: ^12.1.3
-    param-case: ^4.0.0
     pino-pretty: ^10.2.0
     pretty-ms: ^7.0.1
     rate-limiter-flexible: ^2.4.2
@@ -20270,6 +20276,7 @@ __metadata:
     "@tsconfig/node20": ^20.1.4
     "@types/node": ^22.10.10
     bson: ^6.7.0
+    change-case: 5.4.4
     dayjs: ^1.11.13
     eslint-plugin-zod: ^1.4.0
     i18next: ^24.0.5
@@ -20278,7 +20285,6 @@ __metadata:
     luhn: ^2.4.1
     mongodb: ^6.7.0
     openapi3-ts: ^4.4.0
-    param-case: ^4.0.0
     type-fest: ^4.26.0
     typescript: ^5.4.5
     zod: 3.23.8
@@ -22172,7 +22178,6 @@ __metadata:
     next-seo: ^4.29.0
     nock: ^14.0.0-beta.11
     notion-client: 6.16.0
-    param-case: ^4.0.0
     react: latest
     react-csv: ^2.2.2
     react-dates: ^21.8.0

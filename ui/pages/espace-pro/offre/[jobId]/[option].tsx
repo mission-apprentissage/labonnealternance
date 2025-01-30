@@ -1,7 +1,7 @@
 import { Box, Container, Flex, Image, Link, Spinner, Text } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
-import { getDirectJobPath } from "shared/constants/lbaitem"
+import { getDirectJobPath } from "shared"
 
 import Footer from "@/components/footer"
 import Navigation from "@/components/navigation"

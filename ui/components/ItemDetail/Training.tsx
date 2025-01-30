@@ -1,6 +1,6 @@
 import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
-import { paramCase } from "param-case"
 import React, { useContext, useState } from "react"
+import { buildTrainingUrl } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { focusWithin } from "@/theme/theme-lba-tools"
@@ -94,7 +94,7 @@ const Training = ({ training, handleSelectItem, showTextOnly = undefined, search
     }
   }
 
-  const actualLink = `/formation/${training.id}/${paramCase(training.title)}?&${getSearchQueryParameters(formValues)}`
+  const actualLink = `${buildTrainingUrl(training.id, training.title)}?${getSearchQueryParameters(formValues)}`
 
   const cardProperties = {
     display: "block",
