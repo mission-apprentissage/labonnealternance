@@ -7426,7 +7426,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bson@npm:^6.10.1, bson@npm:^6.7.0":
+"bson@npm:^6.10.1":
   version: 6.10.1
   resolution: "bson@npm:6.10.1"
   checksum: 7c85c8df309bbfd4d42fae54aa37112ee048a89457be908a0e53a01d077d548c94a5a6870dd725ef48130da935286edc8b9ce04830869446db22b8c13a370c42
@@ -16152,7 +16152,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb@npm:^6.7.0":
+"mongodb@npm:^6.12.0":
   version: 6.12.0
   resolution: "mongodb@npm:6.12.0"
   dependencies:
@@ -20116,7 +20116,7 @@ __metadata:
     axios: ^1.7.4
     axios-cache-interceptor: ^1.5.3
     basic-ftp: ^5.0.3
-    bson: ^6.7.0
+    bson: ^6.10.1
     bunyan: ^1.8.15
     bunyan-slack: ^0.0.10
     burner-email-providers: ^1.0.67
@@ -20156,7 +20156,7 @@ __metadata:
     memoizee: ^0.4.15
     miniget: ^4.2.3
     mjml: ^4.14.1
-    mongodb: ^6.7.0
+    mongodb: ^6.12.0
     netmask: ^2.0.2
     nock: beta
     nodemailer: ^6.9.5
@@ -20261,14 +20261,14 @@ __metadata:
     "@fastify/swagger": ^8.15.0
     "@tsconfig/node20": ^20.1.4
     "@types/node": ^22.10.10
-    bson: ^6.7.0
+    bson: ^6.10.1
     dayjs: ^1.11.13
     eslint-plugin-zod: ^1.4.0
     i18next: ^24.0.5
     libphonenumber-js: ^1.11.7
     lodash-es: ^4.17.21
     luhn: ^2.4.1
-    mongodb: ^6.7.0
+    mongodb: ^6.12.0
     openapi3-ts: ^4.4.0
     type-fest: ^4.26.0
     typescript: ^5.4.5
