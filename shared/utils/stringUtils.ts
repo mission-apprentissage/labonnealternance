@@ -1,7 +1,5 @@
 import { kebabCase } from "change-case"
 
-import { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
-
 export const removeAccents = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
 export const removeRegexChars = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "")
 
@@ -22,13 +20,4 @@ export const hashcode = (str: string) => {
   return hash
 }
 
-export const buildJobUrl = (type: LBA_ITEM_TYPE, id: string, title: string) => {
-  return `/emploi/${type}/${encodeURIComponent(id)}/${kebabCase(title)}`
-}
-
-export const buildTrainingUrl = (id: string, title: string) => {
-  return `/formation/${encodeURIComponent(id)}/${kebabCase(title)}`
-}
-
-// TODO: ajuster de sorte à n'avoir que des appels avec jobTitle
-export const getDirectJobPath = (jobId: string, jobTitle = "offre") => buildJobUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, jobId, jobTitle)
+export const toKebabCase = (str: string) => kebabCase(str)
