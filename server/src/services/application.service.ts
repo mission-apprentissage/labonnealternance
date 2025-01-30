@@ -19,13 +19,13 @@ import {
   IRecruiter,
   JOB_STATUS,
   assertUnreachable,
-  getDirectJobPath,
 } from "shared"
 import { ApplicationIntention, ApplicationIntentionDefaultText, RefusalReasons } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
+import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { IRecruiterIntentionMail } from "shared/models/recruiterIntentionMail.model"
 import { ITrackingCookies } from "shared/models/trafficSources.model"
