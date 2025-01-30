@@ -156,6 +156,20 @@ const nextConfig = {
       },
     ]
   },
+  async redirects() {
+    return [
+      {
+        source: "/recherche-apprentissage",
+        destination: "/recherche",
+        permanent: true,
+      },
+      {
+        source: "/recherche-apprentissage-formation",
+        destination: "/recherche-formation",
+        permanent: true,
+      },
+    ]
+  },
 }
 
 const sentryConfig = {
