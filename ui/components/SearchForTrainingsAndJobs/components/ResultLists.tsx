@@ -140,6 +140,7 @@ const ResultLists = ({
     count: consolidatedItemList.length + 1,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 220,
+    overscan: 5,
   })
 
   const virtualItems = columnVirtualizer.getVirtualItems()
@@ -191,13 +192,14 @@ const ResultLists = ({
         width="100%"
         height="100vh"
         // overflow="auto"
+        overflow="hidden"
         id="resultList"
         display={shouldShowWelcomeMessage || selectedItem ? "none" : ""}
         bg="beige"
       >
         <Box
           style={{
-            height: "100vh",
+            height: "100%",
             overflow: "auto",
           }}
           width="100%"
@@ -233,16 +235,14 @@ const ResultLists = ({
                       {!lastRow ? (
                         <Box
                           key={virtualRow.key}
-                          my={6}
                           style={{
                             position: "absolute",
                             top: 0,
                             left: 0,
                             width: "100%",
-                            height: `${virtualRow.size}px`,
+                            height: `${virtualRow.size - 20}px`,
                             transform: `translateY(${virtualRow.start}px)`,
-                            marginTop: "12px",
-                            marginBottom: "12px",
+                            marginBottom: "20px",
                           }}
                         >
                           <ItemElement
@@ -257,7 +257,6 @@ const ResultLists = ({
                       ) : (
                         <Box
                           key={virtualRow.key}
-                          my={6}
                           style={{
                             position: "absolute",
                             top: 0,
@@ -265,8 +264,6 @@ const ResultLists = ({
                             width: "100%",
                             height: `130px`,
                             transform: `translateY(${virtualRow.start}px)`,
-                            marginTop: "12px",
-                            marginBottom: "12px",
                           }}
                         >
                           <ListFooter handleExtendedSearch={handleExtendedSearch} isJobSearchLoading={isJobSearchLoading} isPartnerJobSearchLoading={isPartnerJobSearchLoading} />
