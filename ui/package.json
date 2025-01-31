@@ -5,15 +5,18 @@
   "author": "Mission apprentissage",
   "repository": "https://github.com/mission-apprentissage/labonnealternance.git",
   "scripts": {
-    "dev": "SENTRY_SUPPRESS_GLOBAL_ERROR_HANDLER_FILE_WARNING=1 next dev",
-    "build": "SENTRY_SUPPRESS_GLOBAL_ERROR_HANDLER_FILE_WARNING=1 next build --no-lint",
+    "dev": "yarn predev && SENTRY_SUPPRESS_GLOBAL_ERROR_HANDLER_FILE_WARNING=1 next dev",
+    "build": "yarn prebuild && SENTRY_SUPPRESS_GLOBAL_ERROR_HANDLER_FILE_WARNING=1 next build --no-lint",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "analyse": "ANALYZE=true yarn build"
+    "analyse": "ANALYZE=true yarn build",
+    "predev": "react-dsfr update-icons",
+    "prebuild": "react-dsfr update-icons"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.8.1",
+    "@codegouvfr/react-dsfr": "^1.17.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@sentry/browser": "^8.48.0",
@@ -35,7 +38,7 @@
     "mapbox-gl": "^2.15.0",
     "markdown-it": "^12.0.4",
     "match-sorter": "^8.0.0",
-    "next": "latest",
+    "next": "^15.1.6",
     "next-images": "1.8.5",
     "next-plausible": "^3.11.1",
     "next-recompose-plugins": "^3.0.0",
@@ -44,7 +47,7 @@
     "react": "latest",
     "react-csv": "^2.2.2",
     "react-dates": "^21.8.0",
-    "react-dom": "latest",
+    "react-dom": "^19.0.0",
     "react-dropzone": "^11.4.2",
     "react-hooks-global-state": "^2.1.0",
     "react-html-parser": "^2.0.2",
@@ -69,6 +72,7 @@
     "eslint": "^8.50.0",
     "eslint-config-next": "latest",
     "nock": "^14.0.0-beta.11",
+    "sass": "^1.83.4",
     "type-fest": "^4.18.2",
     "typescript": "^5.4.5"
   }

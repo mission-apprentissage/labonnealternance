@@ -90,6 +90,12 @@ const nextConfig = {
     ],
   },
   webpack: (config, { isServer, dev }) => {
+    // Required for DSFR
+    config.module.rules.push({
+      test: /\.woff2$/,
+      type: "asset/resource",
+    })
+
     if (!isServer && !dev) {
       // To optmize homepage loading, would be deleted when switching to App router
       config.optimization.splitChunks.cacheGroups.priorityChunks = {
@@ -123,6 +129,7 @@ const nextConfig = {
       ".mjs": [".mts", ".mjs"],
       ".cjs": [".cts", ".cjs"],
     }
+
     return config
   },
   async headers() {
