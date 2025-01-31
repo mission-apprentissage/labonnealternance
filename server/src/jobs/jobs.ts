@@ -50,6 +50,7 @@ import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndForm
 import { cancelOfferJob } from "./recruiters/cancelOfferJob"
 import { createApiUser } from "./recruiters/createApiUser"
 import { disableApiUser } from "./recruiters/disableApiUser"
+import { opcoReminderJob } from "./recruiters/opcoReminderJob"
 import { recruiterOfferExpirationReminderJob } from "./recruiters/recruiterOfferExpirationReminderJob"
 import { removeDuplicateRecruiters } from "./recruiters/removeDuplicatesRecruiters"
 import { resetApiKey } from "./recruiters/resetApiKey"
@@ -111,6 +112,10 @@ export async function setupJobProcessor() {
           //   cron_string: "25 0 * * *",
           //   handler: () => addJob({ name: "formulaire:relance", payload: { threshold: "1" } }),
           // },
+          "Envoi du rappel de validation des utilisateurs en attente aux OPCOs": {
+            cron_string: "30 0 * * 1,3,5",
+            handler: opcoReminderJob,
+          },
           "Active tous les établissements qui ont souscrits à l'opt-out": {
             cron_string: "50 0 * * *",
             handler: activateOptoutOnEtablissementAndUpdateReferrersOnETFA,
