@@ -1,0 +1,76 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`POST /etablissement/creation > Création d'entreprise > Vérifie que le recruteur est créé avec une offre 1`] = `
+{
+  "address": "20 AVENUE DE SEGUR 75007 PARIS",
+  "address_detail": {
+    "acheminement_postal": {
+      "l1": "DIRECTION INTERMINISTERIELLE DU NUMERIQUE",
+      "l2": "",
+      "l3": "",
+      "l4": "20 AVENUE DE SEGUR",
+      "l5": "",
+      "l6": "75007 PARIS",
+      "l7": "FRANCE",
+    },
+    "code_cedex": null,
+    "code_commune": "75107",
+    "code_pays_etranger": null,
+    "code_postal": "75007",
+    "complement_adresse": null,
+    "distribution_speciale": null,
+    "indice_repetition_voie": null,
+    "libelle_cedex": null,
+    "libelle_commune": "PARIS",
+    "libelle_commune_etranger": null,
+    "libelle_pays_etranger": null,
+    "libelle_voie": "DE SEGUR",
+    "numero_voie": "20",
+    "status_diffusion": "diffusible",
+    "type_voie": "AVENUE",
+  },
+  "email": "email@email.com",
+  "establishment_enseigne": null,
+  "establishment_raison_sociale": "DIRECTION INTERMINISTERIELLE DU NUMERIQUE",
+  "establishment_siret": "42476141900045",
+  "first_name": "John",
+  "geo_coordinates": "48.850699,2.308628",
+  "geopoint": {
+    "coordinates": [
+      2.308628,
+      48.850699,
+    ],
+    "type": "Point",
+  },
+  "idcc": 3248,
+  "is_delegated": false,
+  "jobs": [],
+  "last_name": "Doe",
+  "naf_code": "84.11Z",
+  "naf_label": "Administration publique générale",
+  "opco": "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
+  "origin": "lba",
+  "phone": "0612345678",
+  "status": "Actif",
+}
+`;
+
+exports[`POST /etablissement/creation > Création d'entreprise > Vérifie que le recruteur est créé avec une offre 2`] = `
+{
+  "email": "email@email.com",
+  "first_name": "John",
+  "last_name": "Doe",
+  "origin": "lba",
+  "phone": "0612345678",
+}
+`;
+
+exports[`POST /etablissement/creation > Création de CFA > Vérifie que le CFA est créé 1`] = `
+{
+  "email": "email@email.com",
+  "first_name": "John",
+  "last_name": "Doe",
+  "origin": "lba",
+  "phone": "0612345678",
+}
+`;
