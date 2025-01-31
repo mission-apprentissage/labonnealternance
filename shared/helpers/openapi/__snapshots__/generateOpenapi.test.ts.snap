@@ -147,7 +147,10 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "description": "Le numéro de SIRET de l'établissement",
             "example": "78424186100011",
             "pattern": "^\\d{14}$",
-            "type": "string",
+            "type": [
+              "string",
+              "null",
+            ],
           },
           "company_type": {
             "description": "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
