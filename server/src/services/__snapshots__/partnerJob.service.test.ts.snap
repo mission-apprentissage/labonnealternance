@@ -66,7 +66,7 @@ exports[`partnerJob.service > should execute query with full data 1`] = `
       ],
       "target_diploma_level": null,
       "title": "Une super offre d'alternance",
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGl0eSI6eyJ0eXBlIjoiYXBwbGljYXRpb24iLCJqb2JJZCI6IjY3NTIwOWU3MDQzNzdiZTNkNDM3YmJiOSIsImVtYWlsIjoiIn0sInNjb3BlcyI6W3sib3B0aW9ucyI6e30sInBhdGgiOiIvdjIvX3ByaXZhdGUvYXBwbGljYXRpb24iLCJtZXRob2QiOiJwb3N0In1dLCJpYXQiOjE3MzgzMzg0OTgsImV4cCI6MTczODQyNDg5OCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDozMDAwIn0.1yxJothY1vncEQrtWf0p2-UrcSSf6wNpfZCDcoUgHhw",
+      "token": "",
     },
   ],
 }
@@ -169,7 +169,7 @@ exports[`partnerJob.service > should find offer by id 1`] = `
       ],
       "target_diploma_level": null,
       "title": "Une super offre d'alternance",
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGl0eSI6eyJ0eXBlIjoiYXBwbGljYXRpb24iLCJqb2JJZCI6IjY3NTIwYjhkYjA0ZDFlZjRmZjc5ZTFlNSIsImVtYWlsIjoiIn0sInNjb3BlcyI6W3sib3B0aW9ucyI6e30sInBhdGgiOiIvdjIvX3ByaXZhdGUvYXBwbGljYXRpb24iLCJtZXRob2QiOiJwb3N0In1dLCJpYXQiOjE3MzgzMzg0OTgsImV4cCI6MTczODQyNDg5OCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDozMDAwIn0.HnGGVugUpXH1tRc6pPPqr0aKjuFGlnz3y4MvCm-pRZA",
+      "token": "",
     },
   ],
 }
