@@ -94,7 +94,7 @@ const ResultLists = ({
   isTrainingSearchLoading,
   jobSearchError,
   searchForJobsOnNewCenter,
-  //searchRadius,
+  searchRadius,
   selectedItem,
   searchForTrainingsOnNewCenter,
   shouldShowWelcomeMessage,
@@ -179,6 +179,18 @@ const ResultLists = ({
               {((jobSearchError && !partnerJobSearchError) || (!jobSearchError && partnerJobSearchError)) && <ErrorMessage message={jobSearchError || partnerJobSearchError} />}
             </>
           )}
+
+          {!isTrainingSearchLoading && shouldDisplayTrainings && trainings?.length === 0 && (
+            <Box mx={6} textAlign="center" my={2} fontWeight={700}>
+              Aucune formation en alternance disponible pour ce métier
+            </Box>
+          )}
+          {shouldDisplayTrainings && trainings?.length && searchRadius < trainings[0].place.distance && (
+            <Box fontWeight={700} textAlign="center" mx={4} my={2}>
+              Aucune formation ne correspondait à votre zone de recherche, nous avons trouvé les plus proches
+            </Box>
+          )}
+
           {
             // blocs de textes d'infos / erreur
             !isTrainingSearchLoading && shouldDisplayTrainings && !(trainings instanceof Array) && <ErrorMessage message="Problème momentané d'accès aux offres de formation" />
@@ -191,7 +203,6 @@ const ResultLists = ({
         pr={{ xl: "25px", "2xl": "50px" }}
         width="100%"
         height="100vh"
-        // overflow="auto"
         overflow="hidden"
         id="resultList"
         display={shouldShowWelcomeMessage || selectedItem ? "none" : ""}
@@ -208,17 +219,6 @@ const ResultLists = ({
           pb={10}
           ref={parentRef}
         >
-          {/* {!isTrainingSearchLoading && shouldDisplayTrainings && trainings?.length === 0 && (
-            <Box mx={6} textAlign="center" my={4} fontWeight={700}>
-              Aucune formation en alternance disponible pour ce métier
-            </Box>
-          )}
-          {shouldDisplayTrainings && trainings?.length && searchRadius < trainings[0].place.distance && (
-            <Box fontWeight={700} textAlign="center" ml={4} px={4} py={4}>
-              Aucune formation ne correspondait à votre zone de recherche, nous avons trouvé les plus proches
-            </Box>
-          )} */}
-
           {virtualItems.length && (
             <Box
               sx={{
