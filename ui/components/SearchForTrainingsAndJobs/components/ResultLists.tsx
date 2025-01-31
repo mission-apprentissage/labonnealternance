@@ -1,7 +1,7 @@
 import { Box, Flex } from "@chakra-ui/react"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { useContext, useRef } from "react"
-import { ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
+import { assertUnreachable, ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { ErrorMessage, Job, RecruteurLba, Training } from "../.."
@@ -56,6 +56,34 @@ const ListFooter = ({ handleExtendedSearch, isJobSearchLoading, isPartnerJobSear
     )
   }
   return <></>
+}
+
+const ItemElement = ({ virtualRow, consolidatedItemList, handleSelectItem, searchForTrainingsOnNewCenter, searchForJobsOnNewCenter, columnVirtualizer }) => {
+  const item = consolidatedItemList[virtualRow.index]
+  let itemElement = null
+  switch (item.ideaType) {
+    case LBA_ITEM_TYPE_OLD.LBA:
+      itemElement = <RecruteurLba key={virtualRow.key} company={item} handleSelectItem={handleSelectItem} searchForTrainingsOnNewCenter={searchForTrainingsOnNewCenter} />
+      break
+    case LBA_ITEM_TYPE_OLD.MATCHA:
+    case LBA_ITEM_TYPE_OLD.PEJOB:
+    case LBA_ITEM_TYPE_OLD.PARTNER_JOB:
+      itemElement = <Job key={virtualRow.key} job={item} handleSelectItem={handleSelectItem} searchForTrainingsOnNewCenter={searchForTrainingsOnNewCenter} />
+      break
+    case LBA_ITEM_TYPE_OLD.FORMATION: {
+      const isCfa = isCfaEntreprise(item?.company?.siret, item?.company?.headquarter?.siret)
+      itemElement = <Training key={virtualRow.key} training={item} handleSelectItem={handleSelectItem} isCfa={isCfa} searchForJobsOnNewCenter={searchForJobsOnNewCenter} />
+      break
+    }
+    default:
+      assertUnreachable("should not happen" as never)
+  }
+
+  return (
+    <Box key={virtualRow.key} data-index={virtualRow.index} ref={columnVirtualizer.measureElement}>
+      {itemElement}
+    </Box>
+  )
 }
 
 const ResultLists = ({
@@ -186,26 +214,19 @@ const ResultLists = ({
             </Box>
           )}
 
-          {hasSearch && virtualItems.length && (
+          {virtualItems.length && (
             <Box bg="beige" id="trainingResult">
-              {virtualItems.map((virtualRow, idx) => {
-                const item = consolidatedItemList[virtualRow.index]
-
-                switch (item.ideaType) {
-                  case LBA_ITEM_TYPE_OLD.LBA:
-                    return <RecruteurLba key={idx} company={item} handleSelectItem={handleSelectItem} searchForTrainingsOnNewCenter={searchForTrainingsOnNewCenter} />
-                  case LBA_ITEM_TYPE_OLD.MATCHA:
-                  case LBA_ITEM_TYPE_OLD.PEJOB:
-                  case LBA_ITEM_TYPE_OLD.PARTNER_JOB:
-                    return <Job key={idx} job={item} handleSelectItem={handleSelectItem} searchForTrainingsOnNewCenter={searchForTrainingsOnNewCenter} />
-                  case LBA_ITEM_TYPE_OLD.FORMATION: {
-                    const isCfa = isCfaEntreprise(item?.company?.siret, item?.company?.headquarter?.siret)
-                    return <Training key={idx} training={item} handleSelectItem={handleSelectItem} isCfa={isCfa} searchForJobsOnNewCenter={searchForJobsOnNewCenter} />
-                  }
-                  default:
-                    return <></>
-                }
-              })}
+              {virtualItems.map((virtualRow) => (
+                <ItemElement
+                  key={virtualRow.key}
+                  virtualRow={virtualRow}
+                  consolidatedItemList={consolidatedItemList}
+                  handleSelectItem={handleSelectItem}
+                  searchForTrainingsOnNewCenter={searchForTrainingsOnNewCenter}
+                  searchForJobsOnNewCenter={searchForJobsOnNewCenter}
+                  columnVirtualizer={columnVirtualizer}
+                />
+              ))}
             </Box>
           )}
 
