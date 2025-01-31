@@ -3,7 +3,7 @@
 import { startReactDsfr } from "@codegouvfr/react-dsfr/next-appdir"
 import Link from "next/link"
 
-import { defaultColorScheme } from "./defaultColorScheme"
+import { defaultColorScheme } from "./default-color-scheme"
 
 declare module "@codegouvfr/react-dsfr/next-appdir" {
   interface RegisterLink {

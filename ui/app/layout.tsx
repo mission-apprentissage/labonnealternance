@@ -5,8 +5,8 @@ import Link from "next/link"
 
 import { Footer } from "./components/Footer"
 import { Header } from "./components/Header"
-import { defaultColorScheme } from "./defaultColorScheme"
-import { StartDsfr } from "./StartDsfr"
+import { defaultColorScheme } from "./dsfr-setup/default-color-scheme"
+import { StartDsfr } from "./dsfr-setup/start-dsfr"
 
 export default function RootLayout({ children }: { children: JSX.Element }) {
   //NOTE: The lang parameter is optional and defaults to "fr"
