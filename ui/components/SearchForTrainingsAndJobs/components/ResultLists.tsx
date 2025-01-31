@@ -94,7 +94,7 @@ const ResultLists = ({
   isTrainingSearchLoading,
   jobSearchError,
   searchForJobsOnNewCenter,
-  searchRadius,
+  //searchRadius,
   selectedItem,
   searchForTrainingsOnNewCenter,
   shouldShowWelcomeMessage,
@@ -137,7 +137,7 @@ const ResultLists = ({
   //consolidatedItemList = consolidatedItemList.slice(0, 10)
 
   const columnVirtualizer = useVirtualizer({
-    count: consolidatedItemList.length,
+    count: consolidatedItemList.length + 1,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 220,
   })
@@ -189,21 +189,24 @@ const ResultLists = ({
         pb={["100px", "100px", 0]}
         pr={{ xl: "25px", "2xl": "50px" }}
         width="100%"
-        overflow="auto"
+        height="100vh"
+        // overflow="auto"
         id="resultList"
         display={shouldShowWelcomeMessage || selectedItem ? "none" : ""}
         bg="beige"
-        ref={parentRef}
       >
         <Box
           style={{
             height: "100vh",
+            overflow: "auto",
           }}
+          width="100%"
           margin="auto"
           maxWidth="1310px"
           pb={10}
+          ref={parentRef}
         >
-          {!isTrainingSearchLoading && shouldDisplayTrainings && trainings?.length === 0 && (
+          {/* {!isTrainingSearchLoading && shouldDisplayTrainings && trainings?.length === 0 && (
             <Box mx={6} textAlign="center" my={4} fontWeight={700}>
               Aucune formation en alternance disponible pour ce métier
             </Box>
@@ -212,25 +215,69 @@ const ResultLists = ({
             <Box fontWeight={700} textAlign="center" ml={4} px={4} py={4}>
               Aucune formation ne correspondait à votre zone de recherche, nous avons trouvé les plus proches
             </Box>
-          )}
+          )} */}
 
           {virtualItems.length && (
-            <Box bg="beige" id="trainingResult">
-              {virtualItems.map((virtualRow) => (
-                <ItemElement
-                  key={virtualRow.key}
-                  virtualRow={virtualRow}
-                  consolidatedItemList={consolidatedItemList}
-                  handleSelectItem={handleSelectItem}
-                  searchForTrainingsOnNewCenter={searchForTrainingsOnNewCenter}
-                  searchForJobsOnNewCenter={searchForJobsOnNewCenter}
-                  columnVirtualizer={columnVirtualizer}
-                />
-              ))}
+            <Box
+              sx={{
+                height: `${columnVirtualizer.getTotalSize()}px`,
+                width: "100%",
+                position: "relative",
+              }}
+            >
+              <Box bg="beige" id="trainingResult">
+                {virtualItems.map((virtualRow) => {
+                  const lastRow = virtualRow.index === consolidatedItemList.length
+                  return (
+                    <>
+                      {!lastRow ? (
+                        <Box
+                          key={virtualRow.key}
+                          my={6}
+                          style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            width: "100%",
+                            height: `${virtualRow.size}px`,
+                            transform: `translateY(${virtualRow.start}px)`,
+                            marginTop: "12px",
+                            marginBottom: "12px",
+                          }}
+                        >
+                          <ItemElement
+                            virtualRow={virtualRow}
+                            consolidatedItemList={consolidatedItemList}
+                            handleSelectItem={handleSelectItem}
+                            searchForTrainingsOnNewCenter={searchForTrainingsOnNewCenter}
+                            searchForJobsOnNewCenter={searchForJobsOnNewCenter}
+                            columnVirtualizer={columnVirtualizer}
+                          />
+                        </Box>
+                      ) : (
+                        <Box
+                          key={virtualRow.key}
+                          my={6}
+                          style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            width: "100%",
+                            height: `130px`,
+                            transform: `translateY(${virtualRow.start}px)`,
+                            marginTop: "12px",
+                            marginBottom: "12px",
+                          }}
+                        >
+                          <ListFooter handleExtendedSearch={handleExtendedSearch} isJobSearchLoading={isJobSearchLoading} isPartnerJobSearchLoading={isPartnerJobSearchLoading} />
+                        </Box>
+                      )}
+                    </>
+                  )
+                })}
+              </Box>
             </Box>
           )}
-
-          <ListFooter handleExtendedSearch={handleExtendedSearch} isJobSearchLoading={isJobSearchLoading} isPartnerJobSearchLoading={isPartnerJobSearchLoading} />
         </Box>
       </Box>
     </Flex>
