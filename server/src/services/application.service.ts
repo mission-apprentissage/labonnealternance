@@ -22,9 +22,10 @@ import {
 } from "shared"
 import { ApplicationIntention, ApplicationIntentionDefaultText, RefusalReasons } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { LBA_ITEM_TYPE, getDirectJobPath, newItemTypeToOldItemType } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
+import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { IRecruiterIntentionMail } from "shared/models/recruiterIntentionMail.model"
 import { ITrackingCookies } from "shared/models/trafficSources.model"
@@ -368,8 +369,8 @@ const buildUrlsOfDetail = (application: IApplication, utm?: { utm_source?: strin
   }
   const params = urlSearchParams.toString()
   return {
-    urlWithoutUtm: `${publicUrl}/recherche-apprentissage?${paramsWithoutUtm}`,
-    url: `${publicUrl}/recherche-apprentissage?${params}`,
+    urlWithoutUtm: `${publicUrl}/recherche?${paramsWithoutUtm}`,
+    url: `${publicUrl}/recherche?${params}`,
   }
 }
 

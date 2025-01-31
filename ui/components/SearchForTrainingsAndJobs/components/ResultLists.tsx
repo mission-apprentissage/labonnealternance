@@ -21,16 +21,13 @@ const ResultLists = ({
   handleExtendedSearch,
   handleSelectItem,
   isJobSearchLoading,
-  isPartnerJobSearchLoading,
   isTrainingSearchLoading,
   jobSearchError,
   searchForJobsOnNewCenter,
   searchRadius,
-  selectedItem,
   searchForTrainingsOnNewCenter,
   shouldShowWelcomeMessage,
   showSearchForm,
-  partnerJobSearchError,
   trainingSearchError,
 }) => {
   const scopeContext = useContext(ScopeContext)
@@ -94,7 +91,7 @@ const ResultLists = ({
   }
 
   const getJobResult = () => {
-    if (hasSearch && (!isJobSearchLoading || !isPartnerJobSearchLoading) && (activeFilters.includes("jobs") || activeFilters.includes("duo"))) {
+    if (hasSearch && !isJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))) {
       const jobCount = getJobCount(jobs)
 
       if (jobCount) {
@@ -135,11 +132,11 @@ const ResultLists = ({
 
       let jobCount = 0
 
-      if (!isJobSearchLoading && !isPartnerJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))) {
+      if (!isJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))) {
         jobCount = getJobCount(jobs)
       }
 
-      const isJobElement = scopeContext.isJob && !isJobSearchLoading && !isPartnerJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))
+      const isJobElement = scopeContext.isJob && !isJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))
       const shouldShowFTJobs = isJobElement && jobCount < 100 // scope offre, moins de 100 offres
       const shouldShowExtendSearchButton = isJobElement && jobCount < 100 && !extendedSearch && formValues?.location?.value // scope offre, moins de 100 offres pas déjà étendu, pas recherche france entière
       const shouldShowNoJob = isJobElement && jobCount === 0 // scope offre, pas d'offre
@@ -223,13 +220,12 @@ const ResultLists = ({
 
   // construit le bloc formaté avec les erreurs remontées
   const getErrorMessages = () => {
-    return trainingSearchError && jobSearchError && partnerJobSearchError ? (
+    return trainingSearchError && jobSearchError ? (
       <ErrorMessage message="Erreur technique momentanée" type="column" />
     ) : (
       <>
         {trainingSearchError && <ErrorMessage message={trainingSearchError} />}
-        {jobSearchError && partnerJobSearchError && <ErrorMessage message={allJobSearchErrorText} />}
-        {((jobSearchError && !partnerJobSearchError) || (!jobSearchError && partnerJobSearchError)) && <ErrorMessage message={jobSearchError || partnerJobSearchError} />}
+        {jobSearchError && <ErrorMessage message={allJobSearchErrorText} />}
       </>
     )
   }
@@ -240,15 +236,13 @@ const ResultLists = ({
   }
 
   return (
-    <Flex direction="column" height={selectedItem ? "0%" : "100%"} display={isFormVisible ? "none" : "flex"}>
-      <Box bg="beige" display={shouldShowWelcomeMessage || selectedItem ? "none" : ""}>
+    <Flex direction="column" height={"100%"} display={isFormVisible ? ["none", "none", "flex"] : "flex"}>
+      <Box bg="beige" display={shouldShowWelcomeMessage ? "none" : ""}>
         <Box display={["flex", "flex", "none"]}>
           <ResultFilterAndCounter
             jobSearchError={jobSearchError}
-            partnerJobSearchError={partnerJobSearchError}
             trainingSearchError={trainingSearchError}
             isJobSearchLoading={isJobSearchLoading}
-            isPartnerJobSearchLoading={isPartnerJobSearchLoading}
             isTrainingSearchLoading={isTrainingSearchLoading}
             showSearchForm={showSearchForm}
           />
@@ -256,10 +250,8 @@ const ResultLists = ({
         <Box margin="auto" maxWidth="1310px">
           <ResultListsLoading
             jobSearchError={jobSearchError}
-            partnerJobSearchError={partnerJobSearchError}
             trainingSearchError={trainingSearchError}
             isJobSearchLoading={isJobSearchLoading}
-            isPartnerJobSearchLoading={isPartnerJobSearchLoading}
             isTrainingSearchLoading={isTrainingSearchLoading}
           />
           {getErrorMessages()}
@@ -273,7 +265,7 @@ const ResultLists = ({
         overflow="auto"
         onScroll={handleScroll}
         id="resultList"
-        display={shouldShowWelcomeMessage || selectedItem ? "none" : ""}
+        display={shouldShowWelcomeMessage ? "none" : ""}
         bg="beige"
       >
         <Box margin="auto" maxWidth="1310px" pb={10}>

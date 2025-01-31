@@ -6,8 +6,6 @@ import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
 
-import { testingParameters } from "../../../utils/testingParameters"
-
 import CandidatureLbaFileDropzone from "./CandidatureLbaFileDropzone"
 import CandidatureLbaMandataireMessage from "./CandidatureLbaMandataireMessage"
 import CandidatureLbaMessage from "./CandidatureLbaMessage"
@@ -86,8 +84,6 @@ const CandidatureLbaModalBody = ({ formik, sendingState, company, item, kind, fr
             <FormErrorMessage>{formik.errors.applicant_first_name}</FormErrorMessage>
           </FormControl>
         </Flex>
-
-        {testingParameters?.simulatedRecipient && <Text>Les emails seront envoyés à {testingParameters.simulatedRecipient}</Text>}
 
         <Flex direction={["column", "column", "row"]} mt={[null, null, 4]}>
           <FormControl data-testid="fieldset-email" mt={{ base: 3, md: "0" }} isInvalid={formik.touched.applicant_email && formik.errors.applicant_email}>

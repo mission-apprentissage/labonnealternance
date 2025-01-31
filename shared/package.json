@@ -21,6 +21,7 @@
     "@asteasolutions/zod-to-openapi": "^7.1.1",
     "@fastify/swagger": "^8.15.0",
     "bson": "^6.10.1",
+    "change-case": "5.4.4",
     "dayjs": "^1.11.13",
     "i18next": "^24.0.5",
     "libphonenumber-js": "^1.11.7",

@@ -1,6 +1,5 @@
 import { Box, Flex } from "@chakra-ui/react"
 import dynamic from "next/dynamic"
-import { useRouter } from "next/router"
 import { useContext } from "react"
 
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
@@ -14,22 +13,17 @@ const WidgetHeader = ({
   handleSearchSubmit,
   isHome = false,
   jobSearchError = undefined,
-  partnerJobSearchError = undefined,
   trainingSearchError = undefined,
   isJobSearchLoading = undefined,
-  isPartnerJobSearchLoading = undefined,
   isTrainingSearchLoading = undefined,
 }) => {
-  const router = useRouter()
-
   const { selectedItem } = useContext(SearchResultContext)
 
   const handleSearchSubmitFunction = (values) => {
     return handleSearchSubmit({ values })
   }
 
-  const isFicheDetail = selectedItem && router.asPath.includes("page=fiche") ? true : false
-  const formDisplayValue = isFicheDetail ? "none" : isHome ? "block" : ["none", "none", "block"]
+  const formDisplayValue = selectedItem ? "none" : isHome ? "block" : ["none", "none", "block"]
 
   return (
     <Box zIndex={9} display={formDisplayValue} boxShadow={isHome ? "none" : "0 0 12px 2px rgb(0 0 0 / 21%)"} padding="8px">
@@ -46,10 +40,8 @@ const WidgetHeader = ({
         {!isHome && (
           <ResultFilterAndCounter
             jobSearchError={jobSearchError}
-            partnerJobSearchError={partnerJobSearchError}
             trainingSearchError={trainingSearchError}
             isJobSearchLoading={isJobSearchLoading}
-            isPartnerJobSearchLoading={isPartnerJobSearchLoading}
             isTrainingSearchLoading={isTrainingSearchLoading}
             showSearchForm={() => {}}
           />

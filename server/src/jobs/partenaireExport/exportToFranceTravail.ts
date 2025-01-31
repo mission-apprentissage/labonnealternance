@@ -49,7 +49,7 @@ const formatData = (offre) => {
     Par_ref_offre: `${ntcCle}-${offre.jobId}`,
     Par_cle: "LABONNEALTERNANCE",
     Par_nom: "LABONNEALTERNANCE",
-    Par_URL_offre: `https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage?&type=matcha&itemId=${offre.jobId}`,
+    Par_URL_offre: `https://labonnealternance.apprentissage.beta.gouv.fr/recherche?&type=matcha&itemId=${offre.jobId}`,
     Code_rome: offre.rome_code[0],
     Code_OGR: appellation.code_ogr,
     Libelle_metier_OGR: appellation.libelle,

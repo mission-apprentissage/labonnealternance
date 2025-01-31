@@ -7890,6 +7890,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"change-case@npm:5.4.4":
+  version: 5.4.4
+  resolution: "change-case@npm:5.4.4"
+  checksum: a22a25a763719658424ffbcd41e931d2d19cc22399cc765dca447fbe1eaf13e179d5e8ab1677af75f2e814dbddf74e42ffdecb526cd5bc906cc859f62aa154b2
+  languageName: node
+  linkType: hard
+
 "character-entities-legacy@npm:^1.0.0":
   version: 1.1.4
   resolution: "character-entities-legacy@npm:1.1.4"
@@ -12456,7 +12463,7 @@ __metadata:
     clean-css: ^4.2.1
     commander: ^2.19.0
     he: ^1.2.0
-    param-case: ^2.1.1
+    param-case: ^4.0.0
     relateurl: ^0.2.7
     uglify-js: ^3.5.1
   bin:
@@ -16500,6 +16507,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"no-case@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "no-case@npm:4.0.0"
+  checksum: cbfd08163260cb6be5451637193332aff4b27ea741944f268c63adc874eb7343b0319714202a9293464b691674e2422eaaa9b851bae87d342d2162438846d585
+  languageName: node
+  linkType: hard
+
 "nock@npm:^14.0.0-beta.11, nock@npm:beta":
   version: 14.0.0-beta.19
   resolution: "nock@npm:14.0.0-beta.19"
@@ -17573,12 +17587,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"param-case@npm:^2.1.1":
-  version: 2.1.1
-  resolution: "param-case@npm:2.1.1"
+"param-case@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "param-case@npm:4.0.0"
   dependencies:
-    no-case: ^2.2.0
-  checksum: 3a63dcb8d8dc7995a612de061afdc7bb6fe7bd0e6db994db8d4cae999ed879859fd24389090e1a0d93f4c9207ebf8c048c870f468a3f4767161753e03cb9ab58
+    no-case: ^4.0.0
+  checksum: 42f29ae506b6848c016c7dbd9235fdda8bb4a5e307d79ac229322cf8f7eefded5014fa4d3160bd07ff1b628c7f7e6c84231a3f03a07eb81a27b363e3ffd53c67
   languageName: node
   linkType: hard
 
@@ -20262,6 +20276,7 @@ __metadata:
     "@tsconfig/node20": ^20.1.4
     "@types/node": ^22.10.10
     bson: ^6.10.1
+    change-case: 5.4.4
     dayjs: ^1.11.13
     eslint-plugin-zod: ^1.4.0
     i18next: ^24.0.5

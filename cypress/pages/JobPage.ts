@@ -1,6 +1,6 @@
 export const JobPage = {
   goTo(jobId: string) {
-    return cy.visit(`${Cypress.env("ui")}/recherche-apprentissage?&type=matcha&itemId=${jobId}`)
+    return cy.visit(`${Cypress.env("ui")}/recherche?&type=matcha&itemId=${jobId}`)
   },
   expectNotPublished() {
     cy.get("[data-testid='postuler-button']").should("not.exist")
