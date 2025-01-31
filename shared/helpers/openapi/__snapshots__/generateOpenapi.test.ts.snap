@@ -1918,10 +1918,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "token": {
-            "type": [
-              "string",
-              "null",
-            ],
+            "type": "string",
           },
         },
         "required": [
@@ -1930,6 +1927,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "company",
           "id",
           "applicationCount",
+          "token",
           "recipient_id",
         ],
         "type": "object",
@@ -2700,6 +2698,10 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "place": {
             "$ref": "#/components/schemas/Place",
           },
+          "recipient_id": {
+            "description": "Identifiant personnalisé (ID mongoDB préfixé du nom de la collection) envoyé au server pour la candidature",
+            "type": "string",
+          },
           "romes": {
             "items": {
               "$ref": "#/components/schemas/Rome",
@@ -2720,6 +2722,9 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "title": {
             "type": "string",
           },
+          "token": {
+            "type": "string",
+          },
         },
         "required": [
           "ideaType",
@@ -2728,6 +2733,8 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "company",
           "id",
           "job",
+          "token",
+          "recipient_id",
         ],
         "type": "object",
       },

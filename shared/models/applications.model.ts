@@ -50,7 +50,7 @@ const ZApplicationOld = z
     company_feedback: z.string().nullish().describe("L'avis donné par la société"),
     company_feedback_reasons: z.array(extensions.buildEnum(RefusalReasons)).nullish(),
     company_feedback_date: z.date().nullish().describe("Date d'intention/avis donnée"),
-    company_siret: extensions.siret.describe("Siret de l'entreprise"),
+    company_siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
     company_email: z.string().describe("Email de l'entreprise"),
     company_phone: z.string().nullish().describe("Numéro de téléphone du recruteur"),
     company_name: z.string().describe("Nom de l'entreprise"),
@@ -183,7 +183,7 @@ const ZNewApplicationTransitionToV2 = ZApplicationOld.extend({
 // KBA 20241011 to remove once V2 is LIVE and V1 support has ended
 export type INewApplicationV1 = z.output<typeof ZNewApplicationTransitionToV2>
 
-type JobCollectionName = "recruteurslba" | "jobs_partners" | "recruiters"
+type JobCollectionName = "recruteurslba" | "partners" | "recruiters"
 
 export const ZApplicationApiPrivate = ZApplicationOld.pick({
   applicant_first_name: true,
@@ -204,7 +204,7 @@ export const ZApplicationApiPrivate = ZApplicationOld.pick({
       if (!ObjectId.isValid(jobId)) {
         throw new Error(`Invalid job identifier: ${jobId}`)
       }
-      if (!["recruteurslba", "jobs_parnters", "recruiters"].includes(collectionName)) {
+      if (!["recruteurslba", "partners", "recruiters"].includes(collectionName)) {
         throw new Error(`Invalid collection name: ${collectionName}`)
       }
       return { collectionName: collectionName as JobCollectionName, jobId }

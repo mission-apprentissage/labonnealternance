@@ -302,7 +302,7 @@ export const sendApplicationV2 = async ({
 
     lbaJob = { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job, recruiter }
   }
-  if (collectionName === "jobs_partners") {
+  if (collectionName === "partners") {
     const job = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(jobId) })
     if (!job) {
       throw badRequest(BusinessErrorCodes.NOTFOUND)
@@ -349,15 +349,15 @@ export const sendApplicationV2 = async ({
  * email candidat et recruteur lors d'une candidature
  */
 const buildUrlsOfDetail = (application: IApplication, utm?: { utm_source?: string; utm_medium?: string; utm_campaign?: string }) => {
-  const { job_id, company_siret } = application
+  const { job_id, company_siret, job_origin } = application
   const defaultUtm = { utm_source: "lba", utm_medium: "email", utm_campaign: "je-candidate" }
   const { utm_campaign, utm_medium, utm_source } = { ...defaultUtm, ...utm }
-  const type = job_id ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA : LBA_ITEM_TYPE.RECRUTEURS_LBA
+  const type = job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA : LBA_ITEM_TYPE.RECRUTEURS_LBA
   const urlSearchParams = new URLSearchParams()
   urlSearchParams.append("display", "list")
   urlSearchParams.append("page", "fiche")
   urlSearchParams.append("type", newItemTypeToOldItemType(type))
-  urlSearchParams.append("itemId", job_id || company_siret)
+  urlSearchParams.append("itemId", job_id! || company_siret!)
   const paramsWithoutUtm = urlSearchParams.toString()
   urlSearchParams.append("utm_source", utm_source)
   urlSearchParams.append("utm_medium", utm_medium)
@@ -377,7 +377,7 @@ const buildUrlsOfDetail = (application: IApplication, utm?: { utm_source?: strin
 export const buildUserForToken = (application: IApplication, user?: IUserWithAccount): UserForAccessToken => {
   const { job_origin, company_siret, company_email } = application
   if (job_origin === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    return { type: "lba-company", siret: company_siret, email: company_email }
+    return { type: "lba-company", siret: company_siret!, email: company_email }
   } else if (job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     if (!user) {
       throw internal("un user recruteur était attendu")
@@ -496,7 +496,7 @@ const offreOrCompanyToCompanyFields = (
     const { job } = LbaJob
     const { workplace_siret, workplace_name, workplace_naf_label, apply_phone, apply_email, offer_title, workplace_address_label } = job
     const application = {
-      company_siret: workplace_siret || "",
+      company_siret: workplace_siret || null,
       company_name: workplace_name || "Enseigne inconnue",
       company_naf: workplace_naf_label || "",
       company_phone: apply_phone,
@@ -1157,7 +1157,7 @@ const getJobOrCompany = async (application: IApplication): Promise<IJobOrCompany
     throw internal("getJobOrCompany-job_id manquant")
   }
   if (job_origin === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    const company = await getDbCollection("recruteurslba").findOne({ siret: company_siret })
+    const company = await getDbCollection("recruteurslba").findOne({ siret: company_siret! })
     if (!company) {
       throw internal(`inattendu: aucun recruteur lba avec siret=${company_siret}`)
     }
@@ -1195,7 +1195,7 @@ export const getCompanyEmailFromToken = async (token: string) => {
   const application = await getDbCollection("applications").findOne({ _id: new ObjectId(application_id) })
 
   if (application) {
-    const recruteurLba = await getDbCollection("recruteurslba").findOne({ siret: application.company_siret })
+    const recruteurLba = await getDbCollection("recruteurslba").findOne({ siret: application.company_siret! })
     if (recruteurLba?.email) {
       return recruteurLba.email
     }
@@ -1248,7 +1248,7 @@ const getJobOrCompanyFromApplication = async (application: IApplication) => {
       break
     }
     case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
-      recruiter = await getDbCollection("recruteurslba").findOne({ siret: application.company_siret })
+      recruiter = await getDbCollection("recruteurslba").findOne({ siret: application.company_siret! })
       break
     }
     default:
