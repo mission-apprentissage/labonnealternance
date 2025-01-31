@@ -20275,8 +20275,8 @@ __metadata:
     "@fastify/swagger": ^8.15.0
     "@tsconfig/node20": ^20.1.4
     "@types/node": ^22.10.10
-    change-case: 5.4.4
     bson: ^6.10.1
+    change-case: 5.4.4
     dayjs: ^1.11.13
     eslint-plugin-zod: ^1.4.0
     i18next: ^24.0.5
