@@ -56,7 +56,7 @@ const ZApplicationOld = z
     company_name: z.string().describe("Nom de l'entreprise"),
     company_naf: z.string().nullish().describe("Code NAF de l'entreprise"),
     company_address: z.string().nullish().describe("Adresse de l'entreprise"),
-    job_origin: extensions.buildEnum(LBA_ITEM_TYPE).nullable().describe("Origine de l'offre d'emploi"),
+    job_origin: extensions.buildEnum(LBA_ITEM_TYPE).describe("Origine de l'offre d'emploi"),
     job_title: z
       .string()
       .nullish()
