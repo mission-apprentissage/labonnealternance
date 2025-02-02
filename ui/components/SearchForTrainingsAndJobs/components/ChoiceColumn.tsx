@@ -10,7 +10,7 @@ import { SearchResultContext } from "../../../context/SearchResultContextProvide
 import { currentSearch, setCurrentPage, setCurrentSearch } from "../../../utils/currentPage"
 import { closeMapPopups, filterLayers, flyToLocation, flyToMarker, setSelectedMarker } from "../../../utils/mapTools"
 import pushHistory from "../../../utils/pushHistory"
-import { getItemElement, scrollToElementInContainer, scrollToTop } from "../../../utils/tools"
+import { scrollToElementInContainer, scrollToTop } from "../../../utils/tools"
 import ItemDetail from "../../ItemDetail/ItemDetail"
 import { defaultFilters } from "../services/utils"
 import { insertWhisper } from "../services/whispers"
@@ -37,20 +37,9 @@ const ChoiceColumn = ({
 }) => {
   const router = useRouter()
   const scopeContext = useContext(ScopeContext)
-  const { trainings, setTrainings, setJobs, setSelectedItem, selectedItem, itemToScrollTo, setItemToScrollTo, setExtendedSearch } = useContext(SearchResultContext)
+  const { trainings, setTrainings, setJobs, setSelectedItem, selectedItem, setExtendedSearch } = useContext(SearchResultContext)
   const { formValues, setFormValues, setActiveFilters } = useContext(DisplayContext)
   const { displayMap } = useContext(ParameterContext)
-
-  useEffect(() => {
-    if (itemToScrollTo) {
-      const itemElement = getItemElement(itemToScrollTo)
-
-      if (itemElement) {
-        scrollToElementInContainer({ containerId: "resultList", el: itemElement })
-        setItemToScrollTo(null)
-      }
-    }
-  })
 
   useEffect(() => {
     insertWhisper(document, isTrainingSearchLoading || isJobSearchLoading || isPartnerJobSearchLoading)

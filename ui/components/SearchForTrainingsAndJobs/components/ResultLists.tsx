@@ -1,6 +1,6 @@
 import { Box, Flex } from "@chakra-ui/react"
 import { useVirtualizer } from "@tanstack/react-virtual"
-import { useContext, useRef } from "react"
+import { useContext, useEffect, useRef } from "react"
 import { assertUnreachable, ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
@@ -109,7 +109,7 @@ const ResultLists = ({
   ;({ isFormVisible } = useContext(DisplayContext))
   ;({ extendedSearch, hasSearch } = useContext(SearchResultContext))
 
-  const { jobs, trainings } = useContext(SearchResultContext)
+  const { jobs, trainings, itemToScrollTo, setItemToScrollTo } = useContext(SearchResultContext)
   const { activeFilters } = useContext(DisplayContext)
 
   const parentRef = useRef(null)
@@ -134,8 +134,6 @@ const ResultLists = ({
     }
   }
 
-  //consolidatedItemList = consolidatedItemList.slice(0, 10)
-
   const columnVirtualizer = useVirtualizer({
     count: consolidatedItemList.length + 1,
     getScrollElement: () => parentRef.current,
@@ -143,9 +141,21 @@ const ResultLists = ({
     overscan: 5,
   })
 
-  const virtualItems = columnVirtualizer.getVirtualItems()
+  useEffect(() => {
+    if (itemToScrollTo) {
+      const realItem = itemToScrollTo.items ? itemToScrollTo.items[0] : itemToScrollTo
+      const itemIndex = consolidatedItemList.findIndex((item) => item.id === realItem.id)
 
-  console.log("virtualItems", columnVirtualizer.range)
+      console.log("itemToScrollTo : ", itemToScrollTo, itemIndex)
+
+      if (itemIndex >= 0) {
+        columnVirtualizer.scrollToIndex(itemIndex)
+        setItemToScrollTo(null)
+      }
+    }
+  })
+
+  const virtualItems = columnVirtualizer.getVirtualItems()
 
   return (
     <Flex direction="column" height={selectedItem ? "0%" : "100%"} display={isFormVisible ? "none" : "flex"}>
@@ -229,7 +239,6 @@ const ResultLists = ({
             >
               <Box bg="beige" id="trainingResult">
                 {virtualItems.map((virtualRow) => {
-                  console.log(virtualRow)
                   const lastRow = virtualRow.index === consolidatedItemList.length
                   return (
                     <>
@@ -242,7 +251,7 @@ const ResultLists = ({
                             left: 0,
                             width: "100%",
                             height: `${virtualRow.size}px`,
-                            transform: `translateY(${virtualRow.start + (virtualRow.index - columnVirtualizer.range.startIndex) * 10}px)`,
+                            transform: `translateY(${virtualRow.start + (virtualRow.index - columnVirtualizer.range.startIndex) * 8}px)`,
                           }}
                         >
                           <ItemElement
