@@ -145,7 +145,7 @@ const ResultLists = ({
 
   const virtualItems = columnVirtualizer.getVirtualItems()
 
-  console.log("virtualItems", virtualItems)
+  console.log("virtualItems", columnVirtualizer.range)
 
   return (
     <Flex direction="column" height={selectedItem ? "0%" : "100%"} display={isFormVisible ? "none" : "flex"}>
@@ -229,6 +229,7 @@ const ResultLists = ({
             >
               <Box bg="beige" id="trainingResult">
                 {virtualItems.map((virtualRow) => {
+                  console.log(virtualRow)
                   const lastRow = virtualRow.index === consolidatedItemList.length
                   return (
                     <>
@@ -240,9 +241,8 @@ const ResultLists = ({
                             top: 0,
                             left: 0,
                             width: "100%",
-                            height: `${virtualRow.size - 20}px`,
-                            transform: `translateY(${virtualRow.start}px)`,
-                            marginBottom: "20px",
+                            height: `${virtualRow.size}px`,
+                            transform: `translateY(${virtualRow.start + (virtualRow.index - columnVirtualizer.range.startIndex) * 10}px)`,
                           }}
                         >
                           <ItemElement
