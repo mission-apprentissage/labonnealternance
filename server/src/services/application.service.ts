@@ -391,7 +391,7 @@ const buildUrlsOfDetail = (application: IApplication, utm?: { utm_source?: strin
 
 // TODO KEVIN
 export const buildUserForToken = (application: IApplication, user?: IUserWithAccount): UserForAccessToken => {
-  const { job_origin, company_siret, company_email } = application
+  const { job_origin, company_siret, company_email, job_id } = application
   if (job_origin === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     return { type: "lba-company", siret: company_siret!, email: company_email }
   } else if (job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
@@ -399,6 +399,8 @@ export const buildUserForToken = (application: IApplication, user?: IUserWithAcc
       throw internal("un user recruteur était attendu")
     }
     return userWithAccountToUserForToken(user)
+  } else if (job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) {
+    return { type: "partenaire", jobId: job_id!, email: company_email } // need more ??
   } else {
     throw internal(`job_origin=${job_origin} non supporté`)
   }
