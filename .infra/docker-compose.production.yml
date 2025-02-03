@@ -53,7 +53,7 @@ services:
       <<: *deploy-default
       resources:
         limits:
-          memory: 2g
+          memory: 1g
     command: ["yarn", "cli", "job_processor:start"]
     environment:
       INSTANCE_ID: "runner-{% raw %}{{.Task.Slot}}{% endraw %}"

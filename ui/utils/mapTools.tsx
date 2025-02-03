@@ -261,6 +261,16 @@ const flyToLocation = (location) => {
   }
 }
 
+const flyToCenter = (values) => {
+  const searchCenter = values?.location?.value ? [values.location.value.coordinates[0], values.location.value.coordinates[1]] : null
+
+  if (searchCenter) {
+    flyToLocation({ center: searchCenter, zoom: 10 })
+  } else {
+    flyToLocation({ center: coordinatesOfFrance, zoom: 4 })
+  }
+}
+
 const buildPopup = ({ item, type, selectItemOnMap, setSelectedItem, setSelectedMapPopupItem }) => {
   const popupNode = document.createElement("div")
   const root = createRoot(popupNode)
@@ -320,10 +330,6 @@ const factorPlacesForMap = (list) => {
 // rassemble les formations ayant lieu dans un même établissement pour avoir une seule icône sur la map
 const factorTrainingsForMap = (list) => {
   return factorPlacesForMap(list)
-}
-
-const factorPartnerJobsForMap = (lists) => {
-  return factorJobsForMap(lists, layerType.PARTNER)
 }
 
 const factorInternalJobsForMap = (lists) => {
@@ -608,7 +614,6 @@ const refreshLocationMarkers = ({ jobs, trainings, scopeContext }) => {
   setTimeout(() => {
     if (scopeContext.isJob) {
       setJobMarkers({ jobList: factorInternalJobsForMap(jobs), type: layerType.INTERNAL, hasTrainings: !!trainings })
-      setJobMarkers({ jobList: factorPartnerJobsForMap(jobs), type: layerType.PARTNER, hasTrainings: !!trainings })
     }
     if (scopeContext.isTraining) {
       setTrainingMarkers({ trainingList: factorTrainingsForMap(trainings) })
@@ -622,11 +627,11 @@ export {
   computeMissingPositionAndDistance,
   coordinatesOfFrance,
   factorInternalJobsForMap,
-  factorPartnerJobsForMap,
   factorTrainingsForMap,
   filterLayers,
   flyToLocation,
   flyToMarker,
+  flyToCenter,
   getZoomLevelForDistance,
   initializeMap,
   isMapInitialized,

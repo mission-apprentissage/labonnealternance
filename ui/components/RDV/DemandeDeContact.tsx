@@ -48,6 +48,7 @@ type Props = {
   context: IAppointmentRequestContextCreateFormAvailableResponseSchema
   referrer: string
   showInModal: boolean
+  isCollapsedHeader?: boolean
 }
 
 /**
@@ -434,7 +435,7 @@ const DemandeDeContact = (props: Props) => {
   return props.showInModal ? (
     <Box data-testid="DemandeDeContact">
       <Box>
-        <Box my={4}>
+        <Box my={props.isCollapsedHeader ? 2 : 4}>
           <Button
             ml={1}
             padding="8px 24px"

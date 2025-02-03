@@ -36,7 +36,7 @@ const buildJobBlock = ({ idx, title, rome }) => {
   }
 
   return (
-    <NextLink legacyBehavior key={idx} passHref href={`/recherche-apprentissage?&display=list&job_name=${title}&romes=${rome}&radius=60`}>
+    <NextLink legacyBehavior key={idx} passHref href={`/recherche?&display=list&job_name=${title}&romes=${rome}&radius=60`}>
       <Link onClick={trackClick} {...jobCssProperties} title={`Voir la liste des formations et opportunités d'emploi en alternance pour le métier d'avenir ${title}`}>
         <Flex minHeight="70px" maxHeight="80px" padding={8} alignItems="center" direction="row">
           <Text noOfLines={3} fontWeight={700} color="info">

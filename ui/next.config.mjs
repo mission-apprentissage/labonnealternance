@@ -137,7 +137,7 @@ const nextConfig = {
         ],
       },
       {
-        source: "/:slug(recherche-apprentissage|recherche-emploi|recherche-apprentissage-formation|postuler)",
+        source: "/:slug(recherche|recherche-emploi|recherche-formation|postuler)",
         headers: [
           {
             key: "Content-Security-Policy",
@@ -153,6 +153,20 @@ const nextConfig = {
             value: inline(contentSecurityPolicy),
           },
         ],
+      },
+    ]
+  },
+  async redirects() {
+    return [
+      {
+        source: "/recherche-apprentissage",
+        destination: "/recherche",
+        permanent: true,
+      },
+      {
+        source: "/recherche-apprentissage-formation",
+        destination: "/recherche-formation",
+        permanent: true,
       },
     ]
   },

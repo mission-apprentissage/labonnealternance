@@ -1,3 +1,5 @@
+import { kebabCase } from "change-case"
+
 export const removeAccents = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
 export const removeRegexChars = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "")
 
@@ -17,3 +19,5 @@ export const hashcode = (str: string) => {
   }
   return hash
 }
+
+export const toKebabCase = (str: string) => kebabCase(str)

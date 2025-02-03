@@ -2,14 +2,14 @@ import { LBA_ITEM_TYPE_OLD } from "@/../shared/constants/lbaitem"
 import { Box, Image, Progress, SkeletonCircle, SkeletonText, Text } from "@chakra-ui/react"
 import React, { useEffect, useState } from "react"
 
-const ItemDetailLoading = ({ item }) => {
+const ItemDetailLoading = ({ type }) => {
   const getNextLoadingIllustration = (currentIllustration) => {
     const currentIndex = loadingIllustrations.findIndex((ill) => ill.src === currentIllustration.src)
     return loadingIllustrations[(currentIndex + 1) % loadingIllustrations.length]
   }
 
   const loadingIllustrations: { src: string; text: string }[] =
-    item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION
+    type === LBA_ITEM_TYPE_OLD.FORMATION
       ? [
           {
             src: "/images/loading/training_description.svg",
@@ -63,7 +63,7 @@ const ItemDetailLoading = ({ item }) => {
     return () => {
       clearInterval(interval)
     }
-  }, [item.loadedItemDetail, item.id])
+  }, [])
 
   const resultListProperties = {
     color: "grey.425",
@@ -80,7 +80,7 @@ const ItemDetailLoading = ({ item }) => {
           <Text mt={1}>{currentIllustration.text}</Text>
 
           <Box maxWidth="400px" mx="auto" my={4}>
-            <Progress colorScheme={item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION ? "teal" : "orange"} isIndeterminate size="sm" borderRadius="20px" />
+            <Progress colorScheme={type === LBA_ITEM_TYPE_OLD.FORMATION ? "teal" : "orange"} isIndeterminate size="sm" borderRadius="20px" />
           </Box>
 
           <Box padding="6" boxShadow="lg" bg="white">

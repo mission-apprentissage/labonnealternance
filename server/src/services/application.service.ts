@@ -22,9 +22,10 @@ import {
 } from "shared"
 import { ApplicationIntention, ApplicationIntentionDefaultText, RefusalReasons } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { LBA_ITEM_TYPE, getDirectJobPath, newItemTypeToOldItemType } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
+import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { IRecruiterIntentionMail } from "shared/models/recruiterIntentionMail.model"
 import { ITrackingCookies } from "shared/models/trafficSources.model"
@@ -368,8 +369,8 @@ const buildUrlsOfDetail = (application: IApplication, utm?: { utm_source?: strin
   }
   const params = urlSearchParams.toString()
   return {
-    urlWithoutUtm: `${publicUrl}/recherche-apprentissage?${paramsWithoutUtm}`,
-    url: `${publicUrl}/recherche-apprentissage?${params}`,
+    urlWithoutUtm: `${publicUrl}/recherche?${paramsWithoutUtm}`,
+    url: `${publicUrl}/recherche?${params}`,
   }
 }
 
@@ -857,12 +858,16 @@ export const sendMailToApplicant = async ({
  */
 const notifyHardbounceToApplicant = async ({ application }: { application: IApplication }): Promise<void> => {
   const applicant = await getApplicantFromDB({ _id: application.applicant_id })
-  await mailer.sendEmail({
-    to: applicant!.email,
-    subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
-    template: getEmailTemplate("mail-candidat-hardbounce"),
-    data: { ...sanitizeApplicationForEmail(application), ...sanitizeApplicantForEmail(applicant!), ...images },
-  })
+  if (applicant) {
+    await mailer.sendEmail({
+      to: applicant.email,
+      subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
+      template: getEmailTemplate("mail-candidat-hardbounce"),
+      data: { ...sanitizeApplicationForEmail(application), ...sanitizeApplicantForEmail(applicant!), ...images },
+    })
+  } else {
+    sentryCaptureException(new Error("Applicant not found while processing applicantion hardbounce"), { extra: { applicant_id: application.applicant_id } })
+  }
 }
 
 export interface IApplicationCount {
@@ -944,10 +949,12 @@ export const processApplicationCandidateHardbounceEvent = async (payload) => {
   const messageId = payload["message-id"]
 
   const applicant = await getDbCollection("applicants").findOne({ email })
-  const application = await getDbCollection("applications").findOne({ applicant_id: applicant?._id, to_applicant_message_id: messageId })
 
-  if (application) {
-    return true
+  if (applicant) {
+    const application = await getDbCollection("applications").findOne({ applicant_id: applicant?._id, to_applicant_message_id: messageId })
+    if (application) {
+      return true
+    }
   }
 
   return false

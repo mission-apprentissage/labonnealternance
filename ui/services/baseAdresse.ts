@@ -12,7 +12,7 @@ export const fetchAddresses = memoize(async (value, type) => {
     cancelToken.cancel("Operation canceled due to new request.")
   }
 
-  if (value) {
+  if (value && value.length > 2) {
     let term = value
     const limit = 10
     let filter = ""

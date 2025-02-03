@@ -8146,7 +8146,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "schema": {
               "items": {
                 "enum": [
-                  "Hello work",
+                  "Hellowork",
                   "RH Alternance",
                 ],
                 "type": "string",
