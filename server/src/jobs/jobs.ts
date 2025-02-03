@@ -125,7 +125,7 @@ export async function setupJobProcessor() {
             handler: () => inviteEtablissementAffelnetToPremiumFollowUp(),
           },
           "Synchronise les formations eligibles à la prise de rendez-vous": {
-            cron_string: "45 1 * * *",
+            cron_string: "45 2 * * *",
             handler: syncEtablissementsAndFormations,
           },
           "Supprime les etablissements dupliqués à cause du parallélisme du job de synchronisation RDVA": {
@@ -149,7 +149,7 @@ export async function setupJobProcessor() {
             handler: importReferentielOnisep,
           },
           "Import des formations depuis le Catalogue RCO": {
-            cron_string: "15 1 * * *",
+            cron_string: "15 2 * * *",
             handler: importCatalogueFormationJob,
           },
           "Mise à jour des champs spécifiques de la collection formations catalogue": {
