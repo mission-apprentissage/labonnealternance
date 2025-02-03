@@ -143,17 +143,41 @@ const ResultLists = ({
 
   useEffect(() => {
     if (itemToScrollTo) {
-      const realItem = itemToScrollTo.items ? itemToScrollTo.items[0] : itemToScrollTo
-      const itemIndex = consolidatedItemList.findIndex((item) => item.id === realItem.id)
-
-      console.log("itemToScrollTo : ", itemToScrollTo, itemIndex)
-
+      // sollicité après fermeture de la fiche
+      const itemIndex = consolidatedItemList.findIndex((item) => item.id === itemToScrollTo.id)
       if (itemIndex >= 0) {
         columnVirtualizer.scrollToIndex(itemIndex)
         setItemToScrollTo(null)
       }
     }
   })
+
+  const scrollToItem = (e) => {
+    let itemIndex = 0
+    console.log("e detail ", e.detail, consolidatedItemList)
+    if (e.detail.type === "job") {
+      // recherche premier élément de type job
+      itemIndex = consolidatedItemList.findIndex((item) => [LBA_ITEM_TYPE_OLD.LBA, LBA_ITEM_TYPE_OLD.PARTNER_JOB].includes(item.ideaType))
+    } else {
+      itemIndex = consolidatedItemList.findIndex((item) => item.id === e.detail.itemId)
+    }
+
+    console.log("itemIndex ", itemIndex)
+
+    if (itemIndex >= 0) {
+      columnVirtualizer.scrollToIndex(itemIndex)
+    }
+  }
+
+  useEffect(() => {
+    // events déclenchés manuellement lors des sélections sur la carte
+    const resultList = document.getElementById("resultList")
+    resultList.addEventListener("scrollToItem", scrollToItem)
+
+    return () => {
+      resultList.removeEventListener("scrollToItem", scrollToItem)
+    }
+  }, [])
 
   const virtualItems = columnVirtualizer.getVirtualItems()
 
@@ -237,7 +261,7 @@ const ResultLists = ({
                 position: "relative",
               }}
             >
-              <Box bg="beige" id="trainingResult">
+              <Box bg="beige">
                 {virtualItems.map((virtualRow) => {
                   const lastRow = virtualRow.index === consolidatedItemList.length
                   return (

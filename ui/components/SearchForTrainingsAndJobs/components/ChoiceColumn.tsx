@@ -10,7 +10,7 @@ import { SearchResultContext } from "../../../context/SearchResultContextProvide
 import { currentSearch, setCurrentPage, setCurrentSearch } from "../../../utils/currentPage"
 import { closeMapPopups, filterLayers, flyToLocation, flyToMarker, setSelectedMarker } from "../../../utils/mapTools"
 import pushHistory from "../../../utils/pushHistory"
-import { scrollToElementInContainer, scrollToTop } from "../../../utils/tools"
+import { scrollToTop } from "../../../utils/tools"
 import ItemDetail from "../../ItemDetail/ItemDetail"
 import { defaultFilters } from "../services/utils"
 import { insertWhisper } from "../services/whispers"
@@ -91,7 +91,12 @@ const ChoiceColumn = ({
     searchOnNewCenter(newCenter, null, "jobs")
     showAllResults()
     setTimeout(() => {
-      scrollToElementInContainer({ containerId: "resultList", el: document.getElementById("jobList") })
+      try {
+        const element = document.getElementById("resultList")
+        element.dispatchEvent(new CustomEvent("scrollToItem", { detail: { type: "job" } }))
+      } catch (e) {
+        console.error(e)
+      }
     }, 800)
   }
 

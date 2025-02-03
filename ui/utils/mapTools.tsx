@@ -8,7 +8,6 @@ import { MapPopup } from "../components/SearchForTrainingsAndJobs/components"
 import { fetchAddresses } from "../services/baseAdresse"
 
 import { isArea } from "./isArea"
-import { getItemElement, scrollToElementInContainer } from "./tools"
 
 enum layerType {
   PARTNER = "PARTNER",
@@ -244,8 +243,18 @@ const onLayerClick = (e, layer, selectItemOnMap, unselectItem, unselectMapPopupI
     })
 
     unselectItem()
-    scrollToElementInContainer({ containerId: "resultList", el: getItemElement(item) })
+    const realItem = item.items ? item.items[0] : item
+    dispatchScrollToItem(realItem)
     setSelectedMarker(item)
+  }
+}
+
+const dispatchScrollToItem = (item) => {
+  try {
+    const element = document.getElementById("resultList")
+    element.dispatchEvent(new CustomEvent("scrollToItem", { detail: { itemId: item.id } }))
+  } catch (error) {
+    console.log(error)
   }
 }
 
