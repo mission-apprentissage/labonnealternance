@@ -1,12 +1,7 @@
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
-
-const rankingMultipliers: Partial<Record<JOBPARTNERS_LABEL, number>> = {
-  [JOBPARTNERS_LABEL.HELLOWORK]: 0.7,
-}
-const defaultRankingMultiplier = 0.5
+import { jobPartnersRankConfig, jobPartnersRankDefaultFactor } from "./jobPartnersRankConfig"
 
 const sourceFields = [
   "apply_email",
@@ -39,7 +34,7 @@ export const rankJobPartners = async () => {
       return documents.map((document) => {
         const { _id, partner_label } = document
         const baseValue: number = Object.entries(fieldRankValues).reduce((acc, [fieldName, value]) => acc + (document[fieldName] ? value : 0), 0)
-        const multiplier: number = (partner_label ? rankingMultipliers[partner_label] : null) ?? defaultRankingMultiplier
+        const multiplier: number = (partner_label ? jobPartnersRankConfig[partner_label] : null) ?? jobPartnersRankDefaultFactor
         const rank = baseValue * multiplier
 
         const result: Pick<IComputedJobsPartners, (typeof filledFields)[number] | "_id"> = {
