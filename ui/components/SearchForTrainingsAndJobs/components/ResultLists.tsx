@@ -177,7 +177,6 @@ const ResultLists = ({
     resultList.addEventListener("scrollToItem", scrollToItem)
 
     return () => {
-      console.log("CA REMOVE ????")
       resultList.removeEventListener("scrollToItem", scrollToItem)
     }
   }, [])
