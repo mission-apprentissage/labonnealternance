@@ -1,9 +1,9 @@
 import { Box } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 
-import { FormulaireCreationOffre } from "@/components/espace_pro"
 import { Bandeau } from "@/components/espace_pro/Bandeau"
 import { DepotSimplifieLayout } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
+import { FormulaireCreationOffre } from "@/components/espace_pro/FormulaireCreationOffre/FormulaireCreationOffre"
 import { WidgetFooter } from "@/components/WidgetFooter/WidgetFooter"
 
 export const WidgetEntrepriseOffre = () => {

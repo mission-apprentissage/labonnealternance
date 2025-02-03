@@ -3,8 +3,7 @@ import { useRouter } from "next/router"
 
 import { Bandeau } from "@/components/espace_pro/Bandeau"
 import { DepotSimplifieLayout } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
-
-import { FormulaireCreationOffre } from "../../../components/espace_pro"
+import { FormulaireCreationOffre } from "@/components/espace_pro/FormulaireCreationOffre/FormulaireCreationOffre"
 
 export default function DepotRapideAjouterVoeux() {
   const router = useRouter()

@@ -7,7 +7,6 @@ import ConfirmationModificationOpco from "./ConfirmationModificationOpco"
 import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
 import CustomInput from "./CustomInput"
 import DropdownCombobox from "./DropdownCombobox"
-import FormulaireCreationOffre from "./FormulaireCreationOffre"
 import InfoPopover from "./InfoPopover"
 import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
 import InformationOpco from "./InformationOpco"
@@ -29,7 +28,6 @@ export {
   ConfirmationSuppressionOffre,
   CustomInput,
   DropdownCombobox,
-  FormulaireCreationOffre,
   InfoPopover,
   InfoTooltip,
   InformationLegaleEntreprise,

@@ -73,7 +73,7 @@ export const RomeDetail = ({
   const accesFormatted = acces_metier.split("\\n").join("<br><br>")
 
   return (
-    <BorderedBox mb={5}>
+    <BorderedBox>
       <Heading mb={4}>{appellation}</Heading>
       <Text backgroundColor="#F5F5FE" padding={3} color="#000091" my={3}>
         Voici la description de l’offre qui sera consultable par les candidats.
