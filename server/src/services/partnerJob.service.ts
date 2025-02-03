@@ -11,6 +11,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { trackApiCall } from "@/common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 
+import { generateApplicationToken } from "./appLinks.service"
 import { getJobsPartnersFromDBForUI, resolveQuery } from "./jobs/jobOpportunity/jobOpportunity.service"
 import { sortLbaJobs } from "./lbajob.service"
 import { filterJobsByOpco } from "./opco.service"
@@ -26,14 +27,16 @@ export const transformPartnerJobs = ({ partnerJobs, isMinimalData }: { partnerJo
  */
 function transformPartnerJob(partnerJob: IJobsPartnersOfferPrivateWithDistance): ILbaItemPartnerJob {
   const romes = partnerJob.offer_rome_codes.map((code) => ({ code, label: null }))
-
   const latitude = partnerJob.workplace_geopoint?.coordinates[1] ?? 0
   const longitude = partnerJob.workplace_geopoint?.coordinates[0] ?? 0
+  const id = partnerJob._id.toString()
 
   const resultJob: ILbaItemPartnerJob = {
+    id,
     ideaType: LBA_ITEM_TYPE_OLD.PARTNER_JOB,
-    id: partnerJob._id.toString(),
     title: partnerJob.offer_title,
+    token: generateApplicationToken({ jobId: id }),
+    recipient_id: `partners_${id}`,
     place: {
       //lieu de l'offre. contient ville de l'entreprise et geoloc de l'entreprise
       distance: partnerJob?.distance != null && partnerJob?.distance >= 0 ? roundDistance((partnerJob?.distance ?? 0) / 1000) : null,
@@ -110,6 +113,9 @@ function transformPartnerJobWithMinimalData(partnerJob: IJobsPartnersOfferPrivat
     job: {
       creationDate: partnerJob.offer_creation ? new Date(partnerJob.offer_creation) : null,
     },
+    // KBA 20250131 Quick fix, to remove once return type LBA_ITEM is merge when all jobs comes only from JOBS_PARTNERS COLLECTION
+    token: "",
+    recipient_id: "",
   }
 
   return resultJob
