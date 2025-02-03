@@ -25,13 +25,11 @@ import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
 import { updateDomainesMetiersFile } from "./domainesMetiers/updateDomainesMetiersFile"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
-import { classifyFranceTravailJobs } from "./franceTravail/classifyJobsFranceTravail"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
-import { importFranceTravailJobs } from "./franceTravail/importJobsFranceTravail"
-import { pocRomeo } from "./franceTravail/pocRomeo"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
+import { importFranceTravailRaw } from "./offrePartenaire/france-travail/importJobsFranceTravail"
 import { processJobPartners } from "./offrePartenaire/processJobPartners"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
@@ -216,7 +214,7 @@ export async function setupJobProcessor() {
             handler: () => processApplications(),
           },
           "Génération du token France Travail pour la récupération des offres": {
-            cron_string: "*/5 * * * *",
+            cron_string: "*/20 * * * *", // le token dure 25 minutes et le TTL DB est équivalent
             handler: generateFranceTravailAccess,
           },
           "Mise à jour du référentiel commune": {
@@ -237,7 +235,7 @@ export async function setupJobProcessor() {
           },
           "Import complet des offres France Travail": {
             cron_string: "0 6 * * *",
-            handler: importFranceTravailJobs,
+            handler: importFranceTravailRaw,
           },
           "Emission des intentions des recruteurs": {
             cron_string: "30 20 * * *",
@@ -247,18 +245,6 @@ export async function setupJobProcessor() {
     jobs: {
       "remove:duplicates:recruiters": {
         handler: async () => removeDuplicateRecruiters(),
-      },
-      "poc:romeo": {
-        handler: async () => pocRomeo(),
-      },
-      "francetravail:token-offre": {
-        handler: async () => generateFranceTravailAccess(),
-      },
-      "francetravail:jobs:import": {
-        handler: async () => importFranceTravailJobs(),
-      },
-      "francetravail:jobs:classify": {
-        handler: async () => classifyFranceTravailJobs(),
       },
       "recreate:indexes": {
         handler: async (job) => {
