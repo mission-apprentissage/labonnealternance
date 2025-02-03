@@ -4,8 +4,8 @@ import { badRequest, internal, notFound } from "@hapi/boom"
 import equal from "fast-deep-equal"
 import { Filter, ObjectId, UpdateFilter } from "mongodb"
 import { IDelegation, IJob, IJobCreate, IJobWithRomeDetail, IRecruiter, IRecruiterWithApplicationCount, IUserRecruteur, JOB_STATUS, removeAccents } from "shared"
-import { getDirectJobPath } from "shared/constants/lbaitem"
 import { OPCOS_LABEL, RECRUITER_STATUS, RECRUITER_USER_ORIGIN } from "shared/constants/recruteur"
+import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
@@ -27,6 +27,7 @@ import { replaceRecruiterFieldsWithCfaFields } from "./lbajob.service"
 import mailer from "./mailer.service"
 import { getComputedUserAccess, getGrantedRoles } from "./roleManagement.service"
 import { getRomeDetailsFromDB } from "./rome.service"
+import { isUserEmailChecked, validateUserWithAccountEmail } from "./userWithAccount.service"
 
 export interface IOffreExtended extends IJob {
   candidatures: number
@@ -246,7 +247,8 @@ export const createJob = async ({ job, establishment_id, user }: { job: IJobCrea
     entrepriseStatus = getLastStatusEvent((organization as IEntreprise).status)?.status ?? null
     isOrganizationValid = entrepriseStatus === EntrepriseStatus.VALIDE && (await isAuthorizedToPublishJob({ userId, entrepriseId: organization._id }))
   }
-  const isJobActive = isOrganizationValid
+  const isUserEmailConfirmed = isUserEmailChecked(user)
+  const isJobActive = isOrganizationValid && isUserEmailConfirmed
 
   const newJobStatus = isJobActive ? JOB_STATUS.ACTIVE : JOB_STATUS.EN_ATTENTE
   // get user activation state if not managed by a CFA
@@ -486,7 +488,7 @@ export const archiveFormulaire = async (recruiter: IRecruiter) => {
  * @param {IRecruiter["establishment_id"]} establishment_id
  * @returns {Promise<boolean>}
  */
-export const reactivateRecruiter = async (id: IRecruiter["_id"]): Promise<boolean> => {
+export const activateRecruiter = async (id: IRecruiter["_id"]): Promise<boolean> => {
   const recruiter = await getDbCollection("recruiters").findOne({ _id: id })
   if (!recruiter) {
     throw internal("Recruiter not found")
@@ -716,22 +718,28 @@ const activateAndExtendOffre = async (id: IJob["_id"]): Promise<IJob> => {
 }
 
 /**
- * to be called on the 1st activation of the account of a company
- * @param entrepriseRecruiter entreprise
+ * activate offers if they are awaiting validation and the user is ready to publish its offers
+ * @param recruiter entreprise
  */
-export const activateEntrepriseRecruiterForTheFirstTime = async (entrepriseRecruiter: IRecruiter) => {
-  const firstJob = entrepriseRecruiter.jobs.at(0)
-  if (firstJob && firstJob.job_status === JOB_STATUS.EN_ATTENTE) {
-    const job = await activateAndExtendOffre(firstJob._id)
-    // Send delegation if any
-    if (job.delegations?.length) {
-      await Promise.all(
-        job.delegations.map(async (delegation) => {
-          await sendDelegationMailToCFA(delegation.email, job, entrepriseRecruiter, delegation.siret_code)
-        })
-      )
-    }
-  }
+export const checkForJobActivations = async (recruiter: IRecruiter) => {
+  const awaitingJobs = recruiter.jobs.filter((job) => job.job_status === JOB_STATUS.EN_ATTENTE)
+  if (!awaitingJobs.length) return
+  const { managed_by } = recruiter
+  if (!managed_by) return
+  const managedByObjectId = new ObjectId(managed_by)
+  const [userOpt, entreprise, roles] = await Promise.all([
+    getDbCollection("userswithaccounts").findOne({ _id: managedByObjectId }),
+    getDbCollection("entreprises").findOne({ siret: recruiter.establishment_siret }),
+    getGrantedRoles(managed_by),
+  ])
+  if (!userOpt || !isUserEmailChecked(userOpt) || !entreprise) return
+  const recruiterRole = roles.find((role) => role.authorized_id === entreprise._id.toString())
+  if (!recruiterRole) return
+  await asyncForEach(awaitingJobs, async (job) => {
+    job = await activateAndExtendOffre(job._id)
+    const delegations = job.delegations ?? []
+    await Promise.all(delegations.map(async (delegation) => sendDelegationMailToCFA(delegation.email, job, recruiter, delegation.siret_code)))
+  })
 }
 
 /**
@@ -934,4 +942,11 @@ const validateFieldsFromReferentielRome = async (job) => {
   if (!isValid) {
     throw badRequest("compétences invalides")
   }
+}
+
+export const validateUserEmailFromJobId = async (jobId: ObjectId) => {
+  const recruiterOpt = await getOffre(jobId)
+  const { managed_by } = recruiterOpt ?? {}
+  if (!managed_by) return
+  await validateUserWithAccountEmail(new ObjectId(managed_by))
 }

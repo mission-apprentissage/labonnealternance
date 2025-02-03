@@ -9,7 +9,7 @@ import TagOffreEmploi from "../TagOffreEmploi"
 
 export default function getTags({ kind, isCfa, isMandataire }) {
   return (
-    <Box mb={4} mr="auto" textAlign="left">
+    <Box mr="auto" textAlign="left">
       {kind === LBA_ITEM_TYPE_OLD.FORMATION && <>{isCfa ? <TagCfaDEntreprise /> : <TagFormation />}</>}
       {kind === LBA_ITEM_TYPE_OLD.LBA && <TagCandidatureSpontanee />}
       {[LBA_ITEM_TYPE_OLD.MATCHA, LBA_ITEM_TYPE_OLD.PARTNER_JOB, LBA_ITEM_TYPE_OLD.PEJOB].includes(kind) && <TagOffreEmploi />}

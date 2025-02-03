@@ -8,7 +8,7 @@ import { ScopeContextProvider } from "../context/ScopeContext"
 import { initParametersFromQuery } from "../services/config"
 import { getSeoDescription, getSeoTitle } from "../utils/seoUtils"
 
-const RechercheApprentissageFormation = () => {
+const RechercheApprentissage = () => {
   const router = useRouter()
 
   const parameterContext = React.useContext(ParameterContext)
@@ -19,12 +19,12 @@ const RechercheApprentissageFormation = () => {
 
   return (
     <>
-      <NextSeo title={getSeoTitle({ parameterContext, page: "Formations" })} description={getSeoDescription({ parameterContext, page: "Formations" })} />
-      <ScopeContextProvider value={{ isJob: false, isTraining: true, path: "/recherche-apprentissage-formation" }}>
+      <NextSeo title={getSeoTitle({ parameterContext, page: "Offres" })} description={getSeoDescription({ parameterContext, page: "Offres" })} />
+      <ScopeContextProvider value={{ isJob: true, isTraining: true, path: "/recherche" }}>
         <SearchForTrainingsAndJobs />
       </ScopeContextProvider>
     </>
   )
 }
 
-export default RechercheApprentissageFormation
+export default RechercheApprentissage

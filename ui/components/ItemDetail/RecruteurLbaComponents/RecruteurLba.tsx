@@ -1,12 +1,13 @@
 import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
 import React, { useState } from "react"
+import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
+import { buildJobUrl } from "shared/metier/lbaitemutils"
 
 import { focusWithin } from "@/theme/theme-lba-tools"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
 import { fetchAddresses } from "../../../services/baseAdresse"
-import { getItemQueryParameters } from "../../../utils/getItemId"
 import { getSearchQueryParameters } from "../../../utils/getSearchParameters"
 import { setSelectedMarker } from "../../../utils/mapTools"
 import ItemDetailApplicationsStatus from "../ItemDetailServices/ItemDetailApplicationStatus"
@@ -89,7 +90,7 @@ const RecruteurLba = ({ company, handleSelectItem, showTextOnly = undefined, sea
     }
   }
 
-  const actualLink = `/recherche-apprentissage?display=list&page=fiche&${getItemQueryParameters(company)}&${getSearchQueryParameters(formValues)}`
+  const actualLink = `${buildJobUrl(oldItemTypeToNewItemType(company.ideaType), company.id, company.title)}?${getSearchQueryParameters(formValues)}`
 
   const cardProperties = {
     display: "block",

@@ -14,7 +14,7 @@ interface Job {
 }
 
 export const buildLinkForTownAndJob = (town: Town, job: Job): UrlObject => {
-  const pathname = "/recherche-apprentissage"
+  const pathname = "/recherche"
   const query: Record<string, string | boolean | string[]> = {
     display: "list",
     displayMap: false,

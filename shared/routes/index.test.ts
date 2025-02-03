@@ -3,9 +3,9 @@ import assert from "node:assert"
 import { describe, it } from "vitest"
 import { ZodEffects } from "zod"
 
-import { IRouteSchema, IRouteSchemaGet, IRouteSchemaWrite, IRoutesDef, ZResError } from "./common.routes"
+import { IRouteSchema, IRouteSchemaGet, IRouteSchemaWrite, IRoutesDef, ZResError } from "./common.routes.js"
 
-import { zRoutes } from "."
+import { zRoutes } from "./index.js"
 
 describe("zRoutes", () => {
   it("should define error schema compatible with default one from error middleware", () => {

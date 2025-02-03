@@ -4,7 +4,7 @@ location / {
 
     client_max_body_size 0;
 
-    location /recherche-apprentissage {
+    location /recherche {
         set $upstream http://ui:3000;
         include extra-includes/proxy-iframe.conf;
     }
@@ -14,7 +14,7 @@ location / {
         include extra-includes/proxy-iframe.conf;
     }
 
-    location /recherche-apprentissage-formation {
+    location /recherche-formation {
         set $upstream http://ui:3000;
         include extra-includes/proxy-iframe.conf;
     }

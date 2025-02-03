@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest"
+import { describe, expect, it } from "vitest"
 
-import { validateSIRET } from "./siretValidator"
+import { validateSIRET } from "./siretValidator.js"
 
 describe("validateSIRET", () => {
   it.each([["73282932000074", "35600000000048"]])("should validate correct luhn numbers", (siret) => {

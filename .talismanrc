@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: c0279ec41ea7c516c2eb88dff23ef328a82a466bc2ffde2f169ea370f8430b34
+  checksum: 1910fb07ec956bb49fa09319706b02bdf1320633f8d405f7f53783ebf827f39b
 - filename: .infra/vault/vault.yml
   checksum: c7b85451db302eb73a03185f06cd6d153e7a835a2a518baa4495629972b44eae
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
@@ -24,7 +24,7 @@ fileignoreconfig:
 - filename: server/src/db/migrations/202405230000000-migrate-fix-missing-date-blacklist.ts
   checksum: 0c1b814245a58b8ca788fbfab9899206edbddaae795d56963f86c5aa83ea555f
 - filename: server/src/http/controllers/__snapshots__/etablissementRecruteur.controller.test.ts.snap
-  checksum: 7bf9d206d0ed729df96134d4238d2cecc5b87ce2f8273bc32d95a7609a23afab
+  checksum: e8a35e591adb1447d1b6e796b063f435ac389e9ffe619c68185f348beae71215
 - filename: server/src/http/controllers/application.controller.test.ts
   checksum: 00cac67c8e138098126ae98702e2bdc3e1092e1bbf188d9a437197e9ca94e16a
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
@@ -82,7 +82,7 @@ fileignoreconfig:
 - filename: server/src/services/__snapshots__/formulaire.service.test.ts.snap
   checksum: 71d9956fd03fcec52d37b3799fc5bc806d42ec40200254b1740819b3d5a2b0d1
 - filename: server/src/services/__snapshots__/partnerJob.service.test.ts.snap
-  checksum: 4f9393678b2ba8ea72cfd832d6a33ede3bc4024382b624464481a5f09636e152
+  checksum: 1609ab1239e5a00a5d8ace34b0f1db49b2aea52d9abe76fc1f32c36ce9b34510
 - filename: server/src/services/application.service.test.ts
   checksum: d11d73a73ed489475d6a2f7dd693787fc71a7dfd9150bb88cec4f88c92c19d02
 - filename: server/src/services/application.service.ts
@@ -271,6 +271,8 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
+- filename: server/static/templates/mail-candidat-offre-emploi-partenaire.mjml.ejs
+  checksum: 092f871d48fc0602f5f90bb239defbf809aedab35f347f83fd0fdc97a6359abf
 scopeconfig:
 - scope: node
 custom_patterns:

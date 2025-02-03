@@ -24,6 +24,7 @@ import {
   patchJobDelegation,
   patchOffre,
   provideOffre,
+  validateUserEmailFromJobId,
 } from "../../services/formulaire.service"
 import { Server } from "../server"
 
@@ -386,11 +387,13 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.put["/formulaire/offre/:jobId/cancel"])],
     },
     async (req, res) => {
-      const exists = await checkOffreExists(req.params.jobId)
+      const { jobId } = req.params
+      const exists = await checkOffreExists(jobId)
       if (!exists) {
         return res.status(400).send({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
       }
-      await cancelOffre(req.params.jobId)
+      await cancelOffre(jobId)
+      await validateUserEmailFromJobId(jobId)
       return res.status(200).send({})
     }
   )
@@ -424,11 +427,13 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.put["/formulaire/offre/:jobId/provided"])],
     },
     async (req, res) => {
-      const exists = await checkOffreExists(req.params.jobId)
+      const { jobId } = req.params
+      const exists = await checkOffreExists(jobId)
       if (!exists) {
         return res.status(400).send({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
       }
-      await provideOffre(req.params.jobId)
+      await provideOffre(jobId)
+      await validateUserEmailFromJobId(jobId)
       return res.status(200).send({})
     }
   )

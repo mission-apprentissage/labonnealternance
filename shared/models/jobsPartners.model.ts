@@ -1,21 +1,21 @@
 import { z } from "zod"
 
-import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants"
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
+import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 
-import { ZPointGeometry } from "./address.model"
-import { IModelDescriptor, zObjectId } from "./common"
-import { JOB_STATUS_ENGLISH } from "./job.model"
-import { zOpcoLabel } from "./opco.model"
+import { ZPointGeometry } from "./address.model.js"
+import { IModelDescriptor, zObjectId } from "./common.js"
+import { JOB_STATUS_ENGLISH } from "./job.model.js"
+import { zOpcoLabel } from "./opco.model.js"
 
 const collectionName = "jobs_partners" as const
 
 export enum JOBPARTNERS_LABEL {
-  HELLOWORK = "Hello work",
+  HELLOWORK = "Hellowork",
   OFFRES_EMPLOI_LBA = "La bonne alternance",
-  OFFRES_EMPLOI_FRANCE_TRAVAIL = "France Travail",
+  FRANCE_TRAVAIL = "France Travail",
   RH_ALTERNANCE = "RH Alternance",
-  PASS = "Pass emploi",
+  PASS = "PASS",
 }
 
 export enum FILTER_JOBPARTNERS_LABEL {
@@ -102,6 +102,7 @@ export const ZJobsPartnersOfferPrivate = ZJobsPartnersOfferApi.omit({
   .extend({
     _id: zObjectId,
     apply_url: ZJobsPartnersOfferApi.shape.apply_url.nullable().default(null),
+    rank: z.number().nullish().describe("Valeur indiquant la qualité de l'offre. Plus la valeur est élevée, plus la qualité de l'offre est importante"),
   })
 
 export const ZJobsPartnersOfferPrivateWithDistance = ZJobsPartnersOfferPrivate.extend({

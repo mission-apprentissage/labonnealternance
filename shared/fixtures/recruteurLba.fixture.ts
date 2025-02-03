@@ -1,6 +1,6 @@
 import { ObjectId } from "bson"
 
-import { ILbaCompany } from "../models"
+import { ILbaCompany } from "../models/recruteurLba.model.js"
 
 export function generateLbaCompanyFixture(data: Partial<ILbaCompany>): ILbaCompany {
   return {

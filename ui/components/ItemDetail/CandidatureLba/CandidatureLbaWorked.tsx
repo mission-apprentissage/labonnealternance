@@ -1,8 +1,6 @@
 import { Box, Container, Flex, Image, Text } from "@chakra-ui/react"
 import React from "react"
 
-import { testingParameters } from "../../../utils/testingParameters"
-
 const CandidatureLbaWorked = ({ email, company }) => {
   return (
     <Container data-testid="CandidatureSpontaneeWorked">
@@ -15,7 +13,6 @@ const CandidatureLbaWorked = ({ email, company }) => {
               {company}
             </Text>
           </Text>
-          {testingParameters?.simulatedRecipient && <Text>Les emails ont été envoyés à {testingParameters.simulatedRecipient}</Text>}
         </Box>
       </Flex>
       <Text fontSize="18px">

@@ -11,7 +11,7 @@ import { asyncForEach } from "../common/utils/asyncUtils"
 import { getDbCollection } from "../common/utils/mongodbUtils"
 
 import { autoValidateUserRoleOnCompany, getEntrepriseDataFromSiret, sendEmailConfirmationEntreprise } from "./etablissement.service"
-import { activateEntrepriseRecruiterForTheFirstTime } from "./formulaire.service"
+import { checkForJobActivations } from "./formulaire.service"
 import { deactivateEntreprise, setEntrepriseInError, setEntrepriseValid } from "./userRecruteur.service"
 
 export type Organization = { entreprise: IEntreprise; type: typeof ENTREPRISE } | { cfa: ICFA; type: typeof CFA }
@@ -119,7 +119,7 @@ export const upsertEntrepriseData = async (
         if (!recruiter) {
           return
         }
-        await activateEntrepriseRecruiterForTheFirstTime(recruiter)
+        await checkForJobActivations(recruiter)
         const role = rolesToUpdate.find((role) => role.user_id.toString() === user._id.toString())
         const status = getLastStatusEvent(role?.status)?.status
         if (!status) {

@@ -1,7 +1,7 @@
 import { ObjectId } from "bson"
 
-import { VALIDATION_UTILISATEUR } from "../constants"
-import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent } from "../models"
+import { VALIDATION_UTILISATEUR } from "../constants/recruteur.js"
+import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent } from "../models/entreprise.model.js"
 
 export function generateEntrepriseFixture(data: Partial<IEntreprise> = {}): IEntreprise {
   const now = new Date()

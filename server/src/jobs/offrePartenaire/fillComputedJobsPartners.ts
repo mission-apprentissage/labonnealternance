@@ -6,6 +6,7 @@ import { fillLocationInfosForPartners } from "./fillLocationInfosForPartners"
 import { fillOpcoInfosForPartners } from "./fillOpcoInfosForPartners"
 import { fillRomeForPartners } from "./fillRomeForPartners"
 import { fillSiretInfosForPartners } from "./fillSiretInfosForPartners"
+import { rankJobPartners } from "./rankJobPartners"
 import { validateComputedJobPartners } from "./validateComputedJobPartners"
 
 export const fillComputedJobsPartners = async () => {
@@ -14,6 +15,7 @@ export const fillComputedJobsPartners = async () => {
   await fillLocationInfosForPartners()
   await fillRomeForPartners()
   await detectDuplicateJobPartners()
+  await rankJobPartners()
   await validateComputedJobPartners()
 }
 

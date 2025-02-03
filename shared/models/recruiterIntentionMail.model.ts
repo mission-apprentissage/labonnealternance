@@ -1,8 +1,8 @@
-import { ApplicationIntention } from "../constants/application"
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { z } from "../helpers/zodWithOpenApi"
+import { ApplicationIntention } from "../constants/application.js"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { z } from "../helpers/zodWithOpenApi.js"
 
-import { IModelDescriptor, zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common.js"
 
 const collectionName = "recruiter_intention_mails" as const
 

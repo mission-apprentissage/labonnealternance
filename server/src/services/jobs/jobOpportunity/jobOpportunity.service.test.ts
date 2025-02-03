@@ -1814,28 +1814,28 @@ describe("findJobsOpportunities", () => {
           // Paris
           {
             _id: partnerJobs[0]._id,
-            partner_label: "Hello work",
+            partner_label: "Hellowork",
             partner_job_id: expect.any(String),
             workplace_legal_name: partnerJobs[0].workplace_legal_name,
           },
           // Levallois - 2024-01-01
           {
             _id: extraOffers[0]._id,
-            partner_label: "Hello work",
+            partner_label: "Hellowork",
             partner_job_id: expect.any(String),
             workplace_legal_name: extraOffers[0].workplace_legal_name,
           },
           // Levallois - 2023-01-01
           {
             _id: partnerJobs[2]._id,
-            partner_label: "Hello work",
+            partner_label: "Hellowork",
             partner_job_id: expect.any(String),
             workplace_legal_name: partnerJobs[2].workplace_legal_name,
           },
           // Levallois - 2021-01-01
           {
             _id: extraOffers[1]._id,
-            partner_label: "Hello work",
+            partner_label: "Hellowork",
             partner_job_id: expect.any(String),
             workplace_legal_name: extraOffers[1].workplace_legal_name,
           },

@@ -4,7 +4,7 @@ import { useRouter } from "next/router"
 import QRCode from "react-qr-code"
 import { useQuery } from "react-query"
 import { NIVEAUX_POUR_LBA } from "shared/constants"
-import { getDirectJobPath } from "shared/constants/lbaitem"
+import { getDirectJobPath } from "shared/metier/lbaitemutils"
 
 import { LoadingEmptySpace } from "@/components/espace_pro"
 import fetchLbaJobDetails from "@/services/fetchLbaJobDetails"
