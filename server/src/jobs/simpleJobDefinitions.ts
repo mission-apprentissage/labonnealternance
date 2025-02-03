@@ -9,16 +9,20 @@ import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
 import { obfuscateCollections } from "./database/obfuscateCollections"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
+import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
 import { detectDuplicateJobPartners } from "./offrePartenaire/detectDuplicateJobPartners"
 import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
+import { classifyFranceTravailJobs } from "./offrePartenaire/france-travail/classifyJobsFranceTravail"
+import { importFranceTravailRaw, importFranceTravailToComputed } from "./offrePartenaire/france-travail/importJobsFranceTravail"
 import { importHelloWorkRaw, importHelloWorkToComputed } from "./offrePartenaire/hellowork/importHelloWork"
 import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromComputedToJobsPartners"
 import { importKelio } from "./offrePartenaire/kelio/importKelio"
 import { importPassRaw, importPassToComputed } from "./offrePartenaire/pass/importPass"
 import { processJobPartners } from "./offrePartenaire/processJobPartners"
+import { rankJobPartners } from "./offrePartenaire/rankJobPartners"
 import { importRHAlternanceRaw, importRHAlternanceToComputed } from "./offrePartenaire/rh-alternance/importRHAlternance"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -178,6 +182,14 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: importPassRaw,
     description: "importe les offres Pass dans la collection raw",
   },
+  {
+    fct: importFranceTravailRaw,
+    description: "import des offres France Travail dans la collection raw",
+  },
+  {
+    fct: classifyFranceTravailJobs,
+    description: "Retirer les offres de CFA des offres France travail dans la collection raw",
+  },
   // IMPORT RAW TO COMPUTED JOBS PARTNERS
   {
     fct: importHelloWorkToComputed,
@@ -190,6 +202,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: importPassToComputed,
     description: "Importe les offres Pass depuis raw vers computed",
+  },
+  {
+    fct: importFranceTravailToComputed,
+    description: "Importe les offres France Travail depuis raw vers computed",
   },
   // IMPORT COMPUTED TO JOBS PARTNERS
   {
@@ -227,11 +243,19 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Génère le sitemap pour les offres",
   },
   {
+    fct: generateFranceTravailAccess,
+    description: "Génère les tokens d'accès à France Travail et les sauvegarde en DB",
+  },
+  {
     fct: processScheduledRecruiterIntentions,
     description: "Envoi les intentations des recruteurs programmées",
   },
   {
     fct: resetInvitationDates,
     description: "Permet de réinitialiser les dates d'invitation et de refus des établissements pour la prise de rendez-vous",
+  },
+  {
+    fct: rankJobPartners,
+    description: "Calcule le rank des computed job partners",
   },
 ]

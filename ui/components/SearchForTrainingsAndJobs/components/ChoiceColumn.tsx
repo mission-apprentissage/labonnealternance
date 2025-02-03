@@ -3,12 +3,14 @@ import distance from "@turf/distance"
 import { useRouter } from "next/router"
 import React, { useContext, useEffect } from "react"
 
+import { getCloseAndSelectFunctions } from "@/services/itemDetailServices"
+
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { ParameterContext } from "../../../context/ParameterContextProvider"
 import { ScopeContext } from "../../../context/ScopeContext"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
-import { currentSearch, setCurrentPage, setCurrentSearch } from "../../../utils/currentPage"
-import { closeMapPopups, filterLayers, flyToLocation, flyToMarker, setSelectedMarker } from "../../../utils/mapTools"
+import { setCurrentSearch } from "../../../utils/currentPage"
+import { filterLayers, flyToLocation } from "../../../utils/mapTools"
 import pushHistory from "../../../utils/pushHistory"
 import { scrollToTop } from "../../../utils/tools"
 import ItemDetail from "../../ItemDetail/ItemDetail"
@@ -20,7 +22,6 @@ import SearchFormResponsive from "./SearchFormResponsive"
 
 const ChoiceColumn = ({
   showResultList,
-  unSelectItem,
   showSearchForm,
   handleSearchSubmit,
   shouldShowWelcomeMessage,
@@ -30,10 +31,8 @@ const ChoiceColumn = ({
   trainingSearchError,
   searchForJobs,
   isJobSearchLoading,
-  isPartnerJobSearchLoading,
   isFormVisible,
   jobSearchError,
-  partnerJobSearchError,
 }) => {
   const router = useRouter()
   const scopeContext = useContext(ScopeContext)
@@ -47,39 +46,6 @@ const ChoiceColumn = ({
 
   const handleSearchSubmitFunction = (values) => {
     return handleSearchSubmit({ values })
-  }
-
-  const handleSelectItem = (item) => {
-    flyToMarker(item, 12)
-    closeMapPopups()
-    setSelectedItem(item)
-    setSelectedMarker(item)
-
-    setCurrentPage("fiche")
-
-    pushHistory({
-      router,
-      scopeContext,
-      item,
-      page: "fiche",
-      display: "list",
-      searchParameters: formValues,
-      searchTimestamp: currentSearch,
-      displayMap,
-    })
-  }
-
-  const handleClose = () => {
-    setCurrentPage("")
-    pushHistory({
-      router,
-      scopeContext,
-      display: "list",
-      searchParameters: formValues,
-      searchTimestamp: currentSearch,
-      displayMap,
-    })
-    unSelectItem("doNotSaveToHistory")
   }
 
   const showAllResults = () => {
@@ -165,40 +131,11 @@ const ChoiceColumn = ({
     setTrainings(trainings)
   }
 
-  const getResultLists = () => {
-    return (
-      <ResultLists
-        selectedItem={selectedItem}
-        handleSelectItem={handleSelectItem}
-        showSearchForm={showSearchForm}
-        isTrainingSearchLoading={isTrainingSearchLoading}
-        isJobSearchLoading={isJobSearchLoading}
-        isPartnerJobSearchLoading={isPartnerJobSearchLoading}
-        searchRadius={searchRadius}
-        handleExtendedSearch={searchForJobsWithLooseRadius}
-        searchForJobsOnNewCenter={searchForJobsOnNewCenter}
-        searchForTrainingsOnNewCenter={searchForTrainingsOnNewCenter}
-        jobSearchError={jobSearchError}
-        partnerJobSearchError={partnerJobSearchError}
-        trainingSearchError={trainingSearchError}
-        shouldShowWelcomeMessage={shouldShowWelcomeMessage}
-      />
-    )
-  }
+  const columnBackgroundProperty = shouldShowWelcomeMessage ? ["white", "white", "beige"] : "grey.100"
 
-  const getSearchForm = () => {
-    return (
-      <Box background="white" padding="0.5rem 1rem 2rem" display={isFormVisible ? ["block", "block", "none"] : "none"}>
-        <SearchFormResponsive showResultList={showResultList} handleSearchSubmit={handleSearchSubmitFunction} />
-      </Box>
-    )
-  }
-
-  const getInitialDesktopText = () => {
-    const displayProperty = shouldShowWelcomeMessage ? ["none", "none", "block"] : "none"
-
-    return (
-      <Box display={displayProperty} width={{ base: "75%", lg: "60%", xl: "50%" }} margin="auto" pt={12}>
+  return (
+    <Box id="choiceColumn" flex="1" overflow="auto" background={columnBackgroundProperty} className="choiceCol">
+      <Box display={shouldShowWelcomeMessage ? ["none", "none", "block"] : "none"} width={{ base: "75%", lg: "60%", xl: "50%" }} margin="auto" pt={12}>
         <Flex>
           <Image src="/images/dosearch.svg" alt="" aria-hidden="true" />
           <Box pl={12} pt={12}>
@@ -218,21 +155,27 @@ const ChoiceColumn = ({
           </Box>
         </Flex>
       </Box>
-    )
-  }
-
-  const getSelectedItemDetail = () => {
-    return selectedItem ? <ItemDetail handleClose={handleClose} handleSelectItem={handleSelectItem} /> : <></>
-  }
-
-  const columnBackgroundProperty = shouldShowWelcomeMessage ? ["white", "white", "beige"] : "grey.100"
-
-  return (
-    <Box id="choiceColumn" flex="1" overflow="auto" background={columnBackgroundProperty} className="choiceCol">
-      {getInitialDesktopText()}
-      {getSearchForm()}
-      {getResultLists()}
-      {getSelectedItemDetail()}
+      {!selectedItem && (
+        <>
+          <Box background="white" padding="0.5rem 1rem 2rem" display={isFormVisible ? ["block", "block", "none"] : "none"}>
+            <SearchFormResponsive showResultList={showResultList} handleSearchSubmit={handleSearchSubmitFunction} />
+          </Box>
+          <ResultLists
+            handleSelectItem={handleSelectItem}
+            showSearchForm={showSearchForm}
+            isTrainingSearchLoading={isTrainingSearchLoading}
+            isJobSearchLoading={isJobSearchLoading}
+            searchRadius={searchRadius}
+            handleExtendedSearch={searchForJobsWithLooseRadius}
+            searchForJobsOnNewCenter={searchForJobsOnNewCenter}
+            searchForTrainingsOnNewCenter={searchForTrainingsOnNewCenter}
+            jobSearchError={jobSearchError}
+            trainingSearchError={trainingSearchError}
+            shouldShowWelcomeMessage={shouldShowWelcomeMessage}
+          />
+        </>
+      )}
+      {selectedItem && <ItemDetail handleClose={handleClose} handleSelectItem={handleSelectItem} />}
     </Box>
   )
 }

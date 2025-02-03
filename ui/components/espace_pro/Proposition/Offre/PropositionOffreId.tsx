@@ -3,7 +3,7 @@ import { useRouter } from "next/router"
 import { useEffect } from "react"
 import { useQuery } from "react-query"
 import { IJobJson } from "shared"
-import { getDirectJobPath } from "shared/constants/lbaitem"
+import { getDirectJobPath } from "shared/metier/lbaitemutils"
 
 import { LoadingEmptySpace } from "../.."
 import { dayjs } from "../../../../common/dayjs"

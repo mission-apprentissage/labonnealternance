@@ -90,16 +90,13 @@ const ResultLists = ({
   handleExtendedSearch,
   handleSelectItem,
   isJobSearchLoading,
-  isPartnerJobSearchLoading,
   isTrainingSearchLoading,
   jobSearchError,
   searchForJobsOnNewCenter,
   searchRadius,
-  selectedItem,
   searchForTrainingsOnNewCenter,
   shouldShowWelcomeMessage,
   showSearchForm,
-  partnerJobSearchError,
   trainingSearchError,
 }) => {
   const scopeContext = useContext(ScopeContext)
@@ -184,15 +181,13 @@ const ResultLists = ({
   const virtualItems = columnVirtualizer.getVirtualItems()
 
   return (
-    <Flex direction="column" height={selectedItem ? "0%" : "100%"} display={isFormVisible ? "none" : "flex"}>
-      <Box bg="beige" display={shouldShowWelcomeMessage || selectedItem ? "none" : ""}>
+    <Flex direction="column" height={"100%"} display={isFormVisible ? ["none", "none", "flex"] : "flex"}>
+      <Box bg="beige" display={shouldShowWelcomeMessage ? "none" : ""}>
         <Box display={["flex", "flex", "none"]}>
           <ResultFilterAndCounter
             jobSearchError={jobSearchError}
-            partnerJobSearchError={partnerJobSearchError}
             trainingSearchError={trainingSearchError}
             isJobSearchLoading={isJobSearchLoading}
-            isPartnerJobSearchLoading={isPartnerJobSearchLoading}
             isTrainingSearchLoading={isTrainingSearchLoading}
             showSearchForm={showSearchForm}
           />
@@ -200,10 +195,8 @@ const ResultLists = ({
         <Box margin="auto" maxWidth="1310px">
           <ResultListsLoading
             jobSearchError={jobSearchError}
-            partnerJobSearchError={partnerJobSearchError}
             trainingSearchError={trainingSearchError}
             isJobSearchLoading={isJobSearchLoading}
-            isPartnerJobSearchLoading={isPartnerJobSearchLoading}
             isTrainingSearchLoading={isTrainingSearchLoading}
           />
           {trainingSearchError && jobSearchError && partnerJobSearchError ? (
@@ -241,7 +234,7 @@ const ResultLists = ({
         height="100vh"
         overflow="hidden"
         id="resultList"
-        display={shouldShowWelcomeMessage || selectedItem ? "none" : ""}
+        display={shouldShowWelcomeMessage ? "none" : ""}
         bg="beige"
       >
         <Box

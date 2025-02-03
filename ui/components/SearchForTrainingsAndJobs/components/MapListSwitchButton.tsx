@@ -27,6 +27,7 @@ const MapListSwitchButton = ({ showResultMap, showResultList, isFormVisible }) =
     borderRadius: "19px",
     border: "none",
     padding: "10px 20px",
+    minWidth: "110px",
     _focus: {
       boxShadow: "none",
     },

@@ -11,15 +11,7 @@ import { getJobCount, getMandataireJobCount } from "../services/utils"
 
 import FilterButton from "./FilterButton"
 
-const ResultFilterAndCounter = ({
-  jobSearchError,
-  partnerJobSearchError,
-  trainingSearchError,
-  isTrainingSearchLoading,
-  isJobSearchLoading,
-  isPartnerJobSearchLoading,
-  showSearchForm,
-}) => {
+const ResultFilterAndCounter = ({ jobSearchError, trainingSearchError, isTrainingSearchLoading, isJobSearchLoading, showSearchForm }) => {
   const scopeContext = useContext(ScopeContext)
 
   const { jobs, trainings } = useContext(SearchResultContext)
@@ -41,7 +33,7 @@ const ResultFilterAndCounter = ({
     }
   }
 
-  if (jobSearchError && partnerJobSearchError && trainingSearchError) {
+  if (jobSearchError && trainingSearchError) {
     return <></>
   }
 
@@ -49,7 +41,7 @@ const ResultFilterAndCounter = ({
   let jobCount = 0
   let mandataireJobCount = 0
 
-  if (scopeContext.isJob && !isJobSearchLoading && !isPartnerJobSearchLoading) {
+  if (scopeContext.isJob && !isJobSearchLoading) {
     jobCount = getJobCount(jobs)
     mandataireJobCount = getMandataireJobCount(jobs)
   }

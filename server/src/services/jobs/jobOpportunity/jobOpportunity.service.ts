@@ -351,7 +351,7 @@ export const getJobsPartnersForApi = async ({ romes, geo, target_diploma_level, 
     jobsRouteApiv3Converters.convertToJobOfferApiReadV3({
       ...j,
       contract_type: j.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
-      apply_url: j.apply_url ?? `${config.publicUrl}/recherche-apprentissage?type=partner&itemId=${j._id}`,
+      apply_url: j.apply_url ?? `${config.publicUrl}/recherche?type=partner&itemId=${j._id}`,
       apply_recipient_id: `jobs_partners_${j._id}`,
     })
   )
@@ -391,7 +391,7 @@ export const convertLbaCompanyToJobRecruiterApi = (recruteursLba: ILbaCompany[])
         },
       },
       apply: {
-        url: `${config.publicUrl}/recherche-apprentissage?type=lba&itemId=${recruteurLba.siret}`,
+        url: `${config.publicUrl}/recherche?type=lba&itemId=${recruteurLba.siret}`,
         phone: recruteurLba.phone,
         recipient_id: recruteurLba.email ? `recruteurslba_${recruteurLba._id}` : null,
       },
@@ -499,7 +499,7 @@ export const convertLbaRecruiterToJobOfferApi = (offresEmploiLba: IJobResult[]):
           },
 
           apply: {
-            url: `${config.publicUrl}/recherche-apprentissage?type=matcha&itemId=${job._id}`,
+            url: `${config.publicUrl}/recherche?type=matcha&itemId=${job._id}`,
             phone: recruiter.phone ?? null,
             recipient_id: `recruiters_${job._id}`,
           },
@@ -521,7 +521,7 @@ export const convertFranceTravailJobToJobOfferApi = (offresEmploiFranceTravail: 
         identifier: {
           id: null,
           partner_job_id: offreFT.id,
-          partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_FRANCE_TRAVAIL,
+          partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL,
         },
 
         contract: {

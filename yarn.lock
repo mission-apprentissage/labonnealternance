@@ -7445,7 +7445,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bson@npm:^6.10.1, bson@npm:^6.7.0":
+"bson@npm:^6.10.1":
   version: 6.10.1
   resolution: "bson@npm:6.10.1"
   checksum: 7c85c8df309bbfd4d42fae54aa37112ee048a89457be908a0e53a01d077d548c94a5a6870dd725ef48130da935286edc8b9ce04830869446db22b8c13a370c42
@@ -7906,6 +7906,13 @@ __metadata:
   version: 5.4.1
   resolution: "chalk@npm:5.4.1"
   checksum: 0c656f30b782fed4d99198825c0860158901f449a6b12b818b0aabad27ec970389e7e8767d0e00762175b23620c812e70c4fd92c0210e55fc2d993638b74e86e
+  languageName: node
+  linkType: hard
+
+"change-case@npm:5.4.4":
+  version: 5.4.4
+  resolution: "change-case@npm:5.4.4"
+  checksum: a22a25a763719658424ffbcd41e931d2d19cc22399cc765dca447fbe1eaf13e179d5e8ab1677af75f2e814dbddf74e42ffdecb526cd5bc906cc859f62aa154b2
   languageName: node
   linkType: hard
 
@@ -12475,7 +12482,7 @@ __metadata:
     clean-css: ^4.2.1
     commander: ^2.19.0
     he: ^1.2.0
-    param-case: ^2.1.1
+    param-case: ^4.0.0
     relateurl: ^0.2.7
     uglify-js: ^3.5.1
   bin:
@@ -16171,7 +16178,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb@npm:^6.7.0":
+"mongodb@npm:^6.12.0":
   version: 6.12.0
   resolution: "mongodb@npm:6.12.0"
   dependencies:
@@ -16516,6 +16523,13 @@ __metadata:
   dependencies:
     lower-case: ^1.1.1
   checksum: 856487731936fef44377ca74fdc5076464aba2e0734b56a4aa2b2a23d5b154806b591b9b2465faa59bb982e2b5c9391e3685400957fb4eeb38f480525adcf3dd
+  languageName: node
+  linkType: hard
+
+"no-case@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "no-case@npm:4.0.0"
+  checksum: cbfd08163260cb6be5451637193332aff4b27ea741944f268c63adc874eb7343b0319714202a9293464b691674e2422eaaa9b851bae87d342d2162438846d585
   languageName: node
   linkType: hard
 
@@ -17592,12 +17606,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"param-case@npm:^2.1.1":
-  version: 2.1.1
-  resolution: "param-case@npm:2.1.1"
+"param-case@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "param-case@npm:4.0.0"
   dependencies:
-    no-case: ^2.2.0
-  checksum: 3a63dcb8d8dc7995a612de061afdc7bb6fe7bd0e6db994db8d4cae999ed879859fd24389090e1a0d93f4c9207ebf8c048c870f468a3f4767161753e03cb9ab58
+    no-case: ^4.0.0
+  checksum: 42f29ae506b6848c016c7dbd9235fdda8bb4a5e307d79ac229322cf8f7eefded5014fa4d3160bd07ff1b628c7f7e6c84231a3f03a07eb81a27b363e3ffd53c67
   languageName: node
   linkType: hard
 
@@ -20135,7 +20149,7 @@ __metadata:
     axios: ^1.7.4
     axios-cache-interceptor: ^1.5.3
     basic-ftp: ^5.0.3
-    bson: ^6.7.0
+    bson: ^6.10.1
     bunyan: ^1.8.15
     bunyan-slack: ^0.0.10
     burner-email-providers: ^1.0.67
@@ -20175,7 +20189,7 @@ __metadata:
     memoizee: ^0.4.15
     miniget: ^4.2.3
     mjml: ^4.14.1
-    mongodb: ^6.7.0
+    mongodb: ^6.12.0
     netmask: ^2.0.2
     nock: beta
     nodemailer: ^6.9.5
@@ -20280,14 +20294,15 @@ __metadata:
     "@fastify/swagger": ^8.15.0
     "@tsconfig/node20": ^20.1.4
     "@types/node": ^22.10.10
-    bson: ^6.7.0
+    bson: ^6.10.1
+    change-case: 5.4.4
     dayjs: ^1.11.13
     eslint-plugin-zod: ^1.4.0
     i18next: ^24.0.5
     libphonenumber-js: ^1.11.7
     lodash-es: ^4.17.21
     luhn: ^2.4.1
-    mongodb: ^6.7.0
+    mongodb: ^6.12.0
     openapi3-ts: ^4.4.0
     type-fest: ^4.26.0
     typescript: ^5.4.5

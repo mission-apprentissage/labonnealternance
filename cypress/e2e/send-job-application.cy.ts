@@ -41,7 +41,7 @@ describe("send-job-application", () => {
     // désactivé à cause du process asynchrone
     // smtpClient.getMail(fakeMail, "Votre candidature chez").then((emailContent) => {
     //   containsText("Votre candidature a bien été envoyée à", emailContent)
-    //   const offreUrl = smtpClient.findUrlInBrackets(`${Cypress.env("ui")}/recherche-apprentissage?*`, emailContent)
+    //   const offreUrl = smtpClient.findUrlInBrackets(`${Cypress.env("ui")}/recherche?*`, emailContent)
     //   cy.visit(offreUrl)
     //   FlowSendApplication.applicationForm.verifyAlreadyApplied()
     // })

@@ -13,7 +13,7 @@ export const SearchForm = {
     cy.visit(Cypress.env("ui"))
   },
   goToSearchFormation() {
-    cy.visit(Cypress.env("ui") + "/recherche-apprentissage-formation")
+    cy.visit(Cypress.env("ui") + "/recherche-formation")
   },
   fillSearch({ metier, location, distance, niveauEtude }: { metier?: string; location?: string; distance?: 10 | 30 | 60 | 100; niveauEtude?: Diploma }) {
     if (metier) {

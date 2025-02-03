@@ -47,7 +47,7 @@ const ZFTOrigineOffre = z.object({
 })
 export type IFTOrigineOffre = z.output<typeof ZFTOrigineOffre>
 
-const ZFTJob = z
+export const ZFTJobRaw = z
   .object({
     _id: zObjectId,
     createdAt: z.date(),
@@ -75,7 +75,7 @@ const ZFTJob = z
     natureContrat: z.string(),
     experienceExige: z.string(),
     experienceLibelle: z.string(),
-    competences: z.array(z.object({}).passthrough()).optional(),
+    competences: z.array(z.object({ code: z.string().optional(), libelle: z.string(), exigence: z.string() }).passthrough()).optional(),
     permis: z.array(z.object({}).passthrough()).optional(),
     salaire: z.union([z.array(z.object({}).passthrough()), z.object({}).passthrough()]),
     dureeTravailLibelle: z.string().optional(),
@@ -113,10 +113,10 @@ const ZFTJob = z
   })
   .passthrough()
 
-export type IFTJob = z.output<typeof ZFTJob>
+export type IFTJobRaw = z.output<typeof ZFTJobRaw>
 
 export default {
-  zod: ZFTJob,
+  zod: ZFTJobRaw,
   indexes: [],
   collectionName: "raw_francetravail",
   authorizeAdditionalProperties: true,
