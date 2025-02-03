@@ -113,7 +113,7 @@ function transformPartnerJobWithMinimalData(partnerJob: IJobsPartnersOfferPrivat
     job: {
       creationDate: partnerJob.offer_creation ? new Date(partnerJob.offer_creation) : null,
     },
-    // KBA 20250131 Quick fix, to revome once return type LBA_ITEM is merge when all jobs comes only from JOBS_PARTNERS COLLECTION
+    // KBA 20250131 Quick fix, to remove once return type LBA_ITEM is merge when all jobs comes only from JOBS_PARTNERS COLLECTION
     token: "",
     recipient_id: "",
   }

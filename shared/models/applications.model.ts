@@ -183,7 +183,9 @@ const ZNewApplicationTransitionToV2 = ZApplicationOld.extend({
 // KBA 20241011 to remove once V2 is LIVE and V1 support has ended
 export type INewApplicationV1 = z.output<typeof ZNewApplicationTransitionToV2>
 
-type JobCollectionName = "recruteurslba" | "partners" | "recruiters"
+export const ZJobCollectionName = z.enum(["recruteurslba", "partners", "recruiters"])
+export const JobCollectionName = ZJobCollectionName.enum
+export type IJobCollectionName = z.output<typeof ZJobCollectionName>
 
 export const ZApplicationApiPrivate = ZApplicationOld.pick({
   applicant_first_name: true,
@@ -204,10 +206,10 @@ export const ZApplicationApiPrivate = ZApplicationOld.pick({
       if (!ObjectId.isValid(jobId)) {
         throw new Error(`Invalid job identifier: ${jobId}`)
       }
-      if (!["recruteurslba", "partners", "recruiters"].includes(collectionName)) {
+      if (!ZJobCollectionName.safeParse(collectionName).success) {
         throw new Error(`Invalid collection name: ${collectionName}`)
       }
-      return { collectionName: collectionName as JobCollectionName, jobId }
+      return { collectionName: collectionName as IJobCollectionName, jobId }
     })
     .describe("Identifiant unique de la ressource vers laquelle la candidature est faite, préfixé par le nom de la collection"),
 })

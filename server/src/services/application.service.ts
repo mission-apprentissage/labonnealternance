@@ -18,6 +18,7 @@ import {
   INewApplicationV1,
   IRecruiter,
   JOB_STATUS,
+  JobCollectionName,
   assertUnreachable,
 } from "shared"
 import { ApplicationIntention, ApplicationIntentionDefaultText, RefusalReasons } from "shared/constants/application"
@@ -294,14 +295,14 @@ export const sendApplicationV2 = async ({
     phone: applicant_phone,
   })
 
-  if (collectionName === "recruteurslba") {
+  if (collectionName === JobCollectionName.recruteurslba) {
     const job = await getDbCollection("recruteurslba").findOne({ _id: new ObjectId(jobId) })
     if (!job) {
       throw badRequest(BusinessErrorCodes.NOTFOUND)
     }
     lbaJob = { type: LBA_ITEM_TYPE.RECRUTEURS_LBA, job, recruiter: null }
   }
-  if (collectionName === "recruiters") {
+  if (collectionName === JobCollectionName.recruiters) {
     const recruiterResult = await getOffreAvecInfoMandataire(jobId)
     if (!recruiterResult) {
       throw badRequest(BusinessErrorCodes.NOTFOUND)
@@ -314,7 +315,7 @@ export const sendApplicationV2 = async ({
 
     lbaJob = { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job, recruiter }
   }
-  if (collectionName === "partners") {
+  if (collectionName === JobCollectionName.partners) {
     const job = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(jobId) })
     if (!job) {
       throw badRequest(BusinessErrorCodes.NOTFOUND)
