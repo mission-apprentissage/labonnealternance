@@ -141,6 +141,9 @@ const ResultLists = ({
     overscan: 5,
   })
 
+  // @ts-ignore
+  window.currentConsolidatedItemList = consolidatedItemList
+
   useEffect(() => {
     if (itemToScrollTo) {
       // sollicité après fermeture de la fiche
@@ -152,29 +155,29 @@ const ResultLists = ({
     }
   })
 
-  const scrollToItem = (e) => {
-    let itemIndex = 0
-    console.log("e detail ", e.detail, consolidatedItemList)
-    if (e.detail.type === "job") {
-      // recherche premier élément de type job
-      itemIndex = consolidatedItemList.findIndex((item) => [LBA_ITEM_TYPE_OLD.LBA, LBA_ITEM_TYPE_OLD.PARTNER_JOB].includes(item.ideaType))
-    } else {
-      itemIndex = consolidatedItemList.findIndex((item) => item.id === e.detail.itemId)
-    }
-
-    console.log("itemIndex ", itemIndex)
-
-    if (itemIndex >= 0) {
-      columnVirtualizer.scrollToIndex(itemIndex)
-    }
-  }
-
   useEffect(() => {
     // events déclenchés manuellement lors des sélections sur la carte
+    const scrollToItem = (e) => {
+      let itemIndex = 0
+      if (e.detail.type === "job") {
+        // recherche premier élément de type job
+        // @ts-ignore
+        itemIndex = window.currentConsolidatedItemList.findIndex((item) => [LBA_ITEM_TYPE_OLD.LBA, LBA_ITEM_TYPE_OLD.PARTNER_JOB].includes(item.ideaType))
+      } else {
+        // @ts-ignore
+        itemIndex = window.currentConsolidatedItemList.findIndex((item) => item.id === e.detail.itemId)
+      }
+
+      if (itemIndex >= 0) {
+        columnVirtualizer.scrollToIndex(itemIndex)
+      }
+    }
+
     const resultList = document.getElementById("resultList")
     resultList.addEventListener("scrollToItem", scrollToItem)
 
     return () => {
+      console.log("CA REMOVE ????")
       resultList.removeEventListener("scrollToItem", scrollToItem)
     }
   }, [])
