@@ -1,5 +1,5 @@
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { z } from "../helpers/zodWithOpenApi"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { z } from "../helpers/zodWithOpenApi.js"
 
 const ZAcademie = z
   .object({

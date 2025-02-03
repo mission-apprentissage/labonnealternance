@@ -12,10 +12,8 @@ import { updateUiFromHistory } from "../../services/updateUiFromHistory"
 import { currentPage, currentSearch, setCurrentPage, setCurrentSearch } from "../../utils/currentPage"
 import {
   closeMapPopups,
-  computeMissingPositionAndDistance,
-  coordinatesOfFrance,
   factorTrainingsForMap,
-  flyToLocation,
+  flyToCenter,
   flyToMarker,
   isMapInitialized,
   refreshLocationMarkers,
@@ -29,7 +27,7 @@ import { InitWidgetSearchParameters, WidgetHeader } from "../WidgetHeader"
 
 import { ChoiceColumn, MapListSwitchButton } from "./components"
 import { loadItem } from "./services/loadItem"
-import { searchForJobsFunction, searchForPartnerJobsFunction } from "./services/searchForJobs"
+import { searchForJobsFunction } from "./services/searchForJobs"
 import { searchForTrainingsFunction } from "./services/searchForTrainings"
 
 const DynamicMap = dynamic(() => import("../Map"), {
@@ -52,9 +50,7 @@ const SearchForTrainingsAndJobs = () => {
   const [shouldShowWelcomeMessage, setShouldShowWelcomeMessage] = useState(hasSearch ? false : true)
 
   const [isJobSearchLoading, setIsJobSearchLoading] = useState(hasSearch || !scopeContext.isJob ? false : true)
-  const [isPartnerJobSearchLoading, setIsPartnerJobSearchLoading] = useState(hasSearch || !scopeContext.isJob ? false : true)
   const [jobSearchError, setJobSearchError] = useState("")
-  const [partnerJobSearchError, setPartnerJobSearchError] = useState("")
   const [trainingSearchError, setTrainingSearchError] = useState("")
 
   const router = useRouter()
@@ -102,20 +98,6 @@ const SearchForTrainingsAndJobs = () => {
     }
   }
 
-  const selectItemFromHistory = (itemId, type) => {
-    const item = findItem({ itemId, type, jobs, trainings })
-    selectItem(item)
-  }
-
-  const selectItem = (item) => {
-    closeMapPopups()
-    if (item) {
-      flyToMarker(item, 12)
-      setSelectedItem(item)
-      setSelectedMarker(item)
-    }
-  }
-
   const selectFollowUpItem = ({ itemId, type, jobs, trainings, searchTimestamp, formValues }) => {
     const item = findItem({ itemId, type, jobs, trainings })
 
@@ -132,6 +114,20 @@ const SearchForTrainingsAndJobs = () => {
         isReplace: true,
         displayMap,
       })
+    }
+  }
+
+  const selectItemFromHistory = (itemId, type) => {
+    const item = findItem({ itemId, type, jobs, trainings })
+    selectItem(item)
+  }
+
+  const selectItem = (item) => {
+    closeMapPopups()
+    if (item) {
+      flyToMarker(item, 12)
+      setSelectedItem(item)
+      setSelectedMarker(item)
     }
   }
 
@@ -154,16 +150,6 @@ const SearchForTrainingsAndJobs = () => {
       }
       default:
         return
-    }
-  }
-
-  const flyToCenter = (values) => {
-    const searchCenter = values?.location?.value ? [values.location.value.coordinates[0], values.location.value.coordinates[1]] : null
-
-    if (searchCenter) {
-      flyToLocation({ center: searchCenter, zoom: 10 })
-    } else {
-      flyToLocation({ center: coordinatesOfFrance, zoom: 4 })
     }
   }
 
@@ -192,6 +178,7 @@ const SearchForTrainingsAndJobs = () => {
     setCurrentSearch(searchTimestamp)
   }
 
+  // chargement d'un item depuis une url de type /recherche?itemId=123&type=training sans param de recherche
   const handleItemLoad = async ({ item, router, scopeContext, displayMap }) => {
     setShouldShowWelcomeMessage(false)
 
@@ -205,9 +192,7 @@ const SearchForTrainingsAndJobs = () => {
       setTrainingSearchError,
       setIsTrainingSearchLoading,
       setIsJobSearchLoading,
-      setIsPartnerJobSearchLoading,
       setJobSearchError,
-      setPartnerJobSearchError,
       searchResultContext,
       router,
       scopeContext,
@@ -246,21 +231,6 @@ const SearchForTrainingsAndJobs = () => {
       opcoFilter,
       opcoUrlFilter,
       showCombinedJob,
-      searchResultContext,
-    })
-
-    searchForPartnerJobsFunction({
-      values,
-      searchTimestamp,
-      setIsPartnerJobSearchLoading,
-      setPartnerJobSearchError,
-      computeMissingPositionAndDistance,
-      widgetParameters,
-      scopeContext,
-      followUpItem,
-      selectFollowUpItem,
-      opcoFilter,
-      opcoUrlFilter,
       searchResultContext,
     })
   }
@@ -386,10 +356,8 @@ const SearchForTrainingsAndJobs = () => {
         handleSearchSubmit={handleSearchSubmit}
         trainingSearchError={trainingSearchError}
         jobSearchError={jobSearchError}
-        partnerJobSearchError={partnerJobSearchError}
         isTrainingSearchLoading={isTrainingSearchLoading}
         isJobSearchLoading={isJobSearchLoading}
-        isPartnerJobSearchLoading={isPartnerJobSearchLoading}
       />
       <Flex direction="row" overflow="hidden" height="100%">
         <Box flex={{ base: 8, xl: 6 }} display={listDisplayParameters} height="100%" flexDirection="column">
@@ -398,7 +366,6 @@ const SearchForTrainingsAndJobs = () => {
             handleSearchSubmit={handleSearchSubmit}
             showResultList={showResultList}
             showSearchForm={showSearchForm}
-            unSelectItem={unSelectItem}
             searchRadius={searchRadius}
             isTrainingSearchLoading={isTrainingSearchLoading}
             isFormVisible={isFormVisible}
@@ -406,9 +373,7 @@ const SearchForTrainingsAndJobs = () => {
             trainingSearchError={trainingSearchError}
             searchForJobs={searchForJobs}
             isJobSearchLoading={isJobSearchLoading}
-            isPartnerJobSearchLoading={isPartnerJobSearchLoading}
             jobSearchError={jobSearchError}
-            partnerJobSearchError={partnerJobSearchError}
           />
         </Box>
         {displayMap ? (

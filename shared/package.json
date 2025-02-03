@@ -20,7 +20,8 @@
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^7.1.1",
     "@fastify/swagger": "^8.15.0",
-    "bson": "^6.7.0",
+    "bson": "^6.10.1",
+    "change-case": "5.4.4",
     "dayjs": "^1.11.13",
     "i18next": "^24.0.5",
     "libphonenumber-js": "^1.11.7",
@@ -33,8 +34,10 @@
     "zod-mongodb-schema": "^1.0.2"
   },
   "devDependencies": {
+    "@tsconfig/node20": "^20.1.4",
+    "@types/node": "^22.10.10",
     "eslint-plugin-zod": "^1.4.0",
-    "mongodb": "^6.7.0",
+    "mongodb": "^6.12.0",
     "typescript": "^5.4.5"
   }
 }

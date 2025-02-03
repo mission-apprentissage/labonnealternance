@@ -23,17 +23,17 @@ jobs:
 
       - name: Comment PR Preview
         if: github.event.issue.state != 'closed'
-        uses: thollander/actions-comment-pull-request@v2
+        uses: thollander/actions-comment-pull-request@v3
         with:
           message: |
             ### :rocket: Prévisualisation
             Deploying a new preview, follow progress in ${{ steps.run_url.outputs.url }}
-          comment_tag: deployment
+          comment-tag: deployment
           mode: recreate
-          pr_number: ${{ github.event.issue.number }}
+          pr-number: ${{ github.event.issue.number }}
 
       - name: React to comment
-        uses: dkershner6/reaction-action@v1
+        uses: dkershner6/reaction-action@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commentId: ${{ github.event.comment.id }}
@@ -55,7 +55,7 @@ jobs:
         run: git lfs ls-files --long | cut -d ' ' -f1 | sort > .lfs-assets-id
 
       - name: LFS Cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .git/lfs/objects
           key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
@@ -115,7 +115,7 @@ jobs:
 
       - name: Comment PR Preview
         if: github.event.issue.state != 'closed'
-        uses: thollander/actions-comment-pull-request@v2
+        uses: thollander/actions-comment-pull-request@v3
         with:
           message: |
             ### :rocket: Prévisualisation
@@ -124,13 +124,13 @@ jobs:
             You can access runner logs in ${{ steps.run_url.outputs.url }}
 
             To re-deploy just add a comment with :rocket:
-          comment_tag: deployment
+          comment-tag: deployment
           mode: recreate
-          pr_number: ${{ github.event.issue.number }}
+          pr-number: ${{ github.event.issue.number }}
 
       - name: Comment PR Preview when failed
         if: failure() && github.event.issue.state != 'closed'
-        uses: thollander/actions-comment-pull-request@v2
+        uses: thollander/actions-comment-pull-request@v3
         with:
           message: |
             ### :ambulance: Prévisualisation failed
@@ -141,13 +141,13 @@ jobs:
             You can access runner logs in ${{ steps.run_url.outputs.url }}
 
             To re-deploy just add a comment with :rocket:
-          comment_tag: deployment
+          comment-tag: deployment
           mode: recreate
-          pr_number: ${{ github.event.issue.number }}
+          pr-number: ${{ github.event.issue.number }}
 
       - name: Comment PR Preview when cancelled
         if: cancelled() && github.event.issue.state != 'closed'
-        uses: thollander/actions-comment-pull-request@v2
+        uses: thollander/actions-comment-pull-request@v3
         with:
           message: |
             ### :ambulance: Prévisualisation cancelled
@@ -157,9 +157,9 @@ jobs:
             You can access runner logs in ${{ steps.run_url.outputs.url }}
 
             To re-deploy just add a comment with :rocket:
-          comment_tag: deployment
+          comment-tag: deployment
           mode: recreate
-          pr_number: ${{ github.event.issue.number }}
+          pr-number: ${{ github.event.issue.number }}
 
   cypress:
     concurrency:

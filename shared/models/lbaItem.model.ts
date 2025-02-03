@@ -1,10 +1,10 @@
-import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem.js"
 
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { z } from "../helpers/zodWithOpenApi"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { z } from "../helpers/zodWithOpenApi.js"
 
-import { ZJobType } from "./job.model"
-import { ZReferentielRomeForJob } from "./rome.model"
+import { ZJobType } from "./job.model.js"
+import { ZReferentielRomeForJob } from "./rome.model.js"
 
 const ZLbaItemPlace = z
   .object({

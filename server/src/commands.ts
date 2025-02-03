@@ -183,7 +183,13 @@ function createJobAction(name) {
   }
 }
 
-program.command("recreate:indexes").description("Recreate MongoDB indexes").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("recreate:indexes"))
+program
+  .command("recreate:indexes")
+  .description("Recreate MongoDB indexes")
+  .option("-d, --drop", "Drop all indexes before recreating them", false)
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("recreate:indexes"))
+
 program.command("db:validate").description("Validate Documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:validate"))
 
 program
@@ -244,6 +250,17 @@ program
   .description("Exporte les offres vers France Travail")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("pe:offre:export"))
+
+program
+  .command("francetravail:jobs:import")
+  .description("Récupération des offres de France Travail")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("francetravail:jobs:import"))
+program
+  .command("francetravail:jobs:classify")
+  .description("Classification des offres de France Travail")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("francetravail:jobs:classify"))
 
 /**
  *

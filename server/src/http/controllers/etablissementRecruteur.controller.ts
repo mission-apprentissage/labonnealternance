@@ -1,10 +1,8 @@
 import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
-import { assertUnreachable, toPublicUser, TrafficType, zRoutes } from "shared"
+import { assertUnreachable, IEntreprise, toPublicUser, TrafficType, zRoutes } from "shared"
 import { CFA, ENTREPRISE } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/recruteur"
-import { AccessStatus } from "shared/models/roleManagement.model"
-import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { getSourceFromCookies } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -25,7 +23,7 @@ import {
   validateEligibiliteCfa,
 } from "@/services/etablissement.service"
 import { Organization, upsertEntrepriseData, UserAndOrganization } from "@/services/organization.service"
-import { getMainRoleManagement, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
+import { getMainRoleManagement, getPublicUserRecruteurPropsOrError, isGrantedAndAutoValidatedRole } from "@/services/roleManagement.service"
 import { saveUserTrafficSourceIfAny } from "@/services/trafficSource.service"
 import {
   autoValidateUser,
@@ -74,25 +72,24 @@ export default (server: Server) => {
         throw badRequest("Le numéro siret est obligatoire.")
       }
 
-      const cfaVerification = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
+      let entrepriseOpt: IEntreprise | null = null
+      if (skipUpdate) {
+        entrepriseOpt = await getDbCollection("entreprises").findOne({ siret })
+      }
+      if (!entrepriseOpt) {
+        const siretResponse = await getEntrepriseDataFromSiret({ siret, type: cfa_delegated_siret ? CFA : ENTREPRISE })
+        entrepriseOpt = await upsertEntrepriseData(siret, "création de compte entreprise", siretResponse, false)
+        if ("error" in siretResponse) {
+          throw badRequest(siretResponse.message, siretResponse)
+        }
+      }
+
+      const cfaVerification = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret, nafCode: entrepriseOpt.naf_code ?? undefined })
       if (cfaVerification) {
         throw badRequest(cfaVerification.message)
       }
 
-      if (skipUpdate) {
-        const entrepriseOpt = await getDbCollection("entreprises").findOne({ siret })
-        if (entrepriseOpt) {
-          return res.status(200).send(entrepriseOpt)
-        }
-      }
-      const siretResponse = await getEntrepriseDataFromSiret({ siret, type: cfa_delegated_siret ? CFA : ENTREPRISE })
-      const entreprise = await upsertEntrepriseData(siret, "création de compte entreprise", siretResponse, false)
-
-      if ("error" in siretResponse) {
-        throw badRequest(siretResponse.message, siretResponse)
-      } else {
-        return res.status(200).send(entreprise)
-      }
+      return res.status(200).send(entrepriseOpt)
     }
   )
 
@@ -316,10 +313,11 @@ export default (server: Server) => {
       }
       if (!isUserEmailChecked(user)) {
         await validateUserWithAccountEmail(user._id)
-      }
-      const mainRole = await getMainRoleManagement(user._id, true)
-      if (getLastStatusEvent(mainRole?.status)?.status === AccessStatus.GRANTED) {
-        await sendWelcomeEmailToUserRecruteur(user)
+
+        const mainRole = await getMainRoleManagement(user._id, true)
+        if (mainRole && isGrantedAndAutoValidatedRole(mainRole)) {
+          await sendWelcomeEmailToUserRecruteur(user)
+        }
       }
 
       await updateLastConnectionDate(email)

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { generatePath } from "./generateUri"
+import { generatePath } from "./generateUri.js"
 
 describe("Generate path", () => {
   it("Should generate path without variable", () => {

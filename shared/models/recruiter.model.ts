@@ -2,13 +2,13 @@ import { randomUUID } from "crypto"
 
 import { Jsonify } from "type-fest"
 
-import { OPCOS_LABEL, RECRUITER_STATUS } from "../constants/recruteur"
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { z } from "../helpers/zodWithOpenApi"
+import { OPCOS_LABEL, RECRUITER_STATUS } from "../constants/recruteur.js"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { z } from "../helpers/zodWithOpenApi.js"
 
-import { ZPointGeometry } from "./address.model"
-import { IModelDescriptor, zObjectId } from "./common"
-import { ZJob } from "./job.model"
+import { ZPointGeometry } from "./address.model.js"
+import { IModelDescriptor, zObjectId } from "./common.js"
+import { ZJob } from "./job.model.js"
 
 const allRecruiterStatus = Object.values(RECRUITER_STATUS)
 
@@ -96,11 +96,10 @@ export type IAnonymizedRecruiter = z.output<typeof ZAnonymizedRecruiter>
 export default {
   zod: ZRecruiter,
   indexes: [
-    [{ geopoint: "2dsphere", status: 1, "jobs.job_status": 1, "jobs.rome_code": 1, "jobs.job_expiration_date": 1, "jobs.job_level_label": 1 }, {}],
+    [{ geopoint: "2dsphere", status: 1, "jobs.job_status": 1, "jobs.rome_code": 1, "jobs.job_expiration_date": 1 }, {}],
     [{ establishment_id: 1 }, {}],
     [{ establishment_siret: 1 }, {}],
     [{ cfa_delegated_siret: 1 }, {}],
-    [{ email: 1 }, {}],
     [{ email: 1, establishment_siret: 1 }, { unique: true }],
     [{ establishment_enseigne: 1 }, {}],
     [{ managed_by: 1 }, {}],

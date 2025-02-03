@@ -57,5 +57,5 @@ export const up = async () => {
       stat.error++
     }
   }
-  console.log(stat)
+  console.info(stat)
 }

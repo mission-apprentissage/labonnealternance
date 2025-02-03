@@ -1,13 +1,13 @@
 import { Jsonify } from "type-fest"
 
-import { AUTHTYPE, CFA, ETAT_UTILISATEUR, OPCOS_LABEL } from "../constants/recruteur"
-import { removeUrlsFromText } from "../helpers/common"
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { z } from "../helpers/zodWithOpenApi"
+import { AUTHTYPE, CFA, ETAT_UTILISATEUR, OPCOS_LABEL } from "../constants/recruteur.js"
+import { removeUrlsFromText } from "../helpers/common.js"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { z } from "../helpers/zodWithOpenApi.js"
 
-import { ZGlobalAddress, ZPointGeometry } from "./address.model"
-import { zObjectId } from "./common"
-import { IUserWithAccount, ZValidationUtilisateur } from "./userWithAccount.model"
+import { ZGlobalAddress, ZPointGeometry } from "./address.model.js"
+import { zObjectId } from "./common.js"
+import { IUserWithAccount, ZValidationUtilisateur } from "./userWithAccount.model.js"
 
 export const ZEtatUtilisateur = extensions.buildEnum(ETAT_UTILISATEUR).describe("Statut de l'utilisateur")
 

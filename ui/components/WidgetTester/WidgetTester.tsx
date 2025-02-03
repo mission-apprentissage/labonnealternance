@@ -103,11 +103,11 @@ const WidgetTester = () => {
     let ideaUrl = baseUrl
     ideaUrl = ideaUrl.replace("5", "3")
 
-    let path = "recherche-apprentissage"
+    let path = "recherche"
 
     if (widgetParams) {
       if (widgetParams.scope === "job") path = "recherche-emploi"
-      else if (widgetParams.scope === "training") path = "recherche-apprentissage-formation"
+      else if (widgetParams.scope === "training") path = "recherche-formation"
 
       ideaUrl = `${ideaUrl}/${path}`
 

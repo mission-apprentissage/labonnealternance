@@ -1,7 +1,7 @@
 import { ObjectId } from "bson"
 
-import { EApplicantRole, EApplicantType } from "../constants/rdva"
-import { IUser } from "../models"
+import { EApplicantRole, EApplicantType } from "../constants/rdva.js"
+import { IUser } from "../models/user.model.js"
 
 export function generateUserFixture(data: Partial<IUser> = {}): IUser {
   return {

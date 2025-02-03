@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 
-import { ICacheRomeo } from "../models/cacheRomeo.model"
+import { ICacheRomeo } from "../models/cacheRomeo.model.js"
 
 export const cacheRomeFixture = (props: Partial<ICacheRomeo> = {}): ICacheRomeo => {
   return {

@@ -1,14 +1,14 @@
 import { ObjectId } from "bson"
 import { Jsonify } from "type-fest"
 
-import { RefusalReasons } from "../constants/application"
-import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, allLbaItemType, allLbaItemTypeOLD } from "../constants/lbaitem"
-import { removeUrlsFromText } from "../helpers/common"
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { z } from "../helpers/zodWithOpenApi"
-import { zCallerParam } from "../routes/_params"
+import { RefusalReasons } from "../constants/application.js"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, allLbaItemType, allLbaItemTypeOLD } from "../constants/lbaitem.js"
+import { removeUrlsFromText } from "../helpers/common.js"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { z } from "../helpers/zodWithOpenApi.js"
+import { zCallerParam } from "../routes/_params.js"
 
-import { IModelDescriptor, zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common.js"
 
 const collectionName = "applications" as const
 
@@ -75,6 +75,7 @@ const ZApplicationOld = z
     created_at: z.date().nullable().describe("La date création de la demande"),
     last_update_at: z.date().nullable().describe("Date de dernières mise à jour"),
     scan_status: extensions.buildEnum(ApplicationScanStatus).describe("Status du processus de scan de virus"),
+    application_url: z.string().nullish().describe("URL où a été créé la candidature. Uniquement pour les candidatures venant de LBA."),
   })
   .strict()
   .openapi("Application")
@@ -192,6 +193,7 @@ export const ZApplicationApiPrivate = ZApplicationOld.pick({
   applicant_attachment_name: true,
   job_searched_by_user: true,
   caller: true,
+  application_url: true,
 }).extend({
   applicant_message: ZApplicationOld.shape.applicant_message_to_company.optional(),
   applicant_attachment_content: z.string().max(4_215_276).describe("Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo."),
@@ -225,20 +227,14 @@ export type IApplicationApiPublicJSON = Jsonify<z.input<typeof ZApplicationApiPu
 export default {
   zod: ZApplication,
   indexes: [
-    [{ company_recruitment_intention: 1 }, {}],
-    [{ company_name: 1 }, {}],
-    [{ company_naf: 1 }, {}],
-    [{ job_id: 1 }, {}],
     [{ company_siret: 1 }, {}],
-    [{ applicant_email: 1 }, {}],
+    [{ job_id: 1 }, {}],
+    [{ applicant_id: 1 }, {}],
+    [{ applicant_id: 1, to_applicant_message_id: 1 }, {}],
+    [{ scan_status: 1 }, {}],
+    [{ scan_status: 1, to_applicant_message_id: 1 }, {}],
     [{ created_at: 1 }, {}],
     [{ company_email: 1 }, {}],
-    [{ job_origin: 1 }, {}],
-    [{ caller: 1 }, {}],
-    [{ scan_status: 1 }, {}],
-    [{ applicant_id: 1, to_applicant_message_id: 1 }, {}],
-    [{ scan_status: 1, to_applicant_message_id: 1 }, {}],
-    [{ applicant_id: 1 }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor

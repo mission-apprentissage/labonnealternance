@@ -5,7 +5,7 @@ import { pipeline } from "stream/promises"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { logger } from "../../common/logger"
-import { s3Write } from "../../common/utils/awsUtils"
+import { s3WriteStream } from "../../common/utils/awsUtils"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 
 interface IGeneratorParams {
@@ -86,14 +86,14 @@ async function exportLbaJobsToS3() {
       const key = path.split("/").pop() as string
       const file = createReadStream(path)
       logger.info(`Uploading file ${key} to S3`)
-      await s3Write("storage", key, { Body: file, CacheControl: "no-cache, no-store, must-revalidate" })
+      await s3WriteStream("storage", key, { Body: file, CacheControl: "no-cache, no-store, must-revalidate" })
       logger.info(`file ${key} uploaded`)
     }),
     generateJsonExport(recruteurs_lba).then(async (path) => {
       const key = path.split("/").pop() as string
       const file = createReadStream(path)
       logger.info(`Uploading file ${key} to S3`)
-      await s3Write("storage", key, { Body: file, CacheControl: "no-cache, no-store, must-revalidate" })
+      await s3WriteStream("storage", key, { Body: file, CacheControl: "no-cache, no-store, must-revalidate" })
       logger.info(`File ${key} uploaded`)
     }),
   ])

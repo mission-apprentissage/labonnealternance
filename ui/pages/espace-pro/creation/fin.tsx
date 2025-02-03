@@ -4,7 +4,7 @@ import { useRouter } from "next/router"
 import { useContext, useState } from "react"
 import { useQuery, useQueryClient } from "react-query"
 import { ETAT_UTILISATEUR } from "shared/constants"
-import { getDirectJobPath } from "shared/constants/lbaitem"
+import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import { zObjectId } from "shared/models/common"
 import { z } from "zod"
 
@@ -40,20 +40,6 @@ export default function DepotRapideFin() {
   }
 
   return <FinComponent {...parsedQuery.data} />
-}
-
-function PrintJobLink({ jobId }) {
-  return (
-    <Link
-      href={`/espace-pro/offre/impression/${jobId}`}
-      aria-label="Ouvrir la page de prévisualisation de l'offre sur le site La bonne alternance - nouvelle fenêtre"
-      isExternal
-      variant="basicUnderlinedBlue"
-      display="flex"
-    >
-      <Text as="span">Imprimer l'offre</Text> <Image src="/images/icons/print.svg" mt="4px" mx="3px" aria-hidden={true} alt="" />
-    </Link>
-  )
 }
 
 function FinComponent(props: ComponentProps) {
@@ -137,75 +123,68 @@ function FinComponent(props: ComponentProps) {
         <MailCloud style={{ paddingRight: "10px" }} />
         <Box pt={[3, 0]} ml={10}>
           <Heading fontSize="24px" mb={6} mt={widget?.mobile ? "10px" : "0px"}>
-            Félicitations, votre offre est créée.
+            {shouldDisplayAccountInformation ? <>Encore une étape avant la publication de votre offre...</> : <>Félicitations, votre offre est créée.</>}
           </Heading>
-          <JobPreview jobId={jobId} userIsValidated={userIsValidated} />
-          {!shouldDisplayAccountInformation ? null : userIsValidated ? (
-            <ValidatedAccountDescription withDelegation={withDelegation} email={email} onResendEmail={resendMail} />
-          ) : (
-            <AwaitingAccountDescription withDelegation={withDelegation} email={email} onResendEmail={resendMail} />
-          )}
+          {shouldDisplayAccountInformation ? (
+            userIsValidated ? (
+              <Box>
+                <Heading fontSize="18px" lineHeight="28px">
+                  Confirmez votre email
+                </Heading>
+                <Text>
+                  {withDelegation
+                    ? "Pour publier votre offre auprès des candidats et la transmettre aux organismes de formation sélectionnés, confirmez votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à l’adresse suivante :"
+                    : "Pour publier votre offre auprès des candidats, confirmez votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à l’adresse suivante :"}{" "}
+                  <GreenText>{email}</GreenText>
+                </Text>
+                <ResendEmailContent onClick={resendMail} />
+              </Box>
+            ) : (
+              <AwaitingAccountDescription withDelegation={withDelegation} email={email} onResendEmail={resendMail} />
+            )
+          ) : null}
+
+          <Box mt={7}>
+            <JobPreview jobId={jobId} userIsValidated={userIsValidated} />
+          </Box>
         </Box>
       </Flex>
     </AuthentificationLayout>
   )
 }
 
-const ValidatedAccountDescription = ({ withDelegation, email, onResendEmail }: { withDelegation: boolean; email: string; onResendEmail: () => void }) => {
-  return (
-    <Box mb={5} mt={5}>
-      <Flex alignItems="flex-start" mb={3}>
-        <Box>
-          <Heading fontSize="18px" pb={2}>
-            Confirmez votre email
-          </Heading>
-          <Text textAlign="justify">
-            Pour publier votre offre auprès des candidats {withDelegation ? "et la transmettre aux organismes de formation sélectionnés" : ""}, merci de confirmer votre adresse
-            mail en cliquant sur le lien que nous venons de vous transmettre à l'adresse suivante:
-            <br />
-            <span style={{ fontWeight: "700" }}>{email}</span>
-          </Text>
-        </Box>
-      </Flex>
-      <Stack direction="row" align="center" spacing={4} mt={6}>
-        <ResendEmailContent onClick={onResendEmail} />
-      </Stack>
-    </Box>
-  )
-}
 const AwaitingAccountDescription = ({ withDelegation, email, onResendEmail }: { withDelegation: boolean; email: string; onResendEmail: () => void }) => {
   return (
     <Stack spacing={4} my={4}>
       <Text>Voici les prochaines étapes qui vous attendent :</Text>
-      <Stack direction="row" spacing={4}>
-        <Circle p={5} size="20px" bg="#E3E3FD" color="#000091" fontWeight="700">
-          1
-        </Circle>
-        <Box>
-          <Heading fontSize="18px">Confirmez votre email</Heading>
-          <Text>
-            Cliquez sur le lien que nous venons de vous transmettre à l'adresse suivante:
-            <br />
-            <span style={{ fontWeight: "700" }}>{email}</span>.
-          </Text>
-          <Stack direction="row" align="center" spacing={4}>
-            <ResendEmailContent onClick={onResendEmail} />
-          </Stack>
-        </Box>
-      </Stack>
-      <Stack direction="row" spacing={4}>
-        <Circle p={5} size="20px" bg="#E3E3FD" color="#000091" fontWeight="700">
-          2
-        </Circle>
-        <Box>
-          <Heading fontSize="18px">Votre compte sera validé manuellement</Heading>
-          <Text>
-            {withDelegation
-              ? "Une fois votre compte validé, vous en serez notifié par email. Votre offre sera publiée en ligne et partagée aux organismes de formation que vous avez sélectionnés."
-              : "Une fois votre compte validé, vous en serez notifié par email. Votre offre sera publiée en ligne."}
-          </Text>
-        </Box>
-      </Stack>
+      <ContenuAvecPuce contenuPuce={1}>
+        <Heading fontSize="18px">Confirmez votre email</Heading>
+        <Text>
+          Cliquez sur le lien que nous venons de vous transmettre à l'adresse suivante :
+          <br />
+          <GreenText>{email}</GreenText>.
+        </Text>
+        <ResendEmailContent onClick={onResendEmail} />
+      </ContenuAvecPuce>
+      <ContenuAvecPuce contenuPuce={2}>
+        <Heading fontSize="18px">Votre compte sera validé manuellement</Heading>
+        <Text>
+          {withDelegation
+            ? "Une fois votre compte validé, vous en serez notifié par email. Votre offre sera publiée en ligne et partagée aux organismes de formation que vous avez sélectionnés."
+            : "Une fois votre compte validé, vous en serez notifié par email. Votre offre sera publiée en ligne."}
+        </Text>
+      </ContenuAvecPuce>
+    </Stack>
+  )
+}
+
+const ContenuAvecPuce = ({ children, contenuPuce }: { children: React.ReactNode; contenuPuce: React.ReactNode }) => {
+  return (
+    <Stack direction="row" spacing={4}>
+      <Circle p={5} size="20px" bg="#E3E3FD" color="#000091" fontWeight="700">
+        {contenuPuce}
+      </Circle>
+      <Box>{children}</Box>
     </Stack>
   )
 }
@@ -214,7 +193,7 @@ const ResendEmailContent = ({ onClick }: { onClick: () => void }) => {
   const [disableLink, setDisableLink] = useState(false)
 
   return (
-    <>
+    <Stack direction="row" align="center" spacing={4} mt={6}>
       <Text mr={10}>Vous n’avez pas reçu le mail ? </Text>
       <Button
         variant="popover"
@@ -228,7 +207,7 @@ const ResendEmailContent = ({ onClick }: { onClick: () => void }) => {
       >
         Renvoyer le mail
       </Button>
-    </>
+    </Stack>
   )
 }
 
@@ -255,5 +234,23 @@ const JobPreview = ({ jobId, userIsValidated }: { jobId: string; userIsValidated
         l’alternance, l’ONISEP, la CCI, des plateformes régionales et certains sites d’OPCO.
       </Text>
     </Box>
+  )
+}
+
+const GreenText = ({ children }: { children: React.ReactNode }) => (
+  <span style={{ fontWeight: "700", backgroundColor: "#B8FEC9", color: "#18753C", padding: "2px 4px", borderRadius: "4px" }}>{children}</span>
+)
+
+function PrintJobLink({ jobId }) {
+  return (
+    <Link
+      href={`/espace-pro/offre/impression/${jobId}`}
+      aria-label="Ouvrir la page de prévisualisation de l'offre sur le site La bonne alternance - nouvelle fenêtre"
+      isExternal
+      variant="basicUnderlinedBlue"
+      display="flex"
+    >
+      <Text as="span">Imprimer l'offre</Text> <Image src="/images/icons/print.svg" mt="4px" mx="3px" aria-hidden={true} alt="" />
+    </Link>
   )
 }

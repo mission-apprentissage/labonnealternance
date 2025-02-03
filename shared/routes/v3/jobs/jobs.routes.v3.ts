@@ -1,8 +1,9 @@
-import { z } from "../../../helpers/zodWithOpenApi"
-import { zObjectId } from "../../../models/common"
-import { IRoutesDef } from "../../common.routes"
+import { zObjectId } from "zod-mongodb-schema"
 
-import { zJobSearchApiV3Response, zJobOfferApiWriteV3, zJobSearchApiV3Query } from "./jobs.routes.v3.model"
+import { z } from "../../../helpers/zodWithOpenApi.js"
+import { IRoutesDef } from "../../common.routes.js"
+
+import { zJobOfferApiWriteV3, zJobSearchApiV3Query, zJobSearchApiV3Response } from "./jobs.routes.v3.model.js"
 
 export const zJobsRoutesV3 = {
   get: {

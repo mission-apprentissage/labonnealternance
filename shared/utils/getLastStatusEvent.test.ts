@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { getLastStatusEvent } from "./getLastStatusEvent"
+import { getLastStatusEvent } from "./getLastStatusEvent.js"
 
 describe("getLastStatusEvent", () => {
   it("sort events by date", () => {

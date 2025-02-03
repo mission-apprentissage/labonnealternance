@@ -1,9 +1,9 @@
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { z } from "../helpers/zodWithOpenApi"
-import { zObjectId } from "../models/common"
-import { ZEligibleTrainingsForAppointmentSchema } from "../models/elligibleTraining.model"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { z } from "../helpers/zodWithOpenApi.js"
+import { zObjectId } from "../models/common.js"
+import { ZEligibleTrainingsForAppointmentSchema } from "../models/elligibleTraining.model.js"
 
-import { IRoutesDef } from "./common.routes"
+import { IRoutesDef } from "./common.routes.js"
 
 export const zEligibleTrainingsForAppointmentRoutes = {
   get: {

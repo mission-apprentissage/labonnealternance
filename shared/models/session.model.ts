@@ -1,8 +1,8 @@
 import { Jsonify } from "type-fest"
 
-import { z } from "../helpers/zodWithOpenApi"
+import { z } from "../helpers/zodWithOpenApi.js"
 
-import { IModelDescriptor, zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common.js"
 
 export const ZSession = z
   .object({

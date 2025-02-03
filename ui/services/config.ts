@@ -2,7 +2,6 @@ import { assertUnreachable } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { campaignParameters } from "../utils/campaignParameters"
-import { testingParameters } from "../utils/testingParameters"
 import { getValueFromPath } from "../utils/tools"
 
 type IConfigParameters = {
@@ -127,6 +126,7 @@ export const setDisplayMap = ({ parameterContext }) => {
   }
 }
 
+// TODO: checker la pertinence pour nettoyage
 export const setShowCombinedJob = ({ router, parameterContext }) => {
   const showCombinedJob = getValueFromPath("showCombinedJob")
   if (showCombinedJob !== null) {
@@ -136,21 +136,7 @@ export const setShowCombinedJob = ({ router, parameterContext }) => {
   }
 }
 
-export const initTestingParameters = () => {
-  if (!testingParameters?.secret) {
-    let p = getValueFromPath("secret")
-    if (p) {
-      testingParameters.secret = p
-
-      p = getValueFromPath("simulatedRecipient")
-      if (p) {
-        testingParameters.simulatedRecipient = p
-      }
-    }
-  }
-}
-
-const buildFormValuesFromParameters = (params) => {
+export const buildFormValuesFromParameters = (params) => {
   const location = params.lon
     ? {
         location: {
@@ -178,9 +164,7 @@ const buildFormValuesFromParameters = (params) => {
   return formValues
 }
 
-export const initParametersFromQuery = ({ router, shouldPush = undefined, parameterContext }) => {
-  let hasParameters = false
-
+export const initParametersFromQuery = ({ router, parameterContext }) => {
   const widgetParameters = getWidgetParameters()
   if (widgetParameters?.applyWidgetParameters) {
     if (widgetParameters.applyFormValues) {
@@ -196,13 +180,6 @@ export const initParametersFromQuery = ({ router, shouldPush = undefined, parame
   const itemParameters = getItemParameters()
   if (itemParameters && (itemParameters.applyItemParameters || itemParameters.mode)) {
     parameterContext.setItemParameters(itemParameters)
-    hasParameters = true
-  }
-
-  initTestingParameters()
-
-  if (hasParameters && shouldPush) {
-    router.push("/recherche-apprentissage")
   }
 }
 
@@ -227,8 +204,6 @@ const convertTypeForMigration = (type: QueryParameterType) => {
 }
 
 export const initPostulerParametersFromQuery = () => {
-  initTestingParameters()
-
   const caller = getValueFromPath("caller") // ex : diagoriente
   const itemId = getValueFromPath("itemId")
   const type = getValueFromPath("type") as QueryParameterType

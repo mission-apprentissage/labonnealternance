@@ -117,7 +117,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJob; title: strin
         </Accordion>
         <Box marginTop="10px">
           <ReportJobLink
-            width="480px"
+            tooltipWidth="480px"
             itemId={job?.job?.id}
             type={LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}
             linkLabelNotReported="Signaler l'offre"

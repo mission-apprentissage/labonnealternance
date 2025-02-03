@@ -7,9 +7,10 @@ import { ParameterContext } from "../../context/ParameterContextProvider"
 import { fetchAddressFromCoordinates } from "../../services/baseAdresse"
 import { logError } from "../../utils/tools"
 
-const InitWidgetSearchParameters = ({ handleSearchSubmit, handleItemLoad }) => {
+const InitWidgetSearchParameters = ({ handleSearchSubmit, handleItemLoad /*setShouldShowWelcomeMessage, setSearchRadius, searchForJobs, searchForTrainings*/ }) => {
   const { displayMap, widgetParameters, itemParameters, setWidgetParameters, setItemParameters } = useContext(ParameterContext)
   const router = useRouter()
+
   const scopeContext = useContext(ScopeContext)
 
   useEffect(() => {
@@ -48,6 +49,7 @@ const InitWidgetSearchParameters = ({ handleSearchSubmit, handleItemLoad }) => {
             rncp: p.rncp || "",
           },
           radius: p.radius || 30,
+          diploma: p.diploma || "",
         }
 
         if (p.lon || p.lat) {
@@ -68,7 +70,6 @@ const InitWidgetSearchParameters = ({ handleSearchSubmit, handleItemLoad }) => {
             }
           }
         }
-
         handleSearchSubmit({ values, followUpItem: selectItem ? itemParameters : null })
       }
     } catch (err) {

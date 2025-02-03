@@ -1,6 +1,6 @@
-import { ZMetiersDAvenir } from "../models/metiersdavenir.model"
+import { ZMetiersDAvenir } from "../models/metiersdavenir.model.js"
 
-import { IRoutesDef } from "./common.routes"
+import { IRoutesDef } from "./common.routes.js"
 
 export const zMetiersDAvenirRoutes = {
   get: {

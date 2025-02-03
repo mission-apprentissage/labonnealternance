@@ -22,16 +22,17 @@ import {
 } from "shared"
 import { ApplicationIntention, ApplicationIntentionDefaultText, RefusalReasons } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { LBA_ITEM_TYPE, getDirectJobPath, newItemTypeToOldItemType } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
+import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { IRecruiterIntentionMail } from "shared/models/recruiterIntentionMail.model"
 import { ITrackingCookies } from "shared/models/trafficSources.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { z } from "zod"
 
-import { s3Delete, s3ReadAsString, s3Write } from "@/common/utils/awsUtils"
+import { s3Delete, s3ReadAsString, s3WriteString } from "@/common/utils/awsUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { createToken, getTokenValue } from "@/common/utils/jwtUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -41,6 +42,7 @@ import { UserForAccessToken, userWithAccountToUserForToken } from "@/security/ac
 import { logger } from "../common/logger"
 import { manageApiError } from "../common/utils/errorManager"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
+import { removeHtmlTagsFromString } from "../common/utils/stringUtils"
 import config from "../config"
 
 import { getApplicantFromDB, getOrCreateApplicant } from "./applicant.service"
@@ -48,10 +50,11 @@ import { createCancelJobLink, createProvidedJobLink, generateApplicationReplyTok
 import { BrevoEventStatus } from "./brevo.service"
 import { isInfected } from "./clamav.service"
 import { getOffreAvecInfoMandataire } from "./formulaire.service"
-import mailer, { sanitizeForEmail } from "./mailer.service"
+import mailer from "./mailer.service"
 import { validateCaller } from "./queryValidator.service"
 import { buildLbaCompanyAddress } from "./recruteurLba.service"
 import { saveApplicationTrafficSourceIfAny } from "./trafficSource.service"
+import { validateUserWithAccountEmail } from "./userWithAccount.service"
 
 const MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT = 3
 const MAX_MESSAGES_PAR_SIRET_PAR_CALLER = 20
@@ -204,7 +207,7 @@ export const sendApplication = async ({
         return { error: "email du recruteur manquant" }
       }
       const application = await newApplicationToApplicationDocument(newApplication, applicant, offreOrError, recruteurEmail)
-      await s3Write("applications", getApplicationCvS3Filename(application), {
+      await s3WriteString("applications", getApplicationCvS3Filename(application), {
         Body: newApplication.applicant_file_content,
       })
       await getDbCollection("applications").insertOne(application)
@@ -319,7 +322,7 @@ export const sendApplicationV2 = async ({
   try {
     // add applicant_id to application
     const application = await newApplicationToApplicationDocumentV2(newApplication, applicant, lbaJob, caller)
-    await s3Write("applications", getApplicationCvS3Filename(application), {
+    await s3WriteString("applications", getApplicationCvS3Filename(application), {
       Body: applicant_attachment_content,
     })
     await getDbCollection("applications").insertOne(application)
@@ -345,7 +348,7 @@ export const sendApplicationV2 = async ({
  * email PJ contient un virus
  * email candidat et recruteur lors d'une candidature
  */
-const buildUrlsOfDetail = (publicUrl: string, application: IApplication, utm?: { utm_source?: string; utm_medium?: string; utm_campaign?: string }) => {
+const buildUrlsOfDetail = (application: IApplication, utm?: { utm_source?: string; utm_medium?: string; utm_campaign?: string }) => {
   const { job_id, company_siret } = application
   const defaultUtm = { utm_source: "lba", utm_medium: "email", utm_campaign: "je-candidate" }
   const { utm_campaign, utm_medium, utm_source } = { ...defaultUtm, ...utm }
@@ -366,8 +369,8 @@ const buildUrlsOfDetail = (publicUrl: string, application: IApplication, utm?: {
   }
   const params = urlSearchParams.toString()
   return {
-    urlWithoutUtm: `${publicUrl}/recherche-apprentissage?${paramsWithoutUtm}`,
-    url: `${publicUrl}/recherche-apprentissage?${params}`,
+    urlWithoutUtm: `${publicUrl}/recherche?${paramsWithoutUtm}`,
+    url: `${publicUrl}/recherche?${params}`,
   }
 }
 
@@ -396,8 +399,7 @@ const buildReplyLink = (application: IApplication, applicant: IApplicant, intent
   searchParams.append("utm_medium", "email")
   if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     searchParams.append("utm_campaign", "je-candidate-recruteur")
-  }
-  if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
+  } else if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     searchParams.append("utm_campaign", "je-candidate-spontanement-recruteur")
   }
   const token = generateApplicationReplyToken(userForToken, applicationId, intention)
@@ -569,6 +571,7 @@ const newApplicationToApplicationDocumentV2 = async (
     to_applicant_message_id: null,
     to_company_message_id: null,
     scan_status: ApplicationScanStatus.WAITING_FOR_SCAN,
+    application_url: newApplication.application_url,
     ...offreOrCompanyToCompanyFields(LbaJob),
   }
   return application
@@ -804,8 +807,8 @@ export const sendMailToApplicant = async ({
           partner,
           ...images,
           email,
-          phone: sanitizeForEmail(removeUrlsFromText(phone)),
-          comment: prepareMessageForMail(sanitizeForEmail(company_feedback)),
+          phone: removeHtmlTagsFromString(removeUrlsFromText(phone)),
+          comment: prepareMessageForMail(removeHtmlTagsFromString(company_feedback)),
         },
       })
       break
@@ -822,8 +825,8 @@ export const sendMailToApplicant = async ({
           partner,
           ...images,
           email,
-          phone: sanitizeForEmail(removeUrlsFromText(phone)),
-          comment: prepareMessageForMail(sanitizeForEmail(company_feedback)),
+          phone: removeHtmlTagsFromString(removeUrlsFromText(phone)),
+          comment: prepareMessageForMail(removeHtmlTagsFromString(company_feedback)),
         },
       })
       break
@@ -839,7 +842,7 @@ export const sendMailToApplicant = async ({
           jobSourceType,
           partner,
           ...images,
-          comment: prepareMessageForMail(sanitizeForEmail(company_feedback)),
+          comment: prepareMessageForMail(removeHtmlTagsFromString(company_feedback)),
           reasons: refusal_reasons,
         },
       })
@@ -855,12 +858,16 @@ export const sendMailToApplicant = async ({
  */
 const notifyHardbounceToApplicant = async ({ application }: { application: IApplication }): Promise<void> => {
   const applicant = await getApplicantFromDB({ _id: application.applicant_id })
-  await mailer.sendEmail({
-    to: applicant!.email,
-    subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
-    template: getEmailTemplate("mail-candidat-hardbounce"),
-    data: { ...sanitizeApplicationForEmail(application), ...sanitizeApplicantForEmail(applicant!), ...images },
-  })
+  if (applicant) {
+    await mailer.sendEmail({
+      to: applicant.email,
+      subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
+      template: getEmailTemplate("mail-candidat-hardbounce"),
+      data: { ...sanitizeApplicationForEmail(application), ...sanitizeApplicantForEmail(applicant!), ...images },
+    })
+  } else {
+    sentryCaptureException(new Error("Applicant not found while processing applicantion hardbounce"), { extra: { applicant_id: application.applicant_id } })
+  }
 }
 
 export interface IApplicationCount {
@@ -942,10 +949,12 @@ export const processApplicationCandidateHardbounceEvent = async (payload) => {
   const messageId = payload["message-id"]
 
   const applicant = await getDbCollection("applicants").findOne({ email })
-  const application = await getDbCollection("applications").findOne({ applicant_id: applicant?._id, to_applicant_message_id: messageId })
 
-  if (application) {
-    return true
+  if (applicant) {
+    const application = await getDbCollection("applications").findOne({ applicant_id: applicant?._id, to_applicant_message_id: messageId })
+    if (application) {
+      return true
+    }
   }
 
   return false
@@ -961,10 +970,10 @@ export const obfuscateLbaCompanyApplications = async (company_siret: string) => 
 const sanitizeApplicantForEmail = (applicant: IApplicant) => {
   const { firstname, lastname, email, phone } = applicant
   return {
-    applicant_email: sanitizeForEmail(email),
-    applicant_first_name: sanitizeForEmail(firstname),
-    applicant_last_name: sanitizeForEmail(lastname),
-    applicant_phone: sanitizeForEmail(phone),
+    applicant_email: removeHtmlTagsFromString(email),
+    applicant_first_name: removeHtmlTagsFromString(firstname),
+    applicant_last_name: removeHtmlTagsFromString(lastname),
+    applicant_phone: removeHtmlTagsFromString(phone),
   }
 }
 // get data from applicant
@@ -990,22 +999,22 @@ const sanitizeApplicationForEmail = (application: IApplication) => {
     job_searched_by_user,
   } = application
   return {
-    applicant_attachment_name: sanitizeForEmail(applicant_attachment_name),
-    job_searched_by_user: sanitizeForEmail(job_searched_by_user),
-    applicant_message_to_company: sanitizeForEmail(applicant_message_to_company, "keepBr"),
-    company_recruitment_intention: sanitizeForEmail(company_recruitment_intention),
-    company_feedback: sanitizeForEmail(company_feedback),
+    applicant_attachment_name: removeHtmlTagsFromString(applicant_attachment_name),
+    job_searched_by_user: removeHtmlTagsFromString(job_searched_by_user),
+    applicant_message_to_company: removeHtmlTagsFromString(applicant_message_to_company, true),
+    company_recruitment_intention: removeHtmlTagsFromString(company_recruitment_intention),
+    company_feedback: removeHtmlTagsFromString(company_feedback),
     company_feedback_date: company_feedback_date,
     company_siret: company_siret,
-    company_email: sanitizeForEmail(company_email),
-    company_phone: sanitizeForEmail(company_phone),
+    company_email: removeHtmlTagsFromString(company_email),
+    company_phone: removeHtmlTagsFromString(company_phone),
     company_name: company_name,
     company_naf: company_naf,
     company_address: company_address,
     job_origin: job_origin,
-    job_title: sanitizeForEmail(job_title),
+    job_title: removeHtmlTagsFromString(job_title),
     job_id: job_id,
-    caller: sanitizeForEmail(caller),
+    caller: removeHtmlTagsFromString(caller),
     created_at: created_at,
     last_update_at: last_update_at,
   }
@@ -1031,7 +1040,7 @@ export const processApplicationScanForVirus = async (application: IApplication, 
   )
 
   if (hasVirus) {
-    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, application, { utm_campaign: "je-candidate-virus-pj" })
+    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(application, { utm_campaign: "je-candidate-virus-pj" })
     await mailer.sendEmail({
       to: applicantEmail,
       subject: "Echec d'envoi de votre candidature",
@@ -1067,7 +1076,7 @@ export const processApplicationEmails = {
   // get data from applicant
   async sendRecruteurEmail(application: IApplication, applicant: IApplicant, attachmentContent: string) {
     const { job_origin } = application
-    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, application, { utm_campaign: "je-candidate-recruteur" })
+    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(application, { utm_campaign: "je-candidate-recruteur" })
     const recruiterEmailUrls = await buildRecruiterEmailUrls(application, applicant)
 
     const emailCompany = await mailer.sendEmail({
@@ -1101,7 +1110,7 @@ export const processApplicationEmails = {
   // get data from applicant
   async sendCandidatEmail(application: IApplication, applicant: IApplicant) {
     const { job_origin } = application
-    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, application)
+    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(application)
     const emailCandidat = await mailer.sendEmail({
       to: applicant.email,
       subject: `Votre candidature chez ${application.company_name}`,
@@ -1117,6 +1126,7 @@ export const processApplicationEmails = {
         applicationDate: dayjs(application.created_at).format("DD/MM/YYYY"),
         reminderDate: dayjs(application.created_at).add(10, "days").format("DD/MM/YYYY"),
         attachmentName: application.applicant_attachment_name,
+        sendOtherApplicationsUrl: buildSendOtherApplicationsUrl(application, job_origin ?? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
       },
     })
     if (emailCandidat?.accepted?.length) {
@@ -1194,6 +1204,36 @@ export const getCompanyEmailFromToken = async (token: string) => {
   throw notFound("Adresse non trouvée")
 }
 
+const addUtmParamsToSendOtherApplications = (type: LBA_ITEM_TYPE, searchParams: URLSearchParams, utmCampaignSuffix: string) => {
+  const typeBasedAddition = type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "" : "-spontanement"
+  const utmCampaign = `je-candidate${typeBasedAddition}-${utmCampaignSuffix}`
+  searchParams.delete("utm_source")
+  searchParams.delete("utm_medium")
+  searchParams.delete("utm_campaign")
+  searchParams.append("utm_source", "lba-brevo-transactionnel")
+  searchParams.append("utm_medium", "email")
+  searchParams.append("utm_campaign", utmCampaign)
+}
+
+const buildSendOtherApplicationsUrl = (application: IApplication, type: LBA_ITEM_TYPE) => {
+  const { application_url } = application
+
+  if (application_url) {
+    const url = new URL(application_url)
+    const newParams = url.searchParams
+    if (newParams.get("job_name")) {
+      newParams.delete("page")
+      newParams.delete("type")
+      newParams.delete("itemId")
+      addUtmParamsToSendOtherApplications(type, newParams, "accuse-envoi-lien-recherche")
+      return `${publicUrl}${url.pathname}?${newParams.toString()}`
+    }
+  }
+  const searchParams = new URLSearchParams()
+  addUtmParamsToSendOtherApplications(type, searchParams, "accuse-envoi-lien-home")
+  return `${publicUrl}/?${searchParams.toString()}`
+}
+
 const getJobOrCompanyFromApplication = async (application: IApplication) => {
   let recruiter: ILbaCompany | IRecruiter | null
   let job: IJob | null | undefined
@@ -1234,7 +1274,16 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
   const applicant = await getDbCollection("applicants").findOne({ _id: application.applicant_id })
   if (!applicant) throw notFound("Candidat non trouvé")
 
-  const recruiter_phone = (await getPhoneForApplication(application)) ?? ""
+  const jobOrCompany = await getJobOrCompanyFromApplication(application)
+  const { recruiter } = jobOrCompany ?? {}
+  if (!recruiter) throw internal(`Société pour ${application.job_origin} introuvable`)
+
+  const { managed_by } = recruiter
+  if (managed_by) {
+    await validateUserWithAccountEmail(new ObjectId(managed_by))
+  }
+
+  const recruiter_phone = recruiter.phone ?? ""
 
   await getDbCollection("recruiter_intention_mails").updateOne(
     {

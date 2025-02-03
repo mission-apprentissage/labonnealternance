@@ -1,9 +1,10 @@
-import { z } from "../helpers/zodWithOpenApi"
-import { zObjectId } from "../models/common"
-import { JOB_STATUS, ZJob, ZJobCreate } from "../models/job.model"
-import { ZRecruiter, ZRecruiterWithApplicationCount } from "../models/recruiter.model"
+import { zObjectId } from "zod-mongodb-schema"
 
-import { IRoutesDef } from "./common.routes"
+import { z } from "../helpers/zodWithOpenApi.js"
+import { JOB_STATUS, ZJob, ZJobCreate } from "../models/job.model.js"
+import { ZRecruiter, ZRecruiterWithApplicationCount } from "../models/recruiter.model.js"
+
+import { IRoutesDef } from "./common.routes.js"
 
 export const zFormulaireRoute = {
   get: {

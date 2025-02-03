@@ -8,13 +8,14 @@ import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { createAuthMagicLink } from "@/services/appLinks.service"
 import { getComputedUserAccess, getGrantedRoles, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
-import { getUserWithAccountByEmail, isUserEmailChecked } from "@/services/userWithAccount.service"
+import { getUserWithAccountByEmail, isUserEmailChecked, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
 import { startSession, stopSession } from "../../common/utils/session.service"
+import { removeHtmlTagsFromString } from "../../common/utils/stringUtils"
 import config from "../../config"
 import { sendUserConfirmationEmail } from "../../services/etablissement.service"
 import { controlUserState } from "../../services/login.service"
-import mailer, { sanitizeForEmail } from "../../services/mailer.service"
+import mailer from "../../services/mailer.service"
 import { updateLastConnectionDate } from "../../services/userRecruteur.service"
 import { Server } from "../server"
 
@@ -78,8 +79,8 @@ export default (server: Server) => {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
             logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
           },
-          last_name: sanitizeForEmail(removeUrlsFromText(last_name)),
-          first_name: sanitizeForEmail(removeUrlsFromText(first_name)),
+          last_name: removeHtmlTagsFromString(removeUrlsFromText(last_name)),
+          first_name: removeHtmlTagsFromString(removeUrlsFromText(first_name)),
           connexion_url: createAuthMagicLink(userWithAccountToUserForToken(user)),
         },
       })
@@ -108,6 +109,10 @@ export default (server: Server) => {
 
       if (userState?.error) {
         throw forbidden()
+      }
+
+      if (!isUserEmailChecked(user)) {
+        await validateUserWithAccountEmail(user._id)
       }
 
       await updateLastConnectionDate(formatedEmail)

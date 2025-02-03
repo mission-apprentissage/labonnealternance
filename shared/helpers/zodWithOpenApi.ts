@@ -3,7 +3,7 @@ import i18next from "i18next"
 import { z } from "zod"
 import { makeZodI18nMap, zodI18nMap } from "zod-i18n-map"
 
-import LOCALE_FR from "./locale/locale.fr.json"
+import LOCALE_FR from "./locale/locale.fr.js"
 
 i18next.init({
   lng: "en",

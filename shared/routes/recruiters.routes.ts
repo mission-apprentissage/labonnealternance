@@ -1,16 +1,17 @@
 import { Jsonify } from "type-fest"
+import { zObjectId } from "zod-mongodb-schema"
 
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { z } from "../helpers/zodWithOpenApi"
-import { ZEtablissementCatalogueProcheWithDistance } from "../interface/etablissement.types"
-import { ZPointGeometry, ZRecruiter } from "../models"
-import { zCFA } from "../models/cfa.model"
-import { zObjectId } from "../models/common"
-import { ZEntreprise } from "../models/entreprise.model"
-import { ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/usersRecruteur.model"
-import { ZUserWithAccount } from "../models/userWithAccount.model"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { z } from "../helpers/zodWithOpenApi.js"
+import { ZEtablissementCatalogueProcheWithDistance } from "../interface/etablissement.types.js"
+import { ZPointGeometry } from "../models/address.model.js"
+import { zCFA } from "../models/cfa.model.js"
+import { ZEntreprise } from "../models/entreprise.model.js"
+import { ZRecruiter } from "../models/recruiter.model.js"
+import { ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/usersRecruteur.model.js"
+import { ZUserWithAccount } from "../models/userWithAccount.model.js"
 
-import { IRoutesDef } from "./common.routes"
+import { IRoutesDef } from "./common.routes.js"
 
 export const ZEntrepriseInformations = z
   .object({

@@ -1,10 +1,10 @@
 import { z } from "zod"
 
-import { IModelDescriptor, zObjectId } from "shared/models/common"
+import { IModelDescriptor, zObjectId } from "shared/models/common.js"
 
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 
-import { ZJobsPartnersOfferPrivate } from "./jobsPartners.model"
+import { ZJobsPartnersOfferPrivate } from "./jobsPartners.model.js"
 
 const collectionName = "computed_jobs_partners" as const
 
@@ -14,12 +14,15 @@ export enum COMPUTED_ERROR_SOURCE {
   API_ADRESSE = "api_adresse",
   API_ROMEO = "api_romeo",
   VALIDATION = "validation",
+  RANKING = "ranking",
 }
 
 export enum JOB_PARTNER_BUSINESS_ERROR {
   CLOSED_COMPANY = "CLOSED_COMPANY",
   DUPLICATE = "DUPLICATE",
   ZOD_VALIDATION = "ZOD_VALIDATION",
+  STAGE = "STAGE",
+  EXPIRED = "EXPIRED",
 }
 
 export const ZComputedJobPartnersDuplicateRef = z.object({

@@ -51,6 +51,7 @@ export default async function submitCandidature({
     job_searched_by_user: formValues.job_searched_by_user,
     recipient_id: LbaJob.recipient_id,
     caller,
+    application_url: typeof window !== "undefined" ? window?.location?.href : null,
   }
 
   try {

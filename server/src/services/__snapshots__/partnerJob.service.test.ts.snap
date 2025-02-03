@@ -33,7 +33,7 @@ exports[`partnerJob.service > should execute query with full data 1`] = `
         "offer_desired_skills": [],
         "offer_to_be_acquired_skills": [],
         "origin": null,
-        "partner_label": "Hello work",
+        "partner_label": "Hellowork",
         "quantiteContrat": 1,
         "status": "Active",
         "type": [
@@ -132,7 +132,7 @@ exports[`partnerJob.service > should find offer by id 1`] = `
         "offer_desired_skills": [],
         "offer_to_be_acquired_skills": [],
         "origin": null,
-        "partner_label": "Hello work",
+        "partner_label": "Hellowork",
         "quantiteContrat": 1,
         "status": "Active",
         "type": [

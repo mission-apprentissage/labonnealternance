@@ -214,7 +214,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "identifier": {
       "id": "",
       "partner_job_id": "",
-      "partner_label": "Hello work",
+      "partner_label": "Hellowork",
     },
     "offer": {
       "access_conditions": [],
@@ -267,7 +267,7 @@ exports[`findJobsOpportunities > should execute query 2`] = `
     "apply": {
       "phone": "0100000000",
       "recipient_id": null,
-      "url": "http://localhost:3000/recherche-apprentissage?type=lba&itemId=11000001500013",
+      "url": "http://localhost:3000/recherche?type=lba&itemId=11000001500013",
     },
     "identifier": {
       "id": "000000000000000000000000",

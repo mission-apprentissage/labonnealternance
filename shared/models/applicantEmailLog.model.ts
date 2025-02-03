@@ -1,7 +1,7 @@
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { z } from "../helpers/zodWithOpenApi"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { z } from "../helpers/zodWithOpenApi.js"
 
-import { IModelDescriptor, zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common.js"
 
 const collectionName = "applicants_email_logs" as const
 

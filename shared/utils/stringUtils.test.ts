@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest"
+import { describe, expect, it } from "vitest"
 
-import { joinNonNullStrings, removeAccents } from "./stringUtils"
+import { joinNonNullStrings, toKebabCase, removeAccents } from "./stringUtils.js"
 
 describe("stringUtils", () => {
   describe("removeAccents", () => {
@@ -47,6 +47,12 @@ describe("stringUtils", () => {
 
     it("should return a single word if only one non-null value is present", () => {
       expect(joinNonNullStrings([null, " Vitest ", null])).toBe("Vitest")
+    })
+  })
+
+  describe("toKebabCase", () => {
+    it("should kebab-case a string", () => {
+      expect(toKebabCase("Job Title")).toBe("job-title")
     })
   })
 })
