@@ -140,14 +140,13 @@ const ResultLists = ({
 
   useEffect(() => {
     if (itemToScrollTo) {
-      // sollicité après fermeture de la fiche
+      //sollicité après fermeture de la fiche
       const itemIndex = consolidatedItemList.findIndex((item) => item.id === itemToScrollTo.id)
       if (itemIndex >= 0) {
-        columnVirtualizer.scrollToIndex(itemIndex)
+        setTimeout(() => columnVirtualizer.scrollToIndex(itemIndex), 1000)
         setItemToScrollTo(null)
       }
     }
-
     // @ts-ignore
     window.currentConsolidatedItemList = consolidatedItemList
   })
@@ -157,18 +156,20 @@ const ResultLists = ({
     if (e.detail.type === "job") {
       // recherche premier élément de type job
       // @ts-ignore
-      itemIndex = window.currentConsolidatedItemList.findIndex((item) => [LBA_ITEM_TYPE_OLD.LBA, LBA_ITEM_TYPE_OLD.PARTNER_JOB].includes(item.ideaType))
+      itemIndex = window.currentConsolidatedItemList?.findIndex((item) => [LBA_ITEM_TYPE_OLD.LBA, LBA_ITEM_TYPE_OLD.PARTNER_JOB].includes(item.ideaType))
     } else {
       // @ts-ignore
-      itemIndex = window.currentConsolidatedItemList.findIndex((item) => item.id === e.detail.itemId)
+      itemIndex = window.currentConsolidatedItemList?.findIndex((item) => item.id === e.detail.itemId)
     }
 
     if (itemIndex >= 0) {
       columnVirtualizer.scrollToIndex(itemIndex)
     }
   }
+
   useEffect(() => {
     // events déclenchés manuellement lors des sélections sur la carte
+
     const resultList = document.getElementById("resultList")
     resultList.addEventListener("scrollToItem", scrollToItem)
 
