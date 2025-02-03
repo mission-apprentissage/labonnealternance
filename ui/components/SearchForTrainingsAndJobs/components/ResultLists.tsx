@@ -10,7 +10,7 @@ import { ScopeContext } from "../../../context/ScopeContext"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
 import { isCfaEntreprise } from "../../../services/cfaEntreprise"
 import { mergeJobs, mergeOpportunities } from "../../../utils/itemListUtils"
-import { allJobSearchErrorText, getJobCount } from "../services/utils"
+import { getJobCount } from "../services/utils"
 
 import ExtendedSearchButton from "./ExtendedSearchButton"
 import NoJobResult from "./NoJobResult"
@@ -18,7 +18,7 @@ import RechercheCDICDD from "./rechercheCDDCDI"
 import ResultFilterAndCounter from "./ResultFilterAndCounter"
 import ResultListsLoading from "./ResultListsLoading"
 
-const ListFooter = ({ handleExtendedSearch, isJobSearchLoading, isPartnerJobSearchLoading }) => {
+const ListFooter = ({ handleExtendedSearch, isJobSearchLoading }) => {
   const scopeContext = useContext(ScopeContext)
   const { activeFilters, formValues } = useContext(DisplayContext)
   const { extendedSearch, hasSearch, jobs, trainings } = useContext(SearchResultContext)
@@ -28,11 +28,11 @@ const ListFooter = ({ handleExtendedSearch, isJobSearchLoading, isPartnerJobSear
 
     let jobCount = 0
 
-    if (!isJobSearchLoading && !isPartnerJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))) {
+    if (!isJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))) {
       jobCount = getJobCount(jobs)
     }
 
-    const isJobElement = scopeContext.isJob && !isJobSearchLoading && !isPartnerJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))
+    const isJobElement = scopeContext.isJob && !isJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))
     const shouldShowFTJobs = isJobElement && jobCount < 100 // scope offre, moins de 100 offres
     const shouldShowExtendSearchButton = isJobElement && jobCount < 100 && !extendedSearch && formValues?.location?.value // scope offre, moins de 100 offres pas déjà étendu, pas recherche france entière
     const shouldShowNoJob = isJobElement && jobCount === 0 // scope offre, pas d'offre
@@ -120,7 +120,7 @@ const ResultLists = ({
     consolidatedItemList.push(...trainings)
   }
 
-  if (hasSearch && (!isJobSearchLoading || !isPartnerJobSearchLoading) && (activeFilters.includes("jobs") || activeFilters.includes("duo"))) {
+  if (hasSearch && !isJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))) {
     if (!activeFilters.includes("jobs")) {
       consolidatedItemList.push(...jobs.matchas.filter((job) => job.company?.mandataire))
     } else if (extendedSearch) {
@@ -138,9 +138,6 @@ const ResultLists = ({
     overscan: 5,
   })
 
-  // @ts-ignore
-  window.currentConsolidatedItemList = consolidatedItemList
-
   useEffect(() => {
     if (itemToScrollTo) {
       // sollicité après fermeture de la fiche
@@ -150,26 +147,28 @@ const ResultLists = ({
         setItemToScrollTo(null)
       }
     }
+
+    // @ts-ignore
+    window.currentConsolidatedItemList = consolidatedItemList
   })
 
-  useEffect(() => {
-    // events déclenchés manuellement lors des sélections sur la carte
-    const scrollToItem = (e) => {
-      let itemIndex = 0
-      if (e.detail.type === "job") {
-        // recherche premier élément de type job
-        // @ts-ignore
-        itemIndex = window.currentConsolidatedItemList.findIndex((item) => [LBA_ITEM_TYPE_OLD.LBA, LBA_ITEM_TYPE_OLD.PARTNER_JOB].includes(item.ideaType))
-      } else {
-        // @ts-ignore
-        itemIndex = window.currentConsolidatedItemList.findIndex((item) => item.id === e.detail.itemId)
-      }
-
-      if (itemIndex >= 0) {
-        columnVirtualizer.scrollToIndex(itemIndex)
-      }
+  const scrollToItem = (e) => {
+    let itemIndex = 0
+    if (e.detail.type === "job") {
+      // recherche premier élément de type job
+      // @ts-ignore
+      itemIndex = window.currentConsolidatedItemList.findIndex((item) => [LBA_ITEM_TYPE_OLD.LBA, LBA_ITEM_TYPE_OLD.PARTNER_JOB].includes(item.ideaType))
+    } else {
+      // @ts-ignore
+      itemIndex = window.currentConsolidatedItemList.findIndex((item) => item.id === e.detail.itemId)
     }
 
+    if (itemIndex >= 0) {
+      columnVirtualizer.scrollToIndex(itemIndex)
+    }
+  }
+  useEffect(() => {
+    // events déclenchés manuellement lors des sélections sur la carte
     const resultList = document.getElementById("resultList")
     resultList.addEventListener("scrollToItem", scrollToItem)
 
@@ -199,13 +198,12 @@ const ResultLists = ({
             isJobSearchLoading={isJobSearchLoading}
             isTrainingSearchLoading={isTrainingSearchLoading}
           />
-          {trainingSearchError && jobSearchError && partnerJobSearchError ? (
+          {trainingSearchError && jobSearchError ? (
             <ErrorMessage message="Erreur technique momentanée" type="column" />
           ) : (
             <>
               {trainingSearchError && <ErrorMessage message={trainingSearchError} />}
-              {jobSearchError && partnerJobSearchError && <ErrorMessage message={allJobSearchErrorText} />}
-              {((jobSearchError && !partnerJobSearchError) || (!jobSearchError && partnerJobSearchError)) && <ErrorMessage message={jobSearchError || partnerJobSearchError} />}
+              {jobSearchError && <ErrorMessage message={jobSearchError} />}
             </>
           )}
 
@@ -294,7 +292,7 @@ const ResultLists = ({
                             transform: `translateY(${virtualRow.start}px)`,
                           }}
                         >
-                          <ListFooter handleExtendedSearch={handleExtendedSearch} isJobSearchLoading={isJobSearchLoading} isPartnerJobSearchLoading={isPartnerJobSearchLoading} />
+                          <ListFooter handleExtendedSearch={handleExtendedSearch} isJobSearchLoading={isJobSearchLoading} />
                         </Box>
                       )}
                     </>

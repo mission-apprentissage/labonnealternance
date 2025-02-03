@@ -36,12 +36,16 @@ const ChoiceColumn = ({
 }) => {
   const router = useRouter()
   const scopeContext = useContext(ScopeContext)
-  const { trainings, setTrainings, setJobs, setSelectedItem, selectedItem, setExtendedSearch } = useContext(SearchResultContext)
-  const { formValues, setFormValues, setActiveFilters } = useContext(DisplayContext)
-  const { displayMap } = useContext(ParameterContext)
+  const searchResultContext = useContext(SearchResultContext)
+  const displayContext = useContext(DisplayContext)
+  const parameterContext = useContext(ParameterContext)
+  const { handleClose, handleSelectItem } = getCloseAndSelectFunctions({ router, searchResultContext, displayContext, parameterContext, scopeContext })
+  const { trainings, setTrainings, setJobs, selectedItem, setExtendedSearch } = searchResultContext
+  const { formValues, setFormValues, setActiveFilters } = displayContext
+  const { displayMap } = parameterContext
 
   useEffect(() => {
-    insertWhisper(document, isTrainingSearchLoading || isJobSearchLoading || isPartnerJobSearchLoading)
+    insertWhisper(document, isTrainingSearchLoading || isJobSearchLoading)
   })
 
   const handleSearchSubmitFunction = (values) => {

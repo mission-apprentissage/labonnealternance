@@ -11,7 +11,4 @@ const setCurrentSearch = (s) => {
   currentSearch = s
 }
 
-// @ts-ignore
-window.currentConsolidatedItemList = []
-
 export { currentPage, currentSearch, setCurrentPage, setCurrentSearch }
