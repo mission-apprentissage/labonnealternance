@@ -39,10 +39,16 @@ const apiKey = defaultClient.authentications["api-key"]
 apiKey.apiKey = config.smtp.brevoApiKey
 const apiInstance = new SibApiV3Sdk.ContactsApi()
 
+const marketingClient = SibApiV3Sdk.ApiClient.instance
+const marketingApiKey = marketingClient.authentications["api-key"]
+marketingApiKey.apiKey = config.smtp.brevoMarketingApiKey
+const marketingApiInstance = new SibApiV3Sdk.ContactsApi()
+
 const postToBrevo = async (contacts: IBrevoContact[]) => {
   contactCount += contacts.length
 
   const requestContactImport = new SibApiV3Sdk.RequestContactImport()
+  const requestMarketingContactImport = new SibApiV3Sdk.RequestContactImport()
 
   const fileBody = stringify(contacts, {
     delimiter: ";",
@@ -111,12 +117,18 @@ const postToBrevo = async (contacts: IBrevoContact[]) => {
   requestContactImport.updateExistingContacts = true
   requestContactImport.emptyContactsAttributes = true
 
+  requestMarketingContactImport.fileBody = fileBody
+  requestMarketingContactImport.listIds = [parseInt(config.smtp.brevoMarketingContactListId!)]
+  requestMarketingContactImport.updateExistingContacts = true
+  requestMarketingContactImport.emptyContactsAttributes = true
+
   let trys = 0
   let sent = false
   while (!sent && trys < 3) {
     try {
       trys++
       await apiInstance.importContacts(requestContactImport)
+      await marketingApiInstance.importContacts(requestMarketingContactImport)
       sent = true
     } catch (error: any) {
       if (error.status == 429) {
@@ -253,7 +265,7 @@ const sendContacts = async (type: AccessEntityType) => {
     },
   })
 
-  await pipeline(cursor, streamGroupByCount(1000), postingTransform)
+  await pipeline(cursor, streamGroupByCount(2000), postingTransform)
 }
 
 export const sendContactsToBrevo = async () => {
