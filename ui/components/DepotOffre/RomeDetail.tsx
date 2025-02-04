@@ -5,18 +5,17 @@ import { IReferentielRomeForJob } from "shared"
 
 import { classNames } from "@/utils/classNames"
 
+import { BorderedBox } from "../espace_pro/common/components/BorderedBox"
+
 import { CustomAccordion } from "./CustomAccordion"
 
-const AccordionHeader = styled.div`
-  font-size: 16px;
+const AccordionHeader = styled.p`
   font-weight: 700;
 
   .subtitle {
     color: #666666;
     font-style: italic;
     font-weight: 400;
-    font-size: 12px;
-    line-height: 20px;
     margin-left: 4px;
   }
   .count-badge {
@@ -31,8 +30,6 @@ const AccordionHeader = styled.div`
 
 const CompetenceSelectionDiv = styled.div`
   .competences-group-title {
-    font-size: 16px;
-    line-height: 24px;
     font-weight: 700;
     margin-bottom: 16px;
     margin-top: 2px;
@@ -46,8 +43,6 @@ const CompetenceSelectionDiv = styled.div`
     display: block;
 
     .competence-checkbox {
-      font-size: 16px;
-      line-height: 24px;
       font-weight: 400;
 
       &.unselected {
@@ -78,11 +73,9 @@ export const RomeDetail = ({
   const accesFormatted = acces_metier.split("\\n").join("<br><br>")
 
   return (
-    <Box border="1px solid #000091" p={5} mb={5}>
-      <Heading fontSize="24px" mb="16px" lineHeight="32px">
-        {appellation}
-      </Heading>
-      <Text backgroundColor="#F5F5FE" padding="12px" color="#000091" fontSize="16px" lineHeight="24px" my="12px">
+    <BorderedBox>
+      <Heading mb={4}>{appellation}</Heading>
+      <Text backgroundColor="#F5F5FE" padding={3} color="#000091" my={3}>
         Voici la description de l’offre qui sera consultable par les candidats.
         <br />
         <b>
@@ -98,13 +91,17 @@ export const RomeDetail = ({
           header={
             <AccordionHeader>
               Descriptif du métier
-              <span className="subtitle">Non modifiable</span>
+              <Text as="span" className="subtitle" fontSize={["10px", "10px", "10px", "12px"]} lineHeight={["18px", "18px", "18px", "20px"]}>
+                Non modifiable
+              </Text>
             </AccordionHeader>
           }
         >
-          <ul style={{ marginLeft: 16 }}>
+          <ul>
             {definitionSplitted.map((x) => (
-              <li key={x}>{x}</li>
+              <li key={x} style={{ marginLeft: "20px", marginRight: 0, marginBottom: 0 }}>
+                {x}
+              </li>
             ))}
           </ul>
         </CustomAccordion>
@@ -137,13 +134,13 @@ export const RomeDetail = ({
         )}
 
         <CustomAccordion id="accessibilite" header={<AccordionHeader>À qui ce métier est-il accessible ?</AccordionHeader>}>
-          <span dangerouslySetInnerHTML={{ __html: accesFormatted }}></span>
+          <Text dangerouslySetInnerHTML={{ __html: accesFormatted }}></Text>
         </CustomAccordion>
       </Accordion>
       <Text fontSize="14px" color="#3A3A3A" lineHeight="24px">
         La fiche métier se base sur la classification ROME de France Travail
       </Text>
-    </Box>
+    </BorderedBox>
   )
 }
 
@@ -167,10 +164,9 @@ const CompetenceSelection = ({
               className={classNames({ "competence-checkbox": true, unselected: !competence.selected })}
               isChecked={competence.selected}
               defaultChecked={competence.selected}
-              size="lg"
               onChange={() => onChange(competence.label, !competence.selected)}
             >
-              {competence.label}
+              <Text>{competence.label}</Text>
             </Checkbox>
             {competence.error && <Text className="error-text">{competence.error}</Text>}
           </Box>

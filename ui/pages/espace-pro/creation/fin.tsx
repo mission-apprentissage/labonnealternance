@@ -1,15 +1,17 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Button, Circle, Flex, Heading, Image, Link, Stack, Text, useToast } from "@chakra-ui/react"
+import { Box, Button, Circle, Heading, Image, Link, Stack, Text, useToast } from "@chakra-ui/react"
 import { useRouter } from "next/router"
-import { useContext, useState } from "react"
+import { useState } from "react"
 import { useQuery, useQueryClient } from "react-query"
 import { ETAT_UTILISATEUR } from "shared/constants"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import { zObjectId } from "shared/models/common"
 import { z } from "zod"
 
+import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
+import { DepotSimplifieLayout } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
+
 import { AuthentificationLayout, LoadingEmptySpace } from "../../../components/espace_pro"
-import { WidgetContext } from "../../../context/contextWidget"
 import { MailCloud } from "../../../theme/components/logos"
 import { getUserStatus, getUserStatusByToken, sendValidationLink } from "../../../utils/api"
 
@@ -27,7 +29,7 @@ const ZComponentProps = z
 
 type ComponentProps = z.output<typeof ZComponentProps>
 
-export default function DepotRapideFin() {
+export function DepotRapideFin() {
   const router = useRouter()
 
   if (!router.isReady) return
@@ -42,11 +44,18 @@ export default function DepotRapideFin() {
   return <FinComponent {...parsedQuery.data} />
 }
 
+export default function DepotRapideFinWithLayout() {
+  return (
+    <DepotSimplifieLayout>
+      <DepotRapideFin />
+    </DepotSimplifieLayout>
+  )
+}
+
 function FinComponent(props: ComponentProps) {
   const router = useRouter()
   const toast = useToast()
   const client = useQueryClient()
-  const { widget } = useContext(WidgetContext)
 
   const { jobId, email, withDelegation, fromDashboard, userId, establishment_id, token } = props
 
@@ -119,10 +128,10 @@ function FinComponent(props: ComponentProps) {
 
   return (
     <AuthentificationLayout fromDashboard={fromDashboard} onClose={onClose}>
-      <Flex direction={["column", widget?.mobile ? "column" : "row"]} align={widget?.mobile ? "center" : "flex-start"} border="1px solid #000091" mt={[4, 8]} p={[4, 8]}>
-        <MailCloud style={{ paddingRight: "10px" }} />
-        <Box pt={[3, 0]} ml={10}>
-          <Heading fontSize="24px" mb={6} mt={widget?.mobile ? "10px" : "0px"}>
+      <BorderedBox display="flex" flexDirection={["column", "column", "column", "row"]} gap={[3, 4, 4, 12]} justifyContent="center" width="100%" mt={4}>
+        <MailCloud w={["120px", "120px", "120px", "269px"]} h={["67px", "67px", "67px", "151px"]} />
+        <Box>
+          <Heading className="big" mb={3}>
             {shouldDisplayAccountInformation ? <>Encore une étape avant la publication de votre offre...</> : <>Félicitations, votre offre est créée.</>}
           </Heading>
           {shouldDisplayAccountInformation ? (
@@ -148,7 +157,7 @@ function FinComponent(props: ComponentProps) {
             <JobPreview jobId={jobId} userIsValidated={userIsValidated} />
           </Box>
         </Box>
-      </Flex>
+      </BorderedBox>
     </AuthentificationLayout>
   )
 }
@@ -181,7 +190,7 @@ const AwaitingAccountDescription = ({ withDelegation, email, onResendEmail }: { 
 const ContenuAvecPuce = ({ children, contenuPuce }: { children: React.ReactNode; contenuPuce: React.ReactNode }) => {
   return (
     <Stack direction="row" spacing={4}>
-      <Circle p={5} size="20px" bg="#E3E3FD" color="#000091" fontWeight="700">
+      <Circle p={[4, 4, 4, 5]} size="20px" bg="#E3E3FD" color="#000091" fontWeight="700">
         {contenuPuce}
       </Circle>
       <Box>{children}</Box>
@@ -193,28 +202,39 @@ const ResendEmailContent = ({ onClick }: { onClick: () => void }) => {
   const [disableLink, setDisableLink] = useState(false)
 
   return (
-    <Stack direction="row" align="center" spacing={4} mt={6}>
-      <Text mr={10}>Vous n’avez pas reçu le mail ? </Text>
-      <Button
-        variant="popover"
-        fontWeight={400}
-        textDecoration="underline"
-        onClick={() => {
-          setDisableLink(true)
-          onClick()
+    <Box mt={[4, 4, 4, 6]}>
+      <Box
+        sx={{
+          "& > *": {
+            display: "inline-block",
+          },
         }}
-        isDisabled={disableLink}
       >
-        Renvoyer le mail
-      </Button>
-    </Stack>
+        <Text mr={8}>Vous n’avez pas reçu le mail ? </Text>
+        <Button
+          variant="popover"
+          fontWeight={400}
+          ml={-4}
+          fontSize={["12px", "12px", "12px", "16px"]}
+          width="fit-content"
+          textDecoration="underline"
+          onClick={() => {
+            setDisableLink(true)
+            onClick()
+          }}
+          isDisabled={disableLink}
+        >
+          Renvoyer le mail
+        </Button>
+      </Box>
+    </Box>
   )
 }
 
 const JobPreview = ({ jobId, userIsValidated }: { jobId: string; userIsValidated: boolean }) => {
   return (
     <Box mb={2}>
-      <Box mb={2}>
+      <Text mb={2}>
         <Link
           href={getDirectJobPath(jobId)}
           aria-label="Ouvrir la page de prévisualisation de l'offre sur le site La bonne alternance - nouvelle fenêtre"
@@ -223,7 +243,7 @@ const JobPreview = ({ jobId, userIsValidated }: { jobId: string; userIsValidated
         >
           Voir mon offre sur La bonne alternance <ExternalLinkIcon mx="2px" />
         </Link>
-      </Box>
+      </Text>
       {userIsValidated && (
         <Box mb={2}>
           <PrintJobLink jobId={jobId} />

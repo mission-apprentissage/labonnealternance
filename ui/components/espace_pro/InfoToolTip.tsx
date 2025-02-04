@@ -12,17 +12,7 @@ const TooltipIcon = (props) => (
 
 const InfoTooltip = ({ description }) => {
   return (
-    <Tooltip
-      label={
-        <Text p={3} fontSize={"epsilon"}>
-          {description}
-        </Text>
-      }
-      openDelay={300}
-      bg="white"
-      color="grey.800"
-      placement="right"
-    >
+    <Tooltip label={<Text p={3}>{description}</Text>} openDelay={300} bg="white" color="grey.800" placement="right">
       <Text as={"span"} _hover={{ cursor: "pointer" }}>
         <TooltipIcon color={"grey.500"} boxSize={13} />
       </Text>

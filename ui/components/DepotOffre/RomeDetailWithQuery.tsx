@@ -64,9 +64,7 @@ export const RomeDetailWithQuery = ({
     <LoadingBox />
   ) : error ? (
     <Box border="1px solid #000091" p={5}>
-      <Heading fontSize="24px" mb={3}>
-        {appellation}
-      </Heading>
+      <Heading mb={3}>{appellation}</Heading>
       <Text fontSize="14px">
         La fiche métier n'a pas pu être trouvée, merci de le{" "}
         <Link
