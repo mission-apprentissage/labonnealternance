@@ -1,6 +1,5 @@
 export enum ApplicationIntention {
   ENTRETIEN = "entretien",
-  NESAISPAS = "ne_sais_pas",
   REFUS = "refus",
 }
 
