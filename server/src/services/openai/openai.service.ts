@@ -3,15 +3,20 @@ import z from "zod"
 
 import config from "@/config"
 
+import { logger } from "../../common/logger"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
 
 const openAiApiUrl = "https://api.openai.com/v1/chat/completions"
+
+// const openai = new OpenAI({
+//   apiKey: config.openai.apiKey,
+// })
 
 const ZChatCompletionResponse = z.object({
   offres: z.array(z.object({ type: z.enum(["CFA", "entreprise", "entreprise_CFA"]), id: z.string(), cfa: z.string() })),
 })
 
-export const sendMessages = async ({
+export const sendOpenAIMessages = async ({
   messages,
   seed,
   max_tokens = 2048,
@@ -25,6 +30,14 @@ export const sendMessages = async ({
   response_format?: any
 }): Promise<string | null> => {
   try {
+    // const json = await openai.chat.completions.create({
+    //   model,
+    //   max_tokens,
+    //   ...(seed ? { seed } : {}),
+    //   ...(response_format ? { response_format } : {}),
+    //   messages: messages,
+    // })
+
     const response = await fetch(openAiApiUrl, {
       method: "POST",
       headers: {
@@ -39,10 +52,24 @@ export const sendMessages = async ({
         messages: messages,
       }),
     })
-    const json: OpenAI.Chat.ChatCompletion = await response.json()
-    const message = JSON.parse(json.choices[0].message.content!)
-    if (!ZChatCompletionResponse.safeParse(JSON.parse(message.content!)).success) {
-      console.log("Invalid response format", message.content)
+
+    const json: OpenAI.Chat.Completions.ChatCompletion = await response.json()
+    if ("error" in json) {
+      logger.error("Error from OpenAI", json.error)
+      return null
+    }
+    if (!json.choices.length || !json.choices[0].message || !json.choices[0].message) {
+      logger.info("No response from OpenAI", json)
+      return null
+    }
+
+    const message = json.choices[0].message.content
+    if (!message) {
+      logger.info("No content in response message", json)
+      return null
+    }
+    if (!ZChatCompletionResponse.safeParse(JSON.parse(message)).success) {
+      console.log("Invalid response format", message)
       return null
     }
     return message

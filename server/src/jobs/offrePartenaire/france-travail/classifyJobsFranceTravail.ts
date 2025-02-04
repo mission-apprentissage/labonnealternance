@@ -2,7 +2,7 @@ import { groupData, oleoduc, writeData } from "oleoduc"
 import { IFTJobRaw } from "shared"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { sendMessages } from "@/services/openai/openai.service"
+import { sendOpenAIMessages } from "@/services/openai/openai.service"
 
 import { logger } from "../../../common/logger"
 
@@ -49,16 +49,15 @@ Une fois que tu as déterminé si les offres sont de type CFA, Entreprise ou Ent
     },
   ]
   try {
-    const responseStr = await sendMessages({
+    const response = await sendOpenAIMessages({
       messages,
       seed: 45555,
       max_tokens: 1024,
       response_format: { type: "json_object" },
     })
-    if (!responseStr) {
+    if (!response) {
       return null
     }
-    const response = JSON.parse(responseStr)
     return response
   } catch (error) {
     console.log(error)
@@ -72,7 +71,7 @@ function mapDocument(rawFTDocuments: IFTJobRaw[]) {
     entreprise: doc.entreprise,
     appellationlibelle: doc.appellationlibelle,
     intitule: doc.intitule,
-    type: doc._metadata?.openai?.type || undefined,
+    ...(doc._metadata?.openai?.type ? { type: doc._metadata?.openai?.type } : {}),
   }))
   return offres
 }
@@ -86,7 +85,7 @@ export const classifyFranceTravailJobs = async () => {
   const count = await getDbCollection("raw_francetravail").countDocuments(queryFilter)
   logger.info(`Classification de ${count} jobs depuis raw_francetravail`)
 
-  oleoduc(
+  await oleoduc(
     await getDbCollection("raw_francetravail").find(queryFilter).stream(),
     groupData({ size: 10 }),
     writeData(async (rawFTDocuments: IFTJobRaw[]) => {
