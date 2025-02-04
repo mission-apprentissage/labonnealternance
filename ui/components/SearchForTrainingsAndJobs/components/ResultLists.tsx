@@ -259,44 +259,30 @@ const ResultLists = ({
                 {virtualItems.map((virtualRow) => {
                   const lastRow = virtualRow.index === consolidatedItemList.length
                   return (
-                    <>
-                      {!lastRow ? (
-                        <Box
-                          key={virtualRow.key}
-                          style={{
-                            position: "absolute",
-                            top: 0,
-                            left: 0,
-                            width: "100%",
-                            height: `${virtualRow.size}px`,
-                            transform: `translateY(${virtualRow.start + (virtualRow.index - columnVirtualizer.range.startIndex) * 8}px)`,
-                          }}
-                        >
-                          <ItemElement
-                            virtualRow={virtualRow}
-                            consolidatedItemList={consolidatedItemList}
-                            handleSelectItem={handleSelectItem}
-                            searchForTrainingsOnNewCenter={searchForTrainingsOnNewCenter}
-                            searchForJobsOnNewCenter={searchForJobsOnNewCenter}
-                            columnVirtualizer={columnVirtualizer}
-                          />
-                        </Box>
+                    <Box
+                      key={virtualRow.key}
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: lastRow ? "130px" : `${virtualRow.size}px`,
+                        transform: `translateY(${virtualRow.start + (virtualRow.index - columnVirtualizer.range.startIndex) * 8}px)`,
+                      }}
+                    >
+                      {lastRow ? (
+                        <ListFooter handleExtendedSearch={handleExtendedSearch} isJobSearchLoading={isJobSearchLoading} />
                       ) : (
-                        <Box
-                          key={virtualRow.key}
-                          style={{
-                            position: "absolute",
-                            top: 0,
-                            left: 0,
-                            width: "100%",
-                            height: `130px`,
-                            transform: `translateY(${virtualRow.start}px)`,
-                          }}
-                        >
-                          <ListFooter handleExtendedSearch={handleExtendedSearch} isJobSearchLoading={isJobSearchLoading} />
-                        </Box>
+                        <ItemElement
+                          virtualRow={virtualRow}
+                          consolidatedItemList={consolidatedItemList}
+                          handleSelectItem={handleSelectItem}
+                          searchForTrainingsOnNewCenter={searchForTrainingsOnNewCenter}
+                          searchForJobsOnNewCenter={searchForJobsOnNewCenter}
+                          columnVirtualizer={columnVirtualizer}
+                        />
                       )}
-                    </>
+                    </Box>
                   )
                 })}
               </Box>
