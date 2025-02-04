@@ -2,7 +2,7 @@ import fs from "fs"
 import path from "path"
 
 import { ObjectId } from "mongodb"
-import { oleoduc, pipeStreams, writeData } from "oleoduc"
+import { compose, oleoduc, writeData } from "oleoduc"
 import { ILbaCompany } from "shared/models"
 
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
@@ -79,7 +79,7 @@ export const readCompaniesFromJson = async () => {
 
   const streamCompanies = async () => {
     const response = fs.createReadStream(PREDICTION_FILE)
-    return pipeStreams(response, streamJsonArray())
+    return compose(response, streamJsonArray())
   }
 
   return streamCompanies()

@@ -4,7 +4,7 @@ import bunyan from "bunyan"
 import BunyanSlack from "bunyan-slack"
 import chalk from "chalk"
 import { isEmpty, omit, throttle } from "lodash-es"
-import { pipeStreams, transformData, writeData } from "oleoduc"
+import { compose, transformData, writeData } from "oleoduc"
 
 import config from "@/config"
 
@@ -18,7 +18,7 @@ function prettyPrintStream(outputName) {
     60: chalk.magenta.bold("FATAL"),
   }
 
-  return pipeStreams(
+  return compose(
     transformData((raw: any) => {
       const stack = raw.err?.stack
       const message = stack ? `${raw.msg}\n${stack}` : raw.msg

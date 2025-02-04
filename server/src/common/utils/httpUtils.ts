@@ -3,7 +3,7 @@ import https from "https"
 
 import axios, { AxiosRequestConfig, CreateAxiosDefaults } from "axios"
 import { FastifyRequest } from "fastify"
-import { pipeStreams, transformData } from "oleoduc"
+import { compose, transformData } from "oleoduc"
 import { ITrackingCookies } from "shared/models"
 
 import { logger } from "../logger"
@@ -57,7 +57,7 @@ async function _fetch(url: string, options: Partial<FetchOptions> = {}) {
 
 async function fetchStream(url: string, options: Partial<FetchOptions> = {}) {
   const response = await _fetch(url, { ...options, responseType: "stream" })
-  return pipeStreams(
+  return compose(
     response.data,
     transformData((d: any) => d.toString())
   )
