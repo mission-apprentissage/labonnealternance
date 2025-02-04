@@ -389,7 +389,6 @@ const buildUrlsOfDetail = (application: IApplication, utm?: { utm_source?: strin
   }
 }
 
-// TODO KEVIN
 export const buildUserForToken = (application: IApplication, user?: IUserWithAccount): UserForAccessToken => {
   const { job_origin, company_siret, company_email, job_id } = application
   if (job_origin === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
@@ -1310,8 +1309,8 @@ const getJobOrCompanyFromApplication = async (application: IApplication) => {
 
 const getPhoneForApplication = async (application: IApplication) => {
   const jobOrCompany = await getJobOrCompanyFromApplication(application)
-  if (!jobOrCompany.recruiter) throw internal(`Société pour ${application.job_origin} introuvable`)
-  return jobOrCompany.recruiter.phone
+  const phone = jobOrCompany.type === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES ? jobOrCompany.job?.apply_phone : jobOrCompany.recruiter?.phone
+  return phone
 }
 
 export const getApplicationDataForIntentionAndScheduleMessage = async (applicationId: string, intention: ApplicationIntention) => {
@@ -1321,15 +1320,22 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
   if (!applicant) throw notFound("Candidat non trouvé")
 
   const jobOrCompany = await getJobOrCompanyFromApplication(application)
-  const { recruiter } = jobOrCompany ?? {}
-  if (!recruiter) throw internal(`Société pour ${application.job_origin} introuvable`)
+  const { recruiter, job, type } = jobOrCompany ?? {}
+  let recruiter_phone = ""
 
-  const { managed_by } = recruiter
-  if (managed_by) {
-    await validateUserWithAccountEmail(new ObjectId(managed_by))
+  if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA || type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
+    if (!recruiter) throw internal(`Société pour ${application.job_origin} introuvable`)
+
+    const { managed_by } = recruiter
+    if (managed_by) {
+      await validateUserWithAccountEmail(new ObjectId(managed_by))
+    }
+    recruiter_phone = recruiter.phone || ""
   }
 
-  const recruiter_phone = recruiter.phone ?? ""
+  if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) {
+    recruiter_phone = job.apply_phone || ""
+  }
 
   await getDbCollection("recruiter_intention_mails").updateOne(
     {
