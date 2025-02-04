@@ -3,36 +3,11 @@ import { ILbaCompany, ZLbaCompany } from "shared/models/recruteurLba.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-import { logger } from "../../common/logger"
 import { logMessage } from "../../common/utils/logMessage"
-import { notifyToSlack } from "../../common/utils/slackUtils"
 
-import {
-  checkIfAlgoFileIsNew,
-  getCompanyMissingData,
-  getRecruteursLbaFileFromS3,
-  readCompaniesFromJson,
-  removePredictionFile,
-  verifyRecruteurLBAAlgoFileDataVolume,
-} from "./recruteurLbaUtil"
-
-let count = 0
-
-const cleanUp = async () => {
-  // clearing memory and reseting params
-  count = 0
-  await removePredictionFile()
-}
-
-const printProgress = () => {
-  if (count % 5000 === 0) {
-    logMessage("info", ` -- update ${count}`)
-  }
-}
+import { getCompanyMissingData } from "./recruteurLbaUtil"
 
 const prepareCompany = async (rawCompany): Promise<ILbaCompany | null> => {
-  count++
-  printProgress()
   rawCompany.siret = rawCompany.siret.toString().padStart(14, "0")
   if (!rawCompany.enseigne && rawCompany.raison_sociale) {
     rawCompany.enseigne = rawCompany.raison_sociale
@@ -64,9 +39,9 @@ const prepareCompany = async (rawCompany): Promise<ILbaCompany | null> => {
   return company
 }
 
-const processAlgoCompanies = async () => {
+export const processAlgoCompanies = async () => {
   await oleoduc(
-    await readCompaniesFromJson(),
+    getDbCollection("raw_recruteurslba").find({}).stream(),
     transformData((company) => prepareCompany(company), { parallel: 8 }),
     writeData(async (lbaCompany) => {
       try {
@@ -79,29 +54,4 @@ const processAlgoCompanies = async () => {
       }
     })
   )
-}
-
-export default async function importRecruteurLBAFromAlgoFile({ clearMongo = false, sourceFile = null }: { clearMongo?: boolean; sourceFile?: string | null }) {
-  try {
-    logger.info("Start importRecruteurLBAFromAlgoFile jobs ")
-    logger.info(`recruteurslba collection clear : ${clearMongo}`)
-
-    if (clearMongo) {
-      logger.info("Clear recruteurlba collection")
-      await getDbCollection("recruteurslba").deleteMany({})
-    }
-
-    await checkIfAlgoFileIsNew("algo companies")
-    await getRecruteursLbaFileFromS3(sourceFile)
-    await verifyRecruteurLBAAlgoFileDataVolume()
-    await processAlgoCompanies()
-
-    logger.info("End importRecruteurLBAFromAlgoFile jobs ")
-
-    await notifyToSlack({ subject: "IMPORT SOCIETES ISSUES DE L'ALGO", message: `Import sociétés issues de l'algo terminé. ${count} sociétés importées`, error: false })
-  } catch (err) {
-    logger.error(err)
-  } finally {
-    await cleanUp()
-  }
 }

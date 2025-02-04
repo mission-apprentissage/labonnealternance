@@ -1,6 +1,4 @@
-import { createReadStream, createWriteStream, existsSync, mkdirSync, unlinkSync } from "fs"
-import * as readline from "node:readline"
-import { Transform } from "node:stream"
+import { createWriteStream, existsSync, mkdirSync, unlinkSync } from "fs"
 import { pipeline } from "node:stream/promises"
 import path from "path"
 
@@ -15,7 +13,6 @@ import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
 import { getS3FileLastUpdate, s3ReadAsStream } from "../../common/utils/awsUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
-import { streamJsonArray } from "../../common/utils/streamUtils"
 import config from "../../config"
 
 const currentDirname = __dirname(import.meta.url)
@@ -60,16 +57,8 @@ export const checkIfAlgoFileIsNew = async (reason: string) => {
   }
 }
 
-/**
- * Télécharge localement le fichier des sociétés issues de l'algo
- * @param {string | null} sourceFile un fichier source alternatif
- */
-export const getRecruteursLbaFileFromS3 = async (sourceFile: string | null) => {
-  logger.info(`Downloading algo file ${sourceFile || s3File} from S3 Bucket`)
-  await saveRecruteursLbaFileOnDisk({ from: sourceFile || s3File, to: PREDICTION_FILE })
-}
-
-export const saveRecruteursLbaFileOnDisk = async ({ from, to }) => {
+export const getRecruteursLbaFileFromS3 = async ({ from, to }) => {
+  logger.info(`Downloading algo file ${s3File} from S3 Bucket`)
   await createAssetsFolder()
   const readStream = await s3ReadAsStream("storage", from)
   const writeStream = createWriteStream(to)
@@ -80,69 +69,6 @@ export const saveRecruteursLbaFileOnDisk = async ({ from, to }) => {
   } catch (error) {
     logger.error("Error during file transfer:", error)
     throw error
-  }
-}
-
-export const readCompaniesFromJson = async () => {
-  logger.info(`Reading file`)
-
-  const streamCompanies = async () => {
-    const readStream = createReadStream(PREDICTION_FILE)
-    const jsonStream = streamJsonArray()
-
-    return pipeline(readStream, jsonStream)
-  }
-
-  return streamCompanies()
-}
-
-// KBA 20250124 : to test when file is OK, current invalid string length issue.
-export const countCompaniesFast = async (): Promise<number> => {
-  const readStream = createReadStream(PREDICTION_FILE)
-  const rl = readline.createInterface({ input: readStream, crlfDelay: Infinity })
-
-  let count = 0
-
-  for await (const line of rl) {
-    // Compter les lignes contenant une ouverture d'accolade indicative d'un objet JSON
-    count += (line.match(/{/g) || []).length
-  }
-
-  logger.info(`Count fichier : ${count}`)
-
-  return count
-}
-
-export const countCompaniesInFile = async (): Promise<number> => {
-  let count = 0
-
-  const countTransform = new Transform({
-    objectMode: true,
-    transform(chunk, _encoding, callback) {
-      count++
-      callback()
-    },
-  })
-
-  try {
-    await pipeline(await readCompaniesFromJson(), countTransform)
-  } catch (error) {
-    logger.error("Error counting companies:", error)
-    throw error
-  }
-
-  return count
-}
-
-export const verifyRecruteurLBAAlgoFileDataVolume = async () => {
-  const companyCount = await countCompaniesFast()
-  if (companyCount < config.minRecruteurLBAAlgoData) {
-    await notifyToSlack({
-      subject: "IMPORT SOCIETES ISSUES DE L'ALGO",
-      message: `Import sociétés issues de l'algo avorté car le fichier ne comporte pas assez de sociétés. ${companyCount} sociétés / ${config.minRecruteurLBAAlgoData} minimum attendu`,
-      error: true,
-    })
-    throw new Error(`Nombre de sociétés insuffisant : ${companyCount}`)
   }
 }
 

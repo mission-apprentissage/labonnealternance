@@ -8,7 +8,7 @@ import { notifyToSlack } from "../../common/utils/slackUtils"
 import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "../../services/cfadock.service"
 import { cfaDockOpcoItemToIOpco, saveOpco } from "../../services/opco.service"
 
-import { checkIfAlgoFileIsNew, getRecruteursLbaFileFromS3, readCompaniesFromJson, removePredictionFile } from "./recruteurLbaUtil"
+import { checkIfAlgoFileIsNew, removePredictionFile } from "./recruteurLbaUtil"
 
 let errorCount = 0
 let sirenSet: Set<string> = new Set()
@@ -54,15 +54,7 @@ const cleanUp = () => {
   sirenWithoutOpco = new Set()
 }
 
-export default async function updateOpcoCompanies({
-  ClearMongo = false,
-  ForceRecreate = false,
-  SourceFile = null,
-}: {
-  ClearMongo?: boolean
-  ForceRecreate?: boolean
-  SourceFile?: string | null
-}) {
+export default async function updateOpcoCompanies({ ClearMongo = false, ForceRecreate = false }: { ClearMongo?: boolean; ForceRecreate?: boolean }) {
   try {
     logMessage("info", " -- Start bulk opco determination -- ")
 
@@ -70,15 +62,13 @@ export default async function updateOpcoCompanies({
       await checkIfAlgoFileIsNew("opco companies")
     }
 
-    await getRecruteursLbaFileFromS3(SourceFile)
-
     if (ClearMongo) {
       logMessage("info", `Clearing opcos db...`)
       await getDbCollection("opcos").deleteMany({})
     }
 
     await oleoduc(
-      await readCompaniesFromJson(),
+      await getDbCollection("raw_recruteurslba").find({}).toArray(), //TODO KEVIN
       writeData(async (company) => {
         const siren = company.siret.toString().padStart(14, "0").substring(0, 9)
 

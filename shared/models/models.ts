@@ -37,6 +37,7 @@ import rawFranceTravail from "./rawFranceTravail.model.js"
 import rawHelloWorkModel from "./rawHelloWork.model.js"
 import rawKelioModel from "./rawKelio.model.js"
 import rawPassModel from "./rawPass.model.js"
+import rawRecruteursLbaModel from "./rawRecruteursLba.model.js"
 import rawRHAlternanceModel from "./rawRHAlternance.model.js"
 import recruiterModel from "./recruiter.model.js"
 import recruiterIntentionMailModel from "./recruiterIntentionMail.model.js"
@@ -94,6 +95,7 @@ const modelDescriptorMap = {
   [optoutModel.collectionName]: optoutModel,
   [rawHelloWorkModel.collectionName]: rawHelloWorkModel,
   [rawPassModel.collectionName]: rawPassModel,
+  [rawRecruteursLbaModel.collectionName]: rawRecruteursLbaModel,
   [recruiterModel.collectionName]: recruiterModel,
   [recruiterIntentionMailModel.collectionName]: recruiterIntentionMailModel,
   [recruteurLbaUpdateEventModel.collectionName]: recruteurLbaUpdateEventModel,

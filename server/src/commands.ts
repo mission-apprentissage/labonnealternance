@@ -300,14 +300,6 @@ program
   .action(createJobAction("brevo:blocked:sync"))
 
 program
-  .command("recruteurslba:import")
-  .description("Met à jour la liste des sociétés bonnes alternances")
-  .option("-c, -clear-mongo, [ClearMongo]", "vide la collection des bonnes alternances", false)
-  .option("-s, -source-file, [SourceFile]", "fichier source alternatif")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("recruteurslba:import"))
-
-program
   .command("update-geo-locations")
   .description("Procède à la géolocalisation de masse des sociétés dans le fichier des bonnes alternances")
   .option("-force-recreate, [ForceRecreate]", "pour forcer la recréation", false)

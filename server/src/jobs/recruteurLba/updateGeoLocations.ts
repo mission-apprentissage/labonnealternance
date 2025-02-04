@@ -14,7 +14,7 @@ import __dirname from "../../common/dirname"
 import { logMessage } from "../../common/utils/logMessage"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
-import { checkIfAlgoFileIsNew, getRecruteursLbaFileFromS3, readCompaniesFromJson, removePredictionFile } from "./recruteurLbaUtil"
+import { checkIfAlgoFileIsNew, removePredictionFile } from "./recruteurLbaUtil"
 
 const currentDirname = __dirname(import.meta.url)
 
@@ -69,7 +69,7 @@ const clearingFiles = async () => {
 
 const geolocateCsvHeader = "rue;citycode"
 
-export default async function updateGeoLocations({ ForceRecreate = false, SourceFile = null }: { ForceRecreate?: boolean; SourceFile?: string | null }) {
+export default async function updateGeoLocations({ ForceRecreate = false }: { ForceRecreate?: boolean }) {
   try {
     logMessage("info", " -- Start bulk geolocations -- ")
 
@@ -92,11 +92,9 @@ export default async function updateGeoLocations({ ForceRecreate = false, Source
       adressesToGeolocate = `${geolocateCsvHeader}\r\n`
     }
 
-    await getRecruteursLbaFileFromS3(SourceFile)
-
     // extraction depuis les établissements des adresses à géolocaliser
     await oleoduc(
-      await readCompaniesFromJson(),
+      getDbCollection("raw_recruteurslba").find({}).stream(), //TODO KEVIN
       writeData((company) => {
         if (company.zip_code) {
           adressesToGeolocate += `${company.street_number ? company.street_number.toUpperCase() : ""} ${company.street_name ? company.street_name.toUpperCase() : ""};${
