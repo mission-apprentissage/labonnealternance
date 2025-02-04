@@ -2,7 +2,7 @@ fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: 1910fb07ec956bb49fa09319706b02bdf1320633f8d405f7f53783ebf827f39b
 - filename: .infra/vault/vault.yml
-  checksum: c7b85451db302eb73a03185f06cd6d153e7a835a2a518baa4495629972b44eae
+  checksum: bcf32ab51b6683159515d9ce7e53a544668a73fa058f2736dfa06e50c54a3c0f
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
   checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
 - filename: cypress/pages/FlowAdminPage.ts
@@ -119,6 +119,8 @@ fileignoreconfig:
   checksum: 203d57160c0cda492f4172d9651c2dea9b8d7b4b3ab0e25f80a24438e3f1e184
 - filename: server/static/templates/mail-candidat-offre-emploi-lba.mjml.ejs
   checksum: 3188f43c847d071acfb7a366748647ab88d821abb3e022830b82fd092db90f83
+- filename: server/static/templates/mail-candidat-offre-emploi-partenaire.mjml.ejs
+  checksum: 092f871d48fc0602f5f90bb239defbf809aedab35f347f83fd0fdc97a6359abf
 - filename: server/static/templates/mail-candidat-recruteur-lba.mjml.ejs
   checksum: 0b806bca197dba97415902339e84f924cb45dae766cf8d3cfc47d80d2bdd203c
 - filename: server/static/templates/mail-candidat-refus.mjml.ejs
@@ -271,8 +273,6 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
-- filename: server/static/templates/mail-candidat-offre-emploi-partenaire.mjml.ejs
-  checksum: 092f871d48fc0602f5f90bb239defbf809aedab35f347f83fd0fdc97a6359abf
 scopeconfig:
 - scope: node
 custom_patterns:
