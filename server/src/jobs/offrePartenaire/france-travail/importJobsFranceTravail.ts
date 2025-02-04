@@ -58,5 +58,6 @@ export const importFranceTravailToComputed = async () => {
     partnerLabel: JOBPARTNERS_LABEL.FRANCE_TRAVAIL,
     zodInput: ZFTJobRaw,
     mapper: franceTravailJobsToJobsPartners,
+    rawFilterQuery: { unpublishedAt: { $exists: false } },
   })
 }

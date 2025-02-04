@@ -2,7 +2,7 @@ import fs from "fs"
 import path from "path"
 
 import { ObjectId } from "mongodb"
-import { compose, oleoduc, writeData } from "oleoduc"
+import { oleoduc, pipeStreams, writeData } from "oleoduc"
 import { ILbaCompany } from "shared/models"
 
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
@@ -70,6 +70,7 @@ export const downloadAlgoCompanyFile = async (sourceFile: string | null) => {
 
 export const downloadFile = async ({ from, to }) => {
   await createAssetsFolder()
+  // @ts-ignore // TODO: fix this
   await oleoduc(s3ReadAsStream("storage", from), fs.createWriteStream(to))
 }
 
@@ -78,7 +79,7 @@ export const readCompaniesFromJson = async () => {
 
   const streamCompanies = async () => {
     const response = fs.createReadStream(PREDICTION_FILE)
-    return compose(response, streamJsonArray())
+    return pipeStreams(response, streamJsonArray())
   }
 
   return streamCompanies()
