@@ -44,20 +44,16 @@ Une fois que tu as déterminé si les offres sont de type CFA, Entreprise ou Ent
     },
   ]
   try {
-    // const responseStr = await mistralSendMessages({
-    //   messages,
-    //   seed: 45555,
-    //   max_tokens: 1024,
-    //   response_format: { type: "json_object" },
-    // })
     const responseStr = await sendMessages({
       messages,
       seed: 45555,
       max_tokens: 1024,
       response_format: { type: "json_object" },
     })
+    if (!responseStr) {
+      return null
+    }
     const response = JSON.parse(responseStr)
-
     return response
   } catch (error) {
     console.log(error)
