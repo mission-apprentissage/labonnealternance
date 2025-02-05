@@ -2,29 +2,32 @@ import { Transform } from "stream"
 import { pipeline } from "stream/promises"
 
 import { internal } from "@hapi/boom"
-import { ObjectId } from "mongodb"
+import { Filter } from "mongodb"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { JOB_STATUS_ENGLISH } from "shared/models"
 import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 
-export const importFromComputedToJobsPartners = async () => {
+export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
   const stream = await getDbCollection("computed_jobs_partners")
-    .find({ validated: true, business_error: null })
-    .project({ _id: 0, validated: 0, business_error: 0, errors: 0 })
+    .find({ $and: [{ validated: true, business_error: null }, ...(addedMatchFilter ? [addedMatchFilter] : [])] })
+    .project({ _id: 1, validated: 0, business_error: 0, errors: 0 })
     .stream()
 
   const counters = { total: 0, success: 0, error: 0 }
   const importDate = new Date()
   const transform = new Transform({
     objectMode: true,
-    async transform(computedJobPartner: Omit<IJobsPartnersOfferPrivate, "_id" | "created_at">, encoding, callback: (error?: Error | null, data?: any) => void) {
+    async transform(computedJobPartner: Omit<IJobsPartnersOfferPrivate, "created_at">, encoding, callback: (error?: Error | null, data?: any) => void) {
       try {
         counters.total++
         const partnerJobToUpsert: Partial<IJobsPartnersOfferPrivate> = {
+          _id: computedJobPartner._id,
+          updated_at: importDate,
           partner_label: computedJobPartner.partner_label,
           partner_job_id: computedJobPartner.partner_job_id,
           contract_start: computedJobPartner.contract_start ?? null,
@@ -70,7 +73,7 @@ export const importFromComputedToJobsPartners = async () => {
           { partner_job_id: partnerJobToUpsert.partner_job_id, partner_label: partnerJobToUpsert.partner_label },
           {
             $set: { ...partnerJobToUpsert },
-            $setOnInsert: { _id: new ObjectId(), created_at: importDate, updated_at: importDate },
+            $setOnInsert: { created_at: importDate },
           },
           { upsert: true }
         )

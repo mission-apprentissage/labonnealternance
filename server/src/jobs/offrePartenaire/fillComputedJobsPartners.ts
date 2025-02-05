@@ -1,3 +1,4 @@
+import { Filter } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared/models"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
@@ -9,14 +10,14 @@ import { fillSiretInfosForPartners } from "./fillSiretInfosForPartners"
 import { rankJobPartners } from "./rankJobPartners"
 import { validateComputedJobPartners } from "./validateComputedJobPartners"
 
-export const fillComputedJobsPartners = async () => {
-  await fillOpcoInfosForPartners()
-  await fillSiretInfosForPartners()
-  await fillLocationInfosForPartners()
-  await fillRomeForPartners()
-  await detectDuplicateJobPartners()
-  await rankJobPartners()
-  await validateComputedJobPartners()
+export const fillComputedJobsPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
+  await fillOpcoInfosForPartners(addedMatchFilter)
+  await fillSiretInfosForPartners(addedMatchFilter)
+  await fillLocationInfosForPartners(addedMatchFilter)
+  await fillRomeForPartners(addedMatchFilter)
+  await detectDuplicateJobPartners(addedMatchFilter)
+  await rankJobPartners(addedMatchFilter)
+  await validateComputedJobPartners(addedMatchFilter)
 }
 
 export const blankComputedJobPartner: Omit<IComputedJobsPartners, "_id" | "partner_label" | "partner_job_id"> = {

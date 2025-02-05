@@ -4,7 +4,8 @@ import { IModelDescriptor, zObjectId } from "shared/models/common.js"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 
-import { ZJobsPartnersOfferPrivate } from "./jobsPartners.model.js"
+import jobsPartnersModel, { ZJobsPartnersOfferPrivate } from "./jobsPartners.model.js"
+import recruiterModel from "./recruiter.model.js"
 
 const collectionName = "computed_jobs_partners" as const
 
@@ -27,7 +28,9 @@ export enum JOB_PARTNER_BUSINESS_ERROR {
 
 export const ZComputedJobPartnersDuplicateRef = z.object({
   otherOfferId: zObjectId,
-  collectionName: z.enum(["recruiters", collectionName]).describe("nom de la collection contenant l'offre avec _id=otherOfferId"),
+  collectionName: z
+    .enum([recruiterModel.collectionName, collectionName, jobsPartnersModel.collectionName])
+    .describe("nom de la collection contenant l'offre avec _id=otherOfferId"),
   reason: z.string(),
 })
 
