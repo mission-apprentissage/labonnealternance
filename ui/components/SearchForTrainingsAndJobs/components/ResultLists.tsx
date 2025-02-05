@@ -18,10 +18,6 @@ import RechercheCDICDD from "./rechercheCDDCDI"
 import ResultFilterAndCounter from "./ResultFilterAndCounter"
 import ResultListsLoading from "./ResultListsLoading"
 
-const adjustScrollIndex = (index, listSize) => {
-  return index + (index < listSize - 2 ? 2 : 0)
-}
-
 const ListFooter = ({ handleExtendedSearch, isJobSearchLoading }) => {
   const scopeContext = useContext(ScopeContext)
   const { activeFilters, formValues } = useContext(DisplayContext)
@@ -147,7 +143,7 @@ const ResultLists = ({
       //sollicité après fermeture de la fiche
       const itemIndex = consolidatedItemList.findIndex((item) => item.id === itemToScrollTo.id)
       if (itemIndex >= 0) {
-        setTimeout(() => columnVirtualizer.scrollToIndex(adjustScrollIndex(itemIndex, consolidatedItemList.length)), 500)
+        setTimeout(() => columnVirtualizer.scrollToIndex(itemIndex, { align: "start" }), 500)
         setItemToScrollTo(null)
       }
     }
@@ -167,7 +163,7 @@ const ResultLists = ({
     }
 
     if (itemIndex >= 0) {
-      columnVirtualizer.scrollToIndex(itemIndex)
+      columnVirtualizer.scrollToIndex(itemIndex, { align: "start" })
     }
   }
 
