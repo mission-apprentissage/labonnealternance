@@ -11,7 +11,6 @@ process.on("uncaughtException", (err) => logger.error(err, "uncaughtException"))
 
 try {
   logger.warn("starting application")
-  console.log("WORKER", config.worker)
   await connectToMongodb(config.mongodb.uri)
   await configureDbSchemaValidation(modelDescriptors)
   await startCLI()

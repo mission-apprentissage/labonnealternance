@@ -521,7 +521,7 @@ export const convertFranceTravailJobToJobOfferApi = (offresEmploiFranceTravail: 
         identifier: {
           id: null,
           partner_job_id: offreFT.id,
-          partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_FRANCE_TRAVAIL,
+          partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL,
         },
 
         contract: {

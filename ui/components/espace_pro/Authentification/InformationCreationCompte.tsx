@@ -107,16 +107,15 @@ const Formulaire = ({ submitForm }) => {
 }
 
 const FormulaireLayout = ({ left, right }) => {
-  const { widget } = useContext(WidgetContext)
   const router = useRouter()
   const { type } = router.query
 
   return (
-    <SimpleGrid columns={[1, 1, 1, 2]} spacing={["35px", "35px", "35px", "75px"]} mt={widget.isWidget ? 0 : 12}>
+    <SimpleGrid columns={[1, 1, 2, 2]} spacing={4} mt={0}>
       <Box>
         <Heading>{type === AUTHTYPE.ENTREPRISE ? "Vos informations de contact" : "Créez votre compte"}</Heading>
         <Box fontSize="20px" mb={4}>
-          <Text textAlign="justify" mt={2}>
+          <Text className="big" mt={2} mb={4}>
             {type === AUTHTYPE.ENTREPRISE
               ? "Seul le numéro de téléphone sera visible sur vos offres. Vous recevrez les candidatures sur l'email renseigné."
               : "Seul le numéro de téléphone sera visible sur les offres de vos entreprises partenaires. Vous recevrez les candidatures sur l'email renseigné."}
@@ -193,5 +192,3 @@ export const InformationCreationCompte = ({ isWidget = false }: { isWidget?: boo
     </AnimationContainer>
   )
 }
-
-export default InformationCreationCompte

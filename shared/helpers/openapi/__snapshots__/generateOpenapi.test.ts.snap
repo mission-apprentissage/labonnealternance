@@ -147,7 +147,10 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "description": "Le numéro de SIRET de l'établissement",
             "example": "78424186100011",
             "pattern": "^\\d{14}$",
-            "type": "string",
+            "type": [
+              "string",
+              "null",
+            ],
           },
           "company_type": {
             "description": "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
@@ -1918,10 +1921,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "token": {
-            "type": [
-              "string",
-              "null",
-            ],
+            "type": "string",
           },
         },
         "required": [
@@ -1930,6 +1930,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "company",
           "id",
           "applicationCount",
+          "token",
           "recipient_id",
         ],
         "type": "object",
@@ -2700,6 +2701,10 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "place": {
             "$ref": "#/components/schemas/Place",
           },
+          "recipient_id": {
+            "description": "Identifiant personnalisé (ID mongoDB préfixé du nom de la collection) envoyé au server pour la candidature",
+            "type": "string",
+          },
           "romes": {
             "items": {
               "$ref": "#/components/schemas/Rome",
@@ -2720,6 +2725,9 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "title": {
             "type": "string",
           },
+          "token": {
+            "type": "string",
+          },
         },
         "required": [
           "ideaType",
@@ -2728,6 +2736,8 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "company",
           "id",
           "job",
+          "token",
+          "recipient_id",
         ],
         "type": "object",
       },
@@ -7204,13 +7214,6 @@ Limite : 20 appel(s) / 1 seconde(s)
                   "applicant_phone": {
                     "description": "Téléphone du candidat",
                     "type": "string",
-                  },
-                  "application_url": {
-                    "description": "URL où a été créé la candidature. Uniquement pour les candidatures venant de LBA.",
-                    "type": [
-                      "string",
-                      "null",
-                    ],
                   },
                   "recipient_id": {
                     "description": "Identifiant unique de la ressource vers laquelle la candidature est faite, préfixé par le nom de la collection",

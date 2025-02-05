@@ -9,6 +9,7 @@ import { getCfaInformation, getEntrepriseInformation } from "@/utils/api"
 
 import { InfoCircle } from "../../theme/components/icons"
 
+import { BorderedBox } from "./common/components/BorderedBox"
 import { FieldWithValue } from "./FieldWithValue"
 import InfoPopover from "./InfoPopover"
 import InfoTooltip from "./InfoToolTip"
@@ -29,18 +30,16 @@ export const InformationLegaleEntreprise = ({ siret, type, opco }: InformationLe
   const raisonSociale = entreprise?.raison_sociale ?? cfa?.raison_sociale
 
   return (
-    <Box border="1px solid #000091" p={5}>
-      <Heading mb={3} fontSize="2xl">
-        Informations légales
-      </Heading>
+    <BorderedBox>
+      <Heading mb={3}>Informations légales</Heading>
       {raisonSociale && user?.type !== OPCO && (
-        <Flex alignItems="flex-start" mb={10}>
+        <Flex alignItems="flex-start" mb={[4, 4, 4, 10]}>
           <InfoCircle mr={2} mt={1} />
           <Text>Vérifiez que les informations pré-remplies sont correctes avant de continuer.</Text>
         </Flex>
       )}
       {!raisonSociale && (
-        <Flex alignItems="flex-start" mb={10}>
+        <Flex alignItems="flex-start" mb={[4, 4, 4, 10]}>
           <InfoCircle mr={2} mt={1} />
           <Box>
             <Text mb={4}>Suite à un problème technique, nous ne sommes pas en mesure d’afficher votre raison sociale et l'adresse de votre établissement.</Text>
@@ -67,7 +66,7 @@ export const InformationLegaleEntreprise = ({ siret, type, opco }: InformationLe
         type={type}
         siret={siret}
       />
-    </Box>
+    </BorderedBox>
   )
 }
 
@@ -92,7 +91,7 @@ const OrganizationInfoFields = ({
     establishment_raison_sociale && establishment_raison_sociale.length > 30 ? establishment_raison_sociale.substring(0, 30) + "..." : (establishment_raison_sociale ?? "")
   const firstLineAddress = address
   return (
-    <Stack direction="column" spacing={7}>
+    <Stack direction="column" spacing={[3, 3, 3, 7]}>
       <FieldWithValue
         title="SIRET"
         value={siret}

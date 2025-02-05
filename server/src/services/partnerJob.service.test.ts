@@ -52,7 +52,7 @@ describe("partnerJob.service", () => {
       isMinimalData: true,
       api: "jobV1/jobs",
     })
-
+    results && "results" in results ? (results.results[0].token = "") : null
     expect(results).toMatchSnapshot()
   })
 
@@ -80,7 +80,7 @@ describe("partnerJob.service", () => {
       isMinimalData: false,
       api: "jobV1/jobs",
     })
-
+    results && "results" in results ? (results.results[0].token = "") : null
     expect(results).toMatchSnapshot()
   })
 
@@ -90,6 +90,7 @@ describe("partnerJob.service", () => {
       caller: "lba",
     })
 
+    results && "partnerJobs" in results ? (results.partnerJobs[0].token = "") : null
     expect(results).toMatchSnapshot()
   })
 
