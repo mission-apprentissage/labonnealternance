@@ -44,7 +44,7 @@ import { fixRecruiterDataValidation } from "./recruiters/fixRecruiterDataValidat
 import { opcoReminderJob } from "./recruiters/opcoReminderJob"
 import { updateMissingStartDate } from "./recruiters/updateMissingStartDateJob"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
-import { importRecruteursLbaRaw } from "./recruteurLba/importRecruteursLbaRaw"
+import { importRecruteurLbaToComputed, importRecruteursLbaRaw } from "./recruteurLba/importRecruteursLbaRaw"
 import { importReferentielRome } from "./referentielRome/referentielRome"
 
 type SimpleJobDefinition = {
@@ -212,6 +212,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: importFranceTravailToComputed,
     description: "Importe les offres France Travail depuis raw vers computed",
+  },
+  {
+    fct: importRecruteurLbaToComputed,
+    description: "Importe les recruteurs lba depuis raw vers computed",
   },
   // IMPORT COMPUTED TO JOBS PARTNERS
   {

@@ -2,9 +2,10 @@ import { createReadStream } from "fs"
 import { createRequire } from "module"
 import path from "path"
 
+import { ObjectId } from "bson"
 import { groupData, oleoduc, transformData, writeData } from "oleoduc"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import rawRecruteursLbaModel from "shared/models/rawRecruteursLba.model"
+import rawRecruteursLbaModel, { ZRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -12,10 +13,10 @@ import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import config from "../../config"
-import { ZPassJob, passJobToJobsPartners } from "../offrePartenaire/pass/passMapper"
 import { rawToComputedJobsPartners } from "../offrePartenaire/rawToComputedJobsPartners"
 
 import { getRecruteursLbaFileFromS3, removePredictionFile } from "./recruteurLbaUtil"
+import { recruteursLbaToJobPartners } from "./recruteursLbaMapper"
 
 const require = createRequire(import.meta.url)
 
@@ -36,11 +37,17 @@ const importRecruteursLbaToRawCollection = async () => {
     createReadStream(PREDICTION_FILE_PATH),
     parser(),
     streamArray(),
-    transformData((doc) => ({ createdAt: now, ...doc.value })),
+    transformData((doc) => {
+      const recruteur = { createdAt: now, _id: new ObjectId(), ...doc.value }
+      if (!ZRecruteursLbaRaw.safeParse(recruteur).success) return null
+      return recruteur
+    }),
     groupData({ size: 10_000 }),
     writeData((array) => {
-      count += array.length
-      getDbCollection("raw_recruteurslba").insertMany(array)
+      const filtered = array.filter((item) => item)
+      if (!filtered.length) return
+      count += filtered.length
+      getDbCollection("raw_recruteurslba").insertMany(filtered)
     })
   )
   const message = `import recruteurs lba terminé : ${count} recruteurs importées`
@@ -72,7 +79,7 @@ export const importRecruteurLbaToComputed = async () => {
   await rawToComputedJobsPartners({
     collectionSource: rawRecruteursLbaModel.collectionName,
     partnerLabel: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
-    zodInput: ZPassJob,
-    mapper: passJobToJobsPartners,
+    zodInput: ZRecruteursLbaRaw,
+    mapper: recruteursLbaToJobPartners,
   })
 }
