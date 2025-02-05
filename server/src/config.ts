@@ -40,7 +40,7 @@ const config = {
     brevoWebhookApiKey: env.get("LBA_BREVO_WEBHOOK_API_KEY").required().asString(),
     brevoApiKey: env.get("LBA_BREVO_API_KEY").required().asString(),
     brevoContactListId: env.get("LBA_BREVO_CONTACT_LIST_ID").asString(),
-    brevoMarketingApiKey: env.get("LBA_BREVO_MARKETING_API_KEY").required().asString(),
+    brevoMarketingApiKey: env.get("LBA_BREVO_MARKETING_API_KEY").asString(),
     brevoMarketingContactListId: env.get("LBA_BREVO_MARKETING_CONTACT_LIST_ID").asString(),
   },
   auth: {
