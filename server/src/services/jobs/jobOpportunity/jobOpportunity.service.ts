@@ -742,6 +742,7 @@ async function upsertJobOffer(data: IJobOfferApiWriteV3, identity: IApiAlternanc
     workplace_description: data.workplace.description,
     workplace_website: data.workplace.website,
     workplace_name: data.workplace.name,
+    workplace_address_label: data.workplace.location?.address,
 
     apply_email: data.apply.email,
     apply_url: data.apply.url,
