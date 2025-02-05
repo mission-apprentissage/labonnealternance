@@ -472,7 +472,7 @@ const buildRecruiterEmailUrls = async (application: IApplication, applicant: IAp
     urls.cancelJobUrl = createCancelJobLink(userForToken, application.job_id, utmRecruiterData)
   }
   if (application.job_id) {
-    urls.jobUrl = `${config.publicUrl}${getDirectJobPath(application.job_id)}${utmRecruiterData}`
+    urls.jobUrl = `${config.publicUrl}${getDirectJobPath(application.job_origin, application.job_id)}${utmRecruiterData}`
   }
 
   return urls

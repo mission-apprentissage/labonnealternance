@@ -1,6 +1,7 @@
 import { Box, Container, Flex, Image, Link, Spinner, Text } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
 
 import Footer from "@/components/footer"
@@ -92,7 +93,12 @@ export default function MailActionsOnOffre() {
             {jobId && (
               <>
                 Voir{" "}
-                <Link href={getDirectJobPath(jobId as string)} aria-label="Visualiser l'offre en ligne" textDecoration="underline" fontWeight={700}>
+                <Link
+                  href={getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, jobId as string)}
+                  aria-label="Visualiser l'offre en ligne"
+                  textDecoration="underline"
+                  fontWeight={700}
+                >
                   l'offre
                 </Link>{" "}
                 sur le site La bonne alternance
