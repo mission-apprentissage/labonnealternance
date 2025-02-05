@@ -832,24 +832,6 @@ export const sendMailToApplicant = async ({
       })
       break
     }
-    case ApplicationIntention.NESAISPAS: {
-      mailer.sendEmail({
-        to: applicantEmail,
-        cc: email!,
-        subject: `Réponse de ${application.company_name} à la candidature de ${applicant.firstname} ${applicant.lastname}`,
-        template: getEmailTemplate("mail-candidat-nsp"),
-        data: {
-          ...sanitizeApplicationForEmail(application),
-          ...sanitizeApplicantForEmail(applicant),
-          partner,
-          ...images,
-          email,
-          phone: removeHtmlTagsFromString(removeUrlsFromText(phone)),
-          comment: prepareMessageForMail(removeHtmlTagsFromString(company_feedback)),
-        },
-      })
-      break
-    }
     case ApplicationIntention.REFUS: {
       mailer.sendEmail({
         to: applicantEmail,
