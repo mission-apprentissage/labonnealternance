@@ -97,9 +97,9 @@ const APropos = () => (
                 <ListItem>
                   De nombreuses offres d’emploi en alternance : celles postées par les recruteurs directement sur notre plateforme, ainsi que sur les sites de nos partenaires (via
                   API ou Widget, cf.{" "}
-                  <NextLink legacyBehavior passHref href="/nos-donnees">
-                    <Link aria-label="Accès à nos données" variant="basicUnderlinedBlue">
-                      Nos données
+                  <NextLink legacyBehavior passHref href="/espace-developpeurs">
+                    <Link aria-label="Accès à l'espace développeurs" variant="basicUnderlinedBlue">
+                      Espace développeurs
                     </Link>
                   </NextLink>
                   ).

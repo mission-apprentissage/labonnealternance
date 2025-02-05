@@ -1,5 +1,5 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Code, Container, Divider, Grid, GridItem, Link, ListItem, Text, UnorderedList } from "@chakra-ui/react"
+import { Box, Button, Code, Container, Divider, Grid, GridItem, Link, ListItem, Text, UnorderedList } from "@chakra-ui/react"
 import { NextSeo } from "next-seo"
 import React from "react"
 
@@ -8,10 +8,10 @@ import Footer from "../components/footer"
 import Navigation from "../components/navigation"
 import ScrollToTop from "../components/ScrollToTop"
 
-const Developpeurs = () => (
+const EspaceDeveloppeurs = () => (
   <Box>
     <NextSeo
-      title="Nos Données | La bonne alternance | Trouvez votre alternance"
+      title="Espace développeurs | La bonne alternance | Trouvez votre alternance"
       description="Afin de faciliter l’accès aux informations pour les publics là où ils se trouvent, nous avons développé 4 API et un Widget"
     />
     <ScrollToTop />
@@ -22,15 +22,41 @@ const Developpeurs = () => (
         <Grid templateColumns="repeat(12, 1fr)">
           <GridItem px={4} colSpan={[12, 12, 12, 5]}>
             <Text variant="editorialContentH1" as="h1">
-              Nos Données
+              Espace développeurs
             </Text>
             <Divider variant="pageTitleDivider" my={12} />
           </GridItem>
           <GridItem px={4} colSpan={[12, 12, 12, 7]}>
-            <Text variant="editorialContentH2" as="h2">
+            <Text as="p" mt={4} mb={4}>
+              La bonne alternance propose un point d’entrée unique et documenté pour faciliter l’accès à toutes les données relatives à l’apprentissage.
+            </Text>
+            <Text as="p" mt={4} mb={4}>
+              L’espace développeur est un site dédié
+              <Link variant="editorialContentLink" aria-label="Accès au site api.apprentissage - nouvelle fenêtre" href="https://api.apprentissage.beta.gouv.fr" isExternal>
+                API Apprentissage
+                <ExternalLinkIcon mx="2px" />
+              </Link>
+              , sur lequel vous pourrez utiliser les différents jeux de données proposés, une fois votre compte créé :
+            </Text>
+
+            <Grid mb={4} templateColumns="repeat(12, 1fr)" display="flex" justifyContent="center" gap={4}>
+              <Button as="a" href="https://api.apprentissage.beta.gouv.fr/fr/explorer" target="_blank" rel="noopener noreferrer" variant="primary">
+                <Box as="span" mr="8px">
+                  Explorer l'API
+                </Box>
+                <ExternalLinkIcon />
+              </Button>
+              <Button as="a" href="https://api.apprentissage.beta.gouv.fr/fr/documentation-technique" target="_blank" rel="noopener noreferrer" variant="primary">
+                <Box as="span" mr="8px">
+                  Voir la documentation technique
+                </Box>
+                <ExternalLinkIcon />
+              </Button>
+            </Grid>
+            <Text variant="editorialContentH2" as="h2" fontWeight={900}>
               Obtenir des données
             </Text>
-            <Text as="span" fontWeight={700}>
+            <Text as="span" fontWeight={900}>
               API
             </Text>
             <Text as="p" mb={4}>
@@ -125,4 +151,4 @@ const Developpeurs = () => (
   </Box>
 )
 
-export default Developpeurs
+export default EspaceDeveloppeurs
