@@ -1425,6 +1425,7 @@ export const processScheduledRecruiterIntentions = async () => {
           }
         } catch (intentionErr) {
           counters.error++
+          await getDbCollection("recruiter_intention_mails").deleteOne({ applicationId: recruiterIntention.applicationId })
           sentryCaptureException(intentionErr)
         }
         callback(null)
