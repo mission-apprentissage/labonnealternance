@@ -3,12 +3,18 @@ import { IFTJobRaw } from "shared"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants"
 import dayjs from "shared/helpers/dayjs"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
 export const franceTravailJobsToJobsPartners = (job: IFTJobRaw): IComputedJobsPartners => {
   const now = new Date()
+  const expirationDate = dayjs.tz(job.dateCreation).add(2, "months").toDate()
+  let businessError: null | JOB_PARTNER_BUSINESS_ERROR = null
+
+  if (expirationDate <= now) {
+    businessError = JOB_PARTNER_BUSINESS_ERROR.EXPIRED
+  }
 
   return {
     ...blankComputedJobPartner,
@@ -26,7 +32,7 @@ export const franceTravailJobsToJobsPartners = (job: IFTJobRaw): IComputedJobsPa
     offer_target_diploma: parseDiploma(job.formations?.[0].niveauLibelle),
     offer_to_be_acquired_skills: job.competences ? job.competences.map((competence) => competence.libelle) : [],
     offer_creation: new Date(job.dateCreation),
-    offer_expiration: dayjs.tz(job.dateCreation).add(2, "months").toDate(),
+    offer_expiration: expirationDate,
     offer_opening_count: job.nombrePostes || 1,
     offer_multicast: true,
     workplace_name: job.entreprise.nom,
@@ -42,8 +48,8 @@ export const franceTravailJobsToJobsPartners = (job: IFTJobRaw): IComputedJobsPa
     workplace_naf_code: job.codeNAF,
     workplace_naf_label: job.secteurActiviteLibelle,
     workplace_website: job.entreprise.url,
-
     apply_url: job.origineOffre.partenaires?.[0]?.url || job.origineOffre.urlOrigine,
+    business_error: businessError,
   }
 }
 type DiplomaEuropean = "3" | "4" | "5" | "6" | "7"
