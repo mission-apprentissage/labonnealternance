@@ -1308,7 +1308,9 @@ const getJobOrCompanyFromApplication = async (application: IApplication) => {
 
 const getPhoneForApplication = async (application: IApplication) => {
   const jobOrCompany = await getJobOrCompanyFromApplication(application)
-  if (!jobOrCompany.recruiter) throw internal(`Société pour ${application.job_origin} introuvable`)
+  if (!jobOrCompany.recruiter) {
+    throw internal(`Société pour ${application.job_origin} introuvable`)
+  }
   return jobOrCompany.recruiter.phone
 }
 
@@ -1435,6 +1437,7 @@ export const processScheduledRecruiterIntentions = async () => {
           }
         } catch (intentionErr) {
           counters.error++
+          await getDbCollection("recruiter_intention_mails").deleteOne({ applicationId: recruiterIntention.applicationId })
           sentryCaptureException(intentionErr)
         }
         callback(null)
