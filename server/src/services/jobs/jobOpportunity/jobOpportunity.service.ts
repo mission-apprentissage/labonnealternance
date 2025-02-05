@@ -28,7 +28,6 @@ import {
 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 import { getPartnerJobs } from "@/services/partnerJob.service"
 
 import { logger } from "../../../common/logger"
@@ -715,7 +714,6 @@ async function upsertJobOffer(data: IJobOfferApiWriteV3, identity: IApiAlternanc
   const offer_target_diploma_european = data.offer.target_diploma?.european ?? null
 
   const writableData: Omit<IComputedJobsPartners, InvariantFields> = {
-    ...blankComputedJobPartner,
     contract_start: data.contract.start,
     contract_duration: data.contract.duration,
     contract_type: data.contract.type,
@@ -750,6 +748,10 @@ async function upsertJobOffer(data: IJobOfferApiWriteV3, identity: IApiAlternanc
     apply_phone: data.apply.phone,
 
     updated_at: now,
+    business_error: null,
+    errors: [],
+    validated: false,
+    jobs_in_success: [],
   }
 
   await getDbCollection("computed_jobs_partners").updateOne({ _id: invariantData._id }, { $set: writableData, $setOnInsert: invariantData }, { upsert: true })

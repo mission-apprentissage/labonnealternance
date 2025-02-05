@@ -15,8 +15,8 @@ export const fillComputedJobsPartners = async (addedMatchFilter?: Filter<IComput
   await fillSiretInfosForPartners(addedMatchFilter)
   await fillLocationInfosForPartners(addedMatchFilter)
   await fillRomeForPartners(addedMatchFilter)
-  await detectDuplicateJobPartners(addedMatchFilter)
   await rankJobPartners(addedMatchFilter)
+  await detectDuplicateJobPartners(addedMatchFilter)
   await validateComputedJobPartners(addedMatchFilter)
 }
 
