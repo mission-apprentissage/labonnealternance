@@ -229,17 +229,7 @@ const ResultLists = ({
           }
         </Box>
       </Box>
-      <Box
-        flex="1"
-        pb={["100px", "100px", 0]}
-        pr={{ xl: "25px", "2xl": "50px" }}
-        width="100%"
-        height="100vh"
-        overflow="hidden"
-        id="resultList"
-        display={shouldShowWelcomeMessage ? "none" : ""}
-        bg="beige"
-      >
+      <Box flex="1" pb={["100px", "100px", 0]} width="100%" height="100vh" overflow="hidden" id="resultList" display={shouldShowWelcomeMessage ? "none" : ""} bg="beige">
         <Box
           style={{
             height: "100%",
