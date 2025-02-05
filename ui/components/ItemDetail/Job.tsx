@@ -39,7 +39,7 @@ const Job = ({ job, handleSelectItem, showTextOnly = undefined, searchForTrainin
   const shouldBeHighlighted = () => {
     if (selectedMapPopupItem?.ideaType === "job") {
       return selectedMapPopupItem.items.find((item) => {
-        return item?.job?.id === job.job.id
+        return item?.id === job.id
       })
     } else {
       return false

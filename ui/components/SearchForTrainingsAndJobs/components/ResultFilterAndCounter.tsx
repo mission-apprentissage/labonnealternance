@@ -7,7 +7,7 @@ import { SearchResultContext } from "../../../context/SearchResultContextProvide
 import { filterLayers } from "../../../utils/mapTools"
 import { SendPlausibleEvent } from "../../../utils/plausible"
 import DisplayMapButton from "../../DisplayMapButton/displayMapButton"
-import { getJobCount, getPartnerJobCount } from "../services/utils"
+import { getJobCount, getMandataireJobCount } from "../services/utils"
 
 import FilterButton from "./FilterButton"
 
@@ -21,10 +21,10 @@ const ResultFilterAndCounter = ({ jobSearchError, trainingSearchError, isTrainin
     let filters = activeFilters
 
     filters.includes(filterButton) ? filters.splice(filters.indexOf(filterButton), 1) : filters.push(filterButton)
-    if (!filters.length || (!partnerJobCount && filters.length === 1 && filters[0] === "duo")) {
+    if (!filters.length || (!mandataireJobCount && filters.length === 1 && filters[0] === "duo")) {
       filters = ["jobs", "trainings", "duo"]
     }
-    filters = filters.filter((filter) => filter !== "duo" || partnerJobCount)
+    filters = filters.filter((filter) => filter !== "duo" || mandataireJobCount)
 
     setActiveFilters(filters)
     filterLayers(filters)
@@ -39,11 +39,11 @@ const ResultFilterAndCounter = ({ jobSearchError, trainingSearchError, isTrainin
 
   const jobLoading = ""
   let jobCount = 0
-  let partnerJobCount = 0
+  let mandataireJobCount = 0
 
   if (scopeContext.isJob && !isJobSearchLoading) {
     jobCount = getJobCount(jobs)
-    partnerJobCount = getPartnerJobCount(jobs)
+    mandataireJobCount = getMandataireJobCount(jobs)
   }
 
   let trainingCount = 0
@@ -70,10 +70,10 @@ const ResultFilterAndCounter = ({ jobSearchError, trainingSearchError, isTrainin
             <Flex width="100%" flex="2 auto" flexWrap={["wrap", "wrap", "nowrap"]}>
               {scopeContext.isJob && scopeContext.isTraining && (
                 <>
-                  <FilterButton type="jobs" count={jobCount - partnerJobCount} isActive={activeFilters.includes("jobs")} handleFilterButtonClicked={filterButtonClicked} />
+                  <FilterButton type="jobs" count={jobCount - mandataireJobCount} isActive={activeFilters.includes("jobs")} handleFilterButtonClicked={filterButtonClicked} />
                   <FilterButton type="trainings" count={trainingCount} isActive={activeFilters.includes("trainings")} handleFilterButtonClicked={filterButtonClicked} />
-                  {partnerJobCount > 0 && (
-                    <FilterButton type="duo" count={partnerJobCount} isActive={activeFilters.includes("duo")} handleFilterButtonClicked={filterButtonClicked} />
+                  {mandataireJobCount > 0 && (
+                    <FilterButton type="duo" count={mandataireJobCount} isActive={activeFilters.includes("duo")} handleFilterButtonClicked={filterButtonClicked} />
                   )}
                 </>
               )}
