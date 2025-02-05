@@ -75,7 +75,7 @@ export const ZFTJobRaw = z
     natureContrat: z.string(),
     experienceExige: z.string(),
     experienceLibelle: z.string(),
-    competences: z.array(z.object({ code: z.string(), libelle: z.string(), exigence: z.string() }).passthrough()).optional(),
+    competences: z.array(z.object({ code: z.string().optional(), libelle: z.string(), exigence: z.string() }).passthrough()).optional(),
     permis: z.array(z.object({}).passthrough()).optional(),
     salaire: z.union([z.array(z.object({}).passthrough()), z.object({}).passthrough()]),
     dureeTravailLibelle: z.string().optional(),

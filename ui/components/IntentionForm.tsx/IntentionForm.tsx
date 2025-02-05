@@ -131,7 +131,7 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
     <Box>
       <IntensionFormNavigation />
       {!["ok_sent", "canceled"].includes(sendingState) && (
-        <Flex direction="column" width="80%" maxWidth="992px" margin="auto" pt={12} alignItems="center" data-testid="SatisfactionFormSuccess">
+        <Flex direction="column" width="80%" maxWidth="992px" margin="auto" pt={12} alignItems="center" data-testid="IntentionFormSuccess">
           <Box p={4} backgroundColor="#E1FEE8" fontWeight={700} color="#18753C" width="100%" maxWidth="800px">
             <SuccessCircle width="20px" fillHexaColor="#18753C" mr={2} />
             {text.confirmation}

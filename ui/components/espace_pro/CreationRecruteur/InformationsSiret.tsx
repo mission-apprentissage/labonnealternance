@@ -45,7 +45,7 @@ function InformationsEntreprise() {
         <span style={{ color: "#000091" }}>
           <InfoCircle mr={2} />
         </span>
-        <Text textAlign="justify">
+        <Text>
           Le numéro d’identification de votre entreprise peut être trouvé sur{" "}
           <CatalogueLink url="https://annuaire-entreprises.data.gouv.fr/" aria-label="Site de l'annuaire des entreprises - nouvelle fenêtre">
             l’annuaire des entreprises
@@ -71,17 +71,17 @@ function InformationsCfa() {
   return (
     <>
       <Stack direction="column" spacing={3} mb={5}>
-        <Heading fontSize="24px">Comment s'inscrire ?</Heading>
+        <Heading>Comment s'inscrire ?</Heading>
         <Text>Pour créer le compte de votre organisme de formation, il faut :</Text>
         <UnorderedList>
-          <ListItem mx={10} mb={5}>
+          <ListItem>
             <span style={{ fontWeight: "700" }}>Être référencé dans le Catalogue.</span> Pour ajouter une offre de formation au Catalogue de l’offre de formation en apprentissage,
             merci de la déclarer auprès du Carif-Oref de votre région en allant sur la page suivante :{" "}
             <CatalogueLink url="https://reseau.intercariforef.org/referencer-son-offre-de-formation" arial-label="Site intercariforef.org - nouvelle fenêtre">
               "référencer son offre de formation"
             </CatalogueLink>
           </ListItem>
-          <ListItem mx={10}>
+          <ListItem>
             <span style={{ fontWeight: "700" }}>Être certifié Qualiopi.</span>{" "}
             <CatalogueLink
               url="https://travail-emploi.gouv.fr/formation-professionnelle/acteurs-cadre-et-qualite-de-la-formation-professionnelle/liste-organismes-certificateurs"
@@ -94,14 +94,12 @@ function InformationsCfa() {
           </ListItem>
         </UnorderedList>
       </Stack>
-      <Heading fontSize="24px" mb={3}>
-        Où trouver votre SIRET ?
-      </Heading>
+      <Heading mb={3}>Où trouver votre SIRET ?</Heading>
       <Flex alignItems="flex-start">
         <span style={{ color: "#000091" }}>
           <InfoCircle mr={2} />
         </span>
-        <Text textAlign="justify">
+        <Text>
           Le numéro d’identification de votre organisme peut être trouvé sur le site Le numéro d’identification de votre entreprise peut être trouvé sur{" "}
           <CatalogueLink
             url="https://catalogue.apprentissage.beta.gouv.fr/recherche/etablissements"
@@ -113,9 +111,7 @@ function InformationsCfa() {
         </Text>
       </Flex>
       <Box mt={5}>
-        <Heading fontSize="24px" mb={3}>
-          Vous avez déjà déposé une offre en alternance par le passé ?
-        </Heading>
+        <Heading mb={3}>Vous avez déjà déposé une offre en alternance par le passé ?</Heading>
         <Text>Connectez-vous à votre compte CFA pour publier de nouvelles offres et administrer vos offres existantes.</Text>
         <Button variant="primary" mt={4} onClick={() => router.push("/espace-pro/authentification")}>
           Me connecter

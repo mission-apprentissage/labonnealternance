@@ -389,9 +389,8 @@ const buildUrlsOfDetail = (application: IApplication, utm?: { utm_source?: strin
   }
 }
 
-// TODO KEVIN
 export const buildUserForToken = (application: IApplication, user?: IUserWithAccount): UserForAccessToken => {
-  const { job_origin, company_siret, company_email } = application
+  const { job_origin, company_siret, company_email, job_id } = application
   if (job_origin === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     return { type: "lba-company", siret: company_siret!, email: company_email }
   } else if (job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
@@ -399,6 +398,8 @@ export const buildUserForToken = (application: IApplication, user?: IUserWithAcc
       throw internal("un user recruteur était attendu")
     }
     return userWithAccountToUserForToken(user)
+  } else if (job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) {
+    return { type: "partenaire", jobId: job_id!, email: company_email } // need more ??
   } else {
     throw internal(`job_origin=${job_origin} non supporté`)
   }
@@ -471,7 +472,7 @@ const buildRecruiterEmailUrls = async (application: IApplication, applicant: IAp
     urls.cancelJobUrl = createCancelJobLink(userForToken, application.job_id, utmRecruiterData)
   }
   if (application.job_id) {
-    urls.jobUrl = `${config.publicUrl}${getDirectJobPath(application.job_id)}${utmRecruiterData}`
+    urls.jobUrl = `${config.publicUrl}${getDirectJobPath(application.job_origin, application.job_id)}${utmRecruiterData}`
   }
 
   return urls
@@ -589,7 +590,7 @@ const newApplicationToApplicationDocumentV2 = async (
     to_applicant_message_id: null,
     to_company_message_id: null,
     scan_status: ApplicationScanStatus.WAITING_FOR_SCAN,
-    application_url: newApplication.application_url,
+    application_url: "application_url" in newApplication ? newApplication.application_url : null,
     ...offreOrCompanyToCompanyFields(LbaJob),
   }
   return application
@@ -822,24 +823,6 @@ export const sendMailToApplicant = async ({
           ...sanitizeApplicationForEmail(application),
           ...sanitizeApplicantForEmail(applicant),
           jobSourceType,
-          partner,
-          ...images,
-          email,
-          phone: removeHtmlTagsFromString(removeUrlsFromText(phone)),
-          comment: prepareMessageForMail(removeHtmlTagsFromString(company_feedback)),
-        },
-      })
-      break
-    }
-    case ApplicationIntention.NESAISPAS: {
-      mailer.sendEmail({
-        to: applicantEmail,
-        cc: email!,
-        subject: `Réponse de ${application.company_name} à la candidature de ${applicant.firstname} ${applicant.lastname}`,
-        template: getEmailTemplate("mail-candidat-nsp"),
-        data: {
-          ...sanitizeApplicationForEmail(application),
-          ...sanitizeApplicantForEmail(applicant),
           partner,
           ...images,
           email,
@@ -1308,8 +1291,8 @@ const getJobOrCompanyFromApplication = async (application: IApplication) => {
 
 const getPhoneForApplication = async (application: IApplication) => {
   const jobOrCompany = await getJobOrCompanyFromApplication(application)
-  if (!jobOrCompany.recruiter) throw internal(`Société pour ${application.job_origin} introuvable`)
-  return jobOrCompany.recruiter.phone
+  const phone = jobOrCompany.type === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES ? jobOrCompany.job?.apply_phone : jobOrCompany.recruiter?.phone
+  return phone
 }
 
 export const getApplicationDataForIntentionAndScheduleMessage = async (applicationId: string, intention: ApplicationIntention) => {
@@ -1319,15 +1302,22 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
   if (!applicant) throw notFound("Candidat non trouvé")
 
   const jobOrCompany = await getJobOrCompanyFromApplication(application)
-  const { recruiter } = jobOrCompany ?? {}
-  if (!recruiter) throw internal(`Société pour ${application.job_origin} introuvable`)
+  const { recruiter, job, type } = jobOrCompany ?? {}
+  let recruiter_phone = ""
 
-  const { managed_by } = recruiter
-  if (managed_by) {
-    await validateUserWithAccountEmail(new ObjectId(managed_by))
+  if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA || type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
+    if (!recruiter) throw internal(`Société pour ${application.job_origin} introuvable`)
+
+    const { managed_by } = recruiter
+    if (managed_by) {
+      await validateUserWithAccountEmail(new ObjectId(managed_by))
+    }
+    recruiter_phone = recruiter.phone || ""
   }
 
-  const recruiter_phone = recruiter.phone ?? ""
+  if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) {
+    recruiter_phone = job.apply_phone || ""
+  }
 
   await getDbCollection("recruiter_intention_mails").updateOne(
     {
