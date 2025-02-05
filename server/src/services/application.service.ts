@@ -590,7 +590,7 @@ const newApplicationToApplicationDocumentV2 = async (
     to_applicant_message_id: null,
     to_company_message_id: null,
     scan_status: ApplicationScanStatus.WAITING_FOR_SCAN,
-    application_url: newApplication.application_url,
+    application_url: "application_url" in newApplication ? newApplication.application_url : null,
     ...offreOrCompanyToCompanyFields(LbaJob),
   }
   return application
