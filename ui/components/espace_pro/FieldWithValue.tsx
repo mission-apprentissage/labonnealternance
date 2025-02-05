@@ -23,11 +23,11 @@ export const FieldWithValue = ({
         {title} :
       </Text>
       {!isValueEmpty ? (
-        <Text bg="#F9F8F6" px="8px" py="2px" mr={2} fontWeight={700} noOfLines={1}>
+        <Text bg="#F9F8F6" px={2} py="2px" mr={2} fontWeight={700} noOfLines={1}>
           {value}
         </Text>
       ) : (
-        <Text textTransform="uppercase" bg="#FFE9E9" textColor="#CE0500" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>
+        <Text textTransform="uppercase" bg="#FFE9E9" textColor="#CE0500" px={2} py="2px" fontWeight={700} mr={2} noOfLines={1}>
           Non identifié
         </Text>
       )}

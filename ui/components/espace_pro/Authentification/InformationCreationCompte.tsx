@@ -125,7 +125,7 @@ const FormulaireLayout = ({ left, right }) => {
   const { type } = router.query
 
   return (
-    <SimpleGrid columns={[1, 1, 1, 2]} spacing={["35px", "35px", "35px", "75px"]} mt={widget.isWidget ? 0 : 12}>
+    <SimpleGrid columns={[1, 1, 2, 2]} spacing={4} mt={0}>
       <Box>
         {widget.isWidget && (
           <Text textTransform="uppercase" fontSize="20px" color="#666666">
@@ -133,13 +133,11 @@ const FormulaireLayout = ({ left, right }) => {
           </Text>
         )}
         <Heading>{type === AUTHTYPE.ENTREPRISE ? "Vos informations de contact" : "Créez votre compte"}</Heading>
-        <Box fontSize="20px" mb={4}>
-          <Text textAlign="justify" mt={2}>
-            {type === AUTHTYPE.ENTREPRISE
-              ? "Le numéro de téléphone et l'adresse postale de votre établissement seront visibles sur vos offres. L'email sera destinataire des candidatures."
-              : "Le numéro de téléphone et l'adresse postale de votre établissement seront visibles sur les offres de vos entreprises partenaires. L'email sera destinataire des candidatures."}
-          </Text>
-        </Box>
+        <Text className="big" mt={2} mb={4}>
+          {type === AUTHTYPE.ENTREPRISE
+            ? "Le numéro de téléphone et l'adresse postale de votre établissement seront visibles sur vos offres. L'email sera destinataire des candidatures."
+            : "Le numéro de téléphone et l'adresse postale de votre établissement seront visibles sur les offres de vos entreprises partenaires. L'email sera destinataire des candidatures."}
+        </Text>
         <Box>{left}</Box>
       </Box>
       <Box>{right}</Box>
@@ -211,5 +209,3 @@ export const InformationCreationCompte = ({ isWidget = false }: { isWidget?: boo
     </AnimationContainer>
   )
 }
-
-export default InformationCreationCompte

@@ -59,6 +59,7 @@ export type IAccessToken<Schema extends SchemaWithSecurity = SchemaWithSecurity>
       }
     | { type: "lba-company"; siret: string; email: string }
     | { type: "candidat"; email: string }
+    | { type: "partenaire"; email: string; jobId: string }
     | IApplicationForAccessToken
     | IUserWithAccountForAccessToken
   scopes: ReadonlyArray<IScope<Schema>>

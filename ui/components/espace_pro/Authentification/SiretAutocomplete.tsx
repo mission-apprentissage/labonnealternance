@@ -102,16 +102,12 @@ export const SiretAutocomplete = ({
 
 const EntrepriseCard = ({ adresse, raison_sociale, siret, highlighted }: { highlighted?: boolean; raison_sociale: string; siret: string; adresse: string }) => {
   return (
-    <Box backgroundColor={highlighted ? "#F6F6F6" : "white"} padding="8px 16px">
-      <Text color="#161616" fontSize="16px" lineHeight="24px" fontWeight={700}>
+    <Box backgroundColor={highlighted ? "#F6F6F6" : "white"} py={2} px={4}>
+      <Text color="#161616" fontWeight={700}>
         {raison_sociale}
       </Text>
-      <Text color="#161616" fontSize="16px" lineHeight="24px">
-        {siret}
-      </Text>
-      <Text color="#666666" fontSize="12px" lineHeight="20px">
-        {adresse}
-      </Text>
+      <Text color="#161616">{siret}</Text>
+      <Text color="#666666">{adresse}</Text>
     </Box>
   )
 }

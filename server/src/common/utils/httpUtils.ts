@@ -59,7 +59,7 @@ async function fetchStream(url: string, options: Partial<FetchOptions> = {}) {
   const response = await _fetch(url, { ...options, responseType: "stream" })
   return compose(
     response.data,
-    transformData((d) => d.toString())
+    transformData((d: any) => d.toString())
   )
 }
 

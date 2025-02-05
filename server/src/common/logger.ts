@@ -19,7 +19,7 @@ function prettyPrintStream(outputName) {
   }
 
   return compose(
-    transformData((raw) => {
+    transformData((raw: any) => {
       const stack = raw.err?.stack
       const message = stack ? `${raw.msg}\n${stack}` : raw.msg
       const rest = omit(raw, [
@@ -48,7 +48,7 @@ function prettyPrintStream(outputName) {
       }
       return params
     }),
-    writeData((data) => console[outputName === "stdout" ? "log" : "error"](...data))
+    writeData((data: any) => console[outputName === "stdout" ? "log" : "error"](...data))
   )
 }
 
