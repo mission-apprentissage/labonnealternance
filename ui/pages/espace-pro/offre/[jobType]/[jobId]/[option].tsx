@@ -7,36 +7,38 @@ import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import Footer from "@/components/footer"
 import Navigation from "@/components/navigation"
 
-import { cancelOffre, fillOffre } from "../../../../utils/api"
+import { cancelOffre, cancelPartnerJob, fillOffre, providedPartnerJob } from "../../../../../utils/api"
 
 export default function MailActionsOnOffre() {
   const router = useRouter()
-  const { jobId, option, token } = router.query
+  const { jobId, option, token, jobType } = router.query as { jobId: string; option: string; token: string; jobType: LBA_ITEM_TYPE }
   const [result, setResult] = useState("")
 
-  const error = () => {
-    setResult("Une erreur s'est produite. Merci de contacter le support de La bonne alternance")
-  }
-
   useEffect(() => {
-    if (jobId && option) {
-      if (option === "cancel") {
-        cancelOffre(jobId, token)
-          .then(() => {
-            setResult("ok")
-          })
-          .catch(() => error())
-      }
+    if (!jobId || !option || !jobType) return
 
-      if (option === "provided") {
-        fillOffre(jobId, token)
-          .then(() => {
-            setResult("ok")
-          })
-          .catch(() => error())
-      }
+    const jobActions = {
+      [LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA]: {
+        cancel: cancelOffre,
+        provided: fillOffre,
+      },
+      [LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES]: {
+        cancel: cancelPartnerJob,
+        provided: providedPartnerJob,
+      },
     }
-  }, [jobId, option])
+
+    const action = jobActions[jobType]?.[option]
+    if (action) {
+      action(jobId, token)
+        .then(() => setResult("ok"))
+        .catch((error) => {
+          console.log(error)
+          setResult("Une erreur s'est produite. Merci de contacter le support de La bonne alternance")
+          return
+        })
+    }
+  }, [jobId, option, jobType])
 
   const cssParameters = {
     background: "#fff1e5",

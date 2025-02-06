@@ -469,10 +469,8 @@ const buildRecruiterEmailUrls = async (application: IApplication, applicant: IAp
 
   if (application.job_id) {
     urls.jobUrl = `${config.publicUrl}${getDirectJobPath(application.job_origin, application.job_id)}${utmRecruiterData}`
-    if (user || application.job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) {
-      urls.jobProvidedUrl = createProvidedJobLink(userForToken, application.job_id, utmRecruiterData)
-      urls.cancelJobUrl = createCancelJobLink(userForToken, application.job_id, utmRecruiterData)
-    }
+    urls.jobProvidedUrl = createProvidedJobLink(userForToken, application.job_id, application.job_origin, utmRecruiterData)
+    urls.cancelJobUrl = createCancelJobLink(userForToken, application.job_id, application.job_origin, utmRecruiterData)
   }
 
   return urls

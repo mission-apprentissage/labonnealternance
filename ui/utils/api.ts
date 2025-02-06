@@ -44,6 +44,9 @@ export const createOffreByToken = (establishment_id: string, newOffre: IJobCreat
 export const patchOffreDelegation = (jobId: string, siret: string) =>
   apiPatch(`/formulaire/offre/:jobId/delegation`, { params: { jobId }, querystring: { siret_formateur: siret } }).catch(errorHandler)
 // need a function to cancel partner jobs : add the job_origin from the application in the url - refactor ui/pages/espace-pro/offre/[jobId]/[option].tsx needed
+export const cancelPartnerJob = (id, token) => apiPost("/v2/_private/jobs/canceled/:id", { params: { id }, headers: { authorization: `Bearer ${token}` } })
+export const providedPartnerJob = (id, token) => apiPost("/v2/_private/jobs/provided/:id", { params: { id }, headers: { authorization: `Bearer ${token}` } })
+// once offres_emploi_lba are definitly stored in jobs partners, we can move this call to /jobs/:jobId/cancel
 export const cancelOffre = (jobId, token) => apiPut(`/formulaire/offre/:jobId/cancel`, { params: { jobId }, headers: { authorization: `Bearer ${token}` } })
 export const cancelOffreFromAdmin = (jobId: string, data: IRoutes["put"]["/formulaire/offre/f/:jobId/cancel"]["body"]["_input"]) =>
   apiPut("/formulaire/offre/f/:jobId/cancel", { params: { jobId }, body: data })
