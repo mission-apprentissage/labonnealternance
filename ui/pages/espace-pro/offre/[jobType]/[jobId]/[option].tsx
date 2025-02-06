@@ -29,7 +29,7 @@ export default function MailActionsOnOffre() {
     }
 
     const action = jobActions[jobType]?.[option]
-    if (action) {
+    if (action && typeof action === 'function') {
       action(jobId, token)
         .then(() => setResult("ok"))
         .catch((error) => {
@@ -37,6 +37,8 @@ export default function MailActionsOnOffre() {
           setResult("Une erreur s'est produite. Merci de contacter le support de La bonne alternance")
           return
         })
+    } else {
+      setResult("Unsupported action.")
     }
   }, [jobId, option, jobType])
 
