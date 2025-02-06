@@ -807,14 +807,18 @@ export const sendMailToApplicant = async ({
   company_recruitment_intention: ApplicationIntention
   company_feedback: string
   refusal_reasons: RefusalReasons[]
-}): Promise<void> => {
+}): Promise<{ messageId: string; accepted?: string[] | undefined } | null> => {
   const partner = (application.caller && PARTNER_NAMES[application.caller]) ?? null
   const jobSourceType: string = await getJobSourceType(application)
   const { email: applicantEmail } = applicant
+  let sentMessageId: {
+    messageId: string
+    accepted?: string[] | undefined
+  } | null = null
 
   switch (company_recruitment_intention) {
     case ApplicationIntention.ENTRETIEN: {
-      mailer.sendEmail({
+      sentMessageId = await mailer.sendEmail({
         to: applicantEmail,
         cc: email!,
         subject: `Réponse positive de ${application.company_name} à la candidature${partner ? ` ${partner}` : ""} de ${applicant.firstname} ${applicant.lastname}`,
@@ -833,7 +837,7 @@ export const sendMailToApplicant = async ({
       break
     }
     case ApplicationIntention.REFUS: {
-      mailer.sendEmail({
+      sentMessageId = await mailer.sendEmail({
         to: applicantEmail,
         subject: `Réponse négative de ${application.company_name} à la candidature${partner ? ` ${partner}` : ""} de ${applicant.firstname} ${applicant.lastname}`,
         template: getEmailTemplate("mail-candidat-refus"),
@@ -852,6 +856,7 @@ export const sendMailToApplicant = async ({
     default:
       break
   }
+  return sentMessageId
 }
 
 /**
@@ -1376,7 +1381,7 @@ export const sendRecruiterIntention = async ({
   const computedPhone = shouldComputePhoneAndEmail ? ((await getPhoneForApplication(application)) ?? "") : phone
   const computedEmail = shouldComputePhoneAndEmail ? application.company_email : email
 
-  await sendMailToApplicant({
+  const sentMessageId = await sendMailToApplicant({
     application,
     applicant,
     email: computedEmail,
@@ -1392,7 +1397,8 @@ export const sendRecruiterIntention = async ({
     _id: new ObjectId(),
     applicant_id: applicant._id,
     type: company_recruitment_intention === ApplicationIntention.ENTRETIEN ? EMAIL_LOG_TYPE.INTENTION_ENTRETIEN : EMAIL_LOG_TYPE.INTENTION_REFUS,
-    message_id: null,
+    message_id: sentMessageId?.messageId ?? null,
+    application_id: application._id,
     createdAt: new Date(),
   })
 }
