@@ -41,10 +41,12 @@ export const ZComputedJobsPartners = extensions
   .omit({
     _id: true,
     partner_job_id: true,
+    created_at: true,
   })
   .extend({
     _id: zObjectId,
     partner_job_id: ZJobsPartnersOfferPrivate.shape.partner_job_id,
+    created_at: ZJobsPartnersOfferPrivate.shape.created_at,
     jobs_in_success: z.array(extensions.buildEnum(COMPUTED_ERROR_SOURCE)),
     errors: z.array(
       z

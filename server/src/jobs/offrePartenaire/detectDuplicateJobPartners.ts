@@ -1,5 +1,5 @@
 import { groupBy } from "lodash-es"
-import { AnyBulkWriteOperation, Filter, ObjectId } from "mongodb"
+import { AnyBulkWriteOperation, Filter } from "mongodb"
 import { oleoduc, writeData } from "oleoduc"
 import { RECRUITER_STATUS } from "shared/constants"
 import { IJob, JOB_STATUS, JOB_STATUS_ENGLISH, ZGlobalAddress } from "shared/models"
@@ -16,8 +16,8 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 
 // champs utilisés pour les projections
-const fieldsRead = ["_id", "partner_label", "offer_title", "duplicates", "workplace_address_zipcode"] as const satisfies (keyof IComputedJobsPartners)[]
-const recruiterFieldsRead = ["_id", "status", "address_detail"] as const satisfies (keyof IRecruiter)[]
+const fieldsRead = ["_id", "partner_label", "offer_title", "duplicates", "workplace_address_zipcode", "rank", "created_at"] as const satisfies (keyof IComputedJobsPartners)[]
+const recruiterFieldsRead = ["_id", "status", "address_detail", "createdAt"] as const satisfies (keyof IRecruiter)[]
 const jobFieldsRead = ["_id", "rome_appellation_label", "job_status"] as const satisfies (keyof IJob)[]
 
 const FAKE_RECRUITERS_JOB_PARTNER = "recruiters"
@@ -239,7 +239,7 @@ const detectDuplicateJobPartnersFactory = async (groupField: keyof IComputedJobs
     documentStream,
     writeData(async (aggregationResult: AggregationResult) => {
       const convertedRecruiters: TreatedDocument[] = (aggregationResult?.recruiters ?? []).flatMap((recruiter) => {
-        const { jobs, status, address_detail } = recruiter
+        const { jobs, status, address_detail, createdAt } = recruiter
         if (status !== RECRUITER_STATUS.ACTIF) {
           return []
         }
@@ -255,6 +255,7 @@ const detectDuplicateJobPartnersFactory = async (groupField: keyof IComputedJobs
             partner_label: FAKE_RECRUITERS_JOB_PARTNER,
             offer_title: rome_appellation_label,
             workplace_address_zipcode: parsedAddress.data?.code_postal || null,
+            created_at: createdAt,
           }
           return [mapped]
         })
@@ -342,17 +343,20 @@ export const checkSimilarity = (string1: string | null | undefined, string2: str
   }
 }
 
-export type OfferRef = {
-  _id: ObjectId
-  collectionName: TreatedDocument["collectionName"]
-}
+export type OfferRef = Pick<TreatedDocument, "rank" | "collectionName" | "created_at">
 
 // in case of duplicates, returns true if offer1 is selected over offer2
 export const isCanonicalForDuplicate = (offer1: OfferRef, offer2: OfferRef) => {
-  if (offer1.collectionName === offer2.collectionName) return offer1._id.toString() <= offer2._id.toString()
-  if (offer1.collectionName === recruiterCollection) return true
-  if (offer2.collectionName === recruiterCollection) return false
-  return offer1._id.toString() <= offer2._id.toString()
+  if (offer1.collectionName !== offer2.collectionName) {
+    if (offer1.collectionName === recruiterCollection) return true
+    if (offer2.collectionName === recruiterCollection) return false
+  }
+  const rank1 = offer1.rank ?? 0
+  const rank2 = offer2.rank ?? 0
+  if (rank1 !== rank2) {
+    return rank1 >= rank2
+  }
+  return offer1.created_at.getTime() <= offer2.created_at.getTime()
 }
 
 type ComputedJobPartnerOperation = AnyBulkWriteOperation<IComputedJobsPartners>
