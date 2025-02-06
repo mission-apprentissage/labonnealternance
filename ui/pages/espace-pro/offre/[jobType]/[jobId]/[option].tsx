@@ -29,7 +29,7 @@ export default function MailActionsOnOffre() {
     }
 
     const action = jobActions[jobType]?.[option]
-    if (action && typeof action === 'function') {
+    if (action && typeof action === "function") {
       action(jobId, token)
         .then(() => setResult("ok"))
         .catch((error) => {
