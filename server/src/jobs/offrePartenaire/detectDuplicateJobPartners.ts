@@ -45,11 +45,8 @@ type TreatedDocument = ProjectedComputedJobPartner & {
 }
 
 export const detectDuplicateJobPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
-  const filters: Filter<IComputedJobsPartners>[] = [{ business_error: null }]
-  if (addedMatchFilter) {
-    filters.push(addedMatchFilter)
-  }
-  const computedJobPartnersFilter: Filter<IComputedJobsPartners> = { $and: filters }
+  // @ts-ignore
+  const computedJobPartnersFilter: Filter<IComputedJobsPartners> = { $and: [{ business_error: null }, ...(addedMatchFilter ? [addedMatchFilter] : [])] }
 
   await getDbCollection("computed_jobs_partners").updateMany(computedJobPartnersFilter, { $set: { duplicates: [] } })
   const jobPartnerFields: (keyof IComputedJobsPartners)[] = ["workplace_siret", "workplace_brand", "workplace_legal_name", "workplace_name"]
