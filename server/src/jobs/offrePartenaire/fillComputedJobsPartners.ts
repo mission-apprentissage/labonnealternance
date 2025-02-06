@@ -20,7 +20,7 @@ export const fillComputedJobsPartners = async (addedMatchFilter?: Filter<IComput
   await validateComputedJobPartners(addedMatchFilter)
 }
 
-export const blankComputedJobPartner: Omit<IComputedJobsPartners, "_id" | "partner_label" | "partner_job_id"> = {
+export const blankComputedJobPartner = (): Omit<IComputedJobsPartners, "_id" | "partner_label" | "partner_job_id"> => ({
   apply_phone: null,
   apply_url: null,
   business_error: null,
@@ -62,4 +62,4 @@ export const blankComputedJobPartner: Omit<IComputedJobsPartners, "_id" | "partn
   workplace_size: null,
   workplace_website: null,
   jobs_in_success: [],
-}
+})

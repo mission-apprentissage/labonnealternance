@@ -96,7 +96,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
 
   const created_at = new Date()
   const partnerJob: IComputedJobsPartners = {
-    ...blankComputedJobPartner,
+    ...blankComputedJobPartner(),
     _id: new ObjectId(),
     created_at,
     updated_at: updated_date ? parseDate(updated_date) : created_at,
