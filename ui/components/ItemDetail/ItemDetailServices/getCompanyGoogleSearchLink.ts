@@ -9,7 +9,7 @@ export const getCompanyGoogleSearchLink = (item: ILbaItemLbaJob | ILbaItemLbaCom
     if (item.place.city) {
       placePart = `${item.place.city} ${item.place.zipCode ?? ""}`
     } else {
-      placePart = item.place.address
+      placePart = item.place.address ?? item.place.fullAddress
     }
   }
 
