@@ -42,7 +42,7 @@ const getJobCount = (jobs) => {
   return jobCount
 }
 
-const getPartnerJobCount = (jobs) => {
+const getMandataireJobCount = (jobs) => {
   return jobs && jobs.matchas ? jobs.matchas.filter((job) => job.company?.mandataire).length : 0
 }
 
@@ -52,7 +52,7 @@ export {
   allJobSearchErrorText,
   defaultFilters,
   getJobCount,
-  getPartnerJobCount,
+  getMandataireJobCount,
   getRomeFromParameters,
   minimalDataJobsApi,
   notFoundErrorText,

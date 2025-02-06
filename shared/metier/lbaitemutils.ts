@@ -9,4 +9,4 @@ export const buildTrainingUrl = (id: string, title: string) => {
   return `/formation/${encodeURIComponent(id)}/${toKebabCase(title)}`
 }
 
-export const getDirectJobPath = (jobId: string, jobTitle = "offre") => buildJobUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, jobId, jobTitle)
+export const getDirectJobPath = (type: LBA_ITEM_TYPE, jobId: string, jobTitle = "offre") => buildJobUrl(type, jobId, jobTitle)

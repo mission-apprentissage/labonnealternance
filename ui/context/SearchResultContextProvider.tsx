@@ -86,8 +86,8 @@ export type IContextSearch = {
   setJobs: (b: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null; partnerJobs: [] | null }) => void
   setInternalJobs: (b: any[]) => void
   setPartnerJobs: (b: any[]) => void
-  itemToScrollTo: object
-  setItemToScrollTo: (b: object) => void
+  itemToScrollTo: ILbaItemFormation | ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob | null
+  setItemToScrollTo: (b: ILbaItemFormation | ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob | null) => void
   selectedItem: ILbaItemFormation | ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob
   setSelectedItem: (b: object) => void
   extendedSearch: boolean

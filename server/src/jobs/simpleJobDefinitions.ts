@@ -5,6 +5,7 @@ import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApp
 import { anonimizeUsersWithAccounts } from "./anonymization/anonymizeUserRecruteurs"
 import { anonymizeUsers } from "./anonymization/anonymizeUsers"
 import { processApplications } from "./applications/processApplications"
+import { processRecruiterIntentions } from "./applications/processRecruiterIntentions"
 import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
 import { obfuscateCollections } from "./database/obfuscateCollections"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
@@ -234,6 +235,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processApplications,
     description: "Scanne les virus des pièces jointes et envoie les candidatures. Timeout à 8 minutes.",
+  },
+  {
+    fct: processRecruiterIntentions,
+    description: "Emission des intentions des recruteurs.",
   },
   {
     fct: detectDuplicateJobPartners,

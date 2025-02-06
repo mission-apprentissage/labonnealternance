@@ -12,7 +12,7 @@ export function streamNestedJsonArray(arrayPropertyName) {
     streamJson.parser(),
     jsonFilters.pick({ filter: arrayPropertyName }),
     streamers.streamArray(),
-    transformData((data) => data.value)
+    transformData((data: any) => data.value)
   )
 }
 
@@ -20,7 +20,7 @@ export function streamJsonArray() {
   return compose(
     streamJson.parser(),
     streamers.streamArray(),
-    transformData((data) => data.value)
+    transformData((data: any) => data.value)
   )
 }
 

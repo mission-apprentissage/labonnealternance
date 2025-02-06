@@ -217,6 +217,7 @@ export const ZApplicationApiPrivate = ZApplicationOld.pick({
 export const ZApplicationApiPublic = ZApplicationApiPrivate.omit({
   caller: true,
   job_searched_by_user: true,
+  application_url: true,
 })
 
 export type IApplicationApiPublicOutput = z.output<typeof ZApplicationApiPublic>

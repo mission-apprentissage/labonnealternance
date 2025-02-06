@@ -2,7 +2,7 @@ fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: 1910fb07ec956bb49fa09319706b02bdf1320633f8d405f7f53783ebf827f39b
 - filename: .infra/vault/vault.yml
-  checksum: c7b85451db302eb73a03185f06cd6d153e7a835a2a518baa4495629972b44eae
+  checksum: dd0c0b255fd3ba1c82eac6ada9a1776e5c01e750c5782241631de4073c322b65
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
   checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
 - filename: cypress/pages/FlowAdminPage.ts
@@ -115,8 +115,6 @@ fileignoreconfig:
   checksum: 23f500afe4d0984a4680e387e6e67223bdbdc5d954e984f400451b26bac248ce
 - filename: server/static/templates/mail-candidat-entretien.mjml.ejs
   checksum: 53067858567e2878f5f65da06be9efc6902a691b36299167d54343ab30162e49
-- filename: server/static/templates/mail-candidat-nsp.mjml.ejs
-  checksum: 203d57160c0cda492f4172d9651c2dea9b8d7b4b3ab0e25f80a24438e3f1e184
 - filename: server/static/templates/mail-candidat-offre-emploi-lba.mjml.ejs
   checksum: 3188f43c847d071acfb7a366748647ab88d821abb3e022830b82fd092db90f83
 - filename: server/static/templates/mail-candidat-offre-emploi-partenaire.mjml.ejs
