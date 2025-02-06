@@ -1,21 +1,23 @@
-import { createReadStream } from "fs"
+import { createReadStream, createWriteStream, existsSync, mkdirSync, unlinkSync } from "fs"
 import { createRequire } from "module"
+import { pipeline } from "node:stream/promises"
 import path from "path"
 
 import { ObjectId } from "bson"
 import { groupData, oleoduc, transformData, writeData } from "oleoduc"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import rawRecruteursLbaModel, { ZRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
+import rawRecruteursLbaModel, { IRecruteursLbaRaw, ZRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
+import { getS3FileLastUpdate, s3ReadAsStream } from "../../common/utils/awsUtils"
+import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import config from "../../config"
 import { rawToComputedJobsPartners } from "../offrePartenaire/rawToComputedJobsPartners"
 
-import { getRecruteursLbaFileFromS3, removePredictionFile } from "./recruteurLbaUtil"
 import { recruteursLbaToJobPartners } from "./recruteursLbaMapper"
 
 const require = createRequire(import.meta.url)
@@ -26,6 +28,55 @@ const { streamArray } = require("stream-json/streamers/StreamArray")
 const CURRENT_DIR_PATH = __dirname(import.meta.url)
 const PREDICTION_FILE_PATH = path.join(CURRENT_DIR_PATH, "./assets/recruteurslba.json")
 const S3_FILE = config.algoRecuteursLba.s3File
+
+export const createAssetsFolder = async () => {
+  const assetsPath = path.join(CURRENT_DIR_PATH, "./assets")
+  if (!(await existsSync(assetsPath))) {
+    await mkdirSync(assetsPath)
+  }
+}
+
+const removePredictionFile = async (isFilePresent: boolean) => {
+  if (!isFilePresent) return
+  try {
+    logger.info("Deleting downloaded file from assets")
+    await unlinkSync(PREDICTION_FILE_PATH)
+  } catch (err) {
+    logger.error("Error removing company algo file", err)
+  }
+}
+
+const checkIfAlgoFileIsNew = async (): Promise<boolean> => {
+  const algoFileLastModificationDate = await getS3FileLastUpdate("storage", S3_FILE)
+  if (!algoFileLastModificationDate) {
+    throw new Error("Aucune date de dernière modifications disponible sur le fichier issue de l'algo.")
+  }
+
+  const currentDbCreatedDate = ((await getDbCollection("raw_recruteurslba").findOne({}, { projection: { createdAt: 1 } })) as IRecruteursLbaRaw).createdAt
+  if (algoFileLastModificationDate.getTime() < currentDbCreatedDate.getTime()) {
+    await notifyToSlack({
+      subject: `import des offres recruteurs lba dans raw`,
+      message: `dernier fichier en date déjà traité.`,
+    })
+    return false
+  }
+  return true
+}
+
+const getRecruteursLbaFileFromS3 = async ({ from, to }) => {
+  logger.info(`Downloading algo file from S3 Bucket`)
+  await createAssetsFolder()
+  const readStream = await s3ReadAsStream("storage", from)
+  const writeStream = createWriteStream(to)
+
+  try {
+    await pipeline(readStream, writeStream)
+    logger.info("File transfer completed successfully")
+  } catch (error) {
+    logger.error("Error during file transfer:", error)
+    throw error
+  }
+}
 
 const importRecruteursLbaToRawCollection = async () => {
   logger.info("deleting old data")
@@ -59,19 +110,18 @@ const importRecruteursLbaToRawCollection = async () => {
 }
 
 export const importRecruteursLbaRaw = async () => {
+  let isFileNew
   try {
-    logger.info("start importRecruteursLbaRaw")
-
+    isFileNew = await checkIfAlgoFileIsNew()
+    if (!isFileNew) return
     await getRecruteursLbaFileFromS3({ from: S3_FILE, to: PREDICTION_FILE_PATH })
     await importRecruteursLbaToRawCollection()
-
-    logger.info("end importRecruteursLbaRaw")
-
-    await notifyToSlack({ subject: "IMPORT SOCIETES ISSUES DE L'ALGO", message: `Import sociétés issues de l'algo terminé avec succès` })
   } catch (err) {
+    await notifyToSlack({ subject: `import des offres recruteurs lba dans raw`, message: `import recruteurs lba terminé : echec de l'import`, error: true })
     logger.error(err)
+    sentryCaptureException(err)
   } finally {
-    await removePredictionFile()
+    await removePredictionFile(isFileNew)
   }
 }
 

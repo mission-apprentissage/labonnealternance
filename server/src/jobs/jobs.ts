@@ -54,8 +54,6 @@ import { removeDuplicateRecruiters } from "./recruiters/removeDuplicatesRecruite
 import { resetApiKey } from "./recruiters/resetApiKey"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import { importRecruteursLbaRaw } from "./recruteurLba/importRecruteursLbaRaw"
-import updateGeoLocations from "./recruteurLba/updateGeoLocations"
-import updateOpcoCompanies from "./recruteurLba/updateOpcoCompanies"
 import { SimpleJobDefinition, simpleJobDefinitions } from "./simpleJobDefinitions"
 import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 import { controlApplications } from "./verifications/controlApplications"
@@ -156,14 +154,6 @@ export async function setupJobProcessor() {
           "Mise à jour des adresses emails bloquées": {
             cron_string: "5 0 * * *",
             handler: () => updateBrevoBlockedEmails({}),
-          },
-          "Géolocation de masse des sociétés issues de l'algo": {
-            cron_string: "0 5 * * 6",
-            handler: () => updateGeoLocations({}),
-          },
-          "Détermination des opcos des sociétés issues de l'algo": {
-            cron_string: "30 6 * * 6",
-            handler: () => updateOpcoCompanies({}),
           },
           "Mise à jour des sociétés issues de l'algo": {
             cron_string: "0 5 * * 7",
@@ -303,12 +293,6 @@ export async function setupJobProcessor() {
       },
       "brevo:blocked:sync": {
         handler: async (job) => updateBrevoBlockedEmails(job.payload as any),
-      },
-      "geo-locations:update": {
-        handler: async (job) => updateGeoLocations(job.payload as any),
-      },
-      "opcos:update": {
-        handler: async (job) => updateOpcoCompanies(job.payload as any),
       },
       "domaines-metiers:update": {
         handler: async () => updateDomainesMetiers(),

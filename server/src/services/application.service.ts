@@ -134,7 +134,7 @@ export const getApplicationCount = (job_id: IApplication["job_id"]) => getDbColl
  * @param {string} email - Email
  * @return {Promise<boolean>}
  */
-export const isEmailBlacklisted = async (email: string): Promise<boolean> => Boolean(await getDbCollection("emailblacklists").countDocuments({ email }))
+export const isEmailBlacklisted = async (email: string): Promise<boolean> => Boolean(await getDbCollection("emailblacklists").findOne({ email }))
 
 /**
  * @description Add an email address to the blacklist collection.
