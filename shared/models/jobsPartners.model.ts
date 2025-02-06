@@ -48,6 +48,13 @@ export const zDiplomaEuropeanLevel = z.enum(["3", "4", "5", "6", "7"])
 
 export type INiveauDiplomeEuropeen = z.output<typeof zDiplomaEuropeanLevel>
 
+export const ZJobsPartnersOfferHistoryEvent = z.object({
+  status: extensions.buildEnum(JOB_STATUS_ENGLISH).describe("Statut de l'accès"),
+  reason: z.string().describe("Raison du changement de statut"),
+  date: z.date().describe("Date de l'évènement"),
+  granted_by: z.string().describe("Utilisateur à l'origine du changement"),
+})
+
 export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   _id: true,
 }).extend({
@@ -77,6 +84,7 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   offer_expiration: z.date().nullable().describe("Date d'expiration de l'offre. Si pas présente, mettre à creation_date + 60j").openapi({ format: "date-time" }),
   offer_opening_count: z.number().describe("Nombre de poste disponible"),
   offer_status: extensions.buildEnum(JOB_STATUS_ENGLISH).describe("Status de l'offre (surtout utilisé pour les offres ajouté par API)"),
+  offer_status_history: z.array(ZJobsPartnersOfferHistoryEvent).describe("Historique de l'offre"),
 })
 
 const ZJobsPartnersRecruiterPrivateFields = z.object({

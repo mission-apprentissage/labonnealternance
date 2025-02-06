@@ -49,7 +49,6 @@ export const detectDuplicateJobPartners = async (addedMatchFilter?: Filter<IComp
   if (addedMatchFilter) {
     filters.push(addedMatchFilter)
   }
-  // @ts-expect-error
   const computedJobPartnersFilter: Filter<IComputedJobsPartners> = { $and: filters }
 
   await getDbCollection("computed_jobs_partners").updateMany(computedJobPartnersFilter, { $set: { duplicates: [] } })
@@ -414,6 +413,21 @@ const buildOperationsForASingleOffer = (offer: TreatedDocument, otherOfferDuplic
       updateOne: {
         filter: { _id: offer._id },
         update: { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE } },
+      },
+    })
+    jobPartnerOperations.push({
+      updateOne: {
+        filter: { _id: offer._id },
+        update: {
+          $push: {
+            offer_status_history: {
+              date: new Date(),
+              status: JOB_STATUS_ENGLISH.ANNULEE,
+              reason: `détectée comme doublon, remplacée par ${JSON.stringify(otherOfferDuplicateObject)}`,
+              granted_by: "détecteur de doublons",
+            },
+          },
+        },
       },
     })
   }

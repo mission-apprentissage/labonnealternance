@@ -13,10 +13,12 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 
 export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
-  const stream = await getDbCollection("computed_jobs_partners")
-    .find({ $and: [{ validated: true, business_error: null }, ...(addedMatchFilter ? [addedMatchFilter] : [])] })
-    .project({ _id: 1, validated: 0, business_error: 0, errors: 0 })
-    .stream()
+  const filters: Filter<IComputedJobsPartners>[] = [{ validated: true, business_error: null }]
+  if (addedMatchFilter) {
+    filters.push(addedMatchFilter)
+  }
+
+  const stream = await getDbCollection("computed_jobs_partners").find({ $and: filters }).project({ _id: 1, validated: 0, business_error: 0, errors: 0 }).stream()
 
   const counters = { total: 0, success: 0, error: 0 }
   const importDate = new Date()
@@ -73,10 +75,18 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
           { partner_job_id: partnerJobToUpsert.partner_job_id, partner_label: partnerJobToUpsert.partner_label },
           {
             $set: { ...partnerJobToUpsert },
-            $setOnInsert: { created_at: importDate },
+            $setOnInsert: { created_at: importDate, offer_status_history: [] },
           },
           { upsert: true }
         )
+        if (computedJobPartner.offer_status_history.length) {
+          await getDbCollection("jobs_partners").updateOne(
+            { partner_job_id: partnerJobToUpsert.partner_job_id, partner_label: partnerJobToUpsert.partner_label },
+            {
+              $push: { offer_status_history: { $each: computedJobPartner.offer_status_history } },
+            }
+          )
+        }
         counters.success++
         callback(null)
       } catch (err: unknown) {

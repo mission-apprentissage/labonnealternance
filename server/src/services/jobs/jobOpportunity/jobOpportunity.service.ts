@@ -755,7 +755,26 @@ async function upsertJobOffer(data: IJobOfferApiWriteV3, identity: IApiAlternanc
     jobs_in_success: [],
   }
 
-  await getDbCollection("computed_jobs_partners").updateOne({ _id: invariantData._id }, { $set: writableData, $setOnInsert: invariantData }, { upsert: true })
+  await getDbCollection("computed_jobs_partners").updateOne(
+    { _id: invariantData._id },
+    { $set: writableData, $setOnInsert: { ...invariantData, offer_status_history: [] } },
+    { upsert: true }
+  )
+  if (current && current.offer_status !== data.offer.status) {
+    await getDbCollection("computed_jobs_partners").updateOne(
+      { _id: invariantData._id },
+      {
+        $push: {
+          offer_status_history: {
+            date: now,
+            status: data.offer.status,
+            reason: "créée / modifiée par API",
+            granted_by: identity.email,
+          },
+        },
+      }
+    )
+  }
 
   return invariantData._id
 }
