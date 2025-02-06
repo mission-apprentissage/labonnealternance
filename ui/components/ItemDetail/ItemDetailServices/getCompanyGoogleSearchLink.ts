@@ -13,5 +13,5 @@ export const getCompanyGoogleSearchLink = (item: ILbaItemLbaJob | ILbaItemLbaCom
     }
   }
 
-  return `https://www.google.fr/search?q=${encodeURIComponent(`${item.company.name} ${placePart.trim()}`)}`
+  return `https://www.google.fr/search?q=${encodeURIComponent(`${item.company.name}${placePart ? " " + placePart.trim() : ""}`)}`
 }
