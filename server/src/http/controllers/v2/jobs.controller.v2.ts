@@ -117,7 +117,6 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { id } = req.params
-      console.log(typeof id, id)
       const job = await getDbCollection("jobs_partners").findOne({ _id: id })
       if (!job) {
         throw badRequest("Job does not exist")
