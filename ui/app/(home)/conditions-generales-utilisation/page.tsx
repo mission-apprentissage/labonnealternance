@@ -1,7 +1,7 @@
 import { Metadata } from "next"
 
-import { fetchNotionPage } from "../../services/fetchNotionPage"
-import { PAGES } from "../../utils/routes.utils"
+import { fetchNotionPage } from "@/services/fetchNotionPage"
+import { PAGES } from "@/utils/routes.utils"
 
 import CGURendererClient from "./CGURendererClient"
 

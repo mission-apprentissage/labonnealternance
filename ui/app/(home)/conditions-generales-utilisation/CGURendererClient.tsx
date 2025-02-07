@@ -3,9 +3,9 @@ import { Box, Container, Divider, Grid, GridItem, Text } from "@chakra-ui/react"
 import dynamic from "next/dynamic"
 import Link from "next/link"
 
-import { publicConfig } from "../../config.public"
-import { PAGES } from "../../utils/routes.utils"
-import Breadcrumb from "../components/Breadcrumb"
+import Breadcrumb from "@/app/components/Breadcrumb"
+import { publicConfig } from "@/config.public"
+import { PAGES } from "@/utils/routes.utils"
 
 const NotionRenderer = dynamic(() => import("react-notion-x").then((mod) => mod.NotionRenderer))
 

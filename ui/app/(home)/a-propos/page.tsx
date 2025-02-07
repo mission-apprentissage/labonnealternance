@@ -2,6 +2,7 @@ import { Box, Container, Divider, Grid, GridItem, ListItem, SimpleGrid, Text, Un
 import type { Metadata } from "next"
 import Image from "next/image"
 
+import Breadcrumb from "@/app/components/Breadcrumb"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import j1s from "@/public/images/logosPartenaires/partenaire-1j1s.webp"
 import affelnet from "@/public/images/logosPartenaires/partenaire-affelnet.webp"
@@ -22,9 +23,7 @@ import uniformation from "@/public/images/logosPartenaires/partenaire-opco-unifo
 import parcoursup from "@/public/images/logosPartenaires/partenaire-parcoursup.webp"
 import portailAlternance from "@/public/images/logosPartenaires/partenaire-portail-alternance.webp"
 import tbd from "@/public/images/logosPartenaires/partenaire-tdb.webp"
-
-import { PAGES } from "../../utils/routes.utils"
-import Breadcrumb from "../components/Breadcrumb"
+import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = {
   title: PAGES.static.aPropos.getMetadata.title,
