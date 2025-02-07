@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
-import { zRoutes } from "shared/index"
+import { CompanyFeebackSendStatus, zRoutes } from "shared/index"
 
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 import { getApplicationDataForIntentionAndScheduleMessage, getCompanyEmailFromToken, sendApplication, sendRecruiterIntention } from "../../services/application.service"
@@ -82,30 +82,9 @@ export default function (server: Server) {
     async (req, res) => {
       const { id } = req.params
 
-      await getDbCollection("recruiter_intention_mails").deleteOne({ applicationId: new ObjectId(id) })
+      await getDbCollection("applications").updateOne({ applicationId: new ObjectId(id) }, { $set: { company_feedback_send_status: CompanyFeebackSendStatus.CANCELED } })
 
       return res.status(200).send({ result: "ok", message: "intention canceled" })
-    }
-  )
-
-  server.post(
-    "/application/intention/:id",
-    {
-      schema: zRoutes.post["/application/intention/:id"],
-      onRequest: server.auth(zRoutes.post["/application/intention/:id"]),
-      config: rateLimitConfig,
-    },
-    async (req, res) => {
-      const { id } = req.params
-      const { company_recruitment_intention } = req.body
-
-      const application = await getDbCollection("applications").findOneAndUpdate(
-        { _id: new ObjectId(id) },
-        { $set: { company_recruitment_intention, company_feedback_date: new Date() } }
-      )
-      if (!application) throw new Error("application not found")
-
-      return res.status(200).send({ result: "ok" })
     }
   )
 

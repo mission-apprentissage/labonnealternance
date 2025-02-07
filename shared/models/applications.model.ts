@@ -25,6 +25,7 @@ export enum CompanyFeebackSendStatus {
   SENT = "SENT",
   CANCELED = "CANCELED",
   SCHEDULED = "SCHEDULED",
+  ERROR = "ERROR",
 }
 
 const ZApplicationOld = z

@@ -314,13 +314,6 @@ export function generateApplicationReplyToken(tokenUser: UserForAccessToken, app
     tokenUser,
     [
       generateScope({
-        schema: zRoutes.post["/application/intention/:id"],
-        options: {
-          params: { id: applicationId },
-          querystring: undefined,
-        },
-      }),
-      generateScope({
         schema: zRoutes.post["/application/intentionComment/:id"],
         options: {
           params: { id: applicationId },
