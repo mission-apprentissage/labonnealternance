@@ -9,7 +9,8 @@ import { AUTHTYPE } from "../../common/contants"
 import { ArrowDropRightLine } from "../../theme/components/icons"
 import { createOffre, getOffre } from "../../utils/api"
 
-import { FormulaireCreationOffre, LoadingEmptySpace } from "."
+import { FormulaireCreationOffre } from "./FormulaireCreationOffre/FormulaireCreationOffre"
+import LoadingEmptySpace from "./LoadingEmptySpace"
 
 export default function CreationOffre() {
   const toast = useToast()

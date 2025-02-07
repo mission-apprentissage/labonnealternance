@@ -19,11 +19,11 @@ describe("lbautils", () => {
 
   describe("getDirectJobPath", () => {
     it("should build a direct job path", () => {
-      expect(getDirectJobPath("123")).toBe("/emploi/offres_emploi_lba/123/offre")
+      expect(getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, "123")).toBe("/emploi/offres_emploi_lba/123/offre")
     })
 
     it("should build a direct job path with title", () => {
-      expect(getDirectJobPath("123", "titre de l'offre")).toBe("/emploi/offres_emploi_lba/123/titre-de-l-offre")
+      expect(getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, "123", "titre de l'offre")).toBe("/emploi/offres_emploi_lba/123/titre-de-l-offre")
     })
   })
 })

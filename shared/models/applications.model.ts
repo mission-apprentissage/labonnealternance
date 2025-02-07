@@ -50,13 +50,13 @@ const ZApplicationOld = z
     company_feedback: z.string().nullish().describe("L'avis donné par la société"),
     company_feedback_reasons: z.array(extensions.buildEnum(RefusalReasons)).nullish(),
     company_feedback_date: z.date().nullish().describe("Date d'intention/avis donnée"),
-    company_siret: extensions.siret.describe("Siret de l'entreprise"),
+    company_siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
     company_email: z.string().describe("Email de l'entreprise"),
     company_phone: z.string().nullish().describe("Numéro de téléphone du recruteur"),
     company_name: z.string().describe("Nom de l'entreprise"),
     company_naf: z.string().nullish().describe("Code NAF de l'entreprise"),
     company_address: z.string().nullish().describe("Adresse de l'entreprise"),
-    job_origin: extensions.buildEnum(LBA_ITEM_TYPE).nullable().describe("Origine de l'offre d'emploi"),
+    job_origin: extensions.buildEnum(LBA_ITEM_TYPE).describe("Origine de l'offre d'emploi"),
     job_title: z
       .string()
       .nullish()
@@ -183,7 +183,9 @@ const ZNewApplicationTransitionToV2 = ZApplicationOld.extend({
 // KBA 20241011 to remove once V2 is LIVE and V1 support has ended
 export type INewApplicationV1 = z.output<typeof ZNewApplicationTransitionToV2>
 
-type JobCollectionName = "recruteurslba" | "jobs_partners" | "recruiters"
+export const ZJobCollectionName = z.enum(["recruteurslba", "partners", "recruiters"])
+export const JobCollectionName = ZJobCollectionName.enum
+export type IJobCollectionName = z.output<typeof ZJobCollectionName>
 
 export const ZApplicationApiPrivate = ZApplicationOld.pick({
   applicant_first_name: true,
@@ -204,10 +206,10 @@ export const ZApplicationApiPrivate = ZApplicationOld.pick({
       if (!ObjectId.isValid(jobId)) {
         throw new Error(`Invalid job identifier: ${jobId}`)
       }
-      if (!["recruteurslba", "jobs_parnters", "recruiters"].includes(collectionName)) {
+      if (!ZJobCollectionName.safeParse(collectionName).success) {
         throw new Error(`Invalid collection name: ${collectionName}`)
       }
-      return { collectionName: collectionName as JobCollectionName, jobId }
+      return { collectionName: collectionName as IJobCollectionName, jobId }
     })
     .describe("Identifiant unique de la ressource vers laquelle la candidature est faite, préfixé par le nom de la collection"),
 })
@@ -215,6 +217,7 @@ export const ZApplicationApiPrivate = ZApplicationOld.pick({
 export const ZApplicationApiPublic = ZApplicationApiPrivate.omit({
   caller: true,
   job_searched_by_user: true,
+  application_url: true,
 })
 
 export type IApplicationApiPublicOutput = z.output<typeof ZApplicationApiPublic>

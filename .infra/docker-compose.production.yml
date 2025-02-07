@@ -30,6 +30,8 @@ services:
           memory: 2g
       replicas: 2
     stop_grace_period: 2m
+    environment:
+      NODE_OPTIONS: "--max_old_space_size=2048"
     volumes:
       - /opt/app/data/server:/data
       - /opt/app/.env_server:/app/server/.env
@@ -53,7 +55,7 @@ services:
       <<: *deploy-default
       resources:
         limits:
-          memory: 2g
+          memory: 1g
     command: ["yarn", "cli", "job_processor:start"]
     environment:
       INSTANCE_ID: "runner-{% raw %}{{.Task.Slot}}{% endraw %}"

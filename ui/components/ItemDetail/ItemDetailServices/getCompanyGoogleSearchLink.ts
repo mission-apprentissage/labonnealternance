@@ -9,9 +9,9 @@ export const getCompanyGoogleSearchLink = (item: ILbaItemLbaJob | ILbaItemLbaCom
     if (item.place.city) {
       placePart = `${item.place.city} ${item.place.zipCode ?? ""}`
     } else {
-      placePart = item.place.address
+      placePart = item.place.address ?? item.place.fullAddress
     }
   }
 
-  return `https://www.google.fr/search?q=${encodeURIComponent(`${item.company.name} ${placePart.trim()}`)}`
+  return `https://www.google.fr/search?q=${encodeURIComponent(`${item.company.name}${placePart ? " " + placePart.trim() : ""}`)}`
 }

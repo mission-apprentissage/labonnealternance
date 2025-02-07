@@ -28,6 +28,7 @@ export const CustomTabs = <Name extends string>({
               color: "#161616",
               backgroundColor: "#E3E3FD",
               fontWeight: 700,
+              zIndex: "unset !important",
             }}
           >
             {title}

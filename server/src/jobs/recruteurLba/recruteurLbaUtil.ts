@@ -70,6 +70,7 @@ export const downloadAlgoCompanyFile = async (sourceFile: string | null) => {
 
 export const downloadFile = async ({ from, to }) => {
   await createAssetsFolder()
+  // @ts-ignore // TODO: fix this
   await oleoduc(s3ReadAsStream("storage", from), fs.createWriteStream(to))
 }
 

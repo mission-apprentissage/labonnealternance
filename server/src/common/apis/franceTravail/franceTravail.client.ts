@@ -4,6 +4,8 @@ import querystring from "querystring"
 import { internal } from "@hapi/boom"
 import { ObjectId } from "bson"
 import FormData from "form-data"
+import { sleep } from "openai/core.mjs"
+import { IFTJobRaw } from "shared"
 import { IRomeoAPIResponse } from "shared/models/cacheRomeo.model"
 import { IFranceTravailAccess, IFranceTravailAccessType } from "shared/models/franceTravailAccess.model"
 
@@ -15,6 +17,7 @@ import { logger } from "../../logger"
 import { apiRateLimiter } from "../../utils/apiUtils"
 import { getDbCollection } from "../../utils/mongodbUtils"
 import { sentryCaptureException } from "../../utils/sentryUtils"
+import { notifyToSlack } from "../../utils/slackUtils"
 import getApiClient from "../client"
 
 const axiosClient = getApiClient({}, { cache: false })
@@ -221,4 +224,73 @@ export const getRomeoPredictions = async (payload: IRomeoPayload[], options: IRo
       return null
     }
   })
+}
+// Documentation https://francetravail.io/produits-partages/catalogue/offres-emploi/documentation#/api-reference/operations/recupererListeOffre
+export const getAllFTJobsByDepartments = async (departement: string) => {
+  const jobLimit = 150
+  let start = 0
+  let total = 1
+
+  let allJobs = [] as Omit<IFTJobRaw, "_id" | "createdAt">[]
+
+  while (start < total) {
+    // Construct the range for this "page"
+    const range = `${start}-${start + jobLimit - 1}`
+
+    // Prepare your query params
+    const params: Parameters<typeof searchForFtJobs>[0] = {
+      natureContrat: "E2,FS", // E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
+      range,
+      departement,
+      // publieeDepuis: 7, // Il vaut mieux ne pas mettre de date de publication pour avoir le plus de résultats possible
+      sort: 1, // making sure we get the most recent jobs first
+    }
+
+    try {
+      const response = await searchForFtJobs(params, { throwOnError: true })
+      await sleep(1500)
+      if (!response) {
+        throw new Error("No response from FranceTravail")
+      }
+
+      const { data: jobs, contentRange } = response
+
+      if (!jobs.resultats) {
+        //  logger.info("No resultats from FranceTravail", params)
+        break
+      }
+
+      allJobs = [...allJobs, ...(jobs.resultats as Omit<IFTJobRaw, "_id" | "createdAt">[])]
+
+      // Safely parse out the total
+      // Usually, contentRange might look like "offres 0-149/9981"
+      // We split by "/" and take the second part (9981), converting to Number
+      if (contentRange) {
+        const totalString = contentRange.split("/")[1]
+        if (totalString) {
+          total = parseInt(totalString, 10)
+        }
+      }
+
+      // Move to the next "page"
+      start += jobLimit
+    } catch (error: any) {
+      // handle 3000 limit page reach
+      if (error.response?.data?.message === "La position de début doit être inférieure ou égale à 3000.") {
+        sentryCaptureException(error)
+        await notifyToSlack({
+          subject: "Import Offres France Travail",
+          message: `Limite des 3000 offres par département dépassée! dept: ${departement} total: ${total}`,
+          error: true,
+        })
+        throw error
+      }
+      if (error.response?.data?.message === "Valeur du paramètre « region » incorrecte." || error.response?.data?.message === "Valeur du paramètre « departement » incorrecte.") {
+        // code region or departement not found
+        break
+      }
+      logger.error("Error while fetching jobs", error)
+    }
+  }
+  return allJobs
 }

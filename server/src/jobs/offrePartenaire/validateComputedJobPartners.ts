@@ -16,7 +16,7 @@ type BulkOperation = AnyBulkWriteOperation<IComputedJobsPartners>
 
 export const validateComputedJobPartners = async () => {
   logger.info(`validation des computed_job_partners`)
-  const toUpdateCount = await getDbCollection("computed_jobs_partners").countDocuments({})
+  const toUpdateCount = await getDbCollection("computed_jobs_partners").countDocuments({ business_error: null })
   logger.info(`${toUpdateCount} documents à traiter`)
   const counters = { total: 0, success: 0, error: 0 }
   await oleoduc(

@@ -1,7 +1,8 @@
 import { internal } from "@hapi/boom"
+import { Filter } from "mongodb"
 import { oleoduc, writeData } from "oleoduc"
 import { z } from "shared/helpers/zodWithOpenApi"
-import { JOBPARTNERS_LABEL, ZJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { CollectionName } from "shared/models/models"
 import { AnyZodObject } from "zod"
@@ -17,12 +18,14 @@ export const rawToComputedJobsPartners = async <ZodInput extends AnyZodObject>({
   zodInput,
   partnerLabel,
   documentJobRoot,
+  rawFilterQuery = {},
 }: {
   collectionSource: CollectionName
   zodInput: ZodInput
   mapper: (raw: z.output<ZodInput>) => IComputedJobsPartners
   partnerLabel: JOBPARTNERS_LABEL
   documentJobRoot?: string
+  rawFilterQuery?: Filter<CollectionName>
 }) => {
   logger.info(`début d'import dans computed_jobs_partners pour partner_label=${partnerLabel}`)
   const deletedCount = await getDbCollection("computed_jobs_partners").countDocuments({ partner_label: partnerLabel })
@@ -31,9 +34,9 @@ export const rawToComputedJobsPartners = async <ZodInput extends AnyZodObject>({
   const counters = { total: 0, success: 0, error: 0 }
   const importDate = new Date()
   await oleoduc(
-    getDbCollection(collectionSource).find({}).stream(),
+    getDbCollection(collectionSource).find(rawFilterQuery).stream(),
     writeData(
-      async (document) => {
+      async (document: any) => {
         counters.total++
         try {
           const rawJob = documentJobRoot ? document[documentJobRoot] : document
@@ -42,7 +45,6 @@ export const rawToComputedJobsPartners = async <ZodInput extends AnyZodObject>({
           await getDbCollection("computed_jobs_partners").insertOne({
             ...computedJobPartner,
             partner_label: partnerLabel,
-            validated: ZJobsPartnersOfferPrivate.safeParse(computedJobPartner).success,
             created_at: importDate,
           })
           counters.success++

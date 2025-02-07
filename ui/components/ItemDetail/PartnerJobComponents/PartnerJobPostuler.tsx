@@ -5,10 +5,17 @@ import { focusWithin } from "@/theme/theme-lba-tools"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
 import CandidatureLba from "../CandidatureLba/CandidatureLba"
+import CandidatureParTelephone from "../CandidatureParTelephone"
 
 export const PartnerJobPostuler = ({ job, isCollapsedHeader }: { job: ILbaItemPartnerJob; isCollapsedHeader: boolean }) => {
-  if (job.contact?.phone) {
-    // display FT pop-up ?
+  // KBA fix enum shared/models/lbaItem.model.ts
+  if (["Pourvue", "Annulée"].includes(job.job.status)) return null
+  if (job.contact?.email) {
+    return (
+      <Box my={4}>
+        <CandidatureLba item={job} />
+      </Box>
+    )
   }
 
   if (job.contact?.url) {
@@ -32,11 +39,14 @@ export const PartnerJobPostuler = ({ job, isCollapsedHeader }: { job: ILbaItemPa
     )
   }
 
-  if (job.contact?.email) {
+  if (job.contact?.phone) {
     return (
-      <Box my={4}>
-        <CandidatureLba item={job} />
-      </Box>
+      <CandidatureParTelephone
+        companyName={job.company.name || null}
+        contactName={job.contact.name || null}
+        contactPhone={job.contact.phone || null}
+        urlPostulation={job.contact.url || null}
+      />
     )
   }
 

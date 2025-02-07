@@ -1,5 +1,10 @@
+import { groupData, oleoduc, writeData } from "oleoduc"
+import { IFTJobRaw } from "shared"
+
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { sendMessages } from "@/services/openai/openai.service"
+import { sendOpenAIMessages } from "@/services/openai/openai.service"
+
+import { logger } from "../../../common/logger"
 
 export const checkFTOffer = async (data: any): Promise<any> => {
   const messages = [
@@ -44,34 +49,29 @@ Une fois que tu as déterminé si les offres sont de type CFA, Entreprise ou Ent
     },
   ]
   try {
-    // const responseStr = await mistralSendMessages({
-    //   messages,
-    //   seed: 45555,
-    //   max_tokens: 1024,
-    //   response_format: { type: "json_object" },
-    // })
-    const responseStr = await sendMessages({
+    const response = await sendOpenAIMessages({
       messages,
       seed: 45555,
       max_tokens: 1024,
       response_format: { type: "json_object" },
     })
-    const response = JSON.parse(responseStr)
-
+    if (!response) {
+      return null
+    }
     return response
   } catch (error) {
     console.log(error)
   }
 }
 
-function mapDocument(rawFTDocuments: any) {
+function mapDocument(rawFTDocuments: IFTJobRaw[]) {
   const offres = rawFTDocuments.map((doc) => ({
     id: doc.id,
     description: doc.description,
     entreprise: doc.entreprise,
     appellationlibelle: doc.appellationlibelle,
     intitule: doc.intitule,
-    type: doc._metadata.classification_verification,
+    ...(doc._metadata?.openai?.type ? { type: doc._metadata?.openai?.type } : {}),
   }))
   return offres
 }
@@ -80,38 +80,30 @@ export const classifyFranceTravailJobs = async () => {
   const rawFTDocumentsVerified = await getDbCollection("raw_francetravail")
     .find({ "_metadata.openai.human_verification": { $exists: true } })
     .toArray()
+  const examples = mapDocument(rawFTDocumentsVerified)
+  const queryFilter = { "_metadata.openai.type": { $exists: false } }
+  const count = await getDbCollection("raw_francetravail").countDocuments(queryFilter)
+  logger.info(`Classification de ${count} jobs depuis raw_francetravail`)
 
-  const examples = mapDocument(rawFTDocumentsVerified) // get
+  await oleoduc(
+    await getDbCollection("raw_francetravail").find(queryFilter).stream(),
+    groupData({ size: 10 }),
+    writeData(async (rawFTDocuments: IFTJobRaw[]) => {
+      const offres = mapDocument(rawFTDocuments)
+      const response = await checkFTOffer({ offres, examples })
+      for (const rsp of response.offres) {
+        await getDbCollection("raw_francetravail").findOneAndUpdate(
+          { id: rsp.id as string },
+          {
+            $set: {
+              "_metadata.openai.type": rsp.type.toLowerCase(),
+              ...(rsp.cfa ? { "_metadata.openai.cfa": rsp.cfa } : {}),
+            },
+          }
+        )
+      }
+    })
+  )
 
-  const rawFTDocuments = await getDbCollection("raw_francetravail")
-    .find({ "_metadata.openai.human_verification": { $exists: false } })
-    .toArray()
-
-  // loop through all rawFTDocuments by chunks of 100
-  const chunkSize = 10
-  const totalChunks = Math.ceil(rawFTDocuments.length / chunkSize)
-  for (let i = 0; i < totalChunks; i++) {
-    const chunk = rawFTDocuments.slice(i * chunkSize, (i + 1) * chunkSize)
-    const offres = chunk.map((doc) => ({
-      id: doc.id,
-      description: doc.description,
-      entreprise: doc.entreprise,
-      appellationlibelle: doc.appellationlibelle,
-      intitule: doc.intitule,
-    }))
-    const response = await checkFTOffer({ offres, examples })
-
-    // TODO : Filter 60 days by dateActualisation
-    for (const rsp of response.offres) {
-      await getDbCollection("raw_francetravail").findOneAndUpdate(
-        { id: rsp.id as string },
-        {
-          $set: {
-            "_metadata.openai.type": rsp.type.toLowerCase(),
-            ...(rsp.cfa ? { "_metadata.openai.cfa": rsp.cfa } : {}),
-          },
-        }
-      )
-    }
-  }
+  logger.info(`Classification terminée`)
 }

@@ -165,8 +165,8 @@ const Footer = () => {
                 </NextLink>
               </ListItem>
               <ListItem {...basicLink}>
-                <NextLink legacyBehavior passHref href="/nos-donnees">
-                  <Link aria-label="Accès à nos données">Nos données</Link>
+                <NextLink legacyBehavior passHref href="/espace-developpeurs">
+                  <Link aria-label="Accès à l'espace développeurs">Espace développeurs</Link>
                 </NextLink>
               </ListItem>
               <ListItem {...lastLink}>

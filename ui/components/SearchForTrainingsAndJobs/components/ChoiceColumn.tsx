@@ -12,7 +12,7 @@ import { SearchResultContext } from "../../../context/SearchResultContextProvide
 import { setCurrentSearch } from "../../../utils/currentPage"
 import { filterLayers, flyToLocation } from "../../../utils/mapTools"
 import pushHistory from "../../../utils/pushHistory"
-import { getItemElement, scrollToElementInContainer, scrollToTop } from "../../../utils/tools"
+import { scrollToTop } from "../../../utils/tools"
 import ItemDetail from "../../ItemDetail/ItemDetail"
 import { defaultFilters } from "../services/utils"
 import { insertWhisper } from "../services/whispers"
@@ -39,21 +39,10 @@ const ChoiceColumn = ({
   const searchResultContext = useContext(SearchResultContext)
   const displayContext = useContext(DisplayContext)
   const parameterContext = useContext(ParameterContext)
-  const { trainings, setTrainings, setJobs, selectedItem, itemToScrollTo, setItemToScrollTo, setExtendedSearch } = searchResultContext
+  const { handleClose, handleSelectItem } = getCloseAndSelectFunctions({ router, searchResultContext, displayContext, parameterContext, scopeContext })
+  const { trainings, setTrainings, setJobs, selectedItem, setExtendedSearch } = searchResultContext
   const { formValues, setFormValues, setActiveFilters } = displayContext
   const { displayMap } = parameterContext
-  const { handleClose, handleSelectItem } = getCloseAndSelectFunctions({ router, searchResultContext, displayContext, parameterContext, scopeContext })
-
-  useEffect(() => {
-    if (itemToScrollTo) {
-      const itemElement = getItemElement(itemToScrollTo)
-
-      if (itemElement) {
-        scrollToElementInContainer({ containerId: "resultList", el: itemElement })
-        setItemToScrollTo(null)
-      }
-    }
-  })
 
   useEffect(() => {
     insertWhisper(document, isTrainingSearchLoading || isJobSearchLoading)
@@ -72,7 +61,12 @@ const ChoiceColumn = ({
     searchOnNewCenter(newCenter, null, "jobs")
     showAllResults()
     setTimeout(() => {
-      scrollToElementInContainer({ containerId: "resultList", el: document.getElementById("jobList") })
+      try {
+        const element = document.getElementById("resultList")
+        element.dispatchEvent(new CustomEvent("scrollToItem", { detail: { type: "job" } }))
+      } catch (e) {
+        console.error(e)
+      }
     }, 800)
   }
 
