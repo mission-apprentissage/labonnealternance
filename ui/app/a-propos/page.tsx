@@ -1,5 +1,4 @@
 import { Box, Container, Divider, Grid, GridItem, ListItem, SimpleGrid, Text, UnorderedList } from "@chakra-ui/react"
-import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb"
 import type { Metadata } from "next"
 import Image from "next/image"
 
@@ -24,10 +23,12 @@ import parcoursup from "@/public/images/logosPartenaires/partenaire-parcoursup.w
 import portailAlternance from "@/public/images/logosPartenaires/partenaire-portail-alternance.webp"
 import tbd from "@/public/images/logosPartenaires/partenaire-tdb.webp"
 
+import { PAGES } from "../../utils/routes.utils"
+import Breadcrumb from "../components/Breadcrumb"
+
 export const metadata: Metadata = {
-  title: "A propos | La bonne alternance | Trouvez votre alternance",
-  description:
-    "Vous ne trouvez pas de contrat ou d'offres d'alternance ? Essayez La bonne alternance ! Trouvez ici les formations en alternance et les entreprises qui recrutent régulièrement en alternance.",
+  title: PAGES.static.aPropos.getMetadata.title,
+  description: PAGES.static.aPropos.getMetadata.description,
 }
 
 export default function APropos() {
@@ -35,13 +36,7 @@ export default function APropos() {
     <div>
       <Box as="main">
         <Container variant="responsiveContainer" display="flex">
-          <Breadcrumb
-            currentPageLabel="À propos"
-            segments={[]}
-            homeLinkProps={{
-              href: "/",
-            }}
-          />
+          <Breadcrumb pages={[PAGES.static.aPropos]} />
         </Container>
 
         <Container p={12} my={0} mb={[0, 12]} variant="pageContainer">

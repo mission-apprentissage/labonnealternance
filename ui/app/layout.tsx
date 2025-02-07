@@ -2,6 +2,7 @@ import { DsfrHead } from "@codegouvfr/react-dsfr/next-appdir/DsfrHead"
 import { DsfrProvider } from "@codegouvfr/react-dsfr/next-appdir/DsfrProvider"
 import { getHtmlAttributes } from "@codegouvfr/react-dsfr/next-appdir/getHtmlAttributes"
 import Link from "next/link"
+import "react-notion-x/src/styles.css"
 
 import { Footer } from "./components/Footer"
 import { Header } from "./components/Header"
