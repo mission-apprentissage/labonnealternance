@@ -16,7 +16,7 @@
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.8.1",
-    "@codegouvfr/react-dsfr": "^1.17.0",
+    "@codegouvfr/react-dsfr": "^1.18.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@sentry/browser": "^8.48.0",

@@ -8,6 +8,11 @@ import { Header } from "./components/Header"
 import { defaultColorScheme } from "./dsfr-setup/default-color-scheme"
 import { StartDsfr } from "./dsfr-setup/start-dsfr"
 
+import "../public/styles/application.css"
+import "../public/styles/fonts.css"
+import "../public/styles/notion.css"
+import "../styles/search.css"
+
 export default function RootLayout({ children }: { children: JSX.Element }) {
   //NOTE: The lang parameter is optional and defaults to "fr"
   const lang = "fr"
