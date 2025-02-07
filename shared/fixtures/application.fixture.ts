@@ -14,6 +14,8 @@ export function generateApplicationFixture(data: Partial<IApplication>): IApplic
     company_recruitment_intention: null,
     company_feedback: "a",
     company_feedback_date: null,
+    company_recruitment_intention_date: null,
+    company_feedback_send_status: null,
     company_siret: "34268752200066",
     company_email: "faux_email@faux-domaine-compagnie.com",
     company_name: "nom société",

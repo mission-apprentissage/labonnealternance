@@ -21,6 +21,12 @@ export enum ApplicationScanStatus {
   ERROR_APPLICANT_NOT_FOUND = "ERROR_APPLICANT_NOT_FOUND",
 }
 
+export enum CompanyFeebackSendStatus {
+  SENT = "SENT",
+  CANCELED = "CANCELED",
+  SCHEDULED = "SCHEDULED",
+}
+
 const ZApplicationOld = z
   .object({
     _id: zObjectId,
@@ -47,9 +53,11 @@ const ZApplicationOld = z
     applicant_message_to_company: z.string().nullable().describe("Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat."),
     job_searched_by_user: z.string().nullish().describe("Métier recherché par le candidat"),
     company_recruitment_intention: z.string().nullish().describe("L'intention de la société vis à vis du candidat"),
+    company_recruitment_intention_date: z.date().nullable().describe("Date d'enregistrement d'intention/avis programmé"),
     company_feedback: z.string().nullish().describe("L'avis donné par la société"),
     company_feedback_reasons: z.array(extensions.buildEnum(RefusalReasons)).nullish(),
     company_feedback_date: z.date().nullish().describe("Date d'intention/avis donnée"),
+    company_feedback_send_status: extensions.buildEnum(CompanyFeebackSendStatus).nullable().describe("Etat de l'envoi de l'intention de recrutement"),
     company_siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
     company_email: z.string().describe("Email de l'entreprise"),
     company_phone: z.string().nullish().describe("Numéro de téléphone du recruteur"),
