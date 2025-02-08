@@ -130,7 +130,7 @@ export const PAGES = {
         description: "Besoin d’aide ou d’informations ? Contactez notre équipe pour toute question relative à votre recherche d’alternance.",
       },
     },
-    statistique: {
+    statistiques: {
       getPath: () => `/statistiques` as string,
       title: "Statistiques",
       index: false,

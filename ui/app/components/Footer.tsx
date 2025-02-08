@@ -18,19 +18,19 @@ export function Footer() {
           links: [
             {
               linkProps: {
-                href: "#",
+                href: PAGES.static.faq.getPath(),
               },
               text: "FAQ",
             },
             {
               linkProps: {
-                href: "#",
+                href: PAGES.static.blog.getPath(),
               },
               text: "Blog",
             },
             {
               linkProps: {
-                href: "#",
+                href: PAGES.static.ressources.getPath(),
               },
               text: "Ressources",
             },
@@ -41,19 +41,19 @@ export function Footer() {
           links: [
             {
               linkProps: {
-                href: "#",
+                href: PAGES.static.sources.getPath(),
               },
               text: "Code source",
             },
             {
               linkProps: {
-                href: "#",
+                href: PAGES.static.EspaceDeveloppeurs.getPath(),
               },
-              text: "Nos données",
+              text: "Espace développeurs",
             },
             {
               linkProps: {
-                href: "#",
+                href: PAGES.static.metiers.getPath(),
               },
               text: "Métiers",
             },
@@ -70,7 +70,7 @@ export function Footer() {
             },
             {
               linkProps: {
-                href: "#",
+                href: PAGES.static.statistiques.getPath(),
               },
               text: "Statistiques",
             },
@@ -87,7 +87,7 @@ export function Footer() {
           links: [
             {
               linkProps: {
-                href: "#",
+                href: PAGES.static.mentionsLegales.getPath(),
               },
               text: "Mentions légales",
             },
