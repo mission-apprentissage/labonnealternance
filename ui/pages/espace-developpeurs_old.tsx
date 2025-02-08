@@ -1,7 +1,6 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Button, Code, Container, Divider, Grid, GridItem, Link, ListItem, Text, UnorderedList } from "@chakra-ui/react"
 import { NextSeo } from "next-seo"
-import React from "react"
 
 import Breadcrumb from "../components/breadcrumb"
 import Footer from "../components/footer"
