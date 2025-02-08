@@ -53,10 +53,7 @@ export default function FAQRendererClient({ recruteur, organisme, candidat }) {
 
   return (
     <Box>
-      <Container variant="responsiveContainer" display="flex">
-        <Breadcrumb pages={[PAGES.static.faq]} />
-      </Container>
-
+      <Breadcrumb pages={[PAGES.static.faq]} />
       <Container p={{ base: 2, md: 12 }} my={0} mb={[0, 12]} variant="pageContainer">
         <Grid templateColumns="repeat(12, 1fr)">
           <GridItem px={0} colSpan={[12, 12, 12, 5]}>

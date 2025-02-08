@@ -6,8 +6,8 @@ import { PAGES } from "../../../utils/routes.utils"
 import FAQRendererClient from "./FAQRendererClient"
 
 export const metadata: Metadata = {
-  title: PAGES.static.faq.getMetadata.title,
-  description: PAGES.static.faq.getMetadata.description,
+  title: PAGES.static.faq.getMetadata().title,
+  description: PAGES.static.faq.getMetadata().description,
 }
 
 export default async function FAQ() {

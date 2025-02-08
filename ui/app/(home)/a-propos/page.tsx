@@ -26,18 +26,15 @@ import tbd from "@/public/images/logosPartenaires/partenaire-tdb.webp"
 import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = {
-  title: PAGES.static.aPropos.getMetadata.title,
-  description: PAGES.static.aPropos.getMetadata.description,
+  title: PAGES.static.aPropos.getMetadata().title,
+  description: PAGES.static.aPropos.getMetadata().description,
 }
 
 export default function APropos() {
   return (
     <div>
       <Box as="main">
-        <Container variant="responsiveContainer" display="flex">
-          <Breadcrumb pages={[PAGES.static.aPropos]} />
-        </Container>
-
+        <Breadcrumb pages={[PAGES.static.aPropos]} />
         <Container p={12} my={0} mb={[0, 12]} variant="pageContainer">
           <Grid templateColumns="repeat(12, 1fr)">
             <GridItem px={4} colSpan={[12, 12, 12, 5]}>

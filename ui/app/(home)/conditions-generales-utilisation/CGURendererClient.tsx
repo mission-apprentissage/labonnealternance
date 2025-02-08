@@ -13,9 +13,7 @@ export default function CGURendererClient({ recordMap }: { recordMap: any }) {
   return (
     <Box>
       <Box as="main">
-        <Container variant="responsiveContainer" display="flex">
-          <Breadcrumb pages={[PAGES.static.cgu]} />
-        </Container>
+        <Breadcrumb pages={[PAGES.static.cgu]} />
         <Container p={12} my={0} mb={[0, 12]} variant="pageContainer">
           <Grid templateColumns="repeat(12, 1fr)">
             <GridItem px={4} colSpan={[12, 12, 12, 5]}>

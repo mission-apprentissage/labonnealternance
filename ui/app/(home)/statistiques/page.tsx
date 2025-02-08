@@ -6,8 +6,8 @@ import { PAGES } from "../../../utils/routes.utils"
 import Breadcrumb from "../../components/Breadcrumb"
 
 export const metadata: Metadata = {
-  title: PAGES.static.statistiques.getMetadata.title,
-  description: PAGES.static.statistiques.getMetadata.description,
+  title: PAGES.static.statistiques.getMetadata().title,
+  description: PAGES.static.statistiques.getMetadata().description,
 }
 
 // KBA : à tester en preview, sans ça le composant est server side.
@@ -51,9 +51,7 @@ export default function Statistiques() {
   return (
     <Box>
       <Box as="main">
-        <Container variant="responsiveContainer" display="flex">
-          <Breadcrumb pages={[PAGES.static.statistiques]} />
-        </Container>
+        <Breadcrumb pages={[PAGES.static.statistiques]} />
         <Container px={{ base: 2, sm: 4, md: 12 }} py={8} my={0} mb={[0, 12]} variant="whitePageContainer">
           <Box as="h1" mb={12}>
             <Text as="span" display="block" mb={1} variant="editorialContentH1">

@@ -6,8 +6,8 @@ import { PAGES } from "@/utils/routes.utils"
 import CGURendererClient from "./CGURendererClient"
 
 export const metadata: Metadata = {
-  title: PAGES.static.cgu.getMetadata.title,
-  description: PAGES.static.cgu.getMetadata.description,
+  title: PAGES.static.cgu.getMetadata().title,
+  description: PAGES.static.cgu.getMetadata().description,
 }
 
 export default async function CGU() {
