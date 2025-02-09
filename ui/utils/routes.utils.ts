@@ -85,7 +85,7 @@ export const PAGES = {
         description: "Explorez les différents métiers accessibles en alternance et trouvez celui qui correspond à votre projet professionnel.",
       }),
     },
-    sources: {
+    codeSources: {
       getPath: () => `/sources` as string,
       title: "Sources",
       index: false,

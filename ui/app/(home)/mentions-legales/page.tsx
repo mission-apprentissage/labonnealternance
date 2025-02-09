@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description: PAGES.static.mentionsLegales.getMetadata().description,
 }
 
-export default async function FAQ() {
+export default async function MentionsLegales() {
   const mentionsLegales = await fetchNotionPage("edb34310adc744b4b2001c34f162ee5a")
 
   return <MentionLegalesRendererClient mentionsLegales={mentionsLegales} />

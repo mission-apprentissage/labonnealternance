@@ -41,7 +41,7 @@ export function Footer() {
           links: [
             {
               linkProps: {
-                href: PAGES.static.sources.getPath(),
+                href: PAGES.static.codeSources.getPath(),
               },
               text: "Code source",
             },
@@ -76,7 +76,7 @@ export function Footer() {
             },
             {
               linkProps: {
-                href: "#",
+                href: PAGES.static.contact.getPath(),
               },
               text: "Contact",
             },
@@ -93,7 +93,7 @@ export function Footer() {
             },
             {
               linkProps: {
-                href: "#",
+                href: PAGES.static.politiqueConfidentialite.getPath(),
               },
               text: "Politique de confidentialité",
             },
