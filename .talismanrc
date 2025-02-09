@@ -275,6 +275,8 @@ fileignoreconfig:
   checksum: 2a6862623c8118ea36287831ba82a2830bf8c6a67fd33ab58898be72f0732634
 - filename: ui/app/(home)/faq/page.tsx
   checksum: e4b3904897fb67afd63187ff382138e9d60b9ca0395385eb2afd6a822696b804
+- filename: ui/app/(home)/mentions-legales/page.tsx
+  checksum: 4740029daff0308bfa65289c4eb5be61834c0c8c5d00bdcab0b1662f28c8a0e6
 scopeconfig:
 - scope: node
 custom_patterns:
