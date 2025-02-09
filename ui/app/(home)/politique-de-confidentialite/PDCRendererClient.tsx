@@ -1,6 +1,5 @@
 "use client"
-import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Checkbox, Container, Divider, Link, SimpleGrid, Text } from "@chakra-ui/react"
+import { Box, Checkbox, Container, Divider, SimpleGrid, Text } from "@chakra-ui/react"
 import dynamic from "next/dynamic"
 import { useEffect, useState } from "react"
 
@@ -16,6 +15,7 @@ import {
   setCookie,
 } from "@/tracking/trackingCookieUtils"
 
+import { DsfrLink } from "../../../components/dsfr/DsfrLink"
 import { PAGES } from "../../../utils/routes.utils"
 import Breadcrumb from "../../components/Breadcrumb"
 
@@ -70,17 +70,9 @@ export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeCo
               className="disable-chakra"
             />
             <Box>
-              La bonne alternance utilise la solution de mesure d'audience{" "}
-              <Link href="https://matomo.org/" isExternal variant="basicUnderlinedBlue">
-                Matomo <ExternalLinkIcon mb="3px" ml="2px" />
-              </Link>{" "}
-              en l'ayant configuré en mode « exempté », conformément aux{" "}
-              <Link href="https://www.cnil.fr/fr/solutions-pour-la-mesure-daudience" isExternal variant="basicUnderlinedBlue">
-                recommandations de la CNIL
-                <ExternalLinkIcon mb="3px" ml="2px" />
-              </Link>
-              . Elle ne nécessite donc pas le consentement des personnes concernées. Vous pouvez malgré tout vous opposer au suivi de votre navigation, en décochant la case
-              ci-dessous.
+              La bonne alternance utilise la solution de mesure d'audience <DsfrLink href="https://matomo.org/">Matomo</DsfrLink> en l'ayant configuré en mode « exempté »,
+              conformément aux <DsfrLink href="https://www.cnil.fr/fr/solutions-pour-la-mesure-daudience">recommandations de la CNIL</DsfrLink>. Elle ne nécessite donc pas le
+              consentement des personnes concernées. Vous pouvez malgré tout vous opposer au suivi de votre navigation, en décochant la case ci-dessous.
               <Checkbox
                 mt={3}
                 onChange={(event) => {
