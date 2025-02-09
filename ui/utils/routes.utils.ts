@@ -86,7 +86,7 @@ export const PAGES = {
       }),
     },
     codeSources: {
-      getPath: () => `/sources` as string,
+      getPath: () => `https://github.com/mission-apprentissage/labonnealternance` as string,
       title: "Sources",
       index: false,
       getMetadata: () => ({
@@ -95,7 +95,7 @@ export const PAGES = {
       }),
     },
     blog: {
-      getPath: () => `/blog` as string,
+      getPath: () => `https://labonnealternance.sites.beta.gouv.fr/?utm_source=lba&utm_medium=website&utm_campaign=lba_footer` as string,
       title: "Blog",
       index: false,
       getMetadata: () => ({
