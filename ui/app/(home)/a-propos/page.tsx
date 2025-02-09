@@ -174,7 +174,6 @@ export default function APropos() {
             </GridItem>
           </Grid>
         </Container>
-        <Box mb={3}>&nbsp;</Box>
       </Box>
     </div>
   )

@@ -48,7 +48,6 @@ export default function CGURendererClient({ recordMap }: { recordMap: any }) {
             </GridItem>
           </Grid>
         </Container>
-        <Box mb={3}>&nbsp;</Box>
       </Box>
     </Box>
   )

@@ -101,7 +101,6 @@ export default function FAQRendererClient({ recruteur, organisme, candidat }) {
           </GridItem>
         </Grid>
       </Container>
-      <Box mb={3} />
     </Box>
   )
 }
