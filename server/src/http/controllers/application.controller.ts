@@ -82,7 +82,7 @@ export default function (server: Server) {
     async (req, res) => {
       const { id } = req.params
 
-      await getDbCollection("applications").updateOne({ applicationId: new ObjectId(id) }, { $set: { company_feedback_send_status: CompanyFeebackSendStatus.CANCELED } })
+      await getDbCollection("applications").updateOne({ _id: new ObjectId(id) }, { $set: { company_feedback_send_status: CompanyFeebackSendStatus.CANCELED } })
 
       return res.status(200).send({ result: "ok", message: "intention canceled" })
     }
