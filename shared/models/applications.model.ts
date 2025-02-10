@@ -186,6 +186,8 @@ const ZNewApplicationTransitionToV2 = ZApplicationOld.extend({
     company_recruitment_intention: true,
     company_feedback: true,
     company_feedback_date: true,
+    company_recruitment_intention_date: true,
+    company_feedback_send_status: true,
     created_at: true,
     scan_status: true,
     last_update_at: true,
