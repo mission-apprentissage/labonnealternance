@@ -2,40 +2,59 @@ import { Mistral } from "@mistralai/mistralai"
 
 import config from "@/config"
 
+import { logger } from "../../common/logger"
+import { sentryCaptureException } from "../../common/utils/sentryUtils"
+import { ZChatCompletionResponse } from "../openai/openai.service"
+
 const mistral = new Mistral({
   apiKey: config.mistralai.apiKey,
 })
 
-export const mistralSendMessages = async ({
+export type Message = { role: "system"; content: string } | { role: "user"; content: string } | { role: "assistant"; content: string } | { role: "tool"; content: string }
+
+export const sendMistralMessages = async ({
   messages,
   randomSeed,
   maxTokens = 2048,
-
-  model = "pixtral-12b-2409",
-  response_format,
+  model = "mistral-small-latest",
+  responseFormat = { type: "json_object" },
 }: {
-  messages: any[]
-  randomSeed?: number
-  maxTokens?: 1024 | 2048 | 4096
+  messages: Message[]
   model?: string
-  response_format?: any
+  randomSeed?: number
+  maxTokens?: number
+  responseFormat?: { type: "text" | "json_object" }
 }): Promise<any> => {
-  let response
   try {
-    response = await mistral.chat.complete({
+    const response = await mistral.chat.complete({
       model,
+      messages,
       maxTokens,
       ...(randomSeed ? { randomSeed } : {}),
-      ...(response_format ? { response_format } : {}),
-      messages: messages,
+      responseFormat,
     })
+
+    if (!response.choices?.length || !response.choices[0].message) {
+      logger.info("No response from Mistral", response)
+      return null
+    }
+    const message = response.choices[0].message.content as string
+    if (!message) {
+      logger.info("No content from Mistral", response)
+      return null
+    }
+
+    console.log({ message })
+
+    const { data, error } = ZChatCompletionResponse.safeParse(JSON.parse(message))
+    if (error) {
+      console.log("Invalid response format", error)
+      return null
+    }
+    return data
   } catch (error) {
+    sentryCaptureException(error)
     console.log(error)
     return null
   }
-
-  const message = response.choices[0].message
-  const message_text = message.content
-
-  return message_text
 }
