@@ -213,7 +213,7 @@ const ResultLists = ({
               Aucune formation en alternance disponible pour ce métier
             </Box>
           )}
-          {shouldDisplayTrainings && trainings?.length && searchRadius < trainings[0].place.distance && (
+          {shouldDisplayTrainings && trainings?.length > 0 && searchRadius < trainings[0]?.place?.distance && (
             <Box fontWeight={700} textAlign="center" mx={4} my={2}>
               Aucune formation ne correspondait à votre zone de recherche, nous avons trouvé les plus proches
             </Box>
@@ -237,7 +237,7 @@ const ResultLists = ({
           pb={10}
           ref={parentRef}
         >
-          {virtualItems.length && (
+          {virtualItems.length > 0 && (
             <Box
               sx={{
                 height: `${columnVirtualizer.getTotalSize()}px`,

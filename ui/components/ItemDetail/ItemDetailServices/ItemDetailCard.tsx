@@ -40,7 +40,7 @@ export default function ItemDetailCard({ selectedItem }) {
       <Flex pl={2} alignItems="center" flexWrap="wrap">
         <Text>{selectedItem?.place?.zipCode}</Text>
         <Text whiteSpace="nowrap" ml={1} mr={2}>
-          {selectedItem?.place?.city || selectedItem?.place?.address}
+          {selectedItem?.place?.city || selectedItem?.place?.address || selectedItem?.place?.fullAddress}
         </Text>
         <br />
         <ItemDistanceToCenter item={selectedItem} />

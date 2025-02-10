@@ -59,7 +59,7 @@ export const newItemTypeToOldItemType = (lbaItemType: LBA_ITEM_TYPE): LBA_ITEM_T
     case LBA_ITEM_TYPE.RECRUTEURS_LBA:
       return LBA_ITEM_TYPE_OLD.LBA
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES:
-      return LBA_ITEM_TYPE_OLD.PE
+      return LBA_ITEM_TYPE_OLD.PARTNER_JOB
     case LBA_ITEM_TYPE.FORMATION:
       throw new Error("not used")
     default:

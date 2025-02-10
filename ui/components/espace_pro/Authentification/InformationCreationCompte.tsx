@@ -57,20 +57,7 @@ const Formulaire = ({ submitForm }) => {
                 <>
                   <CustomInput required={false} name="last_name" label="Nom" type="text" value={values.last_name} />
                   <CustomInput required={false} name="first_name" label="Prénom" type="text" value={values.first_name} />
-                  <CustomInput
-                    required={false}
-                    name="phone"
-                    label="Numéro de téléphone"
-                    type="tel"
-                    pattern="[0-9]{10}"
-                    maxLength="10"
-                    helper={
-                      type === AUTHTYPE.ENTREPRISE
-                        ? "Le numéro de téléphone sera visible sur l'offre d'emploi"
-                        : "Le numéro de téléphone sera visible sur l’offre d’emploi de vos entreprises partenaires"
-                    }
-                    value={values.phone}
-                  />
+                  <CustomInput required={false} name="phone" label="Numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
                   <CustomInput
                     sx={{ textTransform: "lowercase" }}
                     required={false}
@@ -82,7 +69,7 @@ const Formulaire = ({ submitForm }) => {
                     info={
                       email
                         ? "L’email que nous utilisons est fourni par votre Carif Oref, et permet de vous connecter. Vous pourrez le modifier dans votre espace personnel."
-                        : "Il s’agit de l’adresse qui vous permettra de vous connecter à votre compte. Privilégiez votre adresse professionnelle"
+                        : "Privilégiez votre adresse professionnelle"
                     }
                   />
                   {shouldSelectOpco && (
@@ -120,24 +107,20 @@ const Formulaire = ({ submitForm }) => {
 }
 
 const FormulaireLayout = ({ left, right }) => {
-  const { widget } = useContext(WidgetContext)
   const router = useRouter()
   const { type } = router.query
 
   return (
     <SimpleGrid columns={[1, 1, 2, 2]} spacing={4} mt={0}>
       <Box>
-        {widget.isWidget && (
-          <Text textTransform="uppercase" fontSize="20px" color="#666666">
-            Dépot simplifié d'offre en alternance
-          </Text>
-        )}
         <Heading>{type === AUTHTYPE.ENTREPRISE ? "Vos informations de contact" : "Créez votre compte"}</Heading>
-        <Text className="big" mt={2} mb={4}>
-          {type === AUTHTYPE.ENTREPRISE
-            ? "Le numéro de téléphone et l'adresse postale de votre établissement seront visibles sur vos offres. L'email sera destinataire des candidatures."
-            : "Le numéro de téléphone et l'adresse postale de votre établissement seront visibles sur les offres de vos entreprises partenaires. L'email sera destinataire des candidatures."}
-        </Text>
+        <Box fontSize="20px" mb={4}>
+          <Text className="big" mt={2} mb={4}>
+            {type === AUTHTYPE.ENTREPRISE
+              ? "Seul le numéro de téléphone sera visible sur vos offres. Vous recevrez les candidatures sur l'email renseigné."
+              : "Seul le numéro de téléphone sera visible sur les offres de vos entreprises partenaires. Vous recevrez les candidatures sur l'email renseigné."}
+          </Text>
+        </Box>
         <Box>{left}</Box>
       </Box>
       <Box>{right}</Box>
