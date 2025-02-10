@@ -44,8 +44,6 @@ export const sendMistralMessages = async ({
       return null
     }
 
-    console.log({ message })
-
     const { data, error } = ZChatCompletionResponse.safeParse(JSON.parse(message))
     if (error) {
       console.log("Invalid response format", error)

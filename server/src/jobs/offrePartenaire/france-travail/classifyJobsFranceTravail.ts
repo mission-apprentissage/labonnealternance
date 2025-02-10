@@ -4,6 +4,7 @@ import { IFTJobRaw } from "shared"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { logger } from "../../../common/logger"
+import { notifyToSlack } from "../../../common/utils/slackUtils"
 import { Message, sendMistralMessages } from "../../../services/mistralai/mistralai.service"
 
 export const checkFTOffer = async (data: any): Promise<any> => {
@@ -54,13 +55,6 @@ Une fois que tu as déterminé si les offres sont de type CFA, Entreprise ou Ent
       randomSeed: 45555,
       maxTokens: 1024,
     })
-    // const response = await sendOpenAIMessages({
-    //   model: "mistral-small-latest",
-    //   messages,
-    //   random_seed: 45555,
-    //   max_tokens: 1024,
-    //   response_format: { type: "json_object" },
-    // })
     if (!response) {
       return null
     }
@@ -97,7 +91,6 @@ export const classifyFranceTravailJobs = async () => {
     writeData(async (rawFTDocuments: IFTJobRaw[]) => {
       const offres = mapDocument(rawFTDocuments)
       const response = await checkFTOffer({ offres, examples })
-      console.log({ response })
       for (const rsp of response.offres) {
         await getDbCollection("raw_francetravail").findOneAndUpdate(
           { id: rsp.id as string },
@@ -111,6 +104,8 @@ export const classifyFranceTravailJobs = async () => {
       }
     })
   )
+
+  await notifyToSlack({ subject: "Classification des offres France Travail", message: `Classification de ${count} terminées` })
 
   logger.info(`Classification terminée`)
 }
