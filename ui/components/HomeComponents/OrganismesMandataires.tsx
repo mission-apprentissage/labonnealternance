@@ -1,7 +1,6 @@
 import { Box, Image, SimpleGrid, Text } from "@chakra-ui/react"
-import React from "react"
 
-const OrganismesMandataires = () => {
+export default function OrganismesMandataires() {
   return (
     <Box as="section" py={3} mb={{ base: "2", md: "5" }}>
       <SimpleGrid columns={{ sm: 1, md: 2 }} spacing="40px" alignItems={"center"} mt={12}>
@@ -21,5 +20,3 @@ const OrganismesMandataires = () => {
     </Box>
   )
 }
-
-export default OrganismesMandataires

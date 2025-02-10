@@ -1,5 +1,7 @@
 import { Header as DsfrHeader, HeaderQuickAccessItem } from "@codegouvfr/react-dsfr/Header"
 
+import { PAGES } from "../../utils/routes.utils"
+
 export function Header() {
   return (
     <DsfrHeader
@@ -38,7 +40,7 @@ export function Header() {
             iconId: "fr-icon-lock-line",
             text: "Recruteur",
             linkProps: {
-              href: "#",
+              href: PAGES.static.accesRecruteur.getPath(),
             },
           }}
         />,

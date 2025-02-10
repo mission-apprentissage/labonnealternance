@@ -139,6 +139,15 @@ export const PAGES = {
         description: "Consultez nos statistiques et analyses sur le marché de l’alternance en France.",
       }),
     },
+    accesRecruteur: {
+      getPath: () => `/acces-recruteur` as string,
+      title: "Accès recruteur",
+      index: false,
+      getMetadata: () => ({
+        title: "Accès recruteur - La bonne alternance",
+        description: "Diffusez simplement et gratuitement vos offres en alternance.",
+      }),
+    },
   },
   dynamic: {
     // example

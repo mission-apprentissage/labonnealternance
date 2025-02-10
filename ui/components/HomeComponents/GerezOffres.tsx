@@ -1,7 +1,6 @@
 import { Box, Image, SimpleGrid, Text } from "@chakra-ui/react"
-import React from "react"
 
-const GerezOffres = () => {
+export default function GerezOffres() {
   return (
     <Box as="section" py={24} backgroundColor="white">
       <Box backgroundColor="grey.100" p={{ base: 3, md: 6, lg: 12 }} borderRadius={10}>
@@ -39,5 +38,3 @@ const GerezOffres = () => {
     </Box>
   )
 }
-
-export default GerezOffres
