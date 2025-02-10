@@ -1,6 +1,8 @@
+import MuiDsfrThemeProvider from "@codegouvfr/react-dsfr/mui"
 import { DsfrHead } from "@codegouvfr/react-dsfr/next-appdir/DsfrHead"
 import { DsfrProvider } from "@codegouvfr/react-dsfr/next-appdir/DsfrProvider"
 import { getHtmlAttributes } from "@codegouvfr/react-dsfr/next-appdir/getHtmlAttributes"
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter"
 import Link from "next/link"
 import "react-notion-x/src/styles.css"
 
@@ -15,10 +17,8 @@ import "../public/styles/notion.css"
 import "../styles/search.css"
 
 export default function RootLayout({ children }: { children: JSX.Element }) {
-  //NOTE: The lang parameter is optional and defaults to "fr"
-  const lang = "fr"
   return (
-    <html {...getHtmlAttributes({ defaultColorScheme, lang })}>
+    <html {...getHtmlAttributes({ defaultColorScheme })}>
       <head>
         <StartDsfr />
         <DsfrHead
@@ -39,11 +39,15 @@ export default function RootLayout({ children }: { children: JSX.Element }) {
       </head>
       <body>
         {
-          <DsfrProvider lang={lang}>
-            <Header />
-            {children}
-            <Footer />
-          </DsfrProvider>
+          <AppRouterCacheProvider>
+            <DsfrProvider>
+              <MuiDsfrThemeProvider>
+                <Header />
+                {children}
+                <Footer />
+              </MuiDsfrThemeProvider>
+            </DsfrProvider>
+          </AppRouterCacheProvider>
         }
       </body>
     </html>

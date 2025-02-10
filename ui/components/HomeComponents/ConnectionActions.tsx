@@ -1,10 +1,10 @@
-import { Flex } from "@chakra-ui/react"
-import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
+import { Stack } from "@mui/material"
 
 const ConnectionActions = ({ service }) => {
   return (
-    <Flex direction={{ base: "column", md: "row" }} align="center" pt="30px">
+    <Stack direction={{ base: "column", md: "row" }}>
+      {/* <Flex direction={{ base: "column", md: "row" }} align="center" pt="30px" gap={2} flexGrow={1}> */}
       {service === "entreprise" && (
         <Button
           linkProps={{
@@ -26,7 +26,6 @@ const ConnectionActions = ({ service }) => {
         </Button>
       )}
       <Button
-        style={fr.spacing("margin", { left: "2w", top: "2w" })} // TODO responsive margin
         linkProps={{
           href: "/espace-pro/authentification",
         }}
@@ -35,7 +34,7 @@ const ConnectionActions = ({ service }) => {
       >
         Me connecter
       </Button>
-    </Flex>
+    </Stack>
   )
 }
 export default ConnectionActions

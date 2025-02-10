@@ -2623,6 +2623,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mui/material-nextjs@npm:^6.4.3":
+  version: 6.4.3
+  resolution: "@mui/material-nextjs@npm:6.4.3"
+  dependencies:
+    "@babel/runtime": ^7.26.0
+  peerDependencies:
+    "@emotion/cache": ^11.11.0
+    "@emotion/react": ^11.11.4
+    "@emotion/server": ^11.11.0
+    "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
+    next: ^13.0.0 || ^14.0.0 || ^15.0.0
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
+  peerDependenciesMeta:
+    "@emotion/cache":
+      optional: true
+    "@emotion/server":
+      optional: true
+    "@types/react":
+      optional: true
+  checksum: 5e8d8086946c15f3ded036cbe29fb3249e366d8dea59b5f1925341e06581f3e24ffa52592bfea9c007ccb0fa0fea733d04c2a2c0df824e9ac640e65501779c79
+  languageName: node
+  linkType: hard
+
 "@mui/material@npm:^6.4.3":
   version: 6.4.3
   resolution: "@mui/material@npm:6.4.3"
@@ -22691,10 +22714,12 @@ __metadata:
     "@chakra-ui/icons": ^2.1.1
     "@chakra-ui/react": ^2.8.1
     "@codegouvfr/react-dsfr": ^1.18.0
+    "@emotion/cache": ^11.14.0
     "@emotion/react": ^11.14.0
     "@emotion/server": ^11.11.0
     "@emotion/styled": ^11.14.0
     "@mui/material": ^6.4.3
+    "@mui/material-nextjs": ^6.4.3
     "@next/bundle-analyzer": ^14.2.13
     "@sentry/browser": ^8.48.0
     "@sentry/cli": ^2.40.0
