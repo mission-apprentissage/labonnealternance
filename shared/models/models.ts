@@ -94,7 +94,6 @@ const modelDescriptorMap = {
   [rawHelloWorkModel.collectionName]: rawHelloWorkModel,
   [rawPassModel.collectionName]: rawPassModel,
   [recruiterModel.collectionName]: recruiterModel,
-  [recruiterIntentionMailModel.collectionName]: recruiterIntentionMailModel,
   [recruteurLbaUpdateEventModel.collectionName]: recruteurLbaUpdateEventModel,
   [referentielOnisepModel.collectionName]: referentielOnisepModel,
   [referentielOpcoModel.collectionName]: referentielOpcoModel,
