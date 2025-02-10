@@ -36,7 +36,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/user.controller.test.ts
   checksum: e01d1b9c54d1e6d0c98fd7984f32c3a93f3e9bde92887bdab320cb7af91fdd92
 - filename: server/src/http/controllers/v2/applications.controller.v2.test.ts
-  checksum: 1cc47a3fd50e4e9951468bd12e1a4dff9cde76ab4aac2b1f94ee191aa508739c
+  checksum: 1adc309b8df44e04275579a56f13b67c05fb91e946949d06fa92a0759b5eb344
 - filename: server/src/http/controllers/v2/appointment.controller.v2.test.ts
   checksum: bbbf100d65bae0d840c715f4b1d893986df7423f470f3ee300545959105f6ca4
 - filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts
@@ -117,6 +117,8 @@ fileignoreconfig:
   checksum: 53067858567e2878f5f65da06be9efc6902a691b36299167d54343ab30162e49
 - filename: server/static/templates/mail-candidat-offre-emploi-lba.mjml.ejs
   checksum: 3188f43c847d071acfb7a366748647ab88d821abb3e022830b82fd092db90f83
+- filename: server/static/templates/mail-candidat-offre-emploi-partenaire.mjml.ejs
+  checksum: 092f871d48fc0602f5f90bb239defbf809aedab35f347f83fd0fdc97a6359abf
 - filename: server/static/templates/mail-candidat-recruteur-lba.mjml.ejs
   checksum: 0b806bca197dba97415902339e84f924cb45dae766cf8d3cfc47d80d2bdd203c
 - filename: server/static/templates/mail-candidat-refus.mjml.ejs
@@ -269,8 +271,6 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
-- filename: server/static/templates/mail-candidat-offre-emploi-partenaire.mjml.ejs
-  checksum: 092f871d48fc0602f5f90bb239defbf809aedab35f347f83fd0fdc97a6359abf
 scopeconfig:
 - scope: node
 custom_patterns:
