@@ -1374,7 +1374,7 @@ export const processRecruiterIntention = async ({ application }: { application: 
   if (sentMessageId?.accepted?.length) {
     await getDbCollection("applications").updateOne(
       { _id: application._id },
-      { $set: { company_recruitment_intention_send_status: CompanyFeebackSendStatus.SENT, company_feedback, company_feedback_date: new Date() } }
+      { $set: { company_feedback_send_status: CompanyFeebackSendStatus.SENT, company_feedback, company_feedback_date: new Date() } }
     )
 
     await getDbCollection("applicants_email_logs").insertOne({
@@ -1459,7 +1459,7 @@ export const processScheduledRecruiterIntentions = async () => {
     const stream = await getDbCollection("applications")
       .find({
         company_recruitment_intention_date: { $lte: dayjs().subtract(3, "hours").toDate() },
-        company_recruitment_intention_send_status: CompanyFeebackSendStatus.SCHEDULED,
+        company_feedback_send_status: CompanyFeebackSendStatus.SCHEDULED,
       })
       .stream()
 
@@ -1479,7 +1479,7 @@ export const processScheduledRecruiterIntentions = async () => {
           counters.error++
           await getDbCollection("applications").updateOne(
             { _id: application._id },
-            { $set: { company_recruitment_intention_send_status: CompanyFeebackSendStatus.ERROR, company_feedback_date: new Date() } }
+            { $set: { company_feedback_send_status: CompanyFeebackSendStatus.ERROR, company_feedback_date: new Date() } }
           )
           sentryCaptureException(intentionErr)
         }
