@@ -125,19 +125,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
-          "company_feedback_send_status": {
-            "description": "Etat de l'envoi de l'intention de recrutement",
-            "enum": [
-              "SENT",
-              "CANCELED",
-              "SCHEDULED",
-              "ERROR",
-            ],
-            "type": [
-              "string",
-              "null",
-            ],
-          },
           "company_naf": {
             "description": "Code NAF de l'entreprise",
             "type": [
@@ -151,13 +138,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "company_phone": {
             "description": "Numéro de téléphone du recruteur",
-            "type": [
-              "string",
-              "null",
-            ],
-          },
-          "company_recruitment_intention_date": {
-            "description": "Date d'enregistrement d'intention/avis programmé",
             "type": [
               "string",
               "null",
@@ -245,8 +225,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "applicant_first_name",
           "applicant_last_name",
           "applicant_phone",
-          "company_recruitment_intention_date",
-          "company_feedback_send_status",
           "company_siret",
           "company_name",
           "applicant_file_name",
