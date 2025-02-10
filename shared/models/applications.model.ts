@@ -136,6 +136,8 @@ export const ZNewApplication = ZApplicationOld.extend({
     to_applicant_message_id: true,
     to_company_message_id: true,
     company_recruitment_intention: true,
+    company_recruitment_intention_date: true,
+    company_feedback_send_status: true,
     company_feedback: true,
     company_feedback_date: true,
     created_at: true,
