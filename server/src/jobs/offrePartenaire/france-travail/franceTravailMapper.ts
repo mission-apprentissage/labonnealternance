@@ -16,6 +16,10 @@ export const franceTravailJobsToJobsPartners = (job: IFTJobRaw): IComputedJobsPa
     businessError = JOB_PARTNER_BUSINESS_ERROR.EXPIRED
   }
 
+  if (job._metadata?.openai?.type === "cfa") {
+    businessError = JOB_PARTNER_BUSINESS_ERROR.CFA
+  }
+
   return {
     ...blankComputedJobPartner,
     _id: new ObjectId(),
