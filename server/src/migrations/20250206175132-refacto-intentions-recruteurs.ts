@@ -1,8 +1,10 @@
+import { Db } from "mongodb"
 import { CompanyFeebackSendStatus } from "shared/models"
 
+import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-export const up = async () => {
+export const up = async (db: Db) => {
   await getDbCollection("applications").updateMany(
     {},
     {
@@ -23,9 +25,9 @@ export const up = async () => {
   )
 
   // transfert des données de recruitment_intentions_mail vers applications
-  const intentionEmails = await getDbCollection("recruiter_intention_mails").find().toArray()
-  intentionEmails.forEach(async (intentionEmail) => {
-    await getDbCollection("applications").updateOne(
+  const intentionEmails = await db.collection("recruiter_intention_mails").find().toArray()
+  await asyncForEach(intentionEmails, (intentionEmail) =>
+    getDbCollection("applications").updateOne(
       { _id: intentionEmail.applicationId },
       {
         $set: {
@@ -35,10 +37,10 @@ export const up = async () => {
         },
       }
     )
-  })
+  )
 
   // nettoyage collection recruitment_intentions_mail
-  await getDbCollection("recruiter_intention_mails").deleteMany({})
+  await db.collection("recruiter_intention_mails").drop()
 }
 
 // set to false ONLY IF migration does not imply a breaking change (ex: update field value or add index)
