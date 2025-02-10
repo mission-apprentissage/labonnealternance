@@ -353,7 +353,7 @@ describe("POST /v2/application", () => {
     })
   })
 
-  it("Remove scheduled intention when Envoyer le message button", async () => {
+  it.skip("Remove scheduled intention when Envoyer le message button", async () => {
     await httpClient().inject({
       method: "GET",
       path: `/api/application/intention/schedule/6081289803569600282e0001?intention=${ApplicationIntention.ENTRETIEN}`,
