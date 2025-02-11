@@ -1,10 +1,11 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Stack } from "@mui/material"
+import { Box } from "@mui/material"
 
 const ConnectionActions = ({ service }) => {
   return (
-    <Stack direction={{ base: "column", md: "row" }}>
-      {/* <Flex direction={{ base: "column", md: "row" }} align="center" pt="30px" gap={2} flexGrow={1}> */}
+    // not working while chakra provider is enable.
+    <Box sx={{ display: "flex", pt: fr.spacing("3w"), flexDirection: { sm: "column", md: "row" }, gap: fr.spacing("2w") }}>
       {service === "entreprise" && (
         <Button
           linkProps={{
@@ -25,6 +26,7 @@ const ConnectionActions = ({ service }) => {
           Créer mon espace dédié
         </Button>
       )}
+
       <Button
         linkProps={{
           href: "/espace-pro/authentification",
@@ -34,7 +36,7 @@ const ConnectionActions = ({ service }) => {
       >
         Me connecter
       </Button>
-    </Stack>
+    </Box>
   )
 }
 export default ConnectionActions
