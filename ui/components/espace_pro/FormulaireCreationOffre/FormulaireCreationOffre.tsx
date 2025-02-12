@@ -1,4 +1,4 @@
-import { Box, Grid, Heading, Text } from "@chakra-ui/react"
+import { Box, Grid, Heading } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import { Formik } from "formik"
 import { omit } from "lodash-es"
@@ -38,7 +38,6 @@ export const FormulaireCreationOffre = ({
   )
   const { rome } = romeAndAppellation ?? {}
   const { user } = useAuth()
-  const { widget } = useContext(WidgetContext)
   const router = useRouter()
   const { establishment_id, email, userId, token } = router.query as { establishment_id: string; email: string; userId: string; type: string; token: string }
 
@@ -163,11 +162,6 @@ export const FormulaireCreationOffre = ({
 
   return (
     <>
-      {widget.isWidget && (
-        <Text textTransform="uppercase" fontSize="20px" color="#666666">
-          Dépot simplifié d'offre en alternance
-        </Text>
-      )}
       <Formik
         validateOnMount
         enableReinitialize={true}

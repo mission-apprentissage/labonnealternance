@@ -467,12 +467,10 @@ const buildRecruiterEmailUrls = async (application: IApplication, applicant: IAp
     cancelJobUrl: "",
   }
 
-  if (application.job_id && user) {
-    urls.jobProvidedUrl = createProvidedJobLink(userForToken, application.job_id, utmRecruiterData)
-    urls.cancelJobUrl = createCancelJobLink(userForToken, application.job_id, utmRecruiterData)
-  }
   if (application.job_id) {
     urls.jobUrl = `${config.publicUrl}${getDirectJobPath(application.job_origin, application.job_id)}${utmRecruiterData}`
+    urls.jobProvidedUrl = createProvidedJobLink(userForToken, application.job_id, application.job_origin, utmRecruiterData)
+    urls.cancelJobUrl = createCancelJobLink(userForToken, application.job_id, application.job_origin, utmRecruiterData)
   }
 
   return urls
@@ -1121,7 +1119,7 @@ export const processApplicationEmails = {
       throw internal("Email entreprise destinataire rejeté.")
     }
   },
-  // get data from applicant
+
   async sendCandidatEmail(application: IApplication, applicant: IApplicant) {
     const { job_origin } = application
     const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(application)

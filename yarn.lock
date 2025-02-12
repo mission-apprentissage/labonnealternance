@@ -2474,12 +2474,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mistralai/mistralai@npm:^1.3.6":
-  version: 1.3.6
-  resolution: "@mistralai/mistralai@npm:1.3.6"
+"@mistralai/mistralai@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "@mistralai/mistralai@npm:1.5.0"
+  dependencies:
+    zod-to-json-schema: ^3.24.1
   peerDependencies:
     zod: ">= 3"
-  checksum: e434ac9cd6dc49f2cb9765ef25de7b1cbf52f44221147eb1829c40a91783655f1c98ddcbde790b94976f44498f0a2fd27305fef54b34f1ce594b625204809c35
+  checksum: c94071aa3209b511b613e29937e5416002d762bc3c2871c3d1ceae2e87ca535c80faf457d4f0135bfb931702dee1601cb304706552ac6e49a3c85ed747dce227
   languageName: node
   linkType: hard
 
@@ -5212,6 +5214,25 @@ __metadata:
   dependencies:
     defer-to-connect: ^2.0.1
   checksum: fc9cb993e808806692e4a3337c90ece0ec00c89f4b67e3652a356b89730da98bc824273a6d67ca84d5f33cd85f317dcd5ce39d8cc0a2f060145a608a7cb8ce92
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-virtual@npm:^3.11.3":
+  version: 3.11.3
+  resolution: "@tanstack/react-virtual@npm:3.11.3"
+  dependencies:
+    "@tanstack/virtual-core": 3.11.3
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: eb39f8a015f4dc98070f0c18bbb1f9c094b7182133554ef3ee31d2678cd3a66edd28ce854d533e830f88f1f0ad1d5b065de184438a08fe774a9acc1dc62da436
+  languageName: node
+  linkType: hard
+
+"@tanstack/virtual-core@npm:3.11.3":
+  version: 3.11.3
+  resolution: "@tanstack/virtual-core@npm:3.11.3"
+  checksum: 43dacdd27802de45c0ccdb34a4cba5f47c7b5aab1cc920a9851e382074fc9099419cc4b014afab74791672e4837afe0ef6ecf47e344267b457858dd982ffac57
   languageName: node
   linkType: hard
 
@@ -20106,7 +20127,7 @@ __metadata:
     "@fastify/swagger": ^8.10.1
     "@fastify/swagger-ui": ^1.9.3
     "@hapi/boom": ^10.0.1
-    "@mistralai/mistralai": ^1.3.6
+    "@mistralai/mistralai": ^1.5.0
     "@sentry/node": ^8.48.0
     "@sentry/profiling-node": ^8.48.0
     "@sentry/types": ^8.19.0
@@ -22153,6 +22174,7 @@ __metadata:
     "@sentry/cli": ^2.40.0
     "@sentry/nextjs": ^8.48.0
     "@socialgouv/matomo-next": ^1.8.0
+    "@tanstack/react-virtual": ^3.11.3
     "@testing-library/react": ^13.4.0
     "@tsconfig/next": ^2.0.3
     "@turf/distance": ^6.5.0
@@ -23414,7 +23436,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod-to-json-schema@npm:^3.21.4, zod-to-json-schema@npm:^3.23.0":
+"zod-to-json-schema@npm:^3.21.4, zod-to-json-schema@npm:^3.23.0, zod-to-json-schema@npm:^3.24.1":
   version: 3.24.1
   resolution: "zod-to-json-schema@npm:3.24.1"
   peerDependencies:

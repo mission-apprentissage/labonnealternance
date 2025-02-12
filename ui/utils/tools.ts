@@ -1,5 +1,3 @@
-import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
-
 import { rawPostalAddress } from "./addressUtils"
 //import * as Sentry from "@sentry/react";
 
@@ -41,14 +39,6 @@ const scrollToTop = (elementId) => {
   }
 }
 
-const scrollToElementInContainer = ({ containerId, el, yOffsett = 250 }) => {
-  el &&
-    document.getElementById(containerId).scrollTo({
-      top: el.offsetTop - yOffsett,
-      left: 0,
-    })
-}
-
 const scrollToNestedElement = ({ containerId, nestedElement, yOffsett = 100 }) => {
   const ancestorElement = document.getElementById(containerId)
 
@@ -65,43 +55,6 @@ const scrollToNestedElement = ({ containerId, nestedElement, yOffsett = 100 }) =
   })
 }
 
-const getItemElement = (item) => {
-  let id = ""
-
-  const realItem = item.items ? item.items[0] : item
-  const kind: LBA_ITEM_TYPE_OLD = realItem.ideaType
-
-  switch (kind) {
-    case LBA_ITEM_TYPE_OLD.PEJOB: {
-      id = `peJob${realItem.job.id}`
-      break
-    }
-    case LBA_ITEM_TYPE_OLD.FORMATION: {
-      id = `id${realItem.id}`
-      break
-    }
-    case LBA_ITEM_TYPE_OLD.MATCHA: {
-      id = `matcha${realItem.job.id}`
-      break
-    }
-    case LBA_ITEM_TYPE_OLD.LBA: {
-      id = `${realItem.ideaType}${realItem.company.siret}`
-      break
-    }
-    default: {
-      // TODO : typer item
-      // assertUnreachable(item)
-      break
-    }
-  }
-
-  try {
-    return document.getElementById(id).parentElement
-  } catch (err) {
-    return null
-  }
-}
-
 const logError = (title, error = undefined) => {
   const err = error instanceof Error ? error : new Error(error)
   err.name = title
@@ -109,4 +62,4 @@ const logError = (title, error = undefined) => {
   console.error(`Error ${title} sent to Sentry`)
 }
 
-export { getItemElement, getPathLink, getValueFromPath, logError, scrollToElementInContainer, scrollToNestedElement, scrollToTop }
+export { getPathLink, getValueFromPath, logError, scrollToNestedElement, scrollToTop }
