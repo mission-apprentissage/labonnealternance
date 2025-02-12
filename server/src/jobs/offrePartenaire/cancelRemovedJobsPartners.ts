@@ -1,6 +1,6 @@
-import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { JOB_STATUS_ENGLISH } from "shared/models"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -72,13 +72,10 @@ export const cancelRemovedJobsPartners = async () => {
               $expr: {
                 $and: [
                   {
-                    $eq: ["$partner_label", "$$partnerLabel"],
-                  },
-                  {
                     $eq: ["$partner_job_id", "$$partnerJobId"],
                   },
                   {
-                    $eq: ["$business_error", BusinessErrorCodes.EXPIRED],
+                    $eq: ["$business_error", JOB_PARTNER_BUSINESS_ERROR.EXPIRED],
                   },
                 ],
               },
