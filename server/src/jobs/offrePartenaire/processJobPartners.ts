@@ -1,5 +1,6 @@
 import { cancelRemovedJobsPartners } from "./cancelRemovedJobsPartners"
 import { fillComputedJobsPartners } from "./fillComputedJobsPartners"
+import { classifyFranceTravailJobs } from "./france-travail/classifyJobsFranceTravail"
 import { importFranceTravailRaw, importFranceTravailToComputed } from "./france-travail/importJobsFranceTravail"
 import { importHelloWorkRaw, importHelloWorkToComputed } from "./hellowork/importHelloWork"
 import { importFromComputedToJobsPartners } from "./importFromComputedToJobsPartners"
@@ -11,8 +12,8 @@ export const processJobPartners = async () => {
   await importHelloWorkRaw()
   await importHelloWorkToComputed()
   await importFranceTravailRaw()
+  await classifyFranceTravailJobs()
   await importFranceTravailToComputed()
-  // missing FT clasification job (openai issue to tacle)
   await fillComputedJobsPartners()
   await importFromComputedToJobsPartners()
   await cancelRemovedJobsPartners()
