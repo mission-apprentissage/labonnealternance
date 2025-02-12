@@ -12,8 +12,8 @@ const openAiApiUrl = "https://api.openai.com/v1/chat/completions"
 //   apiKey: config.openai.apiKey,
 // })
 
-const ZChatCompletionResponse = z.object({
-  offres: z.array(z.object({ type: z.enum(["CFA", "entreprise", "entreprise_CFA"]), id: z.string(), cfa: z.string() })),
+export const ZChatCompletionResponse = z.object({
+  offres: z.array(z.object({ type: z.enum(["cfa", "entreprise", "entreprise_cfa"]), id: z.string(), cfa: z.string().nullish() })),
 })
 
 export const sendOpenAIMessages = async ({
