@@ -1,11 +1,11 @@
 import { badRequest, internal, notFound } from "@hapi/boom"
 import { Document, Filter, ObjectId } from "mongodb"
 import { ERecruteurLbaUpdateEventType, IApplication, ILbaCompany, ILbaCompanyForContactUpdate, IRecruteurLbaUpdateEvent } from "shared"
-import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
-import { roundDistance } from "../common/utils/geolib"
 import { isAllowedSource } from "../common/utils/isAllowedSource"
 import { getDbCollection } from "../common/utils/mongodbUtils"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
@@ -27,7 +27,7 @@ const transformCompany = ({
   contactAllowedOrigin,
   applicationCountByCompany,
 }: {
-  company: ILbaCompany
+  company: IJobsPartnersOfferPrivate
   caller?: string | null
   contactAllowedOrigin: boolean
   applicationCountByCompany: IApplicationCount[]
@@ -36,49 +36,47 @@ const transformCompany = ({
     email?: string
     iv?: string
     phone?: string | null
-  } = encryptMailWithIV({ value: company.email !== "null" ? company.email : "" })
+  } = encryptMailWithIV({ value: company.apply_email !== "null" ? company.apply_email : "" })
 
   if (contactAllowedOrigin) {
-    contact.phone = company.phone
+    contact.phone = company.apply_phone
   }
-  // format différent selon accès aux bonnes boîtes par recherche ou par siret
-  const address = buildLbaCompanyAddress(company)
 
-  const applicationCount = applicationCountByCompany.find((cmp) => company.siret == cmp._id)
+  const applicationCount = applicationCountByCompany.find((cmp) => company.workplace_siret == cmp._id)
 
   const resultCompany: ILbaItemLbaCompany = {
     ideaType: LBA_ITEM_TYPE_OLD.LBA,
     // ideaType: LBA_ITEM_TYPE.RECRUTEURS_LBA,
-    id: company.siret,
-    title: company.enseigne,
+    id: company.workplace_siret,
+    title: company.workplace_brand || company.workplace_legal_name,
     contact,
     place: {
-      distance: company.distance ? (roundDistance(company.distance / 1000) ?? 0) : null,
-      fullAddress: address,
-      latitude: parseFloat(company.geo_coordinates.split(",")[0]),
-      longitude: parseFloat(company.geo_coordinates.split(",")[1]),
-      city: company.city,
-      address,
+      distance: null,
+      fullAddress: company.workplace_address_label,
+      latitude: company.workplace_geopoint.coordinates[0],
+      longitude: company.workplace_geopoint.coordinates[1],
+      city: company.workplace_address_city,
+      address: company.workplace_address_label,
     },
     company: {
-      name: company.enseigne,
-      siret: company.siret,
-      size: company.company_size,
-      url: company.website,
+      name: company.workplace_legal_name,
+      siret: company.workplace_siret,
+      size: company.workplace_size,
+      url: company.workplace_website,
       opco: {
-        label: company.opco,
-        url: company.opco_url,
+        label: company.workplace_opco,
+        url: null,
       },
     },
     nafs: [
       {
-        code: company.naf_code,
-        label: company.naf_label,
+        code: company.workplace_naf_code,
+        label: company.workplace_naf_label,
       },
     ],
     applicationCount: applicationCount?.count || 0,
     url: null,
-    token: generateApplicationToken({ company_siret: company.siret }),
+    token: generateApplicationToken({ company_siret: company.workplace_siret! }),
     recipient_id: `recruteurslba_${company._id.toString()}`,
   }
 
@@ -88,35 +86,40 @@ const transformCompany = ({
 /**
  * Adaptation au modèle LBA d'une société issue de l'algo avec les données minimales nécessaires pour l'ui LBA
  */
-const transformCompanyWithMinimalData = ({ company, applicationCountByCompany }: { company: ILbaCompany; applicationCountByCompany: IApplicationCount[] }): ILbaItemLbaCompany => {
+const transformCompanyWithMinimalData = ({
+  company,
+  applicationCountByCompany,
+}: {
+  company: IJobsPartnersOfferPrivate
+  applicationCountByCompany: IApplicationCount[]
+}): ILbaItemLbaCompany => {
   // format différent selon accès aux bonnes boîtes par recherche ou par siret
-  const address = buildLbaCompanyAddress(company)
 
-  const applicationCount = applicationCountByCompany.find((cmp) => company.siret == cmp._id)
+  const applicationCount = applicationCountByCompany.find((cmp) => company.workplace_siret == cmp._id)
 
   const resultCompany: ILbaItemLbaCompany = {
     ideaType: LBA_ITEM_TYPE_OLD.LBA,
-    id: company.siret,
-    title: company.enseigne,
+    id: company.workplace_siret,
+    title: company.workplace_brand || company.workplace_legal_name,
     place: {
-      distance: company.distance ? (roundDistance(company.distance / 1000) ?? 0) : null,
-      fullAddress: address,
-      latitude: parseFloat(company.geo_coordinates.split(",")[0]),
-      longitude: parseFloat(company.geo_coordinates.split(",")[1]),
-      city: company.city,
-      address,
+      distance: null,
+      fullAddress: company.workplace_address_label,
+      latitude: company.workplace_geopoint.coordinates[0],
+      longitude: company.workplace_geopoint.coordinates[1],
+      city: company.workplace_address_city,
+      address: company.workplace_address_label,
     },
     company: {
-      name: company.enseigne,
-      siret: company.siret,
+      name: company.workplace_legal_name,
+      siret: company.workplace_siret,
     },
     nafs: [
       {
-        label: company.naf_label,
+        label: company.workplace_naf_label,
       },
     ],
     applicationCount: applicationCount?.count || 0,
-    token: generateApplicationToken({ company_siret: company.siret }),
+    token: generateApplicationToken({ company_siret: company.workplace_siret! }),
     recipient_id: `recruteurslba_${company._id.toString()}`,
   }
 
@@ -133,7 +136,7 @@ const transformCompanies = ({
   applicationCountByCompany,
   isMinimalData,
 }: {
-  companies: ILbaCompany[]
+  companies: IJobsPartnersOfferPrivate[]
   referer?: string
   caller?: string | null
   applicationCountByCompany: IApplicationCount[]
@@ -222,34 +225,35 @@ export const getCompanies = async ({
   opco?: string
   opcoUrl?: string
   api: string
-}): Promise<ILbaCompany[] | IApiError> => {
+}): Promise<IJobsPartnersOfferPrivate[] | IApiError> => {
   try {
     const distance = radius || 10
 
-    const query: any = {}
+    const query: any = { partner_label: LBA_ITEM_TYPE.RECRUTEURS_LBA }
 
     if (romes) {
-      query.rome_codes = { $in: romes?.split(",") }
+      query.offer_rome_codes = { $in: romes?.split(",") }
     }
 
     if (opco) {
-      query.opco_short_name = opco.toUpperCase()
+      query.workplace_opco = opco.toUpperCase()
     }
 
+    // TODO 20250212 obsolete, to check if still used
     if (opcoUrl) {
       query.opco_url = opcoUrl.toLowerCase()
     }
 
-    let companies: ILbaCompany[] = []
+    let companies: IJobsPartnersOfferPrivate[] = []
 
     if (latitude && longitude) {
-      companies = (await getDbCollection("recruteurslba")
+      companies = (await getDbCollection("jobs_partners")
         .aggregate([
           {
             $geoNear: {
               near: { type: "Point", coordinates: [longitude, latitude] },
               distanceField: "distance",
-              key: "geopoint",
+              key: "workplace_geopoint",
               maxDistance: distance * 1000,
               query,
             },
@@ -258,9 +262,9 @@ export const getCompanies = async ({
             $limit: companyLimit,
           },
         ])
-        .toArray()) as ILbaCompany[]
+        .toArray()) as IJobsPartnersOfferPrivate[]
     } else {
-      companies = (await getDbCollection("recruteurslba")
+      companies = (await getDbCollection("jobs_partners")
         .aggregate([
           {
             $match: query,
@@ -271,25 +275,21 @@ export const getCompanies = async ({
             },
           },
         ])
-        .toArray()) as ILbaCompany[]
+        .toArray()) as IJobsPartnersOfferPrivate[]
     }
 
     if (!latitude) {
-      companies.sort(function (a, b) {
-        if (!a || !a.enseigne) {
-          return -1
-        }
-        if (!b || !b.enseigne) {
-          return 1
-        }
-        return a.enseigne.toLowerCase().localeCompare(b.enseigne.toLowerCase())
+      companies.sort((a, b) => {
+        if (!a?.workplace_legal_name) return -1
+        if (!b?.workplace_legal_name) return 1
+        return a.workplace_legal_name.toLowerCase().localeCompare(b.workplace_legal_name.toLowerCase())
       })
     }
 
     return companies
   } catch (error) {
     sentryCaptureException(error)
-    return manageApiError({ error, api_path: api, caller, errorTitle: `getting lbaCompanies from DB (${api})` })
+    return manageApiError({ error, api_path: api, caller, errorTitle: `getting recruteurs_lba from jobs_partners collection (${api})` })
   }
 }
 
@@ -336,8 +336,10 @@ export const getSomeCompanies = async ({
     opcoUrl,
   })
 
+  console.log({ companies })
+
   if (!("error" in companies) && companies instanceof Array) {
-    const sirets = companies.map(({ siret }) => siret)
+    const sirets = companies.map(({ workplace_siret }) => workplace_siret) as string[]
     const applicationCountByCompany = await getApplicationByCompanyCount(sirets)
     return transformCompanies({ companies, referer, caller, applicationCountByCompany, isMinimalData })
   } else {
@@ -363,7 +365,7 @@ export const getCompanyFromSiret = async ({
     }
 > => {
   try {
-    const lbaCompany = await getDbCollection("recruteurslba").findOne({ siret })
+    const lbaCompany = await getDbCollection("jobs_partners").findOne({ workplace_siret: siret })
 
     if (!lbaCompany) {
       if (caller) {
@@ -376,7 +378,7 @@ export const getCompanyFromSiret = async ({
       trackApiCall({ caller, api_path: "jobV1/company", job_count: 1, result_count: 1, response: "OK" })
     }
 
-    const applicationCountByCompany = await getApplicationByCompanyCount([lbaCompany.siret])
+    const applicationCountByCompany = await getApplicationByCompanyCount([lbaCompany.workplace_siret!])
     const company = transformCompany({
       company: lbaCompany,
       contactAllowedOrigin: isAllowedSource({ referer, caller }),

@@ -25,5 +25,8 @@ export const recruteursLbaToJobPartners = (recruteursLba: IRecruteursLbaRaw): IC
     apply_email: email,
     apply_phone: phone,
     offer_rome_codes: rome_codes.map(({ rome_code }) => rome_code),
+    // laisse recruteurs_lba pour les entreprises issue de l'algorithme de lba (passer la validation & l'import dans jobs_partners)
+    offer_title: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+    offer_description: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
   }
 }

@@ -53,7 +53,6 @@ import { isInfected } from "./clamav.service"
 import { getOffreAvecInfoMandataire } from "./formulaire.service"
 import mailer from "./mailer.service"
 import { validateCaller } from "./queryValidator.service"
-import { buildLbaCompanyAddress } from "./recruteurLba.service"
 import { saveApplicationTrafficSourceIfAny } from "./trafficSource.service"
 import { validateUserWithAccountEmail } from "./userWithAccount.service"
 
@@ -90,9 +89,14 @@ const images: object = {
     recuCandidature: `${imagePath}recu-candidature.png`,
   },
 }
-
+// TODO 20250212 : TO DELETE WHEN SWITCHING TO V2 and V1 support has ended
 type IJobOrCompany =
   | { type: LBA_ITEM_TYPE.RECRUTEURS_LBA; job: ILbaCompany; recruiter: null }
+  | { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA; job: IJob; recruiter: IRecruiter }
+  | { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES; job: IJobsPartnersOfferPrivate; recruiter: null }
+
+type IJobOrCompanyV2 =
+  | { type: LBA_ITEM_TYPE.RECRUTEURS_LBA; job: IJobsPartnersOfferPrivate; recruiter: null }
   | { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA; job: IJob; recruiter: IRecruiter }
   | { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES; job: IJobsPartnersOfferPrivate; recruiter: null }
 
@@ -215,7 +219,7 @@ export const sendApplication = async ({
       }
 
       const { type, job, recruiter } = offreOrError
-      const recruteurEmail = (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? recruiter.email : type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? job.email : job.apply_email)?.toLowerCase()
+      const recruteurEmail = (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? recruiter.email : job.apply_email)?.toLowerCase()
       if (!recruteurEmail) {
         return { error: "email du recruteur manquant" }
       }
@@ -272,7 +276,7 @@ export const sendApplicationV2 = async ({
   caller?: string
   source?: ITrackingCookies
 }): Promise<{ _id: ObjectId }> => {
-  let lbaJob: IJobOrCompany = { type: null as any, job: null as any, recruiter: null }
+  let lbaJob: IJobOrCompanyV2 = { type: null as any, job: null as any, recruiter: null }
   const {
     recipient_id: { collectionName, jobId },
     applicant_attachment_content,
@@ -296,7 +300,7 @@ export const sendApplicationV2 = async ({
   })
 
   if (collectionName === JobCollectionName.recruteurslba) {
-    const job = await getDbCollection("recruteurslba").findOne({ _id: new ObjectId(jobId) })
+    const job = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(jobId) })
     if (!job) {
       throw badRequest(BusinessErrorCodes.NOTFOUND)
     }
@@ -326,7 +330,7 @@ export const sendApplicationV2 = async ({
   await checkUserApplicationCountV2(applicant._id, lbaJob, caller)
 
   const { type, job, recruiter } = lbaJob
-  const recruteurEmail = (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? recruiter.email : type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? job.email : job.apply_email)?.toLowerCase()
+  const recruteurEmail = (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? recruiter.email : job.apply_email)?.toLowerCase()
   if (!recruteurEmail) {
     sentryCaptureException(`${BusinessErrorCodes.INTERNAL_EMAIL} ${type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? `recruiter: ${recruiter._id} ` : `LbaCompany: ${job._id}`}`)
     throw internal(BusinessErrorCodes.INTERNAL_EMAIL)
@@ -477,24 +481,10 @@ const buildRecruiterEmailUrls = async (application: IApplication, applicant: IAp
 }
 
 const offreOrCompanyToCompanyFields = (
-  LbaJob: IJobOrCompany
+  LbaJob: IJobOrCompanyV2
 ): Pick<IApplication, "company_siret" | "company_name" | "company_naf" | "company_phone" | "company_email" | "job_title" | "company_address" | "job_id"> => {
   const { type } = LbaJob
-  if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    const { job } = LbaJob
-    const { siret, enseigne, naf_label, phone, email, _id } = job
-    const application = {
-      company_siret: siret,
-      company_name: enseigne,
-      company_naf: naf_label,
-      company_phone: phone,
-      company_email: email!,
-      job_title: enseigne,
-      company_address: buildLbaCompanyAddress(job),
-      job_id: _id.toString(),
-    }
-    return application
-  } else if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
+  if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     const { job, recruiter } = LbaJob
     const { address, is_delegated, establishment_siret, establishment_enseigne, establishment_raison_sociale, naf_label, phone, email } = recruiter
     const { rome_appellation_label, rome_label } = job
@@ -509,12 +499,12 @@ const offreOrCompanyToCompanyFields = (
       job_id: job._id.toString(),
     }
     return application
-  } else if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) {
+  } else if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES || type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     const { job } = LbaJob
-    const { workplace_siret, workplace_name, workplace_naf_label, apply_phone, apply_email, offer_title, workplace_address_label } = job
+    const { workplace_siret, workplace_name, workplace_naf_label, apply_phone, apply_email, offer_title, workplace_address_label, workplace_legal_name } = job
     const application = {
       company_siret: workplace_siret || null,
-      company_name: workplace_name || "Enseigne inconnue",
+      company_name: workplace_name || workplace_legal_name || "Enseigne inconnue",
       company_naf: workplace_naf_label || "",
       company_phone: apply_phone,
       company_email: apply_email || "",
@@ -540,7 +530,7 @@ const cleanApplicantFields = (newApplication: INewApplicationV1) => {
  * @description Initialize application object from query parameters
  */
 
-const newApplicationToApplicationDocument = async (newApplication: INewApplicationV1, applicant: IApplicant, offreOrCompany: IJobOrCompany, recruteurEmail: string) => {
+const newApplicationToApplicationDocument = async (newApplication: INewApplicationV1, applicant: IApplicant, offreOrCompany: IJobOrCompanyV2, recruteurEmail: string) => {
   const now = new Date()
   const application: IApplication = {
     ...offreOrCompanyToCompanyFields(offreOrCompany),
@@ -568,7 +558,7 @@ const newApplicationToApplicationDocument = async (newApplication: INewApplicati
 const newApplicationToApplicationDocumentV2 = async (
   newApplication: IApplicationApiPublicOutput | IApplicationApiPrivateOutput,
   applicant: IApplicant,
-  LbaJob: IJobOrCompany,
+  LbaJob: IJobOrCompanyV2,
   caller?: string
 ) => {
   const now = new Date()
@@ -605,7 +595,7 @@ export const getEmailTemplate = (type = "mail-candidat"): string => {
  * @description checks if job applied to is valid
  * KBA 20240502 : TO DELETE WHEN SWITCHING TO V2 and V1 support has ended
  */
-export const validateJob = async (application: INewApplicationV1): Promise<IJobOrCompany | { error: string }> => {
+export const validateJob = async (application: INewApplicationV1): Promise<IJobOrCompanyV2 | { error: string }> => {
   const { company_type, job_id, company_siret } = application
 
   if (company_type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
@@ -625,7 +615,7 @@ export const validateJob = async (application: INewApplicationV1): Promise<IJobO
     if (!company_siret) {
       return { error: "company_siret manquant" }
     }
-    const lbaCompany = await getDbCollection("recruteurslba").findOne({ siret: company_siret })
+    const lbaCompany = await getDbCollection("jobs_partners").findOne({ workplace_siret: company_siret })
     if (!lbaCompany) {
       return { error: "société manquante" }
     }
@@ -645,7 +635,7 @@ const scanFileContent = async (applicant_file_content: string): Promise<string> 
 
 /**
  * checks if email is not disposable
- * KBA 20240502 : TO DELETE WHEN SWITCHING TO V2 and V1 support has ended
+ * TODO KBA 20240502 : TO DELETE WHEN SWITCHING TO V2 and V1 support has ended
  */
 export const validatePermanentEmail = (email: string): string => {
   if (isEmailBurner(email)) {
@@ -654,14 +644,13 @@ export const validatePermanentEmail = (email: string): string => {
   return "ok"
 }
 
-// get data from applicant
-async function getApplicationCountForItem(applicantId: ObjectId, LbaJob: IJobOrCompany) {
+async function getApplicationCountForItemV2(applicantId: ObjectId, LbaJob: IJobOrCompanyV2) {
   const { type, job } = LbaJob
 
   if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     return getDbCollection("applications").countDocuments({
       applicant_id: applicantId,
-      company_siret: job.siret,
+      company_siret: job.workplace_siret,
     })
   } else if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || type === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) {
     return getDbCollection("applications").countDocuments({
@@ -677,7 +666,7 @@ async function getApplicationCountForItem(applicantId: ObjectId, LbaJob: IJobOrC
  * @description checks if email's owner has not sent more than allowed count of applications per day
  * KBA 20240502 : TO DELETE WHEN SWITCHING TO V2 and V1 support has ended
  */
-const checkUserApplicationCount = async (applicantId: ObjectId, offreOrCompany: IJobOrCompany, caller: string | null | undefined): Promise<string> => {
+const checkUserApplicationCount = async (applicantId: ObjectId, offreOrCompany: IJobOrCompanyV2, caller: string | null | undefined): Promise<string> => {
   const start = new Date()
   start.setHours(0, 0, 0, 0)
 
@@ -689,9 +678,7 @@ const checkUserApplicationCount = async (applicantId: ObjectId, offreOrCompany: 
 
   if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     siret = recruiter.establishment_siret
-  } else if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    siret = job.siret
-  } else if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) {
+  } else if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES || type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     siret = job.workplace_siret
   }
 
@@ -700,7 +687,7 @@ const checkUserApplicationCount = async (applicantId: ObjectId, offreOrCompany: 
       applicant_id: applicantId,
       created_at: { $gte: start, $lt: end },
     }),
-    getApplicationCountForItem(applicantId, offreOrCompany),
+    getApplicationCountForItemV2(applicantId, offreOrCompany),
     caller && siret
       ? getDbCollection("applications").countDocuments({
           caller: caller.toLowerCase(),
@@ -729,7 +716,7 @@ const checkUserApplicationCount = async (applicantId: ObjectId, offreOrCompany: 
  * @description checks if email's owner has not sent more than allowed count of applications per day
  */
 // get data from applicant
-const checkUserApplicationCountV2 = async (applicantId: ObjectId, LbaJob: IJobOrCompany, caller?: string): Promise<void> => {
+const checkUserApplicationCountV2 = async (applicantId: ObjectId, LbaJob: IJobOrCompanyV2, caller?: string): Promise<void> => {
   const start = new Date()
   start.setHours(0, 0, 0, 0)
 
@@ -741,9 +728,7 @@ const checkUserApplicationCountV2 = async (applicantId: ObjectId, LbaJob: IJobOr
 
   if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     siret = recruiter.establishment_siret
-  } else if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    siret = job.siret
-  } else if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) {
+  } else if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA || type === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) {
     siret = job.workplace_siret
   }
 
@@ -752,7 +737,7 @@ const checkUserApplicationCountV2 = async (applicantId: ObjectId, LbaJob: IJobOr
       applicant_id: applicantId,
       created_at: { $gte: start, $lt: end },
     }),
-    getApplicationCountForItem(applicantId, LbaJob),
+    getApplicationCountForItemV2(applicantId, LbaJob),
     caller && siret
       ? getDbCollection("applications").countDocuments({
           caller,
@@ -1268,7 +1253,7 @@ const getJobOrCompanyFromApplication = async (application: IApplication) => {
       break
     }
     case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
-      recruiter = await getDbCollection("recruteurslba").findOne({ siret: application.company_siret! })
+      recruiter = await getDbCollection("jobs_partners").findOne({ workplace_siret: application.company_siret! })
       break
     }
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES: {
