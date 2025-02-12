@@ -52,7 +52,7 @@ export const sendMistralMessages = async ({
     return data
   } catch (error) {
     sentryCaptureException(error)
-    console.log(error)
+    console.error(error)
     return null
   }
 }

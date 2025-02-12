@@ -348,9 +348,9 @@ export async function setupJobProcessor() {
         handler: async () => {
           const { count, requireShutdown } = await statusMigration()
           if (count === 0) {
-            console.log("migrations-status=synced")
+            console.info("migrations-status=synced")
           } else {
-            console.log(`migrations-status=${requireShutdown ? "require-shutdown" : "pending"}`)
+            console.info(`migrations-status=${requireShutdown ? "require-shutdown" : "pending"}`)
           }
           return
         },

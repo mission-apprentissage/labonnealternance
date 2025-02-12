@@ -151,7 +151,6 @@ export default (server: Server) => {
       if (!offre) {
         throw badRequest("L'offre n'existe pas")
       }
-
       res.status(200).send(offre)
     }
   )
