@@ -31,7 +31,7 @@ const EspaceDeveloppeurs = () => (
               La bonne alternance propose un point d’entrée unique et documenté pour faciliter l’accès à toutes les données relatives à l’apprentissage.
             </Text>
             <Text as="p" mt={4} mb={4}>
-              L’espace développeur est un site dédié
+              L’espace développeur est un site dédié{" "}
               <Link variant="editorialContentLink" aria-label="Accès au site api.apprentissage - nouvelle fenêtre" href="https://api.apprentissage.beta.gouv.fr" isExternal>
                 API Apprentissage
                 <ExternalLinkIcon mx="2px" />
