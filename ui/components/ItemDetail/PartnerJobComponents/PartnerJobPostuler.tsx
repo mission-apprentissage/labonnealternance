@@ -8,6 +8,8 @@ import CandidatureLba from "../CandidatureLba/CandidatureLba"
 import CandidatureParTelephone from "../CandidatureParTelephone"
 
 export const PartnerJobPostuler = ({ job, isCollapsedHeader }: { job: ILbaItemPartnerJob; isCollapsedHeader: boolean }) => {
+  // KBA fix enum shared/models/lbaItem.model.ts
+  if (["Pourvue", "Annulée"].includes(job.job.status)) return null
   if (job.contact?.email) {
     return (
       <Box my={4}>

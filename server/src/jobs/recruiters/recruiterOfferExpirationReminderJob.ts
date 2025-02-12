@@ -1,6 +1,7 @@
 import { internal } from "@hapi/boom"
 import { groupBy } from "lodash-es"
 import { ObjectId } from "mongodb"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { JOB_STATUS } from "shared/models"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
@@ -82,8 +83,8 @@ export const recruiterOfferExpirationReminderJob = async (threshold: number /* n
             job_type: job.job_type,
             job_level_label: job.job_level_label,
             job_start_date: dayjs(job.job_start_date).format("DD/MM/YYYY"),
-            supprimer: createCancelJobLink(userWithAccountToUserForToken(contactUser), job._id.toString()),
-            pourvue: createProvidedJobLink(userWithAccountToUserForToken(contactUser), job._id.toString()),
+            supprimer: createCancelJobLink(userWithAccountToUserForToken(contactUser), job._id.toString(), LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
+            pourvue: createProvidedJobLink(userWithAccountToUserForToken(contactUser), job._id.toString(), LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
           })),
           threshold,
           connectionUrl: createAuthMagicLink(userWithAccountToUserForToken(contactUser)),

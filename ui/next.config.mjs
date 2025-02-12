@@ -168,6 +168,12 @@ const nextConfig = {
         destination: "/recherche-formation",
         permanent: true,
       },
+      // KBA TODO WAR ROOM : to remove on 2025_03_10 : route without jobType will be obsolete
+      {
+        source: "/espace-pro/offre/:id/:option",
+        destination: "/espace-pro/offre/offres_emploi_lba/:id/:option",
+        permanent: true,
+      },
     ]
   },
 }

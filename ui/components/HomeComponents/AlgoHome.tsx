@@ -12,7 +12,7 @@ const AlgoHome = () => {
         <GridItem colSpan={8} pr="8">
           <Text as="h2">
             <Text as="span" display="block" mb={1} variant="editorialContentH1" color="#2a2a2a">
-              Vous révéler
+              Vous révéler{" "}
             </Text>
             <Text as="span" display="block" mb={1} variant="editorialContentH1">
               le marché caché de l&apos;emploi
