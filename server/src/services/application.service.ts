@@ -1241,7 +1241,7 @@ const buildSendOtherApplicationsUrl = (application: IApplication, type: LBA_ITEM
 }
 
 const getJobOrCompanyFromApplication = async (application: IApplication) => {
-  let recruiter: ILbaCompany | IRecruiter | null = null
+  let recruiter: IJobsPartnersOfferPrivate | IRecruiter | null = null
   let job: IJob | IJobsPartnersOfferPrivate | null | undefined = null
   switch (application.job_origin) {
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
