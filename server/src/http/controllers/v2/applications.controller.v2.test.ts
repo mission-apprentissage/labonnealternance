@@ -198,7 +198,7 @@ describe("POST /v2/application", () => {
       company_siret: recruteur.workplace_siret,
       created_at: expect.any(Date),
       job_id: recruteur._id.toString(),
-      job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
+      job_origin: LBA_ITEM_TYPE.RECRUTEURS_LBA,
       job_searched_by_user: null,
       job_title: "Une super offre d'alternance",
       last_update_at: expect.any(Date),
