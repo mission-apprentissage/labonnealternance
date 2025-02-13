@@ -104,7 +104,7 @@ fileignoreconfig:
 - filename: server/src/services/partnerJob.service.test.ts
   checksum: b488a3b67b801c3fa5b012d2ba2b120b21af4f459b966c6629e6e681ead97913
 - filename: server/src/services/recruteurLba.service.test.ts
-  checksum: 38c947c87cfb508fec88cbce878f89725cbb6679e833a66bdb7fca60e3685a0a
+  checksum: 704c302541b044c957effcb9c3d49246beaece7eefe002e09fb5883636c632a7
 - filename: server/src/services/referrers.service.ts
   checksum: 966b0ece2b18b5a6066df531524c97ba0ad38266e782a334004e8c127b41ade6
 - filename: server/src/services/trafficSource.service.test.ts

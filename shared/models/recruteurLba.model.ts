@@ -4,6 +4,7 @@ import { z } from "../helpers/zodWithOpenApi.js"
 import { ZPointGeometry } from "./address.model.js"
 import { IModelDescriptor, zObjectId } from "./common.js"
 
+// TODO 20250213 KBA : TO REMOVE ONCE JOB PARTNER INTEGRATION IS VALIDATED
 const collectionName = "recruteurslba" as const
 
 export const ZLbaCompany = z

@@ -17,7 +17,6 @@ async function cleanTest() {
   await getDbCollection("emailblacklists").deleteMany({})
   await getDbCollection("applications").deleteMany({})
   await getDbCollection("applicants").deleteMany({})
-  await getDbCollection("recruteurslba").deleteMany({})
   await getDbCollection("etablissements").deleteMany({})
   await getDbCollection("users").deleteMany({})
   await getDbCollection("userswithaccounts").deleteMany({})

@@ -2,7 +2,7 @@ import { badRequest, internal, notFound } from "@hapi/boom"
 import { Document, Filter, ObjectId } from "mongodb"
 import { ERecruteurLbaUpdateEventType, IApplication, ILbaCompany, ILbaCompanyForContactUpdate, IRecruteurLbaUpdateEvent } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
-import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
@@ -407,7 +407,7 @@ export const getCompanyFromSiret = async ({
 export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email?: string; phone?: string }) => {
   const now = new Date()
   try {
-    const recruteurLba = await getDbCollection("recruteurslba").findOne({ siret })
+    const recruteurLba = await getDbCollection("jobs_partners").findOne({ workplace_siret: siret, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
     let application: IApplication | null = null
     const fieldUpdates: IRecruteurLbaUpdateEvent[] = []
 
@@ -419,12 +419,12 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
       }
     } else {
       await Promise.all([
-        email !== undefined && getDbCollection("recruteurslba").findOneAndUpdate({ siret }, { $set: { email, last_update_at: new Date() } }),
-        phone !== undefined && getDbCollection("recruteurslba").findOneAndUpdate({ siret }, { $set: { phone, last_update_at: new Date() } }),
+        email !== undefined && getDbCollection("jobs_partners").findOneAndUpdate({ workplace_siret: siret }, { $set: { apply_email: email, updated_at: new Date() } }),
+        phone !== undefined && getDbCollection("jobs_partners").findOneAndUpdate({ workplace_siret: siret }, { $set: { apply_phone: phone, updated_at: new Date() } }),
       ])
     }
 
-    if (email !== undefined && recruteurLba && recruteurLba.email !== email && !email) {
+    if (email !== undefined && recruteurLba && recruteurLba.apply_email !== email && !email) {
       fieldUpdates.push({
         _id: new ObjectId(),
         created_at: now,
@@ -434,7 +434,7 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
       })
     }
 
-    if (phone !== undefined && recruteurLba && recruteurLba.phone !== phone && !phone) {
+    if (phone !== undefined && recruteurLba && recruteurLba.apply_phone !== phone && !phone) {
       fieldUpdates.push({
         _id: new ObjectId(),
         created_at: now,
@@ -444,7 +444,7 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
       })
     }
 
-    if (email && (application || (recruteurLba && recruteurLba.email !== email))) {
+    if (email && (application || (recruteurLba && recruteurLba.apply_email !== email))) {
       fieldUpdates.push({
         _id: new ObjectId(),
         created_at: now,
@@ -454,7 +454,7 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
       })
     }
 
-    if (phone && (application || (recruteurLba && recruteurLba.phone !== phone))) {
+    if (phone && (application || (recruteurLba && recruteurLba.apply_phone !== phone))) {
       fieldUpdates.push({
         _id: new ObjectId(),
         created_at: now,
@@ -466,7 +466,7 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
 
     fieldUpdates.length && (await getDbCollection("recruteurlbaupdateevents").insertMany(fieldUpdates))
 
-    return { enseigne: application?.company_name ?? recruteurLba?.enseigne, phone, email, siret, active: recruteurLba ? true : false }
+    return { enseigne: application?.company_name || recruteurLba?.workplace_brand || recruteurLba?.workplace_legal_name, phone, email, siret, active: recruteurLba ? true : false }
   } catch (err) {
     sentryCaptureException(err)
     throw err
@@ -475,10 +475,16 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
 
 export const getCompanyContactInfo = async ({ siret }: { siret: string }): Promise<ILbaCompanyForContactUpdate> => {
   try {
-    const lbaCompany = await getDbCollection("recruteurslba").findOne({ siret })
+    const lbaCompany = await getDbCollection("jobs_partners").findOne({ workplace_siret: siret, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
 
     if (lbaCompany) {
-      return { enseigne: lbaCompany.enseigne, phone: lbaCompany.phone, email: lbaCompany.email, siret: lbaCompany.siret, active: true }
+      return {
+        enseigne: lbaCompany.workplace_brand || lbaCompany.workplace_legal_name,
+        phone: lbaCompany.apply_phone,
+        email: lbaCompany.apply_email,
+        siret: lbaCompany.workplace_siret!,
+        active: true,
+      }
     } else {
       const application = await getDbCollection("applications").findOne({ company_siret: siret })
 

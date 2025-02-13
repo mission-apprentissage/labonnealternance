@@ -3,13 +3,14 @@ import { Transform } from "stream"
 import { pipeline } from "stream/promises"
 
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
 import { logger } from "../../common/logger"
 import { s3WriteStream } from "../../common/utils/awsUtils"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 
 interface IGeneratorParams {
-  collection: "jobs" | "recruteurslba"
+  collection: "jobs" | "jobs_partners"
   query: object
   projection: object
   fileName: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA | LBA_ITEM_TYPE.RECRUTEURS_LBA
@@ -76,9 +77,9 @@ async function exportLbaJobsToS3() {
     fileName: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
   }
   const recruteurs_lba: IGeneratorParams = {
-    collection: "recruteurslba",
-    query: {},
-    projection: { _id: 0, email: 0, phone: 0, geopoint: 0, recruitment_potential: 0, opco_short_name: 0 },
+    collection: "jobs_partners",
+    query: { partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA },
+    projection: { _id: 0, apply_email: 0, apply_phone: 0, workplace_geopoint: 0, workplace_opco: 0, workplace_idcc: 0 },
     fileName: LBA_ITEM_TYPE.RECRUTEURS_LBA,
   }
   await Promise.all([

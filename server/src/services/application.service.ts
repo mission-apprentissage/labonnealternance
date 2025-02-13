@@ -171,7 +171,7 @@ export const findApplicationByMessageId = async ({ messageId, email }: { message
   getDbCollection("applications").findOne({ company_email: email, to_company_message_id: messageId })
 
 export const removeEmailFromLbaCompanies = async (email: string) => {
-  return await getDbCollection("recruteurslba").updateMany({ email }, { $set: { email: "" } })
+  return await getDbCollection("jobs_partners").updateMany({ email, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }, { $set: { email: "" } })
 }
 
 /**
@@ -1142,13 +1142,13 @@ const getApplicationWebsiteOrigin = (caller: IApplication["caller"]) => {
   }
 }
 
-const getJobOrCompany = async (application: IApplication): Promise<IJobOrCompany> => {
+const getJobOrCompany = async (application: IApplication): Promise<IJobOrCompanyV2> => {
   const { job_id, company_siret, job_origin } = application
   if (!job_id) {
     throw internal("getJobOrCompany-job_id manquant")
   }
   if (job_origin === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    const company = await getDbCollection("recruteurslba").findOne({ siret: company_siret! })
+    const company = await getDbCollection("jobs_partners").findOne({ siret: company_siret! })
     if (!company) {
       throw internal(`inattendu: aucun recruteur lba avec siret=${company_siret}`)
     }
@@ -1186,9 +1186,9 @@ export const getCompanyEmailFromToken = async (token: string) => {
   const application = await getDbCollection("applications").findOne({ _id: new ObjectId(application_id) })
 
   if (application) {
-    const recruteurLba = await getDbCollection("recruteurslba").findOne({ siret: application.company_siret! })
-    if (recruteurLba?.email) {
-      return recruteurLba.email
+    const recruteurLba = await getDbCollection("jobs_partners").findOne({ siret: application.company_siret! })
+    if (recruteurLba?.apply_email) {
+      return recruteurLba.apply_email
     }
   }
 
