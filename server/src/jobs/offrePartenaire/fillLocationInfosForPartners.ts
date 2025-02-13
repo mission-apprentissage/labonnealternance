@@ -1,3 +1,4 @@
+import { Filter } from "mongodb"
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { joinNonNullStrings } from "shared/utils"
 
@@ -5,7 +6,7 @@ import { getCityFromProperties, getGeolocation, getStreetFromProperties } from "
 
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 
-export const fillLocationInfosForPartners = async () => {
+export const fillLocationInfosForPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
   const sourceFields = ["workplace_address_label"] as const satisfies (keyof IComputedJobsPartners)[]
 
   const filledFields = [
@@ -22,6 +23,7 @@ export const fillLocationInfosForPartners = async () => {
     sourceFields,
     filledFields,
     groupSize: 1,
+    addedMatchFilter,
     getData: async (documents) => {
       const [document] = documents
       const { workplace_address_label } = document

@@ -524,6 +524,7 @@ describe("convertToJobOfferApiReadV3", () => {
       workplace_siret: "11000001500013",
       workplace_size: null,
       workplace_website: null,
+      offer_status_history: [],
     }
 
     const expected: IJobOfferApiReadV3 = {

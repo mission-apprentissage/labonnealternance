@@ -31,6 +31,7 @@ import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
 import { importFranceTravailRaw } from "./offrePartenaire/france-travail/importJobsFranceTravail"
 import { processJobPartners } from "./offrePartenaire/processJobPartners"
+import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -222,6 +223,10 @@ export async function setupJobProcessor() {
           "Traitement complet des jobs_partners": {
             cron_string: "40 3 * * *",
             handler: processJobPartners,
+          },
+          "Traitement complet des jobs_partners par API": {
+            cron_string: "*/10 * * * *",
+            handler: processJobPartnersForApi,
           },
           "Import complet des offres France Travail": {
             cron_string: "0 6 * * *",
