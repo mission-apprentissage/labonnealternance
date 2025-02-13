@@ -36,6 +36,7 @@ export function translateJobStatus(status: JOB_STATUS): JOB_STATUS_ENGLISH | und
       assertUnreachable(status)
   }
 }
+
 export function traductionJobStatus(status: JOB_STATUS_ENGLISH): JOB_STATUS {
   switch (status) {
     case JOB_STATUS_ENGLISH.ACTIVE:

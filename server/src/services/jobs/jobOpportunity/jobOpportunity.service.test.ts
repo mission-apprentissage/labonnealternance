@@ -5,7 +5,6 @@ import { ObjectId } from "mongodb"
 import nock from "nock"
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, RECRUITER_STATUS } from "shared/constants"
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
-import { generateFeaturePropertyFixture } from "shared/fixtures/geolocation.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { generateLbaCompanyFixture } from "shared/fixtures/recruteurLba.fixture"
@@ -17,12 +16,10 @@ import { FILTER_JOBPARTNERS_LABEL, IJobsPartnersOfferPrivate, INiveauDiplomeEuro
 import { zJobOfferApiWriteV3, zJobSearchApiV3Response, type IJobOfferApiWriteV3, type IJobOfferApiWriteV3Input } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
-import { getRomeoPredictions, searchForFtJobs } from "@/common/apis/franceTravail/franceTravail.client"
-import { franceTravailRomeoFixture, generateFtJobFixture } from "@/common/apis/franceTravail/franceTravail.client.fixture"
+import { searchForFtJobs } from "@/common/apis/franceTravail/franceTravail.client"
+import { generateFtJobFixture } from "@/common/apis/franceTravail/franceTravail.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { saveGeolocationInCache } from "@/services/cacheGeolocation.service"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
@@ -1919,34 +1916,6 @@ describe("createJobOffer", () => {
     vi.useFakeTimers()
     vi.setSystemTime(now)
 
-    vi.mocked(getEtablissementFromGouvSafe).mockResolvedValue(apiEntrepriseEtablissementFixture.dinum)
-
-    nock("https://api-adresse.data.gouv.fr:443")
-      .get("/search")
-      .query({ q: "20 AVENUE DE SEGUR, 75007 PARIS", limit: "1" })
-      .reply(200, {
-        features: [
-          {
-            geometry: parisFixture.centre,
-            properties: generateFeaturePropertyFixture({
-              city: parisFixture.nom,
-              postcode: parisFixture.codesPostaux[0],
-              name: "20 AVENUE DE SEGUR",
-            }),
-          },
-        ],
-      })
-      .persist()
-
-    await getDbCollection("opcos").insertOne({
-      _id: new ObjectId(),
-      siren: "130025265",
-      opco: "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
-      opco_short_name: "AKTO",
-      idcc: 1459,
-      url: null,
-    })
-
     return () => {
       vi.useRealTimers()
     }
@@ -1958,52 +1927,19 @@ describe("createJobOffer", () => {
     const result = await createJobOffer(identity, data)
     expect(result).toBeInstanceOf(ObjectId)
 
-    const job = await getDbCollection("jobs_partners").findOne({ _id: result })
-    expect(job?.created_at).toEqual(now)
-    expect(job?.partner_label).toEqual(identity.organisation)
-    expect(job?.offer_rome_codes).toEqual(["M1602"])
-    expect(job?.offer_status).toEqual(JOB_STATUS.ACTIVE)
-    expect(job?.offer_creation).toEqual(now)
-    expect(job?.offer_expiration).toEqual(in2Month)
-    expect(job?.offer_target_diploma).toEqual(null)
-    expect(job?.workplace_geopoint).toEqual(parisFixture.centre)
-    expect(job?.workplace_address_label).toEqual("20 AVENUE DE SEGUR 75007 PARIS")
-    expect(job?.workplace_address_street_label).toEqual("20 AVENUE DE SEGUR")
-    expect(job?.workplace_address_zipcode).toEqual("75007")
-    expect(job?.workplace_address_city).toEqual("PARIS")
-    expect(omit(job, "partner_job_id")).toMatchSnapshot({
+    const job = await getDbCollection("computed_jobs_partners").findOne({ _id: result })
+    expect.soft(job?.created_at).toEqual(now)
+    expect.soft(job?.partner_label).toEqual(identity.organisation)
+    expect.soft(job?.offer_status).toEqual(JOB_STATUS.ACTIVE)
+    expect.soft(job?.offer_creation).toEqual(now)
+    expect.soft(job?.offer_expiration).toEqual(in2Month)
+    expect.soft(job?.offer_target_diploma).toEqual(null)
+    expect.soft(omit(job, "partner_job_id")).toMatchSnapshot({
       _id: expect.any(ObjectId),
     })
-
-    expect(nock.isDone()).toBeTruthy()
-  })
-
-  it("should get default rome from ROMEO", async () => {
-    vi.mocked(getRomeoPredictions).mockResolvedValue(franceTravailRomeoFixture["Software Engineer"])
-
-    const data = generateJobOfferApiWriteV3({ ...minimalData, offer: { ...minimalData.offer, rome_codes: [] } })
-    const result = await createJobOffer(identity, data)
-    expect(result).toBeInstanceOf(ObjectId)
-
-    const job = await getDbCollection("jobs_partners").findOne({ _id: result })
-    expect(job?.offer_rome_codes).toEqual(["E1206"])
-    expect(nock.isDone()).toBeTruthy()
   })
 
   it('should get workplace location from given "workplace_address_*" fields', async () => {
-    await saveGeolocationInCache("1T IMPASSE PASSOIR CLICHY", [
-      {
-        type: "Feature",
-        geometry: clichyFixture.centre,
-        properties: generateFeaturePropertyFixture({
-          city: clichyFixture.nom,
-          postcode: clichyFixture.codesPostaux[0],
-          name: "1T impasse Passoir",
-          street: "impasse Passoir",
-        }),
-      },
-    ])
-
     const data = generateJobOfferApiWriteV3({
       ...minimalData,
       workplace: {
@@ -2017,13 +1953,8 @@ describe("createJobOffer", () => {
 
     expect(result).toBeInstanceOf(ObjectId)
 
-    const job = await getDbCollection("jobs_partners").findOne({ _id: result })
+    const job = await getDbCollection("computed_jobs_partners").findOne({ _id: result })
     expect(job?.workplace_address_label).toEqual("1T impasse Passoir Clichy")
-    expect(job?.workplace_address_street_label).toEqual("1T impasse Passoir")
-    expect(job?.workplace_address_city).toEqual("Clichy")
-    expect(job?.workplace_address_zipcode).toEqual("92110")
-    expect(job?.workplace_geopoint).toEqual(clichyFixture.centre)
-    expect(nock.isDone()).toBeTruthy()
   })
 
   it("should support offer.status", async () => {
@@ -2032,7 +1963,7 @@ describe("createJobOffer", () => {
     const result = await createJobOffer(identity, data)
     expect(result).toBeInstanceOf(ObjectId)
 
-    const job = await getDbCollection("jobs_partners").findOne({ _id: result })
+    const job = await getDbCollection("computed_jobs_partners").findOne({ _id: result })
     expect(job?.offer_status).toEqual(JOB_STATUS_ENGLISH.ANNULEE)
 
     expect(nock.isDone()).toBeTruthy()
@@ -2083,31 +2014,7 @@ describe("updateJobOffer", () => {
   beforeEach(async () => {
     vi.useFakeTimers()
     vi.setSystemTime(now)
-
-    vi.mocked(getEtablissementFromGouvSafe).mockResolvedValue(apiEntrepriseEtablissementFixture.dinum)
-
-    await saveGeolocationInCache("20 AVENUE DE SEGUR, 75007 PARIS", [
-      {
-        type: "Feature",
-        geometry: parisFixture.centre,
-        properties: generateFeaturePropertyFixture({
-          city: parisFixture.nom,
-          postcode: parisFixture.codesPostaux[0],
-          name: "20 AVENUE DE SEGUR",
-        }),
-      },
-    ])
-
     await getDbCollection("jobs_partners").insertOne(originalJob)
-
-    await getDbCollection("opcos").insertOne({
-      _id: new ObjectId(),
-      siren: "130025265",
-      opco: "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
-      opco_short_name: "AKTO",
-      idcc: 1459,
-      url: null,
-    })
 
     return () => {
       vi.useRealTimers()
@@ -2118,89 +2025,18 @@ describe("updateJobOffer", () => {
     const data = generateJobOfferApiWriteV3({ ...minimalData })
     await updateJobOffer(_id, identity, data)
 
-    const job = await getDbCollection("jobs_partners").findOne({ _id })
-    expect(job?.created_at).toEqual(originalCreatedAt)
-    expect(job?.partner_label).toEqual(identity.organisation)
-    expect(job?.offer_rome_codes).toEqual(["M1602"])
-    expect(job?.offer_status).toEqual(JOB_STATUS.ACTIVE)
-    expect(job?.offer_creation).toEqual(originalCreatedAt)
+    const job = await getDbCollection("computed_jobs_partners").findOne({ _id })
+    expect.soft(job?.created_at).toEqual(originalCreatedAt)
+    expect.soft(job?.partner_label).toEqual(identity.organisation)
+    expect.soft(job?.offer_status).toEqual(JOB_STATUS.ACTIVE)
+    expect.soft(job?.offer_creation).toEqual(originalCreatedAt)
     // TODO: figure out if the expiration should be updated
-    expect(job?.offer_expiration).toEqual(originalCreatedAtPlus2Months)
-    expect(job?.offer_target_diploma).toEqual(null)
-    expect(job?.workplace_geopoint).toEqual(parisFixture.centre)
-    expect(job?.workplace_address_label).toEqual("20 AVENUE DE SEGUR 75007 PARIS")
-    expect(job?.workplace_address_street_label).toEqual("20 AVENUE DE SEGUR")
-    expect(job?.workplace_address_zipcode).toEqual("75007")
-    expect(job?.workplace_address_city).toEqual("PARIS")
+    expect.soft(job?.offer_expiration).toEqual(originalCreatedAtPlus2Months)
+    expect.soft(job?.offer_target_diploma).toEqual(null)
 
     expect(omit(job, "partner_job_id")).toMatchSnapshot({
       _id: expect.any(ObjectId),
     })
-
-    expect(nock.isDone()).toBeTruthy()
-  })
-
-  it("should get default rome from ROMEO", async () => {
-    vi.mocked(getRomeoPredictions).mockResolvedValue(franceTravailRomeoFixture["Software Engineer"])
-
-    const data = generateJobOfferApiWriteV3({
-      ...minimalData,
-      offer: {
-        ...minimalData.offer,
-        rome_codes: [],
-      },
-    })
-    await updateJobOffer(_id, identity, data)
-
-    const job = await getDbCollection("jobs_partners").findOne({ _id })
-    expect(job?.offer_rome_codes).toEqual(["E1206"])
-    expect(nock.isDone()).toBeTruthy()
-  })
-
-  it('should get workplace location from given "workplace_address_label" fields', async () => {
-    await saveGeolocationInCache("20 AVENUE DE SEGUR, 75007 PARIS", [
-      {
-        type: "Feature",
-        geometry: parisFixture.centre,
-        properties: generateFeaturePropertyFixture({
-          city: parisFixture.nom,
-          postcode: parisFixture.codesPostaux[0],
-          name: "20 AVENUE DE SEGUR",
-          street: "AVENUE DE SEGUR",
-        }),
-      },
-    ])
-    await saveGeolocationInCache("1T IMPASSE PASSOIR CLICHY", [
-      {
-        type: "Feature",
-        geometry: clichyFixture.centre,
-        properties: generateFeaturePropertyFixture({
-          city: clichyFixture.nom,
-          postcode: clichyFixture.codesPostaux[0],
-          name: "1T impasse Passoir",
-          street: "impasse Passoir",
-        }),
-      },
-    ])
-
-    const data = generateJobOfferApiWriteV3({
-      ...minimalData,
-      workplace: {
-        ...minimalData.workplace,
-        location: {
-          address: "1T impasse Passoir Clichy",
-        },
-      },
-    })
-    await updateJobOffer(_id, identity, data)
-
-    const job = await getDbCollection("jobs_partners").findOne({ _id })
-    expect(job?.workplace_address_label).toEqual("1T impasse Passoir Clichy")
-    expect(job?.workplace_address_street_label).toEqual("1T impasse Passoir")
-    expect(job?.workplace_address_city).toEqual("Clichy")
-    expect(job?.workplace_address_zipcode).toEqual("92110")
-    expect(job?.workplace_geopoint).toEqual(clichyFixture.centre)
-    expect(nock.isDone()).toBeTruthy()
   })
 
   it("should support offer.status", async () => {
@@ -2208,7 +2044,7 @@ describe("updateJobOffer", () => {
 
     await updateJobOffer(_id, identity, data)
 
-    const job = await getDbCollection("jobs_partners").findOne({ _id })
+    const job = await getDbCollection("computed_jobs_partners").findOne({ _id })
     expect(job?.offer_status).toEqual(JOB_STATUS_ENGLISH.ANNULEE)
 
     expect(nock.isDone()).toBeTruthy()

@@ -1,3 +1,4 @@
+import { Filter } from "mongodb"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { isEnum } from "shared/utils"
@@ -9,7 +10,7 @@ import { addressDetailToStreetLabel } from "@/services/geolocation.service"
 
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 
-export const fillSiretInfosForPartners = async () => {
+export const fillSiretInfosForPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
   const filledFields = [
     "workplace_size",
     "workplace_name",
@@ -29,6 +30,7 @@ export const fillSiretInfosForPartners = async () => {
     sourceFields: ["workplace_siret"],
     filledFields,
     groupSize: 1,
+    addedMatchFilter,
     getData: async (documents) => {
       const [document] = documents
       const { workplace_siret: siret } = document

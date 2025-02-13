@@ -61,7 +61,7 @@ export const passJobToJobsPartners = (job: IPassJob): IComputedJobsPartners => {
   }
 
   const partnerJob: IComputedJobsPartners = {
-    ...blankComputedJobPartner,
+    ...blankComputedJobPartner(),
     _id: new ObjectId(),
     created_at: now,
     updated_at: now,
