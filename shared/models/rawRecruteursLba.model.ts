@@ -25,5 +25,4 @@ export default {
   zod: ZRecruteursLbaRaw,
   indexes: [],
   collectionName: "raw_recruteurslba",
-  authorizeAdditionalProperties: true,
 } as const satisfies IModelDescriptor
