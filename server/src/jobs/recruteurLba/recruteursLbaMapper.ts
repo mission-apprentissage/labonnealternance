@@ -9,7 +9,7 @@ import { blankComputedJobPartner } from "../offrePartenaire/fillComputedJobsPart
 export const recruteursLbaToJobPartners = (recruteursLba: IRecruteursLbaRaw): IComputedJobsPartners => {
   const { siret, enseigne, raison_sociale, naf_code, naf_label, street_name, street_number, zip_code, email, phone, company_size, rome_codes, _id } = recruteursLba
   return {
-    ...blankComputedJobPartner,
+    ...blankComputedJobPartner(),
     _id: new ObjectId(),
     partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
     partner_job_id: _id.toString(),
