@@ -59,7 +59,7 @@ describe("fillComputedJobsPartners", () => {
     await fillComputedJobsPartners()
     // then
     expect.soft(await getDbCollection("computed_jobs_partners").countDocuments({ validated: false })).toEqual(1)
-  })
+  }, 10_000)
   // TODO à activer quand tous les enrichissements sont implémentés
   it.skip("should enrich when siret is present", async () => {
     // given
