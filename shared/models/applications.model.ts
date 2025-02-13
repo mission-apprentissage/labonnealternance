@@ -183,7 +183,7 @@ const ZNewApplicationTransitionToV2 = ZApplicationOld.extend({
 // KBA 20241011 to remove once V2 is LIVE and V1 support has ended
 export type INewApplicationV1 = z.output<typeof ZNewApplicationTransitionToV2>
 
-export const ZJobCollectionName = z.enum(["recruteurslba", "partners", "recruiters"])
+export const ZJobCollectionName = z.enum(["partners", "recruiters"])
 export const JobCollectionName = ZJobCollectionName.enum
 export type IJobCollectionName = z.output<typeof ZJobCollectionName>
 

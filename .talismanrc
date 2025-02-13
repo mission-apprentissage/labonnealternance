@@ -26,7 +26,9 @@ fileignoreconfig:
 - filename: server/src/http/controllers/__snapshots__/etablissementRecruteur.controller.test.ts.snap
   checksum: e8a35e591adb1447d1b6e796b063f435ac389e9ffe619c68185f348beae71215
 - filename: server/src/http/controllers/application.controller.test.ts
-  checksum: 00cac67c8e138098126ae98702e2bdc3e1092e1bbf188d9a437197e9ca94e16a
+  checksum: 7ec327fbd60ed13519fb0869dea25434c05b0bc601a07761f7e74c175d7712a7
+- filename: server/src/http/controllers/v2/applications.controller.v2.test.ts
+  checksum: cd5f97d9fcd9a8029f59db12479ab93360d1535fc8f634c0077153034b3ce2e8
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
   checksum: dc77c04efc26dcd8ca4816f392ab24a32a92cb45ca4b94adb593a08e7a2d231e
 - filename: server/src/http/controllers/etablissementRecruteur.controller.test.ts
@@ -44,7 +46,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/v2/jobs.controller.v2.ts
   checksum: da8baa573172fa97c21f9123e04032718249dcec1194a51d7a1f1757070594ce
 - filename: server/src/http/controllers/v3/jobs/jobs.controller.v3.test.ts
-  checksum: 4b24ff09463f476fd0b64bef104da6e17153ffdfff2d628c96b16d3ea33779f7
+  checksum: f945b1e0dd925b704b0ac17e31d6ecd33417de0eb3dd2a9177bd82e9e4dd6131
 - filename: server/src/http/routes/appointmentRequest.controller.ts
   checksum: d2770daa97ae332eec0b66497fdb717229895583ac3bfd48af1a830b36504968
 - filename: server/src/http/routes/auth/password.controller.ts
@@ -84,7 +86,7 @@ fileignoreconfig:
 - filename: server/src/services/__snapshots__/partnerJob.service.test.ts.snap
   checksum: 6f190e19172481706181e0a13ed7de5f0f6c699f86d35d9b08071ece445920b1
 - filename: server/src/services/application.service.test.ts
-  checksum: d11d73a73ed489475d6a2f7dd693787fc71a7dfd9150bb88cec4f88c92c19d02
+  checksum: 2b61fd4ed86f14a39b8c86531b13690bc586954829dd0c8df277516a500dca2d
 - filename: server/src/services/application.service.ts
   checksum: 38021ae663db3a146c848a8d691c0c1bc9bb262a80a6f2dedf9fcdb372eef3ac
 - filename: server/src/services/eligibleTrainingsForAppointment.service.ts

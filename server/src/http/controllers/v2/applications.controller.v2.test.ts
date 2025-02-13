@@ -1,12 +1,12 @@
 import { omit } from "lodash-es"
 import { ObjectId } from "mongodb"
-import { IApplicationApiPublic, JOB_STATUS } from "shared"
-import { NIVEAUX_POUR_LBA, RECRUITER_STATUS } from "shared/constants"
+import { IApplicationApiPublic, JOB_STATUS, JobCollectionName } from "shared"
+import { NIVEAUX_POUR_LBA, OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants"
 import { ApplicationIntention } from "shared/constants/application"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { applicationTestFile, generateApplicantFixture, generateApplicationFixture, wrongApplicationTestFile } from "shared/fixtures/application.fixture"
+import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
-import { generateLbaCompanyFixture } from "shared/fixtures/recruteurLba.fixture"
 import { parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
@@ -43,29 +43,25 @@ const fakeToken = getApiApprentissageTestingTokenFromInvalidPrivateKey({
   habilitations: { "applications:write": true, "appointments:write": false, "jobs:write": false },
 })
 
-const recruteur = generateLbaCompanyFixture({
-  siret: "11000001500013",
-  raison_sociale: "ASSEMBLEE NATIONALE",
-  enseigne: "ASSEMBLEE NATIONALE",
-  naf_code: "8411Z",
-  naf_label: "Administration publique générale",
-  rome_codes: ["G1203", "I1203", "M1602", "M1607", "K2303", "K1802", "K1707", "K1206", "I1101", "M1501", "K1404", "K1202", "M1601"],
-  street_number: "126",
-  street_name: "RUE DE L UNIVERSITE",
-  insee_city_code: "75107",
-  zip_code: "75007",
-  city: "Paris",
-  geo_coordinates: "48.860825,2.318606",
-  geopoint: parisFixture.centre,
-  email: "contact@mail.fr",
-  phone: null,
-  company_size: "1000-1999",
-  website: null,
-  opco: "Opco Mobilités",
-  opco_short_name: "MOBILITE",
-  opco_url: "https://www.opcomobilites.fr/",
+const recruteur = generateJobsPartnersOfferPrivate({
+  partner_label: LBA_ITEM_TYPE.RECRUTEURS_LBA,
+  workplace_siret: "11000001500013",
+  workplace_legal_name: "ASSEMBLEE NATIONALE",
+  workplace_brand: "ASSEMBLEE NATIONALE",
+  workplace_naf_code: "8411Z",
+  workplace_naf_label: "Administration publique générale",
+  offer_rome_codes: ["G1203", "I1203", "M1602", "M1607", "K2303", "K1802", "K1707", "K1206", "I1101", "M1501", "K1404", "K1202", "M1601"],
+  workplace_address_label: "126 RUE DE L UNIVERSITE 75107 Paris",
+  workplace_geopoint: {
+    coordinates: [2.318606, 48.860825],
+    type: "Point",
+  },
+  apply_email: "contact@mail.fr",
+  apply_phone: null,
+  workplace_size: "1000-1999",
+  workplace_website: null,
+  workplace_opco: OPCOS_LABEL.MOBILITE,
   created_at: new Date("2024-07-04T23:24:58.995Z"),
-  last_update_at: new Date("2024-07-04T23:24:58.995Z"),
 })
 
 const recruiterEmailFixture = "test-application@mail.fr"
@@ -128,7 +124,7 @@ const userToken = buildUserForToken(applicationFixture, user)
 const intentionToken = generateApplicationReplyToken(userToken, applicationFixture._id.toString(), ApplicationIntention.ENTRETIEN)
 
 const mockData = async () => {
-  await getDbCollection("recruteurslba").insertOne(recruteur)
+  await getDbCollection("jobs_partners").insertOne(recruteur)
   await getDbCollection("recruiters").insertOne(recruiter)
   await getDbCollection("referentielromes").insertOne(referentielRome)
   await getDbCollection("applicants").insertOne(applicantFixture)
@@ -160,7 +156,7 @@ describe("POST /v2/application", () => {
       applicant_first_name: "Jean",
       applicant_last_name: "Dupont",
       applicant_phone: "0101010101",
-      recipient_id: `recruteurslba_${recruteur._id.toString()}`,
+      recipient_id: `${JobCollectionName.partners}_${recruteur._id.toString()}`,
     }
 
     const response = await httpClient().inject({
@@ -170,7 +166,7 @@ describe("POST /v2/application", () => {
       headers: { authorization: `Bearer ${token}` },
     })
 
-    const application = await getDbCollection("applications").findOne({ company_siret: recruteur.siret })
+    const application = await getDbCollection("applications").findOne({ company_siret: recruteur.workplace_siret })
     const applicant = await getDbCollection("applicants").findOne({ _id: application?.applicant_id })
 
     expect.soft(response.statusCode).toEqual(202)
@@ -190,25 +186,25 @@ describe("POST /v2/application", () => {
       applicant_attachment_name: body.applicant_attachment_name,
       applicant_message_to_company: "",
       application_url: null,
-      company_email: recruteur.email,
+      caller: "Un super Partenaire",
+      company_address: "126 RUE DE L UNIVERSITE 75107 Paris",
+      company_email: recruteur.apply_email,
       company_feedback: null,
       company_feedback_reasons: null,
+      company_naf: "Administration publique générale",
       company_name: "ASSEMBLEE NATIONALE",
       company_phone: null,
       company_recruitment_intention: null,
-      company_siret: recruteur.siret,
-      company_naf: "Administration publique générale",
-      company_address: "126 RUE DE L UNIVERSITE, 75007 Paris",
-      job_id: recruteur._id.toString(),
+      company_siret: recruteur.workplace_siret,
       created_at: expect.any(Date),
+      job_id: recruteur._id.toString(),
+      job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
       job_searched_by_user: null,
-      job_title: "ASSEMBLEE NATIONALE",
-      job_origin: LBA_ITEM_TYPE.RECRUTEURS_LBA,
+      job_title: "Une super offre d'alternance",
       last_update_at: expect.any(Date),
       scan_status: "WAITING_FOR_SCAN",
       to_applicant_message_id: null,
       to_company_message_id: null,
-      caller: "Un super Partenaire",
     })
 
     expect(s3WriteString).toHaveBeenCalledWith("applications", `cv-${application!._id}`, {
@@ -263,7 +259,7 @@ describe("POST /v2/application", () => {
       company_name: "ASSEMBLEE NATIONALE",
       company_phone: "0300000000",
       company_recruitment_intention: null,
-      company_siret: recruteur.siret,
+      company_siret: recruiter.establishment_siret,
       created_at: expect.any(Date),
       job_id: job._id.toString(),
       job_searched_by_user: null,

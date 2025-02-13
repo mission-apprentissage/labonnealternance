@@ -13,7 +13,7 @@ import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, ma
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import { ILbaCompany, IRecruiter, IReferentielRome, JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models"
-import { FILTER_JOBPARTNERS_LABEL, IJobsPartnersOfferPrivate, INiveauDiplomeEuropeen, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { IJobsPartnersOfferPrivate, INiveauDiplomeEuropeen, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { zJobOfferApiWriteV3, zJobSearchApiV3Response, type IJobOfferApiWriteV3, type IJobOfferApiWriteV3Input } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -1461,7 +1461,7 @@ describe("findJobsOpportunities", () => {
             radius: 30,
             romes: ["D1104"],
             rncp: null,
-            partners_to_exclude: [FILTER_JOBPARTNERS_LABEL.HELLOWORK],
+            partners_to_exclude: [JOBPARTNERS_LABEL.HELLOWORK],
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
@@ -1480,7 +1480,7 @@ describe("findJobsOpportunities", () => {
             radius: 30,
             romes: ["D1104"],
             rncp: null,
-            partners_to_exclude: [FILTER_JOBPARTNERS_LABEL.RH_ALTERNANCE],
+            partners_to_exclude: [JOBPARTNERS_LABEL.RH_ALTERNANCE],
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
@@ -1497,7 +1497,7 @@ describe("findJobsOpportunities", () => {
             radius: 30,
             romes: ["D1104"],
             rncp: null,
-            partners_to_exclude: [FILTER_JOBPARTNERS_LABEL.RH_ALTERNANCE, FILTER_JOBPARTNERS_LABEL.HELLOWORK],
+            partners_to_exclude: [JOBPARTNERS_LABEL.RH_ALTERNANCE, JOBPARTNERS_LABEL.HELLOWORK],
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )

@@ -169,11 +169,11 @@ type IRecruteursLbaSearchParams = {
   romes: string[] | null
 }
 
-export const getRecruteursLbaFromDB = async ({ geo, romes }: IRecruteursLbaSearchParams): Promise<ILbaCompany[]> => {
-  const query: Filter<ILbaCompany> = {}
+export const getRecruteursLbaFromDB = async ({ geo, romes }: IRecruteursLbaSearchParams): Promise<IJobsPartnersOfferPrivate[]> => {
+  const query: Filter<IJobsPartnersOfferPrivate> = { partner_label: LBA_ITEM_TYPE.RECRUTEURS_LBA }
 
   if (romes) {
-    query.rome_codes = { $in: romes }
+    query.offer_rome_codes = { $in: romes }
   }
 
   const filterStages: Document[] =
@@ -184,16 +184,16 @@ export const getRecruteursLbaFromDB = async ({ geo, romes }: IRecruteursLbaSearc
             $geoNear: {
               near: { type: "Point", coordinates: [geo.longitude, geo.latitude] },
               distanceField: "distance",
-              key: "geopoint",
+              key: "workplace_geopoint",
               maxDistance: geo.radius * 1000,
               query,
             },
           },
-          { $sort: { distance: 1, last_update_at: -1 } },
+          { $sort: { distance: 1 } },
         ]
 
-  return await getDbCollection("recruteurslba")
-    .aggregate<ILbaCompany>([
+  return await getDbCollection("jobs_partners")
+    .aggregate<IJobsPartnersOfferPrivate>([
       ...filterStages,
       {
         $limit: 150,

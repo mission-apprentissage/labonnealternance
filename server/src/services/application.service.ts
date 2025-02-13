@@ -27,7 +27,7 @@ import { LBA_ITEM_TYPE, newItemTypeToOldItemType } from "shared/constants/lbaite
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
-import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IRecruiterIntentionMail } from "shared/models/recruiterIntentionMail.model"
 import { ITrackingCookies } from "shared/models/trafficSources.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
@@ -299,13 +299,6 @@ export const sendApplicationV2 = async ({
     phone: applicant_phone,
   })
 
-  if (collectionName === JobCollectionName.recruteurslba) {
-    const job = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(jobId) })
-    if (!job) {
-      throw badRequest(BusinessErrorCodes.NOTFOUND)
-    }
-    lbaJob = { type: LBA_ITEM_TYPE.RECRUTEURS_LBA, job, recruiter: null }
-  }
   if (collectionName === JobCollectionName.recruiters) {
     const recruiterResult = await getOffreAvecInfoMandataire(jobId)
     if (!recruiterResult) {
@@ -324,7 +317,8 @@ export const sendApplicationV2 = async ({
     if (!job) {
       throw badRequest(BusinessErrorCodes.NOTFOUND)
     }
-    lbaJob = { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, job, recruiter: null }
+    const type = job.partner_label === JOBPARTNERS_LABEL.RECRUTEURS_LBA ? LBA_ITEM_TYPE.RECRUTEURS_LBA : LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES
+    lbaJob = { type, job, recruiter: null }
   }
 
   await checkUserApplicationCountV2(applicant._id, lbaJob, caller)
