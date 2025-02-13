@@ -46,6 +46,7 @@ export const rawToComputedJobsPartners = async <ZodInput extends AnyZodObject>({
             ...computedJobPartner,
             partner_label: partnerLabel,
             created_at: importDate,
+            updated_at: importDate,
             offer_status_history: [],
           })
           counters.success++

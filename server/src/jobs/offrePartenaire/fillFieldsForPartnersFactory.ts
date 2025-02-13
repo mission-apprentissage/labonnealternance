@@ -17,7 +17,6 @@ import { streamGroupByCount } from "@/common/utils/streamUtils"
  * @param sourceFields: champs nécessaires à la récupération des données (au moins un doit être renseigné)
  * @param filledFields: champs potentiellement modifiés par l'enrichissement (au moins un doit être null)
  * @param groupSize: taille du packet de documents (utile pour optimiser les appels API et BDD)
- * @param replaceMatchFilter: si présent, remplace le filtre source de la collection computed_jobs_partners
  * @param addedMatchFilter: si présent et replaceMatchFilter absent, ajoute une condition sur le filtre source de la collection computed_jobs_partners
  * @param getData: fonction récupérant les nouvelles données.
  * La fonction doit retourner un tableau d'objet contenant l'_id du document à mettre à jour et les nouvelles valeurs à mettre à jour.
@@ -29,7 +28,6 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
   filledFields,
   getData,
   groupSize,
-  replaceMatchFilter,
   addedMatchFilter,
 }: {
   job: COMPUTED_ERROR_SOURCE
@@ -37,14 +35,13 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
   filledFields: readonly FilledFields[]
   getData: (sourceFields: Pick<IComputedJobsPartners, SourceFields | FilledFields | "_id">[]) => Promise<Array<Pick<IComputedJobsPartners, FilledFields | "_id">>>
   groupSize: number
-  replaceMatchFilter?: Filter<IComputedJobsPartners>
   addedMatchFilter?: Filter<IComputedJobsPartners>
 }) => {
   const logger = globalLogger.child({
     job,
   })
   logger.info(`job ${job} : début d'enrichissement des données`)
-  const queryFilter: Filter<IComputedJobsPartners> = replaceMatchFilter ?? {
+  const queryFilter: Filter<IComputedJobsPartners> = {
     $and: [
       {
         $or: sourceFields.map((field) => ({ [field]: { $ne: null } })),
@@ -62,6 +59,7 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
   const toUpdateCount = await getDbCollection("computed_jobs_partners").countDocuments(queryFilter)
   logger.info(`${toUpdateCount} documents à traiter`)
   const counters = { total: 0, success: 0, error: 0 }
+  const now = new Date()
   await oleoduc(
     getDbCollection("computed_jobs_partners")
       .find(queryFilter, {
@@ -85,7 +83,7 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
               {
                 updateOne: {
                   filter: { _id },
-                  update: { $set: newFields },
+                  update: { $set: { ...newFields, updated_at: now } },
                 },
               },
               {

@@ -1,7 +1,7 @@
 import { AnyBulkWriteOperation, Filter } from "mongodb"
 import { oleoduc, writeData } from "oleoduc"
 import jobsPartnersModel from "shared/models/jobsPartners.model"
-import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -51,16 +51,6 @@ export const validateComputedJobPartners = async (addedMatchFilter?: Filter<ICom
                       source: COMPUTED_ERROR_SOURCE.VALIDATION,
                       error: JSON.stringify(error),
                     },
-                  },
-                },
-              },
-            })
-            operations.push({
-              updateOne: {
-                filter: { _id: document._id },
-                update: {
-                  $set: {
-                    business_error: JOB_PARTNER_BUSINESS_ERROR.ZOD_VALIDATION,
                   },
                 },
               },
