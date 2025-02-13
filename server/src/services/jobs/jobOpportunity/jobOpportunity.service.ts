@@ -99,6 +99,7 @@ export const getJobsFromApi = async ({
             return LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
           case "lba":
             return LBA_ITEM_TYPE.RECRUTEURS_LBA
+          case "offres": // compatibility V1 to retreive FT jobs
           case "partnerJob":
             return LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES
 
@@ -112,7 +113,7 @@ export const getJobsFromApi = async ({
     const finalRadius = radius ?? 0
 
     const [peJobs, lbaCompanies, matchas, partnerJobs] = await Promise.all([
-      jobSources.includes("test")
+      jobSources.includes(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES)
         ? getSomeFtJobs({
             romes: romes?.split(","),
             insee: insee,
