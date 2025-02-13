@@ -2,7 +2,7 @@ fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: 1910fb07ec956bb49fa09319706b02bdf1320633f8d405f7f53783ebf827f39b
 - filename: .infra/vault/vault.yml
-  checksum: efe57aa0c0d981181edf8053670c91bf415513077fcb0cc0a26592776f7c71eb
+  checksum: 0e933751fef493db5d478d71c3b774259121c30d9838c53bfc3a167d706b155f
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
   checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
 - filename: cypress/pages/FlowAdminPage.ts
@@ -64,7 +64,7 @@ fileignoreconfig:
 - filename: server/src/jobs/offrePartenaire/__snapshots__/importRHAlternance.test.ts.snap
   checksum: 41e5eadcdaa0cb1eb95e4cb3859f4b7b1d176bbb95ee8451d46a6b2c9021c3fd
 - filename: server/src/jobs/offrePartenaire/detectDuplicateJobPartners.test.ts
-  checksum: 42830bef5459bba7625d1c52c2eac844911c3471f483f38499002e61dfd7cbb5
+  checksum: 82d624da5034d7e482cb7b2a99a134796e3a2b3c3a2a89a10da2e49242854c79
 - filename: server/src/jobs/offrePartenaire/importFromUrlInXml.ts
   checksum: 18bd149922151536ad0e239b082309697cee6046b33512d5eecc54b2d25b465a
 - filename: server/src/jobs/offrePartenaire/importHelloWork.test.input.xml
