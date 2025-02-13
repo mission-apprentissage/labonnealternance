@@ -8,6 +8,7 @@ import { fileTypeFromBuffer } from "file-type"
 import { ObjectId } from "mongodb"
 import {
   ApplicationScanStatus,
+  CompanyFeebackSendStatus,
   EMAIL_LOG_TYPE,
   IApplicant,
   IApplication,
@@ -28,7 +29,6 @@ import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import { IRecruiterIntentionMail } from "shared/models/recruiterIntentionMail.model"
 import { ITrackingCookies } from "shared/models/trafficSources.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { z } from "zod"
@@ -548,6 +548,8 @@ const newApplicationToApplicationDocument = async (newApplication: INewApplicati
     applicant_id: applicant._id,
     company_email: recruteurEmail.toLowerCase(),
     company_recruitment_intention: null,
+    company_recruitment_intention_date: null,
+    company_feedback_send_status: null,
     company_feedback: null,
     company_feedback_reasons: null,
     job_origin: newApplication.company_type,
@@ -579,6 +581,8 @@ const newApplicationToApplicationDocumentV2 = async (
     applicant_message_to_company: prepareMessageForMail(newApplication.applicant_message),
     job_searched_by_user: "job_searched_by_user" in newApplication ? newApplication.job_searched_by_user : null,
     company_recruitment_intention: null,
+    company_feedback_send_status: null,
+    company_recruitment_intention_date: null,
     company_feedback: null,
     company_feedback_reasons: null,
     caller: caller,
@@ -805,14 +809,18 @@ export const sendMailToApplicant = async ({
   company_recruitment_intention: ApplicationIntention
   company_feedback: string
   refusal_reasons: RefusalReasons[]
-}): Promise<void> => {
+}): Promise<{ messageId: string; accepted?: string[] | undefined } | null> => {
   const partner = (application.caller && PARTNER_NAMES[application.caller]) ?? null
   const jobSourceType: string = await getJobSourceType(application)
   const { email: applicantEmail } = applicant
+  let sentMessageId: {
+    messageId: string
+    accepted?: string[] | undefined
+  } | null = null
 
   switch (company_recruitment_intention) {
     case ApplicationIntention.ENTRETIEN: {
-      mailer.sendEmail({
+      sentMessageId = await mailer.sendEmail({
         to: applicantEmail,
         cc: email!,
         subject: `Réponse positive de ${application.company_name} à la candidature${partner ? ` ${partner}` : ""} de ${applicant.firstname} ${applicant.lastname}`,
@@ -831,7 +839,7 @@ export const sendMailToApplicant = async ({
       break
     }
     case ApplicationIntention.REFUS: {
-      mailer.sendEmail({
+      sentMessageId = await mailer.sendEmail({
         to: applicantEmail,
         subject: `Réponse négative de ${application.company_name} à la candidature${partner ? ` ${partner}` : ""} de ${applicant.firstname} ${applicant.lastname}`,
         template: getEmailTemplate("mail-candidat-refus"),
@@ -850,6 +858,7 @@ export const sendMailToApplicant = async ({
     default:
       break
   }
+  return sentMessageId
 }
 
 /**
@@ -1317,18 +1326,17 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
     recruiter_phone = job.apply_phone || ""
   }
 
-  await getDbCollection("recruiter_intention_mails").updateOne(
+  await getDbCollection("applications").updateOne(
     {
-      applicationId: application._id,
+      _id: application._id,
     },
     {
-      $setOnInsert: { _id: new ObjectId(), applicationId: application._id },
       $set: {
-        createdAt: new Date(),
-        intention,
+        company_feedback_send_status: CompanyFeebackSendStatus.SCHEDULED,
+        company_recruitment_intention_date: new Date(),
+        company_recruitment_intention: intention,
       },
-    },
-    { upsert: true }
+    }
   )
 
   return {
@@ -1339,6 +1347,47 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
   }
 }
 
+export const processRecruiterIntention = async ({ application }: { application: IApplication }) => {
+  const applicant = await getApplicantFromDB({ _id: application.applicant_id })
+
+  if (!applicant) {
+    throw notFound(`unexpected: applicant not found for application ${application._id}`)
+  }
+
+  const company_feedback =
+    application.company_recruitment_intention === ApplicationIntention.REFUS ? ApplicationIntentionDefaultText.REFUS : ApplicationIntentionDefaultText.ENTRETIEN
+
+  const company_recruitment_intention = application.company_recruitment_intention === ApplicationIntention.REFUS ? ApplicationIntention.REFUS : ApplicationIntention.ENTRETIEN
+
+  const sentMessageId = await sendMailToApplicant({
+    application,
+    applicant,
+    email: application.company_email,
+    phone: (await getPhoneForApplication(application)) ?? "",
+    company_recruitment_intention,
+    company_feedback,
+    refusal_reasons: [],
+  })
+
+  if (sentMessageId?.accepted?.length) {
+    await getDbCollection("applications").updateOne(
+      { _id: application._id },
+      { $set: { company_feedback_send_status: CompanyFeebackSendStatus.SENT, company_feedback, company_feedback_date: new Date() } }
+    )
+
+    await getDbCollection("applicants_email_logs").insertOne({
+      _id: new ObjectId(),
+      applicant_id: applicant._id,
+      type: application.company_recruitment_intention === ApplicationIntention.ENTRETIEN ? EMAIL_LOG_TYPE.INTENTION_ENTRETIEN : EMAIL_LOG_TYPE.INTENTION_REFUS,
+      message_id: sentMessageId?.messageId ?? null,
+      application_id: application._id,
+      createdAt: new Date(),
+    })
+  } else {
+    throw internal(`unexpected: intention scheduled message not sent for application ${application._id}`)
+  }
+}
+
 export const sendRecruiterIntention = async ({
   application_id,
   company_recruitment_intention,
@@ -1346,20 +1395,15 @@ export const sendRecruiterIntention = async ({
   email,
   phone,
   refusal_reasons,
-  shouldComputePhoneAndEmail = false,
 }: {
   application_id: ObjectId
   company_recruitment_intention: ApplicationIntention
   company_feedback: string
-  email: string | null
-  phone: string | null
+  email: string
+  phone: string
   refusal_reasons: RefusalReasons[]
-  shouldComputePhoneAndEmail?: boolean
 }) => {
-  const application = await getDbCollection("applications").findOneAndUpdate(
-    { _id: application_id },
-    { $set: { company_recruitment_intention, company_feedback, company_feedback_reasons: refusal_reasons, company_feedback_date: new Date() } }
-  )
+  const application = await getDbCollection("applications").findOne({ _id: application_id })
 
   if (!application) {
     throw notFound(`unexpected: application not found when processing intentions. application_id=${application_id}`)
@@ -1371,58 +1415,70 @@ export const sendRecruiterIntention = async ({
     throw notFound(`unexpected: applicant not found for application ${application_id}`)
   }
 
-  const computedPhone = shouldComputePhoneAndEmail ? ((await getPhoneForApplication(application)) ?? "") : phone
-  const computedEmail = shouldComputePhoneAndEmail ? application.company_email : email
-
-  await sendMailToApplicant({
+  const sentMessageId = await sendMailToApplicant({
     application,
     applicant,
-    email: computedEmail,
-    phone: computedPhone,
+    email,
+    phone,
     company_recruitment_intention,
     company_feedback,
     refusal_reasons,
   })
 
-  await getDbCollection("recruiter_intention_mails").deleteOne({ applicationId: application_id })
+  if (sentMessageId?.accepted?.length) {
+    await getDbCollection("applications").findOneAndUpdate(
+      { _id: application_id },
+      {
+        $set: {
+          company_recruitment_intention,
+          company_feedback,
+          company_feedback_send_status: CompanyFeebackSendStatus.SENT,
+          company_feedback_reasons: refusal_reasons,
+          company_feedback_date: new Date(),
+        },
+      }
+    )
 
-  await getDbCollection("applicants_email_logs").insertOne({
-    _id: new ObjectId(),
-    applicant_id: applicant._id,
-    type: company_recruitment_intention === ApplicationIntention.ENTRETIEN ? EMAIL_LOG_TYPE.INTENTION_ENTRETIEN : EMAIL_LOG_TYPE.INTENTION_REFUS,
-    message_id: null,
-    createdAt: new Date(),
-  })
+    await getDbCollection("applicants_email_logs").insertOne({
+      _id: new ObjectId(),
+      applicant_id: applicant._id,
+      type: company_recruitment_intention === ApplicationIntention.ENTRETIEN ? EMAIL_LOG_TYPE.INTENTION_ENTRETIEN : EMAIL_LOG_TYPE.INTENTION_REFUS,
+      message_id: sentMessageId?.messageId ?? null,
+      application_id: application._id,
+      createdAt: new Date(),
+    })
+  } else {
+    throw internal(`unexpected: intention message not sent for application ${application_id}`)
+  }
 }
 
 export const processScheduledRecruiterIntentions = async () => {
   try {
-    const stream = await getDbCollection("recruiter_intention_mails")
-      .find({ createdAt: { $lte: dayjs().subtract(3, "hours").toDate() } })
+    const stream = await getDbCollection("applications")
+      .find({
+        company_recruitment_intention_date: { $lte: dayjs().subtract(3, "hours").toDate() },
+        company_feedback_send_status: CompanyFeebackSendStatus.SCHEDULED,
+      })
       .stream()
 
     const counters = { total: 0, entretien: 0, error: 0 }
 
     const transform = new Transform({
       objectMode: true,
-      async transform(recruiterIntention: IRecruiterIntentionMail, encoding, callback: (error?: Error | null, data?: any) => void) {
+      async transform(application: IApplication, encoding, callback: (error?: Error | null, data?: any) => void) {
         counters.total++
         try {
-          await sendRecruiterIntention({
-            application_id: recruiterIntention.applicationId,
-            company_recruitment_intention: recruiterIntention.intention,
-            company_feedback: recruiterIntention.intention === ApplicationIntention.REFUS ? ApplicationIntentionDefaultText.REFUS : ApplicationIntentionDefaultText.ENTRETIEN,
-            email: null,
-            phone: null,
-            refusal_reasons: [],
-            shouldComputePhoneAndEmail: true,
-          })
+          await processRecruiterIntention({ application })
 
-          if (recruiterIntention.intention === ApplicationIntention.ENTRETIEN) {
+          if (application.company_recruitment_intention === ApplicationIntention.ENTRETIEN) {
             counters.entretien++
           }
         } catch (intentionErr) {
           counters.error++
+          await getDbCollection("applications").updateOne(
+            { _id: application._id },
+            { $set: { company_feedback_send_status: CompanyFeebackSendStatus.ERROR, company_feedback_date: new Date() } }
+          )
           sentryCaptureException(intentionErr)
         }
         callback(null)

@@ -15,6 +15,7 @@ export const ZApplicantEmailLog = z
   .object({
     _id: zObjectId,
     applicant_id: zObjectId,
+    application_id: zObjectId.nullable(),
     type: extensions.buildEnum(EMAIL_LOG_TYPE),
     message_id: z.string().nullable(),
     createdAt: z.date(),
