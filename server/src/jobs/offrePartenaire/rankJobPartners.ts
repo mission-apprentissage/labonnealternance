@@ -29,6 +29,7 @@ export const rankJobPartners = async (addedMatchFilter?: Filter<IComputedJobsPar
     job: COMPUTED_ERROR_SOURCE.RANKING,
     sourceFields,
     filledFields,
+    replaceMatchFilter: {},
     groupSize: 500,
     addedMatchFilter,
     getData: async (documents) => {
