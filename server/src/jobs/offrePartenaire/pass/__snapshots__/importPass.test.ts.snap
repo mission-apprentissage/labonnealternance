@@ -24,6 +24,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
     "offer_origin": null,
     "offer_rome_codes": null,
     "offer_status": "Active",
+    "offer_status_history": [],
     "offer_target_diploma": {
       "european": "6",
       "label": "Licence, Maîtrise, autres formations niveau (Bac+3 à Bac+4)",
@@ -73,6 +74,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
     "offer_origin": null,
     "offer_rome_codes": null,
     "offer_status": "Active",
+    "offer_status_history": [],
     "offer_target_diploma": {
       "european": "6",
       "label": "Licence, Maîtrise, autres formations niveau (Bac+3 à Bac+4)",
@@ -122,6 +124,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
     "offer_origin": null,
     "offer_rome_codes": null,
     "offer_status": "Active",
+    "offer_status_history": [],
     "offer_target_diploma": {
       "european": "7",
       "label": "Master, titre ingénieur, autres formations niveau (Bac+5)",
@@ -171,6 +174,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
     "offer_origin": null,
     "offer_rome_codes": null,
     "offer_status": "Active",
+    "offer_status_history": [],
     "offer_target_diploma": {
       "european": "5",
       "label": "BTS, DEUST, autres formations niveau (Bac+2)",
@@ -220,6 +224,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
     "offer_origin": null,
     "offer_rome_codes": null,
     "offer_status": "Active",
+    "offer_status_history": [],
     "offer_target_diploma": {
       "european": "5",
       "label": "BTS, DEUST, autres formations niveau (Bac+2)",

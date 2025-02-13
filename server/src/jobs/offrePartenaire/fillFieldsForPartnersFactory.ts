@@ -17,6 +17,8 @@ import { streamGroupByCount } from "@/common/utils/streamUtils"
  * @param sourceFields: champs nécessaires à la récupération des données (au moins un doit être renseigné)
  * @param filledFields: champs potentiellement modifiés par l'enrichissement (au moins un doit être null)
  * @param groupSize: taille du packet de documents (utile pour optimiser les appels API et BDD)
+ * @param replaceMatchFilter: si présent, remplace le filtre source de la collection computed_jobs_partners
+ * @param addedMatchFilter: si présent et replaceMatchFilter absent, ajoute une condition sur le filtre source de la collection computed_jobs_partners
  * @param getData: fonction récupérant les nouvelles données.
  * La fonction doit retourner un tableau d'objet contenant l'_id du document à mettre à jour et les nouvelles valeurs à mettre à jour.
  * Les valeurs retournées seront modifiées et écraseront les anciennes données.
@@ -27,20 +29,22 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
   filledFields,
   getData,
   groupSize,
-  sourceFilter,
+  replaceMatchFilter,
+  addedMatchFilter,
 }: {
   job: COMPUTED_ERROR_SOURCE
   sourceFields: readonly SourceFields[]
   filledFields: readonly FilledFields[]
   getData: (sourceFields: Pick<IComputedJobsPartners, SourceFields | FilledFields | "_id">[]) => Promise<Array<Pick<IComputedJobsPartners, FilledFields | "_id">>>
   groupSize: number
-  sourceFilter?: Filter<IComputedJobsPartners>
+  replaceMatchFilter?: Filter<IComputedJobsPartners>
+  addedMatchFilter?: Filter<IComputedJobsPartners>
 }) => {
   const logger = globalLogger.child({
     job,
   })
   logger.info(`job ${job} : début d'enrichissement des données`)
-  const queryFilter: Filter<IComputedJobsPartners> = sourceFilter ?? {
+  const queryFilter: Filter<IComputedJobsPartners> = replaceMatchFilter ?? {
     $and: [
       {
         $or: sourceFields.map((field) => ({ [field]: { $ne: null } })),
@@ -52,6 +56,7 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
         business_error: null,
         jobs_in_success: { $nin: [job] },
       },
+      ...(addedMatchFilter ? [addedMatchFilter] : []),
     ],
   }
   const toUpdateCount = await getDbCollection("computed_jobs_partners").countDocuments(queryFilter)
