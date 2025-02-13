@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb"
 import { IUnsubscribedLbaCompany, zRoutes } from "shared"
 import { UNSUBSCRIBE_EMAIL_ERRORS } from "shared/constants"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IUnsubscribeQueryResponse } from "shared/models/unsubscribedRecruteurLba.model"
 
 import { asyncForEach } from "@/common/utils/asyncUtils"
@@ -35,16 +36,14 @@ export default function (server: Server) {
       const reason = req.body.reason
       const sirets = req.body.sirets
 
-      const criteria: { email: string; siret?: { $in: string[] } } = { email }
-      if (sirets) {
-        if (sirets.length) {
-          criteria.siret = { $in: sirets }
-        } else {
-          return res.status(400).send({ result: UNSUBSCRIBE_EMAIL_ERRORS.WRONG_PARAMETERS })
-        }
+      const query: { apply_email: string; workplace_siret?: { $in: string[] }; partner_label: string } = { apply_email: email, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }
+      if (sirets && sirets.length) {
+        query.workplace_siret = { $in: sirets }
+      } else {
+        return res.status(400).send({ result: UNSUBSCRIBE_EMAIL_ERRORS.WRONG_PARAMETERS })
       }
 
-      const lbaCompaniesToUnsubscribe = await getDbCollection("jobs_partners").find(criteria).limit(ARBITRARY_COMPANY_LIMIT).toArray()
+      const lbaCompaniesToUnsubscribe = await getDbCollection("jobs_partners").find(query).limit(ARBITRARY_COMPANY_LIMIT).toArray()
 
       if (!lbaCompaniesToUnsubscribe.length) {
         result = { result: UNSUBSCRIBE_EMAIL_ERRORS.NON_RECONNU }
@@ -88,7 +87,7 @@ export default function (server: Server) {
 
           await getDbCollection("unsubscribedrecruteurslba").insertOne(unsubscribedLbaCompany)
 
-          const lbaCompanyToUnsubscribe = await getDbCollection("jobs_partners").findOne({ workplace_siret })
+          const lbaCompanyToUnsubscribe = await getDbCollection("jobs_partners").findOne({ workplace_siret, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
           if (lbaCompanyToUnsubscribe) {
             await getDbCollection("jobs_partners").deleteOne({ _id: lbaCompanyToUnsubscribe._id })
           }
