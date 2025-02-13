@@ -66,6 +66,7 @@ export default function (server: Server) {
             workplace_address_city,
             workplace_size,
             created_at,
+            updated_at,
           } = company
           const unsubscribedLbaCompany: IUnsubscribedLbaCompany = {
             _id: new ObjectId(),
@@ -80,7 +81,7 @@ export default function (server: Server) {
             city: workplace_address_city,
             company_size: workplace_size,
             created_at,
-            last_update_at: updated_at, // date does not exist on jobs_partners, set to created_at
+            last_update_at: updated_at,
             unsubscribe_reason: reason,
             unsubscribe_date: now,
           }
