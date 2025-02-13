@@ -381,7 +381,7 @@ export const convertLbaCompanyToJobRecruiterApi = (recruteursLba: IJobsPartnersO
       apply: {
         url: `${config.publicUrl}/recherche?type=lba&itemId=${recruteurLba.workplace_siret}`,
         phone: recruteurLba.apply_phone,
-        recipient_id: recruteurLba.apply_email ? `recruteurslba_${recruteurLba._id}` : null,
+        recipient_id: recruteurLba.apply_email ? `partners_${recruteurLba._id}` : null,
       },
     })
   )

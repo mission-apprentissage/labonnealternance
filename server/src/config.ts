@@ -12,7 +12,6 @@ const config = {
   transactionalEmail: "nepasrepondre@apprentissage.beta.gouv.fr",
   transactionalEmailSender: "La bonne alternance",
   disable_processors: env.get("LBA_DISABLE_PROCESSORS").required().asBool(),
-  minRecruteurLBAAlgoData: 200_000,
   log: {
     level: env.get("LBA_LOG_LEVEL").required().asString(),
     format: env.get("LBA_LOG_FORMAT").required().asString(),

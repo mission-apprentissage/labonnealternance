@@ -77,7 +77,7 @@ const transformCompany = ({
     applicationCount: applicationCount?.count || 0,
     url: null,
     token: generateApplicationToken({ company_siret: company.workplace_siret! }),
-    recipient_id: `recruteurslba_${company._id.toString()}`,
+    recipient_id: `partners_${company._id.toString()}`,
   }
 
   return resultCompany
@@ -120,7 +120,7 @@ const transformCompanyWithMinimalData = ({
     ],
     applicationCount: applicationCount?.count || 0,
     token: generateApplicationToken({ company_siret: company.workplace_siret! }),
-    recipient_id: `recruteurslba_${company._id.toString()}`,
+    recipient_id: `partners_${company._id.toString()}`,
   }
 
   return resultCompany
@@ -335,8 +335,6 @@ export const getSomeCompanies = async ({
     opco,
     opcoUrl,
   })
-
-  console.log({ companies })
 
   if (!("error" in companies) && companies instanceof Array) {
     const sirets = companies.map(({ workplace_siret }) => workplace_siret) as string[]

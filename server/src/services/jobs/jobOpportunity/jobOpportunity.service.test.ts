@@ -8,11 +8,10 @@ import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
 import { generateFeaturePropertyFixture } from "shared/fixtures/geolocation.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
-import { generateLbaCompanyFixture } from "shared/fixtures/recruteurLba.fixture"
 import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
-import { ILbaCompany, IRecruiter, IReferentielRome, JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models"
+import { IRecruiter, IReferentielRome, JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models"
 import { IJobsPartnersOfferPrivate, INiveauDiplomeEuropeen, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { zJobOfferApiWriteV3, zJobSearchApiV3Response, type IJobOfferApiWriteV3, type IJobOfferApiWriteV3Input } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
@@ -49,38 +48,38 @@ afterEach(() => {
 })
 
 describe("findJobsOpportunities", () => {
-  const recruiters: ILbaCompany[] = [
-    generateLbaCompanyFixture({
-      siret: "11000001500013",
-      raison_sociale: "ASSEMBLEE NATIONALE",
-      enseigne: "ASSEMBLEE NATIONALE - La vraie",
-      rome_codes: ["M1602"],
-      geopoint: parisFixture.centre,
-      insee_city_code: parisFixture.code,
-      city: parisFixture.nom,
-      phone: "0100000000",
-      last_update_at: new Date("2021-01-01"),
+  const recruiters: IJobsPartnersOfferPrivate[] = [
+    generateJobsPartnersOfferPrivate({
+      partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+      workplace_siret: "11000001500013",
+      workplace_legal_name: "ASSEMBLEE NATIONALE",
+      workplace_brand: "ASSEMBLEE NATIONALE - La vraie",
+      offer_rome_codes: ["M1602"],
+      workplace_geopoint: parisFixture.centre,
+      workplace_address_zipcode: parisFixture.code,
+      workplace_address_city: parisFixture.nom,
+      apply_phone: "0100000000",
     }),
-    generateLbaCompanyFixture({
-      siret: "77555848900073",
-      raison_sociale: "GRAND PORT MARITIME DE MARSEILLE (GPMM)",
-      rome_codes: ["M1602", "D1212"],
-      geopoint: marseilleFixture.centre,
-      insee_city_code: marseilleFixture.code,
-      city: marseilleFixture.nom,
-      phone: "0200000000",
-      last_update_at: new Date("2022-01-01"),
+    generateJobsPartnersOfferPrivate({
+      partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+      workplace_siret: "77555848900073",
+      workplace_legal_name: "GRAND PORT MARITIME DE MARSEILLE (GPMM)",
+      offer_rome_codes: ["M1602", "D1212"],
+      workplace_geopoint: marseilleFixture.centre,
+      workplace_address_zipcode: marseilleFixture.code,
+      workplace_address_city: marseilleFixture.nom,
+      apply_phone: "0200000000",
     }),
-    generateLbaCompanyFixture({
-      siret: "52951974600034",
-      raison_sociale: "SOCIETE PARISIENNE DE LA PISCINE PONTOISE (S3P)",
-      enseigne: "SOCIETE PARISIENNE DE LA PISCINE PONTOISE (S3P)",
-      rome_codes: ["D1211"],
-      geopoint: levalloisFixture.centre,
-      insee_city_code: levalloisFixture.code,
-      city: levalloisFixture.nom,
-      phone: "0100000001",
-      last_update_at: new Date("2023-01-01"),
+    generateJobsPartnersOfferPrivate({
+      partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+      workplace_siret: "52951974600034",
+      workplace_legal_name: "SOCIETE PARISIENNE DE LA PISCINE PONTOISE (S3P)",
+      workplace_brand: "SOCIETE PARISIENNE DE LA PISCINE PONTOISE (S3P)",
+      offer_rome_codes: ["D1211"],
+      workplace_geopoint: levalloisFixture.centre,
+      workplace_address_zipcode: levalloisFixture.code,
+      workplace_address_city: levalloisFixture.nom,
+      apply_phone: "0100000001",
     }),
   ]
 
@@ -200,7 +199,7 @@ describe("findJobsOpportunities", () => {
   ]
 
   beforeEach(async () => {
-    await getDbCollection("recruteurslba").insertMany(recruiters)
+    await getDbCollection("jobs_partners").insertMany(recruiters)
     await getDbCollection("recruiters").insertMany(lbaJobs)
     await getDbCollection("jobs_partners").insertMany(partnerJobs)
     await getDbCollection("referentielromes").insertMany(romes)
@@ -224,7 +223,7 @@ describe("findJobsOpportunities", () => {
     expect(results).toEqual({
       jobs: [
         expect.objectContaining({
-          identifier: { id: lbaJobs[0].jobs[0]._id, partner_job_id: lbaJobs[0].jobs[0]._id.toString(), partner_label: "La bonne alternance" },
+          identifier: { id: lbaJobs[0].jobs[0]._id, partner_job_id: lbaJobs[0].jobs[0]._id.toString(), partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA },
           workplace: expect.objectContaining({
             location: expect.objectContaining({
               geopoint: lbaJobs[0].geopoint,
@@ -232,7 +231,7 @@ describe("findJobsOpportunities", () => {
           }),
         }),
         expect.objectContaining({
-          identifier: { id: null, partner_job_id: ftJobs[0].id, partner_label: "France Travail" },
+          identifier: { id: null, partner_job_id: ftJobs[0].id, partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL },
         }),
         expect.objectContaining({
           identifier: { id: partnerJobs[0]._id, partner_job_id: partnerJobs[0].partner_job_id, partner_label: partnerJobs[0].partner_label },
@@ -247,8 +246,8 @@ describe("findJobsOpportunities", () => {
         expect.objectContaining({
           identifier: { id: recruiters[0]._id },
           workplace: expect.objectContaining({
-            location: expect.objectContaining({ geopoint: recruiters[0].geopoint }),
-            name: recruiters[0].enseigne,
+            location: expect.objectContaining({ geopoint: recruiters[0].workplace_geopoint }),
+            name: recruiters[0].workplace_legal_name,
           }),
         }),
       ],
@@ -306,7 +305,7 @@ describe("findJobsOpportunities", () => {
     expect(results).toEqual({
       jobs: [
         expect.objectContaining({
-          identifier: { id: lbaJobs[0].jobs[0]._id, partner_job_id: lbaJobs[0].jobs[0]._id.toString(), partner_label: "La bonne alternance" },
+          identifier: { id: lbaJobs[0].jobs[0]._id, partner_job_id: lbaJobs[0].jobs[0]._id.toString(), partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA },
           workplace: expect.objectContaining({
             location: expect.objectContaining({
               geopoint: lbaJobs[0].geopoint,
@@ -314,7 +313,7 @@ describe("findJobsOpportunities", () => {
           }),
         }),
         expect.objectContaining({
-          identifier: { id: lbaJobs[2].jobs[0]._id, partner_job_id: lbaJobs[2].jobs[0]._id.toString(), partner_label: "La bonne alternance" },
+          identifier: { id: lbaJobs[2].jobs[0]._id, partner_job_id: lbaJobs[2].jobs[0]._id.toString(), partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA },
           workplace: expect.objectContaining({
             location: expect.objectContaining({
               geopoint: lbaJobs[2].geopoint,
@@ -322,7 +321,7 @@ describe("findJobsOpportunities", () => {
           }),
         }),
         expect.objectContaining({
-          identifier: { id: null, partner_job_id: ftJobs[0].id, partner_label: "France Travail" },
+          identifier: { id: null, partner_job_id: ftJobs[0].id, partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL },
         }),
         expect.objectContaining({
           identifier: { id: partnerJobs[0]._id, partner_job_id: partnerJobs[0].partner_job_id, partner_label: partnerJobs[0].partner_label },
@@ -345,15 +344,15 @@ describe("findJobsOpportunities", () => {
         expect.objectContaining({
           identifier: { id: recruiters[0]._id },
           workplace: expect.objectContaining({
-            location: expect.objectContaining({ geopoint: recruiters[0].geopoint }),
-            name: recruiters[0].enseigne,
+            location: expect.objectContaining({ geopoint: recruiters[0].workplace_geopoint }),
+            name: recruiters[0].workplace_legal_name,
           }),
         }),
         expect.objectContaining({
           identifier: { id: recruiters[2]._id },
           workplace: expect.objectContaining({
-            location: expect.objectContaining({ geopoint: recruiters[2].geopoint }),
-            name: recruiters[2].enseigne,
+            location: expect.objectContaining({ geopoint: recruiters[2].workplace_geopoint }),
+            name: recruiters[2].workplace_legal_name,
           }),
         }),
       ],
@@ -395,13 +394,13 @@ describe("findJobsOpportunities", () => {
     expect(results).toEqual({
       jobs: [
         expect.objectContaining({
-          identifier: { id: lbaJobs[1].jobs[0]._id, partner_job_id: lbaJobs[1].jobs[0]._id.toString(), partner_label: "La bonne alternance" },
+          identifier: { id: lbaJobs[1].jobs[0]._id, partner_job_id: lbaJobs[1].jobs[0]._id.toString(), partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA },
         }),
         expect.objectContaining({
-          identifier: { id: lbaJobs[0].jobs[0]._id, partner_job_id: lbaJobs[0].jobs[0]._id.toString(), partner_label: "La bonne alternance" },
+          identifier: { id: lbaJobs[0].jobs[0]._id, partner_job_id: lbaJobs[0].jobs[0]._id.toString(), partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA },
         }),
         expect.objectContaining({
-          identifier: { id: null, partner_job_id: ftJobs[0].id, partner_label: "France Travail" },
+          identifier: { id: null, partner_job_id: ftJobs[0].id, partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL },
         }),
         expect.objectContaining({
           identifier: { id: partnerJobs[1]._id, partner_job_id: partnerJobs[1].partner_job_id, partner_label: partnerJobs[1].partner_label },
@@ -412,15 +411,15 @@ describe("findJobsOpportunities", () => {
       ],
       recruiters: [
         expect.objectContaining({
-          identifier: { id: recruiters[1]._id },
+          identifier: { id: recruiters[0]._id },
           workplace: expect.objectContaining({
-            name: recruiters[1].enseigne,
+            name: recruiters[0].workplace_legal_name,
           }),
         }),
         expect.objectContaining({
-          identifier: { id: recruiters[0]._id },
+          identifier: { id: recruiters[1]._id },
           workplace: expect.objectContaining({
-            name: recruiters[0].enseigne,
+            name: recruiters[1].workplace_legal_name,
           }),
         }),
       ],
@@ -466,7 +465,7 @@ describe("findJobsOpportunities", () => {
       expect(results).toEqual({
         jobs: [
           expect.objectContaining({
-            identifier: { id: lbaJobs[2].jobs[0]._id, partner_job_id: lbaJobs[2].jobs[0]._id.toString(), partner_label: "La bonne alternance" },
+            identifier: { id: lbaJobs[2].jobs[0]._id, partner_job_id: lbaJobs[2].jobs[0]._id.toString(), partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA },
             workplace: expect.objectContaining({
               location: expect.objectContaining({
                 geopoint: lbaJobs[2].geopoint,
@@ -486,9 +485,9 @@ describe("findJobsOpportunities", () => {
           expect.objectContaining({
             identifier: { id: recruiters[2]._id },
             workplace: expect.objectContaining({
-              name: recruiters[2].enseigne,
+              name: recruiters[2].workplace_legal_name,
               location: expect.objectContaining({
-                geopoint: recruiters[2].geopoint,
+                geopoint: recruiters[2].workplace_geopoint,
               }),
             }),
           }),
@@ -605,7 +604,7 @@ describe("findJobsOpportunities", () => {
       expect(results).toEqual({
         jobs: [
           expect.objectContaining({
-            identifier: { id: lbaJobs[2].jobs[0]._id, partner_job_id: lbaJobs[2].jobs[0]._id.toString(), partner_label: "La bonne alternance" },
+            identifier: { id: lbaJobs[2].jobs[0]._id, partner_job_id: lbaJobs[2].jobs[0]._id.toString(), partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA },
             workplace: expect.objectContaining({
               location: expect.objectContaining({
                 geopoint: lbaJobs[2].geopoint,
@@ -625,9 +624,9 @@ describe("findJobsOpportunities", () => {
           expect.objectContaining({
             identifier: { id: recruiters[2]._id },
             workplace: expect.objectContaining({
-              name: recruiters[2].enseigne,
+              name: recruiters[2].workplace_legal_name,
               location: expect.objectContaining({
-                geopoint: recruiters[2].geopoint,
+                geopoint: recruiters[2].workplace_geopoint,
               }),
             }),
           }),
@@ -677,7 +676,7 @@ describe("findJobsOpportunities", () => {
     expect(results).toEqual({
       jobs: [
         expect.objectContaining({
-          identifier: { id: lbaJobs[0].jobs[0]._id, partner_job_id: lbaJobs[0].jobs[0]._id.toString(), partner_label: "La bonne alternance" },
+          identifier: { id: lbaJobs[0].jobs[0]._id, partner_job_id: lbaJobs[0].jobs[0]._id.toString(), partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA },
           workplace: expect.objectContaining({
             location: expect.objectContaining({
               geopoint: lbaJobs[0].geopoint,
@@ -685,7 +684,7 @@ describe("findJobsOpportunities", () => {
           }),
         }),
         expect.objectContaining({
-          identifier: { id: lbaJobs[2].jobs[0]._id, partner_job_id: lbaJobs[2].jobs[0]._id.toString(), partner_label: "La bonne alternance" },
+          identifier: { id: lbaJobs[2].jobs[0]._id, partner_job_id: lbaJobs[2].jobs[0]._id.toString(), partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA },
           workplace: expect.objectContaining({
             location: expect.objectContaining({
               geopoint: lbaJobs[2].geopoint,
@@ -693,7 +692,7 @@ describe("findJobsOpportunities", () => {
           }),
         }),
         expect.objectContaining({
-          identifier: { id: null, partner_job_id: ftJobs[0].id, partner_label: "France Travail" },
+          identifier: { id: null, partner_job_id: ftJobs[0].id, partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL },
         }),
         expect.objectContaining({
           identifier: { id: partnerJobs[0]._id, partner_job_id: partnerJobs[0].partner_job_id, partner_label: partnerJobs[0].partner_label },
@@ -716,15 +715,15 @@ describe("findJobsOpportunities", () => {
         expect.objectContaining({
           identifier: { id: recruiters[0]._id },
           workplace: expect.objectContaining({
-            location: expect.objectContaining({ geopoint: recruiters[0].geopoint }),
-            name: recruiters[0].enseigne,
+            location: expect.objectContaining({ geopoint: recruiters[0].workplace_geopoint }),
+            name: recruiters[0].workplace_legal_name,
           }),
         }),
         expect.objectContaining({
           identifier: { id: recruiters[2]._id },
           workplace: expect.objectContaining({
-            location: expect.objectContaining({ geopoint: recruiters[2].geopoint }),
-            name: recruiters[2].enseigne,
+            location: expect.objectContaining({ geopoint: recruiters[2].workplace_geopoint }),
+            name: recruiters[2].workplace_legal_name,
           }),
         }),
       ],
@@ -755,13 +754,14 @@ describe("findJobsOpportunities", () => {
     })
 
     it("should limit companies to 150", async () => {
-      const extraLbaCompanies: ILbaCompany[] = Array.from({ length: 200 }, () =>
-        generateLbaCompanyFixture({
-          geopoint: parisFixture.centre,
-          rome_codes: ["M1602"],
+      const extraLbaCompanies: IJobsPartnersOfferPrivate[] = Array.from({ length: 200 }, () =>
+        generateJobsPartnersOfferPrivate({
+          partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+          workplace_geopoint: parisFixture.centre,
+          offer_rome_codes: ["M1602"],
         })
       )
-      await getDbCollection("recruteurslba").insertMany(extraLbaCompanies)
+      await getDbCollection("jobs_partners").insertMany(extraLbaCompanies)
 
       const results = await findJobsOpportunities(
         {
@@ -1470,8 +1470,8 @@ describe("findJobsOpportunities", () => {
         expect.soft(parseResult.success).toBeTruthy()
         expect(parseResult.error).toBeUndefined()
         expect.soft(results.jobs).toHaveLength(2)
-        expect.soft(results.jobs[0].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA)
-        expect.soft(results.jobs[1].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.RH_ALTERNANCE)
+        expect.soft(results.jobs[0].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.RH_ALTERNANCE)
+        expect.soft(results.jobs[1].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA)
 
         results = await findJobsOpportunities(
           {
@@ -1733,25 +1733,25 @@ describe("findJobsOpportunities", () => {
       await getDbCollection("jobs_partners").insertMany(extraOffers)
 
       const extraLbaCompanies = [
-        generateLbaCompanyFixture({
-          siret: "52951974600034",
-          raison_sociale: "EXTRA LBA COMPANY 1",
-          rome_codes: ["D1211"],
-          geopoint: levalloisFixture.centre,
-          insee_city_code: levalloisFixture.code,
-          last_update_at: new Date("2024-01-01"),
+        generateJobsPartnersOfferPrivate({
+          partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+          workplace_siret: "52951974600034",
+          workplace_legal_name: "EXTRA LBA COMPANY 1",
+          offer_rome_codes: ["D1211"],
+          workplace_geopoint: levalloisFixture.centre,
+          workplace_address_zipcode: levalloisFixture.code,
         }),
-        generateLbaCompanyFixture({
-          siret: "52951974600034",
-          raison_sociale: "EXTRA LBA COMPANY 2",
-          rome_codes: ["D1211"],
-          geopoint: levalloisFixture.centre,
-          insee_city_code: levalloisFixture.code,
-          last_update_at: new Date("2021-01-01"),
+        generateJobsPartnersOfferPrivate({
+          partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+          workplace_siret: "52951974600034",
+          workplace_legal_name: "EXTRA LBA COMPANY 2",
+          offer_rome_codes: ["D1211"],
+          workplace_geopoint: levalloisFixture.centre,
+          workplace_address_zipcode: levalloisFixture.code,
         }),
       ]
 
-      await getDbCollection("recruteurslba").insertMany(extraLbaCompanies)
+      await getDbCollection("jobs_partners").insertMany(extraLbaCompanies)
 
       const results = await findJobsOpportunities(
         {
@@ -1780,62 +1780,62 @@ describe("findJobsOpportunities", () => {
           {
             // Paris
             _id: lbaJobs[0].jobs[0]._id,
-            partner_label: "La bonne alternance",
+            partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
             partner_job_id: lbaJobs[0].jobs[0]._id.toString(),
             workplace_legal_name: lbaJobs[0].establishment_raison_sociale,
           },
           {
             // Levallois - 2024-01-01
             _id: extraLbaJob.jobs[1]._id,
-            partner_label: "La bonne alternance",
+            partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
             partner_job_id: extraLbaJob.jobs[1]._id.toString(),
             workplace_legal_name: extraLbaJob.establishment_raison_sociale,
           },
           {
             // Levallois - 2023-01-01
             _id: lbaJobs[2].jobs[0]._id,
-            partner_label: "La bonne alternance",
+            partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
             partner_job_id: lbaJobs[2].jobs[0]._id.toString(),
             workplace_legal_name: lbaJobs[2].establishment_raison_sociale,
           },
           {
             // Levallois - 2021-01-01
             _id: extraLbaJob.jobs[0]._id,
-            partner_label: "La bonne alternance",
+            partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
             partner_job_id: extraLbaJob.jobs[0]._id.toString(),
             workplace_legal_name: extraLbaJob.establishment_raison_sociale,
           },
           {
             _id: null,
             partner_job_id: ftJobs[0].id,
-            partner_label: "France Travail",
+            partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL,
             workplace_legal_name: null,
           },
           // Paris
           {
             _id: partnerJobs[0]._id,
-            partner_label: "Hellowork",
+            partner_label: JOBPARTNERS_LABEL.HELLOWORK,
             partner_job_id: expect.any(String),
             workplace_legal_name: partnerJobs[0].workplace_legal_name,
           },
           // Levallois - 2024-01-01
           {
             _id: extraOffers[0]._id,
-            partner_label: "Hellowork",
+            partner_label: JOBPARTNERS_LABEL.HELLOWORK,
             partner_job_id: expect.any(String),
             workplace_legal_name: extraOffers[0].workplace_legal_name,
           },
           // Levallois - 2023-01-01
           {
             _id: partnerJobs[2]._id,
-            partner_label: "Hellowork",
+            partner_label: JOBPARTNERS_LABEL.HELLOWORK,
             partner_job_id: expect.any(String),
             workplace_legal_name: partnerJobs[2].workplace_legal_name,
           },
           // Levallois - 2021-01-01
           {
             _id: extraOffers[1]._id,
-            partner_label: "Hellowork",
+            partner_label: JOBPARTNERS_LABEL.HELLOWORK,
             partner_job_id: expect.any(String),
             workplace_legal_name: extraOffers[1].workplace_legal_name,
           },
@@ -1844,22 +1844,22 @@ describe("findJobsOpportunities", () => {
           // Paris
           {
             _id: recruiters[0]._id,
-            workplace_legal_name: recruiters[0].raison_sociale,
-          },
-          // Levallois - 2024-01-01
-          {
-            _id: extraLbaCompanies[0]._id,
-            workplace_legal_name: extraLbaCompanies[0].raison_sociale,
+            workplace_legal_name: recruiters[0].workplace_legal_name,
           },
           // Levallois - 2023-01-01
           {
             _id: recruiters[2]._id,
-            workplace_legal_name: recruiters[2].raison_sociale,
+            workplace_legal_name: recruiters[2].workplace_legal_name,
+          },
+          // Levallois - 2024-01-01
+          {
+            _id: extraLbaCompanies[0]._id,
+            workplace_legal_name: extraLbaCompanies[0].workplace_legal_name,
           },
           // Levallois - 2021-01-01
           {
             _id: extraLbaCompanies[1]._id,
-            workplace_legal_name: extraLbaCompanies[1].raison_sociale,
+            workplace_legal_name: extraLbaCompanies[1].workplace_legal_name,
           },
         ],
       })
