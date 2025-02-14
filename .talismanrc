@@ -197,6 +197,16 @@ fileignoreconfig:
   checksum: 94f2736d7791571d7888a50f53e36e2af246f22c1c832b85477c34cb5328af0d
 - filename: shared/utils/objectUtils.ts
   checksum: cfd0e48e8762b43c6431dad873727f6ac091ca6f5c7555e37a8ee3fba03184d1
+- filename: ui/app/(home)/faq/page.tsx
+  checksum: e4b3904897fb67afd63187ff382138e9d60b9ca0395385eb2afd6a822696b804
+- filename: ui/app/(home)/mentions-legales/page.tsx
+  checksum: 4740029daff0308bfa65289c4eb5be61834c0c8c5d00bdcab0b1662f28c8a0e6
+- filename: ui/app/(home)/politique-de-confidentialite/page.tsx
+  checksum: e5d7f4f0d05c3ef38c59bdcc27feaa88c976faa8520dbb78a75747a67aa1c9ab
+- filename: ui/app/conditions-generales-utilisation/page.tsx
+  checksum: 2a6862623c8118ea36287831ba82a2830bf8c6a67fd33ab58898be72f0732634
+- filename: ui/app/template.tsx
+  checksum: 9b684611b80ec1daeee74bfdc73373073fd0084fe643ba9ea9229905ee737035
 - filename: ui/common/hooks/useAuth.ts
   checksum: 7cce935653407e000b35e98bd365a003e538aed4fed432a9a404d4f2412dd2df
 - filename: ui/components/DepotOffre/InfosDiffusionOffre.tsx
@@ -271,14 +281,6 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
-- filename: ui/app/conditions-generales-utilisation/page.tsx
-  checksum: 2a6862623c8118ea36287831ba82a2830bf8c6a67fd33ab58898be72f0732634
-- filename: ui/app/(home)/faq/page.tsx
-  checksum: e4b3904897fb67afd63187ff382138e9d60b9ca0395385eb2afd6a822696b804
-- filename: ui/app/(home)/mentions-legales/page.tsx
-  checksum: 4740029daff0308bfa65289c4eb5be61834c0c8c5d00bdcab0b1662f28c8a0e6
-- filename: ui/app/(home)/politique-de-confidentialite/page.tsx
-  checksum: e5d7f4f0d05c3ef38c59bdcc27feaa88c976faa8520dbb78a75747a67aa1c9ab
 scopeconfig:
 - scope: node
 custom_patterns:

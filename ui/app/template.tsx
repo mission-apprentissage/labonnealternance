@@ -1,11 +1,25 @@
 "use client"
 
+import { createMuiDsfrThemeProvider } from "@codegouvfr/react-dsfr/mui"
+import { THEME_ID } from "@mui/material"
 import type { PropsWithChildren } from "react"
 
 import Providers from "@/context/Providers"
 
+// https://mui.com/material-ui/integrations/theme-scoping/?srsltid=AfmBOopC5sffoR7iiFA6HxJK-F1sIbPFTE8Bt9V2CZ9b2uGrAgJYXyNc
+// TODO: Move back to layout when chakra is removed
+const { MuiDsfrThemeProvider } = createMuiDsfrThemeProvider({
+  isDark: false,
+  // @ts-ignore
+  augmentMuiTheme: ({ nonAugmentedMuiTheme }) => ({ [THEME_ID]: nonAugmentedMuiTheme }),
+})
+
 function RootTemplate({ children }: PropsWithChildren) {
-  return <Providers>{children}</Providers>
+  return (
+    <MuiDsfrThemeProvider>
+      <Providers>{children}</Providers>
+    </MuiDsfrThemeProvider>
+  )
 }
 
 export default RootTemplate
