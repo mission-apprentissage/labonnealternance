@@ -5,8 +5,6 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter"
 import Link from "next/link"
 import "react-notion-x/src/styles.css"
 
-import { Footer } from "./components/Footer"
-import { Header } from "./components/Header"
 import { defaultColorScheme } from "./dsfr-setup/default-color-scheme"
 import { StartDsfr } from "./dsfr-setup/start-dsfr"
 
@@ -39,11 +37,7 @@ export default function RootLayout({ children }: { children: JSX.Element }) {
       <body>
         {
           <AppRouterCacheProvider>
-            <DsfrProvider>
-              <Header />
-              {children}
-              <Footer />
-            </DsfrProvider>
+            <DsfrProvider>{children}</DsfrProvider>
           </AppRouterCacheProvider>
         }
       </body>

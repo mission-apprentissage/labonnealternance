@@ -2,6 +2,8 @@ import { Footer as DsfrFooter } from "@codegouvfr/react-dsfr/Footer"
 
 import { PAGES } from "../../utils/routes.utils"
 
+import { DsfrHeaderProps } from "./Header"
+
 export function Footer() {
   return (
     <DsfrFooter
@@ -12,6 +14,8 @@ export function Footer() {
         imgUrl: "/images/france_relance.svg",
         orientation: "vertical",
       }}
+      brandTop={DsfrHeaderProps.brandTop}
+      homeLinkProps={DsfrHeaderProps.homeLinkProps}
       linkList={[
         {
           categoryName: "Liens utiles",
