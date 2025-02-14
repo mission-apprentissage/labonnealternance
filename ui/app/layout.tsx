@@ -5,8 +5,8 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter"
 import Link from "next/link"
 import "react-notion-x/src/styles.css"
 
-import { defaultColorScheme } from "./dsfr-setup/default-color-scheme"
-import { StartDsfr } from "./dsfr-setup/start-dsfr"
+import { defaultColorScheme } from "../dsfr-setup/default-color-scheme"
+import { StartDsfr } from "../dsfr-setup/start-dsfr"
 
 import "../public/styles/application.css"
 import "../public/styles/fonts.css"

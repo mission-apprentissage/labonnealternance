@@ -11,7 +11,7 @@ import PostezVotreOffre from "@/components/HomeComponents/PostezVotreOffre"
 import PromoRessources from "@/components/Ressources/promoRessources"
 
 import { PAGES } from "../../../utils/routes.utils"
-import Breadcrumb from "../../components/Breadcrumb"
+import Breadcrumb from "../../_components/Breadcrumb"
 
 export default function AccesRecruteur() {
   return (

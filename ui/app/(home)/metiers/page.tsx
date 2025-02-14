@@ -8,7 +8,7 @@ import Link from "next/link"
 
 import { getStaticMetiers } from "../../../utils/getStaticData"
 import { PAGES } from "../../../utils/routes.utils"
-import Breadcrumb from "../../components/Breadcrumb"
+import Breadcrumb from "../../_components/Breadcrumb"
 
 export const metadata: Metadata = {
   title: PAGES.static.metiers.getMetadata().title,

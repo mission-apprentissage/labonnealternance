@@ -17,7 +17,7 @@ import {
 
 import { DsfrLink } from "../../../components/dsfr/DsfrLink"
 import { PAGES } from "../../../utils/routes.utils"
-import Breadcrumb from "../../components/Breadcrumb"
+import Breadcrumb from "../../_components/Breadcrumb"
 
 const NotionRenderer = dynamic(() => import("react-notion-x").then((mod) => mod.NotionRenderer))
 

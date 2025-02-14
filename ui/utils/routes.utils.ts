@@ -31,6 +31,15 @@ export const PAGES = {
         description: "Découvrez des offres d’alternance adaptées à votre profil et boostez votre carrière avec La bonne alternance.",
       }),
     },
+    authentification: {
+      getPath: () => `/authentification` as string,
+      title: "Authentification",
+      index: false,
+      getMetadata: () => ({
+        title: "Authentification - La bonne alternance",
+        description: "Connectez-vous à votre compte La bonne alternance pour accéder à vos offres d’alternance.",
+      }),
+    },
     aPropos: {
       getPath: () => `/a-propos` as string,
       title: "À propos",

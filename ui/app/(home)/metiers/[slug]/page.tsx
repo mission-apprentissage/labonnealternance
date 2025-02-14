@@ -9,7 +9,7 @@ import Link from "next/link"
 import { buildLinkForTownAndJob } from "../../../../utils/buildLinkForTownAndJob"
 import { getStaticMetiers, getStaticVilles, IStaticMetiers } from "../../../../utils/getStaticData"
 import { PAGES } from "../../../../utils/routes.utils"
-import Breadcrumb from "../../../components/Breadcrumb"
+import Breadcrumb from "../../../_components/Breadcrumb"
 
 const getTowns = () => {
   const txtDirectory = path.join(process.cwd(), "config")

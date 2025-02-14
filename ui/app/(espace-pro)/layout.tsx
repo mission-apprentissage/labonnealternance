@@ -2,9 +2,9 @@ import { headers } from "next/headers"
 import type { PropsWithChildren } from "react"
 import { type IUserRecruteurPublic } from "shared"
 
-import { Footer } from "../components/Footer"
+import { Footer } from "../_components/Footer"
 
-import { EspaceProHeader } from "./components/EspaceProHeader"
+import { EspaceProHeader } from "./_components/EspaceProHeader"
 
 export async function getSession(): Promise<IUserRecruteurPublic | null> {
   try {

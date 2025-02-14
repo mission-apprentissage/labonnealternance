@@ -8,7 +8,7 @@ import RessourcesCFA from "@/components/Ressources/ressourcesCFA"
 import RessourcesRecruteur from "@/components/Ressources/ressourcesRecruteur"
 
 import { PAGES } from "../../../utils/routes.utils"
-import Breadcrumb from "../../components/Breadcrumb"
+import Breadcrumb from "../../_components/Breadcrumb"
 
 const selectedVerticalTabCssProperties = {
   color: "#1d1d1d",

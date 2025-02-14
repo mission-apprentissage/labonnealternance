@@ -2,7 +2,7 @@ import { Box, Container, Divider, Grid, GridItem, ListItem, SimpleGrid, Text, Un
 import type { Metadata } from "next"
 import Image from "next/image"
 
-import Breadcrumb from "@/app/components/Breadcrumb"
+import Breadcrumb from "@/app/_components/Breadcrumb"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import j1s from "@/public/images/logosPartenaires/partenaire-1j1s.webp"
 import affelnet from "@/public/images/logosPartenaires/partenaire-affelnet.webp"
