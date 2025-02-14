@@ -36,6 +36,7 @@ import optoutModel from "./optout.model.js"
 import rawFranceTravail from "./rawFranceTravail.model.js"
 import rawHelloWorkModel from "./rawHelloWork.model.js"
 import rawKelioModel from "./rawKelio.model.js"
+import rawMeteojobModel from "./rawMeteojob.model.js"
 import rawPassModel from "./rawPass.model.js"
 import rawRHAlternanceModel from "./rawRHAlternance.model.js"
 import recruiterModel from "./recruiter.model.js"
@@ -111,6 +112,7 @@ const modelDescriptorMap = {
   [cacheInfosSiretModel.collectionName]: cacheInfosSiretModel,
   [referentielCommuneModel.collectionName]: referentielCommuneModel,
   [rawKelioModel.collectionName]: rawKelioModel,
+  [rawMeteojobModel.collectionName]: rawMeteojobModel,
   [rawRHAlternanceModel.collectionName]: rawRHAlternanceModel,
   [rawFranceTravail.collectionName]: rawFranceTravail,
   [trafficSourcesModel.collectionName]: trafficSourcesModel,
