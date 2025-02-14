@@ -4,7 +4,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 export const cancelRemovedJobsPartners = async () => {
-  const partnerLabelToCancel = [JOBPARTNERS_LABEL.RH_ALTERNANCE, JOBPARTNERS_LABEL.HELLOWORK]
+  const partnerLabelToCancel = [JOBPARTNERS_LABEL.RH_ALTERNANCE, JOBPARTNERS_LABEL.HELLOWORK, JOBPARTNERS_LABEL.METEOJOB, JOBPARTNERS_LABEL.FRANCE_TRAVAIL, JOBPARTNERS_LABEL.PASS]
 
   const pipeline = [
     {
