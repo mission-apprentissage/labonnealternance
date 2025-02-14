@@ -1,33 +1,42 @@
-import { Button, Flex, Link } from "@chakra-ui/react"
-import { useRouter } from "next/router"
+import { fr } from "@codegouvfr/react-dsfr"
+import Button from "@codegouvfr/react-dsfr/Button"
+import { Box } from "@mui/material"
 
 const ConnectionActions = ({ service }) => {
-  const router = useRouter()
-
   return (
-    <Flex direction={{ base: "column", md: "row" }} align="center" pt="30px">
+    // not working while chakra provider is enable.
+    <Box sx={{ display: "flex", pt: fr.spacing("3w"), flexDirection: { sm: "column", md: "row" }, gap: fr.spacing("2w") }}>
       {service === "entreprise" && (
-        <Button as={Link} width="185px" variant="primary" aria-label="Déposer une offre" onClick={() => router.push({ pathname: "/espace-pro/creation/entreprise" })}>
+        <Button
+          linkProps={{
+            href: "/espace-pro/creation/entreprise",
+          }}
+          aria-label="Déposer une offre"
+        >
           Déposer une offre
         </Button>
       )}
       {service === "cfa" && (
-        <Button as={Link} width="235px" variant="primary" aria-label="Créer mon espace dédié" onClick={() => router.push({ pathname: "/espace-pro/creation/cfa" })}>
+        <Button
+          linkProps={{
+            href: "/espace-pro/creation/cfa",
+          }}
+          aria-label="Créer mon espace dédié"
+        >
           Créer mon espace dédié
         </Button>
       )}
+
       <Button
-        as={Link}
-        width="155px"
-        variant="secondary"
-        mt={{ base: "2", md: "0" }}
-        ml={{ base: "0", md: "2" }}
+        linkProps={{
+          href: "/espace-pro/authentification",
+        }}
         aria-label="Me connecter"
-        onClick={() => router.push({ pathname: "/espace-pro/authentification" })}
+        priority="secondary"
       >
         Me connecter
       </Button>
-    </Flex>
+    </Box>
   )
 }
 export default ConnectionActions

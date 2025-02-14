@@ -1,7 +1,6 @@
 import { Box, Container, Image, Text } from "@chakra-ui/react"
-import React from "react"
 
-import Link from "../Link"
+import { DsfrLink } from "../dsfr/DsfrLink"
 
 const getText = (target: string) => {
   switch (target) {
@@ -17,7 +16,7 @@ const getText = (target: string) => {
   }
 }
 
-const PromoRessources = ({ target }) => {
+export default function PromoRessources({ target }) {
   return (
     <Container textAlign="center" variant="responsiveContainer">
       <Image margin="auto" src="/images/pages_ressources/outils.svg" aria-hidden={true} alt="" />
@@ -25,12 +24,8 @@ const PromoRessources = ({ target }) => {
         {getText(target)}
       </Text>
       <Box mt="7">
-        <Link href={`/ressources#${target}`} color="#000091" border="1px solid #000091" padding="10px 24px">
-          Découvrir les ressources
-        </Link>
+        <DsfrLink href={`/ressources#${target}`}>Découvrir les ressources</DsfrLink>
       </Box>
     </Container>
   )
 }
-
-export default PromoRessources

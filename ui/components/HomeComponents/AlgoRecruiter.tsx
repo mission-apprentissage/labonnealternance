@@ -1,8 +1,8 @@
-import { Box, Divider, Grid, GridItem, Image, Link, ListItem, Text, UnorderedList } from "@chakra-ui/react"
-import NextLink from "next/link"
-import React from "react"
+import { Box, Divider, Grid, GridItem, Image, ListItem, Text, UnorderedList } from "@chakra-ui/react"
 
-const AlgoRecruiter = ({ withLinks }) => {
+import { DsfrLink } from "../dsfr/DsfrLink"
+
+export default function AlgoRecruiter({ withLinks }) {
   return (
     <Box as="section" pb={12} backgroundColor="white">
       <Box py={12} backgroundColor="#f5f5fe">
@@ -35,12 +35,10 @@ const AlgoRecruiter = ({ withLinks }) => {
               </ListItem>
             </UnorderedList>
             {withLinks && (
-              <NextLink legacyBehavior passHref href="/desinscription">
-                <Link variant="editorialContentLink" as="a" aria-label="Accès au formulaire de désinscription au service d'envoi de candidatures spontanées">
-                  Je ne souhaite plus recevoir de candidature spontanée
-                  <Image ml={1} display="inline" src="/images/icons/arrow_right.svg" alt="" />
-                </Link>
-              </NextLink>
+              <DsfrLink href="/desinscription" as="a" aria-label="Accès au formulaire de désinscription au service d'envoi de candidatures spontanées">
+                Je ne souhaite plus recevoir de candidature spontanée
+                <Image ml={1} display="inline" src="/images/icons/arrow_right.svg" alt="" />
+              </DsfrLink>
             )}
           </GridItem>
           {/* @ts-expect-error: TODO */}
@@ -54,5 +52,3 @@ const AlgoRecruiter = ({ withLinks }) => {
     </Box>
   )
 }
-
-export default AlgoRecruiter

@@ -1,9 +1,8 @@
 import { Box, Image, Show, SimpleGrid, Text } from "@chakra-ui/react"
-import React from "react"
 
 import ConnectionActions from "./ConnectionActions"
 
-const Entreprise = () => {
+export default function Entreprise() {
   return (
     <Box as="section" p={3} mb={{ base: "2", md: "0" }} backgroundColor="white">
       <SimpleGrid columns={{ sm: 1, md: 2 }} spacing="40px" mb={12}>
@@ -26,5 +25,3 @@ const Entreprise = () => {
     </Box>
   )
 }
-
-export default Entreprise

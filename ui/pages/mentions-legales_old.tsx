@@ -1,7 +1,6 @@
 import { Box, Container, Divider, Grid, GridItem, Text } from "@chakra-ui/react"
 import dynamic from "next/dynamic"
 import { NextSeo } from "next-seo"
-import React from "react"
 
 import Breadcrumb from "../components/breadcrumb"
 import Footer from "../components/footer"
