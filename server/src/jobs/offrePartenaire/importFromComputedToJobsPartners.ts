@@ -69,6 +69,7 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
           offer_multicast: computedJobPartner.offer_multicast ?? true,
           offer_origin: computedJobPartner.offer_origin ?? null,
           rank: computedJobPartner.rank ?? null,
+          duplicates: computedJobPartner.duplicates ?? null,
         }
 
         await getDbCollection("jobs_partners").updateOne(

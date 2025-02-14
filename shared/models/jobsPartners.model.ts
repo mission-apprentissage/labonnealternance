@@ -6,6 +6,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { ZPointGeometry } from "./address.model.js"
 import { IModelDescriptor, zObjectId } from "./common.js"
 import { JOB_STATUS_ENGLISH } from "./job.model.js"
+import { ZComputedJobPartnersDuplicateRef } from "./jobPartnersDuplicateRef.js"
 import { zOpcoLabel } from "./opco.model.js"
 
 const collectionName = "jobs_partners" as const
@@ -111,6 +112,7 @@ export const ZJobsPartnersOfferPrivate = ZJobsPartnersOfferApi.omit({
     _id: zObjectId,
     apply_url: ZJobsPartnersOfferApi.shape.apply_url.nullable().default(null),
     rank: z.number().nullish().describe("Valeur indiquant la qualité de l'offre. Plus la valeur est élevée, plus la qualité de l'offre est importante"),
+    duplicates: z.array(ZComputedJobPartnersDuplicateRef).nullish().describe("Référence les autres offres en duplicata avec celle-ci"),
   })
 
 export const ZJobsPartnersOfferPrivateWithDistance = ZJobsPartnersOfferPrivate.extend({
