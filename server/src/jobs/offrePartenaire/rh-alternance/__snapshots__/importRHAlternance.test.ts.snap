@@ -12,7 +12,7 @@ exports[`import RH Alternance > rawRhAlternanceToComputedMapper > should test th
     "Apprentissage",
     "Professionnalisation",
   ],
-  "created_at": null,
+  "created_at": 2024-07-21T02:49:06.000Z,
   "errors": [],
   "jobs_in_success": [],
   "offer_access_conditions": [],

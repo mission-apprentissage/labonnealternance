@@ -2,12 +2,13 @@ import { groupData, oleoduc, writeData } from "oleoduc"
 import { IFTJobRaw } from "shared"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { sendOpenAIMessages } from "@/services/openai/openai.service"
 
 import { logger } from "../../../common/logger"
+import { notifyToSlack } from "../../../common/utils/slackUtils"
+import { Message, sendMistralMessages } from "../../../services/mistralai/mistralai.service"
 
 export const checkFTOffer = async (data: any): Promise<any> => {
-  const messages = [
+  const messages: Message[] = [
     {
       role: "system",
       content: `En tant qu'expert d'analyse semantique dans le domaine des offres d'emplois en Alternance et en apprentissage, j'ai besoin que tu classifie des offres d'emplois en fonction de qui a posté l'offre.
@@ -22,9 +23,9 @@ Je vais te donner les informations de l'offres au format JSON.
 
 Une fois que tu as déterminé si les offres sont de type CFA, Entreprise ou Entreprise_CFA tu répondras au format JSON:
 {offres: [{
-  type: "CFA" | "entreprise" | "entreprise_CFA",
+  type: "cfa" | "entreprise" | "entreprise_cfa", // conserve bien la casse du type retourné ici
   id: "ID",
-  cfa: "Nom du CFA" // si l'offre est de type entreprise_CFA ou CFA
+  cfa: "Nom du CFA" // si l'offre est de type entreprise_cfa ou cfa
   },
   ...
     ]}
@@ -39,9 +40,9 @@ Une fois que tu as déterminé si les offres sont de type CFA, Entreprise ou Ent
 Voici plusierus offres: ${JSON.stringify({ offres: data.offres })}.
 Une fois que tu as déterminé si les offres sont de type CFA, Entreprise ou Entreprise_CFA tu répondras au format JSON:
 {offres: [{
-  type: "CFA" | "entreprise" | "entreprise_CFA",
+  type: "cfa" | "entreprise" | "entreprise_cfa", // conserve bien la casse du type ici
   id: "ID",
-   cfa: "Nom du CFA" // si l'offre est de type entreprise_CFA ou CFA
+   cfa: "Nom du CFA" // si l'offre est de type entreprise_cfa ou cfa
   },
   ...
     ]}
@@ -49,11 +50,10 @@ Une fois que tu as déterminé si les offres sont de type CFA, Entreprise ou Ent
     },
   ]
   try {
-    const response = await sendOpenAIMessages({
+    const response = await sendMistralMessages({
       messages,
-      seed: 45555,
-      max_tokens: 1024,
-      response_format: { type: "json_object" },
+      randomSeed: 45555,
+      maxTokens: 1024,
     })
     if (!response) {
       return null
@@ -104,6 +104,8 @@ export const classifyFranceTravailJobs = async () => {
       }
     })
   )
+
+  await notifyToSlack({ subject: "Classification des offres France Travail", message: `Classification de ${count} terminées` })
 
   logger.info(`Classification terminée`)
 }

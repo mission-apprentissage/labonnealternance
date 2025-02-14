@@ -23,6 +23,7 @@ import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromCo
 import { importKelio } from "./offrePartenaire/kelio/importKelio"
 import { importPassRaw, importPassToComputed } from "./offrePartenaire/pass/importPass"
 import { processJobPartners } from "./offrePartenaire/processJobPartners"
+import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
 import { rankJobPartners } from "./offrePartenaire/rankJobPartners"
 import { importRHAlternanceRaw, importRHAlternanceToComputed } from "./offrePartenaire/rh-alternance/importRHAlternance"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
@@ -222,6 +223,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processJobPartners,
     description: "Chaîne complète de traitement des jobs_partners",
+  },
+  {
+    fct: processJobPartnersForApi,
+    description: "Chaîne complète de traitement des jobs_partners déposés par API",
   },
   {
     fct: cancelRemovedJobsPartners,
