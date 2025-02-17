@@ -80,8 +80,6 @@ export const zFormulaireRoute = {
           last_name: z.string(),
           first_name: z.string(),
           phone: z.string(),
-          opco: z.string().optional(),
-          idcc: z.number().nullish().optional(),
         })
         .strict(),
       response: {
