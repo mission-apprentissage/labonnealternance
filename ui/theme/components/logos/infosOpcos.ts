@@ -15,7 +15,7 @@ import opcouniformation from "@/public/images/logosPartenaires/partenaire-opco-u
 export type InfosOpco = {
   nom: string
   description: string
-  image: StaticImageData
+  image: StaticImageData | string
 }
 
 export const infosOpcos: InfosOpco[] = [

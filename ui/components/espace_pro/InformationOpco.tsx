@@ -20,8 +20,8 @@ export const InformationOpco = ({ isUpdatable, infosOpco, resetOpcoChoice }: { i
           )}
         </Flex>
         <Flex align="flex-start" direction={["column", "column", "row", "row"]} gap={[2, 2, 4, 4]}>
-          <Text>{infosOpco?.description}</Text>
-          <Image src={infosOpco?.image} alt="" width={80} />
+          <Text>{infosOpco.description}</Text>
+          <Image src={infosOpco.image} alt="" width={80} />
         </Flex>
         <Flex alignItems="flex-start" gap="2px">
           <Box lineHeight={["16px", "16px", "16px", "20px"]}>
