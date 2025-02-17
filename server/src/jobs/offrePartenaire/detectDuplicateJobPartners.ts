@@ -17,11 +17,20 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 
 // champs utilisés pour les projections
-const fieldsRead = ["_id", "partner_label", "offer_title", "duplicates", "workplace_address_zipcode", "rank", "created_at"] as const satisfies (keyof IComputedJobsPartners)[]
+const fieldsRead = [
+  "_id",
+  "partner_label",
+  "partner_job_id",
+  "offer_title",
+  "duplicates",
+  "workplace_address_zipcode",
+  "rank",
+  "created_at",
+] as const satisfies (keyof IComputedJobsPartners)[]
 const recruiterFieldsRead = ["_id", "status", "address_detail", "createdAt"] as const satisfies (keyof IRecruiter)[]
 const jobFieldsRead = ["_id", "rome_appellation_label", "job_status"] as const satisfies (keyof IJob)[]
 
-const FAKE_RECRUITERS_JOB_PARTNER = "recruiters"
+export const FAKE_RECRUITERS_JOB_PARTNER = "recruiters"
 
 const recruiterCollection = recruiterModel.collectionName
 const jobPartnerCollection = jobsPartnersModel.collectionName
@@ -243,6 +252,7 @@ const detectDuplicateJobPartnersFactory = async (groupField: keyof IComputedJobs
           const mapped: TreatedDocument = {
             _id,
             collectionName: recruiterCollection,
+            partner_job_id: _id.toString(),
             partner_label: FAKE_RECRUITERS_JOB_PARTNER,
             offer_title: rome_appellation_label,
             workplace_address_zipcode: parsedAddress.data?.code_postal || null,
@@ -357,12 +367,14 @@ type DbUpdate = { computedJobPartnerOperations: ComputedJobPartnerOperation[]; j
 const duplicateInfosToMongoUpdates = (offer1: TreatedDocument, offer2: TreatedDocument, reasons: string[]): DbUpdate => {
   const reason = reasons.join(", ")
   const duplicateObjectForOffer1: IComputedJobPartnersDuplicateRef = {
-    otherOfferId: offer2._id,
+    partner_job_id: offer2.partner_job_id,
+    partner_label: offer2.partner_label,
     collectionName: offer2.collectionName,
     reason,
   }
   const duplicateObjectForOffer2: IComputedJobPartnersDuplicateRef = {
-    otherOfferId: offer1._id,
+    partner_job_id: offer1.partner_job_id,
+    partner_label: offer1.partner_label,
     collectionName: offer1.collectionName,
     reason,
   }
@@ -446,4 +458,5 @@ const cleanForSearch = (str: string): string => {
   return deduplicate(words).join(" ")
 }
 
-const isFlaggedDuplicateOf = (doc1: TreatedDocument, doc2: TreatedDocument): boolean => Boolean(doc1.duplicates?.some(({ otherOfferId }) => otherOfferId.equals(doc2._id)))
+const isFlaggedDuplicateOf = (doc1: TreatedDocument, doc2: TreatedDocument): boolean =>
+  Boolean(doc1.duplicates?.some(({ partner_job_id, partner_label }) => partner_job_id === doc2.partner_job_id && partner_label === doc2.partner_label))

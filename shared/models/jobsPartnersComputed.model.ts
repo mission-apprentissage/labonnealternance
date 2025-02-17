@@ -28,11 +28,13 @@ export const ZComputedJobsPartners = extensions
   .omit({
     _id: true,
     partner_job_id: true,
+    partner_label: true,
     created_at: true,
   })
   .extend({
     _id: zObjectId,
     partner_job_id: ZJobsPartnersOfferPrivate.shape.partner_job_id,
+    partner_label: ZJobsPartnersOfferPrivate.shape.partner_label,
     created_at: ZJobsPartnersOfferPrivate.shape.created_at,
     jobs_in_success: z.array(extensions.buildEnum(COMPUTED_ERROR_SOURCE)),
     errors: z.array(
@@ -66,7 +68,8 @@ export default {
     [{ errors: 1 }, {}],
     [{ "errors.source": 1 }, {}],
     [{ jobs_in_success: 1 }, {}],
-    [{ "duplicates.otherOfferId": 1 }, {}],
+    [{ "duplicates.partner_job_id": 1 }, {}],
+    [{ "duplicates.partner_job_label": 1 }, {}],
     [{ validated: 1 }, {}],
 
     [{ workplace_siret: 1 }, {}],

@@ -13,7 +13,7 @@ import { givenSomeJobPartners } from "@tests/fixture/givenSomeJobPartners"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { saveRecruiter } from "@tests/utils/user.test.utils"
 
-import { checkSimilarity, detectDuplicateJobPartners, isCanonicalForDuplicate, OfferRef } from "./detectDuplicateJobPartners"
+import { checkSimilarity, detectDuplicateJobPartners, FAKE_RECRUITERS_JOB_PARTNER, isCanonicalForDuplicate, OfferRef } from "./detectDuplicateJobPartners"
 
 const siret = "42476141900045"
 
@@ -54,7 +54,8 @@ describe("detectDuplicateJobPartners", () => {
     const [job, job2] = jobs
     expect.soft(job.duplicates).toEqual([
       {
-        otherOfferId: job2._id,
+        partner_job_id: job2.partner_job_id,
+        partner_label: job2.partner_label,
         collectionName: "computed_jobs_partners",
         reason: "identical workplace_siret, identical offer_title",
       },
@@ -62,7 +63,8 @@ describe("detectDuplicateJobPartners", () => {
     expect.soft(job.business_error).toEqual(null)
     expect.soft(job2.duplicates).toEqual([
       {
-        otherOfferId: job._id,
+        partner_job_id: job.partner_job_id,
+        partner_label: job.partner_label,
         collectionName: "computed_jobs_partners",
         reason: "identical workplace_siret, identical offer_title",
       },
@@ -98,7 +100,8 @@ describe("detectDuplicateJobPartners", () => {
     const [job2] = await getDbCollection("jobs_partners").find({}).toArray()
     expect.soft(job.duplicates).toEqual([
       {
-        otherOfferId: job2._id,
+        partner_job_id: job2.partner_job_id,
+        partner_label: job2.partner_label,
         collectionName: "jobs_partners",
         reason: "identical workplace_siret, identical offer_title",
       },
@@ -139,9 +142,11 @@ describe("detectDuplicateJobPartners", () => {
     // then
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     const [job] = jobs
+    const recruiterJob = recruiter.jobs[0]
     expect.soft(job.duplicates).toEqual([
       {
-        otherOfferId: recruiter.jobs[0]._id,
+        partner_job_id: recruiterJob._id.toString(),
+        partner_label: FAKE_RECRUITERS_JOB_PARTNER,
         collectionName: "recruiters",
         reason: "identical workplace_siret, identical offer_title",
       },
