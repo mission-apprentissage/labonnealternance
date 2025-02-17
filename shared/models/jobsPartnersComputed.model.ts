@@ -64,6 +64,7 @@ export default {
     [{ updated_at: 1 }, {}],
     [{ business_error: 1 }, {}],
     [{ errors: 1 }, {}],
+    [{ "errors.source": 1 }, {}],
     [{ jobs_in_success: 1 }, {}],
     [{ "duplicates.otherOfferId": 1 }, {}],
     [{ validated: 1 }, {}],

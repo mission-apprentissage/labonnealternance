@@ -46,6 +46,7 @@ type TreatedDocument = ProjectedComputedJobPartner & {
 }
 
 export const detectDuplicateJobPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
+  const startDate = new Date()
   // @ts-ignore
   const computedJobPartnersFilter: Filter<IComputedJobsPartners> = { $and: [{ business_error: null }, ...(addedMatchFilter ? [addedMatchFilter] : [])] }
 
@@ -65,11 +66,6 @@ export const detectDuplicateJobPartners = async (addedMatchFilter?: Filter<IComp
     )
     const message = `detectDuplicateJobPartners: VS computed_job_partners: groupé par le champ ${groupField}. duplicateCount=${duplicateCount}, maxOfferPairCount=${maxOfferPairCount}, offerPairCount=${offerPairCount}`
     logger.info(message)
-    await notifyToSlack({
-      subject: `Détection des offres en doublon`,
-      message,
-      error: false,
-    })
   })
   await asyncForEach(jobPartnerVsRecruiterFields, async ({ jobPartnerField, recruiterField }) => {
     const { duplicateCount, maxOfferPairCount, offerPairCount } = await detectDuplicateJobPartnersFactory(
@@ -78,11 +74,6 @@ export const detectDuplicateJobPartners = async (addedMatchFilter?: Filter<IComp
     )
     const message = `detectDuplicateJobPartners: VS recruiters: groupé par le champ computed_jobs_partners.${jobPartnerField} VS recruiters.${recruiterField}. duplicateCount=${duplicateCount}, maxOfferPairCount=${maxOfferPairCount}, offerPairCount=${offerPairCount}`
     logger.info(message)
-    await notifyToSlack({
-      subject: `Détection des offres en doublon`,
-      message,
-      error: false,
-    })
   })
   await asyncForEach(jobPartnerFields, async (groupField) => {
     const { duplicateCount, maxOfferPairCount, offerPairCount } = await detectDuplicateJobPartnersFactory(
@@ -91,12 +82,15 @@ export const detectDuplicateJobPartners = async (addedMatchFilter?: Filter<IComp
     )
     const message = `detectDuplicateJobPartners: VS job_partners: groupé par le champ ${groupField}. duplicateCount=${duplicateCount}, maxOfferPairCount=${maxOfferPairCount}, offerPairCount=${offerPairCount}`
     logger.info(message)
+  })
+  const executionDurationInSeconds = Math.round((new Date().getTime() - startDate.getTime()) / 1000)
+  if (executionDurationInSeconds > 60 * 5) {
     await notifyToSlack({
       subject: `Détection des offres en doublon`,
-      message,
-      error: false,
+      message: `Temps d'exécution : ${executionDurationInSeconds} secondes`,
+      error: true,
     })
-  })
+  }
 }
 
 const computedJobPartnerStreamFactory = (groupField: keyof IComputedJobsPartners, computedJobPartnersFilter: Filter<IComputedJobsPartners>) => {
