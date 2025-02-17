@@ -7,13 +7,13 @@ import { assertUnreachable, parseEnum } from "shared"
 import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
+import { infosOpcos } from "@/theme/components/logos/infosOpcos"
 import { ApiError } from "@/utils/api.utils"
 
 import { AUTHTYPE } from "../../../common/contants"
 import { phoneValidation } from "../../../common/validation/fieldValidations"
 import { WidgetContext } from "../../../context/contextWidget"
 import { ArrowRightLine } from "../../../theme/components/icons"
-import logosOpco from "../../../theme/components/logos/opcos"
 import { createEtablissement, getEntrepriseOpco } from "../../../utils/api"
 import { OpcoSelect } from "../CreationRecruteur/OpcoSelect"
 import { AnimationContainer, AuthentificationLayout, CustomInput, InformationLegaleEntreprise } from "../index"
@@ -63,7 +63,7 @@ const Formulaire = ({
       onSubmit={onSubmit}
     >
       {({ values, isValid, isSubmitting, setFieldValue, errors }) => {
-        const informationOpco = logosOpco.find((x) => x.nom === values.opco)
+        const infosOpco = infosOpcos.find((x) => x.nom === values.opco)
         return (
           <Form>
             <FormulaireLayout
@@ -109,7 +109,7 @@ const Formulaire = ({
               right={
                 <>
                   <InformationLegaleEntreprise siret={establishment_siret} type={type as typeof CFA | typeof ENTREPRISE} opco={opco} />
-                  {informationOpco && <InformationOpco isUpdatable={shouldSelectOpco} informationOpco={informationOpco} resetOpcoChoice={() => setFieldValue("opco", "")} />}
+                  {infosOpco && <InformationOpco isUpdatable={shouldSelectOpco} infosOpco={infosOpco} resetOpcoChoice={() => setFieldValue("opco", "")} />}
                 </>
               }
             />

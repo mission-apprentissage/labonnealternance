@@ -1,20 +1,11 @@
 import { Box, Button, Flex, SimpleGrid, Text } from "@chakra-ui/react"
-import Image, { StaticImageData } from "next/image"
+import Image from "next/image"
+
+import { InfosOpco } from "@/theme/components/logos/infosOpcos"
 
 import { Edit2Fill, InfoCircle } from "../../theme/components/icons"
 
-export const InformationOpco = ({
-  isUpdatable,
-  informationOpco,
-  resetOpcoChoice,
-}: {
-  isUpdatable: boolean
-  resetOpcoChoice: () => void
-  informationOpco: {
-    description: string
-    image: StaticImageData
-  }
-}) => {
+export const InformationOpco = ({ isUpdatable, infosOpco, resetOpcoChoice }: { isUpdatable: boolean; resetOpcoChoice: () => void; infosOpco: InfosOpco }) => {
   return (
     <Box backgroundColor="#F5F5FE" p={3} mt={3}>
       <SimpleGrid columns={1} spacing="20px">
@@ -29,8 +20,8 @@ export const InformationOpco = ({
           )}
         </Flex>
         <Flex align="flex-start" direction={["column", "column", "row", "row"]} gap={[2, 2, 4, 4]}>
-          <Text>{informationOpco?.description}</Text>
-          <Image src={informationOpco?.image} alt="" width={80} />
+          <Text>{infosOpco?.description}</Text>
+          <Image src={infosOpco?.image} alt="" width={80} />
         </Flex>
         <Flex alignItems="flex-start" gap="2px">
           <Box lineHeight={["16px", "16px", "16px", "20px"]}>
