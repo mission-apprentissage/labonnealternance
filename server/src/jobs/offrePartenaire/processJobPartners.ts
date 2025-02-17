@@ -1,3 +1,5 @@
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+
 import { cancelRemovedJobsPartners } from "./cancelRemovedJobsPartners"
 import { fillComputedJobsPartners } from "./fillComputedJobsPartners"
 import { classifyFranceTravailJobs } from "./france-travail/classifyJobsFranceTravail"
@@ -6,7 +8,11 @@ import { importHelloWorkRaw, importHelloWorkToComputed } from "./hellowork/impor
 import { importFromComputedToJobsPartners } from "./importFromComputedToJobsPartners"
 import { importRHAlternanceRaw, importRHAlternanceToComputed } from "./rh-alternance/importRHAlternance"
 
+export const jobPartnersByFlux = Object.values(JOBPARTNERS_LABEL)
+
 export const processJobPartners = async () => {
+  const filter = { partner_label: { $in: jobPartnersByFlux } }
+
   await importRHAlternanceRaw()
   await importRHAlternanceToComputed()
   await importHelloWorkRaw()
@@ -14,7 +20,8 @@ export const processJobPartners = async () => {
   await importFranceTravailRaw()
   await classifyFranceTravailJobs()
   await importFranceTravailToComputed()
-  await fillComputedJobsPartners()
-  await importFromComputedToJobsPartners()
+
+  await fillComputedJobsPartners(filter)
+  await importFromComputedToJobsPartners(filter)
   await cancelRemovedJobsPartners()
 }

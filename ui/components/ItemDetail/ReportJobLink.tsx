@@ -59,14 +59,12 @@ export const ReportJobLink = ({
   linkLabelReported,
   tooltip,
   itemId,
-  tooltipWidth: width,
   type,
 }: {
   itemId: string
   linkLabelNotReported: string
   linkLabelReported: string
   tooltip: React.ReactNode
-  tooltipWidth: string
   type: LBA_ITEM_TYPE
 }) => {
   const [isReported, setReported] = useLocalStorageTyped<boolean>(`report-job-${itemId}`, false)
@@ -168,7 +166,7 @@ export const ReportJobLink = ({
           </>
         )}
       </ModalReadOnly>
-      <InfoTooltipOrModal tooltipContent={tooltip} tooltipWidth={width}>
+      <InfoTooltipOrModal tooltipContent={tooltip}>
         <InterrogationCircle color="#000091" />
       </InfoTooltipOrModal>
     </Flex>
