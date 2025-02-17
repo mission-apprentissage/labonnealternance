@@ -191,7 +191,6 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
                         <CustomFormControl label="Précisez la ou les raison(s) de votre refus :" required={false} name="refusal_reasons">
                           <CheckboxGroup
                             onChange={(value) => {
-                              console.log("value : ", value)
                               setFieldValue("refusal_reasons", value)
                             }}
                           >

@@ -38,7 +38,6 @@ const Formulaire = ({
   const { data: opcoData, isLoading } = useQuery(["getEntrepriseOpco", establishment_siret], () => getEntrepriseOpco(establishment_siret))
 
   if (isLoading) return null
-  console.log({ opcoData }, "plop")
 
   const opco = parseEnum(OPCOS_LABEL, opcoData?.opco)
   const shouldSelectOpco = type === AUTHTYPE.ENTREPRISE && !opco
