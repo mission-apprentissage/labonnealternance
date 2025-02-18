@@ -212,3 +212,5 @@ export const getOpcoUsers = () => apiGet("/user/opco", {})
 
 export const reportLbaItem = (itemId: string, type: LBA_ITEM_TYPE, reason: string, reasonDetails: string | undefined) =>
   apiPost("/report-company", { querystring: { type, itemId }, body: { reason, reasonDetails } })
+
+export const getMetiersDAvenir = () => apiGet("/metiersdavenir")
