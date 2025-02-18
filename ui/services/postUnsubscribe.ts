@@ -6,6 +6,5 @@ export default async function postUnsubscribe({ email, reason, sirets }: { email
     return response
   } catch (error) {
     console.error("postUnsubscribe error : ", error)
-    return { result: "unexpected_error" }
   }
 }
