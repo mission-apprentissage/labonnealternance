@@ -12,7 +12,7 @@ export const storeSearchResultInContext = ({
   formValues,
 }: {
   searchResultContext: IContextSearch
-  results: { trainings?: ILbaItemTraining2[]; jobs?: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null; partnerJobs: [] | null } }
+  results: { trainings?: ILbaItemTraining2[]; jobs?: { peJobs: any | null; lbaCompanies: any | null; matchas: any | null; partnerJobs: any | null } }
   searchTimestamp: number
   formValues?: any
 }): void => {
