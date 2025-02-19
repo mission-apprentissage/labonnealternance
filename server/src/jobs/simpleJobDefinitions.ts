@@ -45,7 +45,7 @@ import { fixRecruiterDataValidation } from "./recruiters/fixRecruiterDataValidat
 import { opcoReminderJob } from "./recruiters/opcoReminderJob"
 import { updateMissingStartDate } from "./recruiters/updateMissingStartDateJob"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
-import { importReferentielRome } from "./referentielRome/referentielRome"
+import { importReferentielRome, importReferentielRomeNew } from "./referentielRome/referentielRome"
 
 type SimpleJobDefinition = {
   fct: () => Promise<unknown>
@@ -267,5 +267,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: rankJobPartners,
     description: "Calcule le rank des computed job partners",
+  },
+  {
+    fct: importReferentielRomeNew,
+    description: "Import le référentiel ROME depuis France Travail",
   },
 ]

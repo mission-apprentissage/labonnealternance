@@ -34,7 +34,7 @@ const OffreFranceTravailLimiter = apiRateLimiter("apiOffreFT", {
   client: axiosClient,
 })
 
-const getFranceTravailTokenFromDB = async (access_type: IAccessParams): Promise<IFranceTravailAccess["access_token"] | undefined> => {
+const getFranceTravailTokenFromDB = async (access_type: IFranceTravailAccessType): Promise<IFranceTravailAccess["access_token"] | undefined> => {
   const data = await getDbCollection("francetravail_access").findOne({ access_type }, { projection: { access_token: 1, _id: 0 } })
   return data?.access_token
 }
@@ -48,21 +48,31 @@ const updateFranceTravailTokenInDB = async ({ access_type, access_token }: { acc
 export const ACCESS_PARAMS = {
   OFFRE: querystring.stringify({
     grant_type: "client_credentials",
-    client_id: config.esdClientId,
-    client_secret: config.esdClientSecret,
-    scope: `application_${config.esdClientId} api_offresdemploiv2 o2dsoffre`,
+    client_id: config.franceTravail.esdClientId,
+    client_secret: config.franceTravail.esdClientSecret,
+    scope: `application_${config.franceTravail.esdClientId} api_offresdemploiv2 o2dsoffre`,
   }),
   ROMEO: querystring.stringify({
     grant_type: "client_credentials",
-    client_id: config.esdClientId,
-    client_secret: config.esdClientSecret,
-    scope: `application_${config.esdClientId} api_romeov2`,
+    client_id: config.franceTravail.esdClientId,
+    client_secret: config.franceTravail.esdClientSecret,
+    scope: `application_${config.franceTravail.esdClientId} api_romeov2`,
+  }),
+  REFERENTIEL_METIERS: querystring.stringify({
+    grant_type: "client_credentials",
+    client_id: config.franceTravail.esdClientId,
+    client_secret: config.franceTravail.esdClientSecret,
+    scope: `application_${config.franceTravail.esdClientId} api_rome-metiersv1 nomenclatureRome`,
+  }),
+  REFERENTIEL_COMPETENCES: querystring.stringify({
+    grant_type: "client_credentials",
+    client_id: config.franceTravail.esdClientId,
+    client_secret: config.franceTravail.esdClientSecret,
+    scope: `application_${config.franceTravail.esdClientId} api_rome-competencesv1 nomenclatureRome`,
   }),
 }
 
-export type IAccessParams = keyof typeof ACCESS_PARAMS
-
-const getToken = async (access: IAccessParams) => {
+const getToken = async (access: IFranceTravailAccessType) => {
   const token = await getFranceTravailTokenFromDB(access)
   if (token) {
     return token
@@ -71,7 +81,7 @@ const getToken = async (access: IAccessParams) => {
   }
 }
 
-export const getFranceTravailTokenFromAPI = async (access: IAccessParams): Promise<string> => {
+export const getFranceTravailTokenFromAPI = async (access: IFranceTravailAccessType): Promise<string> => {
   try {
     logger.info(`requesting new FT token for access=${access}`)
     const tokenParams = ACCESS_PARAMS[access]
@@ -89,6 +99,7 @@ export const getFranceTravailTokenFromAPI = async (access: IAccessParams): Promi
 
     return validation.data.access_token
   } catch (error: any) {
+    console.log(error)
     sentryCaptureException(error, { extra: { responseData: error.response?.data } })
     throw internal("impossible d'obtenir un token pour l'API france travail")
   }
@@ -293,4 +304,30 @@ export const getAllFTJobsByDepartments = async (departement: string) => {
     }
   }
   return allJobs
+}
+
+export const getFranceTravailReferentielMetiers = async () => {
+  const token = await getToken("REFERENTIEL_METIERS")
+  const response = await axiosClient.get("https://api.francetravail.io/partenaire/rome-metiers/v1/metiers/metier", {
+    params: {
+      champs: "accesemploi,appellations(libelle,code,libellecourt),code,libelle,definition",
+    },
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return response.data
+}
+
+export const getFranceTravailReferentielCompetences = async () => {
+  const token = await getToken("REFERENTIEL_COMPETENCES")
+  const response = await axiosClient.get("https://api.francetravail.io/partenaire/rome-competences/v1/competences/competence", {
+    params: {
+      champs: "@savoir(categoriesavoir(libelle,categorie(libelle,code),code)),code,libelle",
+    },
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return response.data
 }

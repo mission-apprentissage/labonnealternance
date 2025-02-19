@@ -7,6 +7,7 @@ import * as xml2js from "xml2js"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
+import { getFranceTravailReferentielCompetences } from "../../common/apis/franceTravail/franceTravail.client"
 import { asyncForEach } from "../../common/utils/asyncUtils"
 
 const getGenericItem = (genericItem: { libelle: string; items: { item: any | any[] } }) => {
@@ -102,6 +103,12 @@ const formatRawData = ({ appellations, competences, contextes_travail, mobilites
     competences: getCompetences(competences),
     couple_appellation_rome,
   }
+}
+
+export const importReferentielRomeNew = async () => {
+  // const referentielMetierFromApi = await getFranceTravailReferentielMetiers()
+  const referentielMetierFromApi = await getFranceTravailReferentielCompetences()
+  console.log(JSON.stringify(referentielMetierFromApi, null, 4))
 }
 
 export const importReferentielRome = async () => {
