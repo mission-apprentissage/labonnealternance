@@ -322,9 +322,9 @@ export const getFranceTravailReferentielMetiers = async () => {
 export const getFranceTravailReferentielCompetences = async () => {
   const token = await getToken("REFERENTIEL_COMPETENCES")
   const response = await axiosClient.get("https://api.francetravail.io/partenaire/rome-competences/v1/competences/competence", {
-    // params: {
-    //   champs: "accesemploi,appellations(libelle,code,libellecourt),code,libelle,definition",
-    // },
+    params: {
+      champs: "@savoir(categoriesavoir(libelle,categorie(libelle,code),code)),code,libelle",
+    },
     headers: {
       Authorization: `Bearer ${token}`,
     },
