@@ -7,6 +7,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { ZJobsPartnersOfferPrivate } from "./jobsPartners.model.js"
 
 export enum COMPUTED_ERROR_SOURCE {
+  BLOCK_BAD_ROME = "BLOCK_BAD_ROME",
   API_SIRET = "api_siret",
   API_OPCO = "api_opco",
   API_ADRESSE = "api_adresse",
@@ -21,6 +22,7 @@ export enum JOB_PARTNER_BUSINESS_ERROR {
   STAGE = "STAGE",
   EXPIRED = "EXPIRED",
   CFA = "CFA",
+  ROME_BLACKLISTED = "ROME_BLACKLISTED",
 }
 
 export const ZComputedJobsPartners = extensions
