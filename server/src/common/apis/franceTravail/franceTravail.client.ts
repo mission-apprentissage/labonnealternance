@@ -48,21 +48,27 @@ const updateFranceTravailTokenInDB = async ({ access_type, access_token }: { acc
 export const ACCESS_PARAMS = {
   OFFRE: querystring.stringify({
     grant_type: "client_credentials",
-    client_id: config.esdClientId,
-    client_secret: config.esdClientSecret,
-    scope: `application_${config.esdClientId} api_offresdemploiv2 o2dsoffre`,
+    client_id: config.franceTravail.esdClientId,
+    client_secret: config.franceTravail.esdClientSecret,
+    scope: `application_${config.franceTravail.esdClientId} api_offresdemploiv2 o2dsoffre`,
   }),
   ROMEO: querystring.stringify({
     grant_type: "client_credentials",
-    client_id: config.esdClientId,
-    client_secret: config.esdClientSecret,
-    scope: `application_${config.esdClientId} api_romeov2`,
+    client_id: config.franceTravail.esdClientId,
+    client_secret: config.franceTravail.esdClientSecret,
+    scope: `application_${config.franceTravail.esdClientId} api_romeov2`,
   }),
-  ROME: querystring.stringify({
+  REFERENTIEL_METIERS: querystring.stringify({
     grant_type: "client_credentials",
-    client_id: config.esdClientId,
-    client_secret: config.esdClientSecret,
-    scope: `application_${config.esdClientId} api_rome-metiersv1 nomenclatureRome`,
+    client_id: config.franceTravail.esdClientId,
+    client_secret: config.franceTravail.esdClientSecret,
+    scope: `application_${config.franceTravail.esdClientId} api_rome-metiersv1 nomenclatureRome`,
+  }),
+  REFERENTIEL_COMPETENCES: querystring.stringify({
+    grant_type: "client_credentials",
+    client_id: config.franceTravail.esdClientId,
+    client_secret: config.franceTravail.esdClientSecret,
+    scope: `application_${config.franceTravail.esdClientId} api_rome-competencesv1 nomenclatureRome`,
   }),
 }
 
@@ -93,6 +99,7 @@ export const getFranceTravailTokenFromAPI = async (access: IFranceTravailAccessT
 
     return validation.data.access_token
   } catch (error: any) {
+    console.log(error)
     sentryCaptureException(error, { extra: { responseData: error.response?.data } })
     throw internal("impossible d'obtenir un token pour l'API france travail")
   }
@@ -300,11 +307,24 @@ export const getAllFTJobsByDepartments = async (departement: string) => {
 }
 
 export const getFranceTravailReferentielMetiers = async () => {
-  const token = await getToken("ROME")
+  const token = await getToken("REFERENTIEL_METIERS")
   const response = await axiosClient.get("https://api.francetravail.io/partenaire/rome-metiers/v1/metiers/metier", {
     params: {
       champs: "accesemploi,appellations(libelle,code,libellecourt),code,libelle,definition",
     },
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return response.data
+}
+
+export const getFranceTravailReferentielCompetences = async () => {
+  const token = await getToken("REFERENTIEL_COMPETENCES")
+  const response = await axiosClient.get("https://api.francetravail.io/partenaire/rome-competences/v1/competences/competence", {
+    // params: {
+    //   champs: "accesemploi,appellations(libelle,code,libellecourt),code,libelle,definition",
+    // },
     headers: {
       Authorization: `Bearer ${token}`,
     },
