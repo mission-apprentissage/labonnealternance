@@ -34,7 +34,7 @@ const OffreFranceTravailLimiter = apiRateLimiter("apiOffreFT", {
   client: axiosClient,
 })
 
-const getFranceTravailTokenFromDB = async (access_type: IAccessParams): Promise<IFranceTravailAccess["access_token"] | undefined> => {
+const getFranceTravailTokenFromDB = async (access_type: IFranceTravailAccessType): Promise<IFranceTravailAccess["access_token"] | undefined> => {
   const data = await getDbCollection("francetravail_access").findOne({ access_type }, { projection: { access_token: 1, _id: 0 } })
   return data?.access_token
 }
@@ -58,11 +58,15 @@ export const ACCESS_PARAMS = {
     client_secret: config.esdClientSecret,
     scope: `application_${config.esdClientId} api_romeov2`,
   }),
+  ROME: querystring.stringify({
+    grant_type: "client_credentials",
+    client_id: config.esdClientId,
+    client_secret: config.esdClientSecret,
+    scope: `application_${config.esdClientId} api_rome-metiersv1 nomenclatureRome`,
+  }),
 }
 
-export type IAccessParams = keyof typeof ACCESS_PARAMS
-
-const getToken = async (access: IAccessParams) => {
+const getToken = async (access: IFranceTravailAccessType) => {
   const token = await getFranceTravailTokenFromDB(access)
   if (token) {
     return token
@@ -71,7 +75,7 @@ const getToken = async (access: IAccessParams) => {
   }
 }
 
-export const getFranceTravailTokenFromAPI = async (access: IAccessParams): Promise<string> => {
+export const getFranceTravailTokenFromAPI = async (access: IFranceTravailAccessType): Promise<string> => {
   try {
     logger.info(`requesting new FT token for access=${access}`)
     const tokenParams = ACCESS_PARAMS[access]
@@ -293,4 +297,17 @@ export const getAllFTJobsByDepartments = async (departement: string) => {
     }
   }
   return allJobs
+}
+
+export const getFranceTravailReferentielMetiers = async () => {
+  const token = await getToken("ROME")
+  const response = await axiosClient.get("https://api.francetravail.io/partenaire/rome-metiers/v1/metiers/metier", {
+    params: {
+      champs: "accesemploi,appellations(libelle,code,libellecourt),code,libelle,definition",
+    },
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return response.data
 }

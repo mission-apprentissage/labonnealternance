@@ -4,13 +4,14 @@ import { IModelDescriptor, zObjectId } from "./common.js"
 
 const collectionName = "francetravail_access" as const
 
-export type IFranceTravailAccessType = "OFFRE" | "ROMEO"
+export const ZFranceTravailAccessType = z.enum(["OFFRE", "ROMEO", "ROME"])
+export type IFranceTravailAccessType = z.output<typeof ZFranceTravailAccessType>
 
 export const ZFranceTravailAccess = z
   .object({
     _id: zObjectId,
     access_token: z.string(),
-    access_type: z.enum(["OFFRE", "ROMEO"]),
+    access_type: ZFranceTravailAccessType,
     created_at: z.date(),
   })
   .strict()
