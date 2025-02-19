@@ -73,14 +73,17 @@ export async function setupJobProcessor() {
           "Génération du token France Travail pour la récupération des offres": {
             cron_string: "*/5 * * * *",
             handler: generateFranceTravailAccess,
+            tag: "main",
           },
           "Scan et envoi des candidatures": {
             cron_string: "*/10 * * * *",
             handler: () => processApplications(),
+            tag: "main",
           },
           "Traitement complet des jobs_partners par API": {
             cron_string: "*/10 * * * *",
             handler: processJobPartnersForApi,
+            tag: "main",
           },
           "Mise à jour des adresses emails bloquées": {
             cron_string: "5 0 * * *",
@@ -138,6 +141,11 @@ export async function setupJobProcessor() {
             cron_string: "30 1 * * *",
             handler: anonymizeAppointments,
           },
+          "Traitement complet des jobs_partners": {
+            cron_string: "00 2 * * *",
+            handler: processJobPartners,
+            tag: "slave",
+          },
           "Import des formations depuis le Catalogue RCO": {
             cron_string: "15 2 * * *",
             handler: importCatalogueFormationJob,
@@ -161,10 +169,6 @@ export async function setupJobProcessor() {
           "Supprime les etablissements dupliqués à cause du parallélisme du job de synchronisation RDVA": {
             cron_string: "30 3 * * *",
             handler: removeDuplicateEtablissements,
-          },
-          "Traitement complet des jobs_partners": {
-            cron_string: "40 3 * * *",
-            handler: processJobPartners,
           },
           "Synchronise les dates des etablissements eligible à la prise de rendez-vous": {
             cron_string: "0 5 * * *",
