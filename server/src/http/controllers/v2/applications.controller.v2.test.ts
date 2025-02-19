@@ -1,6 +1,6 @@
 import { omit } from "lodash-es"
 import { ObjectId } from "mongodb"
-import { IApplicationApiPublic, JOB_STATUS, JobCollectionName } from "shared"
+import { CompanyFeebackSendStatus, EMAIL_LOG_TYPE, IApplicationApiPublic, JOB_STATUS, JobCollectionName } from "shared"
 import { NIVEAUX_POUR_LBA, OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants"
 import { ApplicationIntention } from "shared/constants/application"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -190,12 +190,14 @@ describe("POST /v2/application", () => {
       company_address: "126 RUE DE L UNIVERSITE 75107 Paris",
       company_email: recruteur.apply_email,
       company_feedback: null,
+      company_feedback_send_status: null,
       company_feedback_reasons: null,
       company_naf: "Administration publique générale",
       company_name: "ASSEMBLEE NATIONALE",
       company_phone: null,
       company_recruitment_intention: null,
       company_siret: recruteur.workplace_siret,
+      company_recruitment_intention_date: null,
       created_at: expect.any(Date),
       job_id: recruteur._id.toString(),
       job_origin: LBA_ITEM_TYPE.RECRUTEURS_LBA,
@@ -255,11 +257,13 @@ describe("POST /v2/application", () => {
       company_email: "test-application@mail.fr",
       company_feedback: null,
       company_feedback_reasons: null,
+      company_feedback_send_status: null,
       company_naf: "",
       company_name: "ASSEMBLEE NATIONALE",
       company_phone: "0300000000",
       company_recruitment_intention: null,
       company_siret: recruiter.establishment_siret,
+      company_recruitment_intention_date: null,
       created_at: expect.any(Date),
       job_id: job._id.toString(),
       job_searched_by_user: null,
@@ -312,8 +316,13 @@ describe("POST /v2/application", () => {
       recruiter_email: "faux_email@faux-domaine-compagnie.com",
       recruiter_phone: "0300000000",
     })
-    const intentionInDb = await getDbCollection("recruiter_intention_mails").findOne({ applicationId: new ObjectId("6081289803569600282e0001") })
-    expect.soft(intentionInDb).not.toEqual(null)
+    const application = await getDbCollection("applications").findOne({ _id: new ObjectId("6081289803569600282e0001") })
+    expect.soft(application).toMatchObject({
+      company_feedback_reasons: null,
+      company_feedback: null,
+      company_feedback_send_status: CompanyFeebackSendStatus.SCHEDULED,
+      company_recruitment_intention: ApplicationIntention.ENTRETIEN,
+    })
   })
 
   it("Remove scheduled intention when cancel button", async () => {
@@ -331,27 +340,13 @@ describe("POST /v2/application", () => {
 
     expect.soft(response.statusCode).toEqual(200)
     expect.soft(response.json()).toEqual({ result: "ok", message: "intention canceled" })
-    const intentionInDb = await getDbCollection("recruiter_intention_mails").findOne({ applicationId: new ObjectId("6081289803569600282e0001") })
-    expect.soft(intentionInDb).toEqual(null)
-  })
-
-  it("Remove scheduled intention when cancel button", async () => {
-    await httpClient().inject({
-      method: "GET",
-      path: `/api/application/intention/schedule/6081289803569600282e0001?intention=${ApplicationIntention.ENTRETIEN}`,
-      headers: { authorization: `Bearer ${intentionToken}` },
+    const application = await getDbCollection("applications").findOne({ _id: new ObjectId("6081289803569600282e0001") })
+    expect.soft(application).toMatchObject({
+      company_feedback_reasons: null,
+      company_feedback: null,
+      company_feedback_send_status: CompanyFeebackSendStatus.CANCELED,
+      company_recruitment_intention: ApplicationIntention.ENTRETIEN,
     })
-
-    const response = await httpClient().inject({
-      method: "POST",
-      path: "/api/application/intention/cancel/6081289803569600282e0001",
-      headers: { authorization: `Bearer ${intentionToken}` },
-    })
-
-    expect.soft(response.statusCode).toEqual(200)
-    expect.soft(response.json()).toEqual({ result: "ok", message: "intention canceled" })
-    const intentionInDb = await getDbCollection("recruiter_intention_mails").findOne({ applicationId: new ObjectId("6081289803569600282e0001") })
-    expect.soft(intentionInDb).toEqual(null)
   })
 
   it.skip("Remove scheduled intention when Envoyer le message button", async () => {
@@ -376,13 +371,14 @@ describe("POST /v2/application", () => {
 
     expect.soft(response.statusCode).toEqual(200)
     expect.soft(response.json()).toEqual({ result: "ok", message: "comment registered" })
-    const intentionInDb = await getDbCollection("recruiter_intention_mails").findOne({ applicationId: new ObjectId("6081289803569600282e0001") })
-    expect.soft(intentionInDb).toEqual(null)
     const application = await getDbCollection("applications").findOne({ _id: new ObjectId("6081289803569600282e0001") })
     expect.soft(application!).toMatchObject({
       company_feedback_reasons: [],
       company_feedback: "Bonjour",
       company_recruitment_intention: ApplicationIntention.ENTRETIEN,
+      company_feedback_send_status: CompanyFeebackSendStatus.SENT,
     })
+    const emailLog = await getDbCollection("applicants_email_logs").findOne({ application_id: new ObjectId("6081289803569600282e0001"), type: EMAIL_LOG_TYPE.INTENTION_ENTRETIEN })
+    expect.soft(emailLog).not.toEqual(null)
   })
 })

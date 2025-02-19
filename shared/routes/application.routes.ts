@@ -38,28 +38,6 @@ export const zApplicationRoutes = {
         )}`,
       },
     },
-    "/application/intention/:id": {
-      path: "/application/intention/:id",
-      method: "post",
-      params: z.object({ id: z.string() }).strict(),
-      body: z
-        .object({
-          company_recruitment_intention: extensions.buildEnum(ApplicationIntention),
-        })
-        .strict(),
-      response: {
-        "200": z
-          .object({
-            result: z.literal("ok"),
-          })
-          .strict(),
-      },
-      securityScheme: {
-        auth: "access-token",
-        access: null,
-        resources: {},
-      },
-    },
     "/application/intentionComment/:id": {
       path: "/application/intentionComment/:id",
       method: "post",

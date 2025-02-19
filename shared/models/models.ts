@@ -40,7 +40,6 @@ import rawPassModel from "./rawPass.model.js"
 import rawRecruteursLbaModel from "./rawRecruteursLba.model.js"
 import rawRHAlternanceModel from "./rawRHAlternance.model.js"
 import recruiterModel from "./recruiter.model.js"
-import recruiterIntentionMailModel from "./recruiterIntentionMail.model.js"
 import lbaCompanyModel from "./recruteurLba.model.js"
 import lbaCompanyLegacyModel from "./recruteurLbaLegacy.model.js"
 import recruteurLbaUpdateEventModel from "./recruteurLbaUpdateEvent.model.js"
@@ -97,7 +96,6 @@ const modelDescriptorMap = {
   [rawPassModel.collectionName]: rawPassModel,
   [rawRecruteursLbaModel.collectionName]: rawRecruteursLbaModel,
   [recruiterModel.collectionName]: recruiterModel,
-  [recruiterIntentionMailModel.collectionName]: recruiterIntentionMailModel,
   [recruteurLbaUpdateEventModel.collectionName]: recruteurLbaUpdateEventModel,
   [referentielOnisepModel.collectionName]: referentielOnisepModel,
   [referentielOpcoModel.collectionName]: referentielOpcoModel,

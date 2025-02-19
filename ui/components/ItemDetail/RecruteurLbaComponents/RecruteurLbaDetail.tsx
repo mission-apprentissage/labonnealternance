@@ -224,7 +224,6 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
         </Accordion>
         <Box marginTop="10px">
           <ReportJobLink
-            tooltipWidth="490px"
             itemId={recruteurLba?.company?.siret}
             type={LBA_ITEM_TYPE.RECRUTEURS_LBA}
             linkLabelNotReported="Signaler l’entreprise"
