@@ -7,7 +7,7 @@ export default async function fetchInserJeuneStats(training) {
   }
   try {
     const response = await fetch(`${inserJeuneApiUrl}/api/inserjeunes/regionales/${training.place.zipCode}/certifications/${training.cfd}`)
-    return await response.json()
+    return response.json()
   } catch (error) {
     if (error instanceof Error) {
       if (error.message === "Pas de données disponibles") {
