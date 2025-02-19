@@ -3,14 +3,21 @@ import memoize from "../utils/memoize"
 import { SendPlausibleEvent } from "../utils/plausible"
 import { capitalizeFirstLetter, isNonEmptyString } from "../utils/strutils"
 
-export const fetchRomes = memoize(async (value, errorCallbackFn) => {
+type IFetchRomes = ((value: string, errorCallbackFn?: () => void) => Promise<any>) & { abortController?: AbortController | null }
+
+export const fetchRomes: IFetchRomes = memoize(async (value, errorCallbackFn) => {
+  if (fetchRomes.abortController) {
+    fetchRomes.abortController.abort()
+  }
+  fetchRomes.abortController = new AbortController()
+  const { signal } = fetchRomes.abortController
   let res = []
 
   if (!isNonEmptyString(value)) return res
 
   const reqParams = { title: value }
   try {
-    const response = await apiGet("/rome", { querystring: reqParams })
+    const response = await apiGet("/rome", { querystring: reqParams }, { signal })
     if (!response.labelsAndRomes && !response.labelsAndRomesForDiplomas) return []
 
     // transformation des textes des diplômes
