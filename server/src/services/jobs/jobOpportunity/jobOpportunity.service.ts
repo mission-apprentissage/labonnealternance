@@ -797,3 +797,26 @@ export async function updateJobOffer(id: ObjectId, identity: IApiAlternanceToken
 
   await upsertJobOffer(data, identity, current)
 }
+
+export async function findJobPartnerById(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobGetByIdApiV3Response> {
+  const job = await getDbCollection("jobs_partners").findOne({ _id: id })
+
+  if (!job) {
+    const error = internal("jobOpportunity.service.ts-findJobPartnerById: job not found", { id })
+    logger.error(error)
+    context.addWarning("JOB_NOT_FOUND")
+    sentryCaptureException(error)
+    throw new Error("Job not found")
+  }
+
+  const parsedJob = zJobOfferApiReadV3.safeParse(job)
+  if (!parsedJob.success) {
+    const error = internal("jobOpportunity.service.ts-findJobPartnerById: invalid job offer", { job, error: parsedJob.error.format() })
+    logger.error(error)
+    context.addWarning("JOB_OFFER_FORMATING_ERROR")
+    sentryCaptureException(error)
+    throw new Error("Invalid job offer format")
+  }
+
+  return parsedJob.data
+}

@@ -4,6 +4,7 @@ import { IRouteSchema } from "shared/routes/common.routes"
 export const IJobOpportunityWarningMap = {
   FRANCE_TRAVAIL_API_ERROR: "Unable to retrieve job offers from France Travail API",
   JOB_OFFER_FORMATING_ERROR: "Some job offers are invalid and have been excluded due to unexpected errors.",
+  JOB_NOT_FOUND: "The job offer has not been found.",
   RECRUITERS_FORMATING_ERROR: "Some recruiters are invalid and have been excluded due to unexpected errors.",
 } as const satisfies Record<string, string>
 
