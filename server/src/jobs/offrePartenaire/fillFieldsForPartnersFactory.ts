@@ -87,6 +87,12 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
               {
                 updateOne: {
                   filter: { _id },
+                  update: { $pull: { errors: { source: job } } },
+                },
+              },
+              {
+                updateOne: {
+                  filter: { _id },
                   update: { $set: { ...newFields, updated_at: now } },
                 },
               },
@@ -144,23 +150,31 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
           sentryCaptureException(newError)
           if (documents.length) {
             await getDbCollection("computed_jobs_partners").bulkWrite(
-              documents.map((document) => {
-                return {
-                  updateOne: {
-                    filter: { _id: document._id },
-                    update: {
-                      $push: {
-                        errors: {
-                          source: job,
-                          error: err + "",
+              documents.flatMap((document) => {
+                return [
+                  {
+                    updateOne: {
+                      filter: { _id: document._id },
+                      update: { $pull: { errors: { source: job } } },
+                    },
+                  },
+                  {
+                    updateOne: {
+                      filter: { _id: document._id },
+                      update: {
+                        $push: {
+                          errors: {
+                            source: job,
+                            error: err + "",
+                          },
                         },
                       },
                     },
                   },
-                }
+                ]
               }),
               {
-                ordered: false,
+                ordered: true,
               }
             )
           }
@@ -171,9 +185,11 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
   )
   const message = `job ${job} : enrichissement terminé. total=${counters.total}, success=${counters.success}, errors=${counters.error}`
   logger.info(message)
-  await notifyToSlack({
-    subject: `computedJobPartners: enrichissement de données`,
-    message,
-    error: counters.error > 0,
-  })
+  if (counters.error > 0) {
+    await notifyToSlack({
+      subject: `computedJobPartners: enrichissement de données`,
+      message,
+      error: counters.error > 0,
+    })
+  }
 }
