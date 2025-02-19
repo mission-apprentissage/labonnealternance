@@ -20,15 +20,12 @@ import { processRecruiterIntentions } from "./applications/processRecruiterInten
 import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
 import { recreateIndexes } from "./database/recreateIndexes"
 import { validateModels } from "./database/schemaValidation"
-import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
-import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
 import { updateDomainesMetiersFile } from "./domainesMetiers/updateDomainesMetiersFile"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
-import { runGarbageCollector } from "./misc/runGarbageCollector"
 import { processJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
@@ -50,7 +47,6 @@ import { createApiUser } from "./recruiters/createApiUser"
 import { disableApiUser } from "./recruiters/disableApiUser"
 import { opcoReminderJob } from "./recruiters/opcoReminderJob"
 import { recruiterOfferExpirationReminderJob } from "./recruiters/recruiterOfferExpirationReminderJob"
-import { removeDuplicateRecruiters } from "./recruiters/removeDuplicatesRecruiters"
 import { resetApiKey } from "./recruiters/resetApiKey"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import updateGeoLocations from "./recruteurLba/updateGeoLocations"
@@ -162,10 +158,6 @@ export async function setupJobProcessor() {
             cron_string: "45 2 * * *",
             handler: syncEtablissementsAndFormations,
           },
-          "Lancement du garbage collector": {
-            cron_string: "30 3 * * *",
-            handler: runGarbageCollector,
-          },
           "Supprime les etablissements dupliqués à cause du parallélisme du job de synchronisation RDVA": {
             cron_string: "30 3 * * *",
             handler: removeDuplicateEtablissements,
@@ -240,27 +232,12 @@ export async function setupJobProcessor() {
           },
         },
     jobs: {
-      "remove:duplicates:recruiters": {
-        handler: async () => removeDuplicateRecruiters(),
-      },
       "recreate:indexes": {
         handler: async (job) => {
           const { drop } = job.payload as any
           await recreateIndexes({ drop })
           return
         },
-      },
-      "garbage-collector:run": {
-        handler: async () => runGarbageCollector(),
-      },
-      "anonymize:appointments": {
-        handler: async () => anonymizeAppointments(),
-      },
-      "control:applications": {
-        handler: async () => controlApplications(),
-      },
-      "control:appointments": {
-        handler: async () => controlAppointments(),
       },
       "api:user:create": {
         handler: async (job) => {
@@ -286,17 +263,11 @@ export async function setupJobProcessor() {
           return
         },
       },
-      "pe:offre:export": {
-        handler: async () => exportJobsToFranceTravail(),
-      },
       "etablissement:invite:premium:follow-up": {
         handler: async (job) => inviteEtablissementParcoursupToPremiumFollowUp(job.payload?.bypassDate as any),
       },
       "etablissement:invite:premium:affelnet:follow-up": {
         handler: async (job) => inviteEtablissementAffelnetToPremiumFollowUp(job.payload?.bypassDate as any),
-      },
-      "etablissements:formations:sync": {
-        handler: async () => syncEtablissementsAndFormations(),
       },
       "brevo:blocked:sync": {
         handler: async (job) => updateBrevoBlockedEmails(job.payload as any),
@@ -310,18 +281,12 @@ export async function setupJobProcessor() {
       "opcos:update": {
         handler: async (job) => updateOpcoCompanies(job.payload as any),
       },
-      "domaines-metiers:update": {
-        handler: async () => updateDomainesMetiers(),
-      },
       "domaines-metiers:file:update": {
         handler: async (job) => {
           const { filename, key } = job.payload as any
           await updateDomainesMetiersFile({ filename, key })
           return
         },
-      },
-      "diplomes-metiers:update": {
-        handler: async () => updateDiplomesMetiers(),
       },
       "anonymize-individual": {
         handler: async (job) => {
