@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb"
 import { IUnsubscribedLbaCompany, zRoutes } from "shared"
 import { UNSUBSCRIBE_EMAIL_ERRORS } from "shared/constants"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { IJobsPartnersRecruteurAlgoPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IUnsubscribeQueryResponse } from "shared/models/unsubscribedRecruteurLba.model"
 
 import { asyncForEach } from "@/common/utils/asyncUtils"
@@ -43,13 +43,13 @@ export default function (server: Server) {
         return res.status(400).send({ result: UNSUBSCRIBE_EMAIL_ERRORS.WRONG_PARAMETERS })
       }
 
-      const lbaCompaniesToUnsubscribe = await getDbCollection("jobs_partners").find(query).limit(ARBITRARY_COMPANY_LIMIT).toArray()
+      const lbaCompaniesToUnsubscribe = (await getDbCollection("jobs_partners").find(query).limit(ARBITRARY_COMPANY_LIMIT).toArray()) as IJobsPartnersRecruteurAlgoPrivate[]
 
       if (!lbaCompaniesToUnsubscribe.length) {
         result = { result: UNSUBSCRIBE_EMAIL_ERRORS.NON_RECONNU }
       } else if (lbaCompaniesToUnsubscribe.length > 1 && !sirets) {
         const companies = lbaCompaniesToUnsubscribe.map((company) => {
-          return { enseigne: company.workplace_legal_name!, siret: company.workplace_siret!, address: company.workplace_address_label }
+          return { enseigne: company.workplace_legal_name, siret: company.workplace_siret, address: company.workplace_address_label }
         })
         result = { result: UNSUBSCRIBE_EMAIL_ERRORS.ETABLISSEMENTS_MULTIPLES, companies }
       } else {

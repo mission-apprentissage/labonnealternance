@@ -119,6 +119,12 @@ export const ZJobsPartnersOfferPrivateWithDistance = ZJobsPartnersOfferPrivate.e
   distance: z.number().nullish(),
 })
 
+export const ZJobsPartnersRecruteurAlgoPrivate = ZJobsPartnersOfferPrivate.omit({ workplace_siret: true, workplace_legal_name: true }).extend({
+  workplace_siret: z.string().describe("Siret toujours présent pour les entreprises issue de l'algo"),
+  workplace_legal_name: z.string().describe("Raison sociale toujours présente pour les entreprises issue de l'algo"),
+})
+export type IJobsPartnersRecruteurAlgoPrivate = z.output<typeof ZJobsPartnersRecruteurAlgoPrivate>
+
 export type IJobsPartnersRecruiterApi = z.output<typeof ZJobsPartnersRecruiterApi>
 export type IJobsPartnersOfferApi = z.output<typeof ZJobsPartnersOfferApi>
 
