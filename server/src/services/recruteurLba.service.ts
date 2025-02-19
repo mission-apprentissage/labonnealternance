@@ -407,7 +407,7 @@ export const getCompanyFromSiret = async ({
  * @param {string} phone
  * @returns {Promise<ILbaCompany | string>}
  */
-export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email?: string; phone?: string }) => {
+export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email: string | null; phone: string | null }) => {
   const now = new Date()
   try {
     const recruteurLba = await getDbCollection("jobs_partners").findOne({ workplace_siret: siret, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
@@ -421,12 +421,10 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
         throw badRequest()
       }
     } else {
-      if (email || phone) {
-        await getDbCollection("jobs_partners").findOneAndUpdate(
-          { workplace_siret: siret },
-          { $set: { ...(email ? { apply_email: email } : null), ...(phone ? { apply_phone: phone } : null), updated_at: new Date() } }
-        )
-      }
+      await getDbCollection("jobs_partners").findOneAndUpdate(
+        { workplace_siret: recruteurLba.workplace_siret, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA },
+        { $set: { apply_email: email, apply_phone: phone, updated_at: new Date() } }
+      )
     }
 
     if (email !== undefined && recruteurLba && recruteurLba.apply_email !== email && !email) {

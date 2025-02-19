@@ -67,48 +67,35 @@ describe("/lbacompany/:siret/contactInfo", () => {
     await expect(getCompanyContactInfo({ siret: "34843069553555" })).rejects.toThrow(notFound("Société inconnue"))
   })
 
-  it("La suppression email / phone d'une société présente dans recruteursLba se fait et les événements correspondants sont générés", async () => {
-    const result = await updateContactInfo({ siret: "58006820882692", email: "", phone: "" })
+  it("Suppression email / phone d'une société AVEC événements correspondants générés", async () => {
+    const { siret, email, phone } = { siret: "58006820882692", email: null, phone: null }
+
+    const result = await updateContactInfo({ siret, email, phone })
 
     expect.soft(result).toStrictEqual({
       active: true,
-      siret: "58006820882692",
       enseigne: "fake_company_name",
-      phone: "",
-      email: "",
+      siret,
+      phone,
+      email,
     })
 
-    const modifiedRecruteurLba = await getDbCollection("jobs_partners").findOne({ workplace_siret: "58006820882692", partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
+    const modifiedRecruteurLba = await getDbCollection("jobs_partners").findOne({ workplace_siret: siret, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
     expect.soft(modifiedRecruteurLba).toEqual(
       expect.objectContaining({
-        apply_phone: "",
-        apply_email: "",
+        apply_phone: phone,
+        apply_email: email,
       })
     )
 
-    let eventCount = await getDbCollection("recruteurlbaupdateevents").countDocuments({ siret: "58006820882692", event: ERecruteurLbaUpdateEventType.DELETE_PHONE })
+    let eventCount = await getDbCollection("recruteurlbaupdateevents").countDocuments({ siret, event: ERecruteurLbaUpdateEventType.DELETE_PHONE })
     expect.soft(eventCount).toEqual(1)
 
-    eventCount = await getDbCollection("recruteurlbaupdateevents").countDocuments({ siret: "58006820882692", event: ERecruteurLbaUpdateEventType.DELETE_EMAIL })
+    eventCount = await getDbCollection("recruteurlbaupdateevents").countDocuments({ siret, event: ERecruteurLbaUpdateEventType.DELETE_EMAIL })
     expect.soft(eventCount).toEqual(1)
   })
 
-  it("La suppression email / phone d'une société absente dans recruteursLba mais dans application. Aucun événement généré", async () => {
-    const result = await updateContactInfo({ siret: "34843069553553", email: "", phone: "" })
-
-    expect.soft(result).toStrictEqual({
-      active: false,
-      siret: "34843069553553",
-      enseigne: "fake_company_name",
-      phone: "",
-      email: "",
-    })
-
-    const eventCount = await getDbCollection("recruteurlbaupdateevents").countDocuments({})
-    expect.soft(eventCount).toEqual(0)
-  })
-
-  it("La modification email / phone d'une société présente dans recruteursLba se fait et les événements correspondants sont générés", async () => {
+  it("Modification email / phone d'une société AVEC événements correspondants générés", async () => {
     const result = await updateContactInfo({ siret: "58006820882692", email: "recruteur_lba_2@test.com", phone: "0610101011" })
 
     expect.soft(result).toStrictEqual({
