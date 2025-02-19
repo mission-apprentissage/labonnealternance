@@ -371,8 +371,8 @@ describe("POST /jobs", async () => {
     expect.soft(response.statusCode).toBe(200)
     const responseJson = response.json()
     expect(responseJson).toEqual({ id: expect.any(String) })
-    expect(await getDbCollection("jobs_partners").countDocuments({ _id: new ObjectId(responseJson.id as string) })).toBe(1)
-    const doc = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(responseJson.id as string) })
+    expect(await getDbCollection("computed_jobs_partners").countDocuments({ _id: new ObjectId(responseJson.id as string) })).toBe(1)
+    const doc = await getDbCollection("computed_jobs_partners").findOne({ _id: new ObjectId(responseJson.id as string) })
 
     // Ensure that the job offer is associated to the correct permission
     expect(doc?.partner_label).toBe("Un super Partenaire")
@@ -516,8 +516,8 @@ describe("PUT /jobs/:id", async () => {
     })
 
     expect.soft(response.statusCode).toBe(204)
-    expect(await getDbCollection("jobs_partners").countDocuments({ _id: id })).toBe(1)
-    const doc = await getDbCollection("jobs_partners").findOne({ _id: id })
+    expect(await getDbCollection("computed_jobs_partners").countDocuments({ _id: id })).toBe(1)
+    const doc = await getDbCollection("computed_jobs_partners").findOne({ _id: id })
 
     // Ensure that the job offer is associated to the correct permission
     expect(doc?.offer_title).toBe(data.offer.title)

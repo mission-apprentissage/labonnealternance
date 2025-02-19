@@ -47,10 +47,7 @@ export const passJobToJobsPartners = (job: IPassJob): IComputedJobsPartners => {
   const creationDate = parseDate(pubDate)
   const contractDuration = parseDuration(dcFormat)
   const contractStart = parseDate(dcDate)
-  const offerExpiration = dayjs
-    .tz(creationDate || now)
-    .add(2, "months")
-    .toDate()
+  const offerExpiration = dayjs.tz(contractStart).add(2, "months").toDate()
   let businessError: null | JOB_PARTNER_BUSINESS_ERROR = null
 
   if (contractDuration === 0) {
@@ -58,13 +55,13 @@ export const passJobToJobsPartners = (job: IPassJob): IComputedJobsPartners => {
   }
 
   if (contractStart) {
-    if (contractStart < offerExpiration) {
+    if (offerExpiration <= now) {
       businessError = JOB_PARTNER_BUSINESS_ERROR.EXPIRED
     }
   }
 
   const partnerJob: IComputedJobsPartners = {
-    ...blankComputedJobPartner,
+    ...blankComputedJobPartner(),
     _id: new ObjectId(),
     created_at: now,
     updated_at: now,

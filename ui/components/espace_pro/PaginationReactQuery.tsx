@@ -1,5 +1,4 @@
 import { Box, Button, Link } from "@chakra-ui/react"
-import React from "react"
 
 import { ChevronLeft, ChevronRight } from "../../theme/components/icons"
 
@@ -29,8 +28,7 @@ const NextLink = ({ nextPage, canNextPage }) => {
 }
 
 const sequence = (from, to) => [...new Array(to - from + 1)].map((_, index) => index + from)
-// @ts-expect-error: TODO
-const uniq = (array) => [...new Set(array)]
+const uniq = (array: number[]): number[] => [...new Set(array)]
 
 export function PaginationReactQuery({ pageCount, gotoPage: goToPageIndex, currentPage: pageIndex }) {
   if (Number.isNaN(pageCount) || pageCount <= 1) {

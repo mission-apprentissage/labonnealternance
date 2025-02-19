@@ -307,7 +307,7 @@ export const getFtJobsV2 = async ({
     return { resultats: [] }
   }
 
-  return jobs.data
+  return jobs.data || { resultats: [] }
 }
 
 /**

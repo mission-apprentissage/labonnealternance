@@ -1,14 +1,14 @@
 import { ObjectId } from "bson"
 import { Jsonify } from "type-fest"
 
-import { RefusalReasons } from "../constants/application"
-import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, allLbaItemType, allLbaItemTypeOLD } from "../constants/lbaitem"
-import { removeUrlsFromText } from "../helpers/common"
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { z } from "../helpers/zodWithOpenApi"
-import { zCallerParam } from "../routes/_params"
+import { RefusalReasons } from "../constants/application.js"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, allLbaItemType, allLbaItemTypeOLD } from "../constants/lbaitem.js"
+import { removeUrlsFromText } from "../helpers/common.js"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { z } from "../helpers/zodWithOpenApi.js"
+import { zCallerParam } from "../routes/_params.js"
 
-import { IModelDescriptor, zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common.js"
 
 const collectionName = "applications" as const
 
@@ -19,6 +19,13 @@ export enum ApplicationScanStatus {
   NO_VIRUS_DETECTED = "NO_VIRUS_DETECTED",
   DO_NOT_SEND = "DO_NOT_SEND",
   ERROR_APPLICANT_NOT_FOUND = "ERROR_APPLICANT_NOT_FOUND",
+}
+
+export enum CompanyFeebackSendStatus {
+  SENT = "SENT",
+  CANCELED = "CANCELED",
+  SCHEDULED = "SCHEDULED",
+  ERROR = "ERROR",
 }
 
 const ZApplicationOld = z
@@ -47,16 +54,18 @@ const ZApplicationOld = z
     applicant_message_to_company: z.string().nullable().describe("Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat."),
     job_searched_by_user: z.string().nullish().describe("Métier recherché par le candidat"),
     company_recruitment_intention: z.string().nullish().describe("L'intention de la société vis à vis du candidat"),
+    company_recruitment_intention_date: z.date().nullable().describe("Date d'enregistrement d'intention/avis programmé"),
     company_feedback: z.string().nullish().describe("L'avis donné par la société"),
     company_feedback_reasons: z.array(extensions.buildEnum(RefusalReasons)).nullish(),
     company_feedback_date: z.date().nullish().describe("Date d'intention/avis donnée"),
-    company_siret: extensions.siret.describe("Siret de l'entreprise"),
+    company_feedback_send_status: extensions.buildEnum(CompanyFeebackSendStatus).nullable().describe("Etat de l'envoi de l'intention de recrutement"),
+    company_siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
     company_email: z.string().describe("Email de l'entreprise"),
     company_phone: z.string().nullish().describe("Numéro de téléphone du recruteur"),
     company_name: z.string().describe("Nom de l'entreprise"),
     company_naf: z.string().nullish().describe("Code NAF de l'entreprise"),
     company_address: z.string().nullish().describe("Adresse de l'entreprise"),
-    job_origin: extensions.buildEnum(LBA_ITEM_TYPE).nullable().describe("Origine de l'offre d'emploi"),
+    job_origin: extensions.buildEnum(LBA_ITEM_TYPE).describe("Origine de l'offre d'emploi"),
     job_title: z
       .string()
       .nullish()
@@ -127,6 +136,8 @@ export const ZNewApplication = ZApplicationOld.extend({
     to_applicant_message_id: true,
     to_company_message_id: true,
     company_recruitment_intention: true,
+    company_recruitment_intention_date: true,
+    company_feedback_send_status: true,
     company_feedback: true,
     company_feedback_date: true,
     created_at: true,
@@ -175,6 +186,8 @@ const ZNewApplicationTransitionToV2 = ZApplicationOld.extend({
     company_recruitment_intention: true,
     company_feedback: true,
     company_feedback_date: true,
+    company_recruitment_intention_date: true,
+    company_feedback_send_status: true,
     created_at: true,
     scan_status: true,
     last_update_at: true,
@@ -183,7 +196,9 @@ const ZNewApplicationTransitionToV2 = ZApplicationOld.extend({
 // KBA 20241011 to remove once V2 is LIVE and V1 support has ended
 export type INewApplicationV1 = z.output<typeof ZNewApplicationTransitionToV2>
 
-type JobCollectionName = "recruteurslba" | "jobs_partners" | "recruiters"
+export const ZJobCollectionName = z.enum(["recruteurslba", "partners", "recruiters"])
+export const JobCollectionName = ZJobCollectionName.enum
+export type IJobCollectionName = z.output<typeof ZJobCollectionName>
 
 export const ZApplicationApiPrivate = ZApplicationOld.pick({
   applicant_first_name: true,
@@ -204,10 +219,10 @@ export const ZApplicationApiPrivate = ZApplicationOld.pick({
       if (!ObjectId.isValid(jobId)) {
         throw new Error(`Invalid job identifier: ${jobId}`)
       }
-      if (!["recruteurslba", "jobs_parnters", "recruiters"].includes(collectionName)) {
+      if (!ZJobCollectionName.safeParse(collectionName).success) {
         throw new Error(`Invalid collection name: ${collectionName}`)
       }
-      return { collectionName: collectionName as JobCollectionName, jobId }
+      return { collectionName: collectionName as IJobCollectionName, jobId }
     })
     .describe("Identifiant unique de la ressource vers laquelle la candidature est faite, préfixé par le nom de la collection"),
 })
@@ -215,6 +230,7 @@ export const ZApplicationApiPrivate = ZApplicationOld.pick({
 export const ZApplicationApiPublic = ZApplicationApiPrivate.omit({
   caller: true,
   job_searched_by_user: true,
+  application_url: true,
 })
 
 export type IApplicationApiPublicOutput = z.output<typeof ZApplicationApiPublic>

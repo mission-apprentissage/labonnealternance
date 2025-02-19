@@ -7,8 +7,8 @@ enum LOADING_ILLUSTRATION_TYPES {
   JOB = "JOB",
 }
 
-const ResultListsLoading = ({ jobSearchError, partnerJobSearchError, trainingSearchError, isTrainingSearchLoading, isJobSearchLoading, isPartnerJobSearchLoading }) => {
-  const isLoading = isTrainingSearchLoading || isJobSearchLoading || isPartnerJobSearchLoading
+const ResultListsLoading = ({ jobSearchError, trainingSearchError, isTrainingSearchLoading, isJobSearchLoading }) => {
+  const isLoading = isTrainingSearchLoading || isJobSearchLoading
 
   const getNextLoadingIllustration = (currentIllustrationIndex: number | null) => {
     const initialIndex = currentIllustrationIndex ?? Math.floor(Math.random() * loadingIllustrations.length)
@@ -17,9 +17,7 @@ const ResultListsLoading = ({ jobSearchError, partnerJobSearchError, trainingSea
     const filteredIllustrationIndexes = loadingIllustrations
       .map((item, index) => {
         if (
-          ((item.type === LOADING_ILLUSTRATION_TYPES.PARTNER && isPartnerJobSearchLoading) ||
-            (item.type === LOADING_ILLUSTRATION_TYPES.JOB && isJobSearchLoading) ||
-            (item.type === LOADING_ILLUSTRATION_TYPES.FORMATION && isTrainingSearchLoading)) &&
+          ((item.type === LOADING_ILLUSTRATION_TYPES.JOB && isJobSearchLoading) || (item.type === LOADING_ILLUSTRATION_TYPES.FORMATION && isTrainingSearchLoading)) &&
           index !== initialIndex
         )
           return index
@@ -80,7 +78,7 @@ const ResultListsLoading = ({ jobSearchError, partnerJobSearchError, trainingSea
     }
   }, [isLoading])
 
-  if (jobSearchError && partnerJobSearchError && trainingSearchError) {
+  if (jobSearchError && trainingSearchError) {
     return <></>
   }
 

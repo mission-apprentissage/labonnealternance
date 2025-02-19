@@ -1,11 +1,11 @@
-import { ApplicationIntention, RefusalReasons } from "../constants/application"
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { z } from "../helpers/zodWithOpenApi"
-import { ZLbacError } from "../models"
-import { ZNewApplication } from "../models/applications.model"
-import { rateLimitDescription } from "../utils/rateLimitDescription"
+import { ApplicationIntention, RefusalReasons } from "../constants/application.js"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { z } from "../helpers/zodWithOpenApi.js"
+import { ZNewApplication } from "../models/applications.model.js"
+import { ZLbacError } from "../models/lbacError.model.js"
+import { rateLimitDescription } from "../utils/rateLimitDescription.js"
 
-import { IRoutesDef, ZResError } from "./common.routes"
+import { IRoutesDef, ZResError } from "./common.routes.js"
 
 export const zApplicationRoutes = {
   post: {
@@ -36,28 +36,6 @@ export const zApplicationRoutes = {
         description: `Envoi d'un email de candidature à une offre postée sur La bonne alternance recruteur ou une candidature spontanée à une entreprise identifiée par La bonne alternance.\nL'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne alternance.\n${rateLimitDescription(
           { max: 5, timeWindow: "5s" }
         )}`,
-      },
-    },
-    "/application/intention/:id": {
-      path: "/application/intention/:id",
-      method: "post",
-      params: z.object({ id: z.string() }).strict(),
-      body: z
-        .object({
-          company_recruitment_intention: extensions.buildEnum(ApplicationIntention),
-        })
-        .strict(),
-      response: {
-        "200": z
-          .object({
-            result: z.literal("ok"),
-          })
-          .strict(),
-      },
-      securityScheme: {
-        auth: "access-token",
-        access: null,
-        resources: {},
       },
     },
     "/application/intentionComment/:id": {

@@ -1,119 +1,52 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
-import {
-  Alert,
-  AlertIcon,
-  Box,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  Button,
-  Link as ChakraLink,
-  Container,
-  Flex,
-  Heading,
-  SimpleGrid,
-  Text,
-  useBreakpointValue,
-} from "@chakra-ui/react"
-import { Form, Formik } from "formik"
+import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Link as ChakraLink, Container, Flex, Heading, SimpleGrid, Text } from "@chakra-ui/react"
 import NavLink from "next/link"
 import { useRouter } from "next/router"
-import { useState } from "react"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import * as Yup from "yup"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
+import { SiretAutocomplete } from "@/components/espace_pro/Authentification/SiretAutocomplete"
 import { useAuth } from "@/context/UserContext"
 
-import { SIRETValidation } from "../../../../common/validation/fieldValidations"
-import { AnimationContainer, CustomInput, Layout } from "../../../../components/espace_pro"
+import { AnimationContainer, Layout } from "../../../../components/espace_pro"
 import { authProvider, withAuth } from "../../../../components/espace_pro/withAuth"
-import { InfoCircle, SearchLine } from "../../../../theme/components/icons"
+import { InfoCircle } from "../../../../theme/components/icons"
 import { getEntrepriseInformation, getEntrepriseOpco } from "../../../../utils/api"
 
 const CreationCompte = () => {
-  const [isCfa, setIsCfa] = useState(false)
-  const buttonSize = useBreakpointValue(["sm", "md"])
   const router = useRouter()
   const { user } = useAuth()
 
-  const submitSiret = ({ establishment_siret }, { setSubmitting, setFieldError }) => {
-    const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
-    Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret, { cfa_delegated_siret: user.cfa_delegated_siret })]).then(
-      ([opcoInfos, entrepriseData]) => {
-        if (entrepriseData.error === true) {
-          if (entrepriseData.statusCode >= 500) {
-            router.push({
-              pathname: "/espace-pro/administration/entreprise/detail",
-              query: { informationSiret: JSON.stringify({ establishment_siret: formattedSiret, ...opcoInfos }) },
-            })
-          } else {
-            setFieldError("establishment_siret", entrepriseData?.data?.errorCode === BusinessErrorCodes.NON_DIFFUSIBLE ? BusinessErrorCodes.NON_DIFFUSIBLE : entrepriseData.message)
-            setIsCfa(entrepriseData?.data?.errorCode === BusinessErrorCodes.IS_CFA)
-            setSubmitting(false)
-          }
-        } else if (entrepriseData.error === false) {
-          setSubmitting(true)
-          router.push({
-            pathname: "/espace-pro/administration/entreprise/detail",
-            query: { informationSiret: JSON.stringify({ establishment_siret: formattedSiret, ...opcoInfos }) },
-          })
-        }
-      }
-    )
-  }
-
   return (
-    <Formik
-      validateOnMount
-      initialValues={{ establishment_siret: undefined }}
-      validationSchema={Yup.object().shape({
-        establishment_siret: SIRETValidation().required("champ obligatoire"),
-      })}
-      onSubmit={submitSiret}
-    >
-      {({ values, isValid, isSubmitting, setFieldValue, submitForm }) => {
-        return (
-          <>
-            <Form>
-              <CustomInput required={false} name="establishment_siret" label="SIRET" type="text" value={values.establishment_siret} />
-              {isCfa && (
-                <Alert status="info" variant="top-accent">
-                  <AlertIcon />
-                  <Text>
-                    Pour les organismes de formation,{" "}
-                    <ChakraLink
-                      variant="classic"
-                      onClick={() => {
-                        setIsCfa(false)
-                        setFieldValue("establishment_siret", values.establishment_siret)
-                        router.push("/espace-pro/creation/cfa")
-                        submitForm()
-                      }}
-                    >
-                      veuillez utiliser ce lien
-                    </ChakraLink>
-                  </Text>
-                </Alert>
-              )}
-              <Flex justify="flex-end" mt={5}>
-                <Button
-                  type="submit"
-                  size={buttonSize}
-                  variant="form"
-                  leftIcon={<SearchLine width={5} />}
-                  isActive={isValid}
-                  isDisabled={!isValid || isSubmitting}
-                  isLoading={isSubmitting}
-                >
-                  Chercher
-                </Button>
-              </Flex>
-            </Form>
-          </>
+    <SiretAutocomplete
+      onSubmit={({ establishment_siret }, { setSubmitting, setFieldError }) => {
+        const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
+        Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret, { cfa_delegated_siret: user.cfa_delegated_siret })]).then(
+          ([opcoInfos, entrepriseData]) => {
+            if (entrepriseData.error === true) {
+              if (entrepriseData.statusCode >= 500) {
+                router.push({
+                  pathname: "/espace-pro/administration/entreprise/detail",
+                  query: { informationSiret: JSON.stringify({ establishment_siret: formattedSiret, ...opcoInfos }) },
+                })
+              } else {
+                setFieldError(
+                  "establishment_siret",
+                  entrepriseData?.data?.errorCode === BusinessErrorCodes.NON_DIFFUSIBLE ? BusinessErrorCodes.NON_DIFFUSIBLE : entrepriseData.message
+                )
+                setSubmitting(false)
+              }
+            } else if (entrepriseData.error === false) {
+              setSubmitting(true)
+              router.push({
+                pathname: "/espace-pro/administration/entreprise/detail",
+                query: { informationSiret: JSON.stringify({ establishment_siret: formattedSiret, ...opcoInfos }) },
+              })
+            }
+          }
         )
       }}
-    </Formik>
+    />
   )
 }
 
@@ -137,44 +70,38 @@ const InformationSiret = () => (
 
 function CreationEntreprise() {
   return (
-    <AnimationContainer>
-      <Container maxW="container.xl" mt={5}>
-        <Box mb={5}>
-          <Breadcrumb spacing="4px" textStyle="xs">
-            <BreadcrumbItem isCurrentPage>
-              <NavLink legacyBehavior href="/espace-pro/administration" passHref>
-                <BreadcrumbLink textStyle="xs"> Administration des offres</BreadcrumbLink>
-              </NavLink>
-            </BreadcrumbItem>
-          </Breadcrumb>
-        </Box>
-        <SimpleGrid columns={[1, 1, 1, 2]} spacing={[0, 10]}>
-          <Box>
-            <Heading>Renseignements entreprise</Heading>
-            <Text fontSize="20px" textAlign="justify" mt={2}>
-              Merci de renseigner le SIRET de votre entreprise partenaire afin de l'identifier.
-            </Text>
-            <Box mt={4}>
-              <CreationCompte />
-            </Box>
-          </Box>
-          <Box>
-            <InformationSiret />
-          </Box>
-        </SimpleGrid>
-      </Container>
-    </AnimationContainer>
-  )
-}
-
-function CreationEntreprisePage() {
-  return (
     <Layout footer={false}>
-      <CreationEntreprise />
+      <AnimationContainer>
+        <Container maxW="container.xl" mt={5}>
+          <Box mb={5}>
+            <Breadcrumb spacing="4px" textStyle="xs">
+              <BreadcrumbItem isCurrentPage>
+                <NavLink legacyBehavior href="/espace-pro/administration" passHref>
+                  <BreadcrumbLink textStyle="xs"> Administration des offres</BreadcrumbLink>
+                </NavLink>
+              </BreadcrumbItem>
+            </Breadcrumb>
+          </Box>
+          <SimpleGrid columns={[1, 1, 1, 2]} spacing={[0, 10]}>
+            <Box>
+              <Heading>Renseignements entreprise</Heading>
+              <Text fontSize="20px" textAlign="justify" mt={2}>
+                Précisez le nom ou le SIRET de l’entreprise partenaire pour laquelle vous souhaitez diffuser des offres.
+              </Text>
+              <Box mt={4}>
+                <CreationCompte />
+              </Box>
+            </Box>
+            <Box>
+              <InformationSiret />
+            </Box>
+          </SimpleGrid>
+        </Container>
+      </AnimationContainer>
     </Layout>
   )
 }
 
 export const getServerSideProps = async (context) => ({ props: { ...(await getAuthServerSideProps(context)) } })
 
-export default authProvider(withAuth(CreationEntreprisePage))
+export default authProvider(withAuth(CreationEntreprise))

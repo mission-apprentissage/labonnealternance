@@ -1,11 +1,11 @@
-import { z } from "../helpers/zodWithOpenApi"
-import { zFormationCatalogueSchema } from "../models/formation.model"
-import { ZLbacError } from "../models/lbacError.model"
-import { ZLbaItemFormationResult } from "../models/lbaItem.model"
-import { rateLimitDescription } from "../utils/rateLimitDescription"
+import { z } from "../helpers/zodWithOpenApi.js"
+import { zFormationCatalogueSchema } from "../models/formation.model.js"
+import { ZLbacError } from "../models/lbacError.model.js"
+import { ZLbaItemFormationResult } from "../models/lbaItem.model.js"
+import { rateLimitDescription } from "../utils/rateLimitDescription.js"
 
-import { zCallerParam, zDiplomaParam, zGetFormationOptions, ZLatitudeParam, ZLongitudeParam, ZRadiusParam, zRefererHeaders, zRomesParams } from "./_params"
-import { IRoutesDef, ZResError } from "./common.routes"
+import { ZLatitudeParam, ZLongitudeParam, ZRadiusParam, zCallerParam, zDiplomaParam, zGetFormationOptions, zRefererHeaders, zRomesParams } from "./_params.js"
+import { IRoutesDef, ZResError } from "./common.routes.js"
 
 export const zFormationsRoutes = {
   get: {

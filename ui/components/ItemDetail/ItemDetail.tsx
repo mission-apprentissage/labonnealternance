@@ -189,7 +189,7 @@ const ItemDetail = ({ handleClose, handleSelectItem }) => {
         {hasError ? (
           <ErrorMessage message={hasError === "not_found" ? "Fiche introuvable" : "Une erreur s'est produite. Détail de la fiche momentanément indisponible"} />
         ) : (
-          <ItemDetailLoading item={selectedItem} />
+          <ItemDetailLoading type={selectedItem.ideaType} />
         )}
       </Box>
     </Box>

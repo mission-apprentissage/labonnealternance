@@ -18,7 +18,7 @@ export const IntensionFormResult = ({ intention, canceled = false }: { intention
           <Text as="h1" fontSize="24px" fontWeight={700}>
             Merci d&apos;avoir pris le temps d&apos;envoyer un message au candidat.
           </Text>
-          {intention === ApplicationIntention.NESAISPAS || intention === ApplicationIntention.ENTRETIEN ? (
+          {intention === ApplicationIntention.ENTRETIEN ? (
             <Text fontSize="20px" pt={4}>
               Il dispose désormais de vos coordonnées pour poursuivre l&apos;échange.
             </Text>

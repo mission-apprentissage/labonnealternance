@@ -1,7 +1,8 @@
 import { ObjectId } from "bson"
 
-import { LBA_ITEM_TYPE } from "../constants/lbaitem"
-import { ApplicationScanStatus, IApplicant, IApplication } from "../models"
+import { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
+import { IApplicant } from "../models/applicant.model.js"
+import { ApplicationScanStatus, IApplication } from "../models/applications.model.js"
 
 export function generateApplicationFixture(data: Partial<IApplication>): IApplication {
   const applicant = generateApplicantFixture()
@@ -11,8 +12,11 @@ export function generateApplicationFixture(data: Partial<IApplication>): IApplic
     applicant_message_to_company: "some blahblahblah",
     applicant_attachment_name: "cv.pdf",
     company_recruitment_intention: null,
-    company_feedback: "a",
+    company_feedback: null,
     company_feedback_date: null,
+    company_recruitment_intention_date: null,
+    company_feedback_send_status: null,
+    company_feedback_reasons: null,
     company_siret: "34268752200066",
     company_email: "faux_email@faux-domaine-compagnie.com",
     company_name: "nom société",

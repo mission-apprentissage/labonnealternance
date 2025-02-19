@@ -1,7 +1,7 @@
 export const FlowItemList = {
   lbaCompanies: {
     openFirstWithEmail() {
-      cy.url().should("contain", "/recherche-apprentissage?display=list")
+      cy.url().should("contain", "/recherche?display=list")
       cy.url().then((url) => {
         const searchParams = new URL(url).searchParams
         const romes = searchParams.get("romes")

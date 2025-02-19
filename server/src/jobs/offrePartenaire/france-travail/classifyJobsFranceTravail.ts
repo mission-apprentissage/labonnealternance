@@ -1,8 +1,14 @@
+import { groupData, oleoduc, writeData } from "oleoduc"
+import { IFTJobRaw } from "shared"
+
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { sendMessages } from "@/services/openai/openai.service"
+
+import { logger } from "../../../common/logger"
+import { notifyToSlack } from "../../../common/utils/slackUtils"
+import { Message, sendMistralMessages } from "../../../services/mistralai/mistralai.service"
 
 export const checkFTOffer = async (data: any): Promise<any> => {
-  const messages = [
+  const messages: Message[] = [
     {
       role: "system",
       content: `En tant qu'expert d'analyse semantique dans le domaine des offres d'emplois en Alternance et en apprentissage, j'ai besoin que tu classifie des offres d'emplois en fonction de qui a posté l'offre.
@@ -17,9 +23,9 @@ Je vais te donner les informations de l'offres au format JSON.
 
 Une fois que tu as déterminé si les offres sont de type CFA, Entreprise ou Entreprise_CFA tu répondras au format JSON:
 {offres: [{
-  type: "CFA" | "entreprise" | "entreprise_CFA",
+  type: "cfa" | "entreprise" | "entreprise_cfa", // conserve bien la casse du type retourné ici
   id: "ID",
-  cfa: "Nom du CFA" // si l'offre est de type entreprise_CFA ou CFA
+  cfa: "Nom du CFA" // si l'offre est de type entreprise_cfa ou cfa
   },
   ...
     ]}
@@ -34,9 +40,9 @@ Une fois que tu as déterminé si les offres sont de type CFA, Entreprise ou Ent
 Voici plusierus offres: ${JSON.stringify({ offres: data.offres })}.
 Une fois que tu as déterminé si les offres sont de type CFA, Entreprise ou Entreprise_CFA tu répondras au format JSON:
 {offres: [{
-  type: "CFA" | "entreprise" | "entreprise_CFA",
+  type: "cfa" | "entreprise" | "entreprise_cfa", // conserve bien la casse du type ici
   id: "ID",
-   cfa: "Nom du CFA" // si l'offre est de type entreprise_CFA ou CFA
+   cfa: "Nom du CFA" // si l'offre est de type entreprise_cfa ou cfa
   },
   ...
     ]}
@@ -44,34 +50,28 @@ Une fois que tu as déterminé si les offres sont de type CFA, Entreprise ou Ent
     },
   ]
   try {
-    // const responseStr = await mistralSendMessages({
-    //   messages,
-    //   seed: 45555,
-    //   max_tokens: 1024,
-    //   response_format: { type: "json_object" },
-    // })
-    const responseStr = await sendMessages({
+    const response = await sendMistralMessages({
       messages,
-      seed: 45555,
-      max_tokens: 1024,
-      response_format: { type: "json_object" },
+      randomSeed: 45555,
+      maxTokens: 1024,
     })
-    const response = JSON.parse(responseStr)
-
+    if (!response) {
+      return null
+    }
     return response
   } catch (error) {
     console.log(error)
   }
 }
 
-function mapDocument(rawFTDocuments: any) {
+function mapDocument(rawFTDocuments: IFTJobRaw[]) {
   const offres = rawFTDocuments.map((doc) => ({
     id: doc.id,
     description: doc.description,
     entreprise: doc.entreprise,
     appellationlibelle: doc.appellationlibelle,
     intitule: doc.intitule,
-    type: doc._metadata.classification_verification,
+    ...(doc._metadata?.openai?.type ? { type: doc._metadata?.openai?.type } : {}),
   }))
   return offres
 }
@@ -80,38 +80,32 @@ export const classifyFranceTravailJobs = async () => {
   const rawFTDocumentsVerified = await getDbCollection("raw_francetravail")
     .find({ "_metadata.openai.human_verification": { $exists: true } })
     .toArray()
+  const examples = mapDocument(rawFTDocumentsVerified)
+  const queryFilter = { "_metadata.openai.type": { $exists: false } }
+  const count = await getDbCollection("raw_francetravail").countDocuments(queryFilter)
+  logger.info(`Classification de ${count} jobs depuis raw_francetravail`)
 
-  const examples = mapDocument(rawFTDocumentsVerified) // get
+  await oleoduc(
+    await getDbCollection("raw_francetravail").find(queryFilter).stream(),
+    groupData({ size: 10 }),
+    writeData(async (rawFTDocuments: IFTJobRaw[]) => {
+      const offres = mapDocument(rawFTDocuments)
+      const response = await checkFTOffer({ offres, examples })
+      for (const rsp of response.offres) {
+        await getDbCollection("raw_francetravail").findOneAndUpdate(
+          { id: rsp.id as string },
+          {
+            $set: {
+              "_metadata.openai.type": rsp.type.toLowerCase(),
+              ...(rsp.cfa ? { "_metadata.openai.cfa": rsp.cfa } : {}),
+            },
+          }
+        )
+      }
+    })
+  )
 
-  const rawFTDocuments = await getDbCollection("raw_francetravail")
-    .find({ "_metadata.openai.human_verification": { $exists: false } })
-    .toArray()
+  await notifyToSlack({ subject: "Classification des offres France Travail", message: `Classification de ${count} terminées` })
 
-  // loop through all rawFTDocuments by chunks of 100
-  const chunkSize = 10
-  const totalChunks = Math.ceil(rawFTDocuments.length / chunkSize)
-  for (let i = 0; i < totalChunks; i++) {
-    const chunk = rawFTDocuments.slice(i * chunkSize, (i + 1) * chunkSize)
-    const offres = chunk.map((doc) => ({
-      id: doc.id,
-      description: doc.description,
-      entreprise: doc.entreprise,
-      appellationlibelle: doc.appellationlibelle,
-      intitule: doc.intitule,
-    }))
-    const response = await checkFTOffer({ offres, examples })
-
-    // TODO : Filter 60 days by dateActualisation
-    for (const rsp of response.offres) {
-      await getDbCollection("raw_francetravail").findOneAndUpdate(
-        { id: rsp.id as string },
-        {
-          $set: {
-            "_metadata.openai.type": rsp.type.toLowerCase(),
-            ...(rsp.cfa ? { "_metadata.openai.cfa": rsp.cfa } : {}),
-          },
-        }
-      )
-    }
-  }
+  logger.info(`Classification terminée`)
 }

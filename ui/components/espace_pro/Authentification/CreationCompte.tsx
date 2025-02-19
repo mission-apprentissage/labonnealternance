@@ -1,26 +1,22 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Alert, AlertIcon, Box, Button, Flex, Heading, Link, SimpleGrid, Text } from "@chakra-ui/react"
-import { captureException } from "@sentry/nextjs"
-import { Form, Formik } from "formik"
+import { Alert, AlertIcon, Box, Heading, Link, SimpleGrid, Text } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { validateSIRET } from "shared/validators/siretValidator"
-import * as Yup from "yup"
 
+import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
 import { searchEntreprise } from "@/services/searchEntreprises"
 import { ApiError } from "@/utils/api.utils"
 
 import { AUTHTYPE } from "../../../common/contants"
-import { SIRETValidation } from "../../../common/validation/fieldValidations"
 import { LogoContext } from "../../../context/contextLogo"
 import { WidgetContext } from "../../../context/contextWidget"
 import { getEntrepriseInformation, getEntrepriseOpco, validateCfaCreation } from "../../../utils/api"
-import AutocompleteAsync from "../AutocompleteAsync"
-import { BandeauProps } from "../Bandeau"
-import { Section } from "../common/components/Section"
+import { Bandeau, BandeauProps } from "../Bandeau"
 import { InformationsSiret } from "../CreationRecruteur/InformationsSiret"
-import { AnimationContainer, AuthentificationLayout, Bandeau } from "../index"
+import { AnimationContainer, AuthentificationLayout } from "../index"
+
+import { SiretAutocomplete } from "./SiretAutocomplete"
 
 type EntrepriseOrCfaType = typeof AUTHTYPE.ENTREPRISE | typeof AUTHTYPE.CFA
 
@@ -41,8 +37,6 @@ const CreationCompteForm = ({
 }) => {
   const router = useRouter()
   const [isCfa, setIsCfa] = useState(false)
-  const [selectedEntreprise, setSelectedEntreprise] = useState<Organisation | null>(null)
-  const [searchInput, setSearchInput] = useState<string>()
 
   const nextUri = isWidget ? "/espace-pro/widget/entreprise/detail" : "/espace-pro/creation/detail"
 
@@ -139,100 +133,26 @@ const CreationCompteForm = ({
   }
 
   return (
-    <Formik
-      validateOnMount
-      initialValues={{ establishment_siret: undefined }}
-      validationSchema={Yup.object().shape({
-        establishment_siret: SIRETValidation().required("champ obligatoire"),
-      })}
-      onSubmit={submitSiret}
-    >
-      {({ values, errors, isValid, isSubmitting, setFieldValue, submitForm, setFieldTouched }) => {
-        return (
-          <Form>
-            {isCfa && (
-              <Alert status="info" variant="top-accent">
-                <AlertIcon />
-                <Text>
-                  Pour les organismes de formation,{" "}
-                  <Link
-                    variant="classic"
-                    onClick={() => {
-                      setIsCfa(false)
-                      setFieldValue("establishment_siret", values.establishment_siret)
-                      router.push("/espace-pro/creation/cfa")
-                      submitForm()
-                    }}
-                  >
-                    veuillez utiliser ce lien
-                  </Link>
-                </Text>
-              </Alert>
-            )}
-            <AutocompleteAsync
-              name="establishment_siret"
-              handleSearch={(search: string) => searchEntreprise(search)}
-              renderItem={({ raison_sociale, siret, adresse }, highlighted) => <EntrepriseCard {...{ raison_sociale, siret, adresse, highlighted }} />}
-              itemToString={({ siret }) => siret}
-              onInputFieldChange={(value, hasError) => {
-                setSearchInput(value)
-                if (!hasError) return
-                setFieldTouched("establishment_siret", true, false)
-                setFieldValue("establishment_siret", value, true)
+    <>
+      {isCfa && (
+        <Alert status="info" variant="top-accent">
+          <AlertIcon />
+          <Text>
+            Pour les organismes de formation,{" "}
+            <Link
+              variant="classic"
+              onClick={() => {
+                setIsCfa(false)
+                router.push("/espace-pro/creation/cfa")
               }}
-              onSelectItem={(organisation) => {
-                setSelectedEntreprise(organisation)
-                setFieldTouched("establishment_siret", false, false)
-                setFieldValue("establishment_siret", organisation?.siret, true)
-                onSelectOrganisation(organisation)
-              }}
-              onError={(error, inputValue) => {
-                captureException(error)
-                setFieldTouched("establishment_siret", true, false)
-                setFieldValue("establishment_siret", inputValue, true)
-              }}
-              allowHealFromError={false}
-              renderNoResult={
-                /^[0-9]{14}$/.test(searchInput) && !validateSIRET(searchInput) ? (
-                  <Box>
-                    <Text fontSize="12px" lineHeight="20px" color="#CE0500" padding="8px 16px">
-                      Le numéro de SIRET saisi n’est pas valide
-                    </Text>
-                  </Box>
-                ) : undefined
-              }
-              renderError={() =>
-                values?.establishment_siret && !errors?.establishment_siret ? null : (
-                  <Box>
-                    <Text fontSize="12px" lineHeight="20px" color="#CE0500" padding="8px 16px">
-                      La recherche par raison sociale est temporairement indisponible.
-                      <br />
-                      <b>Veuillez renseigner votre numéro de SIRET.</b>
-                    </Text>
-                  </Box>
-                )
-              }
-            />
-            {selectedEntreprise && (
-              <Box marginTop="32px">
-                <Text fontSize="16px" lineHeight="24px">
-                  Établissement sélectionné :
-                </Text>
-                <Box border="solid 1px #000091" marginTop="8px">
-                  <EntrepriseCard {...selectedEntreprise} />
-                </Box>
-              </Box>
-            )}
-
-            <Flex justify="flex-start" marginTop="32px">
-              <Button type="submit" variant="form" isActive={isValid} isDisabled={!isValid || isSubmitting} isLoading={isSubmitting}>
-                Continuer
-              </Button>
-            </Flex>
-          </Form>
-        )
-      }}
-    </Formik>
+            >
+              veuillez utiliser ce lien
+            </Link>
+          </Text>
+        </Alert>
+      )}
+      <SiretAutocomplete onSubmit={submitSiret} onSelectOrganisation={onSelectOrganisation} />
+    </>
   )
 }
 
@@ -267,42 +187,19 @@ export default function CreationCompte({ type, isWidget = false, origin = "lba" 
     <AuthentificationLayout>
       <AnimationContainer>
         {bandeau && <Bandeau {...bandeau} />}
-        <SimpleGrid columns={[1, 1, 1, 2]} spacing={[0, 0, 0, "75px"]} mt={wid.isWidget ? 0 : { base: 4, md: 12 }}>
-          <Box>
-            {wid.isWidget && (
-              <Text textTransform="uppercase" fontSize="20px" color="#666666">
-                Dépot simplifié d'offre en alternance
-              </Text>
-            )}
-            <Heading>Vous recrutez des alternants ?</Heading>
-            <Text fontSize="20px" textAlign="justify" mt={2} mb={4}>
-              Précisez le nom ou le numéro de SIRET de votre établissement.
+        <SimpleGrid columns={[1, 1, 2, 2]} spacing={[0, 0, 4, 4]} mt={wid.isWidget ? 0 : { base: 4, md: 12 }}>
+          <Box mb={4}>
+            <Heading className="big">Vous recrutez des alternants ?</Heading>
+            <Text className="big" mt={2} mb={4}>
+              Pour diffuser gratuitement vos offres, précisez le nom ou le SIRET de votre établissement.
             </Text>
             <CreationCompteForm organisationType={organisationType} setBandeau={setBandeau} origin={origin} isWidget={isWidget} onSelectOrganisation={onSelectOrganisation} />
           </Box>
-          <Box mt={[4, 4, 4, 0]}>
-            <Section>
-              <InformationsSiret currentTab={selectedTab} onCurrentTabChange={setSelectedTab} />
-            </Section>
-          </Box>
+          <BorderedBox>
+            <InformationsSiret currentTab={selectedTab} onCurrentTabChange={setSelectedTab} />
+          </BorderedBox>
         </SimpleGrid>
       </AnimationContainer>
     </AuthentificationLayout>
-  )
-}
-
-const EntrepriseCard = ({ adresse, raison_sociale, siret, highlighted }: { highlighted?: boolean; raison_sociale: string; siret: string; adresse: string }) => {
-  return (
-    <Box backgroundColor={highlighted ? "#F6F6F6" : "white"} padding="8px 16px">
-      <Text color="#161616" fontSize="16px" lineHeight="24px" fontWeight={700}>
-        {raison_sociale}
-      </Text>
-      <Text color="#161616" fontSize="16px" lineHeight="24px">
-        {siret}
-      </Text>
-      <Text color="#666666" fontSize="12px" lineHeight="20px">
-        {adresse}
-      </Text>
-    </Box>
   )
 }

@@ -1,10 +1,10 @@
-import { z } from "../helpers/zodWithOpenApi"
-import { ZLbacError } from "../models/lbacError.model"
-import { ZLbaItemFormationResult } from "../models/lbaItem.model"
-import { rateLimitDescription } from "../utils/rateLimitDescription"
+import { z } from "../helpers/zodWithOpenApi.js"
+import { ZLbacError } from "../models/lbacError.model.js"
+import { ZLbaItemFormationResult } from "../models/lbaItem.model.js"
+import { rateLimitDescription } from "../utils/rateLimitDescription.js"
 
-import { zCallerParam, zDiplomaParam, zGetFormationOptions, zRefererHeaders } from "./_params"
-import { IRoutesDef, ZResError } from "./common.routes"
+import { zCallerParam, zDiplomaParam, zGetFormationOptions, zRefererHeaders } from "./_params.js"
+import { IRoutesDef, ZResError } from "./common.routes.js"
 
 export const zV1FormationsParRegion = {
   get: {

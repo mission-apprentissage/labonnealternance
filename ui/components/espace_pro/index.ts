@@ -1,14 +1,12 @@
 import AdresseAutocomplete from "./AdresseAutocomplete"
 import AnimationContainer from "./AnimationContainer"
 import AuthentificationLayout from "./AuthentificationLayout"
-import Bandeau from "./Bandeau"
 import ConfirmationActivationUtilsateur from "./ConfirmationActivationUtilsateur"
 import ConfirmationDesactivationUtilisateur from "./ConfirmationDesactivationUtilisateur"
 import ConfirmationModificationOpco from "./ConfirmationModificationOpco"
 import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
 import CustomInput from "./CustomInput"
 import DropdownCombobox from "./DropdownCombobox"
-import FormulaireCreationOffre from "./FormulaireCreationOffre"
 import InfoPopover from "./InfoPopover"
 import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
 import InformationOpco from "./InformationOpco"
@@ -24,14 +22,12 @@ export {
   AdresseAutocomplete,
   AnimationContainer,
   AuthentificationLayout,
-  Bandeau,
   ConfirmationActivationUtilsateur,
   ConfirmationDesactivationUtilisateur,
   ConfirmationModificationOpco,
   ConfirmationSuppressionOffre,
   CustomInput,
   DropdownCombobox,
-  FormulaireCreationOffre,
   InfoPopover,
   InfoTooltip,
   InformationLegaleEntreprise,

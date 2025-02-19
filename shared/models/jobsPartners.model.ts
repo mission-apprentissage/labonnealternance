@@ -1,21 +1,22 @@
 import { z } from "zod"
 
-import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants"
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
+import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 
-import { ZPointGeometry } from "./address.model"
-import { IModelDescriptor, zObjectId } from "./common"
-import { JOB_STATUS_ENGLISH } from "./job.model"
-import { zOpcoLabel } from "./opco.model"
+import { ZPointGeometry } from "./address.model.js"
+import { IModelDescriptor, zObjectId } from "./common.js"
+import { JOB_STATUS_ENGLISH } from "./job.model.js"
+import { ZComputedJobPartnersDuplicateRef } from "./jobPartnersDuplicateRef.js"
+import { zOpcoLabel } from "./opco.model.js"
 
 const collectionName = "jobs_partners" as const
 
 export enum JOBPARTNERS_LABEL {
-  HELLOWORK = "Hello work",
+  HELLOWORK = "Hellowork",
   OFFRES_EMPLOI_LBA = "La bonne alternance",
-  OFFRES_EMPLOI_FRANCE_TRAVAIL = "France Travail",
+  FRANCE_TRAVAIL = "France Travail",
   RH_ALTERNANCE = "RH Alternance",
-  PASS = "Pass emploi",
+  PASS = "PASS",
 }
 
 export enum FILTER_JOBPARTNERS_LABEL {
@@ -48,6 +49,13 @@ export const zDiplomaEuropeanLevel = z.enum(["3", "4", "5", "6", "7"])
 
 export type INiveauDiplomeEuropeen = z.output<typeof zDiplomaEuropeanLevel>
 
+export const ZJobsPartnersOfferHistoryEvent = z.object({
+  status: extensions.buildEnum(JOB_STATUS_ENGLISH).describe("Statut de l'accès"),
+  reason: z.string().describe("Raison du changement de statut"),
+  date: z.date().describe("Date de l'évènement"),
+  granted_by: z.string().describe("Utilisateur à l'origine du changement"),
+})
+
 export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   _id: true,
 }).extend({
@@ -77,6 +85,7 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   offer_expiration: z.date().nullable().describe("Date d'expiration de l'offre. Si pas présente, mettre à creation_date + 60j").openapi({ format: "date-time" }),
   offer_opening_count: z.number().describe("Nombre de poste disponible"),
   offer_status: extensions.buildEnum(JOB_STATUS_ENGLISH).describe("Status de l'offre (surtout utilisé pour les offres ajouté par API)"),
+  offer_status_history: z.array(ZJobsPartnersOfferHistoryEvent).describe("Historique de l'offre"),
 })
 
 const ZJobsPartnersRecruiterPrivateFields = z.object({
@@ -102,6 +111,8 @@ export const ZJobsPartnersOfferPrivate = ZJobsPartnersOfferApi.omit({
   .extend({
     _id: zObjectId,
     apply_url: ZJobsPartnersOfferApi.shape.apply_url.nullable().default(null),
+    rank: z.number().nullish().describe("Valeur indiquant la qualité de l'offre. Plus la valeur est élevée, plus la qualité de l'offre est importante"),
+    duplicates: z.array(ZComputedJobPartnersDuplicateRef).nullish().describe("Référence les autres offres en duplicata avec celle-ci"),
   })
 
 export const ZJobsPartnersOfferPrivateWithDistance = ZJobsPartnersOfferPrivate.extend({
@@ -226,6 +237,10 @@ export default {
     [{ offer_multicast: 1, offer_rome_codes: 1, offer_creation: -1 }, {}],
     [{ offer_multicast: 1, "offer_target_diploma.european": 1, offer_creation: -1 }, {}],
     [{ partner_label: 1, partner_job_id: 1 }, { unique: true }],
+    [{ partner_label: 1 }, {}],
+    [{ offer_status: 1 }, {}],
+    [{ "duplicates.partner_job_id": 1 }, {}],
+    [{ "duplicates.partner_job_label": 1 }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor

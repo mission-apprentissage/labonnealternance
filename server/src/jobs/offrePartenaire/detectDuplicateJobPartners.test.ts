@@ -1,7 +1,7 @@
 import { ObjectId } from "bson"
 import { RECRUITER_STATUS } from "shared/constants"
 import { generateJobFixture, generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
-import { JOB_STATUS } from "shared/models"
+import { JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it } from "vitest"
@@ -9,10 +9,11 @@ import { beforeEach, describe, expect, it } from "vitest"
 import { getPairs } from "@/common/utils/array"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
+import { givenSomeJobPartners } from "@tests/fixture/givenSomeJobPartners"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { saveRecruiter } from "@tests/utils/user.test.utils"
 
-import { checkSimilarity, detectDuplicateJobPartners, isCanonicalForDuplicate, OfferRef } from "./detectDuplicateJobPartners"
+import { checkSimilarity, detectDuplicateJobPartners, FAKE_RECRUITERS_JOB_PARTNER, isCanonicalForDuplicate, OfferRef } from "./detectDuplicateJobPartners"
 
 const siret = "42476141900045"
 
@@ -21,13 +22,14 @@ describe("detectDuplicateJobPartners", () => {
 
   beforeEach(() => {
     return async () => {
+      await getDbCollection("jobs_partners").deleteMany({})
       await getDbCollection("computed_jobs_partners").deleteMany({})
       await getDbCollection("recruiters").deleteMany({})
     }
   })
   const offerTitle = "Coiffeur(euse) H/F"
 
-  it("should detect a duplicate with an exact match in the offer title and the siret (job_partner)", async () => {
+  it("should detect a duplicate with an exact match in the offer title and the siret (computed_job_partner)", async () => {
     // given
     await givenSomeComputedJobPartners([
       {
@@ -52,7 +54,8 @@ describe("detectDuplicateJobPartners", () => {
     const [job, job2] = jobs
     expect.soft(job.duplicates).toEqual([
       {
-        otherOfferId: job2._id,
+        partner_job_id: job2.partner_job_id,
+        partner_label: job2.partner_label,
         collectionName: "computed_jobs_partners",
         reason: "identical workplace_siret, identical offer_title",
       },
@@ -60,13 +63,52 @@ describe("detectDuplicateJobPartners", () => {
     expect.soft(job.business_error).toEqual(null)
     expect.soft(job2.duplicates).toEqual([
       {
-        otherOfferId: job._id,
+        partner_job_id: job.partner_job_id,
+        partner_label: job.partner_label,
         collectionName: "computed_jobs_partners",
         reason: "identical workplace_siret, identical offer_title",
       },
     ])
     expect.soft(job2.business_error).toEqual(JOB_PARTNER_BUSINESS_ERROR.DUPLICATE)
-  })
+  }, 10_000)
+  it("should detect a duplicate with an exact match in the offer title and the siret (job_partner)", async () => {
+    // given
+    await givenSomeComputedJobPartners([
+      {
+        _id: new ObjectId("60646425184afd00e017c1ab"),
+        partner_label: JOBPARTNERS_LABEL.HELLOWORK,
+        workplace_siret: siret,
+        offer_title: offerTitle,
+        workplace_address_zipcode: "75007",
+      },
+    ])
+    await givenSomeJobPartners([
+      {
+        _id: new ObjectId("62646425184afd00e017c1ab"),
+        partner_label: JOBPARTNERS_LABEL.RH_ALTERNANCE,
+        workplace_siret: siret,
+        offer_title: offerTitle,
+        workplace_address_zipcode: "75007",
+        offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      },
+    ])
+    // when
+    await detectDuplicateJobPartners()
+    // then
+    const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
+    const [job] = jobs
+    const [job2] = await getDbCollection("jobs_partners").find({}).toArray()
+    expect.soft(job.duplicates).toEqual([
+      {
+        partner_job_id: job2.partner_job_id,
+        partner_label: job2.partner_label,
+        collectionName: "jobs_partners",
+        reason: "identical workplace_siret, identical offer_title",
+      },
+    ])
+    expect.soft(job.business_error).toEqual(null)
+    expect.soft(job2.offer_status).toEqual(JOB_STATUS_ENGLISH.ANNULEE)
+  }, 10_000)
   it("should detect a duplicate with an exact match in the offer title and the siret (recruiter)", async () => {
     // given
     await givenSomeComputedJobPartners([
@@ -100,16 +142,18 @@ describe("detectDuplicateJobPartners", () => {
     // then
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     const [job] = jobs
+    const recruiterJob = recruiter.jobs[0]
     expect.soft(job.duplicates).toEqual([
       {
-        otherOfferId: recruiter.jobs[0]._id,
+        partner_job_id: recruiterJob._id.toString(),
+        partner_label: FAKE_RECRUITERS_JOB_PARTNER,
         collectionName: "recruiters",
         reason: "identical workplace_siret, identical offer_title",
       },
     ])
     expect.soft(job.business_error).toEqual(JOB_PARTNER_BUSINESS_ERROR.DUPLICATE)
-  })
-  it("should not detect a duplicate with an exact match in the offer title and the siret but a different zip code (job_partner)", async () => {
+  }, 10_000)
+  it("should not detect a duplicate with an exact match in the offer title and the siret but a different zip code (computed_job_partner)", async () => {
     // given
     await givenSomeComputedJobPartners([
       {
@@ -132,7 +176,38 @@ describe("detectDuplicateJobPartners", () => {
     const [job, job2] = jobs
     expect.soft(job.duplicates).toEqual([])
     expect.soft(job2.duplicates).toEqual([])
-  })
+  }, 10_000)
+  it("should detect a duplicate with an exact match in the offer title and the siret (job_partner)", async () => {
+    // given
+    await givenSomeComputedJobPartners([
+      {
+        _id: new ObjectId("60646425184afd00e017c1ab"),
+        partner_label: JOBPARTNERS_LABEL.HELLOWORK,
+        workplace_siret: siret,
+        offer_title: offerTitle,
+        workplace_address_zipcode: "75007",
+      },
+    ])
+    await givenSomeJobPartners([
+      {
+        _id: new ObjectId("62646425184afd00e017c1ab"),
+        partner_label: JOBPARTNERS_LABEL.RH_ALTERNANCE,
+        workplace_siret: siret,
+        offer_title: offerTitle,
+        workplace_address_zipcode: "75005",
+        offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      },
+    ])
+    // when
+    await detectDuplicateJobPartners()
+    // then
+    const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
+    const [job] = jobs
+    const [job2] = await getDbCollection("jobs_partners").find({}).toArray()
+    expect.soft(job.duplicates).toEqual([])
+    expect.soft(job.business_error).toEqual(null)
+    expect.soft(job2.offer_status).toEqual(JOB_STATUS_ENGLISH.ACTIVE)
+  }, 10_000)
   it("should not detect a duplicate with an exact match in the offer title and the siret but a different zip code (recruiter)", async () => {
     // given
     await givenSomeComputedJobPartners([
@@ -165,7 +240,7 @@ describe("detectDuplicateJobPartners", () => {
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     const [job] = jobs
     expect.soft(job.duplicates).toEqual([])
-  })
+  }, 10_000)
   describe("checkSimilarity", () => {
     it("should not detect when one string is empty", async () => {
       expect.soft(checkSimilarity(undefined, offerTitle)).toEqual(undefined)
@@ -193,17 +268,16 @@ describe("detectDuplicateJobPartners", () => {
     })
   })
   describe("isCanonicalForDuplicate", () => {
-    // cf https://www.math.univ-toulouse.fr/~msablik/Cours/MathDiscretes/Slide4-Relation.pdf
     describe("doit être une relation d ordre", () => {
       const offerRefs: OfferRef[] = [
-        { collectionName: "recruiters", _id: new ObjectId("60646425184afd00e017c1ab") },
-        { collectionName: "recruiters", _id: new ObjectId("642605b7c52247005267027e") },
-        { collectionName: "recruiters", _id: new ObjectId("682605b7c52247005267027e") },
-        { collectionName: "computed_jobs_partners", _id: new ObjectId("6525231132fe045f240e4bcd") },
-        { collectionName: "computed_jobs_partners", _id: new ObjectId("67347c0c9af58cb6e6ebbb65") },
-        { collectionName: "computed_jobs_partners", _id: new ObjectId("63347c0c9af58cb6e6ebbb65") },
+        { collectionName: "computed_jobs_partners", rank: 0, created_at: new Date("2023-07-04T23:24:58.995Z") },
+        { collectionName: "computed_jobs_partners", rank: 20, created_at: new Date("2024-07-04T23:24:58.995Z") },
+        { collectionName: "computed_jobs_partners", rank: 10, created_at: new Date("2025-07-04T23:24:58.995Z") },
+        { collectionName: "computed_jobs_partners", rank: 10, created_at: new Date("2024-07-04T23:24:58.995Z") },
+        { collectionName: "recruiters", created_at: new Date("2024-07-04T23:24:58.995Z") },
+        { collectionName: "recruiters", created_at: new Date("2026-07-04T23:24:58.995Z") },
+        { collectionName: "recruiters", created_at: new Date("2025-07-04T23:24:58.995Z") },
       ]
-
       it("la relation doit être reflexive (xRx)", () => {
         offerRefs.forEach((offerRef) => expect(isCanonicalForDuplicate(offerRef, offerRef)).toBe(true))
       })
@@ -226,6 +300,18 @@ describe("detectDuplicateJobPartners", () => {
         getPairs(validPairs)
           .filter(([[_item, item2], [item3, _item4]]) => item2 === item3)
           .forEach(([[item, _item2], [_item3, item4]]) => expect(isCanonicalForDuplicate(item, item4)).toBe(true))
+      })
+      it("should sort the documents", () => {
+        const sorted = [...offerRefs].sort((a, b) => (isCanonicalForDuplicate(a, b) ? -1 : 1))
+        expect(sorted).toEqual([
+          { collectionName: "recruiters", created_at: new Date("2024-07-04T23:24:58.995Z") },
+          { collectionName: "recruiters", created_at: new Date("2025-07-04T23:24:58.995Z") },
+          { collectionName: "recruiters", created_at: new Date("2026-07-04T23:24:58.995Z") },
+          { collectionName: "computed_jobs_partners", rank: 20, created_at: new Date("2024-07-04T23:24:58.995Z") },
+          { collectionName: "computed_jobs_partners", rank: 10, created_at: new Date("2024-07-04T23:24:58.995Z") },
+          { collectionName: "computed_jobs_partners", rank: 10, created_at: new Date("2025-07-04T23:24:58.995Z") },
+          { collectionName: "computed_jobs_partners", rank: 0, created_at: new Date("2023-07-04T23:24:58.995Z") },
+        ])
       })
     })
   })

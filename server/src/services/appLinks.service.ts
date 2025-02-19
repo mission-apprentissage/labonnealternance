@@ -1,4 +1,5 @@
 import { ApplicationIntention } from "shared/constants/application"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { IJob } from "shared/models"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { zRoutes } from "shared/routes"
@@ -95,7 +96,7 @@ export function createCfaUnsubscribeToken(email: string, siret: string) {
   )
 }
 
-export function createCancelJobLink(user: UserForAccessToken, jobId: string, utmData: string | undefined = undefined) {
+export function createCancelJobLink(user: UserForAccessToken, jobId: string, jobOrigin: LBA_ITEM_TYPE, utmData: string | undefined = undefined) {
   const token = generateAccessToken(
     user,
     [
@@ -108,16 +109,25 @@ export function createCancelJobLink(user: UserForAccessToken, jobId: string, utm
           querystring: undefined,
         },
       }),
+      generateScope({
+        schema: zRoutes.post["/v2/_private/jobs/canceled/:id"],
+        options: {
+          params: {
+            id: jobId,
+          },
+          querystring: undefined,
+        },
+      }),
     ],
     {
       expiresIn: "30d",
     }
   )
 
-  return `${config.publicUrl}/espace-pro/offre/${jobId}/cancel?${utmData ? utmData : ""}&token=${token}`
+  return `${config.publicUrl}/espace-pro/offre/${jobOrigin}/${jobId}/cancel?${utmData ? utmData : ""}&token=${token}`
 }
 
-export function createProvidedJobLink(user: UserForAccessToken, jobId: string, utmData: string | undefined = undefined) {
+export function createProvidedJobLink(user: UserForAccessToken, jobId: string, jobOrigin: LBA_ITEM_TYPE, utmData: string | undefined = undefined) {
   const token = generateAccessToken(
     user,
     [
@@ -128,13 +138,20 @@ export function createProvidedJobLink(user: UserForAccessToken, jobId: string, u
           querystring: undefined,
         },
       }),
+      generateScope({
+        schema: zRoutes.post["/v2/_private/jobs/provided/:id"],
+        options: {
+          params: { id: jobId },
+          querystring: undefined,
+        },
+      }),
     ],
     {
       expiresIn: "30d",
     }
   )
 
-  return `${config.publicUrl}/espace-pro/offre/${jobId}/provided?${utmData ? utmData : ""}&token=${token}`
+  return `${config.publicUrl}/espace-pro/offre/${jobOrigin}/${jobId}/provided?${utmData ? utmData : ""}&token=${token}`
 }
 
 export function createViewDelegationLink(email: string, establishment_id: string, job_id: string, siret_formateur: string) {
@@ -313,13 +330,6 @@ export function generateApplicationReplyToken(tokenUser: UserForAccessToken, app
   return generateAccessToken(
     tokenUser,
     [
-      generateScope({
-        schema: zRoutes.post["/application/intention/:id"],
-        options: {
-          params: { id: applicationId },
-          querystring: undefined,
-        },
-      }),
       generateScope({
         schema: zRoutes.post["/application/intentionComment/:id"],
         options: {

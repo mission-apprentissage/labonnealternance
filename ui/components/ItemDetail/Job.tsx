@@ -1,7 +1,8 @@
 import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
 import React, { useState } from "react"
 import ReactHtmlParser from "react-html-parser"
-import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE_OLD, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
+import { buildJobUrl } from "shared/metier/lbaitemutils"
 
 import { focusWithin } from "@/theme/theme-lba-tools"
 
@@ -9,7 +10,6 @@ import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import { fetchAddresses } from "../../services/baseAdresse"
 import { getDaysSinceDate } from "../../utils/dateUtils"
-import { getItemQueryParameters } from "../../utils/getItemId"
 import { getSearchQueryParameters } from "../../utils/getSearchParameters"
 import { isDepartmentJob } from "../../utils/itemListUtils"
 import { setSelectedMarker } from "../../utils/mapTools"
@@ -39,7 +39,7 @@ const Job = ({ job, handleSelectItem, showTextOnly = undefined, searchForTrainin
   const shouldBeHighlighted = () => {
     if (selectedMapPopupItem?.ideaType === "job") {
       return selectedMapPopupItem.items.find((item) => {
-        return item?.job?.id === job.job.id
+        return item?.id === job.id
       })
     } else {
       return false
@@ -100,7 +100,7 @@ const Job = ({ job, handleSelectItem, showTextOnly = undefined, searchForTrainin
     }
   }
 
-  const actualLink = `/recherche-apprentissage?display=list&page=fiche&${getItemQueryParameters(job)}&${getSearchQueryParameters(formValues)}`
+  const actualLink = `${buildJobUrl(oldItemTypeToNewItemType(job.ideaType), job.id, job.title)}?&${getSearchQueryParameters(formValues)}`
 
   const cardProperties = {
     display: "block",

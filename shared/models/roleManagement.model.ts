@@ -1,10 +1,10 @@
 import { Jsonify } from "type-fest"
 
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { z } from "../helpers/zodWithOpenApi"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { z } from "../helpers/zodWithOpenApi.js"
 
-import { IModelDescriptor, zObjectId } from "./common"
-import { ZValidationUtilisateur } from "./userWithAccount.model"
+import { IModelDescriptor, zObjectId } from "./common.js"
+import { ZValidationUtilisateur } from "./userWithAccount.model.js"
 
 export enum AccessEntityType {
   USER = "USER",

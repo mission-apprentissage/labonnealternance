@@ -433,8 +433,11 @@ const getOpcosDataFromFranceCompetence = async (sirets: string[]): Promise<{ opc
 
 export type EntrepriseData = IFormatAPIEntreprise & { geo_coordinates: string; geopoint: IGeoPoint }
 
-export const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_siret }: { siret: string; cfa_delegated_siret?: string }) => {
+export const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_siret, nafCode }: { siret: string; cfa_delegated_siret?: string; nafCode?: string }) => {
   if (!cfa_delegated_siret) return
+  if (nafCode?.startsWith("85")) {
+    return errorFactory("L'entreprise partenaire ne doit pas relever du secteur de l'enseignement.", BusinessErrorCodes.IS_CFA)
+  }
   const recruteurOpt = await getFormulaire({
     establishment_siret: siret,
     cfa_delegated_siret,
@@ -582,8 +585,6 @@ export const entrepriseOnboardingWorkflow = {
     } = {}
   ): Promise<IBusinessError | { formulaire: IRecruiter; user: IUserWithAccount; validated: boolean }> => {
     origin = origin ?? ""
-    const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret })
-    if (cfaErrorOpt) return cfaErrorOpt
     const formulaireExist = await getFormulaire({ establishment_siret: siret, email })
     if (formulaireExist) {
       return errorFactory("Un compte est déjà associé à ce couple email/siret.", BusinessErrorCodes.ALREADY_EXISTS)
@@ -688,8 +689,6 @@ export const entrepriseOnboardingWorkflow = {
     managedBy: string
     origin: string
   }) => {
-    const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
-    if (cfaErrorOpt) return cfaErrorOpt
     const formatedEmail = email.toLocaleLowerCase()
     let siretResponse: Awaited<ReturnType<typeof getEntrepriseDataFromSiret>>
     let isSiretInternalError = false
@@ -711,6 +710,8 @@ export const entrepriseOnboardingWorkflow = {
     if (opco) {
       opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: idcc ?? null })
     }
+    const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret, nafCode: entreprise.naf_code ?? undefined })
+    if (cfaErrorOpt) return cfaErrorOpt
 
     const formulaireInfo = await createFormulaire(
       {
@@ -861,3 +862,5 @@ export const isHardbounceEventFromEtablissement = async (payload) => {
   }
   return false
 }
+
+export const doTasksWhenEntrepriseIsReadyToPublish = async () => {}

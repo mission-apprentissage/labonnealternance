@@ -137,7 +137,7 @@ const nextConfig = {
         ],
       },
       {
-        source: "/:slug(recherche-apprentissage|recherche-emploi|recherche-apprentissage-formation|postuler)",
+        source: "/:slug(recherche|recherche-emploi|recherche-formation|postuler)",
         headers: [
           {
             key: "Content-Security-Policy",
@@ -153,6 +153,26 @@ const nextConfig = {
             value: inline(contentSecurityPolicy),
           },
         ],
+      },
+    ]
+  },
+  async redirects() {
+    return [
+      {
+        source: "/recherche-apprentissage",
+        destination: "/recherche",
+        permanent: true,
+      },
+      {
+        source: "/recherche-apprentissage-formation",
+        destination: "/recherche-formation",
+        permanent: true,
+      },
+      // KBA TODO WAR ROOM : to remove on 2025_03_10 : route without jobType will be obsolete
+      {
+        source: "/espace-pro/offre/:id/:option",
+        destination: "/espace-pro/offre/offres_emploi_lba/:id/:option",
+        permanent: true,
       },
     ]
   },

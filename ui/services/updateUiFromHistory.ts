@@ -42,10 +42,11 @@ export const updateUiFromHistory = ({
     urlParams = new URLSearchParams(url.substring(url.indexOf("?")))
   }
 
-  const pageFromUrl = urlParams ? urlParams.get("page") : ""
   const display = urlParams ? urlParams.get("display") : ""
-  const itemId = urlParams ? urlParams.get("itemId") : ""
   const searchTimestamp = urlParams ? urlParams.get("s") : ""
+
+  const pageFromUrl = urlParams ? urlParams.get("page") : ""
+  const itemId = urlParams ? urlParams.get("itemId") : ""
 
   if (!activeFilters) {
     setActiveFilters(defaultFilters) // restauration des onglets à all pour assurer la présence de marker dans le dom

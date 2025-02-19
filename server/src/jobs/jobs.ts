@@ -25,14 +25,12 @@ import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
 import { updateDomainesMetiersFile } from "./domainesMetiers/updateDomainesMetiersFile"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
-import { classifyFranceTravailJobs } from "./franceTravail/classifyJobsFranceTravail"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
-import { importFranceTravailJobs } from "./franceTravail/importJobsFranceTravail"
-import { pocRomeo } from "./franceTravail/pocRomeo"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
 import { processJobPartners } from "./offrePartenaire/processJobPartners"
+import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -79,6 +77,10 @@ export async function setupJobProcessor() {
           "Scan et envoi des candidatures": {
             cron_string: "*/10 * * * *",
             handler: () => processApplications(),
+          },
+          "Traitement complet des jobs_partners par API": {
+            cron_string: "*/10 * * * *",
+            handler: processJobPartnersForApi,
           },
           "Mise à jour des adresses emails bloquées": {
             cron_string: "5 0 * * *",
@@ -172,10 +174,6 @@ export async function setupJobProcessor() {
             cron_string: "30 5 * * *",
             handler: config.env === "production" ? () => exportJobsToFranceTravail() : () => Promise.resolve(0),
           },
-          "Import complet des offres France Travail": {
-            cron_string: "0 6 * * *",
-            handler: importFranceTravailJobs,
-          },
           "Détermination des opcos des sociétés issues de l'algo": {
             cron_string: "30 6 * * 6",
             handler: () => updateOpcoCompanies({}),
@@ -240,18 +238,6 @@ export async function setupJobProcessor() {
     jobs: {
       "remove:duplicates:recruiters": {
         handler: async () => removeDuplicateRecruiters(),
-      },
-      "poc:romeo": {
-        handler: async () => pocRomeo(),
-      },
-      "francetravail:token-offre": {
-        handler: async () => generateFranceTravailAccess(),
-      },
-      "francetravail:jobs:import": {
-        handler: async () => importFranceTravailJobs(),
-      },
-      "francetravail:jobs:classify": {
-        handler: async () => classifyFranceTravailJobs(),
       },
       "recreate:indexes": {
         handler: async (job) => {

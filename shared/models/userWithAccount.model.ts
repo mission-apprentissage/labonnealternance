@@ -1,10 +1,10 @@
 import { Jsonify } from "type-fest"
 
-import { ADMIN, OPCO, OPCOS_LABEL, VALIDATION_UTILISATEUR } from "../constants/recruteur"
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { z } from "../helpers/zodWithOpenApi"
+import { ADMIN, OPCO, OPCOS_LABEL, VALIDATION_UTILISATEUR } from "../constants/recruteur.js"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { z } from "../helpers/zodWithOpenApi.js"
 
-import { IModelDescriptor, zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common.js"
 
 export enum UserEventType {
   ACTIF = "ACTIF",

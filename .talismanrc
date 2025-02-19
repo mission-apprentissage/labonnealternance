@@ -1,8 +1,8 @@
 fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: c0279ec41ea7c516c2eb88dff23ef328a82a466bc2ffde2f169ea370f8430b34
+  checksum: 1910fb07ec956bb49fa09319706b02bdf1320633f8d405f7f53783ebf827f39b
 - filename: .infra/vault/vault.yml
-  checksum: c7b85451db302eb73a03185f06cd6d153e7a835a2a518baa4495629972b44eae
+  checksum: b9470577e591e9c69d28ad449918cb92c7a29985833624563c279864d70712b9
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
   checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
 - filename: cypress/pages/FlowAdminPage.ts
@@ -24,9 +24,11 @@ fileignoreconfig:
 - filename: server/src/db/migrations/202405230000000-migrate-fix-missing-date-blacklist.ts
   checksum: 0c1b814245a58b8ca788fbfab9899206edbddaae795d56963f86c5aa83ea555f
 - filename: server/src/http/controllers/__snapshots__/etablissementRecruteur.controller.test.ts.snap
-  checksum: 7bf9d206d0ed729df96134d4238d2cecc5b87ce2f8273bc32d95a7609a23afab
+  checksum: e8a35e591adb1447d1b6e796b063f435ac389e9ffe619c68185f348beae71215
 - filename: server/src/http/controllers/application.controller.test.ts
   checksum: 00cac67c8e138098126ae98702e2bdc3e1092e1bbf188d9a437197e9ca94e16a
+- filename: server/src/http/controllers/v2/applications.controller.v2.test.ts
+  checksum: ad4cd4bbc47eb4b1bf82b2cf2f5c9bc6cb7b7cadf89f0aaba1e96582359fba77
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
   checksum: dc77c04efc26dcd8ca4816f392ab24a32a92cb45ca4b94adb593a08e7a2d231e
 - filename: server/src/http/controllers/etablissementRecruteur.controller.test.ts
@@ -36,7 +38,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/user.controller.test.ts
   checksum: e01d1b9c54d1e6d0c98fd7984f32c3a93f3e9bde92887bdab320cb7af91fdd92
 - filename: server/src/http/controllers/v2/applications.controller.v2.test.ts
-  checksum: 1cc47a3fd50e4e9951468bd12e1a4dff9cde76ab4aac2b1f94ee191aa508739c
+  checksum: 1adc309b8df44e04275579a56f13b67c05fb91e946949d06fa92a0759b5eb344
 - filename: server/src/http/controllers/v2/appointment.controller.v2.test.ts
   checksum: bbbf100d65bae0d840c715f4b1d893986df7423f470f3ee300545959105f6ca4
 - filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts
@@ -64,7 +66,7 @@ fileignoreconfig:
 - filename: server/src/jobs/offrePartenaire/__snapshots__/importRHAlternance.test.ts.snap
   checksum: 41e5eadcdaa0cb1eb95e4cb3859f4b7b1d176bbb95ee8451d46a6b2c9021c3fd
 - filename: server/src/jobs/offrePartenaire/detectDuplicateJobPartners.test.ts
-  checksum: 82d624da5034d7e482cb7b2a99a134796e3a2b3c3a2a89a10da2e49242854c79
+  checksum: 86174c29ae86fdf2c39f7694bc04812f000942a5532eb39ba0fafd09f86b1caa
 - filename: server/src/jobs/offrePartenaire/importFromUrlInXml.ts
   checksum: 18bd149922151536ad0e239b082309697cee6046b33512d5eecc54b2d25b465a
 - filename: server/src/jobs/offrePartenaire/importHelloWork.test.input.xml
@@ -82,7 +84,7 @@ fileignoreconfig:
 - filename: server/src/services/__snapshots__/formulaire.service.test.ts.snap
   checksum: 71d9956fd03fcec52d37b3799fc5bc806d42ec40200254b1740819b3d5a2b0d1
 - filename: server/src/services/__snapshots__/partnerJob.service.test.ts.snap
-  checksum: 4f9393678b2ba8ea72cfd832d6a33ede3bc4024382b624464481a5f09636e152
+  checksum: 6f190e19172481706181e0a13ed7de5f0f6c699f86d35d9b08071ece445920b1
 - filename: server/src/services/application.service.test.ts
   checksum: d11d73a73ed489475d6a2f7dd693787fc71a7dfd9150bb88cec4f88c92c19d02
 - filename: server/src/services/application.service.ts
@@ -115,10 +117,10 @@ fileignoreconfig:
   checksum: 23f500afe4d0984a4680e387e6e67223bdbdc5d954e984f400451b26bac248ce
 - filename: server/static/templates/mail-candidat-entretien.mjml.ejs
   checksum: 53067858567e2878f5f65da06be9efc6902a691b36299167d54343ab30162e49
-- filename: server/static/templates/mail-candidat-nsp.mjml.ejs
-  checksum: 203d57160c0cda492f4172d9651c2dea9b8d7b4b3ab0e25f80a24438e3f1e184
 - filename: server/static/templates/mail-candidat-offre-emploi-lba.mjml.ejs
   checksum: 3188f43c847d071acfb7a366748647ab88d821abb3e022830b82fd092db90f83
+- filename: server/static/templates/mail-candidat-offre-emploi-partenaire.mjml.ejs
+  checksum: 092f871d48fc0602f5f90bb239defbf809aedab35f347f83fd0fdc97a6359abf
 - filename: server/static/templates/mail-candidat-recruteur-lba.mjml.ejs
   checksum: 0b806bca197dba97415902339e84f924cb45dae766cf8d3cfc47d80d2bdd203c
 - filename: server/static/templates/mail-candidat-refus.mjml.ejs

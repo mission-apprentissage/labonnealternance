@@ -1,4 +1,4 @@
-import { assertUnreachable } from "../utils"
+import { assertUnreachable } from "../utils/assertUnreachable.js"
 
 /**
  * KBA 20240805
@@ -59,7 +59,7 @@ export const newItemTypeToOldItemType = (lbaItemType: LBA_ITEM_TYPE): LBA_ITEM_T
     case LBA_ITEM_TYPE.RECRUTEURS_LBA:
       return LBA_ITEM_TYPE_OLD.LBA
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES:
-      return LBA_ITEM_TYPE_OLD.PE
+      return LBA_ITEM_TYPE_OLD.PARTNER_JOB
     case LBA_ITEM_TYPE.FORMATION:
       throw new Error("not used")
     default:
@@ -69,5 +69,3 @@ export const newItemTypeToOldItemType = (lbaItemType: LBA_ITEM_TYPE): LBA_ITEM_T
 
 export const allLbaItemType = Object.values(LBA_ITEM_TYPE)
 export const allLbaItemTypeOLD = Object.values(LBA_ITEM_TYPE_OLD)
-
-export const getDirectJobPath = (jobId: string) => `/recherche-apprentissage?display=list&page=fiche&type=matcha&itemId=${jobId}`

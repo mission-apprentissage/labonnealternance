@@ -2474,12 +2474,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mistralai/mistralai@npm:^1.3.6":
-  version: 1.3.6
-  resolution: "@mistralai/mistralai@npm:1.3.6"
+"@mistralai/mistralai@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "@mistralai/mistralai@npm:1.5.0"
+  dependencies:
+    zod-to-json-schema: ^3.24.1
   peerDependencies:
     zod: ">= 3"
-  checksum: e434ac9cd6dc49f2cb9765ef25de7b1cbf52f44221147eb1829c40a91783655f1c98ddcbde790b94976f44498f0a2fd27305fef54b34f1ce594b625204809c35
+  checksum: c94071aa3209b511b613e29937e5416002d762bc3c2871c3d1ceae2e87ca535c80faf457d4f0135bfb931702dee1601cb304706552ac6e49a3c85ed747dce227
   languageName: node
   linkType: hard
 
@@ -5215,6 +5217,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/react-virtual@npm:^3.11.3":
+  version: 3.11.3
+  resolution: "@tanstack/react-virtual@npm:3.11.3"
+  dependencies:
+    "@tanstack/virtual-core": 3.11.3
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: eb39f8a015f4dc98070f0c18bbb1f9c094b7182133554ef3ee31d2678cd3a66edd28ce854d533e830f88f1f0ad1d5b065de184438a08fe774a9acc1dc62da436
+  languageName: node
+  linkType: hard
+
+"@tanstack/virtual-core@npm:3.11.3":
+  version: 3.11.3
+  resolution: "@tanstack/virtual-core@npm:3.11.3"
+  checksum: 43dacdd27802de45c0ccdb34a4cba5f47c7b5aab1cc920a9851e382074fc9099419cc4b014afab74791672e4837afe0ef6ecf47e344267b457858dd982ffac57
+  languageName: node
+  linkType: hard
+
 "@testing-library/dom@npm:^8.5.0":
   version: 8.20.1
   resolution: "@testing-library/dom@npm:8.20.1"
@@ -5259,6 +5280,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tsconfig/next@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "@tsconfig/next@npm:2.0.3"
+  checksum: 35a004bfca70e21f536aa7ef910d4ed0a09316ecc012952b0ba9ceb11ae333eb38f4c613fba79d91341a36db5af1b494dcadb0e35da0841ad47d08d65934f778
+  languageName: node
+  linkType: hard
+
 "@tsconfig/node10@npm:^1.0.7":
   version: 1.0.11
   resolution: "@tsconfig/node10@npm:1.0.11"
@@ -5284,6 +5312,13 @@ __metadata:
   version: 1.0.4
   resolution: "@tsconfig/node16@npm:1.0.4"
   checksum: 202319785901f942a6e1e476b872d421baec20cf09f4b266a1854060efbf78cde16a4d256e8bc949d31e6cd9a90f1e8ef8fb06af96a65e98338a2b6b0de0a0ff
+  languageName: node
+  linkType: hard
+
+"@tsconfig/node20@npm:^20.1.4":
+  version: 20.1.4
+  resolution: "@tsconfig/node20@npm:20.1.4"
+  checksum: 345dba8074647f6c11b8d78afa76d9c16e3436cb56a8e78fe2060014d33a09f3f4fd6ed81dc90e955d3509f926cd7fd61c6ddfd3d5a1d80758d7844f7cc3a99e
   languageName: node
   linkType: hard
 
@@ -5632,12 +5667,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*":
-  version: 22.10.7
-  resolution: "@types/node@npm:22.10.7"
+"@types/node@npm:*, @types/node@npm:^22.10.10":
+  version: 22.10.10
+  resolution: "@types/node@npm:22.10.10"
   dependencies:
     undici-types: ~6.20.0
-  checksum: 2dce6c75c607c6269744f1ea2b5296e8685cd71d0dd5c599c3029626f9d2dc8b037912495cf68b30d6f39f44d3fa8b025e179662ef16dc363e0658425bedfde8
+  checksum: 4906f63dd1dcee6acc096b3336353e04a15746b639bbf4f585e3093851a17852a9ea0e302caef2d782c836adb3812e6eb3305b8783809320013a1d77798816b3
   languageName: node
   linkType: hard
 
@@ -7412,7 +7447,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bson@npm:^6.10.1, bson@npm:^6.7.0":
+"bson@npm:^6.10.1":
   version: 6.10.1
   resolution: "bson@npm:6.10.1"
   checksum: 7c85c8df309bbfd4d42fae54aa37112ee048a89457be908a0e53a01d077d548c94a5a6870dd725ef48130da935286edc8b9ce04830869446db22b8c13a370c42
@@ -7873,6 +7908,13 @@ __metadata:
   version: 5.4.1
   resolution: "chalk@npm:5.4.1"
   checksum: 0c656f30b782fed4d99198825c0860158901f449a6b12b818b0aabad27ec970389e7e8767d0e00762175b23620c812e70c4fd92c0210e55fc2d993638b74e86e
+  languageName: node
+  linkType: hard
+
+"change-case@npm:5.4.4":
+  version: 5.4.4
+  resolution: "change-case@npm:5.4.4"
+  checksum: a22a25a763719658424ffbcd41e931d2d19cc22399cc765dca447fbe1eaf13e179d5e8ab1677af75f2e814dbddf74e42ffdecb526cd5bc906cc859f62aa154b2
   languageName: node
   linkType: hard
 
@@ -12442,7 +12484,7 @@ __metadata:
     clean-css: ^4.2.1
     commander: ^2.19.0
     he: ^1.2.0
-    param-case: ^2.1.1
+    param-case: ^4.0.0
     relateurl: ^0.2.7
     uglify-js: ^3.5.1
   bin:
@@ -13572,9 +13614,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"job-processor@npm:^1.8.0":
-  version: 1.8.0
-  resolution: "job-processor@npm:1.8.0"
+"job-processor@npm:^1.10.1":
+  version: 1.10.1
+  resolution: "job-processor@npm:1.10.1"
   dependencies:
     cron-parser: ^4.9.0
     date-fns: ^2.30.0
@@ -13597,7 +13639,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: c570f60a9ca075d7757978975ae5df6c2ae70654f32cbf655dd249001d607569393537c35a5b6027287cd5f51f9dbb78f2fd78d243e65a9b0d355031587ed712
+  checksum: 45f4f44b1dddf6a4a9bedafd7e1f7175bc75bede0e864d03904914110b17206b6ff9973d97a68f1e9c93ba732b472dcdd04b4b361a5d740c796939842a715f59
   languageName: node
   linkType: hard
 
@@ -16138,7 +16180,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb@npm:^6.7.0":
+"mongodb@npm:^6.12.0":
   version: 6.12.0
   resolution: "mongodb@npm:6.12.0"
   dependencies:
@@ -16483,6 +16525,13 @@ __metadata:
   dependencies:
     lower-case: ^1.1.1
   checksum: 856487731936fef44377ca74fdc5076464aba2e0734b56a4aa2b2a23d5b154806b591b9b2465faa59bb982e2b5c9391e3685400957fb4eeb38f480525adcf3dd
+  languageName: node
+  linkType: hard
+
+"no-case@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "no-case@npm:4.0.0"
+  checksum: cbfd08163260cb6be5451637193332aff4b27ea741944f268c63adc874eb7343b0319714202a9293464b691674e2422eaaa9b851bae87d342d2162438846d585
   languageName: node
   linkType: hard
 
@@ -17200,9 +17249,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openai@npm:^4.78.1":
-  version: 4.78.1
-  resolution: "openai@npm:4.78.1"
+"openai@npm:^4.82.0":
+  version: 4.82.0
+  resolution: "openai@npm:4.82.0"
   dependencies:
     "@types/node": ^18.11.18
     "@types/node-fetch": ^2.6.4
@@ -17212,13 +17261,16 @@ __metadata:
     formdata-node: ^4.3.2
     node-fetch: ^2.6.7
   peerDependencies:
+    ws: ^8.18.0
     zod: ^3.23.8
   peerDependenciesMeta:
+    ws:
+      optional: true
     zod:
       optional: true
   bin:
     openai: bin/cli
-  checksum: 3d782037bf02183b77ee9d6c062d8da74692c3931cca2435db0d1d6a86b039b63ceb5dc1d1931cf0bd5fc7c683d9a70b3a04c931ea838e7f0b8a065b4ca29905
+  checksum: d4d219362d6205adffe57de58a343dbdabfcecd9c6bf656e755a2c9c48a2b70e68985f0ea4015e2c74b46f19a129641d8901a01c3a6e2cdb7a3dbbc953011a3f
   languageName: node
   linkType: hard
 
@@ -17559,12 +17611,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"param-case@npm:^2.1.1":
-  version: 2.1.1
-  resolution: "param-case@npm:2.1.1"
+"param-case@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "param-case@npm:4.0.0"
   dependencies:
-    no-case: ^2.2.0
-  checksum: 3a63dcb8d8dc7995a612de061afdc7bb6fe7bd0e6db994db8d4cae999ed879859fd24389090e1a0d93f4c9207ebf8c048c870f468a3f4767161753e03cb9ab58
+    no-case: ^4.0.0
+  checksum: 42f29ae506b6848c016c7dbd9235fdda8bb4a5e307d79ac229322cf8f7eefded5014fa4d3160bd07ff1b628c7f7e6c84231a3f03a07eb81a27b363e3ffd53c67
   languageName: node
   linkType: hard
 
@@ -20074,7 +20126,7 @@ __metadata:
     "@fastify/swagger": ^8.10.1
     "@fastify/swagger-ui": ^1.9.3
     "@hapi/boom": ^10.0.1
-    "@mistralai/mistralai": ^1.3.6
+    "@mistralai/mistralai": ^1.5.0
     "@sentry/node": ^8.48.0
     "@sentry/profiling-node": ^8.48.0
     "@sentry/types": ^8.19.0
@@ -20102,7 +20154,7 @@ __metadata:
     axios: ^1.7.4
     axios-cache-interceptor: ^1.5.3
     basic-ftp: ^5.0.3
-    bson: ^6.7.0
+    bson: ^6.10.1
     bunyan: ^1.8.15
     bunyan-slack: ^0.0.10
     burner-email-providers: ^1.0.67
@@ -20132,7 +20184,7 @@ __metadata:
     got: ^12.5.2
     iconv-lite: ^0.6.3
     is-semver: ^1.0.11
-    job-processor: ^1.8.0
+    job-processor: ^1.10.1
     joi: ^17.6.0
     jsonwebtoken: ^8.5.1
     lil-http-terminator: ^1.2.3
@@ -20142,13 +20194,13 @@ __metadata:
     memoizee: ^0.4.15
     miniget: ^4.2.3
     mjml: ^4.14.1
-    mongodb: ^6.7.0
+    mongodb: ^6.12.0
     netmask: ^2.0.2
     nock: beta
     nodemailer: ^6.9.5
     nodemailer-html-to-text: ^3.2.0
     oleoduc: ^0.7.0
-    openai: ^4.78.1
+    openai: ^4.82.0
     openapi-types: ^12.1.3
     pino-pretty: ^10.2.0
     pretty-ms: ^7.0.1
@@ -20245,14 +20297,17 @@ __metadata:
   dependencies:
     "@asteasolutions/zod-to-openapi": ^7.1.1
     "@fastify/swagger": ^8.15.0
-    bson: ^6.7.0
+    "@tsconfig/node20": ^20.1.4
+    "@types/node": ^22.10.10
+    bson: ^6.10.1
+    change-case: 5.4.4
     dayjs: ^1.11.13
     eslint-plugin-zod: ^1.4.0
     i18next: ^24.0.5
     libphonenumber-js: ^1.11.7
     lodash-es: ^4.17.21
     luhn: ^2.4.1
-    mongodb: ^6.7.0
+    mongodb: ^6.12.0
     openapi3-ts: ^4.4.0
     type-fest: ^4.26.0
     typescript: ^5.4.5
@@ -22118,7 +22173,9 @@ __metadata:
     "@sentry/cli": ^2.40.0
     "@sentry/nextjs": ^8.48.0
     "@socialgouv/matomo-next": ^1.8.0
+    "@tanstack/react-virtual": ^3.11.3
     "@testing-library/react": ^13.4.0
+    "@tsconfig/next": ^2.0.3
     "@turf/distance": ^6.5.0
     "@types/node": ^20.7.1
     "@types/react": ^18.2.23
@@ -23378,7 +23435,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod-to-json-schema@npm:^3.21.4, zod-to-json-schema@npm:^3.23.0":
+"zod-to-json-schema@npm:^3.21.4, zod-to-json-schema@npm:^3.23.0, zod-to-json-schema@npm:^3.24.1":
   version: 3.24.1
   resolution: "zod-to-json-schema@npm:3.24.1"
   peerDependencies:

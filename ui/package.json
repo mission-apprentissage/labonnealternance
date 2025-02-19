@@ -6,7 +6,7 @@
   "repository": "https://github.com/mission-apprentissage/labonnealternance.git",
   "scripts": {
     "dev": "SENTRY_SUPPRESS_GLOBAL_ERROR_HANDLER_FILE_WARNING=1 next dev",
-    "build": "next build --no-lint",
+    "build": "SENTRY_SUPPRESS_GLOBAL_ERROR_HANDLER_FILE_WARNING=1 next build --no-lint",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "analyse": "ANALYZE=true yarn build"
@@ -20,6 +20,7 @@
     "@sentry/cli": "^2.40.0",
     "@sentry/nextjs": "^8.48.0",
     "@socialgouv/matomo-next": "^1.8.0",
+    "@tanstack/react-virtual": "^3.11.3",
     "@turf/distance": "^6.5.0",
     "axios": "^1.7.4",
     "csv-stringify": "^6.5.2",
@@ -62,6 +63,7 @@
   "devDependencies": {
     "@next/bundle-analyzer": "^14.2.13",
     "@testing-library/react": "^13.4.0",
+    "@tsconfig/next": "^2.0.3",
     "@types/node": "^20.7.1",
     "@types/react": "^18.2.23",
     "dotenv": "^16.3.1",

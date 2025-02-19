@@ -1,3 +1,4 @@
+import { Filter } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared/models"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
@@ -6,18 +7,20 @@ import { fillLocationInfosForPartners } from "./fillLocationInfosForPartners"
 import { fillOpcoInfosForPartners } from "./fillOpcoInfosForPartners"
 import { fillRomeForPartners } from "./fillRomeForPartners"
 import { fillSiretInfosForPartners } from "./fillSiretInfosForPartners"
+import { rankJobPartners } from "./rankJobPartners"
 import { validateComputedJobPartners } from "./validateComputedJobPartners"
 
-export const fillComputedJobsPartners = async () => {
-  await fillOpcoInfosForPartners()
-  await fillSiretInfosForPartners()
-  await fillLocationInfosForPartners()
-  await fillRomeForPartners()
-  await detectDuplicateJobPartners()
-  await validateComputedJobPartners()
+export const fillComputedJobsPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
+  await fillOpcoInfosForPartners(addedMatchFilter)
+  await fillSiretInfosForPartners(addedMatchFilter)
+  await fillLocationInfosForPartners(addedMatchFilter)
+  await fillRomeForPartners(addedMatchFilter)
+  await rankJobPartners(addedMatchFilter)
+  await detectDuplicateJobPartners(addedMatchFilter)
+  await validateComputedJobPartners(addedMatchFilter)
 }
 
-export const blankComputedJobPartner: Omit<IComputedJobsPartners, "_id" | "partner_label" | "partner_job_id"> = {
+export const blankComputedJobPartner = (): Omit<IComputedJobsPartners, "_id" | "partner_label" | "partner_job_id"> => ({
   apply_phone: null,
   apply_url: null,
   business_error: null,
@@ -25,7 +28,7 @@ export const blankComputedJobPartner: Omit<IComputedJobsPartners, "_id" | "partn
   contract_remote: null,
   contract_start: null,
   contract_type: [],
-  created_at: null,
+  created_at: new Date(),
   errors: [],
   offer_access_conditions: [],
   offer_creation: null,
@@ -59,4 +62,4 @@ export const blankComputedJobPartner: Omit<IComputedJobsPartners, "_id" | "partn
   workplace_size: null,
   workplace_website: null,
   jobs_in_success: [],
-}
+})

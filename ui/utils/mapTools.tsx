@@ -8,7 +8,6 @@ import { MapPopup } from "../components/SearchForTrainingsAndJobs/components"
 import { fetchAddresses } from "../services/baseAdresse"
 
 import { isArea } from "./isArea"
-import { getItemElement, scrollToElementInContainer } from "./tools"
 
 enum layerType {
   PARTNER = "PARTNER",
@@ -244,8 +243,18 @@ const onLayerClick = (e, layer, selectItemOnMap, unselectItem, unselectMapPopupI
     })
 
     unselectItem()
-    scrollToElementInContainer({ containerId: "resultList", el: getItemElement(item) })
+    const realItem = item.items ? item.items[0] : item
+    dispatchScrollToItem(realItem)
     setSelectedMarker(item)
+  }
+}
+
+const dispatchScrollToItem = (item) => {
+  try {
+    const element = document.getElementById("resultList")
+    element.dispatchEvent(new CustomEvent("scrollToItem", { detail: { itemId: item.id } }))
+  } catch (error) {
+    console.log(error)
   }
 }
 
@@ -258,6 +267,16 @@ const flyToMarker = (item, zoom = map.getZoom()) => {
 const flyToLocation = (location) => {
   if (isMapInitialized) {
     map.flyTo(location)
+  }
+}
+
+const flyToCenter = (values) => {
+  const searchCenter = values?.location?.value ? [values.location.value.coordinates[0], values.location.value.coordinates[1]] : null
+
+  if (searchCenter) {
+    flyToLocation({ center: searchCenter, zoom: 10 })
+  } else {
+    flyToLocation({ center: coordinatesOfFrance, zoom: 4 })
   }
 }
 
@@ -320,10 +339,6 @@ const factorPlacesForMap = (list) => {
 // rassemble les formations ayant lieu dans un même établissement pour avoir une seule icône sur la map
 const factorTrainingsForMap = (list) => {
   return factorPlacesForMap(list)
-}
-
-const factorPartnerJobsForMap = (lists) => {
-  return factorJobsForMap(lists, layerType.PARTNER)
 }
 
 const factorInternalJobsForMap = (lists) => {
@@ -608,7 +623,6 @@ const refreshLocationMarkers = ({ jobs, trainings, scopeContext }) => {
   setTimeout(() => {
     if (scopeContext.isJob) {
       setJobMarkers({ jobList: factorInternalJobsForMap(jobs), type: layerType.INTERNAL, hasTrainings: !!trainings })
-      setJobMarkers({ jobList: factorPartnerJobsForMap(jobs), type: layerType.PARTNER, hasTrainings: !!trainings })
     }
     if (scopeContext.isTraining) {
       setTrainingMarkers({ trainingList: factorTrainingsForMap(trainings) })
@@ -622,11 +636,11 @@ export {
   computeMissingPositionAndDistance,
   coordinatesOfFrance,
   factorInternalJobsForMap,
-  factorPartnerJobsForMap,
   factorTrainingsForMap,
   filterLayers,
   flyToLocation,
   flyToMarker,
+  flyToCenter,
   getZoomLevelForDistance,
   initializeMap,
   isMapInitialized,
