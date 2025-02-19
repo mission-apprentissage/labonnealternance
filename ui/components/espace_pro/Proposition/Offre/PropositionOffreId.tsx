@@ -1,6 +1,4 @@
 import { Box, Button, Container, Flex, Heading, SimpleGrid, Stack, Text, useToast } from "@chakra-ui/react"
-import { useRouter } from "next/router"
-import { useEffect } from "react"
 import { useQuery } from "react-query"
 import { IJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -10,16 +8,18 @@ import { LoadingEmptySpace } from "../.."
 import { dayjs } from "../../../../common/dayjs"
 import { publicConfig } from "../../../../config.public"
 import { Copy } from "../../../../theme/components/icons"
-import { getDelegationDetails, patchOffreDelegation } from "../../../../utils/api"
+import { getDelegationDetails, viewOffreDelegation } from "../../../../utils/api"
 import { RomeDetailReadOnly } from "../../../DepotOffre/RomeDetailReadOnly"
 
-export default function PropositionOffreId() {
-  const router = useRouter()
-  const { idFormulaire, jobId, siretFormateur, token } = router.query as { idFormulaire: string; jobId: string; siretFormateur: string; token: string }
+export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token }: { idFormulaire: string; jobId: string; siretFormateur: string; token: string }) {
   const toast = useToast()
 
   const formulaireQuery = useQuery(["getFormulaire", idFormulaire, token], () => getDelegationDetails(idFormulaire, token), {
-    enabled: Boolean(idFormulaire && token && siretFormateur),
+    enabled: Boolean(idFormulaire && token),
+  })
+
+  useQuery(["viewDelegation", jobId, siretFormateur, token], () => viewOffreDelegation(jobId, siretFormateur, token), {
+    enabled: Boolean(jobId && siretFormateur && token),
   })
 
   const formulaire = formulaireQuery?.data
@@ -38,16 +38,6 @@ export default function PropositionOffreId() {
       duration: 5000,
     })
   }
-
-  /**
-   * @description Gets offre.
-   * @return {void}
-   */
-  useEffect(() => {
-    if (job?._id && siretFormateur) {
-      patchOffreDelegation(job._id, siretFormateur)
-    }
-  }, [job?._id, siretFormateur])
 
   if (!job) {
     return <LoadingEmptySpace />
