@@ -2,7 +2,7 @@ import { badRequest, notFound } from "@hapi/boom"
 import { generateApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { ERecruteurLbaUpdateEventType } from "shared/models"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { IJobsPartnersRecruteurAlgoPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -19,7 +19,7 @@ const recruteurlba = generateJobsPartnersOfferPrivate({
   workplace_address_label: "1 rue de la paix",
   apply_email: "recruteur_lba@test.com",
   apply_phone: "0610101010",
-})
+}) as IJobsPartnersRecruteurAlgoPrivate
 
 const application = generateApplicationFixture({
   company_siret: "34843069553553",
@@ -40,7 +40,7 @@ describe("/lbacompany/:siret/contactInfo", () => {
   })
 
   it("La société existe", async () => {
-    const result = await getCompanyContactInfo({ siret: recruteurlba.workplace_siret! })
+    const result = await getCompanyContactInfo({ siret: recruteurlba.workplace_siret })
 
     expect.soft(result).toStrictEqual({
       active: true,

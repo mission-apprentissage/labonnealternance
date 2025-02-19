@@ -17,7 +17,7 @@ interface IGeneratorParams {
   fileName: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA | LBA_ITEM_TYPE.RECRUTEURS_LBA
 }
 
-const recruteurLbaWhitelistFields = createProjectionFromZod(ZJobsPartnersRecruiterApi, [
+const recruteurLbaProjection = createProjectionFromZod(ZJobsPartnersRecruiterApi, [
   "_id",
   "apply_phone",
   "apply_url",
@@ -91,7 +91,7 @@ async function exportLbaJobsToS3() {
   const recruteurs_lba: IGeneratorParams = {
     collection: "jobs_partners",
     query: { partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA },
-    projection: recruteurLbaWhitelistFields,
+    projection: recruteurLbaProjection,
     fileName: LBA_ITEM_TYPE.RECRUTEURS_LBA,
   }
   await Promise.all([

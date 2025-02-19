@@ -2,7 +2,7 @@ import { badRequest, internal, notFound } from "@hapi/boom"
 import { Document, Filter, ObjectId } from "mongodb"
 import { ERecruteurLbaUpdateEventType, IApplication, ILbaCompany, ILbaCompanyForContactUpdate, IRecruteurLbaUpdateEvent } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
-import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { IJobsPartnersOfferPrivate, IJobsPartnersRecruteurAlgoPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
@@ -27,7 +27,7 @@ const transformCompany = ({
   contactAllowedOrigin,
   applicationCountByCompany,
 }: {
-  company: IJobsPartnersOfferPrivate
+  company: IJobsPartnersRecruteurAlgoPrivate
   caller?: string | null
   contactAllowedOrigin: boolean
   applicationCountByCompany: IApplicationCount[]
@@ -76,7 +76,7 @@ const transformCompany = ({
     ],
     applicationCount: applicationCount?.count || 0,
     url: null,
-    token: generateApplicationToken({ company_siret: company.workplace_siret! }),
+    token: generateApplicationToken({ company_siret: company.workplace_siret }),
     recipient_id: `partners_${company._id.toString()}`,
   }
 
@@ -90,7 +90,7 @@ const transformCompanyWithMinimalData = ({
   company,
   applicationCountByCompany,
 }: {
-  company: IJobsPartnersOfferPrivate
+  company: IJobsPartnersRecruteurAlgoPrivate
   applicationCountByCompany: IApplicationCount[]
 }): ILbaItemLbaCompany => {
   // format différent selon accès aux bonnes boîtes par recherche ou par siret
@@ -119,7 +119,7 @@ const transformCompanyWithMinimalData = ({
       },
     ],
     applicationCount: applicationCount?.count || 0,
-    token: generateApplicationToken({ company_siret: company.workplace_siret! }),
+    token: generateApplicationToken({ company_siret: company.workplace_siret }),
     recipient_id: `partners_${company._id.toString()}`,
   }
 
@@ -136,7 +136,7 @@ const transformCompanies = ({
   applicationCountByCompany,
   isMinimalData,
 }: {
-  companies: IJobsPartnersOfferPrivate[]
+  companies: IJobsPartnersRecruteurAlgoPrivate[]
   referer?: string
   caller?: string | null
   applicationCountByCompany: IApplicationCount[]
@@ -225,7 +225,7 @@ export const getCompanies = async ({
   opco?: string
   opcoUrl?: string
   api: string
-}): Promise<IJobsPartnersOfferPrivate[] | IApiError> => {
+}): Promise<IJobsPartnersRecruteurAlgoPrivate[] | IApiError> => {
   try {
     const distance = radius || 10
 
@@ -244,7 +244,7 @@ export const getCompanies = async ({
       query.opco_url = opcoUrl.toLowerCase()
     }
 
-    let companies: IJobsPartnersOfferPrivate[] = []
+    let companies: IJobsPartnersRecruteurAlgoPrivate[] = []
 
     if (latitude && longitude) {
       companies = (await getDbCollection("jobs_partners")
@@ -262,7 +262,7 @@ export const getCompanies = async ({
             $limit: companyLimit,
           },
         ])
-        .toArray()) as IJobsPartnersOfferPrivate[]
+        .toArray()) as IJobsPartnersRecruteurAlgoPrivate[]
     } else {
       companies = (await getDbCollection("jobs_partners")
         .aggregate([
@@ -275,7 +275,7 @@ export const getCompanies = async ({
             },
           },
         ])
-        .toArray()) as IJobsPartnersOfferPrivate[]
+        .toArray()) as IJobsPartnersRecruteurAlgoPrivate[]
     }
 
     if (!latitude) {
@@ -337,7 +337,7 @@ export const getSomeCompanies = async ({
   })
 
   if (!("error" in companies) && companies instanceof Array) {
-    const sirets = companies.map(({ workplace_siret }) => workplace_siret) as string[]
+    const sirets = companies.map(({ workplace_siret }) => workplace_siret)
     const applicationCountByCompany = await getApplicationByCompanyCount(sirets)
     return transformCompanies({ companies, referer, caller, applicationCountByCompany, isMinimalData })
   } else {
@@ -363,7 +363,10 @@ export const getCompanyFromSiret = async ({
     }
 > => {
   try {
-    const lbaCompany = await getDbCollection("jobs_partners").findOne({ workplace_siret: siret })
+    const lbaCompany = (await getDbCollection("jobs_partners").findOne({
+      workplace_siret: siret,
+      partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+    })) as IJobsPartnersRecruteurAlgoPrivate
 
     if (!lbaCompany) {
       if (caller) {
@@ -418,10 +421,12 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
         throw badRequest()
       }
     } else {
-      await Promise.all([
-        email !== undefined && getDbCollection("jobs_partners").findOneAndUpdate({ workplace_siret: siret }, { $set: { apply_email: email, updated_at: new Date() } }),
-        phone !== undefined && getDbCollection("jobs_partners").findOneAndUpdate({ workplace_siret: siret }, { $set: { apply_phone: phone, updated_at: new Date() } }),
-      ])
+      if (email || phone) {
+        await getDbCollection("jobs_partners").findOneAndUpdate(
+          { workplace_siret: siret },
+          { $set: { ...(email ? { apply_email: email } : null), ...(phone ? { apply_phone: phone } : null), updated_at: new Date() } }
+        )
+      }
     }
 
     if (email !== undefined && recruteurLba && recruteurLba.apply_email !== email && !email) {
