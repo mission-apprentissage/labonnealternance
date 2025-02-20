@@ -27,6 +27,8 @@ fileignoreconfig:
   checksum: e8a35e591adb1447d1b6e796b063f435ac389e9ffe619c68185f348beae71215
 - filename: server/src/http/controllers/application.controller.test.ts
   checksum: 00cac67c8e138098126ae98702e2bdc3e1092e1bbf188d9a437197e9ca94e16a
+- filename: server/src/http/controllers/v2/applications.controller.v2.test.ts
+  checksum: ad4cd4bbc47eb4b1bf82b2cf2f5c9bc6cb7b7cadf89f0aaba1e96582359fba77
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
   checksum: dc77c04efc26dcd8ca4816f392ab24a32a92cb45ca4b94adb593a08e7a2d231e
 - filename: server/src/http/controllers/etablissementRecruteur.controller.test.ts
@@ -64,7 +66,7 @@ fileignoreconfig:
 - filename: server/src/jobs/offrePartenaire/__snapshots__/importRHAlternance.test.ts.snap
   checksum: 41e5eadcdaa0cb1eb95e4cb3859f4b7b1d176bbb95ee8451d46a6b2c9021c3fd
 - filename: server/src/jobs/offrePartenaire/detectDuplicateJobPartners.test.ts
-  checksum: 82d624da5034d7e482cb7b2a99a134796e3a2b3c3a2a89a10da2e49242854c79
+  checksum: 86174c29ae86fdf2c39f7694bc04812f000942a5532eb39ba0fafd09f86b1caa
 - filename: server/src/jobs/offrePartenaire/importFromUrlInXml.ts
   checksum: 18bd149922151536ad0e239b082309697cee6046b33512d5eecc54b2d25b465a
 - filename: server/src/jobs/offrePartenaire/importHelloWork.test.input.xml
