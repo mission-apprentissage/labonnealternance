@@ -3,17 +3,30 @@ import { Transform } from "stream"
 import { pipeline } from "stream/promises"
 
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { createProjectionFromZod } from "shared/helpers/zodHelpers/zodPrimitives"
+import { JOBPARTNERS_LABEL, ZJobsPartnersRecruiterApi } from "shared/models/jobsPartners.model"
 
 import { logger } from "../../common/logger"
 import { s3WriteStream } from "../../common/utils/awsUtils"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 
 interface IGeneratorParams {
-  collection: "jobs" | "recruteurslba"
+  collection: "jobs" | "jobs_partners"
   query: object
   projection: object
   fileName: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA | LBA_ITEM_TYPE.RECRUTEURS_LBA
 }
+
+const recruteurLbaProjection = createProjectionFromZod(ZJobsPartnersRecruiterApi, [
+  "_id",
+  "apply_phone",
+  "apply_url",
+  "apply_recipient_id",
+  "workplace_address_label",
+  "workplace_geopoint",
+  "workplace_opco",
+  "workplace_idcc",
+])
 
 async function generateJsonExport({ collection, query, projection, fileName }: IGeneratorParams): Promise<string> {
   logger.info(`Generating file ${fileName}`)
@@ -76,9 +89,9 @@ async function exportLbaJobsToS3() {
     fileName: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
   }
   const recruteurs_lba: IGeneratorParams = {
-    collection: "recruteurslba",
-    query: {},
-    projection: { _id: 0, email: 0, phone: 0, geopoint: 0, recruitment_potential: 0, opco_short_name: 0 },
+    collection: "jobs_partners",
+    query: { partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA },
+    projection: recruteurLbaProjection,
     fileName: LBA_ITEM_TYPE.RECRUTEURS_LBA,
   }
   await Promise.all([

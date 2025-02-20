@@ -1,5 +1,6 @@
 import { z } from "zod"
 
+import { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
 import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 
@@ -12,8 +13,9 @@ import { zOpcoLabel } from "./opco.model.js"
 const collectionName = "jobs_partners" as const
 
 export enum JOBPARTNERS_LABEL {
+  OFFRES_EMPLOI_LBA = LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
+  RECRUTEURS_LBA = LBA_ITEM_TYPE.RECRUTEURS_LBA,
   HELLOWORK = "Hellowork",
-  OFFRES_EMPLOI_LBA = "La bonne alternance",
   FRANCE_TRAVAIL = "France Travail",
   RH_ALTERNANCE = "RH Alternance",
   PASS = "PASS",
@@ -118,6 +120,12 @@ export const ZJobsPartnersOfferPrivate = ZJobsPartnersOfferApi.omit({
 export const ZJobsPartnersOfferPrivateWithDistance = ZJobsPartnersOfferPrivate.extend({
   distance: z.number().nullish(),
 })
+
+export const ZJobsPartnersRecruteurAlgoPrivate = ZJobsPartnersOfferPrivate.omit({ workplace_siret: true, workplace_legal_name: true }).extend({
+  workplace_siret: z.string().describe("Siret toujours présent pour les entreprises issue de l'algo"),
+  workplace_legal_name: z.string().describe("Raison sociale toujours présente pour les entreprises issue de l'algo"),
+})
+export type IJobsPartnersRecruteurAlgoPrivate = z.output<typeof ZJobsPartnersRecruteurAlgoPrivate>
 
 export type IJobsPartnersRecruiterApi = z.output<typeof ZJobsPartnersRecruiterApi>
 export type IJobsPartnersOfferApi = z.output<typeof ZJobsPartnersOfferApi>

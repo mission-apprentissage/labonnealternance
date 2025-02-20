@@ -19,6 +19,19 @@ const customErrorMap: z.ZodErrorMap = (issue, ctx) => {
 }
 z.setErrorMap(customErrorMap)
 
+// Fonction générique pour créer une projection MongoDB avec exclusion de champs
+export const createProjectionFromZod = <T extends z.ZodObject<any>>(schema: T, excludeFields: (keyof z.infer<T>)[]): Record<string, 1> => {
+  return Object.keys(schema.shape).reduce(
+    (acc, key) => {
+      if (!excludeFields.includes(key as keyof z.infer<T>)) {
+        acc[key] = 1
+      }
+      return acc
+    },
+    {} as Record<string, 1>
+  )
+}
+
 export const extensions = {
   siret: z
     .string()

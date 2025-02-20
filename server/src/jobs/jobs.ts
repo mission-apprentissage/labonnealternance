@@ -32,6 +32,7 @@ import { runGarbageCollector } from "./misc/runGarbageCollector"
 import { importFranceTravailRaw } from "./offrePartenaire/france-travail/importJobsFranceTravail"
 import { processJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
+import { processRecruteursLba } from "./offrePartenaire/processRecruteursLba"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -54,9 +55,6 @@ import { recruiterOfferExpirationReminderJob } from "./recruiters/recruiterOffer
 import { removeDuplicateRecruiters } from "./recruiters/removeDuplicatesRecruiters"
 import { resetApiKey } from "./recruiters/resetApiKey"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
-import updateGeoLocations from "./recruteurLba/updateGeoLocations"
-import updateOpcoCompanies from "./recruteurLba/updateOpcoCompanies"
-import updateLbaCompanies from "./recruteurLba/updateRecruteurLba"
 import { SimpleJobDefinition, simpleJobDefinitions } from "./simpleJobDefinitions"
 import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 import { controlApplications } from "./verifications/controlApplications"
@@ -158,18 +156,6 @@ export async function setupJobProcessor() {
             cron_string: "5 0 * * *",
             handler: () => updateBrevoBlockedEmails({}),
           },
-          "Géolocation de masse des sociétés issues de l'algo": {
-            cron_string: "0 5 * * 6",
-            handler: () => updateGeoLocations({}),
-          },
-          "Détermination des opcos des sociétés issues de l'algo": {
-            cron_string: "30 6 * * 6",
-            handler: () => updateOpcoCompanies({}),
-          },
-          "Mise à jour des sociétés issues de l'algo": {
-            cron_string: "0 5 * * 7",
-            handler: () => updateLbaCompanies({ useAlgoFile: true, clearMongo: true }),
-          },
           "Contrôle quotidien des candidatures": {
             cron_string: "0 10-19/1 * * 1-5",
             handler: config.env === "production" ? () => controlApplications() : () => Promise.resolve(0),
@@ -246,6 +232,10 @@ export async function setupJobProcessor() {
             cron_string: "30 20 * * *",
             handler: processRecruiterIntentions,
           },
+          "Traitement des recruteur LBA par la pipeline jobs partners": {
+            cron_string: "0 22 * * SUN",
+            handler: processRecruteursLba,
+          },
         },
     jobs: {
       "remove:duplicates:recruiters": {
@@ -308,15 +298,6 @@ export async function setupJobProcessor() {
       },
       "brevo:blocked:sync": {
         handler: async (job) => updateBrevoBlockedEmails(job.payload as any),
-      },
-      "companies:update": {
-        handler: async (job) => updateLbaCompanies(job.payload as any),
-      },
-      "geo-locations:update": {
-        handler: async (job) => updateGeoLocations(job.payload as any),
-      },
-      "opcos:update": {
-        handler: async (job) => updateOpcoCompanies(job.payload as any),
       },
       "domaines-metiers:update": {
         handler: async () => updateDomainesMetiers(),

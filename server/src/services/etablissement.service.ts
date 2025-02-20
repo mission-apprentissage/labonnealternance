@@ -19,6 +19,7 @@ import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { IEtablissementGouvData } from "shared/models/cacheInfosSiret.model"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
+import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IOpco } from "shared/models/opco.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
@@ -170,8 +171,8 @@ export const getAllEstablishmentFromLbaCompanyLegacy = async (query: MongoDBFilt
   (await getDbCollection("recruteurslbalegacies").find(query).project({ email: 1, _id: 0 }).toArray()) as IGetAllEmailFromLbaCompanyLegacy[]
 
 type IGetAllEmailFromLbaCompany = Pick<ILbaCompany, "email">
-export const getAllEstablishmentFromLbaCompany = async (query: MongoDBFilter<ILbaCompany>) =>
-  (await getDbCollection("recruteurslba").find(query).project({ email: 1, _id: 0 }).toArray()) as IGetAllEmailFromLbaCompany[]
+export const getAllEstablishmentFromLbaCompany = async (query: MongoDBFilter<IJobsPartnersOfferPrivate>) =>
+  (await getDbCollection("jobs_partners").find(query).project({ email: 1, _id: 0 }).toArray()) as IGetAllEmailFromLbaCompany[]
 
 function getRaisonSocialeFromGouvResponse(d: IEtablissementGouvData["data"]): string | undefined {
   const { personne_morale_attributs, personne_physique_attributs } = d.unite_legale
@@ -286,7 +287,7 @@ const isCompanyValid = async (props: UserAndOrganization): Promise<{ isValid: bo
   // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
   const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
     getAllEstablishmentFromLbaCompanyLegacy({ siret: { $regex: sirenRegex }, email: { $nin: ["", null] } }),
-    getAllEstablishmentFromLbaCompany({ siret: { $regex: sirenRegex }, email: { $nin: ["", null] } }),
+    getAllEstablishmentFromLbaCompany({ workplace_siret: { $regex: sirenRegex }, apply_email: { $nin: ["", null] }, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }),
     getDbCollection("referentielopcos")
       .find({ siret_code: { $regex: sirenRegex } })
       .toArray(),

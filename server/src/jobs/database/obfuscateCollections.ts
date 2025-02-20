@@ -105,19 +105,6 @@ const obfuscateAppointments = async () => {
   )
 }
 
-const obfuscateLbaCompanies = async () => {
-  logger.info(`obfuscating lbacompanies`)
-  await getDbCollection("recruteurslba").updateMany(
-    {},
-    {
-      $set: {
-        email: fakeEmail,
-        phone: "0601010106",
-      },
-    }
-  )
-}
-
 const obfuscateElligibleTrainingsForAppointment = async () => {
   logger.info(`obfuscating elligible trainings for appointments`)
   await getDbCollection("eligible_trainings_for_appointments").updateMany(
@@ -351,7 +338,6 @@ export async function obfuscateCollections(): Promise<void> {
   await obfuscateJobsPatners()
   await obfuscateEmailBlackList()
   await obfuscateAppointments()
-  await obfuscateLbaCompanies()
   await obfuscateElligibleTrainingsForAppointment()
   await obfuscateEtablissements()
   await obfuscateFormations()

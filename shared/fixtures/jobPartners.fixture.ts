@@ -31,7 +31,7 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     apply_url: "https://apply.com",
     apply_phone: null,
     partner_label: JOBPARTNERS_LABEL.HELLOWORK,
-    partner_job_id: "partner_job_id",
+    partner_job_id: new ObjectId().toString(),
 
     contract_start: null,
     contract_duration: null,

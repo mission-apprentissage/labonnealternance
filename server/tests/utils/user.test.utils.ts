@@ -4,7 +4,7 @@ import { ObjectId } from "mongodb"
 import { OPCOS_LABEL, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
-import { IApplication, ICredential, IEmailBlacklist, ILbaCompany, IRecruiter, ZApplication, ZCredential, ZEmailBlacklist, ZLbaCompany, ZPointGeometry } from "shared/models"
+import { IApplication, ICredential, IEmailBlacklist, IRecruiter, ZApplication, ZCredential, ZEmailBlacklist, ZPointGeometry } from "shared/models"
 import { ICFA, zCFA } from "shared/models/cfa.model"
 import { zObjectId } from "shared/models/common"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent, ZEntreprise } from "shared/models/entreprise.model"
@@ -212,10 +212,6 @@ export async function createEmailBlacklistTest(data: Partial<IEmailBlacklist>) {
   }
   await getDbCollection("emailblacklists").insertOne(u)
   return u
-}
-
-export async function createRecruteurLbaTest(data: Partial<ILbaCompany>): Promise<ILbaCompany> {
-  return await saveDbEntity(ZLbaCompany, (item) => getDbCollection("recruteurslba").insertOne(item), data)
 }
 
 export const saveAdminUserTest = async (userProps: Partial<IUserWithAccount> = {}) => {

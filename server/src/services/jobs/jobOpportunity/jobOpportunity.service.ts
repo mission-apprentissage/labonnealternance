@@ -2,7 +2,7 @@ import { badRequest, internal, notFound } from "@hapi/boom"
 import { IApiAlternanceTokenData } from "api-alternance-sdk"
 import { DateTime } from "luxon"
 import { Document, Filter, ObjectId } from "mongodb"
-import { IGeoPoint, IJob, ILbaCompany, ILbaItemPartnerJob, IRecruiter, JOB_STATUS_ENGLISH, assertUnreachable, joinNonNullStrings, parseEnum, translateJobStatus } from "shared"
+import { IGeoPoint, IJob, ILbaCompany, ILbaItemPartnerJob, IRecruiter, JOB_STATUS_ENGLISH, assertUnreachable, parseEnum, translateJobStatus } from "shared"
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import {
@@ -98,10 +98,9 @@ export const getJobsFromApi = async ({
           case "matcha":
             return LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
           case "lba":
-          case "lbb":
             return LBA_ITEM_TYPE.RECRUTEURS_LBA
-
-          case "offres":
+          case "offres": // compatibility V1 to retreive FT jobs
+          case "partnerJob":
             return LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES
 
           default:
@@ -157,7 +156,7 @@ export const getJobsFromApi = async ({
             isMinimalData,
           })
         : null,
-      jobSources.includes(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA)
+      jobSources.includes(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES)
         ? getPartnerJobs({
             romes,
             latitude,
@@ -329,7 +328,9 @@ export const getJobsPartnersFromDBForUI = async ({ romes, geo, target_diploma_le
 }
 
 export const getJobsPartnersForApi = async ({ romes, geo, target_diploma_level, partners_to_exclude }: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> => {
-  const jobsPartners = await getJobsPartnersFromDB({ romes, geo, target_diploma_level, partners_to_exclude })
+  // recruteurs_lba are available in a different array from the API returned payload
+  const partnersToExclude = partners_to_exclude ? [...partners_to_exclude, JOBPARTNERS_LABEL.RECRUTEURS_LBA] : [JOBPARTNERS_LABEL.RECRUTEURS_LBA]
+  const jobsPartners = await getJobsPartnersFromDB({ romes, geo, target_diploma_level, partners_to_exclude: partnersToExclude })
 
   return jobsPartners.map((j) =>
     jobsRouteApiv3Converters.convertToJobOfferApiReadV3({
@@ -352,32 +353,32 @@ function convertOpco(recruteurLba: Pick<ILbaCompany | IRecruiter, "opco">): IJob
   return null
 }
 
-export const convertLbaCompanyToJobRecruiterApi = (recruteursLba: ILbaCompany[]): IJobRecruiterApiReadV3[] => {
+export const convertLbaCompanyToJobRecruiterApi = (recruteursLba: IJobsPartnersOfferPrivate[]): IJobRecruiterApiReadV3[] => {
   return recruteursLba.map(
     (recruteurLba): IJobRecruiterApiReadV3 => ({
       identifier: { id: recruteurLba._id },
       workplace: {
-        siret: recruteurLba.siret,
-        website: recruteurLba.website,
-        name: recruteurLba.enseigne ?? recruteurLba.raison_sociale,
-        brand: recruteurLba.enseigne,
-        legal_name: recruteurLba.raison_sociale,
+        siret: recruteurLba.workplace_siret,
+        website: recruteurLba.workplace_website,
+        name: recruteurLba.workplace_legal_name,
+        brand: recruteurLba.workplace_brand,
+        legal_name: recruteurLba.workplace_legal_name,
         description: null,
-        size: recruteurLba.company_size,
+        size: recruteurLba.workplace_size,
         location: {
-          address: joinNonNullStrings([recruteurLba.street_number, recruteurLba.street_name, recruteurLba.zip_code, recruteurLba.city])!,
-          geopoint: recruteurLba.geopoint!,
+          address: recruteurLba.workplace_address_label,
+          geopoint: recruteurLba.workplace_geopoint,
         },
         domain: {
-          idcc: null,
-          opco: convertOpco(recruteurLba),
-          naf: recruteurLba.naf_code == null ? null : { code: recruteurLba.naf_code, label: recruteurLba.naf_label },
+          idcc: recruteurLba.workplace_idcc,
+          opco: recruteurLba.workplace_opco,
+          naf: recruteurLba.workplace_naf_code == null ? null : { code: recruteurLba.workplace_naf_code, label: recruteurLba.workplace_naf_label },
         },
       },
       apply: {
-        url: `${config.publicUrl}/recherche?type=lba&itemId=${recruteurLba.siret}`,
-        phone: recruteurLba.phone,
-        recipient_id: recruteurLba.email ? `recruteurslba_${recruteurLba._id}` : null,
+        url: `${config.publicUrl}/recherche?type=lba&itemId=${recruteurLba.workplace_siret}`,
+        phone: recruteurLba.apply_phone,
+        recipient_id: recruteurLba.apply_email ? `partners_${recruteurLba._id}` : null,
       },
     })
   )

@@ -300,16 +300,6 @@ program
   .action(createJobAction("brevo:blocked:sync"))
 
 program
-  .command("update-companies")
-  .description("Met à jour la liste des sociétés bonnes alternances")
-  .option("-use-algo-file, [UseAlgoFile]", "télécharge et traite le fichier issu de l'algo", false)
-  .option("-clear-mongo, [ClearMongo]", "vide la collection des bonnes alternances", false)
-  .option("-force-recreate, [ForceRecreate]", "pour forcer la recréation", false)
-  .option("-source-file, [SourceFile]", "fichier source alternatif")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("companies:update"))
-
-program
   .command("update-geo-locations")
   .description("Procède à la géolocalisation de masse des sociétés dans le fichier des bonnes alternances")
   .option("-force-recreate, [ForceRecreate]", "pour forcer la recréation", false)

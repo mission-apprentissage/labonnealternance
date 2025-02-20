@@ -137,7 +137,7 @@ describe("Sending application", () => {
       sendApplicationV2({
         newApplication: {
           ...fakeApplication,
-          recipient_id: { collectionName: "recruteurslba", jobId: "6081289803569600282e0003" },
+          recipient_id: { collectionName: "partners", jobId: "6081289803569600282e0003" },
         },
       })
     ).rejects.toThrow(notFound(BusinessErrorCodes.NOTFOUND))

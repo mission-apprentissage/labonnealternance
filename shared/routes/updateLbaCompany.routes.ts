@@ -1,5 +1,6 @@
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
+import { ZJobsPartnersOfferPrivate } from "../models/jobsPartners.model.js"
 import { ZLbaCompanyForContactUpdate } from "../models/recruteurLba.model.js"
 
 import { IRoutesDef } from "./common.routes.js"
@@ -35,8 +36,8 @@ export const zUpdateLbaCompanyRoutes = {
         })
         .strict(),
       body: z.object({
-        email: z.string().email().or(z.literal("")).optional(),
-        phone: extensions.phone().or(z.literal("")).optional(),
+        email: ZJobsPartnersOfferPrivate.shape.apply_email,
+        phone: ZJobsPartnersOfferPrivate.shape.apply_phone,
       }),
       response: {
         "200": ZLbaCompanyForContactUpdate,
