@@ -44,21 +44,26 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
     job,
   })
   logger.info(`job ${job} : début d'enrichissement des données`)
-  const queryFilter: Filter<IComputedJobsPartners> = replaceMatchFilter ?? {
-    $and: [
-      {
-        $or: sourceFields.map((field) => ({ [field]: { $ne: null } })),
-      },
-      {
-        $or: filledFields.map((field) => ({ [field]: null })),
-      },
-      {
-        business_error: null,
-        jobs_in_success: { $nin: [job] },
-      },
-      ...(addedMatchFilter ? [addedMatchFilter] : []),
-    ],
+  const filters: Filter<IComputedJobsPartners>[] = [
+    {
+      $or: sourceFields.map((field) => ({ [field]: { $ne: null } })),
+    },
+    {
+      $or: filledFields.map((field) => ({ [field]: null })),
+    },
+    {
+      business_error: null,
+      jobs_in_success: { $nin: [job] },
+    },
+  ]
+  if (addedMatchFilter) {
+    filters.push(addedMatchFilter)
   }
+  const queryFilter: Filter<IComputedJobsPartners> =
+    replaceMatchFilter ??
+    ({
+      $and: filters,
+    } as Filter<IComputedJobsPartners>)
   const toUpdateCount = await getDbCollection("computed_jobs_partners").countDocuments(queryFilter)
   logger.info(`${toUpdateCount} documents à traiter`)
   const counters = { total: 0, success: 0, error: 0 }

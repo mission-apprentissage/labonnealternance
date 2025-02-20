@@ -3,6 +3,7 @@ import { JOB_STATUS_ENGLISH } from "shared/models"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
 import { blockBadRomeJobsPartners } from "./blockBadRomeJobsPartners"
+import { blockJobsPartnersWithNaf85 } from "./blockJobsPartnersWithNaf85"
 import { detectDuplicateJobPartners } from "./detectDuplicateJobPartners"
 import { fillLocationInfosForPartners } from "./fillLocationInfosForPartners"
 import { fillOpcoInfosForPartners } from "./fillOpcoInfosForPartners"
@@ -14,6 +15,7 @@ import { validateComputedJobPartners } from "./validateComputedJobPartners"
 export const fillComputedJobsPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
   await fillOpcoInfosForPartners(addedMatchFilter)
   await fillSiretInfosForPartners(addedMatchFilter)
+  await blockJobsPartnersWithNaf85(addedMatchFilter)
   await fillLocationInfosForPartners(addedMatchFilter)
   await fillRomeForPartners(addedMatchFilter)
   await blockBadRomeJobsPartners(addedMatchFilter)

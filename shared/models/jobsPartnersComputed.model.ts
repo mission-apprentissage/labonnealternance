@@ -14,6 +14,7 @@ export enum COMPUTED_ERROR_SOURCE {
   API_ROMEO = "api_romeo",
   VALIDATION = "validation",
   RANKING = "ranking",
+  REMOVE_NAF_85 = "REMOVE_NAF_85",
 }
 
 export enum JOB_PARTNER_BUSINESS_ERROR {
