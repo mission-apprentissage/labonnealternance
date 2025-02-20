@@ -21,7 +21,7 @@ import {
   getJob,
   getJobWithRomeDetail,
   getOffre,
-  patchJobDelegation,
+  updateJobDelegation,
   patchOffre,
   provideOffre,
   validateUserEmailFromJobId,
@@ -151,7 +151,6 @@ export default (server: Server) => {
       if (!offre) {
         throw badRequest("L'offre n'existe pas")
       }
-
       res.status(200).send(offre)
     }
   )
@@ -331,47 +330,28 @@ export default (server: Server) => {
    * Met à jour la date de lecture de la delegation d'une offre
    */
   server.patch(
-    "/formulaire/offre/:jobId/delegation",
+    "/formulaire/offre/:jobId/delegation/view",
     {
-      schema: zRoutes.patch["/formulaire/offre/:jobId/delegation"],
-      onRequest: [server.auth(zRoutes.patch["/formulaire/offre/:jobId/delegation"])],
+      schema: zRoutes.patch["/formulaire/offre/:jobId/delegation/view"],
+      onRequest: [server.auth(zRoutes.patch["/formulaire/offre/:jobId/delegation/view"])],
     },
     async (req, res) => {
       const { jobId } = req.params
       const { siret_formateur } = req.query
 
-      const exists = await checkOffreExists(jobId)
-
-      if (!exists) {
+      const offre = await getJob(jobId.toString())
+      if (!offre) {
         throw badRequest("L'offre n'existe pas.")
       }
-
-      const offre = await getJob(jobId.toString())
-
-      const delegations = offre?.delegations
-
-      if (!delegations) {
+      const delegation = offre.delegations?.find((delegation) => delegation.siret_code === siret_formateur)
+      if (!delegation) {
         throw badRequest("Le siret formateur n'a pas été proposé à l'offre.")
       }
-
-      const delegationFound = delegations.find((delegation) => delegation.siret_code == siret_formateur)
-
-      if (!delegationFound) {
-        throw badRequest("Le siret formateur n'a pas été proposé à l'offre.")
+      if (!delegation.cfa_read_company_detail_at) {
+        delegation.cfa_read_company_detail_at = new Date()
       }
 
-      const updatedDelegations = delegations.map((delegation) => {
-        // Save the date of the first read of the company detail
-        if (delegation.siret_code === delegationFound.siret_code && !delegation.cfa_read_company_detail_at) {
-          return {
-            ...delegation,
-            cfa_read_company_detail_at: new Date(),
-          }
-        }
-        return delegation
-      })
-
-      await patchJobDelegation(jobId, updatedDelegations)
+      await updateJobDelegation(jobId, delegation)
 
       return res.send({})
     }

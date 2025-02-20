@@ -81,7 +81,7 @@ describe("fillComputedJobsPartners", () => {
     await fillComputedJobsPartners()
     // then
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
-    console.log(jobs[0].errors)
+    console.info(jobs[0].errors)
 
     expect.soft(await getDbCollection("computed_jobs_partners").countDocuments({ validated: true })).toEqual(1)
   })

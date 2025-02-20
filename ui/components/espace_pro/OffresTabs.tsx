@@ -65,7 +65,15 @@ const displayJobStatus = (status: JOB_STATUS, recruiter: IRecruiterJson) => {
   }
 }
 
-export const OffresTabs = ({ recruiter, establishmentId, showStats = false }: { recruiter: IRecruiterJson; establishmentId: string; showStats?: boolean }) => {
+export const OffresTabs = ({
+  recruiter,
+  showStats = false,
+  buildOfferEditionUrl,
+}: {
+  recruiter: IRecruiterJson
+  showStats?: boolean
+  buildOfferEditionUrl: (offerId: string) => string
+}) => {
   const router = useRouter()
   const toast = useToast()
   const client = useQueryClient()
@@ -182,19 +190,7 @@ export const OffresTabs = ({ recruiter, establishmentId, showStats = false }: { 
                   </MenuButton>
                   <MenuList>
                     <MenuItem>
-                      <Link
-                        onClick={() =>
-                          router.push({
-                            pathname:
-                              user.type === "OPCO"
-                                ? `/espace-pro/administration/opco/entreprise/${router.query.siret_userId}/${establishmentId}/offre/${row._id}`
-                                : `/espace-pro/administration/entreprise/${establishmentId}/offre/${row._id}`,
-                            query: { establishment_raison_sociale: recruiter?.establishment_raison_sociale },
-                          })
-                        }
-                      >
-                        Editer l'offre
-                      </Link>
+                      <Link onClick={() => router.push(buildOfferEditionUrl(row._id))}>Editer l'offre</Link>
                     </MenuItem>
                     <MenuItem>
                       <Link
