@@ -8,15 +8,15 @@ import { groupData, oleoduc, transformData, writeData } from "oleoduc"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import rawRecruteursLbaModel, { IRecruteursLbaRaw, ZRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
 
+import __dirname from "@/common/dirname"
+import { logger } from "@/common/logger"
+import { getS3FileLastUpdate, s3ReadAsStream } from "@/common/utils/awsUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
+import config from "@/config"
 
-import __dirname from "../../common/dirname"
-import { logger } from "../../common/logger"
-import { getS3FileLastUpdate, s3ReadAsStream } from "../../common/utils/awsUtils"
-import { sentryCaptureException } from "../../common/utils/sentryUtils"
-import { notifyToSlack } from "../../common/utils/slackUtils"
-import config from "../../config"
-import { rawToComputedJobsPartners } from "../offrePartenaire/rawToComputedJobsPartners"
+import { rawToComputedJobsPartners } from "../rawToComputedJobsPartners"
 
 import { recruteursLbaToJobPartners } from "./recruteursLbaMapper"
 
@@ -36,8 +36,7 @@ export const createAssetsFolder = async () => {
   }
 }
 
-const removePredictionFile = async (isFilePresent: boolean) => {
-  if (!isFilePresent) return
+const removePredictionFile = async () => {
   try {
     logger.info("Deleting downloaded file from assets")
     await unlinkSync(PREDICTION_FILE_PATH)
@@ -46,10 +45,10 @@ const removePredictionFile = async (isFilePresent: boolean) => {
   }
 }
 
-const checkIfAlgoFileIsNew = async (): Promise<boolean> => {
+export const checkIfAlgoFileAlreadyProcessed = async (): Promise<boolean> => {
   const algoFileLastModificationDate = await getS3FileLastUpdate("storage", S3_FILE)
   if (!algoFileLastModificationDate) {
-    throw new Error("Aucune date de dernière modifications disponible sur le fichier issue de l'algo.")
+    throw new Error("Aucune date de dernière modifications disponible sur le fichier issue de l'algo sur S3.")
   }
 
   const currentDbCreatedDate = ((await getDbCollection("raw_recruteurslba").findOne({}, { projection: { createdAt: 1 } })) as IRecruteursLbaRaw).createdAt
@@ -58,9 +57,9 @@ const checkIfAlgoFileIsNew = async (): Promise<boolean> => {
       subject: `import des offres recruteurs lba dans raw`,
       message: `dernier fichier en date déjà traité.`,
     })
-    return false
+    return true
   }
-  return true
+  return false
 }
 
 const getRecruteursLbaFileFromS3 = async ({ from, to }) => {
@@ -110,10 +109,7 @@ const importRecruteursLbaToRawCollection = async () => {
 }
 
 export const importRecruteursLbaRaw = async () => {
-  let isFileNew
   try {
-    isFileNew = await checkIfAlgoFileIsNew()
-    if (!isFileNew) return
     await getRecruteursLbaFileFromS3({ from: S3_FILE, to: PREDICTION_FILE_PATH })
     await importRecruteursLbaToRawCollection()
   } catch (err) {
@@ -121,7 +117,7 @@ export const importRecruteursLbaRaw = async () => {
     logger.error(err)
     sentryCaptureException(err)
   } finally {
-    await removePredictionFile(isFileNew)
+    await removePredictionFile()
   }
 }
 

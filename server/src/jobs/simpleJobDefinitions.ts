@@ -25,6 +25,7 @@ import { importPassRaw, importPassToComputed } from "./offrePartenaire/pass/impo
 import { processJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
 import { rankJobPartners } from "./offrePartenaire/rankJobPartners"
+import { importRecruteurLbaToComputed, importRecruteursLbaRaw } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
 import { importRHAlternanceRaw, importRHAlternanceToComputed } from "./offrePartenaire/rh-alternance/importRHAlternance"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -45,7 +46,6 @@ import { fixRecruiterDataValidation } from "./recruiters/fixRecruiterDataValidat
 import { opcoReminderJob } from "./recruiters/opcoReminderJob"
 import { updateMissingStartDate } from "./recruiters/updateMissingStartDateJob"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
-import { importRecruteurLbaToComputed, importRecruteursLbaRaw } from "./recruteurLba/importRecruteursLbaRaw"
 import { importReferentielRome } from "./referentielRome/referentielRome"
 
 type SimpleJobDefinition = {

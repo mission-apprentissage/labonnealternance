@@ -32,6 +32,7 @@ import { runGarbageCollector } from "./misc/runGarbageCollector"
 import { importFranceTravailRaw } from "./offrePartenaire/france-travail/importJobsFranceTravail"
 import { processJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
+import { processRecruteursLba } from "./offrePartenaire/processRecruteursLba"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -54,7 +55,6 @@ import { recruiterOfferExpirationReminderJob } from "./recruiters/recruiterOffer
 import { removeDuplicateRecruiters } from "./recruiters/removeDuplicatesRecruiters"
 import { resetApiKey } from "./recruiters/resetApiKey"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
-import { importRecruteursLbaRaw } from "./recruteurLba/importRecruteursLbaRaw"
 import { SimpleJobDefinition, simpleJobDefinitions } from "./simpleJobDefinitions"
 import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 import { controlApplications } from "./verifications/controlApplications"
@@ -156,10 +156,6 @@ export async function setupJobProcessor() {
             cron_string: "5 0 * * *",
             handler: () => updateBrevoBlockedEmails({}),
           },
-          "Mise à jour des sociétés issues de l'algo": {
-            cron_string: "0 5 * * 7",
-            handler: () => importRecruteursLbaRaw(),
-          },
           "Contrôle quotidien des candidatures": {
             cron_string: "0 10-19/1 * * 1-5",
             handler: config.env === "production" ? () => controlApplications() : () => Promise.resolve(0),
@@ -235,6 +231,10 @@ export async function setupJobProcessor() {
           "Emission des intentions des recruteurs": {
             cron_string: "30 20 * * *",
             handler: processRecruiterIntentions,
+          },
+          "Traitement des recruteur LBA par la pipeline jobs partners": {
+            cron_string: "0 22 * * SUN",
+            handler: processRecruteursLba,
           },
         },
     jobs: {
