@@ -39,14 +39,16 @@ export default function ListeOffres({ hideModify = false, showStats = false }: {
   const jobs: (IJob & { candidatures: number })[] = data.jobs ?? []
 
   const entrepriseTitle = establishment_raison_sociale ?? establishment_siret
-  const getOffreCreationUrl = () => {
+  const getOffreEditionUrl = (offerId: string) => {
     switch (user.type) {
       case AUTHTYPE.OPCO:
-        return `/espace-pro/administration/opco/entreprise/${establishment_siret}/${establishment_id}/offre/creation`
+        return `/espace-pro/administration/opco/entreprise/${establishment_siret}/${establishment_id}/offre/${offerId}`
       default:
-        return `/espace-pro/administration/entreprise/${establishment_id}/offre/creation`
+        return `/espace-pro/administration/entreprise/${establishment_id}/offre/${offerId}`
     }
   }
+  const getOffreCreationUrl = () => getOffreEditionUrl("creation")
+
   const navigateToCreation = () => {
     // navigate(getOffreCreationUrl(), {
     //   state: { raison_sociale: entrepriseTitle },
@@ -124,7 +126,7 @@ export default function ListeOffres({ hideModify = false, showStats = false }: {
       <Text fontWeight="700" py={6}>
         Offres de recrutement en alternance
       </Text>
-      <OffresTabs showStats={showStats} establishmentId={establishment_id} recruiter={data} />
+      <OffresTabs showStats={showStats} recruiter={data} buildOfferEditionUrl={getOffreEditionUrl} />
     </Container>
   )
 }

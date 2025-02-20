@@ -264,7 +264,10 @@ function DetailEntreprise() {
                         <Text fontSize="20px" lineHeight="32px" fontWeight="700" mb={6}>
                           Offres de recrutement en alternance
                         </Text>
-                        <OffresTabs establishmentId={userRecruteur.establishment_id} recruiter={recruiter} />
+                        <OffresTabs
+                          recruiter={recruiter}
+                          buildOfferEditionUrl={(offerId) => `/espace-pro/administration/entreprise/${userRecruteur.establishment_id}/offre/${offerId}`}
+                        />
                       </Box>
                       <Box mb={12}>
                         <UserValidationHistory histories={userRecruteur.status} />

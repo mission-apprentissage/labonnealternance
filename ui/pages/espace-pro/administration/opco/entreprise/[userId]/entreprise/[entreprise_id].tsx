@@ -52,11 +52,11 @@ function DetailEntreprise() {
   const toast = useToast()
   const { user } = useAuth()
   const router = useRouter()
-  const { siret_userId, entreprise_id } = router.query as { siret_userId: string; entreprise_id: string }
+  const { userId, entreprise_id } = router.query as { userId: string; entreprise_id: string }
 
   const { data: userRecruteur, isLoading } = useQuery("user", {
-    enabled: Boolean(siret_userId),
-    queryFn: () => getUser(siret_userId, entreprise_id),
+    enabled: Boolean(userId),
+    queryFn: () => getUser(userId, entreprise_id),
     cacheTime: 0,
   })
 
@@ -134,7 +134,7 @@ function DetailEntreprise() {
     }
   }
 
-  if (isLoading || !siret_userId || recruiterLoading) {
+  if (isLoading || !userId || recruiterLoading) {
     return <LoadingEmptySpace />
   }
 
@@ -272,7 +272,10 @@ function DetailEntreprise() {
                         <Text fontSize="20px" lineHeight="32px" fontWeight="700" mb={6}>
                           Offres de recrutement en alternance
                         </Text>
-                        <OffresTabs establishmentId={userRecruteur.establishment_id} recruiter={recruiter} />
+                        <OffresTabs
+                          recruiter={recruiter}
+                          buildOfferEditionUrl={(offerId) => `/espace-pro/administration/opco/entreprise/${userId}/${userRecruteur.establishment_id}/offre/${offerId}`}
+                        />
                       </Box>
                       <Box mb={12}>
                         <UserValidationHistory histories={userRecruteur.status} />
