@@ -790,10 +790,10 @@ export const getJob = async (id: string | ObjectId): Promise<IJob | null> => {
  * @description Get job offer by its id.
  */
 export const getJobWithRomeDetail = async (id: string | ObjectId): Promise<IJobWithRomeDetail | null> => {
-  const offre = await getOffre(id)
-  if (!offre) return null
+  const formulaire = await getOffre(id)
+  if (!formulaire) return null
 
-  const job = offre.jobs.find((job) => job._id.toString() === id.toString())
+  const job = formulaire.jobs.find((job) => job._id.toString() === id.toString())
   if (!job) return null
 
   const referentielRome = await getRomeDetailsFromDB(job.rome_code[0])

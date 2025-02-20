@@ -224,7 +224,7 @@ export const FormulaireCreationOffre = ({
               )}
             </Box>
             <Box mt={8}>
-              <FormikCreationOffreButtons competencesDirty={competencesDirty} />
+              <FormikCreationOffreButtons offre={offre} competencesDirty={competencesDirty} />
             </Box>
           </Grid>
         )}

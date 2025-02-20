@@ -7,28 +7,27 @@ import { apiPut } from "@/utils/api.utils"
 
 import { AUTHTYPE } from "../../common/contants"
 import { ArrowDropRightLine } from "../../theme/components/icons"
-import { createOffre, getOffre } from "../../utils/api"
+import { createOffre, getFormulaire, getOffre } from "../../utils/api"
 
 import { FormulaireCreationOffre } from "./FormulaireCreationOffre/FormulaireCreationOffre"
 import LoadingEmptySpace from "./LoadingEmptySpace"
 
-export default function CreationOffre() {
+export default function CreationOffre({ onSuccess, jobId, establishment_id }: { onSuccess: () => void; jobId?: string; establishment_id: string }) {
   const toast = useToast()
   const router = useRouter()
   const client = useQueryClient()
   const { user } = useAuth()
 
-  const { establishment_id, jobId } = router.query as { establishment_id: string; jobId: string }
-  const isCreation = jobId === "creation"
+  const { data: formulaire, isLoading: isFormulaireLoading } = useQuery("formulaire", () => getFormulaire(establishment_id))
 
   const { data: offre, isLoading } = useQuery("offre", () => getOffre(jobId), {
-    enabled: !isCreation,
+    enabled: Boolean(jobId),
     cacheTime: 0,
   })
 
   const handleSave = async (values) => {
     // Updates an offer
-    if (!isCreation) {
+    if (jobId) {
       await apiPut("/formulaire/offre/:jobId", { params: { jobId }, body: { ...values, job_update_date: new Date() } }).then(() => {
         toast({
           title: "Offre mise à jour avec succès.",
@@ -37,9 +36,7 @@ export default function CreationOffre() {
           duration: 2000,
           isClosable: true,
         })
-        user.type === "OPCO"
-          ? router.push(`/espace-pro/administration/opco/entreprise/${router.query.siret_userId}/entreprise/${establishment_id}`)
-          : router.push(`/espace-pro/administration/entreprise/${establishment_id}`)
+        onSuccess()
       })
     } else {
       const { recruiter: formulaire } = await createOffre(establishment_id, values)
@@ -58,12 +55,11 @@ export default function CreationOffre() {
         isClosable: true,
       })
       client.invalidateQueries("offre-liste")
-      // TODO sleep before redirect ?
-      router.push(`/espace-pro/administration/entreprise/${establishment_id}`)
+      onSuccess()
     }
   }
 
-  if (isLoading || !establishment_id || !jobId) return <LoadingEmptySpace label="Chargement en cours" />
+  if (isLoading || isFormulaireLoading) return <LoadingEmptySpace label="Chargement en cours" />
 
   return (
     <Container maxW="container.xl" mt={5}>
@@ -77,7 +73,7 @@ export default function CreationOffre() {
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbItem>
-                <BreadcrumbLink textStyle="xs">{router.query.raison_sociale}</BreadcrumbLink>
+                <BreadcrumbLink textStyle="xs">{formulaire.establishment_raison_sociale}</BreadcrumbLink>
               </BreadcrumbItem>
             </Breadcrumb>
           )}
