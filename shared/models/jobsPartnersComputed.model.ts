@@ -7,12 +7,14 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { ZJobsPartnersOfferPrivate } from "./jobsPartners.model.js"
 
 export enum COMPUTED_ERROR_SOURCE {
+  BLOCK_BAD_ROME = "BLOCK_BAD_ROME",
   API_SIRET = "api_siret",
   API_OPCO = "api_opco",
   API_ADRESSE = "api_adresse",
   API_ROMEO = "api_romeo",
   VALIDATION = "validation",
   RANKING = "ranking",
+  REMOVE_NAF_85 = "REMOVE_NAF_85",
 }
 
 export enum JOB_PARTNER_BUSINESS_ERROR {
@@ -21,6 +23,7 @@ export enum JOB_PARTNER_BUSINESS_ERROR {
   STAGE = "STAGE",
   EXPIRED = "EXPIRED",
   CFA = "CFA",
+  ROME_BLACKLISTED = "ROME_BLACKLISTED",
 }
 
 export const ZComputedJobsPartners = extensions
@@ -28,11 +31,13 @@ export const ZComputedJobsPartners = extensions
   .omit({
     _id: true,
     partner_job_id: true,
+    partner_label: true,
     created_at: true,
   })
   .extend({
     _id: zObjectId,
     partner_job_id: ZJobsPartnersOfferPrivate.shape.partner_job_id,
+    partner_label: ZJobsPartnersOfferPrivate.shape.partner_label,
     created_at: ZJobsPartnersOfferPrivate.shape.created_at,
     jobs_in_success: z.array(extensions.buildEnum(COMPUTED_ERROR_SOURCE)),
     errors: z.array(
@@ -64,8 +69,10 @@ export default {
     [{ updated_at: 1 }, {}],
     [{ business_error: 1 }, {}],
     [{ errors: 1 }, {}],
+    [{ "errors.source": 1 }, {}],
     [{ jobs_in_success: 1 }, {}],
-    [{ "duplicates.otherOfferId": 1 }, {}],
+    [{ "duplicates.partner_job_id": 1 }, {}],
+    [{ "duplicates.partner_job_label": 1 }, {}],
     [{ validated: 1 }, {}],
 
     [{ workplace_siret: 1 }, {}],

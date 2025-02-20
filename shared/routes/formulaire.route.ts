@@ -284,16 +284,16 @@ export const zFormulaireRoute = {
     },
   },
   patch: {
-    "/formulaire/offre/:jobId/delegation": {
+    "/formulaire/offre/:jobId/delegation/view": {
       method: "patch",
-      path: "/formulaire/offre/:jobId/delegation",
+      path: "/formulaire/offre/:jobId/delegation/view",
       params: z.object({ jobId: zObjectId }).strict(),
       querystring: z.object({ siret_formateur: z.string() }).strict(),
       response: {
         "200": z.object({}),
       },
       securityScheme: {
-        auth: "cookie-session",
+        auth: "access-token",
         access: "job:manage",
         resources: {
           job: [{ _id: { type: "params", key: "jobId" } }],

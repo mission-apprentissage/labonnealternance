@@ -44,21 +44,26 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
     job,
   })
   logger.info(`job ${job} : début d'enrichissement des données`)
-  const queryFilter: Filter<IComputedJobsPartners> = replaceMatchFilter ?? {
-    $and: [
-      {
-        $or: sourceFields.map((field) => ({ [field]: { $ne: null } })),
-      },
-      {
-        $or: filledFields.map((field) => ({ [field]: null })),
-      },
-      {
-        business_error: null,
-        jobs_in_success: { $nin: [job] },
-      },
-      ...(addedMatchFilter ? [addedMatchFilter] : []),
-    ],
+  const filters: Filter<IComputedJobsPartners>[] = [
+    {
+      $or: sourceFields.map((field) => ({ [field]: { $ne: null } })),
+    },
+    {
+      $or: filledFields.map((field) => ({ [field]: null })),
+    },
+    {
+      business_error: null,
+      jobs_in_success: { $nin: [job] },
+    },
+  ]
+  if (addedMatchFilter) {
+    filters.push(addedMatchFilter)
   }
+  const queryFilter: Filter<IComputedJobsPartners> =
+    replaceMatchFilter ??
+    ({
+      $and: filters,
+    } as Filter<IComputedJobsPartners>)
   const toUpdateCount = await getDbCollection("computed_jobs_partners").countDocuments(queryFilter)
   logger.info(`${toUpdateCount} documents à traiter`)
   const counters = { total: 0, success: 0, error: 0 }
@@ -84,6 +89,12 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
           const dataToWrite = responses.flatMap((response) => {
             const { _id, ...newFields } = response
             const updates: AnyBulkWriteOperation<IComputedJobsPartners>[] = [
+              {
+                updateOne: {
+                  filter: { _id },
+                  update: { $pull: { errors: { source: job } } },
+                },
+              },
               {
                 updateOne: {
                   filter: { _id },
@@ -144,23 +155,31 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
           sentryCaptureException(newError)
           if (documents.length) {
             await getDbCollection("computed_jobs_partners").bulkWrite(
-              documents.map((document) => {
-                return {
-                  updateOne: {
-                    filter: { _id: document._id },
-                    update: {
-                      $push: {
-                        errors: {
-                          source: job,
-                          error: err + "",
+              documents.flatMap((document) => {
+                return [
+                  {
+                    updateOne: {
+                      filter: { _id: document._id },
+                      update: { $pull: { errors: { source: job } } },
+                    },
+                  },
+                  {
+                    updateOne: {
+                      filter: { _id: document._id },
+                      update: {
+                        $push: {
+                          errors: {
+                            source: job,
+                            error: err + "",
+                          },
                         },
                       },
                     },
                   },
-                }
+                ]
               }),
               {
-                ordered: false,
+                ordered: true,
               }
             )
           }
@@ -171,9 +190,11 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
   )
   const message = `job ${job} : enrichissement terminé. total=${counters.total}, success=${counters.success}, errors=${counters.error}`
   logger.info(message)
-  await notifyToSlack({
-    subject: `computedJobPartners: enrichissement de données`,
-    message,
-    error: counters.error > 0,
-  })
+  if (counters.error > 0) {
+    await notifyToSlack({
+      subject: `computedJobPartners: enrichissement de données`,
+      message,
+      error: counters.error > 0,
+    })
+  }
 }

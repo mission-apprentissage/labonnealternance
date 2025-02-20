@@ -13,6 +13,8 @@ import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formation
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
+import { blockBadRomeJobsPartners } from "./offrePartenaire/blockBadRomeJobsPartners"
+import { blockJobsPartnersWithNaf85 } from "./offrePartenaire/blockJobsPartnersWithNaf85"
 import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
 import { detectDuplicateJobPartners } from "./offrePartenaire/detectDuplicateJobPartners"
 import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
@@ -267,5 +269,13 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: rankJobPartners,
     description: "Calcule le rank des computed job partners",
+  },
+  {
+    fct: blockBadRomeJobsPartners,
+    description: "Bloque les jobs partners avec des mauvais code ROME",
+  },
+  {
+    fct: blockJobsPartnersWithNaf85,
+    description: "Passe les jobs partners en business erreur pour ceux qui ont un naf commençant par 85",
   },
 ]
