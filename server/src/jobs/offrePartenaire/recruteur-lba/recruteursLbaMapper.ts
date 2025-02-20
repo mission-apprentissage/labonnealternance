@@ -4,7 +4,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { IRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
 
-import { blankComputedJobPartner } from "../offrePartenaire/fillComputedJobsPartners"
+import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
 export const recruteursLbaToJobPartners = (recruteursLba: IRecruteursLbaRaw): IComputedJobsPartners => {
   const { siret, enseigne, raison_sociale, naf_code, naf_label, street_name, street_number, zip_code, email, phone, company_size, rome_codes, _id } = recruteursLba
