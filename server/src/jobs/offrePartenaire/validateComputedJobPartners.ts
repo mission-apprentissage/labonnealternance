@@ -20,6 +20,7 @@ export const validateComputedJobPartners = async (addedMatchFilter?: Filter<ICom
   const toUpdateCount = await getDbCollection("computed_jobs_partners").countDocuments(finalFilter)
   logger.info(`${toUpdateCount} documents à traiter`)
   const counters = { total: 0, success: 0, error: 0 }
+  const job = COMPUTED_ERROR_SOURCE.VALIDATION
   await oleoduc(
     getDbCollection("computed_jobs_partners").find(finalFilter).stream(),
     streamGroupByCount(groupSize),
@@ -30,6 +31,13 @@ export const validateComputedJobPartners = async (addedMatchFilter?: Filter<ICom
         const operations: BulkOperation[] = []
         documents.map((document) => {
           const { success: validated, error } = zodModel.safeParse(document)
+
+          operations.push({
+            updateOne: {
+              filter: { _id: document._id },
+              update: { $pull: { errors: { source: job } } },
+            },
+          })
 
           operations.push({
             updateOne: {
@@ -48,7 +56,7 @@ export const validateComputedJobPartners = async (addedMatchFilter?: Filter<ICom
                 update: {
                   $push: {
                     errors: {
-                      source: COMPUTED_ERROR_SOURCE.VALIDATION,
+                      source: job,
                       error: JSON.stringify(error),
                     },
                   },
@@ -61,7 +69,7 @@ export const validateComputedJobPartners = async (addedMatchFilter?: Filter<ICom
         })
         if (operations?.length) {
           await getDbCollection("computed_jobs_partners").bulkWrite(operations, {
-            ordered: false,
+            ordered: true,
           })
         }
       },
