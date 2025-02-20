@@ -17,17 +17,15 @@ import { WidgetContext } from "../../../../context/contextWidget"
 import { ArrowDropRightLine, ArrowRightLine } from "../../../../theme/components/icons"
 import { postFormulaire } from "../../../../utils/api"
 
-const Formulaire = () => {
+const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
   const buttonSize = useBreakpointValue(["sm", "md"])
   const router = useRouter()
   const { widget } = useContext(WidgetContext)
-  const { establishment_siret, opco, idcc } = JSON.parse((router.query.informationSiret as string) || "{}")
   const toast = useToast()
   const { user } = useAuth()
 
   const submitForm = (values, { setSubmitting, setFieldError }) => {
-    // save info if not trusted from source
-    postFormulaire(user._id.toString(), { ...values, establishment_siret, opco, idcc })
+    postFormulaire(user._id.toString(), { ...values, establishment_siret })
       .then((data) => {
         setSubmitting(false)
         toast({
@@ -96,10 +94,7 @@ const Formulaire = () => {
   )
 }
 
-function CreationEntrepriseDetail() {
-  const router = useRouter()
-  const informationEntreprise = JSON.parse((router.query.informationSiret as string) || "{}")
-
+function CreationEntrepriseDetail({ siret }: { siret: string }) {
   return (
     <AnimationContainer>
       <Container maxW="container.xl" my={5}>
@@ -123,10 +118,10 @@ function CreationEntrepriseDetail() {
             </Text>
           </GridItem>
           <GridItem rowStart={["auto", 2]}>
-            <Formulaire />
+            <Formulaire siret={siret} />
           </GridItem>
           <GridItem rowStart={["auto", 2]} pt={[4, 8]} minW="0">
-            <InformationLegaleEntreprise siret={informationEntreprise.establishment_siret} type={ENTREPRISE} />
+            <InformationLegaleEntreprise siret={siret} type={ENTREPRISE} />
           </GridItem>
         </Grid>
       </Container>
@@ -134,9 +129,12 @@ function CreationEntrepriseDetail() {
   )
 }
 function CreationEntrepriseDetailPage() {
+  const router = useRouter()
+  const { siret } = router.query as { siret: string }
+
   return (
     <Layout footer={false}>
-      <CreationEntrepriseDetail />
+      <CreationEntrepriseDetail siret={siret} />
     </Layout>
   )
 }

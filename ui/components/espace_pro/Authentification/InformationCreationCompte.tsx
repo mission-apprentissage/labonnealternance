@@ -2,30 +2,44 @@ import { Box, Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormL
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useContext } from "react"
+import { useQuery } from "react-query"
 import { assertUnreachable, parseEnum } from "shared"
 import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
+import { infosOpcos } from "@/theme/components/logos/infosOpcos"
 import { ApiError } from "@/utils/api.utils"
 
 import { AUTHTYPE } from "../../../common/contants"
 import { phoneValidation } from "../../../common/validation/fieldValidations"
 import { WidgetContext } from "../../../context/contextWidget"
 import { ArrowRightLine } from "../../../theme/components/icons"
-import logosOpco from "../../../theme/components/logos/opcos"
-import { createEtablissement } from "../../../utils/api"
+import { createEtablissement, getEntrepriseOpco } from "../../../utils/api"
 import { OpcoSelect } from "../CreationRecruteur/OpcoSelect"
-import { AnimationContainer, AuthentificationLayout, CustomInput, InformationLegaleEntreprise, InformationOpco } from "../index"
+import { AnimationContainer, AuthentificationLayout, CustomInput, InformationLegaleEntreprise } from "../index"
+import { InformationOpco } from "../InformationOpco"
 
-const Formulaire = ({ submitForm }) => {
+const Formulaire = ({
+  onSubmit,
+  siret: establishment_siret,
+  type,
+  origin,
+  email,
+}: {
+  onSubmit: (values: any, { setSubmitting, setFieldError }: any) => void
+  siret: string
+  type: "CFA" | "ENTREPRISE"
+  origin: string
+  email?: string
+}) => {
   const router = useRouter()
   const { widget } = useContext(WidgetContext)
 
-  const { type, informationSiret: informationSiretString, origin }: { type: string; informationSiret: string; origin: string } = router.query as any
-  const informationSiret = JSON.parse(informationSiretString || "{}")
+  const { data: opcoData, isLoading } = useQuery(["getEntrepriseOpco", establishment_siret], () => getEntrepriseOpco(establishment_siret))
 
-  const { email = "", establishment_siret = "" } = informationSiret ?? {}
-  const opco = parseEnum(OPCOS_LABEL, informationSiret.opco)
+  if (isLoading) return null
+
+  const opco = parseEnum(OPCOS_LABEL, opcoData?.opco)
   const shouldSelectOpco = type === AUTHTYPE.ENTREPRISE && !opco
 
   return (
@@ -46,10 +60,10 @@ const Formulaire = ({ submitForm }) => {
         email: Yup.string().email("Insérez un email valide").lowercase().required("champ obligatoire"),
         opco: shouldSelectOpco ? Yup.string().required("champ obligatoire") : Yup.string(),
       })}
-      onSubmit={submitForm}
+      onSubmit={onSubmit}
     >
       {({ values, isValid, isSubmitting, setFieldValue, errors }) => {
-        const informationOpco = logosOpco.find((x) => x.nom === values.opco)
+        const infosOpco = infosOpcos.find((x) => x.nom === values.opco)
         return (
           <Form>
             <FormulaireLayout
@@ -95,7 +109,7 @@ const Formulaire = ({ submitForm }) => {
               right={
                 <>
                   <InformationLegaleEntreprise siret={establishment_siret} type={type as typeof CFA | typeof ENTREPRISE} opco={opco} />
-                  {informationOpco && <InformationOpco disabled={!shouldSelectOpco} informationOpco={informationOpco} resetOpcoChoice={() => setFieldValue("opco", "")} />}
+                  {infosOpco && <InformationOpco isUpdatable={shouldSelectOpco} infosOpco={infosOpco} resetOpcoChoice={() => setFieldValue("opco", "")} />}
                 </>
               }
             />
@@ -128,14 +142,22 @@ const FormulaireLayout = ({ left, right }) => {
   )
 }
 
-export const InformationCreationCompte = ({ isWidget = false }: { isWidget?: boolean }) => {
+export const InformationCreationCompte = ({
+  isWidget = false,
+  establishment_siret,
+  email,
+  origin,
+  type,
+}: {
+  isWidget?: boolean
+  establishment_siret: string
+  email?: string
+  origin: string
+  type: "CFA" | "ENTREPRISE"
+}) => {
   const router = useRouter()
 
-  const { type, informationSiret: informationSiretString }: { type: "CFA" | "ENTREPRISE"; informationSiret: string } = router.query as any
-  const informationSiret = JSON.parse(informationSiretString || "{}")
-  const { establishment_siret } = informationSiret
-
-  const submitForm = (values, { setSubmitting, setFieldError }) => {
+  const submitForm = (values: any, { setSubmitting, setFieldError }: any) => {
     const payload = { ...values, type, establishment_siret }
     if (type === AUTHTYPE.CFA) {
       payload.opco = OPCOS_LABEL.UNKNOWN_OPCO
@@ -187,7 +209,7 @@ export const InformationCreationCompte = ({ isWidget = false }: { isWidget?: boo
   return (
     <AnimationContainer>
       <AuthentificationLayout>
-        <Formulaire submitForm={submitForm} />
+        <Formulaire onSubmit={submitForm} siret={establishment_siret} type={type} origin={origin} email={email} />
       </AuthentificationLayout>
     </AnimationContainer>
   )

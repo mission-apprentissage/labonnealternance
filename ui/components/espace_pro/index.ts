@@ -9,7 +9,6 @@ import CustomInput from "./CustomInput"
 import DropdownCombobox from "./DropdownCombobox"
 import InfoPopover from "./InfoPopover"
 import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
-import InformationOpco from "./InformationOpco"
 import InfoTooltip from "./InfoToolTip"
 import Layout from "./Layout"
 import LoadingEmptySpace from "./LoadingEmptySpace"
@@ -31,7 +30,6 @@ export {
   InfoPopover,
   InfoTooltip,
   InformationLegaleEntreprise,
-  InformationOpco,
   Layout,
   LoadingEmptySpace,
   Pagination,

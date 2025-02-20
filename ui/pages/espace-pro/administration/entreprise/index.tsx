@@ -11,7 +11,7 @@ import { useAuth } from "@/context/UserContext"
 import { AnimationContainer, Layout } from "../../../../components/espace_pro"
 import { authProvider, withAuth } from "../../../../components/espace_pro/withAuth"
 import { InfoCircle } from "../../../../theme/components/icons"
-import { getEntrepriseInformation, getEntrepriseOpco } from "../../../../utils/api"
+import { getEntrepriseInformation } from "../../../../utils/api"
 
 const CreationCompte = () => {
   const router = useRouter()
@@ -21,30 +21,28 @@ const CreationCompte = () => {
     <SiretAutocomplete
       onSubmit={({ establishment_siret }, { setSubmitting, setFieldError }) => {
         const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
-        Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret, { cfa_delegated_siret: user.cfa_delegated_siret })]).then(
-          ([opcoInfos, entrepriseData]) => {
-            if (entrepriseData.error === true) {
-              if (entrepriseData.statusCode >= 500) {
-                router.push({
-                  pathname: "/espace-pro/administration/entreprise/detail",
-                  query: { informationSiret: JSON.stringify({ establishment_siret: formattedSiret, ...opcoInfos }) },
-                })
-              } else {
-                setFieldError(
-                  "establishment_siret",
-                  entrepriseData?.data?.errorCode === BusinessErrorCodes.NON_DIFFUSIBLE ? BusinessErrorCodes.NON_DIFFUSIBLE : entrepriseData.message
-                )
-                setSubmitting(false)
-              }
-            } else if (entrepriseData.error === false) {
-              setSubmitting(true)
+        getEntrepriseInformation(formattedSiret, { cfa_delegated_siret: user.cfa_delegated_siret }).then((entrepriseData) => {
+          if (entrepriseData.error === true) {
+            if (entrepriseData.statusCode >= 500) {
               router.push({
                 pathname: "/espace-pro/administration/entreprise/detail",
-                query: { informationSiret: JSON.stringify({ establishment_siret: formattedSiret, ...opcoInfos }) },
+                query: { siret: formattedSiret },
               })
+            } else {
+              setFieldError(
+                "establishment_siret",
+                entrepriseData?.data?.errorCode === BusinessErrorCodes.NON_DIFFUSIBLE ? BusinessErrorCodes.NON_DIFFUSIBLE : entrepriseData.message
+              )
+              setSubmitting(false)
             }
+          } else if (entrepriseData.error === false) {
+            setSubmitting(true)
+            router.push({
+              pathname: "/espace-pro/administration/entreprise/detail",
+              query: { siret: formattedSiret },
+            })
           }
-        )
+        })
       }}
     />
   )
