@@ -1,5 +1,5 @@
 import { ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob, ILbaItemTraining, ILbaItemTraining2 } from "@/../shared"
-import React, { createContext, useReducer } from "react"
+import { createContext, useReducer } from "react"
 
 const initialState = {
   trainings: [],
@@ -75,7 +75,7 @@ const reducer = (state, action) => {
 export type IContextSearchHistory = {
   index: number
   trainings?: ILbaItemTraining2[]
-  jobs?: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null; partnerJobs: [] | null }
+  jobs?: { peJobs: ILbaItemFtJob[] | null; lbaCompanies: ILbaItemLbaCompany[] | null; matchas: ILbaItemLbaJob[] | null; partnerJobs: ILbaItemPartnerJob[] | null }
   formValues?: any
 }
 
@@ -83,7 +83,7 @@ export type IContextSearch = {
   trainings: any[]
   setTrainings: (b: any[]) => void
   jobs: { peJobs: ILbaItemFtJob[] | null; lbaCompanies: ILbaItemLbaCompany[] | null; matchas: ILbaItemLbaJob[] | null; partnerJobs: ILbaItemPartnerJob[] }
-  setJobs: (b: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null; partnerJobs: [] | null }) => void
+  setJobs: (b: { peJobs: ILbaItemFtJob[] | null; lbaCompanies: ILbaItemLbaCompany[] | null; matchas: ILbaItemLbaJob[] | null; partnerJobs: ILbaItemPartnerJob[] | null }) => void
   setInternalJobs: (b: any[]) => void
   setPartnerJobs: (b: any[]) => void
   itemToScrollTo: ILbaItemFormation | ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob | null
