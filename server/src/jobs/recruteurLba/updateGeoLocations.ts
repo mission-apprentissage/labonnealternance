@@ -69,7 +69,7 @@ const clearingFiles = async () => {
 
 const geolocateCsvHeader = "rue;citycode"
 
-export default async function updateGeoLocations({ ForceRecreate = false, SourceFile = null }: { ForceRecreate?: boolean; SourceFile?: string | null }) {
+export default async function updateGeoLocations({ ForceRecreate = false }: { ForceRecreate?: boolean }) {
   try {
     logMessage("info", " -- Start bulk geolocations -- ")
 
@@ -92,7 +92,7 @@ export default async function updateGeoLocations({ ForceRecreate = false, Source
       adressesToGeolocate = `${geolocateCsvHeader}\r\n`
     }
 
-    await downloadAlgoCompanyFile(SourceFile)
+    await downloadAlgoCompanyFile()
 
     // extraction depuis les établissements des adresses à géolocaliser
     await oleoduc(
