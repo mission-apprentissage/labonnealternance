@@ -1,8 +1,6 @@
 import { Box, Container, Show } from "@chakra-ui/react"
 import dynamic from "next/dynamic"
 
-import StartForm from "@/components/StartForm/StartForm"
-
 import { RechercheForm } from "./components/RechercheForm"
 
 const HomeCircleImageDecoration = dynamic(() => import("@/components/HomeComponents/HomeCircleImageDecoration").then((mod) => mod.HomeCircleImageDecoration))
