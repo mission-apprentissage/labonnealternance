@@ -1,6 +1,7 @@
 "use client"
 import { Box, Container, Divider, Grid, GridItem, Text } from "@chakra-ui/react"
 import dynamic from "next/dynamic"
+import Image from "next/image"
 import Link from "next/link"
 
 import Breadcrumb from "@/app/_components/Breadcrumb"
