@@ -14042,9 +14042,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"job-processor@npm:^1.8.0":
-  version: 1.8.0
-  resolution: "job-processor@npm:1.8.0"
+"job-processor@npm:^1.10.1":
+  version: 1.10.1
+  resolution: "job-processor@npm:1.10.1"
   dependencies:
     cron-parser: ^4.9.0
     date-fns: ^2.30.0
@@ -14067,7 +14067,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: c570f60a9ca075d7757978975ae5df6c2ae70654f32cbf655dd249001d607569393537c35a5b6027287cd5f51f9dbb78f2fd78d243e65a9b0d355031587ed712
+  checksum: 45f4f44b1dddf6a4a9bedafd7e1f7175bc75bede0e864d03904914110b17206b6ff9973d97a68f1e9c93ba732b472dcdd04b4b361a5d740c796939842a715f59
   languageName: node
   linkType: hard
 
@@ -20687,7 +20687,7 @@ __metadata:
     got: ^12.5.2
     iconv-lite: ^0.6.3
     is-semver: ^1.0.11
-    job-processor: ^1.8.0
+    job-processor: ^1.10.1
     joi: ^17.6.0
     jsonwebtoken: ^8.5.1
     lil-http-terminator: ^1.2.3

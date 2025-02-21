@@ -28,7 +28,6 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
       try {
         counters.total++
         const partnerJobToUpsert: Partial<IJobsPartnersOfferPrivate> = {
-          _id: computedJobPartner._id,
           updated_at: importDate,
           partner_label: computedJobPartner.partner_label,
           partner_job_id: computedJobPartner.partner_job_id,
@@ -69,13 +68,14 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
           offer_multicast: computedJobPartner.offer_multicast ?? true,
           offer_origin: computedJobPartner.offer_origin ?? null,
           rank: computedJobPartner.rank ?? null,
+          duplicates: computedJobPartner.duplicates ?? null,
         }
 
         await getDbCollection("jobs_partners").updateOne(
           { partner_job_id: partnerJobToUpsert.partner_job_id, partner_label: partnerJobToUpsert.partner_label },
           {
             $set: { ...partnerJobToUpsert },
-            $setOnInsert: { created_at: importDate, offer_status_history: [] },
+            $setOnInsert: { created_at: importDate, offer_status_history: [], _id: computedJobPartner._id },
           },
           { upsert: true }
         )

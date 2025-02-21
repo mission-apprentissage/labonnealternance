@@ -70,7 +70,7 @@ export async function up(): Promise<number> {
         const { up } = await import(path.join(myConfig.migrationsDir, migrationFile))
         await up(getDatabase(), getMongodbClient())
         await getDatabase().collection(myConfig.changelogCollectionName).insertOne({ fileName: migrationFile, appliedAt: new Date() })
-        console.log(`${migrationFile} : APPLIED`)
+        console.info(`${migrationFile} : APPLIED`)
       } catch (e) {
         throw withCause(internal("Error applying migration", { migrationFile }), e as Error)
       }
@@ -98,7 +98,7 @@ export async function status(): Promise<{ count: number; requireShutdown: boolea
     result.requireShutdown = result.requireShutdown || requireShutdown
 
     const appliedAt = appliedMigrationsFiles.get(migrationFile) ?? "PENDING"
-    console.log(`${migrationFile} : ${appliedAt}`)
+    console.info(`${migrationFile} : ${appliedAt}`)
   }
 
   return result
@@ -118,5 +118,5 @@ await getDbCollection("").updateMany({}, { $set: { "profile.newField": "defaultV
 export const requireShutdown: boolean = true;`
 
   await writeFile(file, newContent, { encoding: "utf-8" })
-  console.log("Created:", fileName)
+  console.info("Created:", fileName)
 }

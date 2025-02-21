@@ -598,13 +598,47 @@ export const patchOffre = async (id: IJob["_id"], payload: Partial<IJob>): Promi
   return recruiter
 }
 
-export const patchJobDelegation = async (id: IJob["_id"], delegations: IJob["delegations"]) => {
-  await getDbCollection("recruiters").findOneAndUpdate(
-    { "jobs._id": id },
+export const updateJobDelegation = async (jobId: IJob["_id"], delegation: IDelegation) => {
+  const now = new Date()
+  await getDbCollection("recruiters").bulkWrite(
+    [
+      {
+        updateOne: {
+          filter: { "jobs._id": jobId },
+          update: {
+            $set: {
+              updatedAt: now,
+              "jobs.$.job_update_date": now,
+            },
+          },
+        },
+      },
+      {
+        updateOne: {
+          filter: { "jobs._id": jobId },
+          update: {
+            $pull: {
+              "jobs.$.delegations": {
+                siret_code: delegation.siret_code,
+              },
+            },
+          },
+        },
+      },
+      {
+        updateOne: {
+          filter: { "jobs._id": jobId },
+          update: {
+            $push: {
+              "jobs.$.delegations": delegation,
+            },
+          },
+        },
+      },
+    ],
     {
-      $set: { "jobs.$.delegations": delegations, "jobs.$.job_update_date": new Date(), updatedAt: new Date() },
-    },
-    { returnDocument: "after" }
+      ordered: true,
+    }
   )
 }
 
@@ -756,10 +790,10 @@ export const getJob = async (id: string | ObjectId): Promise<IJob | null> => {
  * @description Get job offer by its id.
  */
 export const getJobWithRomeDetail = async (id: string | ObjectId): Promise<IJobWithRomeDetail | null> => {
-  const offre = await getOffre(id)
-  if (!offre) return null
+  const formulaire = await getOffre(id)
+  if (!formulaire) return null
 
-  const job = offre.jobs.find((job) => job._id.toString() === id.toString())
+  const job = formulaire.jobs.find((job) => job._id.toString() === id.toString())
   if (!job) return null
 
   const referentielRome = await getRomeDetailsFromDB(job.rome_code[0])
