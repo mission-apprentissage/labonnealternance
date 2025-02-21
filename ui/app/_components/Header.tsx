@@ -27,7 +27,7 @@ export const DsfrHeaderProps: HeaderProps = {
         iconId: "fr-icon-user-line",
         text: "Candidat",
         linkProps: {
-          href: "#",
+          href: PAGES.static.home.getPath(),
         },
       }}
     />,
@@ -47,7 +47,7 @@ export const DsfrHeaderProps: HeaderProps = {
         iconId: "fr-icon-team-line",
         text: "Organisme de formation",
         linkProps: {
-          href: "#",
+          href: PAGES.static.organismeDeFormation.getPath(),
         },
       }}
     />,

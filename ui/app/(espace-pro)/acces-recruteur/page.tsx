@@ -1,4 +1,5 @@
 import { Box, Container, Text } from "@chakra-ui/react"
+import type { Metadata } from "next"
 
 import AlgoRecruiter from "@/components/HomeComponents/AlgoRecruiter"
 import ConnectionActions from "@/components/HomeComponents/ConnectionActions"
@@ -12,6 +13,11 @@ import PromoRessources from "@/components/Ressources/promoRessources"
 
 import { PAGES } from "../../../utils/routes.utils"
 import Breadcrumb from "../../_components/Breadcrumb"
+
+export const metadata: Metadata = {
+  title: PAGES.static.accesRecruteur.getMetadata().title,
+  description: PAGES.static.accesRecruteur.getMetadata().description,
+}
 
 export default function AccesRecruteur() {
   return (

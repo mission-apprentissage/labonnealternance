@@ -23,7 +23,7 @@ export interface IPages {
 export const PAGES = {
   static: {
     home: {
-      getPath: () => `/` as string,
+      getPath: () => `/home` as string,
       title: "Accueil",
       index: true,
       getMetadata: () => ({
@@ -151,6 +151,15 @@ export const PAGES = {
     accesRecruteur: {
       getPath: () => `/acces-recruteur` as string,
       title: "Accès recruteur",
+      index: false,
+      getMetadata: () => ({
+        title: "Accès recruteur - La bonne alternance",
+        description: "Diffusez simplement et gratuitement vos offres en alternance.",
+      }),
+    },
+    organismeDeFormation: {
+      getPath: () => `/organisme-de-formation` as string,
+      title: "Organisme de formation",
       index: false,
       getMetadata: () => ({
         title: "Accès recruteur - La bonne alternance",
