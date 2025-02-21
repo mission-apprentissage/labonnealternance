@@ -1,4 +1,5 @@
-import fs from "fs"
+import fs, { createWriteStream } from "fs"
+import { pipeline } from "node:stream/promises"
 import path from "path"
 
 import { ObjectId } from "mongodb"
@@ -18,7 +19,7 @@ import config from "../../config"
 
 const currentDirname = __dirname(import.meta.url)
 
-const PREDICTION_FILE = path.join(currentDirname, "./assets/recruteurslba.json")
+export const PREDICTION_FILE = path.join(currentDirname, "./assets/recruteurslba.json")
 const s3File = config.algoRecuteursLba.s3File
 
 export const createAssetsFolder = async () => {
@@ -42,6 +43,7 @@ export const removePredictionFile = async () => {
  * @param {string} reason process calling the function
  */
 export const checkIfAlgoFileIsNew = async (reason: string) => {
+  logger.info("Checking if algo file is more recent than last processed")
   const algoFileLastModificationDate = await getS3FileLastUpdate("storage", s3File)
   if (!algoFileLastModificationDate) {
     throw new Error("Aucune date de dernière modifications disponible sur le fichier issue de l'algo.")
@@ -56,22 +58,30 @@ export const checkIfAlgoFileIsNew = async (reason: string) => {
     })
     throw new Error("Sociétés issues de l'algo déjà à jour")
   }
+  logger.info(`Algo file is more recent than last processed, latest date is ${algoFileLastModificationDate}`)
 }
 
 /**
  * Télécharge localement le fichier des sociétés issues de l'algo
  * @param {string | null} sourceFile un fichier source alternatif
  */
-export const downloadAlgoCompanyFile = async (sourceFile: string | null) => {
-  logger.info(`Downloading algo file ${sourceFile || s3File} from S3 Bucket...`)
+export const downloadAlgoCompanyFile = async () => {
+  logger.info(`Downloading algo file ${s3File} from S3 Bucket...`)
 
-  await downloadFile({ from: sourceFile || s3File, to: PREDICTION_FILE })
+  await downloadFile({ from: s3File, to: PREDICTION_FILE })
 }
 
 export const downloadFile = async ({ from, to }) => {
   await createAssetsFolder()
-  // @ts-ignore // TODO: fix this
-  await oleoduc(s3ReadAsStream("storage", from), fs.createWriteStream(to))
+  const readStream = await s3ReadAsStream("storage", from)
+  const writeStream = createWriteStream(to)
+
+  try {
+    await pipeline(readStream, writeStream)
+  } catch (error) {
+    logger.error(`Error downloading file ${from} to ${to}`, error)
+    throw error
+  }
 }
 
 export const readCompaniesFromJson = async () => {

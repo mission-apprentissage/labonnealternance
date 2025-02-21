@@ -78,25 +78,21 @@ const processCompanies = async () => {
 }
 
 export default async function updateLbaCompanies({
-  useAlgoFile = false,
+  useAlgoFile = true,
   clearMongo = false,
-  forceRecreate = false,
-  sourceFile = null,
+  forceRecreate = true,
 }: {
   useAlgoFile?: boolean
   clearMongo?: boolean
   forceRecreate?: boolean
-  sourceFile?: string | null
 }) {
   try {
     logger.info("Start updateLbaCompanies jobs ")
     console.info({ useAlgoFile, clearMongo, forceRecreate })
     if (useAlgoFile) {
-      if (!forceRecreate) {
-        await checkIfAlgoFileIsNew("algo companies")
-      }
+      await checkIfAlgoFileIsNew("algo companies")
 
-      await downloadAlgoCompanyFile(sourceFile)
+      await downloadAlgoCompanyFile()
 
       if (!forceRecreate) {
         const companyCount = await countCompaniesInFile()
