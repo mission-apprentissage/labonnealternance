@@ -1,6 +1,7 @@
-import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Grid, GridItem, Image, Link, Text } from "@chakra-ui/react"
+import { Box, Grid, GridItem, Image, Text } from "@chakra-ui/react"
 import React from "react"
+
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 const AmeliorerLBA = () => {
   return (
@@ -25,17 +26,12 @@ const AmeliorerLBA = () => {
             <strong>Profitez-en pour poser vos questions en direct !</strong>
           </Text>
           <Box mt="7">
-            <Link
+            <DsfrLink
               href="https://app.livestorm.co/la-bonne-alternance/premiers-pas-sur-la-bonne-alternance-maximisez-votre-experience"
               aria-label="M'inscrire au webinaire - nouvelle fenêtre"
-              title="M'inscrire au webinaire"
-              color="#000091"
-              border="1px solid #000091"
-              padding="10px 24px"
-              isExternal
             >
-              M'inscrire au webinaire <ExternalLinkIcon mx="2px" />
-            </Link>
+              M'inscrire au webinaire
+            </DsfrLink>
           </Box>
           <Box mt="3">&nbsp;</Box>
         </GridItem>
