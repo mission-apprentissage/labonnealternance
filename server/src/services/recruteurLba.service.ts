@@ -1,8 +1,9 @@
 import { badRequest, internal, notFound } from "@hapi/boom"
 import { Document, Filter, ObjectId } from "mongodb"
-import { ERecruteurLbaUpdateEventType, IApplication, ILbaCompany, ILbaCompanyForContactUpdate, IRecruteurLbaUpdateEvent } from "shared"
+import { ERecruteurLbaUpdateEventType, IApplication, IRecruteurLbaUpdateEvent } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { IJobsPartnersOfferPrivate, IJobsPartnersRecruteurAlgoPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { ILbaCompanyForContactUpdate } from "shared/routes/updateLbaCompany.routes"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
@@ -15,9 +16,6 @@ import { getApplicationByCompanyCount, IApplicationCount } from "./application.s
 import { generateApplicationToken } from "./appLinks.service"
 import { TLbaItemResult } from "./jobOpportunity.service.types"
 import { ILbaItemLbaCompany } from "./lbaitem.shared.service.types"
-
-export const buildLbaCompanyAddress = (company: ILbaCompany) =>
-  `${company.street_name ? `${company.street_number ? `${company.street_number} ` : ""}${company.street_name}, ` : ""}${company.zip_code} ${company.city}`.trim()
 
 /**
  * Adaptation au modèle LBA d'une société issue de l'algo

@@ -6,7 +6,6 @@ import {
   ICfaReferentielData,
   IEtablissement,
   IGeoPoint,
-  ILbaCompany,
   ILbaCompanyLegacy,
   IRecruiter,
   ITrackingCookies,
@@ -170,9 +169,9 @@ type IGetAllEmailFromLbaCompanyLegacy = Pick<ILbaCompanyLegacy, "email">
 export const getAllEstablishmentFromLbaCompanyLegacy = async (query: MongoDBFilter<ILbaCompanyLegacy>) =>
   (await getDbCollection("recruteurslbalegacies").find(query).project({ email: 1, _id: 0 }).toArray()) as IGetAllEmailFromLbaCompanyLegacy[]
 
-type IGetAllEmailFromLbaCompany = Pick<ILbaCompany, "email">
+type IGetAllEmailFromLbaCompany = Pick<IJobsPartnersOfferPrivate, "apply_email">
 export const getAllEstablishmentFromLbaCompany = async (query: MongoDBFilter<IJobsPartnersOfferPrivate>) =>
-  (await getDbCollection("jobs_partners").find(query).project({ email: 1, _id: 0 }).toArray()) as IGetAllEmailFromLbaCompany[]
+  (await getDbCollection("jobs_partners").find(query).project({ apply_email: 1, _id: 0 }).toArray()) as IGetAllEmailFromLbaCompany[]
 
 function getRaisonSocialeFromGouvResponse(d: IEtablissementGouvData["data"]): string | undefined {
   const { personne_morale_attributs, personne_physique_attributs } = d.unite_legale
@@ -295,7 +294,7 @@ const isCompanyValid = async (props: UserAndOrganization): Promise<{ isValid: bo
 
   // Format arrays to get only the emails
   const bonneBoiteLegacyEmailList = bonneBoiteLegacyList.map(({ email }) => email)
-  const bonneBoiteEmailList = bonneBoiteList.map(({ email }) => email)
+  const bonneBoiteEmailList = bonneBoiteList.map(({ apply_email }) => apply_email)
   const referentielOpcoEmailList = referentielOpcoList.flatMap((item) => item.emails)
 
   // Create a single array with all emails duplicate free

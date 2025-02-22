@@ -4,6 +4,7 @@ import { ObjectId } from "bson"
 import { chunk } from "lodash-es"
 import { getLastStatusEvent } from "shared"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { CollectionName } from "shared/models/models"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { UserEventType } from "shared/models/userWithAccount.model"
@@ -32,22 +33,6 @@ async function reduceModel(model: CollectionName, limit = 20000) {
   }
 }
 
-const obfuscateJobsPatners = async () => {
-  logger.info(`obfuscating jobs partners`)
-  await getDbCollection("jobs_partners").updateMany(
-    {},
-    {
-      $set: {
-        apply_url: "https://labonnealternance-recette.apprentissage.beta.gouv.fr",
-        apply_phone: "0601010106",
-        apply_email: fakeEmail,
-        offer_description: "offer_description",
-        workplace_description: "workplace_description",
-      },
-    }
-  )
-}
-
 const obfuscateApplicants = async () => {
   logger.info(`obfuscating applicants`)
   const applicants = await getDbCollection("applicants").find({}).toArray()
@@ -67,10 +52,6 @@ const obfuscateApplications = async () => {
     {},
     {
       $set: {
-        applicant_email: fakeEmail,
-        applicant_phone: "0601010106",
-        applicant_last_name: "nom_famille",
-        applicant_first_name: "prenom",
         applicant_attachment_name: "titre_cv.pdf",
         applicant_message_to_company: "applicant_message_to_company",
         company_feedback: "company_feedback",
@@ -149,40 +130,22 @@ const obfuscateFormations = async () => {
   )
 }
 
-const fakeJobPartner = {
+const fakeJobPartner: Partial<IJobsPartnersOfferPrivate> = {
+  apply_url: "https://labonnealternance-recette.apprentissage.beta.gouv.fr",
   apply_phone: "0601010106",
-  apply_url: "https://labonnealternance-recette.apprentissage.beta.gouv.fr/faq",
-  offer_access_conditions: ["vert", "rouge", "bleu"],
-  offer_desired_skills: ["flûte", "violon", "contrebasse"],
-  offer_title: "Boucher en Alternance H/F",
-  offer_to_be_acquired_skills: ["gentillesse"],
-  offer_description:
-    "Les missions du poste : Vous avez envie de...\r\n- Connaitre, transformer les produits de votre marché. Vous mettez en oeuvre les découpes et recettes / process de transformation de vos produits. Vous êtes polyvalent à tous les postes de fabrication / découpe avec un haut niveau de professionnalisme. Vous évaluez la qualité et la fraîcheur des produits et d'écarter les produits non-conformes.\r\n- Contribuer à la bonne organisation de la production dans le respect des règles d'hygiène.  Vous organisez votre espace de travail (propreté, rangement, entretien du matériel) et veillez au respect des règles de sécurité alimentaire. Enfin, vous étalez la fabrication afin de garantir la fraîcheur des produits et de répondre à l'objectif de zéro rupture.\r\n- Mettre en valeurs vos produits et fidéliser vos clients. Vous approvisionnez et mettez en avant vos produits, dans le respect des règles d'étalagisme et de merchandising. Vous veillez à la mise en valeur de vos produits, dans le but d'attirer et fidéliser vos clients. Vous conseillez et répondez aux attentes de ces derniers.\r\n\r\nVous êtes...\r\n\r\nEn formation de niveau BP/CAP/Bac Pro en boucherie ou un CQP.",
-  workplace_brand: "Adadass",
-  workplace_name: "Adadass",
-  workplace_legal_name: "Adadass",
-  workplace_siret: "11000007200014",
-  workplace_website: "https://rhalternance.com/companies/societe",
+  apply_email: fakeEmail,
+  offer_description: "offer_description",
+  workplace_description: "workplace_description",
 }
 
 const obfuscatePartnerJobs = async () => {
-  logger.info(`obfuscating formations`)
-  await getDbCollection("computed_jobs_partners").updateMany(
-    {},
-    {
-      $set: fakeJobPartner,
-    }
-  )
-
+  logger.info(`obfuscating jobs_partners`)
   await getDbCollection("jobs_partners").updateMany(
     {},
     {
       $set: fakeJobPartner,
     }
   )
-
-  await getDbCollection("raw_rhalternance").deleteMany({})
-  await getDbCollection("raw_hellowork").deleteMany({})
 }
 
 const keepSpecificUser = async (email: string, type: AccessEntityType) => {
@@ -291,38 +254,44 @@ const obfuscateUsersWithAccounts = async () => {
 }
 
 export async function obfuscateCollections(): Promise<void> {
-  if (config.env === "production") {
-    // prévention :)
-    return
-  }
+  if (config.env === "production") return
 
-  await getDbCollection("optouts").deleteMany({})
-  await getDbCollection("cache_geolocation").deleteMany({})
-  await getDbCollection("cache_romeo").deleteMany({})
-  await getDbCollection("cache_siret").deleteMany({})
-  await getDbCollection("unsubscribedrecruteurslba").deleteMany({})
-  await getDbCollection("unsubscribedofs").deleteMany({})
-  await getDbCollection("trafficsources").deleteMany({})
-  await getDbCollection("sessions").deleteMany({})
-  await getDbCollection("rolemanagement360").deleteMany({})
-  await getDbCollection("reported_companies").deleteMany({})
-  await getDbCollection("recruteurlbaupdateevents").deleteMany({})
-  await getDbCollection("jobs").deleteMany({})
-  await getDbCollection("eligible_trainings_for_appointments_histories").deleteMany({})
-  await getDbCollection("applicants_email_logs").deleteMany({})
-  await getDbCollection("recruteurslbalegacies").deleteMany({})
+  const collectionsToEmpty: CollectionName[] = [
+    "optouts",
+    "cache_geolocation",
+    "cache_romeo",
+    "cache_siret",
+    "unsubscribedrecruteurslba",
+    "unsubscribedofs",
+    "trafficsources",
+    "sessions",
+    "rolemanagement360",
+    "reported_companies",
+    "recruteurlbaupdateevents",
+    "jobs",
+    "eligible_trainings_for_appointments_histories",
+    "applicants_email_logs",
+    "recruteurslbalegacies",
+    "anonymized_applicants",
+    "anonymized_applications",
+    "anonymized_appointments",
+    "anonymized_recruiters",
+    "anonymized_users",
+    "anonymized_userswithaccounts",
+    "raw_francetravail",
+    "raw_pass",
+    "raw_hellowork",
+    "raw_kelio",
+    "raw_rhalternance",
+    "computed_jobs_partners",
+  ]
 
-  await getDbCollection("anonymized_applicants").deleteMany({})
-  await getDbCollection("anonymized_applications").deleteMany({})
-  await getDbCollection("anonymized_appointments").deleteMany({})
-  await getDbCollection("anonymized_recruiters").deleteMany({})
-  await getDbCollection("anonymized_users").deleteMany({})
-  await getDbCollection("anonymized_userswithaccounts").deleteMany({})
-
-  await getDbCollection("raw_hellowork").deleteMany({})
-  await getDbCollection("raw_kelio").deleteMany({})
-  await getDbCollection("raw_rhalternance").deleteMany({})
-  await getDbCollection("computed_jobs_partners").deleteMany({})
+  await Promise.all(
+    collectionsToEmpty.map(async (collectionToEmpty) => {
+      logger.info(`flusing ${collectionToEmpty}`)
+      getDbCollection(collectionToEmpty).deleteMany({})
+    })
+  )
 
   await reduceModel("apicalls", 5)
   await reduceModel("applicants", 50)
@@ -335,7 +304,7 @@ export async function obfuscateCollections(): Promise<void> {
 
   await obfuscateApplicants()
   await obfuscateApplications()
-  await obfuscateJobsPatners()
+  await obfuscatePartnerJobs()
   await obfuscateEmailBlackList()
   await obfuscateAppointments()
   await obfuscateElligibleTrainingsForAppointment()

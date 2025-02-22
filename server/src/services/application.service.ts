@@ -15,7 +15,6 @@ import {
   IApplicationApiPrivateOutput,
   IApplicationApiPublicOutput,
   IJob,
-  ILbaCompany,
   INewApplicationV1,
   IRecruiter,
   JOB_STATUS,
@@ -89,11 +88,6 @@ const images: object = {
     recuCandidature: `${imagePath}recu-candidature.png`,
   },
 }
-// TODO 20250212 : TO DELETE WHEN SWITCHING TO V2 and V1 support has ended
-type IJobOrCompany =
-  | { type: LBA_ITEM_TYPE.RECRUTEURS_LBA; job: ILbaCompany; recruiter: null }
-  | { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA; job: IJob; recruiter: IRecruiter }
-  | { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES; job: IJobsPartnersOfferPrivate; recruiter: null }
 
 type IJobOrCompanyV2 =
   | { type: LBA_ITEM_TYPE.RECRUTEURS_LBA; job: IJobsPartnersOfferPrivate; recruiter: null }
@@ -890,7 +884,7 @@ export const getApplicationByJobCount = async (job_ids: IApplication["job_id"][]
  * @param {ILbaCompany["siret"][]} sirets
  * @returns {Promise<IApplicationCount[]>} token data
  */
-export const getApplicationByCompanyCount = async (sirets: ILbaCompany["siret"][]): Promise<IApplicationCount[]> => {
+export const getApplicationByCompanyCount = async (sirets: string[]): Promise<IApplicationCount[]> => {
   const applicationCountByCompany = (await getDbCollection("applications")
     .aggregate([
       {
@@ -1272,7 +1266,7 @@ const getJobOrCompanyFromApplication = async (application: IApplication) => {
     type: application.job_origin,
     job,
     recruiter,
-  } as IJobOrCompany
+  } as IJobOrCompanyV2
 }
 
 const getPhoneForApplication = async (application: IApplication) => {

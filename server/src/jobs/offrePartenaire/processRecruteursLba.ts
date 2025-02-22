@@ -5,6 +5,8 @@
  */
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
+import { getDbCollection } from "../../common/utils/mongodbUtils"
+
 import { fillComputedJobsPartners } from "./fillComputedJobsPartners"
 import { importFromComputedToJobsPartners } from "./importFromComputedToJobsPartners"
 import { checkIfAlgoFileAlreadyProcessed, importRecruteurLbaToComputed, importRecruteursLbaRaw } from "./recruteur-lba/importRecruteursLbaRaw"
@@ -20,5 +22,6 @@ export const processRecruteursLba = async () => {
   await importRecruteursLbaRaw()
   await importRecruteurLbaToComputed()
   await fillComputedJobsPartners(filter)
+  await getDbCollection("jobs_partners").deleteMany(filter)
   await importFromComputedToJobsPartners(filter)
 }
