@@ -4,7 +4,7 @@ import { Metadata } from "next"
 
 import { DsfrLink } from "../../../components/dsfr/DsfrLink"
 import { PAGES } from "../../../utils/routes.utils"
-import Breadcrumb from "../../_components/Breadcrumb"
+import { Breadcrumb } from "../../_components/Breadcrumb"
 
 export const metadata: Metadata = {
   title: PAGES.static.contact.getMetadata().title,

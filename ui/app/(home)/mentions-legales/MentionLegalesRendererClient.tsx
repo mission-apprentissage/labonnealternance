@@ -5,7 +5,7 @@ import dynamic from "next/dynamic"
 import { publicConfig } from "@/config.public"
 
 import { PAGES } from "../../../utils/routes.utils"
-import Breadcrumb from "../../_components/Breadcrumb"
+import { Breadcrumb } from "../../_components/Breadcrumb"
 
 const NotionRenderer = dynamic(() => import("react-notion-x").then((mod) => mod.NotionRenderer))
 

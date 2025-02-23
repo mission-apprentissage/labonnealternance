@@ -3,7 +3,7 @@ import { Metadata } from "next"
 
 import { publicConfig } from "../../../config.public"
 import { PAGES } from "../../../utils/routes.utils"
-import Breadcrumb from "../../_components/Breadcrumb"
+import { Breadcrumb } from "../../_components/Breadcrumb"
 
 export const metadata: Metadata = {
   title: PAGES.static.statistiques.getMetadata().title,

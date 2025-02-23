@@ -4,7 +4,7 @@ import dynamic from "next/dynamic"
 import Image from "next/image"
 import Link from "next/link"
 
-import Breadcrumb from "@/app/_components/Breadcrumb"
+import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
 
