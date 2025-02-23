@@ -1,18 +1,18 @@
 import { Box, Container, Text } from "@chakra-ui/react"
 import type { Metadata } from "next"
 
-import AlgoRecruiter from "@/components/HomeComponents/AlgoRecruiter"
-import ConnectionActions from "@/components/HomeComponents/ConnectionActions"
-import Entreprise from "@/components/HomeComponents/Entreprise"
-import FollowLinkedIn from "@/components/HomeComponents/FollowLinkedIn"
-import GerezOffres from "@/components/HomeComponents/GerezOffres"
-import OffresGratuites from "@/components/HomeComponents/OffresGratuites"
-import OrganismesMandataires from "@/components/HomeComponents/OrganismesMandataires"
-import PostezVotreOffre from "@/components/HomeComponents/PostezVotreOffre"
-import PromoRessources from "@/components/Ressources/promoRessources"
+import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActions"
+import { FollowLinkedIn } from "@/app/(espace-pro)/_components/FollowLinkedIn"
+import { OffresGratuites } from "@/app/(espace-pro)/_components/OffresGratuites"
+import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
+import { AlgoRecruiter } from "@/app/(espace-pro)/acces-recruteur/_components/AlgoRecruiter"
+import { Entreprise } from "@/app/(espace-pro)/acces-recruteur/_components/Entreprise"
+import { GerezOffres } from "@/app/(espace-pro)/acces-recruteur/_components/GerezOffres"
+import { OrganismesMandataires } from "@/app/(espace-pro)/acces-recruteur/_components/OrganismesMandataires"
+import { PostezVotreOffre } from "@/app/(espace-pro)/acces-recruteur/_components/PostezVotreOffre"
 
 import { PAGES } from "../../../utils/routes.utils"
-import Breadcrumb from "../../_components/Breadcrumb"
+import { Breadcrumb } from "../../_components/Breadcrumb"
 
 export const metadata: Metadata = {
   title: PAGES.static.accesRecruteur.getMetadata().title,

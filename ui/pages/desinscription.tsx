@@ -1,16 +1,16 @@
 import { Box, Container } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { NextSeo } from "next-seo"
-import React, { useState } from "react"
+import { useState } from "react"
 import { useQuery } from "react-query"
 
 import { getApplicationCompanyEmailAddress } from "@/utils/api"
 
+import AlgoRecruiter from "../app/(espace-pro)/acces-recruteur/_components/AlgoRecruiter"
 import Breadcrumb from "../components/breadcrumb"
 import FormulaireDesinscription from "../components/DesinscriptionEntreprise/FormulaireDesinscription"
 import SuccesDesinscription from "../components/DesinscriptionEntreprise/SuccesDesinscription"
 import Footer from "../components/footer"
-import AlgoRecruiter from "../components/HomeComponents/AlgoRecruiter"
 import Navigation from "../components/navigation"
 import ScrollToTop from "../components/ScrollToTop"
 

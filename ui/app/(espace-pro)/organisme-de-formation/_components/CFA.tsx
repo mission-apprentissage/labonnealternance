@@ -1,9 +1,8 @@
 import { Box, Grid, GridItem, Image, Show, Text } from "@chakra-ui/react"
-import React from "react"
 
-import ConnectionActions from "./ConnectionActions"
+import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActions"
 
-const CFA = () => {
+export function CFA() {
   return (
     <Box mt="8">
       <Grid templateColumns={{ base: "1fr", md: "repeat(12, 1fr)" }}>
@@ -26,5 +25,3 @@ const CFA = () => {
     </Box>
   )
 }
-
-export default CFA

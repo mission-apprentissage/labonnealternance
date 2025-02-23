@@ -1,7 +1,6 @@
 import { Box, Grid, GridItem, Image, Text } from "@chakra-ui/react"
-import React from "react"
 
-const GerezEntreprise = () => {
+export function GerezEntreprise() {
   return (
     <Grid templateColumns={{ base: "1fr", md: "repeat(12, 1fr)" }} gap={4} mb={10}>
       <GridItem colSpan={{ base: 1, md: 7 }}>
@@ -24,5 +23,3 @@ const GerezEntreprise = () => {
     </Grid>
   )
 }
-
-export default GerezEntreprise

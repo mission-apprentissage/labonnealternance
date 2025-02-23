@@ -1,14 +1,12 @@
 import { Box, Container, Show } from "@chakra-ui/react"
-import dynamic from "next/dynamic"
 
-import { RechercheForm } from "./components/RechercheForm"
+import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
+import { AlgoHome } from "@/app/(home)/home/_components/AlgoHome"
+import { AmeliorerLBA } from "@/app/(home)/home/_components/AmeliorerLBA"
+import { HomeCircleImageDecoration } from "@/app/(home)/home/_components/HomeCircleImageDecoration"
+import { HowTo } from "@/app/(home)/home/_components/HowTo"
 
-const HomeCircleImageDecoration = dynamic(() => import("@/components/HomeComponents/HomeCircleImageDecoration").then((mod) => mod.HomeCircleImageDecoration))
-const AlgoHome = dynamic(() => import("@/components/HomeComponents/AlgoHome"))
-const PromoRessources = dynamic(() => import("@/components/Ressources/promoRessources"))
-const HowTo = dynamic(() => import("@/components/HowTo/HowTo"))
-// const Footer = dynamic(() => import("@/components/footer"))
-const AmeliorerLBA = dynamic(() => import("@/components/HomeComponents/AmeliorerLBA"))
+import { RechercheForm } from "./_components/RechercheForm"
 
 const blockCssProperties = {
   position: "relative",
@@ -20,7 +18,6 @@ const blockCssProperties = {
 export default function HomePage() {
   return (
     <Box>
-      {/* <Navigation /> */}
       <Box as="main">
         <Box background="beige" sx={blockCssProperties}>
           <Show above="lg">

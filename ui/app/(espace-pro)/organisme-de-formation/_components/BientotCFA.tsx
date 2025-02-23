@@ -1,7 +1,6 @@
 import { Box, Grid, GridItem, Image, Text } from "@chakra-ui/react"
-import React from "react"
 
-const BientotCFA = () => {
+export function BientotCFA() {
   return (
     <Box bg="beige" mt="16" borderRadius="10" px={{ base: 3, md: 6, lg: 12 }} pt={{ base: 12, lg: 0 }} pb={{ base: 12, lg: 10 }}>
       <Grid templateColumns={{ base: "1fr", lg: "repeat(4, 1fr)" }} templateRows={{ base: "auto", lg: "repeat(5, 1fr)" }}>
@@ -35,5 +34,3 @@ const BientotCFA = () => {
     </Box>
   )
 }
-
-export default BientotCFA

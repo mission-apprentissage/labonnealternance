@@ -1,7 +1,6 @@
-import { Box, Image, Text, Grid, GridItem, Link } from "@chakra-ui/react"
-import React from "react"
+import { Box, Grid, GridItem, Image, Link, Text } from "@chakra-ui/react"
 
-const FacilitezRDVA = () => {
+export function FacilitezRDVA() {
   return (
     <Grid templateColumns={{ base: "1fr", md: "repeat(12, 1fr)" }} gap={4} mb={{ base: 4, md: 0 }}>
       <GridItem order={{ base: 2, md: 1 }} colSpan={{ base: 1, md: 5 }}>
@@ -27,5 +26,3 @@ const FacilitezRDVA = () => {
     </Grid>
   )
 }
-
-export default FacilitezRDVA

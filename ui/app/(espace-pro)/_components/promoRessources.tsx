@@ -1,6 +1,6 @@
 import { Box, Container, Image, Text } from "@chakra-ui/react"
 
-import { DsfrLink } from "../dsfr/DsfrLink"
+import { DsfrLink } from "../../../components/dsfr/DsfrLink"
 
 const getText = (target: string) => {
   switch (target) {
@@ -16,16 +16,14 @@ const getText = (target: string) => {
   }
 }
 
-export default function PromoRessources({ target }) {
-  return (
-    <Container textAlign="center" variant="responsiveContainer">
-      <Image margin="auto" src="/images/pages_ressources/outils.svg" aria-hidden={true} alt="" />
-      <Text fontSize={24} fontWeight={700}>
-        {getText(target)}
-      </Text>
-      <Box mt="7">
-        <DsfrLink href={`/ressources#${target}`}>Découvrir les ressources</DsfrLink>
-      </Box>
-    </Container>
-  )
-}
+export const PromoRessources = ({ target }) => (
+  <Container textAlign="center" variant="responsiveContainer">
+    <Image margin="auto" src="/images/pages_ressources/outils.svg" aria-hidden={true} alt="" />
+    <Text fontSize={24} fontWeight={700}>
+      {getText(target)}
+    </Text>
+    <Box mt="7">
+      <DsfrLink href={`/ressources#${target}`}>Découvrir les ressources</DsfrLink>
+    </Box>
+  </Container>
+)

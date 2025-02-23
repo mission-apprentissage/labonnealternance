@@ -1,17 +1,17 @@
 import { Box, Container, Text } from "@chakra-ui/react"
 import type { Metadata } from "next"
 
-import BientotCFA from "../../../components/HomeComponents/BientotCFA"
-import CFA from "../../../components/HomeComponents/CFA"
-import ConnectionActions from "../../../components/HomeComponents/ConnectionActions"
-import FacilitezRDVA from "../../../components/HomeComponents/FacilitezRDVA"
-import FollowLinkedIn from "../../../components/HomeComponents/FollowLinkedIn"
-import GerezEntreprise from "../../../components/HomeComponents/GerezEntreprise"
-import OffresAutoExposees from "../../../components/HomeComponents/OffresAutoExposees"
-import OffresGratuites from "../../../components/HomeComponents/OffresGratuites"
-import PromoRessources from "../../../components/Ressources/promoRessources"
-import { PAGES } from "../../../utils/routes.utils"
-import Breadcrumb from "../../_components/Breadcrumb"
+import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActions"
+import { FollowLinkedIn } from "@/app/(espace-pro)/_components/FollowLinkedIn"
+import { OffresGratuites } from "@/app/(espace-pro)/_components/OffresGratuites"
+import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
+import { BientotCFA } from "@/app/(espace-pro)/organisme-de-formation/_components/BientotCFA"
+import { CFA } from "@/app/(espace-pro)/organisme-de-formation/_components/CFA"
+import { FacilitezRDVA } from "@/app/(espace-pro)/organisme-de-formation/_components/FacilitezRDVA"
+import { GerezEntreprise } from "@/app/(espace-pro)/organisme-de-formation/_components/GerezEntreprise"
+import OffresAutoExposees from "@/app/(espace-pro)/organisme-de-formation/_components/OffresAutoExposees"
+import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = {
   title: PAGES.static.organismeDeFormation.getMetadata().title,

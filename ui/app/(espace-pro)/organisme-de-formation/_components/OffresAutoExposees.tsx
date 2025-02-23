@@ -1,7 +1,6 @@
-import { Box, Image, Text, Grid, GridItem } from "@chakra-ui/react"
-import React from "react"
+import { Box, Grid, GridItem, Image, Text } from "@chakra-ui/react"
 
-import Link from "../Link"
+import Link from "../../../../components/Link"
 
 const OffresAutoExposees = () => {
   return (
