@@ -1,9 +1,10 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
-import { Select } from "@codegouvfr/react-dsfr/SelectNext"
 import { Box, Typography } from "@mui/material"
 
-import { InputFormField } from "./InputFormField"
+import { SelectFormField } from "@/app/(home)/home/_components/FormComponents/SelectFormField"
+
+import { InputFormField } from "./FormComponents/InputFormField"
 
 export function RechercheForm() {
   return (
@@ -15,6 +16,7 @@ export function RechercheForm() {
         flexDirection: "column",
         gap: fr.spacing("2w"),
         borderRadius: fr.spacing("1w"),
+        boxShadow: "0px 2px 6px 0px #00001229",
       }}
     >
       <Typography variant="h2">
@@ -61,7 +63,7 @@ export function RechercheForm() {
             },
           }}
         >
-          <Select
+          <SelectFormField
             label="Rayon"
             style={{
               marginBottom: 0,
@@ -90,7 +92,7 @@ export function RechercheForm() {
             ]}
           />
         </Box>
-        <Select
+        <SelectFormField
           label="Niveau d'études visé"
           style={{
             marginBottom: 0,
