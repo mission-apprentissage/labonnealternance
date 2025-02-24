@@ -674,8 +674,6 @@ export const entrepriseOnboardingWorkflow = {
     siret,
     cfa_delegated_siret,
     origin,
-    opco,
-    idcc,
     managedBy,
   }: {
     siret: string
@@ -684,8 +682,6 @@ export const entrepriseOnboardingWorkflow = {
     phone: string
     email: string
     cfa_delegated_siret: string
-    opco?: OPCOS_LABEL
-    idcc?: number | null
     managedBy: string
     origin: string
   }) => {
@@ -706,12 +702,11 @@ export const entrepriseOnboardingWorkflow = {
       sentryCaptureException(err)
     }
     const entreprise = await upsertEntrepriseData(siret, origin, siretResponse, isSiretInternalError)
-    let opcoResult: { opco: OPCOS_LABEL | null; idcc: number | null } | null = null
-    if (opco) {
-      opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: idcc ?? null })
-    }
     const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret, nafCode: entreprise.naf_code ?? undefined })
     if (cfaErrorOpt) return cfaErrorOpt
+
+    const opcoResult = await getOpcoData(siret)
+    const opco = opcoResult?.opco
 
     const formulaireInfo = await createFormulaire(
       {
@@ -725,8 +720,8 @@ export const entrepriseOnboardingWorkflow = {
         cfa_delegated_siret,
         is_delegated: true,
         origin,
-        opco: (opcoResult && opcoResult.opco) || OPCOS_LABEL.UNKNOWN_OPCO,
-        idcc: (opcoResult && opcoResult.idcc) ?? null,
+        opco: (opco && parseEnum(OPCOS_LABEL, opco)) || OPCOS_LABEL.UNKNOWN_OPCO,
+        idcc: opcoResult?.idcc ?? null,
         naf_label: "naf_label" in siretResponse ? siretResponse.naf_label : undefined,
         naf_code: "naf_code" in siretResponse ? siretResponse.naf_code : undefined,
       },
