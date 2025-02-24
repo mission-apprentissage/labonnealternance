@@ -8,6 +8,20 @@ import { z } from "zod"
 
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
+const ZMeteojobJobLocation = z.object({
+  $: z.object({
+    label: z.string(),
+    lat: z.string().nullish(),
+    lng: z.string().nullish(),
+  }),
+  city: z.string().nullish(),
+  postalCode: z.string().nullish(),
+  department: z.object({ _: z.string(), $: z.object({ code: z.string() }) }).nullish(),
+  state: z.object({ _: z.string(), $: z.object({ code: z.string() }) }).nullish(),
+  country: z.object({ _: z.string(), $: z.object({ code: z.string() }) }),
+})
+type IMeteojobJobLocation = z.output<typeof ZMeteojobJobLocation>
+
 export const ZMeteojobJob = z
   .object({
     $: z.object({ id: z.string(), reference: z.string(), lang: z.string().nullish() }),
@@ -25,18 +39,7 @@ export const ZMeteojobJob = z
     }),
     workplace: z.object({
       locations: z.object({
-        location: z.object({
-          $: z.object({
-            label: z.string(),
-            lat: z.string().nullish(),
-            lng: z.string().nullish(),
-          }),
-          city: z.string().nullish(),
-          postalCode: z.string().nullish(),
-          department: z.object({ _: z.string(), $: z.object({ code: z.string() }) }).nullish(),
-          state: z.object({ _: z.string(), $: z.object({ code: z.string() }) }).nullish(),
-          country: z.object({ _: z.string(), $: z.object({ code: z.string() }) }),
-        }),
+        location: z.union([ZMeteojobJobLocation, z.array(ZMeteojobJobLocation)]),
       }),
     }),
     contract: z.object({
@@ -73,40 +76,43 @@ export const ZMeteojobJob = z
         }),
       })
       .nullish(),
-    profile: z.object({
-      description: z.string(),
-      degrees: z
-        .object({
-          degree: z.union([
-            z.object({
-              _: z.string(),
-              $: z.object({ code: z.string() }),
-            }),
-            z.array(
+    profile: z
+      .object({
+        description: z.string().nullish(),
+        degrees: z
+          .object({
+            degree: z.union([
               z.object({
                 _: z.string(),
                 $: z.object({ code: z.string() }),
-              })
-            ),
-          ]),
-        })
-        .nullish(),
-    }),
+              }),
+              z.array(
+                z.object({
+                  _: z.string(),
+                  $: z.object({ code: z.string() }),
+                })
+              ),
+            ]),
+          })
+          .nullish(),
+      })
+      .nullable(),
   })
   .passthrough()
 
 export type IMeteojobJob = z.output<typeof ZMeteojobJob>
 
 export const meteojobJobToJobsPartners = (job: IMeteojobJob): IComputedJobsPartners => {
-  const { $, title, description, link, publicationDate, lastModificationDate, position, industry, company, workplace, contract, workSchedule, benefits, profile } = job
-  const { latitude, longitude } = geolocToLatLon(job)
+  const { $, title, description, link, publicationDate, lastModificationDate, position, industry, company, contract, workSchedule, benefits, profile } = job
+  const workplaceLocation = job.workplace.locations.location instanceof Array ? job.workplace.locations.location[0] : job.workplace.locations.location
+  const { latitude, longitude } = geolocToLatLon(workplaceLocation)
 
   const urlParsing = extensions.url().safeParse(link)
   const creationDate = new Date(publicationDate)
 
   const created_at = new Date()
 
-  const descriptionComputed = `${description}\r\n\r\n${industry ? `Secteur: ${industry}\r\n\r\n` : ""}${position ? `Poste: ${position}\r\n\r\n` : ""}${workSchedule ? `${workSchedule.types.type._}\r\n\r\n` : ""}${benefits ? `Avantages: ${benefits.salary._}\r\n\r\n` : ""}Profil: ${profile.description}`
+  const descriptionComputed = `${description}\r\n\r\n${industry ? `Secteur: ${industry}\r\n\r\n` : ""}${position ? `Poste: ${position}\r\n\r\n` : ""}${workSchedule ? `${workSchedule.types.type._}\r\n\r\n` : ""}${benefits ? `Avantages: ${benefits.salary._}\r\n\r\n` : ""}${profile?.description ? `Profil: ${profile.description}` : ""}`
 
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner(),
@@ -128,9 +134,9 @@ export const meteojobJobToJobsPartners = (job: IMeteojobJob): IComputedJobsPartn
 
     workplace_name: company.name,
     workplace_description: company.description && company.description.length >= 30 ? company.description : null,
-    workplace_address_zipcode: workplace?.locations?.location?.postalCode || null,
-    workplace_address_city: workplace?.locations?.location?.city || null,
-    workplace_address_label: workplace?.locations?.location?.$?.label || null,
+    workplace_address_zipcode: workplaceLocation?.postalCode || null,
+    workplace_address_city: workplaceLocation.city || null,
+    workplace_address_label: workplaceLocation.$?.label || null,
     workplace_geopoint:
       latitude && longitude
         ? {
@@ -152,8 +158,8 @@ export const meteojobJobToJobsPartners = (job: IMeteojobJob): IComputedJobsPartn
   return partnerJob
 }
 
-const geolocToLatLon = (job: IMeteojobJob) => {
-  const latitude = parseFloat(`${job.workplace.locations.location.$.lat}`)
-  const longitude = parseFloat(`${job.workplace.locations.location.$.lng}`)
+const geolocToLatLon = (location: IMeteojobJobLocation) => {
+  const latitude = parseFloat(`${location.$.lat}`)
+  const longitude = parseFloat(`${location.$.lng}`)
   return { latitude, longitude }
 }
