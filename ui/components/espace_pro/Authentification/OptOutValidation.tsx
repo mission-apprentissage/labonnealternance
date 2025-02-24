@@ -27,7 +27,7 @@ export default function OptOutValidation() {
       .then(({ data }: any) => {
         router.push({
           pathname: "/espace-pro/creation/detail",
-          query: { informationSiret: JSON.stringify(data), type: AUTHTYPE.CFA, origin: "optout" },
+          query: { siret: data.establishment_siret, type: AUTHTYPE.CFA, origin: "optout" },
         })
       })
       .catch(({ response }) => {
