@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getOffre } from "@/services/formulaire.service"
@@ -35,12 +36,12 @@ const getReportAdditionalInfos = async (itemId: string, type: LBA_ITEM_TYPE) => 
       }
     }
     case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
-      const recruteur = await getDbCollection("recruteurslba").findOne({ siret: itemId })
+      const recruteur = await getDbCollection("jobs_partners").findOne({ siret: itemId, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
       if (!recruteur) return null
-      const { siret, enseigne, raison_sociale } = recruteur
+      const { workplace_siret, workplace_legal_name, workplace_name } = recruteur
       return {
-        siret,
-        companyName: raison_sociale || enseigne,
+        siret: workplace_siret,
+        companyName: workplace_legal_name || workplace_name,
       }
     }
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES: {

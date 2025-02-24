@@ -1,6 +1,6 @@
 import { captureException } from "@sentry/node"
 import { isEqual } from "lodash-es"
-import { Collection, CollectionInfo, MongoClient, MongoServerError } from "mongodb" // to uncomment when migrated to V7
+import { Collection, CollectionInfo, Db, IndexDescriptionInfo, MongoClient, MongoServerError } from "mongodb"
 import { IModelDescriptor } from "shared/models/common"
 import { CollectionName, IDocument, modelDescriptors } from "shared/models/models"
 import { zodToMongoSchema } from "zod-mongodb-schema"
@@ -63,7 +63,7 @@ export const closeMongodbConnection = async () => {
   return mongodbClient?.close()
 }
 
-export const getDatabase = () => {
+export const getDatabase = (): Db => {
   return ensureInitialization().db()
 }
 
@@ -71,11 +71,11 @@ export const getDbCollection = <K extends CollectionName>(name: K): Collection<I
   return ensureInitialization().db().collection(name)
 }
 
-export const getCollectionList = () => {
+export const getCollectionList = (): Promise<(CollectionInfo | Pick<CollectionInfo, "name" | "type">)[]> => {
   return ensureInitialization().db().listCollections().toArray()
 }
 
-export const getDbCollectionIndexes = async (name: CollectionName) => {
+export const getDbCollectionIndexes = async (name: CollectionName): Promise<IndexDescriptionInfo[]> => {
   return await ensureInitialization().db().collection(name).indexes()
 }
 

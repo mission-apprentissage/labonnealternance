@@ -1,6 +1,7 @@
 import { addJob, initJobProcessor } from "job-processor"
 import { ObjectId } from "mongodb"
 
+import updateDomainesMetiers from "@/jobs/domainesMetiers/updateDomainesMetiers"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
 import { generateSitemap } from "@/services/sitemap.service"
@@ -28,6 +29,7 @@ import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollecti
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { processJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
+import { processRecruteursLba } from "./offrePartenaire/processRecruteursLba"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -49,9 +51,6 @@ import { opcoReminderJob } from "./recruiters/opcoReminderJob"
 import { recruiterOfferExpirationReminderJob } from "./recruiters/recruiterOfferExpirationReminderJob"
 import { resetApiKey } from "./recruiters/resetApiKey"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
-import updateGeoLocations from "./recruteurLba/updateGeoLocations"
-import updateOpcoCompanies from "./recruteurLba/updateOpcoCompanies"
-import updateLbaCompanies from "./recruteurLba/updateRecruteurLba"
 import { SimpleJobDefinition, simpleJobDefinitions } from "./simpleJobDefinitions"
 import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 import { controlApplications } from "./verifications/controlApplications"
@@ -170,10 +169,6 @@ export async function setupJobProcessor() {
             cron_string: "30 5 * * *",
             handler: config.env === "production" ? () => exportJobsToFranceTravail() : () => Promise.resolve(0),
           },
-          "Détermination des opcos des sociétés issues de l'algo": {
-            cron_string: "30 6 * * 6",
-            handler: () => updateOpcoCompanies({}),
-          },
           "export des offres LBA sur S3": {
             cron_string: "30 6 * * 1",
             handler: config.env === "production" ? () => exportLbaJobsToS3() : () => Promise.resolve(0),
@@ -230,6 +225,10 @@ export async function setupJobProcessor() {
             cron_string: "0 0 20 11 *",
             handler: resetInvitationDates,
           },
+          "Traitement des recruteur LBA par la pipeline jobs partners": {
+            cron_string: "0 22 * * SUN",
+            handler: processRecruteursLba,
+          },
         },
     jobs: {
       "recreate:indexes": {
@@ -272,14 +271,8 @@ export async function setupJobProcessor() {
       "brevo:blocked:sync": {
         handler: async (job) => updateBrevoBlockedEmails(job.payload as any),
       },
-      "companies:update": {
-        handler: async (job) => updateLbaCompanies(job.payload as any),
-      },
-      "geo-locations:update": {
-        handler: async (job) => updateGeoLocations(job.payload as any),
-      },
-      "opcos:update": {
-        handler: async (job) => updateOpcoCompanies(job.payload as any),
+      "domaines-metiers:update": {
+        handler: async () => updateDomainesMetiers(),
       },
       "domaines-metiers:file:update": {
         handler: async (job) => {
@@ -310,9 +303,9 @@ export async function setupJobProcessor() {
         handler: async () => {
           const { count, requireShutdown } = await statusMigration()
           if (count === 0) {
-            console.log("migrations-status=synced")
+            console.info("migrations-status=synced")
           } else {
-            console.log(`migrations-status=${requireShutdown ? "require-shutdown" : "pending"}`)
+            console.info(`migrations-status=${requireShutdown ? "require-shutdown" : "pending"}`)
           }
           return
         },

@@ -69,13 +69,13 @@ export const sendOpenAIMessages = async ({
       return null
     }
     if (!ZChatCompletionResponse.safeParse(JSON.parse(message)).success) {
-      console.log("Invalid response format", message)
+      console.warn("Invalid response format", message)
       return null
     }
     return message
   } catch (error) {
     sentryCaptureException(error)
-    console.log(error)
+    console.error(error)
     return null
   }
 }
