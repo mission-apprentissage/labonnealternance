@@ -135,6 +135,8 @@ fileignoreconfig:
   checksum: 9055c5495ced85a674770e7fb8a81b3bd84949f9ff8f6e6450989aa3b7cda326
 - filename: server/static/templates/mail-reponse-cfa.mjml.ejs
   checksum: a5a36d078b7c75e6da58c06c032b52d0f57d89bf5913065bb1aaab098f3e80af
+- filename: server/static/templates/mail-candidature-spontanee.mjml.ejs
+  checksum: baf1efe3757cfa6dc72a888fc480bfbc8f74779d0cf7620b94a4800b5ebee75b
 - filename: server/tests/fixture/connectedUser.fixture.ts
   checksum: bfbb2f218580ce302d3bfcd9ba7494a46ff0a05ba02ca0f38a801ea8c6bf9be2
 - filename: server/tests/integration/http/formationV1.test.ts

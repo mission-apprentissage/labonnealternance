@@ -361,7 +361,7 @@ const buildUrlsOfDetail = (application: IApplication, utm?: { utm_source?: strin
   urlSearchParams.append("display", "list")
   urlSearchParams.append("page", "fiche")
   urlSearchParams.append("type", newItemTypeToOldItemType(job_origin))
-  urlSearchParams.append("itemId", job_id! || company_siret!)
+  urlSearchParams.append("itemId", job_origin === LBA_ITEM_TYPE.RECRUTEURS_LBA ? company_siret! : job_id!) // could be switched to job_id, but need to change the direct access routes and UI
   const paramsWithoutUtm = urlSearchParams.toString()
   urlSearchParams.append("utm_source", utm_source)
   urlSearchParams.append("utm_medium", utm_medium)
