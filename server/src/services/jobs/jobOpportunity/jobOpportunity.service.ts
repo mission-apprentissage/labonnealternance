@@ -696,15 +696,27 @@ export async function findJobsOpportunities(payload: IJobSearchApiV3Query, conte
 
 type InvariantFields = "_id" | "created_at" | "partner_label" | "partner_job_id"
 
-async function upsertJobOffer(data: IJobOfferApiWriteV3, identity: IApiAlternanceTokenData, current: IJobsPartnersOfferPrivate | null): Promise<ObjectId> {
+async function upsertJobOfferPrivate({
+  data,
+  partner_label,
+  partnerJobIdIfNew,
+  requestedByEmail,
+  current,
+}: {
+  data: IJobOfferApiWriteV3
+  partner_label: string
+  partnerJobIdIfNew?: string
+  requestedByEmail: string
+  current: IJobsPartnersOfferPrivate | null
+}): Promise<ObjectId> {
   const now = new Date()
 
   const _id = current?._id ?? new ObjectId()
   const invariantData: Pick<IJobsPartnersOfferPrivate, InvariantFields> = {
     _id,
     created_at: current?.created_at ?? now,
-    partner_label: identity.organisation!,
-    partner_job_id: current?.partner_job_id ?? _id.toString(),
+    partner_label,
+    partner_job_id: current?.partner_job_id ?? partnerJobIdIfNew ?? _id.toString(),
   }
 
   const defaultOfferExpiration = current?.offer_expiration
@@ -769,7 +781,7 @@ async function upsertJobOffer(data: IJobOfferApiWriteV3, identity: IApiAlternanc
             date: now,
             status: data.offer.status,
             reason: "créée / modifiée par API",
-            granted_by: identity.email,
+            granted_by: requestedByEmail,
           },
         },
       }
@@ -780,7 +792,12 @@ async function upsertJobOffer(data: IJobOfferApiWriteV3, identity: IApiAlternanc
 }
 
 export async function createJobOffer(identity: IApiAlternanceTokenData, data: IJobOfferApiWriteV3): Promise<ObjectId> {
-  return upsertJobOffer(data, identity, null)
+  return upsertJobOfferPrivate({
+    data,
+    partner_label: identity.organisation!,
+    requestedByEmail: identity.email,
+    current: null,
+  })
 }
 
 export async function updateJobOffer(id: ObjectId, identity: IApiAlternanceTokenData, data: IJobOfferApiWriteV3): Promise<void> {
@@ -795,5 +812,18 @@ export async function updateJobOffer(id: ObjectId, identity: IApiAlternanceToken
     throw badRequest("Job must be active in order to be modified")
   }
 
-  await upsertJobOffer(data, identity, current)
+  await upsertJobOfferPrivate({
+    data,
+    partner_label: identity.organisation!,
+    requestedByEmail: identity.email,
+    current,
+  })
+}
+
+export async function upsertJobOffer(data: IJobOfferApiWriteV3, partner_label: string, partner_job_id: string, requestedByEmail: string) {
+  let current = await getDbCollection("jobs_partners").findOne<IJobsPartnersOfferPrivate>({ partner_label, partner_job_id })
+  if (!current) {
+    current = await getDbCollection("computed_jobs_partners").findOne<IJobsPartnersOfferPrivate>({ partner_label, partner_job_id })
+  }
+  return upsertJobOfferPrivate({ data, partner_label, partnerJobIdIfNew: partner_job_id, requestedByEmail, current })
 }
