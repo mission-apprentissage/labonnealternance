@@ -6,7 +6,7 @@ import path from "path"
 import { ObjectId } from "bson"
 import { groupData, oleoduc, transformData, writeData } from "oleoduc"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import rawRecruteursLbaModel, { IRecruteursLbaRaw, ZRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
+import rawRecruteursLbaModel, { ZRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
 
 import __dirname from "@/common/dirname"
 import { logger } from "@/common/logger"
@@ -51,9 +51,9 @@ export const checkIfAlgoFileAlreadyProcessed = async (): Promise<boolean> => {
     throw new Error("Aucune date de dernière modifications disponible sur le fichier issue de l'algo sur S3.")
   }
 
-  const currentDbCreatedDate = ((await getDbCollection("raw_recruteurslba").findOne({}, { projection: { createdAt: 1 } })) as IRecruteursLbaRaw).createdAt
-  if (!currentDbCreatedDate) return false
-  if (algoFileLastModificationDate.getTime() < currentDbCreatedDate.getTime()) {
+  const recruteurLbaRaw = await getDbCollection("raw_recruteurslba").findOne({}, { projection: { createdAt: 1 } })
+  if (!recruteurLbaRaw) return false
+  if (algoFileLastModificationDate.getTime() < recruteurLbaRaw.createdAt.getTime()) {
     await notifyToSlack({
       subject: `import des offres recruteurs lba dans raw`,
       message: `dernier fichier en date déjà traité.`,
