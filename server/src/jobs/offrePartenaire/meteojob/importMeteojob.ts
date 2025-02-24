@@ -19,7 +19,7 @@ export const importMeteojobRaw = async (sourceStream?: NodeJS.ReadableStream) =>
   }
 }
 
-export const importHelloWorkToComputed = async () => {
+export const importMeteojobToComputed = async () => {
   await rawToComputedJobsPartners({
     collectionSource: rawCollectionName,
     partnerLabel: JOBPARTNERS_LABEL.METEOJOB,
