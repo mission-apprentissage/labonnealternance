@@ -10,14 +10,14 @@ import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
 export const ZMeteojobJob = z
   .object({
-    $: z.object({ id: z.string(), reference: z.string(), lang: z.string() }),
+    $: z.object({ id: z.string(), reference: z.string(), lang: z.string().nullish() }),
     title: z.string(),
     description: z.string(),
     link: z.string(),
     publicationDate: z.string(),
     lastModificationDate: z.string(),
-    position: z.string(),
-    industry: z.string(),
+    position: z.string().nullish(),
+    industry: z.string().nullish(),
     company: z.object({
       $: z.object({ id: z.string(), anonymous: z.string() }),
       description: z.string().nullish(),
@@ -55,36 +55,42 @@ export const ZMeteojobJob = z
         ]),
       }),
     }),
-    workSchedule: z.object({
-      types: z.object({
-        type: z.object({
-          _: z.string(),
-          $: z.object({ code: z.string() }),
-        }),
-      }),
-    }),
-    benefits: z.object({
-      salary: z.object({
-        _: z.string(),
-        $: z.object({ lowEnd: z.string(), currency: z.string(), period: z.string() }),
-      }),
-    }),
-    profile: z.object({
-      description: z.string(),
-      degrees: z.object({
-        degree: z.union([
-          z.object({
+    workSchedule: z
+      .object({
+        types: z.object({
+          type: z.object({
             _: z.string(),
             $: z.object({ code: z.string() }),
           }),
-          z.array(
+        }),
+      })
+      .nullish(),
+    benefits: z
+      .object({
+        salary: z.object({
+          _: z.string(),
+          $: z.object({ lowEnd: z.string(), currency: z.string(), period: z.string() }),
+        }),
+      })
+      .nullish(),
+    profile: z.object({
+      description: z.string(),
+      degrees: z
+        .object({
+          degree: z.union([
             z.object({
               _: z.string(),
               $: z.object({ code: z.string() }),
-            })
-          ),
-        ]),
-      }),
+            }),
+            z.array(
+              z.object({
+                _: z.string(),
+                $: z.object({ code: z.string() }),
+              })
+            ),
+          ]),
+        })
+        .nullish(),
     }),
   })
   .passthrough()
@@ -100,7 +106,7 @@ export const meteojobJobToJobsPartners = (job: IMeteojobJob): IComputedJobsPartn
 
   const created_at = new Date()
 
-  const descriptionComputed = `${description}\r\n\r\n"Secteur: ${industry}\r\n\r\nPoste: ${position}\r\n\r\n${workSchedule.types.type._}\r\n\r\nAvantages: ${benefits.salary._}\r\n\r\nProfil: ${profile.description}`
+  const descriptionComputed = `${description}\r\n\r\n${industry ? `Secteur: ${industry}\r\n\r\n` : ""}${position ? `Poste: ${position}\r\n\r\n` : ""}${workSchedule ? `${workSchedule.types.type._}\r\n\r\n` : ""}${benefits ? `Avantages: ${benefits.salary._}\r\n\r\n` : ""}Profil: ${profile.description}`
 
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner(),
