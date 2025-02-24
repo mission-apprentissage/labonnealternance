@@ -16,7 +16,6 @@ export const ZMeteojobJob = z
     link: z.string(),
     publicationDate: z.string(),
     lastModificationDate: z.string(),
-    createdAt: z.string(),
     position: z.string(),
     industry: z.string(),
     company: z.object({
@@ -52,12 +51,10 @@ export const ZMeteojobJob = z
     }),
     workSchedule: z.object({
       types: z.object({
-        type: z.array(
-          z.object({
-            _: z.string(),
-            $: z.object({ code: z.string() }),
-          })
-        ),
+        type: z.object({
+          _: z.string(),
+          $: z.object({ code: z.string() }),
+        }),
       }),
     }),
     benefits: z.object({
@@ -69,10 +66,18 @@ export const ZMeteojobJob = z
     profile: z.object({
       description: z.string(),
       degrees: z.object({
-        degree: z.object({
-          _: z.string(),
-          $: z.object({ code: z.string() }),
-        }),
+        degree: z.union([
+          z.object({
+            _: z.string(),
+            $: z.object({ code: z.string() }),
+          }),
+          z.array(
+            z.object({
+              _: z.string(),
+              $: z.object({ code: z.string() }),
+            })
+          ),
+        ]),
       }),
     }),
   })
