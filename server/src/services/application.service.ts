@@ -1189,7 +1189,7 @@ export const getCompanyEmailFromToken = async (token: string) => {
   const application = await getDbCollection("applications").findOne({ _id: new ObjectId(application_id) })
 
   if (application) {
-    const recruteurLba = await getDbCollection("jobs_partners").findOne({ siret: application.company_siret! })
+    const recruteurLba = await getDbCollection("jobs_partners").findOne({ workplace_siret: application.company_siret!, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
     if (recruteurLba?.apply_email) {
       return recruteurLba.apply_email
     }
