@@ -89,11 +89,12 @@ export async function s3Delete(bucket: Bucket, fileKey: string) {
 }
 
 export const s3SignedUrl = async (bucket: Bucket, key: string, options: RequestPresigningArguments = {}) => {
+  const bucketName = getBucketName(bucket)
   try {
-    const url = getSignedUrl(s3Client, new GetObjectCommand({ Bucket: bucket, Key: key }), options)
+    const url = getSignedUrl(s3Client, new GetObjectCommand({ Bucket: bucketName, Key: key }), options)
     return url
   } catch (error: any) {
-    const newError = internal(`error getting s3 file url`, { key, bucket })
+    const newError = internal(`error getting s3 file url`, { key, bucketName })
     newError.cause = error.message
     throw newError
   }

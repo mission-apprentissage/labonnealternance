@@ -4,9 +4,9 @@ import { TRAINING_CONTRACT_TYPE } from "../../../constants/recruteur.js"
 import { extensions } from "../../../helpers/zodHelpers/zodPrimitives.js"
 import { JOB_STATUS_ENGLISH } from "../../../models/job.model.js"
 import {
-  FILTER_JOBPARTNERS_LABEL,
   IJobsPartnersOfferApi,
   IJobsPartnersRecruiterApi,
+  JOBPARTNERS_LABEL,
   ZJobsPartnersOfferApi,
   ZJobsPartnersOfferPrivate,
   ZJobsPartnersRecruiterApi,
@@ -98,7 +98,7 @@ export const zJobSearchApiV3Query = z
     target_diploma_level: zDiplomaEuropeanLevel.optional(),
     romes: extensions.romeCodeArray().nullable().default(null),
     rncp: extensions.rncpCode().nullable().default(null),
-    partners_to_exclude: z.array(extensions.buildEnum(FILTER_JOBPARTNERS_LABEL)).nullish(),
+    partners_to_exclude: z.array(extensions.buildEnum(JOBPARTNERS_LABEL)).nullish(),
   })
   .superRefine((data, ctx) => {
     if (data.longitude == null && data.latitude != null) {

@@ -13,6 +13,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 
 export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
+  logger.info(`import dans jobs_partners commencé`)
   const filters: Filter<IComputedJobsPartners>[] = [{ validated: true, business_error: null }]
   if (addedMatchFilter) {
     filters.push(addedMatchFilter)

@@ -27,6 +27,7 @@ import { importPassRaw, importPassToComputed } from "./offrePartenaire/pass/impo
 import { processJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
 import { rankJobPartners } from "./offrePartenaire/rankJobPartners"
+import { importRecruteurLbaToComputed, importRecruteursLbaRaw } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
 import { importRHAlternanceRaw, importRHAlternanceToComputed } from "./offrePartenaire/rh-alternance/importRHAlternance"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -191,6 +192,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "import des offres France Travail dans la collection raw",
   },
   {
+    fct: importRecruteursLbaRaw,
+    description: "import des recruteurs lba dans la collection raw",
+  },
+  {
     fct: classifyFranceTravailJobs,
     description: "Retirer les offres de CFA des offres France travail dans la collection raw",
   },
@@ -210,6 +215,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: importFranceTravailToComputed,
     description: "Importe les offres France Travail depuis raw vers computed",
+  },
+  {
+    fct: importRecruteurLbaToComputed,
+    description: "Importe les recruteurs lba depuis raw vers computed",
   },
   // IMPORT COMPUTED TO JOBS PARTNERS
   {
