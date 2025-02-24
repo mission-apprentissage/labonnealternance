@@ -1,3 +1,4 @@
+import { processRecruteursLba } from "@/jobs/offrePartenaire/processRecruteursLba"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
@@ -234,6 +235,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processJobPartners,
     description: "Chaîne complète de traitement des jobs_partners",
+  },
+  {
+    fct: processRecruteursLba,
+    description: "Chaîne complète de traitement des entreprises issues de l'algo pour jobs_partners",
   },
   {
     fct: processJobPartnersForApi,

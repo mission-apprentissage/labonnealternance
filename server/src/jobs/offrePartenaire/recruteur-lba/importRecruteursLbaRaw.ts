@@ -52,6 +52,7 @@ export const checkIfAlgoFileAlreadyProcessed = async (): Promise<boolean> => {
   }
 
   const currentDbCreatedDate = ((await getDbCollection("raw_recruteurslba").findOne({}, { projection: { createdAt: 1 } })) as IRecruteursLbaRaw).createdAt
+  if (!currentDbCreatedDate) return false
   if (algoFileLastModificationDate.getTime() < currentDbCreatedDate.getTime()) {
     await notifyToSlack({
       subject: `import des offres recruteurs lba dans raw`,
