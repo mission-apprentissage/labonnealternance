@@ -20,7 +20,7 @@ export const ZMeteojobJob = z
     industry: z.string(),
     company: z.object({
       $: z.object({ id: z.string(), anonymous: z.string() }),
-      description: z.string(),
+      description: z.string().nullish(),
       name: z.string(),
     }),
     workplace: z.object({
@@ -28,25 +28,31 @@ export const ZMeteojobJob = z
         location: z.object({
           $: z.object({
             label: z.string(),
-            lat: z.string(),
-            lng: z.string(),
+            lat: z.string().nullish(),
+            lng: z.string().nullish(),
           }),
-          city: z.string(),
-          postalCode: z.string(),
-          department: z.object({ _: z.string(), $: z.object({ code: z.string() }) }),
-          state: z.object({ _: z.string(), $: z.object({ code: z.string() }) }),
+          city: z.string().nullish(),
+          postalCode: z.string().nullish(),
+          department: z.object({ _: z.string(), $: z.object({ code: z.string() }) }).nullish(),
+          state: z.object({ _: z.string(), $: z.object({ code: z.string() }) }).nullish(),
           country: z.object({ _: z.string(), $: z.object({ code: z.string() }) }),
         }),
       }),
     }),
     contract: z.object({
       types: z.object({
-        type: z.array(
+        type: z.union([
           z.object({
             _: z.string(),
             $: z.object({ code: z.string() }),
-          })
-        ),
+          }),
+          z.array(
+            z.object({
+              _: z.string(),
+              $: z.object({ code: z.string() }),
+            })
+          ),
+        ]),
       }),
     }),
     workSchedule: z.object({
@@ -126,9 +132,11 @@ export const meteojobJobToJobsPartners = (job: IMeteojobJob): IComputedJobsPartn
             coordinates: [longitude, latitude],
           }
         : undefined,
-    contract_type: contract.types.type.find((type) => type._ === "Alternance / Apprentissage")
-      ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION]
-      : undefined,
+    contract_type:
+      contract.types.type?._ === "Alternance / Apprentissage" ||
+      (contract.types.type instanceof Array && contract.types.type.find((type) => type._ === "Alternance / Apprentissage"))
+        ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION]
+        : undefined,
     offer_desired_skills: [],
     offer_access_conditions: [],
     offer_multicast: true,
