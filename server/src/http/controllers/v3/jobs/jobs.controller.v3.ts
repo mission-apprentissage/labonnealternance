@@ -3,7 +3,7 @@ import { zRoutes } from "shared"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { JobOpportunityRequestContext } from "@/services/jobs/jobOpportunity/JobOpportunityRequestContext"
 
-import { createJobOffer, findJobsOpportunities, updateJobOffer, upsertJobOffer } from "../../../../services/jobs/jobOpportunity/jobOpportunity.service"
+import { createJobOffer, findJobsOpportunities, updateJobOffer } from "../../../../services/jobs/jobOpportunity/jobOpportunity.service"
 import { Server } from "../../../server"
 
 const config = {
@@ -46,19 +46,4 @@ export const jobsApiV3Routes = (server: Server) => {
     const result = await findJobsOpportunities(req.query, new JobOpportunityRequestContext(zRoutes.get["/v3/jobs/search"], "api-apprentissage"))
     return res.send(result)
   })
-
-  server.post(
-    "/v3/jobs/multi-partner",
-    {
-      schema: zRoutes.post["/v3/jobs/multi-partner"],
-      onRequest: server.auth(zRoutes.post["/v3/jobs/multi-partner"]),
-      config,
-    },
-    async (req, res) => {
-      const { partner_label, partner_job_id } = req.body
-      const user = getUserFromRequest(req, zRoutes.post["/v3/jobs/multi-partner"]).value
-      const id = await upsertJobOffer(req.body, partner_label, partner_job_id, user.email)
-      return res.status(200).send({ id })
-    }
-  )
 }

@@ -41,22 +41,6 @@ export const zJobsRoutesV3 = {
         tags: ["V3 - Jobs"] as string[],
       },
     },
-    "/v3/jobs/multi-partner": {
-      method: "post",
-      path: "/v3/jobs/multi-partner",
-      body: zJobOfferApiWriteV3.extend({
-        partner_label: z.string(),
-        partner_job_id: z.string(),
-      }),
-      response: {
-        "200": z.object({ id: zObjectId }),
-      },
-      securityScheme: {
-        auth: "api-key",
-        access: null,
-        resources: {},
-      },
-    },
   },
   put: {
     "/v3/jobs/:id": {
