@@ -6,6 +6,8 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
 
+import { removeHtmlTagsFromString } from "@/common/utils/stringUtils"
+
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
 const ZMeteojobJobLocation = z.object({
@@ -70,10 +72,13 @@ export const ZMeteojobJob = z
       .nullish(),
     benefits: z
       .object({
-        salary: z.object({
-          _: z.string(),
-          $: z.object({ lowEnd: z.string(), currency: z.string(), period: z.string() }),
-        }),
+        salary: z
+          .object({
+            _: z.string(),
+            $: z.object({ lowEnd: z.string(), currency: z.string(), period: z.string() }),
+          })
+          .nullish(),
+        description: z.string().nullish(),
       })
       .nullish(),
     profile: z
@@ -102,6 +107,12 @@ export const ZMeteojobJob = z
 
 export type IMeteojobJob = z.output<typeof ZMeteojobJob>
 
+const sanitizeHtml = (text: string) => {
+  let sanitizedText = text.replace("<p>", "\r\n").replace("</p>", "\r\n").replace("<br>", "\r\n").replace("<br/>", "\r\n").replace("<br />", "\r\n")
+  sanitizedText = removeHtmlTagsFromString(sanitizedText) as string
+  return sanitizedText
+}
+
 export const meteojobJobToJobsPartners = (job: IMeteojobJob): IComputedJobsPartners => {
   const { $, title, description, link, publicationDate, lastModificationDate, position, industry, company, contract, workSchedule, benefits, profile } = job
   const workplaceLocation = job.workplace.locations.location instanceof Array ? job.workplace.locations.location[0] : job.workplace.locations.location
@@ -112,7 +123,13 @@ export const meteojobJobToJobsPartners = (job: IMeteojobJob): IComputedJobsPartn
 
   const created_at = new Date()
 
-  const descriptionComputed = `${description}\r\n\r\n${industry ? `Secteur: ${industry}\r\n\r\n` : ""}${position ? `Poste: ${position}\r\n\r\n` : ""}${workSchedule ? `${workSchedule.types.type._}\r\n\r\n` : ""}${benefits ? `Avantages: ${benefits.salary._}\r\n\r\n` : ""}${profile?.description ? `Profil: ${profile.description}` : ""}`
+  let descriptionComputed = `${description}\r\n\r\n${industry ? `Secteur: ${industry}\r\n\r\n` : ""}
+  ${position ? `Poste: ${position}\r\n\r\n` : ""}
+  ${workSchedule ? `${workSchedule.types.type._}\r\n\r\n` : ""}
+  ${benefits ? `Avantages: ${benefits?.salary?._ ? benefits.salary._ : ""}\r\n\r\n` : ""}${benefits?.description ? `${benefits.description}\r\n\r\n` : ""}
+  ${profile?.description ? `Profil: ${profile.description}` : ""}`
+
+  descriptionComputed = sanitizeHtml(descriptionComputed)
 
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner(),
@@ -133,7 +150,7 @@ export const meteojobJobToJobsPartners = (job: IMeteojobJob): IComputedJobsPartn
       .toDate(),
 
     workplace_name: company.name,
-    workplace_description: company.description && company.description.length >= 30 ? company.description : null,
+    workplace_description: company.description && company.description.length >= 30 ? sanitizeHtml(company.description) : null,
     workplace_address_zipcode: workplaceLocation?.postalCode || null,
     workplace_address_city: workplaceLocation.city || null,
     workplace_address_label: workplaceLocation.$?.label || null,

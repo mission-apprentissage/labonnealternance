@@ -1,5 +1,5 @@
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import rawMeteojobModel from "shared/models/rawHelloWork.model"
+import rawMeteojobModel from "shared/models/rawMeteojob.model"
 
 import config from "../../../config"
 import { importFromStreamInXml } from "../importFromStreamInXml"
