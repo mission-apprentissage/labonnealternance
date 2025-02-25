@@ -3,10 +3,12 @@ import { createRequire } from "module"
 import { pipeline } from "node:stream/promises"
 import path from "path"
 
+import { internal } from "@hapi/boom"
 import { ObjectId } from "bson"
 import { groupData, oleoduc, transformData, writeData } from "oleoduc"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import rawRecruteursLbaModel, { IRecruteursLbaRaw, ZRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
+import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import rawRecruteursLbaModel, { ZRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
 
 import __dirname from "@/common/dirname"
 import { logger } from "@/common/logger"
@@ -15,8 +17,6 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
-
-import { rawToComputedJobsPartners } from "../rawToComputedJobsPartners"
 
 import { recruteursLbaToJobPartners } from "./recruteursLbaMapper"
 
@@ -51,8 +51,9 @@ export const checkIfAlgoFileAlreadyProcessed = async (): Promise<boolean> => {
     throw new Error("Aucune date de dernière modifications disponible sur le fichier issue de l'algo sur S3.")
   }
 
-  const currentDbCreatedDate = ((await getDbCollection("raw_recruteurslba").findOne({}, { projection: { createdAt: 1 } })) as IRecruteursLbaRaw).createdAt
-  if (algoFileLastModificationDate.getTime() < currentDbCreatedDate.getTime()) {
+  const recruteurLbaRaw = await getDbCollection("raw_recruteurslba").findOne({}, { projection: { createdAt: 1 } })
+  if (!recruteurLbaRaw) return false
+  if (algoFileLastModificationDate.getTime() < recruteurLbaRaw.createdAt.getTime()) {
     await notifyToSlack({
       subject: `import des offres recruteurs lba dans raw`,
       message: `dernier fichier en date déjà traité.`,
@@ -88,7 +89,9 @@ const importRecruteursLbaToRawCollection = async () => {
     parser(),
     streamArray(),
     transformData((doc) => {
-      const recruteur = { createdAt: now, _id: new ObjectId(), ...doc.value }
+      const { value } = doc
+      const partner_job_id = `${value.siret}-${value.phone}-${value.email}`
+      const recruteur = { createdAt: now, _id: new ObjectId(), partner_job_id, ...doc.value }
       if (!ZRecruteursLbaRaw.safeParse(recruteur).success) return null
       return recruteur
     }),
@@ -122,10 +125,70 @@ export const importRecruteursLbaRaw = async () => {
 }
 
 export const importRecruteurLbaToComputed = async () => {
-  await rawToComputedJobsPartners({
-    collectionSource: rawRecruteursLbaModel.collectionName,
-    partnerLabel: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
-    zodInput: ZRecruteursLbaRaw,
-    mapper: recruteursLbaToJobPartners,
+  const collectionSource = rawRecruteursLbaModel.collectionName
+  const partnerLabel = JOBPARTNERS_LABEL.RECRUTEURS_LBA
+  const zodInput = ZRecruteursLbaRaw
+  const mapper = recruteursLbaToJobPartners
+
+  logger.info(`début d'import dans computed_jobs_partners pour partner_label=${partnerLabel}`)
+  const counters = { total: 0, success: 0, error: 0 }
+  const importDate = new Date()
+  await oleoduc(
+    getDbCollection(collectionSource).find({}).stream(),
+    writeData(
+      async (document: any) => {
+        counters.total++
+        try {
+          const parsedDocument = zodInput.parse(document)
+          const { _id, ...computedJobPartner } = mapper(parsedDocument) // remove _id from document
+          await getDbCollection("computed_jobs_partners").updateOne(
+            { partner_job_id: document.partner_job_id },
+            { $set: { ...computedJobPartner, updated_at: importDate }, $setOnInsert: { offer_status_history: [], _id: new ObjectId() } },
+            {
+              upsert: true,
+            }
+          )
+          counters.success++
+        } catch (err) {
+          counters.error++
+          const newError = internal(`error converting raw job to partner_label job for id=${document._id} partner_label=${partnerLabel}`)
+          logger.error(newError.message, err)
+          newError.cause = err
+          sentryCaptureException(newError)
+        }
+      },
+      { parallel: 10 }
+    )
+  )
+  const message = `import dans computed_jobs_partners pour partner_label=${partnerLabel} terminé. total=${counters.total}, success=${counters.success}, errors=${counters.error}`
+  logger.info(message)
+  await notifyToSlack({
+    subject: `mapping Raw => computed_jobs_partners`,
+    message,
+    error: counters.error > 0,
   })
+}
+
+export const removeMissingRecruteursLbaFromRaw = async () => {
+  const results = (await getDbCollection("computed_jobs_partners")
+    .aggregate([
+      { $match: { partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA } },
+      {
+        $lookup: {
+          from: "raw_recruteurslba",
+          localField: "partner_job_id",
+          foreignField: "partner_job_id",
+          as: "matching",
+        },
+      },
+      { $match: { matching: { $size: 0 } } },
+      { $project: { _id: 1 } },
+    ])
+    .toArray()) as IComputedJobsPartners[]
+
+  const idsToRemove = results.map(({ _id }) => _id)
+
+  if (idsToRemove.length) {
+    await getDbCollection("computed_jobs_partners").deleteMany({ _id: { $in: idsToRemove } })
+  }
 }
