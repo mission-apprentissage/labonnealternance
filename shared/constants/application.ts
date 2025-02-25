@@ -11,8 +11,6 @@ export enum ApplicationIntentionDefaultText {
 export enum RefusalReasons {
   COMPETENCE = "Compétences insuffisantes ou non adaptées",
   CANDIDATURE_NON_PERSONNALISEE = "Manque de personnalisation de la candidature",
-  ORTHOGRAPHE = "Fautes d'orthographe",
-  CV_PEU_CLAIR = "Manque de clarté du CV",
   ECOLE = "Avis négatif sur l’école/la formation",
   CONTRAT_INADAPTE = "Type de contrat inadapté",
   METIER_RECHERCHE = "Notre entreprise ne recrute pas sur le métier recherché",
