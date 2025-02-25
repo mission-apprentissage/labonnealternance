@@ -128,7 +128,7 @@ export async function setupJobProcessor() {
             cron_string: "0 1 * * *",
             handler: anonimizeUsersWithAccounts,
           },
-          "Anonimisation des utilisateurs RDVA de plus de deux (2) ans": {
+          "Anonymisation des utilisateurs RDVA de plus de deux (2) ans": {
             cron_string: "5 1 * * *",
             handler: anonymizeUsers,
           },
