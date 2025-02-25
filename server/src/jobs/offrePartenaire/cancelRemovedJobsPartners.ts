@@ -6,7 +6,6 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { jobPartnersByFlux } from "./processJobPartners"
 
 export const cancelRemovedJobsPartners = async () => {
-
   const matchStage = {
     $match: {
       partner_label: { $in: jobPartnersByFlux },
