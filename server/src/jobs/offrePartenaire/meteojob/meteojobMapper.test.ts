@@ -5,7 +5,7 @@ import { meteojobJobToJobsPartners } from "./meteojobMapper"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")
 
-describe("helloWorkJobToJobsPartners", () => {
+describe("meteojobJobToJobsPartners", () => {
   beforeEach(() => {
     vi.useFakeTimers()
     vi.setSystemTime(now)
@@ -15,80 +15,155 @@ describe("helloWorkJobToJobsPartners", () => {
     }
   })
 
-  it("should convert a hellowork job to a partner_label job", () => {
+  it("should convert a meteojob job to a partner_label job", () => {
     expect(
       meteojobJobToJobsPartners({
-        job_id: "73228597",
-        reference: "1267078/12939556 GPEADPA/69V",
-        cpc: "0",
-        title: "Gestionnaire Paie et ADP - Alternance H/F",
-        url: "https://www.url.com/redirect?poc=2&op=5989883668&o=1",
-        description: "ceci est une longue description qui a du sens et qui va passer la limite de 30 caractères",
-        profile: "profile",
-        benefits: null,
-        address: "Stem Propreté Lyon,Villeurbanne,69100",
-        city: "VILLEURBANNE",
-        geoloc: "45.770996568,4.889070834",
-        region: "AUVERGNE RHONE ALPES",
-        department: "RHONE",
-        postal_code: "69100",
-        country: "France",
-        publication_date: "2024-07-05 22:14:56",
-        updated_date: "2024-07-21 04:49:06",
-        contract: "Alternance",
-        contract_start_date: "2024-12-01 00:00:00",
-        contract_end_date: null,
-        contract_period_value: 1,
-        contract_period_unit: "Year",
-        qualification: "RJ/Qualif/Agent_maitrise_B3",
-        experience: "Inf_1",
-        function: "RH_Personnel_Formation",
-        code_rome: "M1203",
-        ogr_id: "12802",
-        job_time: "Full time",
-        education: "RJ/Qualif/Agent_maitrise_B3",
-        language: null,
-        remote: "Pas_teletravail",
-        sector: "Serv_entreprise",
-        company_title: "Stem Propreté Lyon",
-        company_description: "ceci est une longue description de l'entreprise qui a du sens et qui va passer la limite de 30 caractères",
-        logo: "https://f.hellowork.com/img/mail/logo/hellowork-black.png",
-        company_logo: "http://ressources.regionsjob.com/img/entreprises/94930.png",
-        siret: "39837261500128",
-        naf_code: "8121Z",
-        company_sector: "Nettoyage courant des bâtiments",
-        csr_label: null,
+        $: {
+          id: "43954570",
+          reference: "AD4310AL",
+          lang: "fr",
+        },
+        title: "VENDEUR MAGASINIER H/F",
+        description:
+          "<p>- Identifier les pièces détachées sur les différents logiciels constructeurs.</p><p>- Gérer les appels téléphoniques et les emails pour répondre à chaque demande.</p><p>- Gérer les commandes et réceptions fournisseurs.</p><p>- Réaliser les ventes clients au comptoir.</p><p>- Préparer les commandes clients et techniciens.</p><p>- Assurer les différents mouvements de stock via notre logiciel.</p><p>- Gérer les problèmes de retour pièces.</p><p>- Participer à la bonne tenue du magasin (étiquetage, rangement et nettoyage).</p><p>Vous êtes emmené à faire une semaine d'école à Nantes par mois.</p>",
+        link: "https://www.meteojob.com/jobads/43954570?utm_source=labonnealternance&utm_medium=aggregator-free&utm_campaign=alternance",
+        publicationDate: "2025-02-25T02:46:50.131Z",
+        lastModificationDate: "2025-02-25T02:46:50.131Z",
+        position: "Vendeur-magasinier (H/F)",
+        industry: "Recrutement et placement",
+        company: {
+          $: {
+            id: "39837261500128",
+            anonymous: "false",
+          },
+          name: "Tralala",
+          description: "Tralala est une entreprise qui recrute des gens",
+        },
+        workplace: {
+          locations: {
+            location: {
+              $: {
+                label: "Bruguières (31)",
+                lat: "43.72417",
+                lng: "1.41139",
+              },
+              city: "Bruguières",
+              postalCode: "31150",
+              department: {
+                _: "Haute-Garonne",
+                $: {
+                  code: "31",
+                },
+              },
+              state: {
+                _: "Occitanie",
+                $: {
+                  code: "76",
+                },
+              },
+              country: {
+                _: "France",
+                $: {
+                  code: "FR",
+                },
+              },
+            },
+          },
+        },
+        contract: {
+          types: {
+            type: {
+              _: "Alternance / Apprentissage",
+              $: {
+                code: "apprentice",
+              },
+            },
+          },
+          length: {
+            _: "12 month",
+            $: {
+              value: "12",
+              unit: "month",
+            },
+          },
+        },
+        workSchedule: {
+          types: {
+            type: {
+              _: "Temps plein",
+              $: {
+                code: "full-time",
+              },
+            },
+          },
+        },
+        benefits: {
+          salary: {
+            _: "à partir de 11,88 € par an",
+            $: {
+              currency: "EUR",
+              lowEnd: "11.88",
+              period: "annum",
+            },
+          },
+        },
+        profile: {
+          description:
+            "<p>Vous êtes organisé, polyvalent, curieux et vous avez le sens du contact.</p><p>Vous avez des connaissances en mécanique, électricité, hydraulique et en informatique, et ou vous avez une première expérience dans la recherche de pièce en automobile ou autre.</p>",
+          degrees: {
+            degree: {
+              _: "Aucun diplôme",
+              $: {
+                code: "none",
+              },
+            },
+          },
+          experienceLevels: {
+            experienceLevel: [
+              {
+                _: "débutant à 1 an",
+                $: {
+                  code: "beginner",
+                },
+              },
+              {
+                _: "1-2 ans",
+                $: {
+                  code: "one_two",
+                },
+              },
+            ],
+          },
+        },
       })
     ).toEqual({
       _id: expect.any(ObjectId),
       apply_phone: null,
       created_at: now,
-      updated_at: new Date("2024-07-21T04:49:06.000+02:00"),
-      partner_label: "Hellowork",
-      partner_job_id: "73228597",
-      contract_start: new Date("2024-12-01T00:00:00.000+01:00"),
+      updated_at: new Date("2025-02-25T02:46:50.131Z"),
+      partner_label: "Meteojob",
+      partner_job_id: "43954570",
+      contract_start: null,
       contract_type: ["Apprentissage", "Professionnalisation"],
-      contract_remote: "onsite",
+      contract_remote: null,
       contract_duration: 12,
-      offer_title: "Gestionnaire Paie et ADP - Alternance H/F",
-      offer_description: "ceci est une longue description qui a du sens et qui va passer la limite de 30 caractères",
+      offer_title: "VENDEUR MAGASINIER H/F",
+      offer_description:
+        "\r\n- Identifier les pièces détachées sur les différents logiciels constructeurs.\r\n- Gérer les appels téléphoniques et les emails pour répondre à chaque demande.- Gérer les commandes et réceptions fournisseurs.- Réaliser les ventes clients au comptoir.- Préparer les commandes clients et techniciens.- Assurer les différents mouvements de stock via notre logiciel.- Gérer les problèmes de retour pièces.- Participer à la bonne tenue du magasin (étiquetage, rangement et nettoyage).Vous êtes emmené à faire une semaine d'école à Nantes par mois.\r\n\r\nSecteur: Recrutement et placement\r\n\r\n\r\n  Poste: Vendeur-magasinier (H/F)\r\n\r\n\r\n  Temps plein\r\n\r\n\r\n  Avantages: à partir de 11,88 € par an\r\n\r\n\r\n  Profil: Vous êtes organisé, polyvalent, curieux et vous avez le sens du contact.Vous avez des connaissances en mécanique, électricité, hydraulique et en informatique, et ou vous avez une première expérience dans la recherche de pièce en automobile ou autre.",
       offer_status: "Active",
-      offer_target_diploma: {
-        european: "6",
-        label: "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
-      },
-      offer_desired_skills: ["profile"],
-      offer_access_conditions: [],
+      offer_target_diploma: null,
+      offer_desired_skills: [],
+      offer_access_conditions: ["débutant à 1 an", "1-2 ans"],
       offer_to_be_acquired_skills: [],
-      offer_rome_codes: ["M1203"],
-      offer_creation: new Date("2024-07-05T22:14:56.000+02:00"),
-      offer_expiration: new Date("2024-09-05T20:14:56.000Z"),
+      offer_rome_codes: undefined,
+      offer_creation: new Date("2025-02-25T02:46:50.131Z"),
+      offer_expiration: new Date("2025-04-25T02:46:50.131Z"),
       offer_origin: null,
       offer_opening_count: 1,
       offer_multicast: true,
-      workplace_siret: "39837261500128",
-      workplace_name: "Stem Propreté Lyon",
-      workplace_description: "ceci est une longue description de l'entreprise qui a du sens et qui va passer la limite de 30 caractères",
+      workplace_siret: null,
+      workplace_name: "Tralala",
+      workplace_description: "Tralala est une entreprise qui recrute des gens",
       workplace_size: null,
       workplace_website: null,
       workplace_opco: null,
@@ -97,15 +172,15 @@ describe("helloWorkJobToJobsPartners", () => {
       workplace_idcc: null,
       workplace_legal_name: null,
       workplace_brand: null,
-      workplace_address_label: "VILLEURBANNE 69100",
-      workplace_address_zipcode: "69100",
-      workplace_address_city: "VILLEURBANNE",
+      workplace_address_label: "Bruguières (31)",
+      workplace_address_zipcode: "31150",
+      workplace_address_city: "Bruguières",
       workplace_address_street_label: null,
       workplace_geopoint: {
         type: "Point",
-        coordinates: [4.889070834, 45.770996568],
+        coordinates: [1.41139, 43.72417],
       },
-      apply_url: "https://www.url.com/redirect?poc=2&op=5989883668&o=1",
+      apply_url: "https://www.meteojob.com/jobads/43954570?utm_source=labonnealternance&utm_medium=aggregator-free&utm_campaign=alternance",
       errors: [],
       validated: false,
       business_error: null,

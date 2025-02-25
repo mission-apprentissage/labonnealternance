@@ -24,6 +24,8 @@ const ZMeteojobJobLocation = z.object({
 })
 type IMeteojobJobLocation = z.output<typeof ZMeteojobJobLocation>
 
+const CONTRAT_ALTERNANCE = "Alternance / Apprentissage"
+
 export const ZMeteojobJob = z
   .object({
     $: z.object({ id: z.string(), reference: z.string(), lang: z.string().nullish() }),
@@ -59,6 +61,12 @@ export const ZMeteojobJob = z
           ),
         ]),
       }),
+      length: z
+        .object({
+          _: z.string(),
+          $: z.object({ value: z.string(), unit: z.string() }),
+        })
+        .nullish(),
     }),
     workSchedule: z
       .object({
@@ -100,6 +108,7 @@ export const ZMeteojobJob = z
             ]),
           })
           .nullish(),
+        experienceLevels: z.object({ experienceLevel: z.array(z.object({ _: z.string(), $: z.object({ code: z.string() }) })) }).nullish(),
       })
       .nullable(),
   })
@@ -116,7 +125,7 @@ const sanitizeHtml = (text: string) => {
 export const meteojobJobToJobsPartners = (job: IMeteojobJob): IComputedJobsPartners => {
   const { $, title, description, link, publicationDate, lastModificationDate, position, industry, company, contract, workSchedule, benefits, profile } = job
   const workplaceLocation = job.workplace.locations.location instanceof Array ? job.workplace.locations.location[0] : job.workplace.locations.location
-  const { latitude, longitude } = geolocToLatLon(workplaceLocation)
+  const workplace_geopoint = geolocToLatLon(workplaceLocation)
 
   const urlParsing = extensions.url().safeParse(link)
   const creationDate = new Date(publicationDate)
@@ -154,20 +163,14 @@ export const meteojobJobToJobsPartners = (job: IMeteojobJob): IComputedJobsPartn
     workplace_address_zipcode: workplaceLocation?.postalCode || null,
     workplace_address_city: workplaceLocation.city || null,
     workplace_address_label: workplaceLocation.$?.label || null,
-    workplace_geopoint:
-      latitude && longitude
-        ? {
-            type: "Point",
-            coordinates: [longitude, latitude],
-          }
-        : undefined,
+    workplace_geopoint,
     contract_type:
-      contract.types.type?._ === "Alternance / Apprentissage" ||
-      (contract.types.type instanceof Array && contract.types.type.find((type) => type._ === "Alternance / Apprentissage"))
+      contract.types.type?._ === CONTRAT_ALTERNANCE || (contract.types.type instanceof Array && contract.types.type.find((type) => type._ === CONTRAT_ALTERNANCE))
         ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION]
         : undefined,
+    contract_duration: contract?.length?.$?.value ? parseInt(contract.length.$.value) : null,
     offer_desired_skills: [],
-    offer_access_conditions: [],
+    offer_access_conditions: profile?.experienceLevels?.experienceLevel?.length ? profile?.experienceLevels?.experienceLevel.map((l) => l._) : [],
     offer_multicast: true,
     offer_to_be_acquired_skills: [],
     apply_url: urlParsing.success ? urlParsing.data : null,
@@ -175,8 +178,13 @@ export const meteojobJobToJobsPartners = (job: IMeteojobJob): IComputedJobsPartn
   return partnerJob
 }
 
-const geolocToLatLon = (location: IMeteojobJobLocation) => {
-  const latitude = parseFloat(`${location.$.lat}`)
-  const longitude = parseFloat(`${location.$.lng}`)
-  return { latitude, longitude }
+const geolocToLatLon = (location: IMeteojobJobLocation): IComputedJobsPartners["workplace_geopoint"] => {
+  const { lat, lng } = location.$
+  if (!lat || !lng) return null
+  const latitude = parseFloat(lat)
+  const longitude = parseFloat(lng)
+  return {
+    type: "Point",
+    coordinates: [longitude, latitude],
+  }
 }

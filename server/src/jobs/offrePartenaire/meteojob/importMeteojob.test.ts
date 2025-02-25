@@ -27,7 +27,7 @@ describe("importHelloWork", () => {
   it("should test the import of hellowork data into computed_job_partners", async () => {
     const fileStream = fs.createReadStream("server/src/jobs/offrePartenaire/meteojob/importMeteojob.test.input.xml")
     await importMeteojobRaw(fileStream)
-    expect.soft(await getDbCollection("raw_hellowork").countDocuments({})).toBe(5)
+    expect.soft(await getDbCollection("raw_meteojob").countDocuments({})).toBe(3)
 
     await importMeteojobToComputed()
     const jobs = (
@@ -35,7 +35,7 @@ describe("importHelloWork", () => {
         .find({ partner_label: JOBPARTNERS_LABEL.METEOJOB }, { projection: { _id: 0, created_at: 0 } })
         .toArray()
     ).sort((a, b) => ((a.partner_job_id ?? "") < (b.partner_job_id ?? "") ? -1 : 1))
-    expect.soft(jobs.length).toBe(5)
+    expect.soft(jobs.length).toBe(3)
     expect.soft(jobs).toMatchSnapshot()
   })
 })
