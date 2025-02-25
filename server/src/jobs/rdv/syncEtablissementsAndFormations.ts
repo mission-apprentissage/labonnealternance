@@ -5,7 +5,7 @@ import { referrers } from "shared/constants/referers"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { logger } from "../../common/logger"
-import { create, getEmailForRdv } from "../../services/eligibleTrainingsForAppointment.service"
+import { getEmailForRdv } from "../../services/eligibleTrainingsForAppointment.service"
 import { findFirstNonBlacklistedEmail } from "../../services/formation.service"
 
 const hasDateProperty = (etablissements, propertyName) => {
@@ -135,7 +135,7 @@ export const syncEtablissementsAndFormations = async () => {
 
           const now = new Date()
 
-          await create({
+          await getDbCollection("eligible_trainings_for_appointments").insertOne({
             _id: new ObjectId(),
             created_at: now,
             last_catalogue_sync_date: now,
