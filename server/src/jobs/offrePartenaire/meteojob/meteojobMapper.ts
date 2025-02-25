@@ -165,7 +165,8 @@ export const meteojobJobToJobsPartners = (job: IMeteojobJob): IComputedJobsPartn
     workplace_address_label: workplaceLocation.$?.label || null,
     workplace_geopoint,
     contract_type:
-      contract.types.type?._ === CONTRAT_ALTERNANCE || (contract.types.type instanceof Array && contract.types.type.find((type) => type._ === CONTRAT_ALTERNANCE))
+      (!(contract.types.type instanceof Array) && contract.types.type?._ === CONTRAT_ALTERNANCE) ||
+      (contract.types.type instanceof Array && contract.types.type.find((type) => type._ === CONTRAT_ALTERNANCE))
         ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION]
         : undefined,
     contract_duration: contract?.length?.$?.value ? parseInt(contract.length.$.value) : null,
