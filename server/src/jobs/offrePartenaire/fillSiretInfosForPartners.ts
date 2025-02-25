@@ -4,6 +4,7 @@ import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERRO
 import { isEnum } from "shared/utils"
 
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getSiretInfos } from "@/services/cacheInfosSiret.service"
 import { formatEntrepriseData } from "@/services/etablissement.service"
 import { addressDetailToStreetLabel } from "@/services/geolocation.service"
@@ -41,6 +42,7 @@ export const fillSiretInfosForPartners = async (addedMatchFilter?: Filter<ICompu
         return []
       }
       if (isEnum(BusinessErrorCodes, response)) {
+        await getDbCollection("computed_jobs_partners").updateOne({ workplace_siret: siret }, { business_error: response })
         throw new Error(response)
       }
 
