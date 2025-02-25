@@ -29,7 +29,7 @@ import { importPassRaw, importPassToComputed } from "./offrePartenaire/pass/impo
 import { processJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
 import { rankJobPartners } from "./offrePartenaire/rankJobPartners"
-import { importRecruteurLbaToComputed, importRecruteursLbaRaw } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
+import { importRecruteurLbaToComputed, importRecruteursLbaRaw, removeMissingRecruteursLbaFromRaw } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
 import { importRHAlternanceRaw, importRHAlternanceToComputed } from "./offrePartenaire/rh-alternance/importRHAlternance"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -256,6 +256,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: cancelRemovedJobsPartners,
     description: "Met à jour la collection jobs_partners en mettant à 'Annulé' les offres qui ne sont plus dans computed_jobs_partners",
+  },
+  {
+    fct: removeMissingRecruteursLbaFromRaw,
+    description: "Met à jour la collection computed_jobs_partners en supprimant les entreprises qui ne sont plus dans raw_recruteurslba",
   },
   {
     fct: processApplications,
