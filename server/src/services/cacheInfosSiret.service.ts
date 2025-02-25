@@ -1,7 +1,6 @@
 import { ObjectId } from "mongodb"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { IEtablissementGouvData, ZEtablissementGouvData } from "shared/models/cacheInfosSiret.model"
-import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 
 import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -21,26 +20,23 @@ export const getSiretInfos = async (siret: string | null | undefined): Promise<B
   }
   const now = new Date()
   if (response === BusinessErrorCodes.NON_DIFFUSIBLE) {
-    await Promise.all([
-      getDbCollection("cache_siret").updateOne(
-        { siret },
-        {
-          $set: {
-            error: response,
-            updatedAt: now,
-          },
-          $setOnInsert: {
-            _id: new ObjectId(),
-            createdAt: now,
-            siret,
-          },
+    await getDbCollection("cache_siret").updateOne(
+      { siret },
+      {
+        $set: {
+          error: response,
+          updatedAt: now,
         },
-        {
-          upsert: true,
-        }
-      ),
-      getDbCollection("computed_jobs_partners").updateOne({ workplace_siret: siret }, { business_error: JOB_PARTNER_BUSINESS_ERROR.NON_DIFFUSIBLE }),
-    ])
+        $setOnInsert: {
+          _id: new ObjectId(),
+          createdAt: now,
+          siret,
+        },
+      },
+      {
+        upsert: true,
+      }
+    )
     return response
   }
   const parsedData = ZEtablissementGouvData.parse(response)
