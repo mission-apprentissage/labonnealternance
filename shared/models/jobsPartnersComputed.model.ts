@@ -24,6 +24,7 @@ export enum JOB_PARTNER_BUSINESS_ERROR {
   EXPIRED = "EXPIRED",
   CFA = "CFA",
   ROME_BLACKLISTED = "ROME_BLACKLISTED",
+  NON_DIFFUSIBLE = "NON_DIFFUSIBLE",
 }
 
 export const ZComputedJobsPartners = extensions
