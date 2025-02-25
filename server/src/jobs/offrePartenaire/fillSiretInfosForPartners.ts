@@ -42,7 +42,7 @@ export const fillSiretInfosForPartners = async (addedMatchFilter?: Filter<ICompu
         return []
       }
       if (isEnum(BusinessErrorCodes, response)) {
-        await getDbCollection("computed_jobs_partners").updateOne({ workplace_siret: siret }, { business_error: response })
+        await getDbCollection("computed_jobs_partners").updateOne({ workplace_siret: siret }, { $set: { business_error: response } })
         throw new Error(response)
       }
 
