@@ -4,6 +4,7 @@ import { IModelDescriptor, zObjectId } from "./common.js"
 
 export const ZRecruteursLbaRaw = z.object({
   _id: zObjectId,
+  partner_job_id: z.string(),
   createdAt: z.date(),
   siret: z.string(),
   enseigne: z.string(),
@@ -23,6 +24,6 @@ export type IRecruteursLbaRaw = z.output<typeof ZRecruteursLbaRaw>
 
 export default {
   zod: ZRecruteursLbaRaw,
-  indexes: [],
+  indexes: [[{ partner_job_id: 1 }, {}]],
   collectionName: "raw_recruteurslba",
 } as const satisfies IModelDescriptor

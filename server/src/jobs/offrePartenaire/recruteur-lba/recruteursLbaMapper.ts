@@ -7,12 +7,12 @@ import { IRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
 export const recruteursLbaToJobPartners = (recruteursLba: IRecruteursLbaRaw): IComputedJobsPartners => {
-  const { siret, enseigne, raison_sociale, naf_code, naf_label, street_name, street_number, zip_code, email, phone, company_size, rome_codes, _id } = recruteursLba
+  const { siret, enseigne, raison_sociale, naf_code, naf_label, street_name, street_number, zip_code, email, phone, company_size, rome_codes, partner_job_id } = recruteursLba
   return {
     ...blankComputedJobPartner(),
     _id: new ObjectId(),
     partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
-    partner_job_id: _id.toString(),
+    partner_job_id: partner_job_id,
     workplace_siret: siret,
     workplace_brand: enseigne,
     workplace_legal_name: raison_sociale,
