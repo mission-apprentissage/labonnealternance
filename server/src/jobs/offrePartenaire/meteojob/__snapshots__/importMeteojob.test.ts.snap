@@ -1,61 +1,70 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`importMeteojob > should test the import of Meteojob data into computed_job_partners 1`] = `
+exports[`importHelloWork > should test the import of hellowork data into computed_job_partners 1`] = `
 [
   {
     "apply_phone": null,
-    "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162035&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F41990977.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D41990977%26utm_content%3Dfluxexample",
+    "apply_url": "https://www.meteojob.com/jobads/00000070?utm_source=labonnealternance&utm_medium=aggregator-free&utm_campaign=alternance",
     "business_error": null,
-    "contract_duration": null,
-    "contract_remote": "onsite",
+    "contract_duration": 12,
+    "contract_remote": null,
     "contract_start": null,
-    "contract_type": null,
+    "contract_type": [
+      "Apprentissage",
+      "Professionnalisation",
+    ],
     "errors": [],
     "jobs_in_success": [],
-    "offer_access_conditions": [],
-    "offer_creation": 2024-01-30T22:21:39.000Z,
-    "offer_description": "Vous développerez l'innovation pour créer les conditions favorables à l'émergence de nouveaux usages dans nos pratiques de conseil et dans le cadre des projets clients. Vous participerez au processus de recrutement et à la montée en compétences des consultants.
-
-Vous contribuez au développement commercial en concevant des nouvelles offres, développant le portefeuille client existant, répondant aux appels d'offres clients. Vous participez aux actions de notoriété et de communication du cabinet : études de marché, publications d'articles ou d'infographies.",
-    "offer_desired_skills": [
-      "-   Expert du conseil en management et du secteur banque ou assurance.
--   Esprit entrepreneurial et appétence commerciale
--   Goût pour le numérique et l'innovation.
--   Aisance à assurer un pilotage de projet alternant présentiel et distanciel.
--   Créatif ayant la capacité à mettre en oeuvre ses idées
--   Leadership et Capacité à nouer des relations de confiance avec les clients.
--   Esprit d'équipe et d'initiative.
--   Conscient des enjeux collectifs.
--   Pédagogue qui aime transmettre ses compétences.
--   Anglais : lu, écrit, parlé.",
+    "offer_access_conditions": [
+      "débutant à 1 an",
+      "1-2 ans",
+      "3-5 ans",
+      "6-10 ans",
+      "11-20 ans",
     ],
-    "offer_expiration": 2024-03-30T22:21:39.000Z,
+    "offer_creation": 2025-02-25T02:46:50.131Z,
+    "offer_description": "
+- Identifier les pièces détachées sur les différents logiciels constructeurs.
+- Gérer les appels téléphoniques et les emails pour répondre à chaque demande.- Gérer les commandes et réceptions fournisseurs.- Réaliser les ventes clients au comptoir.- Préparer les commandes clients et techniciens.- Assurer les différents mouvements de stock via notre logiciel.- Gérer les problèmes de retour pièces.- Participer à la bonne tenue du magasin (étiquetage, rangement et nettoyage).Vous êtes emmené à faire une semaine d'école à Nantes par mois.
+
+Secteur: Recrutement et placement
+
+
+  Poste: Vendeur-magasinier (H/F)
+
+
+  Temps Plein
+
+
+  Avantages: À partir de 11,88 € par an
+
+
+  Profil: Vous êtes organisé, polyvalent, curieux et vous avez le sens du contact.Vous avez des connaissances en mécanique, électricité, hydraulique et en informatique, et ou vous avez une première expérience dans la recherche de pièce en automobile ou autre.Alors n'hésitez pas et postulez dès maintenant afin de rejoindre une équipe dynamique dans une société à taille humaine.",
+    "offer_desired_skills": [],
+    "offer_expiration": 2025-04-25T02:46:50.131Z,
     "offer_multicast": true,
     "offer_opening_count": 1,
     "offer_origin": null,
     "offer_rome_codes": null,
     "offer_status": "Active",
     "offer_status_history": [],
-    "offer_target_diploma": {
-      "european": "7",
-      "label": "Master, titre ingénieur, autres formations niveau (Bac+5)",
-    },
-    "offer_title": "Manager en Stratégie Management et Organisation H/F",
+    "offer_target_diploma": null,
+    "offer_title": "VENDEUR MAGASINIER H/F",
     "offer_to_be_acquired_skills": [],
-    "partner_job_id": "68087320",
-    "partner_label": "Hellowork",
-    "updated_at": 2024-02-25T04:36:25.000Z,
+    "partner_job_id": "00000070",
+    "partner_label": "Meteojob",
+    "updated_at": 2024-07-21T02:49:06.000Z,
     "validated": false,
-    "workplace_address_city": "VINCENNES",
-    "workplace_address_label": "VINCENNES 94300",
+    "workplace_address_city": "Babaland",
+    "workplace_address_label": "Babaland (38)",
     "workplace_address_street_label": null,
-    "workplace_address_zipcode": "94300",
+    "workplace_address_zipcode": "38990",
     "workplace_brand": null,
-    "workplace_description": "Software Consulting est un cabinet de conseil en stratégie, management et en organisation indépendant et spécialisé dans les services financiers : la banque et l'assurance.",
+    "workplace_description": "Vous avez envie de diversifier vos expériences professionnelles, de gagner en liberté et en sérénité ? Vous êtes au bon endroit ! Avec nos 2 agences réparties sur tout le territoire, nous sommes toujours plus proches de vous. Il y a plein de raisons de donner raison à notre intérim, découvrez l'intérim fait pour vous !",
     "workplace_geopoint": {
       "coordinates": [
-        2.123456789,
-        48.123456789,
+        1.31139,
+        44.12417,
       ],
       "type": "Point",
     },
@@ -63,7 +72,7 @@ Vous contribuez au développement commercial en concevant des nouvelles offres, 
     "workplace_legal_name": null,
     "workplace_naf_code": null,
     "workplace_naf_label": null,
-    "workplace_name": "Software Consulting",
+    "workplace_name": "Tralala Intérim",
     "workplace_opco": null,
     "workplace_siret": null,
     "workplace_size": null,
@@ -71,281 +80,59 @@ Vous contribuez au développement commercial en concevant des nouvelles offres, 
   },
   {
     "apply_phone": null,
-    "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162036&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F41995446.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D41995446%26utm_content%3Dfluxexample",
+    "apply_url": "https://www.meteojob.com/jobads/00000400?utm_source=labonnealternance&utm_medium=aggregator-free&utm_campaign=alternance",
     "business_error": null,
     "contract_duration": null,
     "contract_remote": null,
     "contract_start": null,
-    "contract_type": null,
-    "errors": [],
-    "jobs_in_success": [],
-    "offer_access_conditions": [],
-    "offer_creation": 2024-01-30T22:11:59.000Z,
-    "offer_description": "Votre futur poste
-
-Venez participer à la création et à l'élaboration des actions et outils de communication BtoB au sein de notre Direction Appro lait basée à Laval (53).
-
-Afin de coordonner et mettre en oeuvre les actions et outils de communication de la Direction Approvisionnement Lait France en relation avec la direction communication, vos principales missions seront :
--  Déployer la stratégie digitale et de contenu sur le site web des producteurs laitiers en cohérence avec la ligne éditoriale (Définir un planning éditorial, les contenus des publications, les publier et animer ainsi qu'assurer le reporting des actions
--  Déployer des solutions facilitant l'accès à l'information aux producteurs (portail web producteur, pushmail) dans le but d'ancrer les usages digitaux dans le comportement des producteurs, d'accroître le trafic sur le site et d'attirer de nouveaux utilisateurs.
--  Réaliser des supports d'aide à la vente (plaquettes) en coordination avec les responsables commerciaux, et assurer la création et la diffusion d'outils webmarketing.
--  Accompagner les équipes qualité & RSE sur la conception d'outils de communication à destination de nos équipes techniques et de nos producteurs
--  Mettre en oeuvre la présence de Lactalis France sur les salons et événements professionnels, organiser des événements à destination des clients
--  Concevoir les outils de communication print en lien avec le studio graphique (magazine, plaquettes, affiche, encart web)
-
-Ce poste est à pourvoir en CDI
-
-Accomplissez-vous avec engagement et plaisir au quotidien !
-
-Pourquoi nous rejoindre ?
-
-Parce que la promotion interne est au coeur de notre modèle, vous bénéficierez d'un accompagnement personnalisé et adapté à vos besoins pour construire votre projet professionnel avec des perspectives d'évolution.
-
-Vous pourrez aborder l'avenir en toute confiance avec notamment une rémunération reconnaissant votre engagement : salaire fixe sur 13 mois, prime d'objectifs, intéressement, participation et épargne salariale attractive. Vous bénéficierez par ailleurs d'une mutuelle et des avantages de votre CSE.
-
-Vous recherchez une ville à taille humaine bénéficiant d'un cadre de vie verdoyant ? Venez découvrir Laval, à seulement 1h10 de Paris et à proximité de grandes villes comme Rennes et Angers !
-
-Venez évoluer au sein d'équipes passionnées !
-
-Vos atouts
-
-Vous êtes issu d'une formation de type Master en Marketing, communication ou spécialité agri/agro, et vous justifiez idéalement d'une première expérience dans la communication. L'appétence pour le milieu AGRI/AGRO est également primordiale pour ce poste
-
-Vous maîtrisez différentes techniques de rédaction (écriture web, print), de publication on line et des outils d'analyses de trafic
-
-Et une bonne connaissance des logiciels de PAO (QuarkXPress), de retouche photo (Photoshop, InDesign, Illustrator) et en CMS (Content Management System)
-
-Enfin vous avez une bonne culture des différents procédés de mise en oeuvre des actions et des techniques nécessaires afin de contrôler la qualité des réalisations (brochures, plaquettes, site internet, réseaux sociaux) et de tenir les délais de production
-
-Et surtout, vous êtes doté d'un fort esprit de synthèse et faites preuve d'un excellent relationnel, alors ce poste est fait pour vous !
-
-Révélez votre potentiel dans un environnement « apprenant » !
-
-Ce poste correspond à votre projet ?  Alors postulez !
-
-Après un premier échange téléphonique, vous rencontrerez votre futur Manager et un Responsable Ressources Humaines.
-
-Rejoignez-nous et venez goûter à une expérience unique !",
-    "offer_desired_skills": [],
-    "offer_expiration": 2024-03-30T22:11:59.000Z,
-    "offer_multicast": true,
-    "offer_opening_count": 1,
-    "offer_origin": null,
-    "offer_rome_codes": null,
-    "offer_status": "Active",
-    "offer_status_history": [],
-    "offer_target_diploma": {
-      "european": "5",
-      "label": "BTS, DEUST, autres formations niveau (Bac+2)",
-    },
-    "offer_title": "Chargé de Communication Btob Laval 53 H/F",
-    "offer_to_be_acquired_skills": [],
-    "partner_job_id": "68090104",
-    "partner_label": "Hellowork",
-    "updated_at": 2024-02-25T04:36:28.000Z,
-    "validated": false,
-    "workplace_address_city": "LAVAL",
-    "workplace_address_label": "LAVAL 53000",
-    "workplace_address_street_label": null,
-    "workplace_address_zipcode": "53000",
-    "workplace_brand": null,
-    "workplace_description": "Vous aussi venez vivre votre #LactalisExperience !
-Fondé en 1933 par André Besnier à Laval, le Groupe Lactalis est une entreprise familiale devenue en trois générations le leader mondial des produits laitiers (250 sites de production dans 43 pays - 85 000 collaborateurs)",
-    "workplace_geopoint": {
-      "coordinates": [
-        -0.123456789,
-        48.123456789,
-      ],
-      "type": "Point",
-    },
-    "workplace_idcc": null,
-    "workplace_legal_name": null,
-    "workplace_naf_code": null,
-    "workplace_naf_label": null,
-    "workplace_name": "Lactalis",
-    "workplace_opco": null,
-    "workplace_siret": "33114255400012",
-    "workplace_size": null,
-    "workplace_website": null,
-  },
-  {
-    "apply_phone": null,
-    "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162037&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F42014902.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D42014902%26utm_content%3Dfluxexample",
-    "business_error": null,
-    "contract_duration": null,
-    "contract_remote": "hybrid",
-    "contract_start": null,
-    "contract_type": null,
-    "errors": [],
-    "jobs_in_success": [],
-    "offer_access_conditions": [],
-    "offer_creation": 2024-01-31T22:09:13.000Z,
-    "offer_description": "Nous recherchons notre futur(e) Directeur Marketing.
-
-Vos futures missions : si vous les acceptez
-
-Mission 1 : Élaboration et Développement de la Stratégie Marketing
-
-En tant que Directeur Marketing du Comptoir Général de Robinetterie, vous serez le moteur de notre succès en élaborant et en mettant en oeuvre notre stratégie marketing. Vos responsabilités clés incluront :
--  Concevoir et mettre en oeuvre une stratégie marketing en alignement avec les objectifs de l'entreprise.
--  Contribuer à la stratégie omnicanale de l'entreprise, tant en ligne qu'hors ligne.
--  Superviser le plan de déploiement et d'animation du canal de vente en ligne.
--  Élaborer et superviser le plan marketing opérationnel de l'entreprise.
--  Concevoir des plans marketing, y compris la définition des segments de marché, la tarification, la promotion et la distribution.
--  Surveiller les tendances du marché, la concurrence et les besoins des clients pour adapter la stratégie.
--  Diriger de nouveaux projets digitaux.
--  Travailler en étroite collaboration avec les équipes de vente pour développer des outils et des stratégies de vente efficaces.
--  Proposer des plans d'évolution des produits et services.
-
-Mission 2 : Définition de la Stratégie de Communication Interne et Externe
-
-Vous serez également chargé de définir la stratégie de communication interne et externe pour renforcer la visibilité de l'entreprise. Vos activités comprendront :
--  Participer à la définition de la stratégie de communication interne et externe pour atteindre les publics cibles.
--  Élaborer des plans de communication internes et externes.
--  Mettre en place des indicateurs de performance (KPI) pour évaluer l'efficacité des actions de communication.
--  Assurer la cohérence des actions de communication avec la stratégie globale.
--  Gérer le budget de communication et effectuer un reporting à la direction générale.
--  Optimiser les processus pour améliorer le service de communication.
-
-Mission 3 : Management des Équipes Marketing et Communication
-
-En tant que leader, vous dirigerez les équipes marketing et communication, coordonnerez leurs activités et encouragerez le développement professionnel. Vos activités comprendront :
--  Superviser les équipes de marketing et de communication.
--  Recruter et animer les équipes marketing.
--  Coordonner les collaborations entre les équipes marketing et les équipes commerciales.
--  Diriger et motiver l'équipe pour atteindre les objectifs fixés.
--  Évaluer et contribuer au développement professionnel de vos collaborateurs.
--  Agir pour le développement et l'épanouissement de votre équipe.",
-    "offer_desired_skills": [
-      "Exigences du poste :
--   Expérience solide en marketing, de préférence dans l'industrie de la robinetterie.
--   Connaissance des produits de robinetterie et du secteur.
--   Capacité à élaborer et exécuter des stratégies marketing efficaces.
--   Excellentes compétences en gestion d'équipe et en coordination.
--   Fortes compétences en communication, à la fois écrite et orale.
--   Diplôme en marketing, communication ou domaine connexe (un atout).",
+    "contract_type": [
+      "Apprentissage",
+      "Professionnalisation",
     ],
-    "offer_expiration": 2024-03-31T22:09:13.000Z,
-    "offer_multicast": true,
-    "offer_opening_count": 1,
-    "offer_origin": null,
-    "offer_rome_codes": null,
-    "offer_status": "Active",
-    "offer_status_history": [],
-    "offer_target_diploma": {
-      "european": "7",
-      "label": "Master, titre ingénieur, autres formations niveau (Bac+5)",
-    },
-    "offer_title": "Directeur Marketing H/F",
-    "offer_to_be_acquired_skills": [],
-    "partner_job_id": "68110296",
-    "partner_label": "Hellowork",
-    "updated_at": 2024-02-25T04:36:28.000Z,
-    "validated": false,
-    "workplace_address_city": "TINQUEUX",
-    "workplace_address_label": "TINQUEUX 51430",
-    "workplace_address_street_label": null,
-    "workplace_address_zipcode": "51430",
-    "workplace_brand": null,
-    "workplace_description": "Distributeur spécialisé en robinetterie et accessoires depuis plus de 40 ans, nous accompagnons les professionnels du Génie Climatique, du Logement et de l'Industrie dans la réussite de leurs projets.
-
-Pour ce faire, nous proposons une gamme élargie de solutions et de services associée à une logistique de pointe et à l'expertise de nos 300 collaborateurs.
-
-Nos valeurs : Respect - Bien-être - Détermination - Innovation
-
-En constante évolution pour satisfaire nos clients, nous recherchons de nouveaux talents passionnés et engagés qui souhaitent s'investir pour révolutionner durablement la distribution.
-
-Prêt à rejoindre la Team CGR ?",
-    "workplace_geopoint": {
-      "coordinates": [
-        3.989532671,
-        49.249622311,
-      ],
-      "type": "Point",
-    },
-    "workplace_idcc": null,
-    "workplace_legal_name": null,
-    "workplace_naf_code": null,
-    "workplace_naf_label": null,
-    "workplace_name": "CGR",
-    "workplace_opco": null,
-    "workplace_siret": "31882776300042",
-    "workplace_size": null,
-    "workplace_website": null,
-  },
-  {
-    "apply_phone": null,
-    "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162038&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F42016309.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D42016309%26utm_content%3Dfluxexample",
-    "business_error": null,
-    "contract_duration": null,
-    "contract_remote": "onsite",
-    "contract_start": null,
-    "contract_type": null,
     "errors": [],
     "jobs_in_success": [],
     "offer_access_conditions": [],
-    "offer_creation": 2024-01-31T22:11:11.000Z,
-    "offer_description": "La révolution robotique portée par Exotec ne fait que commencer, vous en êtes ?
+    "offer_creation": 2025-02-25T03:53:02.912Z,
+    "offer_description": "PRÊT À DEVENIR LE RAYON DE SOLEIL DE NOS BÉNÉFICIAIRES ?Vous souhaitez vous former aux métiers du service à la personne pour rendre la vie plus facile à nos bénéficiaires ? Rejoignez notre équipe, nous avons justement un poste d'assistant(e) de vie aux familles en alternance à proposer ! L'ALTERNANCENous vous proposons une formation de 12 mois qui vous permettra de repartir avec un diplôme d'Assistant(e) de vie aux familles. Tout au long de l'alternance, vous êtes formé(e) par notre centre de formation partenaire, spécialiste du service à la personne : * Formation en apprentissage sur 12 mois * Une journée de cours par semaine * Formation à distance ou en présentiel en fonction de votre secteur géographique * Suivi et accompagnement par un tuteur ou une tutrice expérimenté(e) LE QUOTIDIENChez Azaé Aix en Provence nous voyons chaque jour comme l'occasion d'apporter du réconfort et de la joie en facilitant le quotidien ! Entretien du logement, aide aux déplacements et aux soins d'hygiène, à la confection ou à la prise des repas et accompagnement lors des sorties : grâce à vos interventions, nos bénéficiaires et clients évoluent en toute sécurité dans le cadre rassurant de leur maison. La clé de notre métier : avoir vraiment envie d'aider ceux qui en ont besoin ! Notre groupe est labélisé HappyTrainees 2025 par ChooseMyCompany, un label qui atteste que nos alternants se sentent valorisés et bien accompagnés.
 
-Responsibilities
+Secteur: Services à domicile
 
--  Développer des programmes logiciels et des interfaces entre les produits Exotec et les écosystèmes logiciels des clients
--  Rédiger les spécifications pour tous les développements de logiciels des projets
--  Analyser les besoins et l'architecture logicielle des clients et faire des propositions techniques optimisées
--  Rédiger l'analyse fonctionnelle décrivant les opérations logicielles sur les systèmes
--  Assurer une passation des fonctionnalités logicielles développées aux équipes sur site
--  Soutenir (sur place ou à distance) les équipes sur site si nécessaire
 
-Requirements
+  Poste: Assistant de vie (H/F)
 
--  Vous avez une formation orientée informatique acquise en école d'ingénieur ou avec un cursus Bac +4/+5
--  Vous avez une première expérience dans le développement et/ou l'intégration de logiciels de type WMS (WMS, WCS, TMS) dans le secteur logistique
--  Vous maitrisez les compétences techniques suivantes : SQL / PostgreSQL, JavaScript, Web développement
--  Vous aimez le challenge, la diversité et la résolution de problématiques techniques innovantes
--  Vous êtes dynamique, rigoureux(se) et aimez travailler en équipe sur des missions variées
--  Vous avez un niveau d'anglais opérationnel, à l'oral comme à l'écrit
 
-Benefits
+  Temps Partiel
 
--  Couverture mutuelle et prévoyance santé compétitive
--  Primes collectives et attribution de BSPCE
--  Politique famille avantageuse
--  Programme de mobilité interne et internationale
--  Nombreuses opportunités de formation et de développement
 
-Chez Exotec, nous garantissons l'égalité des chances dans notre processus de recrutement. L'ensemble des candidatures reçues sont étudiées indépendamment de l'âge, du genre, de l'origine, de la religion, de la couleur de peau, de la nationalité, du sexe, du handicap, de l'orientation sexuelle ou de toute autre distinction protégée par la loi. Nous mettons en place un environnement de travail inclusif et respectueux de toutes les différences. En rejoignant le Pacte Parité, Exotec s'engage pour un écosystème French Tech plus paritaire",
+  Avantages: À partir de 11,88 € par heure
+
+
+  Profil: VOTRE PROFILSi aider les autres est votre mission et la bienveillance votre super-pouvoir, alors ce poste est fait pour vous ! Votre super sens relationnel et votre adaptabilité à toute situation seront vos atouts tout au long de votre expérience chez nous. AVEC AZAÉ AIX EN PROVENCE VOUS BÉNÉFICIEZ … * D'une formation diplômante et certifiante (BAC+2) reconnue par l'état et d'une expérience terrain * De notre mutuelle d'entreprise , l'accès à notre comité d'entreprise, les tickets restaurants à 7€, Des indemnités kilométriques à 0.47€ par kilomètre, Le remboursement des transports en commun (pris en charge jusqu'à 100%)Nous sommes signataire de la charte de la diversité. En ce sens, nous nous engageons à étudier chaque candidature avec la même importance.",
     "offer_desired_skills": [],
-    "offer_expiration": 2024-03-31T22:11:11.000Z,
+    "offer_expiration": 2025-04-25T03:53:02.912Z,
     "offer_multicast": true,
     "offer_opening_count": 1,
     "offer_origin": null,
     "offer_rome_codes": null,
     "offer_status": "Active",
     "offer_status_history": [],
-    "offer_target_diploma": {
-      "european": "7",
-      "label": "Master, titre ingénieur, autres formations niveau (Bac+5)",
-    },
-    "offer_title": "Ingénieur Intégration Software H/F",
+    "offer_target_diploma": null,
+    "offer_title": "Assistant(e) de Vie aux familles en alternance H/F",
     "offer_to_be_acquired_skills": [],
-    "partner_job_id": "68111676",
-    "partner_label": "Hellowork",
-    "updated_at": 2024-02-25T04:36:28.000Z,
+    "partner_job_id": "00000400",
+    "partner_label": "Meteojob",
+    "updated_at": 2024-07-21T02:49:06.000Z,
     "validated": false,
-    "workplace_address_city": "LILLE",
-    "workplace_address_label": "LILLE 59160",
+    "workplace_address_city": "Aix-en-Provence",
+    "workplace_address_label": "Aix-en-Provence (13)",
     "workplace_address_street_label": null,
-    "workplace_address_zipcode": "59160",
+    "workplace_address_zipcode": "13540",
     "workplace_brand": null,
-    "workplace_description": "Chez Exotec, nous mettons l'excellence technologique au service de la redéfinition des relations entre humains et robots. A travers le monde, nos solutions révolutionnent la façon dont nos clients délivrent leurs produits aux consommateurs finaux. Nous contribuons au succès des plus grandes marques du commerce et de l'industrie, tout en améliorant les conditions de travail de leurs salariés.
-
-Par l'alliance de l'intelligence artificielle et d'un hardware performant, nos robots sont désormais déployés dans le monde entier et leur succès a fait de nous la première licorne industrielle française.
-
-Rejoindre Exotec, c'est l'opportunité de donner du sens à vos compétences. Grandissez avec plus de 600 ExoPeople dans le monde entier pour faire de vos idées, des réalités.",
+    "workplace_description": "Vieuxaumieux Aix en Provence fait partie du groupe Vieuxaumieux, spécialisé dans les services à la personne et représenté par deux marques : Vieuxaumieux et Vieuxaumieux.C'est au travers de ses 316 agences de proximité sur l'ensemble de l'hexagone que le groupe propose ses services d'aide à domicile.Respect, bien être et considération sont les moteurs de nos actions. Ces valeurs influent sur la façon dont nous travaillons ensemble et accompagnons nos clients et bénéficiaires au quotidien.",
     "workplace_geopoint": {
       "coordinates": [
-        3.04783272312,
-        50.6317183168,
+        5.44556,
+        43.52778,
       ],
       "type": "Point",
     },
@@ -353,87 +140,78 @@ Rejoindre Exotec, c'est l'opportunité de donner du sens à vos compétences. Gr
     "workplace_legal_name": null,
     "workplace_naf_code": null,
     "workplace_naf_label": null,
-    "workplace_name": "Exotec",
+    "workplace_name": "Vieuxaumieux",
     "workplace_opco": null,
-    "workplace_siret": "81287874200038",
+    "workplace_siret": null,
     "workplace_size": null,
     "workplace_website": null,
   },
   {
     "apply_phone": null,
-    "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162039&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F42018480.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D42018480%26utm_content%3Dfluxexample",
+    "apply_url": "https://www.meteojob.com/jobads/00000629?utm_source=labonnealternance&utm_medium=aggregator-free&utm_campaign=alternance",
     "business_error": null,
     "contract_duration": null,
-    "contract_remote": "onsite",
+    "contract_remote": null,
     "contract_start": null,
-    "contract_type": null,
+    "contract_type": [
+      "Apprentissage",
+      "Professionnalisation",
+    ],
     "errors": [],
     "jobs_in_success": [],
-    "offer_access_conditions": [],
-    "offer_creation": 2024-01-31T22:22:17.000Z,
-    "offer_description": "Prendre en charge plusieurs projets de développement de produits sous la responsabilité d'un responsable de gamme.
-
-Suivre le cahier des charges Marketing pour définir et figer les spécifications du produit.
-
-Travailler avec les achats pour définir un prix produit et le garantir - make or buy.
-
-Etablir le besoin du projet en ressources, budget et son planning et veiller à les respecter.
-
-Rendre compte au responsable de gamme et à la direction des avancées, besoins et risques du projet.
-
-Piloter les actions pluridisciplinaires (électronique, mécanique, logiciel, validation) des équipes internes et fournisseurs qui conditionnent la fabrication industrielle d'un produit, de la conception à la mise en production. Mettre en place les outils de gestion liés aux produits (documents techniques, structures informatiques, bases de données) et tenir à jour ces données (plans, nomenclatures, procédures).
-
-Veiller à la qualification du produit en collaboration avec les équipes validation et également les organismes de certifications extérieurs.
-
-Veiller à la mise en oeuvre des livrables attendus à chaque jalon (spécification, plans, nomenclatures, schémas électroniques, logiciel, procédures).
-
-Être le premier contact des partenaires, fournisseurs et sous-traitants pour toutes les questions liées à l'industrialisation. Assurer les actions nécessaires à la maintenance des produits en vie série (création / validation kits SAV, gestion obsolescence composants, correction bugs, programme de réduction des coûts)
-
-Assurer les actions nécessaires à la maintenance des produits en vie série (création / validation kits SAV, gestion obsolescence composants, correction bugs, programme de réduction des coûts).",
-    "offer_desired_skills": [
-      "FORMATION - Formation d'Ingénieur généraliste ou industriel ou Mécanique,
-
-Electronique.
-
-EXPERIENCE - 3 à 5 ans dans le domaine industriel, plus
-
-particulièrement dans une entreprise de conception, production, commercialisation
-
-de produits assemblés.
-
-QUALITES - Rigueur, capacité à s'organiser, leadership, communication, pragmatisme, autonomie
-
-LANGUES - Anglais courant.
-
-Ref : 1jvie4rokd",
+    "offer_access_conditions": [
+      "débutant à 1 an",
+      "1-2 ans",
+      "3-5 ans",
+      "6-10 ans",
+      "11-20 ans",
     ],
-    "offer_expiration": 2024-03-31T22:22:17.000Z,
+    "offer_creation": 2025-02-25T02:46:34.914Z,
+    "offer_description": "
+Commercialisation de tous les produits de formations en apprentissage et titre professionnel
+Une expertise sur les financements POEI, POEC et sur l'alternance dans le département 86.
+
+Secteur: Recrutement et placement
+
+
+  Poste: Commercial (H/F)
+
+
+  Temps Plein
+
+
+  Avantages: 26 000 € - 30 000 € par an
+
+
+  Profil: Adepte du terrainDéfier les objectifs commerciauxEnrichir des ventes et des margesProspecter, Négocier, Fidéliser et Satisfaire les clients existantsEtre engagé et orienté dans la politique RSE, Handicap, QVCT dans l'innovation et l'humain.
+Rémunération Et Avantages :Salaire selon profil sur 13 mois avec un variable mensuelVariable garanti pendant les 3 premiers mois dès la prise de posteVéhicule de service 5 places et carte essenceOutils de communication (PC, tablette et téléphone)Participation / Intéressement / Tickets restaurant 9.50€19 RTTCET / Plan d'Epargne Retraite Collectif PERCOLCSEUn programme d'intégration et d'accompagnement tout au long de votre parcours professionnelDes possibilités d'évolution professionnelle et de développement des compétences (catalogue de formations à disposition)Cette offre vous intéresse et votre profil correspond à celui recherché, contactez-nous sans attendre ou postulez en ligne via notre application téléchargeable sur votre smartphone : « MY Tralal »Tralal Intérim POITIERSA bientôt chez Tralal …",
+    "offer_desired_skills": [],
+    "offer_expiration": 2025-04-25T02:46:34.914Z,
     "offer_multicast": true,
     "offer_opening_count": 1,
     "offer_origin": null,
     "offer_rome_codes": null,
     "offer_status": "Active",
     "offer_status_history": [],
-    "offer_target_diploma": {
-      "european": "3",
-      "label": "Cap, autres formations niveau (Infrabac)",
-    },
-    "offer_title": "Chef de Projet Photo H/F",
+    "offer_target_diploma": null,
+    "offer_title": "Commercial(e) H/F",
     "offer_to_be_acquired_skills": [],
-    "partner_job_id": "68113693",
-    "partner_label": "Hellowork",
-    "updated_at": 2024-02-25T04:36:31.000Z,
+    "partner_job_id": "00000629",
+    "partner_label": "Meteojob",
+    "updated_at": 2024-07-21T02:49:06.000Z,
     "validated": false,
-    "workplace_address_city": "ECHIROLLES",
-    "workplace_address_label": "ECHIROLLES 38130",
+    "workplace_address_city": "Poitiers",
+    "workplace_address_label": "Poitiers (86)",
     "workplace_address_street_label": null,
-    "workplace_address_zipcode": "38130",
+    "workplace_address_zipcode": "86000",
     "workplace_brand": null,
-    "workplace_description": "ME GROUP (Photomaton) développe et commercialise des distributeurs automatiques en libre-service à valeur ajoutée. Aujourd'hui, nous sommes un acteur majeur dans des secteurs aussi divers que la photographie, l'alimentation et les laveries automatiques.",
+    "workplace_description": "
+Vous avez envie de diversifier vos expériences professionnelles, de gagner en liberté et en sérénité ? Vous êtes au bon endroit ! Avec nos 190 agences réparties sur tout le territoire, nous sommes toujours plus proches de vous. Il y a plein de raisons de donner raison à notre intérim, découvrez l'intérim fait pour vous !
+L'agence RAS Intérim de Poitiers recherche un(e) commercial(e) H/F pour l'un de nos clients spécialisé dans la formation à Poitiers.",
     "workplace_geopoint": {
       "coordinates": [
-        5.71535600177,
-        45.1471647181,
+        0.33528,
+        46.58111,
       ],
       "type": "Point",
     },
@@ -441,9 +219,9 @@ Ref : 1jvie4rokd",
     "workplace_legal_name": null,
     "workplace_naf_code": null,
     "workplace_naf_label": null,
-    "workplace_name": "ME GROUP",
+    "workplace_name": "Tralala Intérim",
     "workplace_opco": null,
-    "workplace_siret": "81986335800019",
+    "workplace_siret": null,
     "workplace_size": null,
     "workplace_website": null,
   },
