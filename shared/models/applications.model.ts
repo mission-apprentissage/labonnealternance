@@ -21,6 +21,13 @@ export enum ApplicationScanStatus {
   ERROR_APPLICANT_NOT_FOUND = "ERROR_APPLICANT_NOT_FOUND",
 }
 
+export enum CompanyFeebackSendStatus {
+  SENT = "SENT",
+  CANCELED = "CANCELED",
+  SCHEDULED = "SCHEDULED",
+  ERROR = "ERROR",
+}
+
 const ZApplicationOld = z
   .object({
     _id: zObjectId,
@@ -47,9 +54,11 @@ const ZApplicationOld = z
     applicant_message_to_company: z.string().nullable().describe("Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat."),
     job_searched_by_user: z.string().nullish().describe("Métier recherché par le candidat"),
     company_recruitment_intention: z.string().nullish().describe("L'intention de la société vis à vis du candidat"),
+    company_recruitment_intention_date: z.date().nullable().describe("Date d'enregistrement d'intention/avis programmé"),
     company_feedback: z.string().nullish().describe("L'avis donné par la société"),
     company_feedback_reasons: z.array(extensions.buildEnum(RefusalReasons)).nullish(),
     company_feedback_date: z.date().nullish().describe("Date d'intention/avis donnée"),
+    company_feedback_send_status: extensions.buildEnum(CompanyFeebackSendStatus).nullable().describe("Etat de l'envoi de l'intention de recrutement"),
     company_siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
     company_email: z.string().describe("Email de l'entreprise"),
     company_phone: z.string().nullish().describe("Numéro de téléphone du recruteur"),
@@ -127,6 +136,8 @@ export const ZNewApplication = ZApplicationOld.extend({
     to_applicant_message_id: true,
     to_company_message_id: true,
     company_recruitment_intention: true,
+    company_recruitment_intention_date: true,
+    company_feedback_send_status: true,
     company_feedback: true,
     company_feedback_date: true,
     created_at: true,
@@ -175,6 +186,8 @@ const ZNewApplicationTransitionToV2 = ZApplicationOld.extend({
     company_recruitment_intention: true,
     company_feedback: true,
     company_feedback_date: true,
+    company_recruitment_intention_date: true,
+    company_feedback_send_status: true,
     created_at: true,
     scan_status: true,
     last_update_at: true,
@@ -183,7 +196,7 @@ const ZNewApplicationTransitionToV2 = ZApplicationOld.extend({
 // KBA 20241011 to remove once V2 is LIVE and V1 support has ended
 export type INewApplicationV1 = z.output<typeof ZNewApplicationTransitionToV2>
 
-export const ZJobCollectionName = z.enum(["recruteurslba", "partners", "recruiters"])
+export const ZJobCollectionName = z.enum(["partners", "recruiters"])
 export const JobCollectionName = ZJobCollectionName.enum
 export type IJobCollectionName = z.output<typeof ZJobCollectionName>
 

@@ -1,8 +1,9 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Accordion, Box, Flex, Image, Link, Text } from "@chakra-ui/react"
+import { Accordion, Box, Flex, Image, Link, ListItem, Text, UnorderedList } from "@chakra-ui/react"
 import Head from "next/head"
 import React, { useEffect } from "react"
 import { ILbaItemPartnerJob } from "shared"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { SendPlausibleEvent } from "../../../utils/plausible"
@@ -14,6 +15,7 @@ import ItemGoogleSearchLink from "../ItemDetailServices/ItemGoogleSearchLink"
 import ItemLocalisation from "../ItemDetailServices/ItemLocalisation"
 import ItemWebsiteLink from "../ItemDetailServices/ItemWebsiteLink"
 import { JobDescription, JobDescriptionAccordion } from "../ItemDetailServices/JobDescription"
+import { ReportJobLink } from "../ReportJobLink"
 
 const getContractTypes = (contractTypes) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
@@ -77,6 +79,33 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJob; titl
           <JobDescription job={job} />
           <JobDescriptionAccordion title="Qualités souhaitées pour ce poste" items={job?.job?.offer_desired_skills} />
         </Accordion>
+        <Box marginTop="10px">
+          <ReportJobLink
+            itemId={job?.job?.id}
+            type={LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES}
+            linkLabelNotReported="Signaler l'offre"
+            linkLabelReported="Offre signalée"
+            tooltip={
+              <Box>
+                <Text fontSize="16px" lineHeight="24px" fontWeight="700" marginBottom="8px" color="#161616">
+                  Cette offre vous semble inappropriée ? Voici les raisons pour lesquelles vous pouvez nous signaler une offre :
+                </Text>
+                <UnorderedList
+                  style={{
+                    color: "#383838",
+                    fontSize: "16px",
+                    lineHeight: "24px",
+                  }}
+                >
+                  <ListItem>Offre offensante ou discriminatoire</ListItem>
+                  <ListItem>Offre inexacte ou expirée</ListItem>
+                  <ListItem>Fausse offre provenant d’un centre de formation</ListItem>
+                  <ListItem>Tentative d'escroquerie</ListItem>
+                </UnorderedList>
+              </Box>
+            }
+          />
+        </Box>
       </Box>
 
       <Flex padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>

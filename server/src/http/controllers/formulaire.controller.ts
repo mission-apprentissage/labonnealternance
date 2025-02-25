@@ -1,5 +1,5 @@
 import { badRequest, conflict, internal, notFound } from "@hapi/boom"
-import { OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants"
+import { RECRUITER_STATUS } from "shared/constants"
 import { JOB_STATUS, zRoutes } from "shared/index"
 
 import { getUserFromRequest } from "@/security/authenticationService"
@@ -21,7 +21,7 @@ import {
   getJob,
   getJobWithRomeDetail,
   getOffre,
-  patchJobDelegation,
+  updateJobDelegation,
   patchOffre,
   provideOffre,
   validateUserEmailFromJobId,
@@ -94,8 +94,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { userId: userRecruteurId } = req.params
-      const { establishment_siret, email, last_name, first_name, phone, idcc } = req.body
-      const opco = req.body?.opco as OPCOS_LABEL
+      const { establishment_siret, email, last_name, first_name, phone } = req.body
       const userRecruteurOpt = await getUserRecruteurById(userRecruteurId)
       if (!userRecruteurOpt) {
         throw badRequest("Nous n'avons pas trouvé votre compte utilisateur")
@@ -111,8 +110,6 @@ export default (server: Server) => {
         siret: establishment_siret,
         cfa_delegated_siret: userRecruteurOpt.establishment_siret,
         origin: userRecruteurOpt.scope ?? "",
-        opco: opco || OPCOS_LABEL.UNKNOWN_OPCO,
-        idcc,
         managedBy: userRecruteurOpt._id.toString(),
       })
       if ("error" in response) {
@@ -151,7 +148,6 @@ export default (server: Server) => {
       if (!offre) {
         throw badRequest("L'offre n'existe pas")
       }
-
       res.status(200).send(offre)
     }
   )
@@ -331,47 +327,28 @@ export default (server: Server) => {
    * Met à jour la date de lecture de la delegation d'une offre
    */
   server.patch(
-    "/formulaire/offre/:jobId/delegation",
+    "/formulaire/offre/:jobId/delegation/view",
     {
-      schema: zRoutes.patch["/formulaire/offre/:jobId/delegation"],
-      onRequest: [server.auth(zRoutes.patch["/formulaire/offre/:jobId/delegation"])],
+      schema: zRoutes.patch["/formulaire/offre/:jobId/delegation/view"],
+      onRequest: [server.auth(zRoutes.patch["/formulaire/offre/:jobId/delegation/view"])],
     },
     async (req, res) => {
       const { jobId } = req.params
       const { siret_formateur } = req.query
 
-      const exists = await checkOffreExists(jobId)
-
-      if (!exists) {
+      const offre = await getJob(jobId.toString())
+      if (!offre) {
         throw badRequest("L'offre n'existe pas.")
       }
-
-      const offre = await getJob(jobId.toString())
-
-      const delegations = offre?.delegations
-
-      if (!delegations) {
+      const delegation = offre.delegations?.find((delegation) => delegation.siret_code === siret_formateur)
+      if (!delegation) {
         throw badRequest("Le siret formateur n'a pas été proposé à l'offre.")
       }
-
-      const delegationFound = delegations.find((delegation) => delegation.siret_code == siret_formateur)
-
-      if (!delegationFound) {
-        throw badRequest("Le siret formateur n'a pas été proposé à l'offre.")
+      if (!delegation.cfa_read_company_detail_at) {
+        delegation.cfa_read_company_detail_at = new Date()
       }
 
-      const updatedDelegations = delegations.map((delegation) => {
-        // Save the date of the first read of the company detail
-        if (delegation.siret_code === delegationFound.siret_code && !delegation.cfa_read_company_detail_at) {
-          return {
-            ...delegation,
-            cfa_read_company_detail_at: new Date(),
-          }
-        }
-        return delegation
-      })
-
-      await patchJobDelegation(jobId, updatedDelegations)
+      await updateJobDelegation(jobId, delegation)
 
       return res.send({})
     }

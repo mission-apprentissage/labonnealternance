@@ -1,13 +1,9 @@
 import { Box, Divider, Flex, Heading, Link, Text } from "@chakra-ui/react"
-import { useRouter } from "next/router"
 import { IoMail } from "react-icons/io5"
 
 import { AuthentificationLayout } from "../../../components/espace_pro"
 
 export default function ConfirmationCreationCompte() {
-  const router = useRouter()
-  const { email } = router.query
-
   return (
     <AuthentificationLayout>
       <Box px={["6", "8"]} pt={["6w", "12w"]}>
@@ -15,9 +11,7 @@ export default function ConfirmationCreationCompte() {
           Vérifiez votre messagerie
         </Heading>
         <Box fontSize={["16px", "22px"]}>
-          <Text>
-            Nous vous avons envoyé un email à <strong>{email}</strong> avec un lien de confirmation. Celui-ci sera valide pour les 60 prochaines minutes.
-          </Text>
+          <Text>Nous vous avons envoyé un email renseigné précédement avec un lien de confirmation. Celui-ci sera valide pour les 60 prochaines minutes.</Text>
         </Box>
 
         <Divider my={6} w="20%" />

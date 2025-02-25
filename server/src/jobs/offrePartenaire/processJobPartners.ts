@@ -9,7 +9,7 @@ import { importFromComputedToJobsPartners } from "./importFromComputedToJobsPart
 import { importMeteojobRaw, importMeteojobToComputed } from "./meteojob/importMeteojob"
 import { importRHAlternanceRaw, importRHAlternanceToComputed } from "./rh-alternance/importRHAlternance"
 
-export const jobPartnersByFlux = Object.values(JOBPARTNERS_LABEL)
+export const jobPartnersByFlux = Object.values(JOBPARTNERS_LABEL).filter((v) => v !== JOBPARTNERS_LABEL.RECRUTEURS_LBA)
 
 export const processJobPartners = async () => {
   const filter = { partner_label: { $in: jobPartnersByFlux } }

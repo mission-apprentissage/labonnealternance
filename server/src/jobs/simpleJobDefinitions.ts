@@ -1,3 +1,4 @@
+import { processRecruteursLba } from "@/jobs/offrePartenaire/processRecruteursLba"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
@@ -13,6 +14,8 @@ import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formation
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
+import { blockBadRomeJobsPartners } from "./offrePartenaire/blockBadRomeJobsPartners"
+import { blockJobsPartnersWithNaf85 } from "./offrePartenaire/blockJobsPartnersWithNaf85"
 import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
 import { detectDuplicateJobPartners } from "./offrePartenaire/detectDuplicateJobPartners"
 import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
@@ -26,6 +29,7 @@ import { importPassRaw, importPassToComputed } from "./offrePartenaire/pass/impo
 import { processJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
 import { rankJobPartners } from "./offrePartenaire/rankJobPartners"
+import { importRecruteurLbaToComputed, importRecruteursLbaRaw } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
 import { importRHAlternanceRaw, importRHAlternanceToComputed } from "./offrePartenaire/rh-alternance/importRHAlternance"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -194,6 +198,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "import des offres France Travail dans la collection raw",
   },
   {
+    fct: importRecruteursLbaRaw,
+    description: "import des recruteurs lba dans la collection raw",
+  },
+  {
     fct: classifyFranceTravailJobs,
     description: "Retirer les offres de CFA des offres France travail dans la collection raw",
   },
@@ -218,6 +226,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: importFranceTravailToComputed,
     description: "Importe les offres France Travail depuis raw vers computed",
   },
+  {
+    fct: importRecruteurLbaToComputed,
+    description: "Importe les recruteurs lba depuis raw vers computed",
+  },
   // IMPORT COMPUTED TO JOBS PARTNERS
   {
     fct: importFromComputedToJobsPartners,
@@ -232,6 +244,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processJobPartners,
     description: "Chaîne complète de traitement des jobs_partners",
+  },
+  {
+    fct: processRecruteursLba,
+    description: "Chaîne complète de traitement des entreprises issues de l'algo pour jobs_partners",
   },
   {
     fct: processJobPartnersForApi,
@@ -276,5 +292,13 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: rankJobPartners,
     description: "Calcule le rank des computed job partners",
+  },
+  {
+    fct: blockBadRomeJobsPartners,
+    description: "Bloque les jobs partners avec des mauvais code ROME",
+  },
+  {
+    fct: blockJobsPartnersWithNaf85,
+    description: "Passe les jobs partners en business erreur pour ceux qui ont un naf commençant par 85",
   },
 ]

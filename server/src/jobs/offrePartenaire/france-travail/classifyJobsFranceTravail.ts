@@ -60,7 +60,7 @@ Une fois que tu as déterminé si les offres sont de type CFA, Entreprise ou Ent
     }
     return response
   } catch (error) {
-    console.log(error)
+    console.error(error)
   }
 }
 

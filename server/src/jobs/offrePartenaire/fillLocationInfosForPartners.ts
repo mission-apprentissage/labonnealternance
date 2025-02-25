@@ -10,7 +10,6 @@ export const fillLocationInfosForPartners = async (addedMatchFilter?: Filter<ICo
   const sourceFields = ["workplace_address_label"] as const satisfies (keyof IComputedJobsPartners)[]
 
   const filledFields = [
-    "partner_label",
     "workplace_address_label",
     "workplace_address_street_label",
     "workplace_address_city",

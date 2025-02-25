@@ -1,18 +1,21 @@
 import { z } from "zod"
 
+import { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
 import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 
 import { ZPointGeometry } from "./address.model.js"
 import { IModelDescriptor, zObjectId } from "./common.js"
 import { JOB_STATUS_ENGLISH } from "./job.model.js"
+import { ZComputedJobPartnersDuplicateRef } from "./jobPartnersDuplicateRef.js"
 import { zOpcoLabel } from "./opco.model.js"
 
 const collectionName = "jobs_partners" as const
 
 export enum JOBPARTNERS_LABEL {
+  OFFRES_EMPLOI_LBA = LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
+  RECRUTEURS_LBA = LBA_ITEM_TYPE.RECRUTEURS_LBA,
   HELLOWORK = "Hellowork",
-  OFFRES_EMPLOI_LBA = "La bonne alternance",
   FRANCE_TRAVAIL = "France Travail",
   RH_ALTERNANCE = "RH Alternance",
   PASS = "PASS",
@@ -113,11 +116,18 @@ export const ZJobsPartnersOfferPrivate = ZJobsPartnersOfferApi.omit({
     _id: zObjectId,
     apply_url: ZJobsPartnersOfferApi.shape.apply_url.nullable().default(null),
     rank: z.number().nullish().describe("Valeur indiquant la qualité de l'offre. Plus la valeur est élevée, plus la qualité de l'offre est importante"),
+    duplicates: z.array(ZComputedJobPartnersDuplicateRef).nullish().describe("Référence les autres offres en duplicata avec celle-ci"),
   })
 
 export const ZJobsPartnersOfferPrivateWithDistance = ZJobsPartnersOfferPrivate.extend({
   distance: z.number().nullish(),
 })
+
+export const ZJobsPartnersRecruteurAlgoPrivate = ZJobsPartnersOfferPrivate.omit({ workplace_siret: true, workplace_legal_name: true }).extend({
+  workplace_siret: z.string().describe("Siret toujours présent pour les entreprises issue de l'algo"),
+  workplace_legal_name: z.string().describe("Raison sociale toujours présente pour les entreprises issue de l'algo"),
+})
+export type IJobsPartnersRecruteurAlgoPrivate = z.output<typeof ZJobsPartnersRecruteurAlgoPrivate>
 
 export type IJobsPartnersRecruiterApi = z.output<typeof ZJobsPartnersRecruiterApi>
 export type IJobsPartnersOfferApi = z.output<typeof ZJobsPartnersOfferApi>
@@ -209,6 +219,8 @@ export default {
     [{ partner_label: 1, partner_job_id: 1 }, { unique: true }],
     [{ partner_label: 1 }, {}],
     [{ offer_status: 1 }, {}],
+    [{ "duplicates.partner_job_id": 1 }, {}],
+    [{ "duplicates.partner_job_label": 1 }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor

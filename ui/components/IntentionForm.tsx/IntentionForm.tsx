@@ -67,7 +67,7 @@ const getText = ({
 export const IntentionForm = ({ company_recruitment_intention, id, token }: { company_recruitment_intention: ApplicationIntention; id: string; token: string | undefined }) => {
   const { data, error } = useQuery("getApplicationDataForIntention", () => getApplicationDataForIntention(id, company_recruitment_intention, token), {
     retry: false,
-    onError: (error: { message: string }) => console.log(`Something went wrong: ${error.message}`),
+    onError: (error: { message: string }) => console.error(`Something went wrong: ${error.message}`),
   })
 
   const [sendingState, setSendingState] = useState<"not_sent" | "ok_sent" | "not_sent_because_of_errors" | "canceled">("not_sent")
@@ -191,7 +191,6 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
                         <CustomFormControl label="Précisez la ou les raison(s) de votre refus :" required={false} name="refusal_reasons">
                           <CheckboxGroup
                             onChange={(value) => {
-                              console.log("value : ", value)
                               setFieldValue("refusal_reasons", value)
                             }}
                           >
