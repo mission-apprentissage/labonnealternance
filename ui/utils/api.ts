@@ -34,8 +34,8 @@ export const getOffre = (jobId: string) => apiGet("/formulaire/offre/f/:jobId", 
 export const createOffre = (establishment_id: string, newOffre: IJobCreate) => apiPost("/formulaire/:establishment_id/offre", { params: { establishment_id }, body: newOffre })
 export const createOffreByToken = (establishment_id: string, newOffre: IJobCreate, token: string) =>
   apiPost("/formulaire/:establishment_id/offre/by-token", { params: { establishment_id }, body: newOffre, headers: { authorization: `Bearer ${token}` } })
-export const patchOffreDelegation = (jobId: string, siret: string) =>
-  apiPatch(`/formulaire/offre/:jobId/delegation`, { params: { jobId }, querystring: { siret_formateur: siret } }).catch(errorHandler)
+export const viewOffreDelegation = (jobId: string, siret: string, token: string) =>
+  apiPatch(`/formulaire/offre/:jobId/delegation/view`, { params: { jobId }, querystring: { siret_formateur: siret }, headers: { authorization: `Bearer ${token}` } })
 // need a function to cancel partner jobs : add the job_origin from the application in the url - refactor ui/pages/espace-pro/offre/[jobId]/[option].tsx needed
 export const cancelPartnerJob = (id, token) => apiPost("/v2/_private/jobs/canceled/:id", { params: { id }, headers: { authorization: `Bearer ${token}` } })
 export const providedPartnerJob = (id, token) => apiPost("/v2/_private/jobs/provided/:id", { params: { id }, headers: { authorization: `Bearer ${token}` } })

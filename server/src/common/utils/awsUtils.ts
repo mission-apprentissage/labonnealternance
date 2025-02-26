@@ -1,3 +1,5 @@
+import { Readable } from "node:stream"
+
 import { DeleteObjectCommand, GetObjectCommand, HeadObjectCommand, PutObjectCommand, PutObjectRequest, S3Client, S3ClientConfig } from "@aws-sdk/client-s3"
 import { Upload } from "@aws-sdk/lib-storage"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
@@ -28,7 +30,8 @@ function getBucketName(bucket: Bucket) {
 export async function s3ReadAsStream(bucket: Bucket, key: string) {
   try {
     const object = await s3Client.send(new GetObjectCommand({ Bucket: getBucketName(bucket), Key: key }))
-    return object.Body?.transformToWebStream()
+    const webStream = object.Body?.transformToWebStream()
+    return Readable.fromWeb(webStream as any)
   } catch (error: any) {
     const newError = internal(`Error reading S3 file stream`, { key: key, bucket: getBucketName(bucket) })
     newError.cause = error.message
@@ -86,22 +89,24 @@ export async function s3Delete(bucket: Bucket, fileKey: string) {
 }
 
 export const s3SignedUrl = async (bucket: Bucket, key: string, options: RequestPresigningArguments = {}) => {
+  const bucketName = getBucketName(bucket)
   try {
-    const url = getSignedUrl(s3Client, new GetObjectCommand({ Bucket: bucket, Key: key }), options)
+    const url = getSignedUrl(s3Client, new GetObjectCommand({ Bucket: bucketName, Key: key }), options)
     return url
   } catch (error: any) {
-    const newError = internal(`error getting s3 file url`, { key, bucket })
+    const newError = internal(`error getting s3 file url`, { key, bucketName })
     newError.cause = error.message
     throw newError
   }
 }
 
 export const getS3FileLastUpdate = async (bucket: Bucket, key: string): Promise<Date | null> => {
+  const bucketName = getBucketName(bucket)
   try {
-    const headResponse = await s3Client.send(new HeadObjectCommand({ Bucket: bucket, Key: key }))
+    const headResponse = await s3Client.send(new HeadObjectCommand({ Bucket: bucketName, Key: key }))
     return headResponse.LastModified ? new Date(headResponse.LastModified) : null
   } catch (error: any) {
-    const newError = internal(`error getting s3 head object`, { key, bucket })
+    const newError = internal(`error getting s3 head object`, { key, bucketName })
     newError.cause = error.message
     throw newError
   }

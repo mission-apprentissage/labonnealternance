@@ -167,6 +167,17 @@ export function createViewDelegationLink(email: string, establishment_id: string
           querystring: undefined,
         },
       }),
+      generateScope({
+        schema: zRoutes.patch["/formulaire/offre/:jobId/delegation/view"],
+        options: {
+          params: {
+            jobId: job_id,
+          },
+          querystring: {
+            siret_formateur,
+          },
+        },
+      }),
     ],
     {
       expiresIn: "30d",

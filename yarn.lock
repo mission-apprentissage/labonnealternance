@@ -16132,6 +16132,7 @@ __metadata:
     prettier: ^3.0.3
     semantic-release: ^21.1.1
     semantic-release-slack-bot: ^4.0.2
+    stream-json: ^1.9.1
     ts-node: ^10.9.1
     type-fest: ^4.18.2
     typescript: ^5.4.5
@@ -20947,7 +20948,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stream-json@npm:^1.8.0":
+"stream-json@npm:^1.8.0, stream-json@npm:^1.9.1":
   version: 1.9.1
   resolution: "stream-json@npm:1.9.1"
   dependencies:

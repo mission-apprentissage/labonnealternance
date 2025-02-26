@@ -112,8 +112,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "enum": [
                 "Compétences insuffisantes ou non adaptées",
                 "Manque de personnalisation de la candidature",
-                "Fautes d'orthographe",
-                "Manque de clarté du CV",
                 "Avis négatif sur l’école/la formation",
                 "Type de contrat inadapté",
                 "Notre entreprise ne recrute pas sur le métier recherché",
@@ -8149,8 +8147,14 @@ Limite : 5 appel(s) / 1 seconde(s)
             "schema": {
               "items": {
                 "enum": [
+                  "offres_emploi_lba",
+                  "OFFRES_EMPLOI_LBA",
+                  "recruteurs_lba",
+                  "RECRUTEURS_LBA",
                   "Hellowork",
+                  "France Travail",
                   "RH Alternance",
+                  "PASS",
                 ],
                 "type": "string",
               },

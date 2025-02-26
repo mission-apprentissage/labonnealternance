@@ -1,3 +1,5 @@
+import { StaticImageData } from "next/image"
+
 import opco2i from "@/public/images/logosPartenaires/partenaire-opco-2i.webp"
 import opcoafdas from "@/public/images/logosPartenaires/partenaire-opco-afdas.webp"
 import opcoakto from "@/public/images/logosPartenaires/partenaire-opco-akto.webp"
@@ -9,8 +11,14 @@ import opcomobilite from "@/public/images/logosPartenaires/partenaire-opco-mobil
 import ocapiat from "@/public/images/logosPartenaires/partenaire-opco-ocapiat.webp"
 import opcosante from "@/public/images/logosPartenaires/partenaire-opco-sante.webp"
 import opcouniformation from "@/public/images/logosPartenaires/partenaire-opco-uniformation.webp"
-// eslint-disable-next-line import/no-anonymous-default-export
-export default [
+
+export type InfosOpco = {
+  nom: string
+  description: string
+  image: StaticImageData | string
+}
+
+export const infosOpcos: InfosOpco[] = [
   {
     nom: "AFDAS",
     description:

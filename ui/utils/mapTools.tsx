@@ -254,7 +254,7 @@ const dispatchScrollToItem = (item) => {
     const element = document.getElementById("resultList")
     element.dispatchEvent(new CustomEvent("scrollToItem", { detail: { itemId: item.id } }))
   } catch (error) {
-    console.log(error)
+    console.error(error)
   }
 }
 
