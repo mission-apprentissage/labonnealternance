@@ -53,7 +53,7 @@ export const franceTravailJobsToJobsPartners = (job: IFTJobRaw): IComputedJobsPa
     workplace_naf_code: job.codeNAF,
     workplace_naf_label: job.secteurActiviteLibelle,
     workplace_website: job.entreprise.url,
-    apply_url: job.origineOffre.partenaires?.[0]?.url || job.origineOffre.urlOrigine,
+    apply_url: job.contact?.urlPostulation || job.origineOffre.partenaires?.[0]?.url || job.origineOffre.urlOrigine,
     business_error: businessError,
   }
 }
