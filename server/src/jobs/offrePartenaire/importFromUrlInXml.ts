@@ -19,5 +19,7 @@ export const importFromUrlInXml = async ({
   })
   const stream = response.data
 
+  console.log("????")
+
   return importFromStreamInXml({ destinationCollection, offerXmlTag, stream, partnerLabel })
 }
