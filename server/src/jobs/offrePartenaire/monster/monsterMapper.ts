@@ -6,7 +6,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
 
-import { removeHtmlTagsFromString } from "@/common/utils/stringUtils"
+import { formatHtmlForPartnerDescription } from "@/common/utils/stringUtils"
 
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
@@ -16,19 +16,19 @@ export const ZMonsterJob = z
     title: z.string(),
     JobActiveDate: z.string(),
     CompanyName: z.string(),
-    siretNumber: z.string(),
+    siretNumber: z.string().nullable(),
     JobPostalCode: z.string().nullable(),
-    JobCity: z.string(),
-    State: z.string(),
+    JobCity: z.string().nullable(),
+    State: z.string().nullable(),
     Country: z.string(),
     Latitude: z.string(),
     Longitude: z.string(),
-    Industry: z.string(),
+    Industry: z.string().nullable(),
     JobCategory: z.string(),
     JobOccupation: z.string(),
     JobLevel: z.string(),
     JobStatus: z.string(),
-    JobType: z.string(),
+    JobType: z.string().nullable(),
     CompanyJobLogoURL: z.string(),
     JobBody: z.string(),
     guid: z.string(),
@@ -36,12 +36,6 @@ export const ZMonsterJob = z
   .passthrough()
 
 export type IMonsterJob = z.output<typeof ZMonsterJob>
-
-const sanitizeHtml = (text: string) => {
-  let sanitizedText = text.replace("<p>", "\r\n").replace("</p>", "\r\n").replace("<br>", "\r\n").replace("<br/>", "\r\n").replace("<br />", "\r\n")
-  sanitizedText = removeHtmlTagsFromString(sanitizedText) as string
-  return sanitizedText
-}
 
 export const monsterJobToJobsPartners = (job: IMonsterJob): IComputedJobsPartners => {
   const { postingId, title, JobActiveDate, siretNumber, CompanyName, JobPostalCode, JobCity, Latitude, Longitude, JobBody, guid } = job
@@ -55,10 +49,11 @@ export const monsterJobToJobsPartners = (job: IMonsterJob): IComputedJobsPartner
   }
 
   const urlParsing = extensions.url().safeParse(guid)
+  const siretParsing = extensions.siret.safeParse(siretNumber)
 
   let descriptionComputed = JobBody
 
-  descriptionComputed = sanitizeHtml(descriptionComputed)
+  descriptionComputed = formatHtmlForPartnerDescription(descriptionComputed)
 
   const created_at = new Date()
   const publicationDate = new Date(JobActiveDate)
@@ -80,7 +75,7 @@ export const monsterJobToJobsPartners = (job: IMonsterJob): IComputedJobsPartner
       .toDate(),
 
     workplace_name: CompanyName,
-    workplace_siret: siretNumber,
+    workplace_siret: siretParsing.success ? siretParsing.data : null,
     workplace_address_zipcode: JobPostalCode || null,
     workplace_address_city: JobCity,
     workplace_address_label: [JobCity, JobPostalCode].join(" ").trim(),

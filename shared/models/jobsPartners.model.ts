@@ -19,7 +19,7 @@ export enum JOBPARTNERS_LABEL {
   FRANCE_TRAVAIL = "France Travail",
   RH_ALTERNANCE = "RH Alternance",
   PASS = "PASS",
-  MONSTER = "MONSTER",
+  MONSTER = "Monster",
 }
 
 export enum FILTER_JOBPARTNERS_LABEL {
