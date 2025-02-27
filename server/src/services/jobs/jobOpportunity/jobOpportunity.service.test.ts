@@ -2050,3 +2050,19 @@ describe("updateJobOffer", () => {
     expect(nock.isDone()).toBeTruthy()
   })
 })
+
+describe("getLbaJobByIdV2AsJobOfferApi", () => {
+  // TODO
+})
+
+describe("getJobsPartnersByIdAsJobOfferApi", () => {
+  // TODO
+})
+
+describe("getFtJobsV2ByIdAsJobOfferApi", () => {
+  // TODO
+})
+
+describe("findJobOpportunityById", () => {
+  // TODO
+})

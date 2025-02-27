@@ -572,3 +572,26 @@ describe("PUT /jobs/:id", async () => {
     expect(response.json()).toEqual({ error: "Forbidden", message: "Unauthorized", statusCode: 403 })
   })
 })
+
+describe("GET /v3/jobs/:id", () => {
+  const sampleId = new ObjectId()
+  const jobPartnerOffer: IJobsPartnersOfferPrivate = generateJobsPartnersOfferPrivate({ _id: sampleId })
+
+  beforeEach(async () => {
+    await getDbCollection("jobs_partners").insertOne(jobPartnerOffer)
+  })
+
+  it("should return 401 if no api key provided", async () => {
+    const response = await httpClient().inject({ method: "GET", path: `/api/v3/jobs/${sampleId}` })
+    expect(response.statusCode).toBe(401)
+    expect(response.json()).toEqual({ statusCode: 401, error: "Unauthorized", message: "Unable to parse token missing-bearer" })
+  })
+
+  it("should return 401 if api key is invalid", async () => {
+    const response = await httpClient().inject({ method: "GET", path: `/api/v3/jobs/${sampleId}` })
+    expect.soft(response.statusCode).toBe(401)
+    expect(response.json()).toEqual({ statusCode: 401, error: "Unauthorized", message: "Unable to parse token invalid-signature" })
+  })
+
+  // TODO: Add more tests
+})

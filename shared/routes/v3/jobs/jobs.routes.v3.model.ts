@@ -117,7 +117,6 @@ export const zJobSearchApiV3Query = z
       })
     }
   })
-
 export type IJobSearchApiV3Response = z.output<typeof zJobSearchApiV3Response>
 export type IJobSearchApiV3Query = z.output<typeof zJobSearchApiV3Query>
 export type IJobSearchApiV3QueryResolved = Omit<IJobSearchApiV3Query, "latitude" | "longitude" | "radius" | "rncp"> & {

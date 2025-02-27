@@ -36,11 +36,11 @@ import { getDbCollection } from "../../../common/utils/mongodbUtils"
 import { trackApiCall } from "../../../common/utils/sendTrackingEvent"
 import config from "../../../config"
 import { getRomesFromRncp } from "../../external/api-alternance/certification.service"
-import { getFtJobsV2, getSomeFtJobs } from "../../ftjob.service"
+import { getFtJobFromIdV2, getFtJobsV2, getSomeFtJobs } from "../../ftjob.service"
 import { FTJob } from "../../ftjob.service.types"
 import { TJobSearchQuery, TLbaItemResult } from "../../jobOpportunity.service.types"
 import { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "../../lbaitem.shared.service.types"
-import { IJobResult, getLbaJobs, getLbaJobsV2, incrementLbaJobsViewCount } from "../../lbajob.service"
+import { IJobResult, getLbaJobByIdV2, getLbaJobs, getLbaJobsV2, incrementLbaJobsViewCount } from "../../lbajob.service"
 import { jobsQueryValidator } from "../../queryValidator.service"
 import { getRecruteursLbaFromDB, getSomeCompanies } from "../../recruteurLba.service"
 import { getNearestCommuneByGeoPoint } from "../../referentiel/commune/commune.referentiel.service"
@@ -796,4 +796,91 @@ export async function updateJobOffer(id: ObjectId, identity: IApiAlternanceToken
   }
 
   await upsertJobOffer(data, identity, current)
+}
+
+async function getLbaJobByIdV2AsJobOfferApi(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3 | null> {
+  const job = await getLbaJobByIdV2({ id: id.toString(), caller: context?.caller })
+
+  if (!job) {
+    const error = internal("jobOpportunity.service.ts-getLbaJobByIdV2AsJobOfferApi: job not found", { id })
+    logger.error(error)
+    context.addWarning("JOB_NOT_FOUND")
+    sentryCaptureException(error)
+    throw new Error("Job not found")
+  }
+
+  // TODO Convert
+  // return convert(job)
+  return null
+}
+
+async function getJobsPartnersByIdAsJobOfferApi(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3 | null> {
+  const job = await getDbCollection("jobs_partners").findOne({ _id: id })
+
+  if (!job) {
+    const error = internal("jobOpportunity.service.ts-getJobsPartnersByIdAsJobOfferApi: job not found", { id })
+    logger.error(error)
+    context.addWarning("JOB_NOT_FOUND")
+    sentryCaptureException(error)
+    throw new Error("Job not found")
+  }
+
+  // TODO Convert
+  // return convert(job)
+  return null
+}
+
+async function getFtJobsV2ByIdAsJobOfferApi(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3 | null> {
+  const job = await getFtJobFromIdV2({ id: id.toString(), caller: context?.caller })
+
+  if (!job) {
+    const error = internal("jobOpportunity.service.ts-getFtJobsV2ByIdAsJobOfferApi: job not found", { id })
+    logger.error(error)
+    context.addWarning("JOB_NOT_FOUND")
+    sentryCaptureException(error)
+    throw new Error("Job not found")
+  }
+
+  // TODO Convert
+  // return convert(job)
+  return null
+}
+
+export async function findJobOpportunityById(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3 | null> {
+  try {
+    // Exécuter les requêtes en parallèle puis récupérer la première offre trouvée
+    const results = await Promise.allSettled([getLbaJobByIdV2AsJobOfferApi(id, context), getJobsPartnersByIdAsJobOfferApi(id, context), getFtJobsV2ByIdAsJobOfferApi(id, context)])
+    const validResults = results.filter((res): res is PromiseFulfilledResult<IJobOfferApiReadV3> => res.status === "fulfilled" && res.value !== null)
+    const foundJob = validResults.length > 0 ? validResults[0].value : null
+
+    if (!foundJob) {
+      logger.warn(`Aucune offre d'emploi trouvée pour l'ID: ${id.toString()}`, { context })
+      return null
+    }
+
+    return validateJobOffer(foundJob, id, context)
+  } catch (error) {
+    const err = internal("Erreur inattendue dans findJobOpportunityById", { id, error })
+    logger.error(err)
+    sentryCaptureException(err)
+    return null
+  }
+}
+
+function validateJobOffer(job: IJobOfferApiReadV3, id: ObjectId, context: JobOpportunityRequestContext): IJobOfferApiReadV3 | null {
+  const parsedJob = zJobOfferApiReadV3.safeParse(job)
+
+  if (!parsedJob.success) {
+    const error = internal("jobOpportunity.service.ts-findJobOpportunityById: invalid job offer", {
+      job,
+      error: parsedJob.error.format(),
+      id: id.toString(),
+    })
+    logger.error(error)
+    context.addWarning("JOB_OFFER_FORMATING_ERROR")
+    sentryCaptureException(error)
+    return null
+  }
+
+  return parsedJob.data
 }
