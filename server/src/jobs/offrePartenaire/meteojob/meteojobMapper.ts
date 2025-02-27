@@ -108,7 +108,22 @@ export const ZMeteojobJob = z
             ]),
           })
           .nullish(),
-        experienceLevels: z.object({ experienceLevel: z.array(z.object({ _: z.string(), $: z.object({ code: z.string() }) })) }).nullish(),
+        experienceLevels: z
+          .object({
+            experienceLevel: z.union([
+              z.object({
+                _: z.string(),
+                $: z.object({ code: z.string() }),
+              }),
+              z.array(
+                z.object({
+                  _: z.string(),
+                  $: z.object({ code: z.string() }),
+                })
+              ),
+            ]),
+          })
+          .nullish(),
       })
       .nullable(),
   })
@@ -171,7 +186,12 @@ export const meteojobJobToJobsPartners = (job: IMeteojobJob): IComputedJobsPartn
         : undefined,
     contract_duration: contract?.length?.$?.value ? parseInt(contract.length.$.value) : null,
     offer_desired_skills: [],
-    offer_access_conditions: profile?.experienceLevels?.experienceLevel?.length ? profile?.experienceLevels?.experienceLevel.map((l) => l._) : [],
+    offer_access_conditions:
+      profile?.experienceLevels?.experienceLevel instanceof Array
+        ? profile?.experienceLevels?.experienceLevel?.map((l) => l._)
+        : profile?.experienceLevels?.experienceLevel?._
+          ? [profile.experienceLevels.experienceLevel._]
+          : [],
     offer_multicast: true,
     offer_to_be_acquired_skills: [],
     apply_url: urlParsing.success ? urlParsing.data : null,
