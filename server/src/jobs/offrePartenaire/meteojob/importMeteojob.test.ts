@@ -10,7 +10,7 @@ import { importMeteojobRaw, importMeteojobToComputed } from "./importMeteojob"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")
 
-describe("importHelloWork", () => {
+describe("importMeteojob", () => {
   useMongo()
 
   beforeEach(() => {
