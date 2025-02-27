@@ -145,7 +145,7 @@ export const importRecruteurLbaToComputed = async () => {
           const computedJobPartner = omit(mapper(parsedDocument), omitFields)
           await getDbCollection("computed_jobs_partners").updateOne(
             { partner_job_id: document.partner_job_id },
-            { $set: { ...computedJobPartner, updated_at: importDate }, $setOnInsert: { offer_status_history: [], _id: new ObjectId() } },
+            { $set: { updated_at: importDate }, $setOnInsert: { ...computedJobPartner, offer_status_history: [], _id: new ObjectId() } },
             {
               upsert: true,
             }
