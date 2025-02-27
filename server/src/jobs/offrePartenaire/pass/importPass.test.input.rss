@@ -1,111 +1,158 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xml:base="https://www.pass.fonction-publique.gouv.fr/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0" xml:base="https://www.pass.fonction-publique.gouv.fr/">
   <channel>
     <title>Flux rss sortant</title>
     <link>https://www.pass.fonction-publique.gouv.fr/</link>
     <description><![CDATA[]]></description>
     <language>fr</language>
-        <pubDate>Thu, 16 Jan 2025 17:29:33 +0100</pubDate>
+        <pubDate>Wed, 26 Feb 2025 16:40:27 +0100</pubDate>
 
     <item>
-  <title><a href="/offre/apprentissage-assistant-e-de-prevention-au-sein-dun-service-douanier-competence-nationale" hreflang="fr">APPRENTISSAGE  - Assistant (e) de prévention au sein d’un service douanier à compétence nationale</a></title>
-  <link>https://www.pass.fonction-publique.gouv.fr/offre/apprentissage-assistant-e-de-prevention-au-sein-dun-service-douanier-competence-nationale</link>
-  <description><![CDATA[<p>Apprenti(e) au sein du service Prévention/Dialogue Social, vous serez chargé(e) de participer aux activités de prévention des risques professionnels en lien avec les agents d’Ivry et ceux basés en région.</p><p><strong>Principales missions</strong>&nbsp;:</p><p>-Participation à la mise à jour du DUERP,</p><p>-Suivi des Registres obligatoires,</p><p>-Suivi des vérifications obligatoires (contrats, lecture des rapports et observations…),</p><p>-Suivi des exercices incendies pour les différents sites,</p><p>-Participation à l’élaboration des dossiers présentés à la FS (Formation Spécialisée),</p><p>-Rédaction de Compte Rendu de visite,</p><p>-Suivi des stocks des matériels ergonomiques...</p><p><br>&nbsp;</p><p><br>&nbsp;</p>]]></description>
-  <author>Direction générale des douanes et droits indirects</author>
-                            <guid isPermaLink="false">197f8060-fb01-4bf7-b8cc-5892d1421ca5</guid>
-                            <pubDate>2025-01-16T17:29:33+0100
+  <title><a href="/offre/contrat-dapprentissage-financements-hf" hreflang="fr">Contrat d'Apprentissage - financements H/F</a></title>
+  <link>https://www.pass.fonction-publique.gouv.fr/offre/contrat-dapprentissage-financements-hf</link>
+  <description>&lt;p&gt;Au sein du service, l’alternant(e) agira notamment en appui sur les missions suivantes&amp;nbsp;:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;la veille et l’étude des outils de financement du secteur&lt;/li&gt;&lt;li&gt;la tutelle des SOFICA et des crédits d’impôt ;&lt;/li&gt;&lt;li&gt;le suivi des opérateurs du financement, dont Bpifrance et l’IFCIC&lt;/li&gt;&lt;li&gt;le suivi des nouvelles initiatives de financements privés et des stratégies de développement des entreprises&lt;/li&gt;&lt;li&gt;la préparation des projets de loi de finances sur les sujets qui concernent le service&lt;/li&gt;&lt;/ul&gt;</description>
+  <author>Centre national du cinéma et de l&amp;#039;image animée</author>
+                            <guid isPermaLink="false">8760e23b-b22d-4fe6-ab21-3327480cd0b1</guid>
+                            <pubDate>2025-02-26T16:40:27+0100
 </pubDate>
                             <source url="https://www.pass.fonction-publique.gouv.fr/flux/offres">Flux rss sortant</source>
-                            <dc:description>94</dc:description>
-                            <dc:publisher>DGDDI - DNRED</dc:publisher>
-                            <dc:contributor>Ministères économiques et financiers</dc:contributor>
-                            <dc:date>2025-09-15T00:00:00+02:00</dc:date>
-                            <dc:type>Niveau 5 – (Bac+2)</dc:type>
-                            <dc:format>Entre 12 et 24 mois</dc:format>
-                            <dc:identifier>A-2025-156100</dc:identifier>
-                            <dc:source><time datetime="2025-01-16T17:32:27+01:00">2025-01-16T17:32:27+0100</time>
-</dc:source>
-                            <dc:coverage>IVRY SUR SEINE</dc:coverage>
-                            </item>
-<item>
-  <title><a href="/offre/apprentissage-gestionnaire-ressources-humaines-au-sein-dun-service-douanier-competence" hreflang="fr">APPRENTISSAGE  - Gestionnaire Ressources humaines au sein d’un service douanier à compétence nationale</a></title>
-  <link>https://www.pass.fonction-publique.gouv.fr/offre/apprentissage-gestionnaire-ressources-humaines-au-sein-dun-service-douanier-competence</link>
-  <description><![CDATA[<p>Apprenti(e) au sein du service RH, vous serez chargé(e) de participer aux activités des cellules recrutement, gestion des carrières et formation professionnelle, en lien avec les agents concernés &nbsp;:</p><p>- recrutement&nbsp;: suivi des dossiers de recrutements en lien avec la direction générale, relations avec les candidats, utilisation des applicatifs métiers&nbsp;;&nbsp;</p><p>- gestion des carrières&nbsp;: suivi des dossiers de carrières des agents&nbsp;;&nbsp;</p><p>- formation professionnelle&nbsp;: suivi des formations à mettre en place, réservation et mise en place des salles, suivi des statistiques.&nbsp;</p><p><br>&nbsp;</p>]]></description>
-  <author>Direction générale des douanes et droits indirects</author>
-                            <guid isPermaLink="false">6db7963b-0912-4632-acbc-18d71dbf17f3</guid>
-                            <pubDate>2025-01-16T17:24:55+0100
-</pubDate>
-                            <source url="https://www.pass.fonction-publique.gouv.fr/flux/offres">Flux rss sortant</source>
-                            <dc:description>94</dc:description>
-                            <dc:publisher>DGDDI - DNRED</dc:publisher>
-                            <dc:contributor>Ministères économiques et financiers</dc:contributor>
-                            <dc:date>2025-09-15T00:00:00+02:00</dc:date>
-                            <dc:type>Niveau 5 – (Bac+2)</dc:type>
-                            <dc:format>Entre 12 et 24 mois</dc:format>
-                            <dc:identifier>A-2025-156097</dc:identifier>
-                            <dc:source><time datetime="2025-01-16T17:28:16+01:00">2025-01-16T17:28:16+0100</time>
-</dc:source>
-                            <dc:coverage>IVRY SUR SEINE</dc:coverage>
-                            </item>
-<item>
-  <title><a href="/offre/apprentissage-analyste-logistique-criminelle-et-stupefiants-au-sein-dun-service-douanier" hreflang="fr">Apprentissage - Analyste logistique criminelle et stupéfiants au sein d’un service douanier à compétence nationale </a></title>
-  <link>https://www.pass.fonction-publique.gouv.fr/offre/apprentissage-analyste-logistique-criminelle-et-stupefiants-au-sein-dun-service-douanier</link>
-  <description><![CDATA[<p>le département logistique criminelle et stupéfiants traite du renseignement sur les moyens de transport ainsi que du trafic de stupéfiants. Il apporte un soutien opérationnel au réseau douanier et réalise des notes de renseignement.&nbsp;</p><p>L’apprenti aura vocation à traiter de l’ensemble des thématiques du département. Il viendra en support des équipes et traitera des dossiers généraux et transverses en autonomie.&nbsp;</p>]]></description>
-  <author>Direction générale des douanes et droits indirects</author>
-                            <guid isPermaLink="false">aa5bfc34-d687-462a-984c-f85c71147d8e</guid>
-                            <pubDate>2025-01-16T17:20:05+0100
-</pubDate>
-                            <source url="https://www.pass.fonction-publique.gouv.fr/flux/offres">Flux rss sortant</source>
-                            <dc:description>94</dc:description>
-                            <dc:publisher>DGDDI - DNRED</dc:publisher>
-                            <dc:contributor>Ministères économiques et financiers</dc:contributor>
+                            <dc:creator>recrutement@cnc.fr -</dc:creator>
+                            <dc:description>75</dc:description>
+                            <dc:publisher>Centre national du cinéma et de l'image animée</dc:publisher>
+                            <dc:contributor>Ministère de la Culture</dc:contributor>
                             <dc:date>2025-09-15T00:00:00+02:00</dc:date>
                             <dc:type>Niveau 7 – (Bac+5 et plus)</dc:type>
-                            <dc:format>Entre 12 et 24 mois</dc:format>
-                            <dc:identifier>A-2025-156094</dc:identifier>
-                            <dc:source><time datetime="2025-01-16T17:23:57+01:00">2025-01-16T17:23:57+0100</time>
+                            <dc:format>Entre 12 et 0 mois</dc:format>
+                            <dc:identifier>A-2025-159026</dc:identifier>
+                            <dc:source><time datetime="2025-02-26T16:43:04+01:00">2025-02-26T16:43:04+0100</time>
 </dc:source>
-                            <dc:coverage>IVRY SUR SEINE</dc:coverage>
+                            <dc:coverage>PARIS 14ème arrondissement</dc:coverage>
                             </item>
 <item>
-  <title><a href="/offre/apprentissage-au-sein-dun-service-douanier-competence-nationale-pole-danalyse-strategique" hreflang="fr">Apprentissage au sein d’un service douanier à compétence nationale (pôle d’analyse stratégique)</a></title>
-  <link>https://www.pass.fonction-publique.gouv.fr/offre/apprentissage-au-sein-dun-service-douanier-competence-nationale-pole-danalyse-strategique</link>
-  <description><![CDATA[<p>e pôle d’Analyse Stratégique de la DNRED contribue à la rédaction de notes d’initiative ou en réponse à des commandes internes, de la direction générale ou de la CNRLT. Ces notes portent sur les activités et domaines d’actions relevant de la compétence douanière. Elles s’appuient sur des données transmises par des capteurs, par des données issues des bases alimentées par les saisies douanières, par des renseignements obtenus auprès de services de la DNRED, d’experts ou de services territoriaux des douanes ainsi que par des sources ouvertes.</p><p>Les agents de la cellule sont amenés à élaborer des documents stratégiques servant à l’élaboration de la politique de lutte contre la fraude de la DGDDI. Ils concourent, par ailleurs, à la cohérence éditoriale de la direction.</p><p>La cellule est en contact avec plusieurs services et offices interministériels (SGDSN, OCRTIS, Gendarmerie, etc.) et avec les autres centrales françaises de renseignement avec lesquels elle peut rédiger des notes communes.</p><p>Les agents sont essentiellement sédentaires mais peuvent se déplacer ponctuellement auprès de services partenaires.</p>]]></description>
-  <author>Direction générale des douanes et droits indirects</author>
-                            <guid isPermaLink="false">bdfb69eb-a3f7-45d7-a30f-a4244047d30c</guid>
-                            <pubDate>2025-01-16T17:12:57+0100
+  <title><a href="/offre/apprentie-redacteur-en-matiere-juridique-et-fiscal-equivalent-attache-cat-pole-de-controle" hreflang="fr">APPRENTI(E) - Rédacteur en matière juridique et fiscal -  équivalent attaché (cat. A) Pôle de contrôle revenus patrimoine de Cannes</a></title>
+  <link>https://www.pass.fonction-publique.gouv.fr/offre/apprentie-redacteur-en-matiere-juridique-et-fiscal-equivalent-attache-cat-pole-de-controle</link>
+  <description>&lt;p&gt;Au sein du ministère de l’Économie, des Finances et de la Souveraineté industrielle et numérique, la Direction générale des Finances publiques (DGFiP) est une administration au cœur du fonctionnement de l’État. Grâce à leur expertise, leur savoir-être et leur engagement, les agents des Finances publiques contribuent à faciliter toujours davantage le quotidien de l’ensemble des usagers et à faire respecter l’égalité de tous devant les charges publiques et à collecter les impôts qui viendront financer la vie publique. Administration performante et innovante, notre transformation informatique et numérique (big data,intelligence artificielle, cloud…) place l’utilisateur au centre de nos démarches.&lt;/p&gt;&lt;p&gt;Dans le département des Alpes-Maritimes, la direction départementale des finances publiques (DDFIP 06) pilote et anime la mission du contrôle fiscale mise en œuvre par les structures infra-départementales sur le périmètre du département.&lt;/p&gt;&lt;p&gt;Les Pôle de contrôles revenus/patrimoine (PCRP) participent au contrôle fiscal des particuliers en lien avec la Division du contrôle fiscal en Direction et les services des impôts des particuliers. Les PCRP ont pour mission principale de contrôler les dossiers des particuliers sur tous les domaines de la fiscalité (impôt sur le revenu, IFI, donations, successions) et en examinant la cohérence entre les déclarations de revenus et de patrimoine.&lt;/p&gt;&lt;p&gt;Au sein du PCRP de Cannes, le candidat participera aux différentes missions&amp;nbsp;:&lt;/p&gt;&lt;p&gt;- Contrôle sur pièces des dossiers patrimoniaux et rédaction des pièces de procédure &amp;nbsp;;&lt;/p&gt;&lt;p&gt;- Instruction des contentieux d’assiette des dossiers patrimoniaux&amp;nbsp;;&lt;/p&gt;&lt;p&gt;- Traitement des dossiers d’accréditation en matière de plus-values immobilières.&lt;/p&gt;</description>
+  <author>DGFIP</author>
+                            <guid isPermaLink="false">35aec559-a90e-4a11-b66a-665c1b284238</guid>
+                            <pubDate>2025-02-26T16:09:41+0100
 </pubDate>
                             <source url="https://www.pass.fonction-publique.gouv.fr/flux/offres">Flux rss sortant</source>
-                            <dc:description>94</dc:description>
-                            <dc:publisher>DGDDI - DNRED</dc:publisher>
+                            <dc:creator>ddfip06.attractivite@dgfip.finances.gouv.fr - 04.92.17.60.26 ou 60.04 ou 60.12</dc:creator>
+                            <dc:description>6</dc:description>
+                            <dc:publisher>Direction départementale des finances publiques des Alpes-Maritimes - Pôle de contrôle revenus patrimoine de Cannes</dc:publisher>
                             <dc:contributor>Ministères économiques et financiers</dc:contributor>
                             <dc:date>2025-09-15T00:00:00+02:00</dc:date>
                             <dc:type>Niveau 6 – (Bac+3 ou 4)</dc:type>
-                            <dc:format>Entre 12 et 24 mois</dc:format>
-                            <dc:identifier>A-2025-156091</dc:identifier>
-                            <dc:source><time datetime="2025-01-16T17:16:46+01:00">2025-01-16T17:16:46+0100</time>
+                            <dc:format>12 mois</dc:format>
+                            <dc:identifier>A-2025-159005</dc:identifier>
+                            <dc:source><time datetime="2025-02-26T16:37:11+01:00">2025-02-26T16:37:11+0100</time>
 </dc:source>
-                            <dc:coverage>IVRY SUR SEINE</dc:coverage>
+                            <dc:coverage>NICE</dc:coverage>
                             </item>
 <item>
-  <title><a href="/offre/apprentissage-analyste-au-sein-dun-service-douanier-competence-nationale-pole-danalyse-des" hreflang="fr">Apprentissage - Analyste au sein d’un service douanier à compétence nationale (pôle d’analyse des données et des sources ouvertes)</a></title>
-  <link>https://www.pass.fonction-publique.gouv.fr/offre/apprentissage-analyste-au-sein-dun-service-douanier-competence-nationale-pole-danalyse-des</link>
-  <description><![CDATA[<p>le pôle ADSO de la DNRED collecte et traite des données et renseignements, essentiellement en sources ouvertes, afin de les transformer en renseignement exploitables. Il a également une activité de PAO et coordonne certaines missions.<br>Il collecte et traite les renseignements d’origine sources ouvertes à destination des services de la DNRED et de la DGDDI.<br>Outre une veille thématique, le service élabore des travaux d’analyse à destination de la DGDDI et d’autres interlocuteurs.<br>La cellule est en contact avec plusieurs services et acteurs du monde de l’OSINT.<br>Les agents sont essentiellement sédentaires mais peuvent se déplacer ponctuellement auprès de services partenaires.</p>]]></description>
-  <author>Direction générale des douanes et droits indirects</author>
-                            <guid isPermaLink="false">03cfc446-c779-4300-8eee-a51777f67602</guid>
-                            <pubDate>2025-01-16T17:05:09+0100
+  <title><a href="/offre/apprentie-redacteur-en-matiere-domanial-equivalent-attache-cat-division-du-domaine-service-6" hreflang="fr">APPRENTI(E) - Rédacteur en matière domanial - équivalent attaché (cat. A) Division du Domaine – Service Local du Domaine</a></title>
+  <link>https://www.pass.fonction-publique.gouv.fr/offre/apprentie-redacteur-en-matiere-domanial-equivalent-attache-cat-division-du-domaine-service-6</link>
+  <description>&lt;p&gt;La direction départementale des finances publiques (DDFiP) et son réseau territorial est en charge des missions fiscales (établissement des impositions des personnes physiques et morales, encaissement des impôts, contrôle fiscal et contentieux) et de gestion publique (tenue des comptes de l’État et des collectivités locales, paiement des dépenses de l’État, Domaine).&amp;nbsp;&lt;/p&gt;&lt;p&gt;Au siège départemental, s'exercent plus particulièrement des fonctions de pilotage et d’animation des services locaux, de soutien à l’activité (ressources humaines, budget, immobilier), ainsi que la mission domaniale.&lt;/p&gt;&lt;p&gt;L’activité du Domaine consiste à gérer le patrimoine immobilier de l’État et des différentes implantations des services de l’État sur le département. Le Domaine est également chargé des travaux d'évaluation qui encadrent les opérations de gestion précitées mais aussi les opérations immobilières des collectivités locales. Le Domaine traite les dossiers contentieux de l’expropriation en assurant la fonction de Commissaire du gouvernement auprès du juge de l’expropriation. Enfin, le Domaine est également investi d'une mission d'intérêt général de gestion des patrimoines privés recueillis à l'occasion des successions vacantes (successions non réclamées, sans héritiers ou refusées).&amp;nbsp;&lt;/p&gt;&lt;p&gt;Le candidat intègre le Service Local du Domaine de la DDFIP 06, ce service de Gestion a pour objet de valoriser le patrimoine de l’État (location, vente et facturation des occupations).&amp;nbsp;&lt;/p&gt;&lt;p&gt;L’apprenti sera en charge d’analyser et de traiter les dossiers d’occupation du domaine public afin d’en déterminer la redevance. Des missions ponctuelles seront également (i.e. du traitement de servitudes, transfert de gestion, etc.)&lt;/p&gt;</description>
+  <author>DGFIP</author>
+                            <guid isPermaLink="false">4e61b496-9512-49f2-bba3-4f813c397c20</guid>
+                            <pubDate>2025-02-26T16:09:12+0100
 </pubDate>
                             <source url="https://www.pass.fonction-publique.gouv.fr/flux/offres">Flux rss sortant</source>
-                            <dc:description>94</dc:description>
-                            <dc:publisher>DGDDI - DNRED</dc:publisher>
+                            <dc:creator>ddfip06.attractivite@dgfip.finances.gouv.fr - 04.92.17.60.26 ou 60.04 ou 60.12</dc:creator>
+                            <dc:description>6</dc:description>
+                            <dc:publisher>Direction départementale des finances publiques des Alpes-Maritimes - Pôle Ressources, Opérations de l’État, Domaines - Division du Domaine - Service local du Domaine</dc:publisher>
                             <dc:contributor>Ministères économiques et financiers</dc:contributor>
                             <dc:date>2025-09-15T00:00:00+02:00</dc:date>
                             <dc:type>Niveau 6 – (Bac+3 ou 4)</dc:type>
-                            <dc:format>Entre 12 et 24 mois</dc:format>
-                            <dc:identifier>A-2025-156088</dc:identifier>
-                            <dc:source><time datetime="2025-01-16T17:09:11+01:00">2025-01-16T17:09:11+0100</time>
+                            <dc:format>12 mois</dc:format>
+                            <dc:identifier>A-2025-159002</dc:identifier>
+                            <dc:source><time datetime="2025-02-26T17:08:26+01:00">2025-02-26T17:08:26+0100</time>
 </dc:source>
-                            <dc:coverage>IVRY SUR SEINE</dc:coverage>
+                            <dc:coverage>NICE</dc:coverage>
+                            </item>
+<item>
+  <title><a href="/offre/apprentie-redacteur-en-matiere-domanial-equivalent-attache-cat-division-des-domaine-service-4" hreflang="fr">APPRENTI(E) - Rédacteur en matière domanial - équivalent attaché (cat. A) Division des Domaine – Service Gestion des patrimoines privés</a></title>
+  <link>https://www.pass.fonction-publique.gouv.fr/offre/apprentie-redacteur-en-matiere-domanial-equivalent-attache-cat-division-des-domaine-service-4</link>
+  <description>&lt;p&gt;La direction départementale des finances publiques (DDFiP) et son réseau territorial est en charge des missions fiscales (établissement des impositions des personnes physiques et morales, encaissement des impôts, contrôle fiscal et contentieux) et de gestion publique (tenue des comptes de l’État et des collectivités locales, paiement des dépenses de l’État, Domaine).&lt;/p&gt;&lt;p&gt;Au siège départemental, s'exercent plus particulièrement des fonctions de pilotage et d’animation des services locaux, de soutien à l’activité (ressources humaines, budget, immobilier), ainsi que la mission domaniale.&lt;/p&gt;&lt;p&gt;L’activité du Domaine consiste à gérer le patrimoine immobilier de l’État et des différentes implantations des services de l’État sur le département. Le Domaine est également chargé des travaux d'évaluation qui encadrent les opérations de gestion précitées mais aussi les opérations immobilières des collectivités locales. Le Domaine traite les dossiers contentieux de l’expropriation en assurant la fonction de Commissaire du gouvernement auprès du juge de l’expropriation. Enfin, le Domaine est également investi d'une mission d'intérêt général de gestion des patrimoines privés recueillis à l'occasion des successions vacantes (successions non réclamées, sans héritiers ou refusées).&lt;/p&gt;&lt;p&gt;Le candidat intègre le Service de gestion des patrimoines privés au sein de la Division Domaine de la DDFiP 06.&amp;nbsp;&lt;/p&gt;&lt;p&gt;Ce service est en charge la gestion des patrimoines privés recueillis à l'occasion des successions vacantes (successions non réclamées, sans héritiers ou refusées).&amp;nbsp;&lt;/p&gt;&lt;p&gt;Cette mission consiste d’une part à récupérer tous les actifs de la succession, d’autre part à recenser les dettes afin que celles-ci puissent être payées à concurrence des actifs disponibles.&amp;nbsp;&lt;/p&gt;&lt;p&gt;Dans le cadre de la gestion des intérêts de la succession, l’apprenti au sein du service de gestion du patrimoine privé aura en charge le traitement des dossiers&amp;nbsp;: recensement de l’actif et du passif successoral.&lt;/p&gt;&lt;p&gt;Il s’agira également de procéder, en relation avec nos partenaires et dans les meilleures conditions, aux cessions de biens immobiliers.&lt;/p&gt;&lt;p&gt;Enfin, l’apprenti(e) pourra être chargé(e) d'analyser les éventuelles revendications tardives des héritiers.&lt;/p&gt;</description>
+  <author>DGFIP</author>
+                            <guid isPermaLink="false">f77ada58-2277-4691-953b-0e8e62639a55</guid>
+                            <pubDate>2025-02-26T16:08:58+0100
+</pubDate>
+                            <source url="https://www.pass.fonction-publique.gouv.fr/flux/offres">Flux rss sortant</source>
+                            <dc:creator>ddfip06.attractivite@dgfip.finances.gouv.fr - 04.92.17.60.26 ou 60.04 ou 60.12</dc:creator>
+                            <dc:description>6</dc:description>
+                            <dc:publisher>Direction départementale des finances publiques des Alpes-Maritimes - Pôle Ressources, Opérations de l’État, Domaines - Division du Domaine - Service de gestion des patrimoines privés</dc:publisher>
+                            <dc:contributor>Ministères économiques et financiers</dc:contributor>
+                            <dc:date>2025-09-15T00:00:00+02:00</dc:date>
+                            <dc:type>Niveau 6 – (Bac+3 ou 4)</dc:type>
+                            <dc:format>12 mois</dc:format>
+                            <dc:identifier>A-2025-158999</dc:identifier>
+                            <dc:source><time datetime="2025-02-26T17:02:55+01:00">2025-02-26T17:02:55+0100</time>
+</dc:source>
+                            <dc:coverage>NICE</dc:coverage>
+                            </item>
+<item>
+  <title><a href="/offre/chargee-de-projet-formationcommunication-0" hreflang="fr">Chargé(e) de projet - Formation/Communication</a></title>
+  <link>https://www.pass.fonction-publique.gouv.fr/offre/chargee-de-projet-formationcommunication-0</link>
+  <description>&lt;p&gt;Dans le cadre de la transformation numérique des formations au sein de la DSNA, nous recherchons deux alternants disponibles à partir de septembre 2025 pour le projet de création de supports numériques d’information et de formation (enseignement assisté par ordinateur) pour la formation continue des contrôleurs aériens.&lt;/p&gt;&lt;p&gt;Les alternants seront amenés à réaliser les missions suivantes :&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Communiquer avec les enseignants et comprendre les objectifs pédagogiques des formations à réaliser&lt;/li&gt;&lt;li&gt;Accompagner la transformation de documents en storyboards et travailler au design des formations résultantes à l’aide du logiciel Articulate Storyline&lt;/li&gt;&lt;li&gt;Concevoir et réaliser des media numériques (images/vidéos/audio) en s’appuyant, en tant que de besoin, sur des outils intégrant l’intelligence artificielle (Vyond, Murf)&lt;/li&gt;&lt;li&gt;Présenter, organiser des démonstrations du logiciel Storyline à des fins de promotion du logiciel Articulate au sein de la DSNA et répondre aux questions des utilisateurs&amp;nbsp;&lt;/li&gt;&lt;li&gt;Répondre aux besoins des projets en termes de communication et de marketing : création de visuels, évaluation des retours d’expériences&lt;/li&gt;&lt;li&gt;Concevoir, mettre en œuvre et évaluer des projets de communication interne et/ou externe&lt;/li&gt;&lt;/ul&gt;</description>
+  <author>Direction Générale de l&amp;#039;Aviation Civile</author>
+                            <guid isPermaLink="false">9b9f3c7e-e618-4244-9d3a-d1643ab4a0b7</guid>
+                            <pubDate>2025-02-26T15:57:19+0100
+</pubDate>
+                            <source url="https://www.pass.fonction-publique.gouv.fr/flux/offres">Flux rss sortant</source>
+                            <dc:creator>stephane.serabian@aviation-civile.gouv.fr - 06 23 97 71 88</dc:creator>
+                            <dc:description>31</dc:description>
+                            <dc:publisher>DGAC - DO - DOM1 - INS - LFBO</dc:publisher>
+                            <dc:contributor>Ministère de la Transition écologique</dc:contributor>
+                            <dc:date>2025-09-15T00:00:00+02:00</dc:date>
+                            <dc:type>Niveau 6 – (Bac+3 ou 4)</dc:type>
+                            <dc:format>Entre 24 et 36 mois</dc:format>
+                            <dc:identifier>A-2025-158987</dc:identifier>
+                            <dc:source><time datetime="2025-02-26T16:04:16+01:00">2025-02-26T16:04:16+0100</time>
+</dc:source>
+                            <dc:coverage>TOULOUSE</dc:coverage>
+                            </item>
+<item>
+  <title><a href="/offre/contrat-dapprentissage-education-aux-images-hf" hreflang="fr">Contrat d'apprentissage - éducation aux images H/F</a></title>
+  <link>https://www.pass.fonction-publique.gouv.fr/offre/contrat-dapprentissage-education-aux-images-hf</link>
+  <description>&lt;p&gt;Sous la responsabilité de la chargée de mission en charge du suivi du dispositif Ma Classe au cinéma, le service des publics recrute un(e) apprenti(e) chargé(e) de participer au projet de création d’un site de l’éducation aux images porté par le CNC.&lt;/p&gt;&lt;p&gt;Ce site s’adressera à tous les acteurs de l’éducation aux images et aux enseignants. Il permettra de valoriser la politique d’éducation aux images du Centre et de mettre en avant les ressources pédagogiques Collège au cinéma et Lycéens et Apprentis au cinéma produites par le CNC, qui travaille à leur dématérialisation et leur actualisation.&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Principales missions:&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Participation au groupe-projet de développement du site&lt;/li&gt;&lt;li&gt;Recensement des ressources existantes autour des dispositifs Collège au cinéma et Lycéens et Apprentis au cinéma, notamment les ressources &amp;nbsp; &amp;nbsp; pédagogiques (ressources écrites, vidéo, iconographiques),&lt;/li&gt;&lt;li&gt;&lt;p&gt;Suivi des travaux de réécriture et de traduction numérique des dossiers enseignants et fiches élèves Collège au cinéma et Lycéens et Apprentis au &amp;nbsp; &amp;nbsp;cinéma&lt;/p&gt;&lt;p&gt;Recueil et recensement des ressources propres aux autres actions d’éducation aux images portées ou accompagnées par le service (Mission de &amp;nbsp;sensibilisation à l’écriture scénaristique / défi Ecris ta série&amp;nbsp;!, programme des Ambassadeurs jeunes du cinéma, Opération Des Cinés, La Vie&amp;nbsp;!, actions de &amp;nbsp;diffusion culturelle et de développement des publics…)&lt;/p&gt;&lt;p&gt;Travail ponctuel sur d’autres missions relatives au service des publics, notamment le suivi des comités de sélection des films Ma classe au cinéma.&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;</description>
+  <author>Centre national du cinéma et de l&amp;#039;image animée</author>
+                            <guid isPermaLink="false">4111d5f6-680f-4ebb-8874-b5e21fe59f82</guid>
+                            <pubDate>2025-02-26T15:47:42+0100
+</pubDate>
+                            <source url="https://www.pass.fonction-publique.gouv.fr/flux/offres">Flux rss sortant</source>
+                            <dc:creator>recrutement@cnc.fr -</dc:creator>
+                            <dc:description>75</dc:description>
+                            <dc:publisher>Centre national du cinéma et de l'image animée</dc:publisher>
+                            <dc:contributor>Ministère de la Culture</dc:contributor>
+                            <dc:date>2025-04-15T00:00:00+02:00</dc:date>
+                            <dc:type>Niveau 7 – (Bac+5 et plus)</dc:type>
+                            <dc:format>12 mois</dc:format>
+                            <dc:identifier>A-2025-158990</dc:identifier>
+                            <dc:source><time datetime="2025-02-26T16:30:50+01:00">2025-02-26T16:30:50+0100</time>
+</dc:source>
+                            <dc:coverage>PARIS 14ème arrondissement</dc:coverage>
+                            </item>
+<item>
+  <title><a href="/offre/chargee-de-projet-formationcommunication" hreflang="fr">Chargé(e) de projet - Formation/Communication</a></title>
+  <link>https://www.pass.fonction-publique.gouv.fr/offre/chargee-de-projet-formationcommunication</link>
+  <description>&lt;p&gt;Dans le cadre de la transformation numérique des formations au sein de la DSNA, nous recherchons deux alternants disponibles à partir de septembre 2025 pour le projet de création de supports numériques d’information et de formation (enseignement assisté par ordinateur) pour la formation continue des contrôleurs aériens.&lt;/p&gt;&lt;p&gt;Les alternants seront amenés à réaliser les missions suivantes :&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Communiquer avec les enseignants et comprendre les objectifs pédagogiques des formations à réaliser&lt;/li&gt;&lt;li&gt;Accompagner la transformation de documents en storyboards et travailler au design des formations résultantes à l’aide du logiciel Articulate Storyline&lt;/li&gt;&lt;li&gt;Concevoir et réaliser des media numériques (images/vidéos/audio) en s’appuyant, en tant que de besoin, sur des outils intégrant l’intelligence artificielle (Vyond, Murf)&lt;/li&gt;&lt;li&gt;Présenter, organiser des démonstrations du logiciel Storyline à des fins de promotion du logiciel Articulate au sein de la DSNA et répondre aux questions des utilisateurs&amp;nbsp;&lt;/li&gt;&lt;li&gt;Répondre aux besoins des projets en termes de communication et de marketing : création de visuels, évaluation des retours d’expériences&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Concevoir, mettre en œuvre et évaluer des projets de communication interne et/ou externe&lt;/p&gt;</description>
+  <author>Direction Générale de l&amp;#039;Aviation Civile</author>
+                            <guid isPermaLink="false">c6e62fde-e1cb-4de6-901d-18df9ed8fb0d</guid>
+                            <pubDate>2025-02-26T15:43:07+0100
+</pubDate>
+                            <source url="https://www.pass.fonction-publique.gouv.fr/flux/offres">Flux rss sortant</source>
+                            <dc:creator>stephane.serabian@aviation-civile.gouv.fr - 06 23 97 71 88</dc:creator>
+                            <dc:description>91</dc:description>
+                            <dc:publisher>DGAC - DO - DOM1 - INS</dc:publisher>
+                            <dc:contributor>Ministère de la Transition écologique</dc:contributor>
+                            <dc:date>2025-09-15T00:00:00+02:00</dc:date>
+                            <dc:type>Niveau 6 – (Bac+3 ou 4)</dc:type>
+                            <dc:format>Entre 24 et 36 mois</dc:format>
+                            <dc:identifier>A-2025-158984</dc:identifier>
+                            <dc:source><time datetime="2025-02-26T16:06:21+01:00">2025-02-26T16:06:21+0100</time>
+</dc:source>
+                            <dc:coverage>ATHIS MONS</dc:coverage>
                             </item>
   </channel>
 </rss>
