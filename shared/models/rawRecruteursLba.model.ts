@@ -18,6 +18,8 @@ export const ZRecruteursLbaRaw = z.object({
   email: z.string().nullable(),
   phone: z.string().nullable(),
   company_size: z.string(),
+  coordonneeLambertAbscisseEtablissement: z.number().nullable(),
+  coordonneeLambertOrdonneeEtablissement: z.number().nullable(),
   rome_codes: z.array(z.object({ rome_code: z.string(), normalized_score: z.number() })),
 })
 export type IRecruteursLbaRaw = z.output<typeof ZRecruteursLbaRaw>

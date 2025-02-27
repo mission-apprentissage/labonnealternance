@@ -1,4 +1,5 @@
 import { ObjectId } from "bson"
+import proj4 from "proj4"
 import { joinNonNullStrings } from "shared"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
@@ -7,7 +8,24 @@ import { IRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
 export const recruteursLbaToJobPartners = (recruteursLba: IRecruteursLbaRaw): IComputedJobsPartners => {
-  const { siret, enseigne, raison_sociale, naf_code, naf_label, street_name, street_number, zip_code, email, phone, company_size, rome_codes, partner_job_id } = recruteursLba
+  const {
+    siret,
+    enseigne,
+    raison_sociale,
+    naf_code,
+    naf_label,
+    street_name,
+    street_number,
+    zip_code,
+    email,
+    phone,
+    company_size,
+    rome_codes,
+    partner_job_id,
+    coordonneeLambertAbscisseEtablissement,
+    coordonneeLambertOrdonneeEtablissement,
+  } = recruteursLba
+
   return {
     ...blankComputedJobPartner(),
     _id: new ObjectId(),
@@ -21,6 +39,7 @@ export const recruteursLbaToJobPartners = (recruteursLba: IRecruteursLbaRaw): IC
     workplace_address_street_label: street_name,
     workplace_address_zipcode: zip_code,
     workplace_address_label: joinNonNullStrings([street_number, street_name, zip_code]),
+    workplace_geopoint: getWorkplaceGeolocation(coordonneeLambertAbscisseEtablissement, coordonneeLambertOrdonneeEtablissement),
     workplace_size: company_size,
     apply_email: email,
     apply_phone: phone,
@@ -29,4 +48,17 @@ export const recruteursLbaToJobPartners = (recruteursLba: IRecruteursLbaRaw): IC
     offer_title: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
     offer_description: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
   }
+}
+
+// Définition des systèmes de coordonnées
+const lambert93 = "EPSG:2154"
+const wgs84 = "EPSG:4326"
+
+// Définition de Lambert 93 (au cas où proj4 ne l'aurait pas déjà en base)
+proj4.defs(lambert93, "+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 " + "+x_0=700000 +y_0=6600000 +ellps=GRS80 +units=m +no_defs")
+
+const getWorkplaceGeolocation = (x, y): IComputedJobsPartners["workplace_geopoint"] => {
+  if (x === 0 || y === 0) return null
+  const [longitude, latitude] = proj4(lambert93, wgs84, [x, y])
+  return { type: "Point", coordinates: [longitude, latitude] }
 }
