@@ -49,10 +49,14 @@ export const passJobToJobsPartners = (job: IPassJob): IComputedJobsPartners => {
   let phone: string | null = null
 
   if (contact) {
-    const [parsedEmail, parsedPhone] = contact.split("-").map((x) => x.trim())
+    const [parsedEmail, parsedPhone] = contact.split("-").map((x) => {
+      const trimmed = x.trim()
+      return trimmed === "" ? null : trimmed
+    })
     if (z.string().email().safeParse(email).success) {
       email = parsedEmail
     }
+    // phone extension is actually a cleaner, not validating phones, but here it's OK
     if (extensions.phone().safeParse(parsedPhone).success) {
       phone = parsedPhone
     }
