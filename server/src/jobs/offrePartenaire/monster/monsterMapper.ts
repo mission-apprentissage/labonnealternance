@@ -48,7 +48,7 @@ export const monsterJobToJobsPartners = (job: IMonsterJob): IComputedJobsPartner
     coordinates: [parseFloat(Longitude), parseFloat(Latitude)],
   }
 
-  const urlParsing = extensions.url().safeParse(guid)
+  const urlParsing = z.string().url().safeParse(guid)
   const siretParsing = extensions.siret.safeParse(siretNumber)
 
   let descriptionComputed = JobBody
