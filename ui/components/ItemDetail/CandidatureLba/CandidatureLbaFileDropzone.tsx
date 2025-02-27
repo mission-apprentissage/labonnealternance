@@ -148,7 +148,7 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   })
 
   return (
-    <Box p="20px" width="97%" border="1px dashed" borderColor={showUnacceptedFileMessages ? "red.500" : "grey.600"} {...getRootProps()}>
+    <Box p="20px" border="1px dashed" borderColor={showUnacceptedFileMessages ? "red.500" : "grey.600"} {...getRootProps()}>
       {fileLoading ? getSpinner() : hasSelectedFile() ? getSelectedFile() : getFileDropzone()}
     </Box>
   )

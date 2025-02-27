@@ -68,8 +68,8 @@ const sendingStateValues = {
   },
 } satisfies Record<string, DataDisplayForError>
 
-const CandidatureLbaFailed = ({ sendingState }) => {
-  const errorData: DataDisplayForError = sendingStateValues[sendingState] ?? defaultErrorData
+const CandidatureLbaFailed = ({ error }: { error: string }) => {
+  const errorData: DataDisplayForError = sendingStateValues[error] ?? defaultErrorData
   const { dataTestId, title, text } = errorData
 
   return (
