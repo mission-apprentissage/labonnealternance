@@ -134,7 +134,7 @@ export type IMeteojobJob = z.output<typeof ZMeteojobJob>
 const sanitizeHtml = (text: string) => {
   let sanitizedText = text.replace("<p>", "\r\n").replace("</p>", "\r\n").replace("<br>", "\r\n").replace("<br/>", "\r\n").replace("<br />", "\r\n")
   sanitizedText = removeHtmlTagsFromString(sanitizedText) as string
-  return sanitizedText
+  return sanitizedText.trim()
 }
 
 export const meteojobJobToJobsPartners = (job: IMeteojobJob): IComputedJobsPartners => {
