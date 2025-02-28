@@ -32,22 +32,22 @@ const ZApplicationOld = z
   .object({
     _id: zObjectId,
     applicant_id: zObjectId,
-    applicant_email: z.string().email().describe("Email du candidat"),
+    applicant_email: z.string({ required_error: "⚠ L'adresse e-mail est obligatoire" }).email("⚠ Adresse e-mail invalide").describe("Email du candidat"),
     applicant_first_name: z
-      .string()
+      .string({ required_error: "⚠ Le prénom est obligatoire" })
       .min(1)
       .max(50)
       .transform((value) => removeUrlsFromText(value))
       .describe("Prenom du candidat"),
     applicant_last_name: z
-      .string()
+      .string({ required_error: "⚠ Le nom est obligatoire" })
       .min(1)
       .max(50)
       .transform((value) => removeUrlsFromText(value))
       .describe("Nom du candidat"),
     applicant_phone: extensions.telephone.describe("Téléphone du candidat"),
     applicant_attachment_name: z
-      .string()
+      .string({ required_error: "⚠ La pièce jointe est obligatoire" })
       .min(1)
       .regex(/((.*?))(\.)+([Dd][Oo][Cc][Xx]|[Pp][Dd][Ff])$/i)
       .describe("Nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés."),
