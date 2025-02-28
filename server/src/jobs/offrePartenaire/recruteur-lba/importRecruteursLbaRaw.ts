@@ -130,7 +130,7 @@ export const importRecruteurLbaToComputed = async () => {
   const partnerLabel = JOBPARTNERS_LABEL.RECRUTEURS_LBA
   const zodInput = ZRecruteursLbaRaw
   const mapper = recruteursLbaToJobPartners
-  const omitFields = ["_id", "business_error"]
+  const omitFields = ["updated_at"]
 
   logger.info(`début d'import dans computed_jobs_partners pour partner_label=${partnerLabel}`)
   const counters = { total: 0, success: 0, error: 0 }
