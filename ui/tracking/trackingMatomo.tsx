@@ -6,21 +6,13 @@ export const Matomo = () => {
   return (
     <Script id="matomo" strategy="afterInteractive">
       {`
-      var _paq = window._paq = window._paq || [];
-      /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-      _paq.push(['trackPageView']);
-      _paq.push(['enableLinkTracking']);
+      var _mtm = window._mtm = window._mtm || [];
+      _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
       (function() {
-      var u="//${publicConfig.matomo.url}/";
-      _paq.push(['setTrackerUrl', u+'matomo.php']);
-      _paq.push(['setSiteId', '${publicConfig.matomo.siteId}']);
-      _paq.push(['setConsentGiven']);
-      _paq.push(['rememberCookieConsentGiven']);
-      _paq.push(['HeatmapSessionRecording::enable']);
-      var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-      g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+        g.async=true; g.src='${publicConfig.matomo.url}/${publicConfig.matomo.jsTrackerFile}'; s.parentNode.insertBefore(g,s);
       })();
-  `}
+      `}
     </Script>
   )
 }
