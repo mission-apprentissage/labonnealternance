@@ -5,7 +5,7 @@ import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import type { IMetierEnrichi } from "shared"
 
-import { AutocompleteSelectAsync } from "@/app/(home)/home/_components/FormComponents/AutocompleteSelectAsync"
+import { AutocompleteAsync } from "@/app/(home)/home/_components/FormComponents/AutocompleteAsync"
 import { SelectFormField } from "@/app/(home)/home/_components/FormComponents/SelectFormField"
 import { apiGet } from "@/utils/api.utils"
 
@@ -71,7 +71,7 @@ export function RechercheForm() {
           },
         }}
       >
-        <AutocompleteSelectAsync
+        <AutocompleteAsync
           onChange={async (e) => {
             console.log(e)
           }}

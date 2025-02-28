@@ -1,11 +1,10 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Typography } from "@mui/material"
-import type { AutocompleteRenderGroupParams, AutocompleteRenderInputParams, AutocompleteRenderOptionState } from "@mui/material/Autocomplete"
-import Autocomplete from "@mui/material/Autocomplete"
+import { Box, Typography, CircularProgress } from "@mui/material"
+import Autocomplete, { AutocompleteRenderGroupParams, AutocompleteRenderInputParams, AutocompleteRenderOptionState } from "@mui/material/Autocomplete"
 import { useWindowSize } from "@uidotdev/usehooks"
 import match from "autosuggest-highlight/match"
 import parse from "autosuggest-highlight/parse"
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useQuery } from "react-query"
 
 import { InputFormField } from "@/app/(home)/home/_components/FormComponents/InputFormField"
@@ -14,7 +13,7 @@ function identity<T>(value: T) {
   return value
 }
 
-interface AutocompleteSelectProps<T> {
+interface AutocompleteAsyncProps<T> {
   onChange: (value: T | null) => void
 
   fetchOptions: (inputValue: string) => Promise<T[]>
@@ -30,23 +29,6 @@ interface AutocompleteSelectProps<T> {
   label: string
 }
 
-async function sleep(durationMs: number, signal?: AbortSignal): Promise<void> {
-  await new Promise<void>((resolve) => {
-    let timeout: NodeJS.Timeout | null = null
-
-    const listener = () => {
-      if (timeout) clearTimeout(timeout)
-      resolve()
-    }
-
-    timeout = setTimeout(() => {
-      signal?.removeEventListener("abort", listener)
-      resolve()
-    }, durationMs)
-
-    signal?.addEventListener("abort", listener)
-  })
-}
 function renderGroup(props: AutocompleteRenderGroupParams) {
   return (
     <li key={props.group}>
@@ -68,28 +50,47 @@ function renderGroup(props: AutocompleteRenderGroupParams) {
   )
 }
 
-export function AutocompleteSelectAsync<T>(props: AutocompleteSelectProps<T>) {
+// This is different from basic throttle because it will always trigger the first event immediately
+function useThrottle(value: string, delay: number) {
+  const lastUpdateRef = useRef<number | null>(null)
+  const [debouncedValue, setDebouncedValue] = useState(value)
+
+  useEffect(() => {
+    const now = Date.now()
+
+    if (lastUpdateRef.current === null || now - lastUpdateRef.current >= delay) {
+      lastUpdateRef.current = now
+      setDebouncedValue(value)
+      return
+    }
+
+    const timeout = setTimeout(() => {
+      lastUpdateRef.current = now
+      setDebouncedValue(value)
+    }, delay)
+
+    return () => clearTimeout(timeout)
+  }, [value, delay])
+
+  return debouncedValue
+}
+
+export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
   // https://github.com/mui/material-ui/issues/27670#issuecomment-2079148513
   useWindowSize()
 
   const [query, setQuery] = useState("")
+  const debouncedQuery = useThrottle(query, 300)
+
+  const enabled = debouncedQuery.length > 0
 
   const onInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event?.target?.value ?? "")
   }, [])
 
-  const enabled = query.length > 0
-  const result = useQuery(
-    ["autocomplete", props.id, query],
-    async ({ signal }) => {
-      // Debounce the API call
-      await sleep(300, signal)
-      if (signal.aborted) return
+  const result = useQuery(["autocomplete", props.id, debouncedQuery], async () => props.fetchOptions(debouncedQuery), { enabled, staleTime: Infinity })
 
-      return props.fetchOptions(query)
-    },
-    { enabled, staleTime: Infinity }
-  )
+  const isDeferredOrFetching = result.isFetching || query !== debouncedQuery
 
   const renderInput = useCallback(
     (params: AutocompleteRenderInputParams) => {
@@ -102,10 +103,29 @@ export function AutocompleteSelectAsync<T>(props: AutocompleteSelectProps<T>) {
             ...params.inputProps,
             placeholder: props.placeholder,
           }}
+          action={
+            isDeferredOrFetching ? (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: fr.spacing("4w"),
+                  position: "absolute",
+                  right: 1,
+                  top: 1,
+                  bottom: 1,
+                  backgroundColor: fr.colors.decisions.background.default.grey.default,
+                }}
+              >
+                <CircularProgress color="inherit" size={fr.spacing("2w")} />
+              </Box>
+            ) : null
+          }
         ></InputFormField>
       )
     },
-    [props.label, props.placeholder]
+    [props.label, props.placeholder, isDeferredOrFetching]
   )
 
   const renderOption = useCallback(
@@ -124,6 +144,7 @@ export function AutocompleteSelectAsync<T>(props: AutocompleteSelectProps<T>) {
           sx={{
             px: fr.spacing("2w"),
             py: fr.spacing("1w"),
+            color: isDeferredOrFetching ? fr.colors.decisions.text.disabled.grey.default : fr.colors.decisions.text.default.grey.default,
           }}
         >
           <Typography className={fr.cx("fr-text--sm")}>
@@ -142,7 +163,7 @@ export function AutocompleteSelectAsync<T>(props: AutocompleteSelectProps<T>) {
         </Box>
       )
     },
-    [props.getOptionKey, props.getOptionLabel]
+    [props.getOptionKey, props.getOptionLabel, isDeferredOrFetching]
   )
 
   // TODO: create a basic AutoComplete DSFR with static options which can be used here too to share the same design
