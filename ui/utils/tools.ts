@@ -6,8 +6,8 @@ import { rawPostalAddress } from "./addressUtils"
 const getPathLink = (anyItem: ILbaItemFormation2 | ILbaItemLbaCompany | ILbaItemCompany | ILbaItemLbaJob | ILbaItemFtJob) => {
   let res = ""
   if (anyItem?.place) {
-    res = `https://www.google.fr/maps/dir//${encodeURIComponent(rawPostalAddress(anyItem.place.fullAddress || anyItem.place.city))}/@${anyItem.place.longitude},${
-      anyItem.place.latitude
+    res = `https://www.google.fr/maps/dir//${encodeURIComponent(rawPostalAddress(anyItem.place.fullAddress || anyItem.place.city))}/@${anyItem.place.latitude},${
+      anyItem.place.longitude
     },12z/`
   }
   return res
