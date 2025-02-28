@@ -15,4 +15,5 @@ init({
   release: publicConfig.version,
   normalizeDepth: 8,
   integrations: [captureConsoleIntegration({ levels: ["error"] }), extraErrorDataIntegration({ depth: 8 })],
+  ignoreErrors: ["AbortError"],
 })
