@@ -819,13 +819,45 @@ export async function upsertJobOffer(data: IJobOfferApiWriteV3, partner_label: s
   return upsertJobOfferPrivate({ data, partner_label, partnerJobIdIfNew: partner_job_id, requestedByEmail, current })
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function findJobOpportunityById(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3 | null> {
-  //WIP
-  return null
+  try {
+    // Exécuter les requêtes en parallèle puis récupérer la première offre trouvée
+    const results = await Promise.allSettled([getLbaJobByIdV2AsJobOfferApi(id, context), getJobsPartnersByIdAsJobOfferApi(id, context)])
+    const validResults = results.filter((res): res is PromiseFulfilledResult<IJobOfferApiReadV3> => res.status === "fulfilled" && res.value !== null)
+    const foundJob = validResults.length > 0 ? validResults[0].value : null
+
+    if (!foundJob) {
+      logger.warn(`Aucune offre d'emploi trouvée pour l'ID: ${id.toString()}`, { context })
+      return null
+    }
+
+    return validateJobOffer(foundJob, id, context)
+  } catch (error) {
+    const err = internal("Erreur inattendue dans findJobOpportunityById", { id, error })
+    logger.error(err)
+    sentryCaptureException(err)
+    return null
+  }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function validateJobOffer(job: IJobOfferApiReadV3, id: ObjectId, context: JobOpportunityRequestContext): IJobOfferApiReadV3 | null {
+  const parsedJob = zJobOfferApiReadV3.safeParse(job)
+
+  if (!parsedJob.success) {
+    const error = internal("jobOpportunity.service.ts-validateJobOffer: invalid job offer", {
+      job,
+      error: parsedJob.error.format(),
+      id: id.toString(),
+    })
+    logger.error(error)
+    context.addWarning("JOB_OFFER_FORMATING_ERROR")
+    sentryCaptureException(error)
+    return null
+  }
+
+  return parsedJob.data
+}
+
 export async function getLbaJobByIdV2AsJobOfferApi(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3 | null> {
   const job = await getLbaJobByIdV2AsJobResult({ id: id.toString(), caller: context?.caller })
 
@@ -841,7 +873,6 @@ export async function getLbaJobByIdV2AsJobOfferApi(id: ObjectId, context: JobOpp
   return transformedJob
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function getJobsPartnersByIdAsJobOfferApi(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3 | null> {
   const job = await getDbCollection("jobs_partners").findOne({ _id: id })
 
