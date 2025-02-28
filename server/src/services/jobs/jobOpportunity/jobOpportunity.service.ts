@@ -818,3 +818,9 @@ export async function upsertJobOffer(data: IJobOfferApiWriteV3, partner_label: s
   }
   return upsertJobOfferPrivate({ data, partner_label, partnerJobIdIfNew: partner_job_id, requestedByEmail, current })
 }
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function findJobOpportunityById(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3 | null> {
+  //WIP
+  return null
+}
