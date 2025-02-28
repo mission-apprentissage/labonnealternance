@@ -1,11 +1,12 @@
 import { badRequest, internal, notFound } from "@hapi/boom"
 import { Document, Filter, ObjectId } from "mongodb"
-import { ERecruteurLbaUpdateEventType, IApplication, ILbaCompany, ILbaCompanyForContactUpdate, IRecruteurLbaUpdateEvent } from "shared"
-import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { ERecruteurLbaUpdateEventType, IApplication, IRecruteurLbaUpdateEvent } from "shared"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { IJobsPartnersOfferPrivate, IJobsPartnersRecruteurAlgoPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { ILbaCompanyForContactUpdate } from "shared/routes/updateLbaCompany.routes"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
-import { roundDistance } from "../common/utils/geolib"
 import { isAllowedSource } from "../common/utils/isAllowedSource"
 import { getDbCollection } from "../common/utils/mongodbUtils"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
@@ -16,9 +17,6 @@ import { generateApplicationToken } from "./appLinks.service"
 import { TLbaItemResult } from "./jobOpportunity.service.types"
 import { ILbaItemLbaCompany } from "./lbaitem.shared.service.types"
 
-export const buildLbaCompanyAddress = (company: ILbaCompany) =>
-  `${company.street_name ? `${company.street_number ? `${company.street_number} ` : ""}${company.street_name}, ` : ""}${company.zip_code} ${company.city}`.trim()
-
 /**
  * Adaptation au modèle LBA d'une société issue de l'algo
  */
@@ -27,7 +25,7 @@ const transformCompany = ({
   contactAllowedOrigin,
   applicationCountByCompany,
 }: {
-  company: ILbaCompany
+  company: IJobsPartnersRecruteurAlgoPrivate
   caller?: string | null
   contactAllowedOrigin: boolean
   applicationCountByCompany: IApplicationCount[]
@@ -36,50 +34,48 @@ const transformCompany = ({
     email?: string
     iv?: string
     phone?: string | null
-  } = encryptMailWithIV({ value: company.email !== "null" ? company.email : "" })
+  } = encryptMailWithIV({ value: company.apply_email !== "null" ? company.apply_email : "" })
 
   if (contactAllowedOrigin) {
-    contact.phone = company.phone
+    contact.phone = company.apply_phone
   }
-  // format différent selon accès aux bonnes boîtes par recherche ou par siret
-  const address = buildLbaCompanyAddress(company)
 
-  const applicationCount = applicationCountByCompany.find((cmp) => company.siret == cmp._id)
+  const applicationCount = applicationCountByCompany.find((cmp) => company.workplace_siret == cmp._id)
 
   const resultCompany: ILbaItemLbaCompany = {
     ideaType: LBA_ITEM_TYPE_OLD.LBA,
     // ideaType: LBA_ITEM_TYPE.RECRUTEURS_LBA,
-    id: company.siret,
-    title: company.enseigne,
+    id: company.workplace_siret,
+    title: company.workplace_brand || company.workplace_legal_name,
     contact,
     place: {
-      distance: company.distance ? (roundDistance(company.distance / 1000) ?? 0) : null,
-      fullAddress: address,
-      latitude: parseFloat(company.geo_coordinates.split(",")[0]),
-      longitude: parseFloat(company.geo_coordinates.split(",")[1]),
-      city: company.city,
-      address,
+      distance: null,
+      fullAddress: company.workplace_address_label,
+      latitude: company.workplace_geopoint.coordinates[0],
+      longitude: company.workplace_geopoint.coordinates[1],
+      city: company.workplace_address_city,
+      address: company.workplace_address_label,
     },
     company: {
-      name: company.enseigne,
-      siret: company.siret,
-      size: company.company_size,
-      url: company.website,
+      name: company.workplace_legal_name,
+      siret: company.workplace_siret,
+      size: company.workplace_size,
+      url: company.workplace_website,
       opco: {
-        label: company.opco,
-        url: company.opco_url,
+        label: company.workplace_opco,
+        url: null,
       },
     },
     nafs: [
       {
-        code: company.naf_code,
-        label: company.naf_label,
+        code: company.workplace_naf_code,
+        label: company.workplace_naf_label,
       },
     ],
     applicationCount: applicationCount?.count || 0,
     url: null,
-    token: generateApplicationToken({ company_siret: company.siret }),
-    recipient_id: `recruteurslba_${company._id.toString()}`,
+    token: generateApplicationToken({ company_siret: company.workplace_siret }),
+    recipient_id: `partners_${company._id.toString()}`,
   }
 
   return resultCompany
@@ -88,36 +84,41 @@ const transformCompany = ({
 /**
  * Adaptation au modèle LBA d'une société issue de l'algo avec les données minimales nécessaires pour l'ui LBA
  */
-const transformCompanyWithMinimalData = ({ company, applicationCountByCompany }: { company: ILbaCompany; applicationCountByCompany: IApplicationCount[] }): ILbaItemLbaCompany => {
+const transformCompanyWithMinimalData = ({
+  company,
+  applicationCountByCompany,
+}: {
+  company: IJobsPartnersRecruteurAlgoPrivate
+  applicationCountByCompany: IApplicationCount[]
+}): ILbaItemLbaCompany => {
   // format différent selon accès aux bonnes boîtes par recherche ou par siret
-  const address = buildLbaCompanyAddress(company)
 
-  const applicationCount = applicationCountByCompany.find((cmp) => company.siret == cmp._id)
+  const applicationCount = applicationCountByCompany.find((cmp) => company.workplace_siret == cmp._id)
 
   const resultCompany: ILbaItemLbaCompany = {
     ideaType: LBA_ITEM_TYPE_OLD.LBA,
-    id: company.siret,
-    title: company.enseigne,
+    id: company.workplace_siret,
+    title: company.workplace_brand || company.workplace_legal_name,
     place: {
-      distance: company.distance ? (roundDistance(company.distance / 1000) ?? 0) : null,
-      fullAddress: address,
-      latitude: parseFloat(company.geo_coordinates.split(",")[0]),
-      longitude: parseFloat(company.geo_coordinates.split(",")[1]),
-      city: company.city,
-      address,
+      distance: null,
+      fullAddress: company.workplace_address_label,
+      latitude: company.workplace_geopoint.coordinates[0],
+      longitude: company.workplace_geopoint.coordinates[1],
+      city: company.workplace_address_city,
+      address: company.workplace_address_label,
     },
     company: {
-      name: company.enseigne,
-      siret: company.siret,
+      name: company.workplace_legal_name,
+      siret: company.workplace_siret,
     },
     nafs: [
       {
-        label: company.naf_label,
+        label: company.workplace_naf_label,
       },
     ],
     applicationCount: applicationCount?.count || 0,
-    token: generateApplicationToken({ company_siret: company.siret }),
-    recipient_id: `recruteurslba_${company._id.toString()}`,
+    token: generateApplicationToken({ company_siret: company.workplace_siret }),
+    recipient_id: `partners_${company._id.toString()}`,
   }
 
   return resultCompany
@@ -133,7 +134,7 @@ const transformCompanies = ({
   applicationCountByCompany,
   isMinimalData,
 }: {
-  companies: ILbaCompany[]
+  companies: IJobsPartnersRecruteurAlgoPrivate[]
   referer?: string
   caller?: string | null
   applicationCountByCompany: IApplicationCount[]
@@ -166,11 +167,11 @@ type IRecruteursLbaSearchParams = {
   romes: string[] | null
 }
 
-export const getRecruteursLbaFromDB = async ({ geo, romes }: IRecruteursLbaSearchParams): Promise<ILbaCompany[]> => {
-  const query: Filter<ILbaCompany> = {}
+export const getRecruteursLbaFromDB = async ({ geo, romes }: IRecruteursLbaSearchParams): Promise<IJobsPartnersOfferPrivate[]> => {
+  const query: Filter<IJobsPartnersOfferPrivate> = { partner_label: LBA_ITEM_TYPE.RECRUTEURS_LBA }
 
   if (romes) {
-    query.rome_codes = { $in: romes }
+    query.offer_rome_codes = { $in: romes }
   }
 
   const filterStages: Document[] =
@@ -181,16 +182,16 @@ export const getRecruteursLbaFromDB = async ({ geo, romes }: IRecruteursLbaSearc
             $geoNear: {
               near: { type: "Point", coordinates: [geo.longitude, geo.latitude] },
               distanceField: "distance",
-              key: "geopoint",
+              key: "workplace_geopoint",
               maxDistance: geo.radius * 1000,
               query,
             },
           },
-          { $sort: { distance: 1, last_update_at: -1 } },
+          { $sort: { distance: 1 } },
         ]
 
-  return await getDbCollection("recruteurslba")
-    .aggregate<ILbaCompany>([
+  return await getDbCollection("jobs_partners")
+    .aggregate<IJobsPartnersOfferPrivate>([
       ...filterStages,
       {
         $limit: 150,
@@ -222,34 +223,35 @@ export const getCompanies = async ({
   opco?: string
   opcoUrl?: string
   api: string
-}): Promise<ILbaCompany[] | IApiError> => {
+}): Promise<IJobsPartnersRecruteurAlgoPrivate[] | IApiError> => {
   try {
     const distance = radius || 10
 
-    const query: any = {}
+    const query: any = { partner_label: LBA_ITEM_TYPE.RECRUTEURS_LBA }
 
     if (romes) {
-      query.rome_codes = { $in: romes?.split(",") }
+      query.offer_rome_codes = { $in: romes?.split(",") }
     }
 
     if (opco) {
-      query.opco_short_name = opco.toUpperCase()
+      query.workplace_opco = opco.toUpperCase()
     }
 
+    // TODO 20250212 obsolete, to check if still used
     if (opcoUrl) {
       query.opco_url = opcoUrl.toLowerCase()
     }
 
-    let companies: ILbaCompany[] = []
+    let companies: IJobsPartnersRecruteurAlgoPrivate[] = []
 
     if (latitude && longitude) {
-      companies = (await getDbCollection("recruteurslba")
+      companies = (await getDbCollection("jobs_partners")
         .aggregate([
           {
             $geoNear: {
               near: { type: "Point", coordinates: [longitude, latitude] },
               distanceField: "distance",
-              key: "geopoint",
+              key: "workplace_geopoint",
               maxDistance: distance * 1000,
               query,
             },
@@ -258,9 +260,9 @@ export const getCompanies = async ({
             $limit: companyLimit,
           },
         ])
-        .toArray()) as ILbaCompany[]
+        .toArray()) as IJobsPartnersRecruteurAlgoPrivate[]
     } else {
-      companies = (await getDbCollection("recruteurslba")
+      companies = (await getDbCollection("jobs_partners")
         .aggregate([
           {
             $match: query,
@@ -271,25 +273,21 @@ export const getCompanies = async ({
             },
           },
         ])
-        .toArray()) as ILbaCompany[]
+        .toArray()) as IJobsPartnersRecruteurAlgoPrivate[]
     }
 
     if (!latitude) {
-      companies.sort(function (a, b) {
-        if (!a || !a.enseigne) {
-          return -1
-        }
-        if (!b || !b.enseigne) {
-          return 1
-        }
-        return a.enseigne.toLowerCase().localeCompare(b.enseigne.toLowerCase())
+      companies.sort((a, b) => {
+        if (!a?.workplace_legal_name) return -1
+        if (!b?.workplace_legal_name) return 1
+        return a.workplace_legal_name.toLowerCase().localeCompare(b.workplace_legal_name.toLowerCase())
       })
     }
 
     return companies
   } catch (error) {
     sentryCaptureException(error)
-    return manageApiError({ error, api_path: api, caller, errorTitle: `getting lbaCompanies from DB (${api})` })
+    return manageApiError({ error, api_path: api, caller, errorTitle: `getting recruteurs_lba from jobs_partners collection (${api})` })
   }
 }
 
@@ -337,7 +335,7 @@ export const getSomeCompanies = async ({
   })
 
   if (!("error" in companies) && companies instanceof Array) {
-    const sirets = companies.map(({ siret }) => siret)
+    const sirets = companies.map(({ workplace_siret }) => workplace_siret)
     const applicationCountByCompany = await getApplicationByCompanyCount(sirets)
     return transformCompanies({ companies, referer, caller, applicationCountByCompany, isMinimalData })
   } else {
@@ -363,7 +361,10 @@ export const getCompanyFromSiret = async ({
     }
 > => {
   try {
-    const lbaCompany = await getDbCollection("recruteurslba").findOne({ siret })
+    const lbaCompany = (await getDbCollection("jobs_partners").findOne({
+      workplace_siret: siret,
+      partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+    })) as IJobsPartnersRecruteurAlgoPrivate
 
     if (!lbaCompany) {
       if (caller) {
@@ -376,7 +377,7 @@ export const getCompanyFromSiret = async ({
       trackApiCall({ caller, api_path: "jobV1/company", job_count: 1, result_count: 1, response: "OK" })
     }
 
-    const applicationCountByCompany = await getApplicationByCompanyCount([lbaCompany.siret])
+    const applicationCountByCompany = await getApplicationByCompanyCount([lbaCompany.workplace_siret!])
     const company = transformCompany({
       company: lbaCompany,
       contactAllowedOrigin: isAllowedSource({ referer, caller }),
@@ -404,10 +405,10 @@ export const getCompanyFromSiret = async ({
  * @param {string} phone
  * @returns {Promise<ILbaCompany | string>}
  */
-export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email?: string; phone?: string }) => {
+export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email: string | null; phone: string | null }) => {
   const now = new Date()
   try {
-    const recruteurLba = await getDbCollection("recruteurslba").findOne({ siret })
+    const recruteurLba = await getDbCollection("jobs_partners").findOne({ workplace_siret: siret, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
     let application: IApplication | null = null
     const fieldUpdates: IRecruteurLbaUpdateEvent[] = []
 
@@ -418,13 +419,13 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
         throw badRequest()
       }
     } else {
-      await Promise.all([
-        email !== undefined && getDbCollection("recruteurslba").findOneAndUpdate({ siret }, { $set: { email, last_update_at: new Date() } }),
-        phone !== undefined && getDbCollection("recruteurslba").findOneAndUpdate({ siret }, { $set: { phone, last_update_at: new Date() } }),
-      ])
+      await getDbCollection("jobs_partners").findOneAndUpdate(
+        { workplace_siret: recruteurLba.workplace_siret, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA },
+        { $set: { apply_email: email, apply_phone: phone, updated_at: new Date() } }
+      )
     }
 
-    if (email !== undefined && recruteurLba && recruteurLba.email !== email && !email) {
+    if (email !== undefined && recruteurLba && recruteurLba.apply_email !== email && !email) {
       fieldUpdates.push({
         _id: new ObjectId(),
         created_at: now,
@@ -434,7 +435,7 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
       })
     }
 
-    if (phone !== undefined && recruteurLba && recruteurLba.phone !== phone && !phone) {
+    if (phone !== undefined && recruteurLba && recruteurLba.apply_phone !== phone && !phone) {
       fieldUpdates.push({
         _id: new ObjectId(),
         created_at: now,
@@ -444,7 +445,7 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
       })
     }
 
-    if (email && (application || (recruteurLba && recruteurLba.email !== email))) {
+    if (email && (application || (recruteurLba && recruteurLba.apply_email !== email))) {
       fieldUpdates.push({
         _id: new ObjectId(),
         created_at: now,
@@ -454,7 +455,7 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
       })
     }
 
-    if (phone && (application || (recruteurLba && recruteurLba.phone !== phone))) {
+    if (phone && (application || (recruteurLba && recruteurLba.apply_phone !== phone))) {
       fieldUpdates.push({
         _id: new ObjectId(),
         created_at: now,
@@ -466,7 +467,7 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
 
     fieldUpdates.length && (await getDbCollection("recruteurlbaupdateevents").insertMany(fieldUpdates))
 
-    return { enseigne: application?.company_name ?? recruteurLba?.enseigne, phone, email, siret, active: recruteurLba ? true : false }
+    return { enseigne: application?.company_name || recruteurLba?.workplace_brand || recruteurLba?.workplace_legal_name, phone, email, siret, active: recruteurLba ? true : false }
   } catch (err) {
     sentryCaptureException(err)
     throw err
@@ -475,10 +476,16 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
 
 export const getCompanyContactInfo = async ({ siret }: { siret: string }): Promise<ILbaCompanyForContactUpdate> => {
   try {
-    const lbaCompany = await getDbCollection("recruteurslba").findOne({ siret })
+    const lbaCompany = await getDbCollection("jobs_partners").findOne({ workplace_siret: siret, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
 
     if (lbaCompany) {
-      return { enseigne: lbaCompany.enseigne, phone: lbaCompany.phone, email: lbaCompany.email, siret: lbaCompany.siret, active: true }
+      return {
+        enseigne: lbaCompany.workplace_brand || lbaCompany.workplace_legal_name,
+        phone: lbaCompany.apply_phone,
+        email: lbaCompany.apply_email,
+        siret: lbaCompany.workplace_siret!,
+        active: true,
+      }
     } else {
       const application = await getDbCollection("applications").findOne({ company_siret: siret })
 

@@ -1,3 +1,4 @@
+import { processRecruteursLba } from "@/jobs/offrePartenaire/processRecruteursLba"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
@@ -23,10 +24,12 @@ import { importFranceTravailRaw, importFranceTravailToComputed } from "./offrePa
 import { importHelloWorkRaw, importHelloWorkToComputed } from "./offrePartenaire/hellowork/importHelloWork"
 import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromComputedToJobsPartners"
 import { importKelio } from "./offrePartenaire/kelio/importKelio"
+import { importMeteojobRaw, importMeteojobToComputed } from "./offrePartenaire/meteojob/importMeteojob"
 import { importPassRaw, importPassToComputed } from "./offrePartenaire/pass/importPass"
 import { processJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
 import { rankJobPartners } from "./offrePartenaire/rankJobPartners"
+import { importRecruteurLbaToComputed, importRecruteursLbaRaw, removeMissingRecruteursLbaFromRaw } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
 import { importRHAlternanceRaw, importRHAlternanceToComputed } from "./offrePartenaire/rh-alternance/importRHAlternance"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -183,12 +186,20 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Importe les offres kelio dans la collection raw",
   },
   {
+    fct: importMeteojobRaw,
+    description: "Importe les offres Meteojob dans la collection raw",
+  },
+  {
     fct: importPassRaw,
     description: "importe les offres Pass dans la collection raw",
   },
   {
     fct: importFranceTravailRaw,
     description: "import des offres France Travail dans la collection raw",
+  },
+  {
+    fct: importRecruteursLbaRaw,
+    description: "import des recruteurs lba dans la collection raw",
   },
   {
     fct: classifyFranceTravailJobs,
@@ -198,6 +209,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: importHelloWorkToComputed,
     description: "Importe les offres hellowork depuis raw vers computed",
+  },
+  {
+    fct: importMeteojobToComputed,
+    description: "Importe les offres Meteojob depuis raw vers computed",
   },
   {
     fct: importRHAlternanceToComputed,
@@ -210,6 +225,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: importFranceTravailToComputed,
     description: "Importe les offres France Travail depuis raw vers computed",
+  },
+  {
+    fct: importRecruteurLbaToComputed,
+    description: "Importe les recruteurs lba depuis raw vers computed",
   },
   // IMPORT COMPUTED TO JOBS PARTNERS
   {
@@ -227,12 +246,20 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Chaîne complète de traitement des jobs_partners",
   },
   {
+    fct: processRecruteursLba,
+    description: "Chaîne complète de traitement des entreprises issues de l'algo pour jobs_partners",
+  },
+  {
     fct: processJobPartnersForApi,
     description: "Chaîne complète de traitement des jobs_partners déposés par API",
   },
   {
     fct: cancelRemovedJobsPartners,
     description: "Met à jour la collection jobs_partners en mettant à 'Annulé' les offres qui ne sont plus dans computed_jobs_partners",
+  },
+  {
+    fct: removeMissingRecruteursLbaFromRaw,
+    description: "Met à jour la collection computed_jobs_partners en supprimant les entreprises qui ne sont plus dans raw_recruteurslba",
   },
   {
     fct: processApplications,

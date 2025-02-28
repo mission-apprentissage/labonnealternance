@@ -11,7 +11,7 @@ import { ApiError } from "@/utils/api.utils"
 import { AUTHTYPE } from "../../../common/contants"
 import { LogoContext } from "../../../context/contextLogo"
 import { WidgetContext } from "../../../context/contextWidget"
-import { getEntrepriseInformation, getEntrepriseOpco, validateCfaCreation } from "../../../utils/api"
+import { getEntrepriseInformation, validateCfaCreation } from "../../../utils/api"
 import { Bandeau, BandeauProps } from "../Bandeau"
 import { InformationsSiret } from "../CreationRecruteur/InformationsSiret"
 import { AnimationContainer, AuthentificationLayout } from "../index"
@@ -45,12 +45,12 @@ const CreationCompteForm = ({
     const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
     // validate establishment_siret
     if (organisationType === AUTHTYPE.ENTREPRISE) {
-      Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret)]).then(([opcoInfos, entrepriseData]) => {
+      getEntrepriseInformation(formattedSiret).then((entrepriseData) => {
         if (entrepriseData.error === true) {
           if (entrepriseData.statusCode >= 500) {
             router.push({
               pathname: nextUri,
-              query: { type: organisationType, origin, informationSiret: JSON.stringify({ establishment_siret: formattedSiret, ...opcoInfos }) },
+              query: { type: organisationType, origin, siret: formattedSiret },
             })
           } else {
             setFieldError("establishment_siret", entrepriseData?.data?.errorCode === BusinessErrorCodes.NON_DIFFUSIBLE ? BusinessErrorCodes.NON_DIFFUSIBLE : entrepriseData.message)
@@ -61,7 +61,7 @@ const CreationCompteForm = ({
           setSubmitting(true)
           router.push({
             pathname: nextUri,
-            query: { informationSiret: JSON.stringify({ establishment_siret: formattedSiret, ...opcoInfos }), type: organisationType, origin },
+            query: { siret: formattedSiret, type: organisationType, origin },
           })
         }
       })
@@ -71,7 +71,7 @@ const CreationCompteForm = ({
           setSubmitting(false)
           router.push({
             pathname: nextUri,
-            query: { informationSiret: JSON.stringify({ establishment_siret: formattedSiret }), type: organisationType, origin },
+            query: { siret: formattedSiret, type: organisationType, origin },
           })
         })
         .catch((error) => {

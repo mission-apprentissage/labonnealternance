@@ -30,7 +30,7 @@ export const rankJobPartners = async (addedMatchFilter?: Filter<IComputedJobsPar
     sourceFields,
     filledFields,
     replaceMatchFilter: {},
-    groupSize: 500,
+    groupSize: 1_000,
     addedMatchFilter,
     getData: async (documents) => {
       return documents.map((document) => {

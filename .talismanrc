@@ -1,8 +1,8 @@
 fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 1910fb07ec956bb49fa09319706b02bdf1320633f8d405f7f53783ebf827f39b
+  checksum: 6c3ade1ddaac4db86cb79aa5328c7546490450f3be8e356b001299417b68d14e
 - filename: .infra/vault/vault.yml
-  checksum: b9470577e591e9c69d28ad449918cb92c7a29985833624563c279864d70712b9
+  checksum: 34dd8658f403cfd23208533c571630b56fbea0f3131a54cf54f9f826b0dc2201
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
   checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
 - filename: cypress/pages/FlowAdminPage.ts
@@ -26,7 +26,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/__snapshots__/etablissementRecruteur.controller.test.ts.snap
   checksum: e8a35e591adb1447d1b6e796b063f435ac389e9ffe619c68185f348beae71215
 - filename: server/src/http/controllers/application.controller.test.ts
-  checksum: 00cac67c8e138098126ae98702e2bdc3e1092e1bbf188d9a437197e9ca94e16a
+  checksum: ad6c424209e224bb62dd826b86f1c0bb935033bb5fd9d7313a2eebee6766b8f2
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
   checksum: dc77c04efc26dcd8ca4816f392ab24a32a92cb45ca4b94adb593a08e7a2d231e
 - filename: server/src/http/controllers/etablissementRecruteur.controller.test.ts
@@ -44,7 +44,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/v2/jobs.controller.v2.ts
   checksum: da8baa573172fa97c21f9123e04032718249dcec1194a51d7a1f1757070594ce
 - filename: server/src/http/controllers/v3/jobs/jobs.controller.v3.test.ts
-  checksum: 4b24ff09463f476fd0b64bef104da6e17153ffdfff2d628c96b16d3ea33779f7
+  checksum: d75ea18c3cc64f50ba00100308371bd7da8122456cf73642e92c31b5aa05f301
 - filename: server/src/http/routes/appointmentRequest.controller.ts
   checksum: d2770daa97ae332eec0b66497fdb717229895583ac3bfd48af1a830b36504968
 - filename: server/src/http/routes/auth/password.controller.ts
@@ -64,13 +64,15 @@ fileignoreconfig:
 - filename: server/src/jobs/offrePartenaire/__snapshots__/importRHAlternance.test.ts.snap
   checksum: 41e5eadcdaa0cb1eb95e4cb3859f4b7b1d176bbb95ee8451d46a6b2c9021c3fd
 - filename: server/src/jobs/offrePartenaire/detectDuplicateJobPartners.test.ts
-  checksum: 82d624da5034d7e482cb7b2a99a134796e3a2b3c3a2a89a10da2e49242854c79
+  checksum: 42830bef5459bba7625d1c52c2eac844911c3471f483f38499002e61dfd7cbb5
 - filename: server/src/jobs/offrePartenaire/importFromUrlInXml.ts
   checksum: 18bd149922151536ad0e239b082309697cee6046b33512d5eecc54b2d25b465a
 - filename: server/src/jobs/offrePartenaire/importHelloWork.test.input.xml
   checksum: 6f28aee7664d1ec1e4b4da34b96b63e23781538b3fe3e8d50dddbdad3884fa3f
 - filename: server/src/jobs/offrePartenaire/importHelloWork.ts
   checksum: 26caf0b5a97ce2ff7451cc2717a3b36f38b20f94db6beb490b98b8311debfd25
+- filename: server/src/jobs/offrePartenaire/meteojob/importMeteojob.test.input.xml
+  checksum: 62419cb750978e303756a8134f180ffa4febb9835fff97e48ed1024923bebc91
 - filename: server/src/migrations/20241022093834-remove-multi-published.ts
   checksum: a807c70a69c4c8bfc2a0568b466a7f274fd3840169ef3ef4792885d63cb75217
 - filename: server/src/security/accessApiApprentissageService.ts
@@ -84,7 +86,7 @@ fileignoreconfig:
 - filename: server/src/services/__snapshots__/partnerJob.service.test.ts.snap
   checksum: 6f190e19172481706181e0a13ed7de5f0f6c699f86d35d9b08071ece445920b1
 - filename: server/src/services/application.service.test.ts
-  checksum: d11d73a73ed489475d6a2f7dd693787fc71a7dfd9150bb88cec4f88c92c19d02
+  checksum: 2b61fd4ed86f14a39b8c86531b13690bc586954829dd0c8df277516a500dca2d
 - filename: server/src/services/application.service.ts
   checksum: 38021ae663db3a146c848a8d691c0c1bc9bb262a80a6f2dedf9fcdb372eef3ac
 - filename: server/src/services/eligibleTrainingsForAppointment.service.ts
@@ -102,7 +104,7 @@ fileignoreconfig:
 - filename: server/src/services/partnerJob.service.test.ts
   checksum: b488a3b67b801c3fa5b012d2ba2b120b21af4f459b966c6629e6e681ead97913
 - filename: server/src/services/recruteurLba.service.test.ts
-  checksum: 38c947c87cfb508fec88cbce878f89725cbb6679e833a66bdb7fca60e3685a0a
+  checksum: 2c7c55154fe1adf7ec6c500d7526ab5f26178f3ac55495247d8eb24ed7b81a6b
 - filename: server/src/services/referrers.service.ts
   checksum: 966b0ece2b18b5a6066df531524c97ba0ad38266e782a334004e8c127b41ade6
 - filename: server/src/services/trafficSource.service.test.ts
@@ -123,6 +125,8 @@ fileignoreconfig:
   checksum: 0b806bca197dba97415902339e84f924cb45dae766cf8d3cfc47d80d2bdd203c
 - filename: server/static/templates/mail-candidat-refus.mjml.ejs
   checksum: 3fcfa9586df3283a3f50cf6751b735b646d3f3ac64e8e4a8453999e9e5aea881
+- filename: server/static/templates/mail-candidature-spontanee.mjml.ejs
+  checksum: baf1efe3757cfa6dc72a888fc480bfbc8f74779d0cf7620b94a4800b5ebee75b
 - filename: server/static/templates/mail-cfa-delegation.mjml.ejs
   checksum: 569e084a81ffdfbd3b427a60c0712ec2f1af2031fe120572e55235691e84dc5b
 - filename: server/static/templates/mail-cfa-demande-de-contact.mjml.ejs

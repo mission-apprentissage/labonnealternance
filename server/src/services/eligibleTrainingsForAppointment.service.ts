@@ -15,8 +15,6 @@ import { isEmailBlacklisted } from "./application.service"
 import { getMostFrequentEmailByGestionnaireSiret } from "./formation.service"
 import { getReferrerByKeyName } from "./referrers.service"
 
-export const create = (params: IEligibleTrainingsForAppointment) => getDbCollection("eligible_trainings_for_appointments").insertOne(params)
-
 export const find = (conditions: Filter<IEligibleTrainingsForAppointment>, options = {}) =>
   getDbCollection("eligible_trainings_for_appointments").find(conditions, options).toArray()
 

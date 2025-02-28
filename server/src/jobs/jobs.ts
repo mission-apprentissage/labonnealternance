@@ -1,6 +1,7 @@
 import { addJob, initJobProcessor } from "job-processor"
 import { ObjectId } from "mongodb"
 
+import updateDomainesMetiers from "@/jobs/domainesMetiers/updateDomainesMetiers"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
 import { generateSitemap } from "@/services/sitemap.service"
@@ -20,18 +21,15 @@ import { processRecruiterIntentions } from "./applications/processRecruiterInten
 import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
 import { recreateIndexes } from "./database/recreateIndexes"
 import { validateModels } from "./database/schemaValidation"
-import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
-import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
 import { updateDomainesMetiersFile } from "./domainesMetiers/updateDomainesMetiersFile"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
-import { runGarbageCollector } from "./misc/runGarbageCollector"
-import { importFranceTravailRaw } from "./offrePartenaire/france-travail/importJobsFranceTravail"
 import { processJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
+import { processRecruteursLba } from "./offrePartenaire/processRecruteursLba"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -51,12 +49,8 @@ import { createApiUser } from "./recruiters/createApiUser"
 import { disableApiUser } from "./recruiters/disableApiUser"
 import { opcoReminderJob } from "./recruiters/opcoReminderJob"
 import { recruiterOfferExpirationReminderJob } from "./recruiters/recruiterOfferExpirationReminderJob"
-import { removeDuplicateRecruiters } from "./recruiters/removeDuplicatesRecruiters"
 import { resetApiKey } from "./recruiters/resetApiKey"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
-import updateGeoLocations from "./recruteurLba/updateGeoLocations"
-import updateOpcoCompanies from "./recruteurLba/updateOpcoCompanies"
-import updateLbaCompanies from "./recruteurLba/updateRecruteurLba"
 import { SimpleJobDefinition, simpleJobDefinitions } from "./simpleJobDefinitions"
 import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 import { controlApplications } from "./verifications/controlApplications"
@@ -65,18 +59,50 @@ import { controlAppointments } from "./verifications/controlAppointments"
 export async function setupJobProcessor() {
   logger.info("Setup job processor")
   return initJobProcessor({
+    workerTags: config.worker === "runner-1" ? ["main"] : ["slave"],
     db: getDatabase(),
     logger: getLoggerWithContext("script"),
     crons: ["local", "preview", "pentest"].includes(config.env)
       ? {}
       : {
-          "Creation de la collection JOBS pour metabase": {
-            cron_string: "55 0 * * *",
-            handler: createJobsCollectionForMetabase,
+          "Génération du token France Travail pour la récupération des offres": {
+            cron_string: "*/5 * * * *",
+            handler: generateFranceTravailAccess,
+            tag: "main",
+          },
+          "Scan et envoi des candidatures": {
+            cron_string: "*/10 * * * *",
+            handler: () => processApplications(),
+            tag: "main",
+          },
+          "Traitement complet des jobs_partners par API": {
+            cron_string: "*/10 * * * *",
+            handler: processJobPartnersForApi,
+            tag: "main",
+          },
+          "Mise à jour des adresses emails bloquées": {
+            cron_string: "5 0 * * *",
+            handler: () => updateBrevoBlockedEmails({}),
+          },
+          "Anonymisation des candidats & leurs candidatures de plus de deux (2) ans": {
+            cron_string: "10 0 * * *",
+            handler: anonymizeApplicantsAndApplications,
+          },
+          "Mise à jour des recruteurs en erreur": {
+            cron_string: "10 0 * * *",
+            handler: updateSiretInfosInError,
+          },
+          "Anonymisation des candidatures de plus de deux (2) ans": {
+            cron_string: "15 0 * * *",
+            handler: anonymizeApplications,
           },
           "Annulation des offres expirées": {
             cron_string: "15 0 * * *",
             handler: cancelOfferJob,
+          },
+          "Génération du sitemap pour les offres": {
+            cron_string: "20 0 * * *",
+            handler: generateSitemap,
           },
           // "Send offer reminder email at J+7": {
           //   cron_string: "20 0 * * *",
@@ -90,37 +116,42 @@ export async function setupJobProcessor() {
             cron_string: "30 0 * * 1,3,5",
             handler: opcoReminderJob,
           },
-          "Envoi des offres à France Travail": {
-            cron_string: "30 5 * * *",
-            handler: config.env === "production" ? () => exportJobsToFranceTravail() : () => Promise.resolve(0),
-          },
-          "Mise à jour des recruteurs en erreur": {
-            cron_string: "10 0 * * *",
-            handler: updateSiretInfosInError,
-          },
           "Active tous les établissements qui ont souscrits à l'opt-out": {
             cron_string: "50 0 * * *",
             handler: activateOptoutOnEtablissementAndUpdateReferrersOnETFA,
           },
-          "Invite les établissements (via email gestionnaire) à l'opt-out": {
-            cron_string: "0 9 * * *",
-            handler: inviteEtablissementToOptOut,
+          "Creation de la collection JOBS pour metabase": {
+            cron_string: "55 0 * * *",
+            handler: createJobsCollectionForMetabase,
           },
-          "Invite les établissements (via email gestionnaire) au premium (Parcoursup)": {
-            cron_string: "0 9 * * *",
-            handler: inviteEtablissementParcoursupToPremium,
+          "Anonymisation des user recruteurs de plus de deux (2) ans": {
+            cron_string: "0 1 * * *",
+            handler: anonimizeUsersWithAccounts,
           },
-          "(Relance) Invite les établissements (via email gestionnaire) au premium (Parcoursup)": {
-            cron_string: "30 9 * * *",
-            handler: () => inviteEtablissementParcoursupToPremiumFollowUp(),
+          "Anonymisation des utilisateurs RDVA de plus de deux (2) ans": {
+            cron_string: "5 1 * * *",
+            handler: anonymizeUsers,
           },
-          "Invite les établissements (via email gestionnaire) au premium (Affelnet)": {
-            cron_string: "15 9 * * *",
-            handler: inviteEtablissementAffelnetToPremium,
+          "Anonymisation des appointments de plus de deux (2) ans": {
+            cron_string: "30 1 * * *",
+            handler: anonymizeAppointments,
           },
-          "(Relance) Invite les établissements (via email gestionnaire) au premium (Affelnet)": {
-            cron_string: "45 9 * * *",
-            handler: () => inviteEtablissementAffelnetToPremiumFollowUp(),
+          "Traitement complet des jobs_partners": {
+            cron_string: "00 2 * * *",
+            handler: processJobPartners,
+            tag: "slave",
+          },
+          "Import des formations depuis le Catalogue RCO": {
+            cron_string: "15 2 * * *",
+            handler: importCatalogueFormationJob,
+          },
+          "Mise à jour des champs spécifiques de la collection formations catalogue": {
+            cron_string: "30 2 * * *",
+            handler: updateParcoursupAndAffelnetInfoOnFormationCatalogue,
+          },
+          "Historisation des formations éligibles à la prise de rendez-vous": {
+            cron_string: "55 2 * * *",
+            handler: eligibleTrainingsForAppointmentsHistoryWithCatalogue,
           },
           "Synchronise les formations eligibles à la prise de rendez-vous": {
             cron_string: "45 2 * * *",
@@ -134,41 +165,37 @@ export async function setupJobProcessor() {
             cron_string: "0 5 * * *",
             handler: syncEtablissementDates,
           },
-          "Supprime les dates d'invitation et de refus au premium (PARCOURSUP & AFFELNET) des etablissements": {
-            cron_string: "0 0 20 11 *",
-            handler: resetInvitationDates,
+          "Envoi des offres à France Travail": {
+            cron_string: "30 5 * * *",
+            handler: config.env === "production" ? () => exportJobsToFranceTravail() : () => Promise.resolve(0),
           },
-          "Historisation des formations éligibles à la prise de rendez-vous": {
-            cron_string: "55 2 * * *",
-            handler: eligibleTrainingsForAppointmentsHistoryWithCatalogue,
+          "export des offres LBA sur S3": {
+            cron_string: "30 6 * * 1",
+            handler: config.env === "production" ? () => exportLbaJobsToS3() : () => Promise.resolve(0),
           },
-          "Mise à jour de la table de correspondance entre Id formation Onisep et Clé ME du catalogue RCO, utilisé pour diffuser la prise de RDV sur l’Onisep": {
-            cron_string: "45 23 * * 2",
-            handler: importReferentielOnisep,
+          "Invite les établissements (via email gestionnaire) à l'opt-out": {
+            cron_string: "0 9 * * *",
+            handler: inviteEtablissementToOptOut,
           },
-          "Import des formations depuis le Catalogue RCO": {
-            cron_string: "15 2 * * *",
-            handler: importCatalogueFormationJob,
+          "Invite les établissements (via email gestionnaire) au premium (Parcoursup)": {
+            cron_string: "0 9 * * *",
+            handler: inviteEtablissementParcoursupToPremium,
           },
-          "Mise à jour des champs spécifiques de la collection formations catalogue": {
-            cron_string: "30 2 * * *",
-            handler: updateParcoursupAndAffelnetInfoOnFormationCatalogue,
+          "Invite les établissements (via email gestionnaire) au premium (Affelnet)": {
+            cron_string: "15 9 * * *",
+            handler: inviteEtablissementAffelnetToPremium,
           },
-          "Mise à jour des adresses emails bloquées": {
-            cron_string: "5 0 * * *",
-            handler: () => updateBrevoBlockedEmails({}),
+          "(Relance) Invite les établissements (via email gestionnaire) au premium (Parcoursup)": {
+            cron_string: "30 9 * * *",
+            handler: () => inviteEtablissementParcoursupToPremiumFollowUp(),
           },
-          "Géolocation de masse des sociétés issues de l'algo": {
-            cron_string: "0 5 * * 6",
-            handler: () => updateGeoLocations({}),
+          "(Relance) Invite les établissements (via email gestionnaire) au premium (Affelnet)": {
+            cron_string: "45 9 * * *",
+            handler: () => inviteEtablissementAffelnetToPremiumFollowUp(),
           },
-          "Détermination des opcos des sociétés issues de l'algo": {
-            cron_string: "30 6 * * 6",
-            handler: () => updateOpcoCompanies({}),
-          },
-          "Mise à jour des sociétés issues de l'algo": {
-            cron_string: "0 5 * * 7",
-            handler: () => updateLbaCompanies({ useAlgoFile: true, clearMongo: true }),
+          "Creation de la collection rolemanagement360": {
+            cron_string: "00 10,13,17 * * *",
+            handler: createRoleManagement360,
           },
           "Contrôle quotidien des candidatures": {
             cron_string: "0 10-19/1 * * 1-5",
@@ -178,97 +205,38 @@ export async function setupJobProcessor() {
             cron_string: "0 11-19/2 * * 1-5",
             handler: config.env === "production" ? () => controlAppointments() : () => Promise.resolve(0),
           },
-          "Anonymisation des candidatures de plus de deux (2) ans": {
-            cron_string: "15 0 * * *",
-            handler: anonymizeApplications,
-          },
-          "Anonymisation des candidats & leurs candidatures de plus de deux (2) ans": {
-            cron_string: "10 0 * * *",
-            handler: anonymizeApplicantsAndApplications,
-          },
-          "Anonimisation des utilisateurs RDVA de plus de deux (2) ans": {
-            cron_string: "5 1 * * *",
-            handler: anonymizeUsers,
-          },
-          "Anonymisation des user recruteurs de plus de deux (2) ans": {
-            cron_string: "0 1 * * *",
-            handler: anonimizeUsersWithAccounts,
-          },
-          "Anonymisation des appointments de plus de deux (2) ans": {
-            cron_string: "30 1 * * *",
-            handler: anonymizeAppointments,
-          },
-          "Lancement du garbage collector": {
-            cron_string: "30 3 * * *",
-            handler: runGarbageCollector,
-          },
-          "export des offres LBA sur S3": {
-            cron_string: "30 6 * * 1",
-            handler: config.env === "production" ? () => exportLbaJobsToS3() : () => Promise.resolve(0),
-          },
-          "Creation de la collection rolemanagement360": {
-            cron_string: "00 10,13,17 * * *",
-            handler: createRoleManagement360,
-          },
-          "Scan et envoi des candidatures": {
-            cron_string: "*/10 * * * *",
-            handler: () => processApplications(),
-          },
-          "Génération du token France Travail pour la récupération des offres": {
-            cron_string: "*/20 * * * *", // le token dure 25 minutes et le TTL DB est équivalent
-            handler: generateFranceTravailAccess,
-          },
           "Mise à jour du référentiel commune": {
             cron_string: "0 15 * * SUN",
             handler: updateReferentielCommune,
-          },
-          "Emission des contacts vers Brevo": {
-            cron_string: "30 22 * * *",
-            handler: sendContactsToBrevo,
-          },
-          "Génération du sitemap pour les offres": {
-            cron_string: "20 0 * * *",
-            handler: generateSitemap,
-          },
-          "Traitement complet des jobs_partners": {
-            cron_string: "40 3 * * *",
-            handler: processJobPartners,
-          },
-          "Traitement complet des jobs_partners par API": {
-            cron_string: "*/10 * * * *",
-            handler: processJobPartnersForApi,
-          },
-          "Import complet des offres France Travail": {
-            cron_string: "0 6 * * *",
-            handler: importFranceTravailRaw,
           },
           "Emission des intentions des recruteurs": {
             cron_string: "30 20 * * *",
             handler: processRecruiterIntentions,
           },
+          "Emission des contacts vers Brevo": {
+            cron_string: "30 22 * * *",
+            handler: sendContactsToBrevo,
+          },
+          "Mise à jour de la table de correspondance entre Id formation Onisep et Clé ME du catalogue RCO, utilisé pour diffuser la prise de RDV sur l’Onisep": {
+            cron_string: "45 23 * * 2",
+            handler: importReferentielOnisep,
+          },
+          "Supprime les dates d'invitation et de refus au premium (PARCOURSUP & AFFELNET) des etablissements": {
+            cron_string: "0 0 20 11 *",
+            handler: resetInvitationDates,
+          },
+          "Traitement des recruteur LBA par la pipeline jobs partners": {
+            cron_string: "0 22 * * SUN",
+            handler: processRecruteursLba,
+          },
         },
     jobs: {
-      "remove:duplicates:recruiters": {
-        handler: async () => removeDuplicateRecruiters(),
-      },
       "recreate:indexes": {
         handler: async (job) => {
           const { drop } = job.payload as any
           await recreateIndexes({ drop })
           return
         },
-      },
-      "garbage-collector:run": {
-        handler: async () => runGarbageCollector(),
-      },
-      "anonymize:appointments": {
-        handler: async () => anonymizeAppointments(),
-      },
-      "control:applications": {
-        handler: async () => controlApplications(),
-      },
-      "control:appointments": {
-        handler: async () => controlAppointments(),
       },
       "api:user:create": {
         handler: async (job) => {
@@ -294,29 +262,14 @@ export async function setupJobProcessor() {
           return
         },
       },
-      "pe:offre:export": {
-        handler: async () => exportJobsToFranceTravail(),
-      },
       "etablissement:invite:premium:follow-up": {
         handler: async (job) => inviteEtablissementParcoursupToPremiumFollowUp(job.payload?.bypassDate as any),
       },
       "etablissement:invite:premium:affelnet:follow-up": {
         handler: async (job) => inviteEtablissementAffelnetToPremiumFollowUp(job.payload?.bypassDate as any),
       },
-      "etablissements:formations:sync": {
-        handler: async () => syncEtablissementsAndFormations(),
-      },
       "brevo:blocked:sync": {
         handler: async (job) => updateBrevoBlockedEmails(job.payload as any),
-      },
-      "companies:update": {
-        handler: async (job) => updateLbaCompanies(job.payload as any),
-      },
-      "geo-locations:update": {
-        handler: async (job) => updateGeoLocations(job.payload as any),
-      },
-      "opcos:update": {
-        handler: async (job) => updateOpcoCompanies(job.payload as any),
       },
       "domaines-metiers:update": {
         handler: async () => updateDomainesMetiers(),
@@ -327,9 +280,6 @@ export async function setupJobProcessor() {
           await updateDomainesMetiersFile({ filename, key })
           return
         },
-      },
-      "diplomes-metiers:update": {
-        handler: async () => updateDiplomesMetiers(),
       },
       "anonymize-individual": {
         handler: async (job) => {
