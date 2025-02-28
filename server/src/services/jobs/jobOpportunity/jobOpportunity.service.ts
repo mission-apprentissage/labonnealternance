@@ -826,7 +826,7 @@ export async function findJobOpportunityById(id: ObjectId, context: JobOpportuni
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function getLbaJobByIdV2AsJobOfferApi(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3 | null> {
+export async function getLbaJobByIdV2AsJobOfferApi(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3 | null> {
   const job = await getLbaJobByIdV2AsJobResult({ id: id.toString(), caller: context?.caller })
 
   if (!job) {
@@ -842,7 +842,7 @@ async function getLbaJobByIdV2AsJobOfferApi(id: ObjectId, context: JobOpportunit
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function getJobsPartnersByIdAsJobOfferApi(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3 | null> {
+export async function getJobsPartnersByIdAsJobOfferApi(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3 | null> {
   const job = await getDbCollection("jobs_partners").findOne({ _id: id })
 
   if (!job) {
