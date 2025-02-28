@@ -24,8 +24,8 @@ export const processRecruteursLba = async () => {
   if (fileAlreadyProcessed) return
 
   await importRecruteursLbaRaw()
-  await removeMissingRecruteursLbaFromRaw()
   await importRecruteurLbaToComputed()
+  await removeMissingRecruteursLbaFromRaw()
   await fillOpcoInfosForPartners(filter)
   await fillLocationInfosForPartners(filter)
   await blockBadRomeJobsPartners(filter)

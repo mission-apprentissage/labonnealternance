@@ -24,6 +24,7 @@ export const recruteursLbaToJobPartners = (recruteursLba: IRecruteursLbaRaw): IC
     partner_job_id,
     coordonneeLambertAbscisseEtablissement,
     coordonneeLambertOrdonneeEtablissement,
+    libelleCommuneEtablissement,
   } = recruteursLba
 
   return {
@@ -36,15 +37,16 @@ export const recruteursLbaToJobPartners = (recruteursLba: IRecruteursLbaRaw): IC
     workplace_legal_name: raison_sociale,
     workplace_naf_code: naf_code,
     workplace_naf_label: naf_label,
+    workplace_address_city: libelleCommuneEtablissement,
     workplace_address_street_label: street_name,
     workplace_address_zipcode: zip_code,
-    workplace_address_label: joinNonNullStrings([street_number, street_name, zip_code]),
+    workplace_address_label: joinNonNullStrings([street_number, street_name, zip_code, libelleCommuneEtablissement]),
     workplace_geopoint: getWorkplaceGeolocation(coordonneeLambertAbscisseEtablissement, coordonneeLambertOrdonneeEtablissement),
     workplace_size: company_size,
     apply_email: email,
     apply_phone: phone,
     offer_rome_codes: rome_codes.map(({ rome_code }) => rome_code),
-    // laisse recruteurs_lba pour les entreprises issue de l'algorithme de lba (passer la validation & l'import dans jobs_partners)
+    // laisser recruteurs_lba pour les entreprises issue de l'algorithme de lba (passer la validation & l'import dans jobs_partners)
     offer_title: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
     offer_description: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
   }
