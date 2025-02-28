@@ -1,10 +1,44 @@
+"use client"
+
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
+import type { IMetierEnrichi } from "shared"
 
+import { AutocompleteSelectAsync } from "@/app/(home)/home/_components/FormComponents/AutocompleteSelectAsync"
 import { SelectFormField } from "@/app/(home)/home/_components/FormComponents/SelectFormField"
+import { apiGet } from "@/utils/api.utils"
 
 import { InputFormField } from "./FormComponents/InputFormField"
+
+type IRomeSearchOption = {
+  item: IMetierEnrichi
+  key: string
+  label: string
+  group: string
+}
+
+function getOptionKey(option: IRomeSearchOption) {
+  return option.key
+}
+
+function getOptionLabel(option: IRomeSearchOption) {
+  return option.label
+}
+
+async function fetchRomeSearchOptions(query: string): Promise<IRomeSearchOption[]> {
+  const data = await apiGet("/rome", { querystring: { title: query } })
+
+  const metiers: IMetierEnrichi[] = data.labelsAndRomes ?? []
+  const diplomes: IMetierEnrichi[] = data.labelsAndRomesForDiplomas ?? []
+
+  return [
+    ...metiers.slice(0, 4).map((item: IMetierEnrichi) => ({ item, key: `${item.type}:${item.label}`, label: item.label, group: "Métiers" })),
+    ...diplomes.slice(0, 4).map((item: IMetierEnrichi) => ({ item, key: `${item.type}:${item.label}`, label: item.label, group: "Diplômes" })),
+    ...metiers.slice(4).map((item: IMetierEnrichi) => ({ item, key: `${item.type}:${item.label}`, label: item.label, group: "Autres Métiers" })),
+    ...diplomes.slice(4).map((item: IMetierEnrichi) => ({ item, key: `${item.type}:${item.label}`, label: item.label, group: "Autres Diplômes" })),
+  ]
+}
 
 export function RechercheForm() {
   return (
@@ -37,7 +71,20 @@ export function RechercheForm() {
           },
         }}
       >
-        <InputFormField
+        <AutocompleteSelectAsync
+          onChange={async (e) => {
+            console.log(e)
+          }}
+          noOptionsText="Nous ne parvenons pas à identifier le métier que vous cherchez, veuillez reformuler votre recherche"
+          id="metier"
+          label="Métier ou diplôme"
+          fetchOptions={fetchRomeSearchOptions}
+          getOptionKey={getOptionKey}
+          getOptionLabel={getOptionLabel}
+          groupBy={(option: IRomeSearchOption) => option.group}
+          placeholder="Indiquer un métier ou un diplôme"
+        />
+        {/* <InputFormField
           label="Métier ou diplôme"
           style={{
             marginBottom: 0,
@@ -45,7 +92,7 @@ export function RechercheForm() {
           nativeInputProps={{
             placeholder: "Indiquer un métier ou un diplôme",
           }}
-        />
+        /> */}
         <InputFormField
           label="Lieu"
           style={{

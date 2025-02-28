@@ -6708,6 +6708,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@uidotdev/usehooks@npm:^2.4.1":
+  version: 2.4.1
+  resolution: "@uidotdev/usehooks@npm:2.4.1"
+  peerDependencies:
+    react: ">=18.0.0"
+    react-dom: ">=18.0.0"
+  checksum: d381ce7d4853abe53127b70b0734935d1cfba97bfd2314e67aa42d4f35cd5b955712c6e968f435d8818bd51bea9cf7688b60eeb0db19bae2a6666a37ceee8b5f
+  languageName: node
+  linkType: hard
+
 "@ungap/structured-clone@npm:^1.2.0":
   version: 1.2.1
   resolution: "@ungap/structured-clone@npm:1.2.1"
@@ -7500,6 +7510,15 @@ __metadata:
   version: 2.2.5
   resolution: "attr-accept@npm:2.2.5"
   checksum: e6a23183c112f5d313ebfc7e63e454de0600caffe9ab88f86e9df420d2399a48e27e6c46ee8de2fc6f34fee3541ecdb557f2b86e6d8bd7d24fd3a66cc75e6349
+  languageName: node
+  linkType: hard
+
+"autosuggest-highlight@npm:^3.3.4":
+  version: 3.3.4
+  resolution: "autosuggest-highlight@npm:3.3.4"
+  dependencies:
+    remove-accents: ^0.4.2
+  checksum: ec89d69770c65f4a6615d1443307553ca1d1b6d397bce4e2e488610a3c42ffc534b986424c362c84089865922c5713cba94be9fd74ed30e13bd5bbf47162c61d
   languageName: node
   linkType: hard
 
@@ -16530,6 +16549,7 @@ __metadata:
     "@types/node": ^20.12.12
     "@typescript-eslint/eslint-plugin": ^7.9.0
     "@typescript-eslint/parser": ^7.9.0
+    "@uidotdev/usehooks": ^2.4.1
     cross-env: ^7.0.3
     cypress: ^13.6.4
     cypress-slow-down: ^1.3.1
@@ -19872,6 +19892,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"remove-accents@npm:^0.4.2":
+  version: 0.4.4
+  resolution: "remove-accents@npm:0.4.4"
+  checksum: 0219a20550f8e6d7ebb47993fc08633c9c10b171d573467671641178de7a00b47ffcdbbf3be323a22c45de8903ac869cc4707dfc5aa5f25b7711e0c9b4daf4f4
+  languageName: node
+  linkType: hard
+
 "repeat-string@npm:^1.0.0":
   version: 1.6.1
   resolution: "repeat-string@npm:1.6.1"
@@ -22725,6 +22752,7 @@ __metadata:
     "@turf/distance": ^6.5.0
     "@types/node": ^20.7.1
     "@types/react": ^18.2.23
+    autosuggest-highlight: ^3.3.4
     axios: ^1.7.4
     csv-stringify: ^6.5.2
     dayjs: ^1.11.10

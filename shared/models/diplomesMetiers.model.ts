@@ -47,7 +47,7 @@ export const ZMetierEnrichi = z
 
 export type IMetierEnrichi = z.output<typeof ZMetierEnrichi>
 
-export const ZMetierEnrichiArray = ZMetierEnrichi.array().openapi({
+export const ZMetierEnrichiArray = z.array(ZMetierEnrichi).openapi({
   description: "Un tableau de métiers correspondantes aux critères",
 })
 

@@ -29,6 +29,7 @@
     "@socialgouv/matomo-next": "^1.8.0",
     "@tanstack/react-virtual": "^3.11.3",
     "@turf/distance": "^6.5.0",
+    "autosuggest-highlight": "^3.3.4",
     "axios": "^1.7.4",
     "csv-stringify": "^6.5.2",
     "dayjs": "^1.11.10",
