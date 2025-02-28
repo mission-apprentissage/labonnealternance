@@ -38,7 +38,7 @@ import { getFtJobsV2, getSomeFtJobs } from "../../ftjob.service"
 import { FTJob } from "../../ftjob.service.types"
 import { TJobSearchQuery, TLbaItemResult } from "../../jobOpportunity.service.types"
 import { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "../../lbaitem.shared.service.types"
-import { IJobResult, getLbaJobs, getLbaJobsV2, incrementLbaJobsViewCount } from "../../lbajob.service"
+import { IJobResult, getLbaJobByIdV2AsJobResult, getLbaJobs, getLbaJobsV2, incrementLbaJobsViewCount } from "../../lbajob.service"
 import { jobsQueryValidator } from "../../queryValidator.service"
 import { getRecruteursLbaFromDB, getSomeCompanies } from "../../recruteurLba.service"
 import { getNearestCommuneByGeoPoint } from "../../referentiel/commune/commune.referentiel.service"
@@ -823,4 +823,42 @@ export async function upsertJobOffer(data: IJobOfferApiWriteV3, partner_label: s
 export async function findJobOpportunityById(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3 | null> {
   //WIP
   return null
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function getLbaJobByIdV2AsJobOfferApi(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3 | null> {
+  const job = await getLbaJobByIdV2AsJobResult({ id: id.toString(), caller: context?.caller })
+
+  if (!job) {
+    const error = internal("jobOpportunity.service.ts-getLbaJobByIdV2AsJobOfferApi: job not found", { id })
+    logger.error(error)
+    context.addWarning("JOB_NOT_FOUND")
+    sentryCaptureException(error)
+    throw new Error("Job not found")
+  }
+
+  const transformedJob = convertLbaRecruiterToJobOfferApi([job])[0]
+  return transformedJob
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function getJobsPartnersByIdAsJobOfferApi(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3 | null> {
+  const job = await getDbCollection("jobs_partners").findOne({ _id: id })
+
+  if (!job) {
+    const error = internal("jobOpportunity.service.ts-getJobsPartnersByIdAsJobOfferApi: job not found", { id })
+    logger.error(error)
+    context.addWarning("JOB_NOT_FOUND")
+    sentryCaptureException(error)
+    throw new Error("Job not found")
+  }
+
+  const transformedJob = jobsRouteApiv3Converters.convertToJobOfferApiReadV3({
+    ...job,
+    contract_type: job.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
+    apply_url: job.apply_url ?? `${config.publicUrl}/recherche?type=partner&itemId=${job._id}`,
+    apply_recipient_id: `jobs_partners_${job._id}`,
+  })
+
+  return transformedJob
 }
