@@ -145,7 +145,7 @@ export const importRecruteurLbaToComputed = async () => {
           const computedJobPartner = omit(mapper(parsedDocument), omitFields)
           await getDbCollection("computed_jobs_partners").updateOne(
             { partner_job_id: document.partner_job_id },
-            { $set: { ...computedJobPartner, updated_at: importDate }, $setOnInsert: { offer_status_history: [], _id: new ObjectId() } },
+            { $set: { updated_at: importDate }, $setOnInsert: { ...computedJobPartner, offer_status_history: [], _id: new ObjectId() } },
             {
               upsert: true,
             }
@@ -172,6 +172,7 @@ export const importRecruteurLbaToComputed = async () => {
 }
 
 export const removeMissingRecruteursLbaFromRaw = async () => {
+  logger.info("Removing recruteurs_lba from computed")
   const results = (await getDbCollection("computed_jobs_partners")
     .aggregate([
       { $match: { partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA } },
@@ -193,4 +194,10 @@ export const removeMissingRecruteursLbaFromRaw = async () => {
   if (idsToRemove.length) {
     await getDbCollection("computed_jobs_partners").deleteMany({ _id: { $in: idsToRemove } })
   }
+  const message = `clean-up dans computed_jobs_partners pour partner_label=${JOBPARTNERS_LABEL.RECRUTEURS_LBA} terminé. total=${idsToRemove.length}`
+  logger.info(message)
+  await notifyToSlack({
+    subject: `mapping Raw => computed_jobs_partners`,
+    message,
+  })
 }
