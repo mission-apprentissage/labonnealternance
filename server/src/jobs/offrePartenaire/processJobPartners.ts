@@ -7,6 +7,7 @@ import { importFranceTravailRaw, importFranceTravailToComputed } from "./france-
 import { importHelloWorkRaw, importHelloWorkToComputed } from "./hellowork/importHelloWork"
 import { importFromComputedToJobsPartners } from "./importFromComputedToJobsPartners"
 import { importMeteojobRaw, importMeteojobToComputed } from "./meteojob/importMeteojob"
+import { importMonsterRaw, importMonsterToComputed } from "./monster/importMonster"
 import { importRHAlternanceRaw, importRHAlternanceToComputed } from "./rh-alternance/importRHAlternance"
 
 export const jobPartnersByFlux = Object.values(JOBPARTNERS_LABEL).filter((v) => v !== JOBPARTNERS_LABEL.RECRUTEURS_LBA)
@@ -20,6 +21,8 @@ export const processJobPartners = async () => {
   await importHelloWorkToComputed()
   await importMeteojobRaw()
   await importMeteojobToComputed()
+  await importMonsterRaw()
+  await importMonsterToComputed()
   await importFranceTravailRaw()
   await classifyFranceTravailJobs()
   await importFranceTravailToComputed()
