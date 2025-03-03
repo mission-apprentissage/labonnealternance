@@ -1,6 +1,6 @@
-import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Center, Flex, Grid, Image, Link, ListItem, Text, UnorderedList } from "@chakra-ui/react"
-import NextLink from "next/link"
+import { Box, Center, Flex, Grid, Image, ListItem, Text, UnorderedList } from "@chakra-ui/react"
+
+import { DsfrLink } from "../dsfr/DsfrLink"
 
 import { CardForLink } from "./CardForLink"
 import FonctionnementPlateforme from "./fonctionnementPlateforme"
@@ -32,29 +32,24 @@ const RessourcesRecruteur = () => {
             Estimez le coût d’un alternant
           </Text>{" "}
           pour votre entreprise avec le simulateur de l’URSSAF.{" "}
-          <Link
-            href="https://www.alternance.emploi.gouv.fr/simulateur-employeur/etape-1"
-            aria-label="Accéder au simulateur de coût d'un alternant"
-            isExternal
-            variant="basicUnderlinedBlue"
-          >
-            En savoir plus <ExternalLinkIcon mb="3px" ml="2px" />
-          </Link>
+          <DsfrLink href="https://www.alternance.emploi.gouv.fr/simulateur-employeur/etape-1" aria-label="Accéder au simulateur de coût d'un alternant">
+            En savoir plus
+          </DsfrLink>
         </ListItem>
         <ListItem mb={4}>
           En janvier dernier, le Gouvernement a annoncé son nouveau plan d’aide aux entreprises pour 2025.{" "}
-          <Link href="https://entreprendre.service-public.fr/vosdroits/F23556" aria-label="Accéder au site des aides du gouvernement" isExternal variant="basicUnderlinedBlue">
-            En savoir plus <ExternalLinkIcon mb="3px" ml="2px" />
-          </Link>
+          <DsfrLink href="https://entreprendre.service-public.fr/vosdroits/F23556" aria-label="Accéder au site des aides du gouvernement">
+            En savoir plus
+          </DsfrLink>
         </ListItem>
         <ListItem mb={4}>
           <Text as="span" fontWeight={700}>
             Retrouvez les informations légales de votre entreprise
           </Text>{" "}
           sur l’annuaire des entreprises, à partir de votre SIRET.{" "}
-          <Link href="https://annuaire-entreprises.data.gouv.fr/" aria-label="Accéder à l'annuaire des entreprises" isExternal variant="basicUnderlinedBlue">
-            En savoir plus <ExternalLinkIcon mb="3px" ml="2px" />
-          </Link>
+          <DsfrLink href="https://annuaire-entreprises.data.gouv.fr/" aria-label="Accéder à l'annuaire des entreprises">
+            En savoir plus
+          </DsfrLink>
         </ListItem>
         <ListItem mb={4}>
           <Text as="span" fontWeight={700}>
@@ -65,57 +60,37 @@ const RessourcesRecruteur = () => {
           jeunes.
           <br />
           Vous ne connaissez pas votre OPCO ? Retrouvez votre OPCO sur{" "}
-          <Link href="https://quel-est-mon-opco.francecompetences.fr/" aria-label="Accéder au site de France compétences" isExternal variant="basicUnderlinedBlue">
-            France compétences <ExternalLinkIcon mb="3px" ml="2px" />
-          </Link>
+          <DsfrLink href="https://quel-est-mon-opco.francecompetences.fr/" aria-label="Accéder au site de France compétences">
+            France compétences
+          </DsfrLink>
         </ListItem>
         <ListItem mb={4}>
           <Text as="span" fontWeight={700}>
             Quelle est la différence entre un contrat en apprentissage et un contrat de professionnalisation ?
           </Text>{" "}
           Le portail de l’alternance vous explique les différences.{" "}
-          <Link
-            href="https://www.alternance.emploi.gouv.fr/je-suis-employeur#Pour%20quel%20employeur%20?"
-            aria-label="Accéder au portail de l'alternance"
-            isExternal
-            variant="basicUnderlinedBlue"
-          >
-            En savoir plus <ExternalLinkIcon mb="3px" ml="2px" />
-          </Link>
+          <DsfrLink href="https://www.alternance.emploi.gouv.fr/je-suis-employeur#Pour%20quel%20employeur%20?" aria-label="Accéder au portail de l'alternance">
+            En savoir plus
+          </DsfrLink>
         </ListItem>
         <ListItem mb={4}>
-          <Link
-            href="https://travail-emploi.gouv.fr/IMG/pdf/precis-apprentissage.pdf"
-            aria-label="Accéder au précis de l'apprentissage - nouvelle fenêtre"
-            isExternal
-            variant="basicUnderlinedBlue"
-          >
-            Le Précis de l’apprentissage <ExternalLinkIcon mb="3px" ml="2px" />
-          </Link>{" "}
+          <DsfrLink href="https://travail-emploi.gouv.fr/IMG/pdf/precis-apprentissage.pdf" aria-label="Accéder au précis de l'apprentissage - nouvelle fenêtre">
+            Le Précis de l’apprentissage
+          </DsfrLink>{" "}
           vous présente des repères sur l’apprentissage. Il est issu des travaux de la DGEFP et d’une consultation des acteurs institutionnels de l’apprentissage. Il répond à
           l’objectif d’harmoniser les pratiques des acteurs de l’apprentissage et vise à donner des repères juridiques et des clefs de compréhension autour de bases documentaires
           et méthodologiques communes.
         </ListItem>
         <ListItem mb={4}>
           Le contrat en apprentissage{" "}
-          <Link
-            href="https://www.service-public.fr/particuliers/vosdroits/R1319"
-            aria-label="Accéder au cerfa numéro 10103-11 - nouvelle fenêtre"
-            isExternal
-            variant="basicUnderlinedBlue"
-          >
+          <DsfrLink href="https://www.service-public.fr/particuliers/vosdroits/R1319" aria-label="Accéder au cerfa numéro 10103-11 - nouvelle fenêtre">
             Cerfa n° 10103*11
-          </Link>{" "}
+          </DsfrLink>{" "}
           doit être signé et transmis à votre OPCO <b>au plus tard 5 jours après le démarrage du contrat</b>. Gagnez du temps ! Optimisez la création de vos contrats
           d’apprentissage avec le service{" "}
-          <Link
-            href="https://contrat.apprentissage.beta.gouv.fr/"
-            aria-label="Accéder au service de cerfa dématérialisé - nouvelle fenêtre"
-            isExternal
-            variant="basicUnderlinedBlue"
-          >
+          <DsfrLink href="https://contrat.apprentissage.beta.gouv.fr/" aria-label="Accéder au service de cerfa dématérialisé - nouvelle fenêtre">
             CERFA dématérialisé
-          </Link>
+          </DsfrLink>
         </ListItem>
         <ListItem mb={4}>En tant qu’employeur, vous devez conserver le contrat signé pendant 5 ans en cas de contrôle.</ListItem>
       </UnorderedList>
@@ -126,11 +101,9 @@ const RessourcesRecruteur = () => {
             <Text as="div" fontWeight={700} mb={4}>
               Diffusez simplement et gratuitement vos offres en alternance
             </Text>
-            <NextLink legacyBehavior passHref href="/acces-recruteur">
-              <Link aria-label="Accès à la page d'accueil" variant="basicUnderlinedBlue">
-                Accéder à la page d’accueil →
-              </Link>
-            </NextLink>
+            <DsfrLink href="/acces-recruteur" aria-label="Accès à la page d'accueil">
+              Accéder à la page d’accueil →
+            </DsfrLink>
           </Box>
         </Center>
       </Flex>
