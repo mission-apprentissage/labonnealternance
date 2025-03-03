@@ -172,7 +172,7 @@ export const importRecruteurLbaToComputed = async () => {
 }
 
 export const removeMissingRecruteursLbaFromRaw = async () => {
-  logger.info("Removing recruteurs_lba from computed")
+  logger.info("clean-up recruteurs_lba in computed_jobs_partners from raw")
   const results = (await getDbCollection("computed_jobs_partners")
     .aggregate([
       { $match: { partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA } },
