@@ -275,6 +275,8 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
+- filename: server/src/jobs/offrePartenaire/pass/importPass.test.input.rss
+  checksum: c51265ef42491e55f550f2cd3387c3948cec82fad6debcfd2670e324a0c89dcf
 scopeconfig:
 - scope: node
 custom_patterns:
