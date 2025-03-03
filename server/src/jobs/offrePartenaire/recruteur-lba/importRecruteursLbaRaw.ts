@@ -180,8 +180,8 @@ export const removeMissingRecruteursLbaFromRaw = async () => {
       {
         $lookup: {
           from: "raw_recruteurslba",
-          localField: "partner_job_id",
-          foreignField: "partner_job_id",
+          localField: "workplace_siret",
+          foreignField: "siret",
           as: "matching",
         },
       },
