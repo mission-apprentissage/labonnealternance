@@ -32,7 +32,7 @@ const ZApplicationOld = z
   .object({
     _id: zObjectId,
     applicant_id: zObjectId,
-    applicant_email: z.string({ required_error: "⚠ L'adresse e-mail est obligatoire" }).email("⚠ Adresse e-mail invalide").describe("Email du candidat"),
+    applicant_email: z.string().email().describe("Email du candidat"),
     applicant_first_name: z
       .string()
       .min(1)
