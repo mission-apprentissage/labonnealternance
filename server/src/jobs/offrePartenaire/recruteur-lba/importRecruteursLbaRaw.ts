@@ -91,8 +91,7 @@ const importRecruteursLbaToRawCollection = async () => {
     streamArray(),
     transformData((doc) => {
       const { value } = doc
-      const partner_job_id = `${value.siret}-${value.phone}-${value.email}`
-      const recruteur = { createdAt: now, _id: new ObjectId(), partner_job_id, ...doc.value }
+      const recruteur = { createdAt: now, _id: new ObjectId(), ...value }
       if (!ZRecruteursLbaRaw.safeParse(recruteur).success) return null
       return recruteur
     }),
@@ -130,7 +129,7 @@ export const importRecruteurLbaToComputed = async () => {
   const partnerLabel = JOBPARTNERS_LABEL.RECRUTEURS_LBA
   const zodInput = ZRecruteursLbaRaw
   const mapper = recruteursLbaToJobPartners
-  const omitFields = ["updated_at"]
+  const omitFields = ["updated_at", "apply_email", "apply_phone"]
 
   logger.info(`début d'import dans computed_jobs_partners pour partner_label=${partnerLabel}`)
   const counters = { total: 0, success: 0, error: 0 }
@@ -144,8 +143,11 @@ export const importRecruteurLbaToComputed = async () => {
           const parsedDocument = zodInput.parse(document)
           const computedJobPartner = omit(mapper(parsedDocument), omitFields)
           await getDbCollection("computed_jobs_partners").updateOne(
-            { partner_job_id: document.partner_job_id },
-            { $set: { updated_at: importDate }, $setOnInsert: { ...computedJobPartner, offer_status_history: [], _id: new ObjectId() } },
+            { workplace_siret: document.workplace_siret },
+            {
+              $set: { apply_email: computedJobPartner.apply_email, apply_phone: computedJobPartner.apply_phone, updated_at: importDate },
+              $setOnInsert: { ...computedJobPartner, offer_status_history: [], _id: new ObjectId() },
+            },
             {
               upsert: true,
             }
