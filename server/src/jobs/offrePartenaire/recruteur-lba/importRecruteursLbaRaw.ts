@@ -142,7 +142,7 @@ export const importRecruteurLbaToComputed = async () => {
           const parsedDocument = zodInput.parse(document)
           const computedJobPartner = omit(mapper(parsedDocument), omitFields)
           await getDbCollection("computed_jobs_partners").updateOne(
-            { workplace_siret: document.workplace_siret },
+            { workplace_siret: computedJobPartner.workplace_siret },
             {
               $set: { apply_email: computedJobPartner.apply_email, apply_phone: computedJobPartner.apply_phone, updated_at: importDate },
               $setOnInsert: { ...computedJobPartner, offer_status_history: [], _id: new ObjectId() },
