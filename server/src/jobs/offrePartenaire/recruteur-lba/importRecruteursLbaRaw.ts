@@ -90,13 +90,13 @@ const importRecruteursLbaToRawCollection = async () => {
     parser(),
     streamArray(),
     transformData((doc) => {
-      const { value } = doc
-      const recruteur = { createdAt: now, _id: new ObjectId(), ...value }
+      const recruteur = { createdAt: now, _id: new ObjectId(), ...doc.value }
       if (!ZRecruteursLbaRaw.safeParse(recruteur).success) return null
       return recruteur
     }),
     groupData({ size: 10_000 }),
     writeData((array) => {
+      console.log(array.length)
       const filtered = array.filter((item) => item)
       if (!filtered.length) return
       count += filtered.length

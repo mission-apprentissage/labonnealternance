@@ -4,7 +4,6 @@ import { IModelDescriptor, zObjectId } from "./common.js"
 
 export const ZRecruteursLbaRaw = z.object({
   _id: zObjectId,
-  partner_job_id: z.string(),
   createdAt: z.date(),
   siret: z.string(),
   enseigne: z.string(),
