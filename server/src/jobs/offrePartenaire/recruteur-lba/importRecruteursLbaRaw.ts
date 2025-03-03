@@ -96,7 +96,6 @@ const importRecruteursLbaToRawCollection = async () => {
     }),
     groupData({ size: 10_000 }),
     writeData((array) => {
-      console.log(array.length)
       const filtered = array.filter((item) => item)
       if (!filtered.length) return
       count += filtered.length
