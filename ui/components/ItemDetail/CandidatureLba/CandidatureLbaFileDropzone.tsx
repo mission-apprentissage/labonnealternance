@@ -137,7 +137,7 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
             </Flex>
           )}
           {showUnacceptedFileMessages && <FormErrorMessage ml={6}>⚠ Le fichier n&apos;est pas au bon format (autorisé : .docx ou .pdf, &lt;3mo, max 1 fichier)</FormErrorMessage>}
-          {mandatoryFileError && <FormErrorMessage ml={6}>⚠ La pièce jointe est obligatoire</FormErrorMessage>}
+          <FormErrorMessage ml={6}>⚠ La pièce jointe est obligatoire</FormErrorMessage>
         </FormControl>
       )}
     </Box>
