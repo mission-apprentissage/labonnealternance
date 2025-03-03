@@ -22,6 +22,9 @@ export const saveApplicationTrafficSourceIfAny = async ({
 export const saveUserTrafficSourceIfAny = async ({ user_id, type, source }: { user_id: ObjectId; type: TrafficType; source?: ITrackingCookies }) =>
   saveTrafficSourceIfAny({ user_id, traffic_type: type, source })
 
+export const saveJobTrafficSourceIfAny = async ({ job_id, source }: { job_id: ObjectId; source?: ITrackingCookies }) =>
+  saveTrafficSourceIfAny({ job_id, traffic_type: TrafficType.JOB, source })
+
 const saveTrafficSourceIfAny = async ({
   user_id = null,
   application_id = null,

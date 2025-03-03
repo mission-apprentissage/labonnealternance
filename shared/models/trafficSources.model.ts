@@ -9,6 +9,7 @@ export enum TrafficType {
   ENTREPRISE = "ENTREPRISE",
   CFA = "CFA",
   APPLICATION = "APPLICATION",
+  JOB = "JOB",
 }
 const ZTrafficType = extensions.buildEnum(TrafficType)
 
