@@ -94,6 +94,12 @@ export const ZJobFields = z
     stats_search_view: z.number().nullish().describe("Nombre de vues sur une page de recherche"),
     managed_by: z.string().nullish().describe("Id de l'utilisateur gérant l'offre"),
     competences_rome: ZRomeCompetence.nullish().describe("Compétences du code ROME sélectionnées par le recruteur"),
+    offer_title_custom: z
+      .string()
+      .min(3, "L’intitulé est trop court. Sa taille doit être comprise entre 3 et 150 caractères.")
+      .max(150, "L’intitulé est trop long. Sa taille doit être comprise entre 3 et 150 caractères.")
+      .nullish()
+      .describe("Titre de l'offre saisi par le recruteur"),
   })
   .strict()
   .openapi("JobWritable")
@@ -144,6 +150,7 @@ export const ZJobCreate = ZJobFields.pick({
   job_description: true,
   delegations: true,
   competences_rome: true,
+  offer_title_custom: true,
 })
   .extend({
     job_start_date: ZJobStartDateCreate(),

@@ -67,6 +67,18 @@ export const FormikCreationOffreFields = ({ onRomeChange }: { onRomeChange: (rom
           dataTestId="offre-metier"
         />
       </FormControl>
+      {values.rome_label && (
+        <Box mt={6}>
+          <CustomInput
+            required={false}
+            name="offer_title_custom"
+            label="Intitulé de l'offre si différent"
+            info="Personnalisez le titre du poste (Facultatif)"
+            type="text"
+            value={values.offer_title_custom}
+          />
+        </Box>
+      )}
       <FormControl mt={6} isRequired>
         <Box mb={4}>
           <FormLabel display="inline-block" mb={0}>
