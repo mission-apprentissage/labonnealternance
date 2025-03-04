@@ -90,9 +90,7 @@ const importRecruteursLbaToRawCollection = async () => {
     parser(),
     streamArray(),
     transformData((doc) => {
-      const { value } = doc
-      const partner_job_id = `${value.siret}-${value.phone}-${value.email}`
-      const recruteur = { createdAt: now, _id: new ObjectId(), partner_job_id, ...doc.value }
+      const recruteur = { createdAt: now, _id: new ObjectId(), ...doc.value }
       if (!ZRecruteursLbaRaw.safeParse(recruteur).success) return null
       return recruteur
     }),
@@ -130,7 +128,7 @@ export const importRecruteurLbaToComputed = async () => {
   const partnerLabel = JOBPARTNERS_LABEL.RECRUTEURS_LBA
   const zodInput = ZRecruteursLbaRaw
   const mapper = recruteursLbaToJobPartners
-  const omitFields = ["_id", "business_error"]
+  const omitFields = ["updated_at", "apply_email", "apply_phone"]
 
   logger.info(`début d'import dans computed_jobs_partners pour partner_label=${partnerLabel}`)
   const counters = { total: 0, success: 0, error: 0 }
@@ -144,8 +142,11 @@ export const importRecruteurLbaToComputed = async () => {
           const parsedDocument = zodInput.parse(document)
           const computedJobPartner = omit(mapper(parsedDocument), omitFields)
           await getDbCollection("computed_jobs_partners").updateOne(
-            { partner_job_id: document.partner_job_id },
-            { $set: { ...computedJobPartner, updated_at: importDate }, $setOnInsert: { offer_status_history: [], _id: new ObjectId() } },
+            { workplace_siret: computedJobPartner.workplace_siret },
+            {
+              $set: { apply_email: computedJobPartner.apply_email, apply_phone: computedJobPartner.apply_phone, updated_at: importDate },
+              $setOnInsert: { ...computedJobPartner, offer_status_history: [], _id: new ObjectId() },
+            },
             {
               upsert: true,
             }
@@ -172,14 +173,15 @@ export const importRecruteurLbaToComputed = async () => {
 }
 
 export const removeMissingRecruteursLbaFromRaw = async () => {
+  logger.info("clean-up recruteurs_lba in computed_jobs_partners from raw")
   const results = (await getDbCollection("computed_jobs_partners")
     .aggregate([
       { $match: { partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA } },
       {
         $lookup: {
           from: "raw_recruteurslba",
-          localField: "partner_job_id",
-          foreignField: "partner_job_id",
+          localField: "workplace_siret",
+          foreignField: "siret",
           as: "matching",
         },
       },
@@ -193,4 +195,10 @@ export const removeMissingRecruteursLbaFromRaw = async () => {
   if (idsToRemove.length) {
     await getDbCollection("computed_jobs_partners").deleteMany({ _id: { $in: idsToRemove } })
   }
+  const message = `clean-up dans computed_jobs_partners pour partner_label=${JOBPARTNERS_LABEL.RECRUTEURS_LBA} terminé. total=${idsToRemove.length}`
+  logger.info(message)
+  await notifyToSlack({
+    subject: `mapping Raw => computed_jobs_partners`,
+    message,
+  })
 }

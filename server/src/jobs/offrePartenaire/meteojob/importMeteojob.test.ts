@@ -6,11 +6,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
-import { importPassRaw, importPassToComputed } from "./importPass"
+import { importMeteojobRaw, importMeteojobToComputed } from "./importMeteojob"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")
 
-describe("importPass", () => {
+describe("importMeteojob", () => {
   useMongo()
 
   beforeEach(() => {
@@ -20,22 +20,22 @@ describe("importPass", () => {
     return async () => {
       vi.useRealTimers()
       await getDbCollection("computed_jobs_partners").deleteMany({})
-      await getDbCollection("raw_pass").deleteMany({})
+      await getDbCollection("raw_meteojob").deleteMany({})
     }
   })
 
-  it("should test the import of pass data into computed_job_partners", async () => {
-    const fileStream = fs.createReadStream("server/src/jobs/offrePartenaire/pass/importPass.test.input.rss")
-    await importPassRaw(fileStream)
-    expect.soft(await getDbCollection("raw_pass").countDocuments({})).toBe(7)
+  it("should test the import of hellowork data into computed_job_partners", async () => {
+    const fileStream = fs.createReadStream("server/src/jobs/offrePartenaire/meteojob/importMeteojob.test.input.xml")
+    await importMeteojobRaw(fileStream)
+    expect.soft(await getDbCollection("raw_meteojob").countDocuments({})).toBe(3)
 
-    await importPassToComputed()
+    await importMeteojobToComputed()
     const jobs = (
       await getDbCollection("computed_jobs_partners")
-        .find({ partner_label: JOBPARTNERS_LABEL.PASS }, { projection: { _id: 0, created_at: 0 } })
+        .find({ partner_label: JOBPARTNERS_LABEL.METEOJOB }, { projection: { _id: 0, created_at: 0 } })
         .toArray()
     ).sort((a, b) => ((a.partner_job_id ?? "") < (b.partner_job_id ?? "") ? -1 : 1))
-    expect.soft(jobs.length).toBe(7)
+    expect.soft(jobs.length).toBe(3)
     expect.soft(jobs).toMatchSnapshot()
   })
 })

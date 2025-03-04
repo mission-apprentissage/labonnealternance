@@ -2,7 +2,7 @@ fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: 6c3ade1ddaac4db86cb79aa5328c7546490450f3be8e356b001299417b68d14e
 - filename: .infra/vault/vault.yml
-  checksum: b9470577e591e9c69d28ad449918cb92c7a29985833624563c279864d70712b9
+  checksum: 34dd8658f403cfd23208533c571630b56fbea0f3131a54cf54f9f826b0dc2201
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
   checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
 - filename: cypress/pages/FlowAdminPage.ts
@@ -27,8 +27,6 @@ fileignoreconfig:
   checksum: e8a35e591adb1447d1b6e796b063f435ac389e9ffe619c68185f348beae71215
 - filename: server/src/http/controllers/application.controller.test.ts
   checksum: ad6c424209e224bb62dd826b86f1c0bb935033bb5fd9d7313a2eebee6766b8f2
-- filename: server/src/http/controllers/v2/applications.controller.v2.test.ts
-  checksum: 51358a158fbd04caebd42a56120fab182928b368206aa2892a008d14e177b0ac
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
   checksum: dc77c04efc26dcd8ca4816f392ab24a32a92cb45ca4b94adb593a08e7a2d231e
 - filename: server/src/http/controllers/etablissementRecruteur.controller.test.ts
@@ -73,6 +71,8 @@ fileignoreconfig:
   checksum: 6f28aee7664d1ec1e4b4da34b96b63e23781538b3fe3e8d50dddbdad3884fa3f
 - filename: server/src/jobs/offrePartenaire/importHelloWork.ts
   checksum: 26caf0b5a97ce2ff7451cc2717a3b36f38b20f94db6beb490b98b8311debfd25
+- filename: server/src/jobs/offrePartenaire/meteojob/importMeteojob.test.input.xml
+  checksum: 62419cb750978e303756a8134f180ffa4febb9835fff97e48ed1024923bebc91
 - filename: server/src/migrations/20241022093834-remove-multi-published.ts
   checksum: a807c70a69c4c8bfc2a0568b466a7f274fd3840169ef3ef4792885d63cb75217
 - filename: server/src/security/accessApiApprentissageService.ts
@@ -125,6 +125,8 @@ fileignoreconfig:
   checksum: 0b806bca197dba97415902339e84f924cb45dae766cf8d3cfc47d80d2bdd203c
 - filename: server/static/templates/mail-candidat-refus.mjml.ejs
   checksum: 3fcfa9586df3283a3f50cf6751b735b646d3f3ac64e8e4a8453999e9e5aea881
+- filename: server/static/templates/mail-candidature-spontanee.mjml.ejs
+  checksum: baf1efe3757cfa6dc72a888fc480bfbc8f74779d0cf7620b94a4800b5ebee75b
 - filename: server/static/templates/mail-cfa-delegation.mjml.ejs
   checksum: 569e084a81ffdfbd3b427a60c0712ec2f1af2031fe120572e55235691e84dc5b
 - filename: server/static/templates/mail-cfa-demande-de-contact.mjml.ejs
@@ -135,8 +137,6 @@ fileignoreconfig:
   checksum: 9055c5495ced85a674770e7fb8a81b3bd84949f9ff8f6e6450989aa3b7cda326
 - filename: server/static/templates/mail-reponse-cfa.mjml.ejs
   checksum: a5a36d078b7c75e6da58c06c032b52d0f57d89bf5913065bb1aaab098f3e80af
-- filename: server/static/templates/mail-candidature-spontanee.mjml.ejs
-  checksum: baf1efe3757cfa6dc72a888fc480bfbc8f74779d0cf7620b94a4800b5ebee75b
 - filename: server/tests/fixture/connectedUser.fixture.ts
   checksum: bfbb2f218580ce302d3bfcd9ba7494a46ff0a05ba02ca0f38a801ea8c6bf9be2
 - filename: server/tests/integration/http/formationV1.test.ts
@@ -275,6 +275,8 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
+- filename: server/src/jobs/offrePartenaire/pass/importPass.test.input.rss
+  checksum: c51265ef42491e55f550f2cd3387c3948cec82fad6debcfd2670e324a0c89dcf
 scopeconfig:
 - scope: node
 custom_patterns:
