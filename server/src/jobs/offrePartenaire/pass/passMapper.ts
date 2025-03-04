@@ -1,5 +1,6 @@
 import { ObjectId } from "bson"
 import dayjs from "shared/helpers/dayjs"
+import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
@@ -28,6 +29,7 @@ export const ZPassJob = z
     "dc:type": z.string().nullish(),
     "dc:format": z.string().nullish(),
     "dc:coverage": z.string().nullish(),
+    "dc:creator": z.string().nullish(),
   })
   .passthrough()
 
@@ -42,6 +44,23 @@ export const passJobToJobsPartners = (job: IPassJob): IComputedJobsPartners => {
   const dcType = job["dc:type"]
   const dcFormat = job["dc:format"]
   const dcCoverage = job["dc:coverage"]
+  const contact = job["dc:creator"]
+  let email: string | null = null
+  let phone: string | null = null
+
+  if (contact) {
+    const [parsedEmail, parsedPhone] = contact.split("-").map((x) => {
+      const trimmed = x.trim()
+      return trimmed === "" ? null : trimmed
+    })
+    if (z.string().email().safeParse(email).success) {
+      email = parsedEmail
+    }
+    // phone extension is actually a cleaner, not validating phones, but here it's OK
+    if (extensions.phone().safeParse(parsedPhone).success) {
+      phone = parsedPhone
+    }
+  }
 
   const now = new Date()
   const creationDate = parseDate(pubDate)
@@ -80,6 +99,8 @@ export const passJobToJobsPartners = (job: IPassJob): IComputedJobsPartners => {
     workplace_name: author,
     workplace_address_label: `${dcCoverage} ${dcDescription}`,
     apply_url: link,
+    apply_email: email,
+    apply_phone: phone,
     business_error: businessError,
   }
   return partnerJob
