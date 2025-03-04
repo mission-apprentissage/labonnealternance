@@ -1,5 +1,6 @@
 import { useContext } from "react"
-import { IApplicationApiPrivate, ILbaItemLbaCompany, ILbaItemLbaJob } from "shared"
+import { useMutation } from "react-query"
+import { IApplicationApiPrivate, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
 
 import { DisplayContext } from "@/context/DisplayContextProvider"
 import { getItemId } from "@/utils/getItemId"
@@ -9,37 +10,47 @@ import { apiPost } from "../../../../utils/api.utils"
 
 import { IApplicationSchemaInitValues } from "./getSchema"
 
-export const useSubmitCandidature = (): typeof submitCandidature => {
+export const useSubmitCandidature = (
+  LbaJob: ILbaItemLbaJob | ILbaItemLbaCompany | ILbaItemPartnerJob,
+  caller?: string
+): {
+  submitCandidature: (props: { formValues: IApplicationSchemaInitValues }) => void
+  isLoading: boolean
+  isSuccess: boolean
+  isError: boolean
+  isDone: boolean
+  error: unknown
+} => {
+  const { isLoading, error, isSuccess, isError, mutate } = useMutation(["submitCandidature", LbaJob.id], submitCandidature)
   const displayContext = useContext(DisplayContext)
-  if (!displayContext) {
-    return submitCandidature
+  let finalSubmitCandidature = mutate
+  if (displayContext) {
+    const { formValues } = displayContext
+    const { job } = formValues ?? {}
+    const { label: job_searched_by_user } = job ?? {}
+    finalSubmitCandidature = (props) =>
+      mutate({
+        ...props,
+        LbaJob,
+        caller,
+        formValues: {
+          ...props.formValues,
+          job_searched_by_user,
+        },
+      })
   }
-  const { formValues } = displayContext
-  const { job } = formValues ?? {}
-  const { label: job_searched_by_user } = job ?? {}
-  return (props) =>
-    submitCandidature({
-      ...props,
-      formValues: {
-        ...props.formValues,
-        job_searched_by_user,
-      },
-    })
+  return { submitCandidature: finalSubmitCandidature, isLoading, error, isSuccess, isError, isDone: isSuccess || isError }
 }
 
-export default async function submitCandidature({
+async function submitCandidature({
   formValues,
-  setSendingState,
-  LbaJob = {},
+  LbaJob,
   caller,
 }: {
   formValues: IApplicationSchemaInitValues
-  setSendingState: (state: string) => void
-  LbaJob?: ILbaItemLbaCompany | ILbaItemLbaJob
+  LbaJob: ILbaItemLbaJob | ILbaItemLbaCompany | ILbaItemPartnerJob
   caller?: string
 }) {
-  setSendingState("currently_sending")
-
   const payload: IApplicationApiPrivate = {
     applicant_first_name: formValues.applicant_first_name,
     applicant_last_name: formValues.applicant_last_name,
@@ -54,14 +65,7 @@ export default async function submitCandidature({
     application_url: typeof window !== "undefined" ? window?.location?.href : null,
   }
 
-  try {
-    await apiPost("/v2/_private/application", { body: payload, headers: { authorization: `Bearer ${LbaJob.token}` } }, {})
-    sessionStorageSet("application-form-values", payload)
-    localStorageSet(`application-${LbaJob.ideaType}-${getItemId(LbaJob)}`, Date.now().toString())
-    setSendingState("ok_sent")
-    return true
-  } catch (error) {
-    setSendingState(error?.message)
-    return false
-  }
+  await apiPost("/v2/_private/application", { body: payload, headers: { authorization: `Bearer ${LbaJob.token}` } }, {})
+  sessionStorageSet("application-form-values", payload)
+  localStorageSet(`application-${LbaJob.ideaType}-${getItemId(LbaJob)}`, Date.now().toString())
 }

@@ -4,7 +4,7 @@ import { ILbaItemPartnerJob } from "shared"
 import { focusWithin } from "@/theme/theme-lba-tools"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
-import CandidatureLba from "../CandidatureLba/CandidatureLba"
+import { CandidatureLba } from "../CandidatureLba/CandidatureLba"
 import CandidatureParTelephone from "../CandidatureParTelephone"
 
 export const PartnerJobPostuler = ({ job, isCollapsedHeader }: { job: ILbaItemPartnerJob; isCollapsedHeader: boolean }) => {

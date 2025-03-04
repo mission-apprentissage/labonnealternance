@@ -12,7 +12,7 @@ import { filterLayers } from "../../utils/mapTools"
 import InfoBanner from "../InfoBanner/InfoBanner"
 
 import AideApprentissage from "./AideApprentissage"
-import CandidatureLba, { NoCandidatureLba } from "./CandidatureLba/CandidatureLba"
+import { NoCandidatureLba, CandidatureLba } from "./CandidatureLba/CandidatureLba"
 import isCandidatureLba from "./CandidatureLba/services/isCandidatureLba"
 import DidYouKnow from "./DidYouKnow"
 import FTJobDetail from "./FTJobDetail"
@@ -136,7 +136,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
 
           <Flex flexDirection={{ base: "column", sm: "row" }}>
             <Box flex={1}>
-              {isCandidatureLba(selectedItem) && <CandidatureLba item={selectedItem} />}
+              {isCandidatureLba(selectedItem) && <CandidatureLba item={selectedItem as ILbaItemLbaJob | ILbaItemLbaCompany} />}
 
               {kind === LBA_ITEM_TYPE_OLD.LBA && !isCandidatureLba(selectedItem) && <NoCandidatureLba />}
 

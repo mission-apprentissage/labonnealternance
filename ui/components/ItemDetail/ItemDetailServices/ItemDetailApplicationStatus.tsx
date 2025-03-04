@@ -1,15 +1,10 @@
-import { ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "@/../shared"
-import { LBA_ITEM_TYPE_OLD } from "@/../shared/constants/lbaitem"
 import { Box, Text } from "@chakra-ui/react"
+import { ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { localStorageGet } from "@/utils/localStorage"
 
-const getAPostuleMessage = (
-  type: LBA_ITEM_TYPE_OLD.FORMATION | LBA_ITEM_TYPE_OLD.PEJOB | LBA_ITEM_TYPE_OLD.LBA | LBA_ITEM_TYPE_OLD.MATCHA,
-  applicationDate: string,
-  mb = 0,
-  mt = 0
-) => {
+const getAPostuleMessage = (type: LBA_ITEM_TYPE_OLD, applicationDate: string, mb = 0, mt = 0) => {
   const date = new Date(parseInt(applicationDate, 10)).toLocaleDateString("fr-FR", {
     year: "numeric",
     month: "long",
@@ -39,7 +34,7 @@ const getAPostuleMessage = (
   )
 }
 
-export const hasApplied = (item: ILbaItemFormation | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemFtJob) => {
+export const hasApplied = (item: ILbaItemFormation | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemFtJob | ILbaItemPartnerJob) => {
   return localStorageGet(`application-${item.ideaType}-${item.id}`) !== null
 }
 
@@ -48,7 +43,7 @@ export default function ItemDetailApplicationsStatus({
   mb = 0,
   mt = 0,
 }: {
-  item: ILbaItemFormation | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemFtJob
+  item: ILbaItemFormation | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemFtJob | ILbaItemPartnerJob
   mb?: number
   mt?: number
 }) {
