@@ -102,8 +102,8 @@ const transformCompanyWithMinimalData = ({
     place: {
       distance: null,
       fullAddress: company.workplace_address_label,
-      latitude: company.workplace_geopoint.coordinates[0],
-      longitude: company.workplace_geopoint.coordinates[1],
+      longitude: company.workplace_geopoint.coordinates[0],
+      latitude: company.workplace_geopoint.coordinates[1],
       city: company.workplace_address_city,
       address: company.workplace_address_label,
     },
