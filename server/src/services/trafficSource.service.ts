@@ -16,13 +16,13 @@ export const saveApplicationTrafficSourceIfAny = async ({
 }: {
   application_id: ObjectId
   applicant_email: string
-  source: ITrackingCookies
+  source?: ITrackingCookies
 }) => saveTrafficSourceIfAny({ application_id, applicant_email, traffic_type: TrafficType.APPLICATION, source })
 
-export const saveUserTrafficSourceIfAny = async ({ user_id, type, source }: { user_id: ObjectId; type: TrafficType; source: ITrackingCookies }) =>
+export const saveUserTrafficSourceIfAny = async ({ user_id, type, source }: { user_id: ObjectId; type: TrafficType; source?: ITrackingCookies }) =>
   saveTrafficSourceIfAny({ user_id, traffic_type: type, source })
 
-export const saveJobTrafficSourceIfAny = async ({ job_id, source }: { job_id: ObjectId; source: ITrackingCookies }) =>
+export const saveJobTrafficSourceIfAny = async ({ job_id, source }: { job_id: ObjectId; source?: ITrackingCookies }) =>
   saveTrafficSourceIfAny({ job_id, traffic_type: TrafficType.JOB, source })
 
 const saveTrafficSourceIfAny = async ({
@@ -38,9 +38,9 @@ const saveTrafficSourceIfAny = async ({
   application_id?: ObjectId
   applicant_email?: string
   traffic_type: TrafficType
-  source: ITrackingCookies
+  source?: ITrackingCookies
 }) => {
-  if (source?.referer || source?.utm_campaign) {
+  if (source && (source?.referer || source?.utm_campaign)) {
     await getDbCollection("trafficsources").insertOne({
       _id: new ObjectId(),
       user_id,
