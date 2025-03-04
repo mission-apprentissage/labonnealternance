@@ -235,7 +235,7 @@ export const createJob = async ({
   job: IJobCreate
   establishment_id: string
   user: IUserWithAccount
-  source?: ITrackingCookies 
+  source?: ITrackingCookies
 }): Promise<IRecruiter> => {
   await validateFieldsFromReferentielRome(job)
 
