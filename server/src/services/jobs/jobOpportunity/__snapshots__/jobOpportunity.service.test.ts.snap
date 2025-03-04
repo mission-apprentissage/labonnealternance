@@ -184,7 +184,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
   {
     "apply": {
       "phone": null,
-      "recipient_id": "jobs_partners_675209e704377be3d437bbb9",
+      "recipient_id": "partners_675209e704377be3d437bbb9",
       "url": "",
     },
     "contract": {
