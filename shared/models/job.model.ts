@@ -6,6 +6,7 @@ import dayjs from "../helpers/dayjs.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 import { assertUnreachable } from "../utils/assertUnreachable.js"
+import { detectUrlAndEmails } from "../utils/detectUrlAndEmails.js"
 
 import { ZReferentielRomeForJob, ZRomeCompetence } from "./rome.model.js"
 
@@ -99,6 +100,7 @@ export const ZJobFields = z
       .min(3, "L’intitulé est trop court. Sa taille doit être comprise entre 3 et 150 caractères.")
       .max(150, "L’intitulé est trop long. Sa taille doit être comprise entre 3 et 150 caractères.")
       .nullish()
+      .refine((value: string | null | undefined) => (value ? detectUrlAndEmails(value).length === 0 : true), "Les urls et les emails sont interdits")
       .describe("Titre de l'offre saisi par le recruteur"),
   })
   .strict()

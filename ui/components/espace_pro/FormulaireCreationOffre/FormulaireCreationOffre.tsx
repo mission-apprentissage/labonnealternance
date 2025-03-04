@@ -7,6 +7,7 @@ import { useContext, useState } from "react"
 import { useQuery } from "react-query"
 import { IRecruiterJson, IReferentielRomeForJob } from "shared"
 import { IJobJson, JOB_STATUS } from "shared/models/job.model"
+import { detectUrlAndEmails } from "shared/utils/detectUrlAndEmails"
 import * as Yup from "yup"
 
 import { AUTHTYPE } from "@/common/contants"
@@ -194,7 +195,8 @@ export const FormulaireCreationOffre = ({
           job_duration: Yup.number().max(36, "Durée maximale du contrat : 36 mois").min(6, "Durée minimale du contrat : 6 mois").typeError("Durée minimale du contrat : 6 mois"),
           offer_title_custom: Yup.string()
             .min(3, "L’intitulé est trop court. Sa taille doit être comprise entre 3 et 150 caractères.")
-            .max(150, "L’intitulé est trop long. Sa taille doit être comprise entre 3 et 150 caractères."),
+            .max(150, "L’intitulé est trop long. Sa taille doit être comprise entre 3 et 150 caractères.")
+            .test("no-urls-emails", "Les urls et les emails sont interdits", (value) => !value || detectUrlAndEmails(value).length === 0),
         })}
         onSubmit={(values: any, bag) => onSubmit(values, bag)}
       >
