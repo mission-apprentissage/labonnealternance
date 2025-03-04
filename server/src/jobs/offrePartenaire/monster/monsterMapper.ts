@@ -53,7 +53,7 @@ export const monsterJobToJobsPartners = (job: IMonsterJob): IComputedJobsPartner
 
   let descriptionComputed = JobBody
 
-  descriptionComputed = formatHtmlForPartnerDescription(descriptionComputed)
+  descriptionComputed = formatHtmlForPartnerDescription(descriptionComputed).trim()
 
   const created_at = new Date()
   const publicationDate = new Date(JobActiveDate)
