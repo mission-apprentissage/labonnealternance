@@ -1,3 +1,4 @@
+import { fillComputedRecruteursLba, importRecruteursLbaFromComputedToJobsPartners } from "@/jobs/offrePartenaire/fillComputedRecruteursLba"
 import { processRecruteursLba } from "@/jobs/offrePartenaire/processRecruteursLba"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
@@ -248,6 +249,16 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: fillComputedJobsPartners,
     description: "Enrichit la collection computed_jobs_partners avec les données provenant d'API externes",
+  },
+  // IMPORT COMPUTED RECRUTEURS_LBA TO JOBS PARTNERS
+  {
+    fct: importRecruteursLbaFromComputedToJobsPartners,
+    description: "Met à jour la collection jobs_partners à partir de computed_jobs_partners pour les recruteurs_lba",
+  },
+  // ENRICHIT COMPUTED RECRUTEURS_LBA JOBS PARTNERS
+  {
+    fct: fillComputedRecruteursLba,
+    description: "Enrichit la collection computed_jobs_partners avec les données provenant d'API externes pour les recruteurs_lba",
   },
   // FLOW GLOBAL JOBS PARTNERS
   {
