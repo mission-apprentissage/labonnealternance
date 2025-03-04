@@ -18,7 +18,10 @@ exports[`importMonster > should test the import of hellowork data into computed_
     "offer_access_conditions": [],
     "offer_creation": 2025-02-21T00:00:00.000Z,
     "offer_description": "Azaé Dinan fait partie du groupe a2micile, spécialisé dans les services à la personne et représenté par deux marques : Azaé et Domaliance.
-C'est au travers de ses 311 agences de proximité sur l'ensemble de l'hexagone que le groupe propose ses services d'aide à domicile.Respect, bien ê...",
+
+C'est au travers de ses 311 agences de proximité sur l'ensemble de l'hexagone que le groupe propose ses services d'aide à domicile.
+
+Respect, bien ê...",
     "offer_desired_skills": [],
     "offer_expiration": 2025-04-21T00:00:00.000Z,
     "offer_multicast": true,
