@@ -26,6 +26,6 @@ export type IRecruteursLbaRaw = z.output<typeof ZRecruteursLbaRaw>
 
 export default {
   zod: ZRecruteursLbaRaw,
-  indexes: [[{ partner_job_id: 1 }, {}]],
+  indexes: [[{ siret: 1 }, {}]],
   collectionName: "raw_recruteurslba",
 } as const satisfies IModelDescriptor
