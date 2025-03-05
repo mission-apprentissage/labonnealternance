@@ -19,6 +19,7 @@ export enum JOBPARTNERS_LABEL {
   FRANCE_TRAVAIL = "France Travail",
   RH_ALTERNANCE = "RH Alternance",
   PASS = "PASS",
+  MONSTER = "Monster",
   METEOJOB = "Meteojob",
 }
 
