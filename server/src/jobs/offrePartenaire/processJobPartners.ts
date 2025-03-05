@@ -1,5 +1,7 @@
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
+import { removeFTCfaFromJobsPartners } from "@/jobs/offrePartenaire/france-travail/removeCfaFromJobsPartners"
+
 import { cancelRemovedJobsPartners } from "./cancelRemovedJobsPartners"
 import { fillComputedJobsPartners } from "./fillComputedJobsPartners"
 import { classifyFranceTravailJobs } from "./france-travail/classifyJobsFranceTravail"
@@ -26,6 +28,7 @@ export const processJobPartners = async () => {
   await importFranceTravailRaw()
   await classifyFranceTravailJobs()
   await importFranceTravailToComputed()
+  await removeFTCfaFromJobsPartners()
 
   await fillComputedJobsPartners(filter)
   await importFromComputedToJobsPartners(filter)
