@@ -19,6 +19,7 @@ import { blockBadRomeJobsPartners } from "./offrePartenaire/blockBadRomeJobsPart
 import { blockJobsPartnersWithNaf85 } from "./offrePartenaire/blockJobsPartnersWithNaf85"
 import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
 import { detectDuplicateJobPartners } from "./offrePartenaire/detectDuplicateJobPartners"
+import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
 import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
 import { classifyFranceTravailJobs } from "./offrePartenaire/france-travail/classifyJobsFranceTravail"
 import { importFranceTravailRaw, importFranceTravailToComputed } from "./offrePartenaire/france-travail/importJobsFranceTravail"
@@ -315,5 +316,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: blockJobsPartnersWithNaf85,
     description: "Passe les jobs partners en business erreur pour ceux qui ont un naf commençant par 85",
+  },
+  {
+    fct: expireJobsPartners,
+    description: "Change le status des offres dont la date d'expiration est dépassée",
   },
 ]

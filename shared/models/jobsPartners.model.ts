@@ -219,6 +219,7 @@ export default {
     [{ partner_label: 1, partner_job_id: 1 }, { unique: true }],
     [{ partner_label: 1 }, {}],
     [{ offer_status: 1 }, {}],
+    [{ offer_expiration: 1 }, {}],
     [{ "duplicates.partner_job_id": 1 }, {}],
     [{ "duplicates.partner_job_label": 1 }, {}],
   ],
