@@ -435,16 +435,21 @@ export const getUser2ManagingOffer = async (job: Pick<IJob, "managed_by" | "_id"
  * Build urls to add in email messages sent to the recruiter
  * email recruteur uniquement
  */
-const buildRecruiterEmailUrls = async (application: IApplication, applicant: IApplicant) => {
+const buildRecruiterEmailUrlsAndParameters = async (application: IApplication, applicant: IApplicant) => {
   const utmRecruiterData = "&utm_source=lba&utm_medium=email&utm_campaign=je-candidate-recruteur"
 
   let user: IUserWithAccount | undefined
+  let jobPartnerLabel = ""
   if (application.job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     const jobOrCompany = await getJobOrCompany(application)
     if (jobOrCompany.type !== LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
       throw internal(`inattendu : type !== ${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}`)
     }
     user = await getUser2ManagingOffer(jobOrCompany.job)
+  }
+  if (application.job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) {
+    const jobOrCompany = await getJobOrCompany(application)
+    jobPartnerLabel = (jobOrCompany.type === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && jobOrCompany?.job?.partner_label) || ""
   }
   const userForToken = buildUserForToken(application, user)
   const urls = {
@@ -457,6 +462,7 @@ const buildRecruiterEmailUrls = async (application: IApplication, applicant: IAp
     faqUrl: `${config.publicUrl}/faq?${utmRecruiterData}-faq`,
     jobProvidedUrl: "",
     cancelJobUrl: "",
+    jobPartnerLabel,
   }
 
   if (application.job_id) {
@@ -1073,7 +1079,7 @@ export const processApplicationEmails = {
   async sendRecruteurEmail(application: IApplication, applicant: IApplicant, attachmentContent: string) {
     const { job_origin } = application
     const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(application, { utm_campaign: "je-candidate-recruteur" })
-    const recruiterEmailUrls = await buildRecruiterEmailUrls(application, applicant)
+    const recruiterEmailUrls = await buildRecruiterEmailUrlsAndParameters(application, applicant)
 
     const emailCompany = await mailer.sendEmail({
       to: application.company_email,
@@ -1086,6 +1092,7 @@ export const processApplicationEmails = {
         ...recruiterEmailUrls,
         urlOfDetail,
         urlOfDetailNoUtm,
+        jobPartnerLabel: recruiterEmailUrls.jobPartnerLabel,
       },
       attachments: [
         {
