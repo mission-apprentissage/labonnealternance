@@ -2,7 +2,7 @@ import { Transform } from "stream"
 import { pipeline } from "stream/promises"
 
 import { internal } from "@hapi/boom"
-import { Filter, ObjectId } from "mongodb"
+import { Filter } from "mongodb"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { JOB_STATUS_ENGLISH } from "shared/models"
 import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
@@ -29,9 +29,7 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
     async transform(computedJobPartner: Omit<IJobsPartnersOfferPrivate, "created_at">, encoding, callback: (error?: Error | null, data?: any) => void) {
       try {
         counters.total++
-        const partnerJobToUpsert: IJobsPartnersOfferPrivate = {
-          _id: new ObjectId(),
-          created_at: importDate,
+        const partnerJobToUpsert: Partial<IJobsPartnersOfferPrivate> = {
           updated_at: importDate,
           partner_label: computedJobPartner.partner_label,
           partner_job_id: computedJobPartner.partner_job_id,
@@ -73,10 +71,24 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
           offer_origin: computedJobPartner.offer_origin ?? null,
           rank: computedJobPartner.rank ?? null,
           duplicates: computedJobPartner.duplicates ?? null,
-          offer_status_history: [],
         }
 
-        await getDbCollection("jobs_partners").insertOne(partnerJobToUpsert)
+        await getDbCollection("jobs_partners").updateOne(
+          { partner_job_id: partnerJobToUpsert.partner_job_id, partner_label: partnerJobToUpsert.partner_label },
+          {
+            $set: { ...partnerJobToUpsert },
+            $setOnInsert: { created_at: importDate, offer_status_history: [], _id: computedJobPartner._id },
+          },
+          { upsert: true }
+        )
+        if (computedJobPartner.offer_status_history.length) {
+          await getDbCollection("jobs_partners").updateOne(
+            { partner_job_id: partnerJobToUpsert.partner_job_id, partner_label: partnerJobToUpsert.partner_label },
+            {
+              $push: { offer_status_history: { $each: computedJobPartner.offer_status_history } },
+            }
+          )
+        }
         counters.success++
         callback(null)
       } catch (err: unknown) {
