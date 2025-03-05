@@ -28,9 +28,8 @@ export const importRecruteursLbaFromComputedToJobsPartners = async () => {
   await getDbCollection("computed_jobs_partners")
     .aggregate([
       { $match: { ...filter, business_error: null, validated: true } },
-      { $addFields: { offer_offer_status_history: [] } },
       {
-        $unset: ["validated", "business_error", "errors", "currently_processed_id", "jobs_in_success", "offer_offer_status_history"],
+        $unset: ["validated", "business_error", "errors", "currently_processed_id", "jobs_in_success"],
       },
       { $merge: jobsPartnersModel.collectionName },
     ])
