@@ -2,7 +2,7 @@ fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: 6c3ade1ddaac4db86cb79aa5328c7546490450f3be8e356b001299417b68d14e
 - filename: .infra/vault/vault.yml
-  checksum: 34dd8658f403cfd23208533c571630b56fbea0f3131a54cf54f9f826b0dc2201
+  checksum: a6f0c76e90a5c8f564ea9f902ce73484cc92aa3fe408dc5d4f4e784a50e8bd91
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
   checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
 - filename: cypress/pages/FlowAdminPage.ts
@@ -73,6 +73,8 @@ fileignoreconfig:
   checksum: 26caf0b5a97ce2ff7451cc2717a3b36f38b20f94db6beb490b98b8311debfd25
 - filename: server/src/jobs/offrePartenaire/meteojob/importMeteojob.test.input.xml
   checksum: 62419cb750978e303756a8134f180ffa4febb9835fff97e48ed1024923bebc91
+- filename: server/src/jobs/offrePartenaire/pass/importPass.test.input.rss
+  checksum: c51265ef42491e55f550f2cd3387c3948cec82fad6debcfd2670e324a0c89dcf
 - filename: server/src/migrations/20241022093834-remove-multi-published.ts
   checksum: a807c70a69c4c8bfc2a0568b466a7f274fd3840169ef3ef4792885d63cb75217
 - filename: server/src/security/accessApiApprentissageService.ts
@@ -275,8 +277,6 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
-- filename: server/src/jobs/offrePartenaire/pass/importPass.test.input.rss
-  checksum: c51265ef42491e55f550f2cd3387c3948cec82fad6debcfd2670e324a0c89dcf
 scopeconfig:
 - scope: node
 custom_patterns:
