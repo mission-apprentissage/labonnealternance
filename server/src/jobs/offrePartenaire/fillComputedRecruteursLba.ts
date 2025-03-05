@@ -24,7 +24,9 @@ export const fillComputedRecruteursLba = async () => {
 }
 
 export const importRecruteursLbaFromComputedToJobsPartners = async () => {
+  logger.info("suppression des recruteurs_lba de jobs_partners")
   await getDbCollection("jobs_partners").deleteMany(filter as IJobsPartnersOfferPrivate)
+  logger.info("import des recruteurs_lba dans jobs_partners")
   await getDbCollection("computed_jobs_partners")
     .aggregate([
       { $match: { ...filter, business_error: null, validated: true } },
