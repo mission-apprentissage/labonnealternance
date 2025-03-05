@@ -4,7 +4,7 @@ import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.m
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 /**
- * FT job offers are always analyzed but the AI to check if it's from a company or a CFA.
+ * FT job offers are always analyzed by the AI to check if it's from a company or a CFA.
  * Remove all CFA tagged in the computed_jobs_partners business_error.
  */
 export const removeFTCfaFromJobsPartners = async () => {
