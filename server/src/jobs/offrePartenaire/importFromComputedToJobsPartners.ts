@@ -2,7 +2,7 @@ import { Transform } from "stream"
 import { pipeline } from "stream/promises"
 
 import { internal } from "@hapi/boom"
-import { Filter } from "mongodb"
+import { Filter, ObjectId } from "mongodb"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { JOB_STATUS_ENGLISH } from "shared/models"
 import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
@@ -11,6 +11,7 @@ import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 
 export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
   logger.info(`import dans jobs_partners commencé`)
@@ -28,7 +29,9 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
     async transform(computedJobPartner: Omit<IJobsPartnersOfferPrivate, "created_at">, encoding, callback: (error?: Error | null, data?: any) => void) {
       try {
         counters.total++
-        const partnerJobToUpsert: Partial<IJobsPartnersOfferPrivate> = {
+        const partnerJobToUpsert: IJobsPartnersOfferPrivate = {
+          _id: new ObjectId(),
+          created_at: importDate,
           updated_at: importDate,
           partner_label: computedJobPartner.partner_label,
           partner_job_id: computedJobPartner.partner_job_id,
@@ -70,24 +73,10 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
           offer_origin: computedJobPartner.offer_origin ?? null,
           rank: computedJobPartner.rank ?? null,
           duplicates: computedJobPartner.duplicates ?? null,
+          offer_status_history: [],
         }
 
-        await getDbCollection("jobs_partners").updateOne(
-          { partner_job_id: partnerJobToUpsert.partner_job_id, partner_label: partnerJobToUpsert.partner_label },
-          {
-            $set: { ...partnerJobToUpsert },
-            $setOnInsert: { created_at: importDate, offer_status_history: [], _id: computedJobPartner._id },
-          },
-          { upsert: true }
-        )
-        if (computedJobPartner.offer_status_history.length) {
-          await getDbCollection("jobs_partners").updateOne(
-            { partner_job_id: partnerJobToUpsert.partner_job_id, partner_label: partnerJobToUpsert.partner_label },
-            {
-              $push: { offer_status_history: { $each: computedJobPartner.offer_status_history } },
-            }
-          )
-        }
+        await getDbCollection("jobs_partners").insertOne(partnerJobToUpsert)
         counters.success++
         callback(null)
       } catch (err: unknown) {
@@ -105,6 +94,12 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
   })
 
   await pipeline(stream, transform)
+
+  const message = `import dans jobs_partners terminé. total=${counters.total}, success=${counters.success}, errors=${counters.error}`
+  await notifyToSlack({
+    subject: `jobsPartners: import de données`,
+    message,
+  })
 
   logger.info(`import dans jobs_partners terminé`, counters)
 }
