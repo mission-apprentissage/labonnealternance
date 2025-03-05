@@ -828,7 +828,7 @@ export async function findJobOpportunityById(id: ObjectId, context: JobOpportuni
 
     if (!foundJob) {
       logger.warn(`Aucune offre d'emploi trouvée pour l'ID: ${id.toString()}`, { context })
-      return null
+      throw notFound(`Aucune offre d'emploi trouvée pour l'ID: ${id.toString()}`)
     }
 
     return validateJobOffer(foundJob, id, context)
