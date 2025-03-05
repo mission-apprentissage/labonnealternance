@@ -11,7 +11,7 @@ import { kelioJobToJobsPartners, ZKelioJob } from "./kelioMapper"
 const rawCollectionName = rawKelioModel.collectionName
 const offerXmlTag = "job"
 
-export const importMonsterRaw = async (sourceStream?: NodeJS.ReadableStream) => {
+export const importKelioRaw = async (sourceStream?: NodeJS.ReadableStream) => {
   if (sourceStream) {
     await importFromStreamInXml({ destinationCollection: rawCollectionName, offerXmlTag, stream: sourceStream, partnerLabel: JOBPARTNERS_LABEL.MONSTER })
   } else {
@@ -19,7 +19,7 @@ export const importMonsterRaw = async (sourceStream?: NodeJS.ReadableStream) => 
   }
 }
 
-export const importMonsterToComputed = async () => {
+export const importKelioToComputed = async () => {
   await rawToComputedJobsPartners({
     collectionSource: rawCollectionName,
     partnerLabel: JOBPARTNERS_LABEL.KELIO,
