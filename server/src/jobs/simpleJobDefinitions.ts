@@ -25,7 +25,7 @@ import { classifyFranceTravailJobs } from "./offrePartenaire/france-travail/clas
 import { importFranceTravailRaw, importFranceTravailToComputed } from "./offrePartenaire/france-travail/importJobsFranceTravail"
 import { importHelloWorkRaw, importHelloWorkToComputed } from "./offrePartenaire/hellowork/importHelloWork"
 import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromComputedToJobsPartners"
-import { importKelio } from "./offrePartenaire/kelio/importKelio"
+import { importKelioRaw, importKelioToComputed } from "./offrePartenaire/kelio/importKelio"
 import { importMeteojobRaw, importMeteojobToComputed } from "./offrePartenaire/meteojob/importMeteojob"
 import { importMonsterRaw, importMonsterToComputed } from "./offrePartenaire/monster/importMonster"
 import { importPassRaw, importPassToComputed } from "./offrePartenaire/pass/importPass"
@@ -189,7 +189,7 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Importe les offres RHAlternance dans la collection raw",
   },
   {
-    fct: importKelio,
+    fct: importKelioRaw,
     description: "Importe les offres kelio dans la collection raw",
   },
   {
@@ -216,6 +216,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: importHelloWorkToComputed,
     description: "Importe les offres hellowork depuis raw vers computed",
+  },
+  {
+    fct: importKelioToComputed,
+    description: "Importe les offres kelio depuis raw vers computed",
   },
   {
     fct: importMonsterToComputed,
