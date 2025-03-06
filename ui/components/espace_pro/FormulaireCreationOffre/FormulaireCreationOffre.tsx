@@ -154,7 +154,7 @@ export const FormulaireCreationOffre = ({
   const finalSelectedCompetences = selectedCompetences ?? romeQuery?.data?.competences
 
   const onSubmit = (values, bag) => {
-    values = { ...values, competences_rome: finalSelectedCompetences }
+    values = { ...values, competences_rome: finalSelectedCompetences, offer_title_custom: values.offer_title_custom || null }
     fromDashboard ? submitFromDashboard(values, bag) : submitFromDepotRapide(values)
   }
 
