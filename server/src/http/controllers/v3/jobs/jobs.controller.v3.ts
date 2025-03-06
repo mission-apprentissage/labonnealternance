@@ -1,4 +1,3 @@
-import { notFound } from "@hapi/boom"
 import { zRoutes } from "shared"
 
 import { getUserFromRequest } from "@/security/authenticationService"
@@ -65,9 +64,6 @@ export const jobsApiV3Routes = (server: Server) => {
 
   server.get("/v3/jobs/:id", { schema: zRoutes.get["/v3/jobs/:id"], onRequest: server.auth(zRoutes.get["/v3/jobs/:id"]) }, async (req, res) => {
     const result = await findJobOpportunityById(req.params.id, new JobOpportunityRequestContext(zRoutes.get["/v3/jobs/:id"], "api-apprentissage"))
-    if (!result) {
-      throw notFound(`Aucune offre trouvée avec l'identifiant ${req.params.id}`)
-    }
     return res.send(result)
   })
 }

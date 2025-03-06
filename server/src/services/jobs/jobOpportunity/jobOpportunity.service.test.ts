@@ -2228,7 +2228,7 @@ describe("findJobOpportunityById tests", () => {
         ...originalJob,
         contract_type: originalJob.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
         apply_url: originalJob.apply_url ?? `${config.publicUrl}/recherche?type=partner&itemId=${originalJob._id}`,
-        apply_recipient_id: `jobs_partners_${originalJob._id}`,
+        apply_recipient_id: originalJob.apply_email ? `partners_${originalJob._id}` : null,
       })
 
       // Vérifier que addWarning n'a pas été appelé car le job a été trouvé

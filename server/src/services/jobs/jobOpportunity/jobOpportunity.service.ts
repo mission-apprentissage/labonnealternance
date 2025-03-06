@@ -819,7 +819,7 @@ export async function upsertJobOffer(data: IJobOfferApiWriteV3, partner_label: s
   return upsertJobOfferPrivate({ data, partner_label, partnerJobIdIfNew: partner_job_id, requestedByEmail, current })
 }
 
-export async function findJobOpportunityById(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3 | null> {
+export async function findJobOpportunityById(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3> {
   try {
     // Exécuter les requêtes en parallèle puis récupérer la première offre trouvée
     const results = await Promise.allSettled([getLbaJobByIdV2AsJobOfferApi(id, context), getJobsPartnersByIdAsJobOfferApi(id, context)])
