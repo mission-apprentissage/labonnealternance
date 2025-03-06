@@ -43,9 +43,13 @@ export const searchForJobsFunction = async ({
     } = {
       romes,
       rncp,
-      opco: opcoFilter,
-      opcoUrl: opcoUrlFilter,
       sources: "lba,matcha,partnerJob",
+    }
+    if (opcoFilter) {
+      params.opco = opcoFilter
+    }
+    if (opcoUrlFilter) {
+      params.opcoUrl = opcoUrlFilter
     }
     if (values?.location?.value) {
       params.longitude = values.location.value.coordinates[0]
