@@ -26,6 +26,7 @@ const fakeApplication = {
   applicant_attachment_name: "cv.pdf",
   applicant_attachment_content: applicationTestFile,
 }
+
 describe("Sending application", () => {
   beforeEach(async () => {
     const dateMoins1 = dayjs().add(-1, "day")

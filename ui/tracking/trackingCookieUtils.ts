@@ -47,7 +47,7 @@ export const setReferer = () => {
   }
 }
 export const setTrackingCookies = (router: NextRouter) => {
-  if (!isConsentRemoved() && !getCookie("utm_campaign")) {
+  if (!isConsentRemoved()) {
     const { query } = router
     const mtm_campaign = query?.mtm_campaign as string
     const utm_campaign = mtm_campaign || (query?.utm_campaign as string)
