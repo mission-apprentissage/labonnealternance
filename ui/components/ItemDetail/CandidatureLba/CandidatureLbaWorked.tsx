@@ -3,7 +3,7 @@ import React from "react"
 
 const CandidatureLbaWorked = ({ email, company }) => {
   return (
-    <Container data-testid="CandidatureSpontaneeWorked">
+    <Container data-testid="CandidatureSpontaneeWorked" mx={[6, 8]}>
       <Flex direction="row" alignItems="center" my={12}>
         <Image src="/images/paperplane2.svg" aria-hidden={true} alt="" />
         <Box pl={4} ml={4}>
