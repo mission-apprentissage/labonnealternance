@@ -22,4 +22,5 @@ init({
     httpClientIntegration({}),
     reportingObserverIntegration({ types: ["crash", "deprecation", "intervention"] }),
   ],
+  ignoreErrors: ["AbortError"],
 })

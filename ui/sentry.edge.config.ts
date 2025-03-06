@@ -18,4 +18,5 @@ init({
   normalizeDepth: 8,
   sendDefaultPii: true,
   integrations: [captureConsoleIntegration({ levels: ["error"] }), extraErrorDataIntegration({ depth: 8 }), httpClientIntegration()],
+  ignoreErrors: ["AbortError"],
 })

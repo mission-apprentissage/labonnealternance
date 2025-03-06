@@ -1,12 +1,9 @@
 import { ArrowForwardIcon, ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Container, Divider, Flex, Grid, GridItem, Link, SimpleGrid, Text } from "@chakra-ui/react"
-import axios from "axios"
 import NextLink from "next/link"
-import React from "react"
 import { useQuery } from "react-query"
 
-import { publicConfig } from "@/config.public"
-
+import { getMetiersDAvenir } from "../../utils/api"
 import { SendPlausibleEvent } from "../../utils/plausible"
 
 const jobCssProperties = {
@@ -49,11 +46,6 @@ const buildJobBlock = ({ idx, title, rome }) => {
   )
 }
 
-const getMetiersDAvenir = async () => {
-  const res = await axios.get(`${publicConfig.apiEndpoint}/metiersdavenir`)
-  return res.data
-}
-
 const MetiersDAvenir = () => {
   const { isSuccess, data } = useQuery("metiers", getMetiersDAvenir)
 
@@ -86,7 +78,7 @@ const MetiersDAvenir = () => {
           </GridItem>
           <GridItem colSpan={8} height="100%">
             <SimpleGrid columns={[1, 1, 1, 2]} spacingX={8} spacingY={4}>
-              {data.suggestionsMetiersAvenir.map((metier, idx) => buildJobBlock({ idx, title: metier.title, rome: metier.codeROME }))}
+              {data.suggestionsMetiersAvenir.map((metier: any, idx) => buildJobBlock({ idx, title: metier.title, rome: metier.codeROME }))}
             </SimpleGrid>
           </GridItem>
         </Grid>

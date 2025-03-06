@@ -22198,7 +22198,6 @@ __metadata:
     "@turf/distance": ^6.5.0
     "@types/node": ^20.7.1
     "@types/react": ^18.2.23
-    axios: ^1.7.4
     csv-stringify: ^6.5.2
     dayjs: ^1.11.10
     dotenv: ^16.3.1
