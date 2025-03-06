@@ -7,6 +7,7 @@ import { useContext, useState } from "react"
 import { useQuery } from "react-query"
 import { IRecruiterJson, IReferentielRomeForJob } from "shared"
 import { IJobJson, JOB_STATUS } from "shared/models/job.model"
+import { detectUrlAndEmails } from "shared/utils/detectUrlAndEmails"
 import * as Yup from "yup"
 
 import { AUTHTYPE } from "@/common/contants"
@@ -181,6 +182,7 @@ export const FormulaireCreationOffre = ({
           job_duration: offre?.job_duration ?? 12,
           job_rythm: offre?.job_rythm ?? null,
           job_delegation_count: offre?.job_delegation_count ?? 0,
+          offer_title_custom: offre?.offer_title_custom ?? "",
         }}
         validationSchema={Yup.object().shape({
           rome_label: Yup.string().required("Champ obligatoire"),
@@ -191,10 +193,14 @@ export const FormulaireCreationOffre = ({
             .required("Champ obligatoire"),
           job_type: Yup.array().required("Champ obligatoire"),
           job_duration: Yup.number().max(36, "Durée maximale du contrat : 36 mois").min(6, "Durée minimale du contrat : 6 mois").typeError("Durée minimale du contrat : 6 mois"),
+          offer_title_custom: Yup.string()
+            .min(3, "L’intitulé est trop court. Sa taille doit être comprise entre 3 et 150 caractères.")
+            .max(150, "L’intitulé est trop long. Sa taille doit être comprise entre 3 et 150 caractères.")
+            .test("no-urls-emails", "Les urls et les emails sont interdits", (value) => !value || detectUrlAndEmails(value).length === 0),
         })}
         onSubmit={(values: any, bag) => onSubmit(values, bag)}
       >
-        {() => (
+        {({ values }) => (
           <Grid
             gridTemplateColumns={["repeat(1, 1fr)", "repeat(1, 1fr)", "repeat(2, 1fr)", "repeat(2, 1fr)"]}
             gridTemplateRows={["repeat(3, auto)", "repeat(3, auto)", "auto 1fr", "auto 1fr"]}
@@ -215,12 +221,14 @@ export const FormulaireCreationOffre = ({
                     savoir_etre_professionnel: (finalSelectedCompetences?.savoir_etre_professionnel ?? []).flatMap(({ libelle }) => (libelle ? [libelle] : [])),
                     savoir_faire: (finalSelectedCompetences?.savoir_faire ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle)),
                   }}
-                  appellation={romeAndAppellation.appellation}
+                  title={values.offer_title_custom || romeAndAppellation.appellation}
                   rome={romeAndAppellation.rome}
                   onChange={onSelectedCompetencesChange}
                 />
               ) : (
-                <InfosDiffusionOffre />
+                <Box display={["none", "block"]}>
+                  <InfosDiffusionOffre />
+                </Box>
               )}
             </Box>
             <Box mt={8}>

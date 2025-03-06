@@ -199,6 +199,7 @@ export const zFormulaireRoute = {
         job_rythm: true,
         job_delegation_count: true,
         competences_rome: true,
+        offer_title_custom: true,
       }).extend({
         job_start_date: z.coerce.date(),
         job_update_date: z.coerce.date(),
