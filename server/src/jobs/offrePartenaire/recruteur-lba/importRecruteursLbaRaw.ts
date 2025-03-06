@@ -5,7 +5,6 @@ import path from "path"
 
 import { internal } from "@hapi/boom"
 import { ObjectId } from "bson"
-import { omit } from "lodash-es"
 import { groupData, oleoduc, transformData, writeData } from "oleoduc"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
@@ -128,7 +127,6 @@ export const importRecruteurLbaToComputed = async () => {
   const partnerLabel = JOBPARTNERS_LABEL.RECRUTEURS_LBA
   const zodInput = ZRecruteursLbaRaw
   const mapper = recruteursLbaToJobPartners
-  const omitFields = ["updated_at", "apply_email", "apply_phone"]
 
   logger.info(`début d'import dans computed_jobs_partners pour partner_label=${partnerLabel}`)
   const counters = { total: 0, success: 0, error: 0 }
@@ -140,12 +138,12 @@ export const importRecruteurLbaToComputed = async () => {
         counters.total++
         try {
           const parsedDocument = zodInput.parse(document)
-          const computedJobPartner = omit(mapper(parsedDocument), omitFields)
+          const { apply_email, apply_phone, updated_at, ...rest } = mapper(parsedDocument)
           await getDbCollection("computed_jobs_partners").updateOne(
-            { workplace_siret: computedJobPartner.workplace_siret },
+            { workplace_siret: rest.workplace_siret },
             {
-              $set: { apply_email: computedJobPartner.apply_email, apply_phone: computedJobPartner.apply_phone, updated_at: importDate },
-              $setOnInsert: { ...computedJobPartner, offer_status_history: [], _id: new ObjectId() },
+              $set: { apply_email, apply_phone, updated_at: importDate },
+              $setOnInsert: { ...rest, offer_status_history: [], _id: new ObjectId() },
             },
             {
               upsert: true,

@@ -27,6 +27,7 @@ import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formation
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
+import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
 import { processJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
 import { processRecruteursLba } from "./offrePartenaire/processRecruteursLba"
@@ -78,6 +79,11 @@ export async function setupJobProcessor() {
           "Traitement complet des jobs_partners par API": {
             cron_string: "*/10 * * * *",
             handler: processJobPartnersForApi,
+            tag: "main",
+          },
+          "Expiration des offres jobs_partners": {
+            cron_string: "*/30 * * * *",
+            handler: expireJobsPartners,
             tag: "main",
           },
           "Mise à jour des adresses emails bloquées": {
