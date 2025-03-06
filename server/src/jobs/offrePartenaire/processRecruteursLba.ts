@@ -3,17 +3,10 @@
  * This file is processed every sunday
  *
  */
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
-import { getDbCollection } from "../../common/utils/mongodbUtils"
+import { fillComputedRecruteursLba, importRecruteursLbaFromComputedToJobsPartners } from "@/jobs/offrePartenaire/fillComputedRecruteursLba"
 
-import { fillComputedJobsPartners } from "./fillComputedJobsPartners"
-import { importFromComputedToJobsPartners } from "./importFromComputedToJobsPartners"
 import { checkIfAlgoFileAlreadyProcessed, importRecruteurLbaToComputed, importRecruteursLbaRaw } from "./recruteur-lba/importRecruteursLbaRaw"
-
-const filter = {
-  partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
-}
 
 export const processRecruteursLba = async () => {
   const fileAlreadyProcessed = await checkIfAlgoFileAlreadyProcessed()
@@ -21,7 +14,6 @@ export const processRecruteursLba = async () => {
 
   await importRecruteursLbaRaw()
   await importRecruteurLbaToComputed()
-  await fillComputedJobsPartners(filter)
-  await getDbCollection("jobs_partners").deleteMany(filter)
-  await importFromComputedToJobsPartners(filter)
+  await fillComputedRecruteursLba()
+  await importRecruteursLbaFromComputedToJobsPartners()
 }

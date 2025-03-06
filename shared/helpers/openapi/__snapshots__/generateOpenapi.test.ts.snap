@@ -1032,6 +1032,15 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
+          "offer_title_custom": {
+            "description": "Titre de l'offre saisi par le recruteur",
+            "maxLength": 150,
+            "minLength": 3,
+            "type": [
+              "string",
+              "null",
+            ],
+          },
           "relance_mail_sent": {
             "description": "Statut de l'envoi du mail de relance avant expiration",
             "type": [
@@ -8155,6 +8164,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                   "France Travail",
                   "RH Alternance",
                   "PASS",
+                  "Meteojob",
                 ],
                 "type": "string",
               },
