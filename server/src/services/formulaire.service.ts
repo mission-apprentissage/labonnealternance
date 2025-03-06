@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto"
 import { badRequest, internal, notFound } from "@hapi/boom"
 import equal from "fast-deep-equal"
 import { Filter, ObjectId, UpdateFilter } from "mongodb"
-import { IDelegation, IJob, IJobCreate, IJobWithRomeDetail, IRecruiter, IRecruiterWithApplicationCount, IUserRecruteur, JOB_STATUS, removeAccents } from "shared"
+import { IDelegation, IJob, IJobCreate, IJobWithRomeDetail, IRecruiter, IRecruiterWithApplicationCount, ITrackingCookies, IUserRecruteur, JOB_STATUS, removeAccents } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { OPCOS_LABEL, RECRUITER_STATUS, RECRUITER_USER_ORIGIN } from "shared/constants/recruteur"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
@@ -28,6 +28,7 @@ import { replaceRecruiterFieldsWithCfaFields } from "./lbajob.service"
 import mailer from "./mailer.service"
 import { getComputedUserAccess, getGrantedRoles } from "./roleManagement.service"
 import { getRomeDetailsFromDB } from "./rome.service"
+import { saveJobTrafficSourceIfAny } from "./trafficSource.service"
 import { isUserEmailChecked, validateUserWithAccountEmail } from "./userWithAccount.service"
 
 export interface IOffreExtended extends IJob {
@@ -225,7 +226,17 @@ const isAuthorizedToPublishJob = async ({ userId, entrepriseId }: { userId: Obje
 /**
  * @description Create job offer for formulaire
  */
-export const createJob = async ({ job, establishment_id, user }: { job: IJobCreate; establishment_id: string; user: IUserWithAccount }): Promise<IRecruiter> => {
+export const createJob = async ({
+  job,
+  establishment_id,
+  user,
+  source,
+}: {
+  job: IJobCreate
+  establishment_id: string
+  user: IUserWithAccount
+  source?: ITrackingCookies
+}): Promise<IRecruiter> => {
   await validateFieldsFromReferentielRome(job)
 
   const userId = user._id
@@ -282,6 +293,11 @@ export const createJob = async ({ job, establishment_id, user }: { job: IJobCrea
     const role = await getDbCollection("rolemanagements").findOne({ user_id: userId, authorized_type: AccessEntityType.ENTREPRISE, authorized_id: organization._id.toString() })
     const roleStatus = getLastStatusEvent(role?.status)?.status ?? null
     await sendEmailConfirmationEntreprise(user, updatedFormulaire, roleStatus, entrepriseStatus)
+
+    if (source) {
+      await saveJobTrafficSourceIfAny({ job_id: createdJob._id, source })
+    }
+
     return updatedFormulaire
   }
 
@@ -297,6 +313,12 @@ export const createJob = async ({ job, establishment_id, user }: { job: IJobCrea
     }
   }
   await sendMailNouvelleOffre(updatedFormulaire, createdJob, contactCFA ?? undefined)
+
+  // register tracking req.cookies
+  if (source) {
+    await saveJobTrafficSourceIfAny({ job_id: createdJob._id, source })
+  }
+
   return updatedFormulaire
 }
 
