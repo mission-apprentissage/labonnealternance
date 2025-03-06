@@ -336,7 +336,7 @@ export const getJobsPartnersForApi = async ({ romes, geo, target_diploma_level, 
       ...j,
       contract_type: j.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
       apply_url: j.apply_url ?? `${config.publicUrl}/recherche?type=partner&itemId=${j._id}`,
-      apply_recipient_id: j.apply_email ? `partners_${j._id}` : null,
+      apply_recipient_id: `partners_${j._id}`,
     })
   )
 }
