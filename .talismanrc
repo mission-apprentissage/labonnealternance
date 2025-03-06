@@ -71,6 +71,8 @@ fileignoreconfig:
   checksum: 6f28aee7664d1ec1e4b4da34b96b63e23781538b3fe3e8d50dddbdad3884fa3f
 - filename: server/src/jobs/offrePartenaire/importHelloWork.ts
   checksum: 26caf0b5a97ce2ff7451cc2717a3b36f38b20f94db6beb490b98b8311debfd25
+- filename: server/src/jobs/offrePartenaire/kelio/importKelio.test.input.xml
+  checksum: d40699cf149c9658080dcbeac6856adc01a215d5cc00e5c2271096d3cbb2aba4
 - filename: server/src/jobs/offrePartenaire/meteojob/importMeteojob.test.input.xml
   checksum: 62419cb750978e303756a8134f180ffa4febb9835fff97e48ed1024923bebc91
 - filename: server/src/jobs/offrePartenaire/pass/importPass.test.input.rss
