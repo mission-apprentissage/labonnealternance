@@ -1,15 +1,14 @@
 import { JOB_STATUS_ENGLISH } from "shared/models"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-export const cancelRemovedJobsPartners = async () => {
-  const partnerLabelToCancel = Object.values(JOBPARTNERS_LABEL)
+import { jobPartnersByFlux } from "./processJobPartners"
 
+export const cancelRemovedJobsPartners = async () => {
   const matchStage = {
     $match: {
-      partner_label: { $in: partnerLabelToCancel },
+      partner_label: { $in: jobPartnersByFlux },
     },
   }
   const setStage = {

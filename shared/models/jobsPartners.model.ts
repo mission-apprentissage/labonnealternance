@@ -1,5 +1,6 @@
 import { z } from "zod"
 
+import { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
 import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 
@@ -12,16 +13,19 @@ import { zOpcoLabel } from "./opco.model.js"
 const collectionName = "jobs_partners" as const
 
 export enum JOBPARTNERS_LABEL {
+  OFFRES_EMPLOI_LBA = LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
+  RECRUTEURS_LBA = LBA_ITEM_TYPE.RECRUTEURS_LBA,
   HELLOWORK = "Hellowork",
-  OFFRES_EMPLOI_LBA = "La bonne alternance",
   FRANCE_TRAVAIL = "France Travail",
   RH_ALTERNANCE = "RH Alternance",
   PASS = "PASS",
+  METEOJOB = "Meteojob",
 }
 
 export enum FILTER_JOBPARTNERS_LABEL {
   HELLOWORK = JOBPARTNERS_LABEL.HELLOWORK,
   RH_ALTERNANCE = JOBPARTNERS_LABEL.RH_ALTERNANCE,
+  METEOJOB = JOBPARTNERS_LABEL.METEOJOB,
 }
 
 export const ZJobsPartnersRecruiterApi = z.object({
@@ -119,6 +123,12 @@ export const ZJobsPartnersOfferPrivateWithDistance = ZJobsPartnersOfferPrivate.e
   distance: z.number().nullish(),
 })
 
+export const ZJobsPartnersRecruteurAlgoPrivate = ZJobsPartnersOfferPrivate.omit({ workplace_siret: true, workplace_legal_name: true }).extend({
+  workplace_siret: z.string().describe("Siret toujours présent pour les entreprises issue de l'algo"),
+  workplace_legal_name: z.string().describe("Raison sociale toujours présente pour les entreprises issue de l'algo"),
+})
+export type IJobsPartnersRecruteurAlgoPrivate = z.output<typeof ZJobsPartnersRecruteurAlgoPrivate>
+
 export type IJobsPartnersRecruiterApi = z.output<typeof ZJobsPartnersRecruiterApi>
 export type IJobsPartnersOfferApi = z.output<typeof ZJobsPartnersOfferApi>
 
@@ -194,36 +204,6 @@ export const ZJobsPartnersWritableApi = ZJobsPartnersPostApiBodyBase.superRefine
     })
   }
 
-  // TODO: useless car conservation uniquement de workplace_address_label
-  // if (data.workplace_address_street_label != null) {
-  //   if (data.workplace_address_zipcode == null) {
-  //     ctx.addIssue({
-  //       code: "custom",
-  //       message: "When workplace_address_street_label is provided then workplace_address_zipcode is required",
-  //       path: ["workplace_address_zipcode"],
-  //     })
-  //   }
-  //   if (data.workplace_address_city == null) {
-  //     ctx.addIssue({
-  //       code: "custom",
-  //       message: "When workplace_address_street_label is provided then workplace_address_city is required",
-  //       path: ["workplace_address_city"],
-  //     })
-  //   }
-  // }
-
-  // if (data.workplace_address_city != null || data.workplace_address_zipcode != null) {
-  //   if (data.workplace_address_label != null) {
-  //     ctx.addIssue({
-  //       code: "custom",
-  //       message: "workplace_address_label is not allowed when address is provided via detailed fields",
-  //       path: ["workplace_address_label"],
-  //     })
-  //   }
-
-  //   data.workplace_address_label = joinNonNullStrings([data.workplace_address_street_label, data.workplace_address_zipcode, data.workplace_address_city])
-  // }
-
   return data
 })
 
@@ -239,6 +219,7 @@ export default {
     [{ partner_label: 1, partner_job_id: 1 }, { unique: true }],
     [{ partner_label: 1 }, {}],
     [{ offer_status: 1 }, {}],
+    [{ offer_expiration: 1 }, {}],
     [{ "duplicates.partner_job_id": 1 }, {}],
     [{ "duplicates.partner_job_label": 1 }, {}],
   ],

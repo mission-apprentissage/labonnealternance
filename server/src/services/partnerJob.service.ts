@@ -27,8 +27,8 @@ export const transformPartnerJobs = ({ partnerJobs, isMinimalData }: { partnerJo
  */
 function transformPartnerJob(partnerJob: IJobsPartnersOfferPrivateWithDistance): ILbaItemPartnerJob {
   const romes = partnerJob.offer_rome_codes.map((code) => ({ code, label: null }))
-  const latitude = partnerJob.workplace_geopoint?.coordinates[1] ?? 0
-  const longitude = partnerJob.workplace_geopoint?.coordinates[0] ?? 0
+  const longitude = partnerJob.workplace_geopoint.coordinates[0]
+  const latitude = partnerJob.workplace_geopoint.coordinates[1]
   const id = partnerJob._id.toString()
 
   const resultJob: ILbaItemPartnerJob = {
@@ -91,8 +91,8 @@ function transformPartnerJob(partnerJob: IJobsPartnersOfferPrivateWithDistance):
  * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
  */
 function transformPartnerJobWithMinimalData(partnerJob: IJobsPartnersOfferPrivateWithDistance): ILbaItemPartnerJob {
-  const latitude = partnerJob.workplace_geopoint?.coordinates[1] ?? 0
-  const longitude = partnerJob.workplace_geopoint?.coordinates[0] ?? 0
+  const longitude = partnerJob.workplace_geopoint.coordinates[0]
+  const latitude = partnerJob.workplace_geopoint.coordinates[1]
 
   const resultJob: ILbaItemPartnerJob = {
     ideaType: LBA_ITEM_TYPE_OLD.PARTNER_JOB,

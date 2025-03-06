@@ -2,17 +2,15 @@ import { badRequest, internal, notFound } from "@hapi/boom"
 import { IApiAlternanceTokenData } from "api-alternance-sdk"
 import { DateTime } from "luxon"
 import { Document, Filter, ObjectId } from "mongodb"
-import { IGeoPoint, IJob, ILbaCompany, ILbaItemPartnerJob, IRecruiter, JOB_STATUS_ENGLISH, assertUnreachable, joinNonNullStrings, parseEnum, translateJobStatus } from "shared"
+import { IGeoPoint, IJob, ILbaItemPartnerJob, JOB_STATUS_ENGLISH, assertUnreachable, parseEnum, translateJobStatus } from "shared"
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import {
   IJobsPartnersOfferApi,
   IJobsPartnersOfferPrivate,
   IJobsPartnersOfferPrivateWithDistance,
-  IJobsPartnersRecruiterApi,
   INiveauDiplomeEuropeen,
   JOBPARTNERS_LABEL,
-  ZJobsPartnersRecruiterApi,
 } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import {
@@ -95,13 +93,12 @@ export const getJobsFromApi = async ({
       ?.split(",")
       .map((source) => {
         switch (source) {
+          case "partnerJob": // once API consumer shifted to v3, remove case "offres" as it fetches from FT API
           case "matcha":
             return LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
           case "lba":
-          case "lbb":
             return LBA_ITEM_TYPE.RECRUTEURS_LBA
-
-          case "offres":
+          case "offres": // compatibility V1 to retreive FT jobs
             return LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES
 
           default:
@@ -292,6 +289,7 @@ export const getJobsPartnersFromDBForUI = async ({ romes, geo, target_diploma_le
   const query: Filter<IJobsPartnersOfferPrivate> = {
     offer_status: JOB_STATUS_ENGLISH.ACTIVE,
     offer_expiration: { $gt: new Date() },
+    partner_label: { $ne: JOBPARTNERS_LABEL.RECRUTEURS_LBA }, // until offers are not merged together from the endpoint, lba companies are fetched into another service.
   }
 
   if (romes) {
@@ -329,55 +327,48 @@ export const getJobsPartnersFromDBForUI = async ({ romes, geo, target_diploma_le
 }
 
 export const getJobsPartnersForApi = async ({ romes, geo, target_diploma_level, partners_to_exclude }: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> => {
-  const jobsPartners = await getJobsPartnersFromDB({ romes, geo, target_diploma_level, partners_to_exclude })
+  // recruteurs_lba are available in a different array from the API returned payload
+  const partnersToExclude = partners_to_exclude ? [...partners_to_exclude, JOBPARTNERS_LABEL.RECRUTEURS_LBA] : [JOBPARTNERS_LABEL.RECRUTEURS_LBA]
+  const jobsPartners = await getJobsPartnersFromDB({ romes, geo, target_diploma_level, partners_to_exclude: partnersToExclude })
 
   return jobsPartners.map((j) =>
     jobsRouteApiv3Converters.convertToJobOfferApiReadV3({
       ...j,
       contract_type: j.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
       apply_url: j.apply_url ?? `${config.publicUrl}/recherche?type=partner&itemId=${j._id}`,
-      apply_recipient_id: `jobs_partners_${j._id}`,
+      apply_recipient_id: `partners_${j._id}`,
     })
   )
 }
 
 const convertToGeopoint = ({ longitude, latitude }: { longitude: number; latitude: number }): IGeoPoint => ({ type: "Point", coordinates: [longitude, latitude] })
 
-function convertOpco(recruteurLba: Pick<ILbaCompany | IRecruiter, "opco">): IJobsPartnersRecruiterApi["workplace_opco"] {
-  const r = ZJobsPartnersRecruiterApi.shape.workplace_opco.safeParse(recruteurLba.opco)
-  if (r.success) {
-    return r.data
-  }
-
-  return null
-}
-
-export const convertLbaCompanyToJobRecruiterApi = (recruteursLba: ILbaCompany[]): IJobRecruiterApiReadV3[] => {
+export const convertLbaCompanyToJobRecruiterApi = (recruteursLba: IJobsPartnersOfferPrivate[]): IJobRecruiterApiReadV3[] => {
   return recruteursLba.map(
     (recruteurLba): IJobRecruiterApiReadV3 => ({
       identifier: { id: recruteurLba._id },
       workplace: {
-        siret: recruteurLba.siret,
-        website: recruteurLba.website,
-        name: recruteurLba.enseigne ?? recruteurLba.raison_sociale,
-        brand: recruteurLba.enseigne,
-        legal_name: recruteurLba.raison_sociale,
+        siret: recruteurLba.workplace_siret,
+        website: recruteurLba.workplace_website,
+        name: recruteurLba.workplace_legal_name,
+        brand: recruteurLba.workplace_brand,
+        legal_name: recruteurLba.workplace_legal_name,
         description: null,
-        size: recruteurLba.company_size,
+        size: recruteurLba.workplace_size,
         location: {
-          address: joinNonNullStrings([recruteurLba.street_number, recruteurLba.street_name, recruteurLba.zip_code, recruteurLba.city])!,
-          geopoint: recruteurLba.geopoint!,
+          address: recruteurLba.workplace_address_label,
+          geopoint: recruteurLba.workplace_geopoint,
         },
         domain: {
-          idcc: null,
-          opco: convertOpco(recruteurLba),
-          naf: recruteurLba.naf_code == null ? null : { code: recruteurLba.naf_code, label: recruteurLba.naf_label },
+          idcc: recruteurLba.workplace_idcc,
+          opco: recruteurLba.workplace_opco,
+          naf: recruteurLba.workplace_naf_code == null ? null : { code: recruteurLba.workplace_naf_code, label: recruteurLba.workplace_naf_label },
         },
       },
       apply: {
-        url: `${config.publicUrl}/recherche?type=lba&itemId=${recruteurLba.siret}`,
-        phone: recruteurLba.phone,
-        recipient_id: recruteurLba.email ? `recruteurslba_${recruteurLba._id}` : null,
+        url: `${config.publicUrl}/recherche?type=lba&itemId=${recruteurLba.workplace_siret}`,
+        phone: recruteurLba.apply_phone,
+        recipient_id: recruteurLba.apply_email ? `partners_${recruteurLba._id}` : null,
       },
     })
   )
@@ -471,7 +462,7 @@ export const convertLbaRecruiterToJobOfferApi = (offresEmploiLba: IJobResult[]):
             },
             domain: {
               idcc: recruiter.idcc,
-              opco: convertOpco(recruiter),
+              opco: recruiter.opco,
               naf:
                 recruiter.naf_code == null
                   ? null
@@ -696,15 +687,27 @@ export async function findJobsOpportunities(payload: IJobSearchApiV3Query, conte
 
 type InvariantFields = "_id" | "created_at" | "partner_label" | "partner_job_id"
 
-async function upsertJobOffer(data: IJobOfferApiWriteV3, identity: IApiAlternanceTokenData, current: IJobsPartnersOfferPrivate | null): Promise<ObjectId> {
+async function upsertJobOfferPrivate({
+  data,
+  partner_label,
+  partnerJobIdIfNew,
+  requestedByEmail,
+  current,
+}: {
+  data: IJobOfferApiWriteV3
+  partner_label: string
+  partnerJobIdIfNew?: string
+  requestedByEmail: string
+  current: IJobsPartnersOfferPrivate | null
+}): Promise<ObjectId> {
   const now = new Date()
 
   const _id = current?._id ?? new ObjectId()
   const invariantData: Pick<IJobsPartnersOfferPrivate, InvariantFields> = {
     _id,
     created_at: current?.created_at ?? now,
-    partner_label: identity.organisation!,
-    partner_job_id: current?.partner_job_id ?? _id.toString(),
+    partner_label,
+    partner_job_id: current?.partner_job_id ?? partnerJobIdIfNew ?? _id.toString(),
   }
 
   const defaultOfferExpiration = current?.offer_expiration
@@ -769,7 +772,7 @@ async function upsertJobOffer(data: IJobOfferApiWriteV3, identity: IApiAlternanc
             date: now,
             status: data.offer.status,
             reason: "créée / modifiée par API",
-            granted_by: identity.email,
+            granted_by: requestedByEmail,
           },
         },
       }
@@ -780,7 +783,12 @@ async function upsertJobOffer(data: IJobOfferApiWriteV3, identity: IApiAlternanc
 }
 
 export async function createJobOffer(identity: IApiAlternanceTokenData, data: IJobOfferApiWriteV3): Promise<ObjectId> {
-  return upsertJobOffer(data, identity, null)
+  return upsertJobOfferPrivate({
+    data,
+    partner_label: identity.organisation!,
+    requestedByEmail: identity.email,
+    current: null,
+  })
 }
 
 export async function updateJobOffer(id: ObjectId, identity: IApiAlternanceTokenData, data: IJobOfferApiWriteV3): Promise<void> {
@@ -795,5 +803,18 @@ export async function updateJobOffer(id: ObjectId, identity: IApiAlternanceToken
     throw badRequest("Job must be active in order to be modified")
   }
 
-  await upsertJobOffer(data, identity, current)
+  await upsertJobOfferPrivate({
+    data,
+    partner_label: identity.organisation!,
+    requestedByEmail: identity.email,
+    current,
+  })
+}
+
+export async function upsertJobOffer(data: IJobOfferApiWriteV3, partner_label: string, partner_job_id: string, requestedByEmail: string) {
+  let current = await getDbCollection("jobs_partners").findOne<IJobsPartnersOfferPrivate>({ partner_label, partner_job_id })
+  if (!current) {
+    current = await getDbCollection("computed_jobs_partners").findOne<IJobsPartnersOfferPrivate>({ partner_label, partner_job_id })
+  }
+  return upsertJobOfferPrivate({ data, partner_label, partnerJobIdIfNew: partner_job_id, requestedByEmail, current })
 }

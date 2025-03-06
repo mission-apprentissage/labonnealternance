@@ -1,8 +1,18 @@
+import { z } from "zod"
+
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
-import { z } from "../helpers/zodWithOpenApi.js"
-import { ZLbaCompanyForContactUpdate } from "../models/recruteurLba.model.js"
+import { ZJobsPartnersOfferPrivate } from "../models/jobsPartners.model.js"
 
 import { IRoutesDef } from "./common.routes.js"
+
+export const ZLbaCompanyForContactUpdate = z.object({
+  siret: z.string().describe("Le Siret de la société"), // use extension.siret
+  enseigne: z.string().nullish().describe("Enseigne de l'entreprise"),
+  email: z.string().nullish().describe("Adresse email de contact"),
+  phone: extensions.phone().nullish().describe("Numéro de téléphone de contact"),
+  active: z.boolean().describe("société présente dans recruteurslba ou non"),
+})
+export type ILbaCompanyForContactUpdate = z.output<typeof ZLbaCompanyForContactUpdate>
 
 export const zUpdateLbaCompanyRoutes = {
   get: {
@@ -35,8 +45,8 @@ export const zUpdateLbaCompanyRoutes = {
         })
         .strict(),
       body: z.object({
-        email: z.string().email().or(z.literal("")).optional(),
-        phone: extensions.phone().or(z.literal("")).optional(),
+        email: ZJobsPartnersOfferPrivate.shape.apply_email,
+        phone: ZJobsPartnersOfferPrivate.shape.apply_phone,
       }),
       response: {
         "200": ZLbaCompanyForContactUpdate,

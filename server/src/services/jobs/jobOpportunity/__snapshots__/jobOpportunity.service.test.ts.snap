@@ -60,7 +60,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "identifier": {
       "id": "",
       "partner_job_id": "",
-      "partner_label": "La bonne alternance",
+      "partner_label": "offres_emploi_lba",
     },
     "offer": {
       "access_conditions": [
@@ -184,7 +184,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
   {
     "apply": {
       "phone": null,
-      "recipient_id": "jobs_partners_675209e704377be3d437bbb9",
+      "recipient_id": "partners_675209e704377be3d437bbb9",
       "url": "",
     },
     "contract": {
@@ -262,15 +262,12 @@ exports[`findJobsOpportunities > should execute query 2`] = `
       "description": null,
       "domain": {
         "idcc": null,
-        "naf": {
-          "code": "8411Z",
-          "label": "Administration publique générale",
-        },
+        "naf": null,
         "opco": null,
       },
       "legal_name": "ASSEMBLEE NATIONALE",
       "location": {
-        "address": "Paris",
+        "address": "126 RUE DE L'UNIVERSITE 75007 PARIS",
         "geopoint": {
           "coordinates": [
             2.347,
@@ -279,7 +276,7 @@ exports[`findJobsOpportunities > should execute query 2`] = `
           "type": "Point",
         },
       },
-      "name": "ASSEMBLEE NATIONALE - La vraie",
+      "name": "ASSEMBLEE NATIONALE",
       "siret": "11000001500013",
       "size": null,
       "website": null,

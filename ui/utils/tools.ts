@@ -1,7 +1,9 @@
+import { ILbaItemCompany, ILbaItemFormation2, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "shared"
+
 import { rawPostalAddress } from "./addressUtils"
 //import * as Sentry from "@sentry/react";
 
-const getPathLink = (anyItem) => {
+const getPathLink = (anyItem: ILbaItemFormation2 | ILbaItemLbaCompany | ILbaItemCompany | ILbaItemLbaJob | ILbaItemFtJob) => {
   let res = ""
   if (anyItem?.place) {
     res = `https://www.google.fr/maps/dir//${encodeURIComponent(rawPostalAddress(anyItem.place.fullAddress || anyItem.place.city))}/@${anyItem.place.latitude},${
