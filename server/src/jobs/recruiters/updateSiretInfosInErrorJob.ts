@@ -1,7 +1,8 @@
 import { internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
-import { JOB_STATUS } from "shared"
+import { IBusinessError, IRecruiter, JOB_STATUS } from "shared"
 import { ENTREPRISE } from "shared/constants"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { CFA, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
@@ -9,6 +10,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { upsertEntrepriseData } from "@/services/organization.service"
+import { sendDeactivatedRecruteurMail } from "@/services/roleManagement.service"
 import { setEntrepriseInError } from "@/services/userRecruteur.service"
 
 import { logger } from "../../common/logger"
@@ -53,6 +55,25 @@ const updateEntreprisesInfosInError = async () => {
   })
   return stats
 }
+
+const deactivationWarningOriginExclusion = ["opcoep-HUBE", "opcoep-CRM"]
+
+const warnDeactivatedRecruteur = async (recruiter: IRecruiter, error: IBusinessError) => {
+  if (!deactivationWarningOriginExclusion.includes(recruiter.origin ?? "")) {
+    let errorMessage = error.message
+    if (error.errorCode === BusinessErrorCodes.NON_DIFFUSIBLE) {
+      errorMessage = "informations de l’entreprise non diffusibles"
+    }
+    if (error.errorCode === BusinessErrorCodes.IS_CFA) {
+      errorMessage = "entreprise rattachée à un code NAF 85"
+    }
+
+    const { last_name, first_name, email, establishment_siret, establishment_raison_sociale, phone } = recruiter
+
+    await sendDeactivatedRecruteurMail({ email, last_name, first_name, establishment_siret, establishment_raison_sociale, phone, errorMessage })
+  }
+}
+
 const updateRecruteursSiretInfosInError = async () => {
   const recruteurs = await getDbCollection("recruiters")
     .find({
@@ -71,6 +92,7 @@ const updateRecruteursSiretInfosInError = async () => {
       if ("error" in siretResponse) {
         logger.warn(`Correction des recruteurs en erreur: recruteur id=${_id}, désactivation car création interdite, raison=${siretResponse.message}`)
         await archiveFormulaire(recruteur)
+        await warnDeactivatedRecruteur(recruteur, siretResponse)
         stats.deactivated++
       } else {
         await upsertEntrepriseData(establishment_siret, "script de reprise de données entreprise", siretResponse, false)
