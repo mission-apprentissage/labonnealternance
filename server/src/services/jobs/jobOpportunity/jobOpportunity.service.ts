@@ -836,11 +836,11 @@ export async function findJobOpportunityById(id: ObjectId, context: JobOpportuni
     const err = internal("Erreur inattendue dans findJobOpportunityById", { id, error })
     logger.error(err)
     sentryCaptureException(err)
-    return null
+    throw new Error("Erreur inattendue dans findJobOpportunityById")
   }
 }
 
-function validateJobOffer(job: IJobOfferApiReadV3, id: ObjectId, context: JobOpportunityRequestContext): IJobOfferApiReadV3 | null {
+function validateJobOffer(job: IJobOfferApiReadV3, id: ObjectId, context: JobOpportunityRequestContext): IJobOfferApiReadV3 {
   const parsedJob = zJobOfferApiReadV3.safeParse(job)
 
   if (!parsedJob.success) {
@@ -849,10 +849,11 @@ function validateJobOffer(job: IJobOfferApiReadV3, id: ObjectId, context: JobOpp
       error: parsedJob.error.format(),
       id: id.toString(),
     })
+
     logger.error(error)
     context.addWarning("JOB_OFFER_FORMATING_ERROR")
     sentryCaptureException(error)
-    return null
+    throw new Error("Invalid job offer data")
   }
 
   return parsedJob.data
