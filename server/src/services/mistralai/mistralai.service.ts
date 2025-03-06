@@ -15,7 +15,7 @@ export const sendMistralMessages = async ({
   messages,
   randomSeed,
   maxTokens = 2048,
-  model = "mistral-small-latest",
+  model = "pixtral-12b-2409",
   responseFormat = { type: "json_object" },
 }: {
   messages: Message[]

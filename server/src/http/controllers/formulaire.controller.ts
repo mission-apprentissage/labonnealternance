@@ -178,6 +178,7 @@ export default (server: Server) => {
         rome_code,
         rome_label,
         competences_rome,
+        offer_title_custom,
       } = req.body
       const updatedFormulaire = await createJob({
         job: {
@@ -193,6 +194,7 @@ export default (server: Server) => {
           rome_code,
           rome_label,
           competences_rome,
+          offer_title_custom,
         },
         user,
         establishment_id,
@@ -238,6 +240,7 @@ export default (server: Server) => {
         rome_code,
         rome_label,
         competences_rome,
+        offer_title_custom,
       } = req.body
       const updatedFormulaire = await createJob({
         job: {
@@ -254,6 +257,7 @@ export default (server: Server) => {
           rome_code,
           rome_label,
           competences_rome,
+          offer_title_custom,
         },
         establishment_id,
         user,

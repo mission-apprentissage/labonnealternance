@@ -1,12 +1,13 @@
 import { Filter } from "mongodb"
-import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import jobsPartnersModel, { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
+import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 import { blockBadRomeJobsPartners } from "@/jobs/offrePartenaire/blockBadRomeJobsPartners"
 import { fillLocationInfosForPartners } from "@/jobs/offrePartenaire/fillLocationInfosForPartners"
 import { fillOpcoInfosForPartners } from "@/jobs/offrePartenaire/fillOpcoInfosForPartners"
-import { importFromComputedToJobsPartners } from "@/jobs/offrePartenaire/importFromComputedToJobsPartners"
 import { removeMissingRecruteursLbaFromRaw } from "@/jobs/offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
 import { validateComputedJobPartners } from "@/jobs/offrePartenaire/validateComputedJobPartners"
 
@@ -23,6 +24,23 @@ export const fillComputedRecruteursLba = async () => {
 }
 
 export const importRecruteursLbaFromComputedToJobsPartners = async () => {
+  logger.info("suppression des recruteurs_lba de jobs_partners")
   await getDbCollection("jobs_partners").deleteMany(filter as IJobsPartnersOfferPrivate)
-  await importFromComputedToJobsPartners(filter)
+  logger.info("import des recruteurs_lba dans jobs_partners")
+  await getDbCollection("computed_jobs_partners")
+    .aggregate([
+      { $match: { ...filter, business_error: null, validated: true } },
+      {
+        $unset: ["validated", "business_error", "errors", "currently_processed_id", "jobs_in_success"],
+      },
+      { $merge: jobsPartnersModel.collectionName },
+    ])
+    .toArray()
+  const verifyCount = await getDbCollection("jobs_partners").countDocuments(filter as IJobsPartnersOfferPrivate)
+  const message = `import des recruteurs_lba dans jobs_partners terminé. total=${verifyCount}`
+  logger.info(message)
+  await notifyToSlack({
+    subject: `jobsPartners: import de données`,
+    message,
+  })
 }

@@ -2,7 +2,7 @@ fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: 6c3ade1ddaac4db86cb79aa5328c7546490450f3be8e356b001299417b68d14e
 - filename: .infra/vault/vault.yml
-  checksum: 34dd8658f403cfd23208533c571630b56fbea0f3131a54cf54f9f826b0dc2201
+  checksum: 415c766eab6874a05e6dff56b2763c157494b8ec65666e527d9144762829ca0f
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
   checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
 - filename: cypress/pages/FlowAdminPage.ts
@@ -100,7 +100,7 @@ fileignoreconfig:
 - filename: server/src/services/jobs/jobOpportunity/__snapshots__/jobOpportunity.service.test.ts.snap
   checksum: 01dd54f682dc81ecc5ad2099f2cf01e8e6011c0d22c38607f7998d2ce28bf155
 - filename: server/src/services/jobs/jobOpportunity/jobOpportunity.service.test.ts
-  checksum: e192df6796f90fd76e38f3d7218e95d7ff2ef4615b5199e99052feb39ce374ec
+  checksum: 019e2e69727a016ecf674f54423883c7c2ce93dd0f953de3e8d04cd87b4f859c
 - filename: server/src/services/partnerJob.service.test.ts
   checksum: b488a3b67b801c3fa5b012d2ba2b120b21af4f459b966c6629e6e681ead97913
 - filename: server/src/services/recruteurLba.service.test.ts
@@ -199,6 +199,8 @@ fileignoreconfig:
   checksum: f4f3e429e6a7871a218f19eead273c0477636ed3c19b9e4dfd9e55bde1bc7dc8
 - filename: shared/routes/v3/jobs/jobs.routes.v3.model.ts
   checksum: 94f2736d7791571d7888a50f53e36e2af246f22c1c832b85477c34cb5328af0d
+- filename: shared/utils/detectUrlAndEmails.test.ts
+  checksum: ce4d731225425bdbee4e69ff61b6c14be377054db1fb99b438a86e85b4b7a985
 - filename: shared/utils/objectUtils.ts
   checksum: cfd0e48e8762b43c6431dad873727f6ac091ca6f5c7555e37a8ee3fba03184d1
 - filename: ui/common/hooks/useAuth.ts
