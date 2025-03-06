@@ -888,7 +888,7 @@ export async function getJobsPartnersByIdAsJobOfferApi(id: ObjectId, context: Jo
     ...job,
     contract_type: job.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
     apply_url: job.apply_url ?? `${config.publicUrl}/recherche?type=partner&itemId=${job._id}`,
-    apply_recipient_id: `jobs_partners_${job._id}`,
+    apply_recipient_id: job.apply_email ? `partners_${job._id}` : null,
   })
 
   return transformedJob

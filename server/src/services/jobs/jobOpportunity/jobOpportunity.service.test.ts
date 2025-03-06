@@ -2248,6 +2248,95 @@ describe("findJobOpportunityById tests", () => {
       // Vérifier que la validation a réussi
       expect(validationResult.success).toBe(true)
     })
+
+    it("should return a job offer without recipientid when no apply_email on getJobsPartnersByIdAsJobOfferApi", async () => {
+      await getDbCollection("jobs_partners").deleteMany({})
+      await getDbCollection("jobs_partners").insertOne({ ...originalJob, apply_email: null })
+
+      // Créer un contexte de requête mock
+      const context = {
+        addWarning: vi.fn(),
+      } as unknown as JobOpportunityRequestContext
+
+      // Mock de la fonction de conversion pour vérifier qu'elle est appelée avec les bons paramètres
+      const convertSpy = vi.spyOn(jobsRouteApiv3Converters, "convertToJobOfferApiReadV3")
+
+      // Appeler la fonction avec l'ID existant
+      const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId, context)
+
+      // Vérifier que la fonction de conversion a été appelée avec les bons paramètres
+      expect(convertSpy).toHaveBeenCalledWith({
+        ...originalJob,
+        contract_type: originalJob.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
+        apply_url: originalJob.apply_url ?? `${config.publicUrl}/recherche?type=partner&itemId=${originalJob._id}`,
+        apply_recipient_id: null, // Vérification dans l'appel à la conversion
+      })
+
+      // Vérifier que addWarning n'a pas été appelé car le job a été trouvé
+      expect(context.addWarning).not.toHaveBeenCalled()
+
+      // Vérifier que le résultat n'est pas null
+      expect(result).not.toBeNull()
+
+      // Vérifier que l'objet retourné par getJobsPartnersByIdAsJobOfferApi a bien apply_recipient_id = null
+      expect(result?.apply.recipient_id).toBeNull()
+
+      // Utiliser le schéma Zod pour valider la structure
+      const validationResult = zJobOfferApiReadV3.safeParse(result)
+
+      // Si la validation échoue, afficher les erreurs pour faciliter le débogage
+      if (!validationResult.success) {
+        console.error("Validation errors:", validationResult.error.format())
+      }
+
+      // Vérifier que la validation a réussi
+      expect(validationResult.success).toBe(true)
+    })
+
+    it("should return a job offer with recipientid when apply_email on getJobsPartnersByIdAsJobOfferApi", async () => {
+      await getDbCollection("jobs_partners").deleteMany({})
+      await getDbCollection("jobs_partners").insertOne({ ...originalJob, apply_email: "test@mail.fr" })
+
+      // Créer un contexte de requête mock
+      const context = {
+        addWarning: vi.fn(),
+      } as unknown as JobOpportunityRequestContext
+
+      // Mock de la fonction de conversion pour vérifier qu'elle est appelée avec les bons paramètres
+      const convertSpy = vi.spyOn(jobsRouteApiv3Converters, "convertToJobOfferApiReadV3")
+
+      // Appeler la fonction avec l'ID existant
+      const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId, context)
+
+      // Vérifier que la fonction de conversion a été appelée avec les bons paramètres
+      expect(convertSpy).toHaveBeenCalledWith({
+        ...originalJob,
+        contract_type: originalJob.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
+        apply_url: originalJob.apply_url ?? `${config.publicUrl}/recherche?type=partner&itemId=${originalJob._id}`,
+        apply_email: "test@mail.fr",
+        apply_recipient_id: `partners_${originalJob._id}`, // Vérification dans l'appel à la conversion
+      })
+
+      // Vérifier que addWarning n'a pas été appelé car le job a été trouvé
+      expect(context.addWarning).not.toHaveBeenCalled()
+
+      // Vérifier que le résultat n'est pas null
+      expect(result).not.toBeNull()
+
+      // Vérifier que l'objet retourné par getJobsPartnersByIdAsJobOfferApi a bien apply_recipient_id non null et correct
+      expect(result?.apply.recipient_id).toBe(`partners_${originalJob._id}`)
+
+      // Utiliser le schéma Zod pour valider la structure
+      const validationResult = zJobOfferApiReadV3.safeParse(result)
+
+      // Si la validation échoue, afficher les erreurs pour faciliter le débogage
+      if (!validationResult.success) {
+        console.error("Validation errors:", validationResult.error.format())
+      }
+
+      // Vérifier que la validation a réussi
+      expect(validationResult.success).toBe(true)
+    })
   })
 
   describe("getLbaJobByIdV2AsJobOfferApi", () => {
