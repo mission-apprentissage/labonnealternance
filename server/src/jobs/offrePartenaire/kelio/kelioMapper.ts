@@ -14,16 +14,16 @@ export const ZKelioJob = z
     html_description: z.string(),
     last_activation_at: z.string(),
     html_profile: z.string(),
-    contract_duration: z.number(),
-    education_level: z.string(),
-    job_start_date: z.string(),
+    contract_duration: z.string(),
+    education_level: z.string().nullable(),
+    job_start_date: z.string().nullable(),
     working_time: z.string(),
-    remote_level: z.string(),
+    remote_level: z.string().nullable(),
     description: z.string(),
-    video_host: z.string(),
+    video_host: z.string().nullable(),
     created_at: z.string(),
     cover_url: z.string(),
-    video_id: z.string(),
+    video_id: z.string().nullable(),
     job_type: z.string(),
     profile: z.string(),
     company: z.object({
@@ -33,21 +33,21 @@ export const ZKelioJob = z
     }),
     address: z.object({
       city: z.string(),
-      street: z.string(),
+      street: z.string().nullable(),
       country: z.string(),
-      latitude: z.number(),
-      longitude: z.number(),
+      latitude: z.string(),
+      longitude: z.string(),
       postal_code: z.string(),
-      street_number: z.string(),
+      street_number: z.string().nullable(),
     }),
     id: z.string(),
     url: z.string(),
     name: z.string(),
     slug: z.string(),
-    tags: z.string(),
+    tags: z.string().nullable(),
     salary: z.object({
-      max: z.string(),
-      min: z.string(),
+      max: z.string().nullable(),
+      min: z.string().nullable(),
       currency: z.string(),
     }),
   })
@@ -63,7 +63,7 @@ export const kelioJobToJobsPartners = (job: IKelioJob): IComputedJobsPartners =>
     coordinates: [number, number]
   } = {
     type: "Point",
-    coordinates: [address.longitude, address.latitude],
+    coordinates: [parseFloat(address.longitude), parseFloat(address.latitude)],
   }
 
   const urlParsing = z.string().url().safeParse(url)
