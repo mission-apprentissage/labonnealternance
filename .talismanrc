@@ -100,7 +100,7 @@ fileignoreconfig:
 - filename: server/src/services/jobs/jobOpportunity/__snapshots__/jobOpportunity.service.test.ts.snap
   checksum: 01dd54f682dc81ecc5ad2099f2cf01e8e6011c0d22c38607f7998d2ce28bf155
 - filename: server/src/services/jobs/jobOpportunity/jobOpportunity.service.test.ts
-  checksum: e192df6796f90fd76e38f3d7218e95d7ff2ef4615b5199e99052feb39ce374ec
+  checksum: 019e2e69727a016ecf674f54423883c7c2ce93dd0f953de3e8d04cd87b4f859c
 - filename: server/src/services/partnerJob.service.test.ts
   checksum: b488a3b67b801c3fa5b012d2ba2b120b21af4f459b966c6629e6e681ead97913
 - filename: server/src/services/recruteurLba.service.test.ts
