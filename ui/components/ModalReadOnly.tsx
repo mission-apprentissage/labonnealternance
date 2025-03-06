@@ -1,4 +1,5 @@
 import { Button, Modal, ModalBody, ModalContent, ModalContentProps, ModalOverlay, Text } from "@chakra-ui/react"
+import { useEffect } from "react"
 
 import { Close } from "@/theme/components/icons"
 
@@ -16,6 +17,11 @@ export const ModalReadOnly = ({
   hideCloseButton?: boolean
 }) => {
   const isMobile = () => window.innerWidth < 500
+
+  useEffect(() => {
+    window.document.body.className = isOpen ? "is-modal-opened" : ""
+  }, [isOpen])
+
   return (
     <Modal closeOnOverlayClick={true} blockScrollOnMount={true} size={isMobile() ? "full" : "sm"} isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
