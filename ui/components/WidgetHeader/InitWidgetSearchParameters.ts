@@ -50,6 +50,7 @@ const InitWidgetSearchParameters = ({ handleSearchSubmit, handleItemLoad /*setSh
           },
           radius: p.radius || 30,
           diploma: p.diploma || "",
+          location: {},
         }
 
         if (p.lon || p.lat) {
