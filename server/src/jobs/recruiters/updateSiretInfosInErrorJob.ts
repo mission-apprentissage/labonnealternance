@@ -8,18 +8,15 @@ import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { removeHtmlTagsFromString } from "@/common/utils/stringUtils"
-import mailer from "@/services/mailer.service"
 import { upsertEntrepriseData } from "@/services/organization.service"
+import { sendDeactivatedRecruteurMail } from "@/services/roleManagement.service"
 import { setEntrepriseInError } from "@/services/userRecruteur.service"
 
 import { logger } from "../../common/logger"
 import { asyncForEach } from "../../common/utils/asyncUtils"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
-import config from "../../config"
 import { EntrepriseData, getEntrepriseDataFromSiret } from "../../services/etablissement.service"
 import { archiveFormulaire, sendMailNouvelleOffre, updateFormulaire } from "../../services/formulaire.service"
 
@@ -61,7 +58,7 @@ const updateEntreprisesInfosInError = async () => {
 
 const deactivationWarningOriginExclusion = ["opcoep-HUBE", "opcoep-CRM"]
 
-const sendDeactivatedRecruteurMail = async (recruiter: IRecruiter, error: IBusinessError) => {
+const warnDeactivatedRecruteur = async (recruiter: IRecruiter, error: IBusinessError) => {
   if (!deactivationWarningOriginExclusion.includes(recruiter.origin ?? "")) {
     let errorMessage = error.message
     if (error.errorCode === BusinessErrorCodes.NON_DIFFUSIBLE) {
@@ -72,26 +69,8 @@ const sendDeactivatedRecruteurMail = async (recruiter: IRecruiter, error: IBusin
     }
 
     const { last_name, first_name, email, establishment_siret, establishment_raison_sociale, phone } = recruiter
-    await mailer.sendEmail({
-      to: email,
-      subject: "Votre compte a été désactivé sur La bonne alternance",
-      template: getStaticFilePath("./templates/mail-compte-desactive.mjml.ejs"),
-      data: {
-        images: {
-          accountDisabled: `${config.publicUrl}/images/image-compte-desactive.png?raw=true`,
-          logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-          logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
-        },
-        last_name: removeHtmlTagsFromString(last_name),
-        first_name: removeHtmlTagsFromString(first_name),
-        reason: errorMessage,
-        email,
-        siret: removeHtmlTagsFromString(establishment_siret),
-        raison_sociale: removeHtmlTagsFromString(establishment_raison_sociale),
-        phone: removeHtmlTagsFromString(phone),
-        emailSupport: "mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Compte%20pro%20non%20validé",
-      },
-    })
+
+    await sendDeactivatedRecruteurMail({ email, last_name, first_name, establishment_siret, establishment_raison_sociale, phone, errorMessage })
   }
 }
 
@@ -113,7 +92,7 @@ const updateRecruteursSiretInfosInError = async () => {
       if ("error" in siretResponse) {
         logger.warn(`Correction des recruteurs en erreur: recruteur id=${_id}, désactivation car création interdite, raison=${siretResponse.message}`)
         await archiveFormulaire(recruteur)
-        await sendDeactivatedRecruteurMail(recruteur, siretResponse)
+        await warnDeactivatedRecruteur(recruteur, siretResponse)
         stats.deactivated++
       } else {
         await upsertEntrepriseData(establishment_siret, "script de reprise de données entreprise", siretResponse, false)
