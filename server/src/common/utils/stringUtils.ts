@@ -10,8 +10,9 @@ export const removeHtmlTagsFromString = (text: string | null | undefined, keepBr
 export const formatHtmlForPartnerDescription = (text: string) => {
   let sanitizedText = text
     .replace(/&amp;/g, "&")
+    .replace(/<li><p>|<li>/g, "- ")
     .replace(/<ul>|<\/li>|<p>|<\/p>|<br\s*\/?>/g, "\r\n")
-    .replace(/<li>/g, "- ")
+    .replace(/\r\n\r\n\r\n/g, "\r\n\r\n")
   sanitizedText = removeHtmlTagsFromString(sanitizedText) as string
   return sanitizedText
 }
