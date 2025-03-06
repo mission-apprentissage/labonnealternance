@@ -2403,7 +2403,7 @@ describe("findJobOpportunityById tests", () => {
       }
     })
 
-    it("should return null when no job is found on findJobOpportunityById", async () => {
+    it("should throw an error when no job is found on findJobOpportunityById", async () => {
       // Créer un contexte mock
       const context = {
         addWarning: vi.fn(),
@@ -2412,11 +2412,8 @@ describe("findJobOpportunityById tests", () => {
       // Utiliser un ID inexistant
       const nonExistentId = new ObjectId()
 
-      // Exécuter la fonction
-      const result = await findJobOpportunityById(nonExistentId, context)
-
-      // Vérifier que le résultat est bien `null`
-      expect(result).toBeNull()
+      // Vérifier que la fonction lance une erreur
+      await expect(findJobOpportunityById(nonExistentId, context)).rejects.toThrowError("Aucune offre d'emploi trouvée")
     })
 
     it("should find an offer from jobs_partners collection on findJobOpportunityById", async () => {

@@ -1,4 +1,4 @@
-import { badRequest, internal, notFound } from "@hapi/boom"
+import Boom, { badRequest, internal, notFound } from "@hapi/boom"
 import { IApiAlternanceTokenData } from "api-alternance-sdk"
 import { DateTime } from "luxon"
 import { Document, Filter, ObjectId } from "mongodb"
@@ -823,7 +823,9 @@ export async function findJobOpportunityById(id: ObjectId, context: JobOpportuni
   try {
     // Exécuter les requêtes en parallèle puis récupérer la première offre trouvée
     const results = await Promise.allSettled([getLbaJobByIdV2AsJobOfferApi(id, context), getJobsPartnersByIdAsJobOfferApi(id, context)])
+
     const validResults = results.filter((res): res is PromiseFulfilledResult<IJobOfferApiReadV3> => res.status === "fulfilled" && res.value !== null)
+
     const foundJob = validResults.length > 0 ? validResults[0].value : null
 
     if (!foundJob) {
@@ -833,6 +835,10 @@ export async function findJobOpportunityById(id: ObjectId, context: JobOpportuni
 
     return validateJobOffer(foundJob, id, context)
   } catch (error) {
+    if (Boom.isBoom(error)) {
+      throw error
+    }
+
     const err = internal("Erreur inattendue dans findJobOpportunityById", { id, error })
     logger.error(err)
     sentryCaptureException(err)

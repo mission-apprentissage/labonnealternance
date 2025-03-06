@@ -740,9 +740,15 @@ describe("GET /v3/jobs/:id", () => {
     expect(validationResult.success).toBe(true)
   })
 
-  it("should return 404 Not Found if job does not exist", async () => {
+  it("should return error if job does not exist", async () => {
     // Générer un ID inexistant
-    const nonExistentId = new ObjectId()
+    const nonExistentId = new ObjectId().toString()
+
+    // Vérifier que l'ID n'existe pas en base
+    const jobExistsInJobsPartners = await getDbCollection("recruiters").findOne({ _id: new ObjectId(nonExistentId) })
+    const jobExistsInRecruiters = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(nonExistentId) })
+    expect(jobExistsInJobsPartners).toBeNull()
+    expect(jobExistsInRecruiters).toBeNull()
 
     // Effectuer la requête API avec un ID inexistant
     const response = await httpClient().inject({
@@ -761,7 +767,7 @@ describe("GET /v3/jobs/:id", () => {
     expect(data).toMatchObject({
       statusCode: 404,
       error: "Not Found",
-      message: `Aucune offre trouvée avec l'identifiant ${nonExistentId}`,
+      message: `Aucune offre d'emploi trouvée pour l'ID: ${nonExistentId.toString()}`,
     })
   })
 })
