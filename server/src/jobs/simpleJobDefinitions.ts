@@ -10,6 +10,7 @@ import { processApplications } from "./applications/processApplications"
 import { processRecruiterIntentions } from "./applications/processRecruiterIntentions"
 import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
 import { obfuscateCollections } from "./database/obfuscateCollections"
+import { classifyRomesForDomainesMetiers } from "./domainesMetiers/classifyRomesForDomainesMetiers"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
@@ -320,5 +321,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: expireJobsPartners,
     description: "Change le status des offres dont la date d'expiration est dépassée",
+  },
+  {
+    fct: classifyRomesForDomainesMetiers,
+    description: "Classifie les fiches ROME pour les domaines métiers",
   },
 ]

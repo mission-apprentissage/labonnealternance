@@ -2,6 +2,7 @@ import { groupData, oleoduc, writeData } from "oleoduc"
 import { IFTJobRaw } from "shared"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { ZChatCompletionResponse } from "@/services/openai/openai.service"
 
 import { logger } from "../../../common/logger"
 import { notifyToSlack } from "../../../common/utils/slackUtils"
@@ -58,7 +59,11 @@ Une fois que tu as déterminé si les offres sont de type CFA, Entreprise ou Ent
     if (!response) {
       return null
     }
-    return response
+    const { data, error } = ZChatCompletionResponse.safeParse(JSON.parse(response))
+    if (error) {
+      throw new Error(`Invalid response format: ${JSON.stringify(error, null, 2)}`)
+    }
+    return data
   } catch (error) {
     console.error(error)
   }
