@@ -84,6 +84,7 @@
               <span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; font-weight: 700;">
                 <%= data.applicant_first_name %> <%= data.applicant_last_name %></span> vous adresse sa candidature à
                 <a href="<%= data.jobUrl %>" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">votre offre</a>
+                &nbsp;<%= data.jobPartnerLabel %>&nbsp;
                 <% if (data.job_searched_by_user) { %> sur le métier <b><%= data.job_searched_by_user %></b> <% } %>
                 pour l’entreprise <%= data.company_name %>, SIRET <%= data.company_siret %>.
                 <br/>
@@ -99,7 +100,7 @@
               Refuser la candidature
             </mj-button>
             <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
-              Ce courriel est généré automatiquement, vous ne pouvez pas y répondre.
+              Ce courriel est généré automatiquement.
 <br/>Pour répondre au candidat, veuillez utiliser les boutons de réponse situés ci-dessus.
 <br/>
             </mj-text>
@@ -203,26 +204,12 @@
         <mj-group>
           <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="99.64%">
             <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px" padding="0px 0px 12px 0px">
-              Une question ?
-<br/>
+              Pourquoi vous recevez une candidature via La bonne alternance ?
+              <br/>
             </mj-text>
-            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px" padding="0px 0px 12px 0px" text-decoration="underline">
-              <a href="<%= data.jobProvidedUrl %>" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;" target="_blank">
-                ✅ Indiquer que mon offre est pourvue
-              </a>
-<br/>
-            </mj-text>
-            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px" padding="0px 0px 12px 0px" text-decoration="underline">
-              <a href="<%= data.cancelJobUrl %>" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;" target="_blank">
-                📝 Supprimer mon offre
-              </a>
-<br/>
-            </mj-text>
-            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px" text-decoration="underline">
-              <a href="<%= data.faqUrl %>" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;" target="_blank">
-                💬 Consulter la FAQ
-              </a>
-<br/>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px" padding="0px 0px 12px 0px">
+              Afin de maximiser vos chances de trouver le bon candidat, <%= data.jobPartnerLabel %> rediffuse ses offres en alternance auprès de La bonne alternance, plateforme prisée des candidats à l’alternance. Pour modifier ou supprimer votre offre, nous vous invitons à le faire sur le site sur lequel vous avez déposé l'offre.
+              <br/>
             </mj-text>
           </mj-column>
         </mj-group>
@@ -234,7 +221,7 @@
             <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
               La bonne alternance est un site développé par la Mission interministérielle pour l'apprentissage, au sein de l’État, conformément aux missions d’intérêt public du ministère du Travail, du Plein emploi et de l’Insertion.
 <br/>
-<br/>Vous recevez cette candidature car vous avez déposé une offre sur le service de dépôt d'offre simplifié de La bonne alternance.
+<br/>Vous recevez cette candidature car vous avez déposé une offre sur un service partenaire de La bonne alternance.
 <br/>
 <br/>Nous ne faisons aucune utilisation commerciale de vos adresses e-mail. Vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Droit%20opposition" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">labonnealternance@apprentissage.beta.gouv.fr</a>
 <br/>
