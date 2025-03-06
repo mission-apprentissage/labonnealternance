@@ -13,9 +13,21 @@ const offerXmlTag = "job"
 
 export const importKelioRaw = async (sourceStream?: NodeJS.ReadableStream) => {
   if (sourceStream) {
-    await importFromStreamInXml({ destinationCollection: rawCollectionName, offerXmlTag, stream: sourceStream, partnerLabel: JOBPARTNERS_LABEL.KELIO })
+    await importFromStreamInXml({
+      destinationCollection: rawCollectionName,
+      offerXmlTag,
+      stream: sourceStream,
+      partnerLabel: JOBPARTNERS_LABEL.KELIO,
+      conflictingOpeningTagWithoutAttributes: true,
+    })
   } else {
-    await importFromUrlInXml({ destinationCollection: rawCollectionName, url: config.kelioUrl, offerXmlTag, partnerLabel: JOBPARTNERS_LABEL.KELIO })
+    await importFromUrlInXml({
+      destinationCollection: rawCollectionName,
+      url: config.kelioUrl,
+      offerXmlTag,
+      partnerLabel: JOBPARTNERS_LABEL.KELIO,
+      conflictingOpeningTagWithoutAttributes: true,
+    })
   }
 }
 
