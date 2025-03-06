@@ -1,5 +1,6 @@
-import { Text, Flex, Heading, Image, Checkbox, Box } from "@chakra-ui/react"
+import { Box, Checkbox, Heading, Image, Text } from "@chakra-ui/react"
 import styled from "@emotion/styled"
+import { domAnimation, LazyMotion, m } from "framer-motion"
 import { useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
@@ -16,16 +17,13 @@ const OffreTasks = [
   "j’ai adapté mon CV et ma lettre de motivation",
 ]
 
-const completedHeader = (
-  <>
-    Bravo !<br />
-    Vous pouvez envoyer votre candidature en toute sérénité.
-  </>
-)
+const TasksContainer = styled.div`
+  background-color: #f5f5fe;
+  height: 100%;
 
-const CheckboxContainer = styled.div`
-  color: #161616;
-
+  .checkbox-container {
+    color: #161616;
+  }
   .chakra-checkbox {
     align-items: flex-start;
   }
@@ -33,6 +31,12 @@ const CheckboxContainer = styled.div`
     margin: 4px;
     border-radius: 4px;
     border: solid 1px #161616;
+  }
+  .animated-div {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
   }
 `
 
@@ -46,25 +50,36 @@ export const CandidatureTasksChecklist = ({ kind }: { kind: LBA_ITEM_TYPE_OLD })
 
   const isFullyChecked = tasks.every((task) => Boolean(checkedTasks[task]))
 
-  const width = [300, 300, 300, 363, 363]
-  const padding = [8, 8, 8, "44px", "44px"]
   return (
-    <Box backgroundColor="#F5F5FE" height="100%">
-      <Flex width={width} minWidth={width} flexDirection="column" alignItems="center" justifyContent="flex-start" px={padding} pb={padding} pt="124px" height="100%">
-        <Image src={isFullyChecked ? "/images/launching_rocket.svg" : "/images/head_with_bulb.svg"} alt="" marginBottom={7} />
-        <Heading textAlign="center" color="#000091" fontSize="20px" lineHeight="28px" fontWeight={700} mb={6}>
-          {isFullyChecked ? completedHeader : <>Mettez toutes les chances de votre côté !</>}
-        </Heading>
-        {!isFullyChecked && (
-          <CheckboxContainer>
-            {tasks.map((task) => (
-              <Checkbox key={task} defaultChecked={false} marginTop={2} onChange={() => toggleTask(task)}>
-                <Text>{task}</Text>
-              </Checkbox>
-            ))}
-          </CheckboxContainer>
-        )}
-      </Flex>
-    </Box>
+    <TasksContainer>
+      <LazyMotion features={domAnimation}>
+        <Box width={363} minWidth={363} padding="124px 44px 44px 44px" height="100%">
+          {!isFullyChecked && (
+            <m.div initial={{ opacity: 1 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="animated-div">
+              <Image src="/images/head_with_bulb.svg" alt="" marginBottom={7} />
+              <Heading textAlign="center" color="#000091" fontSize="20px" lineHeight="28px" fontWeight={700} mb={6}>
+                Mettez toutes les chances de votre côté !
+              </Heading>
+              <Box className="checkbox-container">
+                {tasks.map((task) => (
+                  <Checkbox key={task} defaultChecked={false} marginTop={2} onChange={() => toggleTask(task)}>
+                    <Text>{task}</Text>
+                  </Checkbox>
+                ))}
+              </Box>
+            </m.div>
+          )}
+          {isFullyChecked && (
+            <m.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="animated-div">
+              <Image src="/images/launching_rocket.svg" alt="" marginBottom={7} />
+              <Heading textAlign="center" color="#000091" fontSize="20px" lineHeight="28px" fontWeight={700} mb={6}>
+                Bravo !<br />
+                Vous pouvez envoyer votre candidature en toute sérénité.
+              </Heading>
+            </m.div>
+          )}
+        </Box>
+      </LazyMotion>
+    </TasksContainer>
   )
 }
