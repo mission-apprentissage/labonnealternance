@@ -293,6 +293,11 @@ export const createJob = async ({
     const role = await getDbCollection("rolemanagements").findOne({ user_id: userId, authorized_type: AccessEntityType.ENTREPRISE, authorized_id: organization._id.toString() })
     const roleStatus = getLastStatusEvent(role?.status)?.status ?? null
     await sendEmailConfirmationEntreprise(user, updatedFormulaire, roleStatus, entrepriseStatus)
+
+    if (source) {
+      await saveJobTrafficSourceIfAny({ job_id: createdJob._id, source })
+    }
+
     return updatedFormulaire
   }
 
