@@ -7,6 +7,7 @@ import { fillComputedJobsPartners } from "./fillComputedJobsPartners"
 import { classifyFranceTravailJobs } from "./france-travail/classifyJobsFranceTravail"
 import { importFranceTravailRaw, importFranceTravailToComputed } from "./france-travail/importJobsFranceTravail"
 import { importHelloWorkRaw, importHelloWorkToComputed } from "./hellowork/importHelloWork"
+import { importKelioRaw, importKelioToComputed } from "./hellowork/importKelio"
 import { importFromComputedToJobsPartners } from "./importFromComputedToJobsPartners"
 import { importMeteojobRaw, importMeteojobToComputed } from "./meteojob/importMeteojob"
 import { importMonsterRaw, importMonsterToComputed } from "./monster/importMonster"
@@ -21,6 +22,8 @@ export const processJobPartners = async () => {
   await importRHAlternanceToComputed()
   await importHelloWorkRaw()
   await importHelloWorkToComputed()
+  await importKelioRaw()
+  await importKelioToComputed()
   await importMeteojobRaw()
   await importMeteojobToComputed()
   await importMonsterRaw()

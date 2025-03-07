@@ -12,7 +12,7 @@ export const formatHtmlForPartnerDescription = (text: string) => {
     .replace(/&amp;/g, "&")
     .replace(/<li><p>|<li>/g, "- ")
     .replace(/<ul>|<\/li>|<p>|<\/p>|<br\s*\/?>/g, "\r\n")
-    .replace(/\r\n\r\n\r\n/g, "\r\n\r\n")
+    .replace(/(\r\n){3,}/g, "\r\n\r\n")
   sanitizedText = removeHtmlTagsFromString(sanitizedText) as string
   return sanitizedText
 }
