@@ -14,24 +14,28 @@ export const importers: Record<string, CronDef> = {
     handler: processRhAlternance,
     checkinMargin: 10,
     maxRuntimeInMinutes: 30,
+    tag: "slave",
   },
   "Import Hellowork": {
     cron_string: timings.import_source,
     handler: processHellowork,
     checkinMargin: 10,
     maxRuntimeInMinutes: 30,
+    tag: "slave",
   },
   "Import France Travail": {
     cron_string: timings.import_source,
     handler: processFranceTravail,
     checkinMargin: 30,
     maxRuntimeInMinutes: 30,
+    tag: "slave",
   },
   "Import Meteojob": {
     cron_string: timings.import_source,
     handler: processFranceTravail,
     checkinMargin: 10,
     maxRuntimeInMinutes: 30,
+    tag: "slave",
   },
   // "Import PASS": {
   //   cron_string: timings.import_source,
