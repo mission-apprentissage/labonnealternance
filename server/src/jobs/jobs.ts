@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb"
 
 import updateDomainesMetiers from "@/jobs/domainesMetiers/updateDomainesMetiers"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
+import { importers } from "@/jobs/offrePartenaire/jobsPartners.importer"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
@@ -30,7 +31,7 @@ import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
 import { processJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
-import { processRecruteursLba } from "./offrePartenaire/processRecruteursLba"
+import { processRecruteursLba } from "./offrePartenaire/recruteur-lba/processRecruteursLba"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -66,6 +67,7 @@ export async function setupJobProcessor() {
     crons: ["local", "preview", "pentest"].includes(config.env)
       ? {}
       : {
+          ...importers,
           "Génération du token France Travail pour la récupération des offres": {
             cron_string: "*/5 * * * *",
             handler: generateFranceTravailAccess,
