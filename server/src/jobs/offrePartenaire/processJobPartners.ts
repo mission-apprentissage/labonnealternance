@@ -6,7 +6,7 @@ import { importFromComputedToJobsPartners } from "./importFromComputedToJobsPart
 
 export const jobPartnersByFlux = Object.values(JOBPARTNERS_LABEL).filter((v) => v !== JOBPARTNERS_LABEL.RECRUTEURS_LBA)
 
-export const processJobPartners = async () => {
+export const processComputedAndImportToJobPartners = async () => {
   const filter = { partner_label: { $in: jobPartnersByFlux } }
   await fillComputedJobsPartners(filter)
   await importFromComputedToJobsPartners(filter)
