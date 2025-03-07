@@ -1,4 +1,5 @@
 import { importRecruteursLbaFromComputedToJobsPartners } from "@/jobs/offrePartenaire/fillComputedRecruteursLba"
+import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail/classifyJobsFranceTravail"
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
 import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
 import { processMeteojob } from "@/jobs/offrePartenaire/meteojob/processMeteojob"
@@ -223,6 +224,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: removeMissingRecruteursLbaFromRaw,
     description: "Met à jour la collection computed_jobs_partners en supprimant les entreprises qui ne sont plus dans raw_recruteurslba",
+  },
+  {
+    fct: classifyFranceTravailJobs,
+    description: "Classifie les offres France Travail en fonction de leur contenu",
   },
   {
     fct: processApplications,
