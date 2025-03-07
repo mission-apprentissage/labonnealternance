@@ -145,7 +145,7 @@ export async function setupJobProcessor() {
             handler: anonymizeAppointments,
           },
           "Traitement complet des jobs_partners": {
-            cron_string: "00 2 * * *",
+            cron_string: "00 3 * * *",
             handler: processJobPartners,
             tag: "slave",
           },
