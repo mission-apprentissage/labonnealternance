@@ -3,7 +3,10 @@ import { DsfrProvider } from "@codegouvfr/react-dsfr/next-appdir/DsfrProvider"
 import { getHtmlAttributes } from "@codegouvfr/react-dsfr/next-appdir/getHtmlAttributes"
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter"
 import Link from "next/link"
+import PlausibleProvider from "next-plausible"
 import "react-notion-x/src/styles.css"
+
+import { publicConfig } from "@/config.public"
 
 import { defaultColorScheme } from "../dsfr-setup/default-color-scheme"
 import { StartDsfr } from "../dsfr-setup/start-dsfr"
@@ -17,6 +20,7 @@ export default function RootLayout({ children }: { children: JSX.Element }) {
   return (
     <html {...getHtmlAttributes({ defaultColorScheme })}>
       <head>
+        <PlausibleProvider domain={publicConfig.host} />
         <StartDsfr />
         <DsfrHead
           Link={Link}
