@@ -10,12 +10,14 @@ import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { describe, expect, it, vi } from "vitest"
 
 import { s3WriteString } from "@/common/utils/awsUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { buildUserForToken } from "@/services/application.service"
 import { generateApplicationReplyToken } from "@/services/appLinks.service"
+import { getRecipientID } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
 
@@ -44,7 +46,7 @@ const fakeToken = getApiApprentissageTestingTokenFromInvalidPrivateKey({
 })
 
 const recruteur = generateJobsPartnersOfferPrivate({
-  partner_label: LBA_ITEM_TYPE.RECRUTEURS_LBA,
+  partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
   workplace_siret: "11000001500013",
   workplace_legal_name: "ASSEMBLEE NATIONALE",
   workplace_brand: "ASSEMBLEE NATIONALE",
@@ -156,7 +158,7 @@ describe("POST /v2/application", () => {
       applicant_first_name: "Jean",
       applicant_last_name: "Dupont",
       applicant_phone: "0101010101",
-      recipient_id: `${JobCollectionName.partners}_${recruteur._id.toString()}`,
+      recipient_id: getRecipientID(JobCollectionName.recruteur, recruteur.workplace_siret!),
     }
 
     const response = await httpClient().inject({
@@ -223,7 +225,7 @@ describe("POST /v2/application", () => {
       applicant_first_name: "Jean",
       applicant_last_name: "Dupont",
       applicant_phone: "0101010101",
-      recipient_id: `recruiters_${job._id.toString()}`,
+      recipient_id: getRecipientID(JobCollectionName.recruiters, job._id.toString()),
     }
 
     const response = await httpClient().inject({

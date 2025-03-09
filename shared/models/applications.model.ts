@@ -7,6 +7,7 @@ import { removeUrlsFromText } from "../helpers/common.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 import { zCallerParam } from "../routes/_params.js"
+import { validateSIRET } from "../validators/siretValidator.js"
 
 import { IModelDescriptor, zObjectId } from "./common.js"
 
@@ -196,7 +197,7 @@ const ZNewApplicationTransitionToV2 = ZApplicationOld.extend({
 // KBA 20241011 to remove once V2 is LIVE and V1 support has ended
 export type INewApplicationV1 = z.output<typeof ZNewApplicationTransitionToV2>
 
-export const ZJobCollectionName = z.enum(["partners", "recruiters"])
+export const ZJobCollectionName = z.enum(["partners", "recruiters", "recruteur"])
 export const JobCollectionName = ZJobCollectionName.enum
 export type IJobCollectionName = z.output<typeof ZJobCollectionName>
 
@@ -216,11 +217,17 @@ export const ZApplicationApiPrivate = ZApplicationOld.pick({
     .string()
     .transform((recipientId) => {
       const [collectionName, jobId] = recipientId.split("_")
-      if (!ObjectId.isValid(jobId)) {
-        throw new Error(`Invalid job identifier: ${jobId}`)
-      }
       if (!ZJobCollectionName.safeParse(collectionName).success) {
         throw new Error(`Invalid collection name: ${collectionName}`)
+      }
+      if (collectionName === "partners" || collectionName === "recruiters") {
+        if (!ObjectId.isValid(jobId)) {
+          throw new Error(`Invalid job identifier: ${jobId}`)
+        }
+      } else {
+        if (!validateSIRET(jobId)) {
+          throw new Error(`Invalid siret identifier: ${jobId}`)
+        }
       }
       return { collectionName: collectionName as IJobCollectionName, jobId }
     })
