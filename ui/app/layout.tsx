@@ -2,6 +2,7 @@ import { DsfrHead } from "@codegouvfr/react-dsfr/next-appdir/DsfrHead"
 import { DsfrProvider } from "@codegouvfr/react-dsfr/next-appdir/DsfrProvider"
 import { getHtmlAttributes } from "@codegouvfr/react-dsfr/next-appdir/getHtmlAttributes"
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter"
+import { Metadata } from "next"
 import Link from "next/link"
 import PlausibleProvider from "next-plausible"
 import "react-notion-x/src/styles.css"
@@ -16,6 +17,29 @@ import "../public/styles/application.css"
 import "../public/styles/fonts.css"
 import "../public/styles/notion.css"
 import "../styles/search.css"
+
+export const metadata: Metadata = {
+  title: "La bonne alternance",
+  description: "Trouvez votre alternance",
+  metadataBase: new URL(publicConfig.baseUrl),
+  manifest: "/favicon/site.webmanifest",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon/apple-touch-icon.png",
+    other: {
+      rel: "icon",
+      url: "/favicon/favicon.svg",
+      type: "image/svg+xml",
+    },
+  },
+  openGraph: {
+    title: "La bonne alternance",
+    type: "website",
+    description: "Trouvez votre alternance",
+    images: "/favicon/apple-touch-icon.png", // to test
+  },
+}
 
 export default function RootLayout({ children }: { children: JSX.Element }) {
   return (
