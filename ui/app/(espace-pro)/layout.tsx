@@ -9,24 +9,24 @@ import { EspaceProHeader } from "./_components/EspaceProHeader"
 export async function getSession(): Promise<IUserRecruteurPublic | null> {
   try {
     const headerStore = await headers()
-    const sessionRaw = headerStore.get("x-session")
+    const userRaw = headerStore.get("x-user")
 
-    if (!sessionRaw) {
+    if (!userRaw) {
       return null
     }
 
-    return JSON.parse(sessionRaw)
+    return JSON.parse(userRaw)
   } catch (error) {
     return null
   }
 }
 
 export default async function RecruteurLayout({ children }: PropsWithChildren) {
-  const session = await getSession()
+  const user = await getSession()
 
   return (
     <>
-      <EspaceProHeader session={session} />
+      <EspaceProHeader user={user} />
       {children}
       <Footer />
     </>
