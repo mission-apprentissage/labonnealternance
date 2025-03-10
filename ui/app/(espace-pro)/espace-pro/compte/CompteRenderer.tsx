@@ -1,7 +1,6 @@
 "use client"
-import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Container, Flex, Heading, SimpleGrid, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import { Box, Button, Container, Flex, Heading, SimpleGrid, Text, useDisclosure, useToast } from "@chakra-ui/react"
 import { Form, Formik } from "formik"
-import { useRouter } from "next/navigation"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { IUserWithAccountFields } from "shared"
 import { CFA, ENTREPRISE } from "shared/constants/recruteur"
@@ -9,17 +8,18 @@ import * as Yup from "yup"
 
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/compte/_components/InformationLegaleEntreprise"
 import ModificationCompteEmail from "@/app/(espace-pro)/espace-pro/compte/_components/ModificationCompteEmail"
+import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import { PAGES } from "@/utils/routes.utils"
 
 import { AUTHTYPE } from "../../../../common/contants"
 import { LoadingEmptySpace } from "../../../../components/espace_pro"
 import CustomInput from "../../../../components/espace_pro/CustomInput"
-import { ArrowDropRightLine, ArrowRightLine } from "../../../../theme/components/icons"
+import { ArrowRightLine } from "../../../../theme/components/icons"
 import { getUser, updateUserWithAccountFields } from "../../../../utils/api"
 
 export default function CompteRenderer({ user }) {
   const client = useQueryClient()
   const toast = useToast()
-  const router = useRouter()
   const ModificationEmailPopup = useDisclosure()
 
   const getUserNavigationContext = () => {
@@ -73,18 +73,7 @@ export default function CompteRenderer({ user }) {
   return (
     <Container maxW="container.xl">
       <Box mt="16px" mb={6}>
-        <Breadcrumb separator={<ArrowDropRightLine color="grey.600" />} textStyle="xs">
-          {user.type !== AUTHTYPE.OPCO && (
-            <BreadcrumbItem>
-              <BreadcrumbLink textDecoration="underline" onClick={() => router.push(getUserNavigationContext())} textStyle="xs">
-                Administration des offres
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-          )}
-          <BreadcrumbItem>
-            <BreadcrumbLink textStyle="xs">Informations de contact</BreadcrumbLink>
-          </BreadcrumbItem>
-        </Breadcrumb>
+        <Breadcrumb pages={[PAGES.dynamic.administrationDesOffres(getUserNavigationContext()), PAGES.dynamic.compte()]} />
       </Box>
       <Formik
         validateOnMount={true}
