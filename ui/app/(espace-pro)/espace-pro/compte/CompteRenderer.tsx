@@ -7,12 +7,12 @@ import { IUserWithAccountFields } from "shared"
 import { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
-import ModificationCompteEmail from "@/app/(espace-pro)/espace-pro/compte/ModificationCompteEmail"
+import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/compte/_components/InformationLegaleEntreprise"
+import ModificationCompteEmail from "@/app/(espace-pro)/espace-pro/compte/_components/ModificationCompteEmail"
 
 import { AUTHTYPE } from "../../../../common/contants"
 import { LoadingEmptySpace } from "../../../../components/espace_pro"
 import CustomInput from "../../../../components/espace_pro/CustomInput"
-import InformationLegaleEntreprise from "../../../../components/espace_pro/InformationLegaleEntreprise"
 import { ArrowDropRightLine, ArrowRightLine } from "../../../../theme/components/icons"
 import { getUser, updateUserWithAccountFields } from "../../../../utils/api"
 
@@ -116,7 +116,7 @@ export default function CompteRenderer({ user }) {
           return (
             <>
               <ModificationCompteEmail {...ModificationEmailPopup} />
-              <SimpleGrid columns={[1, 1, 1, 2]} spacing={[0, 10]}>
+              <SimpleGrid columns={[1, 1, 1, 2]} spacing={[0, 10]} marginBottom={6}>
                 <Box>
                   <Heading>Vos informations de contact</Heading>
                   <Text fontSize="20px" textAlign="justify">
