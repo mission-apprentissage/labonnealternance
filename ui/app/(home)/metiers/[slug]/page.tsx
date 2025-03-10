@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 export default async function MetiersByJobId({ params }: { params: IStaticMetiers }) {
-  const _params = await params
+  const _params = params
   const towns = getTowns()
   const metiers = getMetiers()
   const relatedMetier = getMetierBySlug(metiers, _params.slug)

@@ -67,19 +67,15 @@ function FormulaireModificationEntreprise({ siret }: { siret: string }) {
     { enabled: Boolean(siret), retry: false }
   )
   const [hasUpdated, setHasUpdated] = useState(false)
-  const updateEntreprise = useMutation(
-    "updateEntreprise",
-    ({ phone, email }: { phone: string; email: string }) => putCompanyContactInfo({ phone: phone ?? "", email: email ?? "", siret }),
-    {
-      onSuccess: () => {
-        refetch()
-        setHasUpdated(true)
-      },
-      onError: () => {
-        setHasUpdated(false)
-      },
-    }
-  )
+  const updateEntreprise = useMutation("updateEntreprise", ({ phone, email }: { phone: string; email: string }) => putCompanyContactInfo({ phone, email, siret }), {
+    onSuccess: () => {
+      refetch()
+      setHasUpdated(true)
+    },
+    onError: () => {
+      setHasUpdated(false)
+    },
+  })
   const { error: updateError } = updateEntreprise
 
   if (isLoading) {
@@ -126,7 +122,12 @@ function FormulaireModificationEntreprise({ siret }: { siret: string }) {
             email: Yup.string().email("Insérez un email valide").nullable(),
             phone: phoneValidation().nullable(),
           })}
-          onSubmit={(values) => updateEntreprise.mutate(values)}
+          onSubmit={(values) => {
+            const { phone, email } = values
+            if (!phone) values.phone = null
+            if (!email) values.email = null
+            return updateEntreprise.mutate(values)
+          }}
         >
           {({ values, isValid, dirty }) => {
             return (

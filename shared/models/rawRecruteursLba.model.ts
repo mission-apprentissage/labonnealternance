@@ -4,7 +4,6 @@ import { IModelDescriptor, zObjectId } from "./common.js"
 
 export const ZRecruteursLbaRaw = z.object({
   _id: zObjectId,
-  partner_job_id: z.string(),
   createdAt: z.date(),
   siret: z.string(),
   enseigne: z.string(),
@@ -18,12 +17,15 @@ export const ZRecruteursLbaRaw = z.object({
   email: z.string().nullable(),
   phone: z.string().nullable(),
   company_size: z.string(),
+  libelleCommuneEtablissement: z.string().nullable(),
+  coordonneeLambertAbscisseEtablissement: z.number().nullable(),
+  coordonneeLambertOrdonneeEtablissement: z.number().nullable(),
   rome_codes: z.array(z.object({ rome_code: z.string(), normalized_score: z.number() })),
 })
 export type IRecruteursLbaRaw = z.output<typeof ZRecruteursLbaRaw>
 
 export default {
   zod: ZRecruteursLbaRaw,
-  indexes: [[{ partner_job_id: 1 }, {}]],
+  indexes: [[{ siret: 1 }, {}]],
   collectionName: "raw_recruteurslba",
 } as const satisfies IModelDescriptor

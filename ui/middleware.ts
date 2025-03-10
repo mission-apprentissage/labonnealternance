@@ -1,13 +1,13 @@
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
-import type { IUserRecruteurPublic } from "shared"
+import type { ComputedUserAccess, IUserRecruteurPublic } from "shared"
 import { AUTHTYPE } from "shared/constants"
 
 import { publicConfig } from "./config.public"
 
 const removeAtEnd = (url: string, removed: string): string => (url.endsWith(removed) ? url.slice(0, -removed.length) : url)
 
-export async function getSession(request: NextRequest): Promise<IUserRecruteurPublic | null> {
+async function getSession(request: NextRequest): Promise<{ user: IUserRecruteurPublic | null; userAccess: ComputedUserAccess | null }> {
   try {
     const sessionCookie = request.cookies.get("lba_session")
 
@@ -20,15 +20,20 @@ export async function getSession(request: NextRequest): Promise<IUserRecruteurPu
 
     // Best would be: jwt.decode(sessionCookie.value)
 
-    const req = await fetch(`${removeAtEnd(publicConfig.apiEndpoint, "/")}/auth/session`, {
-      headers,
-    })
+    const [sessionRequest, accessRequest] = await Promise.all([
+      fetch(`${removeAtEnd(publicConfig.apiEndpoint, "/")}/auth/session`, {
+        headers,
+      }),
+      fetch(`${removeAtEnd(publicConfig.apiEndpoint, "/")}/auth/access`, {
+        headers,
+      }),
+    ])
 
-    if (!req.ok) {
+    if (!sessionRequest.ok || !accessRequest.ok) {
       return null
     }
 
-    return req.json()
+    return { user: await sessionRequest.json(), userAccess: await accessRequest.json() }
   } catch (error) {
     return null
   }
@@ -39,6 +44,7 @@ export async function middleware(request: NextRequest) {
 
   const requestHeaders = new Headers(request.headers)
   const session = await getSession(request)
+  const { user } = session
 
   if (pathname.startsWith("/espace-pro/authentification/verification")) {
     // TODO: do verification in middleware
@@ -46,8 +52,8 @@ export async function middleware(request: NextRequest) {
   }
 
   if (pathname === "/espace-pro/authentification") {
-    if (session) {
-      switch (session.type) {
+    if (user) {
+      switch (user.type) {
         case AUTHTYPE.ENTREPRISE:
           return NextResponse.redirect(new URL(`/espace-pro/administration/entreprise/${session.establishment_id}`, request.url))
         // router.push({
@@ -76,7 +82,7 @@ export async function middleware(request: NextRequest) {
     return
   }
 
-  if (!session) {
+  if (!user) {
     return NextResponse.redirect(new URL("/espace-pro/authentification", request.url))
   }
 

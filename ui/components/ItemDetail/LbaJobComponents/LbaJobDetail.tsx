@@ -6,7 +6,7 @@ import { ILbaItemLbaJob } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
-import { notifyLbaJobDetailView } from "../../../services/notifyLbaJobDetailView"
+import { notifyLbaJobDetailView } from "../../../utils/api"
 import { SendPlausibleEvent } from "../../../utils/plausible"
 import { formatDate } from "../../../utils/strutils"
 import { getCompanySize } from "../ItemDetailServices/getCompanySize"

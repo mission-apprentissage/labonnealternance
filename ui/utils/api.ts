@@ -1,5 +1,4 @@
 import { captureException } from "@sentry/nextjs"
-import Axios from "axios"
 import { IJobCreate, INewDelegations, INewSuperUser, IRecruiterJson, IRoutes, IUserWithAccountFields, removeUndefinedFields } from "shared"
 import { ApplicationIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
@@ -7,13 +6,7 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { IEntrepriseJson } from "shared/models/entreprise.model"
 import { IAppointmentRequestContextCreateFormAvailableResponseSchema, IAppointmentRequestContextCreateFormUnavailableResponseSchema } from "shared/routes/appointments.routes"
 
-import { publicConfig } from "@/config.public"
-
 import { ApiError, apiDelete, apiGet, apiPatch, apiPost, apiPut } from "./api.utils"
-
-const API = Axios.create({
-  baseURL: publicConfig.apiEndpoint,
-})
 
 const errorHandler = (error: any): undefined => {
   if (error) {
@@ -56,7 +49,7 @@ export const createEtablissementDelegation = ({ data, jobId }: { jobId: string; 
   apiPost(`/formulaire/offre/:jobId/delegation`, { params: { jobId }, body: data })
 export const createEtablissementDelegationByToken = ({ data, jobId, token }: { jobId: string; data: INewDelegations; token: string }) =>
   apiPost(`/formulaire/offre/:jobId/delegation/by-token`, { params: { jobId }, body: data, headers: { authorization: `Bearer ${token}` } })
-
+export const notifyLbaJobDetailView = async (jobId: string) => await apiPost("/v1/jobs/matcha/:id/stats/view-details", { params: { id: jobId } })
 /**
  * User API
  */
@@ -95,7 +88,7 @@ export const updateUser = async (userId: string, user: any) => {
 /**
  * Auth API
  */
-export const sendMagiclink = async (email) => await API.post(`/login/magiclink`, email)
+export const sendMagiclink = async (email) => await apiPost(`/login/magiclink`, { body: email })
 export const sendValidationLink = async (userId: string, token: string) =>
   await apiPost("/login/:userId/resend-confirmation-email", { params: { userId }, headers: { authorization: `Bearer ${token}` } })
 
@@ -219,3 +212,5 @@ export const getOpcoUsers = () => apiGet("/user/opco", {})
 
 export const reportLbaItem = (itemId: string, type: LBA_ITEM_TYPE, reason: string, reasonDetails: string | undefined) =>
   apiPost("/report-company", { querystring: { type, itemId }, body: { reason, reasonDetails } })
+
+export const getMetiersDAvenir = () => apiGet("/metiersdavenir", {})
