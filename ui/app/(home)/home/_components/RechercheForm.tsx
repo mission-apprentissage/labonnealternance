@@ -7,9 +7,8 @@ import type { IMetierEnrichi } from "shared"
 
 import { AutocompleteAsync } from "@/app/(home)/home/_components/FormComponents/AutocompleteAsync"
 import { SelectFormField } from "@/app/(home)/home/_components/FormComponents/SelectFormField"
+import { fetchAddresses } from "@/services/baseAdresse"
 import { apiGet } from "@/utils/api.utils"
-
-import { InputFormField } from "./FormComponents/InputFormField"
 
 type IRomeSearchOption = {
   item: IMetierEnrichi
@@ -93,14 +92,18 @@ export function RechercheForm() {
             placeholder: "Indiquer un métier ou un diplôme",
           }}
         /> */}
-        <InputFormField
-          label="Lieu"
-          style={{
-            marginBottom: 0,
+        <AutocompleteAsync
+          onChange={async (e) => {
+            console.log(e)
           }}
-          nativeInputProps={{
-            placeholder: "À quel endroit ?",
-          }}
+          noOptionsText="Nous ne parvenons pas à identifier le métier que vous cherchez, veuillez reformuler votre recherche"
+          id="metier"
+          label="Métier ou diplôme"
+          fetchOptions={fetchAddresses}
+          getOptionKey={(option) => option.label}
+          getOptionLabel={(option) => option.label}
+          groupBy={(option: IRomeSearchOption) => option.group}
+          placeholder="À quel endroit ?"
         />
         <Box
           sx={{
