@@ -7,7 +7,7 @@ import { publicConfig } from "./config.public"
 
 const removeAtEnd = (url: string, removed: string): string => (url.endsWith(removed) ? url.slice(0, -removed.length) : url)
 
-export async function getSession(request: NextRequest): Promise<{ user: IUserRecruteurPublic | null; userAccess: ComputedUserAccess | null }> {
+async function getSession(request: NextRequest): Promise<{ user: IUserRecruteurPublic | null; userAccess: ComputedUserAccess | null }> {
   try {
     const sessionCookie = request.cookies.get("lba_session")
 
@@ -20,13 +20,14 @@ export async function getSession(request: NextRequest): Promise<{ user: IUserRec
 
     // Best would be: jwt.decode(sessionCookie.value)
 
-    const sessionRequest = await fetch(`${removeAtEnd(publicConfig.apiEndpoint, "/")}/auth/session`, {
-      headers,
-    })
-
-    const accessRequest = await fetch(`${removeAtEnd(publicConfig.apiEndpoint, "/")}/auth/access`, {
-      headers,
-    })
+    const [sessionRequest, accessRequest] = await Promise.all([
+      fetch(`${removeAtEnd(publicConfig.apiEndpoint, "/")}/auth/session`, {
+        headers,
+      }),
+      fetch(`${removeAtEnd(publicConfig.apiEndpoint, "/")}/auth/access`, {
+        headers,
+      }),
+    ])
 
     if (!sessionRequest.ok || !accessRequest.ok) {
       return null
@@ -42,7 +43,8 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   const requestHeaders = new Headers(request.headers)
-  const { user, userAccess } = await getSession(request)
+  const session = await getSession(request)
+  const { user } = session
 
   if (pathname.startsWith("/espace-pro/authentification/verification")) {
     // TODO: do verification in middleware
@@ -84,8 +86,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/espace-pro/authentification", request.url))
   }
 
-  requestHeaders.set("x-user", JSON.stringify(user))
-  requestHeaders.set("x-access", JSON.stringify(userAccess))
+  requestHeaders.set("x-session", JSON.stringify(session))
 
   return NextResponse.next({
     request: {
