@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb"
 
 import updateDomainesMetiers from "@/jobs/domainesMetiers/updateDomainesMetiers"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
+import { importers } from "@/jobs/offrePartenaire/jobsPartners.importer"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
@@ -27,9 +28,10 @@ import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formation
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
-import { processJobPartners } from "./offrePartenaire/processJobPartners"
+import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
+import { processComputedAndImportToJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
-import { processRecruteursLba } from "./offrePartenaire/processRecruteursLba"
+import { processRecruteursLba } from "./offrePartenaire/recruteur-lba/processRecruteursLba"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -65,6 +67,7 @@ export async function setupJobProcessor() {
     crons: ["local", "preview", "pentest"].includes(config.env)
       ? {}
       : {
+          ...importers,
           "Génération du token France Travail pour la récupération des offres": {
             cron_string: "*/5 * * * *",
             handler: generateFranceTravailAccess,
@@ -78,6 +81,11 @@ export async function setupJobProcessor() {
           "Traitement complet des jobs_partners par API": {
             cron_string: "*/10 * * * *",
             handler: processJobPartnersForApi,
+            tag: "main",
+          },
+          "Expiration des offres jobs_partners": {
+            cron_string: "*/30 * * * *",
+            handler: expireJobsPartners,
             tag: "main",
           },
           "Mise à jour des adresses emails bloquées": {
@@ -136,9 +144,9 @@ export async function setupJobProcessor() {
             cron_string: "30 1 * * *",
             handler: anonymizeAppointments,
           },
-          "Traitement complet des jobs_partners": {
-            cron_string: "00 2 * * *",
-            handler: processJobPartners,
+          "Traitement computed et import dans la collection jobs_partners": {
+            cron_string: "00 3 * * *",
+            handler: processComputedAndImportToJobPartners,
             tag: "slave",
           },
           "Import des formations depuis le Catalogue RCO": {

@@ -37,10 +37,12 @@ export default function (server: Server) {
       const sirets = req.body.sirets
 
       const query: { apply_email: string; workplace_siret?: { $in: string[] }; partner_label: string } = { apply_email: email, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }
-      if (sirets && sirets.length) {
-        query.workplace_siret = { $in: sirets }
-      } else {
-        return res.status(400).send({ result: UNSUBSCRIBE_EMAIL_ERRORS.WRONG_PARAMETERS })
+      if (sirets) {
+        if (sirets.length) {
+          query.workplace_siret = { $in: sirets }
+        } else {
+          return res.status(400).send({ result: UNSUBSCRIBE_EMAIL_ERRORS.WRONG_PARAMETERS })
+        }
       }
 
       const lbaCompaniesToUnsubscribe = (await getDbCollection("jobs_partners").find(query).limit(ARBITRARY_COMPANY_LIMIT).toArray()) as IJobsPartnersRecruteurAlgoPrivate[]

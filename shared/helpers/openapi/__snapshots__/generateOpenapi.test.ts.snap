@@ -1032,6 +1032,15 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
+          "offer_title_custom": {
+            "description": "Titre de l'offre saisi par le recruteur",
+            "maxLength": 150,
+            "minLength": 3,
+            "type": [
+              "string",
+              "null",
+            ],
+          },
           "relance_mail_sent": {
             "description": "Statut de l'envoi du mail de relance avant expiration",
             "type": [
@@ -8859,6 +8868,452 @@ Limite : 5 appel(s) / 1 seconde(s)
       },
     },
     "/v3/jobs/{id}": {
+      "get": {
+        "parameters": [
+          {
+            "description": "Identifiant unique",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "description": "Identifiant unique",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "apply": {
+                      "properties": {
+                        "phone": {
+                          "description": "Téléphone de contact",
+                          "type": [
+                            "string",
+                            "null",
+                          ],
+                        },
+                        "recipient_id": {
+                          "description": "Identifiant permettant de candidaté via l'API, généré à la volé pour les offres LBA uniquement",
+                          "type": [
+                            "string",
+                            "null",
+                          ],
+                        },
+                        "url": {
+                          "description": "URL pour candidater",
+                          "format": "uri",
+                          "type": "string",
+                        },
+                      },
+                      "required": [
+                        "url",
+                        "phone",
+                      ],
+                      "type": "object",
+                    },
+                    "contract": {
+                      "properties": {
+                        "duration": {
+                          "description": "Durée du contrat en mois",
+                          "minimum": 0,
+                          "type": [
+                            "integer",
+                            "null",
+                          ],
+                        },
+                        "remote": {
+                          "description": "Format de travail de l'offre",
+                          "enum": [
+                            "onsite",
+                            "remote",
+                            "hybrid",
+                          ],
+                          "type": [
+                            "string",
+                            "null",
+                          ],
+                        },
+                        "start": {
+                          "description": "Date de début de contrat",
+                          "format": "date-time",
+                          "type": [
+                            "string",
+                            "null",
+                          ],
+                        },
+                        "type": {
+                          "description": "type de contrat, formaté à l'insertion",
+                          "items": {
+                            "enum": [
+                              "Apprentissage",
+                              "Professionnalisation",
+                            ],
+                            "type": "string",
+                          },
+                          "type": "array",
+                        },
+                      },
+                      "required": [
+                        "start",
+                        "duration",
+                        "type",
+                        "remote",
+                      ],
+                      "type": "object",
+                    },
+                    "identifier": {
+                      "properties": {
+                        "id": {
+                          "anyOf": [
+                            {
+                              "description": "Identifiant unique",
+                            },
+                            {
+                              "type": "string",
+                            },
+                            {
+                              "type": "null",
+                            },
+                          ],
+                          "description": "Identifiant de l'offre",
+                        },
+                        "partner_job_id": {
+                          "description": "Identifiant d'origine de l'offre provenant du partenaire",
+                          "type": "string",
+                        },
+                        "partner_label": {
+                          "description": "Référence du partenaire",
+                          "type": "string",
+                        },
+                      },
+                      "required": [
+                        "id",
+                        "partner_label",
+                        "partner_job_id",
+                      ],
+                      "type": "object",
+                    },
+                    "offer": {
+                      "properties": {
+                        "access_conditions": {
+                          "description": "Conditions d'accès à l'offre",
+                          "items": {
+                            "type": "string",
+                          },
+                          "type": "array",
+                        },
+                        "description": {
+                          "description": "description de l'offre, soit définit par le partenaire, soit celle du ROME si pas suffisament grande",
+                          "type": "string",
+                        },
+                        "desired_skills": {
+                          "description": "Compétence attendues par le candidat pour l'offre",
+                          "items": {
+                            "type": "string",
+                          },
+                          "type": "array",
+                        },
+                        "opening_count": {
+                          "description": "Nombre de poste disponible",
+                          "type": "number",
+                        },
+                        "publication": {
+                          "properties": {
+                            "creation": {
+                              "description": "Date de creation de l'offre",
+                              "format": "date-time",
+                              "type": [
+                                "string",
+                                "null",
+                              ],
+                            },
+                            "expiration": {
+                              "description": "Date d'expiration de l'offre. Si pas présente, mettre à creation_date + 60j",
+                              "format": "date-time",
+                              "type": [
+                                "string",
+                                "null",
+                              ],
+                            },
+                          },
+                          "required": [
+                            "creation",
+                            "expiration",
+                          ],
+                          "type": "object",
+                        },
+                        "rome_codes": {
+                          "description": "Code rome de l'offre",
+                          "items": {
+                            "pattern": "^[A-Z]\\d{4}$",
+                            "type": "string",
+                          },
+                          "type": "array",
+                        },
+                        "status": {
+                          "description": "Status de l'offre (surtout utilisé pour les offres ajouté par API)",
+                          "enum": [
+                            "Active",
+                            "Filled",
+                            "Cancelled",
+                          ],
+                          "type": "string",
+                        },
+                        "target_diploma": {
+                          "properties": {
+                            "european": {
+                              "description": "Niveau de diplome visé en fin d'étude, transformé pour chaque partenaire",
+                              "enum": [
+                                "3",
+                                "4",
+                                "5",
+                                "6",
+                                "7",
+                              ],
+                              "type": "string",
+                            },
+                            "label": {
+                              "description": "Libellé du niveau de diplome",
+                              "type": "string",
+                            },
+                          },
+                          "required": [
+                            "european",
+                            "label",
+                          ],
+                          "type": [
+                            "object",
+                            "null",
+                          ],
+                        },
+                        "title": {
+                          "description": "Titre de l'offre",
+                          "minLength": 3,
+                          "type": "string",
+                        },
+                        "to_be_acquired_skills": {
+                          "description": "Compétence acuqises durant l'alternance",
+                          "items": {
+                            "type": "string",
+                          },
+                          "type": "array",
+                        },
+                      },
+                      "required": [
+                        "title",
+                        "rome_codes",
+                        "description",
+                        "target_diploma",
+                        "desired_skills",
+                        "to_be_acquired_skills",
+                        "access_conditions",
+                        "publication",
+                        "opening_count",
+                        "status",
+                      ],
+                      "type": "object",
+                    },
+                    "workplace": {
+                      "properties": {
+                        "brand": {
+                          "description": "Nom d'enseigne de l'établissement",
+                          "type": [
+                            "string",
+                            "null",
+                          ],
+                        },
+                        "description": {
+                          "description": "description de l'entreprise",
+                          "type": [
+                            "string",
+                            "null",
+                          ],
+                        },
+                        "domain": {
+                          "properties": {
+                            "idcc": {
+                              "description": "Identifiant convention collective",
+                              "type": [
+                                "number",
+                                "null",
+                              ],
+                            },
+                            "naf": {
+                              "properties": {
+                                "code": {
+                                  "type": "string",
+                                },
+                                "label": {
+                                  "description": "Libelle NAF",
+                                  "type": [
+                                    "string",
+                                    "null",
+                                  ],
+                                },
+                              },
+                              "required": [
+                                "code",
+                                "label",
+                              ],
+                              "type": [
+                                "object",
+                                "null",
+                              ],
+                            },
+                            "opco": {
+                              "description": "Nom de l'OPCO",
+                              "enum": [
+                                "AFDAS",
+                                "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
+                                "ATLAS",
+                                "Constructys",
+                                "L'Opcommerce",
+                                "OCAPIAT",
+                                "OPCO 2i",
+                                "Opco entreprises de proximité",
+                                "Opco Mobilités",
+                                "Opco Santé",
+                                "Uniformation, l'Opco de la Cohésion sociale",
+                                "inconnu",
+                                "OPCO multiple",
+                              ],
+                              "type": [
+                                "string",
+                                "null",
+                              ],
+                            },
+                          },
+                          "required": [
+                            "idcc",
+                            "opco",
+                            "naf",
+                          ],
+                          "type": "object",
+                        },
+                        "legal_name": {
+                          "description": "Nom légal de l'entreprise",
+                          "type": [
+                            "string",
+                            "null",
+                          ],
+                        },
+                        "location": {
+                          "properties": {
+                            "address": {
+                              "description": "Adresse de l'offre, provenant du SIRET ou du partenaire",
+                              "type": "string",
+                            },
+                            "geopoint": {
+                              "additionalProperties": false,
+                              "description": "Geolocalisation de l'offre",
+                              "properties": {
+                                "coordinates": {
+                                  "prefixItems": [
+                                    {
+                                      "maximum": 180,
+                                      "minimum": -180,
+                                      "type": "number",
+                                    },
+                                    {
+                                      "maximum": 90,
+                                      "minimum": -90,
+                                      "type": "number",
+                                    },
+                                  ],
+                                  "type": "array",
+                                },
+                                "type": {
+                                  "enum": [
+                                    "Point",
+                                  ],
+                                  "type": "string",
+                                },
+                              },
+                              "required": [
+                                "coordinates",
+                                "type",
+                              ],
+                              "type": "object",
+                            },
+                          },
+                          "required": [
+                            "address",
+                            "geopoint",
+                          ],
+                          "type": "object",
+                        },
+                        "name": {
+                          "description": "Nom customisé de l'entreprise",
+                          "type": [
+                            "string",
+                            "null",
+                          ],
+                        },
+                        "siret": {
+                          "description": "Le numéro de SIRET de l'établissement",
+                          "example": "78424186100011",
+                          "pattern": "^\\d{14}$",
+                          "type": [
+                            "string",
+                            "null",
+                          ],
+                        },
+                        "size": {
+                          "description": "Taille de l'entreprise",
+                          "type": [
+                            "string",
+                            "null",
+                          ],
+                        },
+                        "website": {
+                          "description": "Site web de l'entreprise",
+                          "format": "uri",
+                          "type": [
+                            "string",
+                            "null",
+                          ],
+                        },
+                      },
+                      "required": [
+                        "siret",
+                        "brand",
+                        "legal_name",
+                        "website",
+                        "name",
+                        "description",
+                        "size",
+                        "location",
+                        "domain",
+                      ],
+                      "type": "object",
+                    },
+                  },
+                  "required": [
+                    "identifier",
+                    "workplace",
+                    "apply",
+                    "contract",
+                    "offer",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-apprentissage": [],
+          },
+        ],
+        "tags": [
+          "V3 - Jobs",
+        ],
+      },
       "put": {
         "parameters": [
           {

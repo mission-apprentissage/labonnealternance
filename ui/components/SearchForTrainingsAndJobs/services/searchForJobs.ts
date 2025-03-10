@@ -1,12 +1,13 @@
-import axios from "axios"
+import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { factorInternalJobsForMap, layerType, setJobMarkers } from "@/utils/mapTools"
 
+import { apiGet } from "../../../utils/api.utils"
 import { logError } from "../../../utils/tools"
 
 import { storeSearchResultInContext } from "./handleSearchHistoryContext"
-import { getRomeFromParameters, minimalDataJobsApi, partialJobSearchErrorText, technicalErrorText } from "./utils"
+import { getRomeFromParameters, partialJobSearchErrorText } from "./utils"
 
 export const searchForJobsFunction = async ({
   values,
@@ -42,9 +43,13 @@ export const searchForJobsFunction = async ({
     } = {
       romes,
       rncp,
-      opco: opcoFilter,
-      opcoUrl: opcoUrlFilter,
       sources: "lba,matcha,partnerJob",
+    }
+    if (opcoFilter) {
+      params.opco = opcoFilter
+    }
+    if (opcoUrlFilter) {
+      params.opcoUrl = opcoUrlFilter
     }
     if (values?.location?.value) {
       params.longitude = values.location.value.coordinates[0]
@@ -56,47 +61,32 @@ export const searchForJobsFunction = async ({
       params.diploma = values.diploma
     }
 
-    const response = await axios.get(minimalDataJobsApi, {
-      params,
-    })
+    const response = await apiGet("/v1/_private/jobs/min", { querystring: params })
 
-    let results = {} as any
-
-    if (response.data === "romes_missing") {
-      setJobSearchError(technicalErrorText)
-      logError("Job search error", `Missing romes`)
-    } else {
-      results = {
-        matchas: response.data.matchas.result && response.data.matchas.result === "error" ? null : response.data.matchas.results,
-        lbaCompanies: response.data.lbaCompanies.result && response.data.lbaCompanies.result === "error" ? null : response.data.lbaCompanies.results,
-        partnerJobs: response.data.partnerJobs.result && response.data.partnerJobs.result === "error" ? null : response.data.partnerJobs.results,
-      }
-
-      if (!showCombinedJob && results.matchas?.length) {
-        results.matchas = results.matchas.filter((matcha) => !matcha.company.mandataire)
-      }
-
-      if (followUpItem && LBA_ITEM_TYPE_OLD.FORMATION !== followUpItem.parameters.type) {
-        selectFollowUpItem({
-          itemId: followUpItem.parameters.itemId,
-          type: followUpItem.parameters.type,
-          jobs: results,
-          formValues: values,
-        })
-      }
+    const results: { matchas: ILbaItemLbaJob[]; lbaCompanies: ILbaItemLbaCompany[]; partnerJobs: ILbaItemPartnerJob[]; peJobs: null } = {
+      matchas: response.matchas && "error" in response.matchas ? null : "results" in response.matchas ? response.matchas.results : null,
+      lbaCompanies: response.lbaCompanies && "error" in response.lbaCompanies ? null : "results" in response.lbaCompanies ? response.lbaCompanies.results : null,
+      partnerJobs: response.partnerJobs && "error" in response.partnerJobs ? null : "results" in response.partnerJobs ? response.partnerJobs.results : null,
+      peJobs: null,
     }
 
-    // gestion des erreurs
-    let jobErrorMessage = ""
-
-    if (response.data.lbaCompanies.result === "error" || response.data.matchas.result === "error") {
-      jobErrorMessage = partialJobSearchErrorText
-      if (response.data.lbaCompanies.result === "error") logError("Job Search Error", `LBA Error : ${response.data.lbaCompanies.message}`)
-      if (response.data.matchas.result === "error") logError("Job Search Error", `Matcha Error : ${response.data.matchas.message}`)
+    if (!showCombinedJob && results.matchas?.length) {
+      results.matchas = results.matchas.filter((matcha) => !matcha.company.mandataire)
     }
 
-    if (jobErrorMessage) {
-      setJobSearchError(jobErrorMessage)
+    if (followUpItem && LBA_ITEM_TYPE_OLD.FORMATION !== followUpItem.parameters.type) {
+      selectFollowUpItem({
+        itemId: followUpItem.parameters.itemId,
+        type: followUpItem.parameters.type,
+        jobs: results,
+        formValues: values,
+      })
+    }
+
+    if ("error" in response.lbaCompanies || "error" in response.matchas) {
+      setJobSearchError(partialJobSearchErrorText)
+      if ("error" in response.lbaCompanies) logError("Job Search Error", `LBA Error : ${response.lbaCompanies.message}`)
+      if ("error" in response.matchas) logError("Job Search Error", `Matcha Error : ${response.matchas.message}`)
     }
 
     setInternalJobs(results)
@@ -149,16 +139,13 @@ export const searchForJobsLightFunction = async ({ values, widgetParameters = un
       params.diploma = values.diploma
     }
 
-    const response = await axios.get(minimalDataJobsApi, {
-      params,
-    })
+    const response = await apiGet("/v1/_private/jobs/min", { querystring: params })
 
-    let results = {} as any
-
-    results = {
-      matchas: response.data.matchas.result && response.data.matchas.result === "error" ? null : response.data.matchas.results,
-      lbaCompanies: response.data.lbaCompanies.result && response.data.lbaCompanies.result === "error" ? null : response.data.lbaCompanies.results,
-      partnerJobs: response.data.partnerJobs.result && response.data.partnerJobs.result === "error" ? null : response.data.partnerJobs.results,
+    const results: { matchas: ILbaItemLbaJob[]; lbaCompanies: ILbaItemLbaCompany[]; partnerJobs: ILbaItemPartnerJob[]; peJobs: null } = {
+      matchas: response.matchas && "error" in response.matchas ? null : "results" in response.matchas ? response.matchas.results : null,
+      lbaCompanies: response.lbaCompanies && "error" in response.lbaCompanies ? null : "results" in response.lbaCompanies ? response.lbaCompanies.results : null,
+      partnerJobs: response.partnerJobs && "error" in response.partnerJobs ? null : "results" in response.partnerJobs ? response.partnerJobs.results : null,
+      peJobs: null,
     }
 
     setInternalJobs(results)
