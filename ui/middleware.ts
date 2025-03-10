@@ -49,7 +49,7 @@ export async function middleware(request: NextRequest) {
     if (session) {
       switch (session.type) {
         case AUTHTYPE.ENTREPRISE:
-          return NextResponse.redirect(new URL(`/espace-pro/entreprise/${session.establishment_id}`, request.url))
+          return NextResponse.redirect(new URL(`/espace-pro/administration/entreprise/${session.establishment_id}`, request.url))
         // router.push({
         //   pathname: `/espace-pro/administration/entreprise/${user.establishment_id}`,
         //   query: { offerPopup: Object.keys(fromEntrepriseCreation).length > 0 ? true : false },
