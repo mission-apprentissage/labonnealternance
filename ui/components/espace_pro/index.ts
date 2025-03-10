@@ -8,7 +8,6 @@ import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
 import CustomInput from "./CustomInput"
 import DropdownCombobox from "./DropdownCombobox"
 import InfoPopover from "./InfoPopover"
-import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
 import InfoTooltip from "./InfoToolTip"
 import Layout from "./Layout"
 import LoadingEmptySpace from "./LoadingEmptySpace"
@@ -29,7 +28,6 @@ export {
   DropdownCombobox,
   InfoPopover,
   InfoTooltip,
-  InformationLegaleEntreprise,
   Layout,
   LoadingEmptySpace,
   Pagination,

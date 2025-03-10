@@ -4,15 +4,12 @@ import { useQuery } from "react-query"
 import { parseEnum } from "shared"
 import { CFA, ENTREPRISE, OPCO, OPCOS_LABEL } from "shared/constants/recruteur"
 
+import { InfoPopover, InfoTooltip } from "@/components/espace_pro"
+import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
+import { FieldWithValue } from "@/components/espace_pro/FieldWithValue"
 import { useAuth } from "@/context/UserContext"
+import { InfoCircle } from "@/theme/components/icons"
 import { getCfaInformation, getEntrepriseInformation } from "@/utils/api"
-
-import { InfoCircle } from "../../theme/components/icons"
-
-import { BorderedBox } from "./common/components/BorderedBox"
-import { FieldWithValue } from "./FieldWithValue"
-import InfoPopover from "./InfoPopover"
-import InfoTooltip from "./InfoToolTip"
 
 export type InformationLegaleEntrepriseProps = { siret: string; type: typeof CFA | typeof ENTREPRISE; opco?: OPCOS_LABEL }
 
@@ -126,14 +123,6 @@ const OrganizationInfoFields = ({
         value={firstLineAddress}
         tooltip="La donnée “Adresse” provient de l’INSEE puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler."
       />
-      {/* {type !== AUTHTYPE.ENTREPRISE && (
-        <FieldWithValue
-          hideIfEmpty={true}
-          title="Effectif"
-          value={establishment_size}
-          tooltip='La donnée "Effectif” provient de l’INSEE puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler.'
-        />
-      )} */}
       {type === ENTREPRISE && (
         <FieldWithValue
           title="Opco de référence"

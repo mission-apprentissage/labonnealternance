@@ -1,17 +1,14 @@
 import { Button, Heading, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text } from "@chakra-ui/react"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 
-import { useAuth } from "@/context/UserContext"
 import { apiGet } from "@/utils/api.utils"
 
 export default function ModificationCompteEmail(props) {
   const { isOpen, onClose } = props
-  const { setUser } = useAuth()
   const router = useRouter()
 
   const handleLogout = async () => {
     await apiGet("/auth/logout", {})
-    setUser()
     router.push("/espace-pro/authentification")
   }
 

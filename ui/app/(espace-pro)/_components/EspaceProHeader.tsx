@@ -5,7 +5,7 @@ import { DsfrHeaderProps } from "@/app/_components/Header"
 
 import { PAGES } from "../../../utils/routes.utils"
 
-export function EspaceProHeader({ session }: { session: IUserRecruteurPublic | null }) {
+export function EspaceProHeader({ user }: { user: IUserRecruteurPublic | null }) {
   const { quickAccessItems, ...rest } = DsfrHeaderProps
 
   return (
@@ -16,8 +16,8 @@ export function EspaceProHeader({ session }: { session: IUserRecruteurPublic | n
         <HeaderQuickAccessItem
           key="connexion"
           quickAccessItem={{
-            iconId: session === null ? "fr-icon-lock-line" : "fr-icon-account-line",
-            text: session === null ? "Connexion" : "Mon compte",
+            iconId: user === null ? "fr-icon-lock-line" : "fr-icon-account-line",
+            text: user === null ? "Connexion" : "Mon compte",
             linkProps: {
               href: PAGES.static.authentification.getPath(),
             },
