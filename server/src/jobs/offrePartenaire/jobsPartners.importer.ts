@@ -2,6 +2,7 @@ import { CronDef } from "job-processor"
 
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
 import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
+import { processMeteojob } from "@/jobs/offrePartenaire/meteojob/processMeteojob"
 import { processRhAlternance } from "@/jobs/offrePartenaire/rh-alternance/processRhAlternance"
 
 const timings = {
@@ -32,7 +33,7 @@ export const importers: Record<string, CronDef> = {
   },
   "Import Meteojob": {
     cron_string: timings.import_source,
-    handler: processFranceTravail,
+    handler: processMeteojob,
     checkinMargin: 10,
     maxRuntimeInMinutes: 30,
     tag: "slave",
