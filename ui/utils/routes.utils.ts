@@ -20,10 +20,17 @@ export interface IPages {
   notion: Record<string, INotionPage>
 }
 
+export type IRecherchePageParams = {
+  romes: string
+  geo: null | { address: string | null; latitude: number; longitude: number; radius: number }
+  diploma: string | null
+  job_name: string | null
+}
+
 export const PAGES = {
   static: {
     home: {
-      getPath: () => `/home` as string,
+      getPath: () => `/` as string,
       title: "Accueil",
       index: true,
       getMetadata: () => ({
@@ -184,6 +191,34 @@ export const PAGES = {
       }),
       title: metier,
     }),
+    recherche: (params: IRecherchePageParams): IPage => {
+      const query = new URLSearchParams()
+      query.set("romes", params.romes)
+      if (params.geo) {
+        query.set("lat", params.geo.latitude.toString())
+        query.set("lon", params.geo.longitude.toString())
+        query.set("radius", params.geo.radius.toString())
+
+        if (params.geo.address) {
+          query.set("address", params.geo.address)
+        }
+      }
+
+      if (params.diploma) {
+        query.set("diploma", params.diploma)
+      }
+      if (params.job_name) {
+        query.set("job_name", params.job_name)
+      }
+      query.set("display", "list")
+
+      return {
+        getPath: () => `/recherche?${query.toString()}` as string,
+        index: false,
+        getMetadata: () => ({ title: "" }),
+        title: "Recherche",
+      }
+    },
   },
   notion: {},
 } as const satisfies IPages
