@@ -4,17 +4,17 @@ import { useQuery } from "react-query"
 import { parseEnum } from "shared"
 import { CFA, ENTREPRISE, OPCO, OPCOS_LABEL } from "shared/constants/recruteur"
 
+import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { InfoPopover, InfoTooltip } from "@/components/espace_pro"
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
 import { FieldWithValue } from "@/components/espace_pro/FieldWithValue"
-import { useAuth } from "@/context/UserContext"
 import { InfoCircle } from "@/theme/components/icons"
 import { getCfaInformation, getEntrepriseInformation } from "@/utils/api"
 
 export type InformationLegaleEntrepriseProps = { siret: string; type: typeof CFA | typeof ENTREPRISE; opco?: OPCOS_LABEL }
 
 export const InformationLegaleEntreprise = ({ siret, type, opco }: InformationLegaleEntrepriseProps) => {
-  const { user } = useAuth()
+  const { user } = useConnectedSessionClient()
   const entrepriseQuery = useQuery(["get-entreprise", siret], () => getEntrepriseInformation(siret, { skipUpdate: true }), { enabled: Boolean(siret && type === ENTREPRISE) })
   const cfaQuery = useQuery(["get-cfa-infos", siret], () => getCfaInformation(siret), { enabled: Boolean(siret && type === CFA) })
   const { isLoading } = type === ENTREPRISE ? entrepriseQuery : cfaQuery
