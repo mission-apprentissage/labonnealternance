@@ -3,7 +3,7 @@
 import { CreationMiseEnRelationPage } from "@/app/(espace-pro)/_components/CreationMiseEnRelationPage"
 
 function Page() {
-  return <CreationMiseEnRelationPage />
+  return <CreationMiseEnRelationPage isWidget={true} />
 }
 
 export default Page
