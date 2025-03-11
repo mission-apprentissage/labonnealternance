@@ -44,7 +44,7 @@ export async function middleware(request: NextRequest) {
 
   const requestHeaders = new Headers(request.headers)
   const session = await getSession(request)
-  const { user } = session
+  const user = session?.user
 
   if (pathname.startsWith("/espace-pro/authentification/verification")) {
     // TODO: do verification in middleware
@@ -55,7 +55,7 @@ export async function middleware(request: NextRequest) {
     if (user) {
       switch (user.type) {
         case AUTHTYPE.ENTREPRISE:
-          return NextResponse.redirect(new URL(`/espace-pro/administration/entreprise/${session.establishment_id}`, request.url))
+          return NextResponse.redirect(new URL(`/espace-pro/administration/entreprise/${user.establishment_id}`, request.url))
         // router.push({
         //   pathname: `/espace-pro/administration/entreprise/${user.establishment_id}`,
         //   query: { offerPopup: Object.keys(fromEntrepriseCreation).length > 0 ? true : false },
