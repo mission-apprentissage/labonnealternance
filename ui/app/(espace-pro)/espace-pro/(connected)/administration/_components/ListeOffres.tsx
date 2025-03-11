@@ -12,6 +12,7 @@ import { OffresTabs } from "@/app/(espace-pro)/espace-pro/(connected)/administra
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { ArrowDropRightLine, Building, Plus } from "@/theme/components/icons"
 import { getFormulaire } from "@/utils/api"
+import { PAGES } from "@/utils/routes.utils"
 
 export default function ListeOffres({ hideModify = false, showStats = false }: { hideModify?: boolean; showStats?: boolean }) {
   const router = useRouter()
@@ -38,22 +39,11 @@ export default function ListeOffres({ hideModify = false, showStats = false }: {
 
   const entrepriseTitle = establishment_raison_sociale ?? establishment_siret
   const getOffreEditionUrl = (offerId: string) => {
-    switch (user.type) {
-      case AUTHTYPE.OPCO:
-        return `/espace-pro/administration/opco/entreprise/${establishment_siret}/${establishment_id}/offre/${offerId}`
-      default:
-        return `/espace-pro/administration/entreprise/${establishment_id}/offre/${offerId}`
-    }
+    return PAGES.dynamic.offreCreation({ offerId, establishment_id, userType: user.type }).getPath()
   }
-  const getOffreCreationUrl = () => getOffreEditionUrl("creation")
 
   const navigateToCreation = () => {
-    // navigate(getOffreCreationUrl(), {
-    //   state: { raison_sociale: entrepriseTitle },
-    // })
-    router.push(getOffreCreationUrl(), {
-      query: { raison_sociale: entrepriseTitle },
-    })
+    router.push(PAGES.dynamic.offreCreation({ offerId: "creation", establishment_id, userType: user.type, raison_sociale: entrepriseTitle }).getPath())
   }
 
   const shouldDisplayModifyButton = !hideModify && user.type !== AUTHTYPE.CFA

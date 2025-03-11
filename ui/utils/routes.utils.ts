@@ -1,4 +1,5 @@
 import type { Metadata, MetadataRoute } from "next"
+import { OPCO } from "shared/constants"
 
 import { publicConfig } from "@/config.public"
 
@@ -195,6 +196,32 @@ export const PAGES = {
         description: `Explorez les différents métiers accessibles en ${metier} en alternance et trouvez celui qui correspond à votre projet professionnel.`,
       }),
       title: metier,
+    }),
+    offreCreation: ({
+      offerId,
+      establishment_id,
+      userType,
+      raison_sociale,
+      establishment_siret,
+    }: {
+      offerId: string
+      establishment_id: string
+      userType: string
+      raison_sociale?: string
+      establishment_siret?: string
+    }): IPage => ({
+      getPath: () => {
+        const raisonSocialeParam = raison_sociale ? `?raison_sociale=${raison_sociale}` : ""
+        switch (userType) {
+          case OPCO:
+            return `/espace-pro/administration/opco/entreprise/${establishment_siret}/${establishment_id}/offre/${offerId}}${raisonSocialeParam}`
+          default:
+            return `/espace-pro/administration/entreprise/${establishment_id}/offre/${offerId}${raisonSocialeParam}`
+        }
+      },
+      index: false,
+      getMetadata: () => ({ title: "Création d'une offre" }),
+      title: "Création d'une offre",
     }),
   },
   notion: {},
