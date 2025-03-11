@@ -3,6 +3,8 @@ import { NextResponse } from "next/server"
 import type { ComputedUserAccess, IUserRecruteurPublic } from "shared"
 import { AUTHTYPE } from "shared/constants"
 
+import { apiPost } from "@/utils/api.utils"
+
 import { publicConfig } from "./config.public"
 
 const removeAtEnd = (url: string, removed: string): string => (url.endsWith(removed) ? url.slice(0, -removed.length) : url)
@@ -39,47 +41,60 @@ async function getSession(request: NextRequest): Promise<{ user: IUserRecruteurP
   }
 }
 
+const verifyAuthentication = async (search: string, request: NextRequest) => {
+  const query = new URLSearchParams(search)
+  const token = query.get("token")
+  if (!token) {
+    return
+  }
+  try {
+    const { user, sessionToken } = await apiPost("/login/verification", {
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    })
+    const response = await redirectAfterAuthentication(user, request)
+    response.cookies.set("lba_session", sessionToken)
+
+    return response
+  } catch (error) {
+    return NextResponse.redirect(new URL("/espace-pro/authentification?error=true", request.url))
+  }
+}
+
+const redirectAfterAuthentication = async (user: IUserRecruteurPublic, request: NextRequest) => {
+  switch (user.type) {
+    case AUTHTYPE.ENTREPRISE:
+      return NextResponse.redirect(new URL(`/espace-pro/administration/entreprise/${user.establishment_id}`, request.url))
+
+    case AUTHTYPE.OPCO:
+      return NextResponse.redirect(new URL(`/espace-pro/opco`, request.url))
+
+    case AUTHTYPE.CFA:
+      return NextResponse.redirect(new URL(`/espace-pro/cfa`, request.url))
+
+    case AUTHTYPE.ADMIN:
+      return NextResponse.redirect(new URL(`/espace-pro/admin`, request.url))
+
+    default:
+  }
+
+  return NextResponse.redirect(new URL("/espace-pro/administration", request.url))
+}
+
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
+  const { pathname, search } = request.nextUrl
 
   const requestHeaders = new Headers(request.headers)
   const session = await getSession(request)
-  const { user } = session
-
-  if (pathname.startsWith("/espace-pro/authentification/verification")) {
-    // TODO: do verification in middleware
-    return
-  }
+  const user = session?.user
 
   if (pathname === "/espace-pro/authentification") {
     if (user) {
-      switch (user.type) {
-        case AUTHTYPE.ENTREPRISE:
-          return NextResponse.redirect(new URL(`/espace-pro/entreprise/${user.establishment_id}`, request.url))
-        // router.push({
-        //   pathname: `/espace-pro/administration/entreprise/${user.establishment_id}`,
-        //   query: { offerPopup: Object.keys(fromEntrepriseCreation).length > 0 ? true : false },
-        // })
-
-        case AUTHTYPE.OPCO:
-          // router.push(`/espace-pro/administration/opco`)
-          return NextResponse.redirect(new URL(`/espace-pro/opco`, request.url))
-
-        case AUTHTYPE.CFA:
-          // router.push("/espace-pro/administration")
-          return NextResponse.redirect(new URL(`/espace-pro/cfa`, request.url))
-
-        case AUTHTYPE.ADMIN:
-          // router.push("/espace-pro/administration/users")
-          return NextResponse.redirect(new URL(`/espace-pro/admin`, request.url))
-
-        default:
-      }
-
-      return NextResponse.redirect(new URL("/espace-pro/administration", request.url))
+      return redirectAfterAuthentication(user, request)
     }
 
-    return
+    return await verifyAuthentication(search, request)
   }
 
   if (!user) {
