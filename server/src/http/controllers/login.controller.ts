@@ -116,9 +116,8 @@ export default (server: Server) => {
       }
 
       await updateLastConnectionDate(formatedEmail)
-      await startSession(email, res)
-
-      return res.status(200).send(toPublicUser(user, await getPublicUserRecruteurPropsOrError(user._id)))
+      const sessionToken = await startSession(email, res)
+      return res.status(200).send({ user: toPublicUser(user, await getPublicUserRecruteurPropsOrError(user._id)), sessionToken })
     }
   )
 

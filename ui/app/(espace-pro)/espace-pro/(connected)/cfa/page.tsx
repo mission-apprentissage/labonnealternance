@@ -1,19 +1,10 @@
-import { headers } from "next/headers"
-import type { IUserRecruteurPublic } from "shared"
+"use client"
+import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 
-export async function getConnectedSessionServer(): Promise<IUserRecruteurPublic> {
-  const headerStore = await headers()
-  const sessionRaw = headerStore.get("x-session")
+export default function CfaPage() {
+  const session = useConnectedSessionClient()
 
-  if (!sessionRaw) {
-    throw new Error("Session not found")
-  }
+  console.log(session)
 
-  return JSON.parse(sessionRaw)
-}
-
-export default async function CfaPage() {
-  const session = await getConnectedSessionServer()
-
-  return <>Welcome CFA {session.first_name}</>
+  return <>Welcome CFA {JSON.stringify(session, null, 2)}</>
 }

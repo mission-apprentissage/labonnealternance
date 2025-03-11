@@ -32,7 +32,7 @@ export const PAGES = {
       }),
     },
     authentification: {
-      getPath: () => `/authentification` as string,
+      getPath: () => `/espace-pro/authentification` as string,
       title: "Authentification",
       index: false,
       getMetadata: () => ({
@@ -174,6 +174,18 @@ export const PAGES = {
       index: false,
       getMetadata: () => ({ title: "" }),
       title: "Inscription",
+    }),
+    administrationDesOffres: (navigationContext: string): IPage => ({
+      getPath: () => `${navigationContext}`,
+      index: false,
+      getMetadata: () => ({ title: "Administration des offres" }),
+      title: "Administration des offres",
+    }),
+    compte: (): IPage => ({
+      getPath: () => "/compte",
+      index: false,
+      getMetadata: () => ({ title: "Informations de contact" }),
+      title: "Informations de contact",
     }),
     metierJobById: (metier: string): IPage => ({
       getPath: () => `/metiers/${metier}` as string,
