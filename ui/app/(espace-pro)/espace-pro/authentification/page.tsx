@@ -4,15 +4,29 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Dialog, DialogContent, DialogTitle } from "@mui/material"
 import { Form, Formik } from "formik"
+import { useSearchParams } from "next/navigation"
 import z from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
-import { CustomInput } from "../../../components/espace_pro"
-import { sendMagiclink } from "../../../utils/api"
-import { PAGES } from "../../../utils/routes.utils"
+import { CustomInput } from "@/components/espace_pro"
+import { sendMagiclink } from "@/utils/api"
+import { PAGES } from "@/utils/routes.utils"
 
 export default function Authentification() {
+  const p = useSearchParams()
+
   const toast = useToast()
+
+  if (p.get("error")) {
+    return (
+      <Stack direction="column" spacing={7} bg="grey.150" p={["4", "8"]}>
+        <Heading fontSize="32px" as="h2">
+          Erreur
+        </Heading>
+        <Text fontSize="xl">Une erreur est survenue lors de la connexion.</Text>
+      </Stack>
+    )
+  }
 
   const submitEmail = (values, { setFieldError, setSubmitting }) => {
     sendMagiclink(values)

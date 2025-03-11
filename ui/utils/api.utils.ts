@@ -16,7 +16,7 @@ type OptionsWrite = {
 
 type IRequestOptions = OptionsGet | OptionsWrite | EmptyObject
 
-async function optionsToFetchParams(method: RequestInit["method"], options: IRequestOptions, fetchOptions: IRequestFetchOptions) {
+export async function optionsToFetchParams(method: RequestInit["method"], options: IRequestOptions, fetchOptions: IRequestFetchOptions) {
   const { timeout, headers: addedHeaders } = fetchOptions
 
   const headers = await getHeaders(options)
