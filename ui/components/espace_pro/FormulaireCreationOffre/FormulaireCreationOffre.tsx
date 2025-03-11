@@ -1,11 +1,13 @@
+"use client"
+
 import { Box, Grid, Heading } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import { Formik } from "formik"
-import { omit } from "lodash-es"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 import { useContext, useState } from "react"
 import { useQuery } from "react-query"
 import { IRecruiterJson, IReferentielRomeForJob } from "shared"
+import { generateUri } from "shared/helpers/generateUri"
 import { IJobJson, JOB_STATUS } from "shared/models/job.model"
 import { detectUrlAndEmails } from "shared/utils/detectUrlAndEmails"
 import * as Yup from "yup"
@@ -16,6 +18,7 @@ import { RomeDetailWithQuery } from "@/components/DepotOffre/RomeDetailWithQuery
 import { WidgetContext } from "@/context/contextWidget"
 import { useAuth } from "@/context/UserContext"
 import { createOffre, createOffreByToken, getFormulaire, getFormulaireByToken, getRelatedEtablissementsFromRome, getRomeDetail } from "@/utils/api"
+import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
 import { FormikCreationOffreButtons } from "./FormulaireCreationOffreButtons"
 import { FormikCreationOffreFields } from "./FormulaireCreationOffreFields"
@@ -40,7 +43,7 @@ export const FormulaireCreationOffre = ({
   const { rome } = romeAndAppellation ?? {}
   const { user } = useAuth()
   const router = useRouter()
-  const { establishment_id, email, userId, token } = router.query as { establishment_id: string; email: string; userId: string; type: string; token: string }
+  const { establishment_id, email, userId, token, type } = useSearchParamsRecord()
 
   const { data: formulaire } = useQuery("offre-liste", {
     enabled: Boolean(establishment_id),
@@ -139,16 +142,30 @@ export const FormulaireCreationOffre = ({
 
   const handleRedirectionAfterSubmit = (form: IRecruiterJson, job: IJobJson, fromDashboard: boolean, jobToken: string) => {
     if (haveProposals) {
-      return router.replace({
-        pathname: isWidget ? "/espace-pro/widget/entreprise/mise-en-relation" : "/espace-pro/creation/mise-en-relation",
-        query: { job: JSON.stringify(omit(job, "rome_detail")), email, geo_coordinates: form.geo_coordinates, fromDashboard, userId, establishment_id, token: jobToken },
-      })
+      const transmittedJob = {
+        _id: job._id,
+        rome_code: job.rome_code,
+      }
+      return router.replace(
+        generateUri(isWidget ? "/espace-pro/widget/entreprise/mise-en-relation" : "/espace-pro/creation/mise-en-relation", {
+          querystring: {
+            job: JSON.stringify(transmittedJob),
+            email,
+            geo_coordinates: form.geo_coordinates,
+            fromDashboard: fromDashboard.toString(),
+            userId,
+            establishment_id,
+            token: jobToken,
+          },
+        })
+      )
     }
 
-    router.replace({
-      pathname: isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin",
-      query: { jobId: job._id.toString(), email, withDelegation: false, fromDashboard, userId, establishment_id, token: jobToken },
-    })
+    router.replace(
+      generateUri(isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin", {
+        querystring: { jobId: job._id.toString(), email, withDelegation: "false", fromDashboard: fromDashboard.toString(), userId, establishment_id, token: jobToken },
+      })
+    )
   }
 
   const finalSelectedCompetences = selectedCompetences ?? romeQuery?.data?.competences
@@ -210,7 +227,7 @@ export const FormulaireCreationOffre = ({
             <Box>
               <Heading className="big">Votre offre</Heading>
               <Box mt={4}>
-                <FormikCreationOffreFields onRomeChange={onRomeChange} />
+                <FormikCreationOffreFields onRomeChange={onRomeChange} type={type} />
               </Box>
             </Box>
             <Box gridColumnStart={[1, 1, 2, 2]} gridRow={["2 / 3", "2 / 3", "1 / 3", "1 / 3"]}>

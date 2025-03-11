@@ -1,6 +1,8 @@
+"use client"
+
 import { Box, Button, Container, Flex, Icon, Image, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Spacer, Text } from "@chakra-ui/react"
 import Link from "next/link"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 import { useContext } from "react"
 import { RiAccountCircleLine } from "react-icons/ri"
 
@@ -16,13 +18,12 @@ import LogoAkto from "../assets/images/akto"
 
 const Header = () => {
   const { organisation } = useContext(LogoContext)
-  const { user, setUser } = useAuth()
+  const { user } = useAuth()
 
   const router = useRouter()
 
   const handleLogout = async () => {
     await apiGet("/auth/logout", {})
-    setUser()
     router.push("/")
   }
 

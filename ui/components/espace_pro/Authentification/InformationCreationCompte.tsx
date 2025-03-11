@@ -1,10 +1,13 @@
+"use client"
+
 import { Box, Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, SimpleGrid, Text } from "@chakra-ui/react"
 import { Form, Formik } from "formik"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 import { useContext } from "react"
 import { useQuery } from "react-query"
 import { assertUnreachable, parseEnum } from "shared"
 import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
+import { generateUri } from "shared/helpers/generateUri"
 import * as Yup from "yup"
 
 import { infosOpcos } from "@/theme/components/logos/infosOpcos"
@@ -67,6 +70,7 @@ const Formulaire = ({
         return (
           <Form>
             <FormulaireLayout
+              type={type}
               left={
                 <>
                   <CustomInput required={false} name="last_name" label="Nom" type="text" value={values.last_name} />
@@ -120,10 +124,7 @@ const Formulaire = ({
   )
 }
 
-const FormulaireLayout = ({ left, right }) => {
-  const router = useRouter()
-  const { type } = router.query
-
+const FormulaireLayout = ({ left, right, type }: { left: React.ReactNode; right: React.ReactNode; type: string }) => {
   return (
     <SimpleGrid columns={[1, 1, 2, 2]} spacing={4} mt={0}>
       <Box>
@@ -175,18 +176,27 @@ export const InformationCreationCompte = ({
 
         switch (type) {
           case AUTHTYPE.ENTREPRISE: {
-            router.push({
-              pathname: isWidget ? "/espace-pro/widget/entreprise/offre" : "/espace-pro/creation/offre",
-              query: { establishment_id: formulaire.establishment_id, type, email: user.email, userId: user._id.toString(), token, displayBanner: !validated },
-            })
+            router.push(
+              generateUri(isWidget ? "/espace-pro/widget/entreprise/offre" : "/espace-pro/creation/offre", {
+                querystring: {
+                  establishment_id: formulaire.establishment_id,
+                  type,
+                  email: user.email,
+                  userId: user._id.toString(),
+                  token,
+                  displayBanner: Boolean(!validated).toString(),
+                },
+              })
+            )
             break
           }
           case AUTHTYPE.CFA: {
             if (validated) {
-              router.push({
-                pathname: "/espace-pro/authentification/confirmation",
-                query: { email: user.email },
-              })
+              router.push(
+                generateUri("/espace-pro/authentification/confirmation", {
+                  querystring: { email: user.email },
+                })
+              )
             } else {
               router.push("/espace-pro/authentification/en-attente")
             }
