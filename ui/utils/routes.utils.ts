@@ -32,7 +32,7 @@ export const PAGES = {
       }),
     },
     authentification: {
-      getPath: () => `/authentification` as string,
+      getPath: () => `/espace-pro/authentification` as string,
       title: "Authentification",
       index: false,
       getMetadata: () => ({

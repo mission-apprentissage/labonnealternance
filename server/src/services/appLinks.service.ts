@@ -35,7 +35,7 @@ export function createAuthMagicLinkToken(user: UserForAccessToken) {
 
 export function createAuthMagicLink(user: UserForAccessToken) {
   const token = createAuthMagicLinkToken(user)
-  return `${config.publicUrl}/espace-pro/authentification/verification?token=${encodeURIComponent(token)}`
+  return `${config.publicUrl}/espace-pro/authentification?token=${encodeURIComponent(token)}`
 }
 
 export function createValidationMagicLink(user: IUserWithAccountForAccessToken) {
