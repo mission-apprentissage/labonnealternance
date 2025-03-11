@@ -1,5 +1,5 @@
 import { Box, Link, Flex, Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 
 import { useAuth } from "@/context/UserContext"
 import { apiGet } from "@/utils/api.utils"
@@ -8,12 +8,11 @@ import { UserLogo } from "../../../theme/components/icons"
 import Layout from "../common/components/Layout"
 
 const LayoutAdminRdvA = (props) => {
-  const { user, setUser } = useAuth()
+  const { user } = useAuth()
   const router = useRouter()
 
   const handleLogout = async () => {
     await apiGet("/auth/logout", {})
-    setUser()
     router.push("/")
   }
 
