@@ -99,6 +99,7 @@ export const zJobSearchApiV3Query = z
     romes: extensions.romeCodeArray().nullable().default(null),
     rncp: extensions.rncpCode().nullable().default(null),
     partners_to_exclude: z.array(extensions.buildEnum(JOBPARTNERS_LABEL)).nullish(),
+    partner_label: extensions.buildEnum(JOBPARTNERS_LABEL).nullable().default(null).optional(),
   })
   .superRefine((data, ctx) => {
     if (data.longitude == null && data.latitude != null) {
