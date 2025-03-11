@@ -26,7 +26,7 @@ export default function DetailEmploi() {
 
   /* TODO: - gérer l'affichage de la map */
 
-  const { id, type } = router.query
+  const { id, type } = router.query as { id: string; type: LBA_ITEM_TYPE }
   const intituleOffre = router.query["intitule-offre"] as string
 
   const { isSuccess, data } = useQuery(["itemDetail-offre", id, type], () => fetchJobItemDetails({ id, type, searchResultContext }), {

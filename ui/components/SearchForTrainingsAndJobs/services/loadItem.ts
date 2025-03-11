@@ -1,3 +1,4 @@
+import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import { assertUnreachable } from "shared/utils"
 
@@ -164,20 +165,27 @@ export const loadItem = async ({
   return
 }
 
-export const fetchJobItemDetails = async ({ id, type, searchResultContext }) => {
+export const fetchJobItemDetails = async ({
+  id,
+  type,
+  searchResultContext,
+}: {
+  id: string
+  type: LBA_ITEM_TYPE
+  searchResultContext: IContextSearch
+}): Promise<ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob> => {
   if (
     searchResultContext?.selectedItem?.id === id &&
     oldItemTypeToNewItemType(searchResultContext.selectedItem.ideaType) === type &&
     searchResultContext.selectedItem.detailsLoaded
   ) {
-    return searchResultContext.selectedItem
+    return searchResultContext.selectedItem as ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob
   }
 
   switch (type) {
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
       const lbaJob = await fetchLbaJobDetails({ id })
-      const lbaJobs = await computeMissingPositionAndDistance(null, [lbaJob])
-      return lbaJobs[0]
+      return lbaJob
       break
     }
     case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
