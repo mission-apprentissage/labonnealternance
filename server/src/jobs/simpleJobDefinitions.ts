@@ -1,3 +1,4 @@
+import { classifyRome } from "@/jobs/classifyRome"
 import { importRecruteursLbaFromComputedToJobsPartners } from "@/jobs/offrePartenaire/fillComputedRecruteursLba"
 import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail/classifyJobsFranceTravail"
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
@@ -276,5 +277,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: expireJobsPartners,
     description: "Change le status des offres dont la date d'expiration est dépassée",
+  },
+  {
+    fct: classifyRome,
+    description: "Rome les offres hellowork en utilisant un LLM pour tester le romage",
   },
 ]
