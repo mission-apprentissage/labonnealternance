@@ -1,6 +1,6 @@
 import { Button, Flex } from "@chakra-ui/react"
 import { useFormikContext } from "formik"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 import { IJobJson } from "shared/models/job.model"
 
 import { ArrowRightLine } from "@/theme/components/icons"

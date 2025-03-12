@@ -2,7 +2,7 @@ import { Box, Grid, Heading } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import { Formik } from "formik"
 import { omit } from "lodash-es"
-import { useRouter } from "next/router"
+import { useParams, useRouter } from "next/navigation"
 import { useContext, useState } from "react"
 import { useQuery } from "react-query"
 import { IRecruiterJson, IReferentielRomeForJob } from "shared"
@@ -12,11 +12,11 @@ import * as Yup from "yup"
 
 import { FormulaireEditionOffreButtons } from "@/app/(espace-pro)/espace-pro/(connected)/administration/_components/FormulaireEditionOffreButtons"
 import { FormulaireEditionOffreFields } from "@/app/(espace-pro)/espace-pro/(connected)/administration/_components/FormulaireEditionOffreFields"
+import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { AUTHTYPE } from "@/common/contants"
 import { InfosDiffusionOffre } from "@/components/DepotOffre/InfosDiffusionOffre"
 import { RomeDetailWithQuery } from "@/components/DepotOffre/RomeDetailWithQuery"
 import { WidgetContext } from "@/context/contextWidget"
-import { useAuth } from "@/context/UserContext"
 import { createOffre, createOffreByToken, getFormulaire, getFormulaireByToken, getRelatedEtablissementsFromRome, getRomeDetail } from "@/utils/api"
 
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
@@ -37,9 +37,9 @@ export const FormulaireEditionOffre = ({
     rome_appellation_label && initRome ? { rome: initRome, appellation: rome_appellation_label } : null
   )
   const { rome } = romeAndAppellation ?? {}
-  const { user } = useAuth()
+  const { user } = useConnectedSessionClient()
   const router = useRouter()
-  const { establishment_id, email, userId, token } = router.query as { establishment_id: string; email: string; userId: string; type: string; token: string }
+  const { establishment_id, email, userId, token } = useParams() as { establishment_id: string; email: string; userId: string; type: string; token: string }
 
   const { data: formulaire } = useQuery("offre-liste", {
     enabled: Boolean(establishment_id),
