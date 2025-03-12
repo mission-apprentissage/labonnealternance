@@ -4,10 +4,9 @@ import { LBA_ITEM_TYPE } from "../../constants/lbaitem.js"
 import { extensions } from "../../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../../helpers/zodWithOpenApi.js"
 import { ZLbarError } from "../../models/lbacError.model.js"
-import { ZLbaItemFtJob, ZLbaItemLbaJob } from "../../models/lbaItem.model.js"
+import { ZLbaItemFtJob, ZLbaItemLbaCompany, ZLbaItemLbaJob } from "../../models/lbaItem.model.js"
 import { ZRecruiter } from "../../models/recruiter.model.js"
 import { rateLimitDescription } from "../../utils/rateLimitDescription.js"
-import { zCallerParam, zRefererHeaders, zSourcesParams } from "../_params.js"
 import { IRoutesDef, ZResError } from "../common.routes.js"
 
 export const zJobsRoutesV2 = {
@@ -112,46 +111,19 @@ export const zJobsRoutesV2 = {
         operationId: "getJobs",
       },
     },
-    "/v2/jobs/:source/:id": {
+    "/v2/_private/jobs/:source/:id": {
       method: "get",
-      path: "/v2/jobs/:source/:id",
+      path: "/v2/_private/jobs/:source/:id",
       params: z
         .object({
-          source: zSourcesParams,
-          id: z.string().openapi({
-            param: {
-              description: "the id the lba job looked for.",
-            },
-          }),
+          source: extensions.buildEnum(LBA_ITEM_TYPE),
+          id: z.string(),
         })
         .strict(),
-      querystring: z
-        .object({
-          caller: zCallerParam,
-        })
-        .strict()
-        .passthrough(),
-      headers: zRefererHeaders,
       response: {
-        "200": z.union([
-          z
-            .object({
-              job: z.union([z.array(ZLbaItemLbaJob), ZLbaItemFtJob]),
-            })
-            .strict(),
-          z.null(),
-        ]),
+        "200": z.union([ZLbaItemLbaJob, ZLbaItemLbaCompany, ZLbaItemFtJob]).nullable(),
       },
-      securityScheme: {
-        auth: "api-key",
-        access: null,
-        resources: {},
-      },
-      openapi: {
-        tags: ["V2 - Jobs"] as string[],
-        operationId: "getLbaJob",
-        description: `Get one lba job identified by it's id\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
-      },
+      securityScheme: null,
     },
     "/v2/jobs/export": {
       method: "get",

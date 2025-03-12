@@ -1,9 +1,10 @@
 import { badRequest, internal } from "@hapi/boom"
-import { ILbaItemFtJob, ILbaItemLbaJob, JOB_STATUS_ENGLISH, assertUnreachable, zRoutes } from "shared"
+import { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, JOB_STATUS_ENGLISH, assertUnreachable, zRoutes } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
+import { getRecruteurLbaFromDB } from "@/services/recruteurLba.service"
 
 import { s3SignedUrl } from "../../../common/utils/awsUtils"
 import { trackApiCall } from "../../../common/utils/sendTrackingEvent"
@@ -178,30 +179,25 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/v2/jobs/:source/:id",
+    "/v2/_private/jobs/:source/:id",
     {
-      schema: zRoutes.get["/v2/jobs/:source/:id"],
-      onRequest: server.auth(zRoutes.get["/v2/jobs/:source/:id"]),
+      schema: zRoutes.get["/v2/_private/jobs/:source/:id"],
       config,
     },
     async (req, res) => {
       const { source, id } = req.params
-      const { caller } = req.query
-      let result: { job: ILbaItemLbaJob[] | ILbaItemFtJob } | null
+      let result: ILbaItemLbaJob | ILbaItemFtJob | ILbaItemLbaCompany | null
 
       switch (source) {
+        case LBA_ITEM_TYPE.RECRUTEURS_LBA:
+          result = await getRecruteurLbaFromDB(id)
+          break
         case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
-          result = await getLbaJobByIdV2({
-            id,
-            caller,
-          })
+          result = await getLbaJobByIdV2(id)
           break
 
         case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES:
-          result = await getFtJobFromIdV2({
-            id,
-            caller,
-          })
+          result = await getFtJobFromIdV2(id)
           break
 
         default:
