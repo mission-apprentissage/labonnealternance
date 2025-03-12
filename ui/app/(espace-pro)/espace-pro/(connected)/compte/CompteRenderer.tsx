@@ -6,18 +6,21 @@ import { IUserWithAccountFields } from "shared"
 import { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
-import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/compte/_components/InformationLegaleEntreprise"
-import ModificationCompteEmail from "@/app/(espace-pro)/espace-pro/compte/_components/ModificationCompteEmail"
+import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/compte/_components/InformationLegaleEntreprise"
+import ModificationCompteEmail from "@/app/(espace-pro)/espace-pro/(connected)/compte/_components/ModificationCompteEmail"
+import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { PAGES } from "@/utils/routes.utils"
 
-import { AUTHTYPE } from "../../../../common/contants"
-import { LoadingEmptySpace } from "../../../../components/espace_pro"
-import CustomInput from "../../../../components/espace_pro/CustomInput"
-import { ArrowRightLine } from "../../../../theme/components/icons"
-import { getUser, updateUserWithAccountFields } from "../../../../utils/api"
+import { AUTHTYPE } from "../../../../../common/contants"
+import { LoadingEmptySpace } from "../../../../../components/espace_pro"
+import CustomInput from "../../../../../components/espace_pro/CustomInput"
+import { ArrowRightLine } from "../../../../../theme/components/icons"
+import { getUser, updateUserWithAccountFields } from "../../../../../utils/api"
 
-export default function CompteRenderer({ user }) {
+export default function CompteRenderer() {
+  const { user } = useConnectedSessionClient()
+
   const client = useQueryClient()
   const toast = useToast()
   const ModificationEmailPopup = useDisclosure()

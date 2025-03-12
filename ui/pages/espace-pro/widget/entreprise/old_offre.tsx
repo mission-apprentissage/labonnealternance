@@ -1,9 +1,9 @@
 import { Box } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 
+import { FormulaireEditionOffre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffre"
 import { Bandeau } from "@/components/espace_pro/Bandeau"
 import { DepotSimplifieLayout } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
-import { FormulaireCreationOffre } from "@/components/espace_pro/FormulaireCreationOffre/FormulaireCreationOffre"
 import { WidgetFooter } from "@/components/WidgetFooter/WidgetFooter"
 
 export const WidgetEntrepriseOffre = () => {
@@ -18,7 +18,7 @@ export const WidgetEntrepriseOffre = () => {
         description="Déposez votre offre dès maintenant."
       />
       <Box mt={10}>
-        <FormulaireCreationOffre />
+        <FormulaireEditionOffre />
       </Box>
       <WidgetFooter />
     </DepotSimplifieLayout>

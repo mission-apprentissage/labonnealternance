@@ -3,17 +3,16 @@ import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { IUserWithAccountFields } from "shared"
-import { ENTREPRISE } from "shared/constants/recruteur"
+import { AUTHTYPE, ENTREPRISE } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
-import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
+import CustomInput from "@/app/(espace-pro)/_components/CustomInput"
+import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
+import AnimationContainer from "@/app/(espace-pro)/espace-pro/(connected)/_components/AnimationContainer"
+import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/compte/_components/InformationLegaleEntreprise"
 import { useAuth } from "@/context/UserContext"
-
-import { AUTHTYPE } from "../../../../../common/contants"
-import { AnimationContainer, CustomInput, InformationLegaleEntreprise, Layout, LoadingEmptySpace } from "../../../../../components/espace_pro"
-import { authProvider, withAuth } from "../../../../../components/espace_pro/withAuth"
-import { ArrowDropRightLine, ArrowRightLine } from "../../../../../theme/components/icons"
-import { getFormulaire, updateUserWithAccountFields } from "../../../../../utils/api"
+import { ArrowDropRightLine, ArrowRightLine } from "@/theme/components/icons"
+import { getFormulaire, updateUserWithAccountFields } from "@/utils/api"
 
 const Formulaire = ({
   last_name,
@@ -185,14 +184,6 @@ function EditionEntrepriseContact() {
   )
 }
 
-function EditionEntrepriseContactPage() {
-  return (
-    <Layout footer={false}>
-      <EditionEntrepriseContact />
-    </Layout>
-  )
+export default function EditionEntrepriseContactPage() {
+  return <EditionEntrepriseContact />
 }
-
-export const getServerSideProps = async (context) => ({ props: { ...(await getAuthServerSideProps(context)) } })
-
-export default authProvider(withAuth(EditionEntrepriseContactPage))

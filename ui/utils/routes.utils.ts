@@ -1,4 +1,5 @@
 import type { Metadata, MetadataRoute } from "next"
+import { OPCO } from "shared/constants"
 import { generateUri } from "shared/helpers/generateUri"
 
 import { publicConfig } from "@/config.public"
@@ -174,6 +175,15 @@ export const PAGES = {
         description: "Diffusez simplement et gratuitement vos offres en alternance.",
       }),
     },
+    administrationOpco: {
+      getPath: () => `/espace-pro/opco` as string,
+      title: "Administration OPCO",
+      index: false,
+      getMetadata: () => ({
+        title: "Administration OPCO",
+        description: "",
+      }),
+    },
     espaceProCreationEntreprise: {
       getPath: () => `/espace-pro/creation/entreprise` as string,
       title: "Créer un compte entreprise",
@@ -212,6 +222,67 @@ export const PAGES = {
       }),
       title: metier,
     }),
+
+    modificationEntreprise: (establishment_id): IPage => ({
+      getPath: () => `/espace-pro/entreprise/${establishment_id}/edition` as string,
+      index: false,
+      getMetadata: () => ({ title: "Modification entreprise" }),
+      title: "Modification entreprise",
+    }),
+    offreCreation: ({
+      offerId,
+      establishment_id,
+      userType,
+      raison_sociale,
+      establishment_siret,
+    }: {
+      offerId: string
+      establishment_id: string
+      userType: string
+      raison_sociale?: string
+      establishment_siret?: string
+    }): IPage => ({
+      getPath: () => {
+        const raisonSocialeParam = raison_sociale ? `?raison_sociale=${raison_sociale}` : ""
+        switch (userType) {
+          case OPCO:
+            return `/espace-pro/opco/entreprise/${establishment_siret}/${establishment_id}/offre/${offerId}}${raisonSocialeParam}`
+          default:
+            return `/espace-pro/entreprise/${establishment_id}/offre/${offerId}${raisonSocialeParam}`
+        }
+      },
+      index: false,
+      getMetadata: () => ({ title: "Création d'une offre" }),
+      title: "Création d'une offre",
+    }),
+    successEditionOffre: ({ userType, establishment_id, user_id }: { userType: "OPCO" | "ENTREPRISE" | "CFA" | "ADMIN"; establishment_id?: string; user_id?: string }): IPage => ({
+      getPath: () => {
+        return userType === OPCO ? `/espace-pro/opco/entreprise/${user_id}/entreprise/${establishment_id}` : `/espace-pro/entreprise/${establishment_id}`
+      },
+      title: "Success édition offre",
+      index: false,
+      getMetadata: () => ({}),
+    }),
+    miseEnRelationCreationOffre: ({ isWidget, queryParameters }: { isWidget: boolean; queryParameters: string }): IPage => {
+      const path = `${isWidget ? "/espace-pro/widget/entreprise/mise-en-relation" : "/espace-pro/creation/mise-en-relation"}${queryParameters}`
+
+      return {
+        getPath: () => path,
+        title: "Mise en relation avec les CFAs",
+        index: false,
+        getMetadata: () => ({}),
+      }
+    },
+    finCreationOffre: ({ isWidget, queryParameters }: { isWidget: boolean; queryParameters: string }): IPage => {
+      const path = `${isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin"}${queryParameters}`
+
+      return {
+        getPath: () => path,
+        title: "Création d'offre terminée",
+        index: false,
+        getMetadata: () => ({}),
+      }
+    },
     espaceProCreationDetail: (params: { siret: string; email?: string; type: "CFA" | "ENTREPRISE"; origin: string; isWidget: boolean }): IPage => ({
       getPath: () => {
         const { isWidget, ...querystring } = params
@@ -238,7 +309,7 @@ export const PAGES = {
       },
       title: "Créer un compte entreprise",
     }),
-    espaceProCreationMiseEnRelation: (params: {
+    /*espaceProCreationMiseEnRelation: (params: {
       job: {
         _id: string
         rome_code: string[]
@@ -280,7 +351,7 @@ export const PAGES = {
         }) as string
       },
       title: "Créer un compte entreprise",
-    }),
+    }),*/
     recherche: (params: IRecherchePageParams): IPage => {
       const query = new URLSearchParams()
       query.set("romes", params.romes)

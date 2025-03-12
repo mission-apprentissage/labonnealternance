@@ -4,6 +4,7 @@ import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Button, Center, Checkbox, Container, Divider, Flex, Grid, GridItem, Heading, Link, Spinner, Square, Text } from "@chakra-ui/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { generateQueryString } from "shared/helpers/generateUri"
 import { IEtablissementCatalogueProcheWithDistance } from "shared/interface/etablissement.types"
 
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
@@ -41,15 +42,17 @@ export function CreationMiseEnRelationPage({ isWidget = false }: { isWidget?: bo
   const goToEndStep = ({ withDelegation }) => {
     router.replace(
       PAGES.dynamic
-        .espaceProCreationFin({
+        .finCreationOffre({
           isWidget,
-          jobId: job._id.toString(),
-          email,
-          withDelegation,
-          fromDashboard: fromDashboard === "true",
-          userId,
-          establishment_id,
-          token,
+          queryParameters: generateQueryString({
+            jobId: job._id.toString(),
+            email,
+            withDelegation,
+            fromDashboard: (fromDashboard === "true").toString(),
+            userId,
+            establishment_id,
+            token,
+          }),
         })
         .getPath()
     )

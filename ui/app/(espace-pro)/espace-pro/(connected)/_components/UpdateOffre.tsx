@@ -1,22 +1,28 @@
+"use client"
 import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Container, useToast } from "@chakra-ui/react"
-import { useRouter } from "next/router"
+import { useParams, useRouter } from "next/navigation"
 import { useQuery, useQueryClient } from "react-query"
+import { AUTHTYPE } from "shared/constants"
 
-import { useAuth } from "@/context/UserContext"
+import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
+import { FormulaireEditionOffre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffre"
+import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
+import { ArrowDropRightLine } from "@/theme/components/icons"
+import { createOffre, getFormulaire, getOffre } from "@/utils/api"
 import { apiPut } from "@/utils/api.utils"
+import { PAGES } from "@/utils/routes.utils"
 
-import { AUTHTYPE } from "../../common/contants"
-import { ArrowDropRightLine } from "../../theme/components/icons"
-import { createOffre, getFormulaire, getOffre } from "../../utils/api"
-
-import { FormulaireCreationOffre } from "./FormulaireCreationOffre/FormulaireCreationOffre"
-import LoadingEmptySpace from "./LoadingEmptySpace"
-
-export default function CreationOffre({ onSuccess, jobId, establishment_id }: { onSuccess: () => void; jobId?: string; establishment_id: string }) {
-  const toast = useToast()
+export default function UpdateOffre() {
   const router = useRouter()
+  const { user } = useConnectedSessionClient()
+  const { establishment_id, job_id, user_id } = useParams() as { establishment_id: string; job_id: string; user_id?: string }
+  const jobId = job_id === "creation" ? undefined : job_id
+
+  const onSuccess = () =>
+    user.type === AUTHTYPE.ADMIN ? router.back() : router.push(PAGES.dynamic.successEditionOffre({ userType: user.type, establishment_id, user_id }).getPath())
+
+  const toast = useToast()
   const client = useQueryClient()
-  const { user } = useAuth()
 
   const { data: formulaire, isLoading: isFormulaireLoading } = useQuery("formulaire", () => getFormulaire(establishment_id))
 
@@ -79,7 +85,7 @@ export default function CreationOffre({ onSuccess, jobId, establishment_id }: { 
           )}
         </Breadcrumb>
       </Box>
-      <FormulaireCreationOffre fromDashboard handleSave={handleSave} offre={offre} />
+      <FormulaireEditionOffre fromDashboard handleSave={handleSave} offre={offre} />
     </Container>
   )
 }
