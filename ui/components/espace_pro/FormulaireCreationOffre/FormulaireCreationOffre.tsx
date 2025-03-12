@@ -16,7 +16,7 @@ import { InfosDiffusionOffre } from "@/components/DepotOffre/InfosDiffusionOffre
 import { RomeDetailWithQuery } from "@/components/DepotOffre/RomeDetailWithQuery"
 import { WidgetContext } from "@/context/contextWidget"
 import { useAuth } from "@/context/UserContext"
-import { createOffre, createOffreByToken, getFormulaire, getFormulaireByToken, getRelatedEtablissementsFromRome, getRomeDetail } from "@/utils/api"
+import { createOffre, createOffreByToken, getRomeDetail } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
@@ -45,23 +45,10 @@ export const FormulaireCreationOffre = ({
   const router = useRouter()
   const { establishment_id, email, userId, token, type } = useSearchParamsRecord()
 
-  const { data: formulaire } = useQuery("offre-liste", {
-    enabled: Boolean(establishment_id),
-    queryFn: () => (token ? getFormulaireByToken(establishment_id, token) : getFormulaire(establishment_id)),
-  })
   const romeQuery = useQuery(["getRomeDetail", rome], () => getRomeDetail(rome), {
     retry: false,
     enabled: Boolean(rome),
   })
-
-  const { geo_coordinates } = formulaire ?? {}
-  const [latitude, longitude] = geo_coordinates?.split(",")?.map((str) => parseFloat(str)) ?? []
-  const relatedEtablissementQuery = useQuery(["relatedEtablissement", rome, latitude, longitude], () => getRelatedEtablissementsFromRome({ rome, latitude, longitude, limit: 1 }), {
-    retry: false,
-    enabled: Boolean(rome && latitude && longitude),
-  })
-
-  const haveProposals = Boolean(relatedEtablissementQuery.data?.length)
 
   const {
     widget: { isWidget },
@@ -141,26 +128,6 @@ export const FormulaireCreationOffre = ({
   }
 
   const handleRedirectionAfterSubmit = (form: IRecruiterJson, job: IJobJson, fromDashboard: boolean, jobToken: string) => {
-    if (haveProposals) {
-      return router.replace(
-        PAGES.dynamic
-          .espaceProCreationMiseEnRelation({
-            job: {
-              _id: job._id,
-              rome_code: job.rome_code,
-            },
-            email,
-            geo_coordinates: form.geo_coordinates,
-            fromDashboard,
-            userId,
-            establishment_id,
-            token: jobToken,
-            isWidget,
-          })
-          .getPath()
-      )
-    }
-
     router.replace(
       PAGES.dynamic
         .espaceProCreationFin({
@@ -169,7 +136,6 @@ export const FormulaireCreationOffre = ({
           withDelegation: false,
           fromDashboard,
           userId,
-          establishment_id,
           token: jobToken,
           isWidget,
         })

@@ -15,14 +15,14 @@ import { infosOpcos } from "@/theme/components/logos/infosOpcos"
 import { ApiError } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 
-import { AUTHTYPE } from "../../../common/contants"
-import { phoneValidation } from "../../../common/validation/fieldValidations"
-import { WidgetContext } from "../../../context/contextWidget"
-import { ArrowRightLine } from "../../../theme/components/icons"
-import { createEtablissement, getEntrepriseOpco } from "../../../utils/api"
-import { OpcoSelect } from "../CreationRecruteur/OpcoSelect"
-import { AnimationContainer, AuthentificationLayout, CustomInput } from "../index"
-import { InformationOpco } from "../InformationOpco"
+import { AUTHTYPE } from "../../../../common/contants"
+import { phoneValidation } from "../../../../common/validation/fieldValidations"
+import { OpcoSelect } from "../../../../components/espace_pro/CreationRecruteur/OpcoSelect"
+import { AnimationContainer, CustomInput } from "../../../../components/espace_pro/index"
+import { InformationOpco } from "../../../../components/espace_pro/InformationOpco"
+import { WidgetContext } from "../../../../context/contextWidget"
+import { ArrowRightLine } from "../../../../theme/components/icons"
+import { createEtablissement, getEntrepriseOpco } from "../../../../utils/api"
 
 const Formulaire = ({
   onSubmit,
@@ -40,9 +40,7 @@ const Formulaire = ({
   const router = useRouter()
   const { widget } = useContext(WidgetContext)
 
-  const { data: opcoData, isLoading } = useQuery(["getEntrepriseOpco", establishment_siret], () => getEntrepriseOpco(establishment_siret))
-
-  if (isLoading) return null
+  const { data: opcoData } = useQuery(["getEntrepriseOpco", establishment_siret], () => getEntrepriseOpco(establishment_siret))
 
   const opco = parseEnum(OPCOS_LABEL, opcoData?.opco)
   const shouldSelectOpco = type === AUTHTYPE.ENTREPRISE && !opco
@@ -221,9 +219,7 @@ export const InformationCreationCompte = ({
 
   return (
     <AnimationContainer>
-      <AuthentificationLayout>
-        <Formulaire onSubmit={submitForm} siret={establishment_siret} type={type} origin={origin} email={email} />
-      </AuthentificationLayout>
+      <Formulaire onSubmit={submitForm} siret={establishment_siret} type={type} origin={origin} email={email} />
     </AnimationContainer>
   )
 }

@@ -18,7 +18,7 @@ import { WidgetContext } from "../../../context/contextWidget"
 import { getEntrepriseInformation, validateCfaCreation } from "../../../utils/api"
 import { Bandeau, BandeauProps } from "../Bandeau"
 import { InformationsSiret } from "../CreationRecruteur/InformationsSiret"
-import { AnimationContainer, AuthentificationLayout } from "../index"
+import { AnimationContainer } from "../index"
 
 import { SiretAutocomplete } from "./SiretAutocomplete"
 
@@ -154,7 +154,7 @@ const CreationCompteForm = ({
 
 export default function CreationCompte({ type, isWidget = false, origin = "lba" }: { type: EntrepriseOrCfaType; isWidget?: boolean; origin?: string }) {
   const [organisationType, setOrganisationType] = useState<EntrepriseOrCfaType>(type)
-  const { setWidget, widget: wid } = useContext(WidgetContext)
+  const { setWidget } = useContext(WidgetContext)
   const { setOrganisation } = useContext(LogoContext)
   const [bandeau, setBandeau] = useState<BandeauProps>(null)
   const [selectedTab, setSelectedTab] = useState<EntrepriseOrCfaType>(type)
@@ -180,22 +180,20 @@ export default function CreationCompte({ type, isWidget = false, origin = "lba" 
   }
 
   return (
-    <AuthentificationLayout>
-      <AnimationContainer>
-        {bandeau && <Bandeau {...bandeau} />}
-        <SimpleGrid columns={[1, 1, 2, 2]} spacing={[0, 0, 4, 4]} mt={wid.isWidget ? 0 : { base: 4, md: 12 }}>
-          <Box mb={4}>
-            <Heading className="big">Vous recrutez des alternants ?</Heading>
-            <Text className="big" mt={2} mb={4}>
-              Pour diffuser gratuitement vos offres, précisez le nom ou le SIRET de votre établissement.
-            </Text>
-            <CreationCompteForm organisationType={organisationType} setBandeau={setBandeau} origin={origin} isWidget={isWidget} onSelectOrganisation={onSelectOrganisation} />
-          </Box>
-          <BorderedBox>
-            <InformationsSiret currentTab={selectedTab} onCurrentTabChange={setSelectedTab} />
-          </BorderedBox>
-        </SimpleGrid>
-      </AnimationContainer>
-    </AuthentificationLayout>
+    <AnimationContainer>
+      {bandeau && <Bandeau {...bandeau} />}
+      <SimpleGrid columns={[1, 1, 2, 2]} spacing={[0, 0, 4, 4]} mt={0}>
+        <Box mb={4}>
+          <Heading className="big">Vous recrutez des alternants ?</Heading>
+          <Text className="big" mt={2} mb={4}>
+            Pour diffuser gratuitement vos offres, précisez le nom ou le SIRET de votre établissement.
+          </Text>
+          <CreationCompteForm organisationType={organisationType} setBandeau={setBandeau} origin={origin} isWidget={isWidget} onSelectOrganisation={onSelectOrganisation} />
+        </Box>
+        <BorderedBox>
+          <InformationsSiret currentTab={selectedTab} onCurrentTabChange={setSelectedTab} />
+        </BorderedBox>
+      </SimpleGrid>
+    </AnimationContainer>
   )
 }

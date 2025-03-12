@@ -238,41 +238,7 @@ export const PAGES = {
       },
       title: "Créer un compte entreprise",
     }),
-    espaceProCreationMiseEnRelation: (params: {
-      job: {
-        _id: string
-        rome_code: string[]
-      }
-      email: string
-      userId: string
-      establishment_id: string
-      geo_coordinates: string
-      fromDashboard: boolean
-      token: string
-      isWidget: boolean
-    }): IPage => ({
-      getPath: () => {
-        const { isWidget, job, fromDashboard, ...querystring } = params
-        return generateUri(isWidget ? "/espace-pro/widget/entreprise/mise-en-relation" : "/espace-pro/creation/mise-en-relation", {
-          querystring: {
-            ...querystring,
-            fromDashboard: fromDashboard.toString(),
-            job: JSON.stringify(job),
-          },
-        }) as string
-      },
-      title: "Créer un compte entreprise",
-    }),
-    espaceProCreationFin: (params: {
-      jobId: string
-      email: string
-      withDelegation: boolean
-      fromDashboard: boolean
-      userId: string
-      establishment_id: string
-      token: string
-      isWidget: boolean
-    }): IPage => ({
+    espaceProCreationFin: (params: { jobId: string; email: string; withDelegation: boolean; fromDashboard: boolean; userId: string; token: string; isWidget: boolean }): IPage => ({
       getPath: () => {
         const { isWidget, fromDashboard, withDelegation, ...querystring } = params
         return generateUri(isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin", {
