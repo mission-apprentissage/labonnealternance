@@ -122,7 +122,7 @@ function FinComponent(props: ComponentProps) {
    */
   const onClose = async () => {
     await client.invalidateQueries("offre-liste")
-    await router.push(`/espace-pro/administration/entreprise/${encodeURIComponent(establishment_id.toString())}`)
+    router.push(`/espace-pro/administration/entreprise/${encodeURIComponent(establishment_id.toString())}`)
   }
 
   const shouldDisplayAccountInformation = !fromDashboard && !userIsInError

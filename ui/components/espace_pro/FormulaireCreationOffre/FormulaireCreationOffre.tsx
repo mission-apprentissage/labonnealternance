@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation"
 import { useContext, useState } from "react"
 import { useQuery } from "react-query"
 import { IRecruiterJson, IReferentielRomeForJob } from "shared"
-import { generateUri } from "shared/helpers/generateUri"
 import { IJobJson, JOB_STATUS } from "shared/models/job.model"
 import { detectUrlAndEmails } from "shared/utils/detectUrlAndEmails"
 import * as Yup from "yup"
@@ -18,6 +17,7 @@ import { RomeDetailWithQuery } from "@/components/DepotOffre/RomeDetailWithQuery
 import { WidgetContext } from "@/context/contextWidget"
 import { useAuth } from "@/context/UserContext"
 import { createOffre, createOffreByToken, getFormulaire, getFormulaireByToken, getRelatedEtablissementsFromRome, getRomeDetail } from "@/utils/api"
+import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
 import { FormikCreationOffreButtons } from "./FormulaireCreationOffreButtons"
@@ -41,7 +41,7 @@ export const FormulaireCreationOffre = ({
     rome_appellation_label && initRome ? { rome: initRome, appellation: rome_appellation_label } : null
   )
   const { rome } = romeAndAppellation ?? {}
-  const { user } = useAuth()
+  const { user } = useAuth() ?? {}
   const router = useRouter()
   const { establishment_id, email, userId, token, type } = useSearchParamsRecord()
 
@@ -142,29 +142,38 @@ export const FormulaireCreationOffre = ({
 
   const handleRedirectionAfterSubmit = (form: IRecruiterJson, job: IJobJson, fromDashboard: boolean, jobToken: string) => {
     if (haveProposals) {
-      const transmittedJob = {
-        _id: job._id,
-        rome_code: job.rome_code,
-      }
       return router.replace(
-        generateUri(isWidget ? "/espace-pro/widget/entreprise/mise-en-relation" : "/espace-pro/creation/mise-en-relation", {
-          querystring: {
-            job: JSON.stringify(transmittedJob),
+        PAGES.dynamic
+          .espaceProCreationMiseEnRelation({
+            job: {
+              _id: job._id,
+              rome_code: job.rome_code,
+            },
             email,
             geo_coordinates: form.geo_coordinates,
-            fromDashboard: fromDashboard.toString(),
+            fromDashboard,
             userId,
             establishment_id,
             token: jobToken,
-          },
-        })
+            isWidget,
+          })
+          .getPath()
       )
     }
 
     router.replace(
-      generateUri(isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin", {
-        querystring: { jobId: job._id.toString(), email, withDelegation: "false", fromDashboard: fromDashboard.toString(), userId, establishment_id, token: jobToken },
-      })
+      PAGES.dynamic
+        .espaceProCreationFin({
+          jobId: job._id.toString(),
+          email,
+          withDelegation: false,
+          fromDashboard,
+          userId,
+          establishment_id,
+          token: jobToken,
+          isWidget,
+        })
+        .getPath()
     )
   }
 

@@ -4,13 +4,13 @@ import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Button, Center, Checkbox, Container, Divider, Flex, Grid, GridItem, Heading, Link, Spinner, Square, Text } from "@chakra-ui/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import { generateUri } from "shared/helpers/generateUri"
 import { IEtablissementCatalogueProcheWithDistance } from "shared/interface/etablissement.types"
 
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 import { ArrowRightLine, Check } from "@/theme/components/icons"
 import { createEtablissementDelegation, createEtablissementDelegationByToken, getRelatedEtablissementsFromRome } from "@/utils/api"
+import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
 /**
@@ -40,9 +40,18 @@ export function CreationMiseEnRelationPage({ isWidget = false }: { isWidget?: bo
 
   const goToEndStep = ({ withDelegation }) => {
     router.replace(
-      generateUri(isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin", {
-        querystring: { jobId: job._id.toString(), email, withDelegation, fromDashboard, userId, establishment_id, token },
-      })
+      PAGES.dynamic
+        .espaceProCreationFin({
+          isWidget,
+          jobId: job._id.toString(),
+          email,
+          withDelegation,
+          fromDashboard: fromDashboard === "true",
+          userId,
+          establishment_id,
+          token,
+        })
+        .getPath()
     )
   }
 

@@ -22,7 +22,7 @@ import { ChampNombre } from "./ChampNombre"
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
 
 export const FormikCreationOffreFields = ({ onRomeChange, type }: { onRomeChange: (rome: string, appellation: string) => void; type: string }) => {
-  const { user } = useAuth()
+  const { user } = useAuth() ?? {}
   const { organisation } = useContext(LogoContext)
 
   const handleJobSearch = async (search: string) => {

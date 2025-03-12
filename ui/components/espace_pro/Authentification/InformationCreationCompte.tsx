@@ -10,8 +10,10 @@ import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
 import { generateUri } from "shared/helpers/generateUri"
 import * as Yup from "yup"
 
+import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/compte/_components/InformationLegaleEntreprise"
 import { infosOpcos } from "@/theme/components/logos/infosOpcos"
 import { ApiError } from "@/utils/api.utils"
+import { PAGES } from "@/utils/routes.utils"
 
 import { AUTHTYPE } from "../../../common/contants"
 import { phoneValidation } from "../../../common/validation/fieldValidations"
@@ -19,7 +21,7 @@ import { WidgetContext } from "../../../context/contextWidget"
 import { ArrowRightLine } from "../../../theme/components/icons"
 import { createEtablissement, getEntrepriseOpco } from "../../../utils/api"
 import { OpcoSelect } from "../CreationRecruteur/OpcoSelect"
-import { AnimationContainer, AuthentificationLayout, CustomInput, InformationLegaleEntreprise } from "../index"
+import { AnimationContainer, AuthentificationLayout, CustomInput } from "../index"
 import { InformationOpco } from "../InformationOpco"
 
 const Formulaire = ({
@@ -177,16 +179,17 @@ export const InformationCreationCompte = ({
         switch (type) {
           case AUTHTYPE.ENTREPRISE: {
             router.push(
-              generateUri(isWidget ? "/espace-pro/widget/entreprise/offre" : "/espace-pro/creation/offre", {
-                querystring: {
+              PAGES.dynamic
+                .espaceProCreationOffre({
                   establishment_id: formulaire.establishment_id,
                   type,
                   email: user.email,
                   userId: user._id.toString(),
                   token,
-                  displayBanner: Boolean(!validated).toString(),
-                },
-              })
+                  displayBanner: !validated,
+                  isWidget,
+                })
+                .getPath()
             )
             break
           }
