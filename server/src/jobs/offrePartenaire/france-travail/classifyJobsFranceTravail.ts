@@ -2,12 +2,13 @@ import { groupData, oleoduc, writeData } from "oleoduc"
 import { IFTJobRaw } from "shared"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { ZChatCompletionResponse } from "@/services/openai/openai.service"
 
 import { logger } from "../../../common/logger"
 import { notifyToSlack } from "../../../common/utils/slackUtils"
 import { Message, sendMistralMessages } from "../../../services/mistralai/mistralai.service"
 
-export const checkFTOffer = async (data: any): Promise<any> => {
+export const checkFTOffer = async (data: any) => {
   const messages: Message[] = [
     {
       role: "system",
@@ -59,8 +60,12 @@ Une fois que tu as déterminé si les offres sont de type CFA, Entreprise ou Ent
     if (!response) {
       return null
     }
-
-    return response
+    const { data, error } = ZChatCompletionResponse.safeParse(JSON.parse(response))
+    if (error) {
+      console.log("Invalid response format", error)
+      return null
+    }
+    return data
   } catch (error) {
     console.error(error)
   }
@@ -95,6 +100,9 @@ export const classifyFranceTravailJobs = async () => {
     writeData(async (rawFTDocuments: IFTJobRaw[]) => {
       const offres = mapDocument(rawFTDocuments)
       const response = await checkFTOffer({ offres, examples })
+      if (!response) {
+        return
+      }
 
       for (const rsp of response.offres) {
         await getDbCollection("raw_francetravail").findOneAndUpdate(
