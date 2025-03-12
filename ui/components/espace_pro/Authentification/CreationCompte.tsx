@@ -1,12 +1,16 @@
+"use client"
+
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Alert, AlertIcon, Box, Heading, Link, SimpleGrid, Text } from "@chakra-ui/react"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 import { useContext, useEffect, useState } from "react"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
 import { searchEntreprise } from "@/services/searchEntreprises"
 import { ApiError } from "@/utils/api.utils"
+import { PAGES } from "@/utils/routes.utils"
+import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
 import { AUTHTYPE } from "../../../common/contants"
 import { LogoContext } from "../../../context/contextLogo"
@@ -38,20 +42,18 @@ const CreationCompteForm = ({
   const router = useRouter()
   const [isCfa, setIsCfa] = useState(false)
 
-  const nextUri = isWidget ? "/espace-pro/widget/entreprise/detail" : "/espace-pro/creation/detail"
-
   const submitSiret = ({ establishment_siret }, { setSubmitting, setFieldError }) => {
     setBandeau(null)
     const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
+
+    const nextUri = PAGES.dynamic.espaceProCreationDetail({ siret: formattedSiret, type: organisationType, origin, isWidget }).getPath()
+
     // validate establishment_siret
     if (organisationType === AUTHTYPE.ENTREPRISE) {
       getEntrepriseInformation(formattedSiret).then((entrepriseData) => {
         if (entrepriseData.error === true) {
           if (entrepriseData.statusCode >= 500) {
-            router.push({
-              pathname: nextUri,
-              query: { type: organisationType, origin, siret: formattedSiret },
-            })
+            router.push(nextUri)
           } else {
             setFieldError("establishment_siret", entrepriseData?.data?.errorCode === BusinessErrorCodes.NON_DIFFUSIBLE ? BusinessErrorCodes.NON_DIFFUSIBLE : entrepriseData.message)
             setIsCfa(entrepriseData?.data?.errorCode === BusinessErrorCodes.IS_CFA)
@@ -59,20 +61,14 @@ const CreationCompteForm = ({
           }
         } else if (entrepriseData.error === false) {
           setSubmitting(true)
-          router.push({
-            pathname: nextUri,
-            query: { siret: formattedSiret, type: organisationType, origin },
-          })
+          router.push(nextUri)
         }
       })
     } else {
       validateCfaCreation(formattedSiret)
         .then(() => {
           setSubmitting(false)
-          router.push({
-            pathname: nextUri,
-            query: { siret: formattedSiret, type: organisationType, origin },
-          })
+          router.push(nextUri)
         })
         .catch((error) => {
           if (error instanceof ApiError) {
@@ -143,7 +139,7 @@ const CreationCompteForm = ({
               variant="classic"
               onClick={() => {
                 setIsCfa(false)
-                router.push("/espace-pro/creation/cfa")
+                router.push(PAGES.static.espaceProCreationCfa.getPath())
               }}
             >
               veuillez utiliser ce lien
@@ -162,12 +158,12 @@ export default function CreationCompte({ type, isWidget = false, origin = "lba" 
   const { setOrganisation } = useContext(LogoContext)
   const [bandeau, setBandeau] = useState<BandeauProps>(null)
   const [selectedTab, setSelectedTab] = useState<EntrepriseOrCfaType>(type)
-  const router = useRouter()
-  const mobile = router.query.mobile === "true" ? true : false
+  const searchParams = useSearchParamsRecord()
+  const isMobile: boolean = searchParams.mobile === "true"
 
   useEffect(() => {
     if (isWidget) {
-      setWidget({ isWidget: true, mobile: mobile ?? false })
+      setWidget({ isWidget: true, mobile: isMobile ?? false })
       setOrganisation(origin ?? "lba")
     }
     /* eslint react-hooks/exhaustive-deps: 0 */

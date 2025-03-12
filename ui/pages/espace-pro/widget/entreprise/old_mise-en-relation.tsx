@@ -1,4 +1,4 @@
-import CreationMiseEnRelationPage from "../../creation/mise-en-relation"
+import CreationMiseEnRelationPage from "../../creation/old_mise-en-relation"
 
 export const WidgetEntrepriseMiseEnRelation = () => {
   return <CreationMiseEnRelationPage isWidget={true} />

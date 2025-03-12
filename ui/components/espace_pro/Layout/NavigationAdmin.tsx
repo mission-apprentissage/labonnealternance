@@ -1,3 +1,5 @@
+"use client"
+
 import { assertUnreachable } from "@/../shared"
 import { Box, Container, Tab, TabList, Tabs } from "@chakra-ui/react"
 import { useRouter } from "next/router"

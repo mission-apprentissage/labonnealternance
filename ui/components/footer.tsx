@@ -1,7 +1,9 @@
+"use client"
+
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Container, Divider, Flex, Grid, GridItem, Image, Link, ListItem, UnorderedList } from "@chakra-ui/react"
 import NextLink from "next/link"
-import { useRouter } from "next/router"
+import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 
 import { publicConfig } from "../config.public"
@@ -27,7 +29,7 @@ const lastLink = {
 }
 
 const Footer = () => {
-  const { pathname } = useRouter()
+  const pathname = usePathname()
   const [ressource, setRessource] = useState<string>()
 
   useEffect(() => {

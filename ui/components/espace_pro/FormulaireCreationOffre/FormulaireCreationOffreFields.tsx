@@ -1,7 +1,8 @@
+"use client"
+
 import { Box, Checkbox, CheckboxGroup, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input, Link, Select, Text } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import { useFormikContext } from "formik"
-import { useRouter } from "next/router"
 import { useContext } from "react"
 import { IAppellationsRomes } from "shared"
 import { TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "shared/constants/recruteur"
@@ -20,12 +21,9 @@ import { ChampNombre } from "./ChampNombre"
 
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
 
-export const FormikCreationOffreFields = ({ onRomeChange }: { onRomeChange: (rome: string, appellation: string) => void }) => {
-  const router = useRouter()
-  const { user } = useAuth()
+export const FormikCreationOffreFields = ({ onRomeChange, type }: { onRomeChange: (rome: string, appellation: string) => void; type: string }) => {
+  const { user } = useAuth() ?? {}
   const { organisation } = useContext(LogoContext)
-
-  const { type } = router.query as { establishment_id: string; email: string; userId: string; type: string; token: string }
 
   const handleJobSearch = async (search: string) => {
     if (search.trim().length !== 0) {

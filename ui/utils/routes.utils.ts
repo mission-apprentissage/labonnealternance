@@ -1,12 +1,13 @@
 import type { Metadata, MetadataRoute } from "next"
+import { generateUri } from "shared/helpers/generateUri"
 
 import { publicConfig } from "@/config.public"
 
 export interface IPage {
   getPath: (args?: any) => string
   title: string
-  index: boolean
-  getMetadata: (args?: any) => Metadata
+  index?: boolean
+  getMetadata?: (args?: any) => Metadata
 }
 
 export interface INotionPage extends IPage {
@@ -173,6 +174,14 @@ export const PAGES = {
         description: "Diffusez simplement et gratuitement vos offres en alternance.",
       }),
     },
+    espaceProCreationEntreprise: {
+      getPath: () => `/espace-pro/creation/entreprise` as string,
+      title: "Créer un compte entreprise",
+    },
+    espaceProCreationCfa: {
+      getPath: () => `/espace-pro/creation/cfa` as string,
+      title: "Créer un compte d'organisme de formation",
+    },
   },
   dynamic: {
     // example
@@ -202,6 +211,75 @@ export const PAGES = {
         description: `Explorez les différents métiers accessibles en ${metier} en alternance et trouvez celui qui correspond à votre projet professionnel.`,
       }),
       title: metier,
+    }),
+    espaceProCreationDetail: (params: { siret: string; email?: string; type: "CFA" | "ENTREPRISE"; origin: string; isWidget: boolean }): IPage => ({
+      getPath: () => {
+        const { isWidget, ...querystring } = params
+        return generateUri(isWidget ? "/espace-pro/widget/entreprise/detail" : "/espace-pro/creation/detail", {
+          querystring: { ...querystring },
+        }) as string
+      },
+      title: "Créer un compte entreprise",
+    }),
+    espaceProCreationOffre: (params: {
+      establishment_id: string
+      type: "CFA" | "ENTREPRISE"
+      email: string
+      userId: string
+      token: string
+      displayBanner: boolean
+      isWidget: boolean
+    }): IPage => ({
+      getPath: () => {
+        const { isWidget, displayBanner, ...querystring } = params
+        return generateUri(isWidget ? "/espace-pro/widget/entreprise/offre" : "/espace-pro/creation/offre", {
+          querystring: { ...querystring, displayBanner: displayBanner.toString() },
+        }) as string
+      },
+      title: "Créer un compte entreprise",
+    }),
+    espaceProCreationMiseEnRelation: (params: {
+      job: {
+        _id: string
+        rome_code: string[]
+      }
+      email: string
+      userId: string
+      establishment_id: string
+      geo_coordinates: string
+      fromDashboard: boolean
+      token: string
+      isWidget: boolean
+    }): IPage => ({
+      getPath: () => {
+        const { isWidget, job, fromDashboard, ...querystring } = params
+        return generateUri(isWidget ? "/espace-pro/widget/entreprise/mise-en-relation" : "/espace-pro/creation/mise-en-relation", {
+          querystring: {
+            ...querystring,
+            fromDashboard: fromDashboard.toString(),
+            job: JSON.stringify(job),
+          },
+        }) as string
+      },
+      title: "Créer un compte entreprise",
+    }),
+    espaceProCreationFin: (params: {
+      jobId: string
+      email: string
+      withDelegation: boolean
+      fromDashboard: boolean
+      userId: string
+      establishment_id: string
+      token: string
+      isWidget: boolean
+    }): IPage => ({
+      getPath: () => {
+        const { isWidget, fromDashboard, withDelegation, ...querystring } = params
+        return generateUri(isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin", {
+          querystring: { ...querystring, fromDashboard: fromDashboard.toString(), withDelegation: withDelegation.toString() },
+        }) as string
+      },
+      title: "Créer un compte entreprise",
     }),
     recherche: (params: IRecherchePageParams): IPage => {
       const query = new URLSearchParams()
@@ -275,8 +353,8 @@ function getSitemapItem(page: IPage): MetadataRoute.Sitemap[number] {
 }
 
 export function getSitemap(): MetadataRoute.Sitemap {
-  return Object.values(PAGES.static)
-    .filter((page) => page.index)
+  return Object.values((PAGES as IPages).static)
+    .filter((page) => page.index === true)
     .map(getSitemapItem)
 }
 

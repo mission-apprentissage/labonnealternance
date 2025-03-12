@@ -14,7 +14,7 @@ import { getCfaInformation, getEntrepriseInformation } from "@/utils/api"
 export type InformationLegaleEntrepriseProps = { siret: string; type: typeof CFA | typeof ENTREPRISE; opco?: OPCOS_LABEL }
 
 export const InformationLegaleEntreprise = ({ siret, type, opco }: InformationLegaleEntrepriseProps) => {
-  const { user } = useAuth()
+  const { user } = useAuth() ?? {}
   const entrepriseQuery = useQuery(["get-entreprise", siret], () => getEntrepriseInformation(siret, { skipUpdate: true }), { enabled: Boolean(siret && type === ENTREPRISE) })
   const cfaQuery = useQuery(["get-cfa-infos", siret], () => getCfaInformation(siret), { enabled: Boolean(siret && type === CFA) })
   const { isLoading } = type === ENTREPRISE ? entrepriseQuery : cfaQuery
