@@ -8,7 +8,7 @@ import { IJob } from "shared"
 import { AUTHTYPE } from "shared/constants"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
-import { OffresTabs } from "@/app/(espace-pro)/espace-pro/(connected)/administration/_components/OffresTabs"
+import { OffresTabs } from "@/app/(espace-pro)/espace-pro/(connected)/_components/OffresTabs"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { ArrowDropRightLine, Building, Plus } from "@/theme/components/icons"
 import { getFormulaire } from "@/utils/api"

@@ -9,7 +9,7 @@ import { AUTHTYPE, RECRUITER_STATUS } from "shared/constants"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import Table from "@/app/(espace-pro)/_components/Table"
-import ConfirmationSuppressionOffre from "@/app/(espace-pro)/espace-pro/(connected)/administration/_components/ConfirmationSuppressionOffre"
+import ConfirmationSuppressionOffre from "@/app/(espace-pro)/espace-pro/(connected)/_components/ConfirmationSuppressionOffre"
 import { sortReactTableDate } from "@/common/utils/dateUtils"
 import { publicConfig } from "@/config.public"
 import { useAuth } from "@/context/UserContext"

@@ -8,7 +8,7 @@ import * as Yup from "yup"
 
 import CustomInput from "@/app/(espace-pro)/_components/CustomInput"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
-import AnimationContainer from "@/app/(espace-pro)/espace-pro/(connected)/administration/_components/AnimationContainer"
+import AnimationContainer from "@/app/(espace-pro)/espace-pro/(connected)/_components/AnimationContainer"
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/compte/_components/InformationLegaleEntreprise"
 import { useAuth } from "@/context/UserContext"
 import { ArrowDropRightLine, ArrowRightLine } from "@/theme/components/icons"

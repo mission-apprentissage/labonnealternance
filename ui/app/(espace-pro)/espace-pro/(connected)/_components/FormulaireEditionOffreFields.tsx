@@ -6,7 +6,7 @@ import { useContext } from "react"
 import { IAppellationsRomes } from "shared"
 import { TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "shared/constants/recruteur"
 
-import { ChampNombre } from "@/app/(espace-pro)/espace-pro/(connected)/administration/_components/ChampNombre"
+import { ChampNombre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/ChampNombre"
 import { AUTHTYPE } from "@/common/contants"
 import { debounce } from "@/common/utils/debounce"
 import { CustomInput, DropdownCombobox } from "@/components/espace_pro"

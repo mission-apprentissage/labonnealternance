@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from "react-query"
 import { AUTHTYPE } from "shared/constants"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
-import { FormulaireEditionOffre } from "@/app/(espace-pro)/espace-pro/(connected)/administration/_components/FormulaireEditionOffre"
+import { FormulaireEditionOffre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffre"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { ArrowDropRightLine } from "@/theme/components/icons"
 import { createOffre, getFormulaire, getOffre } from "@/utils/api"
