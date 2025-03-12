@@ -238,6 +238,16 @@ export const PAGES = {
       getMetadata: () => ({ title: "Création d'une offre" }),
       title: "Création d'une offre",
     }),
+    successEditionOffre: ({ userType, establishment_id, user_id }: { userType: "OPCO" | "ENTREPRISE" | "CFA" | "ADMIN"; establishment_id?: string; user_id?: string }): IPage => ({
+      getPath: () => {
+        return userType === OPCO
+          ? `/espace-pro/administration/opco/entreprise/${user_id}/entreprise/${establishment_id}`
+          : `/espace-pro/administration/entreprise/${establishment_id}`
+      },
+      title: "Success édition offre",
+      index: false,
+      getMetadata: () => ({}),
+    }),
   },
   notion: {},
 } as const satisfies IPages
