@@ -1,9 +1,10 @@
 import { badRequest, internal } from "@hapi/boom"
-import { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, JOB_STATUS_ENGLISH, assertUnreachable, zRoutes } from "shared"
+import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob, JOB_STATUS_ENGLISH, assertUnreachable, zRoutes } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
+import { getPartnerJobByIdV2 } from "@/services/partnerJob.service"
 import { getRecruteurLbaFromDB } from "@/services/recruteurLba.service"
 
 import { s3SignedUrl } from "../../../common/utils/awsUtils"
@@ -11,7 +12,6 @@ import { trackApiCall } from "../../../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../../../common/utils/sentryUtils"
 import dayjs from "../../../services/dayjs.service"
 import { addExpirationPeriod, getFormulaires } from "../../../services/formulaire.service"
-import { getFtJobFromIdV2 } from "../../../services/ftjob.service"
 import { getLbaJobByIdV2 } from "../../../services/lbajob.service"
 import { Server } from "../../server"
 
@@ -186,7 +186,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { source, id } = req.params
-      let result: ILbaItemLbaJob | ILbaItemFtJob | ILbaItemLbaCompany | null
+      let result: ILbaItemLbaJob | ILbaItemPartnerJob | ILbaItemLbaCompany | null
 
       switch (source) {
         case LBA_ITEM_TYPE.RECRUTEURS_LBA:
@@ -197,7 +197,7 @@ export default (server: Server) => {
           break
 
         case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES:
-          result = await getFtJobFromIdV2(id)
+          result = await getPartnerJobByIdV2(id)
           break
 
         default:

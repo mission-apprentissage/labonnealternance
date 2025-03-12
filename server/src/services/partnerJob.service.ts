@@ -1,3 +1,4 @@
+import { badRequest } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { NIVEAUX_POUR_LBA, TRAINING_REMOTE_TYPE } from "shared/constants"
 import { FRANCE_LATITUDE, FRANCE_LONGITUDE } from "shared/constants/geolocation"
@@ -212,5 +213,22 @@ export const getPartnerJobById = async ({ id, caller }: { id: ObjectId; caller?:
   } catch (error) {
     sentryCaptureException(error)
     return manageApiError({ error, api_path: "jobV1/matcha", caller, errorTitle: "getting job by id from partner jobs" })
+  }
+}
+
+export const getPartnerJobByIdV2 = async (id: string): Promise<ILbaItemPartnerJob> => {
+  try {
+    const rawPartnerJob = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(id) })
+
+    if (!rawPartnerJob) {
+      throw badRequest("Job not found")
+    }
+
+    const partnerJob = transformPartnerJob(rawPartnerJob)
+
+    return partnerJob
+  } catch (error) {
+    sentryCaptureException(error)
+    throw badRequest("getPartnerJobByIdV2 - error sent to sentry")
   }
 }

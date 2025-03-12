@@ -1,6 +1,6 @@
 import { Box, Button, Flex, Image, Text, useDisclosure } from "@chakra-ui/react"
 import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
-import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { getItemId } from "../../../utils/getItemId"
 import { SendPlausibleEvent } from "../../../utils/plausible"
@@ -15,9 +15,9 @@ export const NoCandidatureLba = () => {
       <Box fontSize="20px" mr={2}>
         🕵️
       </Box>
-      <Text color="#66673D" fontSize="12px" fontStyle="italic">
+      <Box color="#66673D" fontSize="12px" fontStyle="italic">
         Nous n’avons pas de contact pour cette entreprise, peut-être que vous en trouverez un sur internet !
-      </Text>
+      </Box>
     </Flex>
   )
 }
@@ -26,11 +26,11 @@ export const CandidatureLba = ({ item }: { item: ILbaItemLbaJob | ILbaItemLbaCom
   const modalControls = useDisclosure()
   const submitControls = useSubmitCandidature(item)
   const { onOpen } = modalControls
-  const kind: LBA_ITEM_TYPE_OLD | null = item.ideaType || null
+  const kind = item.ideaType
 
   const openApplicationForm = () => {
     onOpen()
-    SendPlausibleEvent(kind === LBA_ITEM_TYPE_OLD.MATCHA ? "Clic Postuler - Fiche entreprise Offre LBA" : "Clic Postuler - Fiche entreprise Algo", {
+    SendPlausibleEvent(kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "Clic Postuler - Fiche entreprise Offre LBA" : "Clic Postuler - Fiche entreprise Algo", {
       info_fiche: getItemId(item),
     })
   }
@@ -62,7 +62,7 @@ export const CandidatureLba = ({ item }: { item: ILbaItemLbaJob | ILbaItemLbaCom
                 aria-label="Ouvrir le formulaire d'envoi de candidature spontanée"
                 data-testid="postuler-button"
               >
-                J&apos;envoie ma candidature{kind === LBA_ITEM_TYPE_OLD.LBA ? " spontanée" : ""}
+                J&apos;envoie ma candidature{kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? " spontanée" : ""}
               </Button>
             </Box>
             {item.company?.mandataire && (

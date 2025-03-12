@@ -2,14 +2,13 @@ import { setTimeout } from "timers/promises"
 
 import { badRequest, notFound } from "@hapi/boom"
 import distance from "@turf/distance"
-import { ObjectId } from "bson"
 import { NIVEAUX_POUR_OFFRES_PE } from "shared/constants"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
-import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { ILbaItemPartnerJob } from "shared/models"
+import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 
 import { getFtJob, searchForFtJobs } from "@/common/apis/franceTravail/franceTravail.client"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { IApiError, manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
@@ -133,8 +132,8 @@ const transformFtJob = ({ job, latitude = null, longitude = null }: { job: FTJob
 /**
  * Adaptation au modèle LBA et conservation des seules infos utilisées des offres
  */
-export const transformFtJobV2 = (job: IJobsPartnersOfferPrivate): ILbaItemFtJob => {
-  const resultJob: ILbaItemFtJob = {
+export const transformFtJobV2 = (job: IJobsPartnersOfferPrivate): ILbaItemPartnerJob => {
+  const resultJob: ILbaItemPartnerJob = {
     ideaType: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
     id: job._id.toString(),
     title: job.offer_title,
@@ -166,6 +165,8 @@ export const transformFtJobV2 = (job: IJobsPartnersOfferPrivate): ILbaItemFtJob 
     },
     romes: [{ code: job.offer_rome_codes.join(","), label: null }],
     nafs: [{ code: job.workplace_naf_code, label: job.workplace_naf_label }],
+    token: "",
+    recipient_id: `partners_${job._id.toString()}`,
   }
 
   return resultJob
@@ -445,24 +446,5 @@ export const getFtJobFromId = async ({ id, caller }: { id: string; caller: strin
       manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from FT" })
     }
     throw error
-  }
-}
-/**
- * @description Retourne un tableau contenant la seule offre Pôle emploi identifiée
- */
-export const getFtJobFromIdV2 = async (id: string): Promise<ILbaItemFtJob> => {
-  try {
-    const job = await getDbCollection("jobs_partners").findOne({ partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL, _id: new ObjectId(id) })
-
-    if (!job) {
-      throw notFound("getFtJobFromIdV2 - France travail job not fount in DB")
-    }
-
-    const ftJob = transformFtJobV2(job)
-
-    return ftJob
-  } catch (error: any) {
-    sentryCaptureException(error)
-    throw notFound("getFtJobFromIdV2 - error sent to sentry")
   }
 }

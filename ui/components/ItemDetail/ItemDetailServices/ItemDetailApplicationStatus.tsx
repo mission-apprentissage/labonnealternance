@@ -1,10 +1,10 @@
 import { Box, Text } from "@chakra-ui/react"
 import { ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
-import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { localStorageGet } from "@/utils/localStorage"
 
-const getAPostuleMessage = (type: LBA_ITEM_TYPE_OLD, applicationDate: string, mb = 0, mt = 0) => {
+const getAPostuleMessage = (type: LBA_ITEM_TYPE | LBA_ITEM_TYPE_OLD, applicationDate: string, mb = 0, mt = 0) => {
   const date = new Date(parseInt(applicationDate, 10)).toLocaleDateString("fr-FR", {
     year: "numeric",
     month: "long",
@@ -14,7 +14,7 @@ const getAPostuleMessage = (type: LBA_ITEM_TYPE_OLD, applicationDate: string, mb
   return (
     <Box mb={mb} mt={mt}>
       <Text color="grey.600" fontSize="12px" as="span" px={2} py={1} backgroundColor="#FEF7DA">
-        {type === LBA_ITEM_TYPE_OLD.FORMATION ? (
+        {type === LBA_ITEM_TYPE.FORMATION ? (
           <>
             <Text as="span">👍 </Text>
             <Text as="span" fontStyle="italic">

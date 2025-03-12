@@ -496,7 +496,7 @@ export type ILbaItemLbaJobReturnedByAPI = z.output<typeof ZLbaItemLbaJobReturned
 
 export const ZLbaItemPartnerJob = z
   .object({
-    ideaType: z.literal(LBA_ITEM_TYPE_OLD.PARTNER_JOB),
+    ideaType: z.enum([LBA_ITEM_TYPE_OLD.PARTNER_JOB, LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES]),
     title: z.string(), // partnerJob -> offer_title
     contact: ZLbaItemContact.nullish(),
     place: ZLbaItemPlace.nullable(),

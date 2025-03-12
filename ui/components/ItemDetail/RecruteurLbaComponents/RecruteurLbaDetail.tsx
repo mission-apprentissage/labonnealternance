@@ -1,9 +1,10 @@
 import { ILbaItemLbaCompany } from "@/../shared"
-import { AddIcon, ExternalLinkIcon, MinusIcon } from "@chakra-ui/icons"
-import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Flex, Image, Link, ListItem, /*Link,*/ Text, UnorderedList } from "@chakra-ui/react"
-import React, { useContext, useEffect } from "react"
+import { AddIcon, MinusIcon } from "@chakra-ui/icons"
+import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Flex, Image, ListItem, /*Link,*/ Text, UnorderedList } from "@chakra-ui/react"
+import { useContext, useEffect } from "react"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { scrollToNestedElement } from "@/utils/tools"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
@@ -91,9 +92,9 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
                           Téléphone :{" "}
                         </Text>
                         <Text as="span">
-                          <Link ml="2px" isExternal variant="basicUnderlined" href={`tel:${recruteurLba.contact.phone}`} aria-label="Appeler la société au téléphone">
-                            {recruteurLba.contact.phone} <ExternalLinkIcon mb="3px" ml="2px" />
-                          </Link>
+                          <DsfrLink href={`tel:${recruteurLba.contact.phone}`} aria-label="Appeler la société au téléphone">
+                            {recruteurLba.contact.phone}
+                          </DsfrLink>
                         </Text>
                       </Text>
                     )}
@@ -102,15 +103,9 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
 
                   <Text>
                     Avant de candidater, il est indispensable de prendre le temps de vous renseigner sur les activités de l’entreprise.{" "}
-                    <Link
-                      ml="2px"
-                      isExternal
-                      variant="basicUnderlined"
-                      href={getCompanyGoogleSearchLink(recruteurLba)}
-                      aria-label="Recherche de l'entreprise sur google.fr - nouvelle fenêtre"
-                    >
-                      Démarrez une recherche <ExternalLinkIcon mb="3px" ml="2px" />
-                    </Link>{" "}
+                    <DsfrLink href={getCompanyGoogleSearchLink(recruteurLba)} aria-label="Recherche de l'entreprise sur google.fr - nouvelle fenêtre">
+                      Démarrez une recherche
+                    </DsfrLink>{" "}
                     et visitez son site internet. Posez-vous les questions suivantes :
                   </Text>
                   <UnorderedList pl={3} mt={3}>
@@ -143,9 +138,9 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
                     <br />
                     <br />
                     Pour cela, le service{" "}
-                    <Link href="https://diagoriente.beta.gouv.fr/" aria-label="Accéder au site de Diagoriente" isExternal variant="basicUnderlined">
-                      Diagoriente <ExternalLinkIcon mb="3px" ml="2px" />
-                    </Link>{" "}
+                    <DsfrLink href="https://diagoriente.beta.gouv.fr/" aria-label="Accéder au site de Diagoriente">
+                      Diagoriente
+                    </DsfrLink>{" "}
                     vous aide à valoriser vos compétences sur votre CV sur la base de vos expériences et vos centres d’intérêt.
                     <br />
                     <br />
@@ -153,19 +148,19 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
                   </Text>
                   <UnorderedList pl={3} mt={3}>
                     <ListItem mb={3}>
-                      <Link href="https://cv.clicnjob.fr/" aria-label="Accéder au site cv.clicnjob.fr" isExternal variant="basicUnderlined">
-                        https://cv.clicnjob.fr/ <ExternalLinkIcon mb="3px" ml="2px" />
-                      </Link>
+                      <DsfrLink href="https://cv.clicnjob.fr/" aria-label="Accéder au site cv.clicnjob.fr">
+                        https://cv.clicnjob.fr/
+                      </DsfrLink>
                     </ListItem>
                     <ListItem mb={3}>
-                      <Link href="https://cvdesignr.com/fr" aria-label="Accéder au site cvdesignr.com" isExternal variant="basicUnderlined">
-                        https://cvdesignr.com/fr <ExternalLinkIcon mb="3px" ml="2px" />
-                      </Link>
+                      <DsfrLink href="https://cvdesignr.com/fr" aria-label="Accéder au site cvdesignr.com">
+                        https://cvdesignr.com/fr
+                      </DsfrLink>
                     </ListItem>
                     <ListItem mb={3}>
-                      <Link href="https://www.canva.com/fr_fr/creer/cv/" aria-label="Accéder au site www.canva.com pour créer un cv" isExternal variant="basicUnderlined">
-                        https://www.canva.com/fr_fr/creer/cv/ <ExternalLinkIcon mb="3px" ml="2px" />
-                      </Link>
+                      <DsfrLink href="https://www.canva.com/fr_fr/creer/cv/" aria-label="Accéder au site www.canva.com pour créer un cv">
+                        https://www.canva.com/fr_fr/creer/cv/
+                      </DsfrLink>
                     </ListItem>
                   </UnorderedList>
                 </AccordionPanel>
@@ -207,14 +202,12 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
                   </Text>
                   <UnorderedList pl={3} mt={3}>
                     <ListItem mb={3}>
-                      <Link
+                      <DsfrLink
                         href="https://dinum-beta.didask.com/courses/demonstration/60d1adbb877dae00003f0eac"
                         aria-label="Accéder aux site de conseils didask pour préparer un entretient avec un employeur"
-                        isExternal
-                        variant="basicUnderlined"
                       >
-                        Préparer un entretien avec un employeur <ExternalLinkIcon mb="3px" ml="2px" />
-                      </Link>
+                        Préparer un entretien avec un employeur
+                      </DsfrLink>
                     </ListItem>
                   </UnorderedList>
                 </AccordionPanel>

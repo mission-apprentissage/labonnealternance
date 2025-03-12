@@ -4,7 +4,7 @@ import { LBA_ITEM_TYPE } from "../../constants/lbaitem.js"
 import { extensions } from "../../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../../helpers/zodWithOpenApi.js"
 import { ZLbarError } from "../../models/lbacError.model.js"
-import { ZLbaItemFtJob, ZLbaItemLbaCompany, ZLbaItemLbaJob } from "../../models/lbaItem.model.js"
+import { ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemPartnerJob } from "../../models/lbaItem.model.js"
 import { ZRecruiter } from "../../models/recruiter.model.js"
 import { rateLimitDescription } from "../../utils/rateLimitDescription.js"
 import { IRoutesDef, ZResError } from "../common.routes.js"
@@ -121,7 +121,7 @@ export const zJobsRoutesV2 = {
         })
         .strict(),
       response: {
-        "200": z.union([ZLbaItemLbaJob, ZLbaItemLbaCompany, ZLbaItemFtJob]).nullable(),
+        "200": z.union([ZLbaItemLbaJob, ZLbaItemLbaCompany, ZLbaItemPartnerJob]).nullable(),
       },
       securityScheme: null,
     },
