@@ -1,4 +1,4 @@
-import AnimationContainer from "../../app/(espace-pro)/espace-pro/(connected)/administration/_components/AnimationContainer"
+import AnimationContainer from "../../app/(espace-pro)/espace-pro/(connected)/_components/AnimationContainer"
 
 import AdresseAutocomplete from "./AdresseAutocomplete"
 import AuthentificationLayout from "./AuthentificationLayout"
