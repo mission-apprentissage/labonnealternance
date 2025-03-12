@@ -1,6 +1,6 @@
 import { useRouter } from "next/router"
 
-import { InformationCreationCompte } from "@/components/espace_pro/Authentification/InformationCreationCompte"
+import { InformationCreationCompte } from "@/app/(espace-pro-creation-compte)/_components/InformationCreationCompte/InformationCreationCompte"
 import { DepotSimplifieLayout } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 
 export default function CreationDetail() {

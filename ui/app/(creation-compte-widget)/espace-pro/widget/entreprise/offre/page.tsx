@@ -4,14 +4,12 @@ import { Box } from "@chakra-ui/react"
 
 import { FormulaireEditionOffre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffre"
 import { Bandeau } from "@/components/espace_pro/Bandeau"
-import { DepotSimplifieLayout } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
-import { WidgetFooter } from "@/components/WidgetFooter/WidgetFooter"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
 export const WidgetEntrepriseOffre = () => {
   const { displayBanner } = useSearchParamsRecord()
   return (
-    <DepotSimplifieLayout>
+    <>
       <Bandeau
         type="success"
         header={`Votre compte a été créé avec succès${displayBanner === "true" ? " et est en attente de vérification" : ""}.`}
@@ -20,8 +18,7 @@ export const WidgetEntrepriseOffre = () => {
       <Box mt={10}>
         <FormulaireEditionOffre />
       </Box>
-      <WidgetFooter />
-    </DepotSimplifieLayout>
+    </>
   )
 }
 

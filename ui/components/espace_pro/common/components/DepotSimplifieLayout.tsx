@@ -1,4 +1,5 @@
 import { Box } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import React from "react"
 
 import Layout from "../../Layout"
@@ -26,6 +27,12 @@ export const DepotSimplifieStyling = ({ children }: { children: React.ReactNode 
       "& h2": {
         fontSize: ["16px", "16px", "16px", "24px"],
         lineHeight: ["24px", "24px", "24px", "32px"],
+      },
+      "& .bandeau": {
+        marginBottom: fr.spacing("4w"),
+      },
+      "& .bandeau h2": {
+        marginBottom: fr.spacing("1w"),
       },
       "& h2.big": {
         fontSize: ["18px", "20px", "20px", "32px"],

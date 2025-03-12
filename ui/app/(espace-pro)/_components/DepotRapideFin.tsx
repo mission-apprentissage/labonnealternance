@@ -2,18 +2,16 @@
 
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Button, Circle, Heading, Image, Link, Stack, Text, useToast } from "@chakra-ui/react"
-import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { useQuery, useQueryClient } from "react-query"
+import { useQuery } from "react-query"
 import { ETAT_UTILISATEUR } from "shared/constants"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import { zObjectId } from "shared/models/common"
 import { z } from "zod"
 
-import { AuthentificationLayout, LoadingEmptySpace } from "@/components/espace_pro"
+import { LoadingEmptySpace } from "@/components/espace_pro"
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
-import { DepotSimplifieLayout } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 import { MailCloud } from "@/theme/components/logos"
 import { getUserStatus, getUserStatusByToken, sendValidationLink } from "@/utils/api"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
@@ -25,7 +23,6 @@ const ZComponentProps = z
     withDelegation: z.enum(["true", "false"]).transform((value) => value === "true"),
     fromDashboard: z.enum(["true", "false"]).transform((value) => value === "true"),
     userId: z.union([z.string(), zObjectId]),
-    establishment_id: z.string(),
     token: z.string().optional(),
   })
   .strict()
@@ -45,20 +42,10 @@ export function DepotRapideFin() {
   return <FinComponent {...parsedQuery.data} />
 }
 
-export default function DepotRapideFinWithLayout() {
-  return (
-    <DepotSimplifieLayout>
-      <DepotRapideFin />
-    </DepotSimplifieLayout>
-  )
-}
-
 function FinComponent(props: ComponentProps) {
-  const router = useRouter()
   const toast = useToast()
-  const client = useQueryClient()
 
-  const { jobId, email, withDelegation, fromDashboard, userId, establishment_id, token } = props
+  const { jobId, email, withDelegation, fromDashboard, userId, token } = props
 
   const resendMail = () => {
     sendValidationLink(userId.toString(), token)
@@ -116,50 +103,39 @@ function FinComponent(props: ComponentProps) {
     return <LoadingEmptySpace />
   }
 
-  /**
-   * @description On close from dahboard, return to offre-liste.
-   * @return {Promise<void>}
-   */
-  const onClose = async () => {
-    await client.invalidateQueries("offre-liste")
-    router.push(`/espace-pro/administration/entreprise/${encodeURIComponent(establishment_id.toString())}`)
-  }
-
   const shouldDisplayAccountInformation = !fromDashboard && !userIsInError
 
   return (
-    <AuthentificationLayout fromDashboard={fromDashboard} onClose={onClose}>
-      <BorderedBox display="flex" flexDirection={["column", "column", "column", "row"]} gap={[3, 4, 4, 12]} justifyContent="center" width="100%" mt={4}>
-        <MailCloud w={["120px", "120px", "120px", "269px"]} h={["67px", "67px", "67px", "151px"]} />
-        <Box>
-          <Heading className="big" mb={3}>
-            {shouldDisplayAccountInformation ? <>Encore une étape avant la publication de votre offre...</> : <>Félicitations, votre offre est créée.</>}
-          </Heading>
-          {shouldDisplayAccountInformation ? (
-            userIsValidated ? (
-              <Box>
-                <Heading fontSize="18px" lineHeight="28px">
-                  Confirmez votre email
-                </Heading>
-                <Text>
-                  {withDelegation
-                    ? "Pour publier votre offre auprès des candidats et la transmettre aux organismes de formation sélectionnés, confirmez votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à l’adresse suivante :"
-                    : "Pour publier votre offre auprès des candidats, confirmez votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à l’adresse suivante :"}{" "}
-                  <GreenText>{email}</GreenText>
-                </Text>
-                <ResendEmailContent onClick={resendMail} />
-              </Box>
-            ) : (
-              <AwaitingAccountDescription withDelegation={withDelegation} email={email} onResendEmail={resendMail} />
-            )
-          ) : null}
+    <BorderedBox display="flex" flexDirection={["column", "column", "column", "row"]} gap={[3, 4, 4, 12]} justifyContent="center" width="100%" mt={4}>
+      <MailCloud w={["120px", "120px", "120px", "269px"]} h={["67px", "67px", "67px", "151px"]} />
+      <Box>
+        <Heading className="big" mb={3}>
+          {shouldDisplayAccountInformation ? <>Encore une étape avant la publication de votre offre...</> : <>Félicitations, votre offre est créée.</>}
+        </Heading>
+        {shouldDisplayAccountInformation ? (
+          userIsValidated ? (
+            <Box>
+              <Heading fontSize="18px" lineHeight="28px">
+                Confirmez votre email
+              </Heading>
+              <Text>
+                {withDelegation
+                  ? "Pour publier votre offre auprès des candidats et la transmettre aux organismes de formation sélectionnés, confirmez votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à l’adresse suivante :"
+                  : "Pour publier votre offre auprès des candidats, confirmez votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à l’adresse suivante :"}{" "}
+                <GreenText>{email}</GreenText>
+              </Text>
+              <ResendEmailContent onClick={resendMail} />
+            </Box>
+          ) : (
+            <AwaitingAccountDescription withDelegation={withDelegation} email={email} onResendEmail={resendMail} />
+          )
+        ) : null}
 
-          <Box mt={7}>
-            <JobPreview jobId={jobId} userIsValidated={userIsValidated} />
-          </Box>
+        <Box mt={7}>
+          <JobPreview jobId={jobId} userIsValidated={userIsValidated} />
         </Box>
-      </BorderedBox>
-    </AuthentificationLayout>
+      </Box>
+    </BorderedBox>
   )
 }
 

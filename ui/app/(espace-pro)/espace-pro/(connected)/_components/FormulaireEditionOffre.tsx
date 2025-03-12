@@ -3,25 +3,24 @@
 import { Box, Grid, Heading } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import { Formik } from "formik"
-import { omit } from "lodash-es"
-import { useParams, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useContext, useState } from "react"
 import { useQuery } from "react-query"
 import { IRecruiterJson, IReferentielRomeForJob } from "shared"
-import { generateQueryString } from "shared/helpers/generateUri"
 import { IJobJson, JOB_STATUS } from "shared/models/job.model"
 import { detectUrlAndEmails } from "shared/utils/detectUrlAndEmails"
 import * as Yup from "yup"
 
 import { FormulaireEditionOffreButtons } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreButtons"
 import { FormulaireEditionOffreFields } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreFields"
-import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { AUTHTYPE } from "@/common/contants"
 import { InfosDiffusionOffre } from "@/components/DepotOffre/InfosDiffusionOffre"
 import { RomeDetailWithQuery } from "@/components/DepotOffre/RomeDetailWithQuery"
 import { WidgetContext } from "@/context/contextWidget"
-import { createOffre, createOffreByToken, getFormulaire, getFormulaireByToken, getRelatedEtablissementsFromRome, getRomeDetail } from "@/utils/api"
+import { useAuth } from "@/context/UserContext"
+import { createOffre, createOffreByToken, getRomeDetail } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
+import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
 const FR_DATE_FORMAT = "DD/MM/YYYY"
@@ -41,27 +40,14 @@ export const FormulaireEditionOffre = ({
     rome_appellation_label && initRome ? { rome: initRome, appellation: rome_appellation_label } : null
   )
   const { rome } = romeAndAppellation ?? {}
-  const { user } = useConnectedSessionClient()
+  const { user } = useAuth()
   const router = useRouter()
-  const { establishment_id, email, userId, token } = useParams() as { establishment_id: string; email: string; userId: string; type: string; token: string }
+  const { establishment_id, email, userId, token } = useSearchParamsRecord() as { establishment_id: string; email: string; userId: string; type: string; token: string }
 
-  const { data: formulaire } = useQuery("offre-liste", {
-    enabled: Boolean(establishment_id),
-    queryFn: () => (token ? getFormulaireByToken(establishment_id, token) : getFormulaire(establishment_id)),
-  })
   const romeQuery = useQuery(["getRomeDetail", rome], () => getRomeDetail(rome), {
     retry: false,
     enabled: Boolean(rome),
   })
-
-  const { geo_coordinates } = formulaire ?? {}
-  const [latitude, longitude] = geo_coordinates?.split(",")?.map((str) => parseFloat(str)) ?? []
-  const relatedEtablissementQuery = useQuery(["relatedEtablissement", rome, latitude, longitude], () => getRelatedEtablissementsFromRome({ rome, latitude, longitude, limit: 1 }), {
-    retry: false,
-    enabled: Boolean(rome && latitude && longitude),
-  })
-
-  const haveProposals = Boolean(relatedEtablissementQuery.data?.length)
 
   const {
     widget: { isWidget },
@@ -141,40 +127,19 @@ export const FormulaireEditionOffre = ({
   }
 
   const handleRedirectionAfterSubmit = (form: IRecruiterJson, job: IJobJson, fromDashboard: boolean, jobToken: string) => {
-    if (haveProposals) {
-      return router.replace(
-        PAGES.dynamic
-          .miseEnRelationCreationOffre({
-            isWidget,
-            queryParameters: generateQueryString({
-              job: JSON.stringify(omit(job, "rome_detail")),
-              email,
-              geo_coordinates: form.geo_coordinates,
-              fromDashboard: fromDashboard.toString(),
-              userId,
-              establishment_id,
-              token: jobToken,
-            }),
-          })
-          .getPath()
-      )
-    } else
-      router.replace(
-        PAGES.dynamic
-          .finCreationOffre({
-            isWidget,
-            queryParameters: generateQueryString({
-              jobId: job._id.toString(),
-              email,
-              withDelegation: "false",
-              fromDashboard: fromDashboard.toString(),
-              userId,
-              establishment_id,
-              token: jobToken,
-            }),
-          })
-          .getPath()
-      )
+    router.replace(
+      PAGES.dynamic
+        .espaceProCreationFin({
+          jobId: job._id.toString(),
+          email,
+          withDelegation: false,
+          fromDashboard,
+          userId,
+          token: jobToken,
+          isWidget,
+        })
+        .getPath()
+    )
   }
 
   const finalSelectedCompetences = selectedCompetences ?? romeQuery?.data?.competences

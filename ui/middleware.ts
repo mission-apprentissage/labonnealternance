@@ -84,6 +84,9 @@ const redirectAfterAuthentication = async (user: IUserRecruteurPublic, request: 
 
 export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl
+  if (excludedStartPaths.some((excludedStartPath) => pathname.startsWith(excludedStartPath))) {
+    return
+  }
 
   const requestHeaders = new Headers(request.headers)
   const session = await getSession(request)
@@ -109,6 +112,8 @@ export async function middleware(request: NextRequest) {
     },
   })
 }
+
+const excludedStartPaths = ["/espace-pro/widget/", "/espace-pro/creation/"]
 
 export const config = {
   matcher: [
