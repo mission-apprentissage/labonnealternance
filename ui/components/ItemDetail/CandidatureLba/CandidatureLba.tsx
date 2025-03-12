@@ -1,3 +1,4 @@
+"use client"
 import { Box, Button, Flex, Image, Text, useDisclosure } from "@chakra-ui/react"
 import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -22,7 +23,7 @@ export const NoCandidatureLba = () => {
   )
 }
 
-export const CandidatureLba = ({ item }: { item: ILbaItemLbaJob | ILbaItemLbaCompany | ILbaItemPartnerJob }) => {
+export default function CandidatureLba({ item }: { item: ILbaItemLbaJob | ILbaItemLbaCompany | ILbaItemPartnerJob }) {
   const modalControls = useDisclosure()
   const submitControls = useSubmitCandidature(item)
   const { onOpen } = modalControls

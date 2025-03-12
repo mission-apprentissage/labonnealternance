@@ -11,7 +11,5 @@ export default function ItemDistanceToCenter({ item }: { item: ILbaItemFormation
     <Text as="span" color="grey.425" whiteSpace="nowrap" fontSize={14}>
       {item?.place?.distance} km(s) du lieu de recherche
     </Text>
-  ) : (
-    <></>
-  )
+  ) : null
 }

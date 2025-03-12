@@ -35,7 +35,7 @@ const getAPostuleMessage = (type: LBA_ITEM_TYPE | LBA_ITEM_TYPE_OLD, application
 }
 
 export const hasApplied = (item: ILbaItemFormation | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemFtJob | ILbaItemPartnerJob) => {
-  return localStorageGet(`application-${item.ideaType}-${item.id}`) !== null
+  return localStorage.getItem(`application-${item.ideaType}-${item.id}`) !== null
 }
 
 export default function ItemDetailApplicationsStatus({

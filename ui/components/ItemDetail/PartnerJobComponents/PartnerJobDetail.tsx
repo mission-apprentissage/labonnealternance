@@ -1,3 +1,4 @@
+"use client"
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Accordion, Box, Flex, Image, Link, ListItem, Text, UnorderedList } from "@chakra-ui/react"
 import Head from "next/head"
