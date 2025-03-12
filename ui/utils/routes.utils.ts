@@ -167,6 +167,15 @@ export const PAGES = {
         description: "Diffusez simplement et gratuitement vos offres en alternance.",
       }),
     },
+    administrationOpco: {
+      getPath: () => `/espace-pro/administration/opco` as string,
+      title: "Administration OPCO",
+      index: false,
+      getMetadata: () => ({
+        title: "Administration OPCO",
+        description: "",
+      }),
+    },
   },
   dynamic: {
     // example
@@ -196,6 +205,12 @@ export const PAGES = {
         description: `Explorez les différents métiers accessibles en ${metier} en alternance et trouvez celui qui correspond à votre projet professionnel.`,
       }),
       title: metier,
+    }),
+    modificationEntreprise: (establishment_id): IPage => ({
+      getPath: () => `/espace-pro/administration/entreprise/${establishment_id}/edition` as string,
+      index: false,
+      getMetadata: () => ({ title: "Modification entreprise" }),
+      title: "Modification entreprise",
     }),
     offreCreation: ({
       offerId,

@@ -50,7 +50,7 @@ export default function ListeOffres({ hideModify = false, showStats = false }: {
   const ActionButtons = (
     <Box>
       {shouldDisplayModifyButton && user.type !== AUTHTYPE.OPCO && (
-        <Button mr={5} variant="secondary" leftIcon={<Building />} onClick={() => router.push(`/espace-pro/administration/entreprise/${establishment_id}/edition`)}>
+        <Button mr={5} variant="secondary" leftIcon={<Building />} onClick={() => router.push(PAGES.dynamic.modificationEntreprise(establishment_id).getPath())}>
           {user.type === AUTHTYPE.ENTREPRISE ? "Mes informations" : "Modifier l'entreprise"}
         </Button>
       )}
@@ -81,7 +81,7 @@ export default function ListeOffres({ hideModify = false, showStats = false }: {
           {user.type === AUTHTYPE.OPCO && (
             <Breadcrumb separator={<ArrowDropRightLine color="grey.600" />} textStyle="xs">
               <BreadcrumbItem>
-                <BreadcrumbLink textDecoration="underline" onClick={() => router.push("/espace-pro/administration/opco")} textStyle="xs">
+                <BreadcrumbLink textDecoration="underline" onClick={() => router.push(PAGES.static.administrationOpco.getPath())} textStyle="xs">
                   Entreprises
                 </BreadcrumbLink>
               </BreadcrumbItem>
