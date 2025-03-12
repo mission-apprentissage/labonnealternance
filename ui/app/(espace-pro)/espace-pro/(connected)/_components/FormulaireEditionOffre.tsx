@@ -1,3 +1,5 @@
+"use client"
+
 import { Box, Grid, Heading } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import { Formik } from "formik"

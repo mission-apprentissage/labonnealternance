@@ -1,3 +1,5 @@
+"use client"
+
 import { Box, Checkbox, CheckboxGroup, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input, Link, Select, Text } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import { useFormikContext } from "formik"

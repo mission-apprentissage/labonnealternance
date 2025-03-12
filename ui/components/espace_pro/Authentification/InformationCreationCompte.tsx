@@ -1,14 +1,19 @@
+"use client"
+
 import { Box, Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, SimpleGrid, Text } from "@chakra-ui/react"
 import { Form, Formik } from "formik"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 import { useContext } from "react"
 import { useQuery } from "react-query"
 import { assertUnreachable, parseEnum } from "shared"
 import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
+import { generateUri } from "shared/helpers/generateUri"
 import * as Yup from "yup"
 
+import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/compte/_components/InformationLegaleEntreprise"
 import { infosOpcos } from "@/theme/components/logos/infosOpcos"
 import { ApiError } from "@/utils/api.utils"
+import { PAGES } from "@/utils/routes.utils"
 
 import { AUTHTYPE } from "../../../common/contants"
 import { phoneValidation } from "../../../common/validation/fieldValidations"
@@ -16,7 +21,7 @@ import { WidgetContext } from "../../../context/contextWidget"
 import { ArrowRightLine } from "../../../theme/components/icons"
 import { createEtablissement, getEntrepriseOpco } from "../../../utils/api"
 import { OpcoSelect } from "../CreationRecruteur/OpcoSelect"
-import { AnimationContainer, AuthentificationLayout, CustomInput, InformationLegaleEntreprise } from "../index"
+import { AnimationContainer, AuthentificationLayout, CustomInput } from "../index"
 import { InformationOpco } from "../InformationOpco"
 
 const Formulaire = ({
@@ -67,6 +72,7 @@ const Formulaire = ({
         return (
           <Form>
             <FormulaireLayout
+              type={type}
               left={
                 <>
                   <CustomInput required={false} name="last_name" label="Nom" type="text" value={values.last_name} />
@@ -120,10 +126,7 @@ const Formulaire = ({
   )
 }
 
-const FormulaireLayout = ({ left, right }) => {
-  const router = useRouter()
-  const { type } = router.query
-
+const FormulaireLayout = ({ left, right, type }: { left: React.ReactNode; right: React.ReactNode; type: string }) => {
   return (
     <SimpleGrid columns={[1, 1, 2, 2]} spacing={4} mt={0}>
       <Box>
@@ -175,18 +178,28 @@ export const InformationCreationCompte = ({
 
         switch (type) {
           case AUTHTYPE.ENTREPRISE: {
-            router.push({
-              pathname: isWidget ? "/espace-pro/widget/entreprise/offre" : "/espace-pro/creation/offre",
-              query: { establishment_id: formulaire.establishment_id, type, email: user.email, userId: user._id.toString(), token, displayBanner: !validated },
-            })
+            router.push(
+              PAGES.dynamic
+                .espaceProCreationOffre({
+                  establishment_id: formulaire.establishment_id,
+                  type,
+                  email: user.email,
+                  userId: user._id.toString(),
+                  token,
+                  displayBanner: !validated,
+                  isWidget,
+                })
+                .getPath()
+            )
             break
           }
           case AUTHTYPE.CFA: {
             if (validated) {
-              router.push({
-                pathname: "/espace-pro/authentification/confirmation",
-                query: { email: user.email },
-              })
+              router.push(
+                generateUri("/espace-pro/authentification/confirmation", {
+                  querystring: { email: user.email },
+                })
+              )
             } else {
               router.push("/espace-pro/authentification/en-attente")
             }

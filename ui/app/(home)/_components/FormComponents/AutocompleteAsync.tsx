@@ -4,18 +4,17 @@ import Autocomplete, { AutocompleteRenderGroupParams, AutocompleteRenderInputPar
 import { useWindowSize } from "@uidotdev/usehooks"
 import match from "autosuggest-highlight/match"
 import parse from "autosuggest-highlight/parse"
+import { useField, useFormikContext } from "formik"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useQuery } from "react-query"
 
-import { InputFormField } from "@/app/(home)/home/_components/FormComponents/InputFormField"
+import { InputFormField } from "@/app/(home)/_components/FormComponents/InputFormField"
 
 function identity<T>(value: T) {
   return value
 }
 
 interface AutocompleteAsyncProps<T> {
-  onChange: (value: T | null) => void
-
   fetchOptions: (inputValue: string) => Promise<T[]>
 
   getOptionKey: (option: T) => string
@@ -79,6 +78,9 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
   // https://github.com/mui/material-ui/issues/27670#issuecomment-2079148513
   useWindowSize()
 
+  const [{ onBlur }, meta] = useField(props.id)
+  const { setFieldValue } = useFormikContext()
+
   const [query, setQuery] = useState("")
   const debouncedQuery = useThrottle(query, 300)
 
@@ -122,10 +124,12 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
               </Box>
             ) : null
           }
+          state={meta.touched && meta.error ? "error" : "default"}
+          stateRelatedMessage="champ obligatoire"
         ></InputFormField>
       )
     },
-    [props.label, props.placeholder, isDeferredOrFetching]
+    [props.label, props.placeholder, isDeferredOrFetching, meta]
   )
 
   const renderOption = useCallback(
@@ -180,6 +184,7 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
       renderInput={renderInput}
       onInputChange={onInputChange}
       renderGroup={renderGroup}
+      onBlur={onBlur}
       groupBy={props.groupBy}
       classes={{
         noOptions: fr.cx("fr-text--sm"),
@@ -210,8 +215,8 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
           },
         },
       }}
-      onChange={(event, value) => {
-        props.onChange(value)
+      onChange={(_e, value) => {
+        setFieldValue(props.id, value)
       }}
       filterOptions={identity}
       noOptionsText={enabled ? props.noOptionsText : props.placeholder}

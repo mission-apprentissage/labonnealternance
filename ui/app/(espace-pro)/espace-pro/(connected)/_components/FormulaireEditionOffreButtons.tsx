@@ -1,3 +1,5 @@
+"use client"
+
 import { Button, Flex } from "@chakra-ui/react"
 import { useFormikContext } from "formik"
 import { useRouter } from "next/navigation"
