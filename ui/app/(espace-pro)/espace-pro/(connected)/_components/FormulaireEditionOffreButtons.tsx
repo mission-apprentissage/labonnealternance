@@ -7,7 +7,7 @@ import { IJobJson } from "shared/models/job.model"
 
 import { ArrowRightLine } from "@/theme/components/icons"
 
-export const FormikCreationOffreButtons = ({ offre, competencesDirty }: { offre?: IJobJson; competencesDirty: boolean }) => {
+export const FormulaireEditionOffreButtons = ({ offre, competencesDirty }: { offre?: IJobJson; competencesDirty: boolean }) => {
   const router = useRouter()
 
   const { isValid, isSubmitting, dirty, submitForm } = useFormikContext<any>()

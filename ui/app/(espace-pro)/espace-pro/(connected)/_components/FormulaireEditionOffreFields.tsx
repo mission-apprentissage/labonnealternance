@@ -3,27 +3,27 @@
 import { Box, Checkbox, CheckboxGroup, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input, Link, Select, Text } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import { useFormikContext } from "formik"
+import { useParams } from "next/navigation"
 import { useContext } from "react"
 import { IAppellationsRomes } from "shared"
 import { TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "shared/constants/recruteur"
 
+import { ChampNombre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/ChampNombre"
 import { AUTHTYPE } from "@/common/contants"
 import { debounce } from "@/common/utils/debounce"
+import { CustomInput, DropdownCombobox } from "@/components/espace_pro"
 import { LogoContext } from "@/context/contextLogo"
 import { useAuth } from "@/context/UserContext"
 import { ExternalLinkLine, Warning } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
 
-import CustomInput from "../CustomInput"
-import DropdownCombobox from "../DropdownCombobox"
-
-import { ChampNombre } from "./ChampNombre"
-
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
 
-export const FormikCreationOffreFields = ({ onRomeChange, type }: { onRomeChange: (rome: string, appellation: string) => void; type: string }) => {
-  const { user } = useAuth() ?? {}
+export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (rome: string, appellation: string) => void }) => {
+  const { user } = useAuth()
   const { organisation } = useContext(LogoContext)
+
+  const { type } = useParams() as { establishment_id: string; email: string; userId: string; type: string; token: string }
 
   const handleJobSearch = async (search: string) => {
     if (search.trim().length !== 0) {

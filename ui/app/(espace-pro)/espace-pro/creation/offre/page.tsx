@@ -1,13 +1,14 @@
+"use client"
+
 import { Box } from "@chakra-ui/react"
-import { useRouter } from "next/router"
 
 import { FormulaireEditionOffre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffre"
 import { Bandeau } from "@/components/espace_pro/Bandeau"
 import { DepotSimplifieLayout } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
+import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
 export default function DepotRapideAjouterVoeux() {
-  const router = useRouter()
-  const { displayBanner } = router.query
+  const { displayBanner } = useSearchParamsRecord()
 
   return (
     <DepotSimplifieLayout>

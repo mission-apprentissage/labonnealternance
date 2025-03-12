@@ -2,8 +2,8 @@
 
 import { Box } from "@chakra-ui/react"
 
+import { FormulaireEditionOffre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffre"
 import { Bandeau } from "@/components/espace_pro/Bandeau"
-import { FormulaireCreationOffre } from "@/components/espace_pro/FormulaireCreationOffre/FormulaireCreationOffre"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
 export const WidgetEntrepriseOffre = () => {
@@ -16,7 +16,7 @@ export const WidgetEntrepriseOffre = () => {
         description="Déposez votre offre dès maintenant."
       />
       <Box mt={10}>
-        <FormulaireCreationOffre />
+        <FormulaireEditionOffre />
       </Box>
     </>
   )

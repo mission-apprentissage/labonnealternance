@@ -1,5 +1,6 @@
+import AnimationContainer from "../../app/(espace-pro)/espace-pro/(connected)/_components/AnimationContainer"
+
 import AdresseAutocomplete from "./AdresseAutocomplete"
-import AnimationContainer from "./AnimationContainer"
 import AuthentificationLayout from "./AuthentificationLayout"
 import ConfirmationActivationUtilsateur from "./ConfirmationActivationUtilsateur"
 import ConfirmationDesactivationUtilisateur from "./ConfirmationDesactivationUtilisateur"
