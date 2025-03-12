@@ -168,7 +168,7 @@ export const PAGES = {
       }),
     },
     administrationOpco: {
-      getPath: () => `/espace-pro/administration/opco` as string,
+      getPath: () => `/espace-pro/opco` as string,
       title: "Administration OPCO",
       index: false,
       getMetadata: () => ({
@@ -207,7 +207,7 @@ export const PAGES = {
       title: metier,
     }),
     modificationEntreprise: (establishment_id): IPage => ({
-      getPath: () => `/espace-pro/administration/entreprise/${establishment_id}/edition` as string,
+      getPath: () => `/espace-pro/entreprise/${establishment_id}/edition` as string,
       index: false,
       getMetadata: () => ({ title: "Modification entreprise" }),
       title: "Modification entreprise",
@@ -229,9 +229,9 @@ export const PAGES = {
         const raisonSocialeParam = raison_sociale ? `?raison_sociale=${raison_sociale}` : ""
         switch (userType) {
           case OPCO:
-            return `/espace-pro/administration/opco/entreprise/${establishment_siret}/${establishment_id}/offre/${offerId}}${raisonSocialeParam}`
+            return `/espace-pro/opco/entreprise/${establishment_siret}/${establishment_id}/offre/${offerId}}${raisonSocialeParam}`
           default:
-            return `/espace-pro/administration/entreprise/${establishment_id}/offre/${offerId}${raisonSocialeParam}`
+            return `/espace-pro/entreprise/${establishment_id}/offre/${offerId}${raisonSocialeParam}`
         }
       },
       index: false,
@@ -240,9 +240,7 @@ export const PAGES = {
     }),
     successEditionOffre: ({ userType, establishment_id, user_id }: { userType: "OPCO" | "ENTREPRISE" | "CFA" | "ADMIN"; establishment_id?: string; user_id?: string }): IPage => ({
       getPath: () => {
-        return userType === OPCO
-          ? `/espace-pro/administration/opco/entreprise/${user_id}/entreprise/${establishment_id}`
-          : `/espace-pro/administration/entreprise/${establishment_id}`
+        return userType === OPCO ? `/espace-pro/opco/entreprise/${user_id}/entreprise/${establishment_id}` : `/espace-pro/entreprise/${establishment_id}`
       },
       title: "Success édition offre",
       index: false,
