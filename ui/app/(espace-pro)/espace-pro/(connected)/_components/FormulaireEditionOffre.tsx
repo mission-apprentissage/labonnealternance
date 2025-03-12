@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation"
 import { useContext, useState } from "react"
 import { useQuery } from "react-query"
 import { IRecruiterJson, IReferentielRomeForJob } from "shared"
+import { generateQueryString } from "shared/helpers/generateUri"
 import { IJobJson, JOB_STATUS } from "shared/models/job.model"
 import { detectUrlAndEmails } from "shared/utils/detectUrlAndEmails"
 import * as Yup from "yup"
@@ -18,6 +19,7 @@ import { InfosDiffusionOffre } from "@/components/DepotOffre/InfosDiffusionOffre
 import { RomeDetailWithQuery } from "@/components/DepotOffre/RomeDetailWithQuery"
 import { WidgetContext } from "@/context/contextWidget"
 import { createOffre, createOffreByToken, getFormulaire, getFormulaireByToken, getRelatedEtablissementsFromRome, getRomeDetail } from "@/utils/api"
+import { PAGES } from "@/utils/routes.utils"
 
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
 const FR_DATE_FORMAT = "DD/MM/YYYY"
@@ -138,16 +140,39 @@ export const FormulaireEditionOffre = ({
 
   const handleRedirectionAfterSubmit = (form: IRecruiterJson, job: IJobJson, fromDashboard: boolean, jobToken: string) => {
     if (haveProposals) {
-      return router.replace({
-        pathname: isWidget ? "/espace-pro/widget/entreprise/mise-en-relation" : "/espace-pro/creation/mise-en-relation",
-        query: { job: JSON.stringify(omit(job, "rome_detail")), email, geo_coordinates: form.geo_coordinates, fromDashboard, userId, establishment_id, token: jobToken },
-      })
-    }
-
-    router.replace({
-      pathname: isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin",
-      query: { jobId: job._id.toString(), email, withDelegation: false, fromDashboard, userId, establishment_id, token: jobToken },
-    })
+      return router.replace(
+        PAGES.dynamic
+          .miseEnRelationCreationOffre({
+            isWidget,
+            queryParameters: generateQueryString({
+              job: JSON.stringify(omit(job, "rome_detail")),
+              email,
+              geo_coordinates: form.geo_coordinates,
+              fromDashboard: fromDashboard.toString(),
+              userId,
+              establishment_id,
+              token: jobToken,
+            }),
+          })
+          .getPath()
+      )
+    } else
+      router.replace(
+        PAGES.dynamic
+          .finCreationOffre({
+            isWidget,
+            queryParameters: generateQueryString({
+              jobId: job._id.toString(),
+              email,
+              withDelegation: "false",
+              fromDashboard: fromDashboard.toString(),
+              userId,
+              establishment_id,
+              token: jobToken,
+            }),
+          })
+          .getPath()
+      )
   }
 
   const finalSelectedCompetences = selectedCompetences ?? romeQuery?.data?.competences

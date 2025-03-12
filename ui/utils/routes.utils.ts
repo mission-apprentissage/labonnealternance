@@ -246,6 +246,26 @@ export const PAGES = {
       index: false,
       getMetadata: () => ({}),
     }),
+    miseEnRelationCreationOffre: ({ isWidget, queryParameters }: { isWidget: boolean; queryParameters: string }): IPage => {
+      const path = `${isWidget ? "/espace-pro/widget/entreprise/mise-en-relation" : "/espace-pro/creation/mise-en-relation"}${queryParameters}`
+
+      return {
+        getPath: () => path,
+        title: "Mise en relation avec les CFAs",
+        index: false,
+        getMetadata: () => ({}),
+      }
+    },
+    finCreationOffre: ({ isWidget, queryParameters }: { isWidget: boolean; queryParameters: string }): IPage => {
+      const path = `${isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin"}${queryParameters}`
+
+      return {
+        getPath: () => path,
+        title: "Création d'offre terminée",
+        index: false,
+        getMetadata: () => ({}),
+      }
+    },
   },
   notion: {},
 } as const satisfies IPages
