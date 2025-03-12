@@ -40,7 +40,7 @@ export function Header() {
         <HeaderQuickAccessItem
           key="connexion"
           quickAccessItem={{
-            iconId: "fr-icon-account-line",
+            iconId: "fr-icon-close-line",
             text: "Fermer",
             linkProps: {
               href: PAGES.static.accesRecruteur.getPath(),
