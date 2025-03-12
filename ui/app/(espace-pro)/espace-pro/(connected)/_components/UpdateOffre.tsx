@@ -16,7 +16,6 @@ export default function UpdateOffre() {
   const router = useRouter()
   const { user } = useConnectedSessionClient()
   const { establishment_id, job_id, user_id } = useParams() as { establishment_id: string; job_id: string; user_id?: string }
-  const jobId = job_id === "creation" ? undefined : job_id
 
   const onSuccess = () =>
     user.type === AUTHTYPE.ADMIN ? router.back() : router.push(PAGES.dynamic.successEditionOffre({ userType: user.type, establishment_id, user_id }).getPath())
@@ -26,15 +25,15 @@ export default function UpdateOffre() {
 
   const { data: formulaire, isLoading: isFormulaireLoading } = useQuery("formulaire", () => getFormulaire(establishment_id))
 
-  const { data: offre, isLoading } = useQuery("offre", () => getOffre(jobId), {
-    enabled: Boolean(jobId),
+  const { data: offre, isLoading } = useQuery("offre", () => getOffre(job_id), {
+    enabled: Boolean(job_id),
     cacheTime: 0,
   })
 
   const handleSave = async (values) => {
     // Updates an offer
-    if (jobId) {
-      await apiPut("/formulaire/offre/:jobId", { params: { jobId }, body: { ...values, job_update_date: new Date() } }).then(() => {
+    if (job_id) {
+      await apiPut("/formulaire/offre/:jobId", { params: { jobId: job_id }, body: { ...values, job_update_date: new Date() } }).then(() => {
         toast({
           title: "Offre mise à jour avec succès.",
           position: "top-right",
@@ -85,7 +84,7 @@ export default function UpdateOffre() {
           )}
         </Breadcrumb>
       </Box>
-      <FormulaireEditionOffre fromDashboard handleSave={handleSave} offre={offre} />
+      <FormulaireEditionOffre establishment_id={establishment_id} user_id={user_id} fromDashboard handleSave={handleSave} offre={offre} />
     </Container>
   )
 }
