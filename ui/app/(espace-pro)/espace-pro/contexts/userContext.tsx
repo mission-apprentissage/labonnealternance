@@ -3,13 +3,18 @@
 import { createContext, use, type PropsWithChildren } from "react"
 import type { ComputedUserAccess, IUserRecruteurPublic } from "shared"
 
-export const UserContext = createContext<{ user: IUserRecruteurPublic | null; access: ComputedUserAccess | null }>(null)
+export type IUserContext = {
+  user?: IUserRecruteurPublic
+  access?: ComputedUserAccess
+}
 
-export function UserContextProvider(props: PropsWithChildren<{ user: IUserRecruteurPublic; access: ComputedUserAccess }>) {
+export const UserContext = createContext<IUserContext>(null)
+
+export function UserContextProvider(props: PropsWithChildren<IUserContext>) {
   return <UserContext.Provider value={{ user: props.user, access: props.access }}>{props.children}</UserContext.Provider>
 }
 
-export function useConnectedSessionClient(): { user: IUserRecruteurPublic | null; access: ComputedUserAccess | null } {
+export function useConnectedSessionClient(): IUserContext {
   const userContext = use(UserContext)
 
   if (!userContext) {

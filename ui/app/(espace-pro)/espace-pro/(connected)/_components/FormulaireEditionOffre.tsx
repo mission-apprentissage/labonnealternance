@@ -3,7 +3,7 @@
 import { Box, Grid, Heading } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import { Formik } from "formik"
-import { useParams, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useContext, useState } from "react"
 import { useQuery } from "react-query"
 import { IRecruiterJson, IReferentielRomeForJob } from "shared"
@@ -13,13 +13,14 @@ import * as Yup from "yup"
 
 import { FormulaireEditionOffreButtons } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreButtons"
 import { FormulaireEditionOffreFields } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreFields"
-import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { AUTHTYPE } from "@/common/contants"
 import { InfosDiffusionOffre } from "@/components/DepotOffre/InfosDiffusionOffre"
 import { RomeDetailWithQuery } from "@/components/DepotOffre/RomeDetailWithQuery"
 import { WidgetContext } from "@/context/contextWidget"
+import { useAuth } from "@/context/UserContext"
 import { createOffre, createOffreByToken, getRomeDetail } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
+import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
 const FR_DATE_FORMAT = "DD/MM/YYYY"
@@ -39,9 +40,9 @@ export const FormulaireEditionOffre = ({
     rome_appellation_label && initRome ? { rome: initRome, appellation: rome_appellation_label } : null
   )
   const { rome } = romeAndAppellation ?? {}
-  const { user } = useConnectedSessionClient()
+  const { user } = useAuth()
   const router = useRouter()
-  const { establishment_id, email, userId, token } = useParams() as { establishment_id: string; email: string; userId: string; type: string; token: string }
+  const { establishment_id, email, userId, token } = useSearchParamsRecord() as { establishment_id: string; email: string; userId: string; type: string; token: string }
 
   const romeQuery = useQuery(["getRomeDetail", rome], () => getRomeDetail(rome), {
     retry: false,

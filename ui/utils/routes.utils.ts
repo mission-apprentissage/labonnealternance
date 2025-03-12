@@ -309,16 +309,7 @@ export const PAGES = {
       },
       title: "Créer un compte entreprise",
     }),
-    espaceProCreationFin: (params: {
-      jobId: string
-      email: string
-      withDelegation: boolean
-      fromDashboard: boolean
-      userId: string
-      establishment_id: string
-      token: string
-      isWidget: boolean
-    }): IPage => ({
+    espaceProCreationFin: (params: { jobId: string; email: string; withDelegation: boolean; fromDashboard: boolean; userId: string; token: string; isWidget: boolean }): IPage => ({
       getPath: () => {
         const { isWidget, fromDashboard, withDelegation, ...querystring } = params
         return generateUri(isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin", {
