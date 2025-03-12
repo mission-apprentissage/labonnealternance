@@ -1,8 +1,8 @@
 import { Container, Divider, Grid, GridItem, ListItem, Text, UnorderedList } from "@chakra-ui/react"
 import Image from "next/image"
 
-import TagCandidatureSpontanee from "../../../../components/ItemDetail/TagCandidatureSpontanee"
-import TagOffreEmploi from "../../../../components/ItemDetail/TagOffreEmploi"
+import TagCandidatureSpontanee from "../../../components/ItemDetail/TagCandidatureSpontanee"
+import TagOffreEmploi from "../../../components/ItemDetail/TagOffreEmploi"
 
 export const AlgoHome = () => (
   <Container variant="responsiveContainer">

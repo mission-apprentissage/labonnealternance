@@ -1,12 +1,11 @@
 import { Box, Container, Show } from "@chakra-ui/react"
 
 import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
-import { AlgoHome } from "@/app/(home)/home/_components/AlgoHome"
-import { AmeliorerLBA } from "@/app/(home)/home/_components/AmeliorerLBA"
-import { HomeCircleImageDecoration } from "@/app/(home)/home/_components/HomeCircleImageDecoration"
-import { HowTo } from "@/app/(home)/home/_components/HowTo"
-
-import { RechercheForm } from "./_components/RechercheForm"
+import { AlgoHome } from "@/app/(home)/_components/AlgoHome"
+import { AmeliorerLBA } from "@/app/(home)/_components/AmeliorerLBA"
+import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
+import { HomeRechercheForm } from "@/app/(home)/_components/HomeRechercheForm"
+import { HowTo } from "@/app/(home)/_components/HowTo"
 
 const blockCssProperties = {
   position: "relative",
@@ -24,7 +23,7 @@ export default function HomePage() {
             <HomeCircleImageDecoration />
           </Show>
           <Container variant="responsiveContainer" pt={{ base: 3, sm: 12 }} pb={12} position="relative">
-            <RechercheForm />
+            <HomeRechercheForm />
           </Container>
           <HowTo />
         </Box>
