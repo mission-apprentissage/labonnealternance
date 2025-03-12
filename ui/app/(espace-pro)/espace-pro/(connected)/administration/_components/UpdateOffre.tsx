@@ -1,3 +1,4 @@
+"use client"
 import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Container, useToast } from "@chakra-ui/react"
 import { useParams, useRouter } from "next/navigation"
 import { useQuery, useQueryClient } from "react-query"
