@@ -312,7 +312,15 @@ export const PAGES = {
     espaceProCreationFin: (params: { jobId: string; email: string; withDelegation: boolean; fromDashboard: boolean; userId: string; token: string; isWidget: boolean }): IPage => ({
       getPath: () => {
         const { isWidget, fromDashboard, withDelegation, ...querystring } = params
-        return generateUri(isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin", {
+
+        let path = ""
+        if (fromDashboard) {
+          path = "/espace-pro/offre/fin"
+        } else {
+          path = isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin"
+        }
+
+        return generateUri(path, {
           querystring: { ...querystring, fromDashboard: fromDashboard.toString(), withDelegation: withDelegation.toString() },
         }) as string
       },
