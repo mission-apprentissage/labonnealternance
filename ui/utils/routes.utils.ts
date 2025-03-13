@@ -1,5 +1,7 @@
 import type { Metadata, MetadataRoute } from "next"
+import { removeUndefinedFields, toKebabCase } from "shared"
 import { OPCO } from "shared/constants"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateUri } from "shared/helpers/generateUri"
 
 import { publicConfig } from "@/config.public"
@@ -192,6 +194,14 @@ export const PAGES = {
       getPath: () => `/espace-pro/creation/cfa` as string,
       title: "Créer un compte d'organisme de formation",
     },
+    backCfaHome: {
+      getPath: () => `/espace-pro/cfa` as string,
+      title: "Accueil CFA",
+    },
+    backCfaCreationEntreprise: {
+      getPath: () => `/espace-pro/cfa/creation-entreprise` as string,
+      title: "Création d'entreprise",
+    },
   },
   dynamic: {
     // example
@@ -273,16 +283,6 @@ export const PAGES = {
         getMetadata: () => ({}),
       }
     },
-    finCreationOffre: ({ isWidget, queryParameters }: { isWidget: boolean; queryParameters: string }): IPage => {
-      const path = `${isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin"}${queryParameters}`
-
-      return {
-        getPath: () => path,
-        title: "Création d'offre terminée",
-        index: false,
-        getMetadata: () => ({}),
-      }
-    },
     espaceProCreationDetail: (params: { siret: string; email?: string; type: "CFA" | "ENTREPRISE"; origin: string; isWidget: boolean }): IPage => ({
       getPath: () => {
         const { isWidget, ...querystring } = params
@@ -309,14 +309,34 @@ export const PAGES = {
       },
       title: "Créer un compte entreprise",
     }),
-    espaceProCreationFin: (params: { jobId: string; email: string; withDelegation: boolean; fromDashboard: boolean; userId: string; token: string; isWidget: boolean }): IPage => ({
+    espaceProCreationFin: (params: {
+      jobId: string
+      email?: string
+      withDelegation: boolean
+      fromDashboard: boolean
+      userId: string
+      token?: string
+      isWidget: boolean
+    }): IPage => ({
       getPath: () => {
         const { isWidget, fromDashboard, withDelegation, ...querystring } = params
-        return generateUri(isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin", {
-          querystring: { ...querystring, fromDashboard: fromDashboard.toString(), withDelegation: withDelegation.toString() },
+
+        let path = ""
+        if (fromDashboard) {
+          path = "/espace-pro/offre/fin"
+        } else {
+          path = isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin"
+        }
+
+        return generateUri(path, {
+          querystring: removeUndefinedFields({ ...querystring, fromDashboard: fromDashboard.toString(), withDelegation: withDelegation.toString() }),
         }) as string
       },
-      title: "Créer un compte entreprise",
+      title: params.fromDashboard ? "Nouvelle offre" : "Créer un compte entreprise",
+    }),
+    espaceProOffreImpression: (jobId: string) => ({
+      getPath: () => `/espace-pro/offre/impression/${jobId}`,
+      title: "Imprimer mon offre",
     }),
     recherche: (params: IRecherchePageParams): IPage => {
       const query = new URLSearchParams()
@@ -346,6 +366,22 @@ export const PAGES = {
         title: "Recherche",
       }
     },
+    jobDetail: ({ type, jobId, jobTitle = "offre" }: { type: LBA_ITEM_TYPE; jobId: string; jobTitle?: string }): IPage => ({
+      getPath: () => `/emploi/${type}/${encodeURIComponent(jobId)}/${toKebabCase(jobTitle)}` as string,
+      title: jobTitle,
+    }),
+    backCfaEntrepriseCreationDetail: (siret: string): IPage => ({
+      getPath: () => `/espace-pro/cfa/creation-entreprise/${siret}` as string,
+      title: siret,
+    }),
+    backCfaPageEntreprise: (establishment_id: string): IPage => ({
+      getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}` as string,
+      title: "Entreprise",
+    }),
+    backCfaEntrepriseCreationOffre: (establishment_id: string): IPage => ({
+      getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}/creation-offre` as string,
+      title: "Création d'une offre",
+    }),
   },
   notion: {},
 } as const satisfies IPages

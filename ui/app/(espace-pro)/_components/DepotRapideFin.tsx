@@ -1,25 +1,25 @@
 "use client"
 
-import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Button, Circle, Heading, Image, Link, Stack, Text, useToast } from "@chakra-ui/react"
+import { Box, Button, Circle, Heading, Image, Stack, Text, useToast } from "@chakra-ui/react"
 import { useState } from "react"
 import { useQuery } from "react-query"
 import { ETAT_UTILISATEUR } from "shared/constants"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import { zObjectId } from "shared/models/common"
 import { z } from "zod"
 
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { LoadingEmptySpace } from "@/components/espace_pro"
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
 import { MailCloud } from "@/theme/components/logos"
 import { getUserStatus, getUserStatusByToken, sendValidationLink } from "@/utils/api"
+import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
 const ZComponentProps = z
   .object({
     jobId: z.string(),
-    email: z.string(),
+    email: z.string().optional(),
     withDelegation: z.enum(["true", "false"]).transform((value) => value === "true"),
     fromDashboard: z.enum(["true", "false"]).transform((value) => value === "true"),
     userId: z.union([z.string(), zObjectId]),
@@ -31,7 +31,6 @@ type ComponentProps = z.output<typeof ZComponentProps>
 
 export function DepotRapideFin() {
   const searchParams = useSearchParamsRecord()
-
   const parsedQuery = ZComponentProps.safeParse(searchParams)
 
   if (parsedQuery.success === false) {
@@ -212,14 +211,13 @@ const JobPreview = ({ jobId, userIsValidated }: { jobId: string; userIsValidated
   return (
     <Box mb={2}>
       <Text mb={2}>
-        <Link
-          href={getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, jobId)}
+        <DsfrLink
+          href={PAGES.dynamic.jobDetail({ type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, jobId }).getPath()}
           aria-label="Ouvrir la page de prévisualisation de l'offre sur le site La bonne alternance - nouvelle fenêtre"
-          isExternal
-          variant="basicUnderlinedBlue"
+          external
         >
-          Voir mon offre sur La bonne alternance <ExternalLinkIcon mx="2px" />
-        </Link>
+          Voir mon offre sur La bonne alternance
+        </DsfrLink>
       </Text>
       {userIsValidated && (
         <Box mb={2}>
@@ -240,14 +238,14 @@ const GreenText = ({ children }: { children: React.ReactNode }) => (
 
 function PrintJobLink({ jobId }) {
   return (
-    <Link
-      href={`/espace-pro/offre/impression/${jobId}`}
-      aria-label="Ouvrir la page de prévisualisation de l'offre sur le site La bonne alternance - nouvelle fenêtre"
-      isExternal
-      variant="basicUnderlinedBlue"
-      display="flex"
-    >
-      <Text as="span">Imprimer l'offre</Text> <Image src="/images/icons/print.svg" mt="4px" mx="3px" aria-hidden={true} alt="" />
-    </Link>
+    <Box sx={{ display: "flex" }}>
+      <DsfrLink
+        href={PAGES.dynamic.espaceProOffreImpression(jobId).getPath()}
+        aria-label="Ouvrir la page de prévisualisation de l'offre sur le site La bonne alternance - nouvelle fenêtre"
+        external
+      >
+        <Text as="span">Imprimer l'offre</Text> <Image src="/images/icons/print.svg" mt="4px" mx="3px" aria-hidden={true} alt="" display="inline-block" marginTop={0} />
+      </DsfrLink>
+    </Box>
   )
 }

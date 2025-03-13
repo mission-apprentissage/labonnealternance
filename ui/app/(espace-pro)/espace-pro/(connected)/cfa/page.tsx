@@ -1,10 +1,5 @@
-"use client"
-import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
+import CfaHome from "@/app/(espace-pro)/espace-pro/(connected)/_components/CfaHome"
 
 export default function CfaPage() {
-  const session = useConnectedSessionClient()
-
-  console.log(session)
-
-  return <>Welcome CFA {JSON.stringify(session, null, 2)}</>
+  return <CfaHome />
 }

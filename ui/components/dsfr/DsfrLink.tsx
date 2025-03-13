@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import type { LinkProps } from "next/link"
 import NextLink from "next/link"
-import type { ReactNode } from "react"
+import type { CSSProperties, ReactNode } from "react"
 import { useMemo } from "react"
 
 import { publicConfig } from "@/config.public"
@@ -11,12 +11,14 @@ export function DsfrLink({
   arrow = "none",
   size = "md",
   external = "auto",
+  style,
   ...props
 }: {
   children: ReactNode
   arrow?: "right" | "left" | "none"
   size?: "lg" | "sm" | "md"
   external?: "auto" | boolean
+  style?: CSSProperties
 } & LinkProps) {
   const { href, ...rest } = props
 
@@ -31,7 +33,7 @@ export function DsfrLink({
 
   return (
     <NextLink
-      style={{ textUnderlinePosition: "under" }}
+      style={{ textUnderlinePosition: "under", ...style }}
       href={href}
       rel={isExternal ? "noopener noreferrer" : undefined}
       target={isExternal ? "_blank" : undefined}

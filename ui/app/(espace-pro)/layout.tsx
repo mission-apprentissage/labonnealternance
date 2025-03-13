@@ -1,3 +1,5 @@
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box } from "@mui/material"
 import type { PropsWithChildren } from "react"
 
 import { getSession } from "@/utils/getSession"
@@ -12,7 +14,7 @@ export default async function RecruteurLayout({ children }: PropsWithChildren) {
   return (
     <>
       <EspaceProHeader user={user} />
-      {children}
+      <Box sx={{ marginBottom: fr.spacing("4w") }}>{children}</Box>
       <Footer />
     </>
   )

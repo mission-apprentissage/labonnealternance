@@ -1,5 +1,5 @@
-import UpdateOffre from "@/app/(espace-pro)/espace-pro/(connected)/_components/UpdateOffre"
+import { BackEntrepriseUpsertOffre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/BackEntrepriseUpsertOffre"
 
 export default async function CreationOffre() {
-  return <UpdateOffre />
+  return <BackEntrepriseUpsertOffre />
 }
