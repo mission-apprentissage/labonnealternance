@@ -1,5 +1,5 @@
-import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Badge, Box, Button, Flex, Icon, Image, Link, Menu, MenuButton, MenuItem, MenuList, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import { Badge, Box, Button, Flex, Icon, Image, Menu, MenuButton, MenuItem, MenuList, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import { Link } from "@mui/material"
 import dayjs from "dayjs"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -13,7 +13,7 @@ import ConfirmationSuppressionOffre from "@/app/(espace-pro)/espace-pro/(connect
 import { sortReactTableDate } from "@/common/utils/dateUtils"
 import { publicConfig } from "@/config.public"
 import { useAuth } from "@/context/UserContext"
-import { ExternalLinkLine, Parametre } from "@/theme/components/icons"
+import { Parametre } from "@/theme/components/icons"
 import { extendOffre } from "@/utils/api"
 
 const displayJobStatus = (status: JOB_STATUS, recruiter: IRecruiterJson) => {
@@ -186,10 +186,14 @@ export const OffresTabs = ({
                   </MenuButton>
                   <MenuList>
                     <MenuItem>
-                      <Link onClick={() => router.push(buildOfferEditionUrl(row._id))}>Editer l'offre</Link>
+                      <Link component="button" underline="hover" onClick={() => router.push(buildOfferEditionUrl(row._id))}>
+                        Editer l'offre
+                      </Link>
                     </MenuItem>
                     <MenuItem>
                       <Link
+                        component="button"
+                        underline="hover"
                         onClick={() => {
                           extendOffre(row._id)
                             .then((job) =>
@@ -209,18 +213,21 @@ export const OffresTabs = ({
                     </MenuItem>
                     <MenuItem>
                       <Link
-                        isExternal
+                        underline="hover"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         href={`${publicConfig.baseUrl}/recherche?&type=${LBA_ITEM_TYPE_OLD.MATCHA}&itemId=${row._id}`}
                         aria-label="Lien vers l'offre - nouvelle fenêtre"
                       >
                         Voir l'offre en ligne
-                        <ExternalLinkLine ml={1} color="bluefrance.500" />
                       </Link>
                     </MenuItem>
                     {row.job_status !== JOB_STATUS.EN_ATTENTE && (
                       <MenuItem>
                         <Link
-                          isExternal
+                          underline="hover"
+                          target="_blank"
+                          rel="noopener noreferrer"
                           href={`${publicConfig.baseUrl}/espace-pro/offre/impression/${row._id}`}
                           aria-label="Lien vers la page d'impression de l'offre - nouvelle fenêtre"
                         >
@@ -230,6 +237,7 @@ export const OffresTabs = ({
                     )}
                     <MenuItem>
                       <Link
+                        underline="hover"
                         onClick={(e) => {
                           e.preventDefault()
                           e.stopPropagation()
@@ -237,12 +245,15 @@ export const OffresTabs = ({
                             setCopied(true)
                           })
                         }}
+                        component="button"
                         aria-label="Copier le lien de partage de l'offre dans le presse papier"
                       >
                         {copied ? (
                           <Flex>
                             <Image mr={2} src="/images/icons/share_copied_icon.svg" aria-hidden={true} alt="" />
-                            <Text color="#18753C">Lien copié !</Text>
+                            <Text mb={0} color="#18753C">
+                              Lien copié !
+                            </Text>
                           </Flex>
                         ) : (
                           "Partager l'offre"
@@ -252,16 +263,20 @@ export const OffresTabs = ({
                     {user.type !== AUTHTYPE.CFA && (
                       <MenuItem>
                         <Link
-                          isExternal
+                          underline="hover"
+                          target="_blank"
+                          rel="noopener noreferrer"
                           href={`${publicConfig.baseUrl}/recherche-formation?&caller=lba_recruteur&romes=${row.rome_code}&lon=${lon}&lat=${lat}`}
                           aria-label="Lien vers les formations - nouvelle fenêtre"
                         >
-                          Voir les centres de formations <ExternalLinkIcon mx="2px" />
+                          Voir les centres de formations
                         </Link>
                       </MenuItem>
                     )}
                     <MenuItem>
                       <Link
+                        underline="hover"
+                        component="button"
                         onClick={() => {
                           confirmationSuppression.onOpen()
                           setCurrentOffre(row)

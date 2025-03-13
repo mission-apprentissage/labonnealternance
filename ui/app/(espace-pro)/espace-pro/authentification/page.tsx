@@ -1,6 +1,7 @@
 "use client"
 import { Heading, Stack, Text, useToast } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
+import { Alert } from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Dialog, DialogContent, DialogTitle } from "@mui/material"
 import { Form, Formik } from "formik"
@@ -14,19 +15,9 @@ import { PAGES } from "@/utils/routes.utils"
 
 export default function Authentification() {
   const p = useSearchParams()
+  const hasError = Boolean(p.get("error") === "true")
 
   const toast = useToast()
-
-  if (p.get("error")) {
-    return (
-      <Stack direction="column" spacing={7} bg="grey.150" p={["4", "8"]}>
-        <Heading fontSize="32px" as="h2">
-          Erreur
-        </Heading>
-        <Text fontSize="xl">Une erreur est survenue lors de la connexion.</Text>
-      </Stack>
-    )
-  }
 
   const submitEmail = (values, { setFieldError, setSubmitting }) => {
     sendMagiclink(values)
@@ -82,6 +73,7 @@ export default function Authentification() {
         },
       }}
     >
+      {hasError && <Alert severity="error" title="Veuillez vous reconnecter" description="Session invalidée" />}
       <Box>
         <DialogTitle sx={{ padding: fr.spacing("5w") }}>
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
