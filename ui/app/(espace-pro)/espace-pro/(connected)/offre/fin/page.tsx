@@ -1,9 +1,9 @@
 "use client"
 
-import { DepotRapideFin } from "@/app/(espace-pro)/_components/DepotRapideFin"
+import OffreFin from "@/app/(espace-pro)/espace-pro/(connected)/offre/fin/OffreFin"
 
 export const OffreConnecteFin = () => {
-  return <DepotRapideFin />
+  return <OffreFin />
 }
 
 export default OffreConnecteFin
