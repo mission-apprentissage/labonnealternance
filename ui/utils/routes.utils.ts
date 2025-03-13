@@ -316,16 +316,10 @@ export const PAGES = {
       },
       title: params.fromDashboard ? "Nouvelle offre" : "Créer un compte entreprise",
     }),
-    finCreationOffre: ({ isWidget, queryParameters }: { isWidget: boolean; queryParameters: string }): IPage => {
-      const path = `${isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin"}${queryParameters}`
-
-      return {
-        getPath: () => path,
-        title: "Création d'offre terminée",
-        index: false,
-        getMetadata: () => ({}),
-      }
-    },
+    espaceProOffreImpression: (jobId: string) => ({
+      getPath: () => `/espace-pro/offre/impression/${jobId}`,
+      title: "Imprimer mon offre",
+    }),
     recherche: (params: IRecherchePageParams): IPage => {
       const query = new URLSearchParams()
       query.set("romes", params.romes)
