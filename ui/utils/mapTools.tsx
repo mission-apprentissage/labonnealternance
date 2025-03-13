@@ -15,9 +15,9 @@ enum layerType {
   TRAINING = "TRAINING",
 }
 
-let currentPopup = null
+let currentPopup: any = null
 // eslint-disable-next-line import/no-mutable-exports
-let map = null
+let map: any = null
 // eslint-disable-next-line import/no-mutable-exports
 let isMapInitialized = false
 
@@ -252,7 +252,7 @@ const onLayerClick = (e, layer, selectItemOnMap, unselectItem, unselectMapPopupI
 const dispatchScrollToItem = (item) => {
   try {
     const element = document.getElementById("resultList")
-    element.dispatchEvent(new CustomEvent("scrollToItem", { detail: { itemId: item.id } }))
+    element?.dispatchEvent(new CustomEvent("scrollToItem", { detail: { itemId: item.id } }))
   } catch (error) {
     console.error(error)
   }
@@ -363,6 +363,9 @@ const factorJobsForMap = (lists, type) => {
     const coordA = getFlatCoords(a)
     const coordB = getFlatCoords(b)
 
+    if (coordA === coordB) return 0
+    if (coordA === null) return -1
+    if (coordB === null) return 1
     if (coordA < coordB) return -1
     else return 1
   })
@@ -378,14 +381,13 @@ const isEqualCoords = (coordsA, coordsB) => {
 }
 
 const getCoordinates = (item) => {
-  let coords = null
   if (item?.place?.longitude !== undefined) {
-    coords = [item.place.longitude, item.place.latitude]
+    return [item.place.longitude, item.place.latitude]
   } else if (item?.coords) {
-    coords = item.coords
+    return item.coords
   }
 
-  return coords
+  return null
 }
 
 // utile uniquement pour le tri par coordonnées

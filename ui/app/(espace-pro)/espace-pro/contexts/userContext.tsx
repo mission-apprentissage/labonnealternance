@@ -4,11 +4,11 @@ import { createContext, use, type PropsWithChildren } from "react"
 import type { ComputedUserAccess, IUserRecruteurPublic } from "shared"
 
 export type IUserContext = {
-  user?: IUserRecruteurPublic
-  access?: ComputedUserAccess
+  user: IUserRecruteurPublic
+  access: ComputedUserAccess
 }
 
-export const UserContext = createContext<IUserContext>(null)
+export const UserContext = createContext<IUserContext | null>(null)
 
 export function UserContextProvider(props: PropsWithChildren<IUserContext>) {
   return <UserContext.Provider value={{ user: props.user, access: props.access }}>{props.children}</UserContext.Provider>

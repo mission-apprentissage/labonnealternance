@@ -14,7 +14,7 @@ const getPathLink = (anyItem: ILbaItemFormation2 | ILbaItemLbaCompany | ILbaItem
 }
 
 const getValueFromPath = (key) => {
-  let res = ""
+  let res: string = ""
   if (typeof window !== "undefined") {
     // @ts-expect-error: TODO
     const url = new URL(window.location)
@@ -22,7 +22,7 @@ const getValueFromPath = (key) => {
     // WARNING: URLSearchParams not supported by IE
     const searchParams = new URLSearchParams(url.search)
 
-    res = searchParams.get(key)
+    res = searchParams.get(key) ?? ""
   }
 
   return res
@@ -30,7 +30,7 @@ const getValueFromPath = (key) => {
 
 const scrollToTop = (elementId) => {
   if (elementId) {
-    document.getElementById(elementId).scrollTo({
+    document.getElementById(elementId)?.scrollTo({
       top: 0,
       left: 0,
     })
@@ -51,13 +51,13 @@ const scrollToNestedElement = ({ containerId, nestedElement, yOffsett = 100 }) =
     distanceFromAncestorTop += currentElement.offsetTop
     currentElement = currentElement.offsetParent
   }
-  ancestorElement.scrollTo({
+  ancestorElement?.scrollTo({
     top: distanceFromAncestorTop - yOffsett,
     behavior: "smooth",
   })
 }
 
-const logError = (title, error = undefined) => {
+const logError = (title, error: any = undefined) => {
   const err = error instanceof Error ? error : new Error(error)
   err.name = title
 

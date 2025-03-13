@@ -1,7 +1,7 @@
 // cf https://fr.wikipedia.org/wiki/Formule_de_Luhn
 import luhn from "luhn"
 
-export const validateSIRET = (siret: string): boolean => {
+export const validateSIRET = (siret: string | undefined): boolean => {
   if (!siret) {
     return false
   }

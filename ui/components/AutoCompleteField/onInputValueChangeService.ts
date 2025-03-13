@@ -10,9 +10,22 @@ export default async function onInputValueChangeService({
   setInputTextValue,
   onInputValueChangeFunction = null,
   compareItemFunction = null,
-  onSelectedItemChangeFunction = null,
+  onSelectedItemChangeFunction,
   initialSelectedItem = null,
-  setFieldValue = null,
+  setFieldValue,
+}: {
+  inputValue: string | undefined
+  inputItems?: any[]
+  items?: any[]
+  setInputItems: (items: any[]) => void
+  setLoadingState: (loading: boolean) => void
+  selectItem: (item: any) => void
+  setInputTextValue?: (value: string) => void
+  onInputValueChangeFunction?: null | ((inputValue: string, setLoadingState: (loading: boolean) => void) => Promise<any[]>)
+  compareItemFunction?: null | ((items: any[], inputValue: string) => number)
+  onSelectedItemChangeFunction?: (selectedItem: any, setFieldValue: (value: any) => void) => void
+  initialSelectedItem?: any
+  setFieldValue: (field: string, value?: any) => unknown
 }) {
   if (inputValue) {
     // fixe la liste d'items en fonction de la valeur courante du champ input. S'il y a appel à une API c'est ici
@@ -32,7 +45,7 @@ export default async function onInputValueChangeService({
       if (initialSelectedItem) {
         // uniquement appelé lors d'une réinitialisation de l'input après navigation
         setTimeout(() => {
-          onSelectedItemChangeFunction(initialSelectedItem, setFieldValue)
+          onSelectedItemChangeFunction?.(initialSelectedItem, setFieldValue)
         }, 0) // hack timeout pour passer après le changement de valeurs suite au fetch
       }
     } else {

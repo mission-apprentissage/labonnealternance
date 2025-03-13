@@ -19,7 +19,7 @@ import { apiGet } from "@/utils/api.utils"
 
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
 
-export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (rome: string, appellation: string) => void }) => {
+export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (rome: string | undefined, appellation: string) => void }) => {
   const { user } = useAuth()
   const { organisation } = useContext(LogoContext)
 

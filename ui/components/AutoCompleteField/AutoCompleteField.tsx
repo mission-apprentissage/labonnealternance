@@ -11,7 +11,7 @@ import highlightItem from "../../services/hightlightItem"
 import findExactItemRank from "./findExactItemRank"
 import onInputValueChangeService from "./onInputValueChangeService"
 
-let debouncedOnInputValueChange = null
+let debouncedOnInputValueChange: typeof onInputValueChangeService | null = null
 
 // Permet de sélectionner un élément dans la liste d'items correspondant à un texte entré au clavier
 export const compareAutoCompleteValues = (items, value) => {
@@ -83,6 +83,26 @@ export const AutoCompleteField = ({
   inputVariant = "defaultAutocomplete",
   labelVariant = "defaultAutocomplete",
   ...props
+}: {
+  id: string
+  kind?: string | undefined
+  name: string
+  itemToStringFunction?: (item: any) => string
+  onInputValueChangeFunction: any
+  onSelectedItemChangeFunction?: any
+  compareItemFunction?: any
+  initialSelectedItem?: any
+  items: any
+  hasError?: boolean
+  initialIsOpen?: boolean
+  scrollParentId?: string
+  searchPlaceholder: string
+  splitItemsByTypes?: any
+  isDisabled?: boolean
+  menuVariant?: string
+  inputVariant?: string
+  labelVariant?: string
+  placeholder?: string
 }) => {
   useEffect(() => {
     if (initialSelectedItem) {
@@ -238,7 +258,7 @@ export const AutoCompleteField = ({
           disabled={isDisabled}
           placeholder={props.placeholder}
           variant={inputVariant}
-          name={props.name}
+          name={name}
         />
       </Flex>
 

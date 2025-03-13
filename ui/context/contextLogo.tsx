@@ -1,7 +1,7 @@
 import { createContext, FC, PropsWithChildren, useState } from "react"
 
 interface ItLogoContext {
-  organisation: string
+  organisation: string | undefined
   setOrganisation: (organisation: string) => void
 }
 
@@ -15,7 +15,7 @@ interface Props extends PropsWithChildren {
 }
 
 export const LogoProvider: FC<Props> = ({ initialLogo, children }) => {
-  const [organisation, setOrganisation] = useState<string>(initialLogo)
+  const [organisation, setOrganisation] = useState<string | undefined>(initialLogo)
 
   return <LogoContext.Provider value={{ organisation, setOrganisation }}>{children}</LogoContext.Provider>
 }

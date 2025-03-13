@@ -33,6 +33,7 @@ import {
   ConfirmationDesactivationUtilisateur,
   ConfirmationModificationOpco,
   CustomInput,
+  // @ts-expect-error
   InformationLegaleEntreprise,
   Layout,
   LoadingEmptySpace,
@@ -62,14 +63,24 @@ function DetailEntreprise() {
 
   const { data: recruiter, isLoading: recruiterLoading } = useQuery(["recruiter", userRecruteur?.establishment_id], {
     enabled: Boolean(userRecruteur?.establishment_id),
-    queryFn: () => getFormulaire(userRecruteur.establishment_id),
-  })
-
-  const userMutation = useMutation(({ userId, values }: any) => updateEntrepriseAdmin(userId, values, userRecruteur.establishment_siret), {
-    onSuccess: async () => {
-      await router.push(getUserNavigationContext())
+    queryFn: () => {
+      /* @ts-expect-error */
+      return getFormulaire(userRecruteur.establishment_id)
     },
   })
+
+  const userMutation = useMutation(
+    ({ userId, values }: any) => {
+      // @ts-expect-error
+      return updateEntrepriseAdmin(userId, values, userRecruteur.establishment_siret)
+    },
+    {
+      onSuccess: async () => {
+        /* @ts-expect-error */
+        await router.push(getUserNavigationContext())
+      },
+    }
+  )
 
   const ActivateUserButton = ({ userId }) => {
     const { activate } = useUserPermissionsActions(userId)
@@ -123,6 +134,7 @@ function DetailEntreprise() {
   }
 
   const getUserNavigationContext = () => {
+    // @ts-expect-error
     switch (user.type) {
       case AUTHTYPE.ADMIN:
         return "/espace-pro/administration/users"
@@ -138,7 +150,9 @@ function DetailEntreprise() {
     return <LoadingEmptySpace />
   }
 
+  // @ts-expect-error
   const lastUserState: IUserStatusValidation = userRecruteur.status.at(-1)
+  // @ts-expect-error
   const establishmentLabel = userRecruteur.establishment_raison_sociale ?? userRecruteur.establishment_siret
 
   return (
@@ -148,6 +162,7 @@ function DetailEntreprise() {
         userRecruteur={userRecruteur}
         onUpdate={({ reason }) => {
           if (reason === "Ne relève pas des champs de compétences de mon OPCO") {
+            // @ts-expect-error
             router.push(getUserNavigationContext())
           } else {
             client.invalidateQueries("user")
@@ -159,7 +174,14 @@ function DetailEntreprise() {
           <Box mt="16px" mb={6}>
             <Breadcrumb separator={<ArrowDropRightLine color="grey.600" />} textStyle="xs">
               <BreadcrumbItem>
-                <BreadcrumbLink textDecoration="underline" onClick={() => router.push(getUserNavigationContext())} textStyle="xs">
+                <BreadcrumbLink
+                  textDecoration="underline"
+                  onClick={() => {
+                    // @ts-expect-error
+                    return router.push(getUserNavigationContext())
+                  }}
+                  textStyle="xs"
+                >
                   Entreprises
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -177,7 +199,10 @@ function DetailEntreprise() {
                 <Box ml={5}>{getUserBadge(lastUserState)}</Box>
               </Flex>
               <Stack direction={["column", "column", "column", "row"]} spacing="10px">
-                {getActionButtons(lastUserState, userRecruteur._id)}
+                {
+                  // @ts-expect-error
+                  getActionButtons(lastUserState, userRecruteur._id)
+                }
               </Stack>
             </Flex>
           </Box>
@@ -185,10 +210,15 @@ function DetailEntreprise() {
             validateOnMount={true}
             enableReinitialize={true}
             initialValues={{
+              // @ts-expect-error
               last_name: userRecruteur.last_name,
+              // @ts-expect-error
               first_name: userRecruteur.first_name,
+              // @ts-expect-error
               phone: userRecruteur.phone,
+              // @ts-expect-error
               email: userRecruteur.email,
+              // @ts-expect-error
               opco: userRecruteur.opco,
             }}
             validationSchema={Yup.object().shape({
@@ -200,12 +230,14 @@ function DetailEntreprise() {
                 .max(10, "le téléphone est sur 10 chiffres")
                 .required("champ obligatoire"),
               email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
+              // @ts-expect-error
               type: Yup.string().default(userRecruteur.type),
               opco: Yup.string().when("type", { is: (v) => v === AUTHTYPE.ENTREPRISE, then: Yup.string().required("champ obligatoire") }),
             })}
             onSubmit={async (values, { setSubmitting }) => {
               setSubmitting(true)
               // For companies we update the User Collection and the Formulaire collection at the same time
+              // @ts-expect-error
               userMutation.mutate({ userId: userRecruteur._id, values })
               toast({
                 title: "Mise à jour enregistrée avec succès",
@@ -224,6 +256,7 @@ function DetailEntreprise() {
                     {...confirmationModificationOpco}
                     establishment_raison_sociale={establishmentLabel}
                     setFieldValue={setFieldValue}
+                    // @ts-expect-error
                     previousValue={userRecruteur.opco}
                     newValue={values.opco}
                   />
@@ -238,21 +271,24 @@ function DetailEntreprise() {
                           <CustomInput name="first_name" label="Prénom" type="test" value={values.first_name} />
                           <CustomInput name="phone" label="Téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
                           <CustomInput name="email" label="Email" type="email" value={values.email} />
-                          {userRecruteur.type === AUTHTYPE.ENTREPRISE && (
-                            <FormControl>
-                              <FormLabel>OPCO</FormLabel>
-                              <FormHelperText pb={2}>Pour vous accompagner dans vos recrutements, votre OPCO accède à vos informations sur La bonne alternance.</FormHelperText>
-                              <OpcoSelect
-                                value={values.opco}
-                                name="opco"
-                                onChange={(newValue) => {
-                                  setFieldValue("opco", newValue)
-                                  confirmationModificationOpco.onOpen()
-                                }}
-                              />
-                              <FormErrorMessage>{errors.opco as string}</FormErrorMessage>
-                            </FormControl>
-                          )}
+                          {
+                            // @ts-expect-error
+                            userRecruteur.type === AUTHTYPE.ENTREPRISE && (
+                              <FormControl>
+                                <FormLabel>OPCO</FormLabel>
+                                <FormHelperText pb={2}>Pour vous accompagner dans vos recrutements, votre OPCO accède à vos informations sur La bonne alternance.</FormHelperText>
+                                <OpcoSelect
+                                  value={values.opco}
+                                  name="opco"
+                                  onChange={(newValue) => {
+                                    setFieldValue("opco", newValue)
+                                    confirmationModificationOpco.onOpen()
+                                  }}
+                                />
+                                <FormErrorMessage>{errors.opco as string}</FormErrorMessage>
+                              </FormControl>
+                            )
+                          }
                           <Flex justify="flex-end" mt={10}>
                             <Button type="submit" variant="form" leftIcon={<ArrowRightLine />} isActive={isValid} isDisabled={!isValid || isSubmitting} isLoading={isSubmitting}>
                               Enregistrer
@@ -262,26 +298,33 @@ function DetailEntreprise() {
                       </Box>
                     </Box>
                     <Box>
-                      <InformationLegaleEntreprise siret={userRecruteur.establishment_siret} type={userRecruteur.type as typeof CFA | typeof ENTREPRISE} />
+                      <InformationLegaleEntreprise
+                        siret={/* @ts-expect-error */ userRecruteur.establishment_siret}
+                        type={/* @ts-expect-error */ userRecruteur.type as typeof CFA | typeof ENTREPRISE}
+                      />
                     </Box>
                   </SimpleGrid>
-                  {(user.type === AUTHTYPE.OPCO || user.type === AUTHTYPE.ADMIN) && (
-                    <>
-                      <hr style={{ marginTop: 24 }} />
-                      <Box my={6}>
-                        <Text fontSize="20px" lineHeight="32px" fontWeight="700" mb={6}>
-                          Offres de recrutement en alternance
-                        </Text>
-                        <OffresTabs
-                          recruiter={recruiter}
-                          buildOfferEditionUrl={(offerId) => `/espace-pro/administration/opco/entreprise/${userId}/${userRecruteur.establishment_id}/offre/${offerId}`}
-                        />
-                      </Box>
-                      <Box mb={12}>
-                        <UserValidationHistory histories={userRecruteur.status} />
-                      </Box>
-                    </>
-                  )}
+                  {
+                    /* @ts-expect-error */ (user.type === AUTHTYPE.OPCO || user.type === AUTHTYPE.ADMIN) && (
+                      <>
+                        <hr style={{ marginTop: 24 }} />
+                        <Box my={6}>
+                          <Text fontSize="20px" lineHeight="32px" fontWeight="700" mb={6}>
+                            Offres de recrutement en alternance
+                          </Text>
+                          <OffresTabs
+                            recruiter={recruiter}
+                            buildOfferEditionUrl={(offerId) =>
+                              `/espace-pro/administration/opco/entreprise/${userId}/${/* @ts-expect-error */ userRecruteur.establishment_id}/offre/${offerId}`
+                            }
+                          />
+                        </Box>
+                        <Box mb={12}>
+                          <UserValidationHistory histories={/* @ts-expect-error */ userRecruteur.status} />
+                        </Box>
+                      </>
+                    )
+                  }
                 </>
               )
             }}

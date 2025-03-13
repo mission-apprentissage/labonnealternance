@@ -1,10 +1,11 @@
-import { ILbaItemLbaJob, ILbaItemLbaJobReturnedByAPI } from "shared"
+import { ILbaItemLbaJob } from "shared"
+import { Jsonify } from "type-fest"
 
 import { apiGet } from "@/utils/api.utils"
 
-const fetchLbaJobDetails = async (job): Promise<ILbaItemLbaJob> => {
+const fetchLbaJobDetails = async (job): Promise<Jsonify<ILbaItemLbaJob>> => {
   // KBA 2024-05-31 API should return a single object and not an array as we are only fetching a single job
-  const response: ILbaItemLbaJobReturnedByAPI = await apiGet("/v1/jobs/matcha/:id", { params: { id: job.id }, querystring: {} })
+  const response = await apiGet("/v1/jobs/matcha/:id", { params: { id: job.id }, querystring: {} })
 
   const [firstMatcha] = response.matchas ?? []
   if (firstMatcha) {

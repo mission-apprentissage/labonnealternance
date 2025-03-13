@@ -34,13 +34,13 @@ export const FormulaireEditionOffre = ({
 }: {
   fromDashboard?: boolean
   offre?: IJobJson
-  establishment_id: string
-  user_id: string
+  establishment_id?: string
+  user_id?: string
   handleSave?: (values: any) => Promise<{ form?: IRecruiterJson; offre?: IJobJson }>
 }) => {
   const { rome_appellation_label, rome_code } = offre ?? {}
   const initRome = rome_code?.at(0)
-  const [romeAndAppellation, setRomeAndAppellation] = useState<{ rome: string; appellation: string }>(
+  const [romeAndAppellation, setRomeAndAppellation] = useState<{ rome: string; appellation: string } | null>(
     rome_appellation_label && initRome ? { rome: initRome, appellation: rome_appellation_label } : null
   )
   const { rome } = romeAndAppellation ?? {}
@@ -48,14 +48,12 @@ export const FormulaireEditionOffre = ({
   const router = useRouter()
   const { email, token } = useSearchParamsRecord() as { establishment_id: string; email: string; userId: string; type: string; token: string }
 
-  const romeQuery = useQuery(["getRomeDetail", rome], () => getRomeDetail(rome), {
+  const romeQuery = useQuery(["getRomeDetail", rome], () => getRomeDetail(rome!), {
     retry: false,
     enabled: Boolean(rome),
   })
 
-  const {
-    widget: { isWidget },
-  } = useContext(WidgetContext)
+  const isWidget = useContext(WidgetContext)?.widget?.isWidget ?? false
 
   const [selectedCompetences, setSelectedCompetences] = useState<IReferentielRomeForJob["competences"] | null>(offre?.competences_rome ?? null)
   const [competencesDirty, setCompetencesDirty] = useState(false)
@@ -74,21 +72,23 @@ export const FormulaireEditionOffre = ({
     const isSelected = (groupKey: string, competence: string): boolean => (selectedCompetences[groupKey] ?? []).includes(competence)
 
     const savedCompetences: IReferentielRomeForJob["competences"] = {
-      savoir_etre_professionnel: competences.savoir_etre_professionnel.filter((x) => isSelected("savoir_etre_professionnel", x.libelle)),
-      savoir_faire: competences.savoir_faire.flatMap((competencesGroup) => {
-        const selectedItems = (competencesGroup?.items ?? []).filter(({ libelle }) => isSelected("savoir_faire", libelle))
-        if (!selectedItems.length) {
-          return []
-        }
-        return [{ ...competencesGroup, items: selectedItems }]
-      }),
-      savoirs: competences.savoirs.flatMap((competencesGroup) => {
-        const selectedItems = (competencesGroup?.items ?? []).filter(({ libelle }) => isSelected("savoirs", libelle))
-        if (!selectedItems.length) {
-          return []
-        }
-        return [{ ...competencesGroup, items: selectedItems }]
-      }),
+      savoir_etre_professionnel: competences.savoir_etre_professionnel?.filter((x) => isSelected("savoir_etre_professionnel", x.libelle)) ?? [],
+      savoir_faire:
+        competences.savoir_faire?.flatMap((competencesGroup) => {
+          const selectedItems = (competencesGroup?.items ?? []).filter(({ libelle }) => isSelected("savoir_faire", libelle))
+          if (!selectedItems.length) {
+            return []
+          }
+          return [{ ...competencesGroup, items: selectedItems }]
+        }) ?? [],
+      savoirs:
+        competences.savoirs?.flatMap((competencesGroup) => {
+          const selectedItems = (competencesGroup?.items ?? []).filter(({ libelle }) => isSelected("savoirs", libelle))
+          if (!selectedItems.length) {
+            return []
+          }
+          return [{ ...competencesGroup, items: selectedItems }]
+        }) ?? [],
     }
     setSelectedCompetences(savedCompetences)
     setCompetencesDirty(true)
@@ -104,13 +104,13 @@ export const FormulaireEditionOffre = ({
    */
   const submitFromDashboard = async (values, { resetForm }) => {
     if (user && user.type !== AUTHTYPE.ENTREPRISE) {
-      await handleSave(values)
+      await handleSave?.(values)
     } else {
-      const res = await handleSave(values)
+      const res = await handleSave?.(values)
 
       // Only redirect user in case of offer creation
-      if (res) {
-        await handleRedirectionAfterSubmit(res.form, res.offre, true, null)
+      if (res?.offre) {
+        await handleRedirectionAfterSubmit(res.form, res.offre, true, undefined)
       }
     }
 
@@ -130,7 +130,7 @@ export const FormulaireEditionOffre = ({
     await handleRedirectionAfterSubmit(formulaire, job, false, jobToken)
   }
 
-  const handleRedirectionAfterSubmit = (form: IRecruiterJson, job: IJobJson, fromDashboard: boolean, jobToken: string) => {
+  const handleRedirectionAfterSubmit = (form: unknown, job: IJobJson, fromDashboard: boolean, jobToken: string | undefined) => {
     router.replace(
       PAGES.dynamic
         .espaceProCreationFin({

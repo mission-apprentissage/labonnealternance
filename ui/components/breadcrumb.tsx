@@ -16,7 +16,7 @@ const BreadcrumbLinks = (props) => {
   })
 }
 
-const BreadcrumbComponent = ({ forPage = "", label = "", items = null }) => {
+const BreadcrumbComponent = ({ forPage = "", label = "", items = null }: { forPage?: string; label?: string; items?: { path: string; title: string }[] | null }) => {
   return (
     <Box display={["none", "block"]}>
       <Container fontSize="12px" variant="responsiveContainer" pl={0} pt={4} pb={4} display="flex">

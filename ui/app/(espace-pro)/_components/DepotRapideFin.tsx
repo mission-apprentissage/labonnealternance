@@ -47,7 +47,7 @@ function FinComponent(props: ComponentProps) {
   const { jobId, email, withDelegation, fromDashboard, userId, token } = props
 
   const resendMail = () => {
-    sendValidationLink(userId.toString(), token)
+    sendValidationLink(userId.toString(), token as any)
       .then(() => {
         toast({
           title: "Email envoyé.",

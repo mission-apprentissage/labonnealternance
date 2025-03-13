@@ -2,7 +2,7 @@ import { UrlObject } from "url"
 
 import { IStaticMetiers, IStaticVilles } from "./getStaticData"
 
-export const buildLinkForTownAndJob = (town: Partial<IStaticVilles>, job: IStaticMetiers): UrlObject => {
+export const buildLinkForTownAndJob = (town: IStaticVilles | null, job: IStaticMetiers): UrlObject => {
   const pathname = "/recherche"
   const query: Record<string, string | boolean | string[]> = {
     display: "list",
@@ -11,7 +11,7 @@ export const buildLinkForTownAndJob = (town: Partial<IStaticVilles>, job: IStati
     romes: job.romes.join(","),
   }
 
-  if (town.name !== "France") {
+  if (town) {
     Object.assign(query, {
       radius: "30",
       lat: town.lat.toString(),

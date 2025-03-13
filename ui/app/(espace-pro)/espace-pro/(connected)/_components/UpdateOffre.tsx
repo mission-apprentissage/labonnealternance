@@ -24,7 +24,7 @@ export default function UpdateOffre() {
   const toast = useToast()
   const client = useQueryClient()
 
-  const { data: formulaire, isLoading: isFormulaireLoading } = useQuery("formulaire", () => getFormulaire(establishment_id))
+  const formulaireQuery = useQuery("formulaire", () => getFormulaire(establishment_id))
 
   const { data: offre, isLoading } = useQuery("offre", () => getOffre(job_id), {
     enabled: Boolean(job_id),
@@ -65,7 +65,11 @@ export default function UpdateOffre() {
     }
   }
 
-  if (isLoading || isFormulaireLoading) return <LoadingEmptySpace label="Chargement en cours" />
+  if (isLoading || formulaireQuery.isLoading) return <LoadingEmptySpace label="Chargement en cours" />
+
+  if (formulaireQuery.isError) {
+    throw formulaireQuery.error
+  }
 
   return (
     <Container maxW="container.xl" mt={5}>
@@ -79,7 +83,7 @@ export default function UpdateOffre() {
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbItem>
-                <BreadcrumbLink textStyle="xs">{formulaire.establishment_raison_sociale}</BreadcrumbLink>
+                <BreadcrumbLink textStyle="xs">{formulaireQuery.data.establishment_raison_sociale}</BreadcrumbLink>
               </BreadcrumbItem>
             </Breadcrumb>
           )}

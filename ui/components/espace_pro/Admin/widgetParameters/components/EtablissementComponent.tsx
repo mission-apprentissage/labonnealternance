@@ -20,6 +20,7 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
 
   const fetchData = async () => {
     try {
+      // @ts-expect-error: TODO
       const response = await apiGet("/admin/etablissements/:id", { params: { id } })
       setEtablissement(response ?? null)
     } catch (error) {

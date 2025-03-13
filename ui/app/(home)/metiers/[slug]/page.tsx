@@ -24,6 +24,11 @@ const getMetiers = () => {
 
 const getMetierBySlug = (jobs: IStaticMetiers[], slug: IStaticMetiers["slug"]) => {
   const relatedTown = jobs.find((town) => town.slug === slug)
+
+  if (!relatedTown) {
+    throw new Error(`No job found for slug ${slug}`)
+  }
+
   return relatedTown
 }
 
@@ -31,8 +36,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const _params = await params
   const metier = getMetierBySlug(getMetiers(), _params.slug)
   return {
-    title: PAGES.dynamic.metierJobById(metier.name).getMetadata().title,
-    description: PAGES.dynamic.metierJobById(metier.name).getMetadata().description,
+    title: PAGES.dynamic.metierJobById(metier.name).getMetadata?.().title,
+    description: PAGES.dynamic.metierJobById(metier.name).getMetadata?.().description,
   }
 }
 
@@ -72,7 +77,7 @@ export default async function MetiersByJobId({ params }: { params: IStaticMetier
 
               <Link
                 className={fr.cx("fr-link", "fr-text--bold")}
-                href={buildLinkForTownAndJob({ name: "France" }, relatedMetier)}
+                href={buildLinkForTownAndJob(null, relatedMetier)}
                 title={`Voir les emplois en alternance et formation en alternance en ${relatedMetier.name} sur l'ensemble du territoire`}
               >
                 {relatedMetier.name} sur l'ensemble du territoire

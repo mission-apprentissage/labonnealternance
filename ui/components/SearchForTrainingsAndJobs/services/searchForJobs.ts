@@ -1,6 +1,8 @@
 import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import type { Jsonify } from "type-fest"
 
+import { IWidgetParameters } from "@/services/config"
 import { factorInternalJobsForMap, layerType, setJobMarkers } from "@/utils/mapTools"
 
 import { apiGet } from "../../../utils/api.utils"
@@ -63,15 +65,21 @@ export const searchForJobsFunction = async ({
 
     const response = await apiGet("/v1/_private/jobs/min", { querystring: params })
 
-    const results: { matchas: ILbaItemLbaJob[]; lbaCompanies: ILbaItemLbaCompany[]; partnerJobs: ILbaItemPartnerJob[]; peJobs: null } = {
-      matchas: response.matchas && "error" in response.matchas ? null : "results" in response.matchas ? response.matchas.results : null,
-      lbaCompanies: response.lbaCompanies && "error" in response.lbaCompanies ? null : "results" in response.lbaCompanies ? response.lbaCompanies.results : null,
-      partnerJobs: response.partnerJobs && "error" in response.partnerJobs ? null : "results" in response.partnerJobs ? response.partnerJobs.results : null,
+    const results: {
+      matchas: Jsonify<ILbaItemLbaJob>[] | null
+      lbaCompanies: Jsonify<ILbaItemLbaCompany>[] | null
+      partnerJobs: Jsonify<ILbaItemPartnerJob>[] | null
+      peJobs: null
+    } = {
+      matchas: response.matchas && "error" in response.matchas ? null : response.matchas && "results" in response.matchas ? response.matchas.results : null,
+      lbaCompanies:
+        response.lbaCompanies && "error" in response.lbaCompanies ? null : response.lbaCompanies && "results" in response.lbaCompanies ? response.lbaCompanies.results : null,
+      partnerJobs: response.partnerJobs && "error" in response.partnerJobs ? null : response.partnerJobs && "results" in response.partnerJobs ? response.partnerJobs.results : null,
       peJobs: null,
     }
 
     if (!showCombinedJob && results.matchas?.length) {
-      results.matchas = results.matchas.filter((matcha) => !matcha.company.mandataire)
+      results.matchas = results.matchas.filter((matcha) => !matcha.company?.mandataire)
     }
 
     if (followUpItem && LBA_ITEM_TYPE_OLD.FORMATION !== followUpItem.parameters.type) {
@@ -83,10 +91,10 @@ export const searchForJobsFunction = async ({
       })
     }
 
-    if ("error" in response.lbaCompanies || "error" in response.matchas) {
+    if ((response.lbaCompanies && "error" in response.lbaCompanies) || (response.matchas && "error" in response.matchas)) {
       setJobSearchError(partialJobSearchErrorText)
-      if ("error" in response.lbaCompanies) logError("Job Search Error", `LBA Error : ${response.lbaCompanies.message}`)
-      if ("error" in response.matchas) logError("Job Search Error", `Matcha Error : ${response.matchas.message}`)
+      if (response.lbaCompanies && "error" in response.lbaCompanies) logError("Job Search Error", `LBA Error : ${response.lbaCompanies.message}`)
+      if (response.matchas && "error" in response.matchas) logError("Job Search Error", `Matcha Error : ${response.matchas.message}`)
     }
 
     setInternalJobs(results)
@@ -107,7 +115,17 @@ export const searchForJobsFunction = async ({
   setIsJobSearchLoading(false)
 }
 
-export const searchForJobsLightFunction = async ({ values, widgetParameters = undefined, searchResultContext, searchTimestamp }) => {
+export const searchForJobsLightFunction = async ({
+  values,
+  widgetParameters = undefined,
+  searchResultContext,
+  searchTimestamp,
+}: {
+  values: any
+  widgetParameters?: IWidgetParameters | undefined
+  searchResultContext: any
+  searchTimestamp: number
+}) => {
   try {
     const scopeContext = { isJob: true, isTraining: true }
     const { setHasSearch, setInternalJobs } = searchResultContext
@@ -141,10 +159,16 @@ export const searchForJobsLightFunction = async ({ values, widgetParameters = un
 
     const response = await apiGet("/v1/_private/jobs/min", { querystring: params })
 
-    const results: { matchas: ILbaItemLbaJob[]; lbaCompanies: ILbaItemLbaCompany[]; partnerJobs: ILbaItemPartnerJob[]; peJobs: null } = {
-      matchas: response.matchas && "error" in response.matchas ? null : "results" in response.matchas ? response.matchas.results : null,
-      lbaCompanies: response.lbaCompanies && "error" in response.lbaCompanies ? null : "results" in response.lbaCompanies ? response.lbaCompanies.results : null,
-      partnerJobs: response.partnerJobs && "error" in response.partnerJobs ? null : "results" in response.partnerJobs ? response.partnerJobs.results : null,
+    const results: {
+      matchas: Jsonify<ILbaItemLbaJob>[] | null
+      lbaCompanies: Jsonify<ILbaItemLbaCompany>[] | null
+      partnerJobs: Jsonify<ILbaItemPartnerJob>[] | null
+      peJobs: null
+    } = {
+      matchas: response.matchas && "error" in response.matchas ? null : response.matchas && "results" in response.matchas ? response.matchas.results : null,
+      lbaCompanies:
+        response.lbaCompanies && "error" in response.lbaCompanies ? null : response.lbaCompanies && "results" in response.lbaCompanies ? response.lbaCompanies.results : null,
+      partnerJobs: response.partnerJobs && "error" in response.partnerJobs ? null : response.partnerJobs && "results" in response.partnerJobs ? response.partnerJobs.results : null,
       peJobs: null,
     }
 

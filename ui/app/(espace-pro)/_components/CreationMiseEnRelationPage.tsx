@@ -13,6 +13,8 @@ import { createEtablissementDelegation, createEtablissementDelegationByToken, ge
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
+type IEtablissementCatalogueProcheWithDistanceAndChecked = IEtablissementCatalogueProcheWithDistance & { checked: boolean }
+
 /**
  * @description "Mise en relation" page.
  * @return {JSX.Element}
@@ -20,10 +22,10 @@ import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 export function CreationMiseEnRelationPage({ isWidget = false }: { isWidget?: boolean }) {
   const router = useRouter()
 
-  const [etablissements, setEtablissements] = useState(null)
+  const [etablissements, setEtablissements] = useState<IEtablissementCatalogueProcheWithDistanceAndChecked[]>([])
   const [isSubmitLoading, setIsSubmitLoading] = useState(false)
 
-  const isSubmitButtonEnabled = (etablissements ?? []).find((item) => item.checked)
+  const isSubmitButtonEnabled = etablissements.find((item) => item.checked)
 
   const { job: jobString, email, geo_coordinates, fromDashboard, userId, token } = useSearchParamsRecord()
   const job = JSON.parse((jobString as string) ?? "{}")
@@ -33,7 +35,7 @@ export function CreationMiseEnRelationPage({ isWidget = false }: { isWidget?: bo
    * @param {Object} etablissement
    * @return {void}
    */
-  const checkEtablissement = (etablissement) => {
+  const checkEtablissement = (etablissement: IEtablissementCatalogueProcheWithDistanceAndChecked) => {
     const etablissementUpdated = etablissements.map((item) => (etablissement._id === item._id ? { ...item, checked: !etablissement.checked } : item))
     setEtablissements(etablissementUpdated)
   }
@@ -194,7 +196,7 @@ export function CreationMiseEnRelationPage({ isWidget = false }: { isWidget?: bo
               <Button
                 leftIcon={<ArrowRightLine />}
                 variant="form"
-                isActive={isSubmitButtonEnabled}
+                isActive={isSubmitButtonEnabled != null}
                 isDisabled={!isSubmitButtonEnabled}
                 isLoading={isSubmitLoading}
                 onClick={submit}
