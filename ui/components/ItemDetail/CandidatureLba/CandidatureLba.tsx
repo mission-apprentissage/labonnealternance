@@ -1,5 +1,6 @@
 "use client"
-import { Box, Button, Flex, Image, Text, useDisclosure } from "@chakra-ui/react"
+import { Box, Flex, Image, Text, useDisclosure } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
@@ -50,22 +51,7 @@ export function CandidatureLba({ item }: { item: ILbaItemLbaJob | ILbaItemLbaCom
         ) : (
           <>
             <Box my={4}>
-              <Button
-                ml={1}
-                padding="8px 24px"
-                color="white"
-                background="bluefrance.500"
-                borderRadius="8px"
-                sx={{
-                  textDecoration: "none",
-                  _hover: {
-                    background: "bluesoft.500",
-                  },
-                }}
-                onClick={openApplicationForm}
-                aria-label="Ouvrir le formulaire d'envoi de candidature spontanée"
-                data-testid="postuler-button"
-              >
+              <Button onClick={openApplicationForm} aria-label="Ouvrir le formulaire d'envoi de candidature spontanée" data-testid="postuler-button">
                 J&apos;envoie ma candidature{kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? " spontanée" : ""}
               </Button>
             </Box>

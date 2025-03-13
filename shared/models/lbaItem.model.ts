@@ -1,3 +1,5 @@
+import { Jsonify } from "type-fest"
+
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem.js"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
@@ -577,3 +579,5 @@ export const ZLbaItemFormationResult = z
       "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
   })
 export type ILbaItemFormationResult = z.output<typeof ZLbaItemFormationResult>
+
+export type ILbaItemJobsGlobal = Jsonify<ILbaItemLbaCompany> | Jsonify<ILbaItemLbaJob> | Jsonify<ILbaItemPartnerJob>

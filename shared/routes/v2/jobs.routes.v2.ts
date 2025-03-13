@@ -4,7 +4,6 @@ import { LBA_ITEM_TYPE } from "../../constants/lbaitem.js"
 import { extensions } from "../../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../../helpers/zodWithOpenApi.js"
 import { ZLbarError } from "../../models/lbacError.model.js"
-import { ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemPartnerJob } from "../../models/lbaItem.model.js"
 import { ZRecruiter } from "../../models/recruiter.model.js"
 import { rateLimitDescription } from "../../utils/rateLimitDescription.js"
 import { IRoutesDef, ZResError } from "../common.routes.js"
@@ -110,20 +109,6 @@ export const zJobsRoutesV2 = {
         description: `Get all jobs related to my organization\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
         operationId: "getJobs",
       },
-    },
-    "/v2/_private/jobs/:source/:id": {
-      method: "get",
-      path: "/v2/_private/jobs/:source/:id",
-      params: z
-        .object({
-          source: extensions.buildEnum(LBA_ITEM_TYPE),
-          id: z.string(),
-        })
-        .strict(),
-      response: {
-        "200": z.union([ZLbaItemLbaJob, ZLbaItemLbaCompany, ZLbaItemPartnerJob]).nullable(),
-      },
-      securityScheme: null,
     },
     "/v2/jobs/export": {
       method: "get",
