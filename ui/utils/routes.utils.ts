@@ -1,5 +1,7 @@
 import type { Metadata, MetadataRoute } from "next"
+import { removeUndefinedFields, toKebabCase } from "shared"
 import { OPCO } from "shared/constants"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateUri } from "shared/helpers/generateUri"
 
 import { publicConfig } from "@/config.public"
@@ -299,7 +301,15 @@ export const PAGES = {
       },
       title: "Créer un compte entreprise",
     }),
-    espaceProCreationFin: (params: { jobId: string; email: string; withDelegation: boolean; fromDashboard: boolean; userId: string; token: string; isWidget: boolean }): IPage => ({
+    espaceProCreationFin: (params: {
+      jobId: string
+      email?: string
+      withDelegation: boolean
+      fromDashboard: boolean
+      userId: string
+      token?: string
+      isWidget: boolean
+    }): IPage => ({
       getPath: () => {
         const { isWidget, fromDashboard, withDelegation, ...querystring } = params
 
@@ -311,21 +321,15 @@ export const PAGES = {
         }
 
         return generateUri(path, {
-          querystring: { ...querystring, fromDashboard: fromDashboard.toString(), withDelegation: withDelegation.toString() },
+          querystring: removeUndefinedFields({ ...querystring, fromDashboard: fromDashboard.toString(), withDelegation: withDelegation.toString() }),
         }) as string
       },
       title: params.fromDashboard ? "Nouvelle offre" : "Créer un compte entreprise",
     }),
-    finCreationOffre: ({ isWidget, queryParameters }: { isWidget: boolean; queryParameters: string }): IPage => {
-      const path = `${isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin"}${queryParameters}`
-
-      return {
-        getPath: () => path,
-        title: "Création d'offre terminée",
-        index: false,
-        getMetadata: () => ({}),
-      }
-    },
+    espaceProOffreImpression: (jobId: string) => ({
+      getPath: () => `/espace-pro/offre/impression/${jobId}`,
+      title: "Imprimer mon offre",
+    }),
     recherche: (params: IRecherchePageParams): IPage => {
       const query = new URLSearchParams()
       query.set("romes", params.romes)
@@ -354,6 +358,10 @@ export const PAGES = {
         title: "Recherche",
       }
     },
+    jobDetail: ({ type, jobId, jobTitle = "offre" }: { type: LBA_ITEM_TYPE; jobId: string; jobTitle?: string }): IPage => ({
+      getPath: () => `/emploi/${type}/${encodeURIComponent(jobId)}/${toKebabCase(jobTitle)}` as string,
+      title: jobTitle,
+    }),
   },
   notion: {},
 } as const satisfies IPages

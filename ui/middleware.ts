@@ -113,7 +113,7 @@ export async function middleware(request: NextRequest) {
   })
 }
 
-const excludedStartPaths = ["/espace-pro/widget/", "/espace-pro/creation/"]
+const excludedStartPaths = ["/espace-pro/widget/", "/espace-pro/creation/", "/espace-pro/offre/impression/"]
 
 export const config = {
   matcher: [

@@ -139,7 +139,7 @@ export const FormulaireEditionOffre = ({
           withDelegation: false,
           fromDashboard,
           userId: user_id,
-          token: jobToken,
+          token: jobToken ?? undefined,
           isWidget,
         })
         .getPath()
