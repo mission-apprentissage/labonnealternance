@@ -230,7 +230,7 @@ fileignoreconfig:
 - filename: ui/components/InfoBanner/InfoBanner.tsx
   checksum: e5f8bd78ea46335fbb8784eabc01391be68922960f7d04ce9e8755484d10ce32
 - filename: ui/components/ItemDetail/DidYouKnow.tsx
-  checksum: 88f2245cd7c4d0f962f53bb6e3dd8179ac98cfd8202f1d985f46c4b07c1d75ee
+  checksum: 302fda19b75cd5a3f8e8b7f002366de003c45326e4bc8b98440a6dae20a5b183
 - filename: ui/components/ItemDetail/ItemDetail.tsx
   checksum: 1fcc0442306f83b5e45bf7da67304527598d7749b9e2642c6d4628d3b4f15a9c
 - filename: ui/components/ItemDetail/LbaJobComponents/LbaJobCompetences.tsx
@@ -246,7 +246,7 @@ fileignoreconfig:
 - filename: ui/components/ItemDetail/LbaRecruteurComponents/LbaRecruteurDetail.tsx
   checksum: 6e552b66f9238645f70705a0c43c81905e8dbee1c83d364cd89f951f80cb7ea0
 - filename: ui/components/ItemDetail/PartnerJobComponents/PartnerJobDetail.tsx
-  checksum: 88c8bf2cf48aa2c93a73eea7dcd9a040f44cbba3c82ae1b41b80d9939112d0c5
+  checksum: c1ace8f1692bbeec4534c6378b7be72b971462182df401d2c22b92a25b659875
 - filename: ui/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaDetail.tsx
   checksum: 5d8d24178d6390f4745bcddcaca7e7ea3f8f6af79ef304bb48187a6bea7ccfa1
 - filename: ui/components/ItemDetail/TrainingDetail.tsx

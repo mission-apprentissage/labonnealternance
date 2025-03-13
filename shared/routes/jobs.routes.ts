@@ -1,5 +1,6 @@
 import { zObjectId } from "zod-mongodb-schema"
 
+import { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 import { ZEtablissementCatalogueProcheWithDistance } from "../interface/etablissement.types.js"
@@ -308,6 +309,20 @@ export const zV1JobsRoutes = {
         deprecated: true,
         description: `Get job opportunities matching the query parameters\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
+    },
+    "/_private/jobs/:source/:id": {
+      method: "get",
+      path: "/_private/jobs/:source/:id",
+      params: z
+        .object({
+          source: extensions.buildEnum(LBA_ITEM_TYPE),
+          id: z.string(),
+        })
+        .strict(),
+      response: {
+        "200": z.union([ZLbaItemLbaJob, ZLbaItemLbaCompany, ZLbaItemPartnerJob]).nullable(),
+      },
+      securityScheme: null,
     },
     "/v1/jobs/company/:siret": {
       method: "get",

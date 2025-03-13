@@ -1,9 +1,11 @@
-import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Accordion, Box, Flex, Image, Link, ListItem, Text, UnorderedList } from "@chakra-ui/react"
+"use client"
+import { Accordion, Box, Flex, Image, ListItem, Text, UnorderedList } from "@chakra-ui/react"
 import Head from "next/head"
 import React, { useEffect } from "react"
 import { ILbaItemPartnerJob } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { SendPlausibleEvent } from "../../../utils/plausible"
@@ -22,10 +24,6 @@ const getContractTypes = (contractTypes) => {
 }
 
 export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJob; title: string }) => {
-  useEffect(() => {
-    document.getElementsByClassName("choiceCol")[0].scrollTo(0, 0)
-  }, [])
-
   useEffect(() => {
     SendPlausibleEvent("Affichage - Fiche entreprise Partner Job", {
       info_fiche: `${job?.id}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
@@ -81,7 +79,7 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJob; titl
         </Accordion>
         <Box marginTop="10px">
           <ReportJobLink
-            itemId={job?.job?.id}
+            itemId={job.id}
             type={LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES}
             linkLabelNotReported="Signaler l'offre"
             linkLabelReported="Offre signalée"
@@ -118,9 +116,7 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJob; titl
           </Text>
           <Box color="grey.700">
             Pour convaincre l’entreprise de vous embaucher,{" "}
-            <Link isExternal textDecoration="underline" href="https://dinum.didask.com/courses/demonstration/60d21bf5be76560000ae916e">
-              on vous donne des conseils ici pour vous aider !
-            </Link>
+            <DsfrLink href="https://dinum.didask.com/courses/demonstration/60d21bf5be76560000ae916e">on vous donne des conseils ici pour vous aider !</DsfrLink>
           </Box>
         </Box>
       </Flex>
@@ -184,9 +180,9 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJob; titl
               Téléphone :{" "}
             </Text>
             <Text as="span">
-              <Link ml="2px" isExternal variant="basicUnderlined" href={`tel:${job.contact.phone}`} aria-label="Appeler la société au téléphone">
-                {job.contact.phone} <ExternalLinkIcon mb="3px" ml="2px" />
-              </Link>
+              <DsfrLink href={`tel:${job.contact.phone}`} aria-label="Appeler la société au téléphone">
+                {job.contact.phone}
+              </DsfrLink>
             </Text>
           </Text>
         )}
