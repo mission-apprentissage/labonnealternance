@@ -1,5 +1,7 @@
 import type { Metadata, MetadataRoute } from "next"
+import { toKebabCase } from "shared"
 import { OPCO } from "shared/constants"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateUri } from "shared/helpers/generateUri"
 
 import { publicConfig } from "@/config.public"
@@ -348,6 +350,10 @@ export const PAGES = {
         title: "Recherche",
       }
     },
+    jobDetail: ({ type, jobId, jobTitle = "offre" }: { type: LBA_ITEM_TYPE; jobId: string; jobTitle?: string }): IPage => ({
+      getPath: () => `/emploi/${type}/${encodeURIComponent(jobId)}/${toKebabCase(jobTitle)}` as string,
+      title: jobTitle,
+    }),
   },
   notion: {},
 } as const satisfies IPages

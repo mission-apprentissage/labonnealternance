@@ -5,7 +5,6 @@ import { useState } from "react"
 import { useQuery } from "react-query"
 import { ETAT_UTILISATEUR } from "shared/constants"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import { zObjectId } from "shared/models/common"
 import { z } from "zod"
 
@@ -95,8 +94,7 @@ function FinComponent(props: ComponentProps) {
   })
 
   const userIsInError = userStatusData?.status_current === ETAT_UTILISATEUR.ERROR
-  let userIsValidated = userStatusData?.status_current === ETAT_UTILISATEUR.VALIDE || fromDashboard === true
-  userIsValidated = true
+  const userIsValidated = userStatusData?.status_current === ETAT_UTILISATEUR.VALIDE || fromDashboard === true
 
   if (!jobId && !email && !withDelegation && !fromDashboard && !userId) return <></>
 
@@ -214,7 +212,7 @@ const JobPreview = ({ jobId, userIsValidated }: { jobId: string; userIsValidated
     <Box mb={2}>
       <Text mb={2}>
         <DsfrLink
-          href={getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, jobId)}
+          href={PAGES.dynamic.jobDetail({ type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, jobId }).getPath()}
           aria-label="Ouvrir la page de prévisualisation de l'offre sur le site La bonne alternance - nouvelle fenêtre"
           external
         >

@@ -8,11 +8,11 @@ import QRCode from "react-qr-code"
 import { useQuery } from "react-query"
 import { NIVEAUX_POUR_LBA } from "shared/constants"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { getDirectJobPath } from "shared/metier/lbaitemutils"
 
 import { LoadingEmptySpace } from "@/components/espace_pro"
 import fetchLbaJobDetails from "@/services/fetchLbaJobDetails"
 import { LbaNew } from "@/theme/components/logos"
+import { PAGES } from "@/utils/routes.utils"
 
 const printExactColor = { sx: { WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" } }
 
@@ -79,7 +79,12 @@ export default function PrintableJobPage() {
         Rendez-vous sur La bonne alternance
       </Text>
       <QRCode
-        value={`${window.location.origin}${getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, jobId)}&utm_source=lba-phygital&utm_medium=phygital&utm_campaign=offre-phygital`}
+        value={`${window.location.origin}${PAGES.dynamic
+          .jobDetail({
+            type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
+            jobId,
+          })
+          .getPath()}?utm_source=lba-phygital&utm_medium=phygital&utm_campaign=offre-phygital`}
         size={128}
         style={{ margin: "auto", height: "auto", maxWidth: "128x", width: "128px" }}
         viewBox={`0 0 128 128`}
