@@ -74,7 +74,7 @@ const redirectAfterAuthentication = async (user: IUserRecruteurPublic, request: 
       return NextResponse.redirect(new URL(`/espace-pro/cfa`, request.url))
 
     case AUTHTYPE.ADMIN:
-      return NextResponse.redirect(new URL(`/espace-pro/admin`, request.url))
+      return NextResponse.redirect(new URL(`/espace-pro/administration/users`, request.url))
 
     default:
   }
