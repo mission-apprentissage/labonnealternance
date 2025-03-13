@@ -1,19 +1,19 @@
 "use client"
 
-import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Container, Flex, Grid, GridItem, Heading, Text, useBreakpointValue, useToast } from "@chakra-ui/react"
+import { Button, Container, Flex, Grid, GridItem, Heading, Text, useBreakpointValue, useToast } from "@chakra-ui/react"
 import { Form, Formik } from "formik"
-import NavLink from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { ENTREPRISE } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/compte/_components/InformationLegaleEntreprise"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
+import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { phoneValidation } from "@/common/validation/fieldValidations"
 import { AnimationContainer, CustomInput } from "@/components/espace_pro"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 import Link from "@/components/Link"
-import { ArrowDropRightLine, ArrowRightLine } from "@/theme/components/icons"
+import { ArrowRightLine } from "@/theme/components/icons"
 import { postFormulaire } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -92,18 +92,7 @@ function CreationEntrepriseDetail({ siret }: { siret: string }) {
   return (
     <AnimationContainer>
       <Container maxW="container.xl" my={5}>
-        <Box mb={5}>
-          <Breadcrumb separator={<ArrowDropRightLine color="grey.600" />} spacing="4px" textStyle="xs">
-            <BreadcrumbItem>
-              <NavLink legacyBehavior href="/espace-pro/administration" passHref>
-                <BreadcrumbLink textStyle="xs"> Administration des offres</BreadcrumbLink>
-              </NavLink>
-            </BreadcrumbItem>
-            <BreadcrumbItem isCurrentPage>
-              <BreadcrumbLink textStyle="xs">Nouvelle Entreprise</BreadcrumbLink>
-            </BreadcrumbItem>
-          </Breadcrumb>
-        </Box>
+        <Breadcrumb pages={[PAGES.static.backCfaHome, PAGES.static.backCfaCreationEntreprise, PAGES.dynamic.backCfaEntrepriseCreationDetail(siret)]} />
         <Grid templateRows={["1fr", ".5fr 2fr"]} templateColumns={["1fr", "4fr 5fr"]} gap={6}>
           <GridItem>
             <Heading>Informations de contact</Heading>

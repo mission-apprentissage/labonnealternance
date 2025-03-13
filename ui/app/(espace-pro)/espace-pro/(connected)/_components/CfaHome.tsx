@@ -2,8 +2,6 @@
 
 import {
   Box,
-  Breadcrumb,
-  BreadcrumbItem,
   Button,
   Link as ChakraLink,
   Container,
@@ -26,8 +24,8 @@ import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
 import { IRecruiter, IRecruiterJson } from "shared"
 
+import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
-import BreadcrumbLink from "@/components/BreadcrumbLink"
 import { AnimationContainer, LoadingEmptySpace, TableNew } from "@/components/espace_pro"
 import { ConfirmationSuppressionEntreprise } from "@/components/espace_pro/ConfirmationSuppressionEntreprise"
 import Link from "@/components/Link"
@@ -191,15 +189,7 @@ function ListeEntreprise() {
     <AnimationContainer>
       <ConfirmationSuppressionEntreprise {...confirmationSuppression} {...currentEntreprise} />
       <Container maxW="container.xl" mt={5}>
-        <Box mb={5}>
-          <Breadcrumb spacing="4px" textStyle="xs">
-            <BreadcrumbItem isCurrentPage>
-              <BreadcrumbLink href="#" textStyle="xs">
-                Administration des offres
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-          </Breadcrumb>
-        </Box>
+        <Breadcrumb pages={[PAGES.static.backCfaHome]} />
         <Flex justify="space-between" mb={12}>
           <Text fontSize="2rem" fontWeight={700}>
             Mes entreprises

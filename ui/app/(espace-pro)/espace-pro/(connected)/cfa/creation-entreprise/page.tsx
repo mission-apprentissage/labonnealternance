@@ -1,11 +1,11 @@
 "use client"
 
 import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Link as ChakraLink, Container, Flex, Heading, SimpleGrid, Text } from "@chakra-ui/react"
-import NavLink from "next/link"
+import { Box, Link as ChakraLink, Container, Flex, Heading, SimpleGrid, Text } from "@chakra-ui/react"
 import { useRouter } from "next/navigation"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 
+import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { AnimationContainer } from "@/components/espace_pro"
 import { SiretAutocomplete } from "@/components/espace_pro/Authentification/SiretAutocomplete"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
@@ -66,15 +66,7 @@ function CreationEntreprise() {
     <DepotSimplifieStyling>
       <AnimationContainer>
         <Container maxW="container.xl" mt={5}>
-          <Box mb={5}>
-            <Breadcrumb spacing="4px" textStyle="xs">
-              <BreadcrumbItem isCurrentPage>
-                <NavLink legacyBehavior href="/espace-pro/administration" passHref>
-                  <BreadcrumbLink textStyle="xs"> Administration des offres</BreadcrumbLink>
-                </NavLink>
-              </BreadcrumbItem>
-            </Breadcrumb>
-          </Box>
+          <Breadcrumb pages={[PAGES.static.backCfaHome, PAGES.static.backCfaCreationEntreprise]} />
           <SimpleGrid columns={[1, 1, 1, 2]} spacing={[0, 10]}>
             <Box>
               <Heading>Renseignements entreprise</Heading>

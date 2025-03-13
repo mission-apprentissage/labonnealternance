@@ -372,11 +372,11 @@ export const PAGES = {
     }),
     backCfaEntrepriseCreationDetail: (siret: string): IPage => ({
       getPath: () => `/espace-pro/cfa/creation-entreprise/${siret}` as string,
-      title: "Creation de l'entreprise",
+      title: siret,
     }),
     backCfaPageEntreprise: (establishment_id: string): IPage => ({
       getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}` as string,
-      title: "Compte entreprise",
+      title: "Entreprise",
     }),
     backCfaEntrepriseCreationOffre: (establishment_id: string): IPage => ({
       getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}/creation-offre` as string,
