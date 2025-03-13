@@ -1,24 +1,5 @@
 "use client"
-import {
-  Box,
-  Button,
-  Link as ChakraLink,
-  Container,
-  Flex,
-  Icon,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  Text,
-  useDisclosure,
-  useToast,
-} from "@chakra-ui/react"
+import { Box, Button, Container, Flex, Icon, Menu, MenuButton, MenuItem, MenuList, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure, useToast } from "@chakra-ui/react"
 import { Link } from "@mui/material"
 import dayjs from "dayjs"
 import { useParams } from "next/navigation"
@@ -180,32 +161,36 @@ function Users() {
                   </MenuButton>
                   <MenuList>
                     <MenuItem>
-                      <Link href={`/espace-pro/administration/users/${row._id}`} aria-label="voir les informations">
+                      <Link underline="hover" href={`/espace-pro/administration/users/${row._id}`} aria-label="voir les informations">
                         Voir les informations
                       </Link>
                     </MenuItem>
                     {canActivate && (
                       <MenuItem>
-                        <ChakraLink
+                        <Link
+                          underline="hover"
+                          component="button"
                           onClick={() => {
                             confirmationActivationUtilisateur.onOpen()
                             setCurrentEntreprise(row)
                           }}
                         >
                           Activer le compte
-                        </ChakraLink>
+                        </Link>
                       </MenuItem>
                     )}
                     {canDeactivate && (
                       <MenuItem>
-                        <ChakraLink
+                        <Link
+                          underline="hover"
+                          component="button"
                           onClick={() => {
                             confirmationDesactivationUtilisateur.onOpen()
                             setCurrentEntreprise(row)
                           }}
                         >
                           Désactiver le compte
-                        </ChakraLink>
+                        </Link>
                       </MenuItem>
                     )}
                   </MenuList>
