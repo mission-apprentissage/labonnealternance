@@ -273,16 +273,6 @@ export const PAGES = {
         getMetadata: () => ({}),
       }
     },
-    finCreationOffre: ({ isWidget, queryParameters }: { isWidget: boolean; queryParameters: string }): IPage => {
-      const path = `${isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin"}${queryParameters}`
-
-      return {
-        getPath: () => path,
-        title: "Création d'offre terminée",
-        index: false,
-        getMetadata: () => ({}),
-      }
-    },
     espaceProCreationDetail: (params: { siret: string; email?: string; type: "CFA" | "ENTREPRISE"; origin: string; isWidget: boolean }): IPage => ({
       getPath: () => {
         const { isWidget, ...querystring } = params
@@ -312,12 +302,30 @@ export const PAGES = {
     espaceProCreationFin: (params: { jobId: string; email: string; withDelegation: boolean; fromDashboard: boolean; userId: string; token: string; isWidget: boolean }): IPage => ({
       getPath: () => {
         const { isWidget, fromDashboard, withDelegation, ...querystring } = params
-        return generateUri(isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin", {
+
+        let path = ""
+        if (fromDashboard) {
+          path = "/espace-pro/offre/fin"
+        } else {
+          path = isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin"
+        }
+
+        return generateUri(path, {
           querystring: { ...querystring, fromDashboard: fromDashboard.toString(), withDelegation: withDelegation.toString() },
         }) as string
       },
-      title: "Créer un compte entreprise",
+      title: params.fromDashboard ? "Nouvelle offre" : "Créer un compte entreprise",
     }),
+    finCreationOffre: ({ isWidget, queryParameters }: { isWidget: boolean; queryParameters: string }): IPage => {
+      const path = `${isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin"}${queryParameters}`
+
+      return {
+        getPath: () => path,
+        title: "Création d'offre terminée",
+        index: false,
+        getMetadata: () => ({}),
+      }
+    },
     recherche: (params: IRecherchePageParams): IPage => {
       const query = new URLSearchParams()
       query.set("romes", params.romes)

@@ -8,6 +8,7 @@ import * as Yup from "yup"
 
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/compte/_components/InformationLegaleEntreprise"
 import ModificationCompteEmail from "@/app/(espace-pro)/espace-pro/(connected)/compte/_components/ModificationCompteEmail"
+import { useUserNavigationContext } from "@/app/(espace-pro)/espace-pro/(connected)/hooks/useUserNavigationContext"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { PAGES } from "@/utils/routes.utils"
@@ -25,20 +26,7 @@ export default function CompteRenderer() {
   const toast = useToast()
   const ModificationEmailPopup = useDisclosure()
 
-  const getUserNavigationContext = () => {
-    switch (user.type) {
-      case AUTHTYPE.ENTREPRISE:
-        return `/espace-pro/administration/entreprise/${user.establishment_id}`
-      case AUTHTYPE.CFA:
-        return `/espace-pro/administration`
-      case AUTHTYPE.ADMIN:
-        return `/espace-pro/administration/users`
-      case AUTHTYPE.OPCO:
-        return `/espace-pro/administration/opco`
-      default:
-        break
-    }
-  }
+  const userNavigationContext = useUserNavigationContext()
 
   const { data, isLoading } = useQuery("user", () => getUser(user._id.toString()))
   const userMutation = useMutation(
@@ -76,7 +64,7 @@ export default function CompteRenderer() {
   return (
     <Container maxW="container.xl">
       <Box mt="16px" mb={6}>
-        <Breadcrumb pages={[PAGES.dynamic.administrationDesOffres(getUserNavigationContext()), PAGES.dynamic.compte()]} />
+        <Breadcrumb pages={[PAGES.dynamic.administrationDesOffres(userNavigationContext), PAGES.dynamic.compte()]} />
       </Box>
       <Formik
         validateOnMount={true}

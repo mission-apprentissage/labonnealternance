@@ -1,7 +1,7 @@
 "use client"
 
-import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Button, Circle, Heading, Image, Link, Stack, Text, useToast } from "@chakra-ui/react"
+import { Box, Button, Circle, Heading, Image, Stack, Text, useToast } from "@chakra-ui/react"
+import { Link } from "@mui/material"
 import { useState } from "react"
 import { useQuery } from "react-query"
 import { ETAT_UTILISATEUR } from "shared/constants"
@@ -215,10 +215,10 @@ const JobPreview = ({ jobId, userIsValidated }: { jobId: string; userIsValidated
         <Link
           href={getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, jobId)}
           aria-label="Ouvrir la page de prévisualisation de l'offre sur le site La bonne alternance - nouvelle fenêtre"
-          isExternal
-          variant="basicUnderlinedBlue"
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          Voir mon offre sur La bonne alternance <ExternalLinkIcon mx="2px" />
+          Voir mon offre sur La bonne alternance
         </Link>
       </Text>
       {userIsValidated && (
@@ -243,8 +243,8 @@ function PrintJobLink({ jobId }) {
     <Link
       href={`/espace-pro/offre/impression/${jobId}`}
       aria-label="Ouvrir la page de prévisualisation de l'offre sur le site La bonne alternance - nouvelle fenêtre"
-      isExternal
-      variant="basicUnderlinedBlue"
+      target="_blank"
+      rel="noopener noreferrer"
       display="flex"
     >
       <Text as="span">Imprimer l'offre</Text> <Image src="/images/icons/print.svg" mt="4px" mx="3px" aria-hidden={true} alt="" />

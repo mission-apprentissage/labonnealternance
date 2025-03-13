@@ -28,10 +28,14 @@ const FR_DATE_FORMAT = "DD/MM/YYYY"
 export const FormulaireEditionOffre = ({
   fromDashboard,
   offre,
+  establishment_id,
+  user_id,
   handleSave,
 }: {
   fromDashboard?: boolean
   offre?: IJobJson
+  establishment_id: string
+  user_id: string
   handleSave?: (values: any) => Promise<{ form?: IRecruiterJson; offre?: IJobJson }>
 }) => {
   const { rome_appellation_label, rome_code } = offre ?? {}
@@ -42,7 +46,7 @@ export const FormulaireEditionOffre = ({
   const { rome } = romeAndAppellation ?? {}
   const { user } = useAuth()
   const router = useRouter()
-  const { establishment_id, email, userId, token } = useSearchParamsRecord() as { establishment_id: string; email: string; userId: string; type: string; token: string }
+  const { email, token } = useSearchParamsRecord() as { establishment_id: string; email: string; userId: string; type: string; token: string }
 
   const romeQuery = useQuery(["getRomeDetail", rome], () => getRomeDetail(rome), {
     retry: false,
@@ -134,7 +138,7 @@ export const FormulaireEditionOffre = ({
           email,
           withDelegation: false,
           fromDashboard,
-          userId,
+          userId: user_id,
           token: jobToken,
           isWidget,
         })

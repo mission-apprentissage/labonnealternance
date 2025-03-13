@@ -7,7 +7,7 @@ import { Bandeau } from "@/components/espace_pro/Bandeau"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
 export const WidgetEntrepriseOffre = () => {
-  const { displayBanner } = useSearchParamsRecord()
+  const { displayBanner, establishment_id, user_id } = useSearchParamsRecord()
   return (
     <>
       <Bandeau
@@ -16,7 +16,7 @@ export const WidgetEntrepriseOffre = () => {
         description="Déposez votre offre dès maintenant."
       />
       <Box mt={10}>
-        <FormulaireEditionOffre />
+        <FormulaireEditionOffre establishment_id={establishment_id} user_id={user_id} />
       </Box>
     </>
   )
