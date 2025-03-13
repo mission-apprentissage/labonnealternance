@@ -1,7 +1,7 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box } from "@mui/material"
+import { Box, Link } from "@mui/material"
 import { useParams } from "next/navigation"
 
 import { DepotRapideFin } from "@/app/(espace-pro)/_components/DepotRapideFin"
@@ -32,7 +32,15 @@ export default function OffreFin() {
           }),
         ]}
       />
-      <Box sx={{ margin: "0 auto", maxWidth: "1200px", padding: fr.spacing(6) }}>
+
+      <Box sx={{ margin: "0 auto", maxWidth: "1200px", padding: fr.spacing("4w") }}>
+        <Link
+          href={PAGES.dynamic
+            .espaceProCreationFin({ email: user.email, token: null, userId: user._id.toString(), jobId: job_id, fromDashboard: true, isWidget: false, withDelegation: false })
+            .getPath()}
+        >
+          Retour aux offres
+        </Link>
         <DepotRapideFin />
       </Box>
     </>
