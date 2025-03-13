@@ -1,6 +1,8 @@
 "use client"
 
-import { Box, Checkbox, CheckboxGroup, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input, Link, Select, Text } from "@chakra-ui/react"
+import { Box, Checkbox, CheckboxGroup, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input, Select, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Link } from "@mui/material"
 import dayjs from "dayjs"
 import { useFormikContext } from "formik"
 import { useParams } from "next/navigation"
@@ -14,7 +16,7 @@ import { debounce } from "@/common/utils/debounce"
 import { CustomInput, DropdownCombobox } from "@/components/espace_pro"
 import { LogoContext } from "@/context/contextLogo"
 import { useAuth } from "@/context/UserContext"
-import { ExternalLinkLine, Warning } from "@/theme/components/icons"
+import { Warning } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
 
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
@@ -84,21 +86,12 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
           </FormLabel>
           <Link
             href="https://www.service-public.fr/professionnels-entreprises/vosdroits/F31704"
-            isExternal
-            ml={1}
+            target="_blank"
+            rel="noreferrer noopener"
             aria-label="Accès au contrat en alternance - nouvelle fenêtre"
-            color="bluefrance.500"
-            display="inline-block"
-            sx={{
-              "& > *": {
-                textDecoration: "underline",
-              },
-            }}
+            className={fr.cx("fr-text--xs")}
           >
-            <Text as="span" display="inline-block" fontSize="sm">
-              En savoir plus
-            </Text>
-            <ExternalLinkLine ml={2} w={3} />
+            En savoir plus
           </Link>
         </Box>
         <CheckboxGroup
