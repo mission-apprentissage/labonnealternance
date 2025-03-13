@@ -8,13 +8,13 @@ export function useUserNavigationContext() {
 
   switch (user.type) {
     case AUTHTYPE.ENTREPRISE:
-      return `/espace-pro/administration/entreprise/${user.establishment_id}`
+      return `/espace-pro/entreprise/${user.establishment_id}`
     case AUTHTYPE.CFA:
-      return `/espace-pro/administration`
+      return `/espace-pro/cfa`
     case AUTHTYPE.ADMIN:
-      return `/espace-pro/administration/oousers`
+      return `/espace-pro/admin`
     case AUTHTYPE.OPCO:
-      return `/espace-pro/administration/opco`
+      return `/espace-pro/opco`
     default:
       assertUnreachable(`wrong user type ${user.type}` as never)
   }
