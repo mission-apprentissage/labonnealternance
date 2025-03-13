@@ -1,6 +1,6 @@
 "use client"
 import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Container, useToast } from "@chakra-ui/react"
-import { useParams, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useQuery, useQueryClient } from "react-query"
 import { AUTHTYPE } from "shared/constants"
 
@@ -10,16 +10,11 @@ import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/context
 import { ArrowDropRightLine } from "@/theme/components/icons"
 import { createOffre, getFormulaire, getOffre } from "@/utils/api"
 import { apiPut } from "@/utils/api.utils"
-import { PAGES } from "@/utils/routes.utils"
 
-export default function UpdateOffre() {
+export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { establishment_id: string; job_id?: string; onSuccess: () => void }) {
   const router = useRouter()
   const { user } = useConnectedSessionClient()
   const user_id = user._id
-  const { establishment_id, job_id } = useParams() as { establishment_id: string; job_id?: string }
-
-  const onSuccess = () =>
-    user.type === AUTHTYPE.ADMIN ? router.back() : router.push(PAGES.dynamic.successEditionOffre({ userType: user.type, establishment_id, user_id }).getPath())
 
   const toast = useToast()
   const client = useQueryClient()
