@@ -10,13 +10,13 @@ const Pipe = () => (
   <Box display={["none", "none", "none", "block"]} borderRight="1px solid" borderColor="grey.300" my="6" marginTop="10px !important;" marginBottom="10px !important;"></Box>
 )
 
-const Navigation = ({ currentPage = undefined }) => {
+const Navigation = ({ currentPage = undefined }: { currentPage?: string | undefined }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   return (
     <Box
       sx={
-        ["organisme-de-formation", "acces-recruteur"].includes(currentPage)
+        [currentPage && "organisme-de-formation", "acces-recruteur"].includes(currentPage)
           ? {
               boxShadow: "0px 1px 8px rgba(8, 67, 85, 0.24)",
             }

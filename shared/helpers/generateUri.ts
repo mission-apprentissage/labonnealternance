@@ -1,7 +1,7 @@
 import type { EmptyObject } from "type-fest"
 
 export type PathParam = Record<string, string>
-export type QueryString = Record<string, string | string[]>
+export type QueryString = Record<string, string | string[] | undefined>
 export type WithQueryStringAndPathParam =
   | {
       params?: PathParam
@@ -70,7 +70,7 @@ export function generateQueryString(query: QueryString = {}): string {
   for (const [key, value] of Object.entries(query)) {
     if (Array.isArray(value)) {
       value.forEach((v) => searchParams.append(key, v))
-    } else {
+    } else if (value !== undefined) {
       searchParams.append(key, value)
     }
   }

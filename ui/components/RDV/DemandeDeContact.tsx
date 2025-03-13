@@ -27,7 +27,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react"
-import emailMisspelled, { top100 } from "email-misspelled"
+import emailMisspelled, { Result, top100 } from "email-misspelled"
 import { useFormik } from "formik"
 import { useEffect, useState } from "react"
 import { EReasonsKey } from "shared"
@@ -56,11 +56,11 @@ type Props = {
  */
 const DemandeDeContact = (props: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const [suggestedEmails, setSuggestedEmails] = useState([])
+  const [suggestedEmails, setSuggestedEmails] = useState<Result[]>([])
   const [applicantReasons, setApplicantReasons] = useState<typeof reasons>(reasons)
   const [showApplicantReasonError, setShowApplicantReasonError] = useState(false)
   const [applicantType, setApplicantType] = useState<EApplicantType>(EApplicantType.ETUDIANT)
-  const [onSuccessSubmitResponse, setOnSuccessSubmitResponse] = useState(null)
+  const [onSuccessSubmitResponse, setOnSuccessSubmitResponse] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -134,7 +134,7 @@ const DemandeDeContact = (props: Props) => {
         })
 
         const response = await apiGet("/appointment-request/context/short-recap", {
-          querystring: { appointmentId: result.appointment._id.toString() },
+          querystring: { appointmentId: result.appointment?._id.toString() ?? "" },
           headers: {
             authorization: `Bearer ${result.token}`,
           },

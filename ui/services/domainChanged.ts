@@ -5,9 +5,5 @@ export default async function domainChanged(val, setDomainErrorFunc) {
     setDomainErrorFunc(true)
   })
 
-  if (res === "cancelled") {
-    return []
-  }
-
   return res
 }

@@ -21,48 +21,50 @@ type IConfigParameters = {
   address?: string
 }
 
+export type IWidgetParameters = {
+  parameters: IConfigParameters
+  applyWidgetParameters: boolean
+  applyFormValues: boolean | undefined
+  formValues: undefined | any
+}
+
 export const getWidgetParameters = () => {
-  const widgetParameters = { parameters: null, applyWidgetParameters: false, applyFormValues: undefined, formValues: undefined }
-
-  let parameters: IConfigParameters = {}
-  let applyWidgetParameters = true
-
-  parameters = {}
+  const widgetParameters: IWidgetParameters = { parameters: {}, applyWidgetParameters: true, applyFormValues: undefined, formValues: undefined }
 
   let p = getValueFromPath("lat")
-  if (p && !Number.isNaN(p)) parameters.lat = parseFloat(p)
+  if (p && !Number.isNaN(p)) widgetParameters.parameters.lat = parseFloat(p)
 
   p = getValueFromPath("lon")
-  if (p && !Number.isNaN(p)) parameters.lon = parseFloat(p)
+  if (p && !Number.isNaN(p)) widgetParameters.parameters.lon = parseFloat(p)
 
   p = getValueFromPath("rncp")
   if (p) {
-    parameters.rncp = p
+    widgetParameters.parameters.rncp = p
   }
 
   p = getValueFromPath("romes")
   if (p) {
-    parameters.romes = p
+    widgetParameters.parameters.romes = p
   }
 
-  if (!parameters.romes && !parameters.rncp) {
-    applyWidgetParameters = false
+  if (!widgetParameters.parameters.romes && !widgetParameters.parameters.rncp) {
+    widgetParameters.applyWidgetParameters = false
   }
 
   p = getValueFromPath("radius")
   if (p && !Number.isNaN(p) && (p === "10" || p === "30" || p === "60" || p === "100")) {
-    parameters.radius = parseInt(p)
+    widgetParameters.parameters.radius = parseInt(p)
   }
 
-  parameters.returnURI = getValueFromPath("return_uri")
-  parameters.returnLogoURL = getValueFromPath("return_logo_url")
-  parameters.jobName = getValueFromPath("job_name")
-  parameters.frozenJob = getValueFromPath("frozen_job")
-  parameters.caller = getValueFromPath("caller")
-  parameters.zipcode = getValueFromPath("zipcode")
-  parameters.insee = getValueFromPath("insee")
-  parameters.diploma = getValueFromPath("diploma")
-  parameters.address = getValueFromPath("address")
+  widgetParameters.parameters.returnURI = getValueFromPath("return_uri")
+  widgetParameters.parameters.returnLogoURL = getValueFromPath("return_logo_url")
+  widgetParameters.parameters.jobName = getValueFromPath("job_name")
+  widgetParameters.parameters.frozenJob = getValueFromPath("frozen_job")
+  widgetParameters.parameters.caller = getValueFromPath("caller")
+  widgetParameters.parameters.zipcode = getValueFromPath("zipcode")
+  widgetParameters.parameters.insee = getValueFromPath("insee")
+  widgetParameters.parameters.diploma = getValueFromPath("diploma")
+  widgetParameters.parameters.address = getValueFromPath("address")
 
   p = getValueFromPath("utm_campaign")
   if (p) {
@@ -71,10 +73,7 @@ export const getWidgetParameters = () => {
     campaignParameters.utm_medium = getValueFromPath("utm_medium")
   }
 
-  widgetParameters.parameters = parameters
-  widgetParameters.applyWidgetParameters = applyWidgetParameters
-
-  if (applyWidgetParameters && parameters.jobName) {
+  if (widgetParameters.applyWidgetParameters && widgetParameters.parameters.jobName) {
     widgetParameters.applyFormValues = true
   }
 
@@ -82,7 +81,14 @@ export const getWidgetParameters = () => {
 }
 
 export const getItemParameters = () => {
-  const itemParameters = { parameters: null, mode: null, applyItemParameters: false }
+  const itemParameters: {
+    parameters: {
+      itemId?: string
+      type?: string
+    } | null
+    mode: string | null
+    applyItemParameters: boolean
+  } = { parameters: null, mode: null, applyItemParameters: false }
 
   if (getValueFromPath("itemId")) {
     let parameters: {

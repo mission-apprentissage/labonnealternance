@@ -1,10 +1,11 @@
 import { useRouter } from "next/navigation"
 
+// @ts-expect-error
 import { UserContext, useAuth } from "@/context/UserContext"
 
 import { AUTHTYPE } from "../../common/contants"
 
-export const withAuth = (Component, scope = null) => {
+export const withAuth = (Component, scope: string | null = null) => {
   const Auth = (props) => {
     const router = useRouter()
     const { user } = useAuth()

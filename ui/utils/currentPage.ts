@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-mutable-exports
 let currentPage = ""
 // eslint-disable-next-line import/no-mutable-exports
-let currentSearch = null
+let currentSearch: any = null
 
 const setCurrentPage = (p) => {
   currentPage = p

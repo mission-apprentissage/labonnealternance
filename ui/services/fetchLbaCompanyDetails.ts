@@ -1,10 +1,11 @@
-import { ILbaItemLbaCompany, ILbaItemLbaCompanyReturnedByAPI } from "@/../shared"
+import { ILbaItemLbaCompany } from "@/../shared"
+import { Jsonify } from "type-fest"
 
 import { apiGet } from "@/utils/api.utils"
 
-const fetchLbaCompanyDetails = async (company): Promise<ILbaItemLbaCompany> => {
+const fetchLbaCompanyDetails = async (company): Promise<Jsonify<ILbaItemLbaCompany>> => {
   // KBA 2024-05-31 API should return a single object and not an array as we are only fetching a single object
-  const response: ILbaItemLbaCompanyReturnedByAPI = await apiGet("/v1/jobs/company/:siret", { params: { siret: company.id }, querystring: {} })
+  const response = await apiGet("/v1/jobs/company/:siret", { params: { siret: company.id }, querystring: {} })
 
   const [firstLbaCompany] = response?.lbaCompanies ?? []
   if (firstLbaCompany) {

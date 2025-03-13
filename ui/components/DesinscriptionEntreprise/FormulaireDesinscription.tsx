@@ -176,15 +176,20 @@ const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSuccess }) =>
 
     validationPopup.onClose()
 
+    // @ts-expect-error
     if (response.result === "OK") {
       setPopupData(noPopupData)
       handleUnsubscribeSuccess()
+      // @ts-expect-error
     } else if (response.result === UNSUBSCRIBE_EMAIL_ERRORS.ETABLISSEMENTS_MULTIPLES) {
+      // @ts-expect-error
       setSelectedSirets(response.companies.map((company: any) => company.siret))
+      // @ts-expect-error
       setPopupData({ companies: response.companies, email: values.email, reason: values.reason })
       validationPopup.onOpen()
     } else {
       setPopupData(noPopupData)
+      // @ts-expect-error
       setEmailError(EMAIL_ERRORS["unexpected_error"])
     }
     setIsMultipleSubmitting(false)
@@ -228,7 +233,7 @@ const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSuccess }) =>
           >
             {({ isSubmitting, errors, touched, submitCount }) => (
               <Form>
-                <FormControl isInvalid={errors.email && touched && submitCount > 0}>
+                <FormControl isInvalid={Boolean(errors.email && touched && submitCount > 0)}>
                   <FormLabel color={touched && submitCount > 0 && errors.email ? "red.500" : "gray.800"}>Email de l'établissement</FormLabel>
                   <FormHelperText pb={2}>Indiquez l'email sur lequel sont actuellement reçues les candidatures</FormHelperText>
                   <Field name="email">
@@ -247,7 +252,7 @@ const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSuccess }) =>
                   {touched && submitCount > 0 && errors.email && !emailError && <FormErrorMessage mb={2}>{errors.email as string}</FormErrorMessage>}
                 </FormControl>
 
-                <FormControl mt={3} isInvalid={errors.reason && touched && submitCount > 0}>
+                <FormControl mt={3} isInvalid={Boolean(errors.reason && touched && submitCount > 0)}>
                   <FormLabel color={touched && submitCount > 0 && errors.reason ? "red.500" : "gray.800"}>Motif</FormLabel>
                   <FormHelperText pb={2}>Indiquez la raison pour laquelle vous ne souhaitez plus recevoir de candidature</FormHelperText>
                   <Field name="reason">

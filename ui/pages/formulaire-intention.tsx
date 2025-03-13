@@ -16,7 +16,7 @@ const FormulaireIntention = () => {
   return (
     <>
       <NextSeo title="Formulaire d'intention | La bonne alternance | Trouvez votre alternance" description="Formulaire d'intention." />
-      {router.isReady && <IntentionForm id={id} company_recruitment_intention={parseEnum(ApplicationIntention, company_recruitment_intention)} token={token} />}
+      {router.isReady && <IntentionForm id={id} company_recruitment_intention={parseEnum(ApplicationIntention, company_recruitment_intention)!} token={token} />}
     </>
   )
 }

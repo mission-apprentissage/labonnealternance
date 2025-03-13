@@ -10,7 +10,7 @@ export const CustomInput = (props) => {
   const [field, meta] = useField(props)
   return (
     <Box pb={props.pb ?? "5"}>
-      <FormControl isInvalid={meta.error && meta.touched} isRequired={props.required ?? true}>
+      <FormControl isInvalid={Boolean(meta.error && meta.touched)} isRequired={props.required ?? true}>
         <FormLabel _invalid={{ color: "red.500" }}>{props.label}</FormLabel>
         {props.info && <FormHelperText pb={2}>{props.info}</FormHelperText>}
         <Input {...field} {...props} />
@@ -36,7 +36,7 @@ export const CustomInput = (props) => {
             <Flex direction="row" alignItems="center">
               {meta.error === "Société inconnue" ? <Image src="/images/icons/crossInOctogon.svg" alt="" h="13px" aria-hidden="true" m={0} mt={1} /> : <Warning m={0} />}
               <Flex ml={1}>
-                <div dangerouslySetInnerHTML={{ __html: meta.error }} />
+                <div dangerouslySetInnerHTML={{ __html: meta.error! }} />
                 {meta.error?.includes("déjà associé") && (
                   <Link href="/espace-pro/authentification" textColor="bluefrance.500" textDecoration="underline" ml={1}>
                     Connexion

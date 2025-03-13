@@ -89,7 +89,7 @@ export type IContextSearch = {
   itemToScrollTo: ILbaItemFormation | ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob | null
   setItemToScrollTo: (b: ILbaItemFormation | ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob | null) => void
   selectedItem: ILbaItemFormation | ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob
-  setSelectedItem: (b: object) => void
+  setSelectedItem: (b: object | null) => void
   extendedSearch: boolean
   setExtendedSearch: (b: boolean) => void
   hasSearch: boolean

@@ -46,8 +46,8 @@ function EditPage() {
   const router = useRouter()
   const { id: idParam } = router.query
   const id = idParam as string
-  const [eligibleTrainingsForAppointmentResult, setEligibleTrainingsForAppointmentResult] = useState<IEligibleTrainingsForAppointmentJson[]>([])
-  const [etablissement, setEtablissement] = useState<IEtablissementJson>()
+  const [eligibleTrainingsForAppointmentResult, setEligibleTrainingsForAppointmentResult] = useState<IEligibleTrainingsForAppointmentJson[] | null>([])
+  const [etablissement, setEtablissement] = useState<IEtablissementJson | null>()
   const [loading, setLoading] = useState(true)
   const toast = useToast()
 
@@ -280,6 +280,7 @@ function EditPage() {
                         {/* @ts-expect-error: TODO */}
                         <Td onClick={() => emailFocusRef.current.focus()} fontSize="0.8em" px="1px">
                           <Editable
+                            // @ts-expect-error: TODO
                             defaultValue={parameter?.lieu_formation_email}
                             style={{
                               border: "solid #dee2e6 1px",
@@ -306,8 +307,8 @@ function EditPage() {
                               <Text w={80}>DESACTIVER</Text>
                             </HStack>
                             <Checkbox
-                              isChecked={parameter?.is_lieu_formation_email_customized}
-                              defaultChecked={parameter?.is_lieu_formation_email_customized}
+                              isChecked={Boolean(parameter?.is_lieu_formation_email_customized)}
+                              defaultChecked={Boolean(parameter?.is_lieu_formation_email_customized)}
                               onChange={(event) => disableEmailOverriding(parameter._id, event.target.checked)}
                             />
                           </HStack>

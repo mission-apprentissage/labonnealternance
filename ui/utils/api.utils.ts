@@ -29,6 +29,7 @@ export async function optionsToFetchParams(method: RequestInit["method"], option
 
   let body: BodyInit | undefined = undefined
   if ("body" in options && method !== "GET") {
+    // @ts-expect-error
     if (options.body instanceof FormData) {
       body = options.body
     } else {
@@ -51,7 +52,7 @@ export async function optionsToFetchParams(method: RequestInit["method"], option
 async function getHeaders(options: IRequestOptions) {
   const headers = new Headers()
 
-  if ("headers" in options) {
+  if ("headers" in options && options.headers) {
     const h = options.headers
     Object.keys(h).forEach((name) => {
       headers.append(name, h[name])
@@ -135,8 +136,8 @@ export class ApiError extends Error {
 
     return new ApiError({
       path,
-      params: "params" in options ? options.params : {},
-      querystring: "querystring" in options ? options.querystring : {},
+      params: "params" in options && options.params ? options.params : {},
+      querystring: "querystring" in options && options.querystring ? options.querystring : {},
       requestHeaders: Object.fromEntries(requestHeaders.entries()),
       statusCode: res.status,
       message,

@@ -11,7 +11,7 @@ export const getCookie = (cookieName) => {
     cookieMatch = cookiePattern.exec(document.cookie)
   return cookieMatch ? window.decodeURIComponent(cookieMatch[2]) : null
 }
-export const setCookie = (cookieName: string, value: string, msToExpire?: number) => {
+export const setCookie = (cookieName: string, value: string, msToExpire: number) => {
   const expiryDate = new Date()
   expiryDate.setTime(new Date().getTime() + msToExpire)
   document.cookie = cookieName + "=" + window.encodeURIComponent(value) + (msToExpire ? ";expires=" + expiryDate.toString() : "") + ";path=/;domain=;SameSite=None; Secure"
@@ -43,7 +43,7 @@ const isConsentRemoved = () => {
 
 export const setReferer = () => {
   if (document.referrer) {
-    setCookie("referer", document.referrer)
+    setCookie("referer", document.referrer, 0)
   }
 }
 export const setTrackingCookies = (router: NextRouter) => {
@@ -52,13 +52,13 @@ export const setTrackingCookies = (router: NextRouter) => {
     const mtm_campaign = query?.mtm_campaign as string
     const utm_campaign = mtm_campaign || (query?.utm_campaign as string)
     if (utm_campaign) {
-      setCookie("utm_campaign", utm_campaign)
+      setCookie("utm_campaign", utm_campaign, 0)
     }
     if (query?.utm_source) {
-      setCookie("utm_source", query.utm_source as string)
+      setCookie("utm_source", query.utm_source as string, 0)
     }
     if (query?.utm_medium) {
-      setCookie("utm_medium", query.utm_medium as string)
+      setCookie("utm_medium", query.utm_medium as string, 0)
     }
   }
 }

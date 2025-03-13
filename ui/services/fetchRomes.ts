@@ -1,9 +1,11 @@
+import { IMetierEnrichi } from "shared"
+
 import { apiGet } from "../utils/api.utils"
 import memoize from "../utils/memoize"
 import { SendPlausibleEvent } from "../utils/plausible"
 import { capitalizeFirstLetter, isNonEmptyString } from "../utils/strutils"
 
-type IFetchRomes = ((value: string, errorCallbackFn?: () => void) => Promise<any>) & { abortController?: AbortController | null }
+type IFetchRomes = ((value: string, errorCallbackFn?: () => void) => Promise<IMetierEnrichi[]>) & { abortController?: AbortController | null }
 
 export const fetchRomes: IFetchRomes = memoize(async (value, errorCallbackFn) => {
   if (fetchRomes.abortController) {
@@ -11,7 +13,7 @@ export const fetchRomes: IFetchRomes = memoize(async (value, errorCallbackFn) =>
   }
   fetchRomes.abortController = new AbortController()
   const { signal } = fetchRomes.abortController
-  let res = []
+  let res: IMetierEnrichi[] = []
 
   if (!isNonEmptyString(value)) return res
 
@@ -21,11 +23,7 @@ export const fetchRomes: IFetchRomes = memoize(async (value, errorCallbackFn) =>
     if (!response.labelsAndRomes && !response.labelsAndRomesForDiplomas) return []
 
     // transformation des textes des diplômes
-    let diplomas = []
-
-    if (response.labelsAndRomesForDiplomas?.length) {
-      diplomas = response.labelsAndRomesForDiplomas.map((diploma: any) => (diploma = { ...diploma, label: capitalizeFirstLetter(diploma.label) }))
-    }
+    const diplomas = response.labelsAndRomesForDiplomas?.map((diploma: any) => (diploma = { ...diploma, label: capitalizeFirstLetter(diploma.label) })) ?? []
 
     // on affiche d'abord jusqu'à 4 métiers puis jusqu'à 4 diplômes puis le reste s'il y a
     if (response.labelsAndRomes?.length) {

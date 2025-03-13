@@ -46,11 +46,11 @@ export const loadItem = async ({
     setHasSearch(true)
     setIsFormVisible(false)
 
-    let itemMarker = null
+    let itemMarker: any = null
 
     const searchTimestamp = new Date().getTime()
 
-    let loadedItem = null
+    let loadedItem: any = null
 
     if (item.type === "training") {
       loadedItem = await fetchTrainingDetails({ id: item.itemId })
@@ -89,7 +89,12 @@ export const loadItem = async ({
         searchResultContext,
       })
     } else {
-      const results = {
+      const results: {
+        peJobs: null
+        lbaCompanies: any[] | null
+        matchas: any[] | null
+        partnerJobs: any[] | null
+      } = {
         peJobs: null,
         lbaCompanies: null,
         matchas: null,
@@ -214,7 +219,7 @@ export const shouldFetchItemData = (itemId: string, itemType: LBA_ITEM_TYPE, sea
   if (!itemId) {
     return false
   }
-  let itemToFind = null
+  let itemToFind: { detailsLoaded?: boolean | null | undefined } | null | undefined = null
 
   switch (itemType) {
     case LBA_ITEM_TYPE.FORMATION: {

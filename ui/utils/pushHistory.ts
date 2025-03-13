@@ -19,13 +19,23 @@ const buildQueryParams = ({ display, page, item, searchParameters, searchTimesta
 const pushHistory = ({
   router,
   scopeContext,
-  item = undefined,
-  page = undefined,
-  display = undefined,
-  searchParameters = undefined,
-  searchTimestamp = undefined,
+  item,
+  page,
+  display,
+  searchParameters,
+  searchTimestamp,
   isReplace = false,
   displayMap = false,
+}: {
+  router: any
+  scopeContext: any
+  item?: any
+  page?: string
+  display?: string
+  searchParameters?: string | null
+  searchTimestamp?: string | number
+  isReplace?: boolean
+  displayMap?: boolean
 }) => {
   const params = buildQueryParams({
     display,

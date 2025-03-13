@@ -30,6 +30,7 @@ export const AdminUserForm = ({
   onUpdate?: () => void
 }) => {
   const toast = useToast()
+  // @ts-expect-error
   const { activate: activateUser, deactivate: deactivateUser } = useUserPermissionsActions(user?._id.toString())
 
   const errorHandler = (error: any) => {
@@ -60,6 +61,7 @@ export const AdminUserForm = ({
       const { email, first_name, last_name, phone = "", type } = values
       const commonFields = { email, first_name, last_name, phone, type }
       const sentFields = { ...commonFields, ...(type === OPCO ? { opco: values.opco } : {}) }
+      // @ts-expect-error
       createSuperUser(sentFields)
         .then((user) => {
           toast({
@@ -76,6 +78,7 @@ export const AdminUserForm = ({
   const onDeleteClicked = async (event) => {
     event.preventDefault()
     if (confirm("Voulez-vous vraiment supprimer cet utilisateur ?")) {
+      // @ts-expect-error
       const result = await apiDelete("/admin/users/:userId", { params: { userId: user._id.toString() }, querystring: {} })
       if (result?.ok) {
         toast({
@@ -96,6 +99,7 @@ export const AdminUserForm = ({
     }
   }
 
+  // @ts-expect-error
   const statusArray: IRoleManagementEvent[] = role?.status
   const accessStatus = getLastStatusEvent(statusArray)?.status
 
@@ -136,7 +140,13 @@ export const AdminUserForm = ({
           </HStack>
         </>
       )}
-      <UserFieldsForm user={user} onSubmit={onSubmit} type={parseEnum({ OPCO, ADMIN }, role?.authorized_type)} opco={parseEnum(OPCOS_LABEL, role?.authorized_id)} />
+      <UserFieldsForm
+        user={user}
+        onSubmit={onSubmit}
+        // @ts-expect-error
+        type={parseEnum({ OPCO, ADMIN }, role?.authorized_type)}
+        opco={parseEnum(OPCOS_LABEL, role?.authorized_id)}
+      />
     </>
   )
 }

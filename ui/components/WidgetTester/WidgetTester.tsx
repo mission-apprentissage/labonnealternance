@@ -12,9 +12,9 @@ const WidgetTester = () => {
   const [locationRadius, setLocationRadius] = useState("0")
   const [scope, setScope] = useState("")
   const [frozenJob, setFrozenJob] = useState("")
-  const [widgetParams, setWidgetParams] = useState(null)
-  const [shownRomes, setShownRomes] = useState(null)
-  const [shownSearchCenter, setShownSearchCenter] = useState(null)
+  const [widgetParams, setWidgetParams] = useState<any>(null)
+  const [shownRomes, setShownRomes] = useState<any>(null)
+  const [shownSearchCenter, setShownSearchCenter] = useState<any>(null)
   const [_domainError, setDomainError] = useState(false)
 
   const jobChanged = async function (val, setLoadingState) {
