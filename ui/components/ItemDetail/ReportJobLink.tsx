@@ -6,14 +6,13 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { z } from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
+import { useLocalStorage } from "@/app/hooks/useLocalStorage"
 import { reportLbaItem } from "@/utils/api"
 
 import { CustomFormControl } from "../espace_pro/CustomFormControl"
 import { CustomRadio } from "../espace_pro/CustomRadio"
 import { InfoTooltipOrModal } from "../InfoTooltipOrModal"
 import { ModalReadOnly } from "../ModalReadOnly"
-
-import { useLocalStorageTyped } from "./CandidatureLba/services/useLocalStorage"
 
 const additionalMessageByMotif = {
   "Offre offensante ou discriminatoire": "Pouvez-vous préciser l'offense ou la discrimination en question (dans la description de l'annonce, lors de l'entretien, etc) ?",
@@ -68,15 +67,15 @@ export const ReportJobLink = ({
   tooltip: React.ReactNode
   type: LBA_ITEM_TYPE
 }) => {
-  const [isReported, setReported] = useLocalStorageTyped<boolean>(`report-job-${itemId}`, false)
+  const { storedValue, setLocalStorage } = useLocalStorage(`report-job-${itemId}`, false)
   const { isOpen: isModalOpen, onClose: closeModal, onOpen: openModal } = useDisclosure()
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onReport = async ({ reason, reason_details }: IFormValues) => {
-    if (isReported) {
+    if (storedValue) {
       return
     }
-    setReported(true)
+    setLocalStorage(true)
     await reportLbaItem(itemId, type, reason, reason_details || undefined)
   }
 
@@ -84,7 +83,7 @@ export const ReportJobLink = ({
 
   return (
     <Flex alignItems="center">
-      {isReported ? (
+      {storedValue ? (
         <Button priority="tertiary no outline" disabled iconId="ri-check-line" iconPosition="left" size="small">
           {linkLabelReported}
         </Button>
@@ -105,7 +104,7 @@ export const ReportJobLink = ({
           pb: [12, 16],
         }}
       >
-        {isReported ? (
+        {storedValue ? (
           <ReportedAcknowledgement />
         ) : (
           <>

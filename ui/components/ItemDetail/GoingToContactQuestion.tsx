@@ -1,12 +1,13 @@
 import { Box, Button, Flex } from "@chakra-ui/react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
+import { useLocalStorage } from "@/app/hooks/useLocalStorage"
+
 import { getItemId } from "../../utils/getItemId"
 import { SendPlausibleEvent } from "../../utils/plausible"
-import { useSessionStorage } from "../../utils/useSessionStorage"
 
 const GoingToContactQuestion = ({ kind, uniqId, item }) => {
-  const [thanks, setThanks] = useSessionStorage(uniqId, false)
+  const { storedValue, setLocalStorage } = useLocalStorage(uniqId)
 
   const workplace = kind === LBA_ITEM_TYPE_OLD.FORMATION ? "cet établissement" : "cette entreprise"
 
@@ -38,7 +39,7 @@ const GoingToContactQuestion = ({ kind, uniqId, item }) => {
       <Box fontSize="14px" fontWeight={700}>
         Allez-vous contacter {workplace} ?
       </Box>
-      {thanks ? (
+      {storedValue ? (
         <Box borderRadius="10px" px="3" py="2" background="grey.100" fontSize="14px" fontWeight={700}>
           Merci pour votre réponse ! 👌
         </Box>
@@ -55,7 +56,7 @@ const GoingToContactQuestion = ({ kind, uniqId, item }) => {
             }}
             fontSize="14px"
             onClick={() => {
-              setThanks(true)
+              setLocalStorage(true)
               SendPlausibleEvent(`Clic Je vais contacter - Fiche ${typeForEventTracking}`, {
                 info_fiche: getItemId(item),
               })
@@ -74,7 +75,7 @@ const GoingToContactQuestion = ({ kind, uniqId, item }) => {
             }}
             fontSize="14px"
             onClick={() => {
-              setThanks(true)
+              setLocalStorage(true)
               SendPlausibleEvent(`Clic Je ne vais pas contacter - Fiche ${typeForEventTracking}`, {
                 info_fiche: getItemId(item),
               })

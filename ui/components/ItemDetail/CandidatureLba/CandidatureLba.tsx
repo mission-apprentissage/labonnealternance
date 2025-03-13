@@ -3,9 +3,11 @@ import { Box, Button, Flex, Image, Text, useDisclosure } from "@chakra-ui/react"
 import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
+import { useLocalStorage } from "@/app/hooks/useLocalStorage"
+
 import { getItemId } from "../../../utils/getItemId"
 import { SendPlausibleEvent } from "../../../utils/plausible"
-import ItemDetailApplicationsStatus, { hasApplied } from "../ItemDetailServices/ItemDetailApplicationStatus"
+import ItemDetailApplicationsStatus from "../ItemDetailServices/ItemDetailApplicationStatus"
 
 import { CandidatureLbaModal } from "./CandidatureLbaModal"
 import { useSubmitCandidature } from "./services/submitCandidature"
@@ -24,6 +26,7 @@ export const NoCandidatureLba = () => {
 }
 
 export function CandidatureLba({ item }: { item: ILbaItemLbaJob | ILbaItemLbaCompany | ILbaItemPartnerJob }) {
+  const { storedValue } = useLocalStorage(`application-${item.ideaType}-${item.id}`)
   const modalControls = useDisclosure()
   const submitControls = useSubmitCandidature(item)
   const { onOpen } = modalControls
@@ -36,7 +39,7 @@ export function CandidatureLba({ item }: { item: ILbaItemLbaJob | ILbaItemLbaCom
     })
   }
 
-  const hasAppliedValue = hasApplied(item)
+  const hasAppliedValue = storedValue
 
   return (
     <Box data-testid="CandidatureSpontanee">

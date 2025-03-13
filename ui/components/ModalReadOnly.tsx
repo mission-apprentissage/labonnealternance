@@ -1,6 +1,8 @@
+"use client"
 import { Button, Modal, ModalBody, ModalContent, ModalContentProps, ModalOverlay, Text } from "@chakra-ui/react"
 import { useEffect } from "react"
 
+import { useIsMobileDevice } from "@/app/hooks/useIsMobileDevice"
 import { Close } from "@/theme/components/icons"
 
 export const ModalReadOnly = ({
@@ -16,14 +18,14 @@ export const ModalReadOnly = ({
   modalContentProps?: ModalContentProps
   hideCloseButton?: boolean
 }) => {
-  const isMobile = () => window.innerWidth < 500
+  const isMobile = useIsMobileDevice()
 
   useEffect(() => {
     window.document.body.className = isOpen ? "is-modal-opened" : ""
   }, [isOpen])
 
   return (
-    <Modal closeOnOverlayClick={true} blockScrollOnMount={true} size={isMobile() ? "full" : "sm"} isOpen={isOpen} onClose={onClose}>
+    <Modal closeOnOverlayClick={true} blockScrollOnMount={true} size={isMobile ? "full" : "sm"} isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent overflowY="auto" margin="auto" maxHeight={["100%", "95%"]} maxWidth={["100%", "95%"]} width="fit-content" borderRadius={0} {...modalContentProps} pt={0}>
         {!hideCloseButton && <ModalReadOnlyCloseButton onClick={onClose} />}
