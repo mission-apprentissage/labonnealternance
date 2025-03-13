@@ -19,7 +19,7 @@ import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 const ZComponentProps = z
   .object({
     jobId: z.string(),
-    email: z.string(),
+    email: z.string().optional(),
     withDelegation: z.enum(["true", "false"]).transform((value) => value === "true"),
     fromDashboard: z.enum(["true", "false"]).transform((value) => value === "true"),
     userId: z.union([z.string(), zObjectId]),

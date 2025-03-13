@@ -1,5 +1,5 @@
 import type { Metadata, MetadataRoute } from "next"
-import { toKebabCase } from "shared"
+import { removeUndefinedFields, toKebabCase } from "shared"
 import { OPCO } from "shared/constants"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateUri } from "shared/helpers/generateUri"
@@ -301,7 +301,15 @@ export const PAGES = {
       },
       title: "Créer un compte entreprise",
     }),
-    espaceProCreationFin: (params: { jobId: string; email: string; withDelegation: boolean; fromDashboard: boolean; userId: string; token: string; isWidget: boolean }): IPage => ({
+    espaceProCreationFin: (params: {
+      jobId: string
+      email?: string
+      withDelegation: boolean
+      fromDashboard: boolean
+      userId: string
+      token?: string
+      isWidget: boolean
+    }): IPage => ({
       getPath: () => {
         const { isWidget, fromDashboard, withDelegation, ...querystring } = params
 
@@ -313,7 +321,7 @@ export const PAGES = {
         }
 
         return generateUri(path, {
-          querystring: { ...querystring, fromDashboard: fromDashboard.toString(), withDelegation: withDelegation.toString() },
+          querystring: removeUndefinedFields({ ...querystring, fromDashboard: fromDashboard.toString(), withDelegation: withDelegation.toString() }),
         }) as string
       },
       title: params.fromDashboard ? "Nouvelle offre" : "Créer un compte entreprise",

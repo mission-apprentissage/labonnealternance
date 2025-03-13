@@ -15,7 +15,8 @@ import { PAGES } from "@/utils/routes.utils"
 export default function UpdateOffre() {
   const router = useRouter()
   const { user } = useConnectedSessionClient()
-  const { establishment_id, job_id, user_id } = useParams() as { establishment_id: string; job_id: string; user_id?: string }
+  const user_id = user._id
+  const { establishment_id, job_id } = useParams() as { establishment_id: string; job_id?: string }
 
   const onSuccess = () =>
     user.type === AUTHTYPE.ADMIN ? router.back() : router.push(PAGES.dynamic.successEditionOffre({ userType: user.type, establishment_id, user_id }).getPath())
