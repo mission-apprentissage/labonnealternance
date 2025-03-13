@@ -128,8 +128,8 @@ const UserFields = ({ formik }: { formik: any }) => {
     formik.handleChange(e)
   }
 
-  const clickSuggestion = (e) => {
-    formik.setFieldValue("email", e.currentTarget.innerHTML)
+  const clickSuggestion = (value) => {
+    formik.setFieldValue("applicant_email", value)
     setSuggestedEmails([])
   }
 
@@ -175,20 +175,7 @@ const UserFields = ({ formik }: { formik: any }) => {
                 Voulez vous dire ?
               </Text>
               {suggestedEmails.map((suggestedEmail) => (
-                <Button
-                  key={suggestedEmail.corrected}
-                  onClick={clickSuggestion}
-                  textAlign="center"
-                  fontSize="12px"
-                  width="fit-content"
-                  px="5px"
-                  pb="3px"
-                  mr="5px"
-                  mt="3px"
-                  color="bluefrance.500"
-                  bg="#e3e3fd"
-                  borderRadius="40px"
-                >
+                <Button key={suggestedEmail.corrected} onClick={() => clickSuggestion(suggestedEmail.corrected)} priority="tertiary no outline" size="small">
                   {suggestedEmail.corrected}
                 </Button>
               ))}
