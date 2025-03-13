@@ -74,7 +74,6 @@ const nextConfig = {
   serverExternalPackages: ["react-pdf"],
   poweredByHeader: false,
   experimental: {
-    typedRoutes: true,
     fallbackNodePolyfills: false,
   },
   output: "standalone",
