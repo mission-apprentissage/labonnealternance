@@ -1,15 +1,12 @@
 "use client"
 import { Box, Link } from "@chakra-ui/react"
-import dynamic from "next/dynamic"
 import { ILbaItemPartnerJob } from "shared"
 
 import { focusWithin } from "@/theme/theme-lba-tools"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
-// import { CandidatureLba } from "../CandidatureLba/CandidatureLba"
+import { CandidatureLba } from "../CandidatureLba/CandidatureLba"
 import CandidatureParTelephone from "../CandidatureParTelephone"
-
-const CandidatureLba = dynamic(() => import("../CandidatureLba/CandidatureLba"), { ssr: false })
 
 export const PartnerJobPostuler = ({ job, isCollapsedHeader }: { job: ILbaItemPartnerJob; isCollapsedHeader: boolean }) => {
   // KBA fix enum shared/models/lbaItem.model.ts

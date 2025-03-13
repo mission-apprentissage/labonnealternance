@@ -23,7 +23,7 @@ export const NoCandidatureLba = () => {
   )
 }
 
-export default function CandidatureLba({ item }: { item: ILbaItemLbaJob | ILbaItemLbaCompany | ILbaItemPartnerJob }) {
+export function CandidatureLba({ item }: { item: ILbaItemLbaJob | ILbaItemLbaCompany | ILbaItemPartnerJob }) {
   const modalControls = useDisclosure()
   const submitControls = useSubmitCandidature(item)
   const { onOpen } = modalControls
