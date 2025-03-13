@@ -194,6 +194,14 @@ export const PAGES = {
       getPath: () => `/espace-pro/creation/cfa` as string,
       title: "Créer un compte d'organisme de formation",
     },
+    backCfaHome: {
+      getPath: () => `/espace-pro/cfa` as string,
+      title: "Accueil CFA",
+    },
+    backCfaCreationEntreprise: {
+      getPath: () => `/espace-pro/cfa/creation-entreprise` as string,
+      title: "Création d'entreprise",
+    },
   },
   dynamic: {
     // example
@@ -361,6 +369,18 @@ export const PAGES = {
     jobDetail: ({ type, jobId, jobTitle = "offre" }: { type: LBA_ITEM_TYPE; jobId: string; jobTitle?: string }): IPage => ({
       getPath: () => `/emploi/${type}/${encodeURIComponent(jobId)}/${toKebabCase(jobTitle)}` as string,
       title: jobTitle,
+    }),
+    backCfaEntrepriseCreationDetail: (siret: string): IPage => ({
+      getPath: () => `/espace-pro/cfa/creation-entreprise/${siret}` as string,
+      title: siret,
+    }),
+    backCfaPageEntreprise: (establishment_id: string): IPage => ({
+      getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}` as string,
+      title: "Entreprise",
+    }),
+    backCfaEntrepriseCreationOffre: (establishment_id: string): IPage => ({
+      getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}/creation-offre` as string,
+      title: "Création d'une offre",
     }),
   },
   notion: {},

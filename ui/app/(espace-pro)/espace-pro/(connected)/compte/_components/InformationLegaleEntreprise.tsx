@@ -21,7 +21,7 @@ export const InformationLegaleEntreprise = ({ siret, type, opco }: InformationLe
 
   if (isLoading) return null
 
-  const entreprise = type === ENTREPRISE && "data" in entrepriseQuery.data && "siret" in entrepriseQuery.data.data && entrepriseQuery.data.data
+  const entreprise = type === ENTREPRISE && entrepriseQuery.data && "data" in entrepriseQuery.data && "siret" in entrepriseQuery.data.data && entrepriseQuery.data.data
   const finalOpco = opco ?? parseEnum(OPCOS_LABEL, entreprise?.opco)
   const cfa = type === CFA && "data" in cfaQuery.data && "siret" in cfaQuery.data.data && cfaQuery.data.data
   const raisonSociale = entreprise?.raison_sociale ?? cfa?.raison_sociale

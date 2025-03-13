@@ -1,10 +1,5 @@
-import UpdateOffre from "@/app/(espace-pro)/espace-pro/(connected)/_components/UpdateOffre"
-import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
+import { BackEntrepriseUpsertOffre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/BackEntrepriseUpsertOffre"
 
 export default async function CreationOffre() {
-  return (
-    <DepotSimplifieStyling>
-      <UpdateOffre />
-    </DepotSimplifieStyling>
-  )
+  return <BackEntrepriseUpsertOffre />
 }
