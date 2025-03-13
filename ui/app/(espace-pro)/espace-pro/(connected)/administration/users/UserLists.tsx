@@ -246,13 +246,13 @@ function Users() {
 
 export default function UserLists() {
   return (
-    <Container maxW="full" p="0">
+    <>
       <Box as="header">
         <NavigationAdmin currentPage={EAdminPages.GESTION_RECRUTEURS} />
       </Box>
       <Container as="main" p={0} maxW="container.xl" flexGrow="1">
         <Users />
       </Container>
-    </Container>
+    </>
   )
 }
