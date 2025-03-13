@@ -4,7 +4,6 @@ import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Button, Center, Checkbox, Container, Divider, Flex, Grid, GridItem, Heading, Link, Spinner, Square, Text } from "@chakra-ui/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import { generateQueryString } from "shared/helpers/generateUri"
 import { IEtablissementCatalogueProcheWithDistance } from "shared/interface/etablissement.types"
 
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
@@ -26,7 +25,7 @@ export function CreationMiseEnRelationPage({ isWidget = false }: { isWidget?: bo
 
   const isSubmitButtonEnabled = (etablissements ?? []).find((item) => item.checked)
 
-  const { job: jobString, email, geo_coordinates, fromDashboard, userId, establishment_id, token } = useSearchParamsRecord()
+  const { job: jobString, email, geo_coordinates, fromDashboard, userId, token } = useSearchParamsRecord()
   const job = JSON.parse((jobString as string) ?? "{}")
 
   /**
@@ -42,17 +41,14 @@ export function CreationMiseEnRelationPage({ isWidget = false }: { isWidget?: bo
   const goToEndStep = ({ withDelegation }) => {
     router.replace(
       PAGES.dynamic
-        .finCreationOffre({
+        .espaceProCreationFin({
           isWidget,
-          queryParameters: generateQueryString({
-            jobId: job._id.toString(),
-            email,
-            withDelegation,
-            fromDashboard: (fromDashboard === "true").toString(),
-            userId,
-            establishment_id,
-            token,
-          }),
+          jobId: job._id.toString(),
+          email,
+          withDelegation,
+          fromDashboard: Boolean(fromDashboard === "true"),
+          userId,
+          token,
         })
         .getPath()
     )
