@@ -1,6 +1,5 @@
 "use client"
 import { Box, Flex, Text } from "@chakra-ui/react"
-import { Divider } from "@mui/material"
 import { useContext, useEffect, useState } from "react"
 import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -116,7 +115,7 @@ export default function JobOfferRendererClient({ selectedItem }: { selectedItem:
           </Text>
 
           {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
-          {!isCollapsedHeader && <Divider />}
+          {!isCollapsedHeader && <hr />}
 
           <Flex flexDirection={{ base: "column", sm: "row" }} justifyContent="space-between">
             <Box>

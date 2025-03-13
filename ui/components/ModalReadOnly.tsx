@@ -1,9 +1,9 @@
 "use client"
-import { Button, Modal, ModalBody, ModalContent, ModalContentProps, ModalOverlay, Text } from "@chakra-ui/react"
+import { Modal, ModalBody, ModalContent, ModalContentProps, ModalOverlay } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { useEffect } from "react"
 
 import { useIsMobileDevice } from "@/app/hooks/useIsMobileDevice"
-import { Close } from "@/theme/components/icons"
 
 export const ModalReadOnly = ({
   children,
@@ -37,23 +37,8 @@ export const ModalReadOnly = ({
 
 export const ModalReadOnlyCloseButton = ({ onClick }: { onClick: () => void }) => {
   return (
-    <Button
-      mt={4}
-      mb={4}
-      display={"flex"}
-      alignSelf={"flex-end"}
-      color="bluefrance.500"
-      fontSize={"epsilon"}
-      onClick={onClick}
-      variant="unstyled"
-      p={6}
-      fontWeight={400}
-      cursor="pointer"
-    >
+    <Button onClick={onClick} style={{ cursor: "pointer" }} priority="tertiary no outline" iconId="ri-close-large-line" iconPosition="right">
       Fermer
-      <Text as="span" ml={2}>
-        <Close boxSize={4} />
-      </Text>
     </Button>
   )
 }

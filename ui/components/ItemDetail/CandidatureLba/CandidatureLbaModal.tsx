@@ -1,7 +1,6 @@
 import { useDisclosure } from "@chakra-ui/react"
 import { useState } from "react"
 import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
-import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 
@@ -25,7 +24,7 @@ export const CandidatureLbaModal = ({
   const [applicantEmail, setApplicantEmail] = useState<string>("")
   const { isOpen, onClose: onModalClose } = modalControls
   const { submitCandidature, isDone, isSuccess, isError, error, isLoading } = submitControls
-  const kind: LBA_ITEM_TYPE_OLD | null = item.ideaType || null
+  const kind = item.ideaType
 
   const onSubmit = (formValues: IApplicationSchemaInitValues) => {
     setApplicantEmail(formValues.applicant_email)
