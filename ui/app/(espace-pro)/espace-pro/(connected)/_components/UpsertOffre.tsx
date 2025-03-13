@@ -14,7 +14,6 @@ import { PAGES } from "@/utils/routes.utils"
 
 export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { establishment_id: string; job_id?: string; onSuccess: () => void }) {
   const { user } = useConnectedSessionClient()
-  const user_id = user._id
 
   const toast = useToast()
   const client = useQueryClient()
@@ -63,7 +62,7 @@ export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { e
   return (
     <Container maxW="container.xl" mt={5}>
       <Breadcrumb pages={[PAGES.static.backCfaHome, PAGES.dynamic.backCfaPageEntreprise(establishment_id), PAGES.dynamic.backCfaEntrepriseCreationOffre(establishment_id)]} />
-      <FormulaireEditionOffre establishment_id={establishment_id} user_id={user_id} fromDashboard handleSave={handleSave} offre={offre} />
+      <FormulaireEditionOffre establishment_id={establishment_id} handleSave={handleSave} offre={offre} />
     </Container>
   )
 }

@@ -3,59 +3,34 @@
 import { Box, Grid, Heading } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import { Formik } from "formik"
-import { useRouter } from "next/navigation"
-import { useContext, useState } from "react"
+import { useState } from "react"
 import { useQuery } from "react-query"
-import { IRecruiterJson, IReferentielRomeForJob } from "shared"
+import { IReferentielRomeForJob } from "shared"
 import { IJobJson, JOB_STATUS } from "shared/models/job.model"
 import { detectUrlAndEmails } from "shared/utils/detectUrlAndEmails"
 import * as Yup from "yup"
 
 import { FormulaireEditionOffreButtons } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreButtons"
 import { FormulaireEditionOffreFields } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreFields"
-import { AUTHTYPE } from "@/common/contants"
 import { InfosDiffusionOffre } from "@/components/DepotOffre/InfosDiffusionOffre"
 import { RomeDetailWithQuery } from "@/components/DepotOffre/RomeDetailWithQuery"
-import { WidgetContext } from "@/context/contextWidget"
-import { useAuth } from "@/context/UserContext"
-import { createOffre, createOffreByToken, getRomeDetail } from "@/utils/api"
-import { PAGES } from "@/utils/routes.utils"
-import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
+import { getRomeDetail } from "@/utils/api"
 
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
 const FR_DATE_FORMAT = "DD/MM/YYYY"
 
-export const FormulaireEditionOffre = ({
-  fromDashboard,
-  offre,
-  establishment_id,
-  user_id,
-  handleSave,
-}: {
-  fromDashboard?: boolean
-  offre?: IJobJson
-  establishment_id: string
-  user_id: string
-  handleSave?: (values: any) => Promise<{ form?: IRecruiterJson; offre?: IJobJson }>
-}) => {
+export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: { offre?: IJobJson; establishment_id: string; handleSave: (values: any) => void }) => {
   const { rome_appellation_label, rome_code } = offre ?? {}
   const initRome = rome_code?.at(0)
   const [romeAndAppellation, setRomeAndAppellation] = useState<{ rome: string; appellation: string }>(
     rome_appellation_label && initRome ? { rome: initRome, appellation: rome_appellation_label } : null
   )
   const { rome } = romeAndAppellation ?? {}
-  const { user } = useAuth()
-  const router = useRouter()
-  const { email, token } = useSearchParamsRecord() as { establishment_id: string; email: string; userId: string; type: string; token: string }
 
   const romeQuery = useQuery(["getRomeDetail", rome], () => getRomeDetail(rome), {
     retry: false,
     enabled: Boolean(rome),
   })
-
-  const {
-    widget: { isWidget },
-  } = useContext(WidgetContext)
 
   const [selectedCompetences, setSelectedCompetences] = useState<IReferentielRomeForJob["competences"] | null>(offre?.competences_rome ?? null)
   const [competencesDirty, setCompetencesDirty] = useState(false)
@@ -96,61 +71,11 @@ export const FormulaireEditionOffre = ({
 
   if (!establishment_id) return <></>
 
-  /**
-   * @description Submits form from in a connected context.
-   * @param values
-   * @param resetForm
-   * @return {Promise<void>}
-   */
-  const submitFromDashboard = async (values, { resetForm }) => {
-    if (user && user.type !== AUTHTYPE.ENTREPRISE) {
-      await handleSave(values)
-    } else {
-      const res = await handleSave(values)
-
-      // Only redirect user in case of offer creation
-      if (res) {
-        await handleRedirectionAfterSubmit(res.form, res.offre, true, null)
-      }
-    }
-
-    resetForm({})
-  }
-
-  /**
-   * @description Submits the form.
-   * If there are some CFA proposals, user will be redirected on the CFA selection page.
-   * Otherwise, he's redirected at the end of the form.
-   * @param values
-   * @return {Promise<void>}
-   */
-  const submitFromDepotRapide = async (values) => {
-    const { recruiter: formulaire, token: jobToken } = await (token ? createOffreByToken(establishment_id, values, token) : createOffre(establishment_id, values))
-    const [job] = formulaire.jobs.slice(-1)
-    await handleRedirectionAfterSubmit(formulaire, job, false, jobToken)
-  }
-
-  const handleRedirectionAfterSubmit = (form: IRecruiterJson, job: IJobJson, fromDashboard: boolean, jobToken: string) => {
-    router.replace(
-      PAGES.dynamic
-        .espaceProCreationFin({
-          jobId: job._id.toString(),
-          email,
-          withDelegation: false,
-          fromDashboard,
-          userId: user_id,
-          token: jobToken ?? undefined,
-          isWidget,
-        })
-        .getPath()
-    )
-  }
-
   const finalSelectedCompetences = selectedCompetences ?? romeQuery?.data?.competences
 
-  const onSubmit = (values, bag) => {
+  const onSubmit = (values) => {
     values = { ...values, competences_rome: finalSelectedCompetences, offer_title_custom: values.offer_title_custom || null }
-    fromDashboard ? submitFromDashboard(values, bag) : submitFromDepotRapide(values)
+    handleSave(values)
   }
 
   const minStartDate = dayjs().startOf("day")
