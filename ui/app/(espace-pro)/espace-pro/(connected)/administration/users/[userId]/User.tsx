@@ -37,7 +37,7 @@ import { OpcoSelect } from "@/components/espace_pro/CreationRecruteur/OpcoSelect
 import { FieldWithValue } from "@/components/espace_pro/FieldWithValue"
 import NavigationAdmin, { EAdminPages } from "@/components/espace_pro/Layout/NavigationAdmin"
 import { ArrowDropRightLine, ArrowRightLine } from "@/theme/components/icons"
-import { getFormulaire, getUser } from "@/utils/api"
+import { getFormulaire, getUser, updateEntrepriseAdmin } from "@/utils/api"
 
 function DetailEntreprise() {
   const router = useRouter()
