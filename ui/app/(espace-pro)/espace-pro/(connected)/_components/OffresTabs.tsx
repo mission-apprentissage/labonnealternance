@@ -251,7 +251,9 @@ export const OffresTabs = ({
                         {copied ? (
                           <Flex>
                             <Image mr={2} src="/images/icons/share_copied_icon.svg" aria-hidden={true} alt="" />
-                            <Text color="#18753C">Lien copié !</Text>
+                            <Text mb={0} color="#18753C">
+                              Lien copié !
+                            </Text>
                           </Flex>
                         ) : (
                           "Partager l'offre"
