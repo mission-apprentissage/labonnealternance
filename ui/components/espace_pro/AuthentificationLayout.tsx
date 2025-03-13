@@ -1,6 +1,8 @@
+"use client"
+
 import { Box, Button, Container, Flex, Image } from "@chakra-ui/react"
 import Link from "next/link"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 import { useContext } from "react"
 
 import { WidgetContext } from "../../context/contextWidget"
@@ -13,13 +15,7 @@ export default function AuthentificationLayout(props) {
   const { widget } = useContext(WidgetContext)
 
   const redirectFn = () => {
-    const isCfa = router.pathname.includes("cfa") || router.query?.type?.includes("CFA") ? true : false
-
-    if (isCfa) {
-      return router.push(`/organisme-de-formation`)
-    } else {
-      return router.push(`/acces-recruteur`)
-    }
+    router.push("/")
   }
 
   if (widget?.isWidget) {

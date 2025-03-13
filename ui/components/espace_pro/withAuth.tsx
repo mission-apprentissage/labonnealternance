@@ -1,4 +1,4 @@
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 
 import { UserContext, useAuth } from "@/context/UserContext"
 

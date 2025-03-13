@@ -1,8 +1,11 @@
+import { IPointGeometry, ZPointGeometry } from "shared"
+import { z } from "zod"
+
 import memoize from "../utils/memoize"
 
 import { simplifiedItems } from "./arrondissements"
 
-type IFetchAddresses = ((value: string, type?: string) => Promise<any>) & { abortController?: AbortController | null }
+type IFetchAddresses = ((value: string, type?: string) => Promise<IAddressItem[]>) & { abortController?: AbortController | null }
 type AddressFeature = {
   properties: {
     label: string
@@ -10,20 +13,21 @@ type AddressFeature = {
     citycode: string
     population?: number
   }
-  geometry: any
+  geometry: IPointGeometry
 }
+
 type Coordinates = [number, number]
-type AddressItem = {
-  insee: string
-  zipcode: string
-  label: string
-}
 
-export const fetchAddresses: IFetchAddresses = memoize(async (value: string, type?: string) => {
-  if (fetchAddresses.abortController) {
-    fetchAddresses.abortController.abort()
-  }
+export const zAddressItem = z.object({
+  value: ZPointGeometry,
+  insee: z.string(),
+  zipcode: z.string(),
+  label: z.string(),
+})
 
+type IAddressItem = z.output<typeof zAddressItem>
+
+export async function searchAddress(value: string, type?: string, signal?: AbortSignal): Promise<IAddressItem[]> {
   if (value && value.length > 2) {
     let term = value
     const limit = 10
@@ -42,9 +46,6 @@ export const fetchAddresses: IFetchAddresses = memoize(async (value: string, typ
     if (type) filter = "&type=" + type
 
     const addressURL = `https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${term}${filter}`
-
-    fetchAddresses.abortController = new AbortController()
-    const { signal } = fetchAddresses.abortController
 
     try {
       const response = await fetch(addressURL, { signal })
@@ -76,17 +77,29 @@ export const fetchAddresses: IFetchAddresses = memoize(async (value: string, typ
       return []
     }
   } else return []
+}
+
+export const fetchAddresses: IFetchAddresses = memoize(async (value: string, type?: string) => {
+  if (fetchAddresses.abortController) {
+    fetchAddresses.abortController.abort()
+  }
+
+  fetchAddresses.abortController = new AbortController()
+  const { signal } = fetchAddresses.abortController
+
+  return searchAddress(value, type, signal)
 })
 
-export const fetchAddressFromCoordinates = async (coordinates: Coordinates, type?: string): Promise<AddressItem[]> => {
+export const fetchAddressFromCoordinates = async (coordinates: Coordinates, type?: string): Promise<IAddressItem[]> => {
   const addressURL = `https://api-adresse.data.gouv.fr/reverse/?lat=${coordinates[1]}&lon=${coordinates[0]}${type ? "&type=" + type : ""}`
 
   try {
     const response = await fetch(addressURL)
     if (!response.ok) throw new Error("Network response was not ok")
 
-    const data: { features: { properties: { citycode: string; postcode: string; label: string } }[] } = await response.json()
-    const returnedItems: AddressItem[] = data.features.map((feature) => ({
+    const data: { features: AddressFeature[] } = await response.json()
+    const returnedItems: IAddressItem[] = data.features.map((feature) => ({
+      value: feature.geometry,
       insee: feature.properties.citycode,
       zipcode: feature.properties.postcode,
       label: feature.properties.label,

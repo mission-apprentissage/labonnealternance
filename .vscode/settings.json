@@ -79,5 +79,6 @@
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.preferences.importModuleSpecifier": "non-relative",
-  "vitest.commandLine": "yarn test --single-thread"
+  "vitest.commandLine": "yarn test --single-thread",
+  "vitest.workspaceConfig": "vitest.workspace.ts"
 }

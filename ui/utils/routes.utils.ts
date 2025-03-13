@@ -1,12 +1,14 @@
 import type { Metadata, MetadataRoute } from "next"
+import { OPCO } from "shared/constants"
+import { generateUri } from "shared/helpers/generateUri"
 
 import { publicConfig } from "@/config.public"
 
 export interface IPage {
   getPath: (args?: any) => string
   title: string
-  index: boolean
-  getMetadata: (args?: any) => Metadata
+  index?: boolean
+  getMetadata?: (args?: any) => Metadata
 }
 
 export interface INotionPage extends IPage {
@@ -20,10 +22,17 @@ export interface IPages {
   notion: Record<string, INotionPage>
 }
 
+export type IRecherchePageParams = {
+  romes: string
+  geo: null | { address: string | null; latitude: number; longitude: number; radius: number }
+  diploma: string | null
+  job_name: string | null
+}
+
 export const PAGES = {
   static: {
     home: {
-      getPath: () => `/home` as string,
+      getPath: () => `/` as string,
       title: "Accueil",
       index: true,
       getMetadata: () => ({
@@ -32,7 +41,7 @@ export const PAGES = {
       }),
     },
     authentification: {
-      getPath: () => `/authentification` as string,
+      getPath: () => `/espace-pro/authentification` as string,
       title: "Authentification",
       index: false,
       getMetadata: () => ({
@@ -166,6 +175,23 @@ export const PAGES = {
         description: "Diffusez simplement et gratuitement vos offres en alternance.",
       }),
     },
+    administrationOpco: {
+      getPath: () => `/espace-pro/opco` as string,
+      title: "Administration OPCO",
+      index: false,
+      getMetadata: () => ({
+        title: "Administration OPCO",
+        description: "",
+      }),
+    },
+    espaceProCreationEntreprise: {
+      getPath: () => `/espace-pro/creation/entreprise` as string,
+      title: "Créer un compte entreprise",
+    },
+    espaceProCreationCfa: {
+      getPath: () => `/espace-pro/creation/cfa` as string,
+      title: "Créer un compte d'organisme de formation",
+    },
   },
   dynamic: {
     // example
@@ -174,6 +200,18 @@ export const PAGES = {
       index: false,
       getMetadata: () => ({ title: "" }),
       title: "Inscription",
+    }),
+    administrationDesOffres: (navigationContext: string): IPage => ({
+      getPath: () => `${navigationContext}`,
+      index: false,
+      getMetadata: () => ({ title: "Administration des offres" }),
+      title: "Administration des offres",
+    }),
+    compte: (): IPage => ({
+      getPath: () => "/compte",
+      index: false,
+      getMetadata: () => ({ title: "Informations de contact" }),
+      title: "Informations de contact",
     }),
     metierJobById: (metier: string): IPage => ({
       getPath: () => `/metiers/${metier}` as string,
@@ -184,6 +222,130 @@ export const PAGES = {
       }),
       title: metier,
     }),
+
+    modificationEntreprise: (establishment_id): IPage => ({
+      getPath: () => `/espace-pro/entreprise/${establishment_id}/edition` as string,
+      index: false,
+      getMetadata: () => ({ title: "Modification entreprise" }),
+      title: "Modification entreprise",
+    }),
+    offreCreation: ({
+      offerId,
+      establishment_id,
+      userType,
+      raison_sociale,
+      establishment_siret,
+    }: {
+      offerId: string
+      establishment_id: string
+      userType: string
+      raison_sociale?: string
+      establishment_siret?: string
+    }): IPage => ({
+      getPath: () => {
+        const raisonSocialeParam = raison_sociale ? `?raison_sociale=${raison_sociale}` : ""
+        switch (userType) {
+          case OPCO:
+            return `/espace-pro/opco/entreprise/${establishment_siret}/${establishment_id}/offre/${offerId}}${raisonSocialeParam}`
+          default:
+            return `/espace-pro/entreprise/${establishment_id}/offre/${offerId}${raisonSocialeParam}`
+        }
+      },
+      index: false,
+      getMetadata: () => ({ title: "Création d'une offre" }),
+      title: "Création d'une offre",
+    }),
+    successEditionOffre: ({ userType, establishment_id, user_id }: { userType: "OPCO" | "ENTREPRISE" | "CFA" | "ADMIN"; establishment_id?: string; user_id?: string }): IPage => ({
+      getPath: () => {
+        return userType === OPCO ? `/espace-pro/opco/entreprise/${user_id}/entreprise/${establishment_id}` : `/espace-pro/entreprise/${establishment_id}`
+      },
+      title: "Success édition offre",
+      index: false,
+      getMetadata: () => ({}),
+    }),
+    miseEnRelationCreationOffre: ({ isWidget, queryParameters }: { isWidget: boolean; queryParameters: string }): IPage => {
+      const path = `${isWidget ? "/espace-pro/widget/entreprise/mise-en-relation" : "/espace-pro/creation/mise-en-relation"}${queryParameters}`
+
+      return {
+        getPath: () => path,
+        title: "Mise en relation avec les CFAs",
+        index: false,
+        getMetadata: () => ({}),
+      }
+    },
+    finCreationOffre: ({ isWidget, queryParameters }: { isWidget: boolean; queryParameters: string }): IPage => {
+      const path = `${isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin"}${queryParameters}`
+
+      return {
+        getPath: () => path,
+        title: "Création d'offre terminée",
+        index: false,
+        getMetadata: () => ({}),
+      }
+    },
+    espaceProCreationDetail: (params: { siret: string; email?: string; type: "CFA" | "ENTREPRISE"; origin: string; isWidget: boolean }): IPage => ({
+      getPath: () => {
+        const { isWidget, ...querystring } = params
+        return generateUri(isWidget ? "/espace-pro/widget/entreprise/detail" : "/espace-pro/creation/detail", {
+          querystring: { ...querystring },
+        }) as string
+      },
+      title: "Créer un compte entreprise",
+    }),
+    espaceProCreationOffre: (params: {
+      establishment_id: string
+      type: "CFA" | "ENTREPRISE"
+      email: string
+      userId: string
+      token: string
+      displayBanner: boolean
+      isWidget: boolean
+    }): IPage => ({
+      getPath: () => {
+        const { isWidget, displayBanner, ...querystring } = params
+        return generateUri(isWidget ? "/espace-pro/widget/entreprise/offre" : "/espace-pro/creation/offre", {
+          querystring: { ...querystring, displayBanner: displayBanner.toString() },
+        }) as string
+      },
+      title: "Créer un compte entreprise",
+    }),
+    espaceProCreationFin: (params: { jobId: string; email: string; withDelegation: boolean; fromDashboard: boolean; userId: string; token: string; isWidget: boolean }): IPage => ({
+      getPath: () => {
+        const { isWidget, fromDashboard, withDelegation, ...querystring } = params
+        return generateUri(isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin", {
+          querystring: { ...querystring, fromDashboard: fromDashboard.toString(), withDelegation: withDelegation.toString() },
+        }) as string
+      },
+      title: "Créer un compte entreprise",
+    }),
+    recherche: (params: IRecherchePageParams): IPage => {
+      const query = new URLSearchParams()
+      query.set("romes", params.romes)
+      if (params.geo) {
+        query.set("lat", params.geo.latitude.toString())
+        query.set("lon", params.geo.longitude.toString())
+        query.set("radius", params.geo.radius.toString())
+
+        if (params.geo.address) {
+          query.set("address", params.geo.address)
+        }
+      }
+
+      if (params.diploma) {
+        query.set("diploma", params.diploma)
+      }
+      if (params.job_name) {
+        query.set("job_name", params.job_name)
+      }
+      query.set("display", "list")
+
+      return {
+        getPath: () => `/recherche?${query.toString()}` as string,
+        index: false,
+        getMetadata: () => ({ title: "" }),
+        title: "Recherche",
+      }
+    },
   },
   notion: {},
 } as const satisfies IPages
@@ -228,8 +390,8 @@ function getSitemapItem(page: IPage): MetadataRoute.Sitemap[number] {
 }
 
 export function getSitemap(): MetadataRoute.Sitemap {
-  return Object.values(PAGES.static)
-    .filter((page) => page.index)
+  return Object.values((PAGES as IPages).static)
+    .filter((page) => page.index === true)
     .map(getSitemapItem)
 }
 

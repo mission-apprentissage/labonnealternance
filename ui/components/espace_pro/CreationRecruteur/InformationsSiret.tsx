@@ -1,5 +1,7 @@
+"use client"
+
 import { Box, Button, Flex, Heading, Link, ListItem, Stack, Text, UnorderedList } from "@chakra-ui/react"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 import { CFA, ENTREPRISE } from "shared/constants"
 
 import { ExternalLinkLine, InfoCircle } from "../../../theme/components/icons"
