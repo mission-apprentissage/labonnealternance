@@ -1,25 +1,5 @@
-"use client"
+import { DepotSimplifieCreationOffre } from "@/app/(espace-pro-creation-compte)/_components/DepotSimplifieCreationOffre"
 
-import { Box } from "@chakra-ui/react"
-
-import { FormulaireEditionOffre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffre"
-import { Bandeau } from "@/components/espace_pro/Bandeau"
-import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
-
-export const WidgetEntrepriseOffre = () => {
-  const { displayBanner, establishment_id, user_id } = useSearchParamsRecord()
-  return (
-    <>
-      <Bandeau
-        type="success"
-        header={`Votre compte a été créé avec succès${displayBanner === "true" ? " et est en attente de vérification" : ""}.`}
-        description="Déposez votre offre dès maintenant."
-      />
-      <Box mt={10}>
-        <FormulaireEditionOffre establishment_id={establishment_id} user_id={user_id} />
-      </Box>
-    </>
-  )
+export default function Page() {
+  return <DepotSimplifieCreationOffre />
 }
-
-export default WidgetEntrepriseOffre
