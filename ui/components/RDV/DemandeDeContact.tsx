@@ -32,7 +32,7 @@ import { useFormik } from "formik"
 import { useEffect, useState } from "react"
 import { EReasonsKey } from "shared"
 import { EApplicantType } from "shared/constants/rdva"
-import { IAppointmentRequestContextCreateFormAvailableResponseSchema } from "shared/routes/appointments.routes"
+import { IAppointMentResponseAvailable } from "shared/routes/v2/appointments.routes.v2"
 import * as Yup from "yup"
 
 import { reasons } from "@/components/RDV/types"
@@ -45,7 +45,7 @@ import InfoBanner from "../InfoBanner/InfoBanner"
 import LBAModalCloseButton from "../lbaModalCloseButton"
 
 type Props = {
-  context: IAppointmentRequestContextCreateFormAvailableResponseSchema
+  context: IAppointMentResponseAvailable
   referrer: string
   showInModal: boolean
   isCollapsedHeader?: boolean

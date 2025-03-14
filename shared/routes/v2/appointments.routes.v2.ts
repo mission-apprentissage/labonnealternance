@@ -39,7 +39,7 @@ const ZAppointmentContextApi = z.union([
 const ZAppointmentContextApiWithReferrer = z.intersection(ZAppointmentContextApi, z.object({ referrer: extensions.buildEnum(ReferrerApiEnum) }))
 export type IAppointmentContextAPI = z.output<typeof ZAppointmentContextApiWithReferrer>
 
-const ZAppointmentResponseAvailable = z
+export const ZAppointmentResponseAvailable = z
   .object({
     etablissement_formateur_entreprise_raison_sociale: z.string().nullable().describe("Raison social de l'établissement formateur"),
     intitule_long: z.string().describe("Intitulé long de la formation"),
@@ -52,6 +52,7 @@ const ZAppointmentResponseAvailable = z
     form_url: z.string().describe("Lien de prise de rendez-vous La bonne alternance"),
   })
   .strict()
+export type IAppointMentResponseAvailable = z.output<typeof ZAppointmentResponseAvailable>
 
 const ZAppointmentResponseUnavailable = z.object({
   error: z.literal("Appointment request not available"),

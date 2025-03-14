@@ -1,3 +1,4 @@
+"use client"
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Image, Link, Text } from "@chakra-ui/react"
 import React, { Fragment, useContext, useEffect, useState } from "react"

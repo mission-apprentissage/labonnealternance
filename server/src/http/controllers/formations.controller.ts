@@ -1,7 +1,7 @@
 import { zRoutes } from "shared"
 
 import { trackApiCall } from "../../common/utils/sendTrackingEvent"
-import { getFormationQuery, getFormationsQuery } from "../../services/formation.service"
+import { getFormationByCleME, getFormationQuery, getFormationsQuery } from "../../services/formation.service"
 import { Server } from "../server"
 
 const config = {
@@ -107,6 +107,19 @@ export default (server: Server) => {
         }
         throw err
       }
+    }
+  )
+
+  server.get(
+    "/_private/formations/:id",
+    {
+      schema: zRoutes.get["/_private/formations/:id"],
+      config,
+    },
+    async (req, res) => {
+      const { id } = req.params
+      const result = await getFormationByCleME(id)
+      return res.send(result)
     }
   )
 }
