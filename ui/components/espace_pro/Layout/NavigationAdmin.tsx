@@ -2,7 +2,7 @@
 
 import { assertUnreachable } from "@/../shared"
 import { Box, Container, Tab, TabList, Tabs } from "@chakra-ui/react"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 
 export enum EAdminPages {
   GESTION_RECRUTEURS = "GESTION_RECRUTEURS",

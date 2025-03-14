@@ -218,7 +218,7 @@ export const PAGES = {
       title: "Administration des offres",
     }),
     compte: (): IPage => ({
-      getPath: () => "/compte",
+      getPath: () => "/espace-pro/compte",
       index: false,
       getMetadata: () => ({ title: "Informations de contact" }),
       title: "Informations de contact",

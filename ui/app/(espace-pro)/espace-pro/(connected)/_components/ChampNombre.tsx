@@ -10,7 +10,7 @@ export const ChampNombre = ({ value, max, name, handleChange, label, dataTestId 
         <Button onClick={() => handleChange(name, value - 1)} isDisabled={value === 1} variant="secondary" data-testid="-">
           <Minus />
         </Button>
-        <Text minW="24px" my={3} textAlign="center" data-testid={`${dataTestId}-value`}>
+        <Text minW="24px" textAlign="center" data-testid={`${dataTestId}-value`}>
           {value}
         </Text>
         <Button onClick={() => handleChange(name, value + 1)} isDisabled={value === max} variant="secondary" data-testid="+">

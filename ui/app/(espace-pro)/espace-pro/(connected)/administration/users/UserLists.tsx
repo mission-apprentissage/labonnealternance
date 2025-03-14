@@ -1,50 +1,30 @@
-import {
-  Box,
-  Button,
-  Link as ChakraLink,
-  Container,
-  Flex,
-  Icon,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  Text,
-  useDisclosure,
-  useToast,
-} from "@chakra-ui/react"
+"use client"
+import { Box, Button, Container, Flex, Icon, Menu, MenuButton, MenuItem, MenuList, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import { Link } from "@mui/material"
 import dayjs from "dayjs"
-import { useRouter } from "next/router"
+import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
 import { getLastStatusEvent, IUserRecruteur } from "shared"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
-import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
-import { EAdminPages } from "@/components/espace_pro/Layout/NavigationAdmin"
+import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
+import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
+import { AnimationContainer, ConfirmationActivationUtilsateur, ConfirmationDesactivationUtilisateur, TableNew } from "@/components/espace_pro"
+import NavigationAdmin, { EAdminPages } from "@/components/espace_pro/Layout/NavigationAdmin"
+import { Parametre } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
 
-import { sortReactTableDate, sortReactTableString } from "../../../../common/utils/dateUtils"
-import { AnimationContainer, ConfirmationActivationUtilsateur, ConfirmationDesactivationUtilisateur, Layout, LoadingEmptySpace, TableNew } from "../../../../components/espace_pro"
-import { authProvider, withAuth } from "../../../../components/espace_pro/withAuth"
-import Link from "../../../../components/Link"
-import { Parametre } from "../../../../theme/components/icons"
-
 function Users() {
+  const { newUser } = useParams() as { newUser: string }
   const [currentEntreprise, setCurrentEntreprise] = useState({})
   const [tabIndex, setTabIndex] = useState(0)
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationActivationUtilisateur = useDisclosure()
-  const router = useRouter()
   const toast = useToast()
 
   useEffect(() => {
-    if (router.query.newUser) {
+    if (newUser) {
       toast({
         title: "Vérification réussie",
         description: "Votre adresse mail a été validée avec succès.",
@@ -181,32 +161,36 @@ function Users() {
                   </MenuButton>
                   <MenuList>
                     <MenuItem>
-                      <Link href={`/espace-pro/administration/users/${row._id}`} aria-label="voir les informations">
+                      <Link underline="hover" href={`/espace-pro/administration/users/${row._id}`} aria-label="voir les informations">
                         Voir les informations
                       </Link>
                     </MenuItem>
                     {canActivate && (
                       <MenuItem>
-                        <ChakraLink
+                        <Link
+                          underline="hover"
+                          component="button"
                           onClick={() => {
                             confirmationActivationUtilisateur.onOpen()
                             setCurrentEntreprise(row)
                           }}
                         >
                           Activer le compte
-                        </ChakraLink>
+                        </Link>
                       </MenuItem>
                     )}
                     {canDeactivate && (
                       <MenuItem>
-                        <ChakraLink
+                        <Link
+                          underline="hover"
+                          component="button"
                           onClick={() => {
                             confirmationDesactivationUtilisateur.onOpen()
                             setCurrentEntreprise(row)
                           }}
                         >
                           Désactiver le compte
-                        </ChakraLink>
+                        </Link>
                       </MenuItem>
                     )}
                   </MenuList>
@@ -260,14 +244,15 @@ function Users() {
   )
 }
 
-function UsersPage() {
+export default function UserLists() {
   return (
-    <Layout displayNavigationMenu={false} adminPage={EAdminPages.GESTION_RECRUTEURS} footer={false}>
-      <Users />
-    </Layout>
+    <>
+      <Box as="header">
+        <NavigationAdmin currentPage={EAdminPages.GESTION_RECRUTEURS} />
+      </Box>
+      <Container as="main" p={0} maxW="container.xl" flexGrow="1">
+        <Users />
+      </Container>
+    </>
   )
 }
-
-export const getServerSideProps = async (context) => ({ props: { ...(await getAuthServerSideProps(context)) } })
-
-export default authProvider(withAuth(UsersPage, "admin"))

@@ -1,5 +1,6 @@
+"use client"
 import { CheckIcon } from "@chakra-ui/icons"
-import { Alert, AlertIcon, Box, Button, Flex, Spinner, Text } from "@chakra-ui/react"
+import { Alert, AlertIcon, Box, Button, Container, Flex, Spinner, Text } from "@chakra-ui/react"
 import { Form, Formik } from "formik"
 import { useState } from "react"
 import { useMutation, useQuery } from "react-query"
@@ -9,13 +10,11 @@ import { z } from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import { phoneValidation } from "@/common/validation/fieldValidations"
+import { CustomInput } from "@/components/espace_pro"
 import { Breadcrumb } from "@/components/espace_pro/common/components/Breadcrumb"
-import { EAdminPages } from "@/components/espace_pro/Layout/NavigationAdmin"
+import NavigationAdmin, { EAdminPages } from "@/components/espace_pro/Layout/NavigationAdmin"
+import { SearchLine } from "@/theme/components/icons"
 import { getCompanyContactInfo, putCompanyContactInfo } from "@/utils/api"
-
-import { CustomInput, Layout } from "../../../components/espace_pro"
-import { authProvider, withAuth } from "../../../components/espace_pro/withAuth"
-import { SearchLine } from "../../../theme/components/icons"
 
 const unreferencedLbaRecruteurWarning = "Seules les modifications / ajouts sont supportés dans le cas d'une société déréférencée"
 
@@ -167,23 +166,26 @@ function FormulaireModificationEntreprise({ siret }: { siret: string }) {
   )
 }
 
-function GestionEntreprises() {
+export default function GestionEntreprises() {
   const [siret, setSiret] = useState<string>("")
 
   return (
-    <Layout displayNavigationMenu={false} adminPage={EAdminPages.ENTREPRISES_ALGO} footer={false}>
-      <Box pt={5}>
-        <Breadcrumb pages={[{ title: "Accueil", to: "/espace-pro/administration/users" }, { title: "Entreprises de l'algorithme" }]} />
-        <Box mt={6} px={4}>
-          <Text fontSize="2rem" mb={4} fontWeight={700} as="h1">
-            Entreprises de l'algorithme
-          </Text>
-          <FormulaireRechercheEntreprise onSiretChange={setSiret} />
-          <FormulaireModificationEntreprise siret={siret} />
-        </Box>
+    <>
+      <Box as="header">
+        <NavigationAdmin currentPage={EAdminPages.ENTREPRISES_ALGO} />
       </Box>
-    </Layout>
+      <Container as="main" p={0} maxW="container.xl" flexGrow="1">
+        <Box pt={5}>
+          <Breadcrumb pages={[{ title: "Accueil", to: "/espace-pro/administration/users" }, { title: "Entreprises de l'algorithme" }]} />
+          <Box mt={6} px={4}>
+            <Text fontSize="2rem" mb={4} fontWeight={700} as="h1">
+              Entreprises de l'algorithme
+            </Text>
+            <FormulaireRechercheEntreprise onSiretChange={setSiret} />
+            <FormulaireModificationEntreprise siret={siret} />
+          </Box>
+        </Box>
+      </Container>
+    </>
   )
 }
-
-export default authProvider(withAuth(GestionEntreprises, "admin"))
