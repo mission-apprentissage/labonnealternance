@@ -78,6 +78,16 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
   // https://github.com/mui/material-ui/issues/27670#issuecomment-2079148513
   useWindowSize()
 
+  const [isOpen, setIsOpenned] = useState(false)
+
+  const onOpen = useCallback(() => {
+    setIsOpenned(true)
+  }, [])
+
+  const onClose = useCallback(() => {
+    setIsOpenned(false)
+  }, [])
+
   const { getOptionKey, getOptionLabel } = props
   const [{ onBlur, value }, meta] = useField(props.id)
   const { setFieldValue } = useFormikContext()
@@ -85,7 +95,7 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
   const [query, setQuery] = useState(meta.initialValue ? getOptionLabel(meta.initialValue) : "")
   const debouncedQuery = useThrottle(query, 300)
 
-  const enabled = debouncedQuery.length > 0
+  const enabled = isOpen && debouncedQuery.length > 0
 
   const onInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     if (event && event.type === "change") {
@@ -178,6 +188,8 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
     <Autocomplete
       id={props.id}
       disablePortal
+      onOpen={onOpen}
+      onClose={onClose}
       openOnFocus
       loading={result.isLoading}
       loadingText="Veuillez patienter"

@@ -7,7 +7,7 @@ import { useEffect, useRef } from "react"
 
 import { RechercheResultatsFooter } from "@/app/(candidat)/recherche/_components/RechercheResultats/Footer"
 import { RechercheResultatsPlaceholder } from "@/app/(candidat)/recherche/_components/RechercheResultatsPlaceholder"
-import { ResultatListCard } from "@/app/(candidat)/recherche/_components/ResultatListCard"
+import { ResultCard } from "@/app/(candidat)/recherche/_components/ResultatListCard"
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
 import { useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { ErrorMessage } from "@/components"
@@ -117,7 +117,7 @@ export function RechercheResulats() {
 
               return (
                 <Box key={virtualRow.key} data-index={virtualRow.index} ref={columnVirtualizer.measureElement}>
-                  <ResultatListCard item={result.items[virtualRow.index]} handleSelectItem={handleSelectItem} />
+                  <ResultCard item={result.items[virtualRow.index]} handleSelectItem={handleSelectItem} />
                 </Box>
               )
             })}

@@ -19,12 +19,12 @@ import { isCfaEntreprise } from "@/services/cfaEntreprise"
 import { focusWithin } from "@/theme/theme-lba-tools"
 import { getDaysSinceDate } from "@/utils/dateUtils"
 
-type ResultatListCardProps = {
+type ResultCardProps = {
   item: ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob | ILbaItemFormation
   handleSelectItem: (item: ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob | ILbaItemFormation) => void
 }
 
-const CenterSearchButton = (props: Pick<ResultatListCardProps, "item">) => {
+const CenterSearchButton = (props: Pick<ResultCardProps, "item">) => {
   const searchParams = useCandidatRechercheParams()
   const updateSearch = useUpdateCandidatSearchParam()
 
@@ -78,7 +78,7 @@ function getTitle(item: ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob
   return item.title
 }
 
-function ItemTag(props: Pick<ResultatListCardProps, "item">) {
+function ItemTag(props: Pick<ResultCardProps, "item">) {
   if (props.item.ideaType === LBA_ITEM_TYPE_OLD.LBA || props.item.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     return <TagCandidatureSpontanee />
   }
@@ -97,7 +97,7 @@ function ItemTag(props: Pick<ResultatListCardProps, "item">) {
   )
 }
 
-function ItemCompanyName({ item }: Pick<ResultatListCardProps, "item">) {
+function ItemCompanyName({ item }: Pick<ResultCardProps, "item">) {
   if (item.ideaType === LBA_ITEM_TYPE_OLD.LBA || item.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     return `Secteur d'activité : ${item?.nafs[0]?.label ?? ""}`
   }
@@ -117,7 +117,7 @@ function getAdresse(item: ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJ
   return item.place.fullAddress
 }
 
-function CandidatureCount({ item }: Pick<ResultatListCardProps, "item">) {
+function CandidatureCount({ item }: Pick<ResultCardProps, "item">) {
   if (
     item.ideaType === LBA_ITEM_TYPE_OLD.LBA ||
     item.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA ||
@@ -145,7 +145,7 @@ function CandidatureCount({ item }: Pick<ResultatListCardProps, "item">) {
   return null
 }
 
-function DatePublication({ item }: Pick<ResultatListCardProps, "item">) {
+function DatePublication({ item }: Pick<ResultCardProps, "item">) {
   if (item.ideaType !== LBA_ITEM_TYPE_OLD.MATCHA && item.ideaType !== LBA_ITEM_TYPE_OLD.PARTNER_JOB) {
     return null
   }
@@ -171,7 +171,7 @@ function DatePublication({ item }: Pick<ResultatListCardProps, "item">) {
   )
 }
 
-function EnSavoirPlusButton({ item }: Pick<ResultatListCardProps, "item">) {
+function EnSavoirPlusButton({ item }: Pick<ResultCardProps, "item">) {
   const labelType = item.ideaType === LBA_ITEM_TYPE_OLD.LBA ? "l'entreprise" : item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION ? "la formation" : "l'offre"
 
   return (
@@ -183,7 +183,7 @@ function EnSavoirPlusButton({ item }: Pick<ResultatListCardProps, "item">) {
   )
 }
 
-function useItemLink({ item }: Pick<ResultatListCardProps, "item">) {
+function useItemLink({ item }: Pick<ResultCardProps, "item">) {
   const params = useSearchParams()
 
   if (item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION) {
@@ -193,7 +193,7 @@ function useItemLink({ item }: Pick<ResultatListCardProps, "item">) {
   return `${buildTrainingUrl(oldItemTypeToNewItemType(item.ideaType), item.title)}?${params?.toString() ?? ""}`
 }
 
-export function ResultatListCard({ item, handleSelectItem }: ResultatListCardProps) {
+export function ResultCard({ item, handleSelectItem }: ResultCardProps) {
   const [allowDim, setAllowDim] = useState(true) // cet état évite un appel qui masque la mise en avant de l'icône lors de l'ouverture du détail
 
   const onSelectItem = (e) => {

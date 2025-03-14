@@ -3,75 +3,42 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox"
 import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch"
 import { Box } from "@mui/material"
-import { useSearchParams } from "next/navigation"
-import { ChangeEvent, useCallback, useMemo } from "react"
+import { ChangeEvent, useCallback } from "react"
 
-import { PAGES, parseRecherchePageParams } from "@/utils/routes.utils"
+import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
+import { useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
+import { useUpdateCandidatSearchParam } from "@/app/(candidat)/recherche/_hooks/useUpdateCandidatSearchParam"
 
 export function CandidatRechercheFilters() {
-  const params = useSearchParams()
+  const params = useCandidatRechercheParams()
+  const result = useRechercheResults(params)
+  const updateCandidatSearchParam = useUpdateCandidatSearchParam()
 
-  const { displayEntreprises, displayFormations, displayPartenariats, displayMap } = useMemo(() => parseRecherchePageParams(params), [params])
+  const { displayEntreprises, displayFormations, displayPartenariats, displayMap } = params
 
   const onEntrepriseChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      window.history.pushState(
-        null,
-        "",
-        PAGES.dynamic
-          .recherche({
-            ...parseRecherchePageParams(params),
-            displayEntreprises: e.target.checked,
-          })
-          .getPath()
-      )
+      updateCandidatSearchParam({ displayEntreprises: e.target.checked })
     },
-    [params]
+    [updateCandidatSearchParam]
   )
   const onFormationsChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      window.history.pushState(
-        null,
-        "",
-        PAGES.dynamic
-          .recherche({
-            ...parseRecherchePageParams(params),
-            displayFormations: e.target.checked,
-          })
-          .getPath()
-      )
+      updateCandidatSearchParam({ displayFormations: e.target.checked })
     },
-    [params]
+    [updateCandidatSearchParam]
   )
   const onPartenariatsChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      window.history.pushState(
-        null,
-        "",
-        PAGES.dynamic
-          .recherche({
-            ...parseRecherchePageParams(params),
-            displayPartenariats: e.target.checked,
-          })
-          .getPath()
-      )
+      updateCandidatSearchParam({ displayPartenariats: e.target.checked })
     },
-    [params]
+    [updateCandidatSearchParam]
   )
   const onDisplayMapChange = useCallback(
     (value: boolean) => {
-      window.history.pushState(
-        null,
-        "",
-        PAGES.dynamic
-          .recherche({
-            ...parseRecherchePageParams(params),
-            displayMap: value,
-          })
-          .getPath()
-      )
+      updateCandidatSearchParam({ displayMap: value })
     },
-    [params]
+    [updateCandidatSearchParam]
   )
 
   return (
@@ -90,7 +57,7 @@ export function CandidatRechercheFilters() {
         }}
         options={[
           {
-            label: "Entreprises (XX)",
+            label: `Entreprises${result.status === "success" ? ` (${result.entrepriseCount})` : ""}`,
             nativeInputProps: {
               checked: displayEntreprises,
               onChange: onEntrepriseChange,
@@ -98,7 +65,7 @@ export function CandidatRechercheFilters() {
             },
           },
           {
-            label: "Formations (XX)",
+            label: `Formations${result.status === "success" ? ` (${result.formationsCount})` : ""}`,
 
             nativeInputProps: {
               checked: displayFormations,
@@ -107,7 +74,7 @@ export function CandidatRechercheFilters() {
             },
           },
           {
-            label: "Partenariats (XX)",
+            label: `Partenariats${result.status === "success" ? ` (${result.partenariatCount})` : ""}`,
             nativeInputProps: {
               checked: displayPartenariats,
               onChange: onPartenariatsChange,

@@ -53,6 +53,8 @@ type IUseRechercheResultsSuccess = {
   }
 
   jobsCount: number
+  entrepriseCount: number
+  partenariatCount: number
   formationsCount: number
 }
 
@@ -134,7 +136,7 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
     },
     enabled: isFormationEnabled,
     useErrorBoundary: false,
-    staleTime: 1000 * 60 * 15,
+    staleTime: 1000 * 60 * 60,
   })
 
   const jobQuery = useQuery({
@@ -144,7 +146,7 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
     },
     enabled: isJobsEnabled,
     useErrorBoundary: false,
-    staleTime: 1000 * 60 * 15,
+    staleTime: 1000 * 60 * 60,
   })
 
   const jobs = useMemo(() => {
@@ -254,6 +256,8 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
       jobsCount: jobs.length,
       formations,
       formationsCount: formations.length,
+      entrepriseCount: jobs.filter((item) => !item.company.mandataire).length,
+      partenariatCount: jobs.filter((item) => item.company.mandataire).length,
     }
   }, [formationQuery, jobQuery, isFormationEnabled, isJobsEnabled, jobs, formations, items])
 }
