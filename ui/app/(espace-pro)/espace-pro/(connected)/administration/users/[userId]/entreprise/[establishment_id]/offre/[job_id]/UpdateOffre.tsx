@@ -13,6 +13,7 @@ export function UpdateOffre() {
     <UpsertOffre
       establishment_id={establishment_id}
       job_id={job_id}
+      user_id={userId}
       onSuccess={() => router.push(PAGES.dynamic.successEditionOffre({ establishment_id, userType: "ADMIN", user_id: userId }).getPath())}
     />
   )

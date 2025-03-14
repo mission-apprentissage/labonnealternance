@@ -202,6 +202,10 @@ export const PAGES = {
       getPath: () => `/espace-pro/cfa/creation-entreprise` as string,
       title: "Création d'entreprise",
     },
+    backAdminHome: {
+      getPath: () => `/espace-pro/administration/users` as string,
+      title: "Accueil administration",
+    },
   },
   dynamic: {
     // example
@@ -399,6 +403,22 @@ export const PAGES = {
     backCfaEntrepriseCreationOffre: (establishment_id: string): IPage => ({
       getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}/creation-offre` as string,
       title: "Création d'une offre",
+    }),
+    backAdminRecruteurOffres: (user_id: string): IPage => ({
+      getPath: () => `/espace-pro/administration/users/${user_id}` as string,
+      title: "Entreprise",
+    }),
+    backEditionOffre: ({ establishment_id, job_id }: { establishment_id: string; job_id: string }): IPage => ({
+      getPath: () => `/espace-pro/entreprise/${establishment_id}/offre/${job_id}` as string,
+      title: job_id ? "Edition d'une offre" : "Création d'une offre",
+    }),
+    backCreationOffre: (establishment_id: string): IPage => ({
+      getPath: () => `/espace-pro/entreprise/${establishment_id}/offre/creation` as string,
+      title: "Nouvelle offre",
+    }),
+    backHomeEntreprise: (establishment_id: string): IPage => ({
+      getPath: () => `/espace-pro/entreprise/${establishment_id}` as string,
+      title: "Entreprise",
     }),
   },
   notion: {},
