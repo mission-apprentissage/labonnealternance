@@ -12,7 +12,7 @@ export function useUserNavigationContext() {
     case AUTHTYPE.CFA:
       return `/espace-pro/cfa`
     case AUTHTYPE.ADMIN:
-      return `/espace-pro/admin`
+      return `/espace-pro/administration`
     case AUTHTYPE.OPCO:
       return `/espace-pro/opco`
     default:

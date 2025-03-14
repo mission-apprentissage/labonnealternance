@@ -1,6 +1,6 @@
 import type { Metadata, MetadataRoute } from "next"
-import { removeUndefinedFields, toKebabCase } from "shared"
-import { OPCO } from "shared/constants"
+import { assertUnreachable, removeUndefinedFields, toKebabCase } from "shared"
+import { ADMIN, CFA, ENTREPRISE, OPCO } from "shared/constants"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateUri } from "shared/helpers/generateUri"
 
@@ -265,14 +265,32 @@ export const PAGES = {
       getMetadata: () => ({ title: "Création d'une offre" }),
       title: "Création d'une offre",
     }),
-    successEditionOffre: ({ userType, establishment_id, user_id }: { userType: "OPCO" | "ENTREPRISE" | "CFA" | "ADMIN"; establishment_id?: string; user_id?: string }): IPage => ({
-      getPath: () => {
-        return userType === OPCO ? `/espace-pro/opco/entreprise/${user_id}/entreprise/${establishment_id}` : `/espace-pro/entreprise/${establishment_id}`
-      },
-      title: "Success édition offre",
-      index: false,
-      getMetadata: () => ({}),
-    }),
+    successEditionOffre: ({ userType, establishment_id, user_id }: { userType: "OPCO" | "ENTREPRISE" | "CFA" | "ADMIN"; establishment_id?: string; user_id?: string }): IPage => {
+      let path = ""
+      switch (userType) {
+        case OPCO:
+          path = `/espace-pro/opco/entreprise/${user_id}/entreprise/${establishment_id}`
+          break
+        case CFA:
+          path = `/espace-pro/cfa`
+          break
+        case ADMIN:
+          path = `/espace-pro/administration/users/${user_id}`
+          break
+        case ENTREPRISE:
+          path = `/espace-pro/entreprise/${establishment_id}`
+          break
+        default:
+          assertUnreachable(`wrong user type ${userType}` as never)
+      }
+
+      return {
+        getPath: () => path,
+        title: "Success édition offre",
+        index: false,
+        getMetadata: () => ({}),
+      }
+    },
     miseEnRelationCreationOffre: ({ isWidget, queryParameters }: { isWidget: boolean; queryParameters: string }): IPage => {
       const path = `${isWidget ? "/espace-pro/widget/entreprise/mise-en-relation" : "/espace-pro/creation/mise-en-relation"}${queryParameters}`
 
@@ -308,6 +326,12 @@ export const PAGES = {
         }) as string
       },
       title: "Créer un compte entreprise",
+    }),
+    backCreationFin: ({ establishment_id }: { establishment_id: string }): IPage => ({
+      getPath: () => {
+        return `/espace-pro/entreprise/${establishment_id}/offre/fin`
+      },
+      title: "Nouvelle offre créée",
     }),
     espaceProCreationFin: (params: {
       jobId: string

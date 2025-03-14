@@ -1,22 +1,17 @@
 "use client"
 
 import { Container, useToast } from "@chakra-ui/react"
-import { useQuery, useQueryClient } from "react-query"
-import { AUTHTYPE } from "shared/constants"
+import { useQuery } from "react-query"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { FormulaireEditionOffre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffre"
-import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { createOffre, getOffre } from "@/utils/api"
 import { apiPut } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 
 export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { establishment_id: string; job_id?: string; onSuccess: () => void }) {
-  const { user } = useConnectedSessionClient()
-
   const toast = useToast()
-  const client = useQueryClient()
 
   const { data: offre, isLoading } = useQuery("offre", () => getOffre(job_id), {
     enabled: Boolean(job_id),
@@ -37,14 +32,7 @@ export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { e
         onSuccess()
       })
     } else {
-      const { recruiter: formulaire } = await createOffre(establishment_id, values)
-      if (user.type === AUTHTYPE.ENTREPRISE) {
-        // Create the offer and return the form with the related offer created
-        return {
-          form: formulaire,
-          offre: formulaire.jobs.slice(-1).shift(),
-        }
-      }
+      await createOffre(establishment_id, values)
       toast({
         title: "Offre enregistrée avec succès.",
         position: "top-right",
@@ -52,7 +40,6 @@ export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { e
         duration: 2000,
         isClosable: true,
       })
-      client.invalidateQueries("offre-liste")
       onSuccess()
     }
   }

@@ -257,7 +257,7 @@ function DetailEntreprise() {
                       </Text>
                       <OffresTabs
                         recruiter={recruiter}
-                        buildOfferEditionUrl={(offerId) => `/espace-pro/administration/entreprise/${userRecruteur.establishment_id}/offre/${offerId}`}
+                        buildOfferEditionUrl={(offerId) => `/espace-pro/administration/users/${userRecruteur._id}/entreprise/${userRecruteur.establishment_id}/offre/${offerId}`}
                       />
                     </Box>
                     <Box mb={12}>
