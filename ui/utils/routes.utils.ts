@@ -327,12 +327,6 @@ export const PAGES = {
       },
       title: "Créer un compte entreprise",
     }),
-    backCreationFin: ({ establishment_id }: { establishment_id: string }): IPage => ({
-      getPath: () => {
-        return `/espace-pro/entreprise/${establishment_id}/offre/fin`
-      },
-      title: "Nouvelle offre créée",
-    }),
     espaceProCreationFin: (params: {
       jobId: string
       email?: string
