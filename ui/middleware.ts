@@ -82,6 +82,15 @@ const redirectAfterAuthentication = async (user: IUserRecruteurPublic, request: 
   return NextResponse.redirect(new URL("/espace-pro/administration", request.url))
 }
 
+const isUnallowedPathForUser = (user: IUserRecruteurPublic, pathname: string) => {
+  return (
+    (!(user.type === AUTHTYPE.ADMIN) && pathname.startsWith("/espace-pro/administration")) ||
+    (!(user.type === AUTHTYPE.ENTREPRISE) && pathname.startsWith("/espace-pro/entreprise")) ||
+    (!(user.type === AUTHTYPE.OPCO) && pathname.startsWith("/espace-pro/opco")) ||
+    (!(user.type === AUTHTYPE.CFA) && pathname.startsWith("/espace-pro/cfa"))
+  )
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl
   if (excludedStartPaths.some((excludedStartPath) => pathname.startsWith(excludedStartPath))) {
@@ -101,6 +110,10 @@ export async function middleware(request: NextRequest) {
   }
 
   if (!user) {
+    return NextResponse.redirect(new URL("/espace-pro/authentification", request.url))
+  }
+
+  if (isUnallowedPathForUser(user, pathname)) {
     return NextResponse.redirect(new URL("/espace-pro/authentification", request.url))
   }
 
