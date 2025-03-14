@@ -1,5 +1,3 @@
-"use client"
-
 import { BackEntrepriseUpsertOffre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/BackEntrepriseUpsertOffre"
 
 export default async function EditionOffre() {

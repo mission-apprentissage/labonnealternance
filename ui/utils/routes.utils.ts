@@ -1,6 +1,6 @@
 import type { Metadata, MetadataRoute } from "next"
-import { removeUndefinedFields, toKebabCase } from "shared"
-import { OPCO } from "shared/constants"
+import { assertUnreachable, removeUndefinedFields, toKebabCase } from "shared"
+import { ADMIN, CFA, ENTREPRISE, OPCO } from "shared/constants"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateUri } from "shared/helpers/generateUri"
 
@@ -202,6 +202,10 @@ export const PAGES = {
       getPath: () => `/espace-pro/cfa/creation-entreprise` as string,
       title: "Création d'entreprise",
     },
+    backAdminHome: {
+      getPath: () => `/espace-pro/administration/users` as string,
+      title: "Accueil administration",
+    },
   },
   dynamic: {
     // example
@@ -265,14 +269,32 @@ export const PAGES = {
       getMetadata: () => ({ title: "Création d'une offre" }),
       title: "Création d'une offre",
     }),
-    successEditionOffre: ({ userType, establishment_id, user_id }: { userType: "OPCO" | "ENTREPRISE" | "CFA" | "ADMIN"; establishment_id?: string; user_id?: string }): IPage => ({
-      getPath: () => {
-        return userType === OPCO ? `/espace-pro/opco/entreprise/${user_id}/entreprise/${establishment_id}` : `/espace-pro/entreprise/${establishment_id}`
-      },
-      title: "Success édition offre",
-      index: false,
-      getMetadata: () => ({}),
-    }),
+    successEditionOffre: ({ userType, establishment_id, user_id }: { userType: "OPCO" | "ENTREPRISE" | "CFA" | "ADMIN"; establishment_id?: string; user_id?: string }): IPage => {
+      let path = ""
+      switch (userType) {
+        case OPCO:
+          path = `/espace-pro/opco/entreprise/${user_id}/entreprise/${establishment_id}`
+          break
+        case CFA:
+          path = `/espace-pro/cfa`
+          break
+        case ADMIN:
+          path = `/espace-pro/administration/users/${user_id}`
+          break
+        case ENTREPRISE:
+          path = `/espace-pro/entreprise/${establishment_id}`
+          break
+        default:
+          assertUnreachable(`wrong user type ${userType}` as never)
+      }
+
+      return {
+        getPath: () => path,
+        title: "Success édition offre",
+        index: false,
+        getMetadata: () => ({}),
+      }
+    },
     miseEnRelationCreationOffre: ({ isWidget, queryParameters }: { isWidget: boolean; queryParameters: string }): IPage => {
       const path = `${isWidget ? "/espace-pro/widget/entreprise/mise-en-relation" : "/espace-pro/creation/mise-en-relation"}${queryParameters}`
 
@@ -381,6 +403,22 @@ export const PAGES = {
     backCfaEntrepriseCreationOffre: (establishment_id: string): IPage => ({
       getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}/creation-offre` as string,
       title: "Création d'une offre",
+    }),
+    backAdminRecruteurOffres: ({ user_id, user_label }: { user_id: string; user_label?: string }): IPage => ({
+      getPath: () => `/espace-pro/administration/users/${user_id}` as string,
+      title: user_label ?? "Entreprise",
+    }),
+    backEditionOffre: ({ establishment_id, job_id }: { establishment_id: string; job_id: string }): IPage => ({
+      getPath: () => `/espace-pro/entreprise/${establishment_id}/offre/${job_id}` as string,
+      title: job_id ? "Edition d'une offre" : "Création d'une offre",
+    }),
+    backCreationOffre: (establishment_id: string): IPage => ({
+      getPath: () => `/espace-pro/entreprise/${establishment_id}/offre/creation` as string,
+      title: "Nouvelle offre",
+    }),
+    backHomeEntreprise: (establishment_id: string): IPage => ({
+      getPath: () => `/espace-pro/entreprise/${establishment_id}` as string,
+      title: "Entreprise",
     }),
   },
   notion: {},

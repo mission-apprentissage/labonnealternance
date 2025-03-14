@@ -1,8 +1,8 @@
 "use client"
 
 import { Container, useToast } from "@chakra-ui/react"
-import { useQuery, useQueryClient } from "react-query"
-import { AUTHTYPE } from "shared/constants"
+import { useQuery } from "react-query"
+import { assertUnreachable } from "shared"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { FormulaireEditionOffre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffre"
@@ -12,16 +12,27 @@ import { createOffre, getOffre } from "@/utils/api"
 import { apiPut } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 
-export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { establishment_id: string; job_id?: string; onSuccess: () => void }) {
-  const { user } = useConnectedSessionClient()
-
+export default function UpsertOffre({ establishment_id, job_id, user_id, onSuccess }: { establishment_id: string; user_id?: string; job_id?: string; onSuccess: () => void }) {
   const toast = useToast()
-  const client = useQueryClient()
+  const { user } = useConnectedSessionClient()
 
   const { data: offre, isLoading } = useQuery("offre", () => getOffre(job_id), {
     enabled: Boolean(job_id),
     cacheTime: 0,
   })
+
+  const getBreadCrumbList = () => {
+    switch (user.type) {
+      case "CFA":
+        return [PAGES.static.backCfaHome, PAGES.dynamic.backCfaPageEntreprise(establishment_id), PAGES.dynamic.backCfaEntrepriseCreationOffre(establishment_id)]
+      case "ENTREPRISE":
+        return [PAGES.dynamic.backHomeEntreprise(establishment_id), PAGES.dynamic.backEditionOffre({ establishment_id, job_id })]
+      case "ADMIN":
+        return [PAGES.static.backAdminHome, PAGES.dynamic.backAdminRecruteurOffres({ user_id }), PAGES.dynamic.backEditionOffre({ establishment_id, job_id })]
+      default:
+        assertUnreachable("account type not allowed ${user.account_type}" as never)
+    }
+  }
 
   const handleSave = async (values) => {
     // Updates an offer
@@ -37,14 +48,7 @@ export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { e
         onSuccess()
       })
     } else {
-      const { recruiter: formulaire } = await createOffre(establishment_id, values)
-      if (user.type === AUTHTYPE.ENTREPRISE) {
-        // Create the offer and return the form with the related offer created
-        return {
-          form: formulaire,
-          offre: formulaire.jobs.slice(-1).shift(),
-        }
-      }
+      await createOffre(establishment_id, values)
       toast({
         title: "Offre enregistrée avec succès.",
         position: "top-right",
@@ -52,7 +56,6 @@ export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { e
         duration: 2000,
         isClosable: true,
       })
-      client.invalidateQueries("offre-liste")
       onSuccess()
     }
   }
@@ -61,7 +64,7 @@ export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { e
 
   return (
     <Container maxW="container.xl" mt={5}>
-      <Breadcrumb pages={[PAGES.static.backCfaHome, PAGES.dynamic.backCfaPageEntreprise(establishment_id), PAGES.dynamic.backCfaEntrepriseCreationOffre(establishment_id)]} />
+      <Breadcrumb pages={getBreadCrumbList()} />
       <FormulaireEditionOffre establishment_id={establishment_id} handleSave={handleSave} offre={offre} />
     </Container>
   )
