@@ -1,3 +1,5 @@
+import { ILbaItemFormation } from "shared"
+
 import { factorTrainingsForMap, setTrainingMarkers } from "@/utils/mapTools"
 
 import { apiGet } from "../../../utils/api.utils"
@@ -45,16 +47,16 @@ export const searchForTrainingsFunction = async ({
       querystring.diploma = values.diploma
     }
 
-    const response = await apiGet(trainingsApi, { querystring })
+    const response: ILbaItemFormation[] = await apiGet(trainingsApi, { querystring })
 
-    setTrainings(response.results)
-    storeSearchResultInContext({ searchResultContext, results: { trainings: response.results }, searchTimestamp, formValues: values })
+    setTrainings(response)
+    storeSearchResultInContext({ searchResultContext, results: { trainings: response }, searchTimestamp, formValues: values })
     setHasSearch(true)
     setIsFormVisible(false)
 
-    if (response.results?.length) {
+    if (response?.length) {
       setTrainingMarkers({
-        trainingList: factorTrainingsForMap(response.results),
+        trainingList: factorTrainingsForMap(response),
         options: {
           centerMapOnTraining: hasLocation,
         },
@@ -65,7 +67,7 @@ export const searchForTrainingsFunction = async ({
       selectFollowUpItem({
         itemId: followUpItem.parameters.itemId,
         type: followUpItem.parameters.type,
-        trainings: response.results,
+        trainings: response,
         formValues: values,
       })
     }
@@ -102,15 +104,15 @@ export const searchForTrainingsLightFunction = async ({ values, searchTimestamp,
       querystring.diploma = values.diploma
     }
 
-    const response = await apiGet(trainingsApi, { querystring })
+    const response: ILbaItemFormation[] = await apiGet(trainingsApi, { querystring })
 
-    setTrainings(response.results)
-    storeSearchResultInContext({ searchResultContext, results: { trainings: response.results }, searchTimestamp, formValues: values })
+    setTrainings(response)
+    storeSearchResultInContext({ searchResultContext, results: { trainings: response }, searchTimestamp, formValues: values })
     setHasSearch(true)
 
-    if (response.results?.length) {
+    if (response?.length) {
       setTrainingMarkers({
-        trainingList: factorTrainingsForMap(response.results),
+        trainingList: factorTrainingsForMap(response),
         options: {
           centerMapOnTraining: hasLocation,
         },

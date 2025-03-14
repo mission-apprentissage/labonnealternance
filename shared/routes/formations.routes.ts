@@ -1,7 +1,7 @@
 import { z } from "../helpers/zodWithOpenApi.js"
 import { zFormationCatalogueSchema } from "../models/formation.model.js"
 import { ZLbacError } from "../models/lbacError.model.js"
-import { ZLbaItemFormationResult } from "../models/lbaItem.model.js"
+import { ZLbaItemFormation, ZLbaItemFormationResult } from "../models/lbaItem.model.js"
 import { rateLimitDescription } from "../utils/rateLimitDescription.js"
 
 import { ZLatitudeParam, ZLongitudeParam, ZRadiusParam, zCallerParam, zDiplomaParam, zGetFormationOptions, zRefererHeaders, zRomesParams } from "./_params.js"
@@ -75,45 +75,18 @@ export const zFormationsRoutes = {
     "/v1/_private/formations/min": {
       method: "get",
       path: "/v1/_private/formations/min",
-      querystring: z
-        .object({
-          romes: zRomesParams("romeDomain"),
-          romeDomain: z
-            .string()
-            .optional()
-            .openapi({
-              param: {
-                description:
-                  "Un domaine ROME (1 lettre et deux chiffres) ou un grand domaine ROME (1 lettre). <br />rome et romeDomain sont incompatibles.<br /><strong>Au moins un des deux doit être renseigné.</strong>",
-              },
-              example: "F ou I13",
-            }),
-          latitude: ZLatitudeParam,
-          longitude: ZLongitudeParam,
-          radius: ZRadiusParam.default(30),
-          diploma: zDiplomaParam.optional(),
-          caller: zCallerParam.optional(),
-          options: zGetFormationOptions,
-        })
-        .strict()
-        .passthrough(),
+      querystring: z.object({
+        romes: zRomesParams("romeDomain"),
+        latitude: ZLatitudeParam,
+        longitude: ZLongitudeParam,
+        radius: ZRadiusParam.default(30),
+        diploma: zDiplomaParam.optional(),
+      }),
       headers: zRefererHeaders,
       response: {
-        "200": ZLbaItemFormationResult,
-        "400": z.union([ZResError, ZLbacError]).openapi({
-          description: "Bad Request",
-        }),
-        "500": z.union([ZResError, ZLbacError]).openapi({
-          description: "Internal Server Error",
-        }),
+        "200": ZLbaItemFormation.array(),
       },
       securityScheme: null,
-      openapi: {
-        tags: ["V1 - Formations"] as string[],
-        description: `Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique. Retour de données minimales\n${rateLimitDescription(
-          { max: 7, timeWindow: "1s" }
-        )}`,
-      },
     },
     "/v1/formations/formation/:id": {
       method: "get",

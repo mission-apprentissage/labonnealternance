@@ -439,7 +439,6 @@ export const ZLbaItemFormation = z
 
     rdvContext: z.any().nullish(),
   })
-  .strict()
   .openapi("Formation")
 
 export type ILbaItemFormation = z.output<typeof ZLbaItemFormation>

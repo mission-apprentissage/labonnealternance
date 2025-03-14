@@ -65,7 +65,7 @@
     "shared": "workspace:*",
     "tss-react": "^4.9.15",
     "yup": "^0.32.11",
-    "zod": "3.23.8",
+    "zod": "^3.24.1",
     "zod-formik-adapter": "^1.3.0"
   },
   "devDependencies": {
@@ -79,7 +79,7 @@
     "eslint-config-next": "latest",
     "nock": "^14.0.0-beta.11",
     "sass": "^1.83.4",
-    "type-fest": "^4.18.2",
-    "typescript": "^5.4.5"
+    "type-fest": "^4.37.0",
+    "typescript": "^5.8.2"
   }
 }
