@@ -7,7 +7,7 @@ import { IRecherchePageParams, parseRecherchePageParams } from "@/utils/routes.u
 export function useCandidatRechercheParams(): Required<IRecherchePageParams> | null {
   const searchParams = useSearchParams()
 
-  const params = useMemo(() => parseRecherchePageParams(searchParams), [searchParams?.toString()])
+  const params = useMemo(() => parseRecherchePageParams(searchParams), [searchParams])
 
   return params
 }

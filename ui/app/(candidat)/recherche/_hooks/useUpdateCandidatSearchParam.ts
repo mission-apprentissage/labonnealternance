@@ -18,7 +18,7 @@ export function useUpdateCandidatSearchParam(): (newParams: Partial<IRecherchePa
     const pagePath = new URL(PAGES.dynamic.recherche(null).getPath(), globalThis.window.location.origin).pathname
 
     return currentPath === pagePath
-  }, [currentPath, globalThis.window])
+  }, [currentPath])
 
   const updateCandidatSearchParam = useCallback(
     (newParams: Partial<IRecherchePageParams>): void => {
@@ -35,7 +35,7 @@ export function useUpdateCandidatSearchParam(): (newParams: Partial<IRecherchePa
         router.push(newUrl)
       }
     },
-    [searchParams, isCandidateSearchPage, globalThis.window]
+    [searchParams, isCandidateSearchPage, router]
   )
 
   return updateCandidatSearchParam

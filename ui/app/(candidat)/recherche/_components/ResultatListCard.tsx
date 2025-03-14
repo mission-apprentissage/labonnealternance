@@ -4,7 +4,7 @@ import { Typography } from "@mui/material"
 import { useSearchParams } from "next/navigation"
 import React, { useCallback, useState } from "react"
 import { ILbaItemFormation, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
-import { LBA_ITEM_TYPE_OLD, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import { buildJobUrl, buildTrainingUrl } from "shared/metier/lbaitemutils"
 
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
@@ -47,7 +47,7 @@ const CenterSearchButton = (props: Pick<ResultatListCardProps, "item">) => {
         displayPartenariats: props.item.ideaType !== LBA_ITEM_TYPE_OLD.FORMATION,
       })
     },
-    [searchParams, props.item, updateSearch]
+    [props.item, updateSearch]
   )
 
   if (searchParams.geo) {
@@ -67,7 +67,7 @@ const CenterSearchButton = (props: Pick<ResultatListCardProps, "item">) => {
 }
 
 function getTitle(item: ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob | ILbaItemFormation) {
-  if (item.ideaType === LBA_ITEM_TYPE_OLD.LBA) {
+  if (item.ideaType === LBA_ITEM_TYPE_OLD.LBA || item.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     return item.company.name
   }
 
@@ -79,7 +79,7 @@ function getTitle(item: ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob
 }
 
 function ItemTag(props: Pick<ResultatListCardProps, "item">) {
-  if (props.item.ideaType === LBA_ITEM_TYPE_OLD.LBA) {
+  if (props.item.ideaType === LBA_ITEM_TYPE_OLD.LBA || props.item.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     return <TagCandidatureSpontanee />
   }
 
@@ -98,7 +98,7 @@ function ItemTag(props: Pick<ResultatListCardProps, "item">) {
 }
 
 function ItemCompanyName({ item }: Pick<ResultatListCardProps, "item">) {
-  if (item.ideaType === LBA_ITEM_TYPE_OLD.LBA) {
+  if (item.ideaType === LBA_ITEM_TYPE_OLD.LBA || item.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     return `Secteur d'activité : ${item?.nafs[0]?.label ?? ""}`
   }
 
@@ -106,7 +106,7 @@ function ItemCompanyName({ item }: Pick<ResultatListCardProps, "item">) {
 }
 
 function getAdresse(item: ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob | ILbaItemFormation) {
-  if (item.ideaType === LBA_ITEM_TYPE_OLD.LBA || item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION) {
+  if (item.ideaType === LBA_ITEM_TYPE_OLD.LBA || item.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA || item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION) {
     return item.place.fullAddress
   }
 
@@ -118,30 +118,35 @@ function getAdresse(item: ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJ
 }
 
 function CandidatureCount({ item }: Pick<ResultatListCardProps, "item">) {
-  if (item.ideaType === LBA_ITEM_TYPE_OLD.PARTNER_JOB || item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION) {
-    return null
+  if (
+    item.ideaType === LBA_ITEM_TYPE_OLD.LBA ||
+    item.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA ||
+    item.ideaType === LBA_ITEM_TYPE_OLD.MATCHA ||
+    item.ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
+  ) {
+    return (
+      <Box sx={{ alignItems: "center", display: "flex" }}>
+        <Image mr={1} src="/images/eclair.svg" alt="" />
+        <Typography
+          sx={{
+            my: 0,
+            fontWeight: 400,
+            color: fr.colors.decisions.text.default.info.default,
+            whiteSpace: "nowrap",
+          }}
+          className={fr.cx("fr-text--xs")}
+        >
+          {item.applicationCount} candidature(s)
+        </Typography>
+      </Box>
+    )
   }
 
-  return (
-    <Box sx={{ alignItems: "center", display: "flex" }}>
-      <Image mr={1} src="/images/eclair.svg" alt="" />
-      <Typography
-        sx={{
-          my: 0,
-          fontWeight: 400,
-          color: fr.colors.decisions.text.default.info.default,
-          whiteSpace: "nowrap",
-        }}
-        className={fr.cx("fr-text--xs")}
-      >
-        {item.applicationCount} candidature(s)
-      </Typography>
-    </Box>
-  )
+  return null
 }
 
 function DatePublication({ item }: Pick<ResultatListCardProps, "item">) {
-  if (item.ideaType === LBA_ITEM_TYPE_OLD.LBA || item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION) {
+  if (item.ideaType !== LBA_ITEM_TYPE_OLD.MATCHA && item.ideaType !== LBA_ITEM_TYPE_OLD.PARTNER_JOB) {
     return null
   }
 

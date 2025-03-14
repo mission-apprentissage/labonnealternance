@@ -7,8 +7,7 @@ import ResultListsLoading from "@/components/SearchForTrainingsAndJobs/component
 import { IRecherchePageParams, PAGES } from "@/utils/routes.utils"
 
 type RechercheResultatsFooterProps = {
-  isLoadingJob: boolean
-  isSearchingJobs: boolean
+  jobStatus: "success" | "error" | "disabled" | "loading"
   jobCount: number
   searchParams: IRecherchePageParams
 }
@@ -27,11 +26,11 @@ export function RechercheResultatsFooter(props: RechercheResultatsFooterProps) {
     )
   }, [props.searchParams])
 
-  if (props.isLoadingJob) {
-    return <ResultListsLoading isJobSearchLoading={props.isLoadingJob} isTrainingSearchLoading={false} />
+  if (props.jobStatus === "loading") {
+    return <ResultListsLoading isJobSearchLoading isTrainingSearchLoading={false} />
   }
 
-  if (props.isSearchingJobs) {
+  if (props.jobStatus === "success") {
     if (props.jobCount === 0) {
       return (
         <Typography textAlign="center" fontWeight="bold">

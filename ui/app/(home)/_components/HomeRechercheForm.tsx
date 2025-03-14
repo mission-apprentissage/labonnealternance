@@ -2,19 +2,13 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
-import { useRouter } from "next/navigation"
-import { useCallback } from "react"
 
+import { useUpdateCandidatSearchParam } from "@/app/(candidat)/recherche/_hooks/useUpdateCandidatSearchParam"
 import { RechercheForm } from "@/app/_components/RechercheForm/RechercheForm"
 import { RechercheFormTitle } from "@/app/_components/RechercheForm/RechercheFormTitle"
-import { IRecherchePageParams, PAGES } from "@/utils/routes.utils"
 
 export function HomeRechercheForm() {
-  const router = useRouter()
-
-  const onSubmit = useCallback((params: IRecherchePageParams) => {
-    router.push(PAGES.dynamic.recherche(params).getPath())
-  }, [])
+  const onSubmit = useUpdateCandidatSearchParam()
 
   return (
     <Box

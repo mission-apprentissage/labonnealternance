@@ -40,7 +40,7 @@ export default function JobOfferRendererClient({ selectedItem }: { selectedItem:
     } catch (err) {
       //notice: gère des erreurs qui se présentent à l'initialisation de la page quand mapbox n'est pas prêt.
     }
-  }, [selectedItem.id])
+  }, [selectedItem, activeFilters])
 
   const actualTitle = selectedItem.title
 

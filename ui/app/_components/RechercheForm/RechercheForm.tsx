@@ -284,7 +284,7 @@ export function RechercheForm(props: RechercheFormProps) {
               longitude: props.initialValue.geo.longitude,
             },
     }
-  }, [props.initialValue?.geo, props.initialValue?.diploma, props.initialValue?.job_name, props.initialValue?.romes])
+  }, [props.initialValue?.geo, props.initialValue?.diploma, props.initialValue?.job_name, props.initialValue?.job_type, props.initialValue?.romes])
 
   return (
     <RechercheFormContext.Provider value={props.type}>

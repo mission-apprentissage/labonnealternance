@@ -78,10 +78,11 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
   // https://github.com/mui/material-ui/issues/27670#issuecomment-2079148513
   useWindowSize()
 
+  const { getOptionKey, getOptionLabel } = props
   const [{ onBlur, value }, meta] = useField(props.id)
   const { setFieldValue } = useFormikContext()
 
-  const [query, setQuery] = useState(meta.initialValue ? props.getOptionLabel(meta.initialValue) : "")
+  const [query, setQuery] = useState(meta.initialValue ? getOptionLabel(meta.initialValue) : "")
   const debouncedQuery = useThrottle(query, 300)
 
   const enabled = debouncedQuery.length > 0
@@ -131,13 +132,13 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
         />
       )
     },
-    [props.label, props.placeholder, isDeferredOrFetching, meta, value]
+    [props.label, props.placeholder, isDeferredOrFetching, meta]
   )
 
   const renderOption = useCallback(
     (params: React.HTMLAttributes<HTMLLIElement>, option: T, { inputValue }: AutocompleteRenderOptionState) => {
-      const key = props.getOptionKey(option)
-      const label = props.getOptionLabel(option)
+      const key = getOptionKey(option)
+      const label = getOptionLabel(option)
 
       const matches = match(label, inputValue, { insideWords: true, findAllOccurrences: true })
       const parts = parse(label, matches)
@@ -169,7 +170,7 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
         </Box>
       )
     },
-    [props.getOptionKey, props.getOptionLabel, isDeferredOrFetching]
+    [getOptionKey, getOptionLabel, isDeferredOrFetching]
   )
 
   // TODO: create a basic AutoComplete DSFR with static options which can be used here too to share the same design
@@ -181,15 +182,15 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
       loading={result.isLoading}
       loadingText="Veuillez patienter"
       options={result.data ?? []}
-      getOptionLabel={props.getOptionLabel}
-      getOptionKey={props.getOptionKey}
+      getOptionLabel={getOptionLabel}
+      getOptionKey={getOptionKey}
       value={value}
       renderInput={renderInput}
       onInputChange={onInputChange}
       renderGroup={renderGroup}
       onBlur={onBlur}
       groupBy={props.groupBy}
-      isOptionEqualToValue={(option, value) => props.getOptionKey(option) === props.getOptionKey(value)}
+      isOptionEqualToValue={(option, value) => getOptionKey(option) === getOptionKey(value)}
       classes={{
         noOptions: fr.cx("fr-text--sm"),
       }}
