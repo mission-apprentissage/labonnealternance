@@ -1,7 +1,8 @@
-import { Box, Link } from "@chakra-ui/react"
+"use client"
+import { Box } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { ILbaItemPartnerJob } from "shared"
 
-import { focusWithin } from "@/theme/theme-lba-tools"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
 import { CandidatureLba } from "../CandidatureLba/CandidatureLba"
@@ -21,12 +22,11 @@ export const PartnerJobPostuler = ({ job, isCollapsedHeader }: { job: ILbaItemPa
   if (job.contact?.url) {
     return (
       <Box my={isCollapsedHeader ? 2 : 4}>
-        <Link
+        <Button
           data-tracking-id="postuler-offre-job-partner"
-          {...focusWithin}
-          variant="postuler"
-          href={job.contact.url}
-          target={job.job.partner_label}
+          linkProps={{
+            href: job.contact.url as string,
+          }}
           onClick={() =>
             SendPlausibleEvent(`Clic Postuler - Fiche entreprise Offre ${job.job.partner_label}`, {
               info_fiche: job.id,
@@ -34,7 +34,7 @@ export const PartnerJobPostuler = ({ job, isCollapsedHeader }: { job: ILbaItemPa
           }
         >
           Je postule sur {job.job.partner_label}
-        </Link>
+        </Button>
       </Box>
     )
   }

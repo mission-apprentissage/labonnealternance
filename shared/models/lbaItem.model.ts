@@ -1,3 +1,5 @@
+import { Jsonify } from "type-fest"
+
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem.js"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
@@ -466,8 +468,7 @@ export type ILbaItemFormation2 = z.output<typeof ZLbaItemFormation2>
 
 export const ZLbaItemLbaJob = z
   .object({
-    ideaType: z.literal(LBA_ITEM_TYPE_OLD.MATCHA),
-    // ideaType: z.literal(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
+    ideaType: z.enum([LBA_ITEM_TYPE_OLD.MATCHA, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA]),
     title: z.string().nullish(), // matcha -> offres.libelle || offres.rome_appellation_label
     contact: ZLbaItemContact.nullish(),
     place: ZLbaItemPlace.nullable(),
@@ -497,7 +498,7 @@ export type ILbaItemLbaJobReturnedByAPI = z.output<typeof ZLbaItemLbaJobReturned
 
 export const ZLbaItemPartnerJob = z
   .object({
-    ideaType: z.literal(LBA_ITEM_TYPE_OLD.PARTNER_JOB),
+    ideaType: z.enum([LBA_ITEM_TYPE_OLD.PARTNER_JOB, LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES]),
     title: z.string(), // partnerJob -> offer_title
     contact: ZLbaItemContact.nullish(),
     place: ZLbaItemPlace.nullable(),
@@ -526,7 +527,7 @@ export type ILbaItemPartnerJobReturnedByAPI = z.output<typeof ZLbaItemPartnerJob
 
 export const ZLbaItemLbaCompany = z
   .object({
-    ideaType: z.literal(LBA_ITEM_TYPE_OLD.LBA),
+    ideaType: z.enum([LBA_ITEM_TYPE_OLD.LBA, LBA_ITEM_TYPE.RECRUTEURS_LBA]),
     // ideaType: z.literal(LBA_ITEM_TYPE.RECRUTEURS_LBA),
     id: z.string().nullable().openapi({}),
     title: z.string().nullish(), // lbb/lba -> enseigne
@@ -549,8 +550,7 @@ export type ILbaItemLbaCompanyReturnedByAPI = z.output<typeof ZLbaItemLbaCompany
 
 export const ZLbaItemFtJob = z
   .object({
-    ideaType: z.literal(LBA_ITEM_TYPE_OLD.PEJOB),
-    // ideaType: z.literal(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES),
+    ideaType: z.enum([LBA_ITEM_TYPE_OLD.PEJOB, LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES]),
     id: z.string().nullable().openapi({}),
     title: z.string().nullish(), // pe -> intitule
     contact: ZLbaItemContact.nullish(),
@@ -579,3 +579,5 @@ export const ZLbaItemFormationResult = z
       "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
   })
 export type ILbaItemFormationResult = z.output<typeof ZLbaItemFormationResult>
+
+export type ILbaItemJobsGlobal = Jsonify<ILbaItemLbaCompany> | Jsonify<ILbaItemLbaJob> | Jsonify<ILbaItemPartnerJob>

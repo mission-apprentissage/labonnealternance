@@ -4,7 +4,7 @@ import { Document, Filter, ObjectId } from "mongodb"
 import { IJob, ILbaItemPartnerJob, IRecruiter, IReferentielRomeForJob, JOB_STATUS } from "shared"
 import { NIVEAUX_POUR_LBA } from "shared/constants"
 import { FRANCE_LATITUDE, FRANCE_LONGITUDE } from "shared/constants/geolocation"
-import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { INiveauPourLbaLabel, RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -333,29 +333,26 @@ export const getLbaJobById = async ({ id, caller }: { id: ObjectId; caller?: str
 /**
  * @description Retourne une offre LBA identifiée par son id
  */
-export const getLbaJobByIdV2 = async ({ id, caller }: { id: string; caller?: string }): Promise<{ job: ILbaItemLbaJob[] } | null> => {
+export const getLbaJobByIdV2 = async (id: string): Promise<ILbaItemLbaJob> => {
   try {
     const rawJob = await getOffreAvecInfoMandataire(id)
 
     if (!rawJob) {
-      throw badRequest()
+      throw badRequest("Job not found")
     }
 
     const applicationCountByJob = await getApplicationByJobCount([id])
 
-    const job = transformLbaJob({
+    const job = transformLbaJobPrivate({
       recruiter: rawJob.recruiter,
+      job: rawJob.job,
       applicationCountByJob,
     })
 
-    if (caller) {
-      trackApiCall({ caller: caller, job_count: 1, result_count: 1, api_path: "job/offre_emploi_lba", response: "OK" })
-    }
-
-    return { job }
+    return job
   } catch (error) {
     sentryCaptureException(error)
-    return null
+    throw badRequest("getLbaJobByIdV2 - error while getting job, error sent to sentry")
   }
 }
 
@@ -433,6 +430,87 @@ const getNumberAndStreet = (addressDetail: IRecruiter["address_detail"]): string
   const type_voie = addressDetail?.type_voie
   const libelle_voie = addressDetail?.libelle_voie
   return [numero_voie, indice_repetition_voie, type_voie, libelle_voie].flatMap((x) => (x ? [x] : [])).join(" ") || null
+}
+
+/**
+ * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
+ */
+function transformLbaJobPrivate({
+  recruiter,
+  job,
+  applicationCountByJob,
+}: {
+  recruiter: Partial<IRecruiter>
+  job: IJob
+  applicationCountByJob: IApplicationCount[]
+}): ILbaItemLbaJob {
+  const applicationCountForCurrentJob = applicationCountByJob.find((job) => job._id.toString() === job._id.toString())
+  const romes = job.rome_code.map((code) => ({ code, label: null }))
+
+  const latitude = recruiter?.geopoint?.coordinates[1] ?? 0
+  const longitude = recruiter?.geopoint?.coordinates[0] ?? 0
+
+  const resultJob: ILbaItemLbaJob = {
+    ideaType: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
+    id: job._id.toString(),
+    title: job.offer_title_custom ?? job.rome_appellation_label ?? job.rome_label,
+    contact: {
+      email: recruiter.email,
+      name: recruiter.first_name + " " + recruiter.last_name,
+      phone: recruiter.phone,
+    },
+    place: {
+      //lieu de l'offre. contient ville de l'entreprise et geoloc de l'entreprise
+      distance: (recruiter.distance ?? false) ? roundDistance((recruiter?.distance ?? 0) / 1000) : null,
+      fullAddress: recruiter.is_delegated ? null : recruiter.address,
+      address: recruiter.is_delegated ? null : recruiter.address,
+      numberAndStreet: recruiter.is_delegated ? null : getNumberAndStreet(recruiter.address_detail),
+      latitude,
+      longitude,
+      city: getCity(recruiter),
+      zipCode: recruiter?.address_detail?.code_postal,
+    },
+    company: {
+      // si mandataire contient les données du CFA
+      siret: recruiter.establishment_siret,
+      name: recruiter.establishment_enseigne || recruiter.establishment_raison_sociale || "Enseigne inconnue",
+      size: recruiter.establishment_size,
+      mandataire: recruiter.is_delegated,
+      creationDate: recruiter.establishment_creation_date ? new Date(recruiter.establishment_creation_date) : null,
+      place: recruiter.is_delegated
+        ? {
+            // contient infos d'adresse du cfa mandataire
+            address: recruiter.address,
+            fullAddress: recruiter.address,
+          }
+        : null,
+    },
+    nafs: [{ label: recruiter.naf_label }],
+    target_diploma_level: job.job_level_label || null,
+    job: {
+      id: job._id.toString(),
+      description: job.job_description && job.job_description.length > 50 ? job.job_description : null,
+      employeurDescription: job.job_employer_description || null,
+      creationDate: job.job_creation_date ? new Date(job.job_creation_date) : null,
+      contractType: job.job_type ? job.job_type.join(", ") : null,
+      jobStartDate: job.job_start_date ? new Date(job.job_start_date) : null,
+      jobExpirationDate: job.job_expiration_date ? new Date(job.job_expiration_date) : null,
+      romeDetails: job.rome_detail ? { ...job.rome_detail, competences: job?.competences_rome ?? job.rome_detail?.competences } : null,
+      rythmeAlternance: job.job_rythm || null,
+      dureeContrat: "" + job.job_duration,
+      quantiteContrat: job.job_count,
+      elligibleHandicap: job.is_disabled_elligible,
+      status: recruiter.status === RECRUITER_STATUS.ACTIF && job.job_status === JOB_STATUS.ACTIVE ? JOB_STATUS.ACTIVE : JOB_STATUS.ANNULEE,
+      type: job.job_type,
+    },
+    romes,
+    applicationCount: applicationCountForCurrentJob?.count || 0,
+    token: generateApplicationToken({ jobId: job._id.toString() }),
+    // migration ui: need to update with function from main
+    recipient_id: `recruiters_${job._id.toString()}`,
+  }
+
+  return resultJob
 }
 
 /**

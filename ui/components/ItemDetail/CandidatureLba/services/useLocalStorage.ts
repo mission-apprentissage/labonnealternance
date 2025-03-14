@@ -1,3 +1,4 @@
+"use client"
 import { useState } from "react"
 
 export default function useLocalStorage(key: string, initialValue: string | null | undefined, stubbedLocalStorage?: Storage): [string, (newValue: string) => void] {

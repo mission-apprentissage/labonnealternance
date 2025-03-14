@@ -1,10 +1,11 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Button, Flex, FormControl, FormErrorMessage, FormLabel, Input, Link, Spinner, Text } from "@chakra-ui/react"
+import { Box, Flex, FormControl, FormErrorMessage, FormLabel, Input, Link, Spinner, Text } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
 import emailMisspelled, { top100 } from "email-misspelled"
 import { useFormik } from "formik"
 import { useState } from "react"
 import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
-import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
@@ -30,7 +31,7 @@ export const CandidatureLbaModalBody = ({
   isLoading: boolean
   company: string
   item: ILbaItemLbaJob | ILbaItemLbaCompany | ILbaItemPartnerJob
-  kind: LBA_ITEM_TYPE_OLD
+  kind: LBA_ITEM_TYPE | LBA_ITEM_TYPE_OLD
   fromWidget?: boolean
   onSubmit: (values: IApplicationSchemaInitValues) => void
   onClose: () => void
@@ -58,7 +59,7 @@ export const CandidatureLbaModalBody = ({
           </Flex>
         )}
         <Text as="h1" fontWeight={700} fontSize="24px" data-testid="CandidatureSpontaneeTitle">
-          {kind === LBA_ITEM_TYPE_OLD.MATCHA ? (
+          {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? (
             <>
               Postuler à l&apos;offre {fromWidget ? `${item.title} ` : ""}de {company}
             </>
@@ -103,18 +104,12 @@ export const CandidatureLbaModalBody = ({
               <Spinner mr={4} />
               <Text>Veuillez patienter</Text>
             </Flex>
-          ) : kind === LBA_ITEM_TYPE_OLD.LBA ? (
-            <Button
-              data-tracking-id="postuler-entreprise-algo"
-              aria-label="Envoyer la candidature spontanée"
-              variant="blackButton"
-              type="submit"
-              data-testid="candidature-not-sent"
-            >
+          ) : kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? (
+            <Button data-tracking-id="postuler-entreprise-algo" aria-label="Envoyer la candidature spontanée" type="submit" data-testid="candidature-not-sent">
               J'envoie ma candidature spontanée
             </Button>
           ) : (
-            <Button data-tracking-id="postuler-offre-lba" aria-label="Envoyer la candidature" variant="blackButton" type="submit" data-testid="candidature-not-sent">
+            <Button data-tracking-id="postuler-offre-lba" aria-label="Envoyer la candidature" type="submit" data-testid="candidature-not-sent">
               J'envoie ma candidature
             </Button>
           )}
@@ -133,8 +128,8 @@ const UserFields = ({ formik }: { formik: any }) => {
     formik.handleChange(e)
   }
 
-  const clickSuggestion = (e) => {
-    formik.setFieldValue("email", e.currentTarget.innerHTML)
+  const clickSuggestion = (value) => {
+    formik.setFieldValue("applicant_email", value)
     setSuggestedEmails([])
   }
 
@@ -180,20 +175,7 @@ const UserFields = ({ formik }: { formik: any }) => {
                 Voulez vous dire ?
               </Text>
               {suggestedEmails.map((suggestedEmail) => (
-                <Button
-                  key={suggestedEmail.corrected}
-                  onClick={clickSuggestion}
-                  textAlign="center"
-                  fontSize="12px"
-                  width="fit-content"
-                  px="5px"
-                  pb="3px"
-                  mr="5px"
-                  mt="3px"
-                  color="bluefrance.500"
-                  bg="#e3e3fd"
-                  borderRadius="40px"
-                >
+                <Button key={suggestedEmail.corrected} onClick={() => clickSuggestion(suggestedEmail.corrected)} priority="tertiary no outline" size="small">
                   {suggestedEmail.corrected}
                 </Button>
               ))}

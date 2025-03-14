@@ -1,7 +1,8 @@
+import { badRequest } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { NIVEAUX_POUR_LBA, TRAINING_REMOTE_TYPE } from "shared/constants"
 import { FRANCE_LATITUDE, FRANCE_LONGITUDE } from "shared/constants/geolocation"
-import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { ILbaItemPartnerJob, traductionJobStatus } from "shared/models"
 import { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance } from "shared/models/jobsPartners.model"
 
@@ -25,7 +26,7 @@ export const transformPartnerJobs = ({ partnerJobs, isMinimalData }: { partnerJo
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
  */
-function transformPartnerJob(partnerJob: IJobsPartnersOfferPrivateWithDistance): ILbaItemPartnerJob {
+function transformPartnerJob(partnerJob: IJobsPartnersOfferPrivateWithDistance, version: "V1" | "V2" = "V1"): ILbaItemPartnerJob {
   const romes = partnerJob.offer_rome_codes.map((code) => ({ code, label: null }))
   const longitude = partnerJob.workplace_geopoint.coordinates[0]
   const latitude = partnerJob.workplace_geopoint.coordinates[1]
@@ -33,7 +34,7 @@ function transformPartnerJob(partnerJob: IJobsPartnersOfferPrivateWithDistance):
 
   const resultJob: ILbaItemPartnerJob = {
     id,
-    ideaType: LBA_ITEM_TYPE_OLD.PARTNER_JOB,
+    ideaType: version === "V1" ? LBA_ITEM_TYPE_OLD.PARTNER_JOB : LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
     title: partnerJob.offer_title,
     token: generateApplicationToken({ jobId: id }),
     recipient_id: `partners_${id}`,
@@ -212,5 +213,22 @@ export const getPartnerJobById = async ({ id, caller }: { id: ObjectId; caller?:
   } catch (error) {
     sentryCaptureException(error)
     return manageApiError({ error, api_path: "jobV1/matcha", caller, errorTitle: "getting job by id from partner jobs" })
+  }
+}
+
+export const getPartnerJobByIdV2 = async (id: string): Promise<ILbaItemPartnerJob> => {
+  try {
+    const rawPartnerJob = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(id) })
+
+    if (!rawPartnerJob) {
+      throw badRequest("Job not found")
+    }
+
+    const partnerJob = transformPartnerJob(rawPartnerJob, "V2")
+
+    return partnerJob
+  } catch (error) {
+    sentryCaptureException(error)
+    throw badRequest("getPartnerJobByIdV2 - error sent to sentry")
   }
 }
