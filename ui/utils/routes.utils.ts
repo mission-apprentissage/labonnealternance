@@ -404,9 +404,9 @@ export const PAGES = {
       getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}/creation-offre` as string,
       title: "Création d'une offre",
     }),
-    backAdminRecruteurOffres: (user_id: string): IPage => ({
+    backAdminRecruteurOffres: ({ user_id, user_label }: { user_id: string; user_label?: string }): IPage => ({
       getPath: () => `/espace-pro/administration/users/${user_id}` as string,
-      title: "Entreprise",
+      title: user_label ?? "Entreprise",
     }),
     backEditionOffre: ({ establishment_id, job_id }: { establishment_id: string; job_id: string }): IPage => ({
       getPath: () => `/espace-pro/entreprise/${establishment_id}/offre/${job_id}` as string,

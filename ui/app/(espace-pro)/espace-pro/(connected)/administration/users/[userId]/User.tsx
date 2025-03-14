@@ -2,9 +2,6 @@
 import {
   Badge,
   Box,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
   Button,
   Container,
   Flex,
@@ -20,7 +17,7 @@ import {
   useToast,
 } from "@chakra-ui/react"
 import { Form, Formik } from "formik"
-import { useParams, useRouter } from "next/navigation"
+import { useParams } from "next/navigation"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { IUserStatusValidation } from "shared"
 import { AUTHTYPE, CFA, ENTREPRISE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
@@ -31,16 +28,17 @@ import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { OffresTabs } from "@/app/(espace-pro)/espace-pro/(connected)/_components/OffresTabs"
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/compte/_components/InformationLegaleEntreprise"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
+import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 import { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationModificationOpco, UserValidationHistory } from "@/components/espace_pro"
 import { OpcoSelect } from "@/components/espace_pro/CreationRecruteur/OpcoSelect"
 import { FieldWithValue } from "@/components/espace_pro/FieldWithValue"
 import NavigationAdmin, { EAdminPages } from "@/components/espace_pro/Layout/NavigationAdmin"
-import { ArrowDropRightLine, ArrowRightLine } from "@/theme/components/icons"
+import { ArrowRightLine } from "@/theme/components/icons"
 import { getFormulaire, getUser, updateEntrepriseAdmin } from "@/utils/api"
+import { PAGES } from "@/utils/routes.utils"
 
 function DetailEntreprise() {
-  const router = useRouter()
   const { userId } = useParams() as { userId: string }
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationModificationOpco = useDisclosure()
@@ -100,18 +98,6 @@ function DetailEntreprise() {
     }
   }
 
-  const getUserNavigationContext = () => {
-    switch (user.type) {
-      case AUTHTYPE.ADMIN:
-        return "/espace-pro/administration/users"
-      case AUTHTYPE.OPCO:
-        return "/espace-pro/administration/opco"
-
-      default:
-        break
-    }
-  }
-
   const { data: userRecruteur, isLoading } = useQuery("user", () => getUser(userId), { cacheTime: 0, enabled: !!userId })
   const { data: recruiter, isLoading: recruiterLoading } = useQuery(["recruiter", userRecruteur?.establishment_id], {
     enabled: Boolean(userRecruteur?.establishment_id),
@@ -136,16 +122,7 @@ function DetailEntreprise() {
       <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={userRecruteur} />
       <Container maxW="container.xl">
         <Box mt="16px" mb={6}>
-          <Breadcrumb separator={<ArrowDropRightLine color="grey.600" />} textStyle="xs">
-            <BreadcrumbItem>
-              <BreadcrumbLink textDecoration="underline" onClick={() => router.push(getUserNavigationContext())} textStyle="xs">
-                Entreprises
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbItem>
-              <BreadcrumbLink textStyle="xs">{establishmentLabel}</BreadcrumbLink>
-            </BreadcrumbItem>
-          </Breadcrumb>
+          <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.dynamic.backAdminRecruteurOffres({ user_id: userId, user_label: establishmentLabel })]} />
         </Box>
         <Box borderBottom="1px solid #E3E3FD" mb={10}>
           <Heading fontSize="32px" noOfLines={2}>
