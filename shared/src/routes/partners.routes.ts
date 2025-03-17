@@ -1,6 +1,5 @@
-import { ZEligibleTrainingsForAppointmentSchema } from "shared/models/elligibleTraining.model.js"
-
 import { z } from "../helpers/zodWithOpenApi.js"
+import { ZEligibleTrainingsForAppointmentSchema } from "../models/elligibleTraining.model.js"
 
 import { IRoutesDef } from "./common.routes.js"
 

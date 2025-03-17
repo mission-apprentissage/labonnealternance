@@ -1,6 +1,6 @@
 import dayjs from "dayjs"
 import { generateRoleManagementFixture } from "shared/fixtures/roleManagement.fixture"
-import { AccessStatus, IRoleManagement } from "shared/models"
+import { AccessStatus, IRoleManagement } from "shared/models/index"
 import { describe, expect, it } from "vitest"
 
 import { roleManagementEventFactory } from "@tests/utils/user.test.utils"

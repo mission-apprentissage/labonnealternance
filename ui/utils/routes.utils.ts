@@ -1,7 +1,7 @@
 import type { Metadata, MetadataRoute } from "next"
 import { ReadonlyURLSearchParams } from "next/navigation"
 import { assertUnreachable, removeUndefinedFields, toKebabCase } from "shared"
-import { ADMIN, CFA, ENTREPRISE, OPCO } from "shared/constants"
+import { ADMIN, CFA, ENTREPRISE, OPCO } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateUri } from "shared/helpers/generateUri"
 import { z } from "zod"

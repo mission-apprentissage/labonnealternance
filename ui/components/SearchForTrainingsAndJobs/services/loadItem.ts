@@ -1,6 +1,6 @@
-import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
+import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
-import { assertUnreachable } from "shared/utils"
+import { assertUnreachable } from "shared/utils/index"
 
 import { IContextDisplay } from "@/context/DisplayContextProvider"
 import { IContextSearch } from "@/context/SearchResultContextProvider"
@@ -173,13 +173,13 @@ export const fetchJobItemDetails = async ({
   id: string
   type: LBA_ITEM_TYPE
   searchResultContext: IContextSearch
-}): Promise<ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob> => {
+}): Promise<ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemPartnerJobJson> => {
   if (
     searchResultContext?.selectedItem?.id === id &&
     oldItemTypeToNewItemType(searchResultContext.selectedItem.ideaType) === type &&
     searchResultContext.selectedItem.detailsLoaded
   ) {
-    return searchResultContext.selectedItem as ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob
+    return searchResultContext.selectedItem as ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemPartnerJobJson
   }
 
   switch (type) {

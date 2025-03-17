@@ -4,8 +4,8 @@ import dayjs from "dayjs"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useQueryClient } from "react-query"
-import { IJob, IRecruiterJson, JOB_STATUS } from "shared"
-import { AUTHTYPE, RECRUITER_STATUS } from "shared/constants"
+import { IJobJson, IRecruiterJson, JOB_STATUS } from "shared"
+import { AUTHTYPE, RECRUITER_STATUS } from "shared/constants/index"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import Table from "@/app/(espace-pro)/_components/Table"
@@ -78,7 +78,7 @@ export const OffresTabs = ({
   const [currentOffre, setCurrentOffre] = useState()
   const [copied, setCopied] = useState(false)
 
-  const jobs: (IJob & { candidatures: number; geo_coordinates: string })[] = recruiter?.jobs ?? []
+  const jobs: (IJobJson & { candidatures: number; geo_coordinates: string })[] = recruiter?.jobs ?? []
 
   if (jobs.length === 0) {
     return (

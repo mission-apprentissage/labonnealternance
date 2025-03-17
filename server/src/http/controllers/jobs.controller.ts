@@ -1,6 +1,6 @@
 import { badRequest, internal, notFound } from "@hapi/boom"
 import { assertUnreachable, IJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob, JOB_STATUS, zRoutes } from "shared"
-import { OPCOS_LABEL } from "shared/constants"
+import { OPCOS_LABEL } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { getSourceFromCookies } from "@/common/utils/httpUtils"

@@ -1,5 +1,5 @@
 import { Db } from "mongodb"
-import { ApplicationScanStatus } from "shared/models"
+import { ApplicationScanStatus } from "shared/models/index"
 
 import { logger } from "@/common/logger"
 

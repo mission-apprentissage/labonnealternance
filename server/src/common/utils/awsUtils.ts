@@ -6,7 +6,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { RequestPresigningArguments } from "@aws-sdk/types"
 import { internal } from "@hapi/boom"
 import { StreamingBlobPayloadInputTypes } from "@smithy/types"
-import { assertUnreachable } from "shared/utils"
+import { assertUnreachable } from "shared/utils/index"
 
 import config from "../../config"
 import { logger } from "../logger"

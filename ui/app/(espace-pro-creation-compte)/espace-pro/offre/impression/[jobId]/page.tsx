@@ -6,7 +6,7 @@ import { useParams } from "next/navigation"
 import { useEffect } from "react"
 import QRCode from "react-qr-code"
 import { useQuery } from "react-query"
-import { NIVEAUX_POUR_LBA } from "shared/constants"
+import { NIVEAUX_POUR_LBA } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { LoadingEmptySpace } from "@/components/espace_pro"

@@ -4,8 +4,8 @@ import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { useRouter, useParams } from "next/navigation"
 import { useQuery } from "react-query"
-import { IJob } from "shared"
-import { AUTHTYPE } from "shared/constants"
+import { IJobJson } from "shared"
+import { AUTHTYPE } from "shared/constants/index"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { OffresTabs } from "@/app/(espace-pro)/espace-pro/(connected)/_components/OffresTabs"
@@ -35,7 +35,7 @@ export default function ListeOffres({ hideModify = false, showStats = false }: {
   }
 
   const { establishment_raison_sociale, establishment_siret, _id: dataId } = data
-  const jobs: (IJob & { candidatures: number })[] = data.jobs ?? []
+  const jobs: (IJobJson & { candidatures: number })[] = data.jobs ?? []
 
   const entrepriseTitle = establishment_raison_sociale ?? establishment_siret
   const getOffreEditionUrl = (offerId: string) => {

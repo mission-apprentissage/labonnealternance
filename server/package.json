@@ -16,7 +16,7 @@
     "dev": "tsup-node --env.TSUP_WATCH true",
     "build": "tsup-node --env.NODE_ENV production",
     "seed:reference": "dotenv ts-node-esm src/jobs/seed/candidat.seed.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc -b"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.651.1",

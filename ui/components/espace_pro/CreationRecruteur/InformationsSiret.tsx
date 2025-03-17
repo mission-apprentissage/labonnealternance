@@ -2,7 +2,7 @@
 
 import { Box, Button, Flex, Heading, Link, ListItem, Stack, Text, UnorderedList } from "@chakra-ui/react"
 import { useRouter } from "next/navigation"
-import { CFA, ENTREPRISE } from "shared/constants"
+import { CFA, ENTREPRISE } from "shared/constants/index"
 
 import { ExternalLinkLine, InfoCircle } from "../../../theme/components/icons"
 

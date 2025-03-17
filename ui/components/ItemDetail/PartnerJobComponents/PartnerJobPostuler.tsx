@@ -1,14 +1,14 @@
 "use client"
 import { Box } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { ILbaItemPartnerJob } from "shared"
+import { ILbaItemPartnerJobJson } from "shared"
 
 import { SendPlausibleEvent } from "@/utils/plausible"
 
 import { CandidatureLba } from "../CandidatureLba/CandidatureLba"
 import CandidatureParTelephone from "../CandidatureParTelephone"
 
-export const PartnerJobPostuler = ({ job, isCollapsedHeader }: { job: ILbaItemPartnerJob; isCollapsedHeader: boolean }) => {
+export const PartnerJobPostuler = ({ job, isCollapsedHeader }: { job: ILbaItemPartnerJobJson; isCollapsedHeader: boolean }) => {
   // KBA fix enum shared/models/lbaItem.model.ts
   if (["Pourvue", "Annulée"].includes(job.job.status)) return null
   if (job.contact?.email) {
@@ -23,7 +23,9 @@ export const PartnerJobPostuler = ({ job, isCollapsedHeader }: { job: ILbaItemPa
     return (
       <Box my={isCollapsedHeader ? 2 : 4}>
         <Button
-          data-tracking-id="postuler-offre-job-partner"
+          nativeButtonProps={{
+            "data-tracking-id": "postuler-offre-job-partner",
+          }}
           linkProps={{
             href: job.contact.url as string,
           }}

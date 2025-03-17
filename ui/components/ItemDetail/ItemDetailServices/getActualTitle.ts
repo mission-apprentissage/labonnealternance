@@ -1,4 +1,4 @@
-import { assertUnreachable } from "@/../shared"
+import { assertUnreachable } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 export default function getActualTitle({ selectedItem, kind }) {

@@ -1,7 +1,7 @@
 "use client"
 import { Box, Flex, Image, Text, useDisclosure } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
+import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { useLocalStorage } from "@/app/hooks/useLocalStorage"
@@ -26,7 +26,7 @@ export const NoCandidatureLba = () => {
   )
 }
 
-export function CandidatureLba({ item }: { item: ILbaItemLbaJob | ILbaItemLbaCompany | ILbaItemPartnerJob }) {
+export function CandidatureLba({ item }: { item: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson }) {
   const { storedValue } = useLocalStorage(`application-${item.ideaType}-${item.id}`)
   const modalControls = useDisclosure()
   const submitControls = useSubmitCandidature(item)

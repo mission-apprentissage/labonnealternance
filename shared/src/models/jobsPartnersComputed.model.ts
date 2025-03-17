@@ -1,9 +1,9 @@
 import { z } from "zod"
-
-import { IModelDescriptor, zObjectId } from "shared/models/common.js"
+import { zObjectId } from "zod-mongodb-schema"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 
+import { IModelDescriptor } from "./common.js"
 import { ZJobsPartnersOfferPrivate } from "./jobsPartners.model.js"
 
 export enum COMPUTED_ERROR_SOURCE {

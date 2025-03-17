@@ -1,4 +1,4 @@
-import { JOB_STATUS_ENGLISH } from "shared/models"
+import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it } from "vitest"
 

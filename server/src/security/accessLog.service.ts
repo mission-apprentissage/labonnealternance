@@ -1,6 +1,6 @@
 import { FastifyRequest } from "fastify"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
-import { assertUnreachable } from "shared/utils"
+import { assertUnreachable } from "shared/utils/index"
 
 import { IAccessLog } from "@/security/accessLog.types"
 

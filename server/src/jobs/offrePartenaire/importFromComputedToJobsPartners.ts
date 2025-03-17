@@ -3,8 +3,8 @@ import { pipeline } from "stream/promises"
 
 import { internal } from "@hapi/boom"
 import { Filter } from "mongodb"
-import { TRAINING_CONTRACT_TYPE } from "shared/constants"
-import { JOB_STATUS_ENGLISH } from "shared/models"
+import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
+import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 

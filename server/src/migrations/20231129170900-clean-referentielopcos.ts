@@ -1,4 +1,4 @@
-import { ZReferentielOpco } from "shared/models"
+import { ZReferentielOpco } from "shared/models/index"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"

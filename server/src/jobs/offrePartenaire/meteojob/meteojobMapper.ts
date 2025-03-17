@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import { TRAINING_CONTRACT_TYPE } from "shared/constants"
+import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
 import dayjs from "shared/helpers/dayjs"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"

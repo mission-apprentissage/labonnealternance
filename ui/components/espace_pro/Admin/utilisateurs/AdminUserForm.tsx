@@ -1,7 +1,7 @@
 import { Box, Button, FormControl, FormLabel, HStack, Input, VStack, useToast } from "@chakra-ui/react"
 import { FormikProvider, useFormik } from "formik"
 import { AccessStatus, IRoleManagementEvent, IRoleManagementJson, getLastStatusEvent, parseEnum } from "shared"
-import { OPCOS_LABEL } from "shared/constants"
+import { OPCOS_LABEL } from "shared/constants/index"
 import { AUTHTYPE } from "shared/constants/recruteur"
 import { INewSuperUser, IUserWithAccountJson, ZNewSuperUser, ZUserWithAccountFields } from "shared/models/userWithAccount.model"
 import { toFormikValidationSchema } from "zod-formik-adapter"

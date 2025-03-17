@@ -3,7 +3,6 @@ import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
-import { useAuth } from "@/context/UserContext"
 import { apiPost } from "@/utils/api.utils"
 
 import { AuthentificationLayout, LoadingEmptySpace } from "../../../../../components/espace_pro"
@@ -41,7 +40,10 @@ export default function ConfirmationValidationEmail() {
   const router = useRouter()
   const { token } = router.query as { token: string }
 
-  const { setUser } = useAuth()
+  // const { setUser } = useAuth()
+  const setUser = (_u: any) => {
+    throw new Error("Function not implemented.")
+  }
 
   useEffect(() => {
     const fetchData = async () => {
