@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
-import { ILbaItemJobsGlobal, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
+import { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import JobOfferRendererClient from "@/app/(candidat)/emploi/[type]/[id]/JobDetailRendererClient"
@@ -9,19 +9,19 @@ export default async function JobOfferPage({ params }: { params: Promise<{ type:
   const { type, id } = await params
   if (!type || !id) redirect("/404")
 
-  // let job: ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob | null
+  // let job: ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemPartnerJobJson | null
 
   // switch (type) {
   //   case LBA_ITEM_TYPE.RECRUTEURS_LBA:
-  //     job = (await apiGet("/_private/jobs/:source/:id", { params: { source: type, id } })) as Jsonify<ILbaItemLbaCompany>
+  //     job = (await apiGet("/_private/jobs/:source/:id", { params: { source: type, id } })) as Jsonify<ILbaItemLbaCompanyJson>
   //     break
 
   //   case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
-  //     job = (await apiGet("/_private/jobs/:source/:id", { params: { source: type, id } })) as ILbaItemLbaJob
+  //     job = (await apiGet("/_private/jobs/:source/:id", { params: { source: type, id } })) as ILbaItemLbaJobJson
   //     break
 
   //   case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES:
-  //     job = (await apiGet("/_private/jobs/:source/:id", { params: { source: type, id } })) as ILbaItemPartnerJob
+  //     job = (await apiGet("/_private/jobs/:source/:id", { params: { source: type, id } })) as ILbaItemPartnerJobJson
   //     break
 
   //   default:
@@ -29,16 +29,15 @@ export default async function JobOfferPage({ params }: { params: Promise<{ type:
   // }
 
   const typeToJobMap = {
-    [LBA_ITEM_TYPE.RECRUTEURS_LBA]: "ILbaItemLbaCompany",
-    [LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA]: "ILbaItemLbaJob",
-    [LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES]: "ILbaItemPartnerJob",
+    [LBA_ITEM_TYPE.RECRUTEURS_LBA]: "ILbaItemLbaCompanyJson",
+    [LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA]: "ILbaItemLbaJobJson",
+    [LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES]: "ILbaItemPartnerJobJson",
   } as const
 
   const job = type in typeToJobMap ? ((await apiGet("/_private/jobs/:source/:id", { params: { source: type, id } })) as ILbaItemJobsGlobal) : null
 
   if (!job) redirect("/404")
 
-  console.log(job)
   // @ts-ignore TODO
-  return <JobOfferRendererClient selectedItem={job as ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob} />
+  return <JobOfferRendererClient selectedItem={job as ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemPartnerJobJson} />
 }

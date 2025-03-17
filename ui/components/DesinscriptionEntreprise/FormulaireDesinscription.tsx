@@ -1,4 +1,3 @@
-import { UNSUBSCRIBE_EMAIL_ERRORS } from "@/../shared/constants/recruteur"
 import {
   Box,
   Button,
@@ -25,6 +24,7 @@ import {
 } from "@chakra-ui/react"
 import { Field, Form, Formik } from "formik"
 import { useState } from "react"
+import { UNSUBSCRIBE_EMAIL_ERRORS } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
 import postUnsubscribe from "../../services/postUnsubscribe"

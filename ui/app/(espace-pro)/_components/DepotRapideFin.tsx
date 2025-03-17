@@ -3,7 +3,7 @@
 import { Box, Button, Circle, Heading, Image, Stack, Text, useToast } from "@chakra-ui/react"
 import { useState } from "react"
 import { useQuery } from "react-query"
-import { ETAT_UTILISATEUR } from "shared/constants"
+import { ETAT_UTILISATEUR } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { zObjectId } from "shared/models/common"
 import { z } from "zod"

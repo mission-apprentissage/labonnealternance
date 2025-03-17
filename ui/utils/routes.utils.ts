@@ -1,8 +1,10 @@
 import type { Metadata, MetadataRoute } from "next"
-import { removeUndefinedFields, toKebabCase } from "shared"
-import { OPCO } from "shared/constants"
+import { ReadonlyURLSearchParams } from "next/navigation"
+import { assertUnreachable, removeUndefinedFields, toKebabCase } from "shared"
+import { ADMIN, CFA, ENTREPRISE, OPCO } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateUri } from "shared/helpers/generateUri"
+import { z } from "zod"
 
 import { publicConfig } from "@/config.public"
 
@@ -24,11 +26,96 @@ export interface IPages {
   notion: Record<string, INotionPage>
 }
 
-export type IRecherchePageParams = {
-  romes: string
-  geo: null | { address: string | null; latitude: number; longitude: number; radius: number }
-  diploma: string | null
-  job_name: string | null
+export const zRecherchePageParams = z.object({
+  romes: z.array(z.string()),
+  geo: z
+    .object({
+      address: z.string().nullable(),
+      latitude: z.number(),
+      longitude: z.number(),
+      radius: z.number(),
+    })
+    .nullable(),
+  diploma: z.string().nullable(),
+  job_name: z.string().nullable(),
+  job_type: z.string().nullable(),
+  displayMap: z.boolean().optional(),
+  displayEntreprises: z.boolean().optional(),
+  displayFormations: z.boolean().optional(),
+  displayPartenariats: z.boolean().optional(),
+})
+
+export type IRecherchePageParams = z.output<typeof zRecherchePageParams>
+
+function buildRecherchePageParams(params: IRecherchePageParams): string {
+  const query = new URLSearchParams()
+
+  if (params.romes.length > 0) {
+    query.set("romes", params.romes.join(","))
+  }
+
+  if (params.geo) {
+    query.set("lat", params.geo.latitude.toString())
+    query.set("lon", params.geo.longitude.toString())
+    query.set("radius", params.geo.radius.toString())
+
+    if (params.geo.address) {
+      query.set("address", params.geo.address)
+    }
+  }
+
+  if (params.diploma) {
+    query.set("diploma", params.diploma)
+  }
+  if (params.job_name) {
+    query.set("job_name", params.job_name)
+  }
+  if (params.displayMap === true) {
+    query.set("displayMap", "true")
+  }
+  if (params.displayEntreprises === false) {
+    query.set("displayEntreprises", "false")
+  }
+  if (params.displayFormations === false) {
+    query.set("displayFormations", "false")
+  }
+  if (params.displayPartenariats === false) {
+    query.set("displayPartenariats", "false")
+  }
+
+  return query.toString()
+}
+
+export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSearchParams | null): Required<IRecherchePageParams> | null {
+  if (search === null) {
+    return null
+  }
+
+  const romes = search.get("romes")?.split(",") ?? []
+
+  const rawLat = search.get("lat")
+  const rawLon = search.get("lon")
+
+  const geo =
+    rawLat && rawLon
+      ? {
+          address: search.get("address") ?? null,
+          latitude: parseFloat(rawLat),
+          longitude: parseFloat(rawLon),
+          radius: parseInt(search.get("radius") ?? "30"),
+        }
+      : null
+
+  const diploma = search.get("diploma") || null
+  const job_name = search.get("job_name") || null
+  const job_type = search.get("job_type") || null
+
+  const displayMap = search.get("displayMap") === "true"
+  const displayEntreprises = search.get("displayEntreprises") !== "false"
+  const displayFormations = search.get("displayFormations") !== "false"
+  const displayPartenariats = search.get("displayPartenariats") !== "false"
+
+  return { romes, geo, diploma, job_name, job_type, displayMap, displayEntreprises, displayFormations, displayPartenariats }
 }
 
 export const PAGES = {
@@ -202,6 +289,10 @@ export const PAGES = {
       getPath: () => `/espace-pro/cfa/creation-entreprise` as string,
       title: "Création d'entreprise",
     },
+    backAdminHome: {
+      getPath: () => `/espace-pro/administration/users` as string,
+      title: "Accueil administration",
+    },
   },
   dynamic: {
     // example
@@ -218,7 +309,7 @@ export const PAGES = {
       title: "Administration des offres",
     }),
     compte: (): IPage => ({
-      getPath: () => "/compte",
+      getPath: () => "/espace-pro/compte",
       index: false,
       getMetadata: () => ({ title: "Informations de contact" }),
       title: "Informations de contact",
@@ -265,14 +356,32 @@ export const PAGES = {
       getMetadata: () => ({ title: "Création d'une offre" }),
       title: "Création d'une offre",
     }),
-    successEditionOffre: ({ userType, establishment_id, user_id }: { userType: "OPCO" | "ENTREPRISE" | "CFA" | "ADMIN"; establishment_id?: string; user_id?: string }): IPage => ({
-      getPath: () => {
-        return userType === OPCO ? `/espace-pro/opco/entreprise/${user_id}/entreprise/${establishment_id}` : `/espace-pro/entreprise/${establishment_id}`
-      },
-      title: "Success édition offre",
-      index: false,
-      getMetadata: () => ({}),
-    }),
+    successEditionOffre: ({ userType, establishment_id, user_id }: { userType: "OPCO" | "ENTREPRISE" | "CFA" | "ADMIN"; establishment_id?: string; user_id?: string }): IPage => {
+      let path = ""
+      switch (userType) {
+        case OPCO:
+          path = `/espace-pro/opco/entreprise/${user_id}/entreprise/${establishment_id}`
+          break
+        case CFA:
+          path = `/espace-pro/cfa`
+          break
+        case ADMIN:
+          path = `/espace-pro/administration/users/${user_id}`
+          break
+        case ENTREPRISE:
+          path = `/espace-pro/entreprise/${establishment_id}`
+          break
+        default:
+          assertUnreachable(`wrong user type ${userType}` as never)
+      }
+
+      return {
+        getPath: () => path,
+        title: "Success édition offre",
+        index: false,
+        getMetadata: () => ({}),
+      }
+    },
     miseEnRelationCreationOffre: ({ isWidget, queryParameters }: { isWidget: boolean; queryParameters: string }): IPage => {
       const path = `${isWidget ? "/espace-pro/widget/entreprise/mise-en-relation" : "/espace-pro/creation/mise-en-relation"}${queryParameters}`
 
@@ -338,38 +447,47 @@ export const PAGES = {
       getPath: () => `/espace-pro/offre/impression/${jobId}`,
       title: "Imprimer mon offre",
     }),
-    recherche: (params: IRecherchePageParams): IPage => {
-      const query = new URLSearchParams()
-      query.set("romes", params.romes)
-      if (params.geo) {
-        query.set("lat", params.geo.latitude.toString())
-        query.set("lon", params.geo.longitude.toString())
-        query.set("radius", params.geo.radius.toString())
+    recherche: (params: IRecherchePageParams | null): IPage => {
+      const search = params === null ? "" : buildRecherchePageParams(params)
 
-        if (params.geo.address) {
-          query.set("address", params.geo.address)
+      let searchTitleContext = ""
+      if (params?.job_name) {
+        searchTitleContext += ` - ${params.job_name}`
+        if (params?.geo?.address) {
+          searchTitleContext += ` à ${params.geo.address}`
+        } else if (params?.geo == null) {
+          searchTitleContext += ` sur la France entière `
         }
       }
 
-      if (params.diploma) {
-        query.set("diploma", params.diploma)
-      }
-      if (params.job_name) {
-        query.set("job_name", params.job_name)
-      }
-      query.set("display", "list")
-
       return {
-        getPath: () => `/recherche?${query.toString()}` as string,
+        getPath: () => `/recherche?${search}` as string,
         index: false,
-        getMetadata: () => ({ title: "" }),
-        title: "Recherche",
+        getMetadata: () => ({
+          title: `Offres en alternance${searchTitleContext} | La bonne alternance`,
+          description: `Recherche - Offres en alternance${searchTitleContext} sur le site de La bonne alternance`,
+        }),
+        title: "Offres en alternance",
       }
     },
-    jobDetail: ({ type, jobId, jobTitle = "offre" }: { type: LBA_ITEM_TYPE; jobId: string; jobTitle?: string }): IPage => ({
-      getPath: () => `/emploi/${type}/${encodeURIComponent(jobId)}/${toKebabCase(jobTitle)}` as string,
-      title: jobTitle,
-    }),
+    jobDetail: (params: { type: Exclude<LBA_ITEM_TYPE, LBA_ITEM_TYPE.FORMATION>; jobId: string } & Partial<IRecherchePageParams>): IPage => {
+      const jobTitle = params.job_name ?? "Offre"
+      const search = buildRecherchePageParams(params)
+
+      return {
+        getPath: () => `/emploi/${params.type}/${encodeURIComponent(params.jobId)}/${toKebabCase(jobTitle)}?${search}` as string,
+        title: jobTitle,
+      }
+    },
+    formationDetail: (params: { jobId: string } & Partial<IRecherchePageParams>): IPage => {
+      const jobTitle = params.job_name ?? "Formation"
+      const search = buildRecherchePageParams(params)
+
+      return {
+        getPath: () => `/formation/${LBA_ITEM_TYPE.FORMATION}/${encodeURIComponent(params.jobId)}/${toKebabCase(jobTitle)}?${search}` as string,
+        title: jobTitle,
+      }
+    },
     backCfaEntrepriseCreationDetail: (siret: string): IPage => ({
       getPath: () => `/espace-pro/cfa/creation-entreprise/${siret}` as string,
       title: siret,
@@ -381,6 +499,22 @@ export const PAGES = {
     backCfaEntrepriseCreationOffre: (establishment_id: string): IPage => ({
       getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}/creation-offre` as string,
       title: "Création d'une offre",
+    }),
+    backAdminRecruteurOffres: ({ user_id, user_label }: { user_id: string; user_label?: string }): IPage => ({
+      getPath: () => `/espace-pro/administration/users/${user_id}` as string,
+      title: user_label ?? "Entreprise",
+    }),
+    backEditionOffre: ({ establishment_id, job_id }: { establishment_id: string; job_id: string }): IPage => ({
+      getPath: () => `/espace-pro/entreprise/${establishment_id}/offre/${job_id}` as string,
+      title: job_id ? "Edition d'une offre" : "Création d'une offre",
+    }),
+    backCreationOffre: (establishment_id: string): IPage => ({
+      getPath: () => `/espace-pro/entreprise/${establishment_id}/offre/creation` as string,
+      title: "Nouvelle offre",
+    }),
+    backHomeEntreprise: (establishment_id: string): IPage => ({
+      getPath: () => `/espace-pro/entreprise/${establishment_id}` as string,
+      title: "Entreprise",
     }),
   },
   notion: {},

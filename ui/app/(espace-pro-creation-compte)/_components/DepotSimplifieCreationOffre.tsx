@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { IJob } from "shared"
+import { IJobJson } from "shared"
 
 import { FormulaireEditionOffre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffre"
 import { Bandeau } from "@/components/espace_pro/Bandeau"
@@ -16,7 +16,7 @@ export function DepotSimplifieCreationOffre() {
 
   const submit = async (values) => {
     const { recruiter: formulaire, token: jobToken } = await createOffreByToken(establishment_id, values, token)
-    const job = formulaire.jobs.at(-1) as IJob
+    const job = formulaire.jobs.at(-1) as IJobJson
     router.replace(
       PAGES.dynamic
         .espaceProCreationFin({

@@ -1,4 +1,4 @@
-import { ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
+import { ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 
 import { JobPostingSchema } from "../JobPostingSchema"
 
@@ -11,7 +11,7 @@ export const getJobPostingSchema = ({
   title: string
   description: string
   id: string
-  job: ILbaItemPartnerJob | ILbaItemLbaJob
+  job: ILbaItemPartnerJobJson | ILbaItemLbaJobJson
 }): JobPostingSchema => {
   return {
     "@context": "https://schema.org/",

@@ -1,5 +1,5 @@
 import { assertUnreachable } from "shared"
-import { AUTHTYPE } from "shared/constants"
+import { AUTHTYPE } from "shared/constants/index"
 
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 
@@ -12,7 +12,7 @@ export function useUserNavigationContext() {
     case AUTHTYPE.CFA:
       return `/espace-pro/cfa`
     case AUTHTYPE.ADMIN:
-      return `/espace-pro/admin`
+      return `/espace-pro/administration`
     case AUTHTYPE.OPCO:
       return `/espace-pro/opco`
     default:

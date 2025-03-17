@@ -1,3 +1,4 @@
+import { internal, badRequest } from "@hapi/boom"
 import { zRoutes } from "shared"
 
 import { trackApiCall } from "../../common/utils/sendTrackingEvent"
@@ -54,29 +55,18 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { referer } = req.headers
-      const { romes, romeDomain, caller, latitude, longitude, radius, diploma, options } = req.query
-      const result = await getFormationsQuery({ romes, longitude, latitude, radius, diploma, romeDomain, caller, options, referer, isMinimalData: true })
+      const { romes, latitude, longitude, radius, diploma } = req.query
+      const result = await getFormationsQuery({ romes, longitude, latitude, radius, diploma, referer, isMinimalData: true })
 
       if ("error" in result) {
         if (result.error === "wrong_parameters") {
-          res.status(400)
-        } else {
-          res.status(500)
+          throw badRequest()
         }
 
-        return res.send(result)
+        throw internal("Failed to fetch formations min", { error: result.error })
       }
 
-      if (caller && "results" in result) {
-        trackApiCall({
-          caller: caller,
-          api_path: "formationV1min",
-          training_count: result.results?.length,
-          result_count: result.results?.length,
-          response: "OK",
-        })
-      }
-      return res.send(result)
+      return res.send(result.results)
     }
   )
 

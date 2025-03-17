@@ -1,7 +1,7 @@
-import { assertUnreachable } from "@/../shared"
 import { Box, Flex, Text } from "@chakra-ui/react"
 import { useContext, useState } from "react"
 import { useQuery } from "react-query"
+import { assertUnreachable } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import fetchFtJobDetails from "@/services/fetchFtJobDetails"

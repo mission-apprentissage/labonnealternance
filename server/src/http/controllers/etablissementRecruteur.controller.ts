@@ -1,7 +1,7 @@
 import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
 import { assertUnreachable, IEntreprise, toPublicUser, TrafficType, zRoutes } from "shared"
-import { CFA, ENTREPRISE } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { CFA, ENTREPRISE } from "shared/constants/index"
 import { OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { getSourceFromCookies } from "@/common/utils/httpUtils"

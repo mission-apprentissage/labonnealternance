@@ -1,5 +1,5 @@
-import { ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob, ILbaItemTraining, ILbaItemTraining2 } from "@/../shared"
 import { createContext, useReducer } from "react"
+import { ILbaItemFormationJson, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson, ILbaItemTraining, ILbaItemTraining2 } from "shared"
 
 const initialState = {
   trainings: [],
@@ -75,20 +75,25 @@ const reducer = (state, action) => {
 export type IContextSearchHistory = {
   index: number
   trainings?: ILbaItemTraining2[]
-  jobs?: { peJobs: ILbaItemFtJob[] | null; lbaCompanies: ILbaItemLbaCompany[] | null; matchas: ILbaItemLbaJob[] | null; partnerJobs: ILbaItemPartnerJob[] | null }
+  jobs?: { peJobs: ILbaItemFtJobJson[] | null; lbaCompanies: ILbaItemLbaCompanyJson[] | null; matchas: ILbaItemLbaJobJson[] | null; partnerJobs: ILbaItemPartnerJobJson[] | null }
   formValues?: any
 }
 
 export type IContextSearch = {
   trainings: any[]
   setTrainings: (b: any[]) => void
-  jobs: { peJobs: ILbaItemFtJob[] | null; lbaCompanies: ILbaItemLbaCompany[] | null; matchas: ILbaItemLbaJob[] | null; partnerJobs: ILbaItemPartnerJob[] }
-  setJobs: (b: { peJobs: ILbaItemFtJob[] | null; lbaCompanies: ILbaItemLbaCompany[] | null; matchas: ILbaItemLbaJob[] | null; partnerJobs: ILbaItemPartnerJob[] | null }) => void
+  jobs: { peJobs: ILbaItemFtJobJson[] | null; lbaCompanies: ILbaItemLbaCompanyJson[] | null; matchas: ILbaItemLbaJobJson[] | null; partnerJobs: ILbaItemPartnerJobJson[] }
+  setJobs: (b: {
+    peJobs: ILbaItemFtJobJson[] | null
+    lbaCompanies: ILbaItemLbaCompanyJson[] | null
+    matchas: ILbaItemLbaJobJson[] | null
+    partnerJobs: ILbaItemPartnerJobJson[] | null
+  }) => void
   setInternalJobs: (b: any[]) => void
   setPartnerJobs: (b: any[]) => void
-  itemToScrollTo: ILbaItemFormation | ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob | null
-  setItemToScrollTo: (b: ILbaItemFormation | ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob | null) => void
-  selectedItem: ILbaItemFormation | ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob
+  itemToScrollTo: ILbaItemFormationJson | ILbaItemFtJobJson | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemPartnerJobJson | null
+  setItemToScrollTo: (b: ILbaItemFormationJson | ILbaItemFtJobJson | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemPartnerJobJson | null) => void
+  selectedItem: ILbaItemFormationJson | ILbaItemFtJobJson | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemPartnerJobJson
   setSelectedItem: (b: object) => void
   extendedSearch: boolean
   setExtendedSearch: (b: boolean) => void
@@ -99,7 +104,7 @@ export type IContextSearch = {
   setTrainingsAndSelectedItem: (trainings: ILbaItemTraining[], selectedItem: ILbaItemTraining) => void
   setJobsAndSelectedItem: (
     jobs: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null; partnerJobs: [] | null },
-    selectedItem: ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob
+    selectedItem: ILbaItemFtJobJson | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemPartnerJobJson
   ) => void
   searchHistory: IContextSearchHistory[]
   setSearchHistory: (searchHistory: IContextSearchHistory[]) => void

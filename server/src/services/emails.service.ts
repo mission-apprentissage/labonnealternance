@@ -1,4 +1,4 @@
-import { IApplication } from "shared/models"
+import { IApplication } from "shared/models/index"
 
 import {
   addEmailToBlacklist,

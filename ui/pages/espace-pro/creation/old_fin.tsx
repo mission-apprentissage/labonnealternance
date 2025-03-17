@@ -3,7 +3,7 @@ import { Box, Button, Circle, Heading, Image, Link, Stack, Text, useToast } from
 import { useRouter } from "next/router"
 import { useState } from "react"
 import { useQuery, useQueryClient } from "react-query"
-import { ETAT_UTILISATEUR } from "shared/constants"
+import { ETAT_UTILISATEUR } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import { zObjectId } from "shared/models/common"

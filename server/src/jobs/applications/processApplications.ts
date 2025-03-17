@@ -1,5 +1,5 @@
 import { Filter } from "mongodb"
-import { ApplicationScanStatus, IApplication } from "shared/models"
+import { ApplicationScanStatus, IApplication } from "shared/models/index"
 
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"

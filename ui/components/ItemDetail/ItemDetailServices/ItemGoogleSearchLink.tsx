@@ -1,11 +1,11 @@
-import { ILbaItemFormation2, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "@/../shared"
 import { Flex, Image, Text } from "@chakra-ui/react"
+import { ILbaItemFormation2Json, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson } from "shared"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 import { getCompanyGoogleSearchLink } from "./getCompanyGoogleSearchLink"
 
-export default function ItemGoogleSearchLink({ item }: { item: ILbaItemFormation2 | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemFtJob }) {
+export default function ItemGoogleSearchLink({ item }: { item: ILbaItemFormation2Json | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemFtJobJson }) {
   return (
     <Flex alignItems="center" mt={4}>
       <Image mr={2} alt="" aria-hidden={true} src="/images/icons/magnifyingglass.svg" width="24px" height="24px" />
