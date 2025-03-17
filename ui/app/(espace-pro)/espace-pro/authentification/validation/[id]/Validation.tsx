@@ -6,6 +6,7 @@ import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { apiPost } from "@/utils/api.utils"
+import { PAGES } from "@/utils/routes.utils"
 
 const EmailEnValidationManuelle = () => (
   <Box pt={["6", "12"]} px={["6", "8"]}>
@@ -40,11 +41,6 @@ export default function ConfirmationValidationEmail() {
   const router = useRouter()
   const token = useSearchParams().get("token")
 
-  // const { setUser } = useAuth()
-  const setUser = (_u: any) => {
-    throw new Error("Function not implemented.")
-  }
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading.on()
@@ -56,10 +52,9 @@ export default function ConfirmationValidationEmail() {
         })
         if (user.status_current === ETAT_UTILISATEUR.ATTENTE) {
           setValidationState("Attente")
-          setTimeout(() => router.push("/"), 10000)
+          setTimeout(() => router.push(PAGES.static.accesRecruteur.getPath()), 10000)
         } else {
-          setUser(user)
-          router.push("/espace-pro/authentification")
+          router.push(PAGES.static.authentification.getPath())
         }
       }
     }
