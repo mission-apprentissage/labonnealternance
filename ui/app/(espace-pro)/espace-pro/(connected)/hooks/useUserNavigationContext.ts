@@ -8,7 +8,7 @@ export function useUserNavigationContext() {
 
   switch (user.type) {
     case AUTHTYPE.ENTREPRISE:
-      return `/espace-pro/entreprise/${user.establishment_id}`
+      return `/espace-pro/entreprise`
     case AUTHTYPE.CFA:
       return `/espace-pro/cfa`
     case AUTHTYPE.ADMIN:

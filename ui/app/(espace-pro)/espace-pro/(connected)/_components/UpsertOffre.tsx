@@ -26,9 +26,9 @@ export default function UpsertOffre({ establishment_id, job_id, user_id, onSucce
       case "CFA":
         return [PAGES.static.backCfaHome, PAGES.dynamic.backCfaPageEntreprise(establishment_id), PAGES.dynamic.backCfaEntrepriseCreationOffre(establishment_id)]
       case "ENTREPRISE":
-        return [PAGES.dynamic.backHomeEntreprise(establishment_id), PAGES.dynamic.backEditionOffre({ establishment_id, job_id })]
+        return [PAGES.dynamic.backHomeEntreprise(), PAGES.dynamic.backEditionOffre({ job_id })]
       case "ADMIN":
-        return [PAGES.static.backAdminHome, PAGES.dynamic.backAdminRecruteurOffres({ user_id }), PAGES.dynamic.backEditionOffre({ establishment_id, job_id })]
+        return [PAGES.static.backAdminHome, PAGES.dynamic.backAdminRecruteurOffres({ user_id }), PAGES.dynamic.backEditionOffre({ job_id })]
       default:
         assertUnreachable("account type not allowed ${user.account_type}" as never)
     }

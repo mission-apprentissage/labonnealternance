@@ -1,4 +1,4 @@
-import CreationOffre from "@/app/(espace-pro)/espace-pro/(connected)/entreprise/[establishment_id]/offre/creation/page"
+import CreationOffre from "@/app/(espace-pro)/espace-pro/(connected)/entreprise/creation-offre/page"
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
 
 import { Layout } from "../../../../../../../../components/espace_pro"

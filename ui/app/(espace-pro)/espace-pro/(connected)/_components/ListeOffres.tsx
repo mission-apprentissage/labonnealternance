@@ -1,8 +1,8 @@
 "use client"
-import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Container, Flex, Heading, Image, Stack, Text } from "@chakra-ui/react"
+import { Box, Button, Container, Flex, Heading, Image, Stack, Text } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
-import { useRouter, useParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useQuery } from "react-query"
 import { IJob } from "shared"
 import { AUTHTYPE } from "shared/constants"
@@ -10,17 +10,16 @@ import { AUTHTYPE } from "shared/constants"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { OffresTabs } from "@/app/(espace-pro)/espace-pro/(connected)/_components/OffresTabs"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
-import { ArrowDropRightLine, Building, Plus } from "@/theme/components/icons"
+import { Building, Plus } from "@/theme/components/icons"
 import { getFormulaire } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
-export default function ListeOffres({ hideModify = false, showStats = false }: { hideModify?: boolean; showStats?: boolean }) {
+export default function ListeOffres({ hideModify = false, showStats = false, establishment_id }: { hideModify?: boolean; showStats?: boolean; establishment_id: string }) {
   const router = useRouter()
   const { user } = useConnectedSessionClient()
 
   dayjs.extend(relativeTime)
 
-  const { establishment_id } = useParams() as { establishment_id?: string }
   const { data, isLoading, error } = useQuery("offre-liste", {
     enabled: !!establishment_id,
     queryFn: () => getFormulaire(establishment_id),
@@ -34,7 +33,7 @@ export default function ListeOffres({ hideModify = false, showStats = false }: {
     throw error
   }
 
-  const { establishment_raison_sociale, establishment_siret, _id: dataId } = data
+  const { establishment_raison_sociale, establishment_siret } = data
   const jobs: (IJob & { candidatures: number })[] = data.jobs ?? []
 
   const entrepriseTitle = establishment_raison_sociale ?? establishment_siret
@@ -50,7 +49,7 @@ export default function ListeOffres({ hideModify = false, showStats = false }: {
   const ActionButtons = (
     <Box>
       {shouldDisplayModifyButton && user.type !== AUTHTYPE.OPCO && (
-        <Button mr={5} variant="secondary" leftIcon={<Building />} onClick={() => router.push(PAGES.dynamic.modificationEntreprise(establishment_id).getPath())}>
+        <Button mr={5} variant="secondary" leftIcon={<Building />} onClick={() => router.push(PAGES.dynamic.modificationEntreprise().getPath())}>
           {user.type === AUTHTYPE.ENTREPRISE ? "Mes informations" : "Modifier l'entreprise"}
         </Button>
       )}
@@ -76,34 +75,6 @@ export default function ListeOffres({ hideModify = false, showStats = false }: {
 
   return (
     <Container maxW="container.xl" my={5}>
-      <Box mb={5}>
-        <Breadcrumb separator={<ArrowDropRightLine color="grey.600" />} textStyle="xs">
-          {user.type === AUTHTYPE.OPCO && (
-            <Breadcrumb separator={<ArrowDropRightLine color="grey.600" />} textStyle="xs">
-              <BreadcrumbItem>
-                <BreadcrumbLink textDecoration="underline" onClick={() => router.push(PAGES.static.administrationOpco.getPath())} textStyle="xs">
-                  Entreprises
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbItem>
-                <BreadcrumbLink textStyle="xs">{establishment_raison_sociale}</BreadcrumbLink>
-              </BreadcrumbItem>
-            </Breadcrumb>
-          )}
-          {user && user.type !== AUTHTYPE.ENTREPRISE && user.type !== AUTHTYPE.OPCO && (
-            <Breadcrumb separator={<ArrowDropRightLine color="grey.600" />} textStyle="xs">
-              <BreadcrumbItem>
-                <BreadcrumbLink textDecoration="underline" onClick={() => router.back()} textStyle="xs">
-                  Administration des offres
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbItem>
-                {dataId ? <BreadcrumbLink textStyle="xs">{establishment_raison_sociale}</BreadcrumbLink> : <BreadcrumbLink textStyle="xs">Nouvelle entreprise</BreadcrumbLink>}
-              </BreadcrumbItem>
-            </Breadcrumb>
-          )}
-        </Breadcrumb>
-      </Box>
       <Flex justify="space-between" align="center">
         <Text fontSize="2rem" fontWeight={700}>
           {establishment_raison_sociale ?? `SIRET ${establishment_siret}`}
@@ -121,8 +92,7 @@ export default function ListeOffres({ hideModify = false, showStats = false }: {
 const EmptySpace = () => (
   <Stack direction={["column", "column", "column", "row"]} mt={12} pt={12} py={8} border="1px solid" borderColor="grey.400" spacing="32px">
     <Flex justify={["center", "center", "center", "flex-end"]} align={["center", "center", "center", "flex-start"]} w={["100%", "100%", "100%", "350px"]} h="150px">
-      {/* eslint-disable-next-line jsx-a11y/alt-text */}
-      <Image src="/images/espace_pro/add-offer.svg" />
+      <Image src="/images/espace_pro/add-offer.svg" alt="" />
     </Flex>
 
     <Box w={["100%", "100%", "100%", "600px"]}>

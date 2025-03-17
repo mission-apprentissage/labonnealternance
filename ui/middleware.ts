@@ -65,7 +65,7 @@ const verifyAuthentication = async (search: string, request: NextRequest) => {
 const redirectAfterAuthentication = async (user: IUserRecruteurPublic, request: NextRequest) => {
   switch (user.type) {
     case AUTHTYPE.ENTREPRISE:
-      return NextResponse.redirect(new URL(`/espace-pro/entreprise/${user.establishment_id}`, request.url))
+      return NextResponse.redirect(new URL(`/espace-pro/entreprise`, request.url))
 
     case AUTHTYPE.OPCO:
       return NextResponse.redirect(new URL(`/espace-pro/opco`, request.url))
