@@ -1,9 +1,9 @@
-import { ILbaItemFormation2 } from "shared"
+import { ILbaItemFormation2Json } from "shared"
 
 import { inserJeuneApiUrl } from "../config/config"
 import { logError } from "../utils/tools"
 
-export default async function fetchInserJeuneStats(training: ILbaItemFormation2) {
+export default async function fetchInserJeuneStats(training: ILbaItemFormation2Json) {
   if (!training) {
     return null
   }

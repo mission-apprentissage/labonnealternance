@@ -6,7 +6,6 @@ import {
   AccordionItem,
   AccordionPanel,
   Box,
-  Button,
   Checkbox,
   CheckboxGroup,
   Flex,
@@ -27,6 +26,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
 import emailMisspelled, { top100 } from "email-misspelled"
 import { useFormik } from "formik"
 import { useEffect, useState } from "react"
@@ -35,10 +35,10 @@ import { EApplicantType } from "shared/constants/rdva"
 import { IAppointMentResponseAvailable } from "shared/routes/v2/appointments.routes.v2"
 import * as Yup from "yup"
 
+import { useLocalStorage } from "@/app/hooks/useLocalStorage"
 import { reasons } from "@/components/RDV/types"
 import { BarberGuy } from "@/theme/components/icons"
 import { apiGet, apiPost } from "@/utils/api.utils"
-import { localStorageSet } from "@/utils/localStorage"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
 import InfoBanner from "../InfoBanner/InfoBanner"
@@ -62,6 +62,8 @@ const DemandeDeContact = (props: Props) => {
   const [applicantType, setApplicantType] = useState<EApplicantType>(EApplicantType.ETUDIANT)
   const [onSuccessSubmitResponse, setOnSuccessSubmitResponse] = useState(null)
   const [error, setError] = useState<string | null>(null)
+
+  const { setLocalStorage } = useLocalStorage(`application-formation-${props.context.cle_ministere_educatif}`)
 
   useEffect(() => {
     if (isOpen) {
@@ -140,7 +142,8 @@ const DemandeDeContact = (props: Props) => {
           },
         })
 
-        localStorageSet(`application-formation-${props.context.cle_ministere_educatif}`, Date.now().toString())
+        setLocalStorage(Date.now().toString())
+        // localStorageSet(`application-formation-${props.context.cle_ministere_educatif}`, Date.now().toString())
 
         SendPlausibleEvent("Envoi Prendre RDV - Fiche formation", {
           info_fiche: `${props.context.cle_ministere_educatif}`,
@@ -240,20 +243,7 @@ const DemandeDeContact = (props: Props) => {
                 Voulez vous dire ?
               </Text>
               {suggestedEmails.map((suggestedEmail) => (
-                <Button
-                  key={suggestedEmail.corrected}
-                  onClick={onClickEmailSuggestion}
-                  textAlign="center"
-                  fontSize="12px"
-                  width="fit-content"
-                  px="5px"
-                  pb="3px"
-                  mr="5px"
-                  mt="3px"
-                  color="bluefrance.500"
-                  bg="#e3e3fd"
-                  borderRadius="40px"
-                >
+                <Button key={suggestedEmail.corrected} onClick={onClickEmailSuggestion} priority="tertiary no outline" size="small">
                   {suggestedEmail.corrected}
                 </Button>
               ))}
@@ -314,6 +304,7 @@ const DemandeDeContact = (props: Props) => {
               </AccordionPanel>
             </AccordionItem>
           </Accordion>
+          {/* @ts-expect-error TODO */}
           {applicantReasons.find(({ key, checked }) => key === EReasonsKey.AUTRE && checked) && (
             <FormControl data-testid="fieldset-applicantMessageToCfa">
               <Input
@@ -361,15 +352,7 @@ const DemandeDeContact = (props: Props) => {
       )}
       <InfoBanner showInfo={false} showAlert={false} showOK={false} forceEnvBanner={true} />
       <Box mb={8} textAlign="right" mr={4}>
-        <Button
-          data-tracking-id="prendre-rdv-cfa"
-          aria-label="Envoyer la demande de contact"
-          variant="blackButton"
-          type="submit"
-          fontWeight="700"
-          onClick={submitForm}
-          isDisabled={formik.isSubmitting}
-        >
+        <Button data-tracking-id="prendre-rdv-cfa" aria-label="Envoyer la demande de contact" type="submit" onClick={submitForm} disabled={formik.isSubmitting}>
           J'envoie ma demande
         </Button>
       </Box>
@@ -424,22 +407,7 @@ const DemandeDeContact = (props: Props) => {
     <Box data-testid="DemandeDeContact">
       <Box>
         <Box my={props.isCollapsedHeader ? 2 : 4}>
-          <Button
-            ml={1}
-            padding="8px 24px"
-            color="white"
-            background="bluefrance.500"
-            borderRadius="8px"
-            data-testid="prdvButton"
-            sx={{
-              textDecoration: "none",
-              _hover: {
-                background: "bluesoft.500",
-              },
-            }}
-            onClick={onOpen}
-            aria-label="Ouvrir le formulaire de demande de contact"
-          >
+          <Button data-testid="prdvButton" onClick={onOpen} aria-label="Ouvrir le formulaire de demande de contact">
             Je prends rendez-vous
           </Button>
           <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false} size={["full", "full", "full", "3xl"]}>

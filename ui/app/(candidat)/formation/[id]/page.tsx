@@ -8,7 +8,7 @@ export default async function FormationPage({ params }: { params: Promise<{ id: 
   const idParam = decodeURIComponent(id)
   const formation = await apiGet("/_private/formations/:id", { params: { id: idParam } })
   if (!formation) redirect("/404")
+  const priseDeRendezVous = await apiGet("/_private/appointment", { querystring: { cleMinistereEducatif: formation.training.cleMinistereEducatif, referrer: "lba" } })
 
-  return <TrainingDetailRendererClient selectedItem={formation} />
-  return JSON.stringify(formation, null, 2)
+  return <TrainingDetailRendererClient selectedItem={formation} priseDeRendezVous={priseDeRendezVous} />
 }

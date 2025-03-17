@@ -1,10 +1,12 @@
 "use client"
-import { Box, Divider, Flex, Image, Text } from "@chakra-ui/react"
+import { Box, Flex, Image, Text } from "@chakra-ui/react"
 import { Fragment, useEffect, useState } from "react"
 import { useQuery } from "react-query"
-import { ILbaItemFormation2 } from "shared"
+import { ILbaItemFormation2Json } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { IAppointMentResponseAvailable } from "shared/routes/v2/appointments.routes.v2"
 
+import { useLocalStorage } from "@/app/hooks/useLocalStorage"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
@@ -12,7 +14,6 @@ import GoingToContactQuestion, { getGoingtoId } from "@/components/ItemDetail/Go
 import { buttonRdvShouldBeDisplayed } from "@/components/ItemDetail/ItemDetailServices/getButtons"
 import getJobPublishedTimeAndApplications from "@/components/ItemDetail/ItemDetailServices/getJobPublishedTimeAndApplications"
 import getTags from "@/components/ItemDetail/ItemDetailServices/getTags"
-import ItemDetailApplicationsStatus, { hasApplied } from "@/components/ItemDetail/ItemDetailServices/ItemDetailApplicationStatus"
 import ItemDetailCard from "@/components/ItemDetail/ItemDetailServices/ItemDetailCard"
 import ItemGoogleSearchLink from "@/components/ItemDetail/ItemDetailServices/ItemGoogleSearchLink"
 import ItemLocalisation from "@/components/ItemDetail/ItemDetailServices/ItemLocalisation"
@@ -22,7 +23,6 @@ import StatsInserJeunes from "@/components/ItemDetail/StatsInserJeunes"
 import DemandeDeContact from "@/components/RDV/DemandeDeContact"
 import { isCfaEntreprise } from "@/services/cfaEntreprise"
 import fetchInserJeuneStats from "@/services/fetchInserJeuneStats"
-import { getPrdvContext } from "@/utils/api"
 import { SendPlausibleEvent } from "@/utils/plausible"
 import { formatDate } from "@/utils/strutils"
 
@@ -34,20 +34,44 @@ const dontBreakOutCssParameters = {
   hyphens: "auto",
 }
 
-export default function TrainingDetailRendererClient({ selectedItem }: { selectedItem: ILbaItemFormation2 }) {
-  console.log("TrainingDetailRendererClient", selectedItem)
+export default function TrainingDetailRendererClient({
+  selectedItem,
+  priseDeRendezVous,
+}: {
+  selectedItem: ILbaItemFormation2Json
+  priseDeRendezVous: IAppointMentResponseAvailable
+}) {
+  const { storedValue } = useLocalStorage(`application-${selectedItem.type}-${selectedItem.training.cleMinistereEducatif}`)
   const kind: LBA_ITEM_TYPE = selectedItem?.type
   const actualTitle = selectedItem.training.title
   const isCfa = isCfaEntreprise(selectedItem?.company?.siret, selectedItem?.company?.headquarter?.siret)
   const isMandataire = selectedItem?.company?.mandataire
+  const [appliedDate, setAppliedDate] = useState(null)
+  const [prdvAvailable, setPrdvAvailable] = useState(false)
   // const { jobs, extendedSearch, selectedItem, trainings } = useContext(SearchResultContext)
   // const { activeFilters } = useContext(DisplayContext)
 
-  const priseDeRendezVous = useQuery(["getPrdv", selectedItem.training.cleMinistereEducatif], () => getPrdvContext(selectedItem.training.cleMinistereEducatif), {
-    enabled: Boolean(selectedItem.training.cleMinistereEducatif),
-  })
+  // const priseDeRendezVous = useQuery(["getPrdv", selectedItem.training.cleMinistereEducatif], () => getPrdvContext(selectedItem.training.cleMinistereEducatif), {
+  //   enabled: Boolean(selectedItem.training.cleMinistereEducatif),
+  // })
 
-  console.log(" priseDeRendezVous", priseDeRendezVous.data)
+  useEffect(() => {
+    if (storedValue) {
+      const date = new Date(parseInt(storedValue as string, 10)).toLocaleDateString("fr-FR", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+      setAppliedDate(date)
+    } else {
+      setPrdvAvailable(true)
+    }
+  }, [storedValue])
+
+  console.log("TrainingDetailRendererClient", selectedItem)
+  console.log(" priseDeRendezVous", priseDeRendezVous)
+  console.log(" storedValue", storedValue)
+  console.log(" storedValue", appliedDate)
 
   // useEffect(() => {
   //   try {
@@ -90,6 +114,7 @@ export default function TrainingDetailRendererClient({ selectedItem }: { selecte
         overflowY: "auto",
         position: "relative",
         height: "100vh",
+        backgroundColor: "#f8f8f8",
       }}
       // {...swipeHandlers}
     >
@@ -110,14 +135,12 @@ export default function TrainingDetailRendererClient({ selectedItem }: { selecte
             {/* {getNavigationButtons({ goPrev, goNext, handleClose })} */}
           </Flex>
 
-          {kind === LBA_ITEM_TYPE.FORMATION && (
-            <Text as="p" textAlign="left" color="grey.600" mt={isCollapsedHeader ? 1 : 4} mb={isCollapsedHeader ? 1 : 3} fontWeight={700} fontSize="1rem">
-              <Text as="span">{`${selectedItem?.company?.name || ""} (${selectedItem.company.place.city})`}</Text>
-              <Text as="span" fontWeight={400}>
-                &nbsp;propose cette formation
-              </Text>
+          <Text as="p" textAlign="left" color="grey.600" mt={isCollapsedHeader ? 1 : 4} mb={isCollapsedHeader ? 1 : 3} fontWeight={700} fontSize="1rem">
+            <Text as="span">{`${selectedItem?.company?.name || ""} (${selectedItem.company.place.city})`}</Text>
+            <Text as="span" fontWeight={400}>
+              &nbsp;propose cette formation
             </Text>
-          )}
+          </Text>
 
           {!isCollapsedHeader && getJobPublishedTimeAndApplications({ item: selectedItem })}
           {!isCollapsedHeader && <JobItemCardHeader selectedItem={selectedItem} kind={kind} isMandataire={isMandataire} />}
@@ -125,7 +148,7 @@ export default function TrainingDetailRendererClient({ selectedItem }: { selecte
           <Text
             as="h1"
             fontSize={isCollapsedHeader ? "20px" : "28px"}
-            color={"pinksoft.600"}
+            color={"greensoft.500"}
             sx={{
               fontWeight: 700,
               marginBottom: isCollapsedHeader ? "4px" : "11px",
@@ -139,58 +162,44 @@ export default function TrainingDetailRendererClient({ selectedItem }: { selecte
 
           {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
 
-          {!isCollapsedHeader && <Divider my={2} />}
+          {!isCollapsedHeader && <hr />}
 
-          <Flex flexDirection={{ base: "column", sm: "row" }}>
+          <Flex flexDirection={{ base: "column", sm: "row" }} alignItems="center">
             <Box flex={1}>
-              {kind === LBA_ITEM_TYPE.FORMATION && priseDeRendezVous.isFetched && !hasApplied(selectedItem) && (
-                <DemandeDeContact isCollapsedHeader={isCollapsedHeader} context={priseDeRendezVous.data} referrer="LBA" showInModal />
+              {appliedDate ? (
+                <Text color="grey.600" as="span" px={2} py={1} backgroundColor="#FEF7DA">
+                  <Text as="span">👍 </Text>
+                  <Text as="span" fontStyle="italic">
+                    Super, vous avez déjà pris contact le {appliedDate}.
+                  </Text>
+                </Text>
+              ) : (
+                prdvAvailable &&
+                !appliedDate &&
+                priseDeRendezVous && <DemandeDeContact isCollapsedHeader={isCollapsedHeader} context={priseDeRendezVous} referrer="LBA" showInModal />
               )}
-              {kind === LBA_ITEM_TYPE.FORMATION && <ItemDetailApplicationsStatus item={selectedItem} mt={2} mb={2} />}
             </Box>
-            <Box pt={{ base: 0, sm: 4 }}>
-              <ShareLink item={selectedItem} />
-            </Box>
+            <ShareLink item={selectedItem} />
           </Flex>
         </Box>
       </Box>
 
-      {kind === LBA_ITEM_TYPE.FORMATION && <TrainingDetail training={selectedItem} />}
+      <TrainingDetail training={selectedItem} />
 
       <AideApprentissage />
 
-      {kind === LBA_ITEM_TYPE.FORMATION && !buttonRdvShouldBeDisplayed(selectedItem) && (
+      {!buttonRdvShouldBeDisplayed(selectedItem) && (
         <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
       )}
     </Box>
   )
 }
 
-function TrainingDetail({ training }: { training: ILbaItemFormation2 }) {
-  console.log("TrainingDetailRendererClient", training)
+function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
   // const [IJStats, setIJStats] = useState(null)
   const isCfaDEntreprise = isCfaEntreprise(training?.company?.siret, training?.company?.headquarter?.siret)
   // const { trainings, setTrainingsAndSelectedItem } = useContext(SearchResultContext)
   // const { formValues } = React.useContext(DisplayContext)
-
-  // useQuery(["getPrdv", training.id], () => fetchPrdvContext(training.id), {
-  //   enabled: training && !training.prdvLoaded,
-  // })
-
-  // const fetchPrdvContext = async (cleMinistereEducatif: string) => {
-  //   const context = await getPrdvContext(cleMinistereEducatif)
-  //   const updatedTrainings = trainings
-  //   updatedTrainings.forEach(async (v) => {
-  //     if (v.id === training.id) {
-  //       if (!v.prdvLoaded) {
-  //         v.prdvLoaded = true
-  //         v.rdvContext = context && !("error" in context) ? context : null
-  //         setTrainingsAndSelectedItem(updatedTrainings, v)
-  //       }
-  //     }
-  //   })
-  //   return
-  // }
 
   const IJStats = useQuery(["getIJStats", training.training.cfd], () => fetchInserJeuneStats(training), {
     enabled: Boolean(training.training.cfd),
@@ -198,7 +207,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2 }) {
 
   useEffect(() => {
     SendPlausibleEvent("Affichage - Fiche formation", {
-      // info_fiche: `${training.cleMinistereEducatif}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
+      // info_fiche: `${training.training.cleMinistereEducatif}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
     })
   }, [training.training.cleMinistereEducatif])
 
