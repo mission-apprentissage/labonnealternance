@@ -1,5 +1,5 @@
 "use client"
-import { Box, Heading, Link, Text, useBoolean } from "@chakra-ui/react"
+import { Box, Container, Heading, Link, Text, useBoolean } from "@chakra-ui/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
@@ -68,9 +68,9 @@ export default function ConfirmationValidationEmail() {
   }, [token, router, setLoading])
 
   return (
-    <>
+    <Container maxW="container.xl">
       {loading && <LoadingEmptySpace label="Vérification en cours" />}
       {validationState && (validationState === "Attente" ? <EmailEnValidationManuelle /> : validationState === "Error" ? <ErreurValidation /> : null)}
-    </>
+    </Container>
   )
 }
