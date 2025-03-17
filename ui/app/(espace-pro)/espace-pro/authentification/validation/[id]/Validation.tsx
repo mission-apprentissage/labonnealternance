@@ -1,7 +1,7 @@
 "use client"
-import { Box, Container, Heading, Link, Text, useBoolean } from "@chakra-ui/react"
+import { Box, Container, Heading, Link, Text } from "@chakra-ui/react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useQuery } from "react-query"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
@@ -36,41 +36,29 @@ const ErreurValidation = () => (
 )
 
 export default function ConfirmationValidationEmail() {
-  const [loading, setLoading] = useBoolean()
-  const [validationState, setValidationState] = useState<"Attente" | "Error" | null>(null)
   const router = useRouter()
   const token = useSearchParams().get("token")
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading.on()
-      if (token) {
-        const user = await apiPost("/etablissement/validation", {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        })
-        if (user.status_current === ETAT_UTILISATEUR.ATTENTE) {
-          setValidationState("Attente")
-          setTimeout(() => router.push(PAGES.static.accesRecruteur.getPath()), 10000)
-        } else {
-          router.push(PAGES.static.authentification.getPath())
-        }
-      }
+  const fetchData = async () => {
+    const user = await apiPost("/etablissement/validation", {
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    })
+    if (user.status_current === ETAT_UTILISATEUR.ATTENTE) {
+      setTimeout(() => router.push(PAGES.static.accesRecruteur.getPath()), 10000)
+    } else {
+      router.push(PAGES.static.authentification.getPath())
     }
-    fetchData()
-      .catch(() => {
-        setValidationState("Error")
-      })
-      .finally(() => {
-        setLoading.off()
-      })
-  }, [token, router, setLoading])
+  }
+
+  const { isLoading, isError } = useQuery("postValidation", () => fetchData(), { enabled: Boolean(token), retry: false })
 
   return (
     <Container maxW="container.xl">
-      {loading && <LoadingEmptySpace label="Vérification en cours" />}
-      {validationState && (validationState === "Attente" ? <EmailEnValidationManuelle /> : validationState === "Error" ? <ErreurValidation /> : null)}
+      {isLoading && <LoadingEmptySpace label="Vérification en cours" />}
+      {(!token || isError) && <ErreurValidation />}
+      {token && !isLoading && !isError && <EmailEnValidationManuelle />}
     </Container>
   )
 }
