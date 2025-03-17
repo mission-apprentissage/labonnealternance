@@ -2,16 +2,10 @@ import Boom, { badRequest, internal, notFound } from "@hapi/boom"
 import { IApiAlternanceTokenData } from "api-alternance-sdk"
 import { DateTime } from "luxon"
 import { Document, Filter, ObjectId } from "mongodb"
-import { IGeoPoint, IJob, IJobCollectionName, ILbaItemPartnerJob, JOB_STATUS_ENGLISH, JobCollectionName, assertUnreachable, parseEnum, translateJobStatus } from "shared"
-import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants"
+import { IJob, IJobCollectionName, ILbaItemPartnerJob, JOB_STATUS_ENGLISH, JobCollectionName, assertUnreachable, parseEnum, translateJobStatus } from "shared"
+import { NIVEAUX_POUR_LBA, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
-import {
-  IJobsPartnersOfferApi,
-  IJobsPartnersOfferPrivate,
-  IJobsPartnersOfferPrivateWithDistance,
-  INiveauDiplomeEuropeen,
-  JOBPARTNERS_LABEL,
-} from "shared/models/jobsPartners.model"
+import { IJobsPartnersOfferApi, IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import {
   jobsRouteApiv3Converters,
@@ -34,14 +28,12 @@ import { getDbCollection } from "../../../common/utils/mongodbUtils"
 import { trackApiCall } from "../../../common/utils/sendTrackingEvent"
 import config from "../../../config"
 import { getRomesFromRncp } from "../../external/api-alternance/certification.service"
-import { getFtJobsV2, getSomeFtJobs } from "../../ftjob.service"
-import { FTJob } from "../../ftjob.service.types"
+import { getSomeFtJobs } from "../../ftjob.service"
 import { TJobSearchQuery, TLbaItemResult } from "../../jobOpportunity.service.types"
 import { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "../../lbaitem.shared.service.types"
 import { IJobResult, getLbaJobByIdV2AsJobResult, getLbaJobs, getLbaJobsV2, incrementLbaJobsViewCount } from "../../lbajob.service"
 import { jobsQueryValidator } from "../../queryValidator.service"
 import { getRecruteursLbaFromDB, getSomeCompanies } from "../../recruteurLba.service"
-import { getNearestCommuneByGeoPoint } from "../../referentiel/commune/commune.referentiel.service"
 
 import { JobOpportunityRequestContext } from "./JobOpportunityRequestContext"
 
@@ -233,7 +225,13 @@ export const getJobsQuery = async (
   return result
 }
 
-export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level, partners_to_exclude }: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivate[]> => {
+export const getJobsPartnersFromDB = async ({
+  romes,
+  geo,
+  target_diploma_level,
+  partners_to_exclude = [],
+  partner_label = null,
+}: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivate[]> => {
   const query: Filter<IJobsPartnersOfferPrivate> = {
     offer_multicast: true,
     offer_status: JOB_STATUS_ENGLISH.ACTIVE,
@@ -242,6 +240,10 @@ export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level, 
 
   if (partners_to_exclude?.length) {
     query.partner_label = { $not: { $in: partners_to_exclude } }
+  }
+
+  if (partner_label) {
+    query.partner_label = partner_label
   }
 
   if (romes) {
@@ -326,6 +328,19 @@ export const getJobsPartnersFromDBForUI = async ({ romes, geo, target_diploma_le
     .toArray()
 }
 
+export const findFranceTravailOpportunitiesFromDB = async ({ romes, geo, target_diploma_level }: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> => {
+  const jobsPartners = await getJobsPartnersFromDB({ romes, geo, target_diploma_level, partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL })
+
+  return jobsPartners.map((j) =>
+    jobsRouteApiv3Converters.convertToJobOfferApiReadV3({
+      ...j,
+      contract_type: j.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
+      apply_url: j.apply_url ?? `${config.publicUrl}/recherche?type=partner&itemId=${j._id}`,
+      apply_recipient_id: j.apply_email ? getRecipientID(JobCollectionName.partners, j._id.toString()) : null,
+    })
+  )
+}
+
 export const getJobsPartnersForApi = async ({ romes, geo, target_diploma_level, partners_to_exclude }: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> => {
   // recruteurs_lba are available in a different array from the API returned payload
   const partnersToExclude = partners_to_exclude ? [...partners_to_exclude, JOBPARTNERS_LABEL.RECRUTEURS_LBA] : [JOBPARTNERS_LABEL.RECRUTEURS_LBA]
@@ -340,8 +355,6 @@ export const getJobsPartnersForApi = async ({ romes, geo, target_diploma_level, 
     })
   )
 }
-
-const convertToGeopoint = ({ longitude, latitude }: { longitude: number; latitude: number }): IGeoPoint => ({ type: "Point", coordinates: [longitude, latitude] })
 
 export const convertLbaCompanyToJobRecruiterApi = (recruteursLba: IJobsPartnersOfferPrivate[]): IJobRecruiterApiReadV3[] => {
   return recruteursLba.map(
@@ -483,121 +496,6 @@ export const convertLbaRecruiterToJobOfferApi = (offresEmploiLba: IJobResult[]):
   )
 }
 
-export const convertFranceTravailJobToJobOfferApi = (offresEmploiFranceTravail: FTJob[]): IJobOfferApiReadV3[] => {
-  return offresEmploiFranceTravail
-    .filter((j) => {
-      // TODO: Temporary fix for missing geopoint
-      return j.lieuTravail.latitude != null && j.lieuTravail.longitude != null
-    })
-    .map((offreFT): IJobOfferApiReadV3 => {
-      const contractDuration = parseInt(offreFT.typeContratLibelle, 10)
-      const contractType = parseEnum(TRAINING_CONTRACT_TYPE, offreFT.natureContrat)
-      return {
-        identifier: {
-          id: null,
-          partner_job_id: offreFT.id,
-          partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL,
-        },
-
-        contract: {
-          start: null,
-          duration: isNaN(contractDuration) ? null : contractDuration,
-          type: contractType ? [contractType] : [],
-          remote: null,
-        },
-
-        offer: {
-          title: offreFT.intitule,
-          rome_codes: [offreFT.romeCode],
-          description: offreFT.description,
-          target_diploma: null,
-          desired_skills: [],
-          to_be_acquired_skills: [],
-          access_conditions: offreFT.formations ? offreFT.formations?.map((formation) => `${formation.domaineLibelle} - ${formation.niveauLibelle}`) : [],
-          publication: {
-            creation: new Date(offreFT.dateCreation),
-            expiration: null,
-          },
-          opening_count: offreFT.nombrePostes,
-          status: JOB_STATUS_ENGLISH.ACTIVE,
-        },
-
-        // Try to find entreprise SIRET from  offreFT.entreprise.siret ?
-        workplace: {
-          siret: null,
-          brand: null,
-          legal_name: null,
-          website: null,
-          name: offreFT.entreprise.nom ?? null,
-          description: offreFT.entreprise.description ?? null,
-          size: null,
-          location: {
-            address: offreFT.lieuTravail.libelle,
-            geopoint: convertToGeopoint({
-              longitude: parseFloat(offreFT.lieuTravail.longitude!),
-              latitude: parseFloat(offreFT.lieuTravail.latitude!),
-            }),
-          },
-          domain: {
-            idcc: null,
-            // TODO: try to map opco from FT formation requirement
-            opco: null,
-            naf: offreFT.codeNAF ? { code: offreFT.codeNAF, label: offreFT.secteurActiviteLibelle || null } : null,
-          },
-        },
-
-        apply: {
-          url: offreFT.origineOffre.partenaires?.[0]?.url ?? offreFT.origineOffre.urlOrigine,
-          phone: null,
-          recipient_id: null,
-        },
-      }
-    })
-}
-
-async function findFranceTravailOpportunities(query: IJobSearchApiV3QueryResolved, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3[]> {
-  const getFtDiploma = (target_diploma_level: INiveauDiplomeEuropeen | null): keyof typeof NIVEAUX_POUR_OFFRES_PE | null => {
-    switch (target_diploma_level) {
-      case "3":
-        return "3 (CAP...)"
-      case "4":
-        return "4 (BAC...)"
-      case "5":
-        return "5 (BTS, DEUST...)"
-      case "6":
-        return "6 (Licence, BUT...)"
-      case "7":
-        return "7 (Master, titre ingénieur...)"
-      case null:
-        return null
-      default:
-        assertUnreachable(target_diploma_level)
-    }
-  }
-
-  const params: Parameters<typeof getFtJobsV2>[0] = {
-    jobLimit: 150,
-    romes: query.romes ?? null,
-    insee: null,
-    radius: query.geo?.radius ?? 0,
-    diploma: getFtDiploma(query.target_diploma_level ?? null),
-  }
-
-  if (query.geo !== null) {
-    const commune = await getNearestCommuneByGeoPoint({ type: "Point", coordinates: [query.geo.longitude, query.geo.latitude] })
-    params.insee = commune.code
-  }
-
-  const ftJobs = await getFtJobsV2(params).catch((error) => {
-    sentryCaptureException(error)
-    context.addWarning("FRANCE_TRAVAIL_API_ERROR")
-
-    return { resultats: [] }
-  })
-
-  return convertFranceTravailJobToJobOfferApi(ftJobs.resultats)
-}
-
 async function findLbaJobOpportunities(query: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> {
   const payload: Parameters<typeof getLbaJobsV2>[0] = {
     geo: query.geo,
@@ -654,7 +552,7 @@ export async function findJobsOpportunities(payload: IJobSearchApiV3Query, conte
     getRecruteursLbaFromDB(resolvedQuery),
     findLbaJobOpportunities(resolvedQuery),
     getJobsPartnersForApi(resolvedQuery),
-    findFranceTravailOpportunities(resolvedQuery, context),
+    findFranceTravailOpportunitiesFromDB(resolvedQuery),
   ])
 
   const jobs = [...offreEmploiLba, ...franceTravail, ...offreEmploiPartenaire].filter((job) => {
