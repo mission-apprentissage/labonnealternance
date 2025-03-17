@@ -8,6 +8,7 @@ import { z } from "zod"
 
 import { removeHtmlTagsFromString } from "@/common/utils/stringUtils"
 
+import { isCompanyInBlockedCfaList } from "../blockJobsPartnersFromCfaList"
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
 const ZMeteojobJobLocation = z.object({
@@ -195,6 +196,7 @@ export const meteojobJobToJobsPartners = (job: IMeteojobJob): IComputedJobsPartn
     offer_multicast: true,
     offer_to_be_acquired_skills: [],
     apply_url: urlParsing.success ? urlParsing.data : null,
+    business_error: isCompanyInBlockedCfaList(company.name) ? "company registered in blocked CFA list" : null,
   }
   return partnerJob
 }
