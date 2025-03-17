@@ -7,6 +7,7 @@ import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { joinNonNullStrings } from "shared/utils"
 import { z } from "zod"
 
+import { isCompanyInBlockedCfaList } from "../blockJobsPartnersFromCfaList"
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
 export const ZHelloWorkJob = z
@@ -133,6 +134,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
           }
         : undefined,
     apply_url: urlParsing.success ? urlParsing.data : null,
+    business_error: isCompanyInBlockedCfaList(company_title) ? "company registered in blocked CFA list" : null,
   }
   return partnerJob
 }
