@@ -1,13 +1,12 @@
 import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import { Typography } from "@mui/material"
-import { useSearchParams } from "next/navigation"
 import React, { useCallback, useState } from "react"
 import { ILbaItemFormation, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
-import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
-import { buildJobUrl, buildTrainingUrl } from "shared/metier/lbaitemutils"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
+import { useResultItemUrl } from "@/app/(candidat)/recherche/_hooks/useResultItemUrl"
 import { useUpdateCandidatSearchParam } from "@/app/(candidat)/recherche/_hooks/useUpdateCandidatSearchParam"
 import ItemDetailApplicationsStatus from "@/components/ItemDetail/ItemDetailServices/ItemDetailApplicationStatus"
 import TagCandidatureSpontanee from "@/components/ItemDetail/TagCandidatureSpontanee"
@@ -42,9 +41,9 @@ const CenterSearchButton = (props: Pick<ResultCardProps, "item">) => {
           latitude: props.item.place.latitude,
           radius: 30,
         },
-        displayFormations: props.item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION,
-        displayEntreprises: props.item.ideaType !== LBA_ITEM_TYPE_OLD.FORMATION,
-        displayPartenariats: props.item.ideaType !== LBA_ITEM_TYPE_OLD.FORMATION,
+        displayFormations: props.item.ideaType !== LBA_ITEM_TYPE_OLD.FORMATION,
+        displayEntreprises: props.item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION,
+        displayPartenariats: props.item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION,
       })
     },
     [props.item, updateSearch]
@@ -183,24 +182,8 @@ function EnSavoirPlusButton({ item }: Pick<ResultCardProps, "item">) {
   )
 }
 
-function useItemLink({ item }: Pick<ResultCardProps, "item">) {
-  const params = useSearchParams()
-
-  if (item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION) {
-    return `${buildJobUrl(oldItemTypeToNewItemType(item.ideaType), item.id, item.title)}?${params?.toString() ?? ""}`
-  }
-
-  return `${buildTrainingUrl(oldItemTypeToNewItemType(item.ideaType), item.title)}?${params?.toString() ?? ""}`
-}
-
-export function ResultCard({ item, handleSelectItem }: ResultCardProps) {
+export function ResultCard({ item }: ResultCardProps) {
   const [allowDim, setAllowDim] = useState(true) // cet état évite un appel qui masque la mise en avant de l'icône lors de l'ouverture du détail
-
-  const onSelectItem = (e) => {
-    e.preventDefault()
-    setAllowDim(false) // fixation du flag
-    handleSelectItem(item)
-  }
 
   const highlightItemOnMap = () => {
     return
@@ -233,7 +216,7 @@ export function ResultCard({ item, handleSelectItem }: ResultCardProps) {
   }
 
   // TODO:
-  const actualLink = useItemLink({ item })
+  const itemUrl = useResultItemUrl(item)
 
   const cardProperties = {
     display: "block",
@@ -268,10 +251,9 @@ export function ResultCard({ item, handleSelectItem }: ResultCardProps) {
       className={fr.cx("fr-raw-link")}
       {...cardProperties}
       {...focusWithin}
-      onClick={onSelectItem}
       onMouseOver={highlightItemOnMap}
       onMouseOut={dimItemOnMap}
-      href={actualLink}
+      href={itemUrl}
       data-testid={`${item.ideaType}${id}`}
     >
       <Flex align="flex-start" id={`${item.ideaType}:${id}`}>

@@ -470,10 +470,24 @@ export const PAGES = {
         title: "Offres en alternance",
       }
     },
-    jobDetail: ({ type, jobId, jobTitle = "offre" }: { type: LBA_ITEM_TYPE; jobId: string; jobTitle?: string }): IPage => ({
-      getPath: () => `/emploi/${type}/${encodeURIComponent(jobId)}/${toKebabCase(jobTitle)}` as string,
-      title: jobTitle,
-    }),
+    jobDetail: (params: { type: Exclude<LBA_ITEM_TYPE, LBA_ITEM_TYPE.FORMATION>; jobId: string } & Partial<IRecherchePageParams>): IPage => {
+      const jobTitle = params.job_name ?? "Offre"
+      const search = buildRecherchePageParams(params)
+
+      return {
+        getPath: () => `/emploi/${params.type}/${encodeURIComponent(params.jobId)}/${toKebabCase(jobTitle)}?${search}` as string,
+        title: jobTitle,
+      }
+    },
+    formationDetail: (params: { jobId: string } & Partial<IRecherchePageParams>): IPage => {
+      const jobTitle = params.job_name ?? "Formation"
+      const search = buildRecherchePageParams(params)
+
+      return {
+        getPath: () => `/formation/${LBA_ITEM_TYPE.FORMATION}/${encodeURIComponent(params.jobId)}/${toKebabCase(jobTitle)}?${search}` as string,
+        title: jobTitle,
+      }
+    },
     backCfaEntrepriseCreationDetail: (siret: string): IPage => ({
       getPath: () => `/espace-pro/cfa/creation-entreprise/${siret}` as string,
       title: siret,
