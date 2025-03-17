@@ -1064,6 +1064,7 @@ const cfaCompanyList = [
   "ISAL",
   "IMMERSIA",
   "ISCOD",
+  "ISCOD ALTERNANCE",
   "ISEAH FORMATION",
   "ISEC FORMATION",
   "ISEQ",
