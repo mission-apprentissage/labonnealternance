@@ -50,7 +50,7 @@ export type IRecherchePageParams = z.output<typeof zRecherchePageParams>
 function buildRecherchePageParams(params: IRecherchePageParams): string {
   const query = new URLSearchParams()
 
-  if (params.romes.length > 0) {
+  if (params.romes?.length > 0) {
     query.set("romes", params.romes.join(","))
   }
 
