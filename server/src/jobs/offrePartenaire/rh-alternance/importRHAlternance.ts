@@ -3,7 +3,7 @@ import axios from "axios"
 import { ObjectId } from "mongodb"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import rawRHAlternanceModel, { IRawRHAlternance } from "shared/models/rawRHAlternance.model"
 import { joinNonNullStrings } from "shared/utils"
 import { z } from "zod"
@@ -14,6 +14,7 @@ import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
 import dayjs from "@/services/dayjs.service"
 
+import { isCompanyInBlockedCfaList } from "../blockJobsPartnersFromCfaList"
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 import { rawToComputedJobsPartners } from "../rawToComputedJobsPartners"
 
@@ -100,7 +101,9 @@ export const rawRhAlternanceToComputedMapper =
     jobPostalCode,
   }: IRawRHAlternance["job"]): IComputedJobsPartners => {
     const offer_creation = jobSubmitDateTime ? dayjs.tz(jobSubmitDateTime).toDate() : now
-    const isValid: boolean = jobType === "Alternance"
+
+    const business_error = jobType === "Alternance" ? (isCompanyInBlockedCfaList(companyName ?? "") ? JOB_PARTNER_BUSINESS_ERROR.CFA : null) : JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA
+
     const computedJob: IComputedJobsPartners = {
       ...blankComputedJobPartner(),
       _id: new ObjectId(),
@@ -125,7 +128,7 @@ export const rawRhAlternanceToComputedMapper =
       workplace_address_city: jobCity,
       workplace_address_zipcode: jobPostalCode,
       apply_url: jobUrl,
-      business_error: isValid ? null : `expected jobType === "Alternance" but got ${jobType}`,
+      business_error,
       updated_at: now,
     }
     return computedJob
