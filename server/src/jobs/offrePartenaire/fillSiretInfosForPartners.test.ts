@@ -2,7 +2,7 @@ import pick from "lodash-es/pick"
 import nock from "nock"
 import { generateCacheInfoSiretForSiret } from "shared/fixtures/cacheInfoSiret.fixture"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
-import { entriesToTypedRecord } from "shared/utils"
+import { entriesToTypedRecord } from "shared/utils/index"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"

@@ -1,21 +1,32 @@
 {
   "name": "shared",
   "version": "0.0.0",
-  "main": "./index.ts",
-  "types": "./index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "author": "mna",
   "license": "MIT",
   "private": true,
   "type": "module",
   "sideEffects": [
-    "./helpers/zodWithOpenApi.ts"
+    "./dist/src/helpers/zodWithOpenApi.js"
   ],
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    },
+    "./*": {
+      "import": "./dist/src/*.js",
+      "types": "./dist/src/*.d.ts"
+    }
+  },
   "engines": {
     "node": ">=20",
     "npm": "please-use-yarn"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc -b",
+    "dev": "tsc -b -w"
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^7.1.1",

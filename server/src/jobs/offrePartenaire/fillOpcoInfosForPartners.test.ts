@@ -1,7 +1,7 @@
 import pick from "lodash-es/pick"
 import { ObjectId } from "mongodb"
 import nock from "nock"
-import { OPCOS_LABEL } from "shared/constants"
+import { OPCOS_LABEL } from "shared/constants/index"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"

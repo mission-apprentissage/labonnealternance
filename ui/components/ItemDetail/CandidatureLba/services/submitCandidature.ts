@@ -1,6 +1,6 @@
 import { useContext } from "react"
 import { useMutation } from "react-query"
-import { IApplicationApiPrivate, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
+import { IApplicationApiPrivate, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 
 import { DisplayContext } from "@/context/DisplayContextProvider"
 import { getItemId } from "@/utils/getItemId"
@@ -11,7 +11,7 @@ import { apiPost } from "../../../../utils/api.utils"
 import { IApplicationSchemaInitValues } from "./getSchema"
 
 export const useSubmitCandidature = (
-  LbaJob: ILbaItemLbaJob | ILbaItemLbaCompany | ILbaItemPartnerJob,
+  LbaJob: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson,
   caller?: string
 ): {
   submitCandidature: (props: { formValues: IApplicationSchemaInitValues }) => void
@@ -48,7 +48,7 @@ async function submitCandidature({
   caller,
 }: {
   formValues: IApplicationSchemaInitValues
-  LbaJob: ILbaItemLbaJob | ILbaItemLbaCompany | ILbaItemPartnerJob
+  LbaJob: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson
   caller?: string
 }) {
   const payload: IApplicationApiPrivate = {

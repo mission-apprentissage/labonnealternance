@@ -1,11 +1,12 @@
-import { ILbaItemPartnerJob, ILbaItemPartnerJobReturnedByAPI } from "@/../shared"
+import { ILbaItemPartnerJobJson, ILbaItemPartnerJobReturnedByAPI } from "shared"
 
 import { apiGet } from "@/utils/api.utils"
 
-const fetchPartnerJobDetails = async (partnerJob): Promise<ILbaItemPartnerJob> => {
+const fetchPartnerJobDetails = async (partnerJob): Promise<ILbaItemPartnerJobJson> => {
   const response: ILbaItemPartnerJobReturnedByAPI = await apiGet("/v1/jobs/partnerJob/:id", { params: { id: partnerJob.id }, querystring: {} })
 
-  const [firstPartnerJob] = response?.partnerJobs ?? []
+  // @ts-expect-error
+  const [firstPartnerJob]: [ILbaItemPartnerJobJson] = response?.partnerJobs ?? []
   if (firstPartnerJob) {
     firstPartnerJob.detailsLoaded = true
     return firstPartnerJob

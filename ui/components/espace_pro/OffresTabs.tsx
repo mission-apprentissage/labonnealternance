@@ -4,14 +4,14 @@ import dayjs from "dayjs"
 import { useRouter } from "next/router"
 import { useState } from "react"
 import { useQueryClient } from "react-query"
-import { IJob, JOB_STATUS } from "shared"
-import { RECRUITER_STATUS } from "shared/constants"
+import { IJobJson, JOB_STATUS } from "shared"
+import { RECRUITER_STATUS } from "shared/constants/index"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { IRecruiterJson } from "shared/models/recruiter.model"
 
 import { sortReactTableDate } from "@/common/utils/dateUtils"
 import { useAuth } from "@/context/UserContext"
 
-import { IRecruiterJson } from "../../../shared/models/recruiter.model"
 import { AUTHTYPE } from "../../common/contants"
 import { publicConfig } from "../../config.public"
 import { ExternalLinkLine, Parametre } from "../../theme/components/icons"
@@ -82,7 +82,7 @@ export const OffresTabs = ({
   const [currentOffre, setCurrentOffre] = useState()
   const [copied, setCopied] = useState(false)
 
-  const jobs: (IJob & { candidatures: number; geo_coordinates: string })[] = recruiter?.jobs ?? []
+  const jobs: (IJobJson & { candidatures: number; geo_coordinates: string })[] = recruiter?.jobs ?? []
 
   if (jobs.length === 0) {
     return (

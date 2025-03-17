@@ -1,7 +1,7 @@
 import crypto from "crypto"
 
 import { ObjectId } from "mongodb"
-import { ITrackingCookies, TrafficType } from "shared/models"
+import { ITrackingCookies, TrafficType } from "shared/models/index"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 

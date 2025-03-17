@@ -1,4 +1,4 @@
-import { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob, ILbaItemTraining2 } from "@/../shared"
+import { ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson, ILbaItemTraining2 } from "shared"
 
 import { IContextSearch, IContextSearchHistory } from "@/context/SearchResultContextProvider"
 
@@ -14,7 +14,7 @@ export const storeSearchResultInContext = ({
   searchResultContext: IContextSearch
   results: {
     trainings?: ILbaItemTraining2[]
-    jobs?: { peJobs: ILbaItemFtJob[] | null; lbaCompanies: ILbaItemLbaCompany[] | null; matchas: ILbaItemLbaJob[] | null; partnerJobs: ILbaItemPartnerJob[] | null }
+    jobs?: { peJobs: ILbaItemFtJobJson[] | null; lbaCompanies: ILbaItemLbaCompanyJson[] | null; matchas: ILbaItemLbaJobJson[] | null; partnerJobs: ILbaItemPartnerJobJson[] | null }
   }
   searchTimestamp: number
   formValues?: any

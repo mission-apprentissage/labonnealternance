@@ -1,7 +1,7 @@
 import { Image, Text } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { useEffect, useState } from "react"
-import { ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
+import { ILbaItemFormationJson, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { buildJobUrl, buildTrainingUrl } from "shared/metier/lbaitemutils"
 
@@ -9,7 +9,7 @@ const getPath = (item) => {
   return item.ideaType === LBA_ITEM_TYPE.FORMATION ? buildTrainingUrl(item.id, item.title) : buildJobUrl(item.ideaType, item.id, item.title)
 }
 
-const ShareLink = ({ item }: { item: ILbaItemFormation | ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob }) => {
+const ShareLink = ({ item }: { item: ILbaItemFormationJson | ILbaItemFtJobJson | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemPartnerJobJson }) => {
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {

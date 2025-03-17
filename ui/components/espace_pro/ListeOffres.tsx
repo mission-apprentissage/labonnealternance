@@ -3,7 +3,7 @@ import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { useRouter } from "next/router"
 import { useQuery } from "react-query"
-import { IJob } from "shared"
+import { IJobJson } from "shared"
 
 import { useAuth } from "@/context/UserContext"
 
@@ -36,7 +36,7 @@ export default function ListeOffres({ hideModify = false, showStats = false }: {
   }
 
   const { establishment_raison_sociale, establishment_siret, _id: dataId } = data
-  const jobs: (IJob & { candidatures: number })[] = data.jobs ?? []
+  const jobs: (IJobJson & { candidatures: number })[] = data.jobs ?? []
 
   const entrepriseTitle = establishment_raison_sociale ?? establishment_siret
   const getOffreEditionUrl = (offerId: string) => {

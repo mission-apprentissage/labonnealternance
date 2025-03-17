@@ -1,10 +1,10 @@
 import { ObjectId } from "mongodb"
-import { RECRUITER_STATUS } from "shared/constants"
+import { RECRUITER_STATUS } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { buildJobUrl } from "shared/metier/lbaitemutils"
-import { IJob, IRecruiter, JOB_STATUS } from "shared/models"
+import { IJob, IRecruiter, JOB_STATUS } from "shared/models/index"
 import { ISitemap } from "shared/models/sitemap.model"
-import { hashcode } from "shared/utils"
+import { hashcode } from "shared/utils/index"
 import { generateSitemapFromUrlEntries } from "shared/utils/sitemapUtils"
 
 import { logger } from "@/common/logger"

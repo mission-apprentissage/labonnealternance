@@ -2,10 +2,10 @@ import { setTimeout } from "timers/promises"
 
 import { badRequest, notFound } from "@hapi/boom"
 import distance from "@turf/distance"
-import { NIVEAUX_POUR_OFFRES_PE } from "shared/constants"
+import { NIVEAUX_POUR_OFFRES_PE } from "shared/constants/index"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
-import { ILbaItemPartnerJob } from "shared/models"
+import { ILbaItemPartnerJob } from "shared/models/index"
 import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 
 import { getFtJob, searchForFtJobs } from "@/common/apis/franceTravail/franceTravail.client"

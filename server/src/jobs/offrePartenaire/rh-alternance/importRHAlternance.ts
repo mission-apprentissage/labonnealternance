@@ -1,11 +1,11 @@
 import { internal } from "@hapi/boom"
 import axios from "axios"
 import { ObjectId } from "mongodb"
-import { TRAINING_CONTRACT_TYPE } from "shared/constants"
+import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import rawRHAlternanceModel, { IRawRHAlternance } from "shared/models/rawRHAlternance.model"
-import { joinNonNullStrings } from "shared/utils"
+import { joinNonNullStrings } from "shared/utils/index"
 import { z } from "zod"
 
 import { logger } from "@/common/logger"

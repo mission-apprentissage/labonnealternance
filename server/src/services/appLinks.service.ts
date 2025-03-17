@@ -1,8 +1,8 @@
 import { ApplicationIntention } from "shared/constants/application"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { IJob } from "shared/models"
+import { IJob } from "shared/models/index"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
-import { zRoutes } from "shared/routes"
+import { zRoutes } from "shared/routes/index"
 
 import config from "@/config"
 import {

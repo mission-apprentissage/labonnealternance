@@ -1,6 +1,6 @@
 "use client"
 import { Box, Text } from "@chakra-ui/react"
-import { ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
+import { ILbaItemFormationJson, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { localStorageGet } from "@/utils/localStorage"
@@ -35,7 +35,7 @@ const getAPostuleMessage = (type: LBA_ITEM_TYPE | LBA_ITEM_TYPE_OLD, application
   )
 }
 
-export const hasApplied = (item: ILbaItemFormation | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemFtJob | ILbaItemPartnerJob) => {
+export const hasApplied = (item: ILbaItemFormationJson | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemFtJobJson | ILbaItemPartnerJobJson) => {
   return localStorage.getItem(`application-${item.ideaType}-${item.id}`) !== null
 }
 
@@ -44,7 +44,7 @@ export default function ItemDetailApplicationsStatus({
   mb = 0,
   mt = 0,
 }: {
-  item: ILbaItemFormation | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemFtJob | ILbaItemPartnerJob
+  item: ILbaItemFormationJson | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemFtJobJson | ILbaItemPartnerJobJson
   mb?: number
   mt?: number
 }) {

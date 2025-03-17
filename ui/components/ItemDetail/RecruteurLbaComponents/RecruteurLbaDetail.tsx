@@ -1,7 +1,7 @@
-import { ILbaItemLbaCompany } from "@/../shared"
 import { AddIcon, MinusIcon } from "@chakra-ui/icons"
 import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Flex, Image, ListItem, /*Link,*/ Text, UnorderedList } from "@chakra-ui/react"
 import { useContext, useEffect } from "react"
+import { ILbaItemLbaCompanyJson, ILbaItemNaf } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
@@ -15,7 +15,7 @@ import ItemGoogleSearchLink from "../ItemDetailServices/ItemGoogleSearchLink"
 import ItemLocalisation from "../ItemDetailServices/ItemLocalisation"
 import { ReportJobLink } from "../ReportJobLink"
 
-const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany }) => {
+const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompanyJson }) => {
   useEffect(() => {
     SendPlausibleEvent("Affichage - Fiche entreprise Algo", {
       info_fiche: `${recruteurLba?.company?.siret}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
@@ -84,7 +84,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
                       <Text as="span" fontWeight={700}>
                         Secteur d'activité :{" "}
                       </Text>
-                      <Text as="span">{recruteurLba.nafs[0].label}</Text>
+                      <Text as="span">{(recruteurLba?.nafs as ILbaItemNaf[])?.[0].label}</Text>
                     </Text>
                     {recruteurLba?.contact?.phone && (
                       <Text mt={1}>

@@ -1,6 +1,6 @@
 import { useDisclosure } from "@chakra-ui/react"
 import { useState } from "react"
-import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
+import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 
@@ -16,7 +16,7 @@ export const CandidatureLbaModal = ({
   submitControls,
   fromWidget = false,
 }: {
-  item: ILbaItemLbaJob | ILbaItemLbaCompany | ILbaItemPartnerJob
+  item: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson
   modalControls: ReturnType<typeof useDisclosure>
   submitControls: ReturnType<typeof useSubmitCandidature>
   fromWidget?: boolean

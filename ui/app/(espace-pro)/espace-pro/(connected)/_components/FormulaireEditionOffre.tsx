@@ -5,7 +5,7 @@ import dayjs from "dayjs"
 import { Formik } from "formik"
 import { useState } from "react"
 import { useQuery } from "react-query"
-import { IReferentielRomeForJob } from "shared"
+import { IReferentielRomeForJobJson } from "shared"
 import { IJobJson, JOB_STATUS } from "shared/models/job.model"
 import { detectUrlAndEmails } from "shared/utils/detectUrlAndEmails"
 import * as Yup from "yup"
@@ -19,7 +19,7 @@ import { getRomeDetail } from "@/utils/api"
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
 const FR_DATE_FORMAT = "DD/MM/YYYY"
 
-export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: { offre?: IJobJson; establishment_id: string; handleSave: (values: any) => void }) => {
+export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: { offre?: IJobJson; establishment_id?: string; handleSave?: (values: any) => void }) => {
   const { rome_appellation_label, rome_code } = offre ?? {}
   const initRome = rome_code?.at(0)
   const [romeAndAppellation, setRomeAndAppellation] = useState<{ rome: string; appellation: string }>(
@@ -32,7 +32,7 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
     enabled: Boolean(rome),
   })
 
-  const [selectedCompetences, setSelectedCompetences] = useState<IReferentielRomeForJob["competences"] | null>(offre?.competences_rome ?? null)
+  const [selectedCompetences, setSelectedCompetences] = useState<IReferentielRomeForJobJson["competences"] | null>(offre?.competences_rome ?? null)
   const [competencesDirty, setCompetencesDirty] = useState(false)
 
   const onRomeChange = (rome: string, appellation: string) => {
@@ -45,10 +45,10 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
     if (!romeQuery.data) {
       throw new Error("inattendu : pas de données ROME")
     }
-    const { competences } = romeQuery.data as IReferentielRomeForJob
+    const { competences } = romeQuery.data as IReferentielRomeForJobJson
     const isSelected = (groupKey: string, competence: string): boolean => (selectedCompetences[groupKey] ?? []).includes(competence)
 
-    const savedCompetences: IReferentielRomeForJob["competences"] = {
+    const savedCompetences: IReferentielRomeForJobJson["competences"] = {
       savoir_etre_professionnel: competences.savoir_etre_professionnel.filter((x) => isSelected("savoir_etre_professionnel", x.libelle)),
       savoir_faire: competences.savoir_faire.flatMap((competencesGroup) => {
         const selectedItems = (competencesGroup?.items ?? []).filter(({ libelle }) => isSelected("savoir_faire", libelle))
@@ -75,7 +75,7 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
 
   const onSubmit = (values) => {
     values = { ...values, competences_rome: finalSelectedCompetences, offer_title_custom: values.offer_title_custom || null }
-    handleSave(values)
+    handleSave?.(values)
   }
 
   const minStartDate = dayjs().startOf("day")
@@ -118,7 +118,7 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
             .max(150, "L’intitulé est trop long. Sa taille doit être comprise entre 3 et 150 caractères.")
             .test("no-urls-emails", "Les urls et les emails sont interdits", (value) => !value || detectUrlAndEmails(value).length === 0),
         })}
-        onSubmit={(values: any, bag) => onSubmit(values, bag)}
+        onSubmit={(values: any) => onSubmit(values)}
       >
         {({ values }) => (
           <Grid

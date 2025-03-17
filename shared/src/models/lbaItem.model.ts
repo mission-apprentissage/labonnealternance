@@ -1,7 +1,6 @@
 import { Jsonify } from "type-fest"
 
-import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem.js"
-
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "../constants/lbaitem.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 
@@ -343,7 +342,7 @@ const ZLbaItemTraining2 = z
   .strict()
   .openapi("Training")
 
-export type ILbaItemTraining2 = z.output<typeof ZLbaItemTraining2>
+export type ILbaItemTraining2 = Jsonify<z.output<typeof ZLbaItemTraining2>>
 
 export const ZLbaItemFormation = z
   .object({
@@ -442,6 +441,7 @@ export const ZLbaItemFormation = z
   .openapi("Formation")
 
 export type ILbaItemFormation = z.output<typeof ZLbaItemFormation>
+export type ILbaItemFormationJson = Jsonify<ILbaItemFormation>
 
 export const ZLbaItemFormation2 = z
   .object({
@@ -464,6 +464,7 @@ export const ZLbaItemFormation2 = z
   .openapi("Formation")
 
 export type ILbaItemFormation2 = z.output<typeof ZLbaItemFormation2>
+export type ILbaItemFormation2Json = Jsonify<ILbaItemFormation2>
 
 export const ZLbaItemLbaJob = z
   .object({
@@ -492,8 +493,9 @@ export const ZLbaItemLbaJob = z
   .openapi("LbaJob")
 
 export type ILbaItemLbaJob = z.output<typeof ZLbaItemLbaJob>
+export type ILbaItemLbaJobJson = Jsonify<ILbaItemLbaJob>
 export const ZLbaItemLbaJobReturnedByAPI = z.object({ matchas: z.array(ZLbaItemLbaJob) })
-export type ILbaItemLbaJobReturnedByAPI = z.output<typeof ZLbaItemLbaJobReturnedByAPI>
+export type ILbaItemLbaJobReturnedByAPI = Jsonify<z.output<typeof ZLbaItemLbaJobReturnedByAPI>>
 
 export const ZLbaItemPartnerJob = z
   .object({
@@ -521,8 +523,9 @@ export const ZLbaItemPartnerJob = z
   .openapi("PartnerJob")
 
 export type ILbaItemPartnerJob = z.output<typeof ZLbaItemPartnerJob>
+export type ILbaItemPartnerJobJson = Jsonify<ILbaItemPartnerJob>
 export const ZLbaItemPartnerJobReturnedByAPI = z.object({ partnerJobs: z.array(ZLbaItemPartnerJob) })
-export type ILbaItemPartnerJobReturnedByAPI = z.output<typeof ZLbaItemPartnerJobReturnedByAPI>
+export type ILbaItemPartnerJobReturnedByAPI = Jsonify<z.output<typeof ZLbaItemPartnerJobReturnedByAPI>>
 
 export const ZLbaItemLbaCompany = z
   .object({
@@ -544,8 +547,9 @@ export const ZLbaItemLbaCompany = z
   .openapi("LbaCompany")
 
 export type ILbaItemLbaCompany = z.output<typeof ZLbaItemLbaCompany> & { ideaType: LBA_ITEM_TYPE_OLD.LBA | LBA_ITEM_TYPE.RECRUTEURS_LBA }
+export type ILbaItemLbaCompanyJson = Jsonify<ILbaItemLbaCompany>
 export const ZLbaItemLbaCompanyReturnedByAPI = z.object({ lbaCompanies: z.array(ZLbaItemLbaCompany) })
-export type ILbaItemLbaCompanyReturnedByAPI = z.output<typeof ZLbaItemLbaCompanyReturnedByAPI>
+export type ILbaItemLbaCompanyReturnedByAPI = Jsonify<z.output<typeof ZLbaItemLbaCompanyReturnedByAPI>>
 
 export const ZLbaItemFtJob = z
   .object({
@@ -565,8 +569,9 @@ export const ZLbaItemFtJob = z
   .openapi("PeJob")
 
 export type ILbaItemFtJob = z.output<typeof ZLbaItemFtJob>
+export type ILbaItemFtJobJson = Jsonify<ILbaItemFtJob>
 export const ZLbaItemFtJobReturnedByAPI = z.object({ peJobs: z.array(ZLbaItemFtJob) })
-export type ILbaItemFtJobReturnedByAPI = z.output<typeof ZLbaItemFtJobReturnedByAPI>
+export type ILbaItemFtJobReturnedByAPI = Jsonify<z.output<typeof ZLbaItemFtJobReturnedByAPI>>
 
 export const ZLbaItemFormationResult = z
   .object({
@@ -577,6 +582,6 @@ export const ZLbaItemFormationResult = z
     description:
       "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
   })
-export type ILbaItemFormationResult = z.output<typeof ZLbaItemFormationResult>
+export type ILbaItemFormationResult = Jsonify<z.output<typeof ZLbaItemFormationResult>>
 
-export type ILbaItemJobsGlobal = Jsonify<ILbaItemLbaCompany> | Jsonify<ILbaItemLbaJob> | Jsonify<ILbaItemPartnerJob>
+export type ILbaItemJobsGlobal = ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemPartnerJobJson

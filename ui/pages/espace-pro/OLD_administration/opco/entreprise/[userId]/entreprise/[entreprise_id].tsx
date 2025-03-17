@@ -21,10 +21,11 @@ import {
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useMutation, useQuery, useQueryClient } from "react-query"
-import { IUserStatusValidation } from "shared"
+import { IUserStatusValidationJson } from "shared"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
+import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/compte/_components/InformationLegaleEntreprise"
 import { AUTHTYPE } from "@/common/contants"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
@@ -33,7 +34,6 @@ import {
   ConfirmationDesactivationUtilisateur,
   ConfirmationModificationOpco,
   CustomInput,
-  InformationLegaleEntreprise,
   Layout,
   LoadingEmptySpace,
   UserValidationHistory,
@@ -138,7 +138,7 @@ function DetailEntreprise() {
     return <LoadingEmptySpace />
   }
 
-  const lastUserState: IUserStatusValidation = userRecruteur.status.at(-1)
+  const lastUserState: IUserStatusValidationJson = userRecruteur.status.at(-1)
   const establishmentLabel = userRecruteur.establishment_raison_sociale ?? userRecruteur.establishment_siret
 
   return (

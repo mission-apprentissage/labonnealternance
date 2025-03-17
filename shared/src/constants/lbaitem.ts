@@ -43,14 +43,11 @@ export const oldItemTypeToNewItemType = (lbaItemType: LBA_ITEM_TYPE_OLD | LBA_IT
       return LBA_ITEM_TYPE.FORMATION
     case LBA_ITEM_TYPE_OLD.PARTNER_JOB:
       return LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES
-    case LBA_ITEM_TYPE.FORMATION:
-      return LBA_ITEM_TYPE.FORMATION
-    case LBA_ITEM_TYPE.RECRUTEURS_LBA:
-      return LBA_ITEM_TYPE.RECRUTEURS_LBA
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
-      return LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
+    case LBA_ITEM_TYPE.RECRUTEURS_LBA:
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES:
-      return LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES
+    case LBA_ITEM_TYPE.FORMATION:
+      return lbaItemType
     default:
       assertUnreachable(lbaItemType)
   }
