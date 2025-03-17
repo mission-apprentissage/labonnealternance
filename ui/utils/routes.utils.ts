@@ -518,7 +518,7 @@ export const PAGES = {
     }),
     backHomeEntreprise: (): IPage => ({
       getPath: () => `/espace-pro/entreprise` as string,
-      title: "Entreprise",
+      title: "Accueil",
     }),
   },
   notion: {},

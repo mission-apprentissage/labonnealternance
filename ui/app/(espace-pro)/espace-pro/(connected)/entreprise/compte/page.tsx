@@ -1,3 +1,12 @@
+import CompteRenderer from "@/app/(espace-pro)/espace-pro/(connected)/compte/CompteRenderer"
+import { Breadcrumb } from "@/components/espace_pro/common/components/Breadcrumb"
+import { PAGES } from "@/utils/routes.utils"
+
 export default function Page() {
-  return <>TODO</>
+  return (
+    <>
+      <Breadcrumb pages={[PAGES.dynamic.backHomeEntreprise(), PAGES.dynamic.compte()]} />
+      <CompteRenderer />
+    </>
+  )
 }
