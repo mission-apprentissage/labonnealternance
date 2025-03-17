@@ -1,4 +1,5 @@
 //import { ObjectId } from "mongodb"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { meteojobJobToJobsPartners } from "./meteojobMapper"
@@ -356,7 +357,7 @@ describe("meteojobJobToJobsPartners", () => {
       apply_url: "https://www.meteojob.com/jobads/43954570?utm_source=labonnealternance&utm_medium=aggregator-free&utm_campaign=alternance",
       errors: [],
       validated: false,
-      business_error: "company registered in blocked CFA list",
+      business_error: JOB_PARTNER_BUSINESS_ERROR.CFA,
       jobs_in_success: [],
     })
   })

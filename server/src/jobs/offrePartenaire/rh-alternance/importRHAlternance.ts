@@ -3,7 +3,7 @@ import axios from "axios"
 import { ObjectId } from "mongodb"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import rawRHAlternanceModel, { IRawRHAlternance } from "shared/models/rawRHAlternance.model"
 import { joinNonNullStrings } from "shared/utils"
 import { z } from "zod"
@@ -102,12 +102,7 @@ export const rawRhAlternanceToComputedMapper =
   }: IRawRHAlternance["job"]): IComputedJobsPartners => {
     const offer_creation = jobSubmitDateTime ? dayjs.tz(jobSubmitDateTime).toDate() : now
 
-    const business_error =
-      jobType === "Alternance"
-        ? isCompanyInBlockedCfaList(companyName ?? "")
-          ? "company registered in blocked CFA list"
-          : null
-        : `expected jobType === "Alternance" but got ${jobType}`
+    const business_error = jobType === "Alternance" ? (isCompanyInBlockedCfaList(companyName ?? "") ? JOB_PARTNER_BUSINESS_ERROR.CFA : null) : JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA
 
     const computedJob: IComputedJobsPartners = {
       ...blankComputedJobPartner(),
