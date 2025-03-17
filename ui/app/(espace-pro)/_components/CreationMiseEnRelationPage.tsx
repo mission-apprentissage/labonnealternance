@@ -103,7 +103,7 @@ export function CreationMiseEnRelationPage({ isWidget = false }: { isWidget?: bo
         }
       )
     }
-  }, [geo_coordinates])
+  }, [geo_coordinates, job])
 
   if (!job && !email && !geo_coordinates && !fromDashboard && !userId) return <></>
 

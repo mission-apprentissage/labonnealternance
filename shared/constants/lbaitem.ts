@@ -29,7 +29,7 @@ export enum LBA_ITEM_TYPE_OLD {
  * KBA 20240805
  * to be removed once public API route V2 are active
  */
-export const oldItemTypeToNewItemType = (lbaItemType: LBA_ITEM_TYPE_OLD): LBA_ITEM_TYPE => {
+export const oldItemTypeToNewItemType = (lbaItemType: LBA_ITEM_TYPE_OLD | LBA_ITEM_TYPE): LBA_ITEM_TYPE => {
   switch (lbaItemType) {
     case LBA_ITEM_TYPE_OLD.MATCHA:
       return LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
@@ -42,6 +42,14 @@ export const oldItemTypeToNewItemType = (lbaItemType: LBA_ITEM_TYPE_OLD): LBA_IT
     case LBA_ITEM_TYPE_OLD.FORMATION:
       return LBA_ITEM_TYPE.FORMATION
     case LBA_ITEM_TYPE_OLD.PARTNER_JOB:
+      return LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES
+    case LBA_ITEM_TYPE.FORMATION:
+      return LBA_ITEM_TYPE.FORMATION
+    case LBA_ITEM_TYPE.RECRUTEURS_LBA:
+      return LBA_ITEM_TYPE.RECRUTEURS_LBA
+    case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
+      return LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
+    case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES:
       return LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES
     default:
       assertUnreachable(lbaItemType)

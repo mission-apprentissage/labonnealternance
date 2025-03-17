@@ -8,7 +8,7 @@ import { useField, useFormikContext } from "formik"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useQuery } from "react-query"
 
-import { InputFormField } from "@/app/(home)/_components/FormComponents/InputFormField"
+import { InputFormField } from "@/app/_components/FormComponents/InputFormField"
 
 function identity<T>(value: T) {
   return value
@@ -78,16 +78,29 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
   // https://github.com/mui/material-ui/issues/27670#issuecomment-2079148513
   useWindowSize()
 
-  const [{ onBlur }, meta] = useField(props.id)
+  const [isOpen, setIsOpenned] = useState(false)
+
+  const onOpen = useCallback(() => {
+    setIsOpenned(true)
+  }, [])
+
+  const onClose = useCallback(() => {
+    setIsOpenned(false)
+  }, [])
+
+  const { getOptionKey, getOptionLabel } = props
+  const [{ onBlur, value }, meta] = useField(props.id)
   const { setFieldValue } = useFormikContext()
 
-  const [query, setQuery] = useState("")
+  const [query, setQuery] = useState(meta.initialValue ? getOptionLabel(meta.initialValue) : "")
   const debouncedQuery = useThrottle(query, 300)
 
-  const enabled = debouncedQuery.length > 0
+  const enabled = isOpen && debouncedQuery.length > 0
 
   const onInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event?.target?.value ?? "")
+    if (event && event.type === "change") {
+      setQuery(event?.target?.value ?? "")
+    }
   }, [])
 
   const result = useQuery(["autocomplete", props.id, debouncedQuery], async () => props.fetchOptions(debouncedQuery), { enabled, staleTime: Infinity })
@@ -126,7 +139,7 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
           }
           state={meta.touched && meta.error ? "error" : "default"}
           stateRelatedMessage="champ obligatoire"
-        ></InputFormField>
+        />
       )
     },
     [props.label, props.placeholder, isDeferredOrFetching, meta]
@@ -134,8 +147,8 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
 
   const renderOption = useCallback(
     (params: React.HTMLAttributes<HTMLLIElement>, option: T, { inputValue }: AutocompleteRenderOptionState) => {
-      const key = props.getOptionKey(option)
-      const label = props.getOptionLabel(option)
+      const key = getOptionKey(option)
+      const label = getOptionLabel(option)
 
       const matches = match(label, inputValue, { insideWords: true, findAllOccurrences: true })
       const parts = parse(label, matches)
@@ -167,7 +180,7 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
         </Box>
       )
     },
-    [props.getOptionKey, props.getOptionLabel, isDeferredOrFetching]
+    [getOptionKey, getOptionLabel, isDeferredOrFetching]
   )
 
   // TODO: create a basic AutoComplete DSFR with static options which can be used here too to share the same design
@@ -175,17 +188,21 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
     <Autocomplete
       id={props.id}
       disablePortal
+      onOpen={onOpen}
+      onClose={onClose}
       openOnFocus
       loading={result.isLoading}
       loadingText="Veuillez patienter"
       options={result.data ?? []}
-      getOptionLabel={props.getOptionLabel}
-      getOptionKey={props.getOptionKey}
+      getOptionLabel={getOptionLabel}
+      getOptionKey={getOptionKey}
+      value={value}
       renderInput={renderInput}
       onInputChange={onInputChange}
       renderGroup={renderGroup}
       onBlur={onBlur}
       groupBy={props.groupBy}
+      isOptionEqualToValue={(option, value) => getOptionKey(option) === getOptionKey(value)}
       classes={{
         noOptions: fr.cx("fr-text--sm"),
       }}

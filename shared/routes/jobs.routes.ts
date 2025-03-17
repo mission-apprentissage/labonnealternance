@@ -304,11 +304,6 @@ export const zV1JobsRoutes = {
         "500": z.union([ZResError, ZLbacError, ZApiError]),
       },
       securityScheme: null,
-      openapi: {
-        tags: ["V1 - Jobs"] as string[],
-        deprecated: true,
-        description: `Get job opportunities matching the query parameters\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
-      },
     },
     "/_private/jobs/:source/:id": {
       method: "get",

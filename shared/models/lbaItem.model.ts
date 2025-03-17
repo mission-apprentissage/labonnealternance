@@ -439,7 +439,6 @@ export const ZLbaItemFormation = z
 
     rdvContext: z.any().nullish(),
   })
-  .strict()
   .openapi("Formation")
 
 export type ILbaItemFormation = z.output<typeof ZLbaItemFormation>
@@ -544,7 +543,7 @@ export const ZLbaItemLbaCompany = z
   .strict()
   .openapi("LbaCompany")
 
-export type ILbaItemLbaCompany = z.output<typeof ZLbaItemLbaCompany>
+export type ILbaItemLbaCompany = z.output<typeof ZLbaItemLbaCompany> & { ideaType: LBA_ITEM_TYPE_OLD.LBA | LBA_ITEM_TYPE.RECRUTEURS_LBA }
 export const ZLbaItemLbaCompanyReturnedByAPI = z.object({ lbaCompanies: z.array(ZLbaItemLbaCompany) })
 export type ILbaItemLbaCompanyReturnedByAPI = z.output<typeof ZLbaItemLbaCompanyReturnedByAPI>
 

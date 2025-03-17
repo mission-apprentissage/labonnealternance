@@ -38,7 +38,6 @@ export default async function JobOfferPage({ params }: { params: Promise<{ type:
 
   if (!job) redirect("/404")
 
-  console.log(job)
   // @ts-ignore TODO
   return <JobOfferRendererClient selectedItem={job as ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob} />
 }

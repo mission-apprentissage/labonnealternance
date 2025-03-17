@@ -91,7 +91,7 @@ const nextConfig = {
   webpack: (config, { isServer, dev }) => {
     // Required for DSFR
     config.module.rules.push({
-      test: /\.woff2$/,
+      test: /\.woff2?$/,
       type: "asset/resource",
     })
 
