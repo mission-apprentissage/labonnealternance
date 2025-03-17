@@ -1,9 +1,9 @@
 import { badRequest } from "@hapi/boom"
 import { ObjectId } from "mongodb"
-import { NIVEAUX_POUR_LBA, TRAINING_REMOTE_TYPE } from "shared/constants"
 import { FRANCE_LATITUDE, FRANCE_LONGITUDE } from "shared/constants/geolocation"
+import { NIVEAUX_POUR_LBA, TRAINING_REMOTE_TYPE } from "shared/constants/index"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
-import { ILbaItemPartnerJob, traductionJobStatus } from "shared/models"
+import { ILbaItemPartnerJob, traductionJobStatus } from "shared/models/index"
 import { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance } from "shared/models/jobsPartners.model"
 
 import { IApiError, manageApiError } from "@/common/utils/errorManager"

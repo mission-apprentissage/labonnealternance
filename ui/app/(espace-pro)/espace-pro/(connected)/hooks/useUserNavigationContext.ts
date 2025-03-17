@@ -1,5 +1,5 @@
 import { assertUnreachable } from "shared"
-import { AUTHTYPE } from "shared/constants"
+import { AUTHTYPE } from "shared/constants/index"
 
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 

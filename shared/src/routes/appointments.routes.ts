@@ -1,3 +1,4 @@
+import { Jsonify } from "type-fest"
 import { zObjectId } from "zod-mongodb-schema"
 
 import { referrers } from "../constants/referers.js"
@@ -99,8 +100,8 @@ const zAppointmentRequestContextCreateResponseSchema = z.union([
 ])
 
 export type IAppointmentRequestContextCreateResponseSchema = z.output<typeof zAppointmentRequestContextCreateResponseSchema>
-export type IAppointmentRequestContextCreateFormAvailableResponseSchema = z.output<typeof zAppointmentRequestContextCreateFormAvailableResponseSchema>
-export type IAppointmentRequestContextCreateFormUnavailableResponseSchema = z.output<typeof zAppointmentRequestContextCreateFormUnavailableResponseSchema>
+export type IAppointmentRequestContextCreateFormAvailableResponseSchema = Jsonify<z.output<typeof zAppointmentRequestContextCreateFormAvailableResponseSchema>>
+export type IAppointmentRequestContextCreateFormUnavailableResponseSchema = Jsonify<z.output<typeof zAppointmentRequestContextCreateFormUnavailableResponseSchema>>
 
 const zContextQuerySchema = z
   .object({

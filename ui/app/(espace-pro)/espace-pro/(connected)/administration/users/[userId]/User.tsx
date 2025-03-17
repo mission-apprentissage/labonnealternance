@@ -19,7 +19,7 @@ import {
 import { Form, Formik } from "formik"
 import { useParams } from "next/navigation"
 import { useMutation, useQuery, useQueryClient } from "react-query"
-import { IUserStatusValidation } from "shared"
+import { IUserStatusValidationJson } from "shared"
 import { AUTHTYPE, CFA, ENTREPRISE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
@@ -114,7 +114,7 @@ function DetailEntreprise() {
     return <LoadingEmptySpace />
   }
 
-  const lastUserState: IUserStatusValidation = userRecruteur.status.at(-1)
+  const lastUserState: IUserStatusValidationJson = userRecruteur.status.at(-1)
   const establishmentLabel = userRecruteur.establishment_raison_sociale ?? userRecruteur.establishment_siret
 
   return (

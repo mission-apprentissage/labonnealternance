@@ -1,4 +1,4 @@
-import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
+import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { factorInternalJobsForMap, layerType, setJobMarkers } from "@/utils/mapTools"
@@ -63,7 +63,7 @@ export const searchForJobsFunction = async ({
 
     const response = await apiGet("/v1/_private/jobs/min", { querystring: params })
 
-    const results: { matchas: ILbaItemLbaJob[]; lbaCompanies: ILbaItemLbaCompany[]; partnerJobs: ILbaItemPartnerJob[]; peJobs: null } = {
+    const results: { matchas: ILbaItemLbaJobJson[]; lbaCompanies: ILbaItemLbaCompanyJson[]; partnerJobs: ILbaItemPartnerJobJson[]; peJobs: null } = {
       matchas: response.matchas && "error" in response.matchas ? null : "results" in response.matchas ? response.matchas.results : null,
       lbaCompanies: response.lbaCompanies && "error" in response.lbaCompanies ? null : "results" in response.lbaCompanies ? response.lbaCompanies.results : null,
       partnerJobs: response.partnerJobs && "error" in response.partnerJobs ? null : "results" in response.partnerJobs ? response.partnerJobs.results : null,
@@ -141,7 +141,7 @@ export const searchForJobsLightFunction = async ({ values, widgetParameters = un
 
     const response = await apiGet("/v1/_private/jobs/min", { querystring: params })
 
-    const results: { matchas: ILbaItemLbaJob[]; lbaCompanies: ILbaItemLbaCompany[]; partnerJobs: ILbaItemPartnerJob[]; peJobs: null } = {
+    const results: { matchas: ILbaItemLbaJobJson[]; lbaCompanies: ILbaItemLbaCompanyJson[]; partnerJobs: ILbaItemPartnerJobJson[]; peJobs: null } = {
       matchas: response.matchas && "error" in response.matchas ? null : "results" in response.matchas ? response.matchas.results : null,
       lbaCompanies: response.lbaCompanies && "error" in response.lbaCompanies ? null : "results" in response.lbaCompanies ? response.lbaCompanies.results : null,
       partnerJobs: response.partnerJobs && "error" in response.partnerJobs ? null : "results" in response.partnerJobs ? response.partnerJobs.results : null,

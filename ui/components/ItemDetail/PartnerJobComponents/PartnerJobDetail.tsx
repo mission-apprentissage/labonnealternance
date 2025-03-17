@@ -2,7 +2,7 @@
 import { Accordion, Box, Flex, Image, ListItem, Text, UnorderedList } from "@chakra-ui/react"
 import Head from "next/head"
 import React, { useEffect } from "react"
-import { ILbaItemPartnerJob } from "shared"
+import { ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
@@ -23,7 +23,7 @@ const getContractTypes = (contractTypes) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
 }
 
-export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJob; title: string }) => {
+export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; title: string }) => {
   useEffect(() => {
     SendPlausibleEvent("Affichage - Fiche entreprise Partner Job", {
       info_fiche: `${job?.id}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
@@ -165,12 +165,12 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJob; titl
           <Text as="span">{getCompanySize(job)}</Text>
         </Text>
 
-        {job.nafs[0]?.label && (
+        {(job.nafs as ILbaItemNaf[])[0]?.label && (
           <Text mt={1}>
             <Text as="span" fontWeight={700}>
               Secteur d'activité :{" "}
             </Text>
-            <Text as="span">{job.nafs[0].label}</Text>
+            <Text as="span">{(job.nafs as ILbaItemNaf[])[0].label}</Text>
           </Text>
         )}
 

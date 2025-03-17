@@ -1,7 +1,7 @@
 import type { Metadata, MetadataRoute } from "next"
 import { ReadonlyURLSearchParams } from "next/navigation"
 import { assertUnreachable, removeUndefinedFields, toKebabCase } from "shared"
-import { ADMIN, CFA, ENTREPRISE, OPCO } from "shared/constants"
+import { ADMIN, CFA, ENTREPRISE, OPCO } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateUri } from "shared/helpers/generateUri"
 import { z } from "zod"
@@ -474,10 +474,24 @@ export const PAGES = {
         title: "Offres en alternance",
       }
     },
-    jobDetail: ({ type, jobId, jobTitle = "offre" }: { type: LBA_ITEM_TYPE; jobId: string; jobTitle?: string }): IPage => ({
-      getPath: () => `/emploi/${type}/${encodeURIComponent(jobId)}/${toKebabCase(jobTitle)}` as string,
-      title: jobTitle,
-    }),
+    jobDetail: (params: { type: Exclude<LBA_ITEM_TYPE, LBA_ITEM_TYPE.FORMATION>; jobId: string } & Partial<IRecherchePageParams>): IPage => {
+      const jobTitle = params.job_name ?? "Offre"
+      const search = buildRecherchePageParams(params)
+
+      return {
+        getPath: () => `/emploi/${params.type}/${encodeURIComponent(params.jobId)}/${toKebabCase(jobTitle)}?${search}` as string,
+        title: jobTitle,
+      }
+    },
+    formationDetail: (params: { jobId: string } & Partial<IRecherchePageParams>): IPage => {
+      const jobTitle = params.job_name ?? "Formation"
+      const search = buildRecherchePageParams(params)
+
+      return {
+        getPath: () => `/formation/${LBA_ITEM_TYPE.FORMATION}/${encodeURIComponent(params.jobId)}/${toKebabCase(jobTitle)}?${search}` as string,
+        title: jobTitle,
+      }
+    },
     backCfaEntrepriseCreationDetail: (siret: string): IPage => ({
       getPath: () => `/espace-pro/cfa/creation-entreprise/${siret}` as string,
       title: siret,

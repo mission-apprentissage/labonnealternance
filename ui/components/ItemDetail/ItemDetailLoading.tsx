@@ -1,5 +1,5 @@
-import { LBA_ITEM_TYPE_OLD } from "@/../shared/constants/lbaitem"
 import { Box, Image, Progress, SkeletonCircle, SkeletonText, Text } from "@chakra-ui/react"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import "./ItemDetailLoading.css"
 
 const ItemDetailLoading = ({ type }) => {

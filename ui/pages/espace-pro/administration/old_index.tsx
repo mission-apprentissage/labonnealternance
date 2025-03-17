@@ -59,7 +59,7 @@ function ListeEntreprise() {
   const [currentEntreprise, setCurrentEntreprise] = useState<IRecruiterJson | null>(null)
   const confirmationSuppression = useDisclosure()
   const router = useRouter()
-  const { userAccess } = useAuth()
+  const { access: userAccess } = useAuth()
   const toast = useToast()
 
   useEffect(() => {

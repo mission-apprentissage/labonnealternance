@@ -4,7 +4,7 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import emailMisspelled, { top100 } from "email-misspelled"
 import { useFormik } from "formik"
 import { useState } from "react"
-import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
+import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
@@ -30,7 +30,7 @@ export const CandidatureLbaModalBody = ({
 }: {
   isLoading: boolean
   company: string
-  item: ILbaItemLbaJob | ILbaItemLbaCompany | ILbaItemPartnerJob
+  item: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson
   kind: LBA_ITEM_TYPE | LBA_ITEM_TYPE_OLD
   fromWidget?: boolean
   onSubmit: (values: IApplicationSchemaInitValues) => void

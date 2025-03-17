@@ -2,7 +2,7 @@ import { internal } from "@hapi/boom"
 import { groupBy } from "lodash-es"
 import { ObjectId } from "mongodb"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { JOB_STATUS } from "shared/models"
+import { JOB_STATUS } from "shared/models/index"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"

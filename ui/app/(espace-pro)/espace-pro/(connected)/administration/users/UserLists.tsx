@@ -5,7 +5,7 @@ import dayjs from "dayjs"
 import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
-import { getLastStatusEvent, IUserRecruteur } from "shared"
+import { getLastStatusEvent, IUserRecruteurJson, IUserStatusValidationJson } from "shared"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
@@ -34,7 +34,7 @@ function Users() {
         isClosable: true,
       })
     }
-  }, [])
+  }, [newUser, toast])
 
   const { isLoading, data } = useQuery("user-list", () => apiGet("/user", {}))
 
@@ -147,8 +147,8 @@ function Users() {
       id: "action",
       maxWidth: "80",
       disableSortBy: true,
-      accessor: (row: IUserRecruteur) => {
-        const status = getLastStatusEvent(row.status)?.status
+      accessor: (row: IUserRecruteurJson) => {
+        const status = getLastStatusEvent(row.status as IUserStatusValidationJson[])?.status
         const canActivate = [ETAT_UTILISATEUR.DESACTIVE, ETAT_UTILISATEUR.ATTENTE].includes(status)
         const canDeactivate = [ETAT_UTILISATEUR.VALIDE, ETAT_UTILISATEUR.ATTENTE].includes(status)
         return (

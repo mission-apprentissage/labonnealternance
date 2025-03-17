@@ -13,8 +13,8 @@ import {
   TrafficType,
   ZCfaReferentielData,
 } from "shared"
-import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/index"
 import { OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { IEtablissementGouvData } from "shared/models/cacheInfosSiret.model"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"

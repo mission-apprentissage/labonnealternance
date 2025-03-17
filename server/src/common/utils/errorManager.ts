@@ -1,5 +1,5 @@
 import { captureException } from "@sentry/node"
-import { ZApiError } from "shared/models"
+import { ZApiError } from "shared/models/index"
 import { z } from "zod"
 
 import { trackApiCall } from "./sendTrackingEvent"

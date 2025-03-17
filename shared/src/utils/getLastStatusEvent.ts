@@ -1,10 +1,10 @@
-export const getLastStatusEvent = <Status, T extends { date?: Date | null; status?: Status }>(stateArray?: T[]): T | null => {
+export const getLastStatusEvent = <Status, T extends { date?: Date | string | null; status?: Status }>(stateArray?: T[]): T | null => {
   const sortedArray = getSortedStatusEvents(stateArray)
   const lastValidationEvent = sortedArray.at(sortedArray.length - 1)
   return lastValidationEvent?.status ? lastValidationEvent : null
 }
 
-export const getSortedStatusEvents = <Status, T extends { date?: Date | null; status?: Status }>(stateArray?: T[]): T[] => {
+export const getSortedStatusEvents = <Status, T extends { date?: Date | string | null; status?: Status }>(stateArray?: T[]): T[] => {
   if (!stateArray) {
     return []
   }

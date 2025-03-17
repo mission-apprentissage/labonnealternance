@@ -8,7 +8,7 @@
     "dev": "yarn predev && SENTRY_SUPPRESS_GLOBAL_ERROR_HANDLER_FILE_WARNING=1 next dev",
     "build": "yarn prebuild && SENTRY_SUPPRESS_GLOBAL_ERROR_HANDLER_FILE_WARNING=1 next build --no-lint",
     "start": "next start",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b",
     "analyse": "ANALYZE=true yarn build",
     "predev": "react-dsfr update-icons",
     "prebuild": "react-dsfr update-icons"

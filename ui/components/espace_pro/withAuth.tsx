@@ -1,6 +1,7 @@
 import { useRouter } from "next/navigation"
 
-import { UserContext, useAuth } from "@/context/UserContext"
+import { UserContext } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
+import { useAuth } from "@/context/UserContext"
 
 import { AUTHTYPE } from "../../common/contants"
 
@@ -32,9 +33,9 @@ export const authProvider = (Component) => {
   const Wrapper = (props) => {
     const { user, userAccess } = props
     return (
-      <UserContext {...{ user, userAccess }}>
+      <UserContext.Provider value={{ user, access: userAccess }}>
         <Component {...props} />
-      </UserContext>
+      </UserContext.Provider>
     )
   }
 

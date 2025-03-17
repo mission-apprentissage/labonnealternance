@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 import { oleoduc, writeData } from "oleoduc"
-import { zFormationCatalogueSchemaNew } from "shared/models"
+import { zFormationCatalogueSchemaNew } from "shared/models/index"
 
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodbUtils"

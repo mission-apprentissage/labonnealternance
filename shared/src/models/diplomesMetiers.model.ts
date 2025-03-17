@@ -1,3 +1,5 @@
+import { Jsonify } from "type-fest"
+
 import { z } from "../helpers/zodWithOpenApi.js"
 
 import { IModelDescriptor, zObjectId } from "./common.js"
@@ -46,6 +48,7 @@ export const ZMetierEnrichi = z
   .openapi("MetierEnrichi")
 
 export type IMetierEnrichi = z.output<typeof ZMetierEnrichi>
+export type IMetierEnrichiJson = Jsonify<IMetierEnrichi>
 
 export const ZMetierEnrichiArray = z.array(ZMetierEnrichi).openapi({
   description: "Un tableau de métiers correspondantes aux critères",

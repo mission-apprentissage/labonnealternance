@@ -1,6 +1,6 @@
 import { internal } from "@hapi/boom"
 import axios from "axios"
-import { IMetiersDavenir } from "shared/models"
+import { IMetiersDavenir } from "shared/models/index"
 
 import { getHttpClient } from "@/common/utils/httpUtils"
 

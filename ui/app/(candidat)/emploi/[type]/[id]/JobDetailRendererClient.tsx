@@ -1,7 +1,7 @@
 "use client"
 import { Box, Flex, Text } from "@chakra-ui/react"
 import { useContext, useEffect, useState } from "react"
-import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
+import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { RecruteurLbaDetail } from "@/components"
@@ -25,7 +25,7 @@ import { DisplayContext } from "@/context/DisplayContextProvider"
 import { isCfaEntreprise } from "@/services/cfaEntreprise"
 import { filterLayers } from "@/utils/mapTools"
 
-export default function JobOfferRendererClient({ selectedItem }: { selectedItem: ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob }) {
+export default function JobOfferRendererClient({ selectedItem }: { selectedItem: ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemPartnerJobJson }) {
   // const { jobs, extendedSearch, trainings } = useContext(SearchResultContext)
   const { activeFilters } = useContext(DisplayContext)
 
@@ -119,7 +119,7 @@ export default function JobOfferRendererClient({ selectedItem }: { selectedItem:
 
           <Flex flexDirection={{ base: "column", sm: "row" }} justifyContent="space-between">
             <Box>
-              {isCandidatureLba(selectedItem) && <CandidatureLba item={selectedItem as ILbaItemLbaJob | ILbaItemLbaCompany} />}
+              {isCandidatureLba(selectedItem) && <CandidatureLba item={selectedItem as ILbaItemLbaJobJson | ILbaItemLbaCompanyJson} />}
               {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && !isCandidatureLba(selectedItem) && <NoCandidatureLba />}
               {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && <PartnerJobPostuler isCollapsedHeader={isCollapsedHeader} job={selectedItem} />}
             </Box>
@@ -131,9 +131,9 @@ export default function JobOfferRendererClient({ selectedItem }: { selectedItem:
       </Box>
 
       {/* {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && <FTJobDetail job={selectedItem} />} */}
-      {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && <LbaJobDetail title={actualTitle} job={selectedItem as ILbaItemLbaJob} />}
-      {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaDetail recruteurLba={selectedItem as ILbaItemLbaCompany} />}
-      {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && <PartnerJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJob} />}
+      {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && <LbaJobDetail title={actualTitle} job={selectedItem as ILbaItemLbaJobJson} />}
+      {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaDetail recruteurLba={selectedItem as ILbaItemLbaCompanyJson} />}
+      {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && <PartnerJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
 
       <AideApprentissage />
 

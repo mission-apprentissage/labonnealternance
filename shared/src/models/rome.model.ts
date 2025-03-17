@@ -1,6 +1,9 @@
-import { IModelDescriptor, zObjectId } from "shared/models/common.js"
+import { Jsonify } from "type-fest"
+import { zObjectId } from "zod-mongodb-schema"
 
 import { z } from "../helpers/zodWithOpenApi.js"
+
+import { IModelDescriptor } from "./common.js"
 
 const ZRome = z
   .object({
@@ -95,6 +98,7 @@ export const ZReferentielRome = ZReferentielRomeForJob.extend({
 
 export type IReferentielRome = z.output<typeof ZReferentielRome>
 export type IReferentielRomeForJob = z.output<typeof ZReferentielRomeForJob>
+export type IReferentielRomeForJobJson = Jsonify<IReferentielRomeForJob>
 
 export default {
   zod: ZReferentielRome,

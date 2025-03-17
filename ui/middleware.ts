@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 import type { ComputedUserAccess, IUserRecruteurPublic } from "shared"
-import { AUTHTYPE } from "shared/constants"
+import { AUTHTYPE } from "shared/constants/index"
 
 import { apiPost } from "@/utils/api.utils"
 

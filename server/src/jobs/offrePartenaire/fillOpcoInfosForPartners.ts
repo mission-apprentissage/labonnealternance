@@ -1,5 +1,5 @@
 import { Filter } from "mongodb"
-import { OPCOS_LABEL } from "shared/constants"
+import { OPCOS_LABEL } from "shared/constants/index"
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
 import { getOpcosData } from "@/services/etablissement.service"

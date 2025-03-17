@@ -1,6 +1,6 @@
-import { assertUnreachable } from "@/../shared"
 import { Flex, Spinner } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
+import { assertUnreachable } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import fetchLbaCompanyDetails from "@/services/fetchLbaCompanyDetails"

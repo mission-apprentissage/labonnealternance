@@ -1,4 +1,5 @@
 import nock from "nock"
+import { cacheRomeFixture, cacheRomeResultFixture } from "shared/fixtures/cacheRome.fixture"
 import { IRomeoAPIResponse } from "shared/models/cacheRomeo.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -6,8 +7,6 @@ import { nockFranceTravailRomeo, nockFranceTravailTokenAccessRomeo } from "@/com
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-
-import { cacheRomeFixture, cacheRomeResultFixture } from "../../../../shared/fixtures/cacheRome.fixture"
 
 import { fillRomeForPartners } from "./fillRomeForPartners"
 

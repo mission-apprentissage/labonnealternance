@@ -57,7 +57,7 @@ export function CandidatRechercheFilters() {
         }}
         options={[
           {
-            label: `Entreprises${result.status === "success" ? ` (${result.entrepriseCount})` : ""}`,
+            label: `Entreprises${result.status === "success" && result.jobStatus === "success" ? ` (${result.entrepriseCount})` : ""}`,
             nativeInputProps: {
               checked: displayEntreprises,
               onChange: onEntrepriseChange,
@@ -65,7 +65,7 @@ export function CandidatRechercheFilters() {
             },
           },
           {
-            label: `Formations${result.status === "success" ? ` (${result.formationsCount})` : ""}`,
+            label: `Formations${result.status === "success" && result.formationStatus === "success" ? ` (${result.formationsCount})` : ""}`,
 
             nativeInputProps: {
               checked: displayFormations,
@@ -74,7 +74,7 @@ export function CandidatRechercheFilters() {
             },
           },
           {
-            label: `Partenariats${result.status === "success" ? ` (${result.partenariatCount})` : ""}`,
+            label: `Partenariats${result.status === "success" && result.jobStatus === "success" ? ` (${result.partenariatCount})` : ""}`,
             nativeInputProps: {
               checked: displayPartenariats,
               onChange: onPartenariatsChange,
