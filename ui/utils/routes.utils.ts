@@ -43,6 +43,7 @@ export const zRecherchePageParams = z.object({
   displayEntreprises: z.boolean().optional(),
   displayFormations: z.boolean().optional(),
   displayPartenariats: z.boolean().optional(),
+  selection: z.string().array().optional(),
 })
 
 export type IRecherchePageParams = z.output<typeof zRecherchePageParams>
@@ -82,6 +83,9 @@ function buildRecherchePageParams(params: IRecherchePageParams): string {
   if (params.displayPartenariats === false) {
     query.set("displayPartenariats", "false")
   }
+  if (params?.selection?.length > 0) {
+    query.set("selection", params.selection.join(","))
+  }
 
   return query.toString()
 }
@@ -92,6 +96,7 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
   }
 
   const romes = search.get("romes")?.split(",") ?? []
+  const selection = search.get("selection")?.split(",") ?? []
 
   const rawLat = search.get("lat")
   const rawLon = search.get("lon")
@@ -115,7 +120,7 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
   const displayFormations = search.get("displayFormations") !== "false"
   const displayPartenariats = search.get("displayPartenariats") !== "false"
 
-  return { romes, geo, diploma, job_name, job_type, displayMap, displayEntreprises, displayFormations, displayPartenariats }
+  return { romes, geo, diploma, job_name, job_type, displayMap, displayEntreprises, displayFormations, displayPartenariats, selection }
 }
 
 export const PAGES = {

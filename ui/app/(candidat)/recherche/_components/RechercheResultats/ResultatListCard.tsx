@@ -19,8 +19,8 @@ import { focusWithin } from "@/theme/theme-lba-tools"
 import { getDaysSinceDate } from "@/utils/dateUtils"
 
 type ResultCardProps = {
+  selected: boolean
   item: ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob | ILbaItemFormation
-  handleSelectItem: (item: ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob | ILbaItemFormation) => void
 }
 
 const CenterSearchButton = (props: Pick<ResultCardProps, "item">) => {
@@ -44,6 +44,7 @@ const CenterSearchButton = (props: Pick<ResultCardProps, "item">) => {
         displayFormations: props.item.ideaType !== LBA_ITEM_TYPE_OLD.FORMATION,
         displayEntreprises: props.item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION,
         displayPartenariats: props.item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION,
+        selection: [],
       })
     },
     [props.item, updateSearch]
@@ -182,8 +183,21 @@ function EnSavoirPlusButton({ item }: Pick<ResultCardProps, "item">) {
   )
 }
 
-export function ResultCard({ item }: ResultCardProps) {
+export function ResultCard({ item, selected }: ResultCardProps) {
   const [allowDim, setAllowDim] = useState(true) // cet état évite un appel qui masque la mise en avant de l'icône lors de l'ouverture du détail
+  const params = useCandidatRechercheParams()
+  const updateCandidatSearchParam = useUpdateCandidatSearchParam()
+
+  const onClick = useCallback(
+    (e) => {
+      if (params.displayMap) {
+        updateCandidatSearchParam({ selection: [item.id] })
+        e.preventDefault()
+        return
+      }
+    },
+    [updateCandidatSearchParam, item, params.displayMap]
+  )
 
   const highlightItemOnMap = () => {
     return
@@ -199,23 +213,6 @@ export function ResultCard({ item }: ResultCardProps) {
     }
   }
 
-  const shouldBeHighlighted = () => {
-    return false
-    throw new Error("Function not implemented.")
-    // if (selectedMapPopupItem?.ideaType === "job") {
-    //   return selectedMapPopupItem.items.find((item) => {
-    //     if (item.ideaType === LBA_ITEM_TYPE_OLD.LBA) {
-    //       return item?.company?.siret === item.company.siret
-    //     }
-
-    //     return item?.id === item.id
-    //   })
-    // } else {
-    //   return false
-    // }
-  }
-
-  // TODO:
   const itemUrl = useResultItemUrl(item)
 
   const cardProperties = {
@@ -238,7 +235,7 @@ export function ResultCard({ item }: ResultCardProps) {
     ...focusWithin,
   }
 
-  if (shouldBeHighlighted()) {
+  if (selected) {
     cardProperties.filter = "drop-shadow(0px 0px 8px rgba(30, 30, 30, 0.25))"
   }
 
@@ -255,6 +252,7 @@ export function ResultCard({ item }: ResultCardProps) {
       onMouseOut={dimItemOnMap}
       href={itemUrl}
       data-testid={`${item.ideaType}${id}`}
+      onClick={onClick}
     >
       <Flex align="flex-start" id={`${item.ideaType}:${id}`}>
         <Box flex="1">
