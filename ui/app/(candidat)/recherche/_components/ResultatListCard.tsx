@@ -1,7 +1,7 @@
 import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import { Typography } from "@mui/material"
-import React, { useCallback, useState } from "react"
+import { useCallback, useState } from "react"
 import { ILbaItemFormation, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 

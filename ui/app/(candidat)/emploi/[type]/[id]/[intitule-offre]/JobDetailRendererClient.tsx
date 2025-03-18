@@ -15,7 +15,7 @@ import { CandidatureLba, NoCandidatureLba } from "@/components/ItemDetail/Candid
 import isCandidatureLba from "@/components/ItemDetail/CandidatureLba/services/isCandidatureLba"
 import DidYouKnow from "@/components/ItemDetail/DidYouKnow"
 import GoingToContactQuestion, { getGoingtoId } from "@/components/ItemDetail/GoingToContactQuestion"
-import { buttonJePostuleShouldBeDisplayed, getNavigationButtons } from "@/components/ItemDetail/ItemDetailServices/getButtons"
+import { getNavigationButtons } from "@/components/ItemDetail/ItemDetailServices/getButtons"
 import getJobPublishedTimeAndApplications from "@/components/ItemDetail/ItemDetailServices/getJobPublishedTimeAndApplications"
 import getTags from "@/components/ItemDetail/ItemDetailServices/getTags"
 import ItemDetailCard from "@/components/ItemDetail/ItemDetailServices/ItemDetailCard"
@@ -43,15 +43,15 @@ export default function JobDetailRendererClient({ job }: { job: ILbaItemJobsGlob
 
 function JobDetail({ selectedItem, resultList }: { selectedItem: ILbaItemJobsGlobal; resultList: IUseRechercheResultsSuccess["items"] }) {
   // const { activeFilters } = useContext(DisplayContext)
+  const currentItem = resultList.find((item) => item.id === selectedItem.id)
   const params = useCandidatRechercheParams()
   const router = useRouter()
-
   const [isCollapsedHeader, setIsCollapsedHeader] = useState(false)
-  const currentItem = resultList.find((item) => item.id === selectedItem.id)
+  const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItem })
+
   const kind = selectedItem.ideaType
   const isCfa = isCfaEntreprise(selectedItem?.company?.siret, selectedItem?.company?.headquarter?.siret)
   const isMandataire = selectedItem?.company?.mandataire
-  const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItem })
   const handleClose = () => router.push(PAGES.dynamic.recherche(params).getPath())
 
   const actualTitle = selectedItem.title
@@ -149,7 +149,8 @@ function JobDetail({ selectedItem, resultList }: { selectedItem: ILbaItemJobsGlo
       {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && (
         <>
           <DidYouKnow />
-          {!buttonJePostuleShouldBeDisplayed(selectedItem) && (
+          {/**TODO: before check was only on FT jobs (LBA_ITEM_TYPE_OLD.PE) */}
+          {!(kind !== LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && (
             <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
           )}
         </>
