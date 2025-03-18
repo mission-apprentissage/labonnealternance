@@ -2,6 +2,7 @@ import { badRequest, conflict, internal, notFound } from "@hapi/boom"
 import { RECRUITER_STATUS } from "shared/constants"
 import { JOB_STATUS, zRoutes } from "shared/index"
 
+import { getSourceFromCookies } from "@/common/utils/httpUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateOffreToken } from "@/services/appLinks.service"
 import { getUserRecruteurById } from "@/services/userRecruteur.service"
@@ -178,6 +179,7 @@ export default (server: Server) => {
         rome_code,
         rome_label,
         competences_rome,
+        offer_title_custom,
       } = req.body
       const updatedFormulaire = await createJob({
         job: {
@@ -193,14 +195,17 @@ export default (server: Server) => {
           rome_code,
           rome_label,
           competences_rome,
+          offer_title_custom,
         },
         user,
         establishment_id,
+        source: getSourceFromCookies(req),
       })
       const job = updatedFormulaire.jobs.at(0)
       if (!job) {
         throw new Error("unexpected")
       }
+
       const token = generateOffreToken(user, job)
       return res.status(200).send({ recruiter: updatedFormulaire, token })
     }
@@ -238,6 +243,7 @@ export default (server: Server) => {
         rome_code,
         rome_label,
         competences_rome,
+        offer_title_custom,
       } = req.body
       const updatedFormulaire = await createJob({
         job: {
@@ -254,9 +260,11 @@ export default (server: Server) => {
           rome_code,
           rome_label,
           competences_rome,
+          offer_title_custom,
         },
         establishment_id,
         user,
+        source: getSourceFromCookies(req),
       })
       const job = updatedFormulaire.jobs.at(0)
       if (!job) {

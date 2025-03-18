@@ -3,10 +3,11 @@ import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "
 import dayjs from "shared/helpers/dayjs"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { joinNonNullStrings } from "shared/utils"
 import { z } from "zod"
 
+import { isCompanyInBlockedCfaList } from "../blockJobsPartnersFromCfaList"
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
 export const ZHelloWorkJob = z
@@ -133,6 +134,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
           }
         : undefined,
     apply_url: urlParsing.success ? urlParsing.data : null,
+    business_error: isCompanyInBlockedCfaList(company_title) ? JOB_PARTNER_BUSINESS_ERROR.CFA : null,
   }
   return partnerJob
 }

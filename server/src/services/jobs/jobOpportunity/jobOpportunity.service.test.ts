@@ -3,7 +3,7 @@ import { IApiAlternanceTokenData } from "api-alternance-sdk"
 import omit from "lodash-es/omit"
 import { ObjectId } from "mongodb"
 import nock from "nock"
-import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, RECRUITER_STATUS } from "shared/constants"
+import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, RECRUITER_STATUS, TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
@@ -12,7 +12,14 @@ import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import { IRecruiter, IReferentielRome, JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models"
 import { IJobsPartnersOfferPrivate, INiveauDiplomeEuropeen, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { zJobOfferApiWriteV3, zJobSearchApiV3Response, type IJobOfferApiWriteV3, type IJobOfferApiWriteV3Input } from "shared/routes/v3/jobs/jobs.routes.v3.model"
+import {
+  jobsRouteApiv3Converters,
+  zJobOfferApiReadV3,
+  zJobOfferApiWriteV3,
+  zJobSearchApiV3Response,
+  type IJobOfferApiWriteV3,
+  type IJobOfferApiWriteV3Input,
+} from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
@@ -22,9 +29,17 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
+import config from "../../../config"
 import { FTJob } from "../../ftjob.service.types"
 
-import { createJobOffer, findJobsOpportunities, updateJobOffer } from "./jobOpportunity.service"
+import {
+  createJobOffer,
+  findJobsOpportunities,
+  updateJobOffer,
+  getJobsPartnersByIdAsJobOfferApi,
+  getLbaJobByIdV2AsJobOfferApi,
+  findJobOpportunityById,
+} from "./jobOpportunity.service"
 import { JobOpportunityRequestContext } from "./JobOpportunityRequestContext"
 
 useMongo()
@@ -1379,6 +1394,72 @@ describe("findJobsOpportunities", () => {
       expect(results.jobs).toHaveLength(1)
     })
 
+    it("should return jobs without apply.recipient_id when no apply_email is present", async () => {
+      await getDbCollection("jobs_partners").deleteMany({})
+      await getDbCollection("jobs_partners").insertOne(
+        generateJobsPartnersOfferPrivate({
+          _id: new ObjectId(),
+          offer_rome_codes: ["M1602"],
+          workplace_geopoint: parisFixture.centre,
+          offer_creation: new Date("2023-01-01"),
+          partner_job_id: "job-id-9",
+          apply_email: null, // Pas d'email
+        })
+      )
+      await getDbCollection("recruiters").deleteMany({})
+
+      const results = await findJobsOpportunities(
+        {
+          longitude: parisFixture.centre.coordinates[0],
+          latitude: parisFixture.centre.coordinates[1],
+          radius: 30,
+          romes: ["M1602"],
+          rncp: null,
+        },
+        new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
+      )
+
+      const parseResult = zJobSearchApiV3Response.safeParse(results)
+      expect.soft(parseResult.success).toBeTruthy()
+      expect(parseResult.error).toBeUndefined()
+
+      expect(results.jobs).toHaveLength(1)
+      expect(results.jobs[0].apply.recipient_id).toBeNull()
+    })
+
+    it("should return jobs with apply.recipient_id when apply_email is present", async () => {
+      await getDbCollection("jobs_partners").deleteMany({})
+      await getDbCollection("jobs_partners").insertOne(
+        generateJobsPartnersOfferPrivate({
+          _id: new ObjectId(),
+          offer_rome_codes: ["M1602"],
+          workplace_geopoint: parisFixture.centre,
+          offer_creation: new Date("2023-01-01"),
+          partner_job_id: "job-id-10",
+          apply_email: "contact@example.com", // Email présent
+        })
+      )
+      await getDbCollection("recruiters").deleteMany({})
+
+      const results = await findJobsOpportunities(
+        {
+          longitude: parisFixture.centre.coordinates[0],
+          latitude: parisFixture.centre.coordinates[1],
+          radius: 30,
+          romes: ["M1602"],
+          rncp: null,
+        },
+        new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
+      )
+
+      const parseResult = zJobSearchApiV3Response.safeParse(results)
+      expect.soft(parseResult.success).toBeTruthy()
+      expect(parseResult.error).toBeUndefined()
+
+      expect(results.jobs).toHaveLength(1)
+      expect(results.jobs[0].apply.recipient_id).toEqual(`partners_${results.jobs[0].identifier.id}`)
+    })
+
     describe("when filtered by diploma", () => {
       beforeEach(async () => {
         await getDbCollection("jobs_partners").insertMany([
@@ -2048,5 +2129,336 @@ describe("updateJobOffer", () => {
     expect(job?.offer_status).toEqual(JOB_STATUS_ENGLISH.ANNULEE)
 
     expect(nock.isDone()).toBeTruthy()
+  })
+})
+
+describe("findJobOpportunityById tests", () => {
+  const jobPartnerId = new ObjectId()
+  const now = new Date("2025-02-28T00:00:00.000Z")
+  const identity = {
+    email: "mail@mailType.com",
+    organisation: "Some organisation",
+    habilitations: { "applications:write": false, "appointments:write": false, "jobs:write": true },
+  } as const satisfies IApiAlternanceTokenData
+  const originalCreatedAt = new Date("2023-09-06T00:00:00.000+02:00")
+  const originalCreatedAtPlus2Months = new Date("2023-11-06T00:00:00.000+01:00")
+
+  const originalJob = generateJobsPartnersOfferPrivate({
+    _id: jobPartnerId,
+    partner_label: identity.organisation,
+    created_at: originalCreatedAt,
+    offer_creation: originalCreatedAt,
+    offer_expiration: originalCreatedAtPlus2Months,
+  })
+
+  const lbaJob: IRecruiter = generateRecruiterFixture({
+    establishment_siret: "11000001500013",
+    establishment_raison_sociale: "ASSEMBLEE NATIONALE",
+    geopoint: parisFixture.centre,
+    status: RECRUITER_STATUS.ACTIF,
+    jobs: [
+      {
+        rome_code: ["M1602"],
+        rome_label: "Opérations administratives",
+        job_status: JOB_STATUS.ACTIVE,
+        job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+        job_creation_date: new Date("2021-01-01"),
+        job_expiration_date: new Date("2050-01-01"),
+      },
+    ],
+    address_detail: {
+      code_insee_localite: parisFixture.code,
+    },
+    address: parisFixture.nom,
+    phone: "0300000000",
+  })
+
+  const romes: IReferentielRome[] = [
+    generateReferentielRome({
+      rome: {
+        code_rome: "M1602",
+        intitule: "Opérations administratives",
+        code_ogr: "475",
+      },
+    }),
+    ...certificationFixtures["RNCP37098-46T31203"].domaines.rome.rncp.map(({ code, intitule }) => generateReferentielRome({ rome: { code_rome: code, intitule, code_ogr: "" } })),
+  ]
+
+  describe("getJobsPartnersByIdAsJobOfferApi", () => {
+    beforeEach(async () => {
+      vi.useFakeTimers()
+      vi.setSystemTime(now)
+      await getDbCollection("jobs_partners").insertOne(originalJob)
+
+      return () => {
+        vi.useRealTimers()
+      }
+    })
+
+    it("should throw a job not found error on getJobsPartnersByIdAsJobOfferApi", async () => {
+      // Créer un contexte de requête mock
+      const context = {
+        addWarning: vi.fn(),
+      } as unknown as JobOpportunityRequestContext
+
+      // Utiliser un ID qui n'existe pas dans la base de données
+      const nonExistentId = new ObjectId()
+
+      // Vérifier que la fonction lance bien une erreur
+      await expect(getJobsPartnersByIdAsJobOfferApi(nonExistentId, context)).rejects.toThrow("Job not found")
+
+      // Vérifier que la méthode addWarning a été appelée avec le bon message
+      expect(context.addWarning).toHaveBeenCalledWith("JOB_NOT_FOUND")
+    })
+
+    it("should return a job offer with correct format on getJobsPartnersByIdAsJobOfferApi", async () => {
+      // Créer un contexte de requête mock
+      const context = {
+        addWarning: vi.fn(),
+      } as unknown as JobOpportunityRequestContext
+
+      // Mock de la fonction de conversion pour vérifier qu'elle est appelée avec les bons paramètres
+      const convertSpy = vi.spyOn(jobsRouteApiv3Converters, "convertToJobOfferApiReadV3")
+
+      // Appeler la fonction avec l'ID existant
+      const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId, context)
+
+      // Vérifier que la fonction de conversion a été appelée avec les bons paramètres
+      expect(convertSpy).toHaveBeenCalledWith({
+        ...originalJob,
+        contract_type: originalJob.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
+        apply_url: originalJob.apply_url ?? `${config.publicUrl}/recherche?type=partner&itemId=${originalJob._id}`,
+        apply_recipient_id: originalJob.apply_email ? `partners_${originalJob._id}` : null,
+      })
+
+      // Vérifier que addWarning n'a pas été appelé car le job a été trouvé
+      expect(context.addWarning).not.toHaveBeenCalled()
+
+      // Vérifier que le résultat n'est pas null
+      expect(result).not.toBeNull()
+
+      // Utiliser le schéma Zod pour valider la structure
+      const validationResult = zJobOfferApiReadV3.safeParse(result)
+
+      // Si la validation échoue, afficher les erreurs pour faciliter le débogage
+      if (!validationResult.success) {
+        console.error("Validation errors:", validationResult.error.format())
+      }
+
+      // Vérifier que la validation a réussi
+      expect(validationResult.success).toBe(true)
+    })
+
+    it("should return a job offer without recipientid when no apply_email on getJobsPartnersByIdAsJobOfferApi", async () => {
+      await getDbCollection("jobs_partners").deleteMany({})
+      await getDbCollection("jobs_partners").insertOne({ ...originalJob, apply_email: null })
+
+      // Créer un contexte de requête mock
+      const context = {
+        addWarning: vi.fn(),
+      } as unknown as JobOpportunityRequestContext
+
+      // Mock de la fonction de conversion pour vérifier qu'elle est appelée avec les bons paramètres
+      const convertSpy = vi.spyOn(jobsRouteApiv3Converters, "convertToJobOfferApiReadV3")
+
+      // Appeler la fonction avec l'ID existant
+      const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId, context)
+
+      // Vérifier que la fonction de conversion a été appelée avec les bons paramètres
+      expect(convertSpy).toHaveBeenCalledWith({
+        ...originalJob,
+        contract_type: originalJob.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
+        apply_url: originalJob.apply_url ?? `${config.publicUrl}/recherche?type=partner&itemId=${originalJob._id}`,
+        apply_recipient_id: null, // Vérification dans l'appel à la conversion
+      })
+
+      // Vérifier que addWarning n'a pas été appelé car le job a été trouvé
+      expect(context.addWarning).not.toHaveBeenCalled()
+
+      // Vérifier que le résultat n'est pas null
+      expect(result).not.toBeNull()
+
+      // Vérifier que l'objet retourné par getJobsPartnersByIdAsJobOfferApi a bien apply_recipient_id = null
+      expect(result?.apply.recipient_id).toBeNull()
+
+      // Utiliser le schéma Zod pour valider la structure
+      const validationResult = zJobOfferApiReadV3.safeParse(result)
+
+      // Si la validation échoue, afficher les erreurs pour faciliter le débogage
+      if (!validationResult.success) {
+        console.error("Validation errors:", validationResult.error.format())
+      }
+
+      // Vérifier que la validation a réussi
+      expect(validationResult.success).toBe(true)
+    })
+
+    it("should return a job offer with recipientid when apply_email on getJobsPartnersByIdAsJobOfferApi", async () => {
+      await getDbCollection("jobs_partners").deleteMany({})
+      await getDbCollection("jobs_partners").insertOne({ ...originalJob, apply_email: "test@mail.fr" })
+
+      // Créer un contexte de requête mock
+      const context = {
+        addWarning: vi.fn(),
+      } as unknown as JobOpportunityRequestContext
+
+      // Mock de la fonction de conversion pour vérifier qu'elle est appelée avec les bons paramètres
+      const convertSpy = vi.spyOn(jobsRouteApiv3Converters, "convertToJobOfferApiReadV3")
+
+      // Appeler la fonction avec l'ID existant
+      const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId, context)
+
+      // Vérifier que la fonction de conversion a été appelée avec les bons paramètres
+      expect(convertSpy).toHaveBeenCalledWith({
+        ...originalJob,
+        contract_type: originalJob.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
+        apply_url: originalJob.apply_url ?? `${config.publicUrl}/recherche?type=partner&itemId=${originalJob._id}`,
+        apply_email: "test@mail.fr",
+        apply_recipient_id: `partners_${originalJob._id}`, // Vérification dans l'appel à la conversion
+      })
+
+      // Vérifier que addWarning n'a pas été appelé car le job a été trouvé
+      expect(context.addWarning).not.toHaveBeenCalled()
+
+      // Vérifier que le résultat n'est pas null
+      expect(result).not.toBeNull()
+
+      // Vérifier que l'objet retourné par getJobsPartnersByIdAsJobOfferApi a bien apply_recipient_id non null et correct
+      expect(result?.apply.recipient_id).toBe(`partners_${originalJob._id}`)
+
+      // Utiliser le schéma Zod pour valider la structure
+      const validationResult = zJobOfferApiReadV3.safeParse(result)
+
+      // Si la validation échoue, afficher les erreurs pour faciliter le débogage
+      if (!validationResult.success) {
+        console.error("Validation errors:", validationResult.error.format())
+      }
+
+      // Vérifier que la validation a réussi
+      expect(validationResult.success).toBe(true)
+    })
+  })
+
+  describe("getLbaJobByIdV2AsJobOfferApi", () => {
+    beforeEach(async () => {
+      await getDbCollection("referentielromes").insertMany(romes)
+      await getDbCollection("recruiters").insertOne(lbaJob)
+    })
+
+    it("should throw a job not found error on getLbaJobByIdV2AsJobOfferApi", async () => {
+      // Créer un contexte de requête mock
+      const context = {
+        addWarning: vi.fn(),
+      } as unknown as JobOpportunityRequestContext
+
+      // Utiliser un ID qui n'existe pas dans la base de données
+      const nonExistentId = new ObjectId()
+
+      // Vérifier que la fonction lance bien une erreur
+      await expect(getLbaJobByIdV2AsJobOfferApi(nonExistentId, context)).rejects.toThrow("Job not found")
+
+      // Vérifier que la méthode addWarning a été appelée avec le bon message
+      expect(context.addWarning).toHaveBeenCalledWith("JOB_NOT_FOUND")
+    })
+
+    it("should return a job offer with correct format on getLbaJobByIdV2AsJobOfferApi", async () => {
+      // Créer un contexte de requête mock
+      const context = {
+        addWarning: vi.fn(),
+      } as unknown as JobOpportunityRequestContext
+
+      // Exécuter la fonction avec un ID existant
+      const jobId = lbaJob.jobs[0]._id
+      const result = await getLbaJobByIdV2AsJobOfferApi(jobId, context)
+
+      // Vérifier que addWarning n'a pas été appelé car le job a été trouvé
+      expect(context.addWarning).not.toHaveBeenCalled()
+
+      // Vérifier que le résultat n'est pas null
+      expect(result).not.toBeNull()
+
+      // Valider que le résultat correspond au schéma attendu
+      const validationResult = zJobOfferApiReadV3.safeParse(result)
+
+      // Afficher les erreurs en cas d'échec de validation
+      if (!validationResult.success) {
+        console.error("Validation errors:", validationResult.error.format())
+      }
+
+      // Vérifier que la validation a réussi
+      expect(validationResult.success).toBe(true)
+    })
+  })
+
+  describe("findJobOpportunityById", () => {
+    beforeEach(async () => {
+      vi.useFakeTimers()
+      vi.setSystemTime(now)
+      await getDbCollection("jobs_partners").insertOne(originalJob)
+      await getDbCollection("referentielromes").insertMany(romes)
+      await getDbCollection("recruiters").insertOne(lbaJob)
+
+      return () => {
+        vi.useRealTimers()
+      }
+    })
+
+    it("should throw an error when no job is found on findJobOpportunityById", async () => {
+      // Créer un contexte mock
+      const context = {
+        addWarning: vi.fn(),
+      } as unknown as JobOpportunityRequestContext
+
+      // Utiliser un ID inexistant
+      const nonExistentId = new ObjectId()
+
+      // Vérifier que la fonction lance une erreur
+      await expect(findJobOpportunityById(nonExistentId, context)).rejects.toThrowError("Aucune offre d'emploi trouvée")
+    })
+
+    it("should find an offer from jobs_partners collection on findJobOpportunityById", async () => {
+      // Créer un contexte mock
+      const context = {
+        addWarning: vi.fn(),
+      } as unknown as JobOpportunityRequestContext
+
+      // Exécuter la fonction avec un ID existant lié à un élément de la collection jobs_partners
+      const result = await findJobOpportunityById(jobPartnerId, context)
+
+      // Vérifier que le résultat n'est pas nul
+      expect(result).not.toBeNull()
+
+      // Vérifier que l'objet retourné correspond bien au schéma IJobOfferApiReadV3
+      const validationResult = zJobOfferApiReadV3.safeParse(result)
+      expect(validationResult.success).toBe(true)
+
+      // En cas d'erreur, afficher les détails
+      if (!validationResult.success) {
+        console.error("Validation errors:", validationResult.error.format())
+      }
+    })
+
+    it("should find an offer from recruiters collection on findJobOpportunityById", async () => {
+      // Créer un contexte mock
+      const context = {
+        addWarning: vi.fn(),
+      } as unknown as JobOpportunityRequestContext
+
+      // Exécuter la fonction avec un ID existant lié à un élément de la collection recruiters
+      const lbaJobId = lbaJob.jobs[0]._id
+      const result = await findJobOpportunityById(lbaJobId, context)
+
+      // Vérifier que le résultat n'est pas nul
+      expect(result).not.toBeNull()
+
+      // Vérifier que l'objet retourné correspond bien au schéma IJobOfferApiReadV3
+      const validationResult = zJobOfferApiReadV3.safeParse(result)
+      expect(validationResult.success).toBe(true)
+
+      // En cas d'erreur, afficher les détails
+      if (!validationResult.success) {
+        console.error("Validation errors:", validationResult.error.format())
+      }
+    })
   })
 })

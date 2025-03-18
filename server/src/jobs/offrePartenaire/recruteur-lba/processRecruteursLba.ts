@@ -6,7 +6,7 @@
 
 import { fillComputedRecruteursLba, importRecruteursLbaFromComputedToJobsPartners } from "@/jobs/offrePartenaire/fillComputedRecruteursLba"
 
-import { checkIfAlgoFileAlreadyProcessed, importRecruteurLbaToComputed, importRecruteursLbaRaw } from "./recruteur-lba/importRecruteursLbaRaw"
+import { checkIfAlgoFileAlreadyProcessed, importRecruteurLbaToComputed, importRecruteursLbaRaw } from "./importRecruteursLbaRaw"
 
 export const processRecruteursLba = async () => {
   const fileAlreadyProcessed = await checkIfAlgoFileAlreadyProcessed()

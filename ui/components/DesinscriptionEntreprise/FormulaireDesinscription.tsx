@@ -1,8 +1,8 @@
 import { UNSUBSCRIBE_EMAIL_ERRORS } from "@/../shared/constants/recruteur"
 import {
-  ModalBody,
   Box,
   Button,
+  Checkbox,
   Flex,
   FormControl,
   FormErrorMessage,
@@ -13,6 +13,7 @@ import {
   Input,
   Link,
   Modal,
+  ModalBody,
   ModalContent,
   ModalHeader,
   ModalOverlay,
@@ -21,10 +22,9 @@ import {
   Spinner,
   Text,
   useDisclosure,
-  Checkbox,
 } from "@chakra-ui/react"
-import { Formik, Field, Form } from "formik"
-import React, { useState } from "react"
+import { Field, Form, Formik } from "formik"
+import { useState } from "react"
 import * as Yup from "yup"
 
 import postUnsubscribe from "../../services/postUnsubscribe"
@@ -180,12 +180,12 @@ const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSuccess }) =>
       setPopupData(noPopupData)
       handleUnsubscribeSuccess()
     } else if (response.result === UNSUBSCRIBE_EMAIL_ERRORS.ETABLISSEMENTS_MULTIPLES) {
-      setSelectedSirets(response.companies.map((company) => company.siret))
+      setSelectedSirets(response.companies.map((company: any) => company.siret))
       setPopupData({ companies: response.companies, email: values.email, reason: values.reason })
       validationPopup.onOpen()
     } else {
       setPopupData(noPopupData)
-      setEmailError(EMAIL_ERRORS[response.result])
+      setEmailError(EMAIL_ERRORS["unexpected_error"])
     }
     setIsMultipleSubmitting(false)
   }

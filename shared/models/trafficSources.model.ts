@@ -9,6 +9,7 @@ export enum TrafficType {
   ENTREPRISE = "ENTREPRISE",
   CFA = "CFA",
   APPLICATION = "APPLICATION",
+  JOB = "JOB",
 }
 const ZTrafficType = extensions.buildEnum(TrafficType)
 
@@ -22,9 +23,10 @@ export type ITrackingCookies = z.output<typeof ZTrackingCookies>
 
 export const ZTrafficSource = ZTrackingCookies.extend({
   _id: zObjectId,
-  user_id: zObjectId.nullable(),
-  application_id: zObjectId.nullable(),
-  applicant_email_hash: z.string().nullable(),
+  user_id: zObjectId.nullish(),
+  application_id: zObjectId.nullish(),
+  job_id: zObjectId.nullish(),
+  applicant_email_hash: z.string().nullish(),
   traffic_type: ZTrafficType,
   created_at: z.date(),
 })
