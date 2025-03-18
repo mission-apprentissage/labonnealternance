@@ -48,12 +48,7 @@ export default function TrainingDetailRendererClient({
   const isMandataire = selectedItem?.company?.mandataire
   const [appliedDate, setAppliedDate] = useState(null)
   const [prdvAvailable, setPrdvAvailable] = useState(false)
-  // const { jobs, extendedSearch, selectedItem, trainings } = useContext(SearchResultContext)
   // const { activeFilters } = useContext(DisplayContext)
-
-  // const priseDeRendezVous = useQuery(["getPrdv", selectedItem.training.cleMinistereEducatif], () => getPrdvContext(selectedItem.training.cleMinistereEducatif), {
-  //   enabled: Boolean(selectedItem.training.cleMinistereEducatif),
-  // })
 
   useEffect(() => {
     if (storedValue) {
@@ -67,11 +62,6 @@ export default function TrainingDetailRendererClient({
       setPrdvAvailable(true)
     }
   }, [storedValue])
-
-  console.log("TrainingDetailRendererClient", selectedItem)
-  console.log(" priseDeRendezVous", priseDeRendezVous)
-  console.log(" storedValue", storedValue)
-  console.log(" storedValue", appliedDate)
 
   // useEffect(() => {
   //   try {
@@ -196,9 +186,7 @@ export default function TrainingDetailRendererClient({
 }
 
 function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
-  // const [IJStats, setIJStats] = useState(null)
   const isCfaDEntreprise = isCfaEntreprise(training?.company?.siret, training?.company?.headquarter?.siret)
-  // const { trainings, setTrainingsAndSelectedItem } = useContext(SearchResultContext)
   // const { formValues } = React.useContext(DisplayContext)
 
   const IJStats = useQuery(["getIJStats", training.training.cfd], () => fetchInserJeuneStats(training), {
