@@ -1,6 +1,7 @@
 "use client"
 
-import { Box, Button, Container, Flex, Heading, Icon, Image, Menu, MenuButton, MenuItem, MenuList, Stack, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import { Box, Button as ChakraButton, Container, Flex, Heading, Icon, Image, Menu, MenuButton, MenuItem, MenuList, Stack, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Link } from "@mui/material"
 import dayjs from "dayjs"
 import { useRouter } from "next/navigation"
@@ -142,7 +143,7 @@ function ListeEntreprise() {
             <Menu>
               {({ isOpen }) => (
                 <>
-                  <MenuButton isActive={isOpen} as={Button} variant="navdot" _hover={{ backgroundColor: "none" }}>
+                  <MenuButton isActive={isOpen} as={ChakraButton} variant="navdot" _hover={{ backgroundColor: "none" }}>
                     <Icon as={Parametre} color="bluefrance.500" />
                   </MenuButton>
                   <MenuList>
@@ -181,9 +182,9 @@ function ListeEntreprise() {
           <Text fontSize="2rem" fontWeight={700}>
             Mes entreprises
           </Text>
-          <Button variant="primary" size="sm" mr={3} onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
-            Nouvelle entreprise
-          </Button>
+          <Box mr={3}>
+            <Button onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>Nouvelle entreprise</Button>
+          </Box>
         </Flex>
         {data?.length ? <TableNew columns={columns} data={data} exportable={false} /> : <EmptySpace />}
       </Container>
