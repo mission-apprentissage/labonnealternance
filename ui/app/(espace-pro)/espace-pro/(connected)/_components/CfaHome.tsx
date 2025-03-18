@@ -147,7 +147,7 @@ function ListeEntreprise() {
                   </MenuButton>
                   <MenuList>
                     <MenuItem>
-                      <Link underline="hover" component="button" href={PAGES.dynamic.backCfaPageEntreprise(row.establishment_id).getPath()}>
+                      <Link underline="hover" href={PAGES.dynamic.backCfaPageEntreprise(row.establishment_id).getPath()}>
                         Voir les offres
                       </Link>
                     </MenuItem>
