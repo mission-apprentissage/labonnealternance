@@ -1,6 +1,6 @@
 "use client"
 
-import { Container, useToast } from "@chakra-ui/react"
+import { useToast } from "@chakra-ui/react"
 import { useQuery } from "react-query"
 import { assertUnreachable } from "shared"
 
@@ -26,9 +26,9 @@ export default function UpsertOffre({ establishment_id, job_id, user_id, onSucce
       case "CFA":
         return [PAGES.static.backCfaHome, PAGES.dynamic.backCfaPageEntreprise(establishment_id), PAGES.dynamic.backCfaEntrepriseCreationOffre(establishment_id)]
       case "ENTREPRISE":
-        return [PAGES.dynamic.backHomeEntreprise(establishment_id), PAGES.dynamic.backEditionOffre({ establishment_id, job_id })]
+        return [PAGES.dynamic.backHomeEntreprise(), PAGES.dynamic.backEditionOffre({ job_id })]
       case "ADMIN":
-        return [PAGES.static.backAdminHome, PAGES.dynamic.backAdminRecruteurOffres({ user_id }), PAGES.dynamic.backEditionOffre({ establishment_id, job_id })]
+        return [PAGES.static.backAdminHome, PAGES.dynamic.backAdminRecruteurOffres({ user_id }), PAGES.dynamic.backEditionOffre({ job_id })]
       default:
         assertUnreachable("account type not allowed ${user.account_type}" as never)
     }
@@ -63,9 +63,9 @@ export default function UpsertOffre({ establishment_id, job_id, user_id, onSucce
   if (isLoading) return <LoadingEmptySpace label="Chargement en cours" />
 
   return (
-    <Container maxW="container.xl" mt={5}>
+    <>
       <Breadcrumb pages={getBreadCrumbList()} />
       <FormulaireEditionOffre establishment_id={establishment_id} handleSave={handleSave} offre={offre} />
-    </Container>
+    </>
   )
 }

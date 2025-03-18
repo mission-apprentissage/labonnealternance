@@ -34,7 +34,7 @@ function Users() {
         isClosable: true,
       })
     }
-  }, [])
+  }, [newUser, toast])
 
   const { isLoading, data } = useQuery("user-list", () => apiGet("/user", {}))
 

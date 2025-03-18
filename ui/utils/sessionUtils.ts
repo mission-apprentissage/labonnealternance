@@ -1,7 +1,7 @@
 import { headers } from "next/headers"
 import { IUserRecruteurPublic } from "shared"
 
-export async function getConnectedSessionUser(): Promise<IUserRecruteurPublic> {
+export async function getConnectedSessionUser(): Promise<{ user: IUserRecruteurPublic }> {
   const headerStore = await headers()
   const sessionRaw = headerStore.get("x-session")
 

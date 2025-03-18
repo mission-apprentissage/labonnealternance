@@ -324,8 +324,8 @@ export const PAGES = {
       title: metier,
     }),
 
-    modificationEntreprise: (establishment_id): IPage => ({
-      getPath: () => `/espace-pro/entreprise/${establishment_id}/edition` as string,
+    modificationEntreprise: (): IPage => ({
+      getPath: () => `/espace-pro/entreprise/compte` as string,
       index: false,
       getMetadata: () => ({ title: "Modification entreprise" }),
       title: "Modification entreprise",
@@ -348,8 +348,14 @@ export const PAGES = {
         switch (userType) {
           case OPCO:
             return `/espace-pro/opco/entreprise/${establishment_siret}/${establishment_id}/offre/${offerId}}${raisonSocialeParam}`
+          case CFA:
+            return offerId === "creation"
+              ? PAGES.dynamic.backCfaEntrepriseCreationOffre(establishment_id).getPath()
+              : `/espace-pro/cfa/entreprise/${establishment_id}/offre/${offerId}`
+          case ENTREPRISE:
+            return offerId === "creation" ? PAGES.dynamic.backCreationOffre().getPath() : PAGES.dynamic.backEditionOffre({ job_id: offerId }).getPath()
           default:
-            return `/espace-pro/entreprise/${establishment_id}/offre/${offerId}${raisonSocialeParam}`
+            throw new Error("not implemented")
         }
       },
       index: false,
@@ -369,7 +375,7 @@ export const PAGES = {
           path = `/espace-pro/administration/users/${user_id}`
           break
         case ENTREPRISE:
-          path = `/espace-pro/entreprise/${establishment_id}`
+          path = `/espace-pro/entreprise`
           break
         default:
           assertUnreachable(`wrong user type ${userType}` as never)
@@ -499,17 +505,17 @@ export const PAGES = {
       getPath: () => `/espace-pro/administration/users/${user_id}` as string,
       title: user_label ?? "Entreprise",
     }),
-    backEditionOffre: ({ establishment_id, job_id }: { establishment_id: string; job_id: string }): IPage => ({
-      getPath: () => `/espace-pro/entreprise/${establishment_id}/offre/${job_id}` as string,
+    backEditionOffre: ({ job_id }: { job_id: string }): IPage => ({
+      getPath: () => `/espace-pro/entreprise/offre/${job_id}` as string,
       title: job_id ? "Edition d'une offre" : "Création d'une offre",
     }),
-    backCreationOffre: (establishment_id: string): IPage => ({
-      getPath: () => `/espace-pro/entreprise/${establishment_id}/offre/creation` as string,
+    backCreationOffre: (): IPage => ({
+      getPath: () => `/espace-pro/entreprise/creation-offre` as string,
       title: "Nouvelle offre",
     }),
-    backHomeEntreprise: (establishment_id: string): IPage => ({
-      getPath: () => `/espace-pro/entreprise/${establishment_id}` as string,
-      title: "Entreprise",
+    backHomeEntreprise: (): IPage => ({
+      getPath: () => `/espace-pro/entreprise` as string,
+      title: "Accueil entreprise",
     }),
   },
   notion: {},

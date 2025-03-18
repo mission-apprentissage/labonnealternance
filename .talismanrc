@@ -205,6 +205,10 @@ fileignoreconfig:
   checksum: ce4d731225425bdbee4e69ff61b6c14be377054db1fb99b438a86e85b4b7a985
 - filename: shared/utils/objectUtils.ts
   checksum: cfd0e48e8762b43c6431dad873727f6ac091ca6f5c7555e37a8ee3fba03184d1
+- filename: ui/app/(candidat)/formation/[id]/TrainingDetailRendererClient.tsx
+  checksum: f5c14c3e59be0c6170d21f389882ed894e38081ef05545ffc66cc8a65ded252f
+- filename: ui/app/(espace-pro)/_components/OffresGratuites.tsx
+  checksum: a81881696ad47f4efd1e7956f1972f0425cce0b07dba4afbcc7c088fb5edd90d
 - filename: ui/app/(home)/faq/page.tsx
   checksum: e4b3904897fb67afd63187ff382138e9d60b9ca0395385eb2afd6a822696b804
 - filename: ui/app/(home)/mentions-legales/page.tsx
@@ -289,10 +293,6 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
-- filename: ui/app/(espace-pro)/_components/OffresGratuites.tsx
-  checksum: a81881696ad47f4efd1e7956f1972f0425cce0b07dba4afbcc7c088fb5edd90d
-- filename: ui/app/(candidat)/formation/[id]/TrainingDetailRendererClient.tsx
-  checksum: ee3bac9b3032dc0b7bb685ac70d717475cf30552845cc291f6d453c494fdb0a5
 scopeconfig:
 - scope: node
 custom_patterns:
@@ -310,5 +310,6 @@ allowed_patterns:
 - versionKey
 - '@apprentissage.beta.gouv.fr'
 - adminusersview
+- https://dinum.didask.com/.*
 threshold: medium
 version: "1.0"
