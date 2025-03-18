@@ -1,4 +1,4 @@
-import { PageWithParams } from "@/app/(espace-pro)/espace-pro/(connected)/entreprise/offre/[job_id]/PageWIthParams"
+import { PageWithParams } from "@/app/(espace-pro)/espace-pro/(connected)/entreprise/offre/[job_id]/PageWithParams"
 import { getConnectedSessionUser } from "@/utils/sessionUtils"
 
 export default async function Page() {

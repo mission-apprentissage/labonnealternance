@@ -11,7 +11,7 @@ import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import { phoneValidation } from "@/common/validation/fieldValidations"
 import { CustomInput } from "@/components/espace_pro"
-import { Breadcrumb } from "@/components/espace_pro/common/components/Breadcrumb"
+import { OldBreadcrumb } from "@/components/espace_pro/common/components/Breadcrumb"
 import NavigationAdmin, { EAdminPages } from "@/components/espace_pro/Layout/NavigationAdmin"
 import { SearchLine } from "@/theme/components/icons"
 import { getCompanyContactInfo, putCompanyContactInfo } from "@/utils/api"
@@ -176,7 +176,7 @@ export default function GestionEntreprises() {
       </Box>
       <Container as="main" p={0} maxW="container.xl" flexGrow="1">
         <Box pt={5}>
-          <Breadcrumb pages={[{ title: "Accueil", to: "/espace-pro/administration/users" }, { title: "Entreprises de l'algorithme" }]} />
+          <OldBreadcrumb pages={[{ title: "Accueil", to: "/espace-pro/administration/users" }, { title: "Entreprises de l'algorithme" }]} />
           <Box mt={6} px={4}>
             <Text fontSize="2rem" mb={4} fontWeight={700} as="h1">
               Entreprises de l'algorithme

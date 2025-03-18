@@ -1,6 +1,6 @@
 "use client"
 
-import { Container, useToast } from "@chakra-ui/react"
+import { useToast } from "@chakra-ui/react"
 import { useQuery } from "react-query"
 import { assertUnreachable } from "shared"
 
@@ -63,9 +63,9 @@ export default function UpsertOffre({ establishment_id, job_id, user_id, onSucce
   if (isLoading) return <LoadingEmptySpace label="Chargement en cours" />
 
   return (
-    <Container maxW="container.xl" mt={5}>
+    <>
       <Breadcrumb pages={getBreadCrumbList()} />
       <FormulaireEditionOffre establishment_id={establishment_id} handleSave={handleSave} offre={offre} />
-    </Container>
+    </>
   )
 }

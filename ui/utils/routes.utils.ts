@@ -352,8 +352,10 @@ export const PAGES = {
             return offerId === "creation"
               ? PAGES.dynamic.backCfaEntrepriseCreationOffre(establishment_id).getPath()
               : `/espace-pro/cfa/entreprise/${establishment_id}/offre/${offerId}`
+          case ENTREPRISE:
+            return offerId === "creation" ? PAGES.dynamic.backCreationOffre().getPath() : PAGES.dynamic.backEditionOffre({ job_id: offerId }).getPath()
           default:
-            return `/espace-pro/entreprise/offre/${offerId}${raisonSocialeParam}`
+            throw new Error("not implemented")
         }
       },
       index: false,
@@ -518,7 +520,7 @@ export const PAGES = {
     }),
     backHomeEntreprise: (): IPage => ({
       getPath: () => `/espace-pro/entreprise` as string,
-      title: "Accueil",
+      title: "Accueil entreprise",
     }),
   },
   notion: {},
