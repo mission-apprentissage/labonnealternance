@@ -27,6 +27,8 @@ import { detectDuplicateJobPartners } from "./offrePartenaire/detectDuplicateJob
 import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
 import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
 import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromComputedToJobsPartners"
+import { processKelio } from "./offrePartenaire/kelio/processKelio"
+import { processMonster } from "./offrePartenaire/monster/processMonster"
 import { processComputedAndImportToJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
 import { rankJobPartners } from "./offrePartenaire/rankJobPartners"
@@ -188,6 +190,14 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processFranceTravail,
     description: "Importe les offres France Travail dans la collection raw & computed",
+  },
+  {
+    fct: processMonster,
+    description: "Importe les offres Monster dans la collection raw & computed",
+  },
+  {
+    fct: processKelio,
+    description: "Importe les offres Kelio dans la collection raw & computed",
   },
   // ENRICHIT COMPUTED JOBS PARTNERS
   {
