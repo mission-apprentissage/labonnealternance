@@ -291,6 +291,8 @@ fileignoreconfig:
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
 - filename: ui/app/(espace-pro)/_components/OffresGratuites.tsx
   checksum: a81881696ad47f4efd1e7956f1972f0425cce0b07dba4afbcc7c088fb5edd90d
+- filename: ui/app/(candidat)/formation/[id]/TrainingDetailRendererClient.tsx
+  checksum: ee3bac9b3032dc0b7bb685ac70d717475cf30552845cc291f6d453c494fdb0a5
 scopeconfig:
 - scope: node
 custom_patterns:

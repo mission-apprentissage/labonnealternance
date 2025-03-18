@@ -8,6 +8,7 @@ import { ZEtablissement } from "../models/etablissement.model.js"
 import { ZUser } from "../models/user.model.js"
 
 import { IRoutesDef } from "./common.routes.js"
+import { ZAppointmentResponseAvailable } from "./v2/appointments.routes.v2.js"
 
 const zContextCreateSchemaParcoursup = z
   .object({
@@ -103,29 +104,29 @@ export type IAppointmentRequestContextCreateResponseSchema = z.output<typeof zAp
 export type IAppointmentRequestContextCreateFormAvailableResponseSchema = Jsonify<z.output<typeof zAppointmentRequestContextCreateFormAvailableResponseSchema>>
 export type IAppointmentRequestContextCreateFormUnavailableResponseSchema = Jsonify<z.output<typeof zAppointmentRequestContextCreateFormUnavailableResponseSchema>>
 
-const zContextQuerySchema = z
-  .object({
-    idCleMinistereEducatif: z.string().optional(),
-    idActionFormation: z.string().optional(),
-    idParcoursup: z.string().optional(),
-    referrer: z.enum([
-      referrers.PARCOURSUP.name.toLowerCase(),
-      referrers.LBA.name.toLowerCase(),
-      referrers.ONISEP.name.toLowerCase(),
-      referrers.JEUNE_1_SOLUTION.name.toLowerCase(),
-      referrers.AFFELNET.name.toLowerCase(),
-    ]),
-  })
-  .strict()
+// const zContextQuerySchema = z
+//   .object({
+//     idCleMinistereEducatif: z.string().optional(),
+//     idActionFormation: z.string().optional(),
+//     idParcoursup: z.string().optional(),
+//     referrer: z.enum([
+//       referrers.PARCOURSUP.name.toLowerCase(),
+//       referrers.LBA.name.toLowerCase(),
+//       referrers.ONISEP.name.toLowerCase(),
+//       referrers.JEUNE_1_SOLUTION.name.toLowerCase(),
+//       referrers.AFFELNET.name.toLowerCase(),
+//     ]),
+//   })
+//   .strict()
 
 export const zAppointmentsRoute = {
   get: {
-    "/appointment": {
+    "/_private/appointment": {
       method: "get",
-      path: "/appointment",
-      querystring: zContextQuerySchema,
+      path: "/_private/appointment",
+      querystring: z.object({ cleMinistereEducatif: z.string(), referrer: z.string() }),
       response: {
-        "200": zAppointmentRequestContextCreateResponseSchema,
+        "200": ZAppointmentResponseAvailable,
       },
       securityScheme: null,
     },

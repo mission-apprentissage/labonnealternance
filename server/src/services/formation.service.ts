@@ -756,6 +756,14 @@ export const getFormationQuery = async ({ id }: { id: string }): Promise<{ resul
   return { results: formations }
 }
 
+export const getFormationByCleME = async (id: string): Promise<ILbaItemFormation2> => {
+  const result = await getDbCollection("formationcatalogues").findOne({ cle_ministere_educatif: id })
+  if (!result) {
+    throw badRequest("Formation not found")
+  }
+  return transformFormationV2(result)
+}
+
 /**
  * Retourne une formation identifiée par son id
  */
