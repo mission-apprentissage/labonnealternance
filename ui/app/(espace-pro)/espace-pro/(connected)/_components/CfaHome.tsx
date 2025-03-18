@@ -183,7 +183,9 @@ function ListeEntreprise() {
             Mes entreprises
           </Text>
           <Box mr={3}>
-            <Button onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>Nouvelle entreprise</Button>
+            <Button size="small" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
+              Nouvelle entreprise
+            </Button>
           </Box>
         </Flex>
         {data?.length ? <TableNew columns={columns} data={data} exportable={false} /> : <EmptySpace />}
