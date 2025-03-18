@@ -237,12 +237,13 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/appointment",
+    "/_private/appointment",
     {
-      schema: zRoutes.get["/appointment"],
+      schema: zRoutes.get["/_private/appointment"],
     },
     async (req, res) => {
-      res.status(200).send(await findElligibleTrainingForAppointment(req.query))
+      const { cleMinistereEducatif, referrer } = req.query
+      res.status(200).send(await eligibleTrainingsForAppointmentService.findElligibleTrainingForAppointmentPrivate(referrer, cleMinistereEducatif))
     }
   )
 

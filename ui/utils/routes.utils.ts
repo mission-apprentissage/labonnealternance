@@ -50,7 +50,7 @@ export type IRecherchePageParams = z.output<typeof zRecherchePageParams>
 function buildRecherchePageParams(params: IRecherchePageParams): string {
   const query = new URLSearchParams()
 
-  if (params.romes?.length > 0) {
+  if (params?.romes?.length > 0) {
     query.set("romes", params.romes.join(","))
   }
 
@@ -436,12 +436,7 @@ export const PAGES = {
       getPath: () => {
         const { isWidget, fromDashboard, withDelegation, ...querystring } = params
 
-        let path = ""
-        if (fromDashboard) {
-          path = "/espace-pro/offre/fin"
-        } else {
-          path = isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin"
-        }
+        const path = isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin"
 
         return generateUri(path, {
           querystring: removeUndefinedFields({ ...querystring, fromDashboard: fromDashboard.toString(), withDelegation: withDelegation.toString() }),

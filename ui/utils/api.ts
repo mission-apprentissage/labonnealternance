@@ -4,7 +4,7 @@ import { ApplicationIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { IEntrepriseJson } from "shared/models/entreprise.model"
-import { IAppointmentRequestContextCreateFormAvailableResponseSchema, IAppointmentRequestContextCreateFormUnavailableResponseSchema } from "shared/routes/appointments.routes"
+import { IAppointMentResponseAvailable } from "shared/routes/v2/appointments.routes.v2"
 
 import { ApiError, apiDelete, apiGet, apiPatch, apiPost, apiPut } from "./api.utils"
 
@@ -149,18 +149,14 @@ export const getEntrepriseOpco = async (siret: string) => {
   }
 }
 
-export const getPrdvContext = async (
-  idCleMinistereEducatif: string,
-  referrer: string = "lba"
-): Promise<IAppointmentRequestContextCreateFormAvailableResponseSchema | IAppointmentRequestContextCreateFormUnavailableResponseSchema | null> => {
+export const getPrdvContext = async (cleMinistereEducatif: string, referrer: string = "lba"): Promise<IAppointMentResponseAvailable> => {
   try {
-    const data = await apiGet("/appointment", { querystring: { idCleMinistereEducatif, referrer } }, { timeout: 7000 })
+    const data = await apiGet("/_private/appointment", { querystring: { cleMinistereEducatif, referrer } }, { timeout: 7000 })
     return data
   } catch (error) {
     if (error?.message !== BusinessErrorCodes.TRAINING_NOT_FOUND) {
       captureException(error)
     }
-    return { error: error.message }
   }
 }
 

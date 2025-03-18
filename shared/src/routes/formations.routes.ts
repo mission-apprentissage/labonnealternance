@@ -1,7 +1,7 @@
 import { z } from "../helpers/zodWithOpenApi.js"
 import { zFormationCatalogueSchema } from "../models/formation.model.js"
 import { ZLbacError } from "../models/lbacError.model.js"
-import { ZLbaItemFormation, ZLbaItemFormationResult } from "../models/lbaItem.model.js"
+import { ZLbaItemFormation, ZLbaItemFormation2, ZLbaItemFormationResult } from "../models/lbaItem.model.js"
 import { rateLimitDescription } from "../utils/rateLimitDescription.js"
 
 import { ZLatitudeParam, ZLongitudeParam, ZRadiusParam, zCallerParam, zDiplomaParam, zGetFormationOptions, zRefererHeaders, zRomesParams } from "./_params.js"
@@ -112,6 +112,19 @@ export const zFormationsRoutes = {
         tags: ["V1 - Formations"] as string[],
         description: `Get one formation identified by it's clé ministère éducatif\n${rateLimitDescription({ max: 7, timeWindow: "1s" })}`,
       },
+    },
+    "/_private/formations/:id": {
+      method: "get",
+      path: "/_private/formations/:id",
+      params: z
+        .object({
+          id: z.string(),
+        })
+        .strict(),
+      response: {
+        "200": ZLbaItemFormation2,
+      },
+      securityScheme: null,
     },
   },
 } as const satisfies IRoutesDef

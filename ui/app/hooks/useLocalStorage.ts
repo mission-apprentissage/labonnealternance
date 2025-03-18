@@ -11,7 +11,7 @@ export function useLocalStorage<T>(key: string, initialValue?: T) {
   }, [key, initialValue])
 
   // Function to update localStorage
-  const setItem = useCallback(
+  const setLocalStorage = useCallback(
     (value: T) => {
       if (typeof window === "undefined") return
       localStorage.setItem(key, JSON.stringify(value))
@@ -20,5 +20,5 @@ export function useLocalStorage<T>(key: string, initialValue?: T) {
     [key]
   )
 
-  return { storedValue, setLocalStorage: initialValue !== undefined ? setItem : undefined }
+  return { storedValue, setLocalStorage }
 }
