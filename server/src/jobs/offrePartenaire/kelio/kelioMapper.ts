@@ -2,11 +2,12 @@ import { ObjectId } from "mongodb"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants"
 import dayjs from "shared/helpers/dayjs"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
 
 import { formatHtmlForPartnerDescription } from "@/common/utils/stringUtils"
 
+import { isCompanyInBlockedCfaList } from "../blockJobsPartnersFromCfaList"
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
 export const ZKelioJob = z
@@ -94,6 +95,7 @@ export const kelioJobToJobsPartners = (job: IKelioJob): IComputedJobsPartners =>
     apply_url: urlParsing.success ? urlParsing.data : null,
     offer_multicast: true,
     contract_type: [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
+    business_error: isCompanyInBlockedCfaList(company.name) ? JOB_PARTNER_BUSINESS_ERROR.CFA : null,
   }
   return partnerJob
 }

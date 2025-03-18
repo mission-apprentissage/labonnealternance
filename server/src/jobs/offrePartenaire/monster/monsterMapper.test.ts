@@ -1,5 +1,6 @@
 //import { ObjectId } from "mongodb"
 import { ObjectId } from "mongodb"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { monsterJobToJobsPartners } from "./monsterMapper"
@@ -22,7 +23,7 @@ describe("monsterJobToJobsPartners", () => {
         postingId: "001003b0-a719-4a77-8b6b-01c8503afb8f",
         title: "Chargé d'Affaires Professionnels - Territoire de Boulogne Billancourt (92) H/F",
         JobActiveDate: "2025-02-26",
-        CompanyName: "Brouzouf et fils",
+        CompanyName: "ISCOD",
         siretNumber: "66204244930730",
         JobPostalCode: "92400",
         JobCity: "Boulogne-Billancourt",
@@ -67,7 +68,7 @@ describe("monsterJobToJobsPartners", () => {
       offer_opening_count: 1,
       offer_multicast: true,
       workplace_siret: "66204244930730",
-      workplace_name: "Brouzouf et fils",
+      workplace_name: "ISCOD",
       workplace_description: null,
       workplace_size: null,
       workplace_website: null,
@@ -89,7 +90,7 @@ describe("monsterJobToJobsPartners", () => {
         "https://www.monster.fr/emploi/recherche?q=Charg%C3%A9+dAffaires+Professionnels++Territoire+de+Boulogne+Billancourt++H&where=Boulogne-Billancourt&id=001003b0-a719-4a77-8b6b-01c8503afb8f&mstr_dist=true&utm_medium=feeds_boards&utm_term=unpaid&utm_content=prospecting&utm_source=labonnealternance&utm_campaign=labonnealternance_fr",
       errors: [],
       validated: false,
-      business_error: null,
+      business_error: JOB_PARTNER_BUSINESS_ERROR.CFA,
       jobs_in_success: [],
     })
   })
