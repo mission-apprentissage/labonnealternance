@@ -19516,12 +19516,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-swipeable@npm:^6.2.2":
-  version: 6.2.2
-  resolution: "react-swipeable@npm:6.2.2"
+"react-swipeable@npm:7.0.2":
+  version: 7.0.2
+  resolution: "react-swipeable@npm:7.0.2"
   peerDependencies:
-    react: ^16.8.3 || ^17 || ^18
-  checksum: a707aa9438cedcafbe1e0b9e133d518c423199fc6465e6ae862951c1cfdac2945088b3c12313e8fcc05906d0be0ecfe7ddd8221f9262a0e28c12d2eb98150434
+    react: ^16.8.3 || ^17 || ^18 || ^19.0.0 || ^19.0.0-rc
+  checksum: 3bcc470427049c676d47e8b5fefc852f2fef8875ac78b91da0b025170f5161c422bc1cf78506e97e7b2bf705c4e3687b72bb5c1344f29d3890083a874bc6366c
   languageName: node
   linkType: hard
 
@@ -22815,7 +22815,7 @@ __metadata:
     react-notion-x: ^7.2.6
     react-qr-code: ^2.0.15
     react-query: ^3.39.3
-    react-swipeable: ^6.2.2
+    react-swipeable: 7.0.2
     react-table: ^7.8.0
     sass: ^1.83.4
     shared: "workspace:*"
