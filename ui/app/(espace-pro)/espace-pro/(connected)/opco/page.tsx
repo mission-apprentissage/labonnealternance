@@ -50,10 +50,10 @@ function AdministrationOpco() {
           row: { id },
         },
       }) => {
-        const { establishment_raison_sociale, establishment_siret, _id, establishment_id } = data[id]
+        const { establishment_raison_sociale, establishment_siret, _id } = data[id]
         return (
           <Flex direction="column">
-            <Link underline="hover" fontWeight="700" href={PAGES.dynamic.backOpcoEditionEntreprise({ establishment_id }).getPath()}>
+            <Link underline="hover" fontWeight="700" href={PAGES.dynamic.backOpcoInformationEntreprise({ user_id: _id }).getPath()}>
               {establishment_raison_sociale}
             </Link>
             <Text color="#666666" fontSize="14px">
@@ -139,16 +139,12 @@ function AdministrationOpco() {
                   </MenuButton>
                   <MenuList>
                     <MenuItem>
-                      <Link
-                        underline="hover"
-                        href={PAGES.dynamic.backOpcoEditionEntreprise({ establishment_id: row.establishment_id }).getPath()}
-                        aria-label="voir les informations"
-                      >
+                      <Link underline="hover" href={PAGES.dynamic.backOpcoInformationEntreprise({ user_id: row._id as string }).getPath()} aria-label="voir les informations">
                         Voir les informations
                       </Link>
                     </MenuItem>
                     <MenuItem>
-                      <Link underline="hover" href={`/espace-pro/administration/opco/entreprise/${row.establishment_siret}/${row.establishment_id}`}>
+                      <Link underline="hover" href={PAGES.dynamic.backOpcoOffresEntreprise({ establishment_id: row.establishment_id }).getPath()}>
                         Voir les offres
                       </Link>
                     </MenuItem>

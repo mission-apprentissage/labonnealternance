@@ -518,9 +518,13 @@ export const PAGES = {
       getPath: () => `/espace-pro/entreprise` as string,
       title: "Accueil entreprise",
     }),
-    backOpcoEditionEntreprise: ({ establishment_id }: { establishment_id: string }): IPage => ({
+    backOpcoOffresEntreprise: ({ establishment_id }: { establishment_id: string }): IPage => ({
       getPath: () => `/espace-pro/opco/entreprise/${establishment_id}` as string,
       title: "Entreprise",
+    }),
+    backOpcoInformationEntreprise: ({ user_id, user_label }: { user_id: string; user_label?: string }): IPage => ({
+      getPath: () => `/espace-pro/opco/users/${user_id}` as string,
+      title: user_label ?? "Entreprise",
     }),
   },
   notion: {},

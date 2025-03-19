@@ -11,7 +11,7 @@ export default function EntrepriseJobList() {
 
   return (
     <>
-      <Breadcrumb pages={[PAGES.static.backOpcoHome, PAGES.dynamic.backOpcoEditionEntreprise({ establishment_id })]} />
+      <Breadcrumb pages={[PAGES.static.backOpcoHome, PAGES.dynamic.backOpcoOffresEntreprise({ establishment_id })]} />
       <ListeOffres hideModify={true} establishment_id={establishment_id} />
     </>
   )
