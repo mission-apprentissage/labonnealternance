@@ -1,5 +1,6 @@
 "use client"
-import { Box, Button, Flex, Heading, SimpleGrid, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import { Box, Flex, Heading, SimpleGrid, Spinner, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Form, Formik } from "formik"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { IUserWithAccountFields } from "shared"
@@ -107,8 +108,8 @@ export default function CompteRenderer() {
                     <CustomInput name="phone" label="Téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
                     <CustomInput name="email" label="Email" type="email" value={values.email} />
                     <Flex justify="flex-end" mt={10}>
-                      <Button type="submit" variant="form" leftIcon={<ArrowRightLine />} isActive={isValid} isDisabled={!isValid || isSubmitting} isLoading={isSubmitting}>
-                        Enregistrer
+                      <Button type="submit" disabled={!isValid || isSubmitting}>
+                        {isSubmitting ? <Spinner mr={2} /> : <ArrowRightLine mr={2} />}Enregistrer
                       </Button>
                     </Flex>
                   </Form>

@@ -1,7 +1,7 @@
 "use client"
 
 import {
-  Button,
+  Button as ChakraButton,
   FormControl,
   FormLabel,
   Heading,
@@ -16,6 +16,8 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
+import { Box } from "@mui/material"
 import { useState } from "react"
 import { IUserRecruteurJson } from "shared"
 
@@ -73,12 +75,12 @@ export const ConfirmationDesactivationUtilisateur = ({
     <Modal closeOnOverlayClick={false} blockScrollOnMount={true} size="xl" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent mt={["0", "3.75rem"]} h={["100%", "auto"]} mb={0} borderRadius={0} data-testid="confirmation-desactivation-utilisateur-modal">
-        <Button display={"flex"} alignSelf={"flex-end"} color="bluefrance.500" fontSize={"epsilon"} onClick={onClose} variant="unstyled" p={6} fontWeight={400}>
+        <ChakraButton display={"flex"} alignSelf={"flex-end"} color="bluefrance.500" fontSize={"epsilon"} onClick={onClose} variant="unstyled" p={6} fontWeight={400}>
           fermer
           <Text as={"span"} ml={2}>
             <Close boxSize={4} />
           </Text>
-        </Button>
+        </ChakraButton>
         <ModalHeader>
           <Heading as="h2" fontSize="1.5rem">
             <Text>Désactivation du compte</Text>
@@ -114,17 +116,18 @@ export const ConfirmationDesactivationUtilisateur = ({
         )}
 
         <ModalFooter>
-          <Button
-            variant="secondary"
-            mr={3}
-            onClick={() => {
-              onClose()
-              setReason(null)
-            }}
-          >
-            Annuler
-          </Button>
-          <Button variant="primary" onClick={() => handleUpdate()} isDisabled={!reason}>
+          <Box sx={{ marginRight: "10px" }}>
+            <Button
+              className="fr-btn--secondary"
+              onClick={() => {
+                onClose()
+                setReason(null)
+              }}
+            >
+              Annuler
+            </Button>
+          </Box>
+          <Button onClick={() => handleUpdate()} disabled={!reason}>
             Supprimer
           </Button>
         </ModalFooter>
