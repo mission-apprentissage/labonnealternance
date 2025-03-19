@@ -36,7 +36,7 @@ export function CandidatRechercheFilters() {
   )
   const onDisplayMapChange = useCallback(
     (value: boolean) => {
-      updateCandidatSearchParam({ displayMap: value })
+      updateCandidatSearchParam({ displayMap: value }, true)
     },
     [updateCandidatSearchParam]
   )

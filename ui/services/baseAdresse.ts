@@ -90,11 +90,11 @@ export const fetchAddresses: IFetchAddresses = memoize(async (value: string, typ
   return searchAddress(value, type, signal)
 })
 
-export const fetchAddressFromCoordinates = async (coordinates: Coordinates, type?: string): Promise<IAddressItem[]> => {
+export const fetchAddressFromCoordinates = async (coordinates: Coordinates, type?: string, signal?: AbortSignal): Promise<IAddressItem[]> => {
   const addressURL = `https://api-adresse.data.gouv.fr/reverse/?lat=${coordinates[1]}&lon=${coordinates[0]}${type ? "&type=" + type : ""}`
 
   try {
-    const response = await fetch(addressURL)
+    const response = await fetch(addressURL, { signal })
     if (!response.ok) throw new Error("Network response was not ok")
 
     const data: { features: AddressFeature[] } = await response.json()

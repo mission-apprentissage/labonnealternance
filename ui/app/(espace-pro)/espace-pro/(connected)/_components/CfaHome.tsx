@@ -1,23 +1,8 @@
 "use client"
 
-import {
-  Box,
-  Button,
-  Link as ChakraLink,
-  Container,
-  Flex,
-  Heading,
-  Icon,
-  Image,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Stack,
-  Text,
-  useDisclosure,
-  useToast,
-} from "@chakra-ui/react"
+import { Box, Button as ChakraButton, Container, Flex, Heading, Icon, Image, Menu, MenuButton, MenuItem, MenuList, Stack, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import { Button } from "@codegouvfr/react-dsfr/Button"
+import { Link } from "@mui/material"
 import dayjs from "dayjs"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -28,7 +13,6 @@ import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
 import { AnimationContainer, LoadingEmptySpace, TableNew } from "@/components/espace_pro"
 import { ConfirmationSuppressionEntreprise } from "@/components/espace_pro/ConfirmationSuppressionEntreprise"
-import Link from "@/components/Link"
 import { Parametre } from "@/theme/components/icons"
 import { getEntreprisesManagedByCfa } from "@/utils/api"
 import { apiGet } from "@/utils/api.utils"
@@ -74,7 +58,7 @@ function ListeEntreprise() {
         isClosable: true,
       })
     }
-  }, [isNewUser])
+  }, [isNewUser, toast])
 
   const cfaId = userAccess?.cfas.at(0)
 
@@ -105,13 +89,13 @@ function ListeEntreprise() {
         )
         return (
           <Flex direction="column">
-            <Link fontWeight="700" href={PAGES.dynamic.backCfaPageEntreprise(establishment_id).getPath()} aria-label="voir les informations">
+            <Link underline="hover" fontWeight="700" href={PAGES.dynamic.backCfaPageEntreprise(establishment_id).getPath()} aria-label="voir les informations">
               {establishment_raison_sociale}
             </Link>
             {establishment_raison_sociale ? (
               siretText
             ) : (
-              <Link fontWeight="700" href={PAGES.dynamic.backCfaPageEntreprise(establishment_id).getPath()} aria-label="voir les informations">
+              <Link underline="hover" fontWeight="700" href={PAGES.dynamic.backCfaPageEntreprise(establishment_id).getPath()} aria-label="voir les informations">
                 {siretText}
               </Link>
             )}
@@ -159,22 +143,26 @@ function ListeEntreprise() {
             <Menu>
               {({ isOpen }) => (
                 <>
-                  <MenuButton isActive={isOpen} as={Button} variant="navdot" _hover={{ backgroundColor: "none" }}>
+                  <MenuButton isActive={isOpen} as={ChakraButton} variant="navdot" _hover={{ backgroundColor: "none" }}>
                     <Icon as={Parametre} color="bluefrance.500" />
                   </MenuButton>
                   <MenuList>
                     <MenuItem>
-                      <Link href={PAGES.dynamic.backCfaPageEntreprise(row.establishment_id).getPath()}>Voir les offres</Link>
+                      <Link underline="hover" href={PAGES.dynamic.backCfaPageEntreprise(row.establishment_id).getPath()}>
+                        Voir les offres
+                      </Link>
                     </MenuItem>
                     <MenuItem>
-                      <ChakraLink
+                      <Link
+                        underline="hover"
+                        component="button"
                         onClick={() => {
                           confirmationSuppression.onOpen()
                           setCurrentEntreprise(row)
                         }}
                       >
                         Supprimer l'entreprise
-                      </ChakraLink>
+                      </Link>
                     </MenuItem>
                   </MenuList>
                 </>
@@ -194,9 +182,11 @@ function ListeEntreprise() {
           <Text fontSize="2rem" fontWeight={700}>
             Mes entreprises
           </Text>
-          <Button variant="primary" size="sm" mr={3} onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
-            Nouvelle entreprise
-          </Button>
+          <Box mr={3}>
+            <Button size="small" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
+              Nouvelle entreprise
+            </Button>
+          </Box>
         </Flex>
         {data?.length ? <TableNew columns={columns} data={data} exportable={false} /> : <EmptySpace />}
       </Container>

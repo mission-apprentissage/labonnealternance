@@ -61,7 +61,7 @@ const niveauOptions = [
   },
 ] as const satisfies Array<{ value: IFormType["niveau"]; label: string; selected?: boolean }>
 
-const radiusOptions = [
+export const radiusOptions = [
   {
     value: "10",
     label: "10 km",
@@ -83,7 +83,7 @@ const radiusOptions = [
 type RechercheFormProps = {
   type: "home" | "recherche"
   initialValue?: Pick<IRecherchePageParams, "romes" | "diploma" | "job_name" | "geo" | "job_type"> | null
-  onSubmit: (result: Pick<IRecherchePageParams, "romes" | "diploma" | "job_name" | "geo" | "job_type">) => unknown
+  onSubmit: (result: Pick<IRecherchePageParams, "romes" | "diploma" | "job_name" | "geo" | "job_type" | "selection">) => unknown
 }
 
 type IRomeSearchOption = IFormType["metier"] & { group?: string }
@@ -299,6 +299,7 @@ export function RechercheForm(props: RechercheFormProps) {
             diploma: values.niveau || null,
             job_name: values.metier.label,
             job_type: values.metier.type,
+            selection: [],
           })
         }}
         component={RechercheFormComponent}

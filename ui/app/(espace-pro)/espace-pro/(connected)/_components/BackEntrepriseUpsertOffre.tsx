@@ -1,9 +1,11 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+import { ENTREPRISE } from "shared/constants/recruteur"
 
 import UpsertOffre from "@/app/(espace-pro)/espace-pro/(connected)/_components/UpsertOffre"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
+import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -13,6 +15,7 @@ export function BackEntrepriseUpsertOffre({ establishment_id, job_id }: { establ
 
   return (
     <DepotSimplifieStyling>
+      <Breadcrumb pages={[PAGES.dynamic.backHomeEntreprise(), PAGES.dynamic.offreUpsert({ establishment_id, offerId: job_id, userType: ENTREPRISE })]} />
       <UpsertOffre
         establishment_id={establishment_id}
         job_id={job_id}

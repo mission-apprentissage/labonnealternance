@@ -1,5 +1,6 @@
 "use client"
-import { Box, Button, Container, Flex, Heading, Image, Stack, Text } from "@chakra-ui/react"
+import { Box, Container, Flex, Heading, Image, Stack, Text } from "@chakra-ui/react"
+import { Button } from "@codegouvfr/react-dsfr/Button"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { useRouter } from "next/navigation"
@@ -38,25 +39,27 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
 
   const entrepriseTitle = establishment_raison_sociale ?? establishment_siret
   const getOffreEditionUrl = (offerId: string) => {
-    return PAGES.dynamic.offreCreation({ offerId, establishment_id, userType: user.type }).getPath()
+    return PAGES.dynamic.offreUpsert({ offerId, establishment_id, userType: user.type }).getPath()
   }
 
   const navigateToCreation = () => {
-    router.push(PAGES.dynamic.offreCreation({ offerId: "creation", establishment_id, userType: user.type, raison_sociale: entrepriseTitle }).getPath())
+    router.push(PAGES.dynamic.offreUpsert({ offerId: "creation", establishment_id, userType: user.type, raison_sociale: entrepriseTitle }).getPath())
   }
 
   const shouldDisplayModifyButton = !hideModify && user.type !== AUTHTYPE.CFA
   const ActionButtons = (
-    <Box>
+    <Flex>
       {shouldDisplayModifyButton && user.type !== AUTHTYPE.OPCO && (
-        <Button mr={5} variant="secondary" leftIcon={<Building />} onClick={() => router.push(PAGES.dynamic.modificationEntreprise().getPath())}>
-          {user.type === AUTHTYPE.ENTREPRISE ? "Mes informations" : "Modifier l'entreprise"}
-        </Button>
+        <Box mr={5}>
+          <Button className="fr-btn--secondary" onClick={() => router.push(PAGES.dynamic.modificationEntreprise().getPath())}>
+            <Building mr={2} /> {user.type === AUTHTYPE.ENTREPRISE ? "Mes informations" : "Modifier l'entreprise"}
+          </Button>
+        </Box>
       )}
-      <Button variant="primary" leftIcon={<Plus />} onClick={navigateToCreation}>
-        Ajouter une offre
+      <Button onClick={navigateToCreation}>
+        <Plus mr={2} /> Ajouter une offre
       </Button>
-    </Box>
+    </Flex>
   )
 
   if (jobs.length === 0) {

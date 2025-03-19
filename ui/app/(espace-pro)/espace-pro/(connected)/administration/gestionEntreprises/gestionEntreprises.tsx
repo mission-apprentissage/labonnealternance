@@ -1,6 +1,7 @@
 "use client"
 import { CheckIcon } from "@chakra-ui/icons"
-import { Alert, AlertIcon, Box, Button, Container, Flex, Spinner, Text } from "@chakra-ui/react"
+import { Alert, AlertIcon, Box, Container, Flex, Spinner, Text } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { Form, Formik } from "formik"
 import { useState } from "react"
 import { useMutation, useQuery } from "react-query"
@@ -40,8 +41,8 @@ function FormulaireRechercheEntreprise({ onSiretChange }: { onSiretChange: (newS
           <Form>
             <CustomInput required={true} name="siret" label="SIRET de l'établissement" type="text" value={values.siret} />
             <Flex justify="flex-start">
-              <Button type="submit" variant="form" data-testid="search_for_algo_company" leftIcon={<SearchLine width={5} />} isActive={isValid} isDisabled={!isValid || !dirty}>
-                Chercher
+              <Button type="submit" data-testid="search_for_algo_company" disabled={!isValid || !dirty}>
+                <SearchLine width={5} mr={2} /> Chercher
               </Button>
             </Flex>
           </Form>

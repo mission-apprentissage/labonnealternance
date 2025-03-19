@@ -6,7 +6,8 @@ import { useState } from "react"
 import { useQueryClient } from "react-query"
 import { IJobJson, IRecruiterJson, JOB_STATUS } from "shared"
 import { AUTHTYPE, RECRUITER_STATUS } from "shared/constants/index"
-import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { buildJobUrl } from "shared/metier/lbaitemutils"
 
 import Table from "@/app/(espace-pro)/_components/Table"
 import ConfirmationSuppressionOffre from "@/app/(espace-pro)/espace-pro/(connected)/_components/ConfirmationSuppressionOffre"
@@ -171,6 +172,7 @@ export const OffresTabs = ({
       disableSortBy: true,
       accessor: (row) => {
         const [lat, lon] = (row.geo_coordinates ?? "").split(",")
+        const directLink = `${publicConfig.baseUrl}${buildJobUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, row._id, row.rome_appellation_label)}`
         const isDisable = row.job_status === "Annulée" || row.job_status === "Pourvue" ? true : false
         return (
           <Box display={["none", isDisable ? "none" : "block"]}>
@@ -212,13 +214,7 @@ export const OffresTabs = ({
                       </Link>
                     </MenuItem>
                     <MenuItem>
-                      <Link
-                        underline="hover"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        href={`${publicConfig.baseUrl}/recherche?&type=${LBA_ITEM_TYPE_OLD.MATCHA}&itemId=${row._id}`}
-                        aria-label="Lien vers l'offre - nouvelle fenêtre"
-                      >
+                      <Link underline="hover" target="_blank" rel="noopener noreferrer" href={directLink} aria-label="Lien vers l'offre - nouvelle fenêtre">
                         Voir l'offre en ligne
                       </Link>
                     </MenuItem>
@@ -241,7 +237,7 @@ export const OffresTabs = ({
                         onClick={(e) => {
                           e.preventDefault()
                           e.stopPropagation()
-                          navigator.clipboard.writeText(`${publicConfig.baseUrl}/recherche?&type=${LBA_ITEM_TYPE_OLD.MATCHA}&itemId=${row._id}`).then(function () {
+                          navigator.clipboard.writeText(directLink).then(function () {
                             setCopied(true)
                           })
                         }}

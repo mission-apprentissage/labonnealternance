@@ -43,6 +43,7 @@ export const zRecherchePageParams = z.object({
   displayEntreprises: z.boolean().optional(),
   displayFormations: z.boolean().optional(),
   displayPartenariats: z.boolean().optional(),
+  selection: z.string().array().optional(),
 })
 
 export type IRecherchePageParams = z.output<typeof zRecherchePageParams>
@@ -82,6 +83,9 @@ function buildRecherchePageParams(params: IRecherchePageParams): string {
   if (params.displayPartenariats === false) {
     query.set("displayPartenariats", "false")
   }
+  if (params?.selection?.length > 0) {
+    query.set("selection", params.selection.join(","))
+  }
 
   return query.toString()
 }
@@ -92,6 +96,7 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
   }
 
   const romes = search.get("romes")?.split(",") ?? []
+  const selection = search.get("selection")?.split(",") ?? []
 
   const rawLat = search.get("lat")
   const rawLon = search.get("lon")
@@ -115,7 +120,7 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
   const displayFormations = search.get("displayFormations") !== "false"
   const displayPartenariats = search.get("displayPartenariats") !== "false"
 
-  return { romes, geo, diploma, job_name, job_type, displayMap, displayEntreprises, displayFormations, displayPartenariats }
+  return { romes, geo, diploma, job_name, job_type, displayMap, displayEntreprises, displayFormations, displayPartenariats, selection }
 }
 
 export const PAGES = {
@@ -293,6 +298,10 @@ export const PAGES = {
       getPath: () => `/espace-pro/administration/users` as string,
       title: "Accueil administration",
     },
+    backOpcoHome: {
+      getPath: () => `/espace-pro/opco` as string,
+      title: "Accueil OPCO",
+    },
   },
   dynamic: {
     // example
@@ -330,30 +339,19 @@ export const PAGES = {
       getMetadata: () => ({ title: "Modification entreprise" }),
       title: "Modification entreprise",
     }),
-    offreCreation: ({
-      offerId,
-      establishment_id,
-      userType,
-      raison_sociale,
-      establishment_siret,
-    }: {
-      offerId: string
-      establishment_id: string
-      userType: string
-      raison_sociale?: string
-      establishment_siret?: string
-    }): IPage => ({
+    offreUpsert: ({ offerId, establishment_id, userType, raison_sociale }: { offerId: string; establishment_id: string; userType: string; raison_sociale?: string }): IPage => ({
       getPath: () => {
-        const raisonSocialeParam = raison_sociale ? `?raison_sociale=${raison_sociale}` : ""
+        const isCreation = offerId === "creation"
+        const raisonSocialeParam = raison_sociale ? `?raison_sociale=${encodeURIComponent(raison_sociale)}` : ""
         switch (userType) {
           case OPCO:
-            return `/espace-pro/opco/entreprise/${establishment_siret}/${establishment_id}/offre/${offerId}}${raisonSocialeParam}`
+            return isCreation
+              ? `/espace-pro/opco/entreprise/${establishment_id}/creation-offre${raisonSocialeParam}`
+              : `/espace-pro/opco/entreprise/${establishment_id}/offre/${offerId}${raisonSocialeParam}`
           case CFA:
-            return offerId === "creation"
-              ? PAGES.dynamic.backCfaEntrepriseCreationOffre(establishment_id).getPath()
-              : `/espace-pro/cfa/entreprise/${establishment_id}/offre/${offerId}`
+            return isCreation ? PAGES.dynamic.backCfaEntrepriseCreationOffre(establishment_id).getPath() : `/espace-pro/cfa/entreprise/${establishment_id}/offre/${offerId}`
           case ENTREPRISE:
-            return offerId === "creation" ? PAGES.dynamic.backCreationOffre().getPath() : PAGES.dynamic.backEditionOffre({ job_id: offerId }).getPath()
+            return isCreation ? PAGES.dynamic.backCreationOffre().getPath() : PAGES.dynamic.backEditionOffre({ job_id: offerId }).getPath()
           default:
             throw new Error("not implemented")
         }
@@ -516,6 +514,10 @@ export const PAGES = {
     backHomeEntreprise: (): IPage => ({
       getPath: () => `/espace-pro/entreprise` as string,
       title: "Accueil entreprise",
+    }),
+    backOpcoEditionEntreprise: ({ establishment_id }: { establishment_id: string }): IPage => ({
+      getPath: () => `/espace-pro/opco/entreprise/${establishment_id}` as string,
+      title: "Entreprise",
     }),
   },
   notion: {},

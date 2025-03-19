@@ -14,6 +14,7 @@ import { setZodLanguage } from "shared/helpers/zodWithOpenApi"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 
 import { localOrigin } from "@/common/utils/isOriginLocal"
+import { geoRouteController } from "@/http/controllers/_private/geo.private.controller"
 
 import { initSentryFastify } from "../common/sentry/sentry.fastify"
 import config from "../config"
@@ -135,6 +136,7 @@ export async function bind(app: Server) {
       formationsRegionV1Route(typedSubApp)
       jobsEtFormationsV1Route(typedSubApp)
       reportedCompanyController(typedSubApp)
+      geoRouteController(typedSubApp)
 
       /**
        * Admin / Auth

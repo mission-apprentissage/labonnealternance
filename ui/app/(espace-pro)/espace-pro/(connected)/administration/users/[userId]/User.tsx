@@ -2,7 +2,6 @@
 import {
   Badge,
   Box,
-  Button,
   Container,
   Flex,
   FormControl,
@@ -11,11 +10,13 @@ import {
   FormLabel,
   Heading,
   SimpleGrid,
+  Spinner,
   Stack,
   Text,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react"
+import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Form, Formik } from "formik"
 import { useParams } from "next/navigation"
 import { useMutation, useQuery, useQueryClient } from "react-query"
@@ -50,16 +51,12 @@ function DetailEntreprise() {
   const ActivateUserButton = ({ userId }) => {
     const { activate } = useUserPermissionsActions(userId)
 
-    return (
-      <Button variant="primary" onClick={() => activate()}>
-        Activer le compte
-      </Button>
-    )
+    return <Button onClick={() => activate()}>Activer le compte</Button>
   }
 
   const DisableUserButton = () => {
     return (
-      <Button variant="primary-red" onClick={() => confirmationDesactivationUtilisateur.onOpen()}>
+      <Button className="fr-btn--secondary" onClick={() => confirmationDesactivationUtilisateur.onOpen()}>
         Désactiver le compte
       </Button>
     )
@@ -211,8 +208,8 @@ function DetailEntreprise() {
                           </FormControl>
                         )}
                         <Flex justify="flex-end" mt={10}>
-                          <Button type="submit" variant="form" leftIcon={<ArrowRightLine />} isActive={isValid} isDisabled={!isValid || isSubmitting} isLoading={isSubmitting}>
-                            Enregistrer
+                          <Button type="submit" disabled={!isValid || isSubmitting}>
+                            {isSubmitting ? <Spinner mr={2} /> : <ArrowRightLine mr={2} />}Enregistrer
                           </Button>
                         </Flex>
                       </Form>
