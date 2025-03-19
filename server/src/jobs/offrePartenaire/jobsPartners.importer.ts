@@ -2,9 +2,9 @@ import { CronDef } from "job-processor"
 
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
 import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
-import { processKelio } from "@/jobs/offrePartenaire/kelio/processKelio"
+// import { processKelio } from "@/jobs/offrePartenaire/kelio/processKelio"
 import { processMeteojob } from "@/jobs/offrePartenaire/meteojob/processMeteojob"
-import { processMonster } from "@/jobs/offrePartenaire/monster/processMonster"
+// import { processMonster } from "@/jobs/offrePartenaire/monster/processMonster"
 import { processRhAlternance } from "@/jobs/offrePartenaire/rh-alternance/processRhAlternance"
 
 const timings = {
@@ -40,20 +40,20 @@ export const importers: Record<string, CronDef> = {
     maxRuntimeInMinutes: 30,
     tag: "slave",
   },
-  "Import Monster": {
-    cron_string: timings.import_source,
-    handler: processMonster,
-    checkinMargin: 10,
-    maxRuntimeInMinutes: 30,
-    tag: "slave",
-  },
-  "Import Kelio": {
-    cron_string: timings.import_source,
-    handler: processKelio,
-    checkinMargin: 10,
-    maxRuntimeInMinutes: 30,
-    tag: "slave",
-  },
+  // "Import Monster": {
+  //   cron_string: timings.import_source,
+  //   handler: processMonster,
+  //   checkinMargin: 10,
+  //   maxRuntimeInMinutes: 30,
+  //   tag: "slave",
+  // },
+  // "Import Kelio": {
+  //   cron_string: timings.import_source,
+  //   handler: processKelio,
+  //   checkinMargin: 10,
+  //   maxRuntimeInMinutes: 30,
+  //   tag: "slave",
+  // },
   // "Import PASS": {
   //   cron_string: timings.import_source,
   //   handler: processPass,
