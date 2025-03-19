@@ -1,4 +1,4 @@
-import { Box, Button as ChakraButton, Flex, Heading, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, useToast } from "@chakra-ui/react"
+import { Box, Flex, Heading, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, useToast } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 
 import { ArrowRightLine, Close } from "../../theme/components/icons"
@@ -32,12 +32,14 @@ export function ConfirmationSuppressionEntreprise(props) {
     <Modal closeOnOverlayClick={false} blockScrollOnMount={true} size="xl" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent mt={["0", "3.75rem"]} h={["100%", "auto"]} mb={0} borderRadius={0}>
-        <ChakraButton display={"flex"} alignSelf={"flex-end"} color="bluefrance.500" fontSize={"epsilon"} onClick={onClose} variant="unstyled" p={6} fontWeight={400}>
-          fermer
-          <Text as={"span"} ml={2}>
-            <Close boxSize={4} />
-          </Text>
-        </ChakraButton>
+        <Box display={"flex"} alignSelf={"flex-end"}>
+          <Button priority="tertiary no outline" onClick={() => onClose()}>
+            fermer
+            <Text as={"span"} ml={2}>
+              <Close boxSize={4} />
+            </Text>
+          </Button>
+        </Box>
         <ModalHeader>
           <Heading as="h2" fontSize="1.5rem">
             <Flex>
