@@ -339,27 +339,30 @@ export const PAGES = {
       getMetadata: () => ({ title: "Modification entreprise" }),
       title: "Modification entreprise",
     }),
-    offreUpsert: ({ offerId, establishment_id, userType, raison_sociale }: { offerId: string; establishment_id: string; userType: string; raison_sociale?: string }): IPage => ({
-      getPath: () => {
-        const isCreation = offerId === "creation"
-        const raisonSocialeParam = raison_sociale ? `?raison_sociale=${encodeURIComponent(raison_sociale)}` : ""
-        switch (userType) {
-          case OPCO:
-            return isCreation
-              ? `/espace-pro/opco/entreprise/${establishment_id}/creation-offre${raisonSocialeParam}`
-              : `/espace-pro/opco/entreprise/${establishment_id}/offre/${offerId}${raisonSocialeParam}`
-          case CFA:
-            return isCreation ? PAGES.dynamic.backCfaEntrepriseCreationOffre(establishment_id).getPath() : `/espace-pro/cfa/entreprise/${establishment_id}/offre/${offerId}`
-          case ENTREPRISE:
-            return isCreation ? PAGES.dynamic.backCreationOffre().getPath() : PAGES.dynamic.backEditionOffre({ job_id: offerId }).getPath()
-          default:
-            throw new Error("not implemented")
-        }
-      },
-      index: false,
-      getMetadata: () => ({ title: "Création d'une offre" }),
-      title: "Création d'une offre",
-    }),
+    offreUpsert: ({ offerId, establishment_id, userType, raison_sociale }: { offerId: string; establishment_id: string; userType: string; raison_sociale?: string }): IPage => {
+      const isCreation = offerId === "creation"
+
+      return {
+        getPath: () => {
+          const raisonSocialeParam = raison_sociale ? `?raison_sociale=${encodeURIComponent(raison_sociale)}` : ""
+          switch (userType) {
+            case OPCO:
+              return isCreation
+                ? `/espace-pro/opco/entreprise/${establishment_id}/creation-offre${raisonSocialeParam}`
+                : `/espace-pro/opco/entreprise/${establishment_id}/offre/${offerId}${raisonSocialeParam}`
+            case CFA:
+              return isCreation ? PAGES.dynamic.backCfaEntrepriseCreationOffre(establishment_id).getPath() : `/espace-pro/cfa/entreprise/${establishment_id}/offre/${offerId}`
+            case ENTREPRISE:
+              return isCreation ? PAGES.dynamic.backCreationOffre().getPath() : PAGES.dynamic.backEditionOffre({ job_id: offerId }).getPath()
+            default:
+              throw new Error("not implemented")
+          }
+        },
+        index: false,
+        getMetadata: () => ({ title: isCreation ? "Création d'une offre" : "Edition d'une offre" }),
+        title: isCreation ? "Création d'une offre" : "Edition d'une offre",
+      }
+    },
     successEditionOffre: ({ userType, establishment_id, user_id }: { userType: "OPCO" | "ENTREPRISE" | "CFA" | "ADMIN"; establishment_id?: string; user_id?: string }): IPage => {
       let path = ""
       switch (userType) {
