@@ -6,7 +6,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
 
-import { removeHtmlTagsFromString } from "@/common/utils/stringUtils"
+import { formatHtmlForPartnerDescription } from "@/common/utils/stringUtils"
 
 import { isCompanyInBlockedCfaList } from "../blockJobsPartnersFromCfaList"
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
@@ -132,12 +132,6 @@ export const ZMeteojobJob = z
 
 export type IMeteojobJob = z.output<typeof ZMeteojobJob>
 
-const sanitizeHtml = (text: string) => {
-  let sanitizedText = text.replace("<p>", "\r\n").replace("</p>", "\r\n").replace("<br>", "\r\n").replace("<br/>", "\r\n").replace("<br />", "\r\n")
-  sanitizedText = removeHtmlTagsFromString(sanitizedText) as string
-  return sanitizedText.trim()
-}
-
 export const meteojobJobToJobsPartners = (job: IMeteojobJob): IComputedJobsPartners => {
   const { $, title, description, link, publicationDate, lastModificationDate, position, industry, company, contract, workSchedule, benefits, profile } = job
   const workplaceLocation = job.workplace.locations.location instanceof Array ? job.workplace.locations.location[0] : job.workplace.locations.location
@@ -154,7 +148,7 @@ export const meteojobJobToJobsPartners = (job: IMeteojobJob): IComputedJobsPartn
   ${benefits ? `Avantages: ${benefits?.salary?._ ? benefits.salary._ : ""}\r\n\r\n` : ""}${benefits?.description ? `${benefits.description}\r\n\r\n` : ""}
   ${profile?.description ? `Profil: ${profile.description}` : ""}`
 
-  descriptionComputed = sanitizeHtml(descriptionComputed)
+  descriptionComputed = formatHtmlForPartnerDescription(descriptionComputed).trim()
 
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner(),
@@ -175,7 +169,7 @@ export const meteojobJobToJobsPartners = (job: IMeteojobJob): IComputedJobsPartn
       .toDate(),
 
     workplace_name: company.name,
-    workplace_description: company.description && company.description.length >= 30 ? sanitizeHtml(company.description) : null,
+    workplace_description: company.description && company.description.length >= 30 ? formatHtmlForPartnerDescription(company.description) : null,
     workplace_address_zipcode: workplaceLocation?.postalCode || null,
     workplace_address_city: workplaceLocation.city || null,
     workplace_address_label: workplaceLocation.$?.label || null,

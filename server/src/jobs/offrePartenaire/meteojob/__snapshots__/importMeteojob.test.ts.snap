@@ -1,232 +1,5 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`importHelloWork > should test the import of hellowork data into computed_job_partners 1`] = `
-[
-  {
-    "apply_phone": null,
-    "apply_url": "https://www.meteojob.com/jobads/00000070?utm_source=labonnealternance&utm_medium=aggregator-free&utm_campaign=alternance",
-    "business_error": null,
-    "contract_duration": 12,
-    "contract_remote": null,
-    "contract_start": null,
-    "contract_type": [
-      "Apprentissage",
-      "Professionnalisation",
-    ],
-    "errors": [],
-    "jobs_in_success": [],
-    "offer_access_conditions": [
-      "débutant à 1 an",
-      "1-2 ans",
-      "3-5 ans",
-      "6-10 ans",
-      "11-20 ans",
-    ],
-    "offer_creation": 2025-02-25T02:46:50.131Z,
-    "offer_description": "- Identifier les pièces détachées sur les différents logiciels constructeurs.
-- Gérer les appels téléphoniques et les emails pour répondre à chaque demande.- Gérer les commandes et réceptions fournisseurs.- Réaliser les ventes clients au comptoir.- Préparer les commandes clients et techniciens.- Assurer les différents mouvements de stock via notre logiciel.- Gérer les problèmes de retour pièces.- Participer à la bonne tenue du magasin (étiquetage, rangement et nettoyage).Vous êtes emmené à faire une semaine d'école à Nantes par mois.
-
-Secteur: Recrutement et placement
-
-
-  Poste: Vendeur-magasinier (H/F)
-
-
-  Temps Plein
-
-
-  Avantages: À partir de 11,88 € par an
-
-
-  Profil: Vous êtes organisé, polyvalent, curieux et vous avez le sens du contact.Vous avez des connaissances en mécanique, électricité, hydraulique et en informatique, et ou vous avez une première expérience dans la recherche de pièce en automobile ou autre.Alors n'hésitez pas et postulez dès maintenant afin de rejoindre une équipe dynamique dans une société à taille humaine.",
-    "offer_desired_skills": [],
-    "offer_expiration": 2025-04-25T02:46:50.131Z,
-    "offer_multicast": true,
-    "offer_opening_count": 1,
-    "offer_origin": null,
-    "offer_rome_codes": null,
-    "offer_status": "Active",
-    "offer_status_history": [],
-    "offer_target_diploma": null,
-    "offer_title": "VENDEUR MAGASINIER H/F",
-    "offer_to_be_acquired_skills": [],
-    "partner_job_id": "00000070",
-    "partner_label": "Meteojob",
-    "updated_at": 2024-07-21T02:49:06.000Z,
-    "validated": false,
-    "workplace_address_city": "Babaland",
-    "workplace_address_label": "Babaland (38)",
-    "workplace_address_street_label": null,
-    "workplace_address_zipcode": "38990",
-    "workplace_brand": null,
-    "workplace_description": "Vous avez envie de diversifier vos expériences professionnelles, de gagner en liberté et en sérénité ? Vous êtes au bon endroit ! Avec nos 2 agences réparties sur tout le territoire, nous sommes toujours plus proches de vous. Il y a plein de raisons de donner raison à notre intérim, découvrez l'intérim fait pour vous !",
-    "workplace_geopoint": {
-      "coordinates": [
-        1.31139,
-        44.12417,
-      ],
-      "type": "Point",
-    },
-    "workplace_idcc": null,
-    "workplace_legal_name": null,
-    "workplace_naf_code": null,
-    "workplace_naf_label": null,
-    "workplace_name": "Tralala Intérim",
-    "workplace_opco": null,
-    "workplace_siret": null,
-    "workplace_size": null,
-    "workplace_website": null,
-  },
-  {
-    "apply_phone": null,
-    "apply_url": "https://www.meteojob.com/jobads/00000400?utm_source=labonnealternance&utm_medium=aggregator-free&utm_campaign=alternance",
-    "business_error": null,
-    "contract_duration": null,
-    "contract_remote": null,
-    "contract_start": null,
-    "contract_type": [
-      "Apprentissage",
-      "Professionnalisation",
-    ],
-    "errors": [],
-    "jobs_in_success": [],
-    "offer_access_conditions": [],
-    "offer_creation": 2025-02-25T03:53:02.912Z,
-    "offer_description": "PRÊT À DEVENIR LE RAYON DE SOLEIL DE NOS BÉNÉFICIAIRES ?Vous souhaitez vous former aux métiers du service à la personne pour rendre la vie plus facile à nos bénéficiaires ? Rejoignez notre équipe, nous avons justement un poste d'assistant(e) de vie aux familles en alternance à proposer ! L'ALTERNANCENous vous proposons une formation de 12 mois qui vous permettra de repartir avec un diplôme d'Assistant(e) de vie aux familles. Tout au long de l'alternance, vous êtes formé(e) par notre centre de formation partenaire, spécialiste du service à la personne : * Formation en apprentissage sur 12 mois * Une journée de cours par semaine * Formation à distance ou en présentiel en fonction de votre secteur géographique * Suivi et accompagnement par un tuteur ou une tutrice expérimenté(e) LE QUOTIDIENChez Azaé Aix en Provence nous voyons chaque jour comme l'occasion d'apporter du réconfort et de la joie en facilitant le quotidien ! Entretien du logement, aide aux déplacements et aux soins d'hygiène, à la confection ou à la prise des repas et accompagnement lors des sorties : grâce à vos interventions, nos bénéficiaires et clients évoluent en toute sécurité dans le cadre rassurant de leur maison. La clé de notre métier : avoir vraiment envie d'aider ceux qui en ont besoin ! Notre groupe est labélisé HappyTrainees 2025 par ChooseMyCompany, un label qui atteste que nos alternants se sentent valorisés et bien accompagnés.
-
-Secteur: Services à domicile
-
-
-  Poste: Assistant de vie (H/F)
-
-
-  Temps Partiel
-
-
-  Avantages: À partir de 11,88 € par heure
-
-
-  Profil: VOTRE PROFILSi aider les autres est votre mission et la bienveillance votre super-pouvoir, alors ce poste est fait pour vous ! Votre super sens relationnel et votre adaptabilité à toute situation seront vos atouts tout au long de votre expérience chez nous. AVEC AZAÉ AIX EN PROVENCE VOUS BÉNÉFICIEZ … * D'une formation diplômante et certifiante (BAC+2) reconnue par l'état et d'une expérience terrain * De notre mutuelle d'entreprise , l'accès à notre comité d'entreprise, les tickets restaurants à 7€, Des indemnités kilométriques à 0.47€ par kilomètre, Le remboursement des transports en commun (pris en charge jusqu'à 100%)Nous sommes signataire de la charte de la diversité. En ce sens, nous nous engageons à étudier chaque candidature avec la même importance.",
-    "offer_desired_skills": [],
-    "offer_expiration": 2025-04-25T03:53:02.912Z,
-    "offer_multicast": true,
-    "offer_opening_count": 1,
-    "offer_origin": null,
-    "offer_rome_codes": null,
-    "offer_status": "Active",
-    "offer_status_history": [],
-    "offer_target_diploma": null,
-    "offer_title": "Assistant(e) de Vie aux familles en alternance H/F",
-    "offer_to_be_acquired_skills": [],
-    "partner_job_id": "00000400",
-    "partner_label": "Meteojob",
-    "updated_at": 2024-07-21T02:49:06.000Z,
-    "validated": false,
-    "workplace_address_city": "Aix-en-Provence",
-    "workplace_address_label": "Aix-en-Provence (13)",
-    "workplace_address_street_label": null,
-    "workplace_address_zipcode": "13540",
-    "workplace_brand": null,
-    "workplace_description": "Vieuxaumieux Aix en Provence fait partie du groupe Vieuxaumieux, spécialisé dans les services à la personne et représenté par deux marques : Vieuxaumieux et Vieuxaumieux.C'est au travers de ses 316 agences de proximité sur l'ensemble de l'hexagone que le groupe propose ses services d'aide à domicile.Respect, bien être et considération sont les moteurs de nos actions. Ces valeurs influent sur la façon dont nous travaillons ensemble et accompagnons nos clients et bénéficiaires au quotidien.",
-    "workplace_geopoint": {
-      "coordinates": [
-        5.44556,
-        43.52778,
-      ],
-      "type": "Point",
-    },
-    "workplace_idcc": null,
-    "workplace_legal_name": null,
-    "workplace_naf_code": null,
-    "workplace_naf_label": null,
-    "workplace_name": "Vieuxaumieux",
-    "workplace_opco": null,
-    "workplace_siret": null,
-    "workplace_size": null,
-    "workplace_website": null,
-  },
-  {
-    "apply_phone": null,
-    "apply_url": "https://www.meteojob.com/jobads/00000629?utm_source=labonnealternance&utm_medium=aggregator-free&utm_campaign=alternance",
-    "business_error": null,
-    "contract_duration": null,
-    "contract_remote": null,
-    "contract_start": null,
-    "contract_type": [
-      "Apprentissage",
-      "Professionnalisation",
-    ],
-    "errors": [],
-    "jobs_in_success": [],
-    "offer_access_conditions": [
-      "débutant à 1 an",
-      "1-2 ans",
-      "3-5 ans",
-      "6-10 ans",
-      "11-20 ans",
-    ],
-    "offer_creation": 2025-02-25T02:46:34.914Z,
-    "offer_description": "
-Commercialisation de tous les produits de formations en apprentissage et titre professionnel
-Une expertise sur les financements POEI, POEC et sur l'alternance dans le département 86.
-
-Secteur: Recrutement et placement
-
-
-  Poste: Commercial (H/F)
-
-
-  Temps Plein
-
-
-  Avantages: 26 000 € - 30 000 € par an
-
-
-  Profil: Adepte du terrainDéfier les objectifs commerciauxEnrichir des ventes et des margesProspecter, Négocier, Fidéliser et Satisfaire les clients existantsEtre engagé et orienté dans la politique RSE, Handicap, QVCT dans l'innovation et l'humain.
-Rémunération Et Avantages :Salaire selon profil sur 13 mois avec un variable mensuelVariable garanti pendant les 3 premiers mois dès la prise de posteVéhicule de service 5 places et carte essenceOutils de communication (PC, tablette et téléphone)Participation / Intéressement / Tickets restaurant 9.50€19 RTTCET / Plan d'Epargne Retraite Collectif PERCOLCSEUn programme d'intégration et d'accompagnement tout au long de votre parcours professionnelDes possibilités d'évolution professionnelle et de développement des compétences (catalogue de formations à disposition)Cette offre vous intéresse et votre profil correspond à celui recherché, contactez-nous sans attendre ou postulez en ligne via notre application téléchargeable sur votre smartphone : « MY Tralal »Tralal Intérim POITIERSA bientôt chez Tralal …",
-    "offer_desired_skills": [],
-    "offer_expiration": 2025-04-25T02:46:34.914Z,
-    "offer_multicast": true,
-    "offer_opening_count": 1,
-    "offer_origin": null,
-    "offer_rome_codes": null,
-    "offer_status": "Active",
-    "offer_status_history": [],
-    "offer_target_diploma": null,
-    "offer_title": "Commercial(e) H/F",
-    "offer_to_be_acquired_skills": [],
-    "partner_job_id": "00000629",
-    "partner_label": "Meteojob",
-    "updated_at": 2024-07-21T02:49:06.000Z,
-    "validated": false,
-    "workplace_address_city": "Poitiers",
-    "workplace_address_label": "Poitiers (86)",
-    "workplace_address_street_label": null,
-    "workplace_address_zipcode": "86000",
-    "workplace_brand": null,
-    "workplace_description": "
-Vous avez envie de diversifier vos expériences professionnelles, de gagner en liberté et en sérénité ? Vous êtes au bon endroit ! Avec nos 190 agences réparties sur tout le territoire, nous sommes toujours plus proches de vous. Il y a plein de raisons de donner raison à notre intérim, découvrez l'intérim fait pour vous !
-L'agence RAS Intérim de Poitiers recherche un(e) commercial(e) H/F pour l'un de nos clients spécialisé dans la formation à Poitiers.",
-    "workplace_geopoint": {
-      "coordinates": [
-        0.33528,
-        46.58111,
-      ],
-      "type": "Point",
-    },
-    "workplace_idcc": null,
-    "workplace_legal_name": null,
-    "workplace_naf_code": null,
-    "workplace_naf_label": null,
-    "workplace_name": "Tralala Intérim",
-    "workplace_opco": null,
-    "workplace_siret": null,
-    "workplace_size": null,
-    "workplace_website": null,
-  },
-]
-`;
-
 exports[`importMeteojob > should test the import of hellowork data into computed_job_partners 1`] = `
 [
   {
@@ -251,7 +24,22 @@ exports[`importMeteojob > should test the import of hellowork data into computed
     ],
     "offer_creation": 2025-02-25T02:46:50.131Z,
     "offer_description": "- Identifier les pièces détachées sur les différents logiciels constructeurs.
-- Gérer les appels téléphoniques et les emails pour répondre à chaque demande.- Gérer les commandes et réceptions fournisseurs.- Réaliser les ventes clients au comptoir.- Préparer les commandes clients et techniciens.- Assurer les différents mouvements de stock via notre logiciel.- Gérer les problèmes de retour pièces.- Participer à la bonne tenue du magasin (étiquetage, rangement et nettoyage).Vous êtes emmené à faire une semaine d'école à Nantes par mois.
+
+- Gérer les appels téléphoniques et les emails pour répondre à chaque demande.
+
+- Gérer les commandes et réceptions fournisseurs.
+
+- Réaliser les ventes clients au comptoir.
+
+- Préparer les commandes clients et techniciens.
+
+- Assurer les différents mouvements de stock via notre logiciel.
+
+- Gérer les problèmes de retour pièces.
+
+- Participer à la bonne tenue du magasin (étiquetage, rangement et nettoyage).
+
+Vous êtes emmené à faire une semaine d'école à Nantes par mois.
 
 Secteur: Recrutement et placement
 
@@ -265,7 +53,12 @@ Secteur: Recrutement et placement
   Avantages: À partir de 11,88 € par an
 
 
-  Profil: Vous êtes organisé, polyvalent, curieux et vous avez le sens du contact.Vous avez des connaissances en mécanique, électricité, hydraulique et en informatique, et ou vous avez une première expérience dans la recherche de pièce en automobile ou autre.Alors n'hésitez pas et postulez dès maintenant afin de rejoindre une équipe dynamique dans une société à taille humaine.",
+  Profil: 
+- Vous êtes organisé, polyvalent, curieux et vous avez le sens du contact.
+
+Vous avez des connaissances en mécanique, électricité, hydraulique et en informatique, et ou vous avez une première expérience dans la recherche de pièce en automobile ou autre.
+
+Alors n'hésitez pas et postulez dès maintenant afin de rejoindre une équipe dynamique dans une société à taille humaine.",
     "offer_desired_skills": [],
     "offer_expiration": 2025-04-25T02:46:50.131Z,
     "offer_multicast": true,
@@ -393,8 +186,11 @@ Secteur: Services à domicile
       "11-20 ans",
     ],
     "offer_creation": 2025-02-25T02:46:34.914Z,
-    "offer_description": "Commercialisation de tous les produits de formations en apprentissage et titre professionnel
-Une expertise sur les financements POEI, POEC et sur l'alternance dans le département 86.
+    "offer_description": "- Commercialisation de tous les produits de formations en apprentissage et titre professionnel
+
+- Une expertise sur les financements POEI, POEC et sur l'alternance dans le département 86.
+
+
 
 Secteur: Recrutement et placement
 
@@ -408,8 +204,44 @@ Secteur: Recrutement et placement
   Avantages: 26 000 € - 30 000 € par an
 
 
-  Profil: Adepte du terrainDéfier les objectifs commerciauxEnrichir des ventes et des margesProspecter, Négocier, Fidéliser et Satisfaire les clients existantsEtre engagé et orienté dans la politique RSE, Handicap, QVCT dans l'innovation et l'humain.
-Rémunération Et Avantages :Salaire selon profil sur 13 mois avec un variable mensuelVariable garanti pendant les 3 premiers mois dès la prise de posteVéhicule de service 5 places et carte essenceOutils de communication (PC, tablette et téléphone)Participation / Intéressement / Tickets restaurant 9.50€19 RTTCET / Plan d'Epargne Retraite Collectif PERCOLCSEUn programme d'intégration et d'accompagnement tout au long de votre parcours professionnelDes possibilités d'évolution professionnelle et de développement des compétences (catalogue de formations à disposition)Cette offre vous intéresse et votre profil correspond à celui recherché, contactez-nous sans attendre ou postulez en ligne via notre application téléchargeable sur votre smartphone : « MY Tralal »Tralal Intérim POITIERSA bientôt chez Tralal …",
+  Profil: 
+- Adepte du terrain
+
+- Défier les objectifs commerciaux
+
+- Enrichir des ventes et des marges
+
+- Prospecter, Négocier, Fidéliser et Satisfaire les clients existants
+
+- Etre engagé et orienté dans la politique RSE, Handicap, QVCT dans l'innovation et l'humain.
+
+
+Rémunération Et Avantages :
+
+- Salaire selon profil sur 13 mois avec un variable mensuel
+
+- Variable garanti pendant les 3 premiers mois dès la prise de poste
+
+- Véhicule de service 5 places et carte essence
+
+- Outils de communication (PC, tablette et téléphone)
+
+- Participation / Intéressement / Tickets restaurant 9.50€
+
+- 19 RTT
+
+- CET / Plan d'Epargne Retraite Collectif PERCOL
+
+- CSE
+
+- Un programme d'intégration et d'accompagnement tout au long de votre parcours professionnel
+
+- Des possibilités d'évolution professionnelle et de développement des compétences (catalogue de formations à disposition)
+
+
+Cette offre vous intéresse et votre profil correspond à celui recherché, contactez-nous sans attendre ou postulez en ligne via notre application téléchargeable sur votre smartphone : « MY Tralal »
+
+Tralal Intérim POITIERSA bientôt chez Tralal …",
     "offer_desired_skills": [],
     "offer_expiration": 2025-04-25T02:46:34.914Z,
     "offer_multicast": true,
@@ -430,8 +262,11 @@ Rémunération Et Avantages :Salaire selon profil sur 13 mois avec un variable m
     "workplace_address_street_label": null,
     "workplace_address_zipcode": "86000",
     "workplace_brand": null,
-    "workplace_description": "Vous avez envie de diversifier vos expériences professionnelles, de gagner en liberté et en sérénité ? Vous êtes au bon endroit ! Avec nos 190 agences réparties sur tout le territoire, nous sommes toujours plus proches de vous. Il y a plein de raisons de donner raison à notre intérim, découvrez l'intérim fait pour vous !
-L'agence RAS Intérim de Poitiers recherche un(e) commercial(e) H/F pour l'un de nos clients spécialisé dans la formation à Poitiers.",
+    "workplace_description": "
+Vous avez envie de diversifier vos expériences professionnelles, de gagner en liberté et en sérénité ? Vous êtes au bon endroit ! Avec nos 190 agences réparties sur tout le territoire, nous sommes toujours plus proches de vous. Il y a plein de raisons de donner raison à notre intérim, découvrez l'intérim fait pour vous !
+
+L'agence RAS Intérim de Poitiers recherche un(e) commercial(e) H/F pour l'un de nos clients spécialisé dans la formation à Poitiers.
+",
     "workplace_geopoint": {
       "coordinates": [
         0.33528,
