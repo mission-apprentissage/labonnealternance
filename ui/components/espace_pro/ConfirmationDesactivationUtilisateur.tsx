@@ -6,10 +6,10 @@ import { Box } from "@mui/material"
 import { useState } from "react"
 import { IUserRecruteurJson } from "shared"
 
+import ModalCloseButton from "@/app/(espace-pro)/_components/ModalCloseButton"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 
 import { AUTHTYPE } from "../../common/contants"
-import { Close } from "../../theme/components/icons"
 
 export const ConfirmationDesactivationUtilisateur = ({
   userRecruteur,
@@ -60,14 +60,7 @@ export const ConfirmationDesactivationUtilisateur = ({
     <Modal closeOnOverlayClick={false} blockScrollOnMount={true} size="xl" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent mt={["0", "3.75rem"]} h={["100%", "auto"]} mb={0} borderRadius={0} data-testid="confirmation-desactivation-utilisateur-modal">
-        <Box display={"flex"} alignSelf={"flex-end"}>
-          <Button priority="tertiary no outline" onClick={() => onClose()}>
-            fermer
-            <Text as={"span"} ml={2}>
-              <Close boxSize={4} />
-            </Text>
-          </Button>
-        </Box>
+        <ModalCloseButton onClose={onClose} />
         <ModalHeader>
           <Heading as="h2" fontSize="1.5rem">
             <Text>Désactivation du compte</Text>
