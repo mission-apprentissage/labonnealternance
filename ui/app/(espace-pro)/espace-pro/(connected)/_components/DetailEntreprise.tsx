@@ -195,10 +195,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter }: { userRec
                     <Text fontSize="20px" lineHeight="32px" fontWeight="700" mb={6}>
                       Offres de recrutement en alternance
                     </Text>
-                    <OffresTabs
-                      recruiter={recruiter}
-                      buildOfferEditionUrl={(offerId) => `/espace-pro/administration/users/${userRecruteur._id}/entreprise/${userRecruteur.establishment_id}/offre/${offerId}`}
-                    />
+                    <OffresTabs recruiter={recruiter} buildOfferEditionUrl={(offerId) => `/espace-pro/opco/entreprise/${userRecruteur.establishment_id}/offre/${offerId}`} />
                   </Box>
                   <Box mb={12}>
                     <UserValidationHistory histories={userRecruteur.status} />
