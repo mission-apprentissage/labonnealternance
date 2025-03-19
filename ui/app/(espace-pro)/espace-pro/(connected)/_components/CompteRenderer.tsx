@@ -7,8 +7,8 @@ import { IUserWithAccountFields } from "shared"
 import { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
-import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/compte/_components/InformationLegaleEntreprise"
-import ModificationCompteEmail from "@/app/(espace-pro)/espace-pro/(connected)/compte/_components/ModificationCompteEmail"
+import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
+import ModificationCompteEmail from "@/app/(espace-pro)/espace-pro/(connected)/_components/ModificationCompteEmail"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 
 import { AUTHTYPE } from "../../../../../common/contants"

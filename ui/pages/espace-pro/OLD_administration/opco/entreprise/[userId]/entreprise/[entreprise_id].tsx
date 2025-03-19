@@ -25,7 +25,7 @@ import { IUserStatusValidationJson } from "shared"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
-import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/compte/_components/InformationLegaleEntreprise"
+import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 import { AUTHTYPE } from "@/common/contants"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"

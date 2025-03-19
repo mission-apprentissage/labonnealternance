@@ -2,18 +2,13 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import type { PropsWithChildren } from "react"
 
-import { getSession } from "@/utils/getSession"
-
-import { Footer } from "../_components/Footer"
-
-import { EspaceProHeader } from "./_components/EspaceProHeader"
+import { DisconnectedHeader } from "@/app/(espace-pro)/_components/DisconnectedHeader"
+import { Footer } from "@/app/_components/Footer"
 
 export default async function RecruteurLayout({ children }: PropsWithChildren) {
-  const { user } = await getSession()
-
   return (
     <>
-      <EspaceProHeader user={user} />
+      <DisconnectedHeader />
       <Box sx={{ marginBottom: fr.spacing("4w") }}>{children}</Box>
       <Footer />
     </>

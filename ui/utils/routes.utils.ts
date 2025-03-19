@@ -317,8 +317,21 @@ export const PAGES = {
       getMetadata: () => ({ title: "Administration des offres" }),
       title: "Administration des offres",
     }),
-    compte: (): IPage => ({
-      getPath: () => "/espace-pro/compte",
+    compte: ({ userType }: { userType: "CFA" | "ENTREPRISE" | "OPCO" | "ADMIN" }): IPage => ({
+      getPath: () => {
+        switch (userType) {
+          case "CFA":
+            return "/espace-pro/cfa/compte"
+          case "ENTREPRISE":
+            return "/espace-pro/entreprise/compte"
+          case "OPCO":
+            return "/espace-pro/opco/compte"
+          case "ADMIN":
+            return "/espace-pro/administration/compte"
+          default:
+            throw new Error("unsupported user type")
+        }
+      },
       index: false,
       getMetadata: () => ({ title: "Informations de contact" }),
       title: "Informations de contact",

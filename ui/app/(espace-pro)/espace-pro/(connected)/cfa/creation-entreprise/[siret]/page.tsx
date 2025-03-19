@@ -1,16 +1,16 @@
 "use client"
 
-import { Button, Container, Flex, Grid, GridItem, Heading, Text, useBreakpointValue, useToast } from "@chakra-ui/react"
+import { Button, Flex, Grid, GridItem, Heading, Text, useBreakpointValue, useToast } from "@chakra-ui/react"
 import { Form, Formik } from "formik"
 import { useParams, useRouter } from "next/navigation"
 import { ENTREPRISE } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
-import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/compte/_components/InformationLegaleEntreprise"
+import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { phoneValidation } from "@/common/validation/fieldValidations"
-import { AnimationContainer, CustomInput } from "@/components/espace_pro"
+import { CustomInput } from "@/components/espace_pro"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 import Link from "@/components/Link"
 import { ArrowRightLine } from "@/theme/components/icons"
@@ -90,25 +90,23 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
 
 function CreationEntrepriseDetail({ siret }: { siret: string }) {
   return (
-    <AnimationContainer>
-      <Container maxW="container.xl" my={5}>
-        <Breadcrumb pages={[PAGES.static.backCfaHome, PAGES.static.backCfaCreationEntreprise, PAGES.dynamic.backCfaEntrepriseCreationDetail(siret)]} />
-        <Grid templateRows={["1fr", ".5fr 2fr"]} templateColumns={["1fr", "4fr 5fr"]} gap={6}>
-          <GridItem>
-            <Heading>Informations de contact</Heading>
-            <Text fontSize="20px" textAlign="justify" mt={2}>
-              Il s’agit des informations de contact de votre entreprise partenaire. Ces informations ne seront pas visibles sur l’offre.
-            </Text>
-          </GridItem>
-          <GridItem rowStart={["auto", 2]}>
-            <Formulaire siret={siret} />
-          </GridItem>
-          <GridItem rowStart={["auto", 2]} pt={[4, 8]} minW="0">
-            <InformationLegaleEntreprise siret={siret} type={ENTREPRISE} />
-          </GridItem>
-        </Grid>
-      </Container>
-    </AnimationContainer>
+    <>
+      <Breadcrumb pages={[PAGES.static.backCfaHome, PAGES.static.backCfaCreationEntreprise, PAGES.dynamic.backCfaEntrepriseCreationDetail(siret)]} />
+      <Grid templateRows={["1fr", ".5fr 2fr"]} templateColumns={["1fr", "4fr 5fr"]} gap={6}>
+        <GridItem>
+          <Heading>Informations de contact</Heading>
+          <Text fontSize="20px" textAlign="justify" mt={2}>
+            Il s’agit des informations de contact de votre entreprise partenaire. Ces informations ne seront pas visibles sur l’offre.
+          </Text>
+        </GridItem>
+        <GridItem rowStart={["auto", 2]}>
+          <Formulaire siret={siret} />
+        </GridItem>
+        <GridItem rowStart={["auto", 2]} pt={[4, 8]} minW="0">
+          <InformationLegaleEntreprise siret={siret} type={ENTREPRISE} />
+        </GridItem>
+      </Grid>
+    </>
   )
 }
 function CreationEntrepriseDetailPage() {
