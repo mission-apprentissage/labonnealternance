@@ -1,4 +1,5 @@
-import { Box, Button, Checkbox, CheckboxGroup, Flex, Stack, Text, Textarea } from "@chakra-ui/react"
+import { Box, Checkbox, CheckboxGroup, Flex, Stack, Text, Textarea } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { Formik } from "formik"
 import { useState } from "react"
 import { useQuery } from "react-query"
@@ -213,30 +214,12 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
                         </Box>
                       </Box>
                     ) : (
-                      <Flex direction={{ base: "column-reverse", md: "row-reverse" }} mb={8}>
-                        <Button
-                          mt={4}
-                          variant="form"
-                          aria-label="Envoyer le message au candidat"
-                          type="submit"
-                          onClick={submitForm}
-                          disabled={!isValid || isSubmitting}
-                          isActive={isValid}
-                          isLoading={isSubmitting}
-                        >
+                      <Flex direction={{ base: "column-reverse", md: "row-reverse" }} mb={8} gap={4}>
+                        <Button aria-label="Envoyer le message au candidat" type="submit" onClick={submitForm} disabled={!isValid || isSubmitting}>
                           Envoyer le message
                         </Button>
 
-                        <Button
-                          mt={4}
-                          mr={{ base: 0, md: 4 }}
-                          variant="cancelForm"
-                          aria-label="Annuler l’envoi de la réponse"
-                          type="button"
-                          onClick={cancelForm}
-                          disabled={isSubmitting}
-                          isLoading={isSubmitting}
-                        >
+                        <Button priority="secondary" aria-label="Annuler l’envoi de la réponse" type="button" onClick={cancelForm} disabled={isSubmitting}>
                           Annuler l'envoi de la réponse
                         </Button>
                       </Flex>
