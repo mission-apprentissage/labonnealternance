@@ -60,7 +60,7 @@
     "react-notion-x": "^7.2.6",
     "react-qr-code": "^2.0.15",
     "react-query": "^3.39.3",
-    "react-swipeable": "^6.2.2",
+    "react-swipeable": "7.0.2",
     "react-table": "^7.8.0",
     "shared": "workspace:*",
     "tss-react": "^4.9.15",

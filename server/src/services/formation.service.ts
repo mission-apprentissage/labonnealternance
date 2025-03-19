@@ -418,11 +418,10 @@ const transformFormationV2 = (rawFormation: IFormationCatalogue): ILbaItemFormat
 
   const resultFormation: ILbaItemFormation2 = {
     type: LBA_ITEM_TYPE.FORMATION,
-
+    id: rawFormation.cle_ministere_educatif!,
     contact: {
       phone: rawFormation.num_tel ?? null,
     },
-
     place: {
       distance: rawFormation.distance ? roundDistance(rawFormation.distance / 1000) : rawFormation.distance === 0 ? 0 : null,
       fullAddress: getTrainingAddress(rawFormation), // adresse postale reconstruite à partir des éléments d'adresse fournis
@@ -437,7 +436,6 @@ const transformFormationV2 = (rawFormation: IFormationCatalogue): ILbaItemFormat
       insee: rawFormation.code_commune_insee,
       remoteOnly: rawFormation.entierement_a_distance,
     },
-
     company: {
       name: getSchoolName(rawFormation), // pe -> entreprise.nom | formation -> etablissement_formateur_enseigne | lbb/lba -> name
       siret: rawFormation.etablissement_formateur_siret,
@@ -463,7 +461,6 @@ const transformFormationV2 = (rawFormation: IFormationCatalogue): ILbaItemFormat
         city: rawFormation.etablissement_formateur_localite,
       },
     },
-
     training: {
       title: (rawFormation.intitule_long || rawFormation.intitule_court || rawFormation.intitule_rco) ?? null,
       idRco: rawFormation.id_formation ?? null,
@@ -491,6 +488,7 @@ const transformFormationWithMinimalDataV2 = (rawFormation: IFormationCatalogue):
 
   const resultFormation: ILbaItemFormation2 = {
     type: LBA_ITEM_TYPE.FORMATION,
+    id: rawFormation.cle_ministere_educatif!,
     place: {
       distance: rawFormation.distance ? roundDistance(rawFormation.distance / 1000) : rawFormation.distance === 0 ? 0 : null,
       fullAddress: getTrainingAddress(rawFormation), // adresse postale reconstruite à partir des éléments d'adresse fournis

@@ -496,7 +496,7 @@ export const PAGES = {
       const search = buildRecherchePageParams(params)
 
       return {
-        getPath: () => `/formation/${LBA_ITEM_TYPE.FORMATION}/${encodeURIComponent(params.jobId)}/${toKebabCase(jobTitle)}?${search}` as string,
+        getPath: () => `/formation/${encodeURIComponent(params.jobId)}/${toKebabCase(jobTitle)}?${search}` as string,
         title: jobTitle,
       }
     },

@@ -449,6 +449,7 @@ export const ZLbaItemFormation2 = z
       example: LBA_ITEM_TYPE.FORMATION,
       description: "Le type labonnealternance d'objet, ici la seule valeur possible est 'formation'",
     }),
+    id: z.string().describe("clé ministere educatif - necessaire pour le front"),
     contact: ZLbaItemContact.nullish(),
     place: ZLbaItemPlace.openapi({
       description: "Le lieu de formation",
