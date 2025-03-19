@@ -33,7 +33,7 @@ export default function MailActionsOnOffre() {
       action(jobId, token)
         .then(() => setResult("ok"))
         .catch((error) => {
-          console.log(error)
+          console.error(error)
           setResult("Une erreur s'est produite. Merci de contacter le support de La bonne alternance")
           return
         })

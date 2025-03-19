@@ -38,11 +38,11 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
 
   const entrepriseTitle = establishment_raison_sociale ?? establishment_siret
   const getOffreEditionUrl = (offerId: string) => {
-    return PAGES.dynamic.offreCreation({ offerId, establishment_id, userType: user.type }).getPath()
+    return PAGES.dynamic.offreUpsert({ offerId, establishment_id, userType: user.type }).getPath()
   }
 
   const navigateToCreation = () => {
-    router.push(PAGES.dynamic.offreCreation({ offerId: "creation", establishment_id, userType: user.type, raison_sociale: entrepriseTitle }).getPath())
+    router.push(PAGES.dynamic.offreUpsert({ offerId: "creation", establishment_id, userType: user.type, raison_sociale: entrepriseTitle }).getPath())
   }
 
   const shouldDisplayModifyButton = !hideModify && user.type !== AUTHTYPE.CFA

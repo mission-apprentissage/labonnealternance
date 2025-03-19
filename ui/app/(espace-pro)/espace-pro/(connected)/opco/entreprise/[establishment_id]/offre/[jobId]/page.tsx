@@ -1,7 +1,7 @@
 "use client"
 
 import { useParams, useRouter } from "next/navigation"
-import { CFA } from "shared/constants/index"
+import { OPCO } from "shared/constants/recruteur"
 
 import UpsertOffre from "@/app/(espace-pro)/espace-pro/(connected)/_components/UpsertOffre"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
@@ -14,9 +14,13 @@ export default function Page() {
   return (
     <>
       <Breadcrumb
-        pages={[PAGES.static.backCfaHome, PAGES.dynamic.backCfaPageEntreprise(establishment_id), PAGES.dynamic.offreUpsert({ establishment_id, offerId: jobId, userType: CFA })]}
+        pages={[
+          PAGES.static.backOpcoHome,
+          PAGES.dynamic.backOpcoEditionEntreprise({ establishment_id }),
+          PAGES.dynamic.offreUpsert({ establishment_id, offerId: jobId, userType: OPCO }),
+        ]}
       />
-      <UpsertOffre establishment_id={establishment_id} job_id={jobId} onSuccess={() => router.push(PAGES.dynamic.backCfaPageEntreprise(establishment_id).getPath())} />
+      <UpsertOffre establishment_id={establishment_id} job_id={jobId} onSuccess={() => router.push(PAGES.dynamic.backOpcoEditionEntreprise({ establishment_id }).getPath())} />
     </>
   )
 }
