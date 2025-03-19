@@ -1,25 +1,24 @@
 "use client"
 
-import { Box, Portal } from "@mui/material"
-import { Map, Popup, type GeoJSONSource, type MapMouseEvent } from "mapbox-gl"
-import { useCallback, useEffect, useMemo, useState } from "react"
-
-import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
-import type { IRecherchePageParams } from "@/utils/routes.utils"
+import { Box } from "@mui/material"
 import { captureException } from "@sentry/nextjs"
-import { useRechercheResults, type IUseRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
+import { Map, type GeoJSONSource, type MapMouseEvent } from "mapbox-gl"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import type { ILbaItemFormation, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
-import { create } from "domain"
-import { createPortal } from "react-dom"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+
 import { RechercheMapPopup } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap/RechercheMapPopup"
+import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
+import { useRechercheResults, type IUseRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { useUpdateCandidatSearchParam } from "@/app/(candidat)/recherche/_hooks/useUpdateCandidatSearchParam"
+import type { IRecherchePageParams } from "@/utils/routes.utils"
 
 const FRANCE_CENTER: [number, number] = [2.213749, 46.227638]
 const FRANCE_ZOOM = 5
 
 const CLUSTER_MAX_ZOOM = 14
 
-type LAYERS = "formation" | "job"
+type LAYERS = "formation" | "job" | "selected"
 
 const MAP_LAYERS = {
   formation: {
@@ -34,26 +33,59 @@ const MAP_LAYERS = {
   },
 }
 
-function useCenterCamera(map: Map | null, params: IRecherchePageParams) {
+function useCenterCamera(map: Map | null, params: IRecherchePageParams, selected: ILbaItemLbaCompany | ILbaItemPartnerJob | ILbaItemFormation | ILbaItemLbaJob | null) {
+  const longitude = params.geo?.longitude ?? null
+  const latitude = params.geo?.latitude ?? null
+
   useEffect(() => {
     if (map === null) {
       return
     }
 
-    console.log("flyTo")
     map.flyTo(
-      params.geo == null
+      longitude == null && latitude == null
         ? {
             center: FRANCE_CENTER,
             zoom: FRANCE_ZOOM,
           }
         : {
-            center: [params.geo.longitude, params.geo.latitude],
+            center: [longitude, latitude],
             // TODO: use a better zoom according to radius?
             zoom: 10,
           }
     )
-  }, [params?.geo, map])
+  }, [longitude, latitude, map])
+
+  useEffect(() => {
+    if (map === null || selected === null) {
+      return
+    }
+
+    if (map.idle()) {
+      map.easeTo({
+        center: [selected.place.longitude, selected.place.latitude],
+        speed: 0.2,
+        zoom: Math.max(map.getZoom(), 13),
+      })
+      return
+    }
+
+    const abortController = new AbortController()
+
+    map.once("idle").then(() => {
+      if (abortController.signal.aborted) return
+
+      map.easeTo({
+        center: [selected.place.longitude, selected.place.latitude],
+        speed: 0.2,
+        zoom: Math.max(map.getZoom(), 14),
+      })
+    })
+
+    return () => {
+      abortController.abort()
+    }
+  }, [map, selected])
 }
 
 async function loadImage(url: string, id: string, map: Map) {
@@ -90,7 +122,8 @@ async function createLayer(layer: LAYERS, map: Map) {
     source: MAP_LAYERS[layer].geopoints,
     type: "symbol",
     layout: {
-      "icon-image": layer === "formation" ? "formation" : "job",
+      "icon-image": `${layer}-selected`,
+      "icon-size": ["case", ["boolean", ["get", "selected"], false], 1, 0.6],
       "icon-padding": 0,
       "icon-allow-overlap": true,
     },
@@ -142,7 +175,7 @@ async function setupMap(container: HTMLDivElement): Promise<Map> {
   return map
 }
 
-function setPointOfInterests(map: Map, result: IUseRechercheResults) {
+function setPointOfInterests(map: Map, result: IUseRechercheResults, params: IRecherchePageParams) {
   const jobs = result.status === "success" ? result.jobs : []
 
   map.getSource<GeoJSONSource>(MAP_LAYERS.job.geopoints).setData({
@@ -157,6 +190,7 @@ function setPointOfInterests(map: Map, result: IUseRechercheResults) {
         },
         properties: {
           id: job.id,
+          selected: params.selection?.includes(job.id) || false,
         },
       })),
   })
@@ -175,6 +209,7 @@ function setPointOfInterests(map: Map, result: IUseRechercheResults) {
         },
         properties: {
           id: formation.id,
+          selected: params.selection?.includes(formation.id) || false,
         },
       })),
   })
@@ -185,8 +220,6 @@ function useMap(container: HTMLDivElement | null) {
   const result = useRechercheResults(params)
   const updateCandidatSearchParam = useUpdateCandidatSearchParam()
   const [map, setMap] = useState<Map | null>(null)
-
-  useCenterCamera(map, params)
 
   useEffect(() => {
     if (container === null) {
@@ -206,8 +239,8 @@ function useMap(container: HTMLDivElement | null) {
       return
     }
 
-    setPointOfInterests(map, result)
-  }, [map, result])
+    setPointOfInterests(map, result, params)
+  }, [map, result, params])
 
   useEffect(() => {
     if (map === null) {
@@ -226,12 +259,12 @@ function useMap(container: HTMLDivElement | null) {
 
     const onClicked = (e: MapMouseEvent) => {
       if (e.features.length === 0) {
-        updateCandidatSearchParam({ selection: [] })
+        updateCandidatSearchParam({ selection: [] }, true)
         return
       }
 
       if (e.features.length > 1 && map.getZoom() < CLUSTER_MAX_ZOOM) {
-        updateCandidatSearchParam({ selection: [] })
+        updateCandidatSearchParam({ selection: [] }, true)
         zoomIn(e.lngLat.toArray())
         return
       }
@@ -239,19 +272,19 @@ function useMap(container: HTMLDivElement | null) {
       const feature = e.features[0]
 
       if (feature.properties.cluster) {
-        updateCandidatSearchParam({ selection: [] })
+        updateCandidatSearchParam({ selection: [] }, true)
         zoomIn(e.lngLat.toArray())
         return
       }
 
-      updateCandidatSearchParam({ selection: [feature.properties.id] })
+      updateCandidatSearchParam({ selection: [feature.properties.id] }, true)
     }
 
-    const onMouseEnter = (e: MapMouseEvent) => {
+    const onMouseEnter = () => {
       map.getCanvas().style.cursor = "pointer"
     }
 
-    const onMouseLeave = (e: MapMouseEvent) => {
+    const onMouseLeave = () => {
       map.getCanvas().style.cursor = ""
     }
 
@@ -282,6 +315,29 @@ function useMap(container: HTMLDivElement | null) {
 
     return null
   }, [params.selection, result])
+
+  useCenterCamera(map, params, selectedItem)
+
+  useEffect(() => {
+    if (map === null || selectedItem === null) {
+      return
+    }
+
+    map.setFeatureState(
+      {
+        source: selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION ? MAP_LAYERS.formation.geopoints : MAP_LAYERS.job.geopoints,
+        id: selectedItem.id,
+      },
+      { selected: true }
+    )
+
+    return () => {
+      map.removeFeatureState({
+        source: selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION ? MAP_LAYERS.formation.geopoints : MAP_LAYERS.job.geopoints,
+        id: selectedItem.id,
+      })
+    }
+  }, [selectedItem, map])
 
   return { map, selectedItem }
 }

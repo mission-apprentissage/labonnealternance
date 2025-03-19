@@ -1,11 +1,12 @@
 import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import { Typography } from "@mui/material"
-import React, { useCallback, useState } from "react"
+import React, { useCallback } from "react"
 import { ILbaItemFormation, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
+import { useNavigateToResultItemDetail } from "@/app/(candidat)/recherche/_hooks/useNavigateToResultItemDetail"
 import { useResultItemUrl } from "@/app/(candidat)/recherche/_hooks/useResultItemUrl"
 import { useUpdateCandidatSearchParam } from "@/app/(candidat)/recherche/_hooks/useUpdateCandidatSearchParam"
 import ItemDetailApplicationsStatus from "@/components/ItemDetail/ItemDetailServices/ItemDetailApplicationStatus"
@@ -184,34 +185,10 @@ function EnSavoirPlusButton({ item }: Pick<ResultCardProps, "item">) {
 }
 
 export function ResultCard({ item, selected }: ResultCardProps) {
-  const [allowDim, setAllowDim] = useState(true) // cet état évite un appel qui masque la mise en avant de l'icône lors de l'ouverture du détail
-  const params = useCandidatRechercheParams()
-  const updateCandidatSearchParam = useUpdateCandidatSearchParam()
-
-  const onClick = useCallback(
-    (e) => {
-      if (params.displayMap) {
-        updateCandidatSearchParam({ selection: [item.id] })
-        e.preventDefault()
-        return
-      }
-    },
-    [updateCandidatSearchParam, item, params.displayMap]
-  )
-
-  const highlightItemOnMap = () => {
-    return
-    throw new Error("Function not implemented.")
-  }
-
-  const dimItemOnMap = () => {
-    return
-    if (allowDim) {
-      throw new Error("Function not implemented.")
-    } else {
-      setAllowDim(true)
-    }
-  }
+  const navigateToResultItemDetail = useNavigateToResultItemDetail()
+  const onClick = useCallback(() => {
+    navigateToResultItemDetail(item)
+  }, [navigateToResultItemDetail, item])
 
   const itemUrl = useResultItemUrl(item)
 
@@ -248,8 +225,9 @@ export function ResultCard({ item, selected }: ResultCardProps) {
       className={fr.cx("fr-raw-link")}
       {...cardProperties}
       {...focusWithin}
-      onMouseOver={highlightItemOnMap}
-      onMouseOut={dimItemOnMap}
+      // TODO
+      // onMouseOver={highlightItemOnMap}
+      // onMouseOut={dimItemOnMap}
       href={itemUrl}
       data-testid={`${item.ideaType}${id}`}
       onClick={onClick}
