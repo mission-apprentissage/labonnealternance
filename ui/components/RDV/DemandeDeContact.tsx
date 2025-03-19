@@ -142,7 +142,7 @@ const DemandeDeContact = (props: Props) => {
           },
         })
 
-        setLocalStorage(Date.now().toString())
+        setLocalStorage(Date.now())
 
         SendPlausibleEvent("Envoi Prendre RDV - Fiche formation", {
           info_fiche: `${props.context.cle_ministere_educatif}`,
