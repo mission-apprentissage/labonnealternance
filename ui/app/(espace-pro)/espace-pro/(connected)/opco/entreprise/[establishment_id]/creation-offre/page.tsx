@@ -16,11 +16,11 @@ export default function Page() {
       <Breadcrumb
         pages={[
           PAGES.static.backOpcoHome,
-          PAGES.dynamic.backOpcoEditionEntreprise({ establishment_id }),
+          PAGES.dynamic.backOpcoOffresEntreprise({ establishment_id }),
           PAGES.dynamic.offreUpsert({ establishment_id, offerId: "creation", userType: OPCO }),
         ]}
       />
-      <UpsertOffre establishment_id={establishment_id} onSuccess={() => router.push(PAGES.dynamic.backOpcoEditionEntreprise({ establishment_id }).getPath())} />
+      <UpsertOffre establishment_id={establishment_id} onSuccess={() => router.push(PAGES.dynamic.backOpcoOffresEntreprise({ establishment_id }).getPath())} />
     </>
   )
 }
