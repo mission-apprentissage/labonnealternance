@@ -1,6 +1,7 @@
 import { ConditionalExcept, EmptyObject, Jsonify } from "type-fest"
 import z, { ZodType } from "zod"
 
+import { zPrivateGeoRoutes } from "./_private/geo.routes.js"
 import { zApplicationRoutes } from "./application.routes.js"
 import { zAppointmentsRoute } from "./appointments.routes.js"
 import { IRouteSchema, IRouteSchemaWrite } from "./common.routes.js"
@@ -36,6 +37,7 @@ const zRoutesGetP1 = {
   ...zEtablissementRoutes.get,
   ...zMetiersDAvenirRoutes.get,
   ...zMetiersRoutes.get,
+  ...zPrivateGeoRoutes.get,
 } as const
 
 const zRoutesGetP2 = {

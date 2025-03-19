@@ -61,7 +61,7 @@ const niveauOptions = [
   },
 ] as const satisfies Array<{ value: IFormType["niveau"]; label: string; selected?: boolean }>
 
-const radiusOptions = [
+export const radiusOptions = [
   {
     value: "10",
     label: "10 km",

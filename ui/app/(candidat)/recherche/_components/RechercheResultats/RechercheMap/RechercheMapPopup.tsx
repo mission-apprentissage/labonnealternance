@@ -2,24 +2,42 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { Map, Popup } from "mapbox-gl"
 import Image from "next/image"
-import { useCallback, useEffect, useLayoutEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { createPortal } from "react-dom"
-import type { ILbaItemFormation, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
+import type { ILbaItem } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { useResultItemUrl } from "@/app/(candidat)/recherche/_hooks/useResultItemUrl"
 import { useUpdateCandidatSearchParam } from "@/app/(candidat)/recherche/_hooks/useUpdateCandidatSearchParam"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 type RechercheMapPopupProps = {
   map: Map | null
-  item: ILbaItemLbaCompany | ILbaItemPartnerJob | ILbaItemFormation | ILbaItemLbaJob | null
+  selection: ILbaItem[]
 }
 
-const popupElement = globalThis.window === null ? null : document.createElement("div")
+const popupElement = globalThis.document == null ? null : globalThis.document.createElement("div")
 
-function RechercheMapPopupContent(props: { item: ILbaItemLbaCompany | ILbaItemPartnerJob | ILbaItemFormation | ILbaItemLbaJob }) {
+function RechercheMapPopupLink(props: { item: ILbaItem }) {
   const url = useResultItemUrl(props.item)
 
+  return (
+    <Box>
+      <DsfrLink
+        href={url}
+        size="sm"
+        style={{
+          color: fr.colors.decisions.text.title.grey.default,
+        }}
+      >
+        {props.item.title}
+      </DsfrLink>
+    </Box>
+  )
+}
+
+function RechercheMapPopupContent(props: { selection: ILbaItem[] }) {
+  const type = props.selection[0].ideaType === LBA_ITEM_TYPE_OLD.FORMATION ? "formation" : "job"
   return (
     <Box
       sx={{
@@ -36,8 +54,10 @@ function RechercheMapPopupContent(props: { item: ILbaItemLbaCompany | ILbaItemPa
           alignItems: "center",
         }}
       >
-        <Image src="/images/icons/job.svg" width={40} height={40} alt="" unoptimized />
-        <Typography variant="h4">Opportunités d’emploi</Typography>
+        <Image src={type === "formation" ? "/images/icons/book.svg" : "/images/icons/job.svg"} width={40} height={40} alt="" unoptimized />
+        <Typography variant="h4">
+          {type === "formation" ? `Formation${props.selection.length > 1 ? "s" : ""}` : `Opportunité${props.selection.length > 1 ? "s" : ""} d'emploi`}
+        </Typography>
       </Box>
       <Typography
         sx={{
@@ -45,7 +65,7 @@ function RechercheMapPopupContent(props: { item: ILbaItemLbaCompany | ILbaItemPa
         }}
         className={fr.cx("fr-text--sm")}
       >
-        {props.item.place.fullAddress}
+        {props.selection[0].place.fullAddress}
       </Typography>
       <Box
         sx={{
@@ -54,72 +74,9 @@ function RechercheMapPopupContent(props: { item: ILbaItemLbaCompany | ILbaItemPa
           gap: fr.spacing("1w"),
         }}
       >
-        <Box>
-          <DsfrLink
-            href={url}
-            size="sm"
-            style={{
-              color: fr.colors.decisions.text.title.grey.default,
-            }}
-          >
-            {props.item.title}
-          </DsfrLink>
-        </Box>
-        <Box>
-          <DsfrLink
-            href={url}
-            size="sm"
-            style={{
-              color: fr.colors.decisions.text.title.grey.default,
-            }}
-          >
-            {props.item.title}
-          </DsfrLink>
-        </Box>
-        <Box>
-          <DsfrLink
-            href={url}
-            size="sm"
-            style={{
-              color: fr.colors.decisions.text.title.grey.default,
-            }}
-          >
-            {props.item.title}
-          </DsfrLink>
-        </Box>
-        <Box>
-          <DsfrLink
-            href={url}
-            size="sm"
-            style={{
-              color: fr.colors.decisions.text.title.grey.default,
-            }}
-          >
-            {props.item.title}
-          </DsfrLink>
-        </Box>
-        <Box>
-          <DsfrLink
-            href={url}
-            size="sm"
-            style={{
-              color: fr.colors.decisions.text.title.grey.default,
-            }}
-          >
-            {props.item.title}
-          </DsfrLink>
-        </Box>
-        <Box>
-          <DsfrLink
-            href={url}
-            size="sm"
-            style={{
-              color: fr.colors.decisions.text.title.grey.default,
-            }}
-          >
-            {props.item.title}
-          </DsfrLink>
-        </Box>
+        {props.selection.map((item) => (
+          <RechercheMapPopupLink key={item.id} item={item} />
+        ))}
       </Box>
     </Box>
   )
@@ -131,37 +88,46 @@ export function RechercheMapPopup(props: RechercheMapPopupProps) {
 
   useEffect(() => {
     if (props.map === null || popupElement === null) {
+      setPopup((prev) => {
+        if (prev !== null) {
+          prev.remove()
+        }
+        return null
+      })
       return
     }
 
-    setPopup(new Popup({}).setDOMContent(popupElement))
-  }, [props.map])
+    setPopup(
+      new Popup({
+        offset: 30,
+      }).setDOMContent(popupElement)
+    )
+    // popupElement instance will change on dev mode reload
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.map, popupElement])
 
   const onClose = useCallback(() => {
     updateCandidatSearchParam({ selection: [] }, true)
   }, [updateCandidatSearchParam])
 
-  useLayoutEffect(() => {
-    if (props.map === null || popup === null || props.item === null) {
+  useEffect(() => {
+    if (props.map === null || popup === null || props.selection.length === 0) {
       return
     }
 
-    const timeout = setTimeout(() => {
-      popup.setLngLat([props.item.place.longitude, props.item.place.latitude]).addTo(props.map)
-    }, 300)
-
-    popup.once("close", onClose)
+    // All selected items have the same place
+    popup.setLngLat([props.selection[0].place.longitude, props.selection[0].place.latitude]).addTo(props.map)
+    popup.on("close", onClose)
 
     return () => {
-      clearTimeout(timeout)
       popup.off("close", onClose)
       popup.remove()
     }
-  }, [props.map, props.item, popup, onClose])
+  }, [props.map, props.selection, popup, onClose])
 
-  if (!props.item || !popup) {
+  if (props.selection.length === 0 || !popup) {
     return null
   }
 
-  return createPortal(<RechercheMapPopupContent item={props.item} />, popupElement)
+  return createPortal(<RechercheMapPopupContent selection={props.selection} />, popupElement)
 }

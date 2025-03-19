@@ -5,6 +5,8 @@ import { IGetRoutes, ILbaItemFormation, ILbaItemLbaCompany, ILbaItemLbaJob, ILba
 import { apiGet } from "@/utils/api.utils"
 import { IRecherchePageParams } from "@/utils/routes.utils"
 
+export type ILbaItem = ILbaItemLbaCompany | ILbaItemPartnerJob | ILbaItemFormation | ILbaItemLbaJob
+
 type IUseRechercheResultsIdle = {
   status: "idle"
   formationStatus: "idle"
@@ -45,7 +47,7 @@ type IUseRechercheResultsSuccess = {
   formationStatus: "success" | "error" | "disabled"
   jobStatus: "success" | "error" | "disabled"
 
-  items: Array<ILbaItemLbaCompany | ILbaItemPartnerJob | ILbaItemFormation | ILbaItemLbaJob>
+  items: Array<ILbaItem>
   itemsCount: number
   formations: Array<ILbaItemFormation>
   jobs: Array<ILbaItemLbaCompany | ILbaItemPartnerJob | ILbaItemLbaJob>
@@ -201,7 +203,7 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
   }, [formationQuery.data, isFormationEnabled])
 
   const items = useMemo(() => {
-    const result: Array<ILbaItemLbaCompany | ILbaItemPartnerJob | ILbaItemFormation | ILbaItemLbaJob> = []
+    const result: Array<ILbaItem> = []
 
     if (formations.length > 0) {
       result.push(...formations)
