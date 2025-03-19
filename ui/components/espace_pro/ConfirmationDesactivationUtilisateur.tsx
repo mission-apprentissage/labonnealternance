@@ -1,30 +1,15 @@
 "use client"
 
-import {
-  Button as ChakraButton,
-  FormControl,
-  FormLabel,
-  Heading,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Select,
-  Text,
-  useDisclosure,
-} from "@chakra-ui/react"
+import { FormControl, FormLabel, Heading, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Text, useDisclosure } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
 import { useState } from "react"
 import { IUserRecruteurJson } from "shared"
 
+import ModalCloseButton from "@/app/(espace-pro)/_components/ModalCloseButton"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 
 import { AUTHTYPE } from "../../common/contants"
-import { Close } from "../../theme/components/icons"
 
 export const ConfirmationDesactivationUtilisateur = ({
   userRecruteur,
@@ -75,12 +60,7 @@ export const ConfirmationDesactivationUtilisateur = ({
     <Modal closeOnOverlayClick={false} blockScrollOnMount={true} size="xl" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent mt={["0", "3.75rem"]} h={["100%", "auto"]} mb={0} borderRadius={0} data-testid="confirmation-desactivation-utilisateur-modal">
-        <ChakraButton display={"flex"} alignSelf={"flex-end"} color="bluefrance.500" fontSize={"epsilon"} onClick={onClose} variant="unstyled" p={6} fontWeight={400}>
-          fermer
-          <Text as={"span"} ml={2}>
-            <Close boxSize={4} />
-          </Text>
-        </ChakraButton>
+        <ModalCloseButton onClose={onClose} />
         <ModalHeader>
           <Heading as="h2" fontSize="1.5rem">
             <Text>Désactivation du compte</Text>
