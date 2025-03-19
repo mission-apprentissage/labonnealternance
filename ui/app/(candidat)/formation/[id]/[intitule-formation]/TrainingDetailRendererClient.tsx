@@ -1,17 +1,21 @@
 "use client"
 import { Box, Flex, Image, Text } from "@chakra-ui/react"
-import { Fragment, useEffect, useState } from "react"
+import { useParams } from "next/dist/client/components/navigation"
+import { useRouter } from "next/navigation"
+import { Fragment, useEffect, useMemo, useState } from "react"
 import { useQuery } from "react-query"
 import { ILbaItemFormation2Json } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { IAppointMentResponseAvailable } from "shared/routes/v2/appointments.routes.v2"
 
-import { useLocalStorage } from "@/app/hooks/useLocalStorage"
+import { RechercheCarte } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
+import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
+import { IUseRechercheResultsSuccess, useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
+import { useBuildNavigation } from "@/app/hooks/useBuildNavigation"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
 import GoingToContactQuestion, { getGoingtoId } from "@/components/ItemDetail/GoingToContactQuestion"
-import { buttonRdvShouldBeDisplayed } from "@/components/ItemDetail/ItemDetailServices/getButtons"
+import { getNavigationButtons } from "@/components/ItemDetail/ItemDetailServices/getButtons"
 import getJobPublishedTimeAndApplications from "@/components/ItemDetail/ItemDetailServices/getJobPublishedTimeAndApplications"
 import getTags from "@/components/ItemDetail/ItemDetailServices/getTags"
 import ItemDetailCard from "@/components/ItemDetail/ItemDetailServices/ItemDetailCard"
@@ -24,6 +28,7 @@ import DemandeDeContact from "@/components/RDV/DemandeDeContact"
 import { isCfaEntreprise } from "@/services/cfaEntreprise"
 import fetchInserJeuneStats from "@/services/fetchInserJeuneStats"
 import { SendPlausibleEvent } from "@/utils/plausible"
+import { PAGES } from "@/utils/routes.utils"
 import { formatDate } from "@/utils/strutils"
 
 // Read https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/
@@ -34,34 +39,64 @@ const dontBreakOutCssParameters = {
   hyphens: "auto",
 }
 
-export default function TrainingDetailRendererClient({
-  selectedItem,
-  priseDeRendezVous,
-}: {
-  selectedItem: ILbaItemFormation2Json
-  priseDeRendezVous: IAppointMentResponseAvailable
-}) {
-  const { storedValue } = useLocalStorage(`application-${selectedItem.type}-${selectedItem.training.cleMinistereEducatif}`)
-  const kind: LBA_ITEM_TYPE = selectedItem?.type
-  const actualTitle = selectedItem.training.title
-  const isCfa = isCfaEntreprise(selectedItem?.company?.siret, selectedItem?.company?.headquarter?.siret)
-  const isMandataire = selectedItem?.company?.mandataire
-  const [appliedDate, setAppliedDate] = useState(null)
-  const [prdvAvailable, setPrdvAvailable] = useState(false)
-  // const { activeFilters } = useContext(DisplayContext)
+export default function TrainingDetailRendererClient({ training, priseDeRendezVous }: { training: ILbaItemFormation2Json; priseDeRendezVous: IAppointMentResponseAvailable }) {
+  const params = useCandidatRechercheParams()
+  const result = useRechercheResults(params)
 
-  useEffect(() => {
+  const appliedDate = useMemo(() => {
+    if (globalThis.window == null) return null
+    const storedValue = globalThis.window.localStorage.getItem(`application-${training.type}-${training.id}`)
     if (storedValue) {
-      const date = new Date(parseInt(storedValue as string, 10)).toLocaleDateString("fr-FR", {
+      return new Date(parseInt(storedValue, 10)).toLocaleDateString("fr-FR", {
         year: "numeric",
         month: "long",
         day: "numeric",
       })
-      setAppliedDate(date)
-    } else {
-      setPrdvAvailable(true)
     }
-  }, [storedValue])
+    return null
+  }, [training.type, training.id])
+
+  if (result.status !== "success") {
+    // TODO: handle error
+    return null
+  }
+
+  if (params?.displayMap) {
+    return (
+      <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
+        <TrainingDetailPage selectedItem={training} priseDeRendezVous={appliedDate ? null : priseDeRendezVous} appliedDate={appliedDate} resultList={result.items} />
+        {/* TODO : remove extended search button from map view */}
+        <RechercheCarte />
+      </Box>
+    )
+  }
+
+  return <TrainingDetailPage selectedItem={training} priseDeRendezVous={appliedDate ? null : priseDeRendezVous} appliedDate={appliedDate} resultList={result.items} />
+}
+
+function TrainingDetailPage({
+  selectedItem,
+  priseDeRendezVous,
+  appliedDate,
+  resultList,
+}: {
+  selectedItem: ILbaItemFormation2Json
+  priseDeRendezVous: IAppointMentResponseAvailable
+  appliedDate: string | null
+  resultList: IUseRechercheResultsSuccess["items"]
+}) {
+  const kind: LBA_ITEM_TYPE = selectedItem?.type
+  const actualTitle = selectedItem.training.title
+  const isCfa = isCfaEntreprise(selectedItem?.company?.siret, selectedItem?.company?.headquarter?.siret)
+  const isMandataire = selectedItem?.company?.mandataire
+  const currentItem = resultList.find((item) => item.id === selectedItem.id)
+
+  const searchParams = useCandidatRechercheParams()
+  const router = useRouter()
+  const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItem })
+  const handleClose = () => router.push(PAGES.dynamic.recherche(searchParams).getPath())
+
+  // const { activeFilters } = useContext(DisplayContext)
 
   // useEffect(() => {
   //   try {
@@ -72,8 +107,6 @@ export default function TrainingDetailRendererClient({
   //   /* eslint react-hooks/exhaustive-deps: 0 */
   //   /* @ts-expect-error: à cracker */
   // }, [selectedItem?.id, selectedItem?.company?.siret, selectedItem?.job?.id])
-
-  // const { swipeHandlers, goNext, goPrev } = BuildSwipe({ jobs, trainings, extendedSearch, activeFilters, handleSelectItem, selectedItem })
 
   const [isCollapsedHeader, setIsCollapsedHeader] = useState(false)
   const maxScroll = 100
@@ -106,9 +139,8 @@ export default function TrainingDetailRendererClient({
         height: "100vh",
         backgroundColor: "#f8f8f8",
       }}
-      // {...swipeHandlers}
+      {...swipeHandlers}
     >
-      <InfoBanner />
       {/* @ts-expect-error: TODO */}
       <Box
         as="header"
@@ -122,7 +154,7 @@ export default function TrainingDetailRendererClient({
         <Box width="100%" pl={["0", 4]} pb={isCollapsedHeader ? "0" : 2}>
           <Flex justifyContent="flex-end">
             {getTags({ kind, isCfa, isMandataire })}
-            {/* {getNavigationButtons({ goPrev, goNext, handleClose })} */}
+            {getNavigationButtons({ goPrev, goNext, handleClose })}
           </Flex>
 
           <Text as="p" textAlign="left" color="grey.600" mt={isCollapsedHeader ? 1 : 4} mb={isCollapsedHeader ? 1 : 3} fontWeight={700} fontSize="1rem">
@@ -164,9 +196,7 @@ export default function TrainingDetailRendererClient({
                   </Text>
                 </Text>
               ) : (
-                prdvAvailable &&
-                !appliedDate &&
-                priseDeRendezVous && <DemandeDeContact isCollapsedHeader={isCollapsedHeader} context={priseDeRendezVous} referrer="LBA" showInModal />
+                !appliedDate && priseDeRendezVous && <DemandeDeContact isCollapsedHeader={isCollapsedHeader} context={priseDeRendezVous} referrer="LBA" showInModal />
               )}
             </Box>
             <ShareLink item={selectedItem} />
@@ -178,26 +208,26 @@ export default function TrainingDetailRendererClient({
 
       <AideApprentissage />
 
-      {!buttonRdvShouldBeDisplayed(selectedItem) && (
-        <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
-      )}
+      {!priseDeRendezVous && <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />}
     </Box>
   )
 }
 
 function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
   const isCfaDEntreprise = isCfaEntreprise(training?.company?.siret, training?.company?.headquarter?.siret)
-  // const { formValues } = React.useContext(DisplayContext)
+  const params = useParams()
+  const param = params
 
   const IJStats = useQuery(["getIJStats", training.training.cfd], () => fetchInserJeuneStats(training), {
     enabled: Boolean(training.training.cfd),
   })
 
+  // TODO convert to client component and add in the tree
   useEffect(() => {
     SendPlausibleEvent("Affichage - Fiche formation", {
-      // info_fiche: `${training.training.cleMinistereEducatif}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
+      info_fiche: `${training.id}${param["intitule-formation"] ? ` - ${param["intitule-formation"]}` : ""}`,
     })
-  }, [training.training.cleMinistereEducatif])
+  }, [training.id, param])
 
   return (
     <>

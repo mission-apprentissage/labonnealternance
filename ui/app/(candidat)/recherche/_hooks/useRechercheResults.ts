@@ -41,7 +41,7 @@ type IUseRechercheResultLoadingJobs = {
   }
 }
 
-type IUseRechercheResultsSuccess = {
+export type IUseRechercheResultsSuccess = {
   status: "success"
 
   formationStatus: "success" | "error" | "disabled"

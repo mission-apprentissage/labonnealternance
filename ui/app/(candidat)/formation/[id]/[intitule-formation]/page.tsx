@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 
-import TrainingDetailRendererClient from "@/app/(candidat)/formation/[id]/TrainingDetailRendererClient"
+import TrainingDetailRendererClient from "@/app/(candidat)/formation/[id]/[intitule-formation]/TrainingDetailRendererClient"
 import { apiGet } from "@/utils/api.utils"
 
 export default async function FormationPage({ params }: { params: Promise<{ id: string }> }) {
@@ -10,5 +10,5 @@ export default async function FormationPage({ params }: { params: Promise<{ id: 
   if (!formation) redirect("/404")
   const priseDeRendezVous = await apiGet("/_private/appointment", { querystring: { cleMinistereEducatif: formation.training.cleMinistereEducatif, referrer: "lba" } })
 
-  return <TrainingDetailRendererClient selectedItem={formation} priseDeRendezVous={priseDeRendezVous} />
+  return <TrainingDetailRendererClient training={formation} priseDeRendezVous={priseDeRendezVous} />
 }

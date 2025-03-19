@@ -1,6 +1,16 @@
 "use client"
 import { Box, Text } from "@chakra-ui/react"
-import { ILbaItemFormationJson, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
+import {
+  ILbaItemFormation,
+  ILbaItemFormationJson,
+  ILbaItemFtJobJson,
+  ILbaItemLbaCompany,
+  ILbaItemLbaCompanyJson,
+  ILbaItemLbaJob,
+  ILbaItemLbaJobJson,
+  ILbaItemPartnerJob,
+  ILbaItemPartnerJobJson,
+} from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { localStorageGet } from "@/utils/localStorage"
@@ -44,7 +54,7 @@ export default function ItemDetailApplicationsStatus({
   mb = 0,
   mt = 0,
 }: {
-  item: ILbaItemFormationJson | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemFtJobJson | ILbaItemPartnerJobJson
+  item: ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob | ILbaItemFormation
   mb?: number
   mt?: number
 }) {
