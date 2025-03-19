@@ -6,7 +6,7 @@ import { useCallback, useMemo } from "react"
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
 import { IRecherchePageParams, PAGES } from "@/utils/routes.utils"
 
-export function useUpdateCandidatSearchParam(): (newParams: Partial<IRecherchePageParams>) => void {
+export function useUpdateCandidatSearchParam(): (newParams: Partial<IRecherchePageParams>, replace?: boolean) => void {
   const searchParams = useCandidatRechercheParams()
   const router = useRouter()
 
@@ -21,7 +21,7 @@ export function useUpdateCandidatSearchParam(): (newParams: Partial<IRecherchePa
   }, [currentPath])
 
   const updateCandidatSearchParam = useCallback(
-    (newParams: Partial<IRecherchePageParams>): void => {
+    (newParams: Partial<IRecherchePageParams>, replace: boolean = false): void => {
       const newUrl = PAGES.dynamic
         .recherche({
           ...searchParams,
@@ -30,7 +30,11 @@ export function useUpdateCandidatSearchParam(): (newParams: Partial<IRecherchePa
         .getPath()
 
       if (isCandidateSearchPage && globalThis.window != null) {
-        globalThis.window.history.pushState(null, "", newUrl)
+        if (replace) {
+          globalThis.window.history.replaceState(null, "", newUrl)
+        } else {
+          globalThis.window.history.pushState(null, "", newUrl)
+        }
       } else {
         router.push(newUrl)
       }

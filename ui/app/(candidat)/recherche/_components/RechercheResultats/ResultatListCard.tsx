@@ -1,11 +1,12 @@
 import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import { Typography } from "@mui/material"
-import React, { useCallback, useState } from "react"
+import React, { useCallback } from "react"
 import { ILbaItemFormation, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
+import { useNavigateToResultItemDetail } from "@/app/(candidat)/recherche/_hooks/useNavigateToResultItemDetail"
 import { useResultItemUrl } from "@/app/(candidat)/recherche/_hooks/useResultItemUrl"
 import { useUpdateCandidatSearchParam } from "@/app/(candidat)/recherche/_hooks/useUpdateCandidatSearchParam"
 import ItemDetailApplicationsStatus from "@/components/ItemDetail/ItemDetailServices/ItemDetailApplicationStatus"
@@ -19,8 +20,8 @@ import { focusWithin } from "@/theme/theme-lba-tools"
 import { getDaysSinceDate } from "@/utils/dateUtils"
 
 type ResultCardProps = {
+  selected: boolean
   item: ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob | ILbaItemFormation
-  handleSelectItem: (item: ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob | ILbaItemFormation) => void
 }
 
 const CenterSearchButton = (props: Pick<ResultCardProps, "item">) => {
@@ -44,6 +45,7 @@ const CenterSearchButton = (props: Pick<ResultCardProps, "item">) => {
         displayFormations: props.item.ideaType !== LBA_ITEM_TYPE_OLD.FORMATION,
         displayEntreprises: props.item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION,
         displayPartenariats: props.item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION,
+        selection: [],
       })
     },
     [props.item, updateSearch]
@@ -182,40 +184,12 @@ function EnSavoirPlusButton({ item }: Pick<ResultCardProps, "item">) {
   )
 }
 
-export function ResultCard({ item }: ResultCardProps) {
-  const [allowDim, setAllowDim] = useState(true) // cet état évite un appel qui masque la mise en avant de l'icône lors de l'ouverture du détail
+export function ResultCard({ item, selected }: ResultCardProps) {
+  const navigateToResultItemDetail = useNavigateToResultItemDetail()
+  const onClick = useCallback(() => {
+    navigateToResultItemDetail(item)
+  }, [navigateToResultItemDetail, item])
 
-  const highlightItemOnMap = () => {
-    return
-    throw new Error("Function not implemented.")
-  }
-
-  const dimItemOnMap = () => {
-    return
-    if (allowDim) {
-      throw new Error("Function not implemented.")
-    } else {
-      setAllowDim(true)
-    }
-  }
-
-  const shouldBeHighlighted = () => {
-    return false
-    throw new Error("Function not implemented.")
-    // if (selectedMapPopupItem?.ideaType === "job") {
-    //   return selectedMapPopupItem.items.find((item) => {
-    //     if (item.ideaType === LBA_ITEM_TYPE_OLD.LBA) {
-    //       return item?.company?.siret === item.company.siret
-    //     }
-
-    //     return item?.id === item.id
-    //   })
-    // } else {
-    //   return false
-    // }
-  }
-
-  // TODO:
   const itemUrl = useResultItemUrl(item)
 
   const cardProperties = {
@@ -238,7 +212,7 @@ export function ResultCard({ item }: ResultCardProps) {
     ...focusWithin,
   }
 
-  if (shouldBeHighlighted()) {
+  if (selected) {
     cardProperties.filter = "drop-shadow(0px 0px 8px rgba(30, 30, 30, 0.25))"
   }
 
@@ -251,10 +225,12 @@ export function ResultCard({ item }: ResultCardProps) {
       className={fr.cx("fr-raw-link")}
       {...cardProperties}
       {...focusWithin}
-      onMouseOver={highlightItemOnMap}
-      onMouseOut={dimItemOnMap}
+      // TODO
+      // onMouseOver={highlightItemOnMap}
+      // onMouseOut={dimItemOnMap}
       href={itemUrl}
       data-testid={`${item.ideaType}${id}`}
+      onClick={onClick}
     >
       <Flex align="flex-start" id={`${item.ideaType}:${id}`}>
         <Box flex="1">

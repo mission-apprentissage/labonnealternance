@@ -5,17 +5,21 @@ import { IGetRoutes, ILbaItemFormation, ILbaItemLbaCompany, ILbaItemLbaJob, ILba
 import { apiGet } from "@/utils/api.utils"
 import { IRecherchePageParams } from "@/utils/routes.utils"
 
+export type ILbaItem = ILbaItemLbaCompany | ILbaItemPartnerJob | ILbaItemFormation | ILbaItemLbaJob
+
 type IUseRechercheResultsIdle = {
   status: "idle"
+  formationStatus: "idle"
+  jobStatus: "idle"
   itemsCount: 0
 }
 
 type IUseRechercheResultLoading = {
   status: "loading"
-
-  itemsCount: 0
   formationStatus: "loading"
   jobStatus: "success" | "error" | "disabled" | "loading"
+
+  itemsCount: 0
 }
 
 type IUseRechercheResultLoadingJobs = {
@@ -43,9 +47,10 @@ type IUseRechercheResultsSuccess = {
   formationStatus: "success" | "error" | "disabled"
   jobStatus: "success" | "error" | "disabled"
 
-  items: Array<ILbaItemLbaCompany | ILbaItemPartnerJob | ILbaItemFormation | ILbaItemLbaJob>
+  items: Array<ILbaItem>
   itemsCount: number
   formations: Array<ILbaItemFormation>
+  jobs: Array<ILbaItemLbaCompany | ILbaItemPartnerJob | ILbaItemLbaJob>
 
   nonBlockingErrors: {
     formations: string | null
@@ -60,10 +65,13 @@ type IUseRechercheResultsSuccess = {
 
 type IUseRechercheResultsError = {
   status: "error"
+
+  formationStatus: "error" | "disabled"
+  jobStatus: "error" | "disabled"
   itemsCount: 0
 }
 
-type IUseRechercheResults = IUseRechercheResultsIdle | IUseRechercheResultLoading | IUseRechercheResultLoadingJobs | IUseRechercheResultsSuccess | IUseRechercheResultsError
+export type IUseRechercheResults = IUseRechercheResultsIdle | IUseRechercheResultLoading | IUseRechercheResultLoadingJobs | IUseRechercheResultsSuccess | IUseRechercheResultsError
 
 function getQueryStatus(query: ReturnType<typeof useQuery>, isEnabled: boolean): "success" | "error" | "disabled" | "loading" {
   if (query.isIdle || !isEnabled) {
@@ -195,7 +203,7 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
   }, [formationQuery.data, isFormationEnabled])
 
   const items = useMemo(() => {
-    const result: Array<ILbaItemLbaCompany | ILbaItemPartnerJob | ILbaItemFormation | ILbaItemLbaJob> = []
+    const result: Array<ILbaItem> = []
 
     if (formations.length > 0) {
       result.push(...formations)
@@ -210,15 +218,15 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
 
   return useMemo(() => {
     if (!isFormationEnabled && !isJobsEnabled) {
-      return { status: "idle", itemsCount: 0 }
+      return { status: "idle", formationStatus: "idle", jobStatus: "idle", itemsCount: 0 }
     }
 
-    if (formationQuery.isError && jobQuery.isError) {
-      return { status: "error", itemsCount: 0 }
-    }
-
-    const jobStatus = getQueryStatus(jobQuery, isJobsEnabled)
     const formationStatus = getQueryStatus(formationQuery, isFormationEnabled)
+    const jobStatus = getQueryStatus(jobQuery, isJobsEnabled)
+
+    if ((formationStatus === "error" || formationStatus === "disabled") && (jobStatus === "error" || jobStatus === "disabled")) {
+      return { status: "error", formationStatus, jobStatus, itemsCount: 0 }
+    }
 
     if (formationStatus === "loading") {
       return { status: "loading", formationStatus, jobStatus, itemsCount: 0 }
@@ -253,6 +261,7 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
       items,
       itemsCount: items.length,
       nonBlockingErrors,
+      jobs,
       jobsCount: jobs.length,
       formations,
       formationsCount: formations.length,
