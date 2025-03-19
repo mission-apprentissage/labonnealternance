@@ -2,18 +2,17 @@
 import { Box, Flex, Image, Text } from "@chakra-ui/react"
 import { useParams } from "next/dist/client/components/navigation"
 import { useRouter } from "next/navigation"
-import { Fragment, useEffect, useState } from "react"
+import { Fragment, useEffect, useMemo, useState } from "react"
 import { useQuery } from "react-query"
 import { ILbaItemFormation2Json } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { IAppointMentResponseAvailable } from "shared/routes/v2/appointments.routes.v2"
 
+import { RechercheCarte } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
 import { IUseRechercheResultsSuccess, useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { useBuildNavigation } from "@/app/hooks/useBuildNavigation"
-import { useLocalStorage } from "@/app/hooks/useLocalStorage"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
 import GoingToContactQuestion, { getGoingtoId } from "@/components/ItemDetail/GoingToContactQuestion"
 import { getNavigationButtons } from "@/components/ItemDetail/ItemDetailServices/getButtons"
@@ -41,25 +40,35 @@ const dontBreakOutCssParameters = {
 }
 
 export default function TrainingDetailRendererClient({ training, priseDeRendezVous }: { training: ILbaItemFormation2Json; priseDeRendezVous: IAppointMentResponseAvailable }) {
-  const { storedValue } = useLocalStorage(`application-${training.type}-${training.id}`)
-  const [appliedDate, setAppliedDate] = useState(null)
   const params = useCandidatRechercheParams()
   const result = useRechercheResults(params)
 
-  useEffect(() => {
+  const appliedDate = useMemo(() => {
+    if (globalThis.window == null) return null
+    const storedValue = globalThis.window.localStorage.getItem(`application-${training.type}-${training.id}`)
     if (storedValue) {
-      const date = new Date(parseInt(storedValue as string, 10)).toLocaleDateString("fr-FR", {
+      return new Date(parseInt(storedValue, 10)).toLocaleDateString("fr-FR", {
         year: "numeric",
         month: "long",
         day: "numeric",
       })
-      setAppliedDate(date)
     }
-  }, [storedValue])
+    return null
+  }, [training.type, training.id])
 
   if (result.status !== "success") {
     // TODO: handle error
     return null
+  }
+
+  if (params?.displayMap) {
+    return (
+      <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
+        <TrainingDetailPage selectedItem={training} priseDeRendezVous={appliedDate ? null : priseDeRendezVous} appliedDate={appliedDate} resultList={result.items} />
+        {/* TODO : remove extended search button from map view */}
+        <RechercheCarte />
+      </Box>
+    )
   }
 
   return <TrainingDetailPage selectedItem={training} priseDeRendezVous={appliedDate ? null : priseDeRendezVous} appliedDate={appliedDate} resultList={result.items} />
@@ -82,10 +91,10 @@ function TrainingDetailPage({
   const isMandataire = selectedItem?.company?.mandataire
   const currentItem = resultList.find((item) => item.id === selectedItem.id)
 
-  const params = useCandidatRechercheParams()
+  const searchParams = useCandidatRechercheParams()
   const router = useRouter()
   const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItem })
-  const handleClose = () => router.push(PAGES.dynamic.recherche(params).getPath())
+  const handleClose = () => router.push(PAGES.dynamic.recherche(searchParams).getPath())
 
   // const { activeFilters } = useContext(DisplayContext)
 
@@ -132,7 +141,6 @@ function TrainingDetailPage({
       }}
       {...swipeHandlers}
     >
-      <InfoBanner />
       {/* @ts-expect-error: TODO */}
       <Box
         as="header"
@@ -214,6 +222,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
     enabled: Boolean(training.training.cfd),
   })
 
+  // TODO convert to client component and add in the tree
   useEffect(() => {
     SendPlausibleEvent("Affichage - Fiche formation", {
       info_fiche: `${training.id}${param["intitule-formation"] ? ` - ${param["intitule-formation"]}` : ""}`,
