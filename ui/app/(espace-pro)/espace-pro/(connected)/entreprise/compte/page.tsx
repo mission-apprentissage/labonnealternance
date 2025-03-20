@@ -7,7 +7,7 @@ import { PAGES } from "@/utils/routes.utils"
 export default function Page() {
   return (
     <>
-      <Breadcrumb pages={[PAGES.dynamic.backHomeEntreprise(), PAGES.dynamic.compte({ userType: ENTREPRISE })]} />
+      <Breadcrumb pages={[PAGES.static.backHomeEntreprise, PAGES.dynamic.compte({ userType: ENTREPRISE })]} />
       <CompteRenderer />
     </>
   )

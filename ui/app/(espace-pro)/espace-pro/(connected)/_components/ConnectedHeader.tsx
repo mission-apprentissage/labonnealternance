@@ -23,7 +23,7 @@ export const ConnectedHeader = ({ user }: { user: IUserRecruteurPublic }) => {
       {...rest}
       quickAccessItems={[
         <HeaderQuickAccessItem
-          key="connexion"
+          key="mon_compte"
           quickAccessItem={{
             iconId: "fr-icon-account-line",
             text: `${user.first_name} ${user.last_name.toLocaleUpperCase()}`,

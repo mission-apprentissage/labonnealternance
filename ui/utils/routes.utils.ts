@@ -1,7 +1,7 @@
 import type { Metadata, MetadataRoute } from "next"
 import { ReadonlyURLSearchParams } from "next/navigation"
 import { assertUnreachable, removeUndefinedFields, toKebabCase } from "shared"
-import { ADMIN, CFA, ENTREPRISE, OPCO } from "shared/constants/index"
+import { ADMIN, AUTHTYPE, CFA, ENTREPRISE, OPCO } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateUri } from "shared/helpers/generateUri"
 import { z } from "zod"
@@ -306,6 +306,14 @@ export const PAGES = {
       getPath: () => `/espace-pro/opco` as string,
       title: "Accueil OPCO",
     },
+    backHomeEntreprise: {
+      getPath: () => `/espace-pro/entreprise` as string,
+      title: "Accueil entreprise",
+    },
+    backEntrepriseCreationOffre: {
+      getPath: () => `/espace-pro/entreprise/creation-offre` as string,
+      title: "Nouvelle offre",
+    },
   },
   dynamic: {
     // example
@@ -368,7 +376,7 @@ export const PAGES = {
           case CFA:
             return isCreation ? PAGES.dynamic.backCfaEntrepriseCreationOffre(establishment_id).getPath() : `/espace-pro/cfa/entreprise/${establishment_id}/offre/${offerId}`
           case ENTREPRISE:
-            return isCreation ? PAGES.dynamic.backCreationOffre().getPath() : PAGES.dynamic.backEditionOffre({ job_id: offerId }).getPath()
+            return isCreation ? PAGES.static.backEntrepriseCreationOffre.getPath() : PAGES.dynamic.backEntrepriseEditionOffre({ job_id: offerId }).getPath()
           default:
             throw new Error("not implemented")
         }
@@ -520,22 +528,29 @@ export const PAGES = {
       getPath: () => `/espace-pro/administration/users/${user_id}` as string,
       title: user_label ?? "Entreprise",
     }),
-    backEditionOffre: ({ job_id }: { job_id: string }): IPage => ({
+    backEntrepriseEditionOffre: ({ job_id }: { job_id: string }): IPage => ({
       getPath: () => `/espace-pro/entreprise/offre/${job_id}` as string,
       title: job_id ? "Edition d'une offre" : "Création d'une offre",
     }),
-    backCreationOffre: (): IPage => ({
-      getPath: () => `/espace-pro/entreprise/creation-offre` as string,
-      title: "Nouvelle offre",
-    }),
-    backHomeEntreprise: (): IPage => ({
-      getPath: () => `/espace-pro/entreprise` as string,
-      title: "Accueil entreprise",
-    }),
+
     backOpcoEditionEntreprise: ({ establishment_id }: { establishment_id: string }): IPage => ({
       getPath: () => `/espace-pro/opco/entreprise/${establishment_id}` as string,
       title: "Entreprise",
     }),
+    backHome: ({ userType }: { userType: "CFA" | "ENTREPRISE" | "ADMIN" | "OPCO" }): IPage => {
+      switch (userType) {
+        case AUTHTYPE.CFA:
+          return PAGES.static.backCfaHome
+        case AUTHTYPE.ENTREPRISE:
+          return PAGES.static.backHomeEntreprise
+        case AUTHTYPE.ADMIN:
+          return PAGES.static.backAdminHome
+        case AUTHTYPE.OPCO:
+          return PAGES.static.backOpcoHome
+        default:
+          throw new Error("user type not supported")
+      }
+    },
   },
   notion: {},
 } as const satisfies IPages

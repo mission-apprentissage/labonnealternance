@@ -15,7 +15,7 @@ export function BackEntrepriseUpsertOffre({ establishment_id, job_id }: { establ
 
   return (
     <DepotSimplifieStyling>
-      <Breadcrumb pages={[PAGES.dynamic.backHomeEntreprise(), PAGES.dynamic.offreUpsert({ establishment_id, offerId: job_id, userType: ENTREPRISE })]} />
+      <Breadcrumb pages={[PAGES.static.backHomeEntreprise, PAGES.dynamic.offreUpsert({ establishment_id, offerId: job_id, userType: ENTREPRISE })]} />
       <UpsertOffre
         establishment_id={establishment_id}
         job_id={job_id}
