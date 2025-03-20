@@ -42,6 +42,13 @@ export default function TrainingDetailRendererClient({ training }: { training: I
   const params = useCandidatRechercheParams()
   const result = useRechercheResults(params)
 
+  const trainingSignature = useMemo(() => {
+    return {
+      id: training.id,
+      ideaType: training.type,
+    }
+  }, [training])
+
   const appliedDate = useMemo(() => {
     if (globalThis.window == null) return null
     const storedValue = globalThis.window.localStorage.getItem(`application-${training.type}-${training.id}`)
@@ -62,7 +69,7 @@ export default function TrainingDetailRendererClient({ training }: { training: I
 
   if (params?.displayMap) {
     return (
-      <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
+      <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", height: "100vh", overflow: "hidden" }}>
         <TrainingDetailPage
           selectedItem={training}
           priseDeRendezVous={appliedDate ? false : training.training.elligibleForAppointment}
@@ -70,7 +77,7 @@ export default function TrainingDetailRendererClient({ training }: { training: I
           resultList={result.items}
         />
         {/* TODO : remove extended search button from map view */}
-        <RechercheCarte />
+        <RechercheCarte item={trainingSignature} variant="detail" />
       </Box>
     )
   }

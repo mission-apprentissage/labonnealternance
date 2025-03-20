@@ -3,12 +3,12 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 
-import { useUpdateCandidatSearchParam } from "@/app/(candidat)/recherche/_hooks/useUpdateCandidatSearchParam"
+import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
 import { RechercheForm } from "@/app/_components/RechercheForm/RechercheForm"
 import { RechercheFormTitle } from "@/app/_components/RechercheForm/RechercheFormTitle"
 
 export function HomeRechercheForm() {
-  const onSubmit = useUpdateCandidatSearchParam()
+  const onSubmit = useNavigateToRecherchePage()
 
   return (
     <Box

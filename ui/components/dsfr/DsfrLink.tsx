@@ -1,4 +1,4 @@
-import { fr } from "@codegouvfr/react-dsfr"
+import { fr, type FrIconClassName, type RiIconClassName } from "@codegouvfr/react-dsfr"
 import type { LinkProps } from "next/link"
 import NextLink from "next/link"
 import type { CSSProperties, ReactNode } from "react"
@@ -40,11 +40,11 @@ export function DsfrLink({
       className={fr.cx(`fr-text--${size}`, "fr-link", {
         "fr-link--sm": size === "sm",
         "fr-link--lg": size === "lg",
-        "fr-link--icon-left": arrow === "left",
-        "fr-icon-arrow-left-s-line": arrow === "left",
+        "fr-link--icon-left": true, // arrow === "left",
+        "fr-icon-arrow-left-s-line":  arrow === "left",
         "fr-icon-arrow-right-line": arrow === "right",
         "fr-link--icon-right": arrow === "right",
-      })}
+      }, 'fr-icon-map-pin-2-fill')}
       {...rest}
     >
       {children}

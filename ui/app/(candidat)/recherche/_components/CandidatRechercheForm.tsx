@@ -5,14 +5,14 @@ import { captureException } from "@sentry/nextjs"
 import { useEffect } from "react"
 
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
-import { useUpdateCandidatSearchParam } from "@/app/(candidat)/recherche/_hooks/useUpdateCandidatSearchParam"
+import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
 import { RechercheForm } from "@/app/_components/RechercheForm/RechercheForm"
 import { RechercheFormTitle } from "@/app/_components/RechercheForm/RechercheFormTitle"
 import { apiGet } from "@/utils/api.utils"
 
 export function CandidatRechercheForm() {
   const params = useCandidatRechercheParams()
-  const updateCandidatSearchParam = useUpdateCandidatSearchParam()
+  const navigateToRecherchePage = useNavigateToRecherchePage()
 
   useEffect(() => {
     const controller = new AbortController()
@@ -23,7 +23,7 @@ export function CandidatRechercheForm() {
             return
           }
 
-          updateCandidatSearchParam({ geo: { ...params.geo, address: commune.nom } }, true)
+          navigateToRecherchePage({ geo: { ...params.geo, address: commune.nom } }, true)
         })
         .catch((err) => {
           if (controller.signal.aborted) {
@@ -37,7 +37,7 @@ export function CandidatRechercheForm() {
     return () => {
       controller.abort()
     }
-  }, [params, updateCandidatSearchParam])
+  }, [params, navigateToRecherchePage])
 
   return (
     <Box>
@@ -51,7 +51,7 @@ export function CandidatRechercheForm() {
       >
         <RechercheFormTitle />
       </Box>
-      <RechercheForm type="recherche" onSubmit={updateCandidatSearchParam} initialValue={params} />
+      <RechercheForm type="recherche" onSubmit={navigateToRecherchePage} initialValue={params} />
     </Box>
   )
 }

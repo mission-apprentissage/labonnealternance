@@ -1,7 +1,7 @@
 "use client"
 import { Box, Flex, Text } from "@chakra-ui/react"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
@@ -28,14 +28,27 @@ import ShareLink from "@/components/ItemDetail/ShareLink"
 // import { SearchResultContext } from "@/context/SearchResultContextProvider"
 import { isCfaEntreprise } from "@/services/cfaEntreprise"
 import { PAGES } from "@/utils/routes.utils"
+import { RechercheCarte } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
 // import { filterLayers } from "@/utils/mapTools"
 
 export default function JobDetailRendererClient({ job }: { job: ILbaItemJobsGlobal }) {
   const params = useCandidatRechercheParams()
   const result = useRechercheResults(params)
+
   if (result.status !== "success") {
     // TODO: handle error
     return null
+  }
+
+
+  if (params?.displayMap) {
+    return (
+      <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", height: "100vh", overflow: "hidden" }}>
+        <JobDetail selectedItem={job} resultList={result.items} />
+        {/* TODO : remove extended search button from map view */}
+        <RechercheCarte item={job} variant="detail" />
+      </Box>
+    )
   }
 
   return <JobDetail selectedItem={job} resultList={result.items} />
