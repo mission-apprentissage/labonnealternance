@@ -149,6 +149,7 @@ const initializeMap = ({ mapContainer, unselectItem, selectItemOnMap, onMapHasMo
     minZoom: 3,
     dragRotate: false,
     language: "fr",
+    // @ts-ignore TODO
     locale: "fr",
   })
 
