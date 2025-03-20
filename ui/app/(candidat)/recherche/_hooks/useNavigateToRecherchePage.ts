@@ -1,7 +1,7 @@
 "use client"
 
-import { usePathname, useRouter } from "next/navigation"
-import { useCallback, useMemo } from "react"
+import { useRouter } from "next/navigation"
+import { useCallback } from "react"
 
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
 import { IRecherchePageParams, PAGES } from "@/utils/routes.utils"
@@ -9,16 +9,6 @@ import { IRecherchePageParams, PAGES } from "@/utils/routes.utils"
 export function useNavigateToRecherchePage(): (newParams: Partial<IRecherchePageParams>, replace?: boolean) => void {
   const searchParams = useCandidatRechercheParams()
   const router = useRouter()
-
-  const currentPath = usePathname()
-
-  const isCandidateSearchPage = useMemo(() => {
-    if (globalThis.window == null) return false
-
-    const pagePath = new URL(PAGES.dynamic.recherche(null).getPath(), globalThis.window.location.origin).pathname
-
-    return currentPath === pagePath
-  }, [currentPath])
 
   const navigateToRecherchePage = useCallback(
     (newParams: Partial<IRecherchePageParams>, replace: boolean = false): void => {
@@ -28,18 +18,15 @@ export function useNavigateToRecherchePage(): (newParams: Partial<IRecherchePage
           ...newParams,
         })
         .getPath()
+      
 
-      if (isCandidateSearchPage && globalThis.window != null) {
         if (replace) {
-          globalThis.window.history.replaceState(null, "", newUrl)
+          router.replace(newUrl)
         } else {
-          globalThis.window.history.pushState(null, "", newUrl)
+          router.push(newUrl)
         }
-      } else {
-        router.push(newUrl)
-      }
     },
-    [searchParams, isCandidateSearchPage, router]
+    [searchParams, router]
   )
 
   return navigateToRecherchePage

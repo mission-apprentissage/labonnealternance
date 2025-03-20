@@ -63,7 +63,7 @@ const contentSecurityPolicy = `
 `
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // reactStrictMode: true,
+  reactStrictMode: true,
   transpilePackages: ["shared"],
   i18n: {
     locales: ["fr"],

@@ -8,7 +8,7 @@ import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import type { ILbaItem } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { useResultItemUrl } from "@/app/(candidat)/recherche/_hooks/useResultItemUrl"
-import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useUpdateCandidatSearchParam"
+import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 type RechercheMapPopupProps = {
@@ -101,6 +101,7 @@ export function RechercheMapPopup(props: RechercheMapPopupProps) {
     setPopup(
       new Popup({
         offset: 30,
+        closeOnClick: false,
       }).setDOMContent(popupElement)
     )
     // popupElement instance will change on dev mode reload

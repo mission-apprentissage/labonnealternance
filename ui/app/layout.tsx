@@ -17,6 +17,7 @@ import "../public/styles/application.css"
 import "../public/styles/fonts.css"
 import "../public/styles/notion.css"
 import "../styles/search.css"
+import RootTemplate from "@/app/client_only_providers"
 
 export const metadata: Metadata = {
   title: "La bonne alternance",
@@ -67,7 +68,9 @@ export default function RootLayout({ children }: { children: JSX.Element }) {
       <body>
         {
           <AppRouterCacheProvider>
-            <DsfrProvider>{children}</DsfrProvider>
+            <DsfrProvider>
+              <RootTemplate>{children}</RootTemplate>
+            </DsfrProvider>
           </AppRouterCacheProvider>
         }
       </body>

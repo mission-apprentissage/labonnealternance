@@ -2,7 +2,7 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
-import { useVirtualizer } from "@tanstack/react-virtual"
+import { useVirtualizer, } from "@tanstack/react-virtual"
 import { useEffect, useMemo, useRef } from "react"
 
 import { RechercheResultatsFooter } from "@/app/(candidat)/recherche/_components/RechercheResultats/Footer"
@@ -22,7 +22,7 @@ export function RechercheResulatsList() {
   const columnVirtualizer = useVirtualizer({
     count: result.itemsCount + 1,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 200,
+    estimateSize: () => 278,
     overscan: 10,
   })
 
@@ -119,7 +119,10 @@ export function RechercheResulatsList() {
               const item = result.items[virtualRow.index]
 
               return (
-                <Box key={virtualRow.key} data-index={virtualRow.index} ref={columnVirtualizer.measureElement}>
+                <Box key={virtualRow.key} data-index={virtualRow.index} ref={columnVirtualizer.measureElement} sx={{
+                  my: fr.spacing('1w'),
+                  px: fr.spacing('1w')
+                }}>
                   <ResultCard selected={params.selection?.includes(item.id)} item={item} />
                 </Box>
               )

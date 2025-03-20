@@ -7,7 +7,7 @@ import { ChangeEvent, useCallback } from "react"
 
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
 import { useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
-import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useUpdateCandidatSearchParam"
+import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
 
 export function CandidatRechercheFilters() {
   const params = useCandidatRechercheParams()
