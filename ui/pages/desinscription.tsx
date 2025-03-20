@@ -4,9 +4,9 @@ import { NextSeo } from "next-seo"
 import { useState } from "react"
 import { useQuery } from "react-query"
 
+import { AlgoRecruiter } from "@/app/(landing-pages)/acces-recruteur/_components/AlgoRecruiter"
 import { getApplicationCompanyEmailAddress } from "@/utils/api"
 
-import { AlgoRecruiter } from "../app/(espace-pro)/acces-recruteur/_components/AlgoRecruiter"
 import Breadcrumb from "../components/breadcrumb"
 import FormulaireDesinscription from "../components/DesinscriptionEntreprise/FormulaireDesinscription"
 import SuccesDesinscription from "../components/DesinscriptionEntreprise/SuccesDesinscription"

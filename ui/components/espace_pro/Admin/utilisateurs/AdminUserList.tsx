@@ -2,6 +2,7 @@ import { Box, Button, Flex, Modal, ModalCloseButton, ModalContent, ModalHeader, 
 import dayjs from "dayjs"
 import { useQuery } from "react-query"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
+import { Jsonify } from "type-fest"
 
 import { sortReactTableString } from "@/common/utils/dateUtils"
 import Link from "@/components/Link"
@@ -20,12 +21,9 @@ const AdminUserList = () => {
     data: users,
     isLoading,
     refetch: refetchUsers,
-  } = useQuery<IUserWithAccount[]>({
-    queryKey: ["adminusers"],
-    queryFn: async () => {
-      const users = await apiGet("/admin/users", {})
-      return users.users
-    },
+  } = useQuery<Jsonify<IUserWithAccount>[]>(["adminusers"], async () => {
+    const users = await apiGet("/admin/users", {})
+    return users.users
   })
 
   if (isLoading) {

@@ -36,7 +36,7 @@ export default function FormCreatePage() {
       {isLoading && <Spinner display="block" mx="auto" size="xl" mt="10rem" />}
       {data && "error" in data && (
         <Box mt="5rem" textAlign="center">
-          {data.error}
+          {data.error as string}
         </Box>
       )}
       {data && "intitule_long" in data && (

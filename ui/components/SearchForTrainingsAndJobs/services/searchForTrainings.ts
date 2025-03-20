@@ -1,4 +1,5 @@
 import { ILbaItemFormation } from "shared"
+import { Jsonify } from "type-fest"
 
 import { factorTrainingsForMap, setTrainingMarkers } from "@/utils/mapTools"
 
@@ -47,7 +48,7 @@ export const searchForTrainingsFunction = async ({
       querystring.diploma = values.diploma
     }
 
-    const response: ILbaItemFormation[] = await apiGet(trainingsApi, { querystring })
+    const response: Jsonify<ILbaItemFormation>[] = await apiGet(trainingsApi, { querystring })
 
     setTrainings(response)
     storeSearchResultInContext({ searchResultContext, results: { trainings: response }, searchTimestamp, formValues: values })
@@ -104,7 +105,7 @@ export const searchForTrainingsLightFunction = async ({ values, searchTimestamp,
       querystring.diploma = values.diploma
     }
 
-    const response: ILbaItemFormation[] = await apiGet(trainingsApi, { querystring })
+    const response: Jsonify<ILbaItemFormation>[] = await apiGet(trainingsApi, { querystring })
 
     setTrainings(response)
     storeSearchResultInContext({ searchResultContext, results: { trainings: response }, searchTimestamp, formValues: values })

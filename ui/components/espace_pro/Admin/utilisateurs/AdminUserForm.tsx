@@ -4,6 +4,7 @@ import { AccessStatus, IRoleManagementEvent, IRoleManagementJson, getLastStatusE
 import { OPCOS_LABEL } from "shared/constants/index"
 import { AUTHTYPE } from "shared/constants/recruteur"
 import { INewSuperUser, IUserWithAccountJson, ZNewSuperUser, ZUserWithAccountFields } from "shared/models/userWithAccount.model"
+import { Jsonify } from "type-fest"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
@@ -96,7 +97,7 @@ export const AdminUserForm = ({
     }
   }
 
-  const statusArray: IRoleManagementEvent[] = role?.status
+  const statusArray: Jsonify<IRoleManagementEvent>[] = role?.status
   const accessStatus = getLastStatusEvent(statusArray)?.status
 
   return (

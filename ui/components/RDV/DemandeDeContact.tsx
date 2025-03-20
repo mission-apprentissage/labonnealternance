@@ -303,7 +303,7 @@ const DemandeDeContact = (props: Props) => {
               </AccordionPanel>
             </AccordionItem>
           </Accordion>
-          {/* @ts-expect-error TODO */}
+          {/* @ts-ignore TODO */}
           {applicantReasons.find(({ key, checked }) => key === EReasonsKey.AUTRE && checked) && (
             <FormControl data-testid="fieldset-applicantMessageToCfa">
               <Input
