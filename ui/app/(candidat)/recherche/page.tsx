@@ -7,7 +7,8 @@ import NextLink from "next/link"
 import { CandidatRechercheFilters } from "@/app/(candidat)/recherche/_components/CandidatRechercheFilters"
 import { CandidatRechercheForm } from "@/app/(candidat)/recherche/_components/CandidatRechercheForm"
 import { RechercheResulats } from "@/app/(candidat)/recherche/_components/RechercheResulats"
-import { PAGES, parseRecherchePageParams } from "@/utils/routes.utils"
+import { parseRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+import { PAGES } from "@/utils/routes.utils"
 
 type Props = {
   searchParams: Promise<Record<string, string>>

@@ -8,8 +8,8 @@ import { useCallback, useEffect, useState } from "react"
 
 import { earthCircumferenceKm, mapboxTileSize } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
+import type { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { radiusOptions } from "@/app/_components/RechercheForm/RechercheForm"
-import type { IRecherchePageParams } from "@/utils/routes.utils"
 
 type RechercheMapIciProps = {
   map: Mapbox
@@ -125,7 +125,7 @@ export function RechercheMapIci(props: RechercheMapIciProps) {
         sx={{
           zIndex: 5,
           boxShadow: 2,
-          backgroundColor: fr.colors.decisions.background.default.grey.default
+          backgroundColor: fr.colors.decisions.background.default.grey.default,
         }}
       >
         <Button iconId="ri-refresh-line" onClick={onClick} priority="tertiary">

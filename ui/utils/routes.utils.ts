@@ -1,11 +1,10 @@
 import type { Metadata, MetadataRoute } from "next"
-import { ReadonlyURLSearchParams } from "next/navigation"
 import { assertUnreachable, removeUndefinedFields, toKebabCase } from "shared"
 import { ADMIN, AUTHTYPE, CFA, ENTREPRISE, OPCO } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateUri } from "shared/helpers/generateUri"
-import { z } from "zod"
 
+import { buildRecherchePageParams, IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { publicConfig } from "@/config.public"
 
 export interface IPage {
@@ -24,103 +23,6 @@ export interface IPages {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dynamic: Record<string, (params: any) => IPage>
   notion: Record<string, INotionPage>
-}
-
-export const zRecherchePageParams = z.object({
-  romes: z.array(z.string()),
-  geo: z
-    .object({
-      address: z.string().nullable(),
-      latitude: z.number(),
-      longitude: z.number(),
-      radius: z.number(),
-    })
-    .nullable(),
-  diploma: z.string().nullable(),
-  job_name: z.string().nullable(),
-  job_type: z.string().nullable(),
-  displayMap: z.boolean().optional(),
-  displayEntreprises: z.boolean().optional(),
-  displayFormations: z.boolean().optional(),
-  displayPartenariats: z.boolean().optional(),
-  selection: z.string().array().optional(),
-})
-
-export type IRecherchePageParams = z.output<typeof zRecherchePageParams>
-
-function buildRecherchePageParams(params: IRecherchePageParams): string {
-  const query = new URLSearchParams()
-
-  if (params?.romes?.length > 0) {
-    query.set("romes", params.romes.join(","))
-  }
-
-  if (params.geo) {
-    query.set("lat", params.geo.latitude.toString())
-    query.set("lon", params.geo.longitude.toString())
-    query.set("radius", params.geo.radius.toString())
-
-    if (params.geo.address) {
-      query.set("address", params.geo.address)
-    }
-  }
-
-  if (params.diploma) {
-    query.set("diploma", params.diploma)
-  }
-  if (params.job_name) {
-    query.set("job_name", params.job_name)
-  }
-  if (params.displayMap === true) {
-    query.set("displayMap", "true")
-  }
-  if (params.displayEntreprises === false) {
-    query.set("displayEntreprises", "false")
-  }
-  if (params.displayFormations === false) {
-    query.set("displayFormations", "false")
-  }
-  if (params.displayPartenariats === false) {
-    query.set("displayPartenariats", "false")
-  }
-  if (params?.selection?.length > 0) {
-    query.set("selection", params.selection.join(","))
-  }
-
-  return query.toString()
-}
-
-export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSearchParams | null): Required<IRecherchePageParams> | null {
-  if (search === null) {
-    return null
-  }
-
-  const romes = search.get("romes")?.split(",") ?? []
-  const selection = search.get("selection")?.split(",") ?? []
-
-  const rawLat = search.get("lat")
-  const rawLon = search.get("lon")
-
-  const geo =
-    rawLat && rawLon
-      ? {
-          address: search.get("address") ?? null,
-          latitude: parseFloat(rawLat),
-          longitude: parseFloat(rawLon),
-          radius: parseInt(search.get("radius") ?? "30"),
-        }
-      : null
-
-  const diploma = search.get("diploma") || null
-  const job_name = search.get("job_name") || null
-  const job_type = search.get("job_type") || null
-
-  const displayMap = search.get("displayMap") === "true"
-  const displayEntreprises = search.get("displayEntreprises") !== "false"
-  const displayFormations = search.get("displayFormations") !== "false"
-  const displayPartenariats = search.get("displayPartenariats") !== "false"
-
-  return { romes, geo, diploma, job_name, job_type, displayMap, displayEntreprises, displayFormations, displayPartenariats, selection }
 }
 
 export const PAGES = {

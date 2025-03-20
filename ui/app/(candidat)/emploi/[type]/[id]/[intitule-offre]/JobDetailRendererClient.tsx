@@ -1,10 +1,11 @@
 "use client"
 import { Box, Flex, Text } from "@chakra-ui/react"
 import { useRouter } from "next/navigation"
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
+import { RechercheCarte } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
 import { IUseRechercheResultsSuccess, useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { useBuildNavigation } from "@/app/hooks/useBuildNavigation"
@@ -28,7 +29,6 @@ import ShareLink from "@/components/ItemDetail/ShareLink"
 // import { SearchResultContext } from "@/context/SearchResultContextProvider"
 import { isCfaEntreprise } from "@/services/cfaEntreprise"
 import { PAGES } from "@/utils/routes.utils"
-import { RechercheCarte } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
 // import { filterLayers } from "@/utils/mapTools"
 
 export default function JobDetailRendererClient({ job }: { job: ILbaItemJobsGlobal }) {
@@ -39,7 +39,6 @@ export default function JobDetailRendererClient({ job }: { job: ILbaItemJobsGlob
     // TODO: handle error
     return null
   }
-
 
   if (params?.displayMap) {
     return (

@@ -6,8 +6,8 @@ import { Box } from "@mui/material"
 import { ChangeEvent, useCallback } from "react"
 
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
-import { useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
+import { useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 
 export function CandidatRechercheFilters() {
   const params = useCandidatRechercheParams()

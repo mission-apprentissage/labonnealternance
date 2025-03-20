@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation"
 import { useCallback } from "react"
 
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
-import { IRecherchePageParams, PAGES } from "@/utils/routes.utils"
+import type { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+import { PAGES } from "@/utils/routes.utils"
 
 export function useNavigateToRecherchePage(): (newParams: Partial<IRecherchePageParams>, replace?: boolean) => void {
   const searchParams = useCandidatRechercheParams()
@@ -18,13 +19,12 @@ export function useNavigateToRecherchePage(): (newParams: Partial<IRecherchePage
           ...newParams,
         })
         .getPath()
-      
 
-        if (replace) {
-          router.replace(newUrl)
-        } else {
-          router.push(newUrl)
-        }
+      if (replace) {
+        router.replace(newUrl)
+      } else {
+        router.push(newUrl)
+      }
     },
     [searchParams, router]
   )
