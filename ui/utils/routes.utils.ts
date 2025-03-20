@@ -298,6 +298,10 @@ export const PAGES = {
       getPath: () => `/espace-pro/administration/users` as string,
       title: "Accueil administration",
     },
+    backAdminGestionDesEntreprises: {
+      getPath: () => `/espace-pro/administration/gestion-des-entreprises` as string,
+      title: "Gestion des entreprises",
+    },
     backOpcoHome: {
       getPath: () => `/espace-pro/opco` as string,
       title: "Accueil OPCO",
