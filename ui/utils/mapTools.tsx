@@ -136,12 +136,13 @@ const addLayers = ({ map, type, selectItemOnMap, unselectItem, unselectMapPopupI
 const initializeMap = ({ mapContainer, unselectItem, selectItemOnMap, onMapHasMoved, unselectMapPopupItem, setSelectedItem, setSelectedMapPopupItem }) => {
   isMapInitialized = true
 
-  // eslint-disable-next-line no-import-assign
+  // @ts-ignore TODO
   mapboxgl.accessToken = "pk.eyJ1IjoiYWxhbmxyIiwiYSI6ImNrYWlwYWYyZDAyejQzMHBpYzE0d2hoZWwifQ.FnAOzwsIKsYFRnTUwneUSA"
 
   map = new mapboxgl.Map({
     container: mapContainer.current,
     style: "mapbox://styles/alanlr/ckkcqqf4e0dxz17r5xa3fkn1f",
+    // @ts-ignore TODO
     center: franceCenter,
     zoom: zoomWholeFrance - 2, // hack de contournement du bug d'initialisation de mapbox n'affichant pas les markers sur le niveau de zoom initial (part 1)
     maxZoom: 17,
