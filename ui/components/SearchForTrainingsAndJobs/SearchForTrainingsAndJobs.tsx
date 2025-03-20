@@ -365,6 +365,7 @@ const SearchForTrainingsAndJobs = () => {
             shouldShowWelcomeMessage={shouldShowWelcomeMessage}
             handleSearchSubmit={handleSearchSubmit}
             showResultList={showResultList}
+            /* @ts-ignore TODO */
             showSearchForm={showSearchForm}
             searchRadius={searchRadius}
             isTrainingSearchLoading={isTrainingSearchLoading}

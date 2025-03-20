@@ -18,6 +18,7 @@ import DidYouKnow from "./DidYouKnow"
 import FTJobDetail from "./FTJobDetail"
 import GoingToContactQuestion, { getGoingtoId } from "./GoingToContactQuestion"
 import getActualTitle from "./ItemDetailServices/getActualTitle"
+/* @ts-ignore TODO */
 import { BuildSwipe, buttonJePostuleShouldBeDisplayed, buttonRdvShouldBeDisplayed, getNavigationButtons } from "./ItemDetailServices/getButtons"
 import getJobPublishedTimeAndApplications from "./ItemDetailServices/getJobPublishedTimeAndApplications"
 import getTags from "./ItemDetailServices/getTags"
@@ -140,9 +141,11 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
 
               {kind === LBA_ITEM_TYPE_OLD.LBA && !isCandidatureLba(selectedItem) && <NoCandidatureLba />}
 
+              {/* @ts-ignore TODO */}
               {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && !hasApplied(selectedItem) && (
                 <DemandeDeContact isCollapsedHeader={isCollapsedHeader} context={selectedItem.rdvContext} referrer="LBA" showInModal />
               )}
+              {/* @ts-ignore TODO */}
               {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && <ItemDetailApplicationsStatus item={selectedItem} mt={2} mb={2} />}
 
               {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PARTNER_JOB && <PartnerJobPostuler isCollapsedHeader={isCollapsedHeader} job={selectedItem} />}

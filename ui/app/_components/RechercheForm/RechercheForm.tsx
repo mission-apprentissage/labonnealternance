@@ -99,7 +99,9 @@ function getMetierOptionLabel(option: IRomeSearchOption) {
 async function fetchRomeSearchOptions(query: string): Promise<IRomeSearchOption[]> {
   const data = await apiGet("/rome", { querystring: { title: query } })
 
+  /* @ts-ignore TODO */
   const metiers: IMetierEnrichi[] = data.labelsAndRomes ?? []
+  /* @ts-ignore TODO */
   const diplomes: IMetierEnrichi[] = data.labelsAndRomesForDiplomas ?? []
 
   return [

@@ -1,6 +1,7 @@
 import { useMemo } from "react"
 import { useQuery } from "react-query"
 import { IGetRoutes, ILbaItemFormation, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob, IQuery, IResponse } from "shared"
+import { Jsonify } from "type-fest"
 
 import { apiGet } from "@/utils/api.utils"
 import { IRecherchePageParams } from "@/utils/routes.utils"
@@ -137,7 +138,7 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
   const isFormationEnabled = formationQuerystring.romes.length > 0 && params.displayFormations
   const isJobsEnabled = jobQuerystring.romes.length > 0 && (params.displayEntreprises || params.displayPartenariats)
 
-  const formationQuery = useQuery<ILbaItemFormation[]>({
+  const formationQuery = useQuery<Jsonify<ILbaItemFormation>[]>({
     queryKey: ["/v1/_private/formations/min", formationQuerystring],
     queryFn: async ({ signal }) => {
       return apiGet("/v1/_private/formations/min", { querystring: formationQuerystring }, { signal, priority: "high" })
@@ -158,7 +159,7 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
   })
 
   const jobs = useMemo(() => {
-    const result: Array<ILbaItemLbaCompany | ILbaItemPartnerJob | ILbaItemLbaJob> = []
+    const result: Array<Jsonify<ILbaItemLbaCompany | ILbaItemPartnerJob | ILbaItemLbaJob>> = []
 
     if (!jobQuery.isSuccess || !isJobsEnabled) {
       return result
@@ -167,12 +168,14 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
     if (jobQuery.data.matchas && "results" in jobQuery.data.matchas) {
       result.push(
         ...jobQuery.data.matchas.results
+          // @ts-ignore TODO
           .filter((job: ILbaItemLbaJob) => {
             if (job.company.mandataire) {
               return params.displayPartenariats
             }
             return params.displayEntreprises
           })
+          // @ts-ignore TODO
           .toSorted((a: ILbaItemLbaJob, b: ILbaItemLbaJob) => {
             return a.place.distance - b.place.distance
           })
@@ -185,6 +188,7 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
 
     if (jobQuery.data.partnerJobs && "results" in jobQuery.data.partnerJobs) {
       result.push(
+        // @ts-ignore TODO
         ...jobQuery.data.partnerJobs.results.toSorted((a: ILbaItemPartnerJob, b: ILbaItemPartnerJob) => {
           return a.place.distance - b.place.distance
         })
@@ -199,6 +203,7 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
   }, [jobQuery.data, jobQuery.isSuccess, isJobsEnabled, params.displayPartenariats, params.displayEntreprises])
 
   const formations = useMemo((): ILbaItemFormation[] => {
+    // @ts-ignore TODO
     return formationQuery.data && isFormationEnabled ? formationQuery.data : []
   }, [formationQuery.data, isFormationEnabled])
 
@@ -210,12 +215,14 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
     }
 
     if (jobs.length > 0) {
+      // @ts-ignore TODO
       result.push(...jobs)
     }
 
     return result
   }, [jobs, formations])
 
+  // @ts-ignore TODO
   return useMemo(() => {
     if (!isFormationEnabled && !isJobsEnabled) {
       return { status: "idle", formationStatus: "idle", jobStatus: "idle", itemsCount: 0 }

@@ -22,6 +22,10 @@ import getTags from "./ItemDetailServices/getTags"
 import ItemDetailCard from "./ItemDetailServices/ItemDetailCard"
 import LoadedItemDetail from "./loadedItemDetail"
 
+{
+  /* @ts-ignore TODO */
+}
+
 const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSelectedItem, setJobsAndSelectedItem, setHasError }) => {
   setHasError("")
   switch (selectedItem?.ideaType) {

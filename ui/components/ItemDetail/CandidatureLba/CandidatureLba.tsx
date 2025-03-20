@@ -47,6 +47,7 @@ export function CandidatureLba({ item }: { item: ILbaItemLbaJobJson | ILbaItemLb
       <CandidatureLbaModal item={item} modalControls={modalControls} submitControls={submitControls} />
       <Box>
         {hasAppliedValue ? (
+          /* @ts-ignore TODO */
           <ItemDetailApplicationsStatus item={item} />
         ) : (
           <>

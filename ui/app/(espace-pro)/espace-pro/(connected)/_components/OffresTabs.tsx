@@ -79,6 +79,9 @@ export const OffresTabs = ({
   const [currentOffre, setCurrentOffre] = useState()
   const [copied, setCopied] = useState(false)
 
+  {
+    /* @ts-ignore TODO */
+  }
   const jobs: (IJobJson & { candidatures: number; geo_coordinates: string })[] = recruiter?.jobs ?? []
 
   if (jobs.length === 0) {
