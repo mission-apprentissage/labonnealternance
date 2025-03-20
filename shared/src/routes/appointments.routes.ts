@@ -3,7 +3,7 @@ import { zObjectId } from "zod-mongodb-schema"
 
 import { referrers } from "../constants/referers.js"
 import { z } from "../helpers/zodWithOpenApi.js"
-import { EREASONS, ZAppointment } from "../models/appointments.model.js"
+import { EREASONS, ZAppointment, ZAppointmentRecap, ZAppointmentShortRecap } from "../models/appointments.model.js"
 import { ZEtablissement } from "../models/etablissement.model.js"
 import { ZUser } from "../models/user.model.js"
 
@@ -135,24 +135,7 @@ export const zAppointmentsRoute = {
       path: "/appointment-request/context/short-recap",
       querystring: z.object({ appointmentId: z.string() }).strict(),
       response: {
-        "200": z
-          .object({
-            user: z
-              .object({
-                firstname: z.string(),
-                lastname: z.string(),
-                phone: z.string(),
-                email: z.string(),
-              })
-              .strict(),
-            formation: z
-              .object({
-                etablissement_formateur_raison_sociale: z.string().nullish(),
-                lieu_formation_email: z.string().nullish(),
-              })
-              .strict(),
-          })
-          .strict(),
+        "200": ZAppointmentShortRecap,
       },
       securityScheme: {
         auth: "access-token",
@@ -165,47 +148,7 @@ export const zAppointmentsRoute = {
       path: "/appointment-request/context/recap",
       querystring: z.object({ appointmentId: z.string() }).strict(),
       response: {
-        "200": z
-          .object({
-            appointment: z
-              .object({
-                _id: ZAppointment.shape._id,
-                cfa_intention_to_applicant: ZAppointment.shape.cfa_intention_to_applicant,
-                cfa_message_to_applicant_date: ZAppointment.shape.cfa_message_to_applicant_date,
-                cfa_message_to_applicant: ZAppointment.shape.cfa_message_to_applicant,
-                applicant_message_to_cfa: ZAppointment.shape.applicant_message_to_cfa,
-                applicant_reasons: ZAppointment.shape.applicant_reasons,
-                cle_ministere_educatif: ZAppointment.shape.cle_ministere_educatif,
-                applicant_id: ZAppointment.shape.applicant_id,
-                cfa_read_appointment_details_date: ZAppointment.shape.cfa_read_appointment_details_date,
-              })
-              .strict(),
-            user: z
-              .object({
-                _id: zObjectId,
-                firstname: z.string(),
-                lastname: z.string(),
-                phone: z.string(),
-                email: z.string(),
-                type: z.string(),
-              })
-              .strict(),
-            formation: z.union([
-              z
-                .object({
-                  _id: ZEtablissement.shape._id,
-                  training_intitule_long: z.string().nullish(),
-                  etablissement_formateur_raison_sociale: z.string().nullish(),
-                  lieu_formation_street: z.string().nullish(),
-                  lieu_formation_city: z.string().nullish(),
-                  lieu_formation_zip_code: z.string().nullish(),
-                  lieu_formation_email: z.string().nullish(),
-                })
-                .strict(),
-              z.null(),
-            ]),
-          })
-          .strict(),
+        "200": ZAppointmentRecap,
       },
       securityScheme: {
         auth: "access-token",

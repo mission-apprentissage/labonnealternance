@@ -318,7 +318,7 @@ export function createRdvaAppointmentIdPageLink(email: string, siret: string, et
     }
   )
 
-  return `${config.publicUrl}/espace-pro/establishment/${etablissementId}/appointments/${appointmentId}?token=${encodeURIComponent(token)}`
+  return `${config.publicUrl}/detail-rendez-vous/${appointmentId}?token=${encodeURIComponent(token)}`
 }
 
 export function createRdvaShortRecapToken(email: string, appointmentId: string) {
