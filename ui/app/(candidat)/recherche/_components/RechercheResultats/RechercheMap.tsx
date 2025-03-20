@@ -214,9 +214,7 @@ function getItemSourceId(item: ILbaItem, type: LAYERS): string {
   return `${type}:${item.place.longitude.toFixed(5)},${item.place.latitude.toFixed(5)}`
 }
 
-{
-  /* @ts-ignore TODO */
-}
+/* @ts-ignore TODO */
 function buildSourceData<T extends ILbaItem>(items: T[], type: LAYERS): GeoJSON.GeoJSON {
   const groupByPlace = new Map<string, T[]>()
   for (const item of items) {

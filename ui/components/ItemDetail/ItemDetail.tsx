@@ -17,14 +17,11 @@ import ErrorMessage from "../ErrorMessage"
 
 import ItemDetailLoading from "./ItemDetailLoading"
 import getActualTitle from "./ItemDetailServices/getActualTitle"
+/* @ts-ignore TODO */
 import { BuildSwipe, getNavigationButtons } from "./ItemDetailServices/getButtons"
 import getTags from "./ItemDetailServices/getTags"
 import ItemDetailCard from "./ItemDetailServices/ItemDetailCard"
 import LoadedItemDetail from "./loadedItemDetail"
-
-{
-  /* @ts-ignore TODO */
-}
 
 const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSelectedItem, setJobsAndSelectedItem, setHasError }) => {
   setHasError("")

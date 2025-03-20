@@ -35,9 +35,7 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
   }
 
   const { establishment_raison_sociale, establishment_siret } = data
-  {
-    /* @ts-ignore TODO */
-  }
+  /* @ts-ignore TODO */
   const jobs: (IJobJson & { candidatures: number })[] = data.jobs ?? []
 
   const entrepriseTitle = establishment_raison_sociale ?? establishment_siret

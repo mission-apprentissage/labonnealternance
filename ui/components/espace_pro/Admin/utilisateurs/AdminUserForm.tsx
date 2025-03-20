@@ -61,9 +61,7 @@ export const AdminUserForm = ({
       const { email, first_name, last_name, phone = "", type } = values
       const commonFields = { email, first_name, last_name, phone, type }
       const sentFields = { ...commonFields, ...(type === OPCO ? { opco: values.opco } : {}) }
-      {
-        /* @ts-ignore TODO */
-      }
+      /* @ts-ignore TODO */
       createSuperUser(sentFields)
         .then((user) => {
           toast({
