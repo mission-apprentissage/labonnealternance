@@ -8,12 +8,13 @@ import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import type { ILbaItem } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { useResultItemUrl } from "@/app/(candidat)/recherche/_hooks/useResultItemUrl"
-import { useUpdateCandidatSearchParam } from "@/app/(candidat)/recherche/_hooks/useUpdateCandidatSearchParam"
+import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useUpdateCandidatSearchParam"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 type RechercheMapPopupProps = {
   map: Map | null
   selection: ILbaItem[]
+  variant: "recherche" | "detail"
 }
 
 const popupElement = globalThis.document == null ? null : globalThis.document.createElement("div")
@@ -84,7 +85,7 @@ function RechercheMapPopupContent(props: { selection: ILbaItem[] }) {
 
 export function RechercheMapPopup(props: RechercheMapPopupProps) {
   const [popup, setPopup] = useState<Popup | null>(null)
-  const updateCandidatSearchParam = useUpdateCandidatSearchParam()
+  const navigateToRecherchePage = useNavigateToRecherchePage()
 
   useEffect(() => {
     if (props.map === null || popupElement === null) {
@@ -107,8 +108,12 @@ export function RechercheMapPopup(props: RechercheMapPopupProps) {
   }, [props.map, popupElement])
 
   const onClose = useCallback(() => {
-    updateCandidatSearchParam({ selection: [] }, true)
-  }, [updateCandidatSearchParam])
+    if (props.variant === "detail") {
+      return
+    }
+
+    navigateToRecherchePage({ selection: [] }, true)
+  }, [navigateToRecherchePage, props.variant])
 
   useEffect(() => {
     if (props.map === null || popup === null || props.selection.length === 0) {

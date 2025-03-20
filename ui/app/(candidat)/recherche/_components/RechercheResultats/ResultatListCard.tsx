@@ -8,7 +8,7 @@ import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
 import { useNavigateToResultItemDetail } from "@/app/(candidat)/recherche/_hooks/useNavigateToResultItemDetail"
 import { useResultItemUrl } from "@/app/(candidat)/recherche/_hooks/useResultItemUrl"
-import { useUpdateCandidatSearchParam } from "@/app/(candidat)/recherche/_hooks/useUpdateCandidatSearchParam"
+import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useUpdateCandidatSearchParam"
 import ItemDetailApplicationsStatus from "@/components/ItemDetail/ItemDetailServices/ItemDetailApplicationStatus"
 import TagCandidatureSpontanee from "@/components/ItemDetail/TagCandidatureSpontanee"
 import TagCfaDEntreprise from "@/components/ItemDetail/TagCfaDEntreprise"
@@ -26,7 +26,7 @@ type ResultCardProps = {
 
 const CenterSearchButton = (props: Pick<ResultCardProps, "item">) => {
   const searchParams = useCandidatRechercheParams()
-  const updateSearch = useUpdateCandidatSearchParam()
+  const updateSearch = useNavigateToRecherchePage()
 
   const onClick = useCallback(
     async (e) => {

@@ -6,7 +6,7 @@ import { useCallback, useMemo } from "react"
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
 import { IRecherchePageParams, PAGES } from "@/utils/routes.utils"
 
-export function useUpdateCandidatSearchParam(): (newParams: Partial<IRecherchePageParams>, replace?: boolean) => void {
+export function useNavigateToRecherchePage(): (newParams: Partial<IRecherchePageParams>, replace?: boolean) => void {
   const searchParams = useCandidatRechercheParams()
   const router = useRouter()
 
@@ -20,7 +20,7 @@ export function useUpdateCandidatSearchParam(): (newParams: Partial<IRecherchePa
     return currentPath === pagePath
   }, [currentPath])
 
-  const updateCandidatSearchParam = useCallback(
+  const navigateToRecherchePage = useCallback(
     (newParams: Partial<IRecherchePageParams>, replace: boolean = false): void => {
       const newUrl = PAGES.dynamic
         .recherche({
@@ -42,5 +42,5 @@ export function useUpdateCandidatSearchParam(): (newParams: Partial<IRecherchePa
     [searchParams, isCandidateSearchPage, router]
   )
 
-  return updateCandidatSearchParam
+  return navigateToRecherchePage
 }

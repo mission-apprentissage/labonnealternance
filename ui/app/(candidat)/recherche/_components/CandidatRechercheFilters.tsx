@@ -7,38 +7,38 @@ import { ChangeEvent, useCallback } from "react"
 
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
 import { useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
-import { useUpdateCandidatSearchParam } from "@/app/(candidat)/recherche/_hooks/useUpdateCandidatSearchParam"
+import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useUpdateCandidatSearchParam"
 
 export function CandidatRechercheFilters() {
   const params = useCandidatRechercheParams()
   const result = useRechercheResults(params)
-  const updateCandidatSearchParam = useUpdateCandidatSearchParam()
+  const navigateToRecherchePage = useNavigateToRecherchePage()
 
   const { displayEntreprises, displayFormations, displayPartenariats, displayMap } = params
 
   const onEntrepriseChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      updateCandidatSearchParam({ displayEntreprises: e.target.checked })
+      navigateToRecherchePage({ displayEntreprises: e.target.checked })
     },
-    [updateCandidatSearchParam]
+    [navigateToRecherchePage]
   )
   const onFormationsChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      updateCandidatSearchParam({ displayFormations: e.target.checked })
+      navigateToRecherchePage({ displayFormations: e.target.checked })
     },
-    [updateCandidatSearchParam]
+    [navigateToRecherchePage]
   )
   const onPartenariatsChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      updateCandidatSearchParam({ displayPartenariats: e.target.checked })
+      navigateToRecherchePage({ displayPartenariats: e.target.checked })
     },
-    [updateCandidatSearchParam]
+    [navigateToRecherchePage]
   )
   const onDisplayMapChange = useCallback(
     (value: boolean) => {
-      updateCandidatSearchParam({ displayMap: value }, true)
+      navigateToRecherchePage({ displayMap: value }, true)
     },
-    [updateCandidatSearchParam]
+    [navigateToRecherchePage]
   )
 
   return (

@@ -7,7 +7,7 @@ import { LngLat, Map as Mapbox } from "mapbox-gl"
 import { useCallback, useEffect, useState } from "react"
 
 import { earthCircumferenceKm, mapboxTileSize } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
-import { useUpdateCandidatSearchParam } from "@/app/(candidat)/recherche/_hooks/useUpdateCandidatSearchParam"
+import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useUpdateCandidatSearchParam"
 import { radiusOptions } from "@/app/_components/RechercheForm/RechercheForm"
 import type { IRecherchePageParams } from "@/utils/routes.utils"
 
@@ -64,7 +64,7 @@ export function RechercheMapIci(props: RechercheMapIciProps) {
 
   const [isVisible, setIsVisible] = useState(false)
 
-  const updateCandidatSearchParam = useUpdateCandidatSearchParam()
+  const navigateToRecherchePage = useNavigateToRecherchePage()
 
   const isSameArea = useCallback(
     (map: Mapbox) => {
@@ -107,8 +107,8 @@ export function RechercheMapIci(props: RechercheMapIciProps) {
 
   const onClick = useCallback(() => {
     const params = computeNewSearchGeoParams(map)
-    updateCandidatSearchParam({ geo: params }, true)
-  }, [map, updateCandidatSearchParam])
+    navigateToRecherchePage({ geo: params }, true)
+  }, [map, navigateToRecherchePage])
 
   if (!isVisible) {
     return null

@@ -11,7 +11,7 @@ export function RechercheResulats() {
   return (
     <Box sx={{ display: "grid", gridTemplateColumns: params.displayMap ? "1fr 1fr" : "1fr" }}>
       <RechercheResulatsList />
-      {params.displayMap && <RechercheCarte />}
+      {params.displayMap && <RechercheCarte item={null} variant="recherche" />}
     </Box>
   )
 }
