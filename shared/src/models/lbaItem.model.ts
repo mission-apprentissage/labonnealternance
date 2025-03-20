@@ -338,6 +338,7 @@ const ZLbaItemTraining2 = z
       })
       .nullish(), // formation -> onisep_url
     romes: z.array(ZLbaItemRome).nullish(),
+    elligibleForAppointment: z.boolean().describe("Indique si la formation est éligible pour la prise de rendez-vous").nullish(),
   })
   .strict()
   .openapi("Training")

@@ -1,8 +1,8 @@
-import { internal, badRequest } from "@hapi/boom"
+import { badRequest, internal } from "@hapi/boom"
 import { zRoutes } from "shared"
 
 import { trackApiCall } from "../../common/utils/sendTrackingEvent"
-import { getFormationByCleME, getFormationQuery, getFormationsQuery } from "../../services/formation.service"
+import { getFormationDetailByCleME, getFormationQuery, getFormationsQuery } from "../../services/formation.service"
 import { Server } from "../server"
 
 const config = {
@@ -108,7 +108,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { id } = req.params
-      const result = await getFormationByCleME(id)
+      const result = await getFormationDetailByCleME(id)
       return res.send(result)
     }
   )

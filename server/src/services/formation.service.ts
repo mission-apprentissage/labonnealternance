@@ -3,6 +3,7 @@ import dayjs from "dayjs"
 import { chain } from "lodash-es"
 import { assertUnreachable, type IFormationCatalogue, type ILbaItemFormation2 } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { referrers } from "shared/constants/referers"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -409,7 +410,7 @@ const transformFormation = (rawFormation: IFormationCatalogue): ILbaItemFormatio
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées des formations
  */
-const transformFormationV2 = (rawFormation: IFormationCatalogue): ILbaItemFormation2 => {
+const transformFormationV2 = (rawFormation: IFormationCatalogue, priseDeRendezVous: boolean = false): ILbaItemFormation2 => {
   const latOpt = rawFormation.lieu_formation_geopoint?.coordinates[1] ?? null
   const longOpt = rawFormation.lieu_formation_geopoint?.coordinates[0] ?? null
 
@@ -477,6 +478,7 @@ const transformFormationV2 = (rawFormation: IFormationCatalogue): ILbaItemFormat
       description: rawFormation?.contenu?.trim() ?? null,
       sessions,
       duration,
+      elligibleForAppointment: priseDeRendezVous,
     },
   }
   return resultFormation
@@ -725,7 +727,7 @@ export const getFormationsV2 = async ({
       options: options === "with_description" ? ["with_description"] : [],
       isMinimalData,
     })
-    const formations = (rawFormations || []).map(isMinimalData ? transformFormationWithMinimalDataV2 : transformFormationV2)
+    const formations = (rawFormations || []).map((formation) => (isMinimalData ? transformFormationWithMinimalDataV2(formation) : transformFormationV2(formation)))
     sortFormations(formations)
     if (caller) {
       trackApiCall({
@@ -754,12 +756,17 @@ export const getFormationQuery = async ({ id }: { id: string }): Promise<{ resul
   return { results: formations }
 }
 
-export const getFormationByCleME = async (id: string): Promise<ILbaItemFormation2> => {
-  const result = await getDbCollection("formationcatalogues").findOne({ cle_ministere_educatif: id })
-  if (!result) {
+export const getFormationDetailByCleME = async (id: string): Promise<ILbaItemFormation2> => {
+  const formation = await getDbCollection("formationcatalogues").findOne({ cle_ministere_educatif: id })
+  if (!formation) {
     throw badRequest("Formation not found")
   }
-  return transformFormationV2(result)
+  const priseDeRendezVous = await getDbCollection("eligible_trainings_for_appointments").findOne({
+    cle_ministere_educatif: formation.cle_ministere_educatif,
+    referrers: { $in: [referrers.LBA.name] },
+  })
+  const elligileForAppointment = !!priseDeRendezVous
+  return transformFormationV2(formation, elligileForAppointment)
 }
 
 /**
@@ -870,7 +877,7 @@ export const getFormationsParRegionV2 = async ({
       caller: caller,
       options: withDescription ? ["with_description"] : [],
     })
-    const formations = rawFormations.map(transformFormationV2)
+    const formations = rawFormations.map((formation) => transformFormationV2(formation))
     sortFormations(formations)
     if (caller) {
       trackApiCall({
