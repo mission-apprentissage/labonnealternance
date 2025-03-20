@@ -1,9 +1,11 @@
 import { badRequest, internal, notFound } from "@hapi/boom"
 import { Document, Filter, ObjectId } from "mongodb"
-import { ERecruteurLbaUpdateEventType, IApplication, IRecruteurLbaUpdateEvent } from "shared"
+import { ERecruteurLbaUpdateEventType, IApplication, IRecruteurLbaUpdateEvent, JobCollectionName } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { IJobsPartnersOfferPrivate, IJobsPartnersRecruteurAlgoPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { ILbaCompanyForContactUpdate } from "shared/routes/updateLbaCompany.routes"
+
+import { getRecipientID } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
@@ -76,7 +78,7 @@ const transformCompany = ({
     applicationCount: applicationCount?.count || 0,
     url: null,
     token: generateApplicationToken({ company_siret: company.workplace_siret }),
-    recipient_id: `partners_${company._id.toString()}`,
+    recipient_id: getRecipientID(JobCollectionName.recruteur, company.workplace_siret),
   }
 
   return resultCompany
@@ -120,7 +122,7 @@ const transformCompanyWithMinimalData = ({
     ],
     applicationCount: applicationCount?.count || 0,
     token: generateApplicationToken({ company_siret: company.workplace_siret }),
-    recipient_id: `partners_${company._id.toString()}`,
+    recipient_id: getRecipientID(JobCollectionName.recruteur, company.workplace_siret),
   }
 
   return resultCompany
