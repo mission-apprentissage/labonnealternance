@@ -1,11 +1,11 @@
 "use client"
 
-import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Link as ChakraLink, Flex, Heading, SimpleGrid, Text } from "@chakra-ui/react"
+import { Box, Flex, Heading, SimpleGrid, Text } from "@chakra-ui/react"
 import { useRouter } from "next/navigation"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SiretAutocomplete } from "@/components/espace_pro/Authentification/SiretAutocomplete"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 import { useAuth } from "@/context/UserContext"
@@ -50,10 +50,10 @@ const InformationSiret = () => (
     <Flex alignItems="flex-start">
       <InfoCircle mr={2} mt={1} />
       <Text textAlign="justify">
-        Le numéro d’identification de votre entreprise partenaire peut être trouvé sur
-        <ChakraLink href="https://annuaire-entreprises.data.gouv.fr/" variant="classic" isExternal aria-label="Site de l'annuaire des entreprises - nouvelle fenêtre">
-          l’annuaire des entreprises <ExternalLinkIcon mx="2px" />
-        </ChakraLink>
+        Le numéro d’identification de votre entreprise partenaire peut être trouvé sur{" "}
+        <DsfrLink href="https://annuaire-entreprises.data.gouv.fr/" external aria-label="Site de l'annuaire des entreprises - nouvelle fenêtre">
+          l’annuaire des entreprises
+        </DsfrLink>
         .
       </Text>
     </Flex>

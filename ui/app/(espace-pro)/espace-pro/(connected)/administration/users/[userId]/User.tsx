@@ -26,6 +26,7 @@ import * as Yup from "yup"
 
 import CustomInput from "@/app/(espace-pro)/_components/CustomInput"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
+import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 import { OffresTabs } from "@/app/(espace-pro)/espace-pro/(connected)/_components/OffresTabs"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
@@ -34,7 +35,7 @@ import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActi
 import { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationModificationOpco, UserValidationHistory } from "@/components/espace_pro"
 import { OpcoSelect } from "@/components/espace_pro/CreationRecruteur/OpcoSelect"
 import { FieldWithValue } from "@/components/espace_pro/FieldWithValue"
-import NavigationAdmin, { EAdminPages } from "@/components/espace_pro/Layout/NavigationAdmin"
+import { EAdminPages } from "@/components/espace_pro/Layout/NavigationAdmin"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { getFormulaire, getUser, updateEntrepriseAdmin } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
@@ -250,13 +251,8 @@ function DetailEntreprise() {
 
 export default function User() {
   return (
-    <>
-      <Box as="header">
-        <NavigationAdmin currentPage={EAdminPages.GESTION_RECRUTEURS} />
-      </Box>
-      <Container as="main" p={0} maxW="container.xl" flexGrow="1">
-        <DetailEntreprise />
-      </Container>
-    </>
+    <AdminLayout currentAdminPage={EAdminPages.GESTION_RECRUTEURS}>
+      <DetailEntreprise />
+    </AdminLayout>
   )
 }

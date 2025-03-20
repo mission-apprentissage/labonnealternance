@@ -5,7 +5,6 @@ import AuthentificationLayout from "./AuthentificationLayout"
 import ConfirmationActivationUtilsateur from "./ConfirmationActivationUtilsateur"
 import ConfirmationDesactivationUtilisateur from "./ConfirmationDesactivationUtilisateur"
 import ConfirmationModificationOpco from "./ConfirmationModificationOpco"
-import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
 import CustomInput from "./CustomInput"
 import DropdownCombobox from "./DropdownCombobox"
 import InfoPopover from "./InfoPopover"
@@ -24,7 +23,6 @@ export {
   ConfirmationActivationUtilsateur,
   ConfirmationDesactivationUtilisateur,
   ConfirmationModificationOpco,
-  ConfirmationSuppressionOffre,
   CustomInput,
   DropdownCombobox,
   InfoPopover,

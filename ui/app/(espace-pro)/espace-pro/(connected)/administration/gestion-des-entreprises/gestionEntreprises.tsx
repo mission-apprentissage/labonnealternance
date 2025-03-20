@@ -1,6 +1,6 @@
 "use client"
 import { CheckIcon } from "@chakra-ui/icons"
-import { Alert, AlertIcon, Box, Container, Flex, Spinner, Text } from "@chakra-ui/react"
+import { Alert, AlertIcon, Box, Flex, Spinner, Text } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Form, Formik } from "formik"
 import { useState } from "react"
@@ -10,12 +10,14 @@ import * as Yup from "yup"
 import { z } from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
+import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
+import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { phoneValidation } from "@/common/validation/fieldValidations"
 import { CustomInput } from "@/components/espace_pro"
-import { OldBreadcrumb } from "@/components/espace_pro/common/components/Breadcrumb"
-import NavigationAdmin, { EAdminPages } from "@/components/espace_pro/Layout/NavigationAdmin"
+import { EAdminPages } from "@/components/espace_pro/Layout/NavigationAdmin"
 import { SearchLine } from "@/theme/components/icons"
 import { getCompanyContactInfo, putCompanyContactInfo } from "@/utils/api"
+import { PAGES } from "@/utils/routes.utils"
 
 const unreferencedLbaRecruteurWarning = "Seules les modifications / ajouts sont supportés dans le cas d'une société déréférencée"
 
@@ -154,7 +156,7 @@ function FormulaireModificationEntreprise({ siret }: { siret: string }) {
                   </Alert>
                 )}
                 <Flex justify="flex-start">
-                  <Button type="submit" data-testid="update_algo_company" variant="form" isActive={isValid} isDisabled={!isValid || !dirty} isLoading={updateEntreprise.isLoading}>
+                  <Button type="submit" data-testid="update_algo_company" disabled={!isValid || !dirty}>
                     Enregistrer les modifications
                   </Button>
                 </Flex>
@@ -171,22 +173,15 @@ export default function GestionEntreprises() {
   const [siret, setSiret] = useState<string>("")
 
   return (
-    <>
-      <Box as="header">
-        <NavigationAdmin currentPage={EAdminPages.ENTREPRISES_ALGO} />
+    <AdminLayout currentAdminPage={EAdminPages.ENTREPRISES_ALGO}>
+      <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.backAdminGestionDesEntreprises]} />
+      <Box mt={6} px={4}>
+        <Text fontSize="2rem" mb={4} fontWeight={700} as="h1">
+          Entreprises de l'algorithme
+        </Text>
+        <FormulaireRechercheEntreprise onSiretChange={setSiret} />
+        <FormulaireModificationEntreprise siret={siret} />
       </Box>
-      <Container as="main" p={0} maxW="container.xl" flexGrow="1">
-        <Box pt={5}>
-          <OldBreadcrumb pages={[{ title: "Accueil", to: "/espace-pro/administration/users" }, { title: "Entreprises de l'algorithme" }]} />
-          <Box mt={6} px={4}>
-            <Text fontSize="2rem" mb={4} fontWeight={700} as="h1">
-              Entreprises de l'algorithme
-            </Text>
-            <FormulaireRechercheEntreprise onSiretChange={setSiret} />
-            <FormulaireModificationEntreprise siret={siret} />
-          </Box>
-        </Box>
-      </Container>
-    </>
+    </AdminLayout>
   )
 }

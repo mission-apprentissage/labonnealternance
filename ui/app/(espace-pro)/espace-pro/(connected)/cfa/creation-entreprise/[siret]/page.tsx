@@ -1,6 +1,7 @@
 "use client"
 
-import { Button, Flex, Grid, GridItem, Heading, Text, useBreakpointValue, useToast } from "@chakra-ui/react"
+import { Box, Flex, Grid, GridItem, Heading, Spinner, Text, useToast } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { Form, Formik } from "formik"
 import { useParams, useRouter } from "next/navigation"
 import { ENTREPRISE } from "shared/constants/recruteur"
@@ -12,13 +13,11 @@ import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { phoneValidation } from "@/common/validation/fieldValidations"
 import { CustomInput } from "@/components/espace_pro"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
-import Link from "@/components/Link"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { postFormulaire } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
 const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
-  const buttonSize = useBreakpointValue(["sm", "md"])
   const router = useRouter()
   const toast = useToast()
   const { user } = useConnectedSessionClient()
@@ -67,18 +66,13 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
             <CustomInput required={false} name="phone" label="Numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={informationForm.values.phone} />
             <CustomInput required={false} name="email" label="Email" type="email" value={informationForm.values.email} />
             <Flex justifyContent="flex-end" alignItems="center" mt={5}>
-              <Link href="/espace-pro/administration" variant="secondary" mr={5} size={buttonSize}>
-                Annuler
-              </Link>
-              <Button
-                type="submit"
-                size={buttonSize}
-                variant="form"
-                leftIcon={<ArrowRightLine width={5} />}
-                isActive={informationForm.isValid}
-                isDisabled={!informationForm.isValid || informationForm.isSubmitting}
-              >
-                Suivant
+              <Box mr={5}>
+                <Button type="button" priority="secondary" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
+                  Annuler
+                </Button>
+              </Box>
+              <Button type="submit" disabled={!informationForm.isValid || informationForm.isSubmitting}>
+                {informationForm.isSubmitting ? <Spinner mr={2} /> : <ArrowRightLine width={5} mr={2} />}Suivant
               </Button>
             </Flex>
           </Form>

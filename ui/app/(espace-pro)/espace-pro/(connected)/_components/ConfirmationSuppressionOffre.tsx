@@ -1,4 +1,5 @@
-import { Button, Flex, Heading, Modal, ModalBody, ModalContent, ModalHeader, ModalOverlay, Text, useToast } from "@chakra-ui/react"
+import { Box, Flex, Heading, Modal, ModalBody, ModalContent, ModalHeader, ModalOverlay, Text, useToast } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { FormikProvider, useFormik } from "formik"
 import { useQueryClient } from "react-query"
 import { JOB_STATUS } from "shared"
@@ -7,8 +8,8 @@ import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import CustomInput from "@/app/(espace-pro)/_components/CustomInput"
 import { CustomSelect } from "@/app/(espace-pro)/_components/CustomSelect"
+import ModalCloseButton from "@/app/(espace-pro)/_components/ModalCloseButton"
 import { CustomFormControl } from "@/components/espace_pro/CustomFormControl"
-import { Close } from "@/theme/components/icons"
 import { cancelOffreFromAdmin } from "@/utils/api"
 
 const zodSchema = z.object({
@@ -72,12 +73,7 @@ export default function ConfirmationSuppressionOffre(props) {
     <Modal closeOnOverlayClick={false} blockScrollOnMount={true} isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent mt={["0", "3.75rem"]} h={["100%", "auto"]} mb={0} borderRadius={0} width="532px" minWidth={[0, 532]}>
-        <Button display={"flex"} alignSelf={"flex-end"} color="bluefrance.500" fontSize={"epsilon"} onClick={resetState} variant="unstyled" p={6} fontWeight={400}>
-          Fermer
-          <Text as={"span"} ml={2}>
-            <Close boxSize={4} />
-          </Text>
-        </Button>
+        <ModalCloseButton onClose={onClose} />
         <ModalHeader>
           <Heading as="h2" fontSize="24px" lineHeight="32px">
             Êtes-vous certain de vouloir supprimer votre offre ?
@@ -102,12 +98,16 @@ export default function ConfirmationSuppressionOffre(props) {
               </CustomFormControl>
               {formik.values.motif === motifAutre && <CustomInput label="Précisez votre motif (facultatif)" name="autreMotif" required={false} />}
               <Flex justifyContent="flex-end" mt={8}>
-                <Button variant="secondary" ml={3} onClick={() => resetState()}>
-                  Annuler
-                </Button>
-                <Button type="submit" variant="primary" ml={3} isDisabled={!formik.dirty || !formik.isValid}>
-                  Confirmer la suppression
-                </Button>
+                <Box ml={3}>
+                  <Button type="button" priority="secondary" onClick={() => resetState()}>
+                    Annuler
+                  </Button>
+                </Box>
+                <Box ml={3}>
+                  <Button type="submit" disabled={!formik.dirty || !formik.isValid}>
+                    Confirmer la suppression
+                  </Button>
+                </Box>
               </Flex>
             </form>
           </FormikProvider>
