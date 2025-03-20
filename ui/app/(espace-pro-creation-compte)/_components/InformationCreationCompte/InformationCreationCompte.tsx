@@ -10,7 +10,7 @@ import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
 import { generateUri } from "shared/helpers/generateUri"
 import * as Yup from "yup"
 
-import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/compte/_components/InformationLegaleEntreprise"
+import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 import { infosOpcos } from "@/theme/components/logos/infosOpcos"
 import { ApiError } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"

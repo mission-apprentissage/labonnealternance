@@ -1,6 +1,6 @@
 import { Box, Image, Show, SimpleGrid, Text } from "@chakra-ui/react"
 
-import { ConnectionActions } from "../../_components/ConnectionActions"
+import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActions"
 
 export const Entreprise = () => (
   <Box as="section" p={3} mb={{ base: "2", md: "0" }} backgroundColor="white">

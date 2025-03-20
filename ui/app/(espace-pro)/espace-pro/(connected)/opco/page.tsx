@@ -4,7 +4,6 @@ import {
   Box,
   Button,
   Link as ChakraLink,
-  Container,
   Flex,
   Icon,
   Menu,
@@ -206,40 +205,36 @@ function AdministrationOpco() {
       <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={currentEntreprise} />
       <ConfirmationActivationUtilsateur {...confirmationActivationUtilisateur} {...currentEntreprise} />
 
-      <Container maxW="container.xl" mt={5}>
-        <Box mt="16px" mb={6}>
-          <Breadcrumb pages={[PAGES.static.backOpcoHome]} />
+      <Breadcrumb pages={[PAGES.static.backOpcoHome]} />
+
+      <Flex align="center" justify="space-between" mb={12}>
+        <Text fontSize="2rem" fontWeight={700}>
+          Entreprises
+        </Text>
+      </Flex>
+
+      <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)} variant="search" isLazy>
+        <Box mx={8}>
+          <TabList>
+            <Tab width="300px">En attente de vérification ({data.awaiting.length})</Tab>
+            <Tab width="300px">Actives ({data.active.length})</Tab>
+            <Tab width="300px">Désactivées ({data.disable.length})</Tab>
+          </TabList>
         </Box>
-
-        <Flex align="center" justify="space-between" mb={12}>
-          <Text fontSize="2rem" fontWeight={700}>
-            Entreprises
-          </Text>
-        </Flex>
-
-        <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)} variant="search" isLazy>
-          <Box mx={8}>
-            <TabList>
-              <Tab width="300px">En attente de vérification ({data.awaiting.length})</Tab>
-              <Tab width="300px">Actives ({data.active.length})</Tab>
-              <Tab width="300px">Désactivées ({data.disable.length})</Tab>
-            </TabList>
-          </Box>
-          <TabPanels mt={3}>
-            <TabPanel>
-              {/* @ts-expect-error: TODO */}
-              <TableNew
-                columns={columns}
-                data={data.awaiting}
-                description="Les entreprises en attente de vérification représentent pour votre OPCO de nouvelles opportunités d’accompagnement.  Vous pouvez contacter chacun des comptes en attente, vérifier qu’il s’agit bien d’une entreprise relevant de vos champs de compétences, et qu’il ne s’agit pas d’une tentative d’usurpation de compte."
-              />
-            </TabPanel>
-            <TabPanel>{isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={data.active} exportable />}</TabPanel>
+        <TabPanels mt={3}>
+          <TabPanel>
             {/* @ts-expect-error: TODO */}
-            <TabPanel>{isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={data.disable} />}</TabPanel>
-          </TabPanels>
-        </Tabs>
-      </Container>
+            <TableNew
+              columns={columns}
+              data={data.awaiting}
+              description="Les entreprises en attente de vérification représentent pour votre OPCO de nouvelles opportunités d’accompagnement.  Vous pouvez contacter chacun des comptes en attente, vérifier qu’il s’agit bien d’une entreprise relevant de vos champs de compétences, et qu’il ne s’agit pas d’une tentative d’usurpation de compte."
+            />
+          </TabPanel>
+          <TabPanel>{isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={data.active} exportable />}</TabPanel>
+          {/* @ts-expect-error: TODO */}
+          <TabPanel>{isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={data.disable} />}</TabPanel>
+        </TabPanels>
+      </Tabs>
     </>
   )
 }

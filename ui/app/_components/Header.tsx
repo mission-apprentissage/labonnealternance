@@ -1,4 +1,4 @@
-import { Header as DsfrHeader, HeaderQuickAccessItem, type HeaderProps } from "@codegouvfr/react-dsfr/Header"
+import { HeaderQuickAccessItem, type HeaderProps } from "@codegouvfr/react-dsfr/Header"
 
 import { PAGES } from "../../utils/routes.utils"
 
@@ -52,8 +52,4 @@ export const DsfrHeaderProps: HeaderProps = {
       }}
     />,
   ],
-}
-
-export function Header() {
-  return <DsfrHeader {...DsfrHeaderProps} />
 }

@@ -1,10 +1,13 @@
-import { Footer } from "../_components/Footer"
-import { Header } from "../_components/Header"
+import { PublicHeader } from "@/app/(espace-pro)/_components/PublicHeader"
+import { Footer } from "@/app/_components/Footer"
+import { getSession } from "@/utils/getSession"
 
-export default function HomeLayout({ children }: { children: JSX.Element }) {
+export default async function HomeLayout({ children }: { children: JSX.Element }) {
+  const { user } = await getSession()
+
   return (
     <>
-      <Header />
+      <PublicHeader user={user} hideConnectionButton={true} />
       {children}
       <Footer />
     </>
