@@ -7,6 +7,7 @@ import Link from "next/link"
 import PlausibleProvider from "next-plausible"
 import "react-notion-x/src/styles.css"
 
+import RootTemplate from "@/app/client_only_providers"
 import { publicConfig } from "@/config.public"
 import { Matomo } from "@/tracking/trackingMatomo"
 
@@ -17,7 +18,6 @@ import "../public/styles/application.css"
 import "../public/styles/fonts.css"
 import "../public/styles/notion.css"
 import "../styles/search.css"
-import RootTemplate from "@/app/client_only_providers"
 
 export const metadata: Metadata = {
   title: "La bonne alternance",

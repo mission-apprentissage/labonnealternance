@@ -4,18 +4,17 @@ import { useRouter } from "next/navigation"
 import { useCallback } from "react"
 
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
-import { getResultItemUrl, type ILbaItemSignature } from "@/app/(candidat)/recherche/_hooks/useResultItemUrl"
-import type { IRecherchePageParams } from "@/utils/routes.utils"
+import { getItemReference, getResultItemUrl, IRecherchePageParams, ItemReferenceLike } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 
-export function useNavigateToResultItemDetail(): (item: ILbaItemSignature, newParams?: Partial<IRecherchePageParams>, replace?: boolean) => void {
+export function useNavigateToResultItemDetail(): (item: ItemReferenceLike, newParams?: Partial<IRecherchePageParams>, replace?: boolean) => void {
   const searchParams = useCandidatRechercheParams()
   const router = useRouter()
 
   const navigateToResultItemDetail = useCallback(
-    (item: ILbaItemSignature, newParams: Partial<IRecherchePageParams> = {}, replace: boolean = false) => {
+    (item: ItemReferenceLike, newParams: Partial<IRecherchePageParams> = {}, replace: boolean = false) => {
       const url = getResultItemUrl(item, {
         ...searchParams,
-        selection: [item.id],
+        activeItems: [getItemReference(item)],
         ...newParams,
       })
 

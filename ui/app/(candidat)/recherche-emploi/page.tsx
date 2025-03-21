@@ -9,9 +9,9 @@ type Props = {
 }
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
-  return PAGES.dynamic.recherche(parseRecherchePageParams(new URLSearchParams(await searchParams), "default")).getMetadata?.() ?? {}
+  return PAGES.dynamic.rechercheEmploi(parseRecherchePageParams(new URLSearchParams(await searchParams), "jobs-only")).getMetadata?.() ?? {}
 }
 
-export default function RecherchePage() {
+export default function RechercheEmploiPage() {
   return <RecherchePageComponent />
 }

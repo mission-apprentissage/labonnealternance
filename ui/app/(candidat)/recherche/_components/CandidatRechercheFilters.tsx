@@ -6,8 +6,8 @@ import { Box } from "@mui/material"
 import { ChangeEvent, useCallback } from "react"
 
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
-import { useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
+import { useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 
 export function CandidatRechercheFilters() {
   const params = useCandidatRechercheParams()
@@ -40,6 +40,23 @@ export function CandidatRechercheFilters() {
     },
     [navigateToRecherchePage]
   )
+
+  if (!params.displayFilters) {
+    return (
+      <Box
+        sx={{
+          display: "grid",
+          justifyContent: "flex-end",
+          gridTemplateColumns: "max-content",
+          alignItems: "baseline",
+        }}
+      >
+        <Box sx={{ mt: fr.spacing("3v") }}>
+          <ToggleSwitch showCheckedHint={false} label="Afficher la carte" labelPosition="left" inputTitle="display_map" checked={displayMap} onChange={onDisplayMapChange} />
+        </Box>
+      </Box>
+    )
+  }
 
   return (
     <Box

@@ -9,11 +9,11 @@ import { type IMetierEnrichi } from "shared"
 import { z } from "zod"
 import { toFormikValidate } from "zod-formik-adapter"
 
+import { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { AutocompleteAsync } from "@/app/_components/FormComponents/AutocompleteAsync"
 import { SelectFormField } from "@/app/_components/FormComponents/SelectFormField"
 import { searchAddress } from "@/services/baseAdresse"
 import { apiGet } from "@/utils/api.utils"
-import { IRecherchePageParams } from "@/utils/routes.utils"
 
 const schema = z.object({
   radius: z.string(),
@@ -83,7 +83,7 @@ export const radiusOptions = [
 type RechercheFormProps = {
   type: "home" | "recherche"
   initialValue?: Pick<IRecherchePageParams, "romes" | "diploma" | "job_name" | "geo" | "job_type"> | null
-  onSubmit: (result: Pick<IRecherchePageParams, "romes" | "diploma" | "job_name" | "geo" | "job_type" | "selection">) => unknown
+  onSubmit: (result: Pick<IRecherchePageParams, "romes" | "diploma" | "job_name" | "geo" | "job_type" | "activeItems">) => unknown
 }
 
 type IRomeSearchOption = IFormType["metier"] & { group?: string }
@@ -301,7 +301,7 @@ export function RechercheForm(props: RechercheFormProps) {
             diploma: values.niveau || null,
             job_name: values.metier.label,
             job_type: values.metier.type,
-            selection: [],
+            activeItems: [],
           })
         }}
         component={RechercheFormComponent}

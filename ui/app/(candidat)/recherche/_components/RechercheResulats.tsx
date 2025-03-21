@@ -9,7 +9,7 @@ export function RechercheResulats() {
   const params = useCandidatRechercheParams()
 
   return (
-    <Box sx={{ display: "grid", gridTemplateColumns: params.displayMap ? "1fr 1fr" : "1fr" }}>
+    <Box sx={{ display: "grid", gridTemplateColumns: params.displayMap ? "1fr 1fr" : "1fr", overflow: "hidden" }}>
       <RechercheResulatsList />
       {params.displayMap && <RechercheCarte item={null} variant="recherche" />}
     </Box>

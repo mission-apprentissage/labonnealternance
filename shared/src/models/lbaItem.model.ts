@@ -548,7 +548,7 @@ export const ZLbaItemLbaCompany = z
   .strict()
   .openapi("LbaCompany")
 
-export type ILbaItemLbaCompany = z.output<typeof ZLbaItemLbaCompany> & { ideaType: LBA_ITEM_TYPE_OLD.LBA | LBA_ITEM_TYPE.RECRUTEURS_LBA }
+export type ILbaItemLbaCompany = z.output<typeof ZLbaItemLbaCompany> & { ideaType: LBA_ITEM_TYPE_OLD.LBA | LBA_ITEM_TYPE.RECRUTEURS_LBA; id: string }
 export type ILbaItemLbaCompanyJson = Jsonify<ILbaItemLbaCompany>
 export const ZLbaItemLbaCompanyReturnedByAPI = z.object({ lbaCompanies: z.array(ZLbaItemLbaCompany) })
 export type ILbaItemLbaCompanyReturnedByAPI = Jsonify<z.output<typeof ZLbaItemLbaCompanyReturnedByAPI>>

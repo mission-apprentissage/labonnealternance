@@ -57,7 +57,7 @@ export const oldItemTypeToNewItemType = (lbaItemType: LBA_ITEM_TYPE_OLD | LBA_IT
  * KBA 20240805
  * to be removed once public API route V2 are active
  */
-export const newItemTypeToOldItemType = (lbaItemType: LBA_ITEM_TYPE): LBA_ITEM_TYPE_OLD => {
+export const newItemTypeToOldItemType = (lbaItemType: LBA_ITEM_TYPE | LBA_ITEM_TYPE_OLD): LBA_ITEM_TYPE_OLD => {
   switch (lbaItemType) {
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
       return LBA_ITEM_TYPE_OLD.MATCHA
@@ -66,7 +66,15 @@ export const newItemTypeToOldItemType = (lbaItemType: LBA_ITEM_TYPE): LBA_ITEM_T
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES:
       return LBA_ITEM_TYPE_OLD.PARTNER_JOB
     case LBA_ITEM_TYPE.FORMATION:
-      throw new Error("not used")
+      return LBA_ITEM_TYPE_OLD.FORMATION
+    case LBA_ITEM_TYPE_OLD.MATCHA:
+    case LBA_ITEM_TYPE_OLD.LBA:
+    case LBA_ITEM_TYPE_OLD.LBB:
+    case LBA_ITEM_TYPE_OLD.PE:
+    case LBA_ITEM_TYPE_OLD.PEJOB:
+    case LBA_ITEM_TYPE_OLD.FORMATION:
+    case LBA_ITEM_TYPE_OLD.PARTNER_JOB:
+      return lbaItemType
     default:
       assertUnreachable(lbaItemType)
   }

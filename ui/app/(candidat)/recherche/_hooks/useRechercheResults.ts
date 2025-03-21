@@ -1,12 +1,24 @@
 import { useMemo } from "react"
 import { useQuery } from "react-query"
-import { IGetRoutes, ILbaItemFormation, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob, IQuery, IResponse } from "shared"
+import {
+  IGetRoutes,
+  ILbaItemFormation,
+  ILbaItemFormationJson,
+  ILbaItemLbaCompany,
+  ILbaItemLbaCompanyJson,
+  ILbaItemLbaJob,
+  ILbaItemLbaJobJson,
+  ILbaItemPartnerJob,
+  ILbaItemPartnerJobJson,
+  IQuery,
+  IResponse,
+} from "shared"
 import { Jsonify } from "type-fest"
 
+import { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { apiGet } from "@/utils/api.utils"
-import { IRecherchePageParams } from "@/utils/routes.utils"
 
-export type ILbaItem = ILbaItemLbaCompany | ILbaItemPartnerJob | ILbaItemFormation | ILbaItemLbaJob
+export type ILbaItem = ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson | ILbaItemFormationJson | ILbaItemLbaJobJson
 
 type IUseRechercheResultsIdle = {
   status: "idle"
@@ -29,10 +41,10 @@ type IUseRechercheResultLoadingJobs = {
   formationStatus: "success" | "error" | "disabled"
   jobStatus: "loading"
 
-  items: Array<ILbaItemFormation>
+  items: Array<ILbaItemFormationJson>
   itemsCount: number
 
-  formations: Array<ILbaItemFormation>
+  formations: Array<ILbaItemFormationJson>
 
   formationsCount: number
 
@@ -50,8 +62,8 @@ export type IUseRechercheResultsSuccess = {
 
   items: Array<ILbaItem>
   itemsCount: number
-  formations: Array<ILbaItemFormation>
-  jobs: Array<ILbaItemLbaCompany | ILbaItemPartnerJob | ILbaItemLbaJob>
+  formations: Array<ILbaItemFormationJson>
+  jobs: Array<ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson | ILbaItemLbaJobJson>
 
   nonBlockingErrors: {
     formations: string | null
@@ -202,8 +214,7 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
     return result
   }, [jobQuery.data, jobQuery.isSuccess, isJobsEnabled, params.displayPartenariats, params.displayEntreprises])
 
-  const formations = useMemo((): ILbaItemFormation[] => {
-    // @ts-ignore TODO
+  const formations = useMemo((): ILbaItemFormationJson[] => {
     return formationQuery.data && isFormationEnabled ? formationQuery.data : []
   }, [formationQuery.data, isFormationEnabled])
 
@@ -215,14 +226,12 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
     }
 
     if (jobs.length > 0) {
-      // @ts-ignore TODO
       result.push(...jobs)
     }
 
     return result
   }, [jobs, formations])
 
-  // @ts-ignore TODO
   return useMemo(() => {
     if (!isFormationEnabled && !isJobsEnabled) {
       return { status: "idle", formationStatus: "idle", jobStatus: "idle", itemsCount: 0 }

@@ -3,25 +3,30 @@
 import { Box } from "@mui/material"
 import { captureException } from "@sentry/nextjs"
 import { Map as Mapbox, type GeoJSONSource, type MapMouseEvent } from "mapbox-gl"
-import { useCallback, useEffect, useMemo, useState } from "react"
-import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { RechercheMapIci } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap/RechercheMapIci"
 import { RechercheMapPopup } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap/RechercheMapPopup"
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
-import { useRechercheResults, type ILbaItem, type IUseRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
-import type { IRecherchePageParams } from "@/utils/routes.utils"
-import "mapbox-gl/dist/mapbox-gl.css"
 import { useNavigateToResultItemDetail } from "@/app/(candidat)/recherche/_hooks/useNavigateToResultItemDetail"
-import type { ILbaItemSignature } from "@/app/(candidat)/recherche/_hooks/useResultItemUrl"
+import { useRechercheResults, type ILbaItem, type IUseRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
+import {
+  type IRecherchePageParams,
+  deserializeItemReferences,
+  isItemReferenceInList,
+  ItemReferenceLike,
+  serializeItemReferences,
+} from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+import "mapbox-gl/dist/mapbox-gl.css"
 
 const FRANCE_CENTER: [number, number] = [2.213749, 46.227638]
 const FRANCE_ZOOM = 5
 
 const CLUSTER_MAX_ZOOM = 14
 
-type LAYERS = "formation" | "job" | "selected"
+type LAYERS = "formation" | "job" | "active"
 
 // Persist the map element and the map instance across re-renders
 let mapSingleton: Mapbox | null = null
@@ -37,9 +42,9 @@ const MAP_LAYERS = {
     layer: "job",
     count: "job-count",
   },
-  selected: {
-    geopoints: "selected-points",
-    layer: "selected",
+  active: {
+    geopoints: "active-points",
+    layer: "active",
   },
 }
 
@@ -66,7 +71,7 @@ function getBestZoomLevel({ map, latitude, radius }: { map: Mapbox; latitude: nu
   return Math.log2(Math.abs(earthCircumferenceKm * Math.cos(latitude * Math.PI) * fitSize) / (2 * radius * mapboxTileSize))
 }
 
-function useCenterCamera(map: Mapbox | null, params: IRecherchePageParams, selection: ILbaItem[]): { center: [number, number]; zoom: number } {
+function useCenterCamera(map: Mapbox | null, params: IRecherchePageParams, activeItems: ILbaItem[]): { center: [number, number]; zoom: number } {
   const longitude = params.geo?.longitude ?? null
   const latitude = params.geo?.latitude ?? null
   const radius = params.geo?.radius ?? null
@@ -94,12 +99,12 @@ function useCenterCamera(map: Mapbox | null, params: IRecherchePageParams, selec
   }, [searchArea, map])
 
   useEffect(() => {
-    if (map === null || selection.length === 0) {
+    if (map === null || activeItems.length === 0) {
       return
     }
 
     const target = {
-      center: [selection[0].place.longitude, selection[0].place.latitude] as [number, number],
+      center: [activeItems[0].place.longitude, activeItems[0].place.latitude] as [number, number],
       speed: 0.2,
     }
 
@@ -118,7 +123,7 @@ function useCenterCamera(map: Mapbox | null, params: IRecherchePageParams, selec
     return () => {
       abortController.abort()
     }
-  }, [map, selection])
+  }, [map, activeItems])
 
   return searchArea
 }
@@ -147,7 +152,7 @@ async function createLayer(layer: LAYERS, map: Mapbox) {
       type: "FeatureCollection",
       features: [],
     },
-    cluster: layer !== "selected",
+    cluster: layer !== "active",
     clusterMaxZoom: CLUSTER_MAX_ZOOM,
     clusterRadius: 50,
   })
@@ -157,14 +162,14 @@ async function createLayer(layer: LAYERS, map: Mapbox) {
     source: MAP_LAYERS[layer].geopoints,
     type: "symbol",
     layout: {
-      "icon-image": layer !== "selected" ? layer : ["case", ["boolean", ["==", ["get", "type"], "formation"]], "formation-selected", "job-selected"],
+      "icon-image": layer !== "active" ? layer : ["case", ["boolean", ["==", ["get", "type"], "formation"]], "formation-active", "job-active"],
       "icon-size": 1,
       "icon-padding": 0,
       "icon-allow-overlap": true,
     },
   })
 
-  if (layer !== "selected") {
+  if (layer !== "active") {
     map.addLayer({
       id: MAP_LAYERS[layer].count,
       source: MAP_LAYERS[layer].geopoints,
@@ -189,13 +194,11 @@ async function createLayer(layer: LAYERS, map: Mapbox) {
 
 async function setupMap(container: HTMLDivElement): Promise<Mapbox> {
   if (mapSingleton !== null) {
-    console.info("REUSING MAP")
     container.appendChild(mapSingleton.getContainer())
     mapSingleton.resize()
 
     return mapSingleton
   }
-  console.info("NEW MAP")
 
   const element = globalThis.document.createElement("div")
   element.style.width = "100%"
@@ -215,16 +218,16 @@ async function setupMap(container: HTMLDivElement): Promise<Mapbox> {
   await Promise.all([
     loadImage("/images/icons/book.png", "formation", mapSingleton),
     loadImage("/images/icons/job.png", "job", mapSingleton),
-    loadImage("/images/icons/book_large_shadow.png", "formation-selected", mapSingleton),
-    loadImage("/images/icons/job_large_shadow.png", "job-selected", mapSingleton),
+    loadImage("/images/icons/book_large_shadow.png", "formation-active", mapSingleton),
+    loadImage("/images/icons/job_large_shadow.png", "job-active", mapSingleton),
   ])
 
   // Layout order is important to control the z-index (last added is on top)
   await createLayer("job", mapSingleton)
   await createLayer("formation", mapSingleton)
-  await createLayer("selected", mapSingleton)
+  await createLayer("active", mapSingleton)
 
-  if (!mapSingleton.loaded()) { 
+  if (!mapSingleton.loaded()) {
     await mapSingleton.once("load")
   }
 
@@ -264,20 +267,18 @@ function buildSourceData<T extends ILbaItem>(items: T[], type: LAYERS): GeoJSON.
         properties: {
           id: key,
           type: itemsInPlace[0].ideaType === LBA_ITEM_TYPE_OLD.FORMATION ? "formation" : "job",
-          item_ids: itemsInPlace.map((item) => item.id).join(","),
+          item_refs: serializeItemReferences(itemsInPlace),
         },
       }
     }),
   }
 }
 
-function setPointOfInterests(map: Mapbox, result: IUseRechercheResults, selection: ILbaItem[]) {
-  const selectedIds = new Set(selection.map((item) => item.id))
-
+function setPointOfInterests(map: Mapbox, result: IUseRechercheResults, activeItems: ILbaItem[]) {
   const jobs = result.status === "success" ? result.jobs : []
   map.getSource<GeoJSONSource>(MAP_LAYERS.job.geopoints).setData(
     buildSourceData(
-      jobs.filter((job) => !selectedIds.has(job.id)),
+      jobs.filter((job) => !isItemReferenceInList(job, activeItems)),
       "job"
     )
   )
@@ -285,12 +286,12 @@ function setPointOfInterests(map: Mapbox, result: IUseRechercheResults, selectio
   const formations = result.formationStatus === "success" ? result.formations : []
   map.getSource<GeoJSONSource>(MAP_LAYERS.formation.geopoints).setData(
     buildSourceData(
-      formations.filter((formation) => !selectedIds.has(formation.id)),
+      formations.filter((formation) => !isItemReferenceInList(formation, activeItems)),
       "formation"
     )
   )
 
-  map.getSource<GeoJSONSource>(MAP_LAYERS.selected.geopoints).setData(buildSourceData(selection, "selected"))
+  map.getSource<GeoJSONSource>(MAP_LAYERS.active.geopoints).setData(buildSourceData(activeItems, "active"))
 }
 
 // Force component refresh when using NextJs dev-mode (container reference becomes lost)
@@ -301,9 +302,9 @@ function useMap(container: HTMLDivElement | null, props: RechercheCarteProps) {
   const result = useRechercheResults(params)
   const navigateToRecherchePage = useNavigateToRecherchePage()
   const navigateToResultItemDetail = useNavigateToResultItemDetail()
-  const [map, setMap] = useState<Mapbox | null>(null) 
+  const [map, setMap] = useState<Mapbox | null>(null)
 
-  const updateCandidatSearchParam = useCallback(
+  const updateSearchParam = useCallback(
     (newParams: Partial<IRecherchePageParams>, replace?: boolean) => {
       if (props.variant === "recherche") {
         navigateToRecherchePage(newParams, replace)
@@ -314,7 +315,7 @@ function useMap(container: HTMLDivElement | null, props: RechercheCarteProps) {
     [navigateToRecherchePage, navigateToResultItemDetail, props.variant, props.item]
   )
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (container === null) {
       return
     }
@@ -325,37 +326,40 @@ function useMap(container: HTMLDivElement | null, props: RechercheCarteProps) {
         // TODO: error handler
         captureException(error)
       })
- 
+
     return () => {
-      if (map !== null) {
-        map.getContainer().remove()
-      }
+      setMap((prev) => {
+        if (prev !== null) {
+          prev.getContainer().remove()
+        }
+        return null
+      })
     }
   }, [container])
 
-  const selection = useMemo(() => {
-    const ids = props.item === null ? params.selection : [props.item.id]
+  const activeItems = useMemo(() => {
+    const refs: ItemReferenceLike[] = props.item === null ? params.activeItems : [props.item]
 
-    if (ids == null || ids.length === 0) {
+    if (refs == null || refs.length === 0) {
       return []
     }
 
     if (result.status === "success" || result.formationStatus === "success") {
-      const items = result.items.filter((i) => ids.includes(i.id))
+      const items = result.items.filter((i) => isItemReferenceInList(i, refs))
 
       return items
     }
 
     return []
-  }, [params.selection, result, props.item])
+  }, [params.activeItems, result, props.item])
 
   useEffect(() => {
     if (map === null) {
       return
     }
 
-    setPointOfInterests(map, result, selection)
-  }, [map, result, selection])
+    setPointOfInterests(map, result, activeItems)
+  }, [map, result, activeItems])
 
   useEffect(() => {
     if (map === null) {
@@ -374,7 +378,7 @@ function useMap(container: HTMLDivElement | null, props: RechercheCarteProps) {
 
     const onClicked = (e: MapMouseEvent) => {
       if (e.features.length === 0) {
-        updateCandidatSearchParam({ selection: [] }, true)
+        updateSearchParam({ activeItems: [] }, true)
         return
       }
 
@@ -386,35 +390,22 @@ function useMap(container: HTMLDivElement | null, props: RechercheCarteProps) {
       const feature = e.features[0]
 
       if (feature.properties.cluster) {
-       
-        map.getSource<GeoJSONSource>(feature.source).getClusterExpansionZoom(
-          feature.properties.cluster_id,
-          (err, zoom) => {
-            if (!err) {
-              zoomIn(e.lngLat.toArray(), zoom);
-            } else {
-              zoomIn(e.lngLat.toArray());
-            }
-        }
-        );
-  
+        map.getSource<GeoJSONSource>(feature.source).getClusterExpansionZoom(feature.properties.cluster_id, (err, zoom) => {
+          if (!err) {
+            zoomIn(e.lngLat.toArray(), zoom)
+          } else {
+            zoomIn(e.lngLat.toArray())
+          }
+        })
+
         return
       }
 
-      const ids = feature.properties.item_ids.split(",")
+      const refs = deserializeItemReferences(feature.properties.item_refs)
       if (props.variant === "detail") {
-        navigateToResultItemDetail(
-          {
-            id: ids[0],
-            ideaType: feature.properties.type === "formation" ? LBA_ITEM_TYPE.FORMATION : LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
-          },
-          {
-            selection: ids,
-          },
-          true
-        )
+        navigateToResultItemDetail(refs[0], { activeItems: refs }, true)
       } else {
-        updateCandidatSearchParam({ selection: ids }, true)
+        updateSearchParam({ activeItems: refs }, true)
       }
     }
 
@@ -435,11 +426,11 @@ function useMap(container: HTMLDivElement | null, props: RechercheCarteProps) {
       map.off("mouseenter", [MAP_LAYERS.job.layer, MAP_LAYERS.formation.layer], onMouseEnter)
       map.off("mouseleave", [MAP_LAYERS.job.layer, MAP_LAYERS.formation.layer], onMouseLeave)
     }
-  }, [map, updateCandidatSearchParam, navigateToResultItemDetail, props.variant])
+  }, [map, updateSearchParam, navigateToResultItemDetail, props.variant])
 
-  const searchArea = useCenterCamera(map, params, selection)
+  const searchArea = useCenterCamera(map, params, activeItems)
 
-  return { map, selection, searchArea, radius: params.geo?.radius ?? null }
+  return { map, activeItems, searchArea, radius: params.geo?.radius ?? null }
 }
 
 type RechercheCarteProps =
@@ -449,7 +440,7 @@ type RechercheCarteProps =
     }
   | {
       variant: "detail"
-      item: ILbaItemSignature
+      item: ItemReferenceLike
     }
 
 export function RechercheCarte(props: RechercheCarteProps) {
@@ -457,25 +448,28 @@ export function RechercheCarte(props: RechercheCarteProps) {
 
   const setContainerRef = useCallback((node) => setContainer(node), [])
 
-  const { map, selection, searchArea, radius } = useMap(container, props)
+  const { map, activeItems, searchArea, radius } = useMap(container, props)
 
   return (
     <Box
-      ref={setContainerRef}
       sx={{
         background: "center no-repeat url('/images/static_map.svg'), #fff",
         backgroundSize: "auto",
-        position: 'relative'
+        position: "relative",
+        overflow: "hidden",
+        height: "100%",
       }}
     >
       <Box
         sx={{
           position: "relative",
+          width: "100%",
+          height: "100%",
         }}
         ref={setContainerRef}
       ></Box>
       {props.variant === "recherche" && <RechercheMapIci map={map} searchArea={searchArea} radius={radius} />}
-      <RechercheMapPopup selection={selection} map={map} variant={props.variant} />
+      <RechercheMapPopup activeItems={activeItems} map={map} variant={props.variant} />
     </Box>
   )
 }

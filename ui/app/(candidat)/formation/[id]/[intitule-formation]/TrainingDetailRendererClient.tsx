@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Fragment, useEffect, useMemo, useState } from "react"
 import { useQuery } from "react-query"
 import { ILbaItemFormation2Json } from "shared"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 
 import { RechercheCarte } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
@@ -42,10 +42,10 @@ export default function TrainingDetailRendererClient({ training }: { training: I
   const params = useCandidatRechercheParams()
   const result = useRechercheResults(params)
 
-  const trainingSignature = useMemo(() => {
+  const trainingReference = useMemo(() => {
     return {
       id: training.id,
-      ideaType: training.type,
+      ideaType: newItemTypeToOldItemType(training.type),
     }
   }, [training])
 
@@ -77,7 +77,7 @@ export default function TrainingDetailRendererClient({ training }: { training: I
           resultList={result.items}
         />
         {/* TODO : remove extended search button from map view */}
-        <RechercheCarte item={trainingSignature} variant="detail" />
+        <RechercheCarte item={trainingReference} variant="detail" />
       </Box>
     )
   }
