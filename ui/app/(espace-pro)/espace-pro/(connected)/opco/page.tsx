@@ -53,7 +53,10 @@ function AdministrationOpco() {
     }
   }, [newUser, toast])
 
-  const { data, isLoading } = useQuery(["user-list-opco"], () => getOpcoUsers())
+  const { data, isLoading } = useQuery({
+    queryKey: ["user-list-opco"],
+    queryFn: () => getOpcoUsers(),
+  })
 
   const columns = [
     {

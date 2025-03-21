@@ -77,7 +77,11 @@ function ListeEntreprise() {
 
   const cfaId = userAccess?.cfas.at(0)
 
-  const { data, isLoading } = useQuery(["listeEntreprise"], () => getEntreprisesManagedByCfa(cfaId), { enabled: Boolean(cfaId) })
+  const { data, isLoading } = useQuery({
+    queryKey: ["listeEntreprise"],
+    queryFn: () => getEntreprisesManagedByCfa(cfaId),
+    enabled: Boolean(cfaId),
+  })
 
   if (isLoading) {
     return <LoadingEmptySpace />

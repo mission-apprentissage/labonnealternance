@@ -19,9 +19,11 @@ const printExactColor = { sx: { WebkitPrintColorAdjust: "exact", printColorAdjus
 export default function PrintableJobPage() {
   const { jobId } = useParams() as { jobId: string }
 
-  const { data: offre, isLoading } = useQuery(["offre"], () => fetchLbaJobDetails({ id: jobId }), {
+  const { data: offre, isLoading } = useQuery({
+    queryKey: ["offre"],
+    queryFn: () => fetchLbaJobDetails({ id: jobId }),
     enabled: !!jobId,
-    cacheTime: 0,
+    gcTime: 0,
   })
 
   useEffect(() => {

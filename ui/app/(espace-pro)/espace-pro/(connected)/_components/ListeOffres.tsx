@@ -21,7 +21,8 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
 
   dayjs.extend(relativeTime)
 
-  const { data, isLoading, error } = useQuery(["offre-liste"], {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["offre-liste"],
     enabled: !!establishment_id,
     queryFn: () => getFormulaire(establishment_id),
   })

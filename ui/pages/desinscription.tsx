@@ -24,7 +24,9 @@ const DesinscriptionRecruteur = () => {
     setIsSuccess(true)
   }
 
-  const { data } = useQuery(["getApplicationEmail"], () => getApplicationCompanyEmailAddress(application_id), {
+  const { data } = useQuery({
+    queryKey: ["getApplicationEmail"],
+    queryFn: () => getApplicationCompanyEmailAddress(application_id),
     enabled: !!application_id,
   })
 

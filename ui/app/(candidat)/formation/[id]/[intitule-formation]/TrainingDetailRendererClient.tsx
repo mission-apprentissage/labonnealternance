@@ -243,7 +243,9 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
   const params = useParams()
   const param = params
 
-  const IJStats = useQuery(["getIJStats", training.training.cfd], () => fetchInserJeuneStats(training), {
+  const IJStats = useQuery({
+    queryKey: ["getIJStats", training.training.cfd],
+    queryFn: () => fetchInserJeuneStats(training),
     enabled: Boolean(training.training.cfd),
   })
 

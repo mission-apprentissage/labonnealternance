@@ -27,7 +27,9 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
   )
   const { rome } = romeAndAppellation ?? {}
 
-  const romeQuery = useQuery(["getRomeDetail", rome], () => getRomeDetail(rome), {
+  const romeQuery = useQuery({
+    queryKey: ["getRomeDetail", rome],
+    queryFn: () => getRomeDetail(rome),
     retry: false,
     enabled: Boolean(rome),
   })

@@ -42,7 +42,10 @@ function ListeEntreprise() {
   const [currentEntreprise, setCurrentEntreprise] = useState<IRecruiterJson | null>(null)
   const confirmationSuppression = useDisclosure()
   const router = useRouter()
-  const { data: userAccess } = useQuery(["getUserAccess"], () => apiGet(`/auth/access`, {}))
+  const { data: userAccess } = useQuery({
+    queryKey: ["getUserAccess"],
+    queryFn: () => apiGet(`/auth/access`, {}),
+  })
 
   const toast = useToast()
   const { newUser: isNewUser } = useSearchParamsRecord()
@@ -62,7 +65,11 @@ function ListeEntreprise() {
 
   const cfaId = userAccess?.cfas.at(0)
 
-  const { data, isLoading } = useQuery(["listeEntreprise"], () => getEntreprisesManagedByCfa(cfaId), { enabled: Boolean(cfaId) })
+  const { data, isLoading } = useQuery({
+    queryKey: ["listeEntreprise"],
+    queryFn: () => getEntreprisesManagedByCfa(cfaId),
+    enabled: Boolean(cfaId),
+  })
 
   if (isLoading) {
     return <LoadingEmptySpace />

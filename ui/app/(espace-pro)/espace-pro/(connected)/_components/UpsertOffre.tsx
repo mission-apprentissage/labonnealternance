@@ -11,9 +11,11 @@ import { apiPut } from "@/utils/api.utils"
 export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { establishment_id: string; job_id?: string; onSuccess: () => void }) {
   const toast = useToast()
 
-  const { data: offre, isLoading } = useQuery(["offre"], () => getOffre(job_id), {
+  const { data: offre, isLoading } = useQuery({
+    queryKey: ["offre"],
+    queryFn: () => getOffre(job_id),
     enabled: Boolean(job_id),
-    cacheTime: 0,
+    gcTime: 0,
   })
 
   const handleSave = async (values) => {

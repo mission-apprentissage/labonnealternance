@@ -17,9 +17,11 @@ export default function PrintableJobPage() {
   const router = useRouter()
   const { jobId } = router.query as { jobId: string }
 
-  const { data: offre, isLoading } = useQuery(["offre"], () => fetchLbaJobDetails({ id: jobId }), {
+  const { data: offre, isLoading } = useQuery({
+    queryKey: ["offre"],
+    queryFn: () => fetchLbaJobDetails({ id: jobId }),
     enabled: !!jobId,
-    cacheTime: 0,
+    gcTime: 0,
   })
 
   if (isLoading || !jobId) {

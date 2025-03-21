@@ -35,7 +35,10 @@ function Users() {
     }
   }, [newUser, toast])
 
-  const { isLoading, data } = useQuery(["user-list"], () => apiGet("/user", {}))
+  const { isLoading, data } = useQuery({
+    queryKey: ["user-list"],
+    queryFn: () => apiGet("/user", {}),
+  })
 
   if (isLoading) {
     return <LoadingEmptySpace />

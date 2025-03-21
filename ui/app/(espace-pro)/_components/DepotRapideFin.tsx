@@ -89,7 +89,9 @@ function FinComponent(props: ComponentProps) {
    * KBA 20230130 : retry set to false to avoid waiting for failure if user is from dashboard (userId is not passed)
    * - To be changed with userID in URL params
    */
-  const { isFetched, data: userStatusData } = useQuery(["userdetail"], () => (token ? getUserStatusByToken(userId.toString(), token) : getUserStatus(userId.toString())), {
+  const { isFetched, data: userStatusData } = useQuery({
+    queryKey: ["userdetail"],
+    queryFn: () => (token ? getUserStatusByToken(userId.toString(), token) : getUserStatus(userId.toString())),
     enabled: Boolean(userId),
   })
 

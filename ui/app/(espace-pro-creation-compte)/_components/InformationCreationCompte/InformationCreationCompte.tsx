@@ -40,7 +40,10 @@ const Formulaire = ({
   const router = useRouter()
   const { widget } = useContext(WidgetContext)
 
-  const { data: opcoData } = useQuery(["getEntrepriseOpco", establishment_siret], () => getEntrepriseOpco(establishment_siret))
+  const { data: opcoData } = useQuery({
+    queryKey: ["getEntrepriseOpco", establishment_siret],
+    queryFn: () => getEntrepriseOpco(establishment_siret),
+  })
 
   const opco = parseEnum(OPCOS_LABEL, opcoData?.opco)
   const shouldSelectOpco = type === AUTHTYPE.ENTREPRISE && !opco

@@ -208,7 +208,11 @@ export const OffresTabs = ({
                                 isClosable: true,
                               })
                             )
-                            .finally(() => client.invalidateQueries(["offre-liste"]))
+                            .finally(() =>
+                              client.invalidateQueries({
+                                queryKey: ["offre-liste"],
+                              })
+                            )
                         }}
                       >
                         Prolonger l'offre

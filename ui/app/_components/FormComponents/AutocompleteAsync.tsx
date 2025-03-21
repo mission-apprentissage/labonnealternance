@@ -103,7 +103,12 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
     }
   }, [])
 
-  const result = useQuery(["autocomplete", props.id, debouncedQuery], async () => props.fetchOptions(debouncedQuery), { enabled, staleTime: Infinity })
+  const result = useQuery({
+    queryKey: ["autocomplete", props.id, debouncedQuery],
+    queryFn: async () => props.fetchOptions(debouncedQuery),
+    enabled,
+    staleTime: Infinity,
+  })
 
   const isDeferredOrFetching = result.isFetching || query !== debouncedQuery
 

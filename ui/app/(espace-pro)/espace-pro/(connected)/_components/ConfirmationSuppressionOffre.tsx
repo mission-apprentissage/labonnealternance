@@ -54,7 +54,11 @@ export default function ConfirmationSuppressionOffre(props) {
         })
       })
       .then(() => resetState())
-      .finally(() => client.invalidateQueries(["offre-liste"]))
+      .finally(() =>
+        client.invalidateQueries({
+          queryKey: ["offre-liste"],
+        })
+      )
   }
 
   const formik = useFormik({

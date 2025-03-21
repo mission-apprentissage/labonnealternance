@@ -21,7 +21,10 @@ export const useSubmitCandidature = (
   isDone: boolean
   error: unknown
 } => {
-  const { isLoading, error, isSuccess, isError, mutate } = useMutation(["submitCandidature", LbaJob.id], submitCandidature)
+  const { isPending, error, isSuccess, isError, mutate } = useMutation({
+    mutationKey: ["submitCandidature", LbaJob.id],
+    mutationFn: submitCandidature,
+  })
   const displayContext = useContext(DisplayContext)
   let finalSubmitCandidature = mutate
   if (displayContext) {
@@ -39,7 +42,7 @@ export const useSubmitCandidature = (
         },
       })
   }
-  return { submitCandidature: finalSubmitCandidature, isLoading, error, isSuccess, isError, isDone: isSuccess || isError }
+  return { submitCandidature: finalSubmitCandidature, isLoading: isPending, error, isSuccess, isError, isDone: isSuccess || isError }
 }
 
 async function submitCandidature({

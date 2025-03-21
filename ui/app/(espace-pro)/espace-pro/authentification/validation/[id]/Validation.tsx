@@ -52,7 +52,12 @@ export default function ConfirmationValidationEmail() {
     }
   }
 
-  const { isLoading, isError } = useQuery(["postValidation"], () => fetchData(), { enabled: Boolean(token), retry: false })
+  const { isLoading, isError } = useQuery({
+    queryKey: ["postValidation"],
+    queryFn: () => fetchData(),
+    enabled: Boolean(token),
+    retry: false,
+  })
 
   return (
     <Container maxW="container.xl">

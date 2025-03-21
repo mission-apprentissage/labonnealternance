@@ -28,7 +28,9 @@ export const RomeDetailWithQuery = ({
     data: romeReferentiel,
     isLoading,
     error,
-  } = useQuery(["getRomeDetail", rome], () => getRomeDetail(rome), {
+  } = useQuery({
+    queryKey: ["getRomeDetail", rome],
+    queryFn: () => getRomeDetail(rome),
     retry: false,
   })
 

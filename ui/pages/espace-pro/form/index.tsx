@@ -15,9 +15,11 @@ export default function FormCreatePage() {
   const router = useRouter()
   const { cleMinistereEducatif, referrer } = router.query as { cleMinistereEducatif: string; referrer: string }
 
-  const { data, isLoading } = useQuery(["getPrdvForm", cleMinistereEducatif], () => getPrdvContext(cleMinistereEducatif, referrer), {
+  const { data, isLoading } = useQuery({
+    queryKey: ["getPrdvForm", cleMinistereEducatif],
+    queryFn: () => getPrdvContext(cleMinistereEducatif, referrer),
     enabled: !!cleMinistereEducatif,
-    cacheTime: 0,
+    gcTime: 0,
   })
 
   return (

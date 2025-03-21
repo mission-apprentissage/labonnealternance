@@ -12,15 +12,15 @@ export const PropositionOffreUnsubscribe = () => {
 
   const { siretFormateur } = router.query
   const toast = useToast()
-  const { isLoading, isError, isSuccess } = useQuery(
-    ["proposition-offre-unsubscribe"],
-    async () => {
+  const { isLoading, isError, isSuccess } = useQuery({
+    queryKey: ["proposition-offre-unsubscribe"],
+
+    queryFn: async () => {
       await etablissementUnsubscribeDemandeDelegation(siretFormateur, token)
     },
-    {
-      enabled: Boolean(siretFormateur),
-    }
-  )
+
+    enabled: Boolean(siretFormateur),
+  })
   useEffect(() => {
     if (isError) {
       toast({

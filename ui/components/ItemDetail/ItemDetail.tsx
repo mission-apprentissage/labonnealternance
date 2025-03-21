@@ -1,6 +1,6 @@
 import { Box, Flex, Text } from "@chakra-ui/react"
 import { useQuery } from "@tanstack/react-query"
-import { useContext, useState } from "react"
+import { useContext } from "react"
 import { assertUnreachable } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
@@ -23,8 +23,7 @@ import getTags from "./ItemDetailServices/getTags"
 import ItemDetailCard from "./ItemDetailServices/ItemDetailCard"
 import LoadedItemDetail from "./loadedItemDetail"
 
-const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSelectedItem, setJobsAndSelectedItem, setHasError }) => {
-  setHasError("")
+const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSelectedItem, setJobsAndSelectedItem }) => {
   switch (selectedItem?.ideaType) {
     case LBA_ITEM_TYPE_OLD.FORMATION: {
       const trainingWithDetails = await fetchTrainingDetails(selectedItem)
@@ -130,14 +129,13 @@ const ItemDetail = ({ handleClose, handleSelectItem }) => {
 
   const actualTitle = getActualTitle({ kind, selectedItem })
 
-  const [hasError, setHasError] = useState<"not_found" | "unexpected" | "">("")
-
   const { swipeHandlers, goNext, goPrev } = BuildSwipe({ jobs, trainings, extendedSearch, activeFilters, selectedItem, handleSelectItem })
   const kindColor = kind !== LBA_ITEM_TYPE_OLD.FORMATION ? "pinksoft.600" : "greensoft.500"
 
-  useQuery(["itemDetail", selectedItem.id], () => getItemDetails({ selectedItem, trainings, jobs, setTrainingsAndSelectedItem, setJobsAndSelectedItem, setHasError }), {
+  const { error } = useQuery({
+    queryKey: ["itemDetail", selectedItem.id],
+    queryFn: () => getItemDetails({ selectedItem, trainings, jobs, setTrainingsAndSelectedItem, setJobsAndSelectedItem }),
     enabled: !!selectedItem && !selectedItem.detailsLoaded,
-    onError: (error: ApiError) => setHasError(error.isNotFoundError() ? "not_found" : "unexpected"),
   })
 
   return selectedItem?.detailsLoaded ? (
@@ -187,8 +185,10 @@ const ItemDetail = ({ handleClose, handleSelectItem }) => {
         </Box>
       </Box>
       <Box margin="auto" maxWidth="700px">
-        {hasError ? (
-          <ErrorMessage message={hasError === "not_found" ? "Fiche introuvable" : "Une erreur s'est produite. Détail de la fiche momentanément indisponible"} />
+        {error ? (
+          <ErrorMessage
+            message={error instanceof ApiError && error.isNotFoundError() ? "Fiche introuvable" : "Une erreur s'est produite. Détail de la fiche momentanément indisponible"}
+          />
         ) : (
           <ItemDetailLoading type={selectedItem.ideaType} />
         )}

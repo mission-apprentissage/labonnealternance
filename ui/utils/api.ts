@@ -1,5 +1,5 @@
 import { captureException } from "@sentry/nextjs"
-import { IJobCreate, INewDelegations, INewSuperUser, IRecruiterJson, IRoutes, IUserWithAccountFields, removeUndefinedFields } from "shared"
+import { IJobCreate, INewDelegations, INewSuperUser, IRecruiterJson, IRoutes, IUserWithAccountFields, removeUndefinedFields, type IBody } from "shared"
 import { ApplicationIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -76,7 +76,7 @@ export const updateUserWithAccountFields = async (userId: string, user: IUserWit
   await apiPut("/user/:userId", { params: { userId }, body: user })
 }
 
-export const updateEntrepriseAdmin = async (userId: string, user: any, siret = "unused") => {
+export const updateEntrepriseAdmin = async (userId: string, user: IBody<IRoutes["put"]["/admin/users/:userId/organization/:siret"]>, siret = "unused") => {
   await apiPut("/admin/users/:userId/organization/:siret", { params: { userId, siret }, body: user })
 }
 

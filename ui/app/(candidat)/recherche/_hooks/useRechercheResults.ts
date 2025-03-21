@@ -156,7 +156,7 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
       return apiGet("/v1/_private/formations/min", { querystring: formationQuerystring }, { signal, priority: "high" })
     },
     enabled: isFormationEnabled,
-    useErrorBoundary: false,
+    throwOnError: false,
     staleTime: 1000 * 60 * 60,
   })
 
@@ -166,7 +166,7 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
       return apiGet("/v1/_private/jobs/min", { querystring: jobQuerystring }, { signal, priority: "high" })
     },
     enabled: isJobsEnabled,
-    useErrorBoundary: false,
+    throwOnError: false,
     staleTime: 1000 * 60 * 60,
   })
 

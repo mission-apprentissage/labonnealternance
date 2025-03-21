@@ -66,9 +66,10 @@ const getText = ({
 }
 
 export const IntentionForm = ({ company_recruitment_intention, id, token }: { company_recruitment_intention: ApplicationIntention; id: string; token: string | undefined }) => {
-  const { data, error } = useQuery(["getApplicationDataForIntention"], () => getApplicationDataForIntention(id, company_recruitment_intention, token), {
+  const { data, error } = useQuery({
+    queryKey: ["getApplicationDataForIntention"],
+    queryFn: () => getApplicationDataForIntention(id, company_recruitment_intention, token),
     retry: false,
-    onError: (error: { message: string }) => console.error(`Something went wrong: ${error.message}`),
   })
 
   const [sendingState, setSendingState] = useState<"not_sent" | "ok_sent" | "not_sent_because_of_errors" | "canceled">("not_sent")

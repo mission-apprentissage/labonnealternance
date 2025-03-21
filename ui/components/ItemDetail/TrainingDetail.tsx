@@ -31,7 +31,9 @@ const TrainingDetail = ({ training }) => {
   const { trainings, setTrainingsAndSelectedItem } = useContext(SearchResultContext)
   const { formValues } = React.useContext(DisplayContext)
 
-  useQuery(["getPrdv", training.id], () => fetchPrdvContext(training.id), {
+  useQuery({
+    queryKey: ["getPrdv", training.id],
+    queryFn: () => fetchPrdvContext(training.id),
     enabled: training && !training.prdvLoaded,
   })
 
