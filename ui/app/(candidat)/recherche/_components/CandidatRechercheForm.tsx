@@ -2,15 +2,33 @@
 
 import { Box } from "@mui/material"
 import { captureException } from "@sentry/nextjs"
-import { useEffect } from "react"
+import { Suspense, useEffect } from "react"
 
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
-import { RechercheForm } from "@/app/_components/RechercheForm/RechercheForm"
+import { RechercheForm, type RechercheFormProps } from "@/app/_components/RechercheForm/RechercheForm"
 import { RechercheFormTitle } from "@/app/_components/RechercheForm/RechercheFormTitle"
 import { apiGet } from "@/utils/api.utils"
 
-export function CandidatRechercheForm() {
+export function CandidatRechercheFormUi(props: Pick<RechercheFormProps, "initialValue" | "onSubmit">) {
+  return (
+    <Box>
+      <Box
+        sx={{
+          display: {
+            xs: "block",
+            lg: "none",
+          },
+        }}
+      >
+        <RechercheFormTitle />
+      </Box>
+      <RechercheForm type="recherche" onSubmit={props.onSubmit} initialValue={props.initialValue} />
+    </Box>
+  )
+}
+
+function CandidatRechercheFormComponent() {
   const params = useCandidatRechercheParams()
   const navigateToRecherchePage = useNavigateToRecherchePage()
 
@@ -39,19 +57,13 @@ export function CandidatRechercheForm() {
     }
   }, [params, navigateToRecherchePage])
 
+  return <CandidatRechercheFormUi onSubmit={navigateToRecherchePage} initialValue={params} />
+}
+
+export function CandidatRechercheForm() {
   return (
-    <Box>
-      <Box
-        sx={{
-          display: {
-            xs: "block",
-            lg: "none",
-          },
-        }}
-      >
-        <RechercheFormTitle />
-      </Box>
-      <RechercheForm type="recherche" onSubmit={navigateToRecherchePage} initialValue={params} />
-    </Box>
+    <Suspense fallback={<CandidatRechercheFormUi onSubmit={null} initialValue={null} />}>
+      <CandidatRechercheFormComponent />
+    </Suspense>
   )
 }

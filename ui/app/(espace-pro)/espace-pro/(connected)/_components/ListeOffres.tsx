@@ -1,10 +1,10 @@
 "use client"
 import { Box, Container, Flex, Heading, Image, Stack, Text } from "@chakra-ui/react"
 import { Button } from "@codegouvfr/react-dsfr/Button"
+import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { useRouter } from "next/navigation"
-import { useQuery } from "react-query"
 import { IJobJson } from "shared"
 import { AUTHTYPE } from "shared/constants/index"
 
@@ -21,7 +21,8 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
 
   dayjs.extend(relativeTime)
 
-  const { data, isLoading, error } = useQuery("offre-liste", {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["offre-liste"],
     enabled: !!establishment_id,
     queryFn: () => getFormulaire(establishment_id),
   })

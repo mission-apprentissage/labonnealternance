@@ -80,10 +80,10 @@ export const radiusOptions = [
   },
 ] as const satisfies Array<{ value: IFormType["radius"]; label: string; selected?: boolean }>
 
-type RechercheFormProps = {
+export type RechercheFormProps = {
   type: "home" | "recherche"
   initialValue?: Pick<IRecherchePageParams, "romes" | "diploma" | "job_name" | "geo" | "job_type"> | null
-  onSubmit: (result: Pick<IRecherchePageParams, "romes" | "diploma" | "job_name" | "geo" | "job_type" | "activeItems">) => unknown
+  onSubmit: null | ((result: Pick<IRecherchePageParams, "romes" | "diploma" | "job_name" | "geo" | "job_type" | "activeItems">) => unknown)
 }
 
 type IRomeSearchOption = IFormType["metier"] & { group?: string }
@@ -124,7 +124,10 @@ async function fetchLieuOptions(query: string): Promise<IFormType["lieu"][]> {
 
 const validate = toFormikValidate(schema)
 
-const RechercheFormContext = createContext<RechercheFormProps["type"]>("home")
+const RechercheFormContext = createContext<{
+  type: RechercheFormProps["type"]
+  isEnabled: boolean
+}>({ type: "home", isEnabled: false })
 
 function RechercheFormButton(props: { disabled: boolean; hasError: boolean; type: RechercheFormProps["type"] }) {
   const { disabled, hasError, type } = props
@@ -190,7 +193,7 @@ function RechercheFormButton(props: { disabled: boolean; hasError: boolean; type
 }
 
 function RechercheFormComponent(props: FormikProps<IFormType>) {
-  const type = useContext(RechercheFormContext)
+  const { type, isEnabled } = useContext(RechercheFormContext)
 
   const hasError = useMemo(() => {
     return (
@@ -224,6 +227,7 @@ function RechercheFormComponent(props: FormikProps<IFormType>) {
         getOptionLabel={getMetierOptionLabel}
         groupBy={(option: IRomeSearchOption) => option.group}
         placeholder="Indiquer un métier ou une formation"
+        disabled={!isEnabled}
       />
       <AutocompleteAsync
         noOptionsText="Nous ne parvenons pas à identifier le lieu que vous cherchez, veuillez reformuler votre recherche"
@@ -233,6 +237,7 @@ function RechercheFormComponent(props: FormikProps<IFormType>) {
         getOptionKey={(option) => option.label}
         getOptionLabel={(option) => option.label}
         placeholder="À quel endroit ?"
+        disabled={!isEnabled}
       />
       <Box
         sx={{
@@ -249,6 +254,7 @@ function RechercheFormComponent(props: FormikProps<IFormType>) {
             marginBottom: 0,
           }}
           options={radiusOptions.map((option) => ({ ...option, selected: option.value === props.values.radius }))}
+          disabled={!isEnabled}
         />
       </Box>
       <SelectFormField
@@ -258,8 +264,9 @@ function RechercheFormComponent(props: FormikProps<IFormType>) {
           marginBottom: 0,
         }}
         options={niveauOptions.map((option) => ({ ...option, selected: option.value === props.values.niveau }))}
+        disabled={!isEnabled}
       />
-      <RechercheFormButton disabled={!props.isValid || props.isSubmitting} hasError={hasError} type={type} />
+      <RechercheFormButton disabled={!isEnabled || !props.isValid || props.isSubmitting} hasError={hasError} type={type} />
     </Box>
   )
 }
@@ -288,14 +295,19 @@ export function RechercheForm(props: RechercheFormProps) {
     }
   }, [props.initialValue?.geo, props.initialValue?.diploma, props.initialValue?.job_name, props.initialValue?.job_type, props.initialValue?.romes])
 
+  const isEnabled = props.onSubmit != null
+  const context = useMemo(() => {
+    return { type: props.type, isEnabled }
+  }, [props.type, isEnabled])
+
   return (
-    <RechercheFormContext.Provider value={props.type}>
+    <RechercheFormContext.Provider value={context}>
       <Formik<IFormType>
         initialValues={initialValues}
         enableReinitialize
         validate={validate}
         onSubmit={async (values) => {
-          await props.onSubmit({
+          await props?.onSubmit({
             romes: values.metier.romes,
             geo: values.lieu ? { address: values.lieu.label, latitude: values.lieu.latitude, longitude: values.lieu.longitude, radius: parseInt(values.radius) } : null,
             diploma: values.niveau || null,

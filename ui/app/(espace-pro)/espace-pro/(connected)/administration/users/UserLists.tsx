@@ -1,10 +1,10 @@
 "use client"
 import { Box, Button, Flex, Icon, Menu, MenuButton, MenuItem, MenuList, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure, useToast } from "@chakra-ui/react"
 import { Link } from "@mui/material"
+import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
-import { useQuery } from "react-query"
 import { getLastStatusEvent, IUserRecruteurJson, IUserStatusValidationJson } from "shared"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
@@ -35,7 +35,10 @@ function Users() {
     }
   }, [newUser, toast])
 
-  const { isLoading, data } = useQuery("user-list", () => apiGet("/user", {}))
+  const { isLoading, data } = useQuery({
+    queryKey: ["user-list"],
+    queryFn: () => apiGet("/user", {}),
+  })
 
   if (isLoading) {
     return <LoadingEmptySpace />

@@ -1,8 +1,8 @@
 import { Box, Checkbox, CheckboxGroup, Flex, Stack, Text, Textarea } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
+import { useQuery } from "@tanstack/react-query"
 import { Formik } from "formik"
 import { useState } from "react"
-import { useQuery } from "react-query"
 import { ApplicationIntention, ApplicationIntentionDefaultText, RefusalReasons } from "shared/constants/application"
 import * as Yup from "yup"
 
@@ -66,9 +66,10 @@ const getText = ({
 }
 
 export const IntentionForm = ({ company_recruitment_intention, id, token }: { company_recruitment_intention: ApplicationIntention; id: string; token: string | undefined }) => {
-  const { data, error } = useQuery("getApplicationDataForIntention", () => getApplicationDataForIntention(id, company_recruitment_intention, token), {
+  const { data, error } = useQuery({
+    queryKey: ["getApplicationDataForIntention"],
+    queryFn: () => getApplicationDataForIntention(id, company_recruitment_intention, token),
     retry: false,
-    onError: (error: { message: string }) => console.error(`Something went wrong: ${error.message}`),
   })
 
   const [sendingState, setSendingState] = useState<"not_sent" | "ok_sent" | "not_sent_because_of_errors" | "canceled">("not_sent")

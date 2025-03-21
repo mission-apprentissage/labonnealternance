@@ -1,5 +1,5 @@
+import { useQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
-import { useQuery } from "react-query"
 import {
   IGetRoutes,
   ILbaItemFormation,
@@ -87,7 +87,7 @@ type IUseRechercheResultsError = {
 export type IUseRechercheResults = IUseRechercheResultsIdle | IUseRechercheResultLoading | IUseRechercheResultLoadingJobs | IUseRechercheResultsSuccess | IUseRechercheResultsError
 
 function getQueryStatus(query: ReturnType<typeof useQuery>, isEnabled: boolean): "success" | "error" | "disabled" | "loading" {
-  if (query.isIdle || !isEnabled) {
+  if (query.fetchStatus === "idle" || !isEnabled) {
     return "disabled"
   }
   if (query.isLoading) {
@@ -156,7 +156,7 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
       return apiGet("/v1/_private/formations/min", { querystring: formationQuerystring }, { signal, priority: "high" })
     },
     enabled: isFormationEnabled,
-    useErrorBoundary: false,
+    throwOnError: false,
     staleTime: 1000 * 60 * 60,
   })
 
@@ -166,7 +166,7 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
       return apiGet("/v1/_private/jobs/min", { querystring: jobQuerystring }, { signal, priority: "high" })
     },
     enabled: isJobsEnabled,
-    useErrorBoundary: false,
+    throwOnError: false,
     staleTime: 1000 * 60 * 60,
   })
 

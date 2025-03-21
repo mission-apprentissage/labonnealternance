@@ -1,9 +1,9 @@
 "use client"
 import { Box, Flex, Image, Text } from "@chakra-ui/react"
+import { useQuery } from "@tanstack/react-query"
 import { useParams } from "next/dist/client/components/navigation"
 import { useRouter } from "next/navigation"
 import { Fragment, useEffect, useMemo, useState } from "react"
-import { useQuery } from "react-query"
 import { ILbaItemFormation2Json } from "shared"
 import { LBA_ITEM_TYPE, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 
@@ -113,8 +113,6 @@ function TrainingDetailPage({
   const router = useRouter()
   const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItem })
   const handleClose = () => router.push(PAGES.dynamic.recherche(searchParams).getPath())
-
-  console.log(selectedItem)
 
   const contextPRDV = {
     cle_ministere_educatif: selectedItem.id,
@@ -243,7 +241,9 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
   const params = useParams()
   const param = params
 
-  const IJStats = useQuery(["getIJStats", training.training.cfd], () => fetchInserJeuneStats(training), {
+  const IJStats = useQuery({
+    queryKey: ["getIJStats", training.training.cfd],
+    queryFn: () => fetchInserJeuneStats(training),
     enabled: Boolean(training.training.cfd),
   })
 

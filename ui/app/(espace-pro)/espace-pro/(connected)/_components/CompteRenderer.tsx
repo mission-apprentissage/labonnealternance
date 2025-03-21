@@ -1,8 +1,8 @@
 "use client"
 import { Box, Flex, Heading, SimpleGrid, Spinner, Text, useDisclosure, useToast } from "@chakra-ui/react"
 import { Button } from "@codegouvfr/react-dsfr/Button"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
-import { useMutation, useQuery, useQueryClient } from "react-query"
 import { IUserWithAccountFields } from "shared"
 import { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import * as Yup from "yup"
@@ -24,34 +24,40 @@ export default function CompteRenderer() {
   const toast = useToast()
   const ModificationEmailPopup = useDisclosure()
 
-  const { data, isLoading } = useQuery("user", () => getUser(user._id.toString()))
-  const userMutation = useMutation(
-    ({ values }: { values: IUserWithAccountFields; isChangingEmail: boolean }) => {
+  const { data, isLoading } = useQuery({
+    queryKey: ["user"],
+    queryFn: () => getUser(user._id.toString()),
+    throwOnError: true,
+  })
+  const userMutation = useMutation({
+    mutationFn: ({ values }: { values: IUserWithAccountFields; isChangingEmail: boolean }) => {
       const userId = user._id.toString()
       return updateUserWithAccountFields(userId, values)
     },
-    {
-      onSuccess: (_, variables) => {
-        client.invalidateQueries("user")
-        toast({
-          title: "Mise à jour enregistrée avec succès",
-          position: "top-right",
-          status: "success",
-          duration: 2000,
-          isClosable: true,
-        })
 
-        if (variables.isChangingEmail) {
-          ModificationEmailPopup.onOpen()
-        }
-      },
-      onError: (error: any, variables: any) => {
-        if (error.response.data.reason === "EMAIL_TAKEN") {
-          variables.setFieldError("email", "L'adresse mail est déjà associée à un compte La bonne alternance.")
-        }
-      },
-    }
-  )
+    onSuccess: (_, variables) => {
+      client.invalidateQueries({
+        queryKey: ["user"],
+      })
+      toast({
+        title: "Mise à jour enregistrée avec succès",
+        position: "top-right",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      })
+
+      if (variables.isChangingEmail) {
+        ModificationEmailPopup.onOpen()
+      }
+    },
+
+    onError: (error: any, variables: any) => {
+      if (error.response.data.reason === "EMAIL_TAKEN") {
+        variables.setFieldError("email", "L'adresse mail est déjà associée à un compte La bonne alternance.")
+      }
+    },
+  })
 
   if (isLoading) {
     return <LoadingEmptySpace label="Chargement en cours" />

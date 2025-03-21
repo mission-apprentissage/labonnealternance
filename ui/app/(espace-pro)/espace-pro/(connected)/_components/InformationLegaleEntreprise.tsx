@@ -1,6 +1,6 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Heading, Link, Stack, Text } from "@chakra-ui/react"
-import { useQuery } from "react-query"
+import { useQuery } from "@tanstack/react-query"
 import { parseEnum } from "shared"
 import { CFA, ENTREPRISE, OPCO, OPCOS_LABEL } from "shared/constants/recruteur"
 
@@ -15,8 +15,16 @@ export type InformationLegaleEntrepriseProps = { siret: string; type: typeof CFA
 
 export const InformationLegaleEntreprise = ({ siret, type, opco }: InformationLegaleEntrepriseProps) => {
   const { user } = useAuth()
-  const entrepriseQuery = useQuery(["get-entreprise", siret], () => getEntrepriseInformation(siret, { skipUpdate: true }), { enabled: Boolean(siret && type === ENTREPRISE) })
-  const cfaQuery = useQuery(["get-cfa-infos", siret], () => getCfaInformation(siret), { enabled: Boolean(siret && type === CFA) })
+  const entrepriseQuery = useQuery({
+    queryKey: ["get-entreprise", siret],
+    queryFn: () => getEntrepriseInformation(siret, { skipUpdate: true }),
+    enabled: Boolean(siret && type === ENTREPRISE),
+  })
+  const cfaQuery = useQuery({
+    queryKey: ["get-cfa-infos", siret],
+    queryFn: () => getCfaInformation(siret),
+    enabled: Boolean(siret && type === CFA),
+  })
   const { isLoading } = type === ENTREPRISE ? entrepriseQuery : cfaQuery
 
   if (isLoading) return null

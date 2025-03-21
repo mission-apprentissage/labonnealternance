@@ -9,7 +9,7 @@ import { ZEtablissement } from "./etablissement.model.js"
 
 const collectionName = "appointments" as const
 
-export const enum EReasonsKey {
+export enum EReasonsKey {
   MODALITE = "modalite",
   CONTENU = "contenu",
   PORTE = "porte",

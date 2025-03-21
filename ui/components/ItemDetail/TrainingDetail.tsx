@@ -1,8 +1,8 @@
 "use client"
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Image, Link, Text } from "@chakra-ui/react"
+import { useQuery } from "@tanstack/react-query"
 import React, { Fragment, useContext, useEffect, useState } from "react"
-import { useQuery } from "react-query"
 
 import { isCfaEntreprise } from "@/services/cfaEntreprise"
 import { getPrdvContext } from "@/utils/api"
@@ -31,7 +31,9 @@ const TrainingDetail = ({ training }) => {
   const { trainings, setTrainingsAndSelectedItem } = useContext(SearchResultContext)
   const { formValues } = React.useContext(DisplayContext)
 
-  useQuery(["getPrdv", training.id], () => fetchPrdvContext(training.id), {
+  useQuery({
+    queryKey: ["getPrdv", training.id],
+    queryFn: () => fetchPrdvContext(training.id),
     enabled: training && !training.prdvLoaded,
   })
 

@@ -1,10 +1,10 @@
 "use client"
 
 import { Box, Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, SimpleGrid, Text } from "@chakra-ui/react"
+import { useQuery } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/navigation"
 import { useContext } from "react"
-import { useQuery } from "react-query"
 import { assertUnreachable, parseEnum } from "shared"
 import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
 import { generateUri } from "shared/helpers/generateUri"
@@ -40,7 +40,10 @@ const Formulaire = ({
   const router = useRouter()
   const { widget } = useContext(WidgetContext)
 
-  const { data: opcoData } = useQuery(["getEntrepriseOpco", establishment_siret], () => getEntrepriseOpco(establishment_siret))
+  const { data: opcoData } = useQuery({
+    queryKey: ["getEntrepriseOpco", establishment_siret],
+    queryFn: () => getEntrepriseOpco(establishment_siret),
+  })
 
   const opco = parseEnum(OPCOS_LABEL, opcoData?.opco)
   const shouldSelectOpco = type === AUTHTYPE.ENTREPRISE && !opco
