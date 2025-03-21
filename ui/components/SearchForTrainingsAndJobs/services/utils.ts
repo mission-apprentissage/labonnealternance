@@ -1,9 +1,4 @@
-import { publicConfig } from "@/config.public"
-
-const { apiEndpoint } = publicConfig
-
 const trainingsApi = "/v1/_private/formations/min"
-const minimalDataJobsApi = `${apiEndpoint}/v1/_private/jobs/min`
 
 const allJobSearchErrorText = "Problème momentané d'accès aux opportunités d'emploi"
 const partialJobSearchErrorText = "Problème momentané d'accès à certaines opportunités d'emploi"
@@ -54,7 +49,6 @@ export {
   getJobCount,
   getMandataireJobCount,
   getRomeFromParameters,
-  minimalDataJobsApi,
   notFoundErrorText,
   partialJobSearchErrorText,
   technicalErrorText,

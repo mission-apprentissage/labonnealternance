@@ -2,7 +2,7 @@ import { Box, Checkbox, Heading, Image, Text } from "@chakra-ui/react"
 import styled from "@emotion/styled"
 import { AnimatePresence, domAnimation, LazyMotion, m } from "framer-motion"
 import { useState } from "react"
-import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 const OffreSpontaneTasks = [
   "je me suis renseigné·e sur l'entreprise (son domaine activité, ses valeurs, ...)",
@@ -40,7 +40,7 @@ const TasksContainer = styled.div`
   }
 `
 
-export const CandidatureTasksChecklist = ({ kind }: { kind: LBA_ITEM_TYPE_OLD }) => {
+export const CandidatureTasksChecklist = ({ kind }: { kind: LBA_ITEM_TYPE_OLD | LBA_ITEM_TYPE }) => {
   const tasks = kind === LBA_ITEM_TYPE_OLD.LBA ? OffreSpontaneTasks : OffreTasks
   const [checkedTasks, setCheckedTasks] = useState<Record<string, boolean>>({})
 

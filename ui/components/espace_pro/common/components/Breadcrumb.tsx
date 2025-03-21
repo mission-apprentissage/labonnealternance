@@ -11,7 +11,7 @@ import { ArrowDropRightLine } from "../../../../theme/components/icons"
  * @return {JSX.Element}
  * @constructor
  */
-const Breadcrumb = ({ pages }) => {
+export const OldBreadcrumb = ({ pages }) => {
   return (
     <ChakraBreadcrumb ml={4} fontSize={"12px"} separator={<ArrowDropRightLine color="grey.425" boxSize={3} mb={1} />} textStyle="xs">
       {pages.map((page, index) => {
@@ -44,5 +44,3 @@ const Breadcrumb = ({ pages }) => {
     </ChakraBreadcrumb>
   )
 }
-
-export { Breadcrumb }

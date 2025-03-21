@@ -1,8 +1,9 @@
 import { Text, useDisclosure } from "@chakra-ui/react"
+import { ReactElement } from "react"
 
 import { ModalReadOnly } from "./ModalReadOnly"
 
-export const InfoTooltipOrModal = ({ tooltipContent, children }: { tooltipContent: React.ReactNode; children: React.ReactNode }) => {
+export const InfoTooltipOrModal = ({ tooltipContent, children }: { tooltipContent: React.ReactNode; children: ReactElement }) => {
   const { isOpen: isModalOpen, onClose: closeModal, onOpen: openModal } = useDisclosure()
 
   const onClick = () => {

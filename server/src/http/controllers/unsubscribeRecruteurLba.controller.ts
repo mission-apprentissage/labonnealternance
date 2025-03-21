@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 import { IUnsubscribedLbaCompany, zRoutes } from "shared"
-import { UNSUBSCRIBE_EMAIL_ERRORS } from "shared/constants"
+import { UNSUBSCRIBE_EMAIL_ERRORS } from "shared/constants/index"
 import { IJobsPartnersRecruteurAlgoPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IUnsubscribeQueryResponse } from "shared/models/unsubscribedRecruteurLba.model"
 

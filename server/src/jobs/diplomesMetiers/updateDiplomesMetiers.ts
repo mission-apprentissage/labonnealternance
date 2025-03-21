@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import { ZDiplomesMetiers } from "shared/models"
+import { ZDiplomesMetiers } from "shared/models/index"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { filterWrongRomes } from "@/services/formation.service"

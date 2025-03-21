@@ -1,10 +1,10 @@
 import { ObjectId } from "mongodb"
-import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "shared/constants"
+import { joinNonNullStrings } from "shared"
+import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "shared/constants/index"
 import dayjs from "shared/helpers/dayjs"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
-import { joinNonNullStrings } from "shared/utils"
 import { z } from "zod"
 
 import { isCompanyInBlockedCfaList } from "../blockJobsPartnersFromCfaList"

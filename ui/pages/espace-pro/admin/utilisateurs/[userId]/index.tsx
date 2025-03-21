@@ -1,5 +1,5 @@
+import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/router"
-import { useQuery } from "react-query"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
 import { Layout, LoadingEmptySpace } from "@/components/espace_pro"

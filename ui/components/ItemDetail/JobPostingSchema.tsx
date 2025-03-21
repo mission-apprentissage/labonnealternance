@@ -14,8 +14,8 @@ export type JobPostingSchema = {
     name: "Google"
     value: string
   }
-  datePosted: Date
-  validThrough: Date
+  datePosted: string
+  validThrough: string
   employmentType: "FULL_TIME"
   hiringOrganization: {
     "@type": "Organization"

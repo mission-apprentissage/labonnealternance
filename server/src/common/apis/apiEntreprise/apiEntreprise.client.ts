@@ -1,7 +1,7 @@
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { ZAdresseV3 } from "shared/models"
 import { IEtablissementGouvData } from "shared/models/cacheInfosSiret.model"
+import { ZAdresseV3 } from "shared/models/index"
 
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"

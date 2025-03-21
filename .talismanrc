@@ -102,7 +102,7 @@ fileignoreconfig:
 - filename: server/src/services/jobs/jobOpportunity/__snapshots__/jobOpportunity.service.test.ts.snap
   checksum: 01dd54f682dc81ecc5ad2099f2cf01e8e6011c0d22c38607f7998d2ce28bf155
 - filename: server/src/services/jobs/jobOpportunity/jobOpportunity.service.test.ts
-  checksum: d1cb4c0ab00e83e0b7d320ce206850f08592c64a60b561e5f5860eba7d2544b2
+  checksum: 6192b627272883a4090c0ec5758bf77373821e427585ce3ca1f4dfef4330c3cd
 - filename: server/src/services/partnerJob.service.test.ts
   checksum: b488a3b67b801c3fa5b012d2ba2b120b21af4f459b966c6629e6e681ead97913
 - filename: server/src/services/recruteurLba.service.test.ts
@@ -205,6 +205,20 @@ fileignoreconfig:
   checksum: ce4d731225425bdbee4e69ff61b6c14be377054db1fb99b438a86e85b4b7a985
 - filename: shared/utils/objectUtils.ts
   checksum: cfd0e48e8762b43c6431dad873727f6ac091ca6f5c7555e37a8ee3fba03184d1
+- filename: ui/app/(candidat)/formation/[id]/TrainingDetailRendererClient.tsx
+  checksum: f5c14c3e59be0c6170d21f389882ed894e38081ef05545ffc66cc8a65ded252f
+- filename: ui/app/(espace-pro)/_components/OffresGratuites.tsx
+  checksum: a81881696ad47f4efd1e7956f1972f0425cce0b07dba4afbcc7c088fb5edd90d
+- filename: ui/app/(home)/faq/page.tsx
+  checksum: e4b3904897fb67afd63187ff382138e9d60b9ca0395385eb2afd6a822696b804
+- filename: ui/app/(home)/mentions-legales/page.tsx
+  checksum: 4740029daff0308bfa65289c4eb5be61834c0c8c5d00bdcab0b1662f28c8a0e6
+- filename: ui/app/(home)/politique-de-confidentialite/page.tsx
+  checksum: e5d7f4f0d05c3ef38c59bdcc27feaa88c976faa8520dbb78a75747a67aa1c9ab
+- filename: ui/app/conditions-generales-utilisation/page.tsx
+  checksum: 2a6862623c8118ea36287831ba82a2830bf8c6a67fd33ab58898be72f0732634
+- filename: ui/app/template.tsx
+  checksum: 9b684611b80ec1daeee74bfdc73373073fd0084fe643ba9ea9229905ee737035
 - filename: ui/common/hooks/useAuth.ts
   checksum: 7cce935653407e000b35e98bd365a003e538aed4fed432a9a404d4f2412dd2df
 - filename: ui/components/DepotOffre/InfosDiffusionOffre.tsx
@@ -220,7 +234,7 @@ fileignoreconfig:
 - filename: ui/components/InfoBanner/InfoBanner.tsx
   checksum: e5f8bd78ea46335fbb8784eabc01391be68922960f7d04ce9e8755484d10ce32
 - filename: ui/components/ItemDetail/DidYouKnow.tsx
-  checksum: 88f2245cd7c4d0f962f53bb6e3dd8179ac98cfd8202f1d985f46c4b07c1d75ee
+  checksum: 302fda19b75cd5a3f8e8b7f002366de003c45326e4bc8b98440a6dae20a5b183
 - filename: ui/components/ItemDetail/ItemDetail.tsx
   checksum: 1fcc0442306f83b5e45bf7da67304527598d7749b9e2642c6d4628d3b4f15a9c
 - filename: ui/components/ItemDetail/LbaJobComponents/LbaJobCompetences.tsx
@@ -236,7 +250,7 @@ fileignoreconfig:
 - filename: ui/components/ItemDetail/LbaRecruteurComponents/LbaRecruteurDetail.tsx
   checksum: 6e552b66f9238645f70705a0c43c81905e8dbee1c83d364cd89f951f80cb7ea0
 - filename: ui/components/ItemDetail/PartnerJobComponents/PartnerJobDetail.tsx
-  checksum: 88c8bf2cf48aa2c93a73eea7dcd9a040f44cbba3c82ae1b41b80d9939112d0c5
+  checksum: c1ace8f1692bbeec4534c6378b7be72b971462182df401d2c22b92a25b659875
 - filename: ui/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaDetail.tsx
   checksum: 5d8d24178d6390f4745bcddcaca7e7ea3f8f6af79ef304bb48187a6bea7ccfa1
 - filename: ui/components/ItemDetail/TrainingDetail.tsx
@@ -279,6 +293,8 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
+- filename: ui/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap.tsx
+  checksum: 77aa76bd83ebc2833a69d37454428e30ba751df7e5f8fd34200a250e656469b4
 scopeconfig:
 - scope: node
 custom_patterns:
@@ -296,5 +312,6 @@ allowed_patterns:
 - versionKey
 - '@apprentissage.beta.gouv.fr'
 - adminusersview
+- https://dinum.didask.com/.*
 threshold: medium
 version: "1.0"

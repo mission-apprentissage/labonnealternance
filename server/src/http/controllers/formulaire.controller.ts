@@ -1,5 +1,5 @@
 import { badRequest, conflict, internal, notFound } from "@hapi/boom"
-import { RECRUITER_STATUS } from "shared/constants"
+import { RECRUITER_STATUS } from "shared/constants/index"
 import { JOB_STATUS, zRoutes } from "shared/index"
 
 import { getSourceFromCookies } from "@/common/utils/httpUtils"

@@ -35,7 +35,7 @@ import { apiGet, apiPatch } from "@/utils/api.utils"
 
 import { formatDate } from "../../../../../common/dayjs"
 import EtablissementComponent from "../../../../../components/espace_pro/Admin/widgetParameters/components/EtablissementComponent"
-import { Breadcrumb } from "../../../../../components/espace_pro/common/components/Breadcrumb"
+import { OldBreadcrumb } from "../../../../../components/espace_pro/common/components/Breadcrumb"
 import { authProvider, withAuth } from "../../../../../components/espace_pro/withAuth"
 
 /**
@@ -205,7 +205,7 @@ function EditPage() {
         <title>{title}</title>
         <link rel="icon" href="/favicon/favicon.ico" />
       </Head>
-      <Breadcrumb pages={[{ title: "Administration", to: "/espace-pro/administration/users" }, { title: title }]} />
+      <OldBreadcrumb pages={[{ title: "Administration", to: "/espace-pro/administration/users" }, { title: title }]} />
       <Heading textStyle="h2" mt={5}>
         {title}
       </Heading>

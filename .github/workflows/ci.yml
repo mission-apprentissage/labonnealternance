@@ -36,11 +36,11 @@ jobs:
       - name: Make sure to use same dependencies version across all packages
         run: yarn dedupe --check
 
+      - name: typecheck
+        run: yarn typecheck
+
       - name: lint
         run: yarn lint
-
-      - name: typecheck
-        run: yarn typecheck:ci
 
       - name: start mongodb service
         run: |

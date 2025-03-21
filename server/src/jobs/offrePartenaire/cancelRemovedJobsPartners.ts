@@ -1,4 +1,4 @@
-import { JOB_STATUS_ENGLISH } from "shared/models"
+import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"

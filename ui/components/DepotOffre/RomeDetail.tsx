@@ -1,7 +1,7 @@
 import { Accordion, Badge, Box, Checkbox, Heading, Text } from "@chakra-ui/react"
 import styled from "@emotion/styled"
 import { useState } from "react"
-import { IReferentielRomeForJob } from "shared"
+import { IReferentielRomeForJobJson } from "shared"
 
 import { classNames } from "@/utils/classNames"
 
@@ -62,7 +62,7 @@ export const RomeDetail = ({
   onChange,
   selectedCompetences,
 }: {
-  romeReferentiel: IReferentielRomeForJob
+  romeReferentiel: IReferentielRomeForJobJson
   selectedCompetences: Record<string, string[]>
   title: string
   onChange: (groupKey: string, competence: string, newlyChecked: boolean) => void

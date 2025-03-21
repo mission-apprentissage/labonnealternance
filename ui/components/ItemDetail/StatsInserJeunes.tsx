@@ -1,6 +1,6 @@
-import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Flex, Link, Text } from "@chakra-ui/react"
-import React from "react"
+import { Box, Flex, Text } from "@chakra-ui/react"
+
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 const StatsInserJeunes = ({ stats }) => {
   return (
@@ -53,16 +53,11 @@ const StatsInserJeunes = ({ stats }) => {
             )}
           </Box>
         </Flex>
-        <Text mt={3} color="grey.425" fontSize="12px">
+        <Text mt={3} color="grey.425">
           *Données issues du{" "}
-          <Link
-            href="https://documentation.exposition.inserjeunes.beta.gouv.fr/"
-            textDecoration="underline"
-            isExternal
-            aria-label="Site inserjeunes.beta.gouv.fr - nouvelle fenêtre"
-          >
-            dispositif InserJeunes promotion {stats.millesime.replace("_", "/")} <ExternalLinkIcon mx="2px" />
-          </Link>
+          <DsfrLink href="https://documentation.exposition.inserjeunes.beta.gouv.fr/" aria-label="Site inserjeunes.beta.gouv.fr - nouvelle fenêtre">
+            dispositif InserJeunes promotion {stats.millesime.replace("_", "/")}
+          </DsfrLink>
         </Text>
       </Box>
     )

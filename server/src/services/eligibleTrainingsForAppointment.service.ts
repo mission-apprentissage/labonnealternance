@@ -3,7 +3,7 @@ import { Filter, ObjectId } from "mongodb"
 import { IEligibleTrainingsForAppointment, IFormationCatalogue } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { IAppointmentRequestContextCreateResponseSchema } from "shared/routes/appointments.routes"
-import { IAppointmentContextAPI, IAppointmentResponseSchema } from "shared/routes/v2/appointments.routes.v2"
+import { IAppointmentContextAPI, IAppointMentResponseAvailable, IAppointmentResponseSchema } from "shared/routes/v2/appointments.routes.v2"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -174,6 +174,39 @@ export const findElligibleTrainingForAppointmentV2 = async (context: IAppointmen
 
   if (!etablissement) {
     throw internal("Training establishment not found")
+  }
+
+  return {
+    etablissement_formateur_entreprise_raison_sociale: etablissement.raison_sociale,
+    intitule_long: eligibleTrainingsForAppointment.training_intitule_long,
+    lieu_formation_adresse: eligibleTrainingsForAppointment.lieu_formation_street,
+    code_postal: eligibleTrainingsForAppointment.lieu_formation_zip_code,
+    etablissement_formateur_siret: etablissement.formateur_siret ?? null,
+    cfd: eligibleTrainingsForAppointment.training_code_formation_diplome,
+    localite: eligibleTrainingsForAppointment.lieu_formation_city,
+    cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
+    form_url: `${config.publicUrl}/espace-pro/form?referrer=${referrerObj.name.toLowerCase()}&cleMinistereEducatif=${encodeURIComponent(
+      eligibleTrainingsForAppointment.cle_ministere_educatif
+    )}`,
+  }
+}
+
+export const findElligibleTrainingForAppointmentPrivate = async (referrer: string, cleMinistereEducatif: string): Promise<IAppointMentResponseAvailable> => {
+  const referrerObj = getReferrerByKeyName(referrer)
+  const eligibleTrainingsForAppointment = await findEligibleTrainingByMinisterialKey(cleMinistereEducatif)
+
+  if (!eligibleTrainingsForAppointment) {
+    throw notFound(BusinessErrorCodes.TRAINING_NOT_FOUND)
+  }
+
+  if (!isOpenForAppointments(eligibleTrainingsForAppointment, referrerObj.name)) {
+    throw badRequest("Training not available for appointments")
+  }
+
+  const etablissement = await findEtablissement(eligibleTrainingsForAppointment.etablissement_formateur_siret)
+
+  if (!etablissement) {
+    throw badRequest("Training establishment not found")
   }
 
   return {
