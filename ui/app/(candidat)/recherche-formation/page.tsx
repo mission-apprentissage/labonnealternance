@@ -9,9 +9,9 @@ type Props = {
 }
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
-  return PAGES.dynamic.recherche(parseRecherchePageParams(new URLSearchParams(await searchParams), "default")).getMetadata?.() ?? {}
+  return PAGES.dynamic.rechercheFormation(parseRecherchePageParams(new URLSearchParams(await searchParams), "formations-only")).getMetadata?.() ?? {}
 }
 
-export default function RecherchePage() {
+export default function RechercheFormationPage() {
   return <RecherchePageComponent />
 }

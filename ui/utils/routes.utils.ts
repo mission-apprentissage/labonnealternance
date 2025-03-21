@@ -374,7 +374,7 @@ export const PAGES = {
       title: "Imprimer mon offre",
     }),
     recherche: (params: IRecherchePageParams | null): IPage => {
-      const search = params === null ? "" : buildRecherchePageParams(params)
+      const search = params === null ? "" : buildRecherchePageParams(params, "default")
 
       let searchTitleContext = ""
       if (params?.job_name) {
@@ -396,9 +396,55 @@ export const PAGES = {
         title: "Offres en alternance",
       }
     },
+    rechercheFormation: (params: IRecherchePageParams | null): IPage => {
+      const search = params === null ? "" : buildRecherchePageParams(params, "formations-only")
+
+      let searchTitleContext = ""
+      if (params?.job_name) {
+        searchTitleContext += ` - ${params.job_name}`
+        if (params?.geo?.address) {
+          searchTitleContext += ` à ${params.geo.address}`
+        } else if (params?.geo == null) {
+          searchTitleContext += ` sur la France entière `
+        }
+      }
+
+      return {
+        getPath: () => `/recherche-formation?${search}` as string,
+        index: false,
+        getMetadata: () => ({
+          title: `Formations en alternance${searchTitleContext} | La bonne alternance`,
+          description: `Recherche - Formations en alternance${searchTitleContext} sur le site de La bonne alternance`,
+        }),
+        title: "Formations en alternance",
+      }
+    },
+    rechercheEmploi: (params: IRecherchePageParams | null): IPage => {
+      const search = params === null ? "" : buildRecherchePageParams(params, "jobs-only")
+
+      let searchTitleContext = ""
+      if (params?.job_name) {
+        searchTitleContext += ` - ${params.job_name}`
+        if (params?.geo?.address) {
+          searchTitleContext += ` à ${params.geo.address}`
+        } else if (params?.geo == null) {
+          searchTitleContext += ` sur la France entière `
+        }
+      }
+
+      return {
+        getPath: () => `/recherche-emploi?${search}` as string,
+        index: false,
+        getMetadata: () => ({
+          title: `Offres en alternance${searchTitleContext} | La bonne alternance`,
+          description: `Recherche - Offres en alternance${searchTitleContext} sur le site de La bonne alternance`,
+        }),
+        title: "Offres en alternance",
+      }
+    },
     jobDetail: (params: { type: Exclude<LBA_ITEM_TYPE, LBA_ITEM_TYPE.FORMATION>; jobId: string } & Partial<IRecherchePageParams>): IPage => {
       const jobTitle = params.job_name ?? "Offre"
-      const search = buildRecherchePageParams(params)
+      const search = buildRecherchePageParams(params, "default")
 
       return {
         getPath: () => `/emploi/${params.type}/${encodeURIComponent(params.jobId)}/${toKebabCase(jobTitle)}?${search}` as string,
@@ -407,7 +453,7 @@ export const PAGES = {
     },
     formationDetail: (params: { jobId: string } & Partial<IRecherchePageParams>): IPage => {
       const jobTitle = params.job_name ?? "Formation"
-      const search = buildRecherchePageParams(params)
+      const search = buildRecherchePageParams(params, "default")
 
       return {
         getPath: () => `/formation/${encodeURIComponent(params.jobId)}/${toKebabCase(jobTitle)}?${search}` as string,

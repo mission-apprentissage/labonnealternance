@@ -9,7 +9,6 @@ import { RechercheCarte } from "@/app/(candidat)/recherche/_components/Recherche
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
 import { IUseRechercheResultsSuccess, useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { useBuildNavigation } from "@/app/hooks/useBuildNavigation"
-import { RecruteurLbaDetail } from "@/components"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
 import { CandidatureLba, NoCandidatureLba } from "@/components/ItemDetail/CandidatureLba/CandidatureLba"
@@ -24,12 +23,10 @@ import JobItemCardHeader from "@/components/ItemDetail/ItemDetailServices/JobIte
 import { LbaJobDetail } from "@/components/ItemDetail/LbaJobComponents/LbaJobDetail"
 import { PartnerJobDetail } from "@/components/ItemDetail/PartnerJobComponents/PartnerJobDetail"
 import { PartnerJobPostuler } from "@/components/ItemDetail/PartnerJobComponents/PartnerJobPostuler"
+import RecruteurLbaDetail from "@/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaDetail"
 import ShareLink from "@/components/ItemDetail/ShareLink"
-// import { DisplayContext } from "@/context/DisplayContextProvider"
-// import { SearchResultContext } from "@/context/SearchResultContextProvider"
 import { isCfaEntreprise } from "@/services/cfaEntreprise"
 import { PAGES } from "@/utils/routes.utils"
-// import { filterLayers } from "@/utils/mapTools"
 
 export default function JobDetailRendererClient({ job }: { job: ILbaItemJobsGlobal }) {
   const params = useCandidatRechercheParams()

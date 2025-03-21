@@ -67,6 +67,7 @@ export const zRecherchePageParams = z.object({
   displayEntreprises: z.boolean().optional(),
   displayFormations: z.boolean().optional(),
   displayPartenariats: z.boolean().optional(),
+  displayFilters: z.boolean().optional(),
   activeItems: z
     .object({
       ideaType: z.nativeEnum(LBA_ITEM_TYPE_OLD),
@@ -78,7 +79,9 @@ export const zRecherchePageParams = z.object({
 
 export type IRecherchePageParams = z.output<typeof zRecherchePageParams>
 
-export function buildRecherchePageParams(params: IRecherchePageParams): string {
+export type IRechercheMode = "default" | "formations-only" | "jobs-only"
+
+export function buildRecherchePageParams(params: IRecherchePageParams, mode: IRechercheMode | null): string {
   const query = new URLSearchParams()
 
   if (params?.romes?.length > 0) {
@@ -104,23 +107,30 @@ export function buildRecherchePageParams(params: IRecherchePageParams): string {
   if (params.displayMap === true) {
     query.set("displayMap", "true")
   }
-  if (params.displayEntreprises === false) {
-    query.set("displayEntreprises", "false")
-  }
-  if (params.displayFormations === false) {
-    query.set("displayFormations", "false")
-  }
-  if (params.displayPartenariats === false) {
-    query.set("displayPartenariats", "false")
-  }
   if (params?.activeItems?.length > 0) {
     query.set("activeItems", serializeItemReferences(params.activeItems))
+  }
+
+  // In mode formations-only & jobs-only theses params cannot be modified
+  if (mode !== "default") {
+    if (params.displayEntreprises === false) {
+      query.set("displayEntreprises", "false")
+    }
+    if (params.displayFormations === false) {
+      query.set("displayFormations", "false")
+    }
+    if (params.displayPartenariats === false) {
+      query.set("displayPartenariats", "false")
+    }
+    if (params.displayFilters === false) {
+      query.set("displayFilters", "false")
+    }
   }
 
   return query.toString()
 }
 
-export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSearchParams | null): Required<IRecherchePageParams> | null {
+export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSearchParams | null, mode: IRechercheMode): Required<IRecherchePageParams> | null {
   if (search === null) {
     return null
   }
@@ -146,11 +156,61 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
   const job_type = search.get("job_type") || null
 
   const displayMap = search.get("displayMap") === "true"
+
+  if (mode === "formations-only") {
+    return {
+      romes,
+      geo,
+      diploma,
+      job_name,
+      job_type,
+      displayMap,
+      activeItems,
+      displayEntreprises: false,
+      displayFormations: true,
+      displayPartenariats: false,
+      displayFilters: false,
+    }
+  }
+
+  if (mode === "jobs-only") {
+    return {
+      romes,
+      geo,
+      diploma,
+      job_name,
+      job_type,
+      displayMap,
+      activeItems,
+      displayEntreprises: true,
+      displayFormations: false,
+      displayPartenariats: true,
+      displayFilters: false,
+    }
+  }
+
   const displayEntreprises = search.get("displayEntreprises") !== "false"
   const displayFormations = search.get("displayFormations") !== "false"
   const displayPartenariats = search.get("displayPartenariats") !== "false"
+  const displayFilters = search.get("displayFilters") !== "false"
 
-  return { romes, geo, diploma, job_name, job_type, displayMap, displayEntreprises, displayFormations, displayPartenariats, activeItems }
+  return { romes, geo, diploma, job_name, job_type, activeItems, displayMap, displayEntreprises, displayFormations, displayPartenariats, displayFilters }
+}
+
+export function detectModeFromParams(params: IRecherchePageParams): IRechercheMode {
+  if (params.displayFilters) {
+    return "default"
+  }
+
+  if (!params.displayEntreprises && !params.displayPartenariats && params.displayFormations) {
+    return "formations-only"
+  }
+
+  if (params.displayEntreprises && params.displayPartenariats && !params.displayFormations) {
+    return "jobs-only"
+  }
+
+  return "default"
 }
 
 export function getResultItemUrl(item: ItemReferenceLike, searchParams: Partial<IRecherchePageParams> = {}): string {
