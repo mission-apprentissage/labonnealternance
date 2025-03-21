@@ -33,7 +33,9 @@ export function useCandidatRechercheParams(): Required<IRecherchePageParams> | n
   const searchParams = useSearchParams()
   const mode = useRechercheMode()
 
-  const params = useMemo(() => parseRecherchePageParams(searchParams, mode), [searchParams, mode])
+  const params = useMemo(() => {
+    return parseRecherchePageParams(searchParams, mode)
+  }, [searchParams, mode])
 
   return params
 }
