@@ -24,7 +24,7 @@ export function useNavigateToRecherchePage(): (newParams: Partial<IRecherchePage
 
   const navigateToRecherchePage = useCallback(
     (newParams: Partial<IRecherchePageParams>, replace: boolean = false): void => {
-      const finalParams = { ...searchParams, newParams }
+      const finalParams = { ...searchParams, ...newParams }
       const mode = detectModeFromParams(finalParams)
       const url = getUrl(finalParams, mode)
 

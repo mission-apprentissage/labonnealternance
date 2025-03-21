@@ -112,7 +112,7 @@ export function buildRecherchePageParams(params: IRecherchePageParams, mode: IRe
   }
 
   // In mode formations-only & jobs-only theses params cannot be modified
-  if (mode !== "default") {
+  if (mode === "default") {
     if (params.displayEntreprises === false) {
       query.set("displayEntreprises", "false")
     }

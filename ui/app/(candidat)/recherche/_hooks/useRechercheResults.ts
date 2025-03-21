@@ -87,7 +87,9 @@ type IUseRechercheResultsError = {
 export type IUseRechercheResults = IUseRechercheResultsIdle | IUseRechercheResultLoading | IUseRechercheResultLoadingJobs | IUseRechercheResultsSuccess | IUseRechercheResultsError
 
 function getQueryStatus(query: ReturnType<typeof useQuery>, isEnabled: boolean): "success" | "error" | "disabled" | "loading" {
-  if (query.fetchStatus === "idle" || !isEnabled) {
+  const isQueryDisabled = query.isLoading && query.fetchStatus === "idle"
+
+  if (isQueryDisabled || !isEnabled) {
     return "disabled"
   }
   if (query.isLoading) {
@@ -232,13 +234,13 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
     return result
   }, [jobs, formations])
 
+  const formationStatus = getQueryStatus(formationQuery, isFormationEnabled)
+  const jobStatus = getQueryStatus(jobQuery, isJobsEnabled)
+
   return useMemo(() => {
     if (!isFormationEnabled && !isJobsEnabled) {
       return { status: "idle", formationStatus: "idle", jobStatus: "idle", itemsCount: 0 }
     }
-
-    const formationStatus = getQueryStatus(formationQuery, isFormationEnabled)
-    const jobStatus = getQueryStatus(jobQuery, isJobsEnabled)
 
     if ((formationStatus === "error" || formationStatus === "disabled") && (jobStatus === "error" || jobStatus === "disabled")) {
       return { status: "error", formationStatus, jobStatus, itemsCount: 0 }
@@ -249,12 +251,13 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
     }
 
     const nonBlockingErrors = {
-      formations: formationQuery.isError ? "Oups ! Les résultats formation ne sont pas disponibles actuellement !" : null,
-      jobs: jobQuery.isError
-        ? "Problème momentané d'accès aux opportunités d'emploi"
-        : isPartialJobError(jobQuery.data)
-          ? "Problème momentané d'accès à certaines opportunités d'emploi"
-          : null,
+      formations: formationStatus === "error" ? "Oups ! Les résultats formation ne sont pas disponibles actuellement !" : null,
+      jobs:
+        jobStatus === "error"
+          ? "Problème momentané d'accès aux opportunités d'emploi"
+          : isPartialJobError(jobQuery.data)
+            ? "Problème momentané d'accès à certaines opportunités d'emploi"
+            : null,
     }
 
     if (jobStatus === "loading") {
@@ -284,5 +287,5 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
       entrepriseCount: jobs.filter((item) => !item.company.mandataire).length,
       partenariatCount: jobs.filter((item) => item.company.mandataire).length,
     }
-  }, [formationQuery, jobQuery, isFormationEnabled, isJobsEnabled, jobs, formations, items])
+  }, [jobQuery.data, isFormationEnabled, isJobsEnabled, jobs, formations, items, formationStatus, jobStatus])
 }
