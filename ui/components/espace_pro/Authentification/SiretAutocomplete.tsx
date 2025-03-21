@@ -88,7 +88,6 @@ export const SiretAutocomplete = ({
                 </Box>
               </Box>
             )}
-
             <Flex justify="flex-start" marginTop="32px">
               <Button type="submit" disabled={!isValid || isSubmitting}>
                 {isSubmitting ? <Spinner mr={2} /> : null}Continuer

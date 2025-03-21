@@ -17,9 +17,9 @@ import {
   useToast,
 } from "@chakra-ui/react"
 import { Button } from "@codegouvfr/react-dsfr/Button"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
 import { useParams } from "next/navigation"
-import { useMutation, useQuery, useQueryClient } from "react-query"
 import { IUserStatusValidationJson } from "shared"
 import { AUTHTYPE, CFA, ENTREPRISE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
@@ -96,7 +96,7 @@ function DetailEntreprise() {
     }
   }
 
-  const { data: userRecruteur, isLoading } = useQuery("user", () => getUser(userId), { cacheTime: 0, enabled: !!userId })
+  const { data: userRecruteur, isLoading } = useQuery(["user"], () => getUser(userId), { cacheTime: 0, enabled: !!userId })
   const { data: recruiter, isLoading: recruiterLoading } = useQuery(["recruiter", userRecruteur?.establishment_id], {
     enabled: Boolean(userRecruteur?.establishment_id),
     queryFn: () => getFormulaire(userRecruteur.establishment_id),
@@ -104,7 +104,7 @@ function DetailEntreprise() {
   // @ts-expect-error: TODO
   const userMutation = useMutation(({ userId, values }) => updateEntrepriseAdmin(userId, values, userRecruteur.establishment_siret), {
     onSuccess: () => {
-      client.invalidateQueries("user")
+      client.invalidateQueries(["user"])
     },
   })
 

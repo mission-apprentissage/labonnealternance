@@ -19,9 +19,9 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react"
+import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useEffect, useState } from "react"
-import { useQuery } from "react-query"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
@@ -53,7 +53,7 @@ function AdministrationOpco() {
     }
   }, [newUser, toast])
 
-  const { data, isLoading } = useQuery("user-list-opco", () => getOpcoUsers())
+  const { data, isLoading } = useQuery(["user-list-opco"], () => getOpcoUsers())
 
   const columns = [
     {

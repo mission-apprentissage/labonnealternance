@@ -1,9 +1,9 @@
 "use client"
 import { Box, Flex, Image, Text } from "@chakra-ui/react"
+import { useQuery } from "@tanstack/react-query"
 import { useParams } from "next/dist/client/components/navigation"
 import { useRouter } from "next/navigation"
 import { Fragment, useEffect, useMemo, useState } from "react"
-import { useQuery } from "react-query"
 import { ILbaItemFormation2Json } from "shared"
 import { LBA_ITEM_TYPE, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 

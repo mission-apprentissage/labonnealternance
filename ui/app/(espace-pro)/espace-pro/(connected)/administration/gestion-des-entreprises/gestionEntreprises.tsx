@@ -2,9 +2,9 @@
 import { CheckIcon } from "@chakra-ui/icons"
 import { Alert, AlertIcon, Box, Flex, Spinner, Text } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
 import { useState } from "react"
-import { useMutation, useQuery } from "react-query"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import * as Yup from "yup"
 import { z } from "zod"
@@ -69,7 +69,7 @@ function FormulaireModificationEntreprise({ siret }: { siret: string }) {
     { enabled: Boolean(siret), retry: false }
   )
   const [hasUpdated, setHasUpdated] = useState(false)
-  const updateEntreprise = useMutation("updateEntreprise", ({ phone, email }: { phone: string; email: string }) => putCompanyContactInfo({ phone, email, siret }), {
+  const updateEntreprise = useMutation(["updateEntreprise"], ({ phone, email }: { phone: string; email: string }) => putCompanyContactInfo({ phone, email, siret }), {
     onSuccess: () => {
       refetch()
       setHasUpdated(true)

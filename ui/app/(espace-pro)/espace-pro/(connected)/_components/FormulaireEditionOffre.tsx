@@ -1,10 +1,10 @@
 "use client"
 
 import { Box, Grid, Heading } from "@chakra-ui/react"
+import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { Formik } from "formik"
 import { useState } from "react"
-import { useQuery } from "react-query"
 import { IReferentielRomeForJobJson } from "shared"
 import { IJobJson, JOB_STATUS } from "shared/models/job.model"
 import { detectUrlAndEmails } from "shared/utils/detectUrlAndEmails"

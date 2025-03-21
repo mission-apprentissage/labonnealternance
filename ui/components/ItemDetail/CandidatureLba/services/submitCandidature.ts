@@ -1,5 +1,5 @@
+import { useMutation } from "@tanstack/react-query"
 import { useContext } from "react"
-import { useMutation } from "react-query"
 import { IApplicationApiPrivate, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 
 import { DisplayContext } from "@/context/DisplayContextProvider"

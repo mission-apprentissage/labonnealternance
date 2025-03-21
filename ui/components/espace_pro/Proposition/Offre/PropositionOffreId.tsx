@@ -1,5 +1,5 @@
 import { Box, Button, Container, Flex, Heading, SimpleGrid, Stack, Text, useToast } from "@chakra-ui/react"
-import { useQuery } from "react-query"
+import { useQuery } from "@tanstack/react-query"
 import { IJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"

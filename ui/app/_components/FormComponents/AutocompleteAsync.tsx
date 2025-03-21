@@ -1,12 +1,12 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography, CircularProgress } from "@mui/material"
 import Autocomplete, { AutocompleteRenderGroupParams, AutocompleteRenderInputParams, AutocompleteRenderOptionState } from "@mui/material/Autocomplete"
+import { useQuery } from "@tanstack/react-query"
 import { useWindowSize } from "@uidotdev/usehooks"
 import match from "autosuggest-highlight/match"
 import parse from "autosuggest-highlight/parse"
 import { useField, useFormikContext } from "formik"
 import { useCallback, useEffect, useRef, useState } from "react"
-import { useQuery } from "react-query"
 
 import { InputFormField } from "@/app/_components/FormComponents/InputFormField"
 

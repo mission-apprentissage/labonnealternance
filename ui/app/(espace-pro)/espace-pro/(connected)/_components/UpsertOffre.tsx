@@ -1,7 +1,7 @@
 "use client"
 
 import { useToast } from "@chakra-ui/react"
-import { useQuery } from "react-query"
+import { useQuery } from "@tanstack/react-query"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { FormulaireEditionOffre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffre"
@@ -11,7 +11,7 @@ import { apiPut } from "@/utils/api.utils"
 export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { establishment_id: string; job_id?: string; onSuccess: () => void }) {
   const toast = useToast()
 
-  const { data: offre, isLoading } = useQuery("offre", () => getOffre(job_id), {
+  const { data: offre, isLoading } = useQuery(["offre"], () => getOffre(job_id), {
     enabled: Boolean(job_id),
     cacheTime: 0,
   })

@@ -1,8 +1,8 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Button, Circle, Heading, Image, Link, Stack, Text, useToast } from "@chakra-ui/react"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/router"
 import { useState } from "react"
-import { useQuery, useQueryClient } from "react-query"
 import { ETAT_UTILISATEUR } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
@@ -103,7 +103,7 @@ function FinComponent(props: ComponentProps) {
    * KBA 20230130 : retry set to false to avoid waiting for failure if user is from dashboard (userId is not passed)
    * - To be changed with userID in URL params
    */
-  const { isFetched, data: userStatusData } = useQuery("userdetail", () => (token ? getUserStatusByToken(userId.toString(), token) : getUserStatus(userId.toString())), {
+  const { isFetched, data: userStatusData } = useQuery(["userdetail"], () => (token ? getUserStatusByToken(userId.toString(), token) : getUserStatus(userId.toString())), {
     enabled: Boolean(userId),
   })
 
@@ -121,7 +121,7 @@ function FinComponent(props: ComponentProps) {
    * @return {Promise<void>}
    */
   const onClose = async () => {
-    await client.invalidateQueries("offre-liste")
+    await client.invalidateQueries(["offre-liste"])
     await router.push(`/espace-pro/administration/entreprise/${encodeURIComponent(establishment_id.toString())}`)
   }
 

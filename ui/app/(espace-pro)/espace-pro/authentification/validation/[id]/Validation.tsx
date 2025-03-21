@@ -1,7 +1,7 @@
 "use client"
 import { Box, Container, Heading, Link, Text } from "@chakra-ui/react"
+import { useQuery } from "@tanstack/react-query"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useQuery } from "react-query"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
@@ -52,7 +52,7 @@ export default function ConfirmationValidationEmail() {
     }
   }
 
-  const { isLoading, isError } = useQuery("postValidation", () => fetchData(), { enabled: Boolean(token), retry: false })
+  const { isLoading, isError } = useQuery(["postValidation"], () => fetchData(), { enabled: Boolean(token), retry: false })
 
   return (
     <Container maxW="container.xl">

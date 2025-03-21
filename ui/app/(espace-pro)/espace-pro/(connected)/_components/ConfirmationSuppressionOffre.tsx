@@ -1,7 +1,7 @@
 import { Box, Flex, Heading, Modal, ModalBody, ModalContent, ModalHeader, ModalOverlay, Text, useToast } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
+import { useQueryClient } from "@tanstack/react-query"
 import { FormikProvider, useFormik } from "formik"
-import { useQueryClient } from "react-query"
 import { JOB_STATUS } from "shared"
 import { z } from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
@@ -54,7 +54,7 @@ export default function ConfirmationSuppressionOffre(props) {
         })
       })
       .then(() => resetState())
-      .finally(() => client.invalidateQueries("offre-liste"))
+      .finally(() => client.invalidateQueries(["offre-liste"]))
   }
 
   const formik = useFormik({

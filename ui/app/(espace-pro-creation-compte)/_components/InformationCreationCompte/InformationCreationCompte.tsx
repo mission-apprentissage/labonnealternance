@@ -1,10 +1,10 @@
 "use client"
 
 import { Box, Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, SimpleGrid, Text } from "@chakra-ui/react"
+import { useQuery } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/navigation"
 import { useContext } from "react"
-import { useQuery } from "react-query"
 import { assertUnreachable, parseEnum } from "shared"
 import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
 import { generateUri } from "shared/helpers/generateUri"

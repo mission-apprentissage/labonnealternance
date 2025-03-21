@@ -1,6 +1,6 @@
 import { Box, Spinner, Text } from "@chakra-ui/react"
+import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/router"
-import { useQuery } from "react-query"
 
 import { ContactCfaSummary } from "@/components/espace_pro/Candidat/layout/ContactCfaSummary"
 import DemandeDeContact from "@/components/RDV/DemandeDeContact"

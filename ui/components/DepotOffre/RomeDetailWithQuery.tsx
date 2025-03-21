@@ -1,9 +1,9 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Heading, Link, Progress, Text } from "@chakra-ui/react"
 import styled from "@emotion/styled"
+import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
 import { useEffect, useState } from "react"
-import { useQuery } from "react-query"
 
 import image from "@/public/assets/checkbox-list.webp"
 import { getRomeDetail } from "@/utils/api"

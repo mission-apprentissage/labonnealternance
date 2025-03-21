@@ -1,6 +1,6 @@
 import { Box, Flex, Text } from "@chakra-ui/react"
+import { useQuery } from "@tanstack/react-query"
 import { useContext, useState } from "react"
-import { useQuery } from "react-query"
 import { assertUnreachable } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 

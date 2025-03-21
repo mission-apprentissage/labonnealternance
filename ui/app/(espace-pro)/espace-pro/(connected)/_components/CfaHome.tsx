@@ -3,10 +3,10 @@
 import { Box, Button as ChakraButton, Container, Flex, Heading, Icon, Image, Menu, MenuButton, MenuItem, MenuList, Stack, Text, useDisclosure, useToast } from "@chakra-ui/react"
 import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Link } from "@mui/material"
+import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import { useQuery } from "react-query"
 import { IRecruiter, IRecruiterJson } from "shared"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
@@ -62,7 +62,7 @@ function ListeEntreprise() {
 
   const cfaId = userAccess?.cfas.at(0)
 
-  const { data, isLoading } = useQuery("listeEntreprise", () => getEntreprisesManagedByCfa(cfaId), { enabled: Boolean(cfaId) })
+  const { data, isLoading } = useQuery(["listeEntreprise"], () => getEntreprisesManagedByCfa(cfaId), { enabled: Boolean(cfaId) })
 
   if (isLoading) {
     return <LoadingEmptySpace />

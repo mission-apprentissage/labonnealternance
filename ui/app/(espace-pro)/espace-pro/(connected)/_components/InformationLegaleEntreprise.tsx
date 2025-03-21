@@ -1,6 +1,6 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Heading, Link, Stack, Text } from "@chakra-ui/react"
-import { useQuery } from "react-query"
+import { useQuery } from "@tanstack/react-query"
 import { parseEnum } from "shared"
 import { CFA, ENTREPRISE, OPCO, OPCOS_LABEL } from "shared/constants/recruteur"
 
