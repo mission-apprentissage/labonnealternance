@@ -26,6 +26,7 @@ interface AutocompleteAsyncProps<T> {
 
   id: string
   label: string
+  disabled?: boolean
 }
 
 function renderGroup(props: AutocompleteRenderGroupParams) {
@@ -116,6 +117,7 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
     (params: AutocompleteRenderInputParams) => {
       return (
         <InputFormField
+          disabled={params.disabled ?? false}
           label={props.label}
           // @ts-expect-error
           ref={params.InputProps.ref}
@@ -192,6 +194,7 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
   return (
     <Autocomplete
       id={props.id}
+      disabled={props.disabled ?? false}
       disablePortal
       onOpen={onOpen}
       onClose={onClose}

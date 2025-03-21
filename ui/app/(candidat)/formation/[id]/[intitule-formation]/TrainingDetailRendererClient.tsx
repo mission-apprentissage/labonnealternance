@@ -114,8 +114,6 @@ function TrainingDetailPage({
   const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItem })
   const handleClose = () => router.push(PAGES.dynamic.recherche(searchParams).getPath())
 
-  console.log(selectedItem)
-
   const contextPRDV = {
     cle_ministere_educatif: selectedItem.id,
     etablissement_formateur_entreprise_raison_sociale: selectedItem.company.name,

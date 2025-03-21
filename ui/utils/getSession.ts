@@ -1,3 +1,4 @@
+import { isDynamicServerError } from "next/dist/client/components/hooks-server-context"
 import { headers } from "next/headers"
 import { ComputedUserAccess, IUserRecruteurPublic } from "shared"
 
@@ -12,6 +13,11 @@ export async function getSession(): Promise<{ user?: IUserRecruteurPublic | null
 
     return JSON.parse(sessionRaw)
   } catch (error) {
+    // Useful for NextJS to detect dynamic routes
+    if (isDynamicServerError(error)) {
+      throw error
+    }
+
     return {}
   }
 }

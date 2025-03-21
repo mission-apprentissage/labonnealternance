@@ -11,6 +11,10 @@ import { UserContextProvider } from "../contexts/userContext"
 export default async function EspaceProConnecteLayout({ children }: PropsWithChildren) {
   const { user, access } = await getSession()
 
+  if (user == null) {
+    throw new Error("User is not connected")
+  }
+
   return (
     <UserContextProvider user={user} access={access}>
       <ConnectedHeader user={user} />

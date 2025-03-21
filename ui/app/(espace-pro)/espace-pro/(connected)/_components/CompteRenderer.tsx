@@ -27,6 +27,7 @@ export default function CompteRenderer() {
   const { data, isLoading } = useQuery({
     queryKey: ["user"],
     queryFn: () => getUser(user._id.toString()),
+    throwOnError: true,
   })
   const userMutation = useMutation({
     mutationFn: ({ values }: { values: IUserWithAccountFields; isChangingEmail: boolean }) => {

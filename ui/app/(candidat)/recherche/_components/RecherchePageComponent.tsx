@@ -2,10 +2,12 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Link } from "@mui/material"
 import Image from "next/image"
 import NextLink from "next/link"
+import { Suspense } from "react"
 
 import { CandidatRechercheFilters } from "@/app/(candidat)/recherche/_components/CandidatRechercheFilters"
 import { CandidatRechercheForm } from "@/app/(candidat)/recherche/_components/CandidatRechercheForm"
 import { RechercheResulats } from "@/app/(candidat)/recherche/_components/RechercheResulats"
+import { RechercheResultatsPlaceholder } from "@/app/(candidat)/recherche/_components/RechercheResultatsPlaceholder"
 import { PAGES } from "@/utils/routes.utils"
 
 export function RecherchePageComponent() {
@@ -65,7 +67,9 @@ export function RecherchePageComponent() {
           </Box>
         </Box>
       </Box>
-      <RechercheResulats />
+      <Suspense fallback={<RechercheResultatsPlaceholder />}>
+        <RechercheResulats />
+      </Suspense>
     </Box>
   )
 }
