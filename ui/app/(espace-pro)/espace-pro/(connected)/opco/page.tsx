@@ -1,6 +1,6 @@
 "use client"
 
-import { Box, Button, Container, Flex, Icon, Menu, MenuButton, MenuItem, MenuList, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import { Box, Button, Flex, Icon, Menu, MenuButton, MenuItem, MenuList, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure, useToast } from "@chakra-ui/react"
 import { Link } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
@@ -144,11 +144,6 @@ function AdministrationOpco() {
                     <MenuItem>
                       <Link underline="hover" href={PAGES.dynamic.backOpcoInformationEntreprise({ user_id: row._id as string }).getPath()} aria-label="voir les informations">
                         Voir les informations
-                      </Link>
-                    </MenuItem>
-                    <MenuItem>
-                      <Link underline="hover" href={PAGES.dynamic.backOpcoOffresEntreprise({ establishment_id: row.establishment_id }).getPath()}>
-                        Voir les offres
                       </Link>
                     </MenuItem>
                     {tabIndex !== 1 && (
