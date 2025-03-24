@@ -5,17 +5,17 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Dialog, DialogContent, DialogTitle } from "@mui/material"
 import { Form, Formik } from "formik"
-import { useSearchParams } from "next/navigation"
 import z from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import { CustomInput } from "@/components/espace_pro"
 import { sendMagiclink } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
+import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
 export default function Authentification() {
-  const p = useSearchParams()
-  const hasError = Boolean(p.get("error") === "true")
+  const { error } = useSearchParamsRecord()
+  const hasError = Boolean(error === "true")
 
   const toast = useToast()
 
