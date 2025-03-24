@@ -171,15 +171,6 @@ export const PAGES = {
         description: "Diffusez simplement et gratuitement vos offres en alternance.",
       }),
     },
-    administrationOpco: {
-      getPath: () => `/espace-pro/opco` as string,
-      title: "Administration OPCO",
-      index: false,
-      getMetadata: () => ({
-        title: "Administration OPCO",
-        description: "",
-      }),
-    },
     espaceProCreationEntreprise: {
       getPath: () => `/espace-pro/creation/entreprise` as string,
       title: "Créer un compte entreprise",
@@ -280,9 +271,6 @@ export const PAGES = {
       raison_sociale?: string
     }): IPage => {
       const isCreation = offerId === "creation"
-
-      console.log("offerId", offerId, "establishment_id", establishment_id, "userType", userType, "raison_sociale", raison_sociale)
-
       return {
         getPath: () => {
           const raisonSocialeParam = raison_sociale ? `?raison_sociale=${encodeURIComponent(raison_sociale)}` : ""
@@ -292,7 +280,7 @@ export const PAGES = {
             case CFA:
               return isCreation ? PAGES.dynamic.backCfaEntrepriseCreationOffre(establishment_id).getPath() : `/espace-pro/cfa/entreprise/${establishment_id}/offre/${offerId}`
             case ENTREPRISE:
-              return isCreation ? PAGES.dynamic.backCreationOffre().getPath() : PAGES.dynamic.backEntrepriseEditionOffre({ job_id: offerId }).getPath()
+              return isCreation ? PAGES.static.backEntrepriseCreationOffre.getPath() : PAGES.dynamic.backEntrepriseEditionOffre({ job_id: offerId }).getPath()
             case ADMIN:
               return `/espace-pro/administration/users/${userId}/entreprise/${establishment_id}/offre/${offerId}${raisonSocialeParam}`
             default:
@@ -330,16 +318,6 @@ export const PAGES = {
         getMetadata: () => ({}),
       }
     },
-    // miseEnRelationCreationOffre: ({ isWidget, queryParameters }: { isWidget: boolean; queryParameters: string }): IPage => {
-    //   const path = `${isWidget ? "/espace-pro/widget/entreprise/mise-en-relation" : "/espace-pro/creation/mise-en-relation"}${queryParameters}`
-
-    //   return {
-    //     getPath: () => path,
-    //     title: "Mise en relation avec les CFAs",
-    //     index: false,
-    //     getMetadata: () => ({}),
-    //   }
-    // },
     espaceProCreationDetail: (params: { siret: string; email?: string; type: "CFA" | "ENTREPRISE"; origin: string; isWidget: boolean }): IPage => ({
       getPath: () => {
         const { isWidget, ...querystring } = params
@@ -496,10 +474,6 @@ export const PAGES = {
     backEntrepriseEditionOffre: ({ job_id }: { job_id: string }): IPage => ({
       getPath: () => `/espace-pro/entreprise/offre/${job_id}` as string,
       title: job_id ? "Edition d'une offre" : "Création d'une offre",
-    }),
-    backCreationOffre: (): IPage => ({
-      getPath: () => `/espace-pro/entreprise/creation-offre` as string,
-      title: "Nouvelle offre",
     }),
     backHomeEntreprise: (): IPage => ({
       getPath: () => `/espace-pro/entreprise` as string,
