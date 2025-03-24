@@ -1,8 +1,9 @@
 "use client"
 
 import { Box, Container } from "@chakra-ui/react"
+import { useQuery } from "@tanstack/react-query"
 import { useParams } from "next/navigation"
-import { useQuery } from "react-query"
+
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import DetailEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/DetailEntreprise"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"

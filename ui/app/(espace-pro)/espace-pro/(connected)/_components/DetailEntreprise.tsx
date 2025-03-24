@@ -1,15 +1,15 @@
 "use client"
 import { Badge, Box, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, SimpleGrid, Spinner, Stack, Text, useDisclosure, useToast } from "@chakra-ui/react"
 import { Button } from "@codegouvfr/react-dsfr/Button"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
-import { useMutation, useQueryClient } from "react-query"
-import { IUserStatusValidationJson } from "shared"
+import { INewSuperUser, IUserStatusValidationJson } from "shared"
 import { AUTHTYPE, CFA, ENTREPRISE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
 import CustomInput from "@/app/(espace-pro)/_components/CustomInput"
+import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 import { OffresTabs } from "@/app/(espace-pro)/espace-pro/(connected)/_components/OffresTabs"
-import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/compte/_components/InformationLegaleEntreprise"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 import { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationModificationOpco, UserValidationHistory } from "@/components/espace_pro"
@@ -73,10 +73,21 @@ export default function DetailEntreprise({ userRecruteur, recruiter }: { userRec
     }
   }
 
-  // @ts-expect-error: TODO
-  const userMutation = useMutation(({ userId, values }) => updateEntrepriseAdmin(userId, values, userRecruteur.establishment_siret), {
+  const userMutation = useMutation({
+    mutationFn: ({ userId, values, siret }: { userId: string; values: INewSuperUser; siret: string }) => {
+      return updateEntrepriseAdmin(userId, values, siret)
+    },
     onSuccess: () => {
-      client.invalidateQueries("user")
+      client.invalidateQueries({
+        queryKey: ["user"],
+      })
+      toast({
+        title: "Mise à jour enregistrée avec succès",
+        position: "top-right",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      })
     },
   })
 
@@ -125,15 +136,8 @@ export default function DetailEntreprise({ userRecruteur, recruiter }: { userRec
         onSubmit={async (values, { setSubmitting }) => {
           setSubmitting(true)
           // For companies we update the User Collection and the Formulaire collection at the same time
-          // @ts-expect-error: TODO
-          userMutation.mutate({ userId: userRecruteur._id, values })
-          toast({
-            title: "Mise à jour enregistrée avec succès",
-            position: "top-right",
-            status: "success",
-            duration: 2000,
-            isClosable: true,
-          })
+          userMutation.mutate({ userId: userRecruteur._id, values, siret: userRecruteur.establishment_siret })
+
           setSubmitting(false)
         }}
       >
