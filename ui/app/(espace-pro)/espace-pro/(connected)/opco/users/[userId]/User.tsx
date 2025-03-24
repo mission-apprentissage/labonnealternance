@@ -1,7 +1,7 @@
 "use client"
 import { Container } from "@chakra-ui/react"
+import { useQuery } from "@tanstack/react-query"
 import { useParams } from "next/navigation"
-import { useQuery } from "react-query"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import DetailEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/DetailEntreprise"
@@ -12,8 +12,14 @@ import { PAGES } from "@/utils/routes.utils"
 export default function User() {
   const { userId } = useParams() as { userId: string }
 
-  const { data: userRecruteur, isLoading } = useQuery("user", () => getUser(userId), { cacheTime: 0, enabled: !!userId })
-  const { data: recruiter, isLoading: recruiterLoading } = useQuery(["recruiter", userRecruteur?.establishment_id], {
+  const { data: userRecruteur, isLoading } = useQuery({
+    queryKey: ["user"],
+    queryFn: () => getUser(userId),
+    gcTime: 0,
+    enabled: !!userId,
+  })
+  const { data: recruiter, isLoading: recruiterLoading } = useQuery({
+    queryKey: ["recruiter", userRecruteur?.establishment_id],
     enabled: Boolean(userRecruteur?.establishment_id),
     queryFn: () => getFormulaire(userRecruteur.establishment_id),
   })

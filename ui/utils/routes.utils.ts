@@ -288,9 +288,7 @@ export const PAGES = {
           const raisonSocialeParam = raison_sociale ? `?raison_sociale=${encodeURIComponent(raison_sociale)}` : ""
           switch (userType) {
             case OPCO:
-              return isCreation
-                ? `/espace-pro/opco/entreprise/${establishment_id}/creation-offre${raisonSocialeParam}`
-                : `/espace-pro/opco/entreprise/${establishment_id}/offre/${offerId}${raisonSocialeParam}`
+              return `/espace-pro/opco/users/${userId}/entreprise/${establishment_id}/offre/${offerId}${raisonSocialeParam}`
             case CFA:
               return isCreation ? PAGES.dynamic.backCfaEntrepriseCreationOffre(establishment_id).getPath() : `/espace-pro/cfa/entreprise/${establishment_id}/offre/${offerId}`
             case ENTREPRISE:
@@ -507,9 +505,9 @@ export const PAGES = {
       getPath: () => `/espace-pro/entreprise` as string,
       title: "Accueil entreprise",
     }),
-    backOpcoOffresEntreprise: ({ establishment_id }: { establishment_id: string }): IPage => ({
+    backOpcoOffresEntreprise: ({ establishment_id, raison_sociale }: { establishment_id: string; raison_sociale: string }): IPage => ({
       getPath: () => `/espace-pro/opco/entreprise/${establishment_id}` as string,
-      title: "Entreprise",
+      title: `Entreprise ${raison_sociale}`,
     }),
     backOpcoInformationEntreprise: ({ user_id, user_label }: { user_id: string; user_label?: string }): IPage => ({
       getPath: () => `/espace-pro/opco/users/${user_id}` as string,
