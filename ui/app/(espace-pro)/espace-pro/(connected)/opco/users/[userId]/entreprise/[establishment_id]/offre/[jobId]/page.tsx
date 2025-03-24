@@ -10,7 +10,7 @@ import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
 export default function Page() {
   const router = useRouter()
-  const { establishment_id, jobId } = useParams() as { establishment_id: string; jobId: string }
+  const { userId, establishment_id, jobId } = useParams() as { userId: string; establishment_id: string; jobId: string }
   const { raison_sociale } = useSearchParamsRecord()
 
   return (
@@ -18,14 +18,14 @@ export default function Page() {
       <Breadcrumb
         pages={[
           PAGES.static.backOpcoHome,
-          PAGES.dynamic.backOpcoOffresEntreprise({ establishment_id, raison_sociale }),
+          PAGES.dynamic.backOpcoInformationEntreprise({ user_id: userId, user_label: raison_sociale }),
           PAGES.dynamic.offreUpsert({ establishment_id, offerId: jobId, userType: OPCO }),
         ]}
       />
       <UpsertOffre
         establishment_id={establishment_id}
         job_id={jobId}
-        onSuccess={() => router.push(PAGES.dynamic.backOpcoOffresEntreprise({ establishment_id, raison_sociale }).getPath())}
+        onSuccess={() => router.push(PAGES.dynamic.backOpcoInformationEntreprise({ user_id: userId, user_label: raison_sociale }).getPath())}
       />
     </>
   )
