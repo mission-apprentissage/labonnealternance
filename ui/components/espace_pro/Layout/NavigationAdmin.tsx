@@ -8,6 +8,7 @@ import { PAGES } from "@/utils/routes.utils"
 export enum EAdminPages {
   GESTION_RECRUTEURS = "GESTION_RECRUTEURS",
   ENTREPRISES_ALGO = "ENTREPRISES_ALGO",
+  RECHERCHE_RENDEZ_VOUS = "RECHERCHE_RENDEZ_VOUS",
 }
 
 const selectedTabParams = {
@@ -39,6 +40,10 @@ const pageDefs = [
     page: EAdminPages.ENTREPRISES_ALGO,
     path: PAGES.static.backAdminGestionDesEntreprises.getPath(),
   },
+  {
+    page: EAdminPages.RECHERCHE_RENDEZ_VOUS,
+    path: PAGES.static.rendezVousApprentissageRecherche.getPath(),
+  },
 ]
 
 const NavigationAdmin = ({ currentPage }: { currentPage: EAdminPages }) => {
@@ -68,6 +73,9 @@ const NavigationAdmin = ({ currentPage }: { currentPage: EAdminPages }) => {
             </Tab>
             <Tab data-testid="algo_company_tab" {...tabParams} isDisabled={selectedIndex === 1} _focus={focusedTabParams} _selected={selectedTabParams}>
               Entreprises de l'algorithme
+            </Tab>
+            <Tab data-testid="recherche_rendez_vous_apprentissage_tab" {...tabParams} isDisabled={selectedIndex === 1} _focus={focusedTabParams} _selected={selectedTabParams}>
+              Rendez-vous apprentissage
             </Tab>
           </TabList>
         </Tabs>

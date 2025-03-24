@@ -209,3 +209,8 @@ export const reportLbaItem = (itemId: string, type: LBA_ITEM_TYPE, reason: strin
   apiPost("/report-company", { querystring: { type, itemId }, body: { reason, reasonDetails } })
 
 export const getMetiersDAvenir = () => apiGet("/metiersdavenir", {})
+
+export const getEligibleTrainingsForAppointments = (siret: string) =>
+  apiGet("/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret", { params: { siret: siret } })
+
+export const getEtablissement = (siret: string) => apiGet("/admin/etablissements/siret-formateur/:siret", { params: { siret: siret } })

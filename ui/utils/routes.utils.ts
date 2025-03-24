@@ -216,6 +216,10 @@ export const PAGES = {
       getPath: () => `/espace-pro/entreprise/creation-offre` as string,
       title: "Nouvelle offre",
     },
+    rendezVousApprentissageRecherche: {
+      getPath: () => `/espace-pro/administration/rendez-vous-apprentissage` as string,
+      title: "Recherche etablissement rendez-vous apprentissage",
+    },
   },
   dynamic: {
     // example
@@ -499,6 +503,10 @@ export const PAGES = {
           throw new Error("user type not supported")
       }
     },
+    rendezVousApprentissageDetail: ({ siret }: { siret: string }): IPage => ({
+      getPath: () => `/espace-pro/administration/rendez-vous-apprentissage/${siret}` as string,
+      title: `Détail etablissement ${siret}`,
+    }),
   },
   notion: {},
 } as const satisfies IPages

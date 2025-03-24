@@ -190,7 +190,6 @@ export const zFormationCatalogueSchema = z
     num_tel: z.string().nullable().describe("Numéro de téléphone de contact"),
     distance: z.number().nullish(),
   })
-  .strict()
   .extend(etablissementFormateurSchema.shape)
   .extend(etablissementGestionnaireSchema.shape)
   .extend(etablissementReferenceSchema.shape)
