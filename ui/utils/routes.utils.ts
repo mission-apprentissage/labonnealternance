@@ -195,6 +195,10 @@ export const PAGES = {
       getPath: () => `/espace-pro/administration/gestion-des-entreprises` as string,
       title: "Gestion des entreprises",
     },
+    backAdminGestionDesAdministrateurs: {
+      getPath: () => `/espace-pro/administration/gestion-des-administrateurs` as string,
+      title: "Gestion des administrateurs",
+    },
     backOpcoHome: {
       getPath: () => `/espace-pro/opco` as string,
       title: "Accueil OPCO",
