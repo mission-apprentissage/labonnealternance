@@ -7,9 +7,9 @@ import { LngLat, Map as Mapbox } from "mapbox-gl"
 import { useCallback, useEffect, useState } from "react"
 
 import { earthCircumferenceKm, mapboxTileSize } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
-import { useUpdateCandidatSearchParam } from "@/app/(candidat)/recherche/_hooks/useUpdateCandidatSearchParam"
+import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
+import type { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { radiusOptions } from "@/app/_components/RechercheForm/RechercheForm"
-import type { IRecherchePageParams } from "@/utils/routes.utils"
 
 type RechercheMapIciProps = {
   map: Mapbox
@@ -45,11 +45,7 @@ function computeNewSearchGeoParams(map: Mapbox): Required<IRecherchePageParams["
 
   const containedOptions = RADIUS_OPTIONS_VALUES.filter((option) => newRadiusRaw < option)
 
-  const newRadius = containedOptions.length === 0 ? null : Math.max(...containedOptions)
-
-  if (newRadius == null) {
-    return null
-  }
+  const newRadius = Math.min(...containedOptions)
 
   return {
     address: null,
@@ -64,7 +60,7 @@ export function RechercheMapIci(props: RechercheMapIciProps) {
 
   const [isVisible, setIsVisible] = useState(false)
 
-  const updateCandidatSearchParam = useUpdateCandidatSearchParam()
+  const navigateToRecherchePage = useNavigateToRecherchePage()
 
   const isSameArea = useCallback(
     (map: Mapbox) => {
@@ -73,7 +69,7 @@ export function RechercheMapIci(props: RechercheMapIciProps) {
       }
 
       const newCenter = map.getCenter()
-      const d = newCenter.distanceTo(new LngLat(...searchArea.center))
+      const d = newCenter.distanceTo(new LngLat(...searchArea.center)) / 1_000
 
       // Check if the map is centered on the search area (with a 25% margin)
       if (d > 0.25 * radius) {
@@ -82,7 +78,7 @@ export function RechercheMapIci(props: RechercheMapIciProps) {
 
       const newParams = computeNewSearchGeoParams(map)
 
-      return newParams !== null && newParams.radius === radius
+      return newParams.radius === radius
     },
     [searchArea, radius]
   )
@@ -107,8 +103,8 @@ export function RechercheMapIci(props: RechercheMapIciProps) {
 
   const onClick = useCallback(() => {
     const params = computeNewSearchGeoParams(map)
-    updateCandidatSearchParam({ geo: params }, true)
-  }, [map, updateCandidatSearchParam])
+    navigateToRecherchePage({ geo: params }, true)
+  }, [map, navigateToRecherchePage])
 
   if (!isVisible) {
     return null
@@ -129,9 +125,10 @@ export function RechercheMapIci(props: RechercheMapIciProps) {
         sx={{
           zIndex: 5,
           boxShadow: 2,
+          backgroundColor: fr.colors.decisions.background.default.grey.default,
         }}
       >
-        <Button iconId="ri-refresh-line" onClick={onClick}>
+        <Button iconId="ri-refresh-line" onClick={onClick} priority="tertiary">
           Rechercher dans cette zone
         </Button>
       </Box>

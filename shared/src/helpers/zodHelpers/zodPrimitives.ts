@@ -1,4 +1,3 @@
-import { capitalize } from "lodash-es"
 import { ZodEnum } from "zod"
 
 import { CODE_INSEE_REGEX, CODE_NAF_REGEX, CODE_POSTAL_REGEX, CODE_ROME_REGEX, RNCP_REGEX, SIRET_REGEX, UAI_REGEX } from "../../constants/regex.js"
@@ -6,18 +5,6 @@ import { validatePhone } from "../../validators/phoneValidator.js"
 import { validateSIRET } from "../../validators/siretValidator.js"
 import { removeUrlsFromText } from "../common.js"
 import { z } from "../zodWithOpenApi.js"
-
-// custom error map to translate zod errors to french
-const customErrorMap: z.ZodErrorMap = (issue, ctx) => {
-  if (issue.code === z.ZodIssueCode.invalid_type) {
-    return { message: `${capitalize(issue.expected)} attendu` }
-  } else if (issue.code === z.ZodIssueCode.custom) {
-    return { message: `${capitalize(issue.path.join("."))}: ${issue.message}` }
-  }
-
-  return { message: ctx.defaultError }
-}
-z.setErrorMap(customErrorMap)
 
 // Fonction générique pour créer une projection MongoDB avec exclusion de champs
 export const createProjectionFromZod = <T extends z.ZodObject<any>>(schema: T, excludeFields: (keyof z.infer<T>)[]): Record<string, 1> => {

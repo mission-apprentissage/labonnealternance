@@ -11,7 +11,7 @@ const ItemDetailLoading = ({ type }) => {
             text: "Chargement du descriptif de la formation",
           },
           {
-            src: "/images/loading/search_training.svg",
+            src: "/images/loading/search_trainings.svg",
             text: "Vérification des coordonnées du centre de formation",
           },
           {

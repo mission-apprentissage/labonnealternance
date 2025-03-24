@@ -6,10 +6,11 @@ import { AUTHTYPE } from "shared/constants/index"
 import { apiPost } from "@/utils/api.utils"
 
 import { publicConfig } from "./config.public"
+import { PAGES } from "./utils/routes.utils"
 
 const removeAtEnd = (url: string, removed: string): string => (url.endsWith(removed) ? url.slice(0, -removed.length) : url)
 
-async function getSession(request: NextRequest): Promise<{ user: IUserRecruteurPublic | null; userAccess: ComputedUserAccess | null }> {
+async function getSession(request: NextRequest): Promise<{ user: IUserRecruteurPublic | null; userAccess: ComputedUserAccess | null } | null> {
   try {
     const sessionCookie = request.cookies.get("lba_session")
 
@@ -63,23 +64,8 @@ const verifyAuthentication = async (search: string, request: NextRequest) => {
 }
 
 const redirectAfterAuthentication = async (user: IUserRecruteurPublic, request: NextRequest) => {
-  switch (user.type) {
-    case AUTHTYPE.ENTREPRISE:
-      return NextResponse.redirect(new URL(`/espace-pro/entreprise`, request.url))
-
-    case AUTHTYPE.OPCO:
-      return NextResponse.redirect(new URL(`/espace-pro/opco`, request.url))
-
-    case AUTHTYPE.CFA:
-      return NextResponse.redirect(new URL(`/espace-pro/cfa`, request.url))
-
-    case AUTHTYPE.ADMIN:
-      return NextResponse.redirect(new URL(`/espace-pro/administration/users`, request.url))
-
-    default:
-  }
-
-  return NextResponse.redirect(new URL("/espace-pro/administration", request.url))
+  const path = PAGES.dynamic.backHome({ userType: user.type }).getPath()
+  return NextResponse.redirect(new URL(path, request.url))
 }
 
 const isUnallowedPathForUser = (user: IUserRecruteurPublic, pathname: string) => {
@@ -93,10 +79,6 @@ const isUnallowedPathForUser = (user: IUserRecruteurPublic, pathname: string) =>
 
 export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl
-  if (excludedStartPaths.some((excludedStartPath) => pathname.startsWith(excludedStartPath))) {
-    return
-  }
-
   const requestHeaders = new Headers(request.headers)
   const session = await getSession(request)
   const user = session?.user
@@ -105,19 +87,16 @@ export async function middleware(request: NextRequest) {
     if (user) {
       return redirectAfterAuthentication(user, request)
     }
-
     return await verifyAuthentication(search, request)
   }
 
-  if (!user) {
+  if (isConnectionRequired(pathname) && (!user || isUnallowedPathForUser(user, pathname))) {
     return NextResponse.redirect(new URL("/espace-pro/authentification", request.url))
   }
 
-  if (isUnallowedPathForUser(user, pathname)) {
-    return NextResponse.redirect(new URL("/espace-pro/authentification", request.url))
+  if (session) {
+    requestHeaders.set("x-session", JSON.stringify(session))
   }
-
-  requestHeaders.set("x-session", JSON.stringify(session))
 
   return NextResponse.next({
     request: {
@@ -127,11 +106,12 @@ export async function middleware(request: NextRequest) {
 }
 
 const excludedStartPaths = ["/espace-pro/authentification/validation/", "/espace-pro/widget/", "/espace-pro/creation/", "/espace-pro/offre/impression/"]
+const isConnectionRequired = (path: string) => excludedStartPaths.some((excludedStartPath) => path.startsWith(excludedStartPath))
 
 export const config = {
   matcher: [
     {
-      source: "/espace-pro/:path*",
+      source: "/:path*",
     },
   ],
 }

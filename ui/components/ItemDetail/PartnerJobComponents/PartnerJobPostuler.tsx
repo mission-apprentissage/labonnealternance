@@ -22,6 +22,7 @@ export const PartnerJobPostuler = ({ job, isCollapsedHeader }: { job: ILbaItemPa
   if (job.contact?.url) {
     return (
       <Box my={isCollapsedHeader ? 2 : 4}>
+        {/* @ts-ignore TODO */}
         <Button
           nativeButtonProps={{
             "data-tracking-id": "postuler-offre-job-partner",

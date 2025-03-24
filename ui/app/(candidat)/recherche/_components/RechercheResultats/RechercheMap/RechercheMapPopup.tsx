@@ -6,14 +6,15 @@ import { useCallback, useEffect, useState } from "react"
 import { createPortal } from "react-dom"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
+import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
 import type { ILbaItem } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { useResultItemUrl } from "@/app/(candidat)/recherche/_hooks/useResultItemUrl"
-import { useUpdateCandidatSearchParam } from "@/app/(candidat)/recherche/_hooks/useUpdateCandidatSearchParam"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 type RechercheMapPopupProps = {
   map: Map | null
-  selection: ILbaItem[]
+  activeItems: ILbaItem[]
+  variant: "recherche" | "detail"
 }
 
 const popupElement = globalThis.document == null ? null : globalThis.document.createElement("div")
@@ -36,8 +37,8 @@ function RechercheMapPopupLink(props: { item: ILbaItem }) {
   )
 }
 
-function RechercheMapPopupContent(props: { selection: ILbaItem[] }) {
-  const type = props.selection[0].ideaType === LBA_ITEM_TYPE_OLD.FORMATION ? "formation" : "job"
+function RechercheMapPopupContent(props: { activeItems: ILbaItem[] }) {
+  const type = props.activeItems[0].ideaType === LBA_ITEM_TYPE_OLD.FORMATION ? "formation" : "job"
   return (
     <Box
       sx={{
@@ -56,7 +57,7 @@ function RechercheMapPopupContent(props: { selection: ILbaItem[] }) {
       >
         <Image src={type === "formation" ? "/images/icons/book.svg" : "/images/icons/job.svg"} width={40} height={40} alt="" unoptimized />
         <Typography variant="h4">
-          {type === "formation" ? `Formation${props.selection.length > 1 ? "s" : ""}` : `Opportunité${props.selection.length > 1 ? "s" : ""} d'emploi`}
+          {type === "formation" ? `Formation${props.activeItems.length > 1 ? "s" : ""}` : `Opportunité${props.activeItems.length > 1 ? "s" : ""} d'emploi`}
         </Typography>
       </Box>
       <Typography
@@ -65,7 +66,7 @@ function RechercheMapPopupContent(props: { selection: ILbaItem[] }) {
         }}
         className={fr.cx("fr-text--sm")}
       >
-        {props.selection[0].place.fullAddress}
+        {props.activeItems[0].place.fullAddress}
       </Typography>
       <Box
         sx={{
@@ -74,7 +75,7 @@ function RechercheMapPopupContent(props: { selection: ILbaItem[] }) {
           gap: fr.spacing("1w"),
         }}
       >
-        {props.selection.map((item) => (
+        {props.activeItems.map((item) => (
           <RechercheMapPopupLink key={item.id} item={item} />
         ))}
       </Box>
@@ -84,7 +85,7 @@ function RechercheMapPopupContent(props: { selection: ILbaItem[] }) {
 
 export function RechercheMapPopup(props: RechercheMapPopupProps) {
   const [popup, setPopup] = useState<Popup | null>(null)
-  const updateCandidatSearchParam = useUpdateCandidatSearchParam()
+  const navigateToRecherchePage = useNavigateToRecherchePage()
 
   useEffect(() => {
     if (props.map === null || popupElement === null) {
@@ -100,6 +101,7 @@ export function RechercheMapPopup(props: RechercheMapPopupProps) {
     setPopup(
       new Popup({
         offset: 30,
+        closeOnClick: false,
       }).setDOMContent(popupElement)
     )
     // popupElement instance will change on dev mode reload
@@ -107,27 +109,31 @@ export function RechercheMapPopup(props: RechercheMapPopupProps) {
   }, [props.map, popupElement])
 
   const onClose = useCallback(() => {
-    updateCandidatSearchParam({ selection: [] }, true)
-  }, [updateCandidatSearchParam])
+    if (props.variant === "detail") {
+      return
+    }
+
+    navigateToRecherchePage({ activeItems: [] }, true)
+  }, [navigateToRecherchePage, props.variant])
 
   useEffect(() => {
-    if (props.map === null || popup === null || props.selection.length === 0) {
+    if (props.map === null || popup === null || props.activeItems.length === 0) {
       return
     }
 
     // All selected items have the same place
-    popup.setLngLat([props.selection[0].place.longitude, props.selection[0].place.latitude]).addTo(props.map)
+    popup.setLngLat([props.activeItems[0].place.longitude, props.activeItems[0].place.latitude]).addTo(props.map)
     popup.on("close", onClose)
 
     return () => {
       popup.off("close", onClose)
       popup.remove()
     }
-  }, [props.map, props.selection, popup, onClose])
+  }, [props.map, props.activeItems, popup, onClose])
 
-  if (props.selection.length === 0 || !popup) {
+  if (props.activeItems.length === 0 || !popup) {
     return null
   }
 
-  return createPortal(<RechercheMapPopupContent selection={props.selection} />, popupElement)
+  return createPortal(<RechercheMapPopupContent activeItems={props.activeItems} />, popupElement)
 }

@@ -1,11 +1,24 @@
+import { useQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
-import { useQuery } from "react-query"
-import { IGetRoutes, ILbaItemFormation, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob, IQuery, IResponse } from "shared"
+import {
+  IGetRoutes,
+  ILbaItemFormation,
+  ILbaItemFormationJson,
+  ILbaItemLbaCompany,
+  ILbaItemLbaCompanyJson,
+  ILbaItemLbaJob,
+  ILbaItemLbaJobJson,
+  ILbaItemPartnerJob,
+  ILbaItemPartnerJobJson,
+  IQuery,
+  IResponse,
+} from "shared"
+import { Jsonify } from "type-fest"
 
+import { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { apiGet } from "@/utils/api.utils"
-import { IRecherchePageParams } from "@/utils/routes.utils"
 
-export type ILbaItem = ILbaItemLbaCompany | ILbaItemPartnerJob | ILbaItemFormation | ILbaItemLbaJob
+export type ILbaItem = ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson | ILbaItemFormationJson | ILbaItemLbaJobJson
 
 type IUseRechercheResultsIdle = {
   status: "idle"
@@ -28,10 +41,10 @@ type IUseRechercheResultLoadingJobs = {
   formationStatus: "success" | "error" | "disabled"
   jobStatus: "loading"
 
-  items: Array<ILbaItemFormation>
+  items: Array<ILbaItemFormationJson>
   itemsCount: number
 
-  formations: Array<ILbaItemFormation>
+  formations: Array<ILbaItemFormationJson>
 
   formationsCount: number
 
@@ -49,8 +62,8 @@ export type IUseRechercheResultsSuccess = {
 
   items: Array<ILbaItem>
   itemsCount: number
-  formations: Array<ILbaItemFormation>
-  jobs: Array<ILbaItemLbaCompany | ILbaItemPartnerJob | ILbaItemLbaJob>
+  formations: Array<ILbaItemFormationJson>
+  jobs: Array<ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson | ILbaItemLbaJobJson>
 
   nonBlockingErrors: {
     formations: string | null
@@ -74,7 +87,9 @@ type IUseRechercheResultsError = {
 export type IUseRechercheResults = IUseRechercheResultsIdle | IUseRechercheResultLoading | IUseRechercheResultLoadingJobs | IUseRechercheResultsSuccess | IUseRechercheResultsError
 
 function getQueryStatus(query: ReturnType<typeof useQuery>, isEnabled: boolean): "success" | "error" | "disabled" | "loading" {
-  if (query.isIdle || !isEnabled) {
+  const isQueryDisabled = query.isLoading && query.fetchStatus === "idle"
+
+  if (isQueryDisabled || !isEnabled) {
     return "disabled"
   }
   if (query.isLoading) {
@@ -137,13 +152,13 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
   const isFormationEnabled = formationQuerystring.romes.length > 0 && params.displayFormations
   const isJobsEnabled = jobQuerystring.romes.length > 0 && (params.displayEntreprises || params.displayPartenariats)
 
-  const formationQuery = useQuery<ILbaItemFormation[]>({
+  const formationQuery = useQuery<Jsonify<ILbaItemFormation>[]>({
     queryKey: ["/v1/_private/formations/min", formationQuerystring],
     queryFn: async ({ signal }) => {
       return apiGet("/v1/_private/formations/min", { querystring: formationQuerystring }, { signal, priority: "high" })
     },
     enabled: isFormationEnabled,
-    useErrorBoundary: false,
+    throwOnError: false,
     staleTime: 1000 * 60 * 60,
   })
 
@@ -153,12 +168,12 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
       return apiGet("/v1/_private/jobs/min", { querystring: jobQuerystring }, { signal, priority: "high" })
     },
     enabled: isJobsEnabled,
-    useErrorBoundary: false,
+    throwOnError: false,
     staleTime: 1000 * 60 * 60,
   })
 
   const jobs = useMemo(() => {
-    const result: Array<ILbaItemLbaCompany | ILbaItemPartnerJob | ILbaItemLbaJob> = []
+    const result: Array<Jsonify<ILbaItemLbaCompany | ILbaItemPartnerJob | ILbaItemLbaJob>> = []
 
     if (!jobQuery.isSuccess || !isJobsEnabled) {
       return result
@@ -167,12 +182,14 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
     if (jobQuery.data.matchas && "results" in jobQuery.data.matchas) {
       result.push(
         ...jobQuery.data.matchas.results
+          // @ts-ignore TODO
           .filter((job: ILbaItemLbaJob) => {
             if (job.company.mandataire) {
               return params.displayPartenariats
             }
             return params.displayEntreprises
           })
+          // @ts-ignore TODO
           .toSorted((a: ILbaItemLbaJob, b: ILbaItemLbaJob) => {
             return a.place.distance - b.place.distance
           })
@@ -185,6 +202,7 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
 
     if (jobQuery.data.partnerJobs && "results" in jobQuery.data.partnerJobs) {
       result.push(
+        // @ts-ignore TODO
         ...jobQuery.data.partnerJobs.results.toSorted((a: ILbaItemPartnerJob, b: ILbaItemPartnerJob) => {
           return a.place.distance - b.place.distance
         })
@@ -198,7 +216,7 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
     return result
   }, [jobQuery.data, jobQuery.isSuccess, isJobsEnabled, params.displayPartenariats, params.displayEntreprises])
 
-  const formations = useMemo((): ILbaItemFormation[] => {
+  const formations = useMemo((): ILbaItemFormationJson[] => {
     return formationQuery.data && isFormationEnabled ? formationQuery.data : []
   }, [formationQuery.data, isFormationEnabled])
 
@@ -216,13 +234,13 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
     return result
   }, [jobs, formations])
 
+  const formationStatus = getQueryStatus(formationQuery, isFormationEnabled)
+  const jobStatus = getQueryStatus(jobQuery, isJobsEnabled)
+
   return useMemo(() => {
     if (!isFormationEnabled && !isJobsEnabled) {
       return { status: "idle", formationStatus: "idle", jobStatus: "idle", itemsCount: 0 }
     }
-
-    const formationStatus = getQueryStatus(formationQuery, isFormationEnabled)
-    const jobStatus = getQueryStatus(jobQuery, isJobsEnabled)
 
     if ((formationStatus === "error" || formationStatus === "disabled") && (jobStatus === "error" || jobStatus === "disabled")) {
       return { status: "error", formationStatus, jobStatus, itemsCount: 0 }
@@ -233,12 +251,13 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
     }
 
     const nonBlockingErrors = {
-      formations: formationQuery.isError ? "Oups ! Les résultats formation ne sont pas disponibles actuellement !" : null,
-      jobs: jobQuery.isError
-        ? "Problème momentané d'accès aux opportunités d'emploi"
-        : isPartialJobError(jobQuery.data)
-          ? "Problème momentané d'accès à certaines opportunités d'emploi"
-          : null,
+      formations: formationStatus === "error" ? "Oups ! Les résultats formation ne sont pas disponibles actuellement !" : null,
+      jobs:
+        jobStatus === "error"
+          ? "Problème momentané d'accès aux opportunités d'emploi"
+          : isPartialJobError(jobQuery.data)
+            ? "Problème momentané d'accès à certaines opportunités d'emploi"
+            : null,
     }
 
     if (jobStatus === "loading") {
@@ -268,5 +287,5 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
       entrepriseCount: jobs.filter((item) => !item.company.mandataire).length,
       partenariatCount: jobs.filter((item) => item.company.mandataire).length,
     }
-  }, [formationQuery, jobQuery, isFormationEnabled, isJobsEnabled, jobs, formations, items])
+  }, [jobQuery.data, isFormationEnabled, isJobsEnabled, jobs, formations, items, formationStatus, jobStatus])
 }

@@ -1,17 +1,16 @@
 "use client"
-import { Box, Button, Container, Flex, Icon, Menu, MenuButton, MenuItem, MenuList, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import { Box, Button, Flex, Icon, Menu, MenuButton, MenuItem, MenuList, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure, useToast } from "@chakra-ui/react"
 import { Link } from "@mui/material"
+import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
-import { useQuery } from "react-query"
 import { getLastStatusEvent, IUserRecruteurJson, IUserStatusValidationJson } from "shared"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
-import { AnimationContainer, ConfirmationActivationUtilsateur, ConfirmationDesactivationUtilisateur, TableNew } from "@/components/espace_pro"
-import NavigationAdmin, { EAdminPages } from "@/components/espace_pro/Layout/NavigationAdmin"
+import { ConfirmationActivationUtilsateur, ConfirmationDesactivationUtilisateur, TableNew } from "@/components/espace_pro"
 import { Parametre } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
 
@@ -36,7 +35,10 @@ function Users() {
     }
   }, [newUser, toast])
 
-  const { isLoading, data } = useQuery("user-list", () => apiGet("/user", {}))
+  const { isLoading, data } = useQuery({
+    queryKey: ["user-list"],
+    queryFn: () => apiGet("/user", {}),
+  })
 
   if (isLoading) {
     return <LoadingEmptySpace />
@@ -204,55 +206,42 @@ function Users() {
   ]
 
   return (
-    <AnimationContainer>
+    <>
       <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={currentEntreprise} />
       <ConfirmationActivationUtilsateur {...confirmationActivationUtilisateur} {...currentEntreprise} />
 
-      <Container maxW="container.xl" mt={5}>
-        <Flex align="center" justify="space-between" mb={12}>
-          <Text fontSize="2rem" fontWeight={700}>
-            Gestion des recruteurs
-          </Text>
-        </Flex>
+      <Flex align="center" justify="space-between" mb={12}>
+        <Text fontSize="2rem" fontWeight={700}>
+          Gestion des recruteurs
+        </Text>
+      </Flex>
 
-        <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)} variant="search" isLazy>
-          <Box mx={8}>
-            <TabList>
-              <Tab width="300px">En attente de vérification ({data.awaiting.length})</Tab>
-              <Tab width="300px">Actifs</Tab>
-              <Tab width="300px">Désactivés ({data.disabled.length})</Tab>
-              <Tab width="300px">En erreur ({data.error.length})</Tab>
-            </TabList>
-          </Box>
-          <TabPanels mt={3}>
-            <TabPanel>
-              <TableNew columns={columns} data={data.awaiting} description={null} exportable={null} />
-            </TabPanel>
-            <TabPanel>
-              <TableNew columns={columns} data={data.active} description={null} exportable={null} />
-            </TabPanel>
-            <TabPanel>
-              <TableNew columns={columns} data={data.disabled} description={null} exportable={null} />
-            </TabPanel>
-            <TabPanel>
-              <TableNew columns={columns} data={data.error} description={null} exportable={null} />
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
-      </Container>
-    </AnimationContainer>
-  )
-}
-
-export default function UserLists() {
-  return (
-    <>
-      <Box as="header">
-        <NavigationAdmin currentPage={EAdminPages.GESTION_RECRUTEURS} />
-      </Box>
-      <Container as="main" p={0} maxW="container.xl" flexGrow="1">
-        <Users />
-      </Container>
+      <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)} variant="search" isLazy>
+        <Box mx={8}>
+          <TabList>
+            <Tab width="300px">En attente de vérification ({data.awaiting.length})</Tab>
+            <Tab width="300px">Actifs</Tab>
+            <Tab width="300px">Désactivés ({data.disabled.length})</Tab>
+            <Tab width="300px">En erreur ({data.error.length})</Tab>
+          </TabList>
+        </Box>
+        <TabPanels mt={3}>
+          <TabPanel>
+            <TableNew columns={columns} data={data.awaiting} description={null} exportable={null} />
+          </TabPanel>
+          <TabPanel>
+            <TableNew columns={columns} data={data.active} description={null} exportable={null} />
+          </TabPanel>
+          <TabPanel>
+            <TableNew columns={columns} data={data.disabled} description={null} exportable={null} />
+          </TabPanel>
+          <TabPanel>
+            <TableNew columns={columns} data={data.error} description={null} exportable={null} />
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </>
   )
 }
+
+export default Users

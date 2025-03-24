@@ -1,11 +1,10 @@
 import type { Metadata, MetadataRoute } from "next"
-import { ReadonlyURLSearchParams } from "next/navigation"
 import { assertUnreachable, removeUndefinedFields, toKebabCase } from "shared"
-import { ADMIN, CFA, ENTREPRISE, OPCO } from "shared/constants/index"
+import { ADMIN, AUTHTYPE, CFA, ENTREPRISE, OPCO } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateUri } from "shared/helpers/generateUri"
-import { z } from "zod"
 
+import { buildRecherchePageParams, IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { publicConfig } from "@/config.public"
 
 export interface IPage {
@@ -24,103 +23,6 @@ export interface IPages {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dynamic: Record<string, (params: any) => IPage>
   notion: Record<string, INotionPage>
-}
-
-export const zRecherchePageParams = z.object({
-  romes: z.array(z.string()),
-  geo: z
-    .object({
-      address: z.string().nullable(),
-      latitude: z.number(),
-      longitude: z.number(),
-      radius: z.number(),
-    })
-    .nullable(),
-  diploma: z.string().nullable(),
-  job_name: z.string().nullable(),
-  job_type: z.string().nullable(),
-  displayMap: z.boolean().optional(),
-  displayEntreprises: z.boolean().optional(),
-  displayFormations: z.boolean().optional(),
-  displayPartenariats: z.boolean().optional(),
-  selection: z.string().array().optional(),
-})
-
-export type IRecherchePageParams = z.output<typeof zRecherchePageParams>
-
-function buildRecherchePageParams(params: IRecherchePageParams): string {
-  const query = new URLSearchParams()
-
-  if (params?.romes?.length > 0) {
-    query.set("romes", params.romes.join(","))
-  }
-
-  if (params.geo) {
-    query.set("lat", params.geo.latitude.toString())
-    query.set("lon", params.geo.longitude.toString())
-    query.set("radius", params.geo.radius.toString())
-
-    if (params.geo.address) {
-      query.set("address", params.geo.address)
-    }
-  }
-
-  if (params.diploma) {
-    query.set("diploma", params.diploma)
-  }
-  if (params.job_name) {
-    query.set("job_name", params.job_name)
-  }
-  if (params.displayMap === true) {
-    query.set("displayMap", "true")
-  }
-  if (params.displayEntreprises === false) {
-    query.set("displayEntreprises", "false")
-  }
-  if (params.displayFormations === false) {
-    query.set("displayFormations", "false")
-  }
-  if (params.displayPartenariats === false) {
-    query.set("displayPartenariats", "false")
-  }
-  if (params?.selection?.length > 0) {
-    query.set("selection", params.selection.join(","))
-  }
-
-  return query.toString()
-}
-
-export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSearchParams | null): Required<IRecherchePageParams> | null {
-  if (search === null) {
-    return null
-  }
-
-  const romes = search.get("romes")?.split(",") ?? []
-  const selection = search.get("selection")?.split(",") ?? []
-
-  const rawLat = search.get("lat")
-  const rawLon = search.get("lon")
-
-  const geo =
-    rawLat && rawLon
-      ? {
-          address: search.get("address") ?? null,
-          latitude: parseFloat(rawLat),
-          longitude: parseFloat(rawLon),
-          radius: parseInt(search.get("radius") ?? "30"),
-        }
-      : null
-
-  const diploma = search.get("diploma") || null
-  const job_name = search.get("job_name") || null
-  const job_type = search.get("job_type") || null
-
-  const displayMap = search.get("displayMap") === "true"
-  const displayEntreprises = search.get("displayEntreprises") !== "false"
-  const displayFormations = search.get("displayFormations") !== "false"
-  const displayPartenariats = search.get("displayPartenariats") !== "false"
-
-  return { romes, geo, diploma, job_name, job_type, displayMap, displayEntreprises, displayFormations, displayPartenariats, selection }
 }
 
 export const PAGES = {
@@ -298,9 +200,21 @@ export const PAGES = {
       getPath: () => `/espace-pro/administration/users` as string,
       title: "Accueil administration",
     },
+    backAdminGestionDesEntreprises: {
+      getPath: () => `/espace-pro/administration/gestion-des-entreprises` as string,
+      title: "Gestion des entreprises",
+    },
     backOpcoHome: {
       getPath: () => `/espace-pro/opco` as string,
       title: "Accueil OPCO",
+    },
+    backHomeEntreprise: {
+      getPath: () => `/espace-pro/entreprise` as string,
+      title: "Accueil entreprise",
+    },
+    backEntrepriseCreationOffre: {
+      getPath: () => `/espace-pro/entreprise/creation-offre` as string,
+      title: "Nouvelle offre",
     },
   },
   dynamic: {
@@ -317,8 +231,21 @@ export const PAGES = {
       getMetadata: () => ({ title: "Administration des offres" }),
       title: "Administration des offres",
     }),
-    compte: (): IPage => ({
-      getPath: () => "/espace-pro/compte",
+    compte: ({ userType }: { userType: "CFA" | "ENTREPRISE" | "OPCO" | "ADMIN" }): IPage => ({
+      getPath: () => {
+        switch (userType) {
+          case "CFA":
+            return "/espace-pro/cfa/compte"
+          case "ENTREPRISE":
+            return "/espace-pro/entreprise/compte"
+          case "OPCO":
+            return "/espace-pro/opco/compte"
+          case "ADMIN":
+            return "/espace-pro/administration/compte"
+          default:
+            throw new Error("unsupported user type")
+        }
+      },
       index: false,
       getMetadata: () => ({ title: "Informations de contact" }),
       title: "Informations de contact",
@@ -450,7 +377,7 @@ export const PAGES = {
       title: "Imprimer mon offre",
     }),
     recherche: (params: IRecherchePageParams | null): IPage => {
-      const search = params === null ? "" : buildRecherchePageParams(params)
+      const search = params === null ? "" : buildRecherchePageParams(params, "default")
 
       let searchTitleContext = ""
       if (params?.job_name) {
@@ -472,9 +399,55 @@ export const PAGES = {
         title: "Offres en alternance",
       }
     },
+    rechercheFormation: (params: IRecherchePageParams | null): IPage => {
+      const search = params === null ? "" : buildRecherchePageParams(params, "formations-only")
+
+      let searchTitleContext = ""
+      if (params?.job_name) {
+        searchTitleContext += ` - ${params.job_name}`
+        if (params?.geo?.address) {
+          searchTitleContext += ` à ${params.geo.address}`
+        } else if (params?.geo == null) {
+          searchTitleContext += ` sur la France entière `
+        }
+      }
+
+      return {
+        getPath: () => `/recherche-formation?${search}` as string,
+        index: false,
+        getMetadata: () => ({
+          title: `Formations en alternance${searchTitleContext} | La bonne alternance`,
+          description: `Recherche - Formations en alternance${searchTitleContext} sur le site de La bonne alternance`,
+        }),
+        title: "Formations en alternance",
+      }
+    },
+    rechercheEmploi: (params: IRecherchePageParams | null): IPage => {
+      const search = params === null ? "" : buildRecherchePageParams(params, "jobs-only")
+
+      let searchTitleContext = ""
+      if (params?.job_name) {
+        searchTitleContext += ` - ${params.job_name}`
+        if (params?.geo?.address) {
+          searchTitleContext += ` à ${params.geo.address}`
+        } else if (params?.geo == null) {
+          searchTitleContext += ` sur la France entière `
+        }
+      }
+
+      return {
+        getPath: () => `/recherche-emploi?${search}` as string,
+        index: false,
+        getMetadata: () => ({
+          title: `Offres en alternance${searchTitleContext} | La bonne alternance`,
+          description: `Recherche - Offres en alternance${searchTitleContext} sur le site de La bonne alternance`,
+        }),
+        title: "Offres en alternance",
+      }
+    },
     jobDetail: (params: { type: Exclude<LBA_ITEM_TYPE, LBA_ITEM_TYPE.FORMATION>; jobId: string } & Partial<IRecherchePageParams>): IPage => {
       const jobTitle = params.job_name ?? "Offre"
-      const search = buildRecherchePageParams(params)
+      const search = buildRecherchePageParams(params, "default")
 
       return {
         getPath: () => `/emploi/${params.type}/${encodeURIComponent(params.jobId)}/${toKebabCase(jobTitle)}?${search}` as string,
@@ -483,7 +456,7 @@ export const PAGES = {
     },
     formationDetail: (params: { jobId: string } & Partial<IRecherchePageParams>): IPage => {
       const jobTitle = params.job_name ?? "Formation"
-      const search = buildRecherchePageParams(params)
+      const search = buildRecherchePageParams(params, "default")
 
       return {
         getPath: () => `/formation/${encodeURIComponent(params.jobId)}/${toKebabCase(jobTitle)}?${search}` as string,
@@ -506,7 +479,7 @@ export const PAGES = {
       getPath: () => `/espace-pro/administration/users/${user_id}` as string,
       title: user_label ?? "Entreprise",
     }),
-    backEditionOffre: ({ job_id }: { job_id: string }): IPage => ({
+    backEntrepriseEditionOffre: ({ job_id }: { job_id: string }): IPage => ({
       getPath: () => `/espace-pro/entreprise/offre/${job_id}` as string,
       title: job_id ? "Edition d'une offre" : "Création d'une offre",
     }),
@@ -526,6 +499,24 @@ export const PAGES = {
       getPath: () => `/espace-pro/opco/users/${user_id}` as string,
       title: user_label ?? "Entreprise",
     }),
+    backOpcoEditionEntreprise: ({ establishment_id }: { establishment_id: string }): IPage => ({
+      getPath: () => `/espace-pro/opco/entreprise/${establishment_id}` as string,
+      title: "Entreprise",
+    }),
+    backHome: ({ userType }: { userType: "CFA" | "ENTREPRISE" | "ADMIN" | "OPCO" }): IPage => {
+      switch (userType) {
+        case AUTHTYPE.CFA:
+          return PAGES.static.backCfaHome
+        case AUTHTYPE.ENTREPRISE:
+          return PAGES.static.backHomeEntreprise
+        case AUTHTYPE.ADMIN:
+          return PAGES.static.backAdminHome
+        case AUTHTYPE.OPCO:
+          return PAGES.static.backOpcoHome
+        default:
+          throw new Error("user type not supported")
+      }
+    },
   },
   notion: {},
 } as const satisfies IPages

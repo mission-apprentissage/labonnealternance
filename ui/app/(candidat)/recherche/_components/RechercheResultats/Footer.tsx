@@ -2,9 +2,10 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Typography } from "@mui/material"
 import { useCallback } from "react"
 
+import type { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import RechercheCDICDD from "@/components/SearchForTrainingsAndJobs/components/rechercheCDDCDI"
 import ResultListsLoading from "@/components/SearchForTrainingsAndJobs/components/ResultListsLoading"
-import { IRecherchePageParams, PAGES } from "@/utils/routes.utils"
+import { PAGES } from "@/utils/routes.utils"
 
 type RechercheResultatsFooterProps = {
   jobStatus: "success" | "error" | "disabled" | "loading"

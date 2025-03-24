@@ -303,7 +303,6 @@ export const sendApplicationV2 = async ({
     if (recruiter.status !== RECRUITER_STATUS.ACTIF || job.job_status !== JOB_STATUS.ACTIVE || dayjs(job.job_expiration_date).add(1, "day").isBefore(dayjs())) {
       throw badRequest(BusinessErrorCodes.EXPIRED)
     }
-
     lbaJob = { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job, recruiter }
   }
   if (collectionName === JobCollectionName.partners) {
@@ -311,8 +310,14 @@ export const sendApplicationV2 = async ({
     if (!job) {
       throw badRequest(BusinessErrorCodes.NOTFOUND)
     }
-    const type = job.partner_label === JOBPARTNERS_LABEL.RECRUTEURS_LBA ? LBA_ITEM_TYPE.RECRUTEURS_LBA : LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES
-    lbaJob = { type, job, recruiter: null }
+    lbaJob = { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, job, recruiter: null }
+  }
+  if (collectionName === JobCollectionName.recruteur) {
+    const job = await getDbCollection("jobs_partners").findOne({ workplace_siret: jobId })
+    if (!job) {
+      throw badRequest(BusinessErrorCodes.NOTFOUND)
+    }
+    lbaJob = { type: LBA_ITEM_TYPE.RECRUTEURS_LBA, job, recruiter: null }
   }
 
   await checkUserApplicationCountV2(applicant._id, lbaJob, caller)

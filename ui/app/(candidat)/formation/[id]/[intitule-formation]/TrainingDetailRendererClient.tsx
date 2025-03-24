@@ -1,12 +1,11 @@
 "use client"
 import { Box, Flex, Image, Text } from "@chakra-ui/react"
+import { useQuery } from "@tanstack/react-query"
 import { useParams } from "next/dist/client/components/navigation"
 import { useRouter } from "next/navigation"
 import { Fragment, useEffect, useMemo, useState } from "react"
-import { useQuery } from "react-query"
 import { ILbaItemFormation2Json } from "shared"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { IAppointMentResponseAvailable } from "shared/routes/v2/appointments.routes.v2"
+import { LBA_ITEM_TYPE, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 
 import { RechercheCarte } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
@@ -39,9 +38,16 @@ const dontBreakOutCssParameters = {
   hyphens: "auto",
 }
 
-export default function TrainingDetailRendererClient({ training, priseDeRendezVous }: { training: ILbaItemFormation2Json; priseDeRendezVous: IAppointMentResponseAvailable }) {
+export default function TrainingDetailRendererClient({ training }: { training: ILbaItemFormation2Json }) {
   const params = useCandidatRechercheParams()
   const result = useRechercheResults(params)
+
+  const trainingReference = useMemo(() => {
+    return {
+      id: training.id,
+      ideaType: newItemTypeToOldItemType(training.type),
+    }
+  }, [training])
 
   const appliedDate = useMemo(() => {
     if (globalThis.window == null) return null
@@ -63,15 +69,27 @@ export default function TrainingDetailRendererClient({ training, priseDeRendezVo
 
   if (params?.displayMap) {
     return (
-      <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
-        <TrainingDetailPage selectedItem={training} priseDeRendezVous={appliedDate ? null : priseDeRendezVous} appliedDate={appliedDate} resultList={result.items} />
+      <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", height: "100vh", overflow: "hidden" }}>
+        <TrainingDetailPage
+          selectedItem={training}
+          priseDeRendezVous={appliedDate ? false : training.training.elligibleForAppointment}
+          appliedDate={appliedDate}
+          resultList={result.items}
+        />
         {/* TODO : remove extended search button from map view */}
-        <RechercheCarte />
+        <RechercheCarte item={trainingReference} variant="detail" />
       </Box>
     )
   }
 
-  return <TrainingDetailPage selectedItem={training} priseDeRendezVous={appliedDate ? null : priseDeRendezVous} appliedDate={appliedDate} resultList={result.items} />
+  return (
+    <TrainingDetailPage
+      selectedItem={training}
+      priseDeRendezVous={appliedDate ? false : training.training.elligibleForAppointment}
+      appliedDate={appliedDate}
+      resultList={result.items}
+    />
+  )
 }
 
 function TrainingDetailPage({
@@ -81,7 +99,7 @@ function TrainingDetailPage({
   resultList,
 }: {
   selectedItem: ILbaItemFormation2Json
-  priseDeRendezVous: IAppointMentResponseAvailable
+  priseDeRendezVous: boolean
   appliedDate: string | null
   resultList: IUseRechercheResultsSuccess["items"]
 }) {
@@ -95,6 +113,11 @@ function TrainingDetailPage({
   const router = useRouter()
   const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItem })
   const handleClose = () => router.push(PAGES.dynamic.recherche(searchParams).getPath())
+
+  const contextPRDV = {
+    cle_ministere_educatif: selectedItem.id,
+    etablissement_formateur_entreprise_raison_sociale: selectedItem.company.name,
+  }
 
   // const { activeFilters } = useContext(DisplayContext)
 
@@ -196,7 +219,7 @@ function TrainingDetailPage({
                   </Text>
                 </Text>
               ) : (
-                !appliedDate && priseDeRendezVous && <DemandeDeContact isCollapsedHeader={isCollapsedHeader} context={priseDeRendezVous} referrer="LBA" showInModal />
+                priseDeRendezVous && <DemandeDeContact isCollapsedHeader={isCollapsedHeader} context={contextPRDV} referrer="LBA" showInModal />
               )}
             </Box>
             <ShareLink item={selectedItem} />
@@ -218,7 +241,9 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
   const params = useParams()
   const param = params
 
-  const IJStats = useQuery(["getIJStats", training.training.cfd], () => fetchInserJeuneStats(training), {
+  const IJStats = useQuery({
+    queryKey: ["getIJStats", training.training.cfd],
+    queryFn: () => fetchInserJeuneStats(training),
     enabled: Boolean(training.training.cfd),
   })
 

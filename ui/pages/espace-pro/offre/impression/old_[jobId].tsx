@@ -1,8 +1,8 @@
 import { Box, Image, Text } from "@chakra-ui/react"
+import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useRouter } from "next/router"
 import QRCode from "react-qr-code"
-import { useQuery } from "react-query"
 import { NIVEAUX_POUR_LBA } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
@@ -17,9 +17,11 @@ export default function PrintableJobPage() {
   const router = useRouter()
   const { jobId } = router.query as { jobId: string }
 
-  const { data: offre, isLoading } = useQuery("offre", () => fetchLbaJobDetails({ id: jobId }), {
+  const { data: offre, isLoading } = useQuery({
+    queryKey: ["offre"],
+    queryFn: () => fetchLbaJobDetails({ id: jobId }),
     enabled: !!jobId,
-    cacheTime: 0,
+    gcTime: 0,
   })
 
   if (isLoading || !jobId) {

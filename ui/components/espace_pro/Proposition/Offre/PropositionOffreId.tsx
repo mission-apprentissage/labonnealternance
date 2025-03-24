@@ -1,5 +1,5 @@
 import { Box, Button, Container, Flex, Heading, SimpleGrid, Stack, Text, useToast } from "@chakra-ui/react"
-import { useQuery } from "react-query"
+import { useQuery } from "@tanstack/react-query"
 import { IJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
@@ -14,11 +14,15 @@ import { RomeDetailReadOnly } from "../../../DepotOffre/RomeDetailReadOnly"
 export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token }: { idFormulaire: string; jobId: string; siretFormateur: string; token: string }) {
   const toast = useToast()
 
-  const formulaireQuery = useQuery(["getFormulaire", idFormulaire, token], () => getDelegationDetails(idFormulaire, token), {
+  const formulaireQuery = useQuery({
+    queryKey: ["getFormulaire", idFormulaire, token],
+    queryFn: () => getDelegationDetails(idFormulaire, token),
     enabled: Boolean(idFormulaire && token),
   })
 
-  useQuery(["viewDelegation", jobId, siretFormateur, token], () => viewOffreDelegation(jobId, siretFormateur, token), {
+  useQuery({
+    queryKey: ["viewDelegation", jobId, siretFormateur, token],
+    queryFn: () => viewOffreDelegation(jobId, siretFormateur, token),
     enabled: Boolean(jobId && siretFormateur && token),
   })
 

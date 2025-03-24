@@ -6,7 +6,7 @@
   "repository": "https://github.com/mission-apprentissage/labonnealternance.git",
   "scripts": {
     "dev": "yarn predev && SENTRY_SUPPRESS_GLOBAL_ERROR_HANDLER_FILE_WARNING=1 next dev",
-    "build": "yarn prebuild && SENTRY_SUPPRESS_GLOBAL_ERROR_HANDLER_FILE_WARNING=1 next build --no-lint",
+    "build": "yarn prebuild && SENTRY_SUPPRESS_GLOBAL_ERROR_HANDLER_FILE_WARNING=1 NODE_OPTIONS=--max_old_space_size=4096 next build --no-lint",
     "start": "next start",
     "typecheck": "tsc -b",
     "analyse": "ANALYZE=true yarn build",
@@ -16,7 +16,7 @@
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.8.1",
-    "@codegouvfr/react-dsfr": "^1.18.0",
+    "@codegouvfr/react-dsfr": "^1.20.2",
     "@emotion/cache": "^11.14.0",
     "@emotion/react": "^11.14.0",
     "@emotion/server": "^11.11.0",
@@ -27,6 +27,7 @@
     "@sentry/cli": "^2.40.0",
     "@sentry/nextjs": "^8.48.0",
     "@socialgouv/matomo-next": "^1.8.0",
+    "@tanstack/react-query": "^5.0.0",
     "@tanstack/react-virtual": "^3.11.3",
     "@turf/distance": "^6.5.0",
     "autosuggest-highlight": "^3.3.4",
@@ -59,7 +60,6 @@
     "react-icons": "^4.11.0",
     "react-notion-x": "^7.2.6",
     "react-qr-code": "^2.0.15",
-    "react-query": "^3.39.3",
     "react-swipeable": "7.0.2",
     "react-table": "^7.8.0",
     "shared": "workspace:*",

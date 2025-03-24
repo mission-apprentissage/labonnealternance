@@ -63,7 +63,7 @@ const contentSecurityPolicy = `
 `
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // reactStrictMode: true,
+  reactStrictMode: true,
   transpilePackages: ["shared"],
   i18n: {
     locales: ["fr"],
@@ -88,37 +88,13 @@ const nextConfig = {
       },
     ],
   },
-  webpack: (config, { isServer, dev }) => {
+  webpack: (config) => {
     // Required for DSFR
     config.module.rules.push({
       test: /\.woff2?$/,
       type: "asset/resource",
     })
 
-    if (!isServer && !dev) {
-      // To optmize homepage loading, would be deleted when switching to App router
-      config.optimization.splitChunks.cacheGroups.priorityChunks = {
-        name: "high-priority",
-        test: (module) => {
-          if (
-            [
-              "./components/StartForm/StartForm.tsx",
-              "./components/SearchForm/SearchForm.tsx",
-              "./components/SearchForTrainingsAndJobs/components/SearchFormResponsive.tsx",
-              "./components/WidgetHeader/WidgetHeaderHomePage.tsx",
-              "./components/SearchForTrainingsAndJobs/components/SearchFormResponsiveHomePage.tsx",
-            ].includes(module?.resourceResolveData?.relativePath)
-          ) {
-            return true
-          }
-          return false
-        },
-        priority: 35,
-        chunks: "all",
-        minChunks: 1,
-        reuseExistingChunk: true,
-      }
-    }
     // Bson is using top-level await, which is not supported by default in Next.js in client side
     // Probably related to https://github.com/vercel/next.js/issues/54282
     config.resolve.alias.bson = path.join(path.dirname(fileURLToPath(import.meta.resolve("bson"))), "bson.cjs")

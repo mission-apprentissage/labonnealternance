@@ -10,6 +10,7 @@ import { ResultCard } from "@/app/(candidat)/recherche/_components/RechercheResu
 import { RechercheResultatsPlaceholder } from "@/app/(candidat)/recherche/_components/RechercheResultatsPlaceholder"
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
 import { useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
+import { isItemReferenceInList } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { ErrorMessage } from "@/components"
 import ResultListsLoading from "@/components/SearchForTrainingsAndJobs/components/ResultListsLoading"
 
@@ -22,7 +23,7 @@ export function RechercheResulatsList() {
   const columnVirtualizer = useVirtualizer({
     count: result.itemsCount + 1,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 200,
+    estimateSize: () => 278,
     overscan: 10,
   })
 
@@ -31,7 +32,7 @@ export function RechercheResulatsList() {
   }, [result])
 
   useEffect(() => {
-    const index = items.findIndex((item) => params.selection?.includes(item.id))
+    const index = items.findIndex((item) => isItemReferenceInList(item, params.activeItems ?? []))
     // Scroll to top when search param changes
     columnVirtualizer.scrollToIndex(Math.max(index, 0), { align: "start" })
   }, [params, columnVirtualizer, items])
@@ -119,8 +120,16 @@ export function RechercheResulatsList() {
               const item = result.items[virtualRow.index]
 
               return (
-                <Box key={virtualRow.key} data-index={virtualRow.index} ref={columnVirtualizer.measureElement}>
-                  <ResultCard selected={params.selection?.includes(item.id)} item={item} />
+                <Box
+                  key={virtualRow.key}
+                  data-index={virtualRow.index}
+                  ref={columnVirtualizer.measureElement}
+                  sx={{
+                    my: fr.spacing("1w"),
+                    px: fr.spacing("1w"),
+                  }}
+                >
+                  <ResultCard active={isItemReferenceInList(item, params.activeItems ?? [])} item={item} />
                 </Box>
               )
             })}

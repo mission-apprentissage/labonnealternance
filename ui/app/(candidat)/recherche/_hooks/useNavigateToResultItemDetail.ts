@@ -2,19 +2,27 @@
 
 import { useRouter } from "next/navigation"
 import { useCallback } from "react"
-import type { ILbaItemFormation, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
 
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
-import { getResultItemUrl } from "@/app/(candidat)/recherche/_hooks/useResultItemUrl"
+import { getItemReference, getResultItemUrl, IRecherchePageParams, ItemReferenceLike } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 
-export function useNavigateToResultItemDetail(): (item: ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob | ILbaItemFormation) => void {
+export function useNavigateToResultItemDetail(): (item: ItemReferenceLike, newParams?: Partial<IRecherchePageParams>, replace?: boolean) => void {
   const searchParams = useCandidatRechercheParams()
   const router = useRouter()
 
   const navigateToResultItemDetail = useCallback(
-    (item: ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob | ILbaItemFormation) => {
-      const url = getResultItemUrl(item, searchParams)
-      router.push(url)
+    (item: ItemReferenceLike, newParams: Partial<IRecherchePageParams> = {}, replace: boolean = false) => {
+      const url = getResultItemUrl(item, {
+        ...searchParams,
+        activeItems: [getItemReference(item)],
+        ...newParams,
+      })
+
+      if (replace) {
+        router.replace(url)
+      } else {
+        router.push(url)
+      }
     },
     [searchParams, router]
   )

@@ -1,6 +1,6 @@
 import { Box, Spinner, Text } from "@chakra-ui/react"
+import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/router"
-import { useQuery } from "react-query"
 
 import { ContactCfaSummary } from "@/components/espace_pro/Candidat/layout/ContactCfaSummary"
 import DemandeDeContact from "@/components/RDV/DemandeDeContact"
@@ -15,9 +15,11 @@ export default function FormCreatePage() {
   const router = useRouter()
   const { cleMinistereEducatif, referrer } = router.query as { cleMinistereEducatif: string; referrer: string }
 
-  const { data, isLoading } = useQuery(["getPrdvForm", cleMinistereEducatif], () => getPrdvContext(cleMinistereEducatif, referrer), {
+  const { data, isLoading } = useQuery({
+    queryKey: ["getPrdvForm", cleMinistereEducatif],
+    queryFn: () => getPrdvContext(cleMinistereEducatif, referrer),
     enabled: !!cleMinistereEducatif,
-    cacheTime: 0,
+    gcTime: 0,
   })
 
   return (
@@ -36,7 +38,7 @@ export default function FormCreatePage() {
       {isLoading && <Spinner display="block" mx="auto" size="xl" mt="10rem" />}
       {data && "error" in data && (
         <Box mt="5rem" textAlign="center">
-          {data.error}
+          {data.error as string}
         </Box>
       )}
       {data && "intitule_long" in data && (
@@ -48,6 +50,7 @@ export default function FormCreatePage() {
             codePostal={data?.code_postal}
             ville={data?.localite}
           />
+          {/* @ts-ignore TODO */}
           <DemandeDeContact context={data} referrer={referrer} showInModal={false} />
         </>
       )}

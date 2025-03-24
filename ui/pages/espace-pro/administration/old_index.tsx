@@ -18,10 +18,10 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react"
+import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useRouter } from "next/router"
 import { memo, useEffect, useState } from "react"
-import { useQuery } from "react-query"
 import { IRecruiter, IRecruiterJson } from "shared"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
@@ -77,7 +77,11 @@ function ListeEntreprise() {
 
   const cfaId = userAccess?.cfas.at(0)
 
-  const { data, isLoading } = useQuery("listeEntreprise", () => getEntreprisesManagedByCfa(cfaId), { enabled: Boolean(cfaId) })
+  const { data, isLoading } = useQuery({
+    queryKey: ["listeEntreprise"],
+    queryFn: () => getEntreprisesManagedByCfa(cfaId),
+    enabled: Boolean(cfaId),
+  })
 
   if (isLoading) {
     return <LoadingEmptySpace />

@@ -1,10 +1,9 @@
 import { captureException } from "@sentry/nextjs"
-import { IJobCreate, INewDelegations, INewSuperUser, IRecruiterJson, IRoutes, IUserWithAccountFields, removeUndefinedFields } from "shared"
+import { IJobCreate, INewDelegations, INewSuperUser, IRecruiterJson, IRoutes, IUserWithAccountFields, removeUndefinedFields, type IBody } from "shared"
 import { ApplicationIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { IEntrepriseJson } from "shared/models/entreprise.model"
-import { IAppointMentResponseAvailable } from "shared/routes/v2/appointments.routes.v2"
 
 import { ApiError, apiDelete, apiGet, apiPatch, apiPost, apiPut } from "./api.utils"
 
@@ -77,7 +76,7 @@ export const updateUserWithAccountFields = async (userId: string, user: IUserWit
   await apiPut("/user/:userId", { params: { userId }, body: user })
 }
 
-export const updateEntrepriseAdmin = async (userId: string, user: any, siret = "unused") => {
+export const updateEntrepriseAdmin = async (userId: string, user: IBody<IRoutes["put"]["/admin/users/:userId/organization/:siret"]>, siret = "unused") => {
   await apiPut("/admin/users/:userId/organization/:siret", { params: { userId, siret }, body: user })
 }
 
@@ -149,7 +148,7 @@ export const getEntrepriseOpco = async (siret: string) => {
   }
 }
 
-export const getPrdvContext = async (cleMinistereEducatif: string, referrer: string = "lba"): Promise<IAppointMentResponseAvailable> => {
+export const getPrdvContext = async (cleMinistereEducatif: string, referrer: string = "lba") => {
   try {
     const data = await apiGet("/_private/appointment", { querystring: { cleMinistereEducatif, referrer } }, { timeout: 7000 })
     return data

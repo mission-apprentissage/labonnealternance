@@ -338,6 +338,7 @@ const ZLbaItemTraining2 = z
       })
       .nullish(), // formation -> onisep_url
     romes: z.array(ZLbaItemRome).nullish(),
+    elligibleForAppointment: z.boolean().describe("Indique si la formation est éligible pour la prise de rendez-vous").nullish(),
   })
   .strict()
   .openapi("Training")
@@ -547,7 +548,7 @@ export const ZLbaItemLbaCompany = z
   .strict()
   .openapi("LbaCompany")
 
-export type ILbaItemLbaCompany = z.output<typeof ZLbaItemLbaCompany> & { ideaType: LBA_ITEM_TYPE_OLD.LBA | LBA_ITEM_TYPE.RECRUTEURS_LBA }
+export type ILbaItemLbaCompany = z.output<typeof ZLbaItemLbaCompany> & { ideaType: LBA_ITEM_TYPE_OLD.LBA | LBA_ITEM_TYPE.RECRUTEURS_LBA; id: string }
 export type ILbaItemLbaCompanyJson = Jsonify<ILbaItemLbaCompany>
 export const ZLbaItemLbaCompanyReturnedByAPI = z.object({ lbaCompanies: z.array(ZLbaItemLbaCompany) })
 export type ILbaItemLbaCompanyReturnedByAPI = Jsonify<z.output<typeof ZLbaItemLbaCompanyReturnedByAPI>>

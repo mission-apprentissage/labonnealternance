@@ -1,7 +1,6 @@
 import { Box, Button, Flex, Modal, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, useDisclosure } from "@chakra-ui/react"
+import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
-import { useQuery } from "react-query"
-import { IUserWithAccount } from "shared/models/userWithAccount.model"
 
 import { sortReactTableString } from "@/common/utils/dateUtils"
 import Link from "@/components/Link"
@@ -20,8 +19,9 @@ const AdminUserList = () => {
     data: users,
     isLoading,
     refetch: refetchUsers,
-  } = useQuery<IUserWithAccount[]>({
+  } = useQuery({
     queryKey: ["adminusers"],
+
     queryFn: async () => {
       const users = await apiGet("/admin/users", {})
       return users.users

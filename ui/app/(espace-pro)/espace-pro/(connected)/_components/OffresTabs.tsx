@@ -1,9 +1,9 @@
 import { Badge, Box, Button, Flex, Icon, Image, Menu, MenuButton, MenuItem, MenuList, Text, useDisclosure, useToast } from "@chakra-ui/react"
 import { Link } from "@mui/material"
+import { useQueryClient } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { useQueryClient } from "react-query"
 import { IJobJson, IRecruiterJson, JOB_STATUS } from "shared"
 import { AUTHTYPE, RECRUITER_STATUS } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -79,6 +79,7 @@ export const OffresTabs = ({
   const [currentOffre, setCurrentOffre] = useState()
   const [copied, setCopied] = useState(false)
 
+  /* @ts-ignore TODO */
   const jobs: (IJobJson & { candidatures: number; geo_coordinates: string })[] = recruiter?.jobs ?? []
 
   if (jobs.length === 0) {
@@ -207,7 +208,11 @@ export const OffresTabs = ({
                                 isClosable: true,
                               })
                             )
-                            .finally(() => client.invalidateQueries("offre-liste"))
+                            .finally(() =>
+                              client.invalidateQueries({
+                                queryKey: ["offre-liste"],
+                              })
+                            )
                         }}
                       >
                         Prolonger l'offre

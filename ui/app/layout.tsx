@@ -5,14 +5,16 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter"
 import { Metadata } from "next"
 import Link from "next/link"
 import PlausibleProvider from "next-plausible"
-import "react-notion-x/src/styles.css"
+import { setupZodErrorMap } from "shared/helpers/zodHelpers/setupZodErrorMap"
 
+import RootTemplate from "@/app/client_only_providers"
 import { publicConfig } from "@/config.public"
 import { Matomo } from "@/tracking/trackingMatomo"
 
 import { defaultColorScheme } from "../dsfr-setup/default-color-scheme"
 import { StartDsfr } from "../dsfr-setup/start-dsfr"
 
+import "react-notion-x/src/styles.css"
 import "../public/styles/application.css"
 import "../public/styles/fonts.css"
 import "../public/styles/notion.css"
@@ -41,6 +43,8 @@ export const metadata: Metadata = {
   },
 }
 
+setupZodErrorMap()
+
 export default function RootLayout({ children }: { children: JSX.Element }) {
   return (
     <html {...getHtmlAttributes({ defaultColorScheme })}>
@@ -67,7 +71,9 @@ export default function RootLayout({ children }: { children: JSX.Element }) {
       <body>
         {
           <AppRouterCacheProvider>
-            <DsfrProvider>{children}</DsfrProvider>
+            <DsfrProvider>
+              <RootTemplate>{children}</RootTemplate>
+            </DsfrProvider>
           </AppRouterCacheProvider>
         }
       </body>

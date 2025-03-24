@@ -1,17 +1,10 @@
 import { useRouter } from "next/navigation"
 import { useSwipeable } from "react-swipeable"
-import { ILbaItemFormation, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
 
-import { IUseRechercheResultsSuccess } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
+import { ILbaItem, IUseRechercheResultsSuccess } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { useResultItemUrl } from "@/app/(candidat)/recherche/_hooks/useResultItemUrl"
 
-export function useBuildNavigation({
-  items,
-  currentItem,
-}: {
-  items: IUseRechercheResultsSuccess["items"]
-  currentItem: ILbaItemLbaCompany | ILbaItemPartnerJob | ILbaItemFormation | ILbaItemLbaJob
-}) {
+export function useBuildNavigation({ items, currentItem }: { items: IUseRechercheResultsSuccess["items"]; currentItem: ILbaItem }) {
   const router = useRouter()
   const currentIndex = items.findIndex((item) => currentItem.id === item.id)
   const nextIndex = currentIndex == items.length - 1 ? 0 : currentIndex + 1

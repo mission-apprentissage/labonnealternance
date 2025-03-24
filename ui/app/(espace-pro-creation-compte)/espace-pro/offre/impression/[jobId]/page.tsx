@@ -1,11 +1,11 @@
 "use client"
 
 import { Box, Image, Text } from "@chakra-ui/react"
+import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useParams } from "next/navigation"
 import { useEffect } from "react"
 import QRCode from "react-qr-code"
-import { useQuery } from "react-query"
 import { NIVEAUX_POUR_LBA } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
@@ -19,9 +19,11 @@ const printExactColor = { sx: { WebkitPrintColorAdjust: "exact", printColorAdjus
 export default function PrintableJobPage() {
   const { jobId } = useParams() as { jobId: string }
 
-  const { data: offre, isLoading } = useQuery("offre", () => fetchLbaJobDetails({ id: jobId }), {
+  const { data: offre, isLoading } = useQuery({
+    queryKey: ["offre"],
+    queryFn: () => fetchLbaJobDetails({ id: jobId }),
     enabled: !!jobId,
-    cacheTime: 0,
+    gcTime: 0,
   })
 
   useEffect(() => {

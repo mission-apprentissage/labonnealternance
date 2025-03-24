@@ -94,7 +94,7 @@ const collectionName = "formationcatalogues" as const
 export const zFormationCatalogueSchema = z
   .object({
     _id: zObjectId,
-    cle_ministere_educatif: z.string().nullish(),
+    cle_ministere_educatif: z.string(),
     cfd: z.string(),
     cfd_specialite: z.string().nullish(),
     cfd_outdated: z.boolean().nullish(),

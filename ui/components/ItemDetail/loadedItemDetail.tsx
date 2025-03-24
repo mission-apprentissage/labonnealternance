@@ -1,5 +1,5 @@
 import { Box, Divider, Flex, Text } from "@chakra-ui/react"
-import { useContext, useEffect, useState } from "react"
+import { useContext, useState } from "react"
 import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
@@ -8,7 +8,6 @@ import DemandeDeContact from "@/components/RDV/DemandeDeContact"
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import { isCfaEntreprise } from "../../services/cfaEntreprise"
-import { filterLayers } from "../../utils/mapTools"
 import InfoBanner from "../InfoBanner/InfoBanner"
 
 import AideApprentissage from "./AideApprentissage"
@@ -18,6 +17,7 @@ import DidYouKnow from "./DidYouKnow"
 import FTJobDetail from "./FTJobDetail"
 import GoingToContactQuestion, { getGoingtoId } from "./GoingToContactQuestion"
 import getActualTitle from "./ItemDetailServices/getActualTitle"
+/* @ts-ignore TODO */
 import { BuildSwipe, buttonJePostuleShouldBeDisplayed, buttonRdvShouldBeDisplayed, getNavigationButtons } from "./ItemDetailServices/getButtons"
 import getJobPublishedTimeAndApplications from "./ItemDetailServices/getJobPublishedTimeAndApplications"
 import getTags from "./ItemDetailServices/getTags"
@@ -39,16 +39,6 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
 
   const isCfa = isCfaEntreprise(selectedItem?.company?.siret, selectedItem?.company?.headquarter?.siret)
   const isMandataire = selectedItem?.company?.mandataire
-
-  useEffect(() => {
-    try {
-      filterLayers(activeFilters)
-    } catch (err) {
-      //notice: gère des erreurs qui se présentent à l'initialisation de la page quand mapbox n'est pas prêt.
-    }
-    /* eslint react-hooks/exhaustive-deps: 0 */
-    /* @ts-expect-error: à cracker */
-  }, [selectedItem?.id, selectedItem?.company?.siret, selectedItem?.job?.id])
 
   const actualTitle = getActualTitle({ kind, selectedItem }) || ""
 
@@ -140,9 +130,11 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
 
               {kind === LBA_ITEM_TYPE_OLD.LBA && !isCandidatureLba(selectedItem) && <NoCandidatureLba />}
 
+              {/* @ts-ignore TODO */}
               {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && !hasApplied(selectedItem) && (
                 <DemandeDeContact isCollapsedHeader={isCollapsedHeader} context={selectedItem.rdvContext} referrer="LBA" showInModal />
               )}
+              {/* @ts-ignore TODO */}
               {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && <ItemDetailApplicationsStatus item={selectedItem} mt={2} mb={2} />}
 
               {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PARTNER_JOB && <PartnerJobPostuler isCollapsedHeader={isCollapsedHeader} job={selectedItem} />}

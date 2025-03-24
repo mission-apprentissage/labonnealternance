@@ -37,14 +37,19 @@ export function DsfrLink({
       href={href}
       rel={isExternal ? "noopener noreferrer" : undefined}
       target={isExternal ? "_blank" : undefined}
-      className={fr.cx(`fr-text--${size}`, "fr-link", {
-        "fr-link--sm": size === "sm",
-        "fr-link--lg": size === "lg",
-        "fr-link--icon-left": arrow === "left",
-        "fr-icon-arrow-left-s-line": arrow === "left",
-        "fr-icon-arrow-right-line": arrow === "right",
-        "fr-link--icon-right": arrow === "right",
-      })}
+      className={fr.cx(
+        `fr-text--${size}`,
+        "fr-link",
+        {
+          "fr-link--sm": size === "sm",
+          "fr-link--lg": size === "lg",
+          "fr-link--icon-left": true, // arrow === "left",
+          "fr-icon-arrow-left-s-line": arrow === "left",
+          "fr-icon-arrow-right-line": arrow === "right",
+          "fr-link--icon-right": arrow === "right",
+        },
+        "fr-icon-map-pin-2-fill"
+      )}
       {...rest}
     >
       {children}

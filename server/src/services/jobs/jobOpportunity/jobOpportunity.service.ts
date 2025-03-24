@@ -2,9 +2,9 @@ import Boom, { badRequest, internal, notFound } from "@hapi/boom"
 import { IApiAlternanceTokenData } from "api-alternance-sdk"
 import { DateTime } from "luxon"
 import { Document, Filter, ObjectId } from "mongodb"
-import { IGeoPoint, IJob, ILbaItemPartnerJob, JOB_STATUS_ENGLISH, assertUnreachable, parseEnum, translateJobStatus } from "shared"
-import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants/index"
+import { IGeoPoint, IJob, IJobCollectionName, ILbaItemPartnerJob, JOB_STATUS_ENGLISH, JobCollectionName, assertUnreachable, parseEnum, translateJobStatus } from "shared"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
+import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import {
   IJobsPartnersOfferApi,
   IJobsPartnersOfferPrivate,
@@ -336,7 +336,7 @@ export const getJobsPartnersForApi = async ({ romes, geo, target_diploma_level, 
       ...j,
       contract_type: j.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
       apply_url: j.apply_url ?? `${config.publicUrl}/recherche?type=partner&itemId=${j._id}`,
-      apply_recipient_id: j.apply_email ? `partners_${j._id}` : null,
+      apply_recipient_id: j.apply_email ? getRecipientID(JobCollectionName.partners, j._id.toString()) : null,
     })
   )
 }
@@ -368,7 +368,7 @@ export const convertLbaCompanyToJobRecruiterApi = (recruteursLba: IJobsPartnersO
       apply: {
         url: `${config.publicUrl}/recherche?type=lba&itemId=${recruteurLba.workplace_siret}`,
         phone: recruteurLba.apply_phone,
-        recipient_id: recruteurLba.apply_email ? `partners_${recruteurLba._id}` : null,
+        recipient_id: recruteurLba.apply_email ? getRecipientID(JobCollectionName.recruteur, recruteurLba.workplace_siret!) : null,
       },
     })
   )
@@ -476,7 +476,7 @@ export const convertLbaRecruiterToJobOfferApi = (offresEmploiLba: IJobResult[]):
           apply: {
             url: `${config.publicUrl}/recherche?type=matcha&itemId=${job._id}`,
             phone: recruiter.phone ?? null,
-            recipient_id: `recruiters_${job._id}`,
+            recipient_id: getRecipientID(JobCollectionName.recruiters, job._id.toString()),
           },
         })
       )
@@ -899,4 +899,17 @@ export async function getJobsPartnersByIdAsJobOfferApi(id: ObjectId, context: Jo
   })
 
   return transformedJob
+}
+
+export const getRecipientID = (type: IJobCollectionName, id: string) => {
+  if (type === JobCollectionName.recruiters) {
+    return `recruiters_${id}`
+  }
+  if (type === JobCollectionName.partners) {
+    return `partners_${id}`
+  }
+  if (type === JobCollectionName.recruteur) {
+    return `recruteur_${id}`
+  }
+  assertUnreachable(type)
 }

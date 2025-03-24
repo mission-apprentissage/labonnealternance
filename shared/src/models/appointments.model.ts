@@ -5,10 +5,11 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 
 import { IModelDescriptor, zObjectId } from "./common.js"
+import { ZEtablissement } from "./etablissement.model.js"
 
 const collectionName = "appointments" as const
 
-export const enum EReasonsKey {
+export enum EReasonsKey {
   MODALITE = "modalite",
   CONTENU = "contenu",
   PORTE = "porte",
@@ -64,6 +65,58 @@ export const ZAppointment = z
 
 export type IAppointment = z.output<typeof ZAppointment>
 export type IAppointmentJson = Jsonify<z.input<typeof ZAppointment>>
+
+export const ZAppointmentShortRecap = z.object({
+  user: z.object({
+    firstname: z.string(),
+    lastname: z.string(),
+    phone: z.string(),
+    email: z.string(),
+  }),
+  formation: z.object({
+    etablissement_formateur_raison_sociale: z.string().nullish(),
+    lieu_formation_email: z.string().nullish(),
+  }),
+})
+export type IAppointmentShortRecap = z.output<typeof ZAppointmentShortRecap>
+export type IAppointmentShortRecapJson = Jsonify<z.output<typeof ZAppointmentShortRecap>>
+
+export const ZAppointmentRecap = z.object({
+  appointment: z.object({
+    _id: ZAppointment.shape._id,
+    cfa_intention_to_applicant: ZAppointment.shape.cfa_intention_to_applicant,
+    cfa_message_to_applicant_date: ZAppointment.shape.cfa_message_to_applicant_date,
+    cfa_message_to_applicant: ZAppointment.shape.cfa_message_to_applicant,
+    applicant_message_to_cfa: ZAppointment.shape.applicant_message_to_cfa,
+    applicant_reasons: ZAppointment.shape.applicant_reasons,
+    cle_ministere_educatif: ZAppointment.shape.cle_ministere_educatif,
+    applicant_id: ZAppointment.shape.applicant_id,
+    cfa_read_appointment_details_date: ZAppointment.shape.cfa_read_appointment_details_date,
+  }),
+  user: z.object({
+    _id: zObjectId,
+    firstname: z.string(),
+    lastname: z.string(),
+    phone: z.string(),
+    email: z.string(),
+    type: z.string(),
+  }),
+  formation: z.union([
+    z.object({
+      _id: ZEtablissement.shape._id,
+      training_intitule_long: z.string().nullish(),
+      etablissement_formateur_raison_sociale: z.string().nullish(),
+      lieu_formation_street: z.string().nullish(),
+      lieu_formation_city: z.string().nullish(),
+      lieu_formation_zip_code: z.string().nullish(),
+      lieu_formation_email: z.string().nullish(),
+    }),
+    z.null(),
+  ]),
+})
+
+export type IAppointmentRecap = z.output<typeof ZAppointmentRecap>
+export type IAppointmentRecapJson = Jsonify<z.output<typeof ZAppointmentRecap>>
 
 export default {
   zod: ZAppointment,

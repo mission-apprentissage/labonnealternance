@@ -21,5 +21,9 @@ export function useConnectedSessionClient(): IUserContext {
     throw new Error("User context provider is not found in the component tree")
   }
 
+  if (userContext.user == null) {
+    throw new Error("User is not connected")
+  }
+
   return userContext
 }

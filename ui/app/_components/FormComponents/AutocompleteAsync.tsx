@@ -1,12 +1,12 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography, CircularProgress } from "@mui/material"
 import Autocomplete, { AutocompleteRenderGroupParams, AutocompleteRenderInputParams, AutocompleteRenderOptionState } from "@mui/material/Autocomplete"
+import { useQuery } from "@tanstack/react-query"
 import { useWindowSize } from "@uidotdev/usehooks"
 import match from "autosuggest-highlight/match"
 import parse from "autosuggest-highlight/parse"
 import { useField, useFormikContext } from "formik"
 import { useCallback, useEffect, useRef, useState } from "react"
-import { useQuery } from "react-query"
 
 import { InputFormField } from "@/app/_components/FormComponents/InputFormField"
 
@@ -26,6 +26,7 @@ interface AutocompleteAsyncProps<T> {
 
   id: string
   label: string
+  disabled?: boolean
 }
 
 function renderGroup(props: AutocompleteRenderGroupParams) {
@@ -103,7 +104,12 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
     }
   }, [])
 
-  const result = useQuery(["autocomplete", props.id, debouncedQuery], async () => props.fetchOptions(debouncedQuery), { enabled, staleTime: Infinity })
+  const result = useQuery({
+    queryKey: ["autocomplete", props.id, debouncedQuery],
+    queryFn: async () => props.fetchOptions(debouncedQuery),
+    enabled,
+    staleTime: Infinity,
+  })
 
   const isDeferredOrFetching = result.isFetching || query !== debouncedQuery
 
@@ -111,6 +117,7 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
     (params: AutocompleteRenderInputParams) => {
       return (
         <InputFormField
+          disabled={params.disabled ?? false}
           label={props.label}
           // @ts-expect-error
           ref={params.InputProps.ref}
@@ -187,6 +194,7 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
   return (
     <Autocomplete
       id={props.id}
+      disabled={props.disabled ?? false}
       disablePortal
       onOpen={onOpen}
       onClose={onClose}
