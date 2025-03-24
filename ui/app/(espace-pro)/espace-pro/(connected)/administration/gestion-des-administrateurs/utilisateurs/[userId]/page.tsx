@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/router"
 
+import { AdminUserForm } from "@/app/(espace-pro)/espace-pro/(connected)/administration/gestion-des-administrateurs/_components/AdminUserForm"
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
 import { Layout, LoadingEmptySpace } from "@/components/espace_pro"
-import { AdminUserForm } from "@/components/espace_pro/Admin/utilisateurs/AdminUserForm"
 import { authProvider, withAuth } from "@/components/espace_pro/withAuth"
 import { apiGet } from "@/utils/api.utils"
 
