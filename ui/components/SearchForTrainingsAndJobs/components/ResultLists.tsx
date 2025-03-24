@@ -44,7 +44,7 @@ const ListFooter = ({ handleExtendedSearch, isJobSearchLoading }) => {
           <Box py={4} textAlign="center" color="grey.425" fontWeight={14} fontStyle="italic">
             Vous êtes arrivé.e au bout de la liste.
             <br />
-            Pour voir d'autres possibilités, revenez plus tard ou changez vos critères de recherche
+            Pour voir d'autres possibilités, revenez plus tard ou modifiez vos critères de recherche
           </Box>
         )}
         {shouldShowNoJob && <NoJobResult />}
