@@ -98,7 +98,7 @@ export const ConfirmationDesactivationUtilisateur = ({
         <ModalFooter>
           <Box sx={{ marginRight: "10px" }}>
             <Button
-              className="fr-btn--secondary"
+              priority="secondary"
               onClick={() => {
                 onClose()
                 setReason(null)
