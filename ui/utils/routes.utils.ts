@@ -266,8 +266,22 @@ export const PAGES = {
       getMetadata: () => ({ title: "Modification entreprise" }),
       title: "Modification entreprise",
     }),
-    offreUpsert: ({ offerId, establishment_id, userType, raison_sociale }: { offerId: string; establishment_id: string; userType: string; raison_sociale?: string }): IPage => {
+    offreUpsert: ({
+      offerId,
+      establishment_id,
+      userType,
+      userId,
+      raison_sociale,
+    }: {
+      offerId: string
+      establishment_id: string
+      userType: string
+      userId?: string
+      raison_sociale?: string
+    }): IPage => {
       const isCreation = offerId === "creation"
+
+      console.log("offerId", offerId, "establishment_id", establishment_id, "userType", userType, "raison_sociale", raison_sociale)
 
       return {
         getPath: () => {
@@ -280,7 +294,9 @@ export const PAGES = {
             case CFA:
               return isCreation ? PAGES.dynamic.backCfaEntrepriseCreationOffre(establishment_id).getPath() : `/espace-pro/cfa/entreprise/${establishment_id}/offre/${offerId}`
             case ENTREPRISE:
-              return isCreation ? PAGES.dynamic.backCreationOffre().getPath() : PAGES.dynamic.backEditionOffre({ job_id: offerId }).getPath()
+              return isCreation ? PAGES.dynamic.backCreationOffre().getPath() : PAGES.dynamic.backEntrepriseEditionOffre({ job_id: offerId }).getPath()
+            case ADMIN:
+              return `/espace-pro/administration/users/${userId}/entreprise/${establishment_id}/offre/${offerId}${raisonSocialeParam}`
             default:
               throw new Error("not implemented")
           }
@@ -316,16 +332,16 @@ export const PAGES = {
         getMetadata: () => ({}),
       }
     },
-    miseEnRelationCreationOffre: ({ isWidget, queryParameters }: { isWidget: boolean; queryParameters: string }): IPage => {
-      const path = `${isWidget ? "/espace-pro/widget/entreprise/mise-en-relation" : "/espace-pro/creation/mise-en-relation"}${queryParameters}`
+    // miseEnRelationCreationOffre: ({ isWidget, queryParameters }: { isWidget: boolean; queryParameters: string }): IPage => {
+    //   const path = `${isWidget ? "/espace-pro/widget/entreprise/mise-en-relation" : "/espace-pro/creation/mise-en-relation"}${queryParameters}`
 
-      return {
-        getPath: () => path,
-        title: "Mise en relation avec les CFAs",
-        index: false,
-        getMetadata: () => ({}),
-      }
-    },
+    //   return {
+    //     getPath: () => path,
+    //     title: "Mise en relation avec les CFAs",
+    //     index: false,
+    //     getMetadata: () => ({}),
+    //   }
+    // },
     espaceProCreationDetail: (params: { siret: string; email?: string; type: "CFA" | "ENTREPRISE"; origin: string; isWidget: boolean }): IPage => ({
       getPath: () => {
         const { isWidget, ...querystring } = params

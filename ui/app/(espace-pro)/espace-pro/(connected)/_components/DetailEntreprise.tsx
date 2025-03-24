@@ -17,6 +17,7 @@ import { OpcoSelect } from "@/components/espace_pro/CreationRecruteur/OpcoSelect
 import { FieldWithValue } from "@/components/espace_pro/FieldWithValue"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { updateEntrepriseAdmin } from "@/utils/api"
+import { PAGES } from "@/utils/routes.utils"
 
 export default function DetailEntreprise({ userRecruteur, recruiter }: { userRecruteur: any; recruiter: any }) {
   const confirmationDesactivationUtilisateur = useDisclosure()
@@ -199,7 +200,20 @@ export default function DetailEntreprise({ userRecruteur, recruiter }: { userRec
                     <Text fontSize="20px" lineHeight="32px" fontWeight="700" mb={6}>
                       Offres de recrutement en alternance
                     </Text>
-                    <OffresTabs recruiter={recruiter} buildOfferEditionUrl={(offerId) => `/espace-pro/opco/entreprise/${userRecruteur.establishment_id}/offre/${offerId}`} />
+                    <OffresTabs
+                      recruiter={recruiter}
+                      buildOfferEditionUrl={(offerId) => {
+                        return PAGES.dynamic
+                          .offreUpsert({
+                            offerId,
+                            establishment_id: userRecruteur.establishment_id,
+                            userType: user.type,
+                            userId: userRecruteur._id,
+                            raison_sociale: establishmentLabel,
+                          })
+                          .getPath()
+                      }}
+                    />
                   </Box>
                   <Box mb={12}>
                     <UserValidationHistory histories={userRecruteur.status} />
