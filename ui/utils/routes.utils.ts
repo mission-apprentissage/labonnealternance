@@ -209,19 +209,6 @@ export const PAGES = {
     },
   },
   dynamic: {
-    // example
-    inscription: (token: string): IPage => ({
-      getPath: () => `/auth/inscription?token=${token}`,
-      index: false,
-      getMetadata: () => ({ title: "" }),
-      title: "Inscription",
-    }),
-    administrationDesOffres: (navigationContext: string): IPage => ({
-      getPath: () => `${navigationContext}`,
-      index: false,
-      getMetadata: () => ({ title: "Administration des offres" }),
-      title: "Administration des offres",
-    }),
     compte: ({ userType }: { userType: "CFA" | "ENTREPRISE" | "OPCO" | "ADMIN" }): IPage => ({
       getPath: () => {
         switch (userType) {
@@ -475,17 +462,9 @@ export const PAGES = {
       getPath: () => `/espace-pro/entreprise/offre/${job_id}` as string,
       title: job_id ? "Edition d'une offre" : "Création d'une offre",
     }),
-    backHomeEntreprise: (): IPage => ({
-      getPath: () => `/espace-pro/entreprise` as string,
-      title: "Accueil entreprise",
-    }),
     backOpcoInformationEntreprise: ({ user_id, user_label }: { user_id: string; user_label?: string }): IPage => ({
       getPath: () => `/espace-pro/opco/users/${user_id}` as string,
       title: user_label ?? "Entreprise",
-    }),
-    backOpcoEditionEntreprise: ({ establishment_id }: { establishment_id: string }): IPage => ({
-      getPath: () => `/espace-pro/opco/entreprise/${establishment_id}` as string,
-      title: "Entreprise",
     }),
     backHome: ({ userType }: { userType: "CFA" | "ENTREPRISE" | "ADMIN" | "OPCO" }): IPage => {
       switch (userType) {
