@@ -17,8 +17,8 @@ export default function UpdateOffre() {
       <Breadcrumb
         pages={[
           PAGES.static.backAdminHome,
-          PAGES.dynamic.backAdminRecruteurOffres({ user_id: userId }),
-          PAGES.dynamic.offreUpsert({ offerId: job_id, establishment_id, userType: ADMIN, raison_sociale }),
+          PAGES.dynamic.backAdminRecruteurOffres({ user_id: userId, user_label: raison_sociale }),
+          PAGES.dynamic.offreUpsert({ offerId: job_id, establishment_id, userType: ADMIN }),
         ]}
       />
       <UpsertOffre
