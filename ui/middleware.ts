@@ -106,7 +106,12 @@ export async function middleware(request: NextRequest) {
 }
 
 const excludedStartPaths = ["/espace-pro/authentification/validation/", "/espace-pro/widget/", "/espace-pro/creation/", "/espace-pro/offre/impression/"]
-const isConnectionRequired = (path: string) => excludedStartPaths.some((excludedStartPath) => path.startsWith(excludedStartPath))
+const isConnectionRequired = (path: string) => {
+  if (!path.startsWith("/espace-pro/")) {
+    return false
+  }
+  return !excludedStartPaths.some((excludedStartPath) => path.startsWith(excludedStartPath))
+}
 
 export const config = {
   matcher: [
