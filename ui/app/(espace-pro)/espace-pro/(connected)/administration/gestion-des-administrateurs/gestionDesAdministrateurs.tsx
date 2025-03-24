@@ -95,7 +95,7 @@ export default function GestionDesAdministrateurs() {
             disableSortBy: true,
             accessor: (row) => {
               return (
-                <Button priority="tertiary no outline" onClick={() => router.push(`/espace-pro/administration/gestion-des-administrateurs/utilisateurs/${row._id}`)}>
+                <Button priority="tertiary no outline" onClick={() => router.push(PAGES.dynamic.backEditAdministrator({ userId: row._id }).getPath())}>
                   <ArrowRightLine2 w="1w" />
                 </Button>
               )
