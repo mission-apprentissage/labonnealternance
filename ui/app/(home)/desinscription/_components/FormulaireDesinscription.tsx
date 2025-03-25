@@ -27,8 +27,8 @@ import { useState } from "react"
 import { UNSUBSCRIBE_EMAIL_ERRORS } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
-import postUnsubscribe from "../../services/postUnsubscribe"
-import LBAModalCloseButton from "../lbaModalCloseButton"
+import LBAModalCloseButton from "@/components/lbaModalCloseButton"
+import postUnsubscribe from "@/services/postUnsubscribe"
 
 const UNSUBSCRIBE_REASON = {
   RECRUTEMENT_CLOS: "Nous avons déjà trouvé nos alternants pour l’année en cours",

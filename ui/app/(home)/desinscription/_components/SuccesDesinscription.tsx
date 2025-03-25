@@ -1,7 +1,7 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, GridItem, Image, Link, ListItem, SimpleGrid, Text, UnorderedList } from "@chakra-ui/react"
 
-import { baseUrl } from "../../config/config"
+import { baseUrl } from "@/config/config"
 
 const SuccesDesinscription = () => (
   <Box as="section" p={3} mb={{ base: "2", md: "0" }} backgroundColor="white">

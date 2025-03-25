@@ -4,10 +4,10 @@ import { useQuery } from "@tanstack/react-query"
 import { useSearchParams } from "next/navigation"
 import { useState } from "react"
 
+import FormulaireDesinscription from "@/app/(home)/desinscription/_components/FormulaireDesinscription"
+import SuccesDesinscription from "@/app/(home)/desinscription/_components/SuccesDesinscription"
 import { AlgoRecruiter } from "@/app/(landing-pages)/acces-recruteur/_components/AlgoRecruiter"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
-import FormulaireDesinscription from "@/components/DesinscriptionEntreprise/FormulaireDesinscription"
-import SuccesDesinscription from "@/components/DesinscriptionEntreprise/SuccesDesinscription"
 import { getApplicationCompanyEmailAddress } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
