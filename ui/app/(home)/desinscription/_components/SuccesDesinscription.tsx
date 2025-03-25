@@ -1,5 +1,5 @@
-import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Flex, GridItem, Image, Link, ListItem, SimpleGrid, Text, UnorderedList } from "@chakra-ui/react"
+import { Box, Flex, GridItem, Image, ListItem, SimpleGrid, Text, UnorderedList } from "@chakra-ui/react"
+import { Link } from "@mui/material"
 
 import { baseUrl } from "@/config/config"
 
@@ -31,25 +31,24 @@ const SuccesDesinscription = () => (
         <UnorderedList mt={4}>
           <ListItem mb="3">
             Celles ayant diffusé une offre d'emploi sur notre{" "}
-            <Link aria-label="Accéder au formulaire de dépôt simplifié de La bonne alternance" variant="basicUnderlined" href={`${baseUrl}/acces-recruteur`}>
+            <Link underline="hover" aria-label="Accéder au formulaire de dépôt simplifié de La bonne alternance" href={`${baseUrl}/acces-recruteur`}>
               formulaire de dépôt simplifié
             </Link>
           </ListItem>
           <ListItem mb="3">
             Celles ayant diffusé une offre d'emploi sur{" "}
-            <Link aria-label="Accéder au site de France Travail - nouvelle fenêtre" variant="basicUnderlined" isExternal href="https://www.francetravail.fr">
+            <Link aria-label="Accéder au site de France Travail - nouvelle fenêtre" underline="hover" target="_blank" rel="noopener noreferrer" href="https://www.francetravail.fr">
               France Travail
-              <ExternalLinkIcon mx="2px" />
             </Link>{" "}
             ou ses{" "}
             <Link
               aria-label="Accéder au site de France Travail - nouvelle fenêtre"
-              variant="basicUnderlined"
-              isExternal
+              underline="hover"
+              target="_blank"
+              rel="noopener noreferrer"
               href="https://www.francetravail.fr/candidat/vos-services-en-ligne/des-partenaires-pour-vous-propos.html"
             >
               sites partenaires
-              <ExternalLinkIcon mx="2px" />
             </Link>
           </ListItem>
           <ListItem mb="3">
@@ -94,11 +93,12 @@ const SuccesDesinscription = () => (
             <ListItem>
               <Link
                 aria-label="Accès au site de simulation des aides au recrutement en alternance - nouvelle fenêtre"
-                variant="basicUnderlined"
-                isExternal
+                underline="hover"
+                target="_blank"
+                rel="noopener noreferrer"
                 href="https://alternance.emploi.gouv.fr/simulateur-employeur/etape-1"
               >
-                Profiter d'un financement gouvernemental <ExternalLinkIcon mx="2px" />
+                Profiter d'un financement gouvernemental
               </Link>
             </ListItem>
           </UnorderedList>
