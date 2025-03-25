@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Image, Text, useDisclosure } from "@chakra-ui/react"
-import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
+import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob, JOB_STATUS } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { getItemId } from "../../../utils/getItemId"
@@ -36,6 +36,7 @@ export const CandidatureLba = ({ item }: { item: ILbaItemLbaJob | ILbaItemLbaCom
   }
 
   const hasAppliedValue = hasApplied(item)
+  const isActive = kind !== LBA_ITEM_TYPE_OLD.MATCHA || (item as ILbaItemLbaJob).job.status === JOB_STATUS.ACTIVE
 
   return (
     <Box data-testid="CandidatureSpontanee">
@@ -43,7 +44,7 @@ export const CandidatureLba = ({ item }: { item: ILbaItemLbaJob | ILbaItemLbaCom
       <Box>
         {hasAppliedValue ? (
           <ItemDetailApplicationsStatus item={item} />
-        ) : (
+        ) : isActive ? (
           <>
             <Box my={4}>
               <Button
@@ -76,6 +77,8 @@ export const CandidatureLba = ({ item }: { item: ILbaItemLbaJob | ILbaItemLbaCom
               </Box>
             )}
           </>
+        ) : (
+          <></>
         )}
       </Box>
     </Box>
