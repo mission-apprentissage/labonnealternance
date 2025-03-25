@@ -57,7 +57,8 @@
     "e2e:recette": "cypress run --env ui=https://labonnealternance-recette.apprentissage.beta.gouv.fr,server=https://labonnealternance-recette.apprentissage.beta.gouv.fr,smtp=https://labonnealternance-recette.apprentissage.beta.gouv.fr/smtp",
     "e2e:convert": "chrome-recorder cypress/records/ui/*.json --output=cypress/e2e/ui; chrome-recorder cypress/records/ui_espace_pro/*.json --output=cypress/e2e/ui_espace_pro",
     "e2e:convert2": "node cypress/convertRecords.mjs",
-    "e2e:specific": "cypress run --spec=./cypress/e2e/create-cfa-account-autovalidated.cy.ts"
+    "e2e:specific": "cypress run --spec=./cypress/e2e/create-cfa-account-autovalidated.cy.ts",
+    "knip": "knip"
   },
   "dependencies": {
     "@uidotdev/usehooks": "^2.4.1",
@@ -92,6 +93,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-simple-import-sort": "^12.1.0",
     "eslint-plugin-unused-imports": "^3.2.0",
+    "knip": "^5.34.1",
     "lint-staged": "^14.0.1",
     "node-talisman": "^1.29.10",
     "prettier": "^3.0.3",

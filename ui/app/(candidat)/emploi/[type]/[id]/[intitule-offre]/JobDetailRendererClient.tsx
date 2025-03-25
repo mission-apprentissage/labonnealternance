@@ -6,8 +6,8 @@ import { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaIte
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { RechercheCarte } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
-import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
 import { IUseRechercheResultsSuccess, useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
+import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { useBuildNavigation } from "@/app/hooks/useBuildNavigation"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
@@ -28,8 +28,7 @@ import ShareLink from "@/components/ItemDetail/ShareLink"
 import { isCfaEntreprise } from "@/services/cfaEntreprise"
 import { PAGES } from "@/utils/routes.utils"
 
-export default function JobDetailRendererClient({ job }: { job: ILbaItemJobsGlobal }) {
-  const params = useCandidatRechercheParams()
+export default function JobDetailRendererClient({ job, params }: WithRecherchePageParams<{ job: ILbaItemJobsGlobal }>) {
   const result = useRechercheResults(params)
 
   if (result.status !== "success") {
@@ -40,23 +39,22 @@ export default function JobDetailRendererClient({ job }: { job: ILbaItemJobsGlob
   if (params?.displayMap) {
     return (
       <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", height: "100vh", overflow: "hidden" }}>
-        <JobDetail selectedItem={job} resultList={result.items} />
+        <JobDetail selectedItem={job} resultList={result.items} params={params} />
         {/* TODO : remove extended search button from map view */}
-        <RechercheCarte item={job} variant="detail" />
+        <RechercheCarte item={job} variant="detail" params={params} />
       </Box>
     )
   }
 
-  return <JobDetail selectedItem={job} resultList={result.items} />
+  return <JobDetail selectedItem={job} resultList={result.items} params={params} />
 }
 
-function JobDetail({ selectedItem, resultList }: { selectedItem: ILbaItemJobsGlobal; resultList: IUseRechercheResultsSuccess["items"] }) {
+function JobDetail({ selectedItem, resultList, params }: WithRecherchePageParams<{ selectedItem: ILbaItemJobsGlobal; resultList: IUseRechercheResultsSuccess["items"] }>) {
   // const { activeFilters } = useContext(DisplayContext)
   const currentItem = resultList.find((item) => item.id === selectedItem.id)
-  const params = useCandidatRechercheParams()
   const router = useRouter()
   const [isCollapsedHeader, setIsCollapsedHeader] = useState(false)
-  const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItem })
+  const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItem, params })
 
   const kind = selectedItem.ideaType
   const isCfa = isCfaEntreprise(selectedItem?.company?.siret, selectedItem?.company?.headquarter?.siret)

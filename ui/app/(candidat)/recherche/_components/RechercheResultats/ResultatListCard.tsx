@@ -5,6 +5,7 @@ import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { ILbaItem } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { useResultItemUrl } from "@/app/(candidat)/recherche/_hooks/useResultItemUrl"
+import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import ItemDetailApplicationsStatus from "@/components/ItemDetail/ItemDetailServices/ItemDetailApplicationStatus"
 import TagCandidatureSpontanee from "@/components/ItemDetail/TagCandidatureSpontanee"
 import TagCfaDEntreprise from "@/components/ItemDetail/TagCfaDEntreprise"
@@ -14,10 +15,10 @@ import TagOffreEmploi from "@/components/ItemDetail/TagOffreEmploi"
 import { isCfaEntreprise } from "@/services/cfaEntreprise"
 import { getDaysSinceDate } from "@/utils/dateUtils"
 
-type ResultCardProps = {
+type ResultCardProps = WithRecherchePageParams<{
   active: boolean
   item: ILbaItem
-}
+}>
 
 function getTitle(item: ILbaItem) {
   if (item.ideaType === LBA_ITEM_TYPE_OLD.LBA || item.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
@@ -130,8 +131,8 @@ const activeStyle = {
   },
 }
 
-export function ResultCard({ item, active }: ResultCardProps) {
-  const itemUrl = useResultItemUrl(item)
+export function ResultCard({ item, active, params }: ResultCardProps) {
+  const itemUrl = useResultItemUrl(item, params)
 
   return (
     <Box sx={active ? activeStyle : null}>
