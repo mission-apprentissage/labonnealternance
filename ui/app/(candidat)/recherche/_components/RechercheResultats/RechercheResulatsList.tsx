@@ -11,7 +11,7 @@ import { Whisper } from "@/app/(candidat)/recherche/_components/RechercheResulta
 import { RechercheResultatsPlaceholder } from "@/app/(candidat)/recherche/_components/RechercheResultatsPlaceholder"
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
 import { useRechercheResults, type ILbaItem } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
-import { useWhispers, type IWisper } from "@/app/(candidat)/recherche/_hooks/useWhispers"
+import { useWhispers, type IWhisper } from "@/app/(candidat)/recherche/_hooks/useWhispers"
 import { isItemReferenceInList } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { ErrorMessage } from "@/components"
 import ResultListsLoading from "@/components/SearchForTrainingsAndJobs/components/ResultListsLoading"
@@ -23,7 +23,7 @@ export function RechercheResulatsList() {
 
   const parentRef = useRef(null)
 
-  const items = useMemo((): Array<ILbaItem | IWisper> => {
+  const items = useMemo((): Array<ILbaItem | IWhisper> => {
     if (result.status !== "success" && result.formationStatus !== "success") {
       return []
     }

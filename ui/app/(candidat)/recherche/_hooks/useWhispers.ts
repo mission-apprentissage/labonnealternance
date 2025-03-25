@@ -5,13 +5,13 @@ import { useMemo } from "react"
 
 import type { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 
-export type IWisper = {
+export type IWhisper = {
   ideaType: "whisper"
   message: string
   lien: string | null
 }
 
-export const WHISPERS: IWisper[] = [
+export const WHISPERS: IWhisper[] = [
   {
     ideaType: "whisper",
     message: "Vous avez besoin de passer le permis ? Bénéficiez d'au moins 500€ d'aides dès maintenant.",
@@ -183,7 +183,7 @@ function generateSeed(query: IRecherchePageParams): number {
   return seed
 }
 
-export function useWhispers(query: IRecherchePageParams): Map<number, IWisper> {
+export function useWhispers(query: IRecherchePageParams): Map<number, IWhisper> {
   // Generate stable seed for the whispers to prevent hydration mismatch
   const seed = generateSeed(query)
 
@@ -193,7 +193,7 @@ export function useWhispers(query: IRecherchePageParams): Map<number, IWisper> {
     const randomizer = new MersenneTwister(seed)
     const availableWhispers = shuffle(WHISPERS)
 
-    const result: Map<number, IWisper> = new Map()
+    const result: Map<number, IWhisper> = new Map()
     for (let i = 0; i < availableWhispers.length; i++) {
       const { message, lien } = availableWhispers.pop()
       result.set(1 + Math.floor(randomizer.random() * 10) + i * 20, { message, lien, ideaType: "whisper" })

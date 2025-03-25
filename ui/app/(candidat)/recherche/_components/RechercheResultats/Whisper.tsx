@@ -2,14 +2,14 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 
-import type { IWisper } from "@/app/(candidat)/recherche/_hooks/useWhispers"
+import type { IWhisper } from "@/app/(candidat)/recherche/_hooks/useWhispers"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
-type WisperProps = {
-  whisper: IWisper
+type WhisperProps = {
+  whisper: IWhisper
 }
 
-export function Whisper({ whisper }: WisperProps) {
+export function Whisper({ whisper }: WhisperProps) {
   return (
     <Box
       sx={{
