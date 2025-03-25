@@ -83,6 +83,7 @@ export default function Authentification() {
         padding: fr.spacing("5w"),
         justifyContent: "center",
         alignContent: "center",
+        margin: "auto",
       }}
     >
       <Alerts />

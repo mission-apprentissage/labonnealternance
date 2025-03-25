@@ -12,7 +12,7 @@ export default async function AuthentificationLayout({ children }: PropsWithChil
   return (
     <>
       <PublicHeader hideConnectionButton={true} user={user} />
-      <Container maxW="container.xl" sx={{ margin: "auto", marginTop: fr.spacing("2v"), marginBottom: fr.spacing("2v") }}>
+      <Container maxW="container.xl" sx={{ alignContent: "center", marginTop: fr.spacing("2v"), marginBottom: fr.spacing("2v") }}>
         {children}
       </Container>
       <Footer />
