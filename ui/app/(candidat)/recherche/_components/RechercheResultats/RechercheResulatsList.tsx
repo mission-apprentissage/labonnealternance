@@ -7,9 +7,11 @@ import { useEffect, useMemo, useRef } from "react"
 
 import { RechercheResultatsFooter } from "@/app/(candidat)/recherche/_components/RechercheResultats/Footer"
 import { ResultCard } from "@/app/(candidat)/recherche/_components/RechercheResultats/ResultatListCard"
+import { Whisper } from "@/app/(candidat)/recherche/_components/RechercheResultats/Whisper"
 import { RechercheResultatsPlaceholder } from "@/app/(candidat)/recherche/_components/RechercheResultatsPlaceholder"
 import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
-import { useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
+import { useRechercheResults, type ILbaItem } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
+import { useWhispers, type IWhisper } from "@/app/(candidat)/recherche/_hooks/useWhispers"
 import { isItemReferenceInList } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { ErrorMessage } from "@/components"
 import ResultListsLoading from "@/components/SearchForTrainingsAndJobs/components/ResultListsLoading"
@@ -17,22 +19,41 @@ import ResultListsLoading from "@/components/SearchForTrainingsAndJobs/component
 export function RechercheResulatsList() {
   const params = useCandidatRechercheParams()
   const result = useRechercheResults(params)
+  const whispers = useWhispers(params)
 
   const parentRef = useRef(null)
 
+  const items = useMemo((): Array<ILbaItem | IWhisper> => {
+    if (result.status !== "success" && result.formationStatus !== "success") {
+      return []
+    }
+
+    const data = []
+    for (let i = 0; i < result.itemsCount; i++) {
+      if (whispers.has(i)) {
+        data.push(whispers.get(i))
+      }
+      data.push(result.items[i])
+    }
+
+    return data
+  }, [result, whispers])
+
   const columnVirtualizer = useVirtualizer({
-    count: result.itemsCount + 1,
+    count: items.length + 1,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 278,
+    estimateSize: (index) => {
+      if (items[index]?.ideaType === "whisper") {
+        return 112
+      }
+
+      return 270
+    },
     overscan: 10,
   })
 
-  const items = useMemo(() => {
-    return result.status === "success" || result.formationStatus === "success" ? result.items : []
-  }, [result])
-
   useEffect(() => {
-    const index = items.findIndex((item) => isItemReferenceInList(item, params.activeItems ?? []))
+    const index = items.findIndex((item) => item.ideaType !== "whisper" && isItemReferenceInList(item, params.activeItems ?? []))
     // Scroll to top when search param changes
     columnVirtualizer.scrollToIndex(Math.max(index, 0), { align: "start" })
   }, [params, columnVirtualizer, items])
@@ -98,7 +119,7 @@ export function RechercheResulatsList() {
             }}
           >
             {virtualItems.map((virtualRow) => {
-              if (virtualRow.index >= result.itemsCount) {
+              if (virtualRow.index >= items.length) {
                 return (
                   <Box
                     key={virtualRow.key}
@@ -117,7 +138,7 @@ export function RechercheResulatsList() {
                 )
               }
 
-              const item = result.items[virtualRow.index]
+              const item = items[virtualRow.index]
 
               return (
                 <Box
@@ -129,7 +150,7 @@ export function RechercheResulatsList() {
                     px: fr.spacing("1w"),
                   }}
                 >
-                  <ResultCard active={isItemReferenceInList(item, params.activeItems ?? [])} item={item} />
+                  {item.ideaType === "whisper" ? <Whisper whisper={item} /> : <ResultCard active={isItemReferenceInList(item, params.activeItems ?? [])} item={item} />}
                 </Box>
               )
             })}
