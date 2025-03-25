@@ -8,6 +8,7 @@ import { PAGES } from "@/utils/routes.utils"
 export enum EAdminPages {
   GESTION_RECRUTEURS = "GESTION_RECRUTEURS",
   ENTREPRISES_ALGO = "ENTREPRISES_ALGO",
+  GESTION_ADMINISTRATEURS = "GESTION_ADMINISTRATEURS",
 }
 
 const selectedTabParams = {
@@ -39,6 +40,10 @@ const pageDefs = [
     page: EAdminPages.ENTREPRISES_ALGO,
     path: PAGES.static.backAdminGestionDesEntreprises.getPath(),
   },
+  {
+    page: EAdminPages.GESTION_ADMINISTRATEURS,
+    path: PAGES.static.backAdminGestionDesAdministrateurs.getPath(),
+  },
 ]
 
 const NavigationAdmin = ({ currentPage }: { currentPage: EAdminPages }) => {
@@ -68,6 +73,9 @@ const NavigationAdmin = ({ currentPage }: { currentPage: EAdminPages }) => {
             </Tab>
             <Tab data-testid="algo_company_tab" {...tabParams} isDisabled={selectedIndex === 1} _focus={focusedTabParams} _selected={selectedTabParams}>
               Entreprises de l'algorithme
+            </Tab>
+            <Tab data-testid="administrator_management_tab" {...tabParams} isDisabled={selectedIndex === 2} _focus={focusedTabParams} _selected={selectedTabParams}>
+              Gestion des administrateurs
             </Tab>
           </TabList>
         </Tabs>

@@ -195,6 +195,10 @@ export const PAGES = {
       getPath: () => `/espace-pro/administration/gestion-des-entreprises` as string,
       title: "Gestion des entreprises",
     },
+    backAdminGestionDesAdministrateurs: {
+      getPath: () => `/espace-pro/administration/gestion-des-administrateurs` as string,
+      title: "Gestion des administrateurs",
+    },
     backOpcoHome: {
       getPath: () => `/espace-pro/opco` as string,
       title: "Accueil OPCO",
@@ -237,7 +241,6 @@ export const PAGES = {
       }),
       title: metier,
     }),
-
     modificationEntreprise: (): IPage => ({
       getPath: () => `/espace-pro/entreprise/compte` as string,
       index: false,
@@ -465,6 +468,10 @@ export const PAGES = {
     backOpcoInformationEntreprise: ({ user_id, user_label }: { user_id: string; user_label?: string }): IPage => ({
       getPath: () => `/espace-pro/opco/users/${user_id}` as string,
       title: user_label ?? "Entreprise",
+    }),
+    backEditAdministrator: ({ userId }: { userId: string }): IPage => ({
+      getPath: () => `/espace-pro/administration/gestion-des-administrateurs/user/${userId}` as string,
+      title: "Modification d'administrateur",
     }),
     backHome: ({ userType }: { userType: "CFA" | "ENTREPRISE" | "ADMIN" | "OPCO" }): IPage => {
       switch (userType) {

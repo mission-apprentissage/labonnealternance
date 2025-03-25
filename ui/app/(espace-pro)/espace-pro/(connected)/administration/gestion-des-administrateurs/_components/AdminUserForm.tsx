@@ -1,4 +1,5 @@
-import { Box, Button, FormControl, FormLabel, HStack, Input, VStack, useToast } from "@chakra-ui/react"
+import { Box, FormControl, FormLabel, HStack, Input, VStack, useToast } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { FormikProvider, useFormik } from "formik"
 import { AccessStatus, IRoleManagementEvent, IRoleManagementJson, getLastStatusEvent, parseEnum } from "shared"
 import { OPCOS_LABEL } from "shared/constants/index"
@@ -7,13 +8,12 @@ import { INewSuperUser, IUserWithAccountJson, ZNewSuperUser, ZUserWithAccountFie
 import { Jsonify } from "type-fest"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
+import CustomInput from "@/app/(espace-pro)/_components/CustomInput"
+import { CustomSelect } from "@/app/(espace-pro)/_components/CustomSelect"
+import { CustomFormControl } from "@/app/_components/CustomFormControl"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 import { createSuperUser, updateUser } from "@/utils/api"
 import { apiDelete, ApiError } from "@/utils/api.utils"
-
-import { CustomFormControl } from "../../CustomFormControl"
-import CustomInput from "../../CustomInput"
-import { CustomSelect } from "../../CustomSelect"
 
 const { OPCO, ADMIN } = AUTHTYPE
 
@@ -130,7 +130,7 @@ export const AdminUserForm = ({
                 />
               )}
               <Box>
-                <Button variant="outline" colorScheme="red" borderRadius="none" onClick={onDeleteClicked}>
+                <Button priority="secondary" onClick={onDeleteClicked}>
                   Supprimer l&apos;utilisateur
                 </Button>
               </Box>
@@ -144,19 +144,11 @@ export const AdminUserForm = ({
 }
 
 const ActivateUserButton = ({ onClick }) => {
-  return (
-    <Button variant="primary" onClick={onClick}>
-      Activer le compte
-    </Button>
-  )
+  return <Button onClick={onClick}>Activer le compte</Button>
 }
 
 const DisableUserButton = ({ onClick }) => {
-  return (
-    <Button variant="primary-red" onClick={onClick}>
-      Désactiver le compte
-    </Button>
-  )
+  return <Button onClick={onClick}>Désactiver le compte</Button>
 }
 
 const UserFieldsForm = ({
@@ -226,8 +218,8 @@ const UserFieldsForm = ({
           <CustomInput required={true} name="last_name" label="Nom" type="text" value={values.last_name ?? ""} />
           <CustomInput required={true} name="email" label="Email" type="email" value={values.email ?? ""} />
           <CustomInput required={false} name="phone" label="Téléphone" type="phone" value={values.phone ?? ""} />
-          <Box paddingTop={10}>
-            <Button type="submit" variant="primary" mr={5} isDisabled={!dirty || !isValid}>
+          <Box paddingTop={10} mr={5}>
+            <Button type="submit" disabled={!dirty || !isValid}>
               {user ? "Enregistrer" : "Créer l'utilisateur"}
             </Button>
           </Box>

@@ -1,20 +1,26 @@
-import { Box, Button, Flex, Modal, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, useDisclosure } from "@chakra-ui/react"
+"use client"
+
+import { Box, Flex, Modal, ModalContent, ModalHeader, ModalOverlay, useDisclosure } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
+import { useRouter } from "next/navigation"
 
+import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
+import ModalCloseButton from "@/app/(espace-pro)/_components/ModalCloseButton"
+import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
+import { AdminUserForm } from "@/app/(espace-pro)/espace-pro/(connected)/administration/gestion-des-administrateurs/_components/AdminUserForm"
+import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { sortReactTableString } from "@/common/utils/dateUtils"
-import Link from "@/components/Link"
+import { TableNew } from "@/components/espace_pro"
+import { EAdminPages } from "@/components/espace_pro/Layout/NavigationAdmin"
 import { ArrowRightLine2 } from "@/theme/components/icons"
+import { apiGet } from "@/utils/api.utils"
+import { PAGES } from "@/utils/routes.utils"
 
-import { apiGet } from "../../../../utils/api.utils"
-import LoadingEmptySpace from "../../LoadingEmptySpace"
-import TableNew from "../../TableNew"
-
-import { AdminUserForm } from "./AdminUserForm"
-
-const AdminUserList = () => {
+export default function GestionDesAdministrateurs() {
   const newUser = useDisclosure()
-
+  const router = useRouter()
   const {
     data: users,
     isLoading,
@@ -33,7 +39,8 @@ const AdminUserList = () => {
   }
 
   return (
-    <>
+    <AdminLayout currentAdminPage={EAdminPages.GESTION_ADMINISTRATEURS}>
+      <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.backAdminGestionDesAdministrateurs]} />
       <Modal isOpen={newUser.isOpen} onClose={newUser.onClose} size="4xl">
         <ModalOverlay />
         <ModalContent borderRadius="0" p={10}>
@@ -42,10 +49,8 @@ const AdminUserList = () => {
               Ajouter un nouvel utilisateur
             </Box>
           </ModalHeader>
-          <ModalCloseButton width="80px">
-            fermer
-            <Box paddingLeft="1w" as="i" className="ri-close-line" />
-          </ModalCloseButton>
+          <ModalCloseButton onClose={newUser.onClose} />
+
           <AdminUserForm
             onCreate={async () => {
               newUser.onClose()
@@ -56,9 +61,7 @@ const AdminUserList = () => {
       </Modal>
 
       <Flex justifyContent="flex-end">
-        <Button variant="primary" onClick={newUser.onOpen}>
-          Créer un utilisateur
-        </Button>
+        <Button onClick={newUser.onOpen}>Créer un utilisateur</Button>
       </Flex>
 
       <TableNew
@@ -92,9 +95,9 @@ const AdminUserList = () => {
             disableSortBy: true,
             accessor: (row) => {
               return (
-                <Link href={`/espace-pro/admin/utilisateurs/${row._id}`}>
+                <Button priority="tertiary no outline" onClick={() => router.push(PAGES.dynamic.backEditAdministrator({ userId: row._id }).getPath())}>
                   <ArrowRightLine2 w="1w" />
-                </Link>
+                </Button>
               )
             },
           },
@@ -103,8 +106,6 @@ const AdminUserList = () => {
         exportable={null}
         description={null}
       />
-    </>
+    </AdminLayout>
   )
 }
-
-export default AdminUserList
