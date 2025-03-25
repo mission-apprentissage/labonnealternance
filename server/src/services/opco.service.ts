@@ -1,9 +1,9 @@
 import memoize from "memoizee"
 import { ObjectId } from "mongodb"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
-import { IReferentielOpco, ZReferentielOpcoInsert } from "shared/models"
+import { IReferentielOpco, ZReferentielOpcoInsert } from "shared/models/index"
 import { IOpco } from "shared/models/opco.model"
-import { parseEnum } from "shared/utils"
+import { parseEnum } from "shared/utils/index"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 

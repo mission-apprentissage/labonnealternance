@@ -1,16 +1,16 @@
 import { Box, Container } from "@chakra-ui/react"
+import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/router"
 import { NextSeo } from "next-seo"
-import React, { useState } from "react"
-import { useQuery } from "react-query"
+import { useState } from "react"
 
+import { AlgoRecruiter } from "@/app/(landing-pages)/acces-recruteur/_components/AlgoRecruiter"
 import { getApplicationCompanyEmailAddress } from "@/utils/api"
 
 import Breadcrumb from "../components/breadcrumb"
 import FormulaireDesinscription from "../components/DesinscriptionEntreprise/FormulaireDesinscription"
 import SuccesDesinscription from "../components/DesinscriptionEntreprise/SuccesDesinscription"
 import Footer from "../components/footer"
-import AlgoRecruiter from "../components/HomeComponents/AlgoRecruiter"
 import Navigation from "../components/navigation"
 import ScrollToTop from "../components/ScrollToTop"
 
@@ -24,7 +24,9 @@ const DesinscriptionRecruteur = () => {
     setIsSuccess(true)
   }
 
-  const { data } = useQuery("getApplicationEmail", () => getApplicationCompanyEmailAddress(application_id), {
+  const { data } = useQuery({
+    queryKey: ["getApplicationEmail"],
+    queryFn: () => getApplicationCompanyEmailAddress(application_id),
     enabled: !!application_id,
   })
 

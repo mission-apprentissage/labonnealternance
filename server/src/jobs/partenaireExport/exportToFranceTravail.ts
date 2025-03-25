@@ -5,7 +5,7 @@ import { promisify } from "util"
 
 import { stringify } from "csv-stringify"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
-import { JOB_STATUS } from "shared/models"
+import { JOB_STATUS } from "shared/models/index"
 
 import { sendCsvToFranceTravail } from "../../common/apis/franceTravail/franceTravail.client"
 import { logger } from "../../common/logger"

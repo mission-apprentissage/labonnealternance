@@ -1,6 +1,6 @@
-import { BusinessErrorCodes } from "@/../shared/constants/errorCodes"
 import { Box } from "@chakra-ui/react"
 import React from "react"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
 
 const WidgetPostulerError = ({ hasError }) => {
   const getErrorText = () => {

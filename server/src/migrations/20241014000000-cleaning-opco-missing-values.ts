@@ -1,5 +1,5 @@
 import { Db } from "mongodb"
-import { OPCOS_LABEL } from "shared/constants"
+import { OPCOS_LABEL } from "shared/constants/index"
 
 import { logger } from "@/common/logger"
 

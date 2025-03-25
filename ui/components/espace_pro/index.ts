@@ -1,14 +1,13 @@
+import AnimationContainer from "../../app/(espace-pro)/espace-pro/(connected)/_components/AnimationContainer"
+
 import AdresseAutocomplete from "./AdresseAutocomplete"
-import AnimationContainer from "./AnimationContainer"
 import AuthentificationLayout from "./AuthentificationLayout"
 import ConfirmationActivationUtilsateur from "./ConfirmationActivationUtilsateur"
 import ConfirmationDesactivationUtilisateur from "./ConfirmationDesactivationUtilisateur"
 import ConfirmationModificationOpco from "./ConfirmationModificationOpco"
-import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
 import CustomInput from "./CustomInput"
 import DropdownCombobox from "./DropdownCombobox"
 import InfoPopover from "./InfoPopover"
-import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
 import InfoTooltip from "./InfoToolTip"
 import Layout from "./Layout"
 import LoadingEmptySpace from "./LoadingEmptySpace"
@@ -24,12 +23,10 @@ export {
   ConfirmationActivationUtilsateur,
   ConfirmationDesactivationUtilisateur,
   ConfirmationModificationOpco,
-  ConfirmationSuppressionOffre,
   CustomInput,
   DropdownCombobox,
   InfoPopover,
   InfoTooltip,
-  InformationLegaleEntreprise,
   Layout,
   LoadingEmptySpace,
   Pagination,

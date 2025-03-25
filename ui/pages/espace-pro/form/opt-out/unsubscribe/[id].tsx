@@ -6,7 +6,7 @@ import { IEtablissementJson } from "shared"
 
 import { apiGet, apiPost } from "@/utils/api.utils"
 
-import { Breadcrumb } from "../../../../../components/espace_pro/common/components/Breadcrumb"
+import { OldBreadcrumb } from "../../../../../components/espace_pro/common/components/Breadcrumb"
 import Layout from "../../../../../components/espace_pro/common/components/Layout"
 import { SuccessCircle } from "../../../../../theme/components/icons"
 
@@ -106,7 +106,7 @@ export default function OptOutUnsubscribe() {
       </Head>
       <Box w="100%" pt={[4, 8]} px={[1, 1, 12, 24]}>
         <Container border="1px solid #000091" mt={8} mb={20} maxW="996px" pl={20} pr={24} py={10}>
-          <Breadcrumb pages={[{ title: "Accueil", to: "/" }, { title: title }]} />
+          <OldBreadcrumb pages={[{ title: "Accueil", to: "/" }, { title: title }]} />
           <Heading textStyle="h2" mt={5}>
             {title}
           </Heading>

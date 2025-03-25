@@ -1,3 +1,5 @@
+"use client"
+
 import { Input, Box } from "@chakra-ui/react"
 import { useCombobox } from "downshift"
 import { useState } from "react"

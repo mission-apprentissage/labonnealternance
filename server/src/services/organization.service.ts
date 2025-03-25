@@ -1,11 +1,11 @@
 import { internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
-import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants"
+import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/index"
 import { ICFA } from "shared/models/cfa.model"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
-import { getLastStatusEvent, isEnum } from "shared/utils"
+import { getLastStatusEvent, isEnum } from "shared/utils/index"
 
 import { asyncForEach } from "../common/utils/asyncUtils"
 import { getDbCollection } from "../common/utils/mongodbUtils"

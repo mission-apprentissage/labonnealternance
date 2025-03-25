@@ -1,7 +1,7 @@
 import { badRequest } from "@hapi/boom"
 import { matchSorter } from "match-sorter"
 import { IAppellationRome, IAppellationsRomes, IDiplomesMetiers, IDomainesMetiers, IMetierEnrichi, IMetiers, IMetiersEnrichis } from "shared"
-import { removeAccents, removeRegexChars } from "shared/utils"
+import { removeAccents, removeRegexChars } from "shared/utils/index"
 
 import { logger } from "@/common/logger"
 import { notifyToSlack } from "@/common/utils/slackUtils"

@@ -4,7 +4,7 @@ import https from "https"
 import axios, { AxiosRequestConfig, CreateAxiosDefaults } from "axios"
 import { FastifyRequest } from "fastify"
 import { compose, transformData } from "oleoduc"
-import { ITrackingCookies } from "shared/models"
+import { ITrackingCookies } from "shared/models/index"
 
 import { logger } from "../logger"
 

@@ -1,10 +1,14 @@
-import { assertUnreachable } from "@/../shared"
+"use client"
+
 import { Box, Container, Tab, TabList, Tabs } from "@chakra-ui/react"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
+
+import { PAGES } from "@/utils/routes.utils"
 
 export enum EAdminPages {
   GESTION_RECRUTEURS = "GESTION_RECRUTEURS",
   ENTREPRISES_ALGO = "ENTREPRISES_ALGO",
+  GESTION_ADMINISTRATEURS = "GESTION_ADMINISTRATEURS",
 }
 
 const selectedTabParams = {
@@ -27,37 +31,32 @@ const tabParams = {
 
 const focusedTabParams = {}
 
-const getTabIndex = (currentPage) => {
-  switch (currentPage) {
-    case EAdminPages.GESTION_RECRUTEURS:
-      return 0
-    case EAdminPages.ENTREPRISES_ALGO:
-      return 1
-    default:
-      return 0
-  }
-}
+const pageDefs = [
+  {
+    page: EAdminPages.GESTION_RECRUTEURS,
+    path: PAGES.static.backAdminHome.getPath(),
+  },
+  {
+    page: EAdminPages.ENTREPRISES_ALGO,
+    path: PAGES.static.backAdminGestionDesEntreprises.getPath(),
+  },
+  {
+    page: EAdminPages.GESTION_ADMINISTRATEURS,
+    path: PAGES.static.backAdminGestionDesAdministrateurs.getPath(),
+  },
+]
 
-const NavigationAdmin = ({ currentPage }) => {
-  const selectedIndex = getTabIndex(currentPage)
-
+const NavigationAdmin = ({ currentPage }: { currentPage: EAdminPages }) => {
   const router = useRouter()
 
+  let selectedIndex = pageDefs.findIndex((page) => page.page === currentPage)
+  if (selectedIndex === -1) {
+    selectedIndex = 0
+  }
+
   const handleTabsChange = (index) => {
-    switch (index) {
-      case 0: {
-        router.push("/espace-pro/administration/users")
-        break
-      }
-      case 1: {
-        router.push("/espace-pro/administration/gestionEntreprises")
-        break
-      }
-      default: {
-        assertUnreachable("unknown tab" as never)
-        break
-      }
-    }
+    const pageDef = pageDefs[index] ?? pageDefs[0]
+    router.push(pageDef.path)
   }
 
   return (
@@ -74,6 +73,9 @@ const NavigationAdmin = ({ currentPage }) => {
             </Tab>
             <Tab data-testid="algo_company_tab" {...tabParams} isDisabled={selectedIndex === 1} _focus={focusedTabParams} _selected={selectedTabParams}>
               Entreprises de l'algorithme
+            </Tab>
+            <Tab data-testid="administrator_management_tab" {...tabParams} isDisabled={selectedIndex === 2} _focus={focusedTabParams} _selected={selectedTabParams}>
+              Gestion des administrateurs
             </Tab>
           </TabList>
         </Tabs>

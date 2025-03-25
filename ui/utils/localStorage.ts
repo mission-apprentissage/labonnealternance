@@ -1,3 +1,4 @@
+"use client"
 export function storageSet<T>(storage: Storage, key: string, value: T) {
   try {
     if (storage) {

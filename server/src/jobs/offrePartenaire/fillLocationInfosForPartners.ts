@@ -1,6 +1,6 @@
 import { Filter } from "mongodb"
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
-import { joinNonNullStrings } from "shared/utils"
+import { joinNonNullStrings } from "shared/utils/index"
 
 import { getCityFromProperties, getGeolocation, getStreetFromProperties } from "@/services/geolocation.service"
 

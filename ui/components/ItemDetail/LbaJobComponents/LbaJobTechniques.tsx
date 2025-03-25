@@ -1,6 +1,5 @@
 import { AddIcon, MinusIcon } from "@chakra-ui/icons"
 import { AccordionButton, AccordionItem, AccordionPanel, Box, Text } from "@chakra-ui/react"
-import React from "react"
 
 import { scrollToNestedElement } from "@/utils/tools"
 
@@ -13,7 +12,7 @@ const LbaJobTechniques = ({ job }) => {
 
   return (
     job?.job?.romeDetails?.competences?.savoirs?.length && (
-      <AccordionItem borderBottom="1px solid #E5E5E5" onClick={onClick}>
+      <AccordionItem borderBottom="1px solid #E5E5E5" onClick={onClick} key={"techniques"}>
         {({ isExpanded }) => (
           <>
             <AccordionButton fontSize="1rem" fontWeight={700} color="#161616">

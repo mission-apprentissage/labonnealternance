@@ -1,6 +1,6 @@
-import { AccessEntityType, ZRoleManagement } from "shared/models"
 import cfaModel, { zCFA } from "shared/models/cfa.model"
 import entrepriseModel, { ZEntreprise } from "shared/models/entreprise.model"
+import { AccessEntityType, ZRoleManagement } from "shared/models/index"
 import roleManagement360Model from "shared/models/roleManagement360.model"
 import userWithAccountModel, { ZUserWithAccount } from "shared/models/userWithAccount.model"
 

@@ -1,4 +1,5 @@
-import { Box, Text, Textarea, Button, FormErrorMessage, FormControl } from "@chakra-ui/react"
+import { Box, FormControl, FormErrorMessage, Text, Textarea } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
 
 /**
  * @description CfaCandidatInformationForm component.
@@ -36,32 +37,17 @@ export const CfaCandidatInformationForm = (props) => {
           <FormErrorMessage>{formik.errors.message}</FormErrorMessage>
         </FormControl>
         <Box>
-          <Button
-            ml={1}
-            mt={4}
-            padding="8px 24px"
-            color="white"
-            background="bluefrance.500"
-            borderRadius="0"
-            sx={{
-              textDecoration: "none",
-              _hover: {
-                background: "bluesoft.500",
-              },
-            }}
-            aria-label="Envoyer la réponse"
-            type="submit"
-          >
+          <Button aria-label="Envoyer la réponse" type="submit">
             Envoyer ma réponse
           </Button>
         </Box>
         <Box mt={6}>
-          <Button onClick={props.otherClicked} fontWeight="500" color="bluefrance.500" fontSize="16px" lineHeight="24px" p="0" bg="none">
+          <Button priority="secondary" onClick={props.otherClicked}>
             J'ai répondu au candidat par un autre canal (mail ou téléphone)
           </Button>
         </Box>
         <Box mt={2}>
-          <Button onClick={props.unreachableClicked} fontWeight="500" color="bluefrance.500" fontSize="16px" lineHeight="24px" p="0" bg="none">
+          <Button priority="secondary" onClick={props.unreachableClicked}>
             Le candidat n'est pas joignable
           </Button>
         </Box>

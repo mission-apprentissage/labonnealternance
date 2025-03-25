@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import { TrafficType } from "shared/models"
+import { TrafficType } from "shared/models/index"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"

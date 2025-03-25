@@ -1,10 +1,10 @@
 import { Box, useDisclosure } from "@chakra-ui/react"
-import { ILbaItemLbaCompany, ILbaItemLbaJob } from "shared"
+import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson } from "shared"
 
 import { CandidatureLbaModal } from "./CandidatureLbaModal"
 import { useSubmitCandidature } from "./services/submitCandidature"
 
-const WidgetCandidatureLba = ({ item, caller }: { item: ILbaItemLbaJob | ILbaItemLbaCompany; caller: string }) => {
+const WidgetCandidatureLba = ({ item, caller }: { item: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson; caller: string }) => {
   const modalControls = useDisclosure()
   const submitControls = useSubmitCandidature(item, caller)
 

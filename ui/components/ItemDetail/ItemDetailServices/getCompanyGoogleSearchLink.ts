@@ -1,6 +1,6 @@
-import { ILbaItemFormation2, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "@/../shared"
+import { ILbaItemFormation2Json, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson } from "shared"
 
-export const getCompanyGoogleSearchLink = (item: ILbaItemLbaJob | ILbaItemLbaCompany | ILbaItemFtJob | ILbaItemFormation2) => {
+export const getCompanyGoogleSearchLink = (item: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemFtJobJson | ILbaItemFormation2Json) => {
   let placePart = ""
 
   if (item?.company?.mandataire) {

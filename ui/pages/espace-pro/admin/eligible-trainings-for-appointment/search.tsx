@@ -9,7 +9,7 @@ import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
 import { Layout } from "@/components/espace_pro"
 import { apiGet } from "@/utils/api.utils"
 
-import { Breadcrumb } from "../../../../components/espace_pro/common/components/Breadcrumb"
+import { OldBreadcrumb } from "../../../../components/espace_pro/common/components/Breadcrumb"
 import { authProvider, withAuth } from "../../../../components/espace_pro/withAuth"
 
 function SearchPage() {
@@ -63,7 +63,7 @@ function SearchPage() {
         <title>{title}</title>
         <link rel="icon" href="/favicon/favicon.ico" />
       </Head>
-      <Breadcrumb pages={[{ title: "Administration", to: "/espace-pro/administration/users" }, { title }]} />
+      <OldBreadcrumb pages={[{ title: "Administration", to: "/espace-pro/administration/users" }, { title }]} />
       <Heading textStyle="h2" mt={5}>
         {title}
       </Heading>

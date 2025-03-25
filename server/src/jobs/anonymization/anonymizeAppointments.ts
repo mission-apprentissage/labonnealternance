@@ -1,6 +1,6 @@
 import { Filter } from "mongodb"
-import { IAppointment } from "shared/models"
 import anonymizedAppointmentsModel from "shared/models/anonymizedAppointments.model"
+import { IAppointment } from "shared/models/index"
 
 import { logger } from "../../common/logger"
 import { getDbCollection } from "../../common/utils/mongodbUtils"

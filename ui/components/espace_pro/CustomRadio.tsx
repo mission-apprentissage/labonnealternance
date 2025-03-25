@@ -1,4 +1,5 @@
-import { Text, Radio, RadioGroup, RadioGroupProps } from "@chakra-ui/react"
+import { Radio, RadioGroup, RadioGroupProps } from "@chakra-ui/react"
+import { Box } from "@mui/material"
 
 export const CustomRadio = ({
   name,
@@ -19,7 +20,7 @@ export const CustomRadio = ({
     <RadioGroup data-testid={dataTestId} variant="outline" size="md" {...radioProps} name={name} mr={3} onChange={onChange} value={value}>
       {possibleValues.map((value) => (
         <Radio key={value} value={value}>
-          <Text>{value}</Text>
+          <Box component="span">{value}</Box>
         </Radio>
       ))}
     </RadioGroup>

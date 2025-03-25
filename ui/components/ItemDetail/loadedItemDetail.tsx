@@ -1,14 +1,13 @@
-import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "@/../shared"
 import { Box, Divider, Flex, Text } from "@chakra-ui/react"
-import { useContext, useEffect, useState } from "react"
-import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { useContext, useState } from "react"
+import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import DemandeDeContact from "@/components/RDV/DemandeDeContact"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import { isCfaEntreprise } from "../../services/cfaEntreprise"
-import { filterLayers } from "../../utils/mapTools"
 import InfoBanner from "../InfoBanner/InfoBanner"
 
 import AideApprentissage from "./AideApprentissage"
@@ -18,6 +17,7 @@ import DidYouKnow from "./DidYouKnow"
 import FTJobDetail from "./FTJobDetail"
 import GoingToContactQuestion, { getGoingtoId } from "./GoingToContactQuestion"
 import getActualTitle from "./ItemDetailServices/getActualTitle"
+/* @ts-ignore TODO */
 import { BuildSwipe, buttonJePostuleShouldBeDisplayed, buttonRdvShouldBeDisplayed, getNavigationButtons } from "./ItemDetailServices/getButtons"
 import getJobPublishedTimeAndApplications from "./ItemDetailServices/getJobPublishedTimeAndApplications"
 import getTags from "./ItemDetailServices/getTags"
@@ -35,20 +35,10 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
   const { jobs, extendedSearch, selectedItem, trainings } = useContext(SearchResultContext)
   const { activeFilters } = useContext(DisplayContext)
 
-  const kind: LBA_ITEM_TYPE_OLD = selectedItem?.ideaType
+  const kind: LBA_ITEM_TYPE_OLD | LBA_ITEM_TYPE = selectedItem?.ideaType
 
   const isCfa = isCfaEntreprise(selectedItem?.company?.siret, selectedItem?.company?.headquarter?.siret)
   const isMandataire = selectedItem?.company?.mandataire
-
-  useEffect(() => {
-    try {
-      filterLayers(activeFilters)
-    } catch (err) {
-      //notice: gère des erreurs qui se présentent à l'initialisation de la page quand mapbox n'est pas prêt.
-    }
-    /* eslint react-hooks/exhaustive-deps: 0 */
-    /* @ts-expect-error: à cracker */
-  }, [selectedItem?.id, selectedItem?.company?.siret, selectedItem?.job?.id])
 
   const actualTitle = getActualTitle({ kind, selectedItem }) || ""
 
@@ -136,13 +126,15 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
 
           <Flex flexDirection={{ base: "column", sm: "row" }}>
             <Box flex={1}>
-              {isCandidatureLba(selectedItem) && <CandidatureLba item={selectedItem as ILbaItemLbaJob | ILbaItemLbaCompany} />}
+              {isCandidatureLba(selectedItem) && <CandidatureLba item={selectedItem as ILbaItemLbaJobJson | ILbaItemLbaCompanyJson} />}
 
               {kind === LBA_ITEM_TYPE_OLD.LBA && !isCandidatureLba(selectedItem) && <NoCandidatureLba />}
 
+              {/* @ts-ignore TODO */}
               {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && !hasApplied(selectedItem) && (
                 <DemandeDeContact isCollapsedHeader={isCollapsedHeader} context={selectedItem.rdvContext} referrer="LBA" showInModal />
               )}
+              {/* @ts-ignore TODO */}
               {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && <ItemDetailApplicationsStatus item={selectedItem} mt={2} mb={2} />}
 
               {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PARTNER_JOB && <PartnerJobPostuler isCollapsedHeader={isCollapsedHeader} job={selectedItem} />}
@@ -155,10 +147,10 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
       </Box>
 
       {kind === LBA_ITEM_TYPE_OLD.PEJOB && <FTJobDetail job={selectedItem} />}
-      {kind === LBA_ITEM_TYPE_OLD.MATCHA && <LbaJobDetail title={actualTitle} job={selectedItem as ILbaItemLbaJob} />}
-      {kind === LBA_ITEM_TYPE_OLD.LBA && <RecruteurLbaDetail recruteurLba={selectedItem as ILbaItemLbaCompany} />}
+      {kind === LBA_ITEM_TYPE_OLD.MATCHA && <LbaJobDetail title={actualTitle} job={selectedItem as ILbaItemLbaJobJson} />}
+      {kind === LBA_ITEM_TYPE_OLD.LBA && <RecruteurLbaDetail recruteurLba={selectedItem as ILbaItemLbaCompanyJson} />}
       {kind === LBA_ITEM_TYPE_OLD.FORMATION && <TrainingDetail training={selectedItem} />}
-      {kind === LBA_ITEM_TYPE_OLD.PARTNER_JOB && <PartnerJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJob} />}
+      {kind === LBA_ITEM_TYPE_OLD.PARTNER_JOB && <PartnerJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
 
       <AideApprentissage />
 

@@ -9,7 +9,11 @@ COPY ui/package.json ui/package.json
 COPY server/package.json server/package.json
 COPY shared/package.json shared/package.json
 
-RUN --mount=type=cache,target=/app/.yarn/cache yarn install --immutable
+RUN yarn install --immutable
+
+COPY . .
+
+RUN yarn typecheck
 
 FROM builder_root AS root
 WORKDIR /app
@@ -26,8 +30,8 @@ COPY ./server ./server
 COPY ./shared ./shared
 
 RUN yarn --cwd server build
-# Removing dev dependencies
-RUN --mount=type=cache,target=/app/.yarn/cache yarn workspaces focus --all --production
+
+RUN mkdir -p /app/shared/node_modules && mkdir -p /app/server/node_modules
 
 # Production image, copy all the files and run next
 FROM node:20-slim AS server
@@ -44,6 +48,8 @@ ENV COMMIT_HASH=$COMMIT_HASH
 COPY --from=builder_server /app/server ./server
 COPY --from=builder_server /app/shared ./shared
 COPY --from=builder_server /app/node_modules ./node_modules
+COPY --from=builder_server /app/server/node_modules ./server/node_modules
+COPY --from=builder_server /app/shared/node_modules ./shared/node_modules
 COPY ./server/static /app/server/static
 
 EXPOSE 5000
@@ -58,8 +64,6 @@ CMD ["node", "dist/index.js", "start"]
 # Rebuild the source code only when needed
 FROM root AS builder_ui
 WORKDIR /app
-COPY ./ui ./ui
-COPY ./shared ./shared
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
