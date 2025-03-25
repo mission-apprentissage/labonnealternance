@@ -207,6 +207,15 @@ export const PAGES = {
       getPath: () => `/espace-pro/entreprise/creation-offre` as string,
       title: "Nouvelle offre",
     },
+    desinscription: {
+      getPath: () => `/desinscription` as string,
+      title: "Désinscription candidatures spontanées",
+      index: false,
+      getMetadata: () => ({
+        title: "Désinscription candidatures spontanées",
+        description: "Désinscrivez vous de l'envoi de candidatures spontanées.",
+      }),
+    },
   },
   dynamic: {
     compte: ({ userType }: { userType: "CFA" | "ENTREPRISE" | "OPCO" | "ADMIN" }): IPage => ({
