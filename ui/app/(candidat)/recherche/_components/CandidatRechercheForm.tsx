@@ -1,35 +1,34 @@
 "use client"
 
+import { createModal } from "@codegouvfr/react-dsfr/Modal"
+import { prDsfrLoaded } from "@codegouvfr/react-dsfr/start"
 import { Box } from "@mui/material"
 import { captureException } from "@sentry/nextjs"
-import { Suspense, useEffect } from "react"
+import { useCallback, useEffect } from "react"
 
 import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
-import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
-import { RechercheForm, type RechercheFormProps } from "@/app/_components/RechercheForm/RechercheForm"
+import type { IRecherchePageParams, WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+import { RechercheForm } from "@/app/_components/RechercheForm/RechercheForm"
 import { RechercheFormTitle } from "@/app/_components/RechercheForm/RechercheFormTitle"
 import { apiGet } from "@/utils/api.utils"
 
-export function CandidatRechercheFormUi(props: Pick<RechercheFormProps, "initialValue" | "onSubmit">) {
-  return (
-    <Box>
-      <Box
-        sx={{
-          display: {
-            xs: "block",
-            lg: "none",
-          },
-        }}
-      >
-        <RechercheFormTitle />
-      </Box>
-      <RechercheForm type="recherche" onSubmit={props.onSubmit} initialValue={props.initialValue} />
-    </Box>
-  )
-}
+export const candidatRechercheFormModal = createModal({
+  id: "candidat-recherche-form-modal",
+  isOpenedByDefault: false,
+})
 
-function CandidatRechercheFormComponent(props: WithRecherchePageParams) {
+export function CandidatRechercheForm(props: WithRecherchePageParams) {
   const navigateToRecherchePage = useNavigateToRecherchePage(props.params)
+
+  const onSubmit = useCallback(
+    (result: Pick<IRecherchePageParams, "romes" | "diploma" | "job_name" | "geo" | "job_type" | "activeItems">) => {
+      prDsfrLoaded.then(() => {
+        candidatRechercheFormModal.close()
+      })
+      navigateToRecherchePage(result)
+    },
+    [navigateToRecherchePage]
+  )
 
   useEffect(() => {
     const controller = new AbortController()
@@ -56,13 +55,31 @@ function CandidatRechercheFormComponent(props: WithRecherchePageParams) {
     }
   }, [props.params, navigateToRecherchePage])
 
-  return <CandidatRechercheFormUi onSubmit={navigateToRecherchePage} initialValue={props.params} />
-}
-
-export function CandidatRechercheForm(props: WithRecherchePageParams) {
   return (
-    <Suspense fallback={<CandidatRechercheFormUi onSubmit={null} initialValue={null} />}>
-      <CandidatRechercheFormComponent {...props} />
-    </Suspense>
+    <Box>
+      <Box
+        sx={{
+          display: {
+            xs: "block",
+            md: "none",
+          },
+        }}
+      >
+        <candidatRechercheFormModal.Component title={<RechercheFormTitle />} topAnchor size="large">
+          <RechercheForm type="recherche" onSubmit={onSubmit} initialValue={props.params} />
+        </candidatRechercheFormModal.Component>
+      </Box>
+
+      <Box
+        sx={{
+          display: {
+            xs: "none",
+            md: "block",
+          },
+        }}
+      >
+        <RechercheForm type="recherche" onSubmit={onSubmit} initialValue={props.params} />
+      </Box>
+    </Box>
   )
 }
