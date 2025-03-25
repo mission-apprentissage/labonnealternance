@@ -61,15 +61,8 @@ export default function Authentification() {
       })
   }
 
-  return (
-    <Box
-      sx={{
-        maxWidth: "md",
-        padding: fr.spacing("5w"),
-        justifyContent: "center",
-        alignContent: "center",
-      }}
-    >
+  const Alerts = () => (
+    <>
       {errorMessage && (
         <Alert
           severity="error"
@@ -80,7 +73,19 @@ export default function Authentification() {
       {magicLinkSent && !errorMessage && (
         <Alert severity="success" title="Un lien de connexion a été envoyé" description="Vérifiez votre boite mail et cliquez sur le lien pour vous connecter" />
       )}
+    </>
+  )
 
+  return (
+    <Box
+      sx={{
+        maxWidth: "md",
+        padding: fr.spacing("5w"),
+        justifyContent: "center",
+        alignContent: "center",
+      }}
+    >
+      <Alerts />
       <Stack direction="column" spacing={7} bg="grey.150" p={["4", "8"]}>
         <Heading fontSize="32px" as="h2">
           Vous avez déjà un compte ?
@@ -110,6 +115,7 @@ export default function Authentification() {
           </Formik>
         </Box>
       </Stack>
+      <Alerts />
     </Box>
   )
 }
