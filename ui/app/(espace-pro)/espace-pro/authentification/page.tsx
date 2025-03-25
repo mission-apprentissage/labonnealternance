@@ -1,21 +1,24 @@
 "use client"
-import { Heading, Spinner, Stack, Text } from "@chakra-ui/react"
+import { Divider, Heading, Spinner, Stack, Text } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import { Alert } from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
 import { Form, Formik } from "formik"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import z from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import { CustomInput } from "@/components/espace_pro"
 import { sendMagiclink } from "@/utils/api"
+import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
 export default function Authentification() {
   const { error } = useSearchParamsRecord()
   const hasError = Boolean(error === "true")
+  const router = useRouter()
 
   const [magicLinkSent, setMagicLinkSent] = useState(false)
   const [errorMessage, setErrorMessage] = useState(hasError ? "Session invalidée" : "")
@@ -86,8 +89,8 @@ export default function Authentification() {
         margin: "auto",
       }}
     >
-      <Alerts />
       <Stack direction="column" spacing={7} bg="grey.150" p={["4", "8"]}>
+        <Alerts />
         <Heading fontSize="32px" as="h2">
           Vous avez déjà un compte ?
         </Heading>
@@ -115,8 +118,18 @@ export default function Authentification() {
             }}
           </Formik>
         </Box>
+
+        <Alerts />
+
+        <Divider pb={0} />
+
+        <Text fontSize="32px" as="h2" mb={1}>
+          Vous n'avez pas de compte ?
+        </Text>
+        <Button priority="secondary" type="button" onClick={() => router.push(PAGES.static.espaceProCreationEntreprise.getPath())}>
+          Créer un compte
+        </Button>
       </Stack>
-      <Alerts />
     </Box>
   )
 }
