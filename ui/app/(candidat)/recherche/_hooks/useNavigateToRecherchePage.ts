@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation"
 import { useCallback } from "react"
 
-import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
 import { detectModeFromParams, type IRechercheMode, type IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -18,8 +17,7 @@ function getUrl(params: Required<IRecherchePageParams>, mode: IRechercheMode): s
   return PAGES.dynamic.recherche(params).getPath()
 }
 
-export function useNavigateToRecherchePage(): (newParams: Partial<IRecherchePageParams>, replace?: boolean) => void {
-  const searchParams = useCandidatRechercheParams()
+export function useNavigateToRecherchePage(searchParams: IRecherchePageParams): (newParams: Partial<IRecherchePageParams>, replace?: boolean) => void {
   const router = useRouter()
 
   const navigateToRecherchePage = useCallback(

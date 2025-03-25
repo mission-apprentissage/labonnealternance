@@ -43,7 +43,7 @@ export function DsfrLink({
         {
           "fr-link--sm": size === "sm",
           "fr-link--lg": size === "lg",
-          "fr-link--icon-left": true, // arrow === "left",
+          "fr-link--icon-left": arrow === "left",
           "fr-icon-arrow-left-s-line": arrow === "left",
           "fr-icon-arrow-right-line": arrow === "right",
           "fr-link--icon-right": arrow === "right",

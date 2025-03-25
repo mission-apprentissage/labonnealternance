@@ -5,6 +5,7 @@ import { Box } from "@mui/material"
 import { Suspense } from "react"
 
 import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
+import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { RechercheForm, type RechercheFormProps } from "@/app/_components/RechercheForm/RechercheForm"
 import { RechercheFormTitle } from "@/app/_components/RechercheForm/RechercheFormTitle"
 
@@ -27,16 +28,16 @@ export function HomeRechercheFormUI(props: Pick<RechercheFormProps, "onSubmit">)
   )
 }
 
-function HomeRechercheFormComponent() {
-  const onSubmit = useNavigateToRecherchePage()
+function HomeRechercheFormComponent(props: WithRecherchePageParams) {
+  const onSubmit = useNavigateToRecherchePage(props.params)
 
   return <HomeRechercheFormUI onSubmit={onSubmit} />
 }
 
-export function HomeRechercheForm() {
+export function HomeRechercheForm(props: WithRecherchePageParams) {
   return (
     <Suspense fallback={<HomeRechercheFormUI onSubmit={null} />}>
-      <HomeRechercheFormComponent />
+      <HomeRechercheFormComponent params={props.params} />
     </Suspense>
   )
 }
