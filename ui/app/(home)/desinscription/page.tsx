@@ -1,6 +1,7 @@
 import { Metadata } from "next"
 
 import DesinscriptionRecruteur from "@/app/(home)/desinscription/Desinscription"
+import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = {
@@ -9,5 +10,9 @@ export const metadata: Metadata = {
 }
 
 export default async function PageDesinscription() {
-  return <DesinscriptionRecruteur />
+  return (
+    <DepotSimplifieStyling>
+      <DesinscriptionRecruteur />
+    </DepotSimplifieStyling>
+  )
 }
