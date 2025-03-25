@@ -121,6 +121,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter }: { userRec
           phone: userRecruteur.phone,
           email: userRecruteur.email,
           opco: userRecruteur.opco,
+          type: userRecruteur.type,
         }}
         validationSchema={Yup.object().shape({
           last_name: Yup.string().required("champ obligatoire"),
