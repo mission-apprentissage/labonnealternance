@@ -4,8 +4,8 @@ import { Box } from "@mui/material"
 import { captureException } from "@sentry/nextjs"
 import { Suspense, useEffect } from "react"
 
-import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
+import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { RechercheForm, type RechercheFormProps } from "@/app/_components/RechercheForm/RechercheForm"
 import { RechercheFormTitle } from "@/app/_components/RechercheForm/RechercheFormTitle"
 import { apiGet } from "@/utils/api.utils"
@@ -28,20 +28,19 @@ export function CandidatRechercheFormUi(props: Pick<RechercheFormProps, "initial
   )
 }
 
-function CandidatRechercheFormComponent() {
-  const params = useCandidatRechercheParams()
-  const navigateToRecherchePage = useNavigateToRecherchePage()
+function CandidatRechercheFormComponent(props: WithRecherchePageParams) {
+  const navigateToRecherchePage = useNavigateToRecherchePage(props.params)
 
   useEffect(() => {
     const controller = new AbortController()
-    if (params.geo !== null && params.geo.address === null) {
-      apiGet("/_private/geo/commune/reverse", { querystring: { latitude: params.geo.latitude, longitude: params.geo.longitude } }, { signal: controller.signal })
+    if (props.params.geo !== null && props.params.geo.address === null) {
+      apiGet("/_private/geo/commune/reverse", { querystring: { latitude: props.params.geo.latitude, longitude: props.params.geo.longitude } }, { signal: controller.signal })
         .then((commune) => {
           if (controller.signal.aborted) {
             return
           }
 
-          navigateToRecherchePage({ geo: { ...params.geo, address: commune.nom } }, true)
+          navigateToRecherchePage({ geo: { ...props.params.geo, address: commune.nom } }, true)
         })
         .catch((err) => {
           if (controller.signal.aborted) {
@@ -55,15 +54,15 @@ function CandidatRechercheFormComponent() {
     return () => {
       controller.abort()
     }
-  }, [params, navigateToRecherchePage])
+  }, [props.params, navigateToRecherchePage])
 
-  return <CandidatRechercheFormUi onSubmit={navigateToRecherchePage} initialValue={params} />
+  return <CandidatRechercheFormUi onSubmit={navigateToRecherchePage} initialValue={props.params} />
 }
 
-export function CandidatRechercheForm() {
+export function CandidatRechercheForm(props: WithRecherchePageParams) {
   return (
     <Suspense fallback={<CandidatRechercheFormUi onSubmit={null} initialValue={null} />}>
-      <CandidatRechercheFormComponent />
+      <CandidatRechercheFormComponent {...props} />
     </Suspense>
   )
 }

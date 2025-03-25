@@ -5,9 +5,9 @@ import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch"
 import { Box } from "@mui/material"
 import { ChangeEvent, Suspense, useCallback } from "react"
 
-import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
 import { useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
+import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 
 type CandidatRechercheFiltersUIProps = {
   entrepriseCount: number | null
@@ -113,12 +113,11 @@ function CandidatRechercheFiltersUI({
   )
 }
 
-function CandidatRechercheFiltersComponent() {
-  const params = useCandidatRechercheParams()
-  const result = useRechercheResults(params)
-  const navigateToRecherchePage = useNavigateToRecherchePage()
+function CandidatRechercheFiltersComponent(props: WithRecherchePageParams) {
+  const result = useRechercheResults(props.params)
+  const navigateToRecherchePage = useNavigateToRecherchePage(props.params)
 
-  const { displayEntreprises, displayFormations, displayPartenariats, displayMap } = params
+  const { displayEntreprises, displayFormations, displayPartenariats, displayMap } = props.params
 
   const onEntrepriseChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -154,7 +153,7 @@ function CandidatRechercheFiltersComponent() {
       displayFormations={displayFormations}
       displayPartenariats={displayPartenariats}
       displayMap={displayMap}
-      displayFilters={params.displayFilters}
+      displayFilters={props.params.displayFilters}
       onEntrepriseChange={onEntrepriseChange}
       onFormationsChange={onFormationsChange}
       onPartenariatsChange={onPartenariatsChange}
@@ -163,7 +162,7 @@ function CandidatRechercheFiltersComponent() {
   )
 }
 
-export function CandidatRechercheFilters() {
+export function CandidatRechercheFilters(props: WithRecherchePageParams) {
   return (
     <Suspense
       fallback={
@@ -171,11 +170,11 @@ export function CandidatRechercheFilters() {
           entrepriseCount={null}
           formationsCount={null}
           partenariatCount={null}
-          displayEntreprises
-          displayFormations
-          displayPartenariats
-          displayMap
-          displayFilters
+          displayEntreprises={props.params.displayEntreprises}
+          displayFormations={props.params.displayFormations}
+          displayPartenariats={props.params.displayPartenariats}
+          displayMap={props.params.displayMap}
+          displayFilters={props.params.displayFilters}
           onEntrepriseChange={null}
           onFormationsChange={null}
           onPartenariatsChange={null}
@@ -183,7 +182,7 @@ export function CandidatRechercheFilters() {
         />
       }
     >
-      <CandidatRechercheFiltersComponent />
+      <CandidatRechercheFiltersComponent {...props} />
     </Suspense>
   )
 }

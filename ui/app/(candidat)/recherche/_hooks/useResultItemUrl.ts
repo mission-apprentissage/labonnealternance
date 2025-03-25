@@ -2,15 +2,12 @@
 
 import { useMemo } from "react"
 
-import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
-import { getItemReference, getResultItemUrl, ItemReferenceLike } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+import { getItemReference, getResultItemUrl, ItemReferenceLike, type IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 
-export function useResultItemUrl(item: ItemReferenceLike): string {
-  const searchParams = useCandidatRechercheParams()
-
+export function useResultItemUrl(item: ItemReferenceLike, params: IRecherchePageParams): string {
   const url = useMemo(() => {
-    return getResultItemUrl(item, { ...searchParams, activeItems: [getItemReference(item)] })
-  }, [item, searchParams])
+    return getResultItemUrl(item, { ...params, activeItems: [getItemReference(item)] })
+  }, [item, params])
 
   return url
 }

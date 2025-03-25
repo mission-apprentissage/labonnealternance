@@ -1,5 +1,6 @@
 import { Box, Container, Show } from "@chakra-ui/react"
 
+import { parseRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
 import { AlgoHome } from "@/app/(home)/_components/AlgoHome"
 import { AmeliorerLBA } from "@/app/(home)/_components/AmeliorerLBA"
@@ -14,7 +15,9 @@ const blockCssProperties = {
   marginRight: "auto",
   maxWidth: "1310px",
 }
-export default function HomePage() {
+export default async function HomePage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
+  const params = parseRecherchePageParams(new URLSearchParams(await searchParams), "default")
+
   return (
     <Box>
       <Box as="main">
@@ -23,7 +26,7 @@ export default function HomePage() {
             <HomeCircleImageDecoration />
           </Show>
           <Container variant="responsiveContainer" pt={{ base: 3, sm: 12 }} pb={12} position="relative">
-            <HomeRechercheForm />
+            <HomeRechercheForm params={params} />
           </Container>
           <HowTo />
         </Box>

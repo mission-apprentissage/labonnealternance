@@ -12,6 +12,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   return PAGES.dynamic.rechercheEmploi(parseRecherchePageParams(new URLSearchParams(await searchParams), "jobs-only")).getMetadata?.() ?? {}
 }
 
-export default function RechercheEmploiPage() {
-  return <RecherchePageComponent />
+export default async function RechercheEmploiPage({ searchParams }: Props) {
+  const params = parseRecherchePageParams(new URLSearchParams(await searchParams), "jobs-only")
+  return <RecherchePageComponent params={params} />
 }

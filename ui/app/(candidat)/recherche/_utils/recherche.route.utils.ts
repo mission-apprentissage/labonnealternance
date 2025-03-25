@@ -77,11 +77,13 @@ export const zRecherchePageParams = z.object({
     .optional(),
 })
 
-export type IRecherchePageParams = z.output<typeof zRecherchePageParams>
+export type IRecherchePageParams = Required<z.output<typeof zRecherchePageParams>>
+
+export type WithRecherchePageParams<T = object> = T & { params: IRecherchePageParams }
 
 export type IRechercheMode = "default" | "formations-only" | "jobs-only"
 
-export function buildRecherchePageParams(params: IRecherchePageParams, mode: IRechercheMode | null): string {
+export function buildRecherchePageParams(params: Partial<IRecherchePageParams>, mode: IRechercheMode | null): string {
   const query = new URLSearchParams()
 
   if (params?.romes?.length > 0) {
@@ -130,7 +132,7 @@ export function buildRecherchePageParams(params: IRecherchePageParams, mode: IRe
   return query.toString()
 }
 
-export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSearchParams | null, mode: IRechercheMode): Required<IRecherchePageParams> | null {
+export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSearchParams | null, mode: IRechercheMode): IRecherchePageParams | null {
   if (search === null) {
     return null
   }
