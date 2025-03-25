@@ -8,7 +8,7 @@ import { useCallback, useEffect, useState } from "react"
 
 import { earthCircumferenceKm, mapboxTileSize } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
-import type { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+import type { IRecherchePageParams, WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { radiusOptions } from "@/app/_components/RechercheForm/RechercheForm"
 
 type RechercheMapIciProps = {
@@ -55,12 +55,12 @@ function computeNewSearchGeoParams(map: Mapbox): Required<IRecherchePageParams["
   }
 }
 
-export function RechercheMapIci(props: RechercheMapIciProps) {
+export function RechercheMapIci(props: WithRecherchePageParams<RechercheMapIciProps>) {
   const { map, searchArea, radius } = props
 
   const [isVisible, setIsVisible] = useState(false)
 
-  const navigateToRecherchePage = useNavigateToRecherchePage()
+  const navigateToRecherchePage = useNavigateToRecherchePage(props.params)
 
   const isSameArea = useCallback(
     (map: Mapbox) => {

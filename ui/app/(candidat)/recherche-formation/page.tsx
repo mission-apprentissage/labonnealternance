@@ -12,6 +12,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   return PAGES.dynamic.rechercheFormation(parseRecherchePageParams(new URLSearchParams(await searchParams), "formations-only")).getMetadata?.() ?? {}
 }
 
-export default function RechercheFormationPage() {
-  return <RecherchePageComponent />
+export default async function RechercheFormationPage({ searchParams }: Props) {
+  const params = parseRecherchePageParams(new URLSearchParams(await searchParams), "formations-only")
+  return <RecherchePageComponent params={params} />
 }

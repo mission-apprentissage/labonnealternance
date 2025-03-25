@@ -8,8 +8,8 @@ import { ILbaItemFormation2Json } from "shared"
 import { LBA_ITEM_TYPE, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 
 import { RechercheCarte } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
-import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
 import { IUseRechercheResultsSuccess, useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
+import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { useBuildNavigation } from "@/app/hooks/useBuildNavigation"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
@@ -38,8 +38,7 @@ const dontBreakOutCssParameters = {
   hyphens: "auto",
 }
 
-export default function TrainingDetailRendererClient({ training }: { training: ILbaItemFormation2Json }) {
-  const params = useCandidatRechercheParams()
+export default function TrainingDetailRendererClient({ training, params }: WithRecherchePageParams<{ training: ILbaItemFormation2Json }>) {
   const result = useRechercheResults(params)
 
   const trainingReference = useMemo(() => {
@@ -75,9 +74,10 @@ export default function TrainingDetailRendererClient({ training }: { training: I
           priseDeRendezVous={appliedDate ? false : training.training.elligibleForAppointment}
           appliedDate={appliedDate}
           resultList={result.items}
+          params={params}
         />
         {/* TODO : remove extended search button from map view */}
-        <RechercheCarte item={trainingReference} variant="detail" />
+        <RechercheCarte item={trainingReference} variant="detail" params={params} />
       </Box>
     )
   }
@@ -88,6 +88,7 @@ export default function TrainingDetailRendererClient({ training }: { training: I
       priseDeRendezVous={appliedDate ? false : training.training.elligibleForAppointment}
       appliedDate={appliedDate}
       resultList={result.items}
+      params={params}
     />
   )
 }
@@ -97,22 +98,22 @@ function TrainingDetailPage({
   priseDeRendezVous,
   appliedDate,
   resultList,
-}: {
+  params,
+}: WithRecherchePageParams<{
   selectedItem: ILbaItemFormation2Json
   priseDeRendezVous: boolean
   appliedDate: string | null
   resultList: IUseRechercheResultsSuccess["items"]
-}) {
+}>) {
   const kind: LBA_ITEM_TYPE = selectedItem?.type
   const actualTitle = selectedItem.training.title
   const isCfa = isCfaEntreprise(selectedItem?.company?.siret, selectedItem?.company?.headquarter?.siret)
   const isMandataire = selectedItem?.company?.mandataire
   const currentItem = resultList.find((item) => item.id === selectedItem.id)
 
-  const searchParams = useCandidatRechercheParams()
   const router = useRouter()
-  const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItem })
-  const handleClose = () => router.push(PAGES.dynamic.recherche(searchParams).getPath())
+  const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItem, params })
+  const handleClose = () => router.push(PAGES.dynamic.recherche(params).getPath())
 
   const contextPRDV = {
     cle_ministere_educatif: selectedItem.id,

@@ -9,6 +9,7 @@ import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
 import type { ILbaItem } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { useResultItemUrl } from "@/app/(candidat)/recherche/_hooks/useResultItemUrl"
+import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 type RechercheMapPopupProps = {
@@ -19,8 +20,8 @@ type RechercheMapPopupProps = {
 
 const popupElement = globalThis.document == null ? null : globalThis.document.createElement("div")
 
-function RechercheMapPopupLink(props: { item: ILbaItem }) {
-  const url = useResultItemUrl(props.item)
+function RechercheMapPopupLink(props: WithRecherchePageParams<{ item: ILbaItem }>) {
+  const url = useResultItemUrl(props.item, props.params)
 
   return (
     <Box>
@@ -37,7 +38,7 @@ function RechercheMapPopupLink(props: { item: ILbaItem }) {
   )
 }
 
-function RechercheMapPopupContent(props: { activeItems: ILbaItem[] }) {
+function RechercheMapPopupContent(props: WithRecherchePageParams<{ activeItems: ILbaItem[] }>) {
   const type = props.activeItems[0].ideaType === LBA_ITEM_TYPE_OLD.FORMATION ? "formation" : "job"
   return (
     <Box
@@ -76,16 +77,16 @@ function RechercheMapPopupContent(props: { activeItems: ILbaItem[] }) {
         }}
       >
         {props.activeItems.map((item) => (
-          <RechercheMapPopupLink key={item.id} item={item} />
+          <RechercheMapPopupLink key={item.id} item={item} params={props.params} />
         ))}
       </Box>
     </Box>
   )
 }
 
-export function RechercheMapPopup(props: RechercheMapPopupProps) {
+export function RechercheMapPopup(props: WithRecherchePageParams<RechercheMapPopupProps>) {
   const [popup, setPopup] = useState<Popup | null>(null)
-  const navigateToRecherchePage = useNavigateToRecherchePage()
+  const navigateToRecherchePage = useNavigateToRecherchePage(props.params)
 
   useEffect(() => {
     if (props.map === null || popupElement === null) {
@@ -135,5 +136,5 @@ export function RechercheMapPopup(props: RechercheMapPopupProps) {
     return null
   }
 
-  return createPortal(<RechercheMapPopupContent activeItems={props.activeItems} />, popupElement)
+  return createPortal(<RechercheMapPopupContent activeItems={props.activeItems} params={props.params} />, popupElement)
 }
