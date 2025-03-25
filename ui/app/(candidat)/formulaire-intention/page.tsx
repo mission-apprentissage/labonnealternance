@@ -1,17 +1,14 @@
 "use client"
 
 // import { NextSeo } from "next-seo"
-import { useSearchParams } from "next/navigation"
 import { parseEnum } from "shared"
 import { ApplicationIntention } from "shared/constants/application"
 
 import { IntentionForm } from "@/components/IntentionForm.tsx/IntentionForm"
+import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
 export default function FormulaireIntentionPage() {
-  const params = useSearchParams()
-  const token = params.get("token")
-  const id = params.get("id")
-  const company_recruitment_intention = params.get("company_recruitment_intention")
+  const { token, id, company_recruitment_intention } = useSearchParamsRecord()
 
   return (
     <>
