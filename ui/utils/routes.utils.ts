@@ -480,7 +480,10 @@ export const PAGES = {
       getPath: () => `/espace-pro/entreprise/offre/${job_id}` as string,
       title: job_id ? "Edition d'une offre" : "Création d'une offre",
     }),
-
+    backEntrepriseMiseEnRelation: ({ job_id }: { job_id: string }): IPage => ({
+      getPath: () => `/espace-pro/entreprise/offre/${job_id}/mise-en-relation` as string,
+      title: "Mise en relation avec des organismes de formation",
+    }),
     backOpcoEditionEntreprise: ({ establishment_id }: { establishment_id: string }): IPage => ({
       getPath: () => `/espace-pro/opco/entreprise/${establishment_id}` as string,
       title: "Entreprise",
