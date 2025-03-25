@@ -4,9 +4,9 @@ import { useRouter } from "next/router"
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 
-import { AuthentificationLayout } from "../../../components/espace_pro"
-import { InfoCircle } from "../../../theme/components/icons"
-import { MailCloud } from "../../../theme/components/logos"
+import { AuthentificationLayout } from "../../../../../components/espace_pro"
+import { InfoCircle } from "../../../../../theme/components/icons"
+import { MailCloud } from "../../../../../theme/components/logos"
 
 export default function CompteEnAttente() {
   const router = useRouter()

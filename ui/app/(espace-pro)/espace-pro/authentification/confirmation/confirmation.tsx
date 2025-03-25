@@ -1,7 +1,7 @@
 import { Box, Divider, Flex, Heading, Link, Text } from "@chakra-ui/react"
 import { IoMail } from "react-icons/io5"
 
-import { AuthentificationLayout } from "../../../components/espace_pro"
+import { AuthentificationLayout } from "../../../../../components/espace_pro"
 
 export default function ConfirmationCreationCompte() {
   return (
