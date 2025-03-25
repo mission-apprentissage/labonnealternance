@@ -16732,7 +16732,7 @@ __metadata:
     husky: ^8.0.3
     knip: ^5.34.1
     lint-staged: ^14.0.1
-    node-talisman: ^1.29.10
+    node-talisman: ^1.29.14
     prettier: ^3.0.3
     semantic-release: ^21.1.1
     semantic-release-slack-bot: ^4.0.2
@@ -17249,9 +17249,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-talisman@npm:^1.29.10":
-  version: 1.29.11
-  resolution: "node-talisman@npm:1.29.11"
+"node-talisman@npm:^1.29.14":
+  version: 1.29.14
+  resolution: "node-talisman@npm:1.29.14"
   dependencies:
     clogy: ^1.3.3
     exec-sh: ^0.3.4
@@ -17259,7 +17259,7 @@ __metadata:
     request: ^2.88.2
   bin:
     node-talisman: dist-node/index.bin.js
-  checksum: a77999e7ea65c29e525fb5454041b1a5a3caff612380e58a6fc076c92df76aff0661924f7e4b42c46b5ba0a868dfaa123c97091fb6804bef61f96c68b63ff1e4
+  checksum: 3c7b6c39c1ae900f736b14476983d643ec1441500d8cd763f6d73001f4da7aa8bb03c37152c77ce7d9a4c5e1280981e9678b3a627aac6c19a1d2cb9afb57af89
   languageName: node
   linkType: hard
 

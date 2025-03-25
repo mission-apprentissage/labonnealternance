@@ -95,7 +95,7 @@
     "eslint-plugin-unused-imports": "^3.2.0",
     "knip": "^5.34.1",
     "lint-staged": "^14.0.1",
-    "node-talisman": "^1.29.10",
+    "node-talisman": "^1.29.14",
     "prettier": "^3.0.3",
     "semantic-release": "^21.1.1",
     "semantic-release-slack-bot": "^4.0.2",

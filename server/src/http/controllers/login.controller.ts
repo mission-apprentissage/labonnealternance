@@ -52,7 +52,7 @@ export default (server: Server) => {
       const user = await getDbCollection("userswithaccounts").findOne({ email: formatedEmail })
 
       if (!user) {
-        return res.status(400).send({ error: true, reason: "UNKNOWN" })
+        return res.status(400).send({ error: true, data: "UNKNOWN" })
       }
       const userState = await controlUserState(user)
       if (userState?.error) {
