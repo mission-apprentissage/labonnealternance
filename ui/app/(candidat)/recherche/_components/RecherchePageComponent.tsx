@@ -6,7 +6,7 @@ import { Suspense } from "react"
 
 import { CandidatRechercheFilters } from "@/app/(candidat)/recherche/_components/CandidatRechercheFilters"
 import { CandidatRechercheForm } from "@/app/(candidat)/recherche/_components/CandidatRechercheForm"
-import { RechercheResulats } from "@/app/(candidat)/recherche/_components/RechercheResulats"
+import { RechercheResultats } from "@/app/(candidat)/recherche/_components/RechercheResultats"
 import { RechercheResultatsPlaceholder } from "@/app/(candidat)/recherche/_components/RechercheResultatsPlaceholder"
 import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { PAGES } from "@/utils/routes.utils"
@@ -75,7 +75,7 @@ export function RecherchePageComponent(props: WithRecherchePageParams) {
     >
       <RechercheHeader {...props} />
       <Suspense fallback={<RechercheResultatsPlaceholder />}>
-        <RechercheResulats {...props} />
+        <RechercheResultats {...props} />
       </Suspense>
     </Box>
   )

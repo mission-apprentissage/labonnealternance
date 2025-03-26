@@ -15,7 +15,7 @@ import { isItemReferenceInList, type WithRecherchePageParams } from "@/app/(cand
 import { ErrorMessage } from "@/components"
 import ResultListsLoading from "@/components/SearchForTrainingsAndJobs/components/ResultListsLoading"
 
-export function RechercheResulatsList(props: WithRecherchePageParams) {
+export function RechercheResultatsList(props: WithRecherchePageParams) {
   const result = useRechercheResults(props.params)
   const whispers = useWhispers(props.params)
 
