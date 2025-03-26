@@ -146,7 +146,7 @@ function CandidatRechercheFiltersUI({
           }}
           priority="secondary"
         >
-          Filtres
+          Modifier la recherche
         </Button>
       </Box>
     </Box>
