@@ -1,20 +1,22 @@
+"use client"
 import { Box, Flex, Spinner, Text, useToast } from "@chakra-ui/react"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 import { useEffect } from "react"
+import { AUTHTYPE } from "shared/constants/recruteur"
 
 import { apiGet } from "@/utils/api.utils"
-
-import { AUTHTYPE } from "../../../common/contants"
+import { PAGES } from "@/utils/routes.utils"
+import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
 export default function OptOutValidation() {
   const toast = useToast()
   const router = useRouter()
 
-  const { token } = router.query
+  const { token } = useSearchParamsRecord()
 
   useEffect(() => {
     if (!token) {
-      router.push("/espace-pro/")
+      router.push(PAGES.static.backCfaHome.getPath())
     }
 
     // send token to back office
@@ -25,13 +27,10 @@ export default function OptOutValidation() {
       },
     })
       .then(({ data }: any) => {
-        router.push({
-          pathname: "/espace-pro/creation/detail",
-          query: { siret: data.establishment_siret, type: AUTHTYPE.CFA, origin: "optout" },
-        })
+        router.push(PAGES.dynamic.espaceProCreationDetail({ siret: data.establishment_siret, type: AUTHTYPE.CFA, origin: "optout", isWidget: false }).getPath())
       })
-      .catch(({ response }) => {
-        switch (response.data.reason) {
+      .catch(({ context }) => {
+        switch (context.errorData) {
           case "TOKEN_NOT_FOUND":
             toast({
               title: "Le lien est invalide ou a expiré.",
@@ -57,7 +56,7 @@ export default function OptOutValidation() {
         }
         router.push("/espace-pro/")
       })
-  }, [token])
+  }, [token, router, toast])
 
   return (
     <Box>
