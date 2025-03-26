@@ -10,6 +10,6 @@ export default {
     })
     .passthrough(),
   indexes: [],
-  collectionName: "raw_kelio",
+  collectionName: "raw_monster",
   authorizeAdditionalProperties: true,
 } as const satisfies IModelDescriptor

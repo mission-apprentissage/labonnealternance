@@ -22,11 +22,13 @@ export const importFromStreamInXml = async ({
   destinationCollection,
   offerXmlTag,
   partnerLabel,
+  conflictingOpeningTagWithoutAttributes = false,
 }: {
   stream: NodeJS.ReadableStream
   destinationCollection: CollectionName
   offerXmlTag: string
   partnerLabel: string
+  conflictingOpeningTagWithoutAttributes?: boolean
 }) => {
   logger.info("deleting old data")
   await getDbCollection(destinationCollection).deleteMany({})
@@ -36,7 +38,7 @@ export const importFromStreamInXml = async ({
   const now = new Date()
   let currentOffer = ""
   let offerInsertCount = 0
-  const openingTag = `<${offerXmlTag}`
+  const openingTag = `<${offerXmlTag}${conflictingOpeningTagWithoutAttributes ? ">" : ""}`
   const closingTag = `</${offerXmlTag}>`
 
   const readChunk = async (str: string) => {
