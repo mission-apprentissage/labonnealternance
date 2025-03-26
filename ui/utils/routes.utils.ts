@@ -211,6 +211,10 @@ export const PAGES = {
       getPath: () => `/espace-pro/entreprise/creation-offre` as string,
       title: "Nouvelle offre",
     },
+    backCFACreationEnAttente: {
+      getPath: () => "/espace-pro/authentification/en-attente" as string,
+      title: "Création de compte CFA en attente",
+    },
     desinscription: {
       getPath: () => `/desinscription` as string,
       title: "Désinscription candidatures spontanées",
@@ -481,6 +485,10 @@ export const PAGES = {
     backEditAdministrator: ({ userId }: { userId: string }): IPage => ({
       getPath: () => `/espace-pro/administration/gestion-des-administrateurs/user/${userId}` as string,
       title: "Modification d'administrateur",
+    }),
+    backCreateCFAConfirmation: ({ email }: { email: string }): IPage => ({
+      getPath: () => `/espace-pro/authentification/confirmation?email=${email}` as string,
+      title: "Confirmation de création de compte",
     }),
     backHome: ({ userType }: { userType: "CFA" | "ENTREPRISE" | "ADMIN" | "OPCO" }): IPage => {
       switch (userType) {

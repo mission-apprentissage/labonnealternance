@@ -1,13 +1,13 @@
 "use client"
 
-import { Box, Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, SimpleGrid, Text } from "@chakra-ui/react"
+import { Box, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, SimpleGrid, Spinner, Text } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { useQuery } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/navigation"
 import { useContext } from "react"
 import { assertUnreachable, parseEnum } from "shared"
 import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
-import { generateUri } from "shared/helpers/generateUri"
 import * as Yup from "yup"
 
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
@@ -103,12 +103,14 @@ const Formulaire = ({
                   )}
                   <Flex justifyContent="flex-end" alignItems="center" mt={5}>
                     {!widget?.isWidget && (
-                      <Button variant="link" sx={{ color: "black", fontWeight: 400 }} mr={5} onClick={() => router.back()}>
-                        Annuler
-                      </Button>
+                      <Box mr={5}>
+                        <Button type="button" priority="secondary" onClick={() => router.back()}>
+                          Annuler
+                        </Button>
+                      </Box>
                     )}
-                    <Button type="submit" variant="form" leftIcon={<ArrowRightLine width={5} />} isActive={isValid} isDisabled={!isValid || isSubmitting}>
-                      Suivant
+                    <Button type="submit" disabled={!isValid || isSubmitting}>
+                      {isSubmitting ? <Spinner mr={2} /> : <ArrowRightLine width={5} mr={2} />}Suivant
                     </Button>
                   </Flex>
                 </>
@@ -196,13 +198,9 @@ export const InformationCreationCompte = ({
           }
           case AUTHTYPE.CFA: {
             if (validated) {
-              router.push(
-                generateUri("/espace-pro/authentification/confirmation", {
-                  querystring: { email: user.email },
-                })
-              )
+              router.push(PAGES.dynamic.backCreateCFAConfirmation({ email: user.email }).getPath())
             } else {
-              router.push("/espace-pro/authentification/en-attente")
+              router.push(PAGES.static.backCFACreationEnAttente.getPath())
             }
             break
           }
