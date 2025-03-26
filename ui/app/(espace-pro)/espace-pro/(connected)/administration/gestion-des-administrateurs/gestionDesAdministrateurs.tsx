@@ -7,10 +7,10 @@ import dayjs from "dayjs"
 import { useRouter } from "next/navigation"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
-import ModalCloseButton from "@/app/(espace-pro)/_components/ModalCloseButton"
 import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
 import { AdminUserForm } from "@/app/(espace-pro)/espace-pro/(connected)/administration/gestion-des-administrateurs/_components/AdminUserForm"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import ModalCloseButton from "@/app/_components/ModalCloseButton"
 import { sortReactTableString } from "@/common/utils/dateUtils"
 import { TableNew } from "@/components/espace_pro"
 import { EAdminPages } from "@/components/espace_pro/Layout/NavigationAdmin"
@@ -50,7 +50,6 @@ export default function GestionDesAdministrateurs() {
             </Box>
           </ModalHeader>
           <ModalCloseButton onClose={newUser.onClose} />
-
           <AdminUserForm
             onCreate={async () => {
               newUser.onClose()

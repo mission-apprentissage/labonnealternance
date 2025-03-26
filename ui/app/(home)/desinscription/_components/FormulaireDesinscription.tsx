@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Checkbox,
   Flex,
   FormControl,
@@ -22,13 +21,14 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { Field, Form, Formik } from "formik"
 import { useState } from "react"
 import { UNSUBSCRIBE_EMAIL_ERRORS } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
-import postUnsubscribe from "../../services/postUnsubscribe"
-import LBAModalCloseButton from "../lbaModalCloseButton"
+import ModalCloseButton from "@/app/_components/ModalCloseButton"
+import postUnsubscribe from "@/services/postUnsubscribe"
 
 const UNSUBSCRIBE_REASON = {
   RECRUTEMENT_CLOS: "Nous avons déjà trouvé nos alternants pour l’année en cours",
@@ -122,8 +122,8 @@ const ConfirmationDesinscription = ({
     <Modal closeOnOverlayClick={false} blockScrollOnMount={true} size="3xl" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent mt={["0", "3.75rem"]} h={["100%", "auto"]} borderRadius={0}>
-        <ModalHeader mt={4} paddingTop="10px" paddingBottom="0" sx={{ textAlign: "right" }}>
-          <LBAModalCloseButton onClose={onClose} />
+        <ModalCloseButton onClose={onClose} />
+        <ModalHeader paddingTop="10px" paddingBottom="0" sx={{ textAlign: "right" }}>
           <Heading as="h2" fontSize="24px">
             <Flex>
               <Image mt={1} src="/images/icons/arrow_right.svg" alt="" width="16px" mr={1} /> Plusieurs établissements correspondent à cet email
@@ -138,8 +138,8 @@ const ConfirmationDesinscription = ({
                 <Flex key={company.siret} alignItems="center" border="1px solid #E5E5E5" mb={2} px={4} py={2}>
                   <Checkbox onChange={onCompanyCheckboxChange} isChecked={selectedSirets?.includes(company.siret)} value={company.siret} defaultChecked />
                   <Box ml={4}>
-                    <Text>SIRET: {company.siret}</Text>
-                    <Text color="grey.425" fontSize={12}>
+                    <Text mb={1}>SIRET: {company.siret}</Text>
+                    <Text mb={0} color="grey.425" fontSize={12}>
                       {company.enseigne}
                       <br />
                       {company.address}
@@ -152,7 +152,7 @@ const ConfirmationDesinscription = ({
             <Checkbox onChange={selectAllSirets} isChecked={allSelected} defaultChecked>
               Tout sélectionner
             </Checkbox>
-            <Button isDisabled={isMultipleSubmitting || !selectedSirets?.length} variant="primary" onClick={handleMultipleUnsubscribeSubmit}>
+            <Button disabled={isMultipleSubmitting || !selectedSirets?.length} onClick={handleMultipleUnsubscribeSubmit}>
               {isMultipleSubmitting && <Spinner mr={4} />}Déréférencer
             </Button>
           </Flex>
@@ -267,7 +267,7 @@ const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSuccess }) =>
                     Tous les champs sont obligatoires
                   </Text>
 
-                  <Button variant="primary" isDisabled={isSubmitting} type={"submit"} fontSize="16px" px={6} py={2} fontWeight="400">
+                  <Button disabled={isSubmitting} type="submit">
                     {isSubmitting && <Spinner mr={4} />}Confirmer
                   </Button>
                 </Flex>
