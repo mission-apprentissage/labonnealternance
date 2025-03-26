@@ -5,10 +5,10 @@ import { Box } from "@mui/material"
 import { useCallback, useState } from "react"
 
 import { RechercheCarte } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
-import { RechercheResulatsList } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheResulatsList"
+import { RechercheResultatsList } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheResultatsList"
 import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 
-function RechercheResulatsMobile(props: WithRecherchePageParams) {
+function RechercheResultatsMobile(props: WithRecherchePageParams) {
   // Mode is only used for mobile view
   const [mode, setMode] = useState<"list" | "map">("list")
 
@@ -26,7 +26,7 @@ function RechercheResulatsMobile(props: WithRecherchePageParams) {
         overflow: "hidden",
       }}
     >
-      {activeMode === "list" ? <RechercheResulatsList {...props} /> : <RechercheCarte item={null} variant="recherche" {...props} />}
+      {activeMode === "list" ? <RechercheResultatsList {...props} /> : <RechercheCarte item={null} variant="recherche" {...props} />}
       <Box sx={{ p: fr.spacing("2w"), display: "flex", justifyContent: "center" }}>
         <Button onClick={toggleMode} iconId={mode === "list" ? "fr-icon-map-pin-2-line" : "fr-icon-list-unordered"}>
           {mode === "list" ? "Carte" : "Liste"}
@@ -36,7 +36,7 @@ function RechercheResulatsMobile(props: WithRecherchePageParams) {
   )
 }
 
-export function RechercheResulatsDesktop(props: WithRecherchePageParams) {
+export function RechercheResultatsDesktop(props: WithRecherchePageParams) {
   return (
     <Box
       sx={{
@@ -45,17 +45,17 @@ export function RechercheResulatsDesktop(props: WithRecherchePageParams) {
         overflow: "hidden",
       }}
     >
-      <RechercheResulatsList {...props} />
+      <RechercheResultatsList {...props} />
       {props.params.displayMap && <RechercheCarte item={null} variant="recherche" {...props} />}
     </Box>
   )
 }
 
-export function RechercheResulats(props: WithRecherchePageParams) {
+export function RechercheResultats(props: WithRecherchePageParams) {
   return (
     <>
-      <RechercheResulatsDesktop {...props} />
-      <RechercheResulatsMobile {...props} />
+      <RechercheResultatsDesktop {...props} />
+      <RechercheResultatsMobile {...props} />
     </>
   )
 }
