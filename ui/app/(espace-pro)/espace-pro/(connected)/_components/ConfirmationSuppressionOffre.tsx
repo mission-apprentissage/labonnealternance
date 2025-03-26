@@ -8,7 +8,7 @@ import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import CustomInput from "@/app/(espace-pro)/_components/CustomInput"
 import { CustomSelect } from "@/app/(espace-pro)/_components/CustomSelect"
-import ModalCloseButton from "@/app/(espace-pro)/_components/ModalCloseButton"
+import ModalCloseButton from "@/app/_components/ModalCloseButton"
 import { CustomFormControl } from "@/components/espace_pro/CustomFormControl"
 import { cancelOffreFromAdmin } from "@/utils/api"
 
