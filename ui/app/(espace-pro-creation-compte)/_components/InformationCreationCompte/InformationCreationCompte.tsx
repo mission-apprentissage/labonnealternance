@@ -200,7 +200,7 @@ export const InformationCreationCompte = ({
             if (validated) {
               router.push(PAGES.dynamic.backCreateCFAConfirmation({ email: user.email }).getPath())
             } else {
-              router.push(PAGES.static.backCFACreationEnAttente.getPath())
+              router.push(PAGES.static.backCreateCFAEnAttente.getPath())
             }
             break
           }

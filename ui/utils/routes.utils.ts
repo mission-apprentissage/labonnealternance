@@ -211,7 +211,7 @@ export const PAGES = {
       getPath: () => `/espace-pro/entreprise/creation-offre` as string,
       title: "Nouvelle offre",
     },
-    backCFACreationEnAttente: {
+    backCreateCFAEnAttente: {
       getPath: () => "/espace-pro/authentification/en-attente" as string,
       title: "Création de compte CFA en attente",
     },
