@@ -1,4 +1,6 @@
-import { Box, Grid, GridItem, Image, Link, Text } from "@chakra-ui/react"
+import { Box, Grid, GridItem, Image, Text } from "@chakra-ui/react"
+
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 export function FacilitezRDVA() {
   return (
@@ -12,9 +14,9 @@ export function FacilitezRDVA() {
         </Text>
         <Text fontSize="14px" mt={6}>
           *Vous pouvez à tout moment vous désinscrire de ce service en{" "}
-          <Link href="mailto:labonnealternance@beta.gouv.fr?subject=CFA désactivation RDVA" variant="basicUnderlined" aria-label="Adresse email de l'équipe La bonne alternance">
+          <DsfrLink href="mailto:labonnealternance@beta.gouv.fr?subject=CFA désactivation RDVA" aria-label="Adresse email de l'équipe La bonne alternance">
             contactant notre équipe
-          </Link>
+          </DsfrLink>
           .
         </Text>
       </GridItem>

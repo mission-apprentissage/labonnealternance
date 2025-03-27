@@ -4,7 +4,7 @@ import { Box } from "@mui/material"
 
 import { PAGES } from "@/utils/routes.utils"
 
-export const ConnectionActions = ({ service }) => (
+export const ConnectionActions = ({ service }: { service: "entreprise" | "cfa" }) => (
   <Box sx={{ display: "flex", pt: fr.spacing("3w"), flexDirection: { sm: "column", md: "row" }, gap: fr.spacing("2w") }}>
     {service === "entreprise" && (
       <Button
