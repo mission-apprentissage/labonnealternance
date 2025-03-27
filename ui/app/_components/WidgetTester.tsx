@@ -1,12 +1,15 @@
+"use client"
+
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Button, Container, Grid, GridItem, Input, Link, Radio, RadioGroup, Select, Stack, Text } from "@chakra-ui/react"
 import { ErrorMessage, Field, Form, Formik } from "formik"
 import React, { useState } from "react"
 
+import { AutoCompleteField, autoCompleteToStringFunction, compareAutoCompleteValues } from "@/components/AutoCompleteField/AutoCompleteField"
+
 import { baseUrl } from "../../config/config"
 import { fetchAddresses } from "../../services/baseAdresse"
 import domainChanged from "../../services/domainChanged"
-import { AutoCompleteField, autoCompleteToStringFunction, compareAutoCompleteValues } from "../AutoCompleteField/AutoCompleteField"
 
 const WidgetTester = () => {
   const [locationRadius, setLocationRadius] = useState("0")
