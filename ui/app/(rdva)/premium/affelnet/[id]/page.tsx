@@ -1,59 +1,59 @@
+"use client"
+
 import { Box, Button, Container, Stack, Text } from "@chakra-ui/react"
-import Head from "next/head"
-import { useRouter } from "next/router"
+import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { IEtablissementJson } from "shared"
 
 import { apiGet, apiPost } from "@/utils/api.utils"
 
-import { Layout } from "../../../../components/espace_pro"
-import { SuccessCircle } from "../../../../theme/components/icons"
+import { Layout } from "../../../../../components/espace_pro"
+import { SuccessCircle } from "../../../../../theme/components/icons"
 
-type IPremiumEtablissement = {
+type IAffelnetEtablissement = {
   raison_sociale: string
   gestionnaire_siret: string
   formateur_siret: string
   formateur_address: string
   formateur_zip_code: string
   formateur_city: string
-  premium_refusal_date: any
-  premium_activation_date: any
+  premium_affelnet_refusal_date: any
+  premium_affelnet_activation_date: any
 }
 
 /**
  * @description Premium form component.
  * @returns {JSX.Element}
  */
-export default function PremiumForm() {
-  const router = useRouter()
-  const { id, token } = router.query as { id: string; token: string }
+export default function PremiumAffelnet() {
+  const id = useSearchParams().get("id")
+  const token = useSearchParams().get("token")
   const [hasRefused, setHasRefused] = useState(false)
   const [hasAccepted, setHasAccepted] = useState(false)
-  const [etablissement, setEtablissement]: [IPremiumEtablissement | null, (e: any) => void] = useState()
-
-  const title = "Parcoursup"
+  const [etablissement, setEtablissement]: [IAffelnetEtablissement | null, (e: any) => void] = useState()
 
   /**
    * @description Accept terms.
    * @returns {Promise<void>}
    */
   const accept = async () => {
-    await apiPost("/etablissements/:id/premium/accept", {
+    await apiPost("/etablissements/:id/premium/affelnet/accept", {
       params: { id },
       headers: {
         authorization: `Bearer ${token}`,
       },
     })
+
     setHasAccepted(true)
     window.scrollTo(0, 0)
   }
 
   /**
-   * @description Refuse invite.
+   * @description Refuse terms.
    * @returns {Promise<void>}
    */
   const refuse = async () => {
-    await apiPost("/etablissements/:id/premium/refuse", {
+    await apiPost("/etablissements/:id/premium/affelnet/refuse", {
       params: { id },
       headers: {
         authorization: `Bearer ${token}`,
@@ -72,11 +72,11 @@ export default function PremiumForm() {
         },
       })) as IEtablissementJson
 
-      if (etablissement.premium_refusal_date) {
+      if (etablissement.premium_affelnet_refusal_date) {
         setHasRefused(true)
       }
 
-      if (etablissement.premium_activation_date) {
+      if (etablissement.premium_affelnet_activation_date) {
         setHasAccepted(true)
       }
 
@@ -86,7 +86,7 @@ export default function PremiumForm() {
     if (id) {
       fetchData().catch(console.error)
     }
-  }, [id])
+  }, [id, token])
 
   if (!etablissement) {
     return null
@@ -94,10 +94,6 @@ export default function PremiumForm() {
 
   return (
     <Layout>
-      <Head>
-        <title>{title}</title>
-        <link rel="icon" href="/favicon/favicon.ico" />
-      </Head>
       <Box w="100%" pt={[4, 8]} px={[1, 1, 12, 24]}>
         <Container border="1px solid #000091" mt={8} mb={20} maxW="container.lg" px={20} py={10}>
           {hasRefused && !hasAccepted && (
@@ -125,7 +121,7 @@ export default function PremiumForm() {
                   Félicitations, votre choix a bien été pris en compte.
                 </Text>
                 <Text mt={4} color="grey.800" ml={2}>
-                  Le service RDV Apprentissage est désormais activé sur Parcoursup.
+                  Le service RDV Apprentissage est désormais activé sur Choisir son affectation après la 3e.
                 </Text>
               </Box>
             </Stack>
@@ -134,10 +130,10 @@ export default function PremiumForm() {
             <>
               <Box>
                 <Text textStyle="h3" fontSize="24px" fontWeight="bold" color="grey.800">
-                  Activation du service “RDV Apprentissage” sur Parcoursup
+                  Activation du service “RDV Apprentissage” sur Choisir son affectation après la 3e
                 </Text>
               </Box>
-              <Text mt={6}>En activant le service RDV Apprentissage, je m'engage auprès de Parcoursup à :</Text>
+              <Text mt={6}>En activant le service RDV Apprentissage, je m'engage auprès de Choisir son affectation après la 3e à :</Text>
               <Stack direction="row" align="center">
                 <SuccessCircle fillHexaColor="#00AC8C" />
                 <Text fontWeight="700">Répondre par email ou téléphone à tous les candidats qui me contacteront</Text>
@@ -154,7 +150,7 @@ export default function PremiumForm() {
               </Button>
               <Box>
                 <Text mt={5}>
-                  Le service sera activé sur toutes les formations éligibles à être affichées sur Parcoursup, liées à votre SIRET{" "}
+                  Le service sera activé sur toutes les formations éligibles à être affichées sur Choisir son affectation après la 3e, liées à votre SIRET{" "}
                   <Text as="span" fontWeight="700">
                     {etablissement.gestionnaire_siret}
                   </Text>

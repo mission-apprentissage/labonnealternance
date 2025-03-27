@@ -187,8 +187,8 @@ fileignoreconfig:
   checksum: 6c2ec97a1cb5d523af4bd805d6540774ccbcc0145bc48268732548163796de05
 - filename: shared/models/lbaItem.model.ts
   checksum: 144ab34674299cdac89d96ffa6ed834814135c54e1621e1fa47ec5012924f862
-- filename: shared/routes/appointments.routes.ts
-  checksum: 46d94affa911e46d6e3f72d453412c4b5378a4ef71e6ee6cb3ab2f43eee3d5d4
+- filename: shared/src/routes/appointments.routes.ts
+  checksum: c9e50c644e7f14004c8c141c2c0b350adc29c49cfa72a766a0822a8f27b1ccd7
 - filename: shared/routes/appointments.routes.v2.ts
   checksum: 87bd633c10c7301e6c3029f96770b42519533afe2c89d712cbe5951dc165fed1
 - filename: shared/routes/formulaire.route.ts

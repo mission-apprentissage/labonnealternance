@@ -1,12 +1,14 @@
+"use client"
 import { Box, Button, Container, Flex, Heading, Radio, RadioGroup, Stack, Text, Textarea } from "@chakra-ui/react"
 import Head from "next/head"
-import { useRouter } from "next/router"
+import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { IEtablissementJson } from "shared"
 
+import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { apiGet, apiPost } from "@/utils/api.utils"
+import { PAGES } from "@/utils/routes.utils"
 
-import { OldBreadcrumb } from "../../../../../components/espace_pro/common/components/Breadcrumb"
 import Layout from "../../../../../components/espace_pro/common/components/Layout"
 import { SuccessCircle } from "../../../../../theme/components/icons"
 
@@ -35,8 +37,8 @@ export default function OptOutUnsubscribe() {
     UNSUBSCRIBE_MORE_DETAILS: "unsubscribe_more_details",
   }
 
-  const router = useRouter()
-  const { id, token } = router.query as { id: string; token: string }
+  const token = useSearchParams().get("token")
+  const id = useSearchParams().get("id")
   const [textarea, setTextarea] = useState("")
   const [hasBeenUnsubscribed, setHasBeenUnsubscribed] = useState(false)
   const [isQuestionSent, setIsQuestionSent] = useState(false)
@@ -91,7 +93,7 @@ export default function OptOutUnsubscribe() {
     if (id) {
       fetchData().catch(console.error)
     }
-  }, [id])
+  }, [id, token])
 
   // Display nothing until date isn't received
   if (!etablissement) {
@@ -106,7 +108,7 @@ export default function OptOutUnsubscribe() {
       </Head>
       <Box w="100%" pt={[4, 8]} px={[1, 1, 12, 24]}>
         <Container border="1px solid #000091" mt={8} mb={20} maxW="996px" pl={20} pr={24} py={10}>
-          <OldBreadcrumb pages={[{ title: "Accueil", to: "/" }, { title: title }]} />
+          <Breadcrumb pages={[PAGES.static.home]} />
           <Heading textStyle="h2" mt={5}>
             {title}
           </Heading>
