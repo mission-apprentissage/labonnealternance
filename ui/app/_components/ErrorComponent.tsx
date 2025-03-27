@@ -2,7 +2,6 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
-import TechnicalErrorArtwork from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/system/technical-error.svg"
 import { Box, Container, Typography } from "@mui/material"
 import * as Sentry from "@sentry/nextjs"
 import Image from "next/image"
@@ -58,7 +57,7 @@ export function ErrorComponent({ error, reset }: ErrorProps) {
           }}
         >
           <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Image src={TechnicalErrorArtwork.src} alt="" width={TechnicalErrorArtwork.width * 2} height={TechnicalErrorArtwork.height * 2} />
+            <Image src="/images/error_solid.png" alt="" width={558} height={303} />
           </Box>
 
           <Box>
