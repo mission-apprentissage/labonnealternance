@@ -18,7 +18,7 @@ export default function JobItemCardHeader({ selectedItem, kind, isMandataire, is
     if (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && isMandataire) {
       res = (
         // @ts-expect-error: TODO
-        <Text as="p" {...detailActivityProperties} mt={2}>
+        <Text as="p" {...detailActivityProperties} my={1}>
           <Text as="span" fontWeight={400}>
             Le centre de formation&nbsp;
           </Text>
@@ -33,7 +33,7 @@ export default function JobItemCardHeader({ selectedItem, kind, isMandataire, is
     if ([LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA].includes(kind) && !isMandataire) {
       res = (
         // @ts-expect-error: TODO
-        <Text as="p" {...detailActivityProperties} mt={2}>
+        <Text as="p" {...detailActivityProperties} my={1}>
           {companyName ? (
             <>
               <Text as="span">{companyName}</Text>
@@ -62,7 +62,7 @@ export default function JobItemCardHeader({ selectedItem, kind, isMandataire, is
     if (kind === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
       res = (
         // @ts-expect-error: TODO
-        <Text as="p" {...detailActivityProperties} mt={2}>
+        <Text as="p" {...detailActivityProperties} my={1}>
           <Text as="span">{companyName}</Text>
           <Text as="span" fontWeight={400}>
             &nbsp;a des salariés qui exercent le métier auquel vous vous destinez. Envoyez votre candidature spontanée !

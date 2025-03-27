@@ -2,12 +2,6 @@ import { Image, Text } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { useEffect, useState } from "react"
 import { ILbaItemFormationJson, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { buildJobUrl, buildTrainingUrl } from "shared/metier/lbaitemutils"
-
-const getPath = (item) => {
-  return item.ideaType === LBA_ITEM_TYPE.FORMATION ? buildTrainingUrl(item.id, item.title) : buildJobUrl(item.ideaType, item.id, item.title)
-}
 
 const ShareLink = ({ item }: { item: ILbaItemFormationJson | ILbaItemFtJobJson | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemPartnerJobJson }) => {
   const [copied, setCopied] = useState(false)
@@ -19,7 +13,7 @@ const ShareLink = ({ item }: { item: ILbaItemFormationJson | ILbaItemFtJobJson |
   const copyLink = (e) => {
     e.preventDefault()
 
-    const link = `${window.location.origin}${getPath(item)}${window.location.search}`
+    const link = window.location.toString()
     navigator.clipboard.writeText(link).then(function () {
       setCopied(true)
     })
