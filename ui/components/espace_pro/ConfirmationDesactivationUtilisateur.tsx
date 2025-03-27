@@ -6,7 +6,7 @@ import { Box } from "@mui/material"
 import { useState } from "react"
 import { IUserRecruteurJson } from "shared"
 
-import ModalCloseButton from "@/app/(espace-pro)/_components/ModalCloseButton"
+import ModalCloseButton from "@/app/_components/ModalCloseButton"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 
 import { AUTHTYPE } from "../../common/contants"
@@ -98,7 +98,7 @@ export const ConfirmationDesactivationUtilisateur = ({
         <ModalFooter>
           <Box sx={{ marginRight: "10px" }}>
             <Button
-              className="fr-btn--secondary"
+              priority="secondary"
               onClick={() => {
                 onClose()
                 setReason(null)

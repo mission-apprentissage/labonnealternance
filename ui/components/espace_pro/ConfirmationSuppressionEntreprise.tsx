@@ -1,7 +1,7 @@
 import { Box, Flex, Heading, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, useToast } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 
-import ModalCloseButton from "@/app/(espace-pro)/_components/ModalCloseButton"
+import ModalCloseButton from "@/app/_components/ModalCloseButton"
 
 import { ArrowRightLine } from "../../theme/components/icons"
 import { archiveFormulaire } from "../../utils/api"

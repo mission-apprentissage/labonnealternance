@@ -1,5 +1,5 @@
 import { forbidden, internal } from "@hapi/boom"
-import jwt from "jsonwebtoken"
+import jwt, { SignOptions } from "jsonwebtoken"
 import { ObjectId } from "mongodb"
 import { PathParam, QueryString } from "shared/helpers/generateUri"
 import { IUserRecruteur } from "shared/models/index"
@@ -92,7 +92,7 @@ export function generateAccessToken(user: UserForAccessToken, scopes: ReadonlyAr
   const token = jwt.sign(data, config.auth.user.jwtSecret, {
     expiresIn: options.expiresIn ?? config.auth.user.expiresIn,
     issuer: config.publicUrl,
-  })
+  } as SignOptions)
   if (token.length > TOKEN_MAX_LENGTH) {
     sentryCaptureException(internal(`Token généré trop long : ${token.length}`))
   }

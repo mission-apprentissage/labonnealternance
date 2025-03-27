@@ -142,17 +142,17 @@ function RechercheFormButton(props: { disabled: boolean; hasError: boolean; type
     whiteSpace: "nowrap",
     py: {
       xs: fr.spacing("2w"),
-      lg: "1px",
+      [type === "home" ? "lg" : "md"]: "1px",
     },
     alignSelf: !hasError ? "end" : "center",
     '& button[type="submit"]': {
       justifyContent: {
         xs: "center",
-        lg: "start",
+        [type === "home" ? "lg" : "md"]: "start",
       },
       width: {
         xs: "100%",
-        lg: "auto",
+        [type === "home" ? "lg" : "md"]: "auto",
       },
     },
   }
@@ -166,7 +166,7 @@ function RechercheFormButton(props: { disabled: boolean; hasError: boolean; type
               ? "block"
               : {
                   xs: "block",
-                  lg: "none",
+                  md: "none",
                 },
           ...buttonContainerSx,
         }}
@@ -180,7 +180,7 @@ function RechercheFormButton(props: { disabled: boolean; hasError: boolean; type
           sx={{
             display: {
               xs: "none",
-              lg: "block",
+              md: "block",
             },
             ...buttonContainerSx,
           }}
@@ -213,7 +213,7 @@ function RechercheFormComponent(props: FormikProps<IFormType>) {
         display: "grid",
         gridTemplateColumns: {
           xs: "1fr",
-          lg: "1fr 1fr min-content 1fr min-content",
+          [type === "home" ? "lg" : "md"]: "1fr 1fr min-content 1fr min-content",
         },
       }}
     >
@@ -243,7 +243,7 @@ function RechercheFormComponent(props: FormikProps<IFormType>) {
         sx={{
           width: {
             xs: "100%",
-            lg: "120px",
+            [type === "home" ? "lg" : "md"]: "120px",
           },
         }}
       >

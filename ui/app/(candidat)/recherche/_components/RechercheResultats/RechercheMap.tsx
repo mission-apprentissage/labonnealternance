@@ -8,12 +8,12 @@ import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { RechercheMapIci } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap/RechercheMapIci"
 import { RechercheMapPopup } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap/RechercheMapPopup"
-import { useCandidatRechercheParams } from "@/app/(candidat)/recherche/_hooks/useCandidatRechercheParams"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
 import { useNavigateToResultItemDetail } from "@/app/(candidat)/recherche/_hooks/useNavigateToResultItemDetail"
 import { useRechercheResults, type ILbaItem, type IUseRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import {
   type IRecherchePageParams,
+  type WithRecherchePageParams,
   deserializeItemReferences,
   isItemReferenceInList,
   ItemReferenceLike,
@@ -298,10 +298,9 @@ function setPointOfInterests(map: Mapbox, result: IUseRechercheResults, activeIt
 // https://nextjs.org/docs/architecture/fast-refresh
 // @refresh reset
 function useMap(container: HTMLDivElement | null, props: RechercheCarteProps) {
-  const params = useCandidatRechercheParams()
-  const result = useRechercheResults(params)
-  const navigateToRecherchePage = useNavigateToRecherchePage()
-  const navigateToResultItemDetail = useNavigateToResultItemDetail()
+  const result = useRechercheResults(props.params)
+  const navigateToRecherchePage = useNavigateToRecherchePage(props.params)
+  const navigateToResultItemDetail = useNavigateToResultItemDetail(props.params)
   const [map, setMap] = useState<Mapbox | null>(null)
 
   const updateSearchParam = useCallback(
@@ -338,7 +337,7 @@ function useMap(container: HTMLDivElement | null, props: RechercheCarteProps) {
   }, [container])
 
   const activeItems = useMemo(() => {
-    const refs: ItemReferenceLike[] = props.item === null ? params.activeItems : [props.item]
+    const refs: ItemReferenceLike[] = props.item === null ? props.params.activeItems : [props.item]
 
     if (refs == null || refs.length === 0) {
       return []
@@ -351,7 +350,7 @@ function useMap(container: HTMLDivElement | null, props: RechercheCarteProps) {
     }
 
     return []
-  }, [params.activeItems, result, props.item])
+  }, [props.params.activeItems, result, props.item])
 
   useEffect(() => {
     if (map === null) {
@@ -428,12 +427,12 @@ function useMap(container: HTMLDivElement | null, props: RechercheCarteProps) {
     }
   }, [map, updateSearchParam, navigateToResultItemDetail, props.variant])
 
-  const searchArea = useCenterCamera(map, params, activeItems)
+  const searchArea = useCenterCamera(map, props.params, activeItems)
 
-  return { map, activeItems, searchArea, radius: params.geo?.radius ?? null }
+  return { map, activeItems, searchArea, radius: props.params.geo?.radius ?? null }
 }
 
-type RechercheCarteProps =
+type RechercheCarteProps = WithRecherchePageParams<
   | {
       variant: "recherche"
       item: null
@@ -442,6 +441,7 @@ type RechercheCarteProps =
       variant: "detail"
       item: ItemReferenceLike
     }
+>
 
 export function RechercheCarte(props: RechercheCarteProps) {
   const [container, setContainer] = useState<HTMLDivElement | null>(null)
@@ -468,8 +468,8 @@ export function RechercheCarte(props: RechercheCarteProps) {
         }}
         ref={setContainerRef}
       ></Box>
-      {props.variant === "recherche" && <RechercheMapIci map={map} searchArea={searchArea} radius={radius} />}
-      <RechercheMapPopup activeItems={activeItems} map={map} variant={props.variant} />
+      {props.variant === "recherche" && <RechercheMapIci map={map} searchArea={searchArea} radius={radius} {...props} />}
+      <RechercheMapPopup activeItems={activeItems} map={map} variant={props.variant} {...props} />
     </Box>
   )
 }

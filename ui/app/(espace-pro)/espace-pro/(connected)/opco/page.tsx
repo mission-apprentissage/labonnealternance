@@ -1,24 +1,7 @@
 "use client"
 
-import {
-  Box,
-  Button,
-  Link as ChakraLink,
-  Flex,
-  Icon,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  Text,
-  useDisclosure,
-  useToast,
-} from "@chakra-ui/react"
+import { Box, Button, Flex, Icon, Menu, MenuButton, MenuItem, MenuList, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import { Link } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useEffect, useState } from "react"
@@ -26,7 +9,6 @@ import { useEffect, useState } from "react"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
 import { ConfirmationActivationUtilsateur, ConfirmationDesactivationUtilisateur, LoadingEmptySpace, TableNew } from "@/components/espace_pro"
-import Link from "@/components/Link"
 import { Parametre } from "@/theme/components/icons"
 import { getOpcoUsers } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
@@ -71,10 +53,10 @@ function AdministrationOpco() {
           row: { id },
         },
       }) => {
-        const { establishment_raison_sociale, establishment_siret, _id, establishment_id } = data[id]
+        const { establishment_raison_sociale, establishment_siret, _id } = data[id]
         return (
           <Flex direction="column">
-            <Link fontWeight="700" href={PAGES.dynamic.backOpcoEditionEntreprise({ establishment_id }).getPath()}>
+            <Link underline="hover" fontWeight="700" href={PAGES.dynamic.backOpcoInformationEntreprise({ user_id: _id }).getPath()}>
               {establishment_raison_sociale}
             </Link>
             <Text color="#666666" fontSize="14px">
@@ -160,33 +142,36 @@ function AdministrationOpco() {
                   </MenuButton>
                   <MenuList>
                     <MenuItem>
-                      <Link href={PAGES.dynamic.backOpcoEditionEntreprise({ establishment_id: row.establishment_id }).getPath()}>Voir les informations</Link>
-                    </MenuItem>
-                    <MenuItem>
-                      <Link href={`/espace-pro/administration/opco/entreprise/${row.establishment_siret}/${row.establishment_id}`}>Voir les offres</Link>
+                      <Link underline="hover" href={PAGES.dynamic.backOpcoInformationEntreprise({ user_id: row._id as string }).getPath()} aria-label="voir les informations">
+                        Voir les informations
+                      </Link>
                     </MenuItem>
                     {tabIndex !== 1 && (
                       <MenuItem>
-                        <ChakraLink
+                        <Link
+                          underline="hover"
+                          component="button"
                           onClick={() => {
                             confirmationActivationUtilisateur.onOpen()
                             setCurrentEntreprise(row)
                           }}
                         >
                           Activer le compte
-                        </ChakraLink>
+                        </Link>
                       </MenuItem>
                     )}
                     {tabIndex !== 2 && (
                       <MenuItem>
-                        <ChakraLink
+                        <Link
+                          underline="hover"
+                          component="button"
                           onClick={() => {
                             confirmationDesactivationUtilisateur.onOpen()
                             setCurrentEntreprise(row)
                           }}
                         >
                           Désactiver le compte
-                        </ChakraLink>
+                        </Link>
                       </MenuItem>
                     )}
                   </MenuList>

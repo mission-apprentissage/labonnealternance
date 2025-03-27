@@ -9,6 +9,7 @@ export enum EAdminPages {
   GESTION_RECRUTEURS = "GESTION_RECRUTEURS",
   ENTREPRISES_ALGO = "ENTREPRISES_ALGO",
   RECHERCHE_RENDEZ_VOUS = "RECHERCHE_RENDEZ_VOUS",
+  GESTION_ADMINISTRATEURS = "GESTION_ADMINISTRATEURS",
 }
 
 const selectedTabParams = {
@@ -44,6 +45,10 @@ const pageDefs = [
     page: EAdminPages.RECHERCHE_RENDEZ_VOUS,
     path: PAGES.static.rendezVousApprentissageRecherche.getPath(),
   },
+  {
+    page: EAdminPages.GESTION_ADMINISTRATEURS,
+    path: PAGES.static.backAdminGestionDesAdministrateurs.getPath(),
+  },
 ]
 
 const NavigationAdmin = ({ currentPage }: { currentPage: EAdminPages }) => {
@@ -76,6 +81,10 @@ const NavigationAdmin = ({ currentPage }: { currentPage: EAdminPages }) => {
             </Tab>
             <Tab data-testid="recherche_rendez_vous_apprentissage_tab" {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>
               Rendez-vous apprentissage
+            </Tab>
+            <Tab data-testid="administrator_management_tab" {...tabParams} isDisabled={selectedIndex === 2} _focus={focusedTabParams} _selected={selectedTabParams}>
+              Gestion des administrateurs
+            </Tab>
             </Tab>
           </TabList>
         </Tabs>

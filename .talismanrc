@@ -313,5 +313,6 @@ allowed_patterns:
 - '@apprentissage.beta.gouv.fr'
 - adminusersview
 - https://dinum.didask.com/.*
+- 'labonnealternance@beta.gouv.fr'
 threshold: medium
 version: "1.0"

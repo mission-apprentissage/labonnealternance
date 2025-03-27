@@ -1,6 +1,7 @@
 import { Box, Grid, GridItem, Image, Text } from "@chakra-ui/react"
 
-import Link from "../../../../components/Link"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { PAGES } from "@/utils/routes.utils"
 
 const OffresAutoExposees = () => {
   return (
@@ -20,9 +21,9 @@ const OffresAutoExposees = () => {
           <br />
           <br />
           Elles sont ensuite nationalement agrégées par le Réseau des Carif-Oref puis automatiquement exposées sur La bonne alternance.{" "}
-          <Link href="/faq#cfa" aria-label="Lien vers la FAQ des CFA" variant="basicUnderlined">
+          <DsfrLink href={PAGES.static.faq.getPath() + "#cfa"} aria-label="Lien vers la FAQ des CFA">
             En savoir plus
-          </Link>
+          </DsfrLink>
         </Text>
       </GridItem>
     </Grid>

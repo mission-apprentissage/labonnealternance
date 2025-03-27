@@ -12,6 +12,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   return PAGES.dynamic.recherche(parseRecherchePageParams(new URLSearchParams(await searchParams), "default")).getMetadata?.() ?? {}
 }
 
-export default function RecherchePage() {
-  return <RecherchePageComponent />
+export default async function RecherchePage({ searchParams }: Props) {
+  const params = parseRecherchePageParams(new URLSearchParams(await searchParams), "default")
+  return <RecherchePageComponent params={params} />
 }

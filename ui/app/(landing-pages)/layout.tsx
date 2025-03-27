@@ -6,7 +6,7 @@ import { PublicHeader } from "@/app/(espace-pro)/_components/PublicHeader"
 import { Footer } from "@/app/_components/Footer"
 import { getSession } from "@/utils/getSession"
 
-export default async function RecruteurLayout({ children }: PropsWithChildren) {
+export default async function PublicLayout({ children }: PropsWithChildren) {
   const { user } = await getSession()
 
   return (
