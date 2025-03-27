@@ -116,7 +116,7 @@ function JobDetail({ selectedItem, resultList, params }: WithRecherchePageParams
             color={"pinksoft.600"}
             sx={{
               fontWeight: 700,
-              marginBottom: isCollapsedHeader ? "4px" : "4px",
+              marginBottom: "4px",
               paddingBottom: "0",
               textAlign: "left",
               wordBreak: "break-word",
