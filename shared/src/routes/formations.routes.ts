@@ -14,7 +14,7 @@ export const zFormationsRoutes = {
       path: "/admin/formations",
       querystring: z.object({ search_item: z.string() }).strict(),
       response: {
-        "2xx": z.array(zFormationCatalogueSchema),
+        "200": z.array(zFormationCatalogueSchema),
       },
       securityScheme: {
         auth: "cookie-session",

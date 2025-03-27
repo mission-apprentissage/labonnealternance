@@ -1,107 +1,35 @@
-import { ExternalLinkIcon } from "@chakra-ui/icons"
-import {
-  Box,
-  Button,
-  Checkbox,
-  Editable,
-  EditableInput,
-  EditablePreview,
-  Flex,
-  HStack,
-  Heading,
-  Link,
-  Spinner,
-  Table,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr,
-  VStack,
-  useToast,
-} from "@chakra-ui/react"
-import emailValidator from "email-validator"
-import Head from "next/head"
-import { useRouter } from "next/router"
-import { createRef, useEffect, useState } from "react"
-import { IEtablissementJson } from "shared"
+"use client"
+
+import { Box, Button, Checkbox, Editable, EditableInput, EditablePreview, Flex, Heading, HStack, Table, Tbody, Td, Text, Th, Thead, Tr, useToast, VStack } from "@chakra-ui/react"
+import { useParams, useRouter } from "next/navigation"
+import { createRef } from "react"
+import { IEligibleTrainingsForAppointmentJson, IEtablissementJson, IETFAParametersJson } from "shared"
 import { referrers } from "shared/constants/referers"
-import { IEligibleTrainingsForAppointmentJson } from "shared/models/elligibleTraining.model"
+import { z } from "zod"
 
-import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
-import { InfoPopover, Layout } from "@/components/espace_pro"
-import { apiGet, apiPatch } from "@/utils/api.utils"
+import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
+import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import { formatDate } from "@/common/dayjs"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { InfoPopover } from "@/components/espace_pro"
+import EtablissementComponent from "@/components/espace_pro/Admin/widgetParameters/components/EtablissementComponent"
+import { EAdminPages } from "@/components/espace_pro/Layout/NavigationAdmin"
+import { apiPatch } from "@/utils/api.utils"
+import { PAGES } from "@/utils/routes.utils"
 
-import { formatDate } from "../../../../../common/dayjs"
-import EtablissementComponent from "../../../../../components/espace_pro/Admin/widgetParameters/components/EtablissementComponent"
-import { OldBreadcrumb } from "../../../../../components/espace_pro/common/components/Breadcrumb"
-import { authProvider, withAuth } from "../../../../../components/espace_pro/withAuth"
-
-/**
- * @description Page that handle formation editions.
- * @returns {JSX.Element}
- */
-function EditPage() {
-  const router = useRouter()
-  const { id: idParam } = router.query
-  const id = idParam as string
-  const [eligibleTrainingsForAppointmentResult, setEligibleTrainingsForAppointmentResult] = useState<IEligibleTrainingsForAppointmentJson[]>([])
-  const [etablissement, setEtablissement] = useState<IEtablissementJson>()
-  const [loading, setLoading] = useState(true)
+export default function RendezVousApprentissageDetailRendererClient({
+  eligibleTrainingsForAppointmentResult,
+  etablissement,
+}: {
+  eligibleTrainingsForAppointmentResult: IETFAParametersJson
+  etablissement: IEtablissementJson
+}) {
   const toast = useToast()
+  const router = useRouter()
+  const { siret } = useParams() as { siret: string }
+  const refreshPage = () => router.refresh()
 
   const title = "Gestion de l'établissement"
-
-  /**
-   * @description Fetch initial data.
-   * @return {Promise<void>}
-   */
-  const fetchData = async () => {
-    try {
-      setLoading(true)
-      const [eligibleTrainingsForAppointmentsResponse, etablissementResponse] = await Promise.all([
-        getEligibleTrainingsForAppointments(id).catch(() => null),
-        getEtablissement(id).catch(() => null),
-      ])
-      if (eligibleTrainingsForAppointmentsResponse && etablissementResponse) {
-        const { parameters: parametersResponse } = eligibleTrainingsForAppointmentsResponse
-        setEligibleTrainingsForAppointmentResult(parametersResponse)
-        setEtablissement(etablissementResponse)
-      } else {
-        setEligibleTrainingsForAppointmentResult(null)
-        setEtablissement(null)
-      }
-    } catch (error) {
-      toast({
-        title: "Une erreur est survenue durant la récupération des informations.",
-        status: "error",
-        isClosable: true,
-        position: "bottom-right",
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  /**
-   * @description Get all parameters.
-   */
-  useEffect(() => {
-    if (id) fetchData()
-  }, [id, toast])
-
-  const refreshParameters = async () => {
-    const eligibleTrainingsForAppointmentsResponse = await getEligibleTrainingsForAppointments(id)
-
-    const { parameters: parametersResponse } = eligibleTrainingsForAppointmentsResponse
-    setEligibleTrainingsForAppointmentResult(parametersResponse)
-  }
-
-  const getEligibleTrainingsForAppointments = (siret: string) =>
-    apiGet("/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret", { params: { siret: siret } })
-
-  const getEtablissement = (siret: string) => apiGet("/admin/etablissements/siret-formateur/:siret", { params: { siret: siret } })
 
   /**
    * @description Patch eligibleTrainingsForAppointments.
@@ -120,7 +48,7 @@ function EditPage() {
    * @returns {Promise<string|number>}
    */
   const saveEmail = async (parameterId, email, cle_ministere_educatif) => {
-    if (!email && !emailValidator.validate(email)) {
+    if (!email && !z.string().email().safeParse(email).success) {
       return toast({
         title: "Email de contact non valide.",
         status: "error",
@@ -151,7 +79,6 @@ function EditPage() {
    */
   const disableEmailOverriding = async (id, is_lieu_formation_email_customized) => {
     await patchEligibleTrainingsForAppointment(id, { is_lieu_formation_email_customized })
-    await refreshParameters()
     if (is_lieu_formation_email_customized) {
       toast({
         title: "Lors de la prochaine synchronisation l'email ne sera pas écrasé car il est personnalisé.",
@@ -167,6 +94,7 @@ function EditPage() {
         position: "bottom-right",
       })
     }
+    refreshPage()
   }
 
   /**
@@ -182,30 +110,18 @@ function EditPage() {
       await patchEligibleTrainingsForAppointment(parameter._id, {
         referrers: parameter.referrers.map((ref) => ref).concat(referrer.name),
       })
-      await refreshParameters()
+      refreshPage()
     } else {
       await patchEligibleTrainingsForAppointment(parameter._id, {
         referrers: parameter.referrers.map((ref) => ref).filter((item) => item !== referrer.name),
       })
-      await refreshParameters()
+      refreshPage()
     }
   }
 
-  if (loading) {
-    return (
-      <Layout footer={false} rdva>
-        <Spinner display="block" mx="auto" mt="10rem" />
-      </Layout>
-    )
-  }
-
   return (
-    <Layout footer={false} rdva>
-      <Head>
-        <title>{title}</title>
-        <link rel="icon" href="/favicon/favicon.ico" />
-      </Head>
-      <OldBreadcrumb pages={[{ title: "Administration", to: "/espace-pro/administration/users" }, { title: title }]} />
+    <AdminLayout currentAdminPage={EAdminPages.RECHERCHE_RENDEZ_VOUS}>
+      <Breadcrumb pages={[PAGES.static.rendezVousApprentissageRecherche, PAGES.dynamic.rendezVousApprentissageDetail({ siret })]} />
       <Heading textStyle="h2" mt={5}>
         {title}
       </Heading>
@@ -242,7 +158,7 @@ function EditPage() {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {eligibleTrainingsForAppointmentResult.map((parameter, i) => {
+                  {eligibleTrainingsForAppointmentResult.parameters.map((parameter: IEligibleTrainingsForAppointmentJson, i) => {
                     const emailRef = createRef()
                     const emailFocusRef = createRef()
 
@@ -259,15 +175,12 @@ function EditPage() {
                             <Box>
                               <Text fontWeight="bold">Intitulé</Text> {parameter?.training_intitule_long}
                             </Box>
-                            <Link
+                            <DsfrLink
                               href={`https://catalogue-apprentissage.intercariforef.org/recherche/formations?SEARCH=%22${encodeURIComponent(parameter.cle_ministere_educatif)}%22`}
-                              title="La formation du Catalogue - nouvelle fenêtre"
-                              isExternal
-                              rel="noreferrer"
-                              fontWeight="bold"
+                              aria-label="La formation du Catalogue - nouvelle fenêtre"
                             >
-                              Lien catalogue <ExternalLinkIcon w={6} h={6} />
-                            </Link>
+                              Lien catalogue
+                            </DsfrLink>
                           </VStack>
                         </Td>
 
@@ -362,10 +275,6 @@ function EditPage() {
           <Text>Etablissement introuvable</Text>
         )}
       </Box>
-    </Layout>
+    </AdminLayout>
   )
 }
-
-export const getServerSideProps = async (context) => ({ props: { ...(await getAuthServerSideProps(context)) } })
-
-export default authProvider(withAuth(EditPage, "admin"))

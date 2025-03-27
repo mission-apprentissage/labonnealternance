@@ -1,3 +1,5 @@
+import { Jsonify } from "type-fest"
+
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 
@@ -190,7 +192,6 @@ export const zFormationCatalogueSchema = z
     num_tel: z.string().nullable().describe("Numéro de téléphone de contact"),
     distance: z.number().nullish(),
   })
-  .strict()
   .extend(etablissementFormateurSchema.shape)
   .extend(etablissementGestionnaireSchema.shape)
   .extend(etablissementReferenceSchema.shape)
@@ -199,6 +200,7 @@ export const zFormationCatalogueSchema = z
 export const zFormationCatalogueSchemaNew = zFormationCatalogueSchema.omit({ _id: true })
 
 export type IFormationCatalogue = z.output<typeof zFormationCatalogueSchema>
+export type IFormationCatalogueJson = Jsonify<z.input<typeof zFormationCatalogueSchema>>
 
 export default {
   zod: zFormationCatalogueSchema,

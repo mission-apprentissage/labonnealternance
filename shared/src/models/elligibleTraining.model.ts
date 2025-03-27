@@ -43,6 +43,9 @@ export const ZEligibleTrainingsForAppointmentSchema = z
 export type IEligibleTrainingsForAppointment = z.output<typeof ZEligibleTrainingsForAppointmentSchema>
 export type IEligibleTrainingsForAppointmentJson = Jsonify<z.input<typeof ZEligibleTrainingsForAppointmentSchema>>
 
+export const ZETFAParameters = z.object({ parameters: z.array(ZEligibleTrainingsForAppointmentSchema) })
+export type IETFAParametersJson = Jsonify<z.output<typeof ZETFAParameters>>
+
 export default {
   zod: ZEligibleTrainingsForAppointmentSchema,
   indexes: [
