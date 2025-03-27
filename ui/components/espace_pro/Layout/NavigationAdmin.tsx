@@ -68,13 +68,13 @@ const NavigationAdmin = ({ currentPage }: { currentPage: EAdminPages }) => {
       <Container as="header" maxW="container.xl" flexGrow="1">
         <Tabs variant="unstyled" index={selectedIndex} onChange={handleTabsChange}>
           <TabList px={0}>
-            <Tab data-testid="recruiter_management_tab" {...tabParams} isDisabled={selectedIndex === 0} _focus={focusedTabParams} _selected={selectedTabParams}>
+            <Tab data-testid="recruiter_management_tab" {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>
               Gestion des recruteurs
             </Tab>
-            <Tab data-testid="algo_company_tab" {...tabParams} isDisabled={selectedIndex === 1} _focus={focusedTabParams} _selected={selectedTabParams}>
+            <Tab data-testid="algo_company_tab" {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>
               Entreprises de l'algorithme
             </Tab>
-            <Tab data-testid="recherche_rendez_vous_apprentissage_tab" {...tabParams} isDisabled={selectedIndex === 1} _focus={focusedTabParams} _selected={selectedTabParams}>
+            <Tab data-testid="recherche_rendez_vous_apprentissage_tab" {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>
               Rendez-vous apprentissage
             </Tab>
           </TabList>

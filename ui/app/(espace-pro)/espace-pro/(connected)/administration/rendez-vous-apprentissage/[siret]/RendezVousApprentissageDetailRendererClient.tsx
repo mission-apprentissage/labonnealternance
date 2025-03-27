@@ -1,18 +1,21 @@
 "use client"
 
 import { Box, Button, Checkbox, Editable, EditableInput, EditablePreview, Flex, Heading, HStack, Table, Tbody, Td, Text, Th, Thead, Tr, useToast, VStack } from "@chakra-ui/react"
-import { useRouter } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { createRef } from "react"
-import { IEligibleTrainingsForAppointment, IEtablissementJson, IETFAParametersJson } from "shared"
+import { IEligibleTrainingsForAppointmentJson, IEtablissementJson, IETFAParametersJson } from "shared"
 import { referrers } from "shared/constants/referers"
 import { z } from "zod"
 
+import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
+import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { formatDate } from "@/common/dayjs"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { InfoPopover } from "@/components/espace_pro"
 import EtablissementComponent from "@/components/espace_pro/Admin/widgetParameters/components/EtablissementComponent"
-import { OldBreadcrumb } from "@/components/espace_pro/common/components/Breadcrumb"
+import { EAdminPages } from "@/components/espace_pro/Layout/NavigationAdmin"
 import { apiPatch } from "@/utils/api.utils"
+import { PAGES } from "@/utils/routes.utils"
 
 export default function RendezVousApprentissageDetailRendererClient({
   eligibleTrainingsForAppointmentResult,
@@ -23,6 +26,7 @@ export default function RendezVousApprentissageDetailRendererClient({
 }) {
   const toast = useToast()
   const router = useRouter()
+  const { siret } = useParams() as { siret: string }
   const refreshPage = () => router.refresh()
 
   const title = "Gestion de l'établissement"
@@ -116,8 +120,8 @@ export default function RendezVousApprentissageDetailRendererClient({
   }
 
   return (
-    <>
-      <OldBreadcrumb pages={[{ title: "Administration", to: "/espace-pro/administration/users" }, { title: title }]} />
+    <AdminLayout currentAdminPage={EAdminPages.RECHERCHE_RENDEZ_VOUS}>
+      <Breadcrumb pages={[PAGES.static.rendezVousApprentissageRecherche, PAGES.dynamic.rendezVousApprentissageDetail({ siret })]} />
       <Heading textStyle="h2" mt={5}>
         {title}
       </Heading>
@@ -154,7 +158,7 @@ export default function RendezVousApprentissageDetailRendererClient({
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {eligibleTrainingsForAppointmentResult.parameters.map((parameter: IEligibleTrainingsForAppointment, i) => {
+                  {eligibleTrainingsForAppointmentResult.parameters.map((parameter: IEligibleTrainingsForAppointmentJson, i) => {
                     const emailRef = createRef()
                     const emailFocusRef = createRef()
 
@@ -271,6 +275,6 @@ export default function RendezVousApprentissageDetailRendererClient({
           <Text>Etablissement introuvable</Text>
         )}
       </Box>
-    </>
+    </AdminLayout>
   )
 }

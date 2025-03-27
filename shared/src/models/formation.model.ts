@@ -1,3 +1,5 @@
+import { Jsonify } from "type-fest"
+
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 
@@ -198,6 +200,7 @@ export const zFormationCatalogueSchema = z
 export const zFormationCatalogueSchemaNew = zFormationCatalogueSchema.omit({ _id: true })
 
 export type IFormationCatalogue = z.output<typeof zFormationCatalogueSchema>
+export type IFormationCatalogueJson = Jsonify<z.input<typeof zFormationCatalogueSchema>>
 
 export default {
   zod: zFormationCatalogueSchema,
