@@ -3,6 +3,7 @@ import { Card } from "@codegouvfr/react-dsfr/Card"
 import { Box, Typography } from "@mui/material"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
+import { CardStyling } from "@/app/(candidat)/recherche/_components/RechercheResultats/CardStyling"
 import { ILbaItem } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { useResultItemUrl } from "@/app/(candidat)/recherche/_hooks/useResultItemUrl"
 import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
@@ -136,74 +137,77 @@ export function ResultCard({ item, active, params }: ResultCardProps) {
 
   return (
     <Box sx={active ? activeStyle : null}>
-      <Card
-        background
-        border
-        enlargeLink
-        horizontal
-        linkProps={{
-          href: itemUrl,
-        }}
-        start={<ItemTag item={item} />}
-        title={
-          <Typography
-            component="span"
-            className={fr.cx("fr-text--bold", "fr-text--md")}
-            sx={{
-              color: fr.colors.decisions.text.actionHigh.grey.default,
-            }}
-          >
-            {getTitle(item)}
-          </Typography>
-        }
-        desc={
-          <Box
-            component="span"
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: fr.spacing("3v"),
-            }}
-          >
-            <Typography component="span" className={fr.cx("fr-text--sm")} color={fr.colors.decisions.text.actionHigh.grey.default}>
-              <ItemCompanyName item={item} />
-            </Typography>
+      <CardStyling>
+        <Card
+          background
+          style={{ paddingBottom: fr.spacing("1v") }}
+          border
+          enlargeLink
+          horizontal
+          linkProps={{
+            href: itemUrl,
+          }}
+          start={<ItemTag item={item} />}
+          title={
             <Typography
               component="span"
+              className={fr.cx("fr-text--bold", "fr-text--md")}
               sx={{
-                color: fr.colors.decisions.text.title.grey.default,
+                color: fr.colors.decisions.text.actionHigh.grey.default,
               }}
-              className={fr.cx("fr-text--xs")}
             >
-              {getAdresse(item)}
-              {item.place.distance != null && (
-                <>
-                  <br />
-                  <Typography
-                    component="span"
-                    sx={{
-                      my: 0,
-                      fontWeight: 400,
-                      color: fr.colors.decisions.text.mention.grey.default,
-                    }}
-                    className={fr.cx("fr-text--xs")}
-                  >
-                    {item.place.distance} km(s) du lieu de recherche
-                  </Typography>
-                </>
-              )}
+              {getTitle(item)}
             </Typography>
+          }
+          desc={
+            <Box
+              component="span"
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: fr.spacing("3v"),
+              }}
+            >
+              <Typography component="span" className={fr.cx("fr-text--sm")} color={fr.colors.decisions.text.actionHigh.grey.default}>
+                <ItemCompanyName item={item} />
+              </Typography>
+              <Typography
+                component="span"
+                sx={{
+                  color: fr.colors.decisions.text.title.grey.default,
+                }}
+                className={fr.cx("fr-text--xs")}
+              >
+                {getAdresse(item)}
+                {item.place.distance != null && (
+                  <>
+                    <br />
+                    <Typography
+                      component="span"
+                      sx={{
+                        my: 0,
+                        fontWeight: 400,
+                        color: fr.colors.decisions.text.mention.grey.default,
+                      }}
+                      className={fr.cx("fr-text--xs")}
+                    >
+                      {item.place.distance} km(s) du lieu de recherche
+                    </Typography>
+                  </>
+                )}
+              </Typography>
 
-            <Box component="span" sx={{ alignItems: "center", display: "flex", gap: fr.spacing("2w") }}>
-              <DatePublication item={item} />
-              <CandidatureCount item={item} />
-              <ItemDetailApplicationsStatus item={item} />
+              <Box component="span" sx={{ alignItems: "center", display: "flex", gap: fr.spacing("2w") }}>
+                <DatePublication item={item} />
+                <CandidatureCount item={item} />
+                <ItemDetailApplicationsStatus item={item} />
+              </Box>
             </Box>
-          </Box>
-        }
-        shadow
-        size="medium"
-      />
+          }
+          shadow
+          size="medium"
+        />
+      </CardStyling>
     </Box>
   )
 }
