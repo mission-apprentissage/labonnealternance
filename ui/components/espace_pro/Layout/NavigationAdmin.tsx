@@ -85,7 +85,6 @@ const NavigationAdmin = ({ currentPage }: { currentPage: EAdminPages }) => {
             <Tab data-testid="administrator_management_tab" {...tabParams} isDisabled={selectedIndex === 2} _focus={focusedTabParams} _selected={selectedTabParams}>
               Gestion des administrateurs
             </Tab>
-            </Tab>
           </TabList>
         </Tabs>
       </Container>
