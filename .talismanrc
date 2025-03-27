@@ -207,6 +207,8 @@ fileignoreconfig:
   checksum: cfd0e48e8762b43c6431dad873727f6ac091ca6f5c7555e37a8ee3fba03184d1
 - filename: ui/app/(candidat)/formation/[id]/TrainingDetailRendererClient.tsx
   checksum: f5c14c3e59be0c6170d21f389882ed894e38081ef05545ffc66cc8a65ded252f
+- filename: ui/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap.tsx
+  checksum: 77aa76bd83ebc2833a69d37454428e30ba751df7e5f8fd34200a250e656469b4
 - filename: ui/app/(espace-pro)/_components/OffresGratuites.tsx
   checksum: a81881696ad47f4efd1e7956f1972f0425cce0b07dba4afbcc7c088fb5edd90d
 - filename: ui/app/(home)/faq/page.tsx
@@ -215,6 +217,8 @@ fileignoreconfig:
   checksum: 4740029daff0308bfa65289c4eb5be61834c0c8c5d00bdcab0b1662f28c8a0e6
 - filename: ui/app/(home)/politique-de-confidentialite/page.tsx
   checksum: e5d7f4f0d05c3ef38c59bdcc27feaa88c976faa8520dbb78a75747a67aa1c9ab
+- filename: ui/app/accessibilite/page.tsx
+  checksum: b19bfcaa29d8cf28223ba40336cbc32034ab057b081001aa8a6f02d7934ec0ed
 - filename: ui/app/conditions-generales-utilisation/page.tsx
   checksum: 2a6862623c8118ea36287831ba82a2830bf8c6a67fd33ab58898be72f0732634
 - filename: ui/app/template.tsx
@@ -293,8 +297,6 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
-- filename: ui/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap.tsx
-  checksum: 77aa76bd83ebc2833a69d37454428e30ba751df7e5f8fd34200a250e656469b4
 scopeconfig:
 - scope: node
 custom_patterns:
@@ -313,6 +315,6 @@ allowed_patterns:
 - '@apprentissage.beta.gouv.fr'
 - adminusersview
 - https://dinum.didask.com/.*
-- 'labonnealternance@beta.gouv.fr'
+- labonnealternance@beta.gouv.fr
 threshold: medium
 version: "1.0"
