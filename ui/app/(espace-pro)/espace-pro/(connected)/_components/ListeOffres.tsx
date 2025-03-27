@@ -79,7 +79,7 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
   }
 
   return (
-    <Container maxW="container.xl" my={5}>
+    <Container maxW="container.xl" my={5} pb={4}>
       <Flex justify="space-between" align="center">
         <Text fontSize="2rem" fontWeight={700}>
           {establishment_raison_sociale ?? `SIRET ${establishment_siret}`}
