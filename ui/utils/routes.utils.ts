@@ -155,7 +155,7 @@ export const PAGES = {
     },
     accesRecruteur: {
       getPath: () => `/acces-recruteur` as string,
-      title: "Accès recruteur",
+      title: "Recruteur",
       index: false,
       getMetadata: () => ({
         title: "Accès recruteur - La bonne alternance",

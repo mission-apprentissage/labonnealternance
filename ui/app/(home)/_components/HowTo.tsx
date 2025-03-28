@@ -1,47 +1,112 @@
-import { Box, Container, Grid, GridItem, Image, Show, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Typography } from "@mui/material"
+import Image from "next/image"
 
 export const HowTo = () => (
-  <>
-    <Container variant="responsiveContainer">
-      <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap={{ base: "10", md: "24" }}>
-        <GridItem position="relative" width={{ base: "200px", md: "auto" }} mx="auto">
-          <Image fetchPriority="low" src="/images/howto1.svg" alt="" zIndex="2" position="inherit" />
-          <Show above="md">
-            <Image fetchPriority="low" src="/images/howtoline1.svg" alt="" position="absolute" top="85px" left="-162px" />
-          </Show>
-          <Box>
-            <Text as="h3" fontSize="1.25rem" fontWeight="500" mb="3">
-              Le job de vos rêves
-            </Text>
-            <Text as="p">Renseignez le métier que vous souhaitez faire et la localisation (Ville ou Code postal)</Text>
+  <Box
+    sx={{
+      display: "grid",
+      gridTemplateColumns: {
+        xs: "1fr",
+        sm: "repeat(2, 1fr)",
+        lg: "repeat(3, 1fr)",
+      },
+      gap: { xs: fr.spacing("2w"), md: fr.spacing("6w"), lg: fr.spacing("15w") },
+      borderRadius: "5px",
+      px: { xs: fr.spacing("2w"), md: fr.spacing("6w"), lg: 0 },
+      alignItems: "flex-start",
+    }}
+  >
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: fr.spacing("2w"),
+        position: "relative",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <Image fetchPriority="low" src="/images/howto1.svg" alt="" unoptimized width={286} height={141} style={{ width: "100%" }} />
+      <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("1w") }}>
+        <Typography className={fr.cx("fr-text--bold", "fr-text--lg")}>Le job de vos rêves</Typography>
+        <Typography>
+          Renseignez
+          <Box
+            component="span"
+            sx={{
+              color: fr.colors.decisions.border.default.blueFrance.default,
+            }}
+            className={fr.cx("fr-text--bold")}
+          >
+            {" le métier "}
           </Box>
-        </GridItem>
-        <GridItem position="relative" width={{ base: "200px", md: "auto" }} mx="auto">
-          <Image fetchPriority="low" src="/images/howto2.svg" alt="" zIndex="2" position="inherit" />
-          <Show above="md">
-            <Image fetchPriority="low" src="/images/howtoline2a.svg" alt="" position="absolute" top="47px" left="-208px" />
-          </Show>
-          <Box>
-            <Text as="h3" fontSize="1.25rem" fontWeight="500" mb="3">
-              En un clin d’&oelig;il
-            </Text>
-            <Text as="p">Obtenez la liste des formations et entreprises où réaliser votre alternance</Text>
+          que vous souhaitez faire et
+          <Box
+            component="span"
+            sx={{
+              color: fr.colors.decisions.border.default.blueFrance.default,
+            }}
+            className={fr.cx("fr-text--bold")}
+          >
+            {" la localisation "}
           </Box>
-        </GridItem>
-        <GridItem position="relative" width={{ base: "200px", md: "auto" }} mx="auto" mb="12">
-          <Image fetchPriority="low" src="/images/howto3.svg" alt="" zIndex="2" position="inherit" />
-          <Show above="md">
-            <Image fetchPriority="low" src="/images/howtoline3a.svg" alt="" position="absolute" top="47px" left="-200px" />
-            <Image fetchPriority="low" src="/images/howtoline3b.svg" alt="" position="absolute" top="47px" left="158px" />
-          </Show>
-          <Box>
-            <Text as="h3" fontSize="1.25rem" fontWeight="500" mb="3">
-              Un contact facile
-            </Text>
-            <Text as="p">Contactez facilement les centres de formation ou les entreprises pour postuler</Text>
+          (Ville ou Code postal)
+        </Typography>
+      </Box>
+    </Box>
+
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: fr.spacing("2w"),
+        position: "relative",
+      }}
+    >
+      <Image fetchPriority="low" src="/images/howto2.svg" alt="" unoptimized width={299} height={145} style={{ width: "100%" }} />
+      <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("1w") }}>
+        <Typography className={fr.cx("fr-text--bold", "fr-text--lg")}>En un clin d’oeil</Typography>
+        <Typography>
+          Obtenez en un clin d’oeil la
+          <Box
+            component="span"
+            sx={{
+              color: fr.colors.decisions.border.default.blueFrance.default,
+            }}
+            className={fr.cx("fr-text--bold")}
+          >
+            {" liste des formations et entreprises proche de chez vous "}
           </Box>
-        </GridItem>
-      </Grid>
-    </Container>
-  </>
+          dans le domaine recherché.
+        </Typography>
+      </Box>
+    </Box>
+
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: fr.spacing("2w"),
+        position: "relative",
+      }}
+    >
+      <Image fetchPriority="low" src="/images/howto3.svg" alt="" unoptimized width={285} height={140} style={{ width: "100%" }} />
+      <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("1w") }}>
+        <Typography className={fr.cx("fr-text--bold", "fr-text--lg")}>Un contact facile</Typography>
+        <Typography>
+          <Box
+            component="span"
+            sx={{
+              color: fr.colors.decisions.border.default.blueFrance.default,
+            }}
+            className={fr.cx("fr-text--bold")}
+          >
+            {"Contactez facilement "}
+          </Box>
+          les centres de formations ou les entreprises pour postuler.
+        </Typography>
+      </Box>
+    </Box>
+  </Box>
 )

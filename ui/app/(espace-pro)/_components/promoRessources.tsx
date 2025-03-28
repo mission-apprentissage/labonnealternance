@@ -1,4 +1,7 @@
-import { Box, Container, Image, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import Button from "@codegouvfr/react-dsfr/Button"
+import { Box, Typography } from "@mui/material"
+import Image from "next/image"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { PAGES } from "@/utils/routes.utils"
@@ -12,13 +15,25 @@ const textes: Record<Target, string> = {
 }
 
 export const PromoRessources = ({ target }: { target: Target }) => (
-  <Container textAlign="center" variant="responsiveContainer">
-    <Image margin="auto" src="/images/pages_ressources/outils.svg" aria-hidden={true} alt="" />
-    <Text fontSize={24} fontWeight={700}>
+  <Box
+    component="section"
+    sx={{
+      display: "flex",
+      flexDirection: "column",
+      gap: fr.spacing("3w"),
+      padding: fr.spacing("3v"),
+      alignItems: "center",
+      justifyContent: "center",
+    }}
+  >
+    <Image fetchPriority="low" src="/images/pages_ressources/outils.svg" aria-hidden={true} alt="" width={212} height={145} />
+    <Typography variant="h4" textAlign="center" sx={{ textWrap: "balance" }}>
       {textes[target]}
-    </Text>
-    <Box mt="7">
-      <DsfrLink href={`${PAGES.static.ressources.getPath()}#${target}`}>Découvrir les ressources</DsfrLink>
-    </Box>
-  </Container>
+    </Typography>
+    <Button priority="secondary" size="large">
+      <DsfrLink href={`${PAGES.static.ressources.getPath()}#${target}`} size="lg">
+        Découvrir les ressources
+      </DsfrLink>
+    </Button>
+  </Box>
 )

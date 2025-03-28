@@ -18,7 +18,7 @@ export function HomeRechercheFormUI(props: Pick<RechercheFormProps, "onSubmit">)
         display: "flex",
         flexDirection: "column",
         gap: fr.spacing("2w"),
-        borderRadius: fr.spacing("1w"),
+        borderRadius: { xs: 0, lg: fr.spacing("1w") },
         boxShadow: "0px 2px 6px 0px #00001229",
       }}
     >
