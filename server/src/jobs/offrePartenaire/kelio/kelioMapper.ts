@@ -57,7 +57,7 @@ export const ZKelioJob = z
 export type IKelioJob = z.output<typeof ZKelioJob>
 
 export const kelioJobToJobsPartners = (job: IKelioJob): IComputedJobsPartners => {
-  const { id, name, html_description, html_profile, address, url, company, created_at, job_type } = job
+  const { id, name, html_description, html_profile, address, url, company, created_at, job_type, contract_duration } = job
 
   const workplace_geopoint: {
     type: "Point"
@@ -125,6 +125,7 @@ export const kelioJobToJobsPartners = (job: IKelioJob): IComputedJobsPartners =>
     contract_type,
     contract_start: null,
     contract_remote,
+    contract_duration: contract_duration ? parseInt(contract_duration) : null,
     business_error,
   }
   return partnerJob
