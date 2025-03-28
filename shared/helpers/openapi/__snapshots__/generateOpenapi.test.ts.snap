@@ -8167,6 +8167,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                   "Monster",
                   "Meteojob",
                   "Kelio",
+                  "Veritone",
                 ],
                 "type": "string",
               },
