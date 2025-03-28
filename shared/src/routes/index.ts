@@ -17,7 +17,6 @@ import { zV1JobsEtFormationsRoutes } from "./jobsEtFormations.routes.js"
 import { zLoginRoutes } from "./login.routes.js"
 import { zMetiersRoutes } from "./metiers.routes.js"
 import { zMetiersDAvenirRoutes } from "./metiersdavenir.routes.js"
-import { zOptoutRoutes } from "./optout.routes.js"
 import { zPartnersRoutes } from "./partners.routes.js"
 import { zRecruiterRoutes } from "./recruiters.routes.js"
 import { zReportedCompanyRoutes } from "./reportedCompany.routes.js"
@@ -50,7 +49,6 @@ const zRoutesGetP3 = {
   ...zAppointmentsRoute.get,
   ...zEligibleTrainingsForAppointmentRoutes.get,
   ...zFormationsRoutes.get,
-  ...zOptoutRoutes.get,
 } as const
 
 const zRoutesGetP4 = {

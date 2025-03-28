@@ -21,7 +21,7 @@ const NotFound = () => (
   >
     <Box>
       <Typography variant="h1">404</Typography>
-      <Typography className={fr.cx("fr-text--lg", "fr-text--bold")}>Vous êtes perdu ?</Typography>
+      <Typography className={fr.cx("fr-text--lg", "fr-text--bold")}>Vous êtes perdu·e ?</Typography>
       <Typography className={fr.cx("fr-text--sm")}>
         Il semble que la page que vous essayez de rejoindre n&apos;existe pas. En cas de problème pour retrouver la page, essayez de repartir de la page d&apos;accueil en cliquant
         sur le lien ci-dessous.

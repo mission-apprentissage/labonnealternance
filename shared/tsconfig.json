@@ -1,6 +1,8 @@
 {
   "extends": "@tsconfig/node20/tsconfig.json",
   "compilerOptions": {
+    // Limit to ensure browser compatibility
+    "lib": ["es2022"],
     "declaration": true,
     "sourceMap": true,
     "declarationMap": true,

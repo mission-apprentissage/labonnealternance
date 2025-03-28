@@ -37,7 +37,6 @@ import jobsEtFormationsV1Route from "./controllers/jobsEtFormations.controller"
 import login from "./controllers/login.controller"
 import metiers from "./controllers/metiers.controller"
 import metiersDAvenirRoute from "./controllers/metiersDAvenir.controller"
-import optoutRoute from "./controllers/optout.controller"
 import partnersRoute from "./controllers/partners.controller"
 import reportedCompanyController from "./controllers/reportedCompany.controller"
 import rome from "./controllers/rome.controller"
@@ -159,7 +158,6 @@ export async function bind(app: Server) {
        */
       userRoute(typedSubApp)
       formulaireRoute(typedSubApp)
-      optoutRoute(typedSubApp)
       etablissementsRecruteurRoute(typedSubApp)
       jobsRouteV2(typedSubApp)
 
