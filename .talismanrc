@@ -217,6 +217,8 @@ fileignoreconfig:
   checksum: 4740029daff0308bfa65289c4eb5be61834c0c8c5d00bdcab0b1662f28c8a0e6
 - filename: ui/app/(home)/politique-de-confidentialite/page.tsx
   checksum: e5d7f4f0d05c3ef38c59bdcc27feaa88c976faa8520dbb78a75747a67aa1c9ab
+- filename: ui/app/accessibilite/page.tsx
+  checksum: b19bfcaa29d8cf28223ba40336cbc32034ab057b081001aa8a6f02d7934ec0ed
 - filename: ui/app/conditions-generales-utilisation/page.tsx
   checksum: 2a6862623c8118ea36287831ba82a2830bf8c6a67fd33ab58898be72f0732634
 - filename: ui/app/template.tsx
@@ -313,6 +315,6 @@ allowed_patterns:
 - '@apprentissage.beta.gouv.fr'
 - adminusersview
 - https://dinum.didask.com/.*
-- 'labonnealternance@beta.gouv.fr'
+- labonnealternance@beta.gouv.fr
 threshold: medium
 version: "1.0"

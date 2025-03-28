@@ -228,6 +228,15 @@ export const PAGES = {
         description: "Désinscrivez vous de l'envoi de candidatures spontanées.",
       }),
     },
+    accessibilite: {
+      getPath: () => `/accessibilite` as string,
+      title: "Déclaration d'accessibilité",
+      index: true,
+      getMetadata: () => ({
+        title: "Déclaration d'accessibilité",
+        description: "Politique de confidentialité, traitement des données à caractère personnel sur le site de La bonne alternance.",
+      }),
+    },
   },
   dynamic: {
     compte: ({ userType }: { userType: "CFA" | "ENTREPRISE" | "OPCO" | "ADMIN" }): IPage => ({
