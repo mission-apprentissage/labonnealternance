@@ -6,8 +6,8 @@ export const jobPartnersRankDefaultFactor = 0.5
 const jobPartnersRankConfigByFlux: Partial<Record<JOBPARTNERS_LABEL, number>> = {
   Hellowork: 0.7,
   "France Travail": 0.5,
-  "RH Alternance": 0.6,
-  Veritone: 0.6,
+  "RH Alternance": 0.7,
+  Veritone: 0.7,
 }
 
 const jobPartnersRankConfigByAPI: Record<string, number> = {}
