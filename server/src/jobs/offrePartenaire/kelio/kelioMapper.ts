@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import { TRAINING_CONTRACT_TYPE } from "shared/constants"
+import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "shared/constants"
 import dayjs from "shared/helpers/dayjs"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
@@ -57,7 +57,7 @@ export const ZKelioJob = z
 export type IKelioJob = z.output<typeof ZKelioJob>
 
 export const kelioJobToJobsPartners = (job: IKelioJob): IComputedJobsPartners => {
-  const { id, name, html_description, html_profile, address, url, company, created_at } = job
+  const { id, name, html_description, html_profile, address, url, company, created_at, job_type } = job
 
   const workplace_geopoint: {
     type: "Point"
@@ -65,6 +65,34 @@ export const kelioJobToJobsPartners = (job: IKelioJob): IComputedJobsPartners =>
   } = {
     type: "Point",
     coordinates: [parseFloat(address.longitude), parseFloat(address.latitude)],
+  }
+
+  let business_error: string | null = null
+  if (isCompanyInBlockedCfaList(company.name)) {
+    business_error = JOB_PARTNER_BUSINESS_ERROR.CFA
+  }
+
+  let contract_type: ("Apprentissage" | "Professionnalisation")[] = []
+  if (job_type === "Alternating") {
+    contract_type = [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION]
+  } else if (job_type.toUpperCase() === "Professional Contract".toUpperCase()) {
+    contract_type = [TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION]
+  } else if (job_type === "Internship") {
+    business_error = JOB_PARTNER_BUSINESS_ERROR.STAGE
+  }
+
+  let contract_remote: TRAINING_REMOTE_TYPE | null = null
+  switch (job.remote_level) {
+    case "unauthorized":
+    case "fulltime":
+      contract_remote = TRAINING_REMOTE_TYPE.onsite
+      break
+    case "punctual":
+    case "partial":
+      contract_remote = TRAINING_REMOTE_TYPE.hybrid
+      break
+    default:
+      contract_remote = null
   }
 
   const urlParsing = z.string().url().safeParse(url)
@@ -94,8 +122,10 @@ export const kelioJobToJobsPartners = (job: IKelioJob): IComputedJobsPartners =>
     workplace_geopoint,
     apply_url: urlParsing.success ? urlParsing.data : null,
     offer_multicast: true,
-    contract_type: [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
-    business_error: isCompanyInBlockedCfaList(company.name) ? JOB_PARTNER_BUSINESS_ERROR.CFA : null,
+    contract_type,
+    contract_start: null,
+    contract_remote,
+    business_error,
   }
   return partnerJob
 }
