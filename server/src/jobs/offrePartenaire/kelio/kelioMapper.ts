@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "shared/constants"
+import { NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "shared/constants"
 import dayjs from "shared/helpers/dayjs"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
@@ -57,7 +57,7 @@ export const ZKelioJob = z
 export type IKelioJob = z.output<typeof ZKelioJob>
 
 export const kelioJobToJobsPartners = (job: IKelioJob): IComputedJobsPartners => {
-  const { id, name, html_description, html_profile, address, url, company, created_at, job_type, contract_duration } = job
+  const { id, name, html_description, html_profile, address, url, company, created_at, job_type, contract_duration, job_start_date, education_level } = job
 
   const workplace_geopoint: {
     type: "Point"
@@ -95,6 +95,28 @@ export const kelioJobToJobsPartners = (job: IKelioJob): IComputedJobsPartners =>
       contract_remote = null
   }
 
+  let offer_target_diploma: { european: "3" | "4" | "5" | "6" | "7"; label: string } | null = null
+  switch (education_level) {
+    case "CAP/BEP":
+      offer_target_diploma = { european: "3", label: NIVEAU_DIPLOME_LABEL["3"] }
+      break
+    case "BAC":
+      offer_target_diploma = { european: "4", label: NIVEAU_DIPLOME_LABEL["4"] }
+      break
+    case "BAC +2":
+      offer_target_diploma = { european: "5", label: NIVEAU_DIPLOME_LABEL["5"] }
+      break
+    case "BAC +3":
+      offer_target_diploma = { european: "6", label: NIVEAU_DIPLOME_LABEL["6"] }
+      break
+    case "BAC +5":
+    case ">BAC +5":
+      offer_target_diploma = { european: "7", label: NIVEAU_DIPLOME_LABEL["7"] }
+      break
+    default:
+      offer_target_diploma = null
+  }
+
   const urlParsing = z.string().url().safeParse(url)
 
   const descriptionComputed = formatHtmlForPartnerDescription(html_description + html_profile).trim()
@@ -123,8 +145,9 @@ export const kelioJobToJobsPartners = (job: IKelioJob): IComputedJobsPartners =>
     apply_url: urlParsing.success ? urlParsing.data : null,
     offer_multicast: true,
     contract_type,
-    contract_start: null,
+    contract_start: new Date(job_start_date!),
     contract_remote,
+    offer_target_diploma,
     contract_duration: contract_duration ? parseInt(contract_duration) : null,
     business_error,
   }
