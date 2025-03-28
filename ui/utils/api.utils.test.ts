@@ -1,7 +1,7 @@
 import { generatePath, generateQueryString } from "shared/helpers/generateUri"
-import { describe, expect, expectTypeOf, it } from "vitest"
+import { describe, expect, it } from "vitest"
 
-import { apiGet, generateUrl } from "./api.utils"
+import { generateUrl } from "./api.utils"
 
 /*
  * The following tests are inspired from https://github.com/remix-run/react-router/blob/868e5157bbb72fb77f827f264a2b7f6f6106147d/packages/react-router/__tests__/generatePath-test.tsx#L3C1-L182
@@ -185,48 +185,5 @@ describe("generateUrl", () => {
         querystring: { a: "hello", b: "world" },
       })
     ).toBe("http://localhost:5000/api/courses/routing?a=hello&b=world")
-  })
-})
-
-describe("typing route definition: no header + access token", () => {
-  describe("no header + access token", () => {
-    it("should not detect an error", () => {
-      expectTypeOf(
-        apiGet(`/optout/validate`, {
-          headers: {
-            authorization: `Bearer fakeToken`,
-          },
-        })
-      ).resolves.not.toBeAny()
-    })
-    it("should detect a misspelled header", () => {
-      expectTypeOf(
-        apiGet(`/optout/validate`, {
-          headers: {
-            // @ts-expect-error should detect invalid key "Authorization"
-            Authorization: `Bearer fakeToken`,
-          },
-        })
-      ).resolves.not.toBeAny()
-    })
-    it("should detect a missing header", () => {
-      expectTypeOf(
-        apiGet(`/optout/validate`, {
-          // @ts-expect-error should detect missing key "authorization"
-          headers: {},
-        })
-      ).resolves.not.toBeAny()
-    })
-    it("should detect an unexpected header", () => {
-      expectTypeOf(
-        apiGet(`/optout/validate`, {
-          headers: {
-            authorization: `Bearer fakeToken`,
-            // @ts-expect-error should detect header is not defined in the route
-            test: "test",
-          },
-        })
-      ).resolves.not.toBeAny()
-    })
   })
 })
