@@ -24,12 +24,6 @@ export const WidgetFooter = () => {
             La bonne alternance
           </Link>
         </NextLink>
-        . Il est développé par la{" "}
-        <NextLink legacyBehavior passHref href="https://beta.gouv.fr/incubateurs/mission-apprentissage.html">
-          <Link aria-label="Accès au site de la mission interministérielle pour l’apprentissage" textDecoration="underline">
-            Mission interministérielle pour l’apprentissage
-          </Link>
-        </NextLink>
       </Box>
       <UnorderedList listStyleType="none" color="grey.425" fontSize={12} marginInlineStart={0}>
         <ListItem
