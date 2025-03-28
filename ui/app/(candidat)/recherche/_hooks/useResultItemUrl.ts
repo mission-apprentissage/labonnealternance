@@ -6,7 +6,7 @@ import { getItemReference, getResultItemUrl, ItemReferenceLike, type IRechercheP
 
 export function useResultItemUrl(item: ItemReferenceLike, params: IRecherchePageParams): string {
   const url = useMemo(() => {
-    return getResultItemUrl(item, { ...params, activeItems: [getItemReference(item)] })
+    return item ? getResultItemUrl(item, { ...params, activeItems: [getItemReference(item)] }) : null
   }, [item, params])
 
   return url

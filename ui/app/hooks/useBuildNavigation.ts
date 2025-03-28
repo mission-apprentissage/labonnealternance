@@ -27,8 +27,8 @@ export function useBuildNavigation({ items, currentItem, params }: WithRecherche
     },
   })
 
-  const goNext = () => router.push(nextUrl)
-  const goPrev = () => router.push(previousUrl)
+  const goNext = nextUrl ? () => router.push(nextUrl) : null
+  const goPrev = previousUrl ? () => router.push(previousUrl) : null
 
   return {
     swipeHandlers,

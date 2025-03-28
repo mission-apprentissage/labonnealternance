@@ -100,14 +100,18 @@ function CandidatRechercheFiltersUI({
               name: "formations",
             },
           },
-          {
-            label: `Partenariats${partenariatCount != null ? ` (${partenariatCount})` : ""}`,
-            nativeInputProps: {
-              checked: displayPartenariats,
-              onChange: onPartenariatsChange,
-              name: "partenariats",
-            },
-          },
+          ...(partenariatCount
+            ? [
+                {
+                  label: `Partenariats${partenariatCount != null ? ` (${partenariatCount})` : ""}`,
+                  nativeInputProps: {
+                    checked: displayPartenariats,
+                    onChange: onPartenariatsChange,
+                    name: "partenariats",
+                  },
+                },
+              ]
+            : []),
         ]}
         orientation="horizontal"
         small
