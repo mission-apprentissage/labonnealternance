@@ -215,6 +215,7 @@ async function setupMap(container: HTMLDivElement): Promise<Mapbox> {
 
   mapSingleton.getCanvas().setAttribute("aria-label", "Localisation géographique des employeurs et/ou formations en alternance")
 
+  console.log("Loading images!!!")
   await Promise.all([
     loadImage("/images/icons/book.png", "formation", mapSingleton),
     loadImage("/images/icons/job.png", "job", mapSingleton),
@@ -222,14 +223,23 @@ async function setupMap(container: HTMLDivElement): Promise<Mapbox> {
     loadImage("/images/icons/job_large_shadow.png", "job-active", mapSingleton),
   ])
 
+  if (!mapSingleton.loaded()) {
+    console.log("Waiting for map to load")
+    await mapSingleton.once("load")
+  }
+
+  console.log("Creating layers")
   // Layout order is important to control the z-index (last added is on top)
   await createLayer("job", mapSingleton)
   await createLayer("formation", mapSingleton)
   await createLayer("active", mapSingleton)
 
+  console.log("Check is loaded")
   if (!mapSingleton.loaded()) {
+    console.log("Waiting for map to load")
     await mapSingleton.once("load")
   }
+  console.log("Map loaded")
 
   return mapSingleton
 }
@@ -316,12 +326,19 @@ function useMap(container: HTMLDivElement | null, props: RechercheCarteProps) {
 
   useLayoutEffect(() => {
     if (container === null) {
+      console.log("No container")
       return
     }
 
+    console.log("Start Setup")
+
     setupMap(container)
-      .then(setMap)
+      .then((m) => {
+        console.log("Setup Complete")
+        setMap(m)
+      })
       .catch((error) => {
+        console.error("Setup failed", error)
         // TODO: error handler
         captureException(error)
       })
@@ -329,6 +346,7 @@ function useMap(container: HTMLDivElement | null, props: RechercheCarteProps) {
     return () => {
       setMap((prev) => {
         if (prev !== null) {
+          console.log("Remove map")
           prev.getContainer().remove()
         }
         return null
