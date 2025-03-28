@@ -213,7 +213,7 @@ function RechercheFormComponent(props: FormikProps<IFormType>) {
         display: "grid",
         gridTemplateColumns: {
           xs: "1fr",
-          [type === "home" ? "lg" : "md"]: "1fr 1fr min-content 1fr min-content",
+          [type === "home" ? "lg" : "md"]: "minmax(310px, 1fr) minmax(210px, 1fr)  min-content 1fr min-content",
         },
       }}
     >
@@ -262,6 +262,7 @@ function RechercheFormComponent(props: FormikProps<IFormType>) {
         label="Niveau d'études visé"
         style={{
           marginBottom: 0,
+          textWrap: "nowrap",
         }}
         options={niveauOptions.map((option) => ({ ...option, selected: option.value === props.values.niveau }))}
         disabled={!isEnabled}
