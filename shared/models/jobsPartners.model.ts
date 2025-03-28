@@ -22,6 +22,7 @@ export enum JOBPARTNERS_LABEL {
   MONSTER = "Monster",
   METEOJOB = "Meteojob",
   KELIO = "Kelio",
+  VERITONE = "Veritone",
 }
 
 export enum FILTER_JOBPARTNERS_LABEL {
