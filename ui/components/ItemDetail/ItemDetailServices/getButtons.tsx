@@ -18,28 +18,32 @@ const navigationButtonProperties = {
 export const getNavigationButtons = ({ goPrev, goNext, handleClose }) => {
   return (
     <>
-      <Box>
-        <Button
-          {...navigationButtonProperties}
-          onClick={() => {
-            goPrev()
-          }}
-          data-testid="previous-button"
-        >
-          <Image width="30px" height="30px" src="/images/chevronleft.svg" alt="Résultat précédent" />
-        </Button>
-      </Box>
-      <Box ml={2}>
-        <Button
-          {...navigationButtonProperties}
-          onClick={() => {
-            goNext()
-          }}
-          data-testid="next-button"
-        >
-          <Image width="30px" height="30px" src="/images/chevronright.svg" alt="Résultat suivant" />
-        </Button>
-      </Box>
+      {goPrev && (
+        <Box>
+          <Button
+            {...navigationButtonProperties}
+            onClick={() => {
+              goPrev()
+            }}
+            data-testid="previous-button"
+          >
+            <Image width="30px" height="30px" src="/images/chevronleft.svg" alt="Résultat précédent" />
+          </Button>
+        </Box>
+      )}
+      {goNext && (
+        <Box ml={2}>
+          <Button
+            {...navigationButtonProperties}
+            onClick={() => {
+              goNext()
+            }}
+            data-testid="next-button"
+          >
+            <Image width="30px" height="30px" src="/images/chevronright.svg" alt="Résultat suivant" />
+          </Button>
+        </Box>
+      )}
       <Box ml={2}>
         <Button
           {...navigationButtonProperties}
