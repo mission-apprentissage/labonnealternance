@@ -5,7 +5,6 @@ import { IStaticMetiers, IStaticVilles } from "./getStaticData"
 export const buildLinkForTownAndJob = (town: Partial<IStaticVilles>, job: IStaticMetiers): UrlObject => {
   const pathname = "/recherche"
   const query: Record<string, string | boolean | string[]> = {
-    display: "list",
     displayMap: false,
     job_name: encodeURIComponent(job.name),
     romes: job.romes.join(","),
