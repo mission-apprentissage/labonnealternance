@@ -281,7 +281,7 @@ export function RechercheForm(props: RechercheFormProps) {
         props.initialValue?.romes == null
           ? null
           : {
-              label: props.initialValue.job_name ?? "",
+              label: (props.initialValue.job_name && decodeURIComponent(props.initialValue.job_name)) ?? "",
               romes: props.initialValue.romes,
               type: props.initialValue.job_type ?? "job",
             },
