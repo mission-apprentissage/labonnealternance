@@ -307,6 +307,7 @@ export function RechercheForm(props: RechercheFormProps) {
         initialValues={initialValues}
         enableReinitialize
         validate={validate}
+        validateOnBlur={false}
         onSubmit={async (values) => {
           await props?.onSubmit({
             romes: values.metier.romes,
