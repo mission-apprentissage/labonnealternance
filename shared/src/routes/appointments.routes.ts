@@ -84,7 +84,7 @@ const zAppointmentRequestContextCreateFormAvailableResponseSchema = z
       example: "101249P01313538697790003635386977900036-93006#L01",
     }),
     form_url: z.string().openapi({
-      example: "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=affelnet&cleMinistereEducatif=101249P01313538697790003635386977900036-93006%23L01",
+      example: "https://labonnealternance.apprentissage.beta.gouv.fr/rdva?referrer=affelnet&cleMinistereEducatif=101249P01313538697790003635386977900036-93006%23L01",
     }),
   })
   .strict()

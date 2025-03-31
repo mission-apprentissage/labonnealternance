@@ -3644,7 +3644,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                           ],
                         },
                         "form_url": {
-                          "example": "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=affelnet&cleMinistereEducatif=101249P01313538697790003635386977900036-93006%23L01",
+                          "example": "https://labonnealternance.apprentissage.beta.gouv.fr/rdva?referrer=affelnet&cleMinistereEducatif=101249P01313538697790003635386977900036-93006%23L01",
                           "type": "string",
                         },
                         "id_rco_formation": {

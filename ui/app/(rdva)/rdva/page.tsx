@@ -1,6 +1,8 @@
+"use client"
+
 import { Box, Spinner, Text } from "@chakra-ui/react"
 import { useQuery } from "@tanstack/react-query"
-import { useRouter } from "next/router"
+import { useSearchParams } from "next/navigation"
 
 import { ContactCfaSummary } from "@/components/espace_pro/Candidat/layout/ContactCfaSummary"
 import DemandeDeContact from "@/components/RDV/DemandeDeContact"
@@ -11,9 +13,9 @@ import { FormLayoutComponent } from "../../../components/espace_pro/Candidat/lay
 /**
  * Appointment form page.
  */
-export default function FormCreatePage() {
-  const router = useRouter()
-  const { cleMinistereEducatif, referrer } = router.query as { cleMinistereEducatif: string; referrer: string }
+export default function PriseDeRendezVous() {
+  const cleMinistereEducatif = useSearchParams().get("cleMinistereEducatif")
+  const referrer = useSearchParams().get("referrer")
 
   const { data, isLoading } = useQuery({
     queryKey: ["getPrdvForm", cleMinistereEducatif],
