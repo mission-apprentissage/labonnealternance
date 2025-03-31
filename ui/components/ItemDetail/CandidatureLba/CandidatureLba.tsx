@@ -1,7 +1,6 @@
 "use client"
-import { Box, Flex, Image, Text, useDisclosure } from "@chakra-ui/react"
-import Button from "@codegouvfr/react-dsfr/Button"
-import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
+import { Box, Button, Flex, Image, Text, useDisclosure } from "@chakra-ui/react"
+import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson, JOB_STATUS } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { useLocalStorage } from "@/app/hooks/useLocalStorage"
@@ -41,6 +40,7 @@ export function CandidatureLba({ item }: { item: ILbaItemLbaJobJson | ILbaItemLb
   }
 
   const hasAppliedValue = storedValue
+  const isActive = kind !== LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || (item as ILbaItemLbaJobJson).job.status === JOB_STATUS.ACTIVE
 
   return (
     <Box data-testid="CandidatureSpontanee">
@@ -49,7 +49,7 @@ export function CandidatureLba({ item }: { item: ILbaItemLbaJobJson | ILbaItemLb
         {hasAppliedValue ? (
           /* @ts-ignore TODO */
           <ItemDetailApplicationsStatus item={item} />
-        ) : (
+        ) : isActive ? (
           <>
             <Box my={2}>
               <Button onClick={openApplicationForm} aria-label="Ouvrir le formulaire d'envoi de candidature spontanée" data-testid="postuler-button">
@@ -67,6 +67,8 @@ export function CandidatureLba({ item }: { item: ILbaItemLbaJobJson | ILbaItemLb
               </Box>
             )}
           </>
+        ) : (
+          <></>
         )}
       </Box>
     </Box>
