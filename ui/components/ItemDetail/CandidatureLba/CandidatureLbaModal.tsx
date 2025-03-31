@@ -50,7 +50,7 @@ export const CandidatureLbaModal = ({
       modalContentProps={{
         maxWidth: 1152,
       }}
-      hideCloseButton={true}
+      hideCloseButton={isSuccess || isError ? false : true}
     >
       {content}
     </ModalReadOnly>
