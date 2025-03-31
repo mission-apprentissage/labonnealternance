@@ -24,7 +24,7 @@ export const DsfrHeaderProps: HeaderProps = {
     <HeaderQuickAccessItem
       key="candidat"
       quickAccessItem={{
-        iconId: "fr-icon-user-line",
+        iconId: null,
         text: "Candidat",
         linkProps: {
           href: PAGES.static.home.getPath(),
@@ -34,7 +34,7 @@ export const DsfrHeaderProps: HeaderProps = {
     <HeaderQuickAccessItem
       key="recruteur"
       quickAccessItem={{
-        iconId: "fr-icon-building-line",
+        iconId: null,
         text: "Recruteur",
         linkProps: {
           href: PAGES.static.accesRecruteur.getPath(),
@@ -44,7 +44,7 @@ export const DsfrHeaderProps: HeaderProps = {
     <HeaderQuickAccessItem
       key="organisme"
       quickAccessItem={{
-        iconId: "fr-icon-team-line",
+        iconId: null,
         text: "Organisme de formation",
         linkProps: {
           href: PAGES.static.organismeDeFormation.getPath(),
