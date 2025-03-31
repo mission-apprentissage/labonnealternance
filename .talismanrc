@@ -177,8 +177,8 @@ fileignoreconfig:
   checksum: bf864b963375d5836150faf3e343e482a8612552581bd39be21b4f1e8f566971
 - filename: shared/helpers/generateUri.ts
   checksum: 6542db0d3eca959c6e81d574f8b71d4b18d2f1af21042ca5ed4dff319cd39555
-- filename: shared/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap
-  checksum: aa01a8388e2accb53cc88b46750fea7487998584a107059e3149695c0d219ae6
+- filename: shared/src/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap
+  checksum: 4ce14d79331025043378f3f41d7bed9266a987699623f36f1ab30c4276e14f6c
 - filename: shared/helpers/openapi/generateOpenapi.test.ts
   checksum: d7b85c3dff488cec523d78f0926e15dbea41071a1864bda62b4d6caeb2541df3
 - filename: shared/models/applications.model.ts
