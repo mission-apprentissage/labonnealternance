@@ -1,5 +1,4 @@
-import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Flex, FormControl, FormErrorMessage, FormLabel, Input, Link, Spinner, Text } from "@chakra-ui/react"
+import { Box, Flex, FormControl, FormErrorMessage, FormLabel, Input, Spinner, Text } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 import emailMisspelled, { top100 } from "email-misspelled"
 import { useFormik } from "formik"
@@ -9,6 +8,7 @@ import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
 
 import CandidatureLbaFileDropzone from "./CandidatureLbaFileDropzone"
@@ -86,15 +86,15 @@ export const CandidatureLbaModalBody = ({
           </Text>
           <Text>
             En remplissant ce formulaire, vous acceptez les{" "}
-            <Link href="/cgu" color="companygrey.800" textDecoration="underline" isExternal title="Conditions générales d'utilisation - nouvelle fenêtre">
-              Conditions générales d&apos;utilisation <ExternalLinkIcon mx="2px" />
-            </Link>{" "}
+            <DsfrLink href="/conditions-generales-utilisation" aria-description="Conditions générales d'utilisation - nouvelle fenêtre" external>
+              Conditions générales d&apos;utilisation
+            </DsfrLink>{" "}
             du service La bonne alternance et acceptez le partage de vos informations avec l&apos;établissement {company}.
             <br />
             Pour plus d'informations sur le traitement de vos données à caractère personnel, veuillez consulter la{" "}
-            <Link href="/politique-de-confidentialite" color="grey.800" textDecoration="underline" isExternal title="politique de confidentialité - nouvelle fenêtre">
-              Politique de confidentialité <ExternalLinkIcon mx="2px" />
-            </Link>{" "}
+            <DsfrLink href="/politique-de-confidentialite" aria-description="politique de confidentialité - nouvelle fenêtre" external>
+              Politique de confidentialité
+            </DsfrLink>{" "}
             de La bonne alternance.
           </Text>
         </Box>

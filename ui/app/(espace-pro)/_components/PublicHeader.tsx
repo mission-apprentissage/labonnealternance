@@ -16,7 +16,7 @@ export function PublicHeader({ user, hideConnectionButton = false }: { user?: IU
         <HeaderQuickAccessItem
           key="mon_compte"
           quickAccessItem={{
-            iconId: "fr-icon-account-line",
+            iconId: null,
             text: `${user.first_name} ${user.last_name.toLocaleUpperCase()}`,
             linkProps: {
               href: PAGES.dynamic.backHome({ userType: user.type }).getPath(),
@@ -30,7 +30,7 @@ export function PublicHeader({ user, hideConnectionButton = false }: { user?: IU
         <HeaderQuickAccessItem
           key="connexion"
           quickAccessItem={{
-            iconId: "fr-icon-lock-line",
+            iconId: null,
             text: "Connexion",
             linkProps: {
               href: PAGES.static.authentification.getPath(),

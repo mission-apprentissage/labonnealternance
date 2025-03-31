@@ -51,7 +51,7 @@ export function CandidatureLba({ item }: { item: ILbaItemLbaJobJson | ILbaItemLb
           <ItemDetailApplicationsStatus item={item} />
         ) : (
           <>
-            <Box my={4}>
+            <Box my={2}>
               <Button onClick={openApplicationForm} aria-label="Ouvrir le formulaire d'envoi de candidature spontanée" data-testid="postuler-button">
                 J&apos;envoie ma candidature{kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? " spontanée" : ""}
               </Button>

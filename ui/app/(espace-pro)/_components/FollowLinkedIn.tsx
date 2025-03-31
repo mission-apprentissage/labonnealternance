@@ -1,4 +1,4 @@
-import { Grid, GridItem, Image, Text } from "@chakra-ui/react"
+import { Grid, GridItem, Text } from "@chakra-ui/react"
 
 import { DsfrLink } from "../../../components/dsfr/DsfrLink"
 
@@ -17,8 +17,7 @@ export const FollowLinkedIn = () => (
         href="https://www.linkedin.com/company/mission-apprentissage/posts/?feedView=all"
         aria-label="Accès à la page Linkedin de la mission interministérielle pour l’apprentissage - nouvelle fenêtre"
       >
-        Voir notre page &nbsp;
-        <Image src="/images/icons/linkedin.svg" aria-hidden={true} alt=""></Image>
+        Voir notre page
       </DsfrLink>
     </GridItem>
   </Grid>

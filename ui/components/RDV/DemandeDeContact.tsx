@@ -1,4 +1,3 @@
-import { ExternalLinkIcon } from "@chakra-ui/icons"
 import {
   Accordion,
   AccordionButton,
@@ -14,7 +13,6 @@ import {
   FormLabel,
   Image,
   Input,
-  Link,
   Modal,
   ModalBody,
   ModalContent,
@@ -330,15 +328,15 @@ const DemandeDeContact = (props: Props) => {
         </Text>
         <Text mt={4}>
           En remplissant ce formulaire, vous acceptez les{" "}
-          <Link href="/cgu" color="grey.800" textDecoration="underline" isExternal title="Conditions générales d'utilisation - nouvelle fenêtre">
-            Conditions générales d&apos;utilisation <ExternalLinkIcon mx="2px" />
-          </Link>{" "}
+          <DsfrLink href="/conditions-generales-utilisation" external aria-description="Conditions générales d'utilisation - nouvelle fenêtre">
+            Conditions générales d&apos;utilisation
+          </DsfrLink>{" "}
           du service La bonne alternance et acceptez le partage de vos informations avec l&apos;établissement {props.context.etablissement_formateur_entreprise_raison_sociale}.
           <br />
           Pour plus d'informations sur le traitement de vos données à caractère personnel, veuillez consulter la{" "}
-          <Link href="/politique-de-confidentialite" color="grey.800" textDecoration="underline" isExternal title="politique de confidentialité - nouvelle fenêtre">
-            Politique de confidentialité <ExternalLinkIcon mx="2px" />
-          </Link>{" "}
+          <DsfrLink href="/politique-de-confidentialite" external aria-description="politique de confidentialité - nouvelle fenêtre">
+            Politique de confidentialité
+          </DsfrLink>{" "}
           de La bonne alternance.
         </Text>
       </Box>
