@@ -211,10 +211,18 @@ function RechercheFormComponent(props: FormikProps<IFormType>) {
         gap: fr.spacing("2w"),
         alignItems: "baseline",
         display: "grid",
-        gridTemplateColumns: {
-          xs: "1fr",
-          [type === "home" ? "lg" : "md"]: "minmax(310px, 1fr) minmax(210px, 1fr)  min-content 1fr min-content",
-        },
+        gridTemplateColumns:
+          type === "home"
+            ? {
+                xs: "1fr",
+                lg: "minmax(180px, 1fr) minmax(min-content, 1fr) min-content minmax(min-content, 1fr) min-content",
+                xl: "minmax(310px, 1fr) minmax(210px, 1fr) min-content 1fr min-content",
+              }
+            : {
+                xs: "1fr",
+                md: "minmax(min-content, 1fr) minmax(min-content, 1fr) min-content minmax(min-content, 1fr) min-content",
+                lg: "minmax(310px, 1fr) minmax(210px, 1fr) min-content 1fr min-content",
+              },
       }}
     >
       <AutocompleteAsync

@@ -5,6 +5,7 @@ import { parseRecherchePageParams } from "@/app/(candidat)/recherche/_utils/rech
 import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
 import { AlgoHome } from "@/app/(home)/_components/AlgoHome"
 import { AmeliorerLBA } from "@/app/(home)/_components/AmeliorerLBA"
+import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
 import { HomeRechercheForm } from "@/app/(home)/_components/HomeRechercheForm"
 import { HowTo } from "@/app/(home)/_components/HowTo"
 
@@ -32,17 +33,17 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           backgroundColor: fr.colors.decisions.background.alt.grey.default,
         }}
       >
-        {/* <Box
+        <Box
           sx={{
             display: {
-              sx: "none",
-              lg: "block",
+              xs: "none",
+              md: "block",
             },
           }}
         >
           <HomeCircleImageDecoration />
-        </Box> */}
-        <Box sx={{ position: "relative", maxWidth: "xl", display: "grid", padding: { xs: 0, lg: fr.spacing("6w") }, gap: fr.spacing("4w") }}>
+        </Box>
+        <Box sx={{ position: "relative", display: "grid", padding: { xs: 0, md: fr.spacing("6w") }, gap: fr.spacing("4w"), gridTemplateColumns: "1fr" }}>
           <HomeRechercheForm params={params} />
           <HowTo />
         </Box>
