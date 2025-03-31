@@ -3,6 +3,7 @@ import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
 import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
 import { processMeteojob } from "@/jobs/offrePartenaire/meteojob/processMeteojob"
+import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
 import { processRecruteursLba } from "@/jobs/offrePartenaire/recruteur-lba/processRecruteursLba"
 import { processRhAlternance } from "@/jobs/offrePartenaire/rh-alternance/processRhAlternance"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
@@ -198,6 +199,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processKelio,
     description: "Importe les offres Kelio dans la collection raw & computed",
+  },
+  {
+    fct: processPass,
+    description: "Importe les offres Pass dans la collection raw & computed",
   },
   // ENRICHIT COMPUTED JOBS PARTNERS
   {
