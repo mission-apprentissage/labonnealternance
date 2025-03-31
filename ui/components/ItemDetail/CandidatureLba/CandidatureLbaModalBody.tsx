@@ -8,8 +8,8 @@ import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } fr
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
+import ModalCloseButton from "@/app/_components/ModalCloseButton"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
-import { ModalReadOnlyCloseButton } from "@/components/ModalReadOnly"
 
 import CandidatureLbaFileDropzone from "./CandidatureLbaFileDropzone"
 import CandidatureLbaMandataireMessage from "./CandidatureLbaMandataireMessage"
@@ -54,9 +54,11 @@ export const CandidatureLbaModalBody = ({
       </Box>
       <Box marginX={[6, 8, 8, 8, "69px"]} my={4}>
         {!fromWidget && (
-          <Flex justifyContent="flex-end" mr={-6}>
-            <ModalReadOnlyCloseButton onClick={onClose} />
-          </Flex>
+          <>
+            <Flex justifyContent="flex-end" mr={-6}>
+              <ModalCloseButton onClose={onClose} />
+            </Flex>
+          </>
         )}
         <Text as="h1" fontWeight={700} fontSize="24px" data-testid="CandidatureSpontaneeTitle">
           {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? (

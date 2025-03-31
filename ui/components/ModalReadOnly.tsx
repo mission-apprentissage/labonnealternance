@@ -1,6 +1,5 @@
 "use client"
 import { Modal, ModalBody, ModalContent, ModalContentProps, ModalOverlay } from "@chakra-ui/react"
-import Button from "@codegouvfr/react-dsfr/Button"
 import { useEffect } from "react"
 
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
@@ -33,13 +32,5 @@ export const ModalReadOnly = ({
         <ModalBody padding={0}>{children}</ModalBody>
       </ModalContent>
     </Modal>
-  )
-}
-
-export const ModalReadOnlyCloseButton = ({ onClick }: { onClick: () => void }) => {
-  return (
-    <Button onClick={onClick} style={{ cursor: "pointer" }} priority="tertiary no outline" iconId="ri-close-large-line" iconPosition="right">
-      Fermer
-    </Button>
   )
 }
