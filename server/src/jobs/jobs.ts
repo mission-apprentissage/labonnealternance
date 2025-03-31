@@ -234,7 +234,7 @@ export async function setupJobProcessor() {
             handler: resetInvitationDates,
           },
           "Traitement des recruteur LBA par la pipeline jobs partners": {
-            cron_string: "0 22 * * SUN",
+            cron_string: "0 10 * * SUN",
             handler: processRecruteursLba,
           },
         },
