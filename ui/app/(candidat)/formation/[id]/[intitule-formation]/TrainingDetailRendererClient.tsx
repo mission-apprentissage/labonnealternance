@@ -197,12 +197,14 @@ function TrainingDetailPage({
           <Flex flexDirection={{ base: "column", sm: "row" }} alignItems={{ sm: "leftn", md: "center" }}>
             <Box flex={1}>
               {appliedDate ? (
-                <Text color="grey.600" as="span" px={2} py={1} backgroundColor="#FEF7DA">
-                  <Text as="span">👍 </Text>
-                  <Text as="span" fontStyle="italic">
-                    Super, vous avez déjà pris contact le {appliedDate}.
+                <Box my={4}>
+                  <Text color="grey.600" as="span" px={2} py={1} backgroundColor="#FEF7DA">
+                    <Text as="span">👍 </Text>
+                    <Text as="span" fontStyle="italic">
+                      Super, vous avez déjà pris contact le {appliedDate}.
+                    </Text>
                   </Text>
-                </Text>
+                </Box>
               ) : (
                 priseDeRendezVous && <DemandeDeContact isCollapsedHeader={isCollapsedHeader} context={contextPRDV} referrer="LBA" showInModal />
               )}
