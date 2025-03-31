@@ -171,6 +171,7 @@ export const OffresTabs = ({
       maxWidth: "50",
       disableFilters: true,
       disableSortBy: true,
+      isSticky: true,
       accessor: (row) => {
         const [lat, lon] = (row.geo_coordinates ?? "").split(",")
         const directLink = `${publicConfig.baseUrl}${buildJobUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, row._id, row.rome_appellation_label)}`

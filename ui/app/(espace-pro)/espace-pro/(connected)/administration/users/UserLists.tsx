@@ -149,6 +149,7 @@ function Users() {
       id: "action",
       maxWidth: "80",
       disableSortBy: true,
+      isSticky: true,
       accessor: (row: IUserRecruteurJson) => {
         const status = getLastStatusEvent(row.status as IUserStatusValidationJson[])?.status
         const canActivate = [ETAT_UTILISATEUR.DESACTIVE, ETAT_UTILISATEUR.ATTENTE].includes(status)

@@ -4,6 +4,14 @@ import { useFlexLayout, useSortBy, useTable } from "react-table"
 
 import { ArrowDownLine, ArrowUpLine } from "@/theme/components/icons"
 
+export const stickyCssAttributes = {
+  position: "sticky",
+  right: 0,
+  background: "white",
+  boxShadow: "-2px 0 5px rgba(0, 0, 0, 0.1)",
+  zIndex: 500,
+}
+
 export const Table = ({ data, columns }) => {
   const tableData = useMemo(() => data, [data])
   const tableColumns = useMemo(() => columns, [columns])
@@ -30,7 +38,7 @@ export const Table = ({ data, columns }) => {
                 {headerGroups.map((headerGroup, g) => (
                   <Box key={g} as="tr" {...headerGroup.getHeaderGroupProps({})}>
                     {headerGroup.headers.map((column, i) => (
-                      <Box key={i} as="th" {...column.getHeaderProps(column.getSortByToggleProps())}>
+                      <Box key={i} as="th" sx={column.isSticky ? stickyCssAttributes : {}} {...column.getHeaderProps(column.getSortByToggleProps())}>
                         <Flex flexDirection="column" w="full" alignItems="flex-start" justify="center">
                           <Text className="fr-cell__title">
                             {column.render("Header")}
