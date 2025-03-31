@@ -6,7 +6,7 @@ import { Close } from "@/theme/components/icons"
 export default function ModalCloseButton({ onClose }: { onClose: () => void }) {
   return (
     <Box display={"flex"} alignSelf={"flex-end"}>
-      <Button priority="tertiary no outline" onClick={onClose}>
+      <Button type="button" priority="tertiary no outline" onClick={onClose}>
         fermer
         <Text as={"span"} ml={2}>
           <Close boxSize={4} />

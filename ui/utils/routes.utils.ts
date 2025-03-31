@@ -155,7 +155,7 @@ export const PAGES = {
     },
     accesRecruteur: {
       getPath: () => `/acces-recruteur` as string,
-      title: "Accès recruteur",
+      title: "Recruteur",
       index: false,
       getMetadata: () => ({
         title: "Accès recruteur - La bonne alternance",
@@ -226,6 +226,15 @@ export const PAGES = {
       getMetadata: () => ({
         title: "Désinscription candidatures spontanées",
         description: "Désinscrivez vous de l'envoi de candidatures spontanées.",
+      }),
+    },
+    accessibilite: {
+      getPath: () => `/accessibilite` as string,
+      title: "Déclaration d'accessibilité",
+      index: true,
+      getMetadata: () => ({
+        title: "Déclaration d'accessibilité",
+        description: "Politique de confidentialité, traitement des données à caractère personnel sur le site de La bonne alternance.",
       }),
     },
   },

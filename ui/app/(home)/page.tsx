@@ -1,48 +1,56 @@
-import { Box, Container, Show } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Container } from "@mui/material"
 
 import { parseRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
 import { AlgoHome } from "@/app/(home)/_components/AlgoHome"
 import { AmeliorerLBA } from "@/app/(home)/_components/AmeliorerLBA"
-import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
 import { HomeRechercheForm } from "@/app/(home)/_components/HomeRechercheForm"
 import { HowTo } from "@/app/(home)/_components/HowTo"
 
-const blockCssProperties = {
-  position: "relative",
-  borderRadius: "10px",
-  marginLeft: "auto",
-  marginRight: "auto",
-  maxWidth: "1310px",
-}
 export default async function HomePage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const params = parseRecherchePageParams(new URLSearchParams(await searchParams), "default")
 
   return (
-    <Box>
-      <Box as="main">
-        <Box background="beige" sx={blockCssProperties}>
-          <Show above="lg">
-            <HomeCircleImageDecoration />
-          </Show>
-          <Container variant="responsiveContainer" pt={{ base: 3, sm: 12 }} pb={12} position="relative">
-            <HomeRechercheForm params={params} />
-          </Container>
+    <Container
+      component="main"
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: fr.spacing("8w"),
+        marginTop: { xs: 0, lg: fr.spacing("4w") },
+        marginBottom: fr.spacing("8w"),
+        px: { xs: 0, lg: fr.spacing("2w") },
+      }}
+      maxWidth="xl"
+    >
+      <Box
+        component="section"
+        sx={{
+          position: "relative",
+          borderRadius: { xs: 0, lg: fr.spacing("1w") },
+          backgroundColor: fr.colors.decisions.background.alt.grey.default,
+        }}
+      >
+        {/* <Box
+          sx={{
+            display: {
+              sx: "none",
+              lg: "block",
+            },
+          }}
+        >
+          <HomeCircleImageDecoration />
+        </Box> */}
+        <Box sx={{ position: "relative", maxWidth: "xl", display: "grid", padding: { xs: 0, lg: fr.spacing("6w") }, gap: fr.spacing("4w") }}>
+          <HomeRechercheForm params={params} />
           <HowTo />
         </Box>
-
-        <Box sx={blockCssProperties} py={12}>
-          <AlgoHome />
-        </Box>
-
-        <Box sx={blockCssProperties} pb={12}>
-          <PromoRessources target="candidat" />
-        </Box>
-
-        <Box sx={blockCssProperties}>
-          <AmeliorerLBA />
-        </Box>
       </Box>
-    </Box>
+
+      <AlgoHome />
+      <AmeliorerLBA />
+      <PromoRessources target="candidat" />
+    </Container>
   )
 }

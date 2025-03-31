@@ -32,7 +32,6 @@ import jobsModel from "./jobs.model.js"
 import jobsPartnersModel from "./jobsPartners.model.js"
 import jobsPartnersComputedModel from "./jobsPartnersComputed.model.js"
 import opcoModel from "./opco.model.js"
-import optoutModel from "./optout.model.js"
 import rawFranceTravail from "./rawFranceTravail.model.js"
 import rawHelloWorkModel from "./rawHelloWork.model.js"
 import rawKelioModel from "./rawKelio.model.js"
@@ -90,7 +89,6 @@ const modelDescriptorMap = {
   [jobsPartnersComputedModel.collectionName]: jobsPartnersComputedModel,
   [lbaCompanyLegacyModel.collectionName]: lbaCompanyLegacyModel,
   [opcoModel.collectionName]: opcoModel,
-  [optoutModel.collectionName]: optoutModel,
   [rawHelloWorkModel.collectionName]: rawHelloWorkModel,
   [rawPassModel.collectionName]: rawPassModel,
   [rawRecruteursLbaModel.collectionName]: rawRecruteursLbaModel,

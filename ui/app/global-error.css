@@ -36,11 +36,8 @@
     line-height: 1.15em;
     font-size: 56px;
   }
-  h2 {
+  p {
     font-size: 20px;
-    max-width: 495px;
-    font-weight: 700;
-    line-height: 1.3em;
   }
 
   @media (max-width: 480px) {
@@ -51,7 +48,7 @@
     h1 {
       font-size: 48px;
     }
-    h2 {
+    p {
       font-size: 18px;
     }
   }
@@ -60,7 +57,7 @@
     h1 {
       font-size: 32px;
     }
-    h2 {
+    p {
       font-size: 12px;
     }
   }

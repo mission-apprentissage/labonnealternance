@@ -213,7 +213,7 @@ function RechercheFormComponent(props: FormikProps<IFormType>) {
         display: "grid",
         gridTemplateColumns: {
           xs: "1fr",
-          [type === "home" ? "lg" : "md"]: "1fr 1fr min-content 1fr min-content",
+          [type === "home" ? "lg" : "md"]: "minmax(310px, 1fr) minmax(210px, 1fr)  min-content 1fr min-content",
         },
       }}
     >
@@ -262,6 +262,7 @@ function RechercheFormComponent(props: FormikProps<IFormType>) {
         label="Niveau d'études visé"
         style={{
           marginBottom: 0,
+          textWrap: "nowrap",
         }}
         options={niveauOptions.map((option) => ({ ...option, selected: option.value === props.values.niveau }))}
         disabled={!isEnabled}
@@ -280,7 +281,7 @@ export function RechercheForm(props: RechercheFormProps) {
         props.initialValue?.romes == null
           ? null
           : {
-              label: props.initialValue.job_name ?? "",
+              label: (props.initialValue.job_name && decodeURIComponent(props.initialValue.job_name)) ?? "",
               romes: props.initialValue.romes,
               type: props.initialValue.job_type ?? "job",
             },
@@ -306,6 +307,7 @@ export function RechercheForm(props: RechercheFormProps) {
         initialValues={initialValues}
         enableReinitialize
         validate={validate}
+        validateOnBlur={false}
         onSubmit={async (values) => {
           await props?.onSubmit({
             romes: values.metier.romes,
