@@ -42,6 +42,62 @@ function AdministrationOpco() {
 
   const columns = [
     {
+      Header: "Actions",
+      id: "action",
+      maxWidth: "80",
+      disableSortBy: true,
+      accessor: (row) => {
+        return (
+          <Box>
+            <Menu>
+              {({ isOpen }) => (
+                <>
+                  <MenuButton isActive={isOpen} as={Button} variant="navdot" _hover={{ backgroundColor: "none" }}>
+                    <Icon as={Parametre} color="bluefrance.500" />
+                  </MenuButton>
+                  <MenuList>
+                    <MenuItem>
+                      <Link underline="hover" href={PAGES.dynamic.backOpcoInformationEntreprise({ user_id: row._id as string }).getPath()} aria-label="voir les informations">
+                        Voir les informations
+                      </Link>
+                    </MenuItem>
+                    {tabIndex !== 1 && (
+                      <MenuItem>
+                        <Link
+                          underline="hover"
+                          component="button"
+                          onClick={() => {
+                            confirmationActivationUtilisateur.onOpen()
+                            setCurrentEntreprise(row)
+                          }}
+                        >
+                          Activer le compte
+                        </Link>
+                      </MenuItem>
+                    )}
+                    {tabIndex !== 2 && (
+                      <MenuItem>
+                        <Link
+                          underline="hover"
+                          component="button"
+                          onClick={() => {
+                            confirmationDesactivationUtilisateur.onOpen()
+                            setCurrentEntreprise(row)
+                          }}
+                        >
+                          Désactiver le compte
+                        </Link>
+                      </MenuItem>
+                    )}
+                  </MenuList>
+                </>
+              )}
+            </Menu>
+          </Box>
+        )
+      },
+    },
+    {
       Header: "Entreprise",
       id: "establishment_raison_sociale",
       width: "300",
@@ -125,62 +181,6 @@ function AdministrationOpco() {
       disableSortBy: true,
       sortType: "basic",
       accessor: ({ jobs_count }) => jobs_count,
-    },
-    {
-      Header: "Actions",
-      id: "action",
-      maxWidth: "80",
-      disableSortBy: true,
-      accessor: (row) => {
-        return (
-          <Box display={["none", "block"]}>
-            <Menu>
-              {({ isOpen }) => (
-                <>
-                  <MenuButton isActive={isOpen} as={Button} variant="navdot" _hover={{ backgroundColor: "none" }}>
-                    <Icon as={Parametre} color="bluefrance.500" />
-                  </MenuButton>
-                  <MenuList>
-                    <MenuItem>
-                      <Link underline="hover" href={PAGES.dynamic.backOpcoInformationEntreprise({ user_id: row._id as string }).getPath()} aria-label="voir les informations">
-                        Voir les informations
-                      </Link>
-                    </MenuItem>
-                    {tabIndex !== 1 && (
-                      <MenuItem>
-                        <Link
-                          underline="hover"
-                          component="button"
-                          onClick={() => {
-                            confirmationActivationUtilisateur.onOpen()
-                            setCurrentEntreprise(row)
-                          }}
-                        >
-                          Activer le compte
-                        </Link>
-                      </MenuItem>
-                    )}
-                    {tabIndex !== 2 && (
-                      <MenuItem>
-                        <Link
-                          underline="hover"
-                          component="button"
-                          onClick={() => {
-                            confirmationDesactivationUtilisateur.onOpen()
-                            setCurrentEntreprise(row)
-                          }}
-                        >
-                          Désactiver le compte
-                        </Link>
-                      </MenuItem>
-                    )}
-                  </MenuList>
-                </>
-              )}
-            </Menu>
-          </Box>
-        )
-      },
     },
   ]
 

@@ -203,6 +203,10 @@ fileignoreconfig:
   checksum: f4f3e429e6a7871a218f19eead273c0477636ed3c19b9e4dfd9e55bde1bc7dc8
 - filename: shared/routes/v3/jobs/jobs.routes.v3.model.ts
   checksum: 94f2736d7791571d7888a50f53e36e2af246f22c1c832b85477c34cb5328af0d
+- filename: shared/src/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap
+  checksum: ac7786e3082174e9164d4634a9432511815d79828f0e408ad75c0532a18ddd98
+- filename: shared/src/routes/appointments.routes.ts
+  checksum: c9e50c644e7f14004c8c141c2c0b350adc29c49cfa72a766a0822a8f27b1ccd7
 - filename: shared/utils/detectUrlAndEmails.test.ts
   checksum: ce4d731225425bdbee4e69ff61b6c14be377054db1fb99b438a86e85b4b7a985
 - filename: shared/utils/objectUtils.ts
