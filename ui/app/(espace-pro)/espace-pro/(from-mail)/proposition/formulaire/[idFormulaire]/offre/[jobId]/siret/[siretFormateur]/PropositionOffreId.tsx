@@ -1,6 +1,8 @@
 "use client"
 
-import { Box, Button, Flex, Heading, SimpleGrid, Stack, Text, useToast } from "@chakra-ui/react"
+import { Box, Flex, Heading, SimpleGrid, Stack, Text, useToast } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { useQuery } from "@tanstack/react-query"
 import { IJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -10,7 +12,6 @@ import { RomeDetailReadOnly } from "@/components/DepotOffre/RomeDetailReadOnly"
 import { LoadingEmptySpace } from "@/components/espace_pro"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 import { publicConfig } from "@/config.public"
-import { Copy } from "@/theme/components/icons"
 import { getDelegationDetails, viewOffreDelegation } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -66,7 +67,14 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
         <Text fontSize="16px" mt={5}>
           Vous pouvez contacter directement l’entreprise pour évaluer son besoin, ou alors partager le lien vers l’offre à vos étudiants :
         </Text>
-        <Button mt={5} type="submit" variant="primary" leftIcon={<Copy width={5} />} onClick={copyInClipboard}>
+        <Button
+          style={{
+            marginTop: fr.spacing("4v"),
+          }}
+          type="submit"
+          priority="primary"
+          onClick={copyInClipboard}
+        >
           Copier l'url
         </Button>
       </Box>
