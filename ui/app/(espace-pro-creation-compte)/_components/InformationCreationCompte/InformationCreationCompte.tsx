@@ -45,7 +45,9 @@ const Formulaire = ({
     queryFn: () => getEntrepriseOpco(establishment_siret),
   })
 
-  const opco = parseEnum(OPCOS_LABEL, opcoData?.opco)
+  const parsedOpco = parseEnum(OPCOS_LABEL, opcoData?.opco)
+  const opco = parsedOpco === OPCOS_LABEL.UNKNOWN_OPCO ? undefined : parsedOpco
+
   const shouldSelectOpco = type === AUTHTYPE.ENTREPRISE && !opco
 
   return (
