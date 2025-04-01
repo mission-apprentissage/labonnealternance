@@ -1,5 +1,6 @@
 "use client"
-import { Box, Button, Flex, Image, Text, useDisclosure } from "@chakra-ui/react"
+import { Box, Flex, Image, Text, useDisclosure } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson, JOB_STATUS } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
