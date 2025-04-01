@@ -163,21 +163,19 @@ export const OffresTabs = ({
     : []
 
   const columns = [
-    ...commonColumns,
-    ...statsColumns,
     {
       Header: "",
       id: "action",
       maxWidth: "50",
       disableFilters: true,
       disableSortBy: true,
-      isSticky: true,
+      // isSticky: true,
       accessor: (row) => {
         const [lat, lon] = (row.geo_coordinates ?? "").split(",")
         const directLink = `${publicConfig.baseUrl}${buildJobUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, row._id, row.rome_appellation_label)}`
         const isDisable = row.job_status === "Annulée" || row.job_status === "Pourvue" || row.job_status === "En attente"
         return (
-          <Box display={["none", isDisable ? "none" : "block"]}>
+          <Box display={isDisable ? "none" : "block"}>
             <Menu
               onOpen={() => {
                 setCopied(false)
@@ -295,6 +293,8 @@ export const OffresTabs = ({
         )
       },
     },
+    ...commonColumns,
+    ...statsColumns,
   ]
 
   return (

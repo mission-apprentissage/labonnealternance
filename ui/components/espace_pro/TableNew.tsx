@@ -3,8 +3,6 @@ import { matchSorter } from "match-sorter"
 import React, { useMemo } from "react"
 import { useFilters, useFlexLayout, useGlobalFilter, usePagination, useSortBy, useTable } from "react-table"
 
-import { stickyCssAttributes } from "@/app/(espace-pro)/_components/Table"
-
 import { ArrowDownLine, ArrowUpLine, SearchLine } from "../../theme/components/icons"
 
 import ExportButtonNew from "./ExportButton/ExportButtonNew"
@@ -151,7 +149,7 @@ export function TableNew({ data = [], columns, description = undefined, exportab
                       <Box key={i} as="tr" {...row.getRowProps()}>
                         {row.cells.map((cell, j) => {
                           return (
-                            <Flex key={j} sx={j === row.cells.length - 1 ? stickyCssAttributes : {}} as="td" {...cell.getCellProps()}>
+                            <Flex key={j} as="td" {...cell.getCellProps()} sx={cell.column.id === "action" ? { padding: "4px !important" } : {}}>
                               {cell.render("Cell")}
                             </Flex>
                           )

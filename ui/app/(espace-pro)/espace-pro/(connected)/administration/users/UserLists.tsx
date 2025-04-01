@@ -46,6 +46,66 @@ function Users() {
 
   const columns = [
     {
+      Header: "Actions",
+      id: "action",
+      maxWidth: "80",
+      disableSortBy: true,
+      // isSticky: true,
+      accessor: (row: IUserRecruteurJson) => {
+        const status = getLastStatusEvent(row.status as IUserStatusValidationJson[])?.status
+        const canActivate = [ETAT_UTILISATEUR.DESACTIVE, ETAT_UTILISATEUR.ATTENTE].includes(status)
+        const canDeactivate = [ETAT_UTILISATEUR.VALIDE, ETAT_UTILISATEUR.ATTENTE].includes(status)
+        return (
+          <Box>
+            <Menu>
+              {({ isOpen }) => (
+                <>
+                  <MenuButton isActive={isOpen} as={Button} variant="navdot" _hover={{ backgroundColor: "none" }}>
+                    <Icon as={Parametre} color="bluefrance.500" />
+                  </MenuButton>
+                  <MenuList>
+                    <MenuItem>
+                      <Link underline="hover" href={`/espace-pro/administration/users/${row._id}`} aria-label="voir les informations">
+                        Voir les informations
+                      </Link>
+                    </MenuItem>
+                    {canActivate && (
+                      <MenuItem>
+                        <Link
+                          underline="hover"
+                          component="button"
+                          onClick={() => {
+                            confirmationActivationUtilisateur.onOpen()
+                            setCurrentEntreprise(row)
+                          }}
+                        >
+                          Activer le compte
+                        </Link>
+                      </MenuItem>
+                    )}
+                    {canDeactivate && (
+                      <MenuItem>
+                        <Link
+                          underline="hover"
+                          component="button"
+                          onClick={() => {
+                            confirmationDesactivationUtilisateur.onOpen()
+                            setCurrentEntreprise(row)
+                          }}
+                        >
+                          Désactiver le compte
+                        </Link>
+                      </MenuItem>
+                    )}
+                  </MenuList>
+                </>
+              )}
+            </Menu>
+          </Box>
+        )
+      },
+    },
+    {
       Header: "Etablissement",
       id: "establishment_raison_sociale",
       width: "300",
@@ -143,66 +203,6 @@ function Users() {
         </Text>
       ),
       id: "origine",
-    },
-    {
-      Header: "Actions",
-      id: "action",
-      maxWidth: "80",
-      disableSortBy: true,
-      isSticky: true,
-      accessor: (row: IUserRecruteurJson) => {
-        const status = getLastStatusEvent(row.status as IUserStatusValidationJson[])?.status
-        const canActivate = [ETAT_UTILISATEUR.DESACTIVE, ETAT_UTILISATEUR.ATTENTE].includes(status)
-        const canDeactivate = [ETAT_UTILISATEUR.VALIDE, ETAT_UTILISATEUR.ATTENTE].includes(status)
-        return (
-          <Box display={["none", "block"]}>
-            <Menu>
-              {({ isOpen }) => (
-                <>
-                  <MenuButton isActive={isOpen} as={Button} variant="navdot" _hover={{ backgroundColor: "none" }}>
-                    <Icon as={Parametre} color="bluefrance.500" />
-                  </MenuButton>
-                  <MenuList>
-                    <MenuItem>
-                      <Link underline="hover" href={`/espace-pro/administration/users/${row._id}`} aria-label="voir les informations">
-                        Voir les informations
-                      </Link>
-                    </MenuItem>
-                    {canActivate && (
-                      <MenuItem>
-                        <Link
-                          underline="hover"
-                          component="button"
-                          onClick={() => {
-                            confirmationActivationUtilisateur.onOpen()
-                            setCurrentEntreprise(row)
-                          }}
-                        >
-                          Activer le compte
-                        </Link>
-                      </MenuItem>
-                    )}
-                    {canDeactivate && (
-                      <MenuItem>
-                        <Link
-                          underline="hover"
-                          component="button"
-                          onClick={() => {
-                            confirmationDesactivationUtilisateur.onOpen()
-                            setCurrentEntreprise(row)
-                          }}
-                        >
-                          Désactiver le compte
-                        </Link>
-                      </MenuItem>
-                    )}
-                  </MenuList>
-                </>
-              )}
-            </Menu>
-          </Box>
-        )
-      },
     },
   ]
 
