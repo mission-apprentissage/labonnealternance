@@ -38,7 +38,7 @@ export const Table = ({ data, columns }) => {
                 {headerGroups.map((headerGroup, g) => (
                   <Box key={g} as="tr" {...headerGroup.getHeaderGroupProps({})}>
                     {headerGroup.headers.map((column, i) => (
-                      <Box key={i} as="th" sx={column.isSticky ? stickyCssAttributes : {}} {...column.getHeaderProps(column.getSortByToggleProps())}>
+                      <Box key={i} as="th" {...column.getHeaderProps(column.getSortByToggleProps())}>
                         <Flex flexDirection="column" w="full" alignItems="flex-start" justify="center">
                           <Text className="fr-cell__title">
                             {column.render("Header")}
