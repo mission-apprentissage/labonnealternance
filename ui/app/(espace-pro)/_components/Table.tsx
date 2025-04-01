@@ -4,14 +4,6 @@ import { useFlexLayout, useSortBy, useTable } from "react-table"
 
 import { ArrowDownLine, ArrowUpLine } from "@/theme/components/icons"
 
-export const stickyCssAttributes = {
-  position: "sticky",
-  right: 0,
-  background: "white",
-  boxShadow: "-2px 0 5px rgba(0, 0, 0, 0.1)",
-  zIndex: 500,
-}
-
 export const Table = ({ data, columns }) => {
   const tableData = useMemo(() => data, [data])
   const tableColumns = useMemo(() => columns, [columns])
