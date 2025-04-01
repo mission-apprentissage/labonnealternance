@@ -119,8 +119,6 @@ export default function Authentification() {
           </Formik>
         </Box>
 
-        <Alerts />
-
         <Divider pb={0} />
 
         <Text fontSize="32px" as="h2" mb={1}>
