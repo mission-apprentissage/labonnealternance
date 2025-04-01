@@ -1,6 +1,5 @@
 "use client"
-import { Divider, Heading, Spinner, Stack, Text } from "@chakra-ui/react"
-import { fr } from "@codegouvfr/react-dsfr"
+import { Divider, Heading, Stack, Text } from "@chakra-ui/react"
 import { Alert } from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
@@ -34,7 +33,7 @@ export default function Authentification() {
         }, 4000)
       })
       .catch(({ context }) => {
-        switch (context.errorData) {
+        switch (context?.errorData) {
           case "DISABLED":
             setFieldError(
               "email",
@@ -67,14 +66,18 @@ export default function Authentification() {
   const Alerts = () => (
     <>
       {errorMessage && (
-        <Alert
-          severity="error"
-          title={errorMessage !== "Session invalidée" ? "Erreur de connexion" : "Veuillez vous reconnecter"}
-          description={errorMessage || "Session invalidée"}
-        />
+        <Box mb={2}>
+          <Alert
+            severity="error"
+            title={errorMessage !== "Session invalidée" ? "Erreur de connexion" : "Veuillez vous reconnecter"}
+            description={errorMessage || "Session invalidée"}
+          />
+        </Box>
       )}
       {magicLinkSent && !errorMessage && (
-        <Alert severity="success" title="Un lien de connexion a été envoyé" description="Vérifiez votre boite mail et cliquez sur le lien pour vous connecter" />
+        <Box mb={2}>
+          <Alert severity="success" title="Un lien de connexion a été envoyé" description="Vérifiez votre boite mail et cliquez sur le lien pour vous connecter" />
+        </Box>
       )}
     </>
   )
@@ -83,14 +86,12 @@ export default function Authentification() {
     <Box
       sx={{
         maxWidth: "md",
-        padding: fr.spacing("5w"),
         justifyContent: "center",
         alignContent: "center",
         margin: "auto",
       }}
     >
-      <Stack direction="column" spacing={7} bg="grey.150" p={["4", "8"]}>
-        <Alerts />
+      <Stack direction="column" bg="grey.150" p={["4", "8"]}>
         <Heading fontSize="32px" as="h2">
           Vous avez déjà un compte ?
         </Heading>
@@ -110,8 +111,9 @@ export default function Authentification() {
               return (
                 <Form autoComplete="off">
                   <CustomInput required={false} name="email" label="Votre email" type="text" value={values.email} />
+                  <Alerts />
                   <Button type="submit" disabled={!isValid || isSubmitting} iconId="fr-icon-arrow-right-line" iconPosition="right">
-                    {isSubmitting && <Spinner mr={2} />}Me connecter
+                    Me connecter
                   </Button>
                 </Form>
               )
@@ -119,11 +121,9 @@ export default function Authentification() {
           </Formik>
         </Box>
 
-        <Alerts />
+        <Divider mt={4} pb={0} />
 
-        <Divider pb={0} />
-
-        <Text fontSize="32px" as="h2" mb={1}>
+        <Text fontSize={24} mb={1}>
           Vous n'avez pas de compte ?
         </Text>
         <Button priority="secondary" type="button" onClick={() => router.push(PAGES.static.espaceProCreationEntreprise.getPath())}>
