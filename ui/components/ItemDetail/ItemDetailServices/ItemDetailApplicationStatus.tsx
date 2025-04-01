@@ -1,16 +1,17 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Typography } from "@mui/material"
+import { Typography } from "@mui/material"
 import { useMemo } from "react"
-import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 
 import { ILbaItem } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { localStorageGet } from "@/utils/localStorage"
 
 export default function ItemDetailApplicationsStatus({ item }: { item: ILbaItem }) {
-  const key = `application-${item.ideaType}-${item.id}`
-  const applicationDate = localStorageGet(key)
+  const key = `application-${newItemTypeToOldItemType(item.ideaType)}-${item.id}`
+  const oldKey = `application-${oldItemTypeToNewItemType(item.ideaType)}-${item.id}`
+  const applicationDate = localStorageGet(key) ?? localStorageGet(oldKey)
 
   const message = useMemo(() => {
     if (applicationDate == null) {
@@ -31,20 +32,18 @@ export default function ItemDetailApplicationsStatus({ item }: { item: ILbaItem 
   }
 
   return (
-    <Box mt={2}>
-      <Typography
-        component="span"
-        sx={{
-          backgroundColor: fr.colors.decisions.background.contrast.info.default,
-          color: fr.colors.decisions.background.actionHigh.info.default,
-          px: fr.spacing("1w"),
-          py: fr.spacing("1v"),
-          fontStyle: "italic",
-        }}
-        className={fr.cx("ri-history-line", "fr-icon--sm", "fr-text--xs")}
-      >
-        {message}
-      </Typography>
-    </Box>
+    <Typography
+      component="span"
+      sx={{
+        backgroundColor: fr.colors.decisions.background.contrast.info.default,
+        color: fr.colors.decisions.background.actionHigh.info.default,
+        px: fr.spacing("1w"),
+        // py: fr.spacing("1v"),
+        fontStyle: "italic",
+      }}
+      className={fr.cx("ri-history-line", "fr-icon--sm")}
+    >
+      {message}
+    </Typography>
   )
 }

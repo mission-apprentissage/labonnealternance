@@ -128,13 +128,13 @@ function JobDetail({ selectedItem, resultList, params }: WithRecherchePageParams
           {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
           {!isCollapsedHeader && <hr style={{ paddingBottom: "1px" }} />}
 
-          <Flex flexDirection={{ base: "column", sm: "row" }} justifyContent="space-between">
+          <Flex flexDirection={{ base: "column", sm: "row" }} justifyContent="space-between" gap={2} alignItems={{ sm: "left", md: "center" }}>
             <Box>
               {isCandidatureLba(selectedItem) && <CandidatureLba item={selectedItem as ILbaItemLbaJobJson | ILbaItemLbaCompanyJson} />}
               {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && !isCandidatureLba(selectedItem) && <NoCandidatureLba />}
               {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && <PartnerJobPostuler isCollapsedHeader={isCollapsedHeader} job={selectedItem} />}
             </Box>
-            <Box pt={{ base: 0, sm: 4 }}>
+            <Box>
               <ShareLink item={selectedItem} />
             </Box>
           </Flex>
