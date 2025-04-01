@@ -5,10 +5,10 @@ import { SideMenu } from "@codegouvfr/react-dsfr/SideMenu"
 import Tabs from "@codegouvfr/react-dsfr/Tabs"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
+import { useUrlHash } from "@/app/hooks/useUrlHash"
 import RessourcesCandidat from "@/components/Ressources/ressourcesCandidat"
 import RessourcesCFA from "@/components/Ressources/ressourcesCFA"
 import RessourcesRecruteur from "@/components/Ressources/ressourcesRecruteur"
-import { useUrlHash } from "@/utils/useUrlHash"
 
 import { PAGES } from "../../../utils/routes.utils"
 import { Breadcrumb } from "../../_components/Breadcrumb"

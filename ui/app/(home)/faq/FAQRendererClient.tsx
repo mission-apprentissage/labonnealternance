@@ -4,9 +4,9 @@ import { Tabs } from "@codegouvfr/react-dsfr/Tabs"
 import dynamic from "next/dynamic"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import { useUrlHash } from "@/app/hooks/useUrlHash"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
-import { useUrlHash } from "@/utils/useUrlHash"
 
 const NotionRenderer = dynamic(() => import("react-notion-x").then((mod) => mod.NotionRenderer), { ssr: false })
 
