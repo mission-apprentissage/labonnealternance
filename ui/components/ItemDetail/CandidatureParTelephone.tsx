@@ -9,10 +9,10 @@ export default function CandidatureParTelephone({
   contactName,
   urlPostulation,
 }: {
-  companyName: string
-  contactPhone: string
-  contactName: string
-  urlPostulation?: string
+  companyName: string | null
+  contactPhone: string | null
+  contactName: string | null
+  urlPostulation?: string | null
 }) {
   const { isOpen, onClose, onOpen } = useDisclosure()
   return (

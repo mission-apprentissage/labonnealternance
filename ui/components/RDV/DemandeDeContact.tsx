@@ -25,10 +25,10 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
-import emailMisspelled, { top100 } from "email-misspelled"
+import emailMisspelled, { Result, top100 } from "email-misspelled"
 import { useFormik } from "formik"
 import { useEffect, useState } from "react"
-import { EReasonsKey } from "shared"
+import { EReasonsKey, type IAppointmentShortRecapJson } from "shared"
 import { EApplicantType } from "shared/constants/rdva"
 import * as Yup from "yup"
 
@@ -49,16 +49,60 @@ type Props = {
   isCollapsedHeader?: boolean
 }
 
+const FormConfirmed = ({ onSuccessSubmitResponse }: { onSuccessSubmitResponse: IAppointmentShortRecapJson }) => (
+  <Box mt={2}>
+    <Flex alignItems="center">
+      <Image mr={2} src="/images/paperplane2.svg" aria-hidden={true} alt="" />
+      <Text mb={2} as="h1" fontWeight={700} fontSize="20px" data-testid="DemandeDeContactConfirmationTitle">
+        Voilà une bonne chose de faite {onSuccessSubmitResponse.user.firstname} {onSuccessSubmitResponse.user.lastname} !
+      </Text>
+    </Flex>
+    <Box mt={6}>
+      <Text fontWeight="700" color="grey.750">
+        {onSuccessSubmitResponse.formation.etablissement_formateur_raison_sociale.toUpperCase()} pourra donc vous contacter au{" "}
+        <Text color="bluefrance.500" as="span">
+          {onSuccessSubmitResponse.user.phone.match(/.{1,2}/g).join(".")}
+        </Text>{" "}
+        ou sur{" "}
+        <Text color="bluefrance.500" as="span">
+          {onSuccessSubmitResponse.user.email}
+        </Text>{" "}
+        pour répondre à vos questions.
+      </Text>
+      <Text mt={6}>Vous allez recevoir un email de confirmation de votre demande de contact sur votre adresse email.</Text>
+    </Box>
+    <Flex bg="#F9F8F6" mt="32px">
+      <Box w="100px" px="40px" py="16px">
+        <BarberGuy w="34px" h="38px" />
+      </Box>
+      <Box mt="12px" pb="24px" pr="10px">
+        <Text fontSize="20px" fontWeight="700" mt="6px">
+          Psst, nous avons une{" "}
+          <Box as="span" color="bluefrance.500">
+            info pour vous !
+          </Box>
+        </Text>
+        <Text fontSize="16px" mt="12px">
+          <b>Pour préparer votre premier contact avec le centre formation,</b> répondez à notre quiz{" "}
+          <DsfrLink href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987" aria-label="Prendre contact avec une école - nouvelle fenêtre">
+            Prendre contact avec une école
+          </DsfrLink>
+        </Text>
+      </Box>
+    </Flex>
+  </Box>
+)
+
 /**
  * "Demande de contact" modal.
  */
 const DemandeDeContact = (props: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const [suggestedEmails, setSuggestedEmails] = useState([])
+  const [suggestedEmails, setSuggestedEmails] = useState<Result[]>([])
   const [applicantReasons, setApplicantReasons] = useState<typeof reasons>(reasons)
   const [showApplicantReasonError, setShowApplicantReasonError] = useState(false)
   const [applicantType, setApplicantType] = useState<EApplicantType>(EApplicantType.ETUDIANT)
-  const [onSuccessSubmitResponse, setOnSuccessSubmitResponse] = useState(null)
+  const [onSuccessSubmitResponse, setOnSuccessSubmitResponse] = useState<IAppointmentShortRecapJson | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const { setLocalStorage } = useLocalStorage(`application-formation-${props.context.cle_ministere_educatif}`)
@@ -356,50 +400,6 @@ const DemandeDeContact = (props: Props) => {
     </form>
   )
 
-  const FormConfirmed = () => (
-    <Box mt={2}>
-      <Flex alignItems="center">
-        <Image mr={2} src="/images/paperplane2.svg" aria-hidden={true} alt="" />
-        <Text mb={2} as="h1" fontWeight={700} fontSize="20px" data-testid="DemandeDeContactConfirmationTitle">
-          Voilà une bonne chose de faite {onSuccessSubmitResponse.user.firstname} {onSuccessSubmitResponse.user.lastname} !
-        </Text>
-      </Flex>
-      <Box mt={6}>
-        <Text fontWeight="700" color="grey.750">
-          {onSuccessSubmitResponse.formation.etablissement_formateur_raison_sociale.toUpperCase()} pourra donc vous contacter au{" "}
-          <Text color="bluefrance.500" as="span">
-            {onSuccessSubmitResponse.user.phone.match(/.{1,2}/g).join(".")}
-          </Text>{" "}
-          ou sur{" "}
-          <Text color="bluefrance.500" as="span">
-            {onSuccessSubmitResponse.user.email}
-          </Text>{" "}
-          pour répondre à vos questions.
-        </Text>
-        <Text mt={6}>Vous allez recevoir un email de confirmation de votre demande de contact sur votre adresse email.</Text>
-      </Box>
-      <Flex bg="#F9F8F6" mt="32px">
-        <Box w="100px" px="40px" py="16px">
-          <BarberGuy w="34px" h="38px" />
-        </Box>
-        <Box mt="12px" pb="24px" pr="10px">
-          <Text fontSize="20px" fontWeight="700" mt="6px">
-            Psst, nous avons une{" "}
-            <Box as="span" color="bluefrance.500">
-              info pour vous !
-            </Box>
-          </Text>
-          <Text fontSize="16px" mt="12px">
-            <b>Pour préparer votre premier contact avec le centre formation,</b> répondez à notre quiz{" "}
-            <DsfrLink href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987" aria-label="Prendre contact avec une école - nouvelle fenêtre">
-              Prendre contact avec une école
-            </DsfrLink>
-          </Text>
-        </Box>
-      </Flex>
-    </Box>
-  )
-
   return props.showInModal ? (
     <Box data-testid="DemandeDeContact">
       <Box>
@@ -415,7 +415,7 @@ const DemandeDeContact = (props: Props) => {
               </ModalHeader>
               <ModalBody data-testid="modalbody-contact-confirmation" mx={onSuccessSubmitResponse ? [0, 0, 12, 12] : [0, 0, 4, 4]}>
                 {onSuccessSubmitResponse ? (
-                  <FormConfirmed />
+                  <FormConfirmed onSuccessSubmitResponse={onSuccessSubmitResponse} />
                 ) : (
                   <>
                     <Text as="h1" fontWeight={700} fontSize="24px" data-testid="DemandeDeContactFormTitle" mb={4}>
@@ -431,7 +431,7 @@ const DemandeDeContact = (props: Props) => {
       </Box>
     </Box>
   ) : (
-    <Box>{onSuccessSubmitResponse ? <FormConfirmed /> : <FormElement />}</Box>
+    <Box>{onSuccessSubmitResponse ? <FormConfirmed onSuccessSubmitResponse={onSuccessSubmitResponse} /> : <FormElement />}</Box>
   )
 }
 
