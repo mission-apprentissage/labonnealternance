@@ -67,7 +67,7 @@ export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeCo
               darkMode={false}
               disableHeader={true}
               rootDomain={publicConfig.baseUrl}
-              className="disable-chakra"
+              className="notion-body"
             />
             <Box>
               La bonne alternance utilise la solution de mesure d'audience <DsfrLink href="https://matomo.org/">Matomo</DsfrLink> en l'ayant configuré en mode « exempté »,

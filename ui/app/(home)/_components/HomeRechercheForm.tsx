@@ -9,7 +9,7 @@ import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/
 import { RechercheForm, type RechercheFormProps } from "@/app/_components/RechercheForm/RechercheForm"
 import { RechercheFormTitle } from "@/app/_components/RechercheForm/RechercheFormTitle"
 
-export function HomeRechercheFormUI(props: Pick<RechercheFormProps, "onSubmit">) {
+function HomeRechercheFormUI(props: Pick<RechercheFormProps, "onSubmit">) {
   return (
     <Box
       sx={{
@@ -18,7 +18,7 @@ export function HomeRechercheFormUI(props: Pick<RechercheFormProps, "onSubmit">)
         display: "flex",
         flexDirection: "column",
         gap: fr.spacing("2w"),
-        borderRadius: fr.spacing("1w"),
+        borderRadius: { xs: 0, lg: fr.spacing("1w") },
         boxShadow: "0px 2px 6px 0px #00001229",
       }}
     >

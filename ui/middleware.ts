@@ -105,7 +105,15 @@ export async function middleware(request: NextRequest) {
   })
 }
 
-const excludedStartPaths = ["/espace-pro/authentification/validation/", "/espace-pro/widget/", "/espace-pro/creation/", "/espace-pro/offre/impression/"]
+const excludedStartPaths = [
+  "/espace-pro/authentification/validation/",
+  "/espace-pro/authentification/en-attente",
+  "/espace-pro/authentification/confirmation",
+  "/espace-pro/authentification/optout/verification",
+  "/espace-pro/widget/",
+  "/espace-pro/creation/",
+  "/espace-pro/offre/impression/",
+]
 const isConnectionRequired = (path: string) => {
   if (!path.startsWith("/espace-pro/")) {
     return false

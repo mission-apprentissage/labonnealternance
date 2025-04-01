@@ -1,5 +1,6 @@
 "use client"
 import { Box, Flex, Image, Text } from "@chakra-ui/react"
+import { Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "next/dist/client/components/navigation"
 import { useRouter } from "next/navigation"
@@ -61,11 +62,6 @@ export default function TrainingDetailRendererClient({ training, params }: WithR
     return null
   }, [training.type, training.id])
 
-  if (result.status !== "success") {
-    // TODO: handle error
-    return null
-  }
-
   if (params?.displayMap) {
     return (
       <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", height: "100vh", overflow: "hidden" }}>
@@ -73,7 +69,7 @@ export default function TrainingDetailRendererClient({ training, params }: WithR
           selectedItem={training}
           priseDeRendezVous={appliedDate ? false : training.training.elligibleForAppointment}
           appliedDate={appliedDate}
-          resultList={result.items}
+          resultList={result.status === "success" ? result.items : []}
           params={params}
         />
         {/* TODO : remove extended search button from map view */}
@@ -87,7 +83,7 @@ export default function TrainingDetailRendererClient({ training, params }: WithR
       selectedItem={training}
       priseDeRendezVous={appliedDate ? false : training.training.elligibleForAppointment}
       appliedDate={appliedDate}
-      resultList={result.items}
+      resultList={result.status === "success" ? result.items : []}
       params={params}
     />
   )
@@ -119,18 +115,6 @@ function TrainingDetailPage({
     cle_ministere_educatif: selectedItem.id,
     etablissement_formateur_entreprise_raison_sociale: selectedItem.company.name,
   }
-
-  // const { activeFilters } = useContext(DisplayContext)
-
-  // useEffect(() => {
-  //   try {
-  //     filterLayers(activeFilters)
-  //   } catch (err) {
-  //     //notice: gère des erreurs qui se présentent à l'initialisation de la page quand mapbox n'est pas prêt.
-  //   }
-  //   /* eslint react-hooks/exhaustive-deps: 0 */
-  //   /* @ts-expect-error: à cracker */
-  // }, [selectedItem?.id, selectedItem?.company?.siret, selectedItem?.job?.id])
 
   const [isCollapsedHeader, setIsCollapsedHeader] = useState(false)
   const maxScroll = 100
@@ -181,7 +165,7 @@ function TrainingDetailPage({
             {getNavigationButtons({ goPrev, goNext, handleClose })}
           </Flex>
 
-          <Text as="p" textAlign="left" color="grey.600" mt={isCollapsedHeader ? 1 : 4} mb={isCollapsedHeader ? 1 : 3} fontWeight={700} fontSize="1rem">
+          <Text as="p" textAlign="left" color="grey.600" mt={isCollapsedHeader ? 1 : 1} mb={isCollapsedHeader ? 1 : 1} fontWeight={700} fontSize="1rem">
             <Text as="span">{`${selectedItem?.company?.name || ""} (${selectedItem.company.place.city})`}</Text>
             <Text as="span" fontWeight={400}>
               &nbsp;propose cette formation
@@ -208,17 +192,19 @@ function TrainingDetailPage({
 
           {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
 
-          {!isCollapsedHeader && <hr />}
+          {!isCollapsedHeader && <hr style={{ paddingBottom: "1px" }} />}
 
-          <Flex flexDirection={{ base: "column", sm: "row" }} alignItems="center">
+          <Flex flexDirection={{ base: "column", sm: "row" }} alignItems={{ sm: "leftn", md: "center" }}>
             <Box flex={1}>
               {appliedDate ? (
-                <Text color="grey.600" as="span" px={2} py={1} backgroundColor="#FEF7DA">
-                  <Text as="span">👍 </Text>
-                  <Text as="span" fontStyle="italic">
-                    Super, vous avez déjà pris contact le {appliedDate}.
+                <Box my={4}>
+                  <Text color="grey.600" as="span" px={2} py={1} backgroundColor="#FEF7DA">
+                    <Text as="span">👍 </Text>
+                    <Text as="span" fontStyle="italic">
+                      Super, vous avez déjà pris contact le {appliedDate}.
+                    </Text>
                   </Text>
-                </Text>
+                </Box>
               ) : (
                 priseDeRendezVous && <DemandeDeContact isCollapsedHeader={isCollapsedHeader} context={contextPRDV} referrer="LBA" showInModal />
               )}
@@ -379,9 +365,7 @@ const TrainingDescriptionDetails = ({ training }) => {
         <Flex alignItems="flex-start" mt={5}>
           <Image src="/images/icons/traning-clipboard-list.svg" alt="" />
           <Box pl={4} whiteSpace="pre-wrap">
-            <Text as="h3" mt="0" mb={4} fontWeight={700} color="grey.700">
-              Description de la formation
-            </Text>
+            <Typography sx={{ fontWeight: "700" }}>Description de la formation</Typography>
             <Text as="span" sx={dontBreakOutCssParameters}>
               {training.description}
             </Text>
@@ -392,9 +376,7 @@ const TrainingDescriptionDetails = ({ training }) => {
         <Flex alignItems="flex-start" mt={5}>
           <Image mt={1} src="/images/icons/training-target.svg" alt="" />
           <Box pl={4} whiteSpace="pre-wrap">
-            <Text as="h3" mt="0" mb={4} fontWeight={700} color="grey.700">
-              Objectifs
-            </Text>
+            <Typography sx={{ fontWeight: "700" }}>Objectifs</Typography>
             <Text as="span" sx={dontBreakOutCssParameters}>
               {training.objectif}
             </Text>
@@ -405,9 +387,7 @@ const TrainingDescriptionDetails = ({ training }) => {
         <Flex alignItems="flex-start" mt={5}>
           <Image src="/images/icons/training-academic-cap.svg" alt="" />
           <Box pl={4} whiteSpace="pre-wrap">
-            <Text as="h3" mt="0" mb={4} fontWeight={700} color="grey.700">
-              Sessions de formation
-            </Text>
+            <Typography sx={{ fontWeight: "700" }}>Sessions de formation</Typography>
             {training["sessions"][0].isPermanentEntry
               ? "Il est possible de s’inscrire à cette formation tout au long de l’année."
               : training["sessions"].map((session, i) => (

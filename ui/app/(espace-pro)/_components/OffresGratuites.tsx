@@ -1,6 +1,6 @@
 import { Box, Grid, GridItem, Image, Text } from "@chakra-ui/react"
 
-import { DsfrLink } from "../../../components/dsfr/DsfrLink"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 export const OffresGratuites = () => (
   <Grid templateColumns={{ base: "1fr", md: "repeat(12, 1fr)" }} gap={4} mb={{ base: 4, md: 0 }}>

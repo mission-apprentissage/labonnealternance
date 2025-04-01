@@ -1,7 +1,7 @@
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 import { zObjectId } from "../models/common.js"
-import { ZEligibleTrainingsForAppointmentSchema } from "../models/elligibleTraining.model.js"
+import { ZEligibleTrainingsForAppointmentSchema, ZETFAParameters } from "../models/elligibleTraining.model.js"
 
 import { IRoutesDef } from "./common.routes.js"
 
@@ -12,7 +12,7 @@ export const zEligibleTrainingsForAppointmentRoutes = {
       path: "/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret",
       params: z.object({ siret: extensions.siret }).strict(),
       response: {
-        "200": z.object({ parameters: z.array(ZEligibleTrainingsForAppointmentSchema) }).strict(),
+        "200": ZETFAParameters,
       },
       securityScheme: {
         auth: "cookie-session",

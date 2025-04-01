@@ -1,10 +1,10 @@
 import { Box, Heading, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 
-import ModalCloseButton from "@/app/(espace-pro)/_components/ModalCloseButton"
+import ModalCloseButton from "@/app/_components/ModalCloseButton"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 
-export const ConfirmationActivationUtilsateur = (props) => {
+const ConfirmationActivationUtilsateur = (props) => {
   const { isOpen, onClose, establishment_raison_social, _id } = props
   const { activate } = useUserPermissionsActions(_id)
 

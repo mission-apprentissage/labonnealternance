@@ -2,6 +2,7 @@ import { groupData, oleoduc, writeData } from "oleoduc"
 import { IFTJobRaw } from "shared"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import config from "@/config"
 
 import { logger } from "../../../common/logger"
 import { notifyToSlack } from "../../../common/utils/slackUtils"
@@ -79,6 +80,7 @@ function mapDocument(rawFTDocuments: IFTJobRaw[]) {
 }
 
 export const classifyFranceTravailJobs = async () => {
+  if (config.env !== "production") return
   const rawFTDocumentsVerified = await getDbCollection("raw_francetravail")
     .find({ "_metadata.openai.human_verification": { $exists: true } })
     .limit(40) // HARD LIMIT FOR FREE MISTRAL MODEL

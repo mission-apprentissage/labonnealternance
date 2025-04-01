@@ -8,6 +8,7 @@ import { PAGES } from "@/utils/routes.utils"
 export enum EAdminPages {
   GESTION_RECRUTEURS = "GESTION_RECRUTEURS",
   ENTREPRISES_ALGO = "ENTREPRISES_ALGO",
+  RECHERCHE_RENDEZ_VOUS = "RECHERCHE_RENDEZ_VOUS",
   GESTION_ADMINISTRATEURS = "GESTION_ADMINISTRATEURS",
 }
 
@@ -41,6 +42,10 @@ const pageDefs = [
     path: PAGES.static.backAdminGestionDesEntreprises.getPath(),
   },
   {
+    page: EAdminPages.RECHERCHE_RENDEZ_VOUS,
+    path: PAGES.static.rendezVousApprentissageRecherche.getPath(),
+  },
+  {
     page: EAdminPages.GESTION_ADMINISTRATEURS,
     path: PAGES.static.backAdminGestionDesAdministrateurs.getPath(),
   },
@@ -68,11 +73,14 @@ const NavigationAdmin = ({ currentPage }: { currentPage: EAdminPages }) => {
       <Container as="header" maxW="container.xl" flexGrow="1">
         <Tabs variant="unstyled" index={selectedIndex} onChange={handleTabsChange}>
           <TabList px={0}>
-            <Tab data-testid="recruiter_management_tab" {...tabParams} isDisabled={selectedIndex === 0} _focus={focusedTabParams} _selected={selectedTabParams}>
+            <Tab data-testid="recruiter_management_tab" {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>
               Gestion des recruteurs
             </Tab>
-            <Tab data-testid="algo_company_tab" {...tabParams} isDisabled={selectedIndex === 1} _focus={focusedTabParams} _selected={selectedTabParams}>
+            <Tab data-testid="algo_company_tab" {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>
               Entreprises de l'algorithme
+            </Tab>
+            <Tab data-testid="recherche_rendez_vous_apprentissage_tab" {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>
+              Rendez-vous apprentissage
             </Tab>
             <Tab data-testid="administrator_management_tab" {...tabParams} isDisabled={selectedIndex === 2} _focus={focusedTabParams} _selected={selectedTabParams}>
               Gestion des administrateurs

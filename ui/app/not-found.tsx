@@ -1,17 +1,19 @@
 "use client"
 
-import Error from "next/error"
+import { Box, Container } from "@mui/material"
 
-// Render the default Next.js 404 page when a route
-// is requested that doesn't match the middleware and
-// therefore doesn't have a locale associated with it.
+import { PublicHeader } from "@/app/(espace-pro)/_components/PublicHeader"
+import { Footer } from "@/app/_components/Footer"
+import NotFound from "@/app/_components/NotFound"
 
-export default function NotFound() {
+export default function yo() {
   return (
-    <html lang="en">
-      <body>
-        <Error statusCode={404} />
-      </body>
-    </html>
+    <Box sx={{ minHeight: "100vh", display: "grid", gridTemplateRows: "max-content 1fr min-content" }}>
+      <PublicHeader user={null} hideConnectionButton={true} />
+      <Container maxWidth="xl">
+        <NotFound />
+      </Container>
+      <Footer />
+    </Box>
   )
 }

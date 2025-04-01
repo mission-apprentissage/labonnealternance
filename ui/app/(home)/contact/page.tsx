@@ -29,9 +29,9 @@ export default function Contact() {
                 Nous contacter
               </Text>
               <Text as="p">Vous avez une question sur nos outils ? Consultez notre foire aux questions. </Text>
-              <Flex justify="center" my={12}>
-                <Button priority="secondary" aria-label="Accès à la Foire aux questions">
-                  <DsfrLink href="/faq">Consulter la FAQ</DsfrLink>
+              <Flex justify="center" my={8}>
+                <Button priority="secondary" aria-label="Accès à la Foire aux questions" size="large">
+                  <DsfrLink href={PAGES.static.faq.getPath()}>Consulter la FAQ</DsfrLink>
                 </Button>
               </Flex>
               <Text as="p" mb={4}>

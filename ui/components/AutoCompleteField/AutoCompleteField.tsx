@@ -289,5 +289,3 @@ export const AutoCompleteField = ({
     </Box>
   )
 }
-
-export default AutoCompleteField

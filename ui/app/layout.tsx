@@ -25,16 +25,7 @@ export const metadata: Metadata = {
   description: "Trouvez votre alternance",
   metadataBase: new URL(publicConfig.baseUrl),
   manifest: "/favicon/site.webmanifest",
-  icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
-    apple: "/favicon/apple-touch-icon.png",
-    other: {
-      rel: "icon",
-      url: "/favicon/favicon.svg",
-      type: "image/svg+xml",
-    },
-  },
+  icons: { icon: "/favicon.ico", shortcut: "/favicon.ico", apple: "/favicon/apple-touch-icon.png", other: { rel: "icon", url: "/favicon/favicon.svg", type: "image/svg+xml" } },
   openGraph: {
     title: "La bonne alternance",
     type: "website",
@@ -45,9 +36,11 @@ export const metadata: Metadata = {
 
 setupZodErrorMap()
 
+const lang = "fr"
+
 export default function RootLayout({ children }: { children: JSX.Element }) {
   return (
-    <html {...getHtmlAttributes({ defaultColorScheme })}>
+    <html {...getHtmlAttributes({ defaultColorScheme, lang })}>
       <head>
         <StartDsfr />
         <DsfrHead
@@ -71,7 +64,7 @@ export default function RootLayout({ children }: { children: JSX.Element }) {
       <body>
         {
           <AppRouterCacheProvider>
-            <DsfrProvider>
+            <DsfrProvider lang={lang} defaultColorScheme={defaultColorScheme} Link={Link}>
               <RootTemplate>{children}</RootTemplate>
             </DsfrProvider>
           </AppRouterCacheProvider>

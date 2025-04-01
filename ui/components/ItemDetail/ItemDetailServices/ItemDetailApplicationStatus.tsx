@@ -1,17 +1,12 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import { Typography } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import { useMemo } from "react"
-import { ILbaItemFormationJson, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { ILbaItem } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { localStorageGet } from "@/utils/localStorage"
-
-export const hasApplied = (item: ILbaItemFormationJson | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemFtJobJson | ILbaItemPartnerJobJson) => {
-  return localStorage.getItem(`application-${item.ideaType}-${item.id}`) !== null
-}
 
 export default function ItemDetailApplicationsStatus({ item }: { item: ILbaItem }) {
   const key = `application-${item.ideaType}-${item.id}`
@@ -36,18 +31,20 @@ export default function ItemDetailApplicationsStatus({ item }: { item: ILbaItem 
   }
 
   return (
-    <Typography
-      component="span"
-      sx={{
-        backgroundColor: fr.colors.decisions.background.contrast.info.default,
-        color: fr.colors.decisions.background.actionHigh.info.default,
-        px: fr.spacing("1w"),
-        py: fr.spacing("1v"),
-        fontStyle: "italic",
-      }}
-      className={fr.cx("ri-history-line", "fr-icon--sm", "fr-text--xs")}
-    >
-      {message}
-    </Typography>
+    <Box mt={2}>
+      <Typography
+        component="span"
+        sx={{
+          backgroundColor: fr.colors.decisions.background.contrast.info.default,
+          color: fr.colors.decisions.background.actionHigh.info.default,
+          px: fr.spacing("1w"),
+          py: fr.spacing("1v"),
+          fontStyle: "italic",
+        }}
+        className={fr.cx("ri-history-line", "fr-icon--sm", "fr-text--xs")}
+      >
+        {message}
+      </Typography>
+    </Box>
   )
 }

@@ -141,9 +141,7 @@ const getAppointmentContext = async (
     localite: eligibleTrainingsForAppointment.lieu_formation_city,
     id_rco_formation: eligibleTrainingsForAppointment.rco_formation_id,
     cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
-    form_url: `${config.publicUrl}/espace-pro/form?referrer=${referrerName.toLowerCase()}&cleMinistereEducatif=${encodeURIComponent(
-      eligibleTrainingsForAppointment.cle_ministere_educatif
-    )}`,
+    form_url: `${config.publicUrl}/rdva?referrer=${referrerName.toLowerCase()}&cleMinistereEducatif=${encodeURIComponent(eligibleTrainingsForAppointment.cle_ministere_educatif)}`,
   }
 }
 
@@ -185,7 +183,7 @@ export const findElligibleTrainingForAppointmentV2 = async (context: IAppointmen
     cfd: eligibleTrainingsForAppointment.training_code_formation_diplome,
     localite: eligibleTrainingsForAppointment.lieu_formation_city,
     cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
-    form_url: `${config.publicUrl}/espace-pro/form?referrer=${referrerObj.name.toLowerCase()}&cleMinistereEducatif=${encodeURIComponent(
+    form_url: `${config.publicUrl}/rdva?referrer=${referrerObj.name.toLowerCase()}&cleMinistereEducatif=${encodeURIComponent(
       eligibleTrainingsForAppointment.cle_ministere_educatif
     )}`,
   }
@@ -218,7 +216,7 @@ export const findElligibleTrainingForAppointmentPrivate = async (referrer: strin
     cfd: eligibleTrainingsForAppointment.training_code_formation_diplome,
     localite: eligibleTrainingsForAppointment.lieu_formation_city,
     cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
-    form_url: `${config.publicUrl}/espace-pro/form?referrer=${referrerObj.name.toLowerCase()}&cleMinistereEducatif=${encodeURIComponent(
+    form_url: `${config.publicUrl}/rdva?referrer=${referrerObj.name.toLowerCase()}&cleMinistereEducatif=${encodeURIComponent(
       eligibleTrainingsForAppointment.cle_ministere_educatif
     )}`,
   }

@@ -1,5 +1,3 @@
-const rootFontSizePx = 16
-
 const colors = {
   white: "#ffffff",
   beige: "#f9f8f6",
@@ -154,82 +152,9 @@ const colors = {
   },
 }
 
-const fontSizes = {
-  giga: "4.75rem",
-  mega: "3.375rem",
-  alpha: "2.25rem",
-  beta: "1.75rem",
-  gamma: "1.25rem",
-  delta: "1.125rem",
-  epsilon: "1rem",
-  zeta: "0.875rem",
-  omega: "0.75rem",
-  caption: "0.6875rem",
-  legal: "0.625rem",
-}
-
-const textStyles = {
-  h2: {
-    fontSize: ["1.75rem", "2rem"],
-    lineHeight: ["2.25rem", "2.5rem"],
-    fontWeight: "700",
-  },
-  h4: {
-    fontSize: ["1.375rem", "1.5rem"],
-    lineHeight: ["1.75rem", "2rem"],
-  },
-  h6: {
-    fontSize: ["1.125rem", "1.25rem"],
-    lineHeight: ["1.5rem", "1.75rem"],
-  },
-  "rf-text": {
-    fontSize: ["1rem"],
-    lineHeight: "1.5rem",
-    fontWeight: "400",
-  },
-  sm: {
-    fontSize: ["0.875rem"],
-    lineHeight: "1.5rem",
-    fontWeight: "400",
-  },
-  xs: {
-    fontSize: ["0.75rem"],
-    lineHeight: "1.35rem",
-    fontWeight: "400",
-  },
-}
-
 const fonts = {
   body: "Marianne, Arial",
   heading: "Marianne, Arial",
 }
 
-const styles = {
-  global: {
-    "html, body": {
-      fontSize: `${rootFontSizePx}px`,
-      fontFamily: "Marianne, Arial",
-      background: "white",
-      color: "bluefrance",
-    },
-  },
-}
-
-const space = {
-  0: "0",
-  "1v": `${4 / rootFontSizePx}rem`,
-  "1w": `${8 / rootFontSizePx}rem`,
-  "3v": `${12 / rootFontSizePx}rem`,
-  "2w": `${16 / rootFontSizePx}rem`,
-  "3w": `${24 / rootFontSizePx}rem`,
-  "4w": `${32 / rootFontSizePx}rem`,
-  "5w": `${40 / rootFontSizePx}rem`,
-  "6w": `${48 / rootFontSizePx}rem`,
-  "7w": `${56 / rootFontSizePx}rem`,
-  "8w": `${64 / rootFontSizePx}rem`,
-  "9w": `${72 / rootFontSizePx}rem`,
-  "12w": `${96 / rootFontSizePx}rem`,
-  "15w": `${120 / rootFontSizePx}rem`,
-}
-
-export { fonts, colors, styles, fontSizes, space, rootFontSizePx, textStyles }
+export { fonts, colors }

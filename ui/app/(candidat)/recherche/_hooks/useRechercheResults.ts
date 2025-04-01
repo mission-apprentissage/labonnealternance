@@ -181,18 +181,16 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
 
     if (jobQuery.data.matchas && "results" in jobQuery.data.matchas) {
       result.push(
-        ...jobQuery.data.matchas.results
-          // @ts-ignore TODO
-          .filter((job: ILbaItemLbaJob) => {
+        ...[
+          ...(jobQuery.data.matchas.results as any[]).filter((job: ILbaItemLbaJob) => {
             if (job.company.mandataire) {
               return params.displayPartenariats
             }
             return params.displayEntreprises
-          })
-          // @ts-ignore TODO
-          .toSorted((a: ILbaItemLbaJob, b: ILbaItemLbaJob) => {
-            return a.place.distance - b.place.distance
-          })
+          }),
+        ].sort((a: ILbaItemLbaJob, b: ILbaItemLbaJob) => {
+          return a.place.distance - b.place.distance
+        })
       )
     }
 
@@ -202,8 +200,7 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
 
     if (jobQuery.data.partnerJobs && "results" in jobQuery.data.partnerJobs) {
       result.push(
-        // @ts-ignore TODO
-        ...jobQuery.data.partnerJobs.results.toSorted((a: ILbaItemPartnerJob, b: ILbaItemPartnerJob) => {
+        ...[...(jobQuery.data.partnerJobs.results as any)].sort((a: ILbaItemPartnerJob, b: ILbaItemPartnerJob) => {
           return a.place.distance - b.place.distance
         })
       )

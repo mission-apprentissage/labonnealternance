@@ -142,17 +142,17 @@ function RechercheFormButton(props: { disabled: boolean; hasError: boolean; type
     whiteSpace: "nowrap",
     py: {
       xs: fr.spacing("2w"),
-      lg: "1px",
+      [type === "home" ? "lg" : "md"]: "1px",
     },
     alignSelf: !hasError ? "end" : "center",
     '& button[type="submit"]': {
       justifyContent: {
         xs: "center",
-        lg: "start",
+        [type === "home" ? "lg" : "md"]: "start",
       },
       width: {
         xs: "100%",
-        lg: "auto",
+        [type === "home" ? "lg" : "md"]: "auto",
       },
     },
   }
@@ -166,7 +166,7 @@ function RechercheFormButton(props: { disabled: boolean; hasError: boolean; type
               ? "block"
               : {
                   xs: "block",
-                  lg: "none",
+                  md: "none",
                 },
           ...buttonContainerSx,
         }}
@@ -180,7 +180,7 @@ function RechercheFormButton(props: { disabled: boolean; hasError: boolean; type
           sx={{
             display: {
               xs: "none",
-              lg: "block",
+              md: "block",
             },
             ...buttonContainerSx,
           }}
@@ -211,10 +211,18 @@ function RechercheFormComponent(props: FormikProps<IFormType>) {
         gap: fr.spacing("2w"),
         alignItems: "baseline",
         display: "grid",
-        gridTemplateColumns: {
-          xs: "1fr",
-          lg: "1fr 1fr min-content 1fr min-content",
-        },
+        gridTemplateColumns:
+          type === "home"
+            ? {
+                xs: "1fr",
+                lg: "minmax(180px, 1fr) minmax(min-content, 1fr) min-content minmax(min-content, 1fr) min-content",
+                xl: "minmax(310px, 1fr) minmax(210px, 1fr) min-content 1fr min-content",
+              }
+            : {
+                xs: "1fr",
+                md: "minmax(min-content, 1fr) minmax(min-content, 1fr) min-content minmax(min-content, 1fr) min-content",
+                lg: "minmax(310px, 1fr) minmax(210px, 1fr) min-content 1fr min-content",
+              },
       }}
     >
       <AutocompleteAsync
@@ -243,7 +251,7 @@ function RechercheFormComponent(props: FormikProps<IFormType>) {
         sx={{
           width: {
             xs: "100%",
-            lg: "120px",
+            [type === "home" ? "lg" : "md"]: "120px",
           },
         }}
       >
@@ -262,6 +270,7 @@ function RechercheFormComponent(props: FormikProps<IFormType>) {
         label="Niveau d'études visé"
         style={{
           marginBottom: 0,
+          textWrap: "nowrap",
         }}
         options={niveauOptions.map((option) => ({ ...option, selected: option.value === props.values.niveau }))}
         disabled={!isEnabled}
@@ -280,7 +289,7 @@ export function RechercheForm(props: RechercheFormProps) {
         props.initialValue?.romes == null
           ? null
           : {
-              label: props.initialValue.job_name ?? "",
+              label: (props.initialValue.job_name && decodeURIComponent(props.initialValue.job_name)) ?? "",
               romes: props.initialValue.romes,
               type: props.initialValue.job_type ?? "job",
             },
@@ -306,6 +315,7 @@ export function RechercheForm(props: RechercheFormProps) {
         initialValues={initialValues}
         enableReinitialize
         validate={validate}
+        validateOnBlur={false}
         onSubmit={async (values) => {
           await props?.onSubmit({
             romes: values.metier.romes,

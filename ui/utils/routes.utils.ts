@@ -1,11 +1,10 @@
-import type { Metadata, MetadataRoute } from "next"
+import type { Metadata } from "next"
 import { assertUnreachable, removeUndefinedFields, toKebabCase } from "shared"
 import { ADMIN, AUTHTYPE, CFA, ENTREPRISE, OPCO } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateUri } from "shared/helpers/generateUri"
 
 import { buildRecherchePageParams, IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
-import { publicConfig } from "@/config.public"
 
 export interface IPage {
   getPath: (args?: any) => string
@@ -14,11 +13,11 @@ export interface IPage {
   getMetadata?: (args?: any) => Metadata
 }
 
-export interface INotionPage extends IPage {
+interface INotionPage extends IPage {
   notionId: string
 }
 
-export interface IPages {
+interface IPages {
   static: Record<string, IPage>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dynamic: Record<string, (params: any) => IPage>
@@ -155,7 +154,7 @@ export const PAGES = {
     },
     accesRecruteur: {
       getPath: () => `/acces-recruteur` as string,
-      title: "Accès recruteur",
+      title: "Recruteur",
       index: false,
       getMetadata: () => ({
         title: "Accès recruteur - La bonne alternance",
@@ -210,6 +209,32 @@ export const PAGES = {
     backEntrepriseCreationOffre: {
       getPath: () => `/espace-pro/entreprise/creation-offre` as string,
       title: "Nouvelle offre",
+    },
+    rendezVousApprentissageRecherche: {
+      getPath: () => `/espace-pro/administration/rendez-vous-apprentissage` as string,
+      title: "Recherche etablissement rendez-vous apprentissage",
+    },
+    backCreateCFAEnAttente: {
+      getPath: () => "/espace-pro/authentification/en-attente" as string,
+      title: "Création de compte CFA en attente",
+    },
+    desinscription: {
+      getPath: () => `/desinscription` as string,
+      title: "Désinscription candidatures spontanées",
+      index: false,
+      getMetadata: () => ({
+        title: "Désinscription candidatures spontanées",
+        description: "Désinscrivez vous de l'envoi de candidatures spontanées.",
+      }),
+    },
+    accessibilite: {
+      getPath: () => `/accessibilite` as string,
+      title: "Déclaration d'accessibilité",
+      index: true,
+      getMetadata: () => ({
+        title: "Déclaration d'accessibilité",
+        description: "Politique de confidentialité, traitement des données à caractère personnel sur le site de La bonne alternance.",
+      }),
     },
   },
   dynamic: {
@@ -481,6 +506,10 @@ export const PAGES = {
       getPath: () => `/espace-pro/administration/gestion-des-administrateurs/user/${userId}` as string,
       title: "Modification d'administrateur",
     }),
+    backCreateCFAConfirmation: ({ email }: { email: string }): IPage => ({
+      getPath: () => `/espace-pro/authentification/confirmation?email=${email}` as string,
+      title: "Confirmation de création de compte",
+    }),
     backHome: ({ userType }: { userType: "CFA" | "ENTREPRISE" | "ADMIN" | "OPCO" }): IPage => {
       switch (userType) {
         case AUTHTYPE.CFA:
@@ -495,55 +524,10 @@ export const PAGES = {
           throw new Error("user type not supported")
       }
     },
+    rendezVousApprentissageDetail: ({ siret }: { siret: string }): IPage => ({
+      getPath: () => `/espace-pro/administration/rendez-vous-apprentissage/${siret}` as string,
+      title: `Détail etablissement ${siret}`,
+    }),
   },
   notion: {},
 } as const satisfies IPages
-
-function getRawPath(pathname: string): string {
-  const rawPath = pathname.replace(/^\/fr/, "").replace(/^\/en/, "")
-  return rawPath === "" ? "/" : rawPath
-}
-
-export function isStaticPage(pathname: string): boolean {
-  return Object.values(PAGES.static).some((page) => getRawPath(page.getPath()) === pathname)
-}
-
-export function isDynamicPage(pathname: string): boolean {
-  if (pathname === "/auth/inscription") {
-    return true
-  }
-  if (pathname === "/auth/refus-inscription") {
-    return true
-  }
-  if (/^\/admin\/utilisateurs\/[^/]+$/.test(pathname)) {
-    return true
-  }
-
-  return false
-}
-
-export function isNotionPage(pathname: string): boolean {
-  return pathname.startsWith("/doc/") || /^\/notion\/[^/]+$/.test(pathname)
-}
-
-function getSitemapItem(page: IPage): MetadataRoute.Sitemap[number] {
-  return {
-    url: `${publicConfig.baseUrl}${getRawPath(page.getPath())}`,
-    alternates: {
-      languages: {
-        fr: `${publicConfig.baseUrl}${page.getPath()}`,
-        en: `${publicConfig.baseUrl}${page.getPath()}`,
-      },
-    },
-  }
-}
-
-export function getSitemap(): MetadataRoute.Sitemap {
-  return Object.values((PAGES as IPages).static)
-    .filter((page) => page.index === true)
-    .map(getSitemapItem)
-}
-
-export function isPage(pathname: string): boolean {
-  return isStaticPage(pathname) || isDynamicPage(pathname) || isNotionPage(pathname)
-}

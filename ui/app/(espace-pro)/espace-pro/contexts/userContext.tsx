@@ -3,7 +3,7 @@
 import { createContext, use, type PropsWithChildren } from "react"
 import type { ComputedUserAccess, IUserRecruteurPublic } from "shared"
 
-export type IUserContext = {
+type IUserContext = {
   user?: IUserRecruteurPublic
   access?: ComputedUserAccess
 }

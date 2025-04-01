@@ -1,55 +1,48 @@
-import { Box, Button, Image } from "@chakra-ui/react"
-
-const navigationButtonProperties = {
-  background: "white",
-  border: "none",
-  padding: "0",
-  width: "30px",
-  height: "30px",
-  minWidth: "30px",
-  _hover: {
-    background: "white",
-  },
-  _active: {
-    background: "white",
-  },
-}
+import { Box } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
 
 export const getNavigationButtons = ({ goPrev, goNext, handleClose }) => {
   return (
     <>
-      <Box>
-        <Button
-          {...navigationButtonProperties}
-          onClick={() => {
-            goPrev()
-          }}
-          data-testid="previous-button"
-        >
-          <Image width="30px" height="30px" src="/images/chevronleft.svg" alt="Résultat précédent" />
-        </Button>
-      </Box>
+      {goPrev && (
+        <Box>
+          <Button
+            priority="tertiary"
+            iconId="ri-arrow-left-s-line"
+            onClick={() => {
+              goPrev()
+            }}
+            data-testid="previous-button"
+            title="previous"
+            size="small"
+          />
+        </Box>
+      )}
+      {goNext && (
+        <Box ml={2}>
+          <Button
+            priority="tertiary"
+            iconId="ri-arrow-right-s-line"
+            onClick={() => {
+              goNext()
+            }}
+            data-testid="next-button"
+            title="next"
+            size="small"
+          />
+        </Box>
+      )}
       <Box ml={2}>
         <Button
-          {...navigationButtonProperties}
-          onClick={() => {
-            goNext()
-          }}
-          data-testid="next-button"
-        >
-          <Image width="30px" height="30px" src="/images/chevronright.svg" alt="Résultat suivant" />
-        </Button>
-      </Box>
-      <Box ml={2}>
-        <Button
-          {...navigationButtonProperties}
+          priority="tertiary"
+          iconId="ri-close-line"
           onClick={() => {
             handleClose()
           }}
           data-testid="close-detail-button"
-        >
-          <Image width="30px" height="30px" src="/images/close.svg" alt="Fermer la fenêtre" />
-        </Button>
+          title="close"
+          size="small"
+        />
       </Box>
     </>
   )

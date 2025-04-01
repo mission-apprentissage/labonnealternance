@@ -182,7 +182,7 @@ export default function GestionEntreprises() {
   return (
     <AdminLayout currentAdminPage={EAdminPages.ENTREPRISES_ALGO}>
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.backAdminGestionDesEntreprises]} />
-      <Box mt={6} px={4}>
+      <Box px={4}>
         <Text fontSize="2rem" mb={4} fontWeight={700} as="h1">
           Entreprises de l'algorithme
         </Text>

@@ -20,6 +20,7 @@ import {
   serializeItemReferences,
 } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import "mapbox-gl/dist/mapbox-gl.css"
+import { ErrorBoundary } from "@/app/_components/ErrorComponent"
 
 const FRANCE_CENTER: [number, number] = [2.213749, 46.227638]
 const FRANCE_ZOOM = 5
@@ -192,6 +193,54 @@ async function createLayer(layer: LAYERS, map: Mapbox) {
   }
 }
 
+// mapbox.once("loaded") seems to be broken
+// We need to workaround this by using a promise to prevent infinite waiting
+async function onceLoaded(map: Mapbox): Promise<void> {
+  if (map.loaded()) {
+    console.log("Map already loaded")
+    return
+  }
+
+  console.log("Waiting for map to load")
+  await new Promise((resolve, reject) => {
+    const controller = new AbortController()
+    const signal = controller.signal
+
+    const timeoutId = setTimeout(() => {
+      controller.abort()
+    }, 30_000)
+
+    const callback = () => {
+      if (map.loaded()) {
+        clearTimeout(timeoutId)
+        resolve(undefined)
+      } else if (signal.aborted) {
+        console.log("Map loading timeout")
+        reject(signal.reason)
+      } else {
+        globalThis.window.requestAnimationFrame(callback)
+      }
+    }
+
+    globalThis.window.requestAnimationFrame(callback)
+  })
+}
+
+function removeMap() {
+  if (mapSingleton === null) {
+    return
+  }
+
+  try {
+    mapSingleton.remove()
+  } catch (error) {
+    console.error("Error while resetting map", error)
+    captureException(error)
+  } finally {
+    mapSingleton = null
+  }
+}
+
 async function setupMap(container: HTMLDivElement): Promise<Mapbox> {
   if (mapSingleton !== null) {
     container.appendChild(mapSingleton.getContainer())
@@ -215,6 +264,7 @@ async function setupMap(container: HTMLDivElement): Promise<Mapbox> {
 
   mapSingleton.getCanvas().setAttribute("aria-label", "Localisation géographique des employeurs et/ou formations en alternance")
 
+  console.log("Loading images!!!")
   await Promise.all([
     loadImage("/images/icons/book.png", "formation", mapSingleton),
     loadImage("/images/icons/job.png", "job", mapSingleton),
@@ -222,14 +272,13 @@ async function setupMap(container: HTMLDivElement): Promise<Mapbox> {
     loadImage("/images/icons/job_large_shadow.png", "job-active", mapSingleton),
   ])
 
+  console.log("Creating layers")
   // Layout order is important to control the z-index (last added is on top)
   await createLayer("job", mapSingleton)
   await createLayer("formation", mapSingleton)
   await createLayer("active", mapSingleton)
 
-  if (!mapSingleton.loaded()) {
-    await mapSingleton.once("load")
-  }
+  await onceLoaded(mapSingleton)
 
   return mapSingleton
 }
@@ -298,6 +347,7 @@ function setPointOfInterests(map: Mapbox, result: IUseRechercheResults, activeIt
 // https://nextjs.org/docs/architecture/fast-refresh
 // @refresh reset
 function useMap(container: HTMLDivElement | null, props: RechercheCarteProps) {
+  const [error, setError] = useState<Error | null>(null)
   const result = useRechercheResults(props.params)
   const navigateToRecherchePage = useNavigateToRecherchePage(props.params)
   const navigateToResultItemDetail = useNavigateToResultItemDetail(props.params)
@@ -316,19 +366,29 @@ function useMap(container: HTMLDivElement | null, props: RechercheCarteProps) {
 
   useLayoutEffect(() => {
     if (container === null) {
+      console.log("No container")
       return
     }
 
+    setError(null)
+    console.log("Start Setup")
+
     setupMap(container)
-      .then(setMap)
+      .then((m) => {
+        console.log("Setup Complete")
+        setMap(m)
+      })
       .catch((error) => {
-        // TODO: error handler
+        console.error("Setup failed", error)
         captureException(error)
+        removeMap()
+        setError(error)
       })
 
     return () => {
       setMap((prev) => {
         if (prev !== null) {
+          console.log("Remove map")
           prev.getContainer().remove()
         }
         return null
@@ -429,6 +489,10 @@ function useMap(container: HTMLDivElement | null, props: RechercheCarteProps) {
 
   const searchArea = useCenterCamera(map, props.params, activeItems)
 
+  if (error !== null) {
+    throw error
+  }
+
   return { map, activeItems, searchArea, radius: props.params.geo?.radius ?? null }
 }
 
@@ -443,7 +507,7 @@ type RechercheCarteProps = WithRecherchePageParams<
     }
 >
 
-export function RechercheCarte(props: RechercheCarteProps) {
+function RechercheCarteInternal(props: RechercheCarteProps) {
   const [container, setContainer] = useState<HTMLDivElement | null>(null)
 
   const setContainerRef = useCallback((node) => setContainer(node), [])
@@ -471,5 +535,13 @@ export function RechercheCarte(props: RechercheCarteProps) {
       {props.variant === "recherche" && <RechercheMapIci map={map} searchArea={searchArea} radius={radius} {...props} />}
       <RechercheMapPopup activeItems={activeItems} map={map} variant={props.variant} {...props} />
     </Box>
+  )
+}
+
+export function RechercheCarte(props: RechercheCarteProps) {
+  return (
+    <ErrorBoundary>
+      <RechercheCarteInternal {...props} />
+    </ErrorBoundary>
   )
 }

@@ -1,8 +1,11 @@
 "use client"
-import { Box, Button, Container, Grid, GridItem, List, ListItem, Text } from "@chakra-ui/react"
-import { usePathname } from "next/navigation"
-import { useEffect, useState } from "react"
 
+import { Box, Container, Grid, GridItem, Text } from "@chakra-ui/react"
+import { SideMenu } from "@codegouvfr/react-dsfr/SideMenu"
+import Tabs from "@codegouvfr/react-dsfr/Tabs"
+
+import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
+import { useUrlHash } from "@/app/hooks/useUrlHash"
 import RessourcesCandidat from "@/components/Ressources/ressourcesCandidat"
 import RessourcesCFA from "@/components/Ressources/ressourcesCFA"
 import RessourcesRecruteur from "@/components/Ressources/ressourcesRecruteur"
@@ -10,107 +13,18 @@ import RessourcesRecruteur from "@/components/Ressources/ressourcesRecruteur"
 import { PAGES } from "../../../utils/routes.utils"
 import { Breadcrumb } from "../../_components/Breadcrumb"
 
-const selectedVerticalTabCssProperties = {
-  color: "#1d1d1d",
-  background: "white",
-  borderLeftColor: "#000091",
-}
-
-const hoverTabCssProperties = { background: "#F5F5FE !important" }
-
-const buttonProperties = {
-  padding: "8px",
-  height: "50px",
-  background: "none",
-  fontWeight: "bold",
-  borderRadius: 0,
-}
-
-const verticalButtonProperties = {
-  ...buttonProperties,
-  width: "100%",
-  paddingRight: "12px",
-}
-
-const selectedVerticalButtonProperties = {
-  ...verticalButtonProperties,
-  color: "#000091",
-}
-
-const horizontalButtonProperties = {
-  ...buttonProperties,
-  borderBottom: "3px solid",
-  borderBottomColor: "#E5E5E5",
-  marginRight: "16px",
-}
-const selectedHorizontalButtonProperties = {
-  ...horizontalButtonProperties,
-  borderBottomColor: "#000091",
-  color: "#000091",
-}
-
 export default function Ressources() {
-  const pathname = usePathname()
-  const [tabIndex, setTabIndex] = useState("candidat")
+  const tabs = [
+    { tabId: "candidat", label: "Candidats", content: <RessourcesCandidat /> },
+    { tabId: "recruteur", label: "Recruteurs", content: <RessourcesRecruteur /> },
+    { tabId: "cfa", label: "Organismes de formation", content: <RessourcesCFA /> },
+  ]
+  const [firstTab] = tabs
 
-  useEffect(() => {
-    const hash = pathname.split("#")[1]
-    setTabIndex(hash || "candidat")
-  }, [pathname])
-
-  const getTabContent = () => {
-    switch (tabIndex) {
-      case "recruteur": {
-        return <RessourcesRecruteur />
-      }
-      case "cfa": {
-        return <RessourcesCFA />
-      }
-      default: {
-        return <RessourcesCandidat />
-      }
-    }
-  }
-
-  const getButton = ({ type, alignment }: { type: string; alignment: string }) => {
-    let text = "Candidats"
-
-    switch (type) {
-      case "recruteur": {
-        text = "Recruteurs"
-        break
-      }
-      case "cfa": {
-        text = "Organismes de formation"
-        break
-      }
-      default:
-        break
-    }
-
-    return (
-      <Button
-        _hover={hoverTabCssProperties}
-        justifyContent="left"
-        style={
-          tabIndex === type
-            ? alignment === "vertical"
-              ? selectedVerticalButtonProperties
-              : selectedHorizontalButtonProperties
-            : alignment === "vertical"
-              ? verticalButtonProperties
-              : horizontalButtonProperties
-        }
-        onClick={() => {
-          window.location.hash = type
-          setTabIndex(type)
-        }}
-        aria-label={`Afficher les ressources pour ${text}`}
-      >
-        {text}
-      </Button>
-    )
-  }
+  const { hash, isClient } = useUrlHash()
+  if (!isClient) return <LoadingEmptySpace />
+  const selectedTabId = hash || firstTab.tabId
+  const displayedTab = tabs.find((x) => x.tabId === selectedTabId) ?? firstTab
 
   return (
     <Box>
@@ -124,27 +38,31 @@ export default function Ressources() {
         </Box>
         <Grid templateColumns="repeat(5, 1fr)" gap={10}>
           <GridItem display={{ base: "none", lg: "block" }} colSpan={{ base: 0, lg: 1 }}>
-            <List>
-              <ListItem borderLeft="3px solid" borderLeftColor="white" style={tabIndex === "candidat" ? selectedVerticalTabCssProperties : {}}>
-                {getButton({ type: "candidat", alignment: "vertical" })}
-              </ListItem>
-              <ListItem borderLeft="3px solid" borderLeftColor="white" style={tabIndex === "recruteur" ? selectedVerticalTabCssProperties : {}}>
-                {getButton({ type: "recruteur", alignment: "vertical" })}
-              </ListItem>
-              <ListItem borderLeft="3px solid" borderLeftColor="white" style={tabIndex === "cfa" ? selectedVerticalTabCssProperties : {}}>
-                {getButton({ type: "cfa", alignment: "vertical" })}
-              </ListItem>
-            </List>
+            <SideMenu
+              align="left"
+              burgerMenuButtonText="Dans cette rubrique"
+              items={tabs.map(({ tabId, label }) => ({
+                isActive: selectedTabId === tabId,
+                linkProps: {
+                  href: "#" + tabId,
+                },
+                text: label,
+              }))}
+            />
           </GridItem>
           <GridItem colSpan={{ base: 5, lg: 4 }}>
-            <Box>
-              <Box display={{ base: "block", lg: "none" }} mb={6}>
-                {getButton({ type: "candidat", alignment: "horizontal" })}
-                {getButton({ type: "recruteur", alignment: "horizontal" })}
-                {getButton({ type: "cfa", alignment: "horizontal" })}
-              </Box>
-              <Box style={{ clear: "both" }}>{getTabContent()}</Box>
+            <Box display={{ base: "block", lg: "none" }} mb={6}>
+              <Tabs
+                selectedTabId={selectedTabId}
+                tabs={tabs.map(({ label, tabId }) => ({ label, tabId }))}
+                onTabChange={(tabId) => {
+                  window.location.hash = tabId
+                }}
+              >
+                <></>
+              </Tabs>
             </Box>
+            {displayedTab.content}
           </GridItem>
         </Grid>
       </Container>

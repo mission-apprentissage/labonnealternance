@@ -11,9 +11,9 @@ import { useAuth } from "@/context/UserContext"
 import { InfoCircle } from "@/theme/components/icons"
 import { getCfaInformation, getEntrepriseInformation } from "@/utils/api"
 
-export type InformationLegaleEntrepriseProps = { siret: string; type: typeof CFA | typeof ENTREPRISE; opco?: OPCOS_LABEL }
+type InformationLegaleEntrepriseProps = { siret: string; type: typeof CFA | typeof ENTREPRISE; opco?: OPCOS_LABEL }
 
-export const InformationLegaleEntreprise = ({ siret, type, opco }: InformationLegaleEntrepriseProps) => {
+const InformationLegaleEntreprise = ({ siret, type, opco }: InformationLegaleEntrepriseProps) => {
   const { user } = useAuth()
   const entrepriseQuery = useQuery({
     queryKey: ["get-entreprise", siret],

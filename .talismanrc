@@ -1,8 +1,8 @@
 fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 6c3ade1ddaac4db86cb79aa5328c7546490450f3be8e356b001299417b68d14e
+  checksum: b5006031bb5254e253e43023a9355016f20205f30377729895d8152fe475e9bb
 - filename: .infra/vault/vault.yml
-  checksum: 415c766eab6874a05e6dff56b2763c157494b8ec65666e527d9144762829ca0f
+  checksum: 8ab8cb04152d0de5be955293ed191f7f4dd19fe9a990f044a5f6ffd32e2111b4
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
   checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
 - filename: cypress/pages/FlowAdminPage.ts
@@ -71,6 +71,8 @@ fileignoreconfig:
   checksum: 6f28aee7664d1ec1e4b4da34b96b63e23781538b3fe3e8d50dddbdad3884fa3f
 - filename: server/src/jobs/offrePartenaire/importHelloWork.ts
   checksum: 26caf0b5a97ce2ff7451cc2717a3b36f38b20f94db6beb490b98b8311debfd25
+- filename: server/src/jobs/offrePartenaire/kelio/importKelio.test.input.xml
+  checksum: d40699cf149c9658080dcbeac6856adc01a215d5cc00e5c2271096d3cbb2aba4
 - filename: server/src/jobs/offrePartenaire/meteojob/importMeteojob.test.input.xml
   checksum: 62419cb750978e303756a8134f180ffa4febb9835fff97e48ed1024923bebc91
 - filename: server/src/jobs/offrePartenaire/pass/importPass.test.input.rss
@@ -177,8 +179,6 @@ fileignoreconfig:
   checksum: bf864b963375d5836150faf3e343e482a8612552581bd39be21b4f1e8f566971
 - filename: shared/helpers/generateUri.ts
   checksum: 6542db0d3eca959c6e81d574f8b71d4b18d2f1af21042ca5ed4dff319cd39555
-- filename: shared/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap
-  checksum: aa01a8388e2accb53cc88b46750fea7487998584a107059e3149695c0d219ae6
 - filename: shared/helpers/openapi/generateOpenapi.test.ts
   checksum: d7b85c3dff488cec523d78f0926e15dbea41071a1864bda62b4d6caeb2541df3
 - filename: shared/models/applications.model.ts
@@ -187,8 +187,6 @@ fileignoreconfig:
   checksum: 6c2ec97a1cb5d523af4bd805d6540774ccbcc0145bc48268732548163796de05
 - filename: shared/models/lbaItem.model.ts
   checksum: 144ab34674299cdac89d96ffa6ed834814135c54e1621e1fa47ec5012924f862
-- filename: shared/routes/appointments.routes.ts
-  checksum: 46d94affa911e46d6e3f72d453412c4b5378a4ef71e6ee6cb3ab2f43eee3d5d4
 - filename: shared/routes/appointments.routes.v2.ts
   checksum: 87bd633c10c7301e6c3029f96770b42519533afe2c89d712cbe5951dc165fed1
 - filename: shared/routes/formulaire.route.ts
@@ -201,12 +199,18 @@ fileignoreconfig:
   checksum: f4f3e429e6a7871a218f19eead273c0477636ed3c19b9e4dfd9e55bde1bc7dc8
 - filename: shared/routes/v3/jobs/jobs.routes.v3.model.ts
   checksum: 94f2736d7791571d7888a50f53e36e2af246f22c1c832b85477c34cb5328af0d
+- filename: shared/src/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap
+  checksum: ac7786e3082174e9164d4634a9432511815d79828f0e408ad75c0532a18ddd98
+- filename: shared/src/routes/appointments.routes.ts
+  checksum: c9e50c644e7f14004c8c141c2c0b350adc29c49cfa72a766a0822a8f27b1ccd7
 - filename: shared/utils/detectUrlAndEmails.test.ts
   checksum: ce4d731225425bdbee4e69ff61b6c14be377054db1fb99b438a86e85b4b7a985
 - filename: shared/utils/objectUtils.ts
   checksum: cfd0e48e8762b43c6431dad873727f6ac091ca6f5c7555e37a8ee3fba03184d1
 - filename: ui/app/(candidat)/formation/[id]/TrainingDetailRendererClient.tsx
   checksum: f5c14c3e59be0c6170d21f389882ed894e38081ef05545ffc66cc8a65ded252f
+- filename: ui/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap.tsx
+  checksum: 77aa76bd83ebc2833a69d37454428e30ba751df7e5f8fd34200a250e656469b4
 - filename: ui/app/(espace-pro)/_components/OffresGratuites.tsx
   checksum: a81881696ad47f4efd1e7956f1972f0425cce0b07dba4afbcc7c088fb5edd90d
 - filename: ui/app/(home)/faq/page.tsx
@@ -215,6 +219,8 @@ fileignoreconfig:
   checksum: 4740029daff0308bfa65289c4eb5be61834c0c8c5d00bdcab0b1662f28c8a0e6
 - filename: ui/app/(home)/politique-de-confidentialite/page.tsx
   checksum: e5d7f4f0d05c3ef38c59bdcc27feaa88c976faa8520dbb78a75747a67aa1c9ab
+- filename: ui/app/accessibilite/page.tsx
+  checksum: b19bfcaa29d8cf28223ba40336cbc32034ab057b081001aa8a6f02d7934ec0ed
 - filename: ui/app/conditions-generales-utilisation/page.tsx
   checksum: 2a6862623c8118ea36287831ba82a2830bf8c6a67fd33ab58898be72f0732634
 - filename: ui/app/template.tsx
@@ -260,7 +266,7 @@ fileignoreconfig:
 - filename: ui/components/RDV/DemandeDeContact.tsx
   checksum: 0ba102126f1de5657601f172cb5348a7e0db77e5b0d06e124563f60c37ae3942
 - filename: ui/components/Ressources/conseilsEtAstuces.tsx
-  checksum: b9f16607c1fb319c2940223e7e9ce5acc48b8b5a5b519e2bb79210e3f0feaf17
+  checksum: b8cbddb1ff00fd527f64034a9a3e00a4613182abe2168380a7e334e2b9b7f749
 - filename: ui/components/Ressources/misesEnSituation.tsx
   checksum: 5730ed3668f818b36384d28402889e6489c3ac15b4ae2213493a3b91cf8e4f31
 - filename: ui/components/Ressources/ressourcesRecruteur.tsx
@@ -293,8 +299,6 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
-- filename: ui/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap.tsx
-  checksum: 77aa76bd83ebc2833a69d37454428e30ba751df7e5f8fd34200a250e656469b4
 scopeconfig:
 - scope: node
 custom_patterns:
@@ -313,6 +317,6 @@ allowed_patterns:
 - '@apprentissage.beta.gouv.fr'
 - adminusersview
 - https://dinum.didask.com/.*
-- 'queryKey:'
+- labonnealternance@beta.gouv.fr
 threshold: medium
 version: "1.0"

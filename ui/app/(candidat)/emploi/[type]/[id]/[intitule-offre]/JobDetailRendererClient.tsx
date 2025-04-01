@@ -31,22 +31,17 @@ import { PAGES } from "@/utils/routes.utils"
 export default function JobDetailRendererClient({ job, params }: WithRecherchePageParams<{ job: ILbaItemJobsGlobal }>) {
   const result = useRechercheResults(params)
 
-  if (result.status !== "success") {
-    // TODO: handle error
-    return null
-  }
-
   if (params?.displayMap) {
     return (
       <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", height: "100vh", overflow: "hidden" }}>
-        <JobDetail selectedItem={job} resultList={result.items} params={params} />
+        <JobDetail selectedItem={job} resultList={result.status === "success" ? result.items : []} params={params} />
         {/* TODO : remove extended search button from map view */}
         <RechercheCarte item={job} variant="detail" params={params} />
       </Box>
     )
   }
 
-  return <JobDetail selectedItem={job} resultList={result.items} params={params} />
+  return <JobDetail selectedItem={job} resultList={result.status === "success" ? result.items : []} params={params} />
 }
 
 function JobDetail({ selectedItem, resultList, params }: WithRecherchePageParams<{ selectedItem: ILbaItemJobsGlobal; resultList: IUseRechercheResultsSuccess["items"] }>) {
@@ -121,7 +116,7 @@ function JobDetail({ selectedItem, resultList, params }: WithRecherchePageParams
             color={"pinksoft.600"}
             sx={{
               fontWeight: 700,
-              marginBottom: isCollapsedHeader ? "4px" : "11px",
+              marginBottom: "4px",
               paddingBottom: "0",
               textAlign: "left",
               wordBreak: "break-word",
@@ -131,7 +126,7 @@ function JobDetail({ selectedItem, resultList, params }: WithRecherchePageParams
           </Text>
 
           {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
-          {!isCollapsedHeader && <hr />}
+          {!isCollapsedHeader && <hr style={{ paddingBottom: "1px" }} />}
 
           <Flex flexDirection={{ base: "column", sm: "row" }} justifyContent="space-between">
             <Box>
@@ -146,7 +141,6 @@ function JobDetail({ selectedItem, resultList, params }: WithRecherchePageParams
         </Box>
       </Box>
 
-      {/* {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && <FTJobDetail job={selectedItem} />} */}
       {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && <LbaJobDetail title={actualTitle} job={selectedItem as ILbaItemLbaJobJson} />}
       {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaDetail recruteurLba={selectedItem as ILbaItemLbaCompanyJson} />}
       {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && <PartnerJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
