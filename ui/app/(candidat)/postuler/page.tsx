@@ -33,7 +33,7 @@ export default function WidgetPostuler() {
     enabled: Boolean(type) && Boolean(itemId) && Boolean(caller),
   })
 
-  if (!searchParams.has("type")) {
+  if (!type) {
     return <WidgetPostulerError hasError={"missing_type_parameter"} />
   }
   if (!caller) {
