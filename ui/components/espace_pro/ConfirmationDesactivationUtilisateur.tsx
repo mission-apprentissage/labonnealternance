@@ -11,7 +11,7 @@ import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActi
 
 import { AUTHTYPE } from "../../common/contants"
 
-export const ConfirmationDesactivationUtilisateur = ({
+const ConfirmationDesactivationUtilisateur = ({
   userRecruteur,
   onClose,
   isOpen,

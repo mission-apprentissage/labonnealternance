@@ -72,14 +72,14 @@ const reducer = (state, action) => {
   }
 }
 
-export type IContextSearchHistory = {
+type IContextSearchHistory = {
   index: number
   trainings?: ILbaItemTraining2[]
   jobs?: { peJobs: ILbaItemFtJobJson[] | null; lbaCompanies: ILbaItemLbaCompanyJson[] | null; matchas: ILbaItemLbaJobJson[] | null; partnerJobs: ILbaItemPartnerJobJson[] | null }
   formValues?: any
 }
 
-export type IContextSearch = {
+type IContextSearch = {
   trainings: any[]
   setTrainings: (b: any[]) => void
   jobs: { peJobs: ILbaItemFtJobJson[] | null; lbaCompanies: ILbaItemLbaCompanyJson[] | null; matchas: ILbaItemLbaJobJson[] | null; partnerJobs: ILbaItemPartnerJobJson[] }
@@ -110,7 +110,7 @@ export type IContextSearch = {
   setSearchHistory: (searchHistory: IContextSearchHistory[]) => void
 }
 // @ts-expect-error: TODO
-export const SearchResultContext = createContext<IContextSearch>()
+const SearchResultContext = createContext<IContextSearch>()
 
 const SearchResultContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState)

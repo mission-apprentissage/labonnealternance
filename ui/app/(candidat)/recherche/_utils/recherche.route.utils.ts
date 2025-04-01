@@ -7,7 +7,7 @@ import { PAGES } from "@/utils/routes.utils"
 
 const zIdeaType = z.nativeEnum(LBA_ITEM_TYPE_OLD)
 
-export type ItemReference = {
+type ItemReference = {
   id: string
   ideaType: LBA_ITEM_TYPE_OLD
 }
@@ -42,7 +42,7 @@ export function getItemReference(item: ItemReferenceLike): ItemReference {
   }
 }
 
-export function areItemReferencesEqual(a: ItemReferenceLike, b: ItemReferenceLike) {
+function areItemReferencesEqual(a: ItemReferenceLike, b: ItemReferenceLike) {
   return a.id === b.id && newItemTypeToOldItemType(a.ideaType) === newItemTypeToOldItemType(b.ideaType)
 }
 
@@ -50,7 +50,7 @@ export function isItemReferenceInList(item: ItemReferenceLike, list: ItemReferen
   return list.some((ref) => areItemReferencesEqual(ref, item))
 }
 
-export const zRecherchePageParams = z.object({
+const zRecherchePageParams = z.object({
   romes: z.array(z.string()),
   geo: z
     .object({

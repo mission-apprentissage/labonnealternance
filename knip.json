@@ -14,7 +14,8 @@
       "paths": {
         "@/*": ["./*"]
       },
-      "next": true
+      "next": true,
+      "ignoreDependencies": ["@sentry/cli"]
     },
     ".": {
       "husky": true,

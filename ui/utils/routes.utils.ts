@@ -1,11 +1,10 @@
-import type { Metadata, MetadataRoute } from "next"
+import type { Metadata } from "next"
 import { assertUnreachable, removeUndefinedFields, toKebabCase } from "shared"
 import { ADMIN, AUTHTYPE, CFA, ENTREPRISE, OPCO } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateUri } from "shared/helpers/generateUri"
 
 import { buildRecherchePageParams, IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
-import { publicConfig } from "@/config.public"
 
 export interface IPage {
   getPath: (args?: any) => string
@@ -14,11 +13,11 @@ export interface IPage {
   getMetadata?: (args?: any) => Metadata
 }
 
-export interface INotionPage extends IPage {
+interface INotionPage extends IPage {
   notionId: string
 }
 
-export interface IPages {
+interface IPages {
   static: Record<string, IPage>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dynamic: Record<string, (params: any) => IPage>
@@ -524,52 +523,3 @@ export const PAGES = {
   },
   notion: {},
 } as const satisfies IPages
-
-function getRawPath(pathname: string): string {
-  const rawPath = pathname.replace(/^\/fr/, "").replace(/^\/en/, "")
-  return rawPath === "" ? "/" : rawPath
-}
-
-export function isStaticPage(pathname: string): boolean {
-  return Object.values(PAGES.static).some((page) => getRawPath(page.getPath()) === pathname)
-}
-
-export function isDynamicPage(pathname: string): boolean {
-  if (pathname === "/auth/inscription") {
-    return true
-  }
-  if (pathname === "/auth/refus-inscription") {
-    return true
-  }
-  if (/^\/admin\/utilisateurs\/[^/]+$/.test(pathname)) {
-    return true
-  }
-
-  return false
-}
-
-export function isNotionPage(pathname: string): boolean {
-  return pathname.startsWith("/doc/") || /^\/notion\/[^/]+$/.test(pathname)
-}
-
-function getSitemapItem(page: IPage): MetadataRoute.Sitemap[number] {
-  return {
-    url: `${publicConfig.baseUrl}${getRawPath(page.getPath())}`,
-    alternates: {
-      languages: {
-        fr: `${publicConfig.baseUrl}${page.getPath()}`,
-        en: `${publicConfig.baseUrl}${page.getPath()}`,
-      },
-    },
-  }
-}
-
-export function getSitemap(): MetadataRoute.Sitemap {
-  return Object.values((PAGES as IPages).static)
-    .filter((page) => page.index === true)
-    .map(getSitemapItem)
-}
-
-export function isPage(pathname: string): boolean {
-  return isStaticPage(pathname) || isDynamicPage(pathname) || isNotionPage(pathname)
-}
