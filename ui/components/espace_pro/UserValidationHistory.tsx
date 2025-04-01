@@ -4,7 +4,7 @@ import { IUserStatusValidationJson } from "shared"
 
 import LoadingEmptySpace from "./LoadingEmptySpace"
 
-export const UserValidationHistory = ({ histories }: { histories: IUserStatusValidationJson[] }) => {
+const UserValidationHistory = ({ histories }: { histories: IUserStatusValidationJson[] }) => {
   if (histories.length === 0) {
     return <LoadingEmptySpace />
   }

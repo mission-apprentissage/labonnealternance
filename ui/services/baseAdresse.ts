@@ -18,7 +18,7 @@ type AddressFeature = {
 
 type Coordinates = [number, number]
 
-export const zAddressItem = z.object({
+const zAddressItem = z.object({
   value: ZPointGeometry,
   insee: z.string(),
   zipcode: z.string(),

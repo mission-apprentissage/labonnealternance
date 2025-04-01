@@ -16,7 +16,7 @@ type OptionsWrite = {
 
 type IRequestOptions = OptionsGet | OptionsWrite | EmptyObject
 
-export async function optionsToFetchParams(method: RequestInit["method"], options: IRequestOptions, fetchOptions: IRequestFetchOptions) {
+async function optionsToFetchParams(method: RequestInit["method"], options: IRequestOptions, fetchOptions: IRequestFetchOptions) {
   const { timeout, headers: addedHeaders } = fetchOptions
 
   const headers = await getHeaders(options)
@@ -81,7 +81,7 @@ export function generateUrl(path: string, options: WithQueryStringAndPathParam =
   return removeAtEnd(baseUrl, "/") + generateUri(path, { params, querystring })
 }
 
-export interface ApiErrorContext {
+interface ApiErrorContext {
   path: string
   params: PathParam
   querystring: QueryString

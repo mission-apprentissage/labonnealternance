@@ -58,7 +58,8 @@
     "**/*/lib": true,
     "**/*/dist": true,
     "**/*/build": true,
-    "**/.webpack": true
+    "**/.webpack": true,
+    "**/tsconfig.tsbuildinfo": true
   },
   "files.watcherExclude": {
     "**/*/lib": true,

@@ -36,7 +36,7 @@ function RechercheResultatsMobile(props: WithRecherchePageParams) {
   )
 }
 
-export function RechercheResultatsDesktop(props: WithRecherchePageParams) {
+function RechercheResultatsDesktop(props: WithRecherchePageParams) {
   return (
     <Box
       sx={{
