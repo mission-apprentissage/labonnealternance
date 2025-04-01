@@ -11,7 +11,7 @@ export default function MatchaLbaOverlay() {
       <Container maxW="container.xl" py={3}>
         <Flex justify="flex-end" pr={4}>
           <Button display="flex" onClick={setOverlay.off} fontWeight="normal" variant="pill" color="#8585F6" rightIcon={<Close width={3} />}>
-            fermer
+            Fermer
           </Button>
         </Flex>
         <Container maxW="container.lg" pt={2} pb={5}>

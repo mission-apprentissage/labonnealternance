@@ -87,7 +87,7 @@ function ListeEntreprise() {
             <Menu>
               {({ isOpen }) => (
                 <>
-                  <MenuButton isActive={isOpen} as={ChakraButton} _hover={{ backgroundColor: "none" }}>
+                  <MenuButton isActive={isOpen} as={ChakraButton} variant="navdot">
                     <Icon as={Parametre} color="bluefrance.500" />
                   </MenuButton>
                   <MenuList>

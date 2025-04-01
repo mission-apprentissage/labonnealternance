@@ -42,7 +42,7 @@ export default function AuthentificationLayout(props) {
               // rightIcon={<Close width={3} />}
               leftIcon={<ArrowLeft w="w" />}
             >
-              {props.fromDashboard ? "fermer" : "Retour à l'accueil"}
+              {props.fromDashboard ? "Fermer" : "Retour à l'accueil"}
             </Button>
           </Box>
         </Flex>
