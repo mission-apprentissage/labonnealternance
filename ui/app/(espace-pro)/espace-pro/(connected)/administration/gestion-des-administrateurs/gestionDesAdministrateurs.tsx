@@ -67,6 +67,19 @@ export default function GestionDesAdministrateurs() {
         data={users || []}
         columns={[
           {
+            Header: "Actions",
+            id: "action",
+            maxWidth: "80",
+            disableSortBy: true,
+            accessor: (row) => {
+              return (
+                <Button priority="tertiary no outline" onClick={() => router.push(PAGES.dynamic.backEditAdministrator({ userId: row._id }).getPath())}>
+                  <ArrowRightLine2 w="1w" />
+                </Button>
+              )
+            },
+          },
+          {
             Header: "Email",
             id: "email",
             width: "300",
@@ -85,19 +98,6 @@ export default function GestionDesAdministrateurs() {
             id: "last_connection",
             accessor: ({ last_action_date: date }) => {
               return date ? dayjs(date).format("DD/MM/YYYY") : "Jamais"
-            },
-          },
-          {
-            Header: "Actions",
-            id: "action",
-            maxWidth: "80",
-            disableSortBy: true,
-            accessor: (row) => {
-              return (
-                <Button priority="tertiary no outline" onClick={() => router.push(PAGES.dynamic.backEditAdministrator({ userId: row._id }).getPath())}>
-                  <ArrowRightLine2 w="1w" />
-                </Button>
-              )
             },
           },
         ]}

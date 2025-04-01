@@ -77,6 +77,46 @@ function ListeEntreprise() {
 
   const columns = [
     {
+      Header: "",
+      id: "action",
+      maxWidth: "50",
+      disableSortBy: true,
+      accessor: (row: IRecruiterJson) => {
+        return (
+          <Box>
+            <Menu>
+              {({ isOpen }) => (
+                <>
+                  <MenuButton isActive={isOpen} as={ChakraButton} variant="navdot">
+                    <Icon as={Parametre} color="bluefrance.500" />
+                  </MenuButton>
+                  <MenuList>
+                    <MenuItem>
+                      <Link underline="hover" href={PAGES.dynamic.backCfaPageEntreprise(row.establishment_id).getPath()}>
+                        Voir les offres
+                      </Link>
+                    </MenuItem>
+                    <MenuItem>
+                      <Link
+                        underline="hover"
+                        component="button"
+                        onClick={() => {
+                          confirmationSuppression.onOpen()
+                          setCurrentEntreprise(row)
+                        }}
+                      >
+                        Supprimer l'entreprise
+                      </Link>
+                    </MenuItem>
+                  </MenuList>
+                </>
+              )}
+            </Menu>
+          </Box>
+        )
+      },
+    },
+    {
       Header: "Entreprise",
       id: "establishment_raison_sociale",
       width: "500",
@@ -137,46 +177,6 @@ function ListeEntreprise() {
         } else {
           return ""
         }
-      },
-    },
-    {
-      Header: "",
-      id: "action",
-      maxWidth: "50",
-      disableSortBy: true,
-      accessor: (row: IRecruiterJson) => {
-        return (
-          <Box display={["none", "block"]}>
-            <Menu>
-              {({ isOpen }) => (
-                <>
-                  <MenuButton isActive={isOpen} as={ChakraButton} variant="navdot" _hover={{ backgroundColor: "none" }}>
-                    <Icon as={Parametre} color="bluefrance.500" />
-                  </MenuButton>
-                  <MenuList>
-                    <MenuItem>
-                      <Link underline="hover" href={PAGES.dynamic.backCfaPageEntreprise(row.establishment_id).getPath()}>
-                        Voir les offres
-                      </Link>
-                    </MenuItem>
-                    <MenuItem>
-                      <Link
-                        underline="hover"
-                        component="button"
-                        onClick={() => {
-                          confirmationSuppression.onOpen()
-                          setCurrentEntreprise(row)
-                        }}
-                      >
-                        Supprimer l'entreprise
-                      </Link>
-                    </MenuItem>
-                  </MenuList>
-                </>
-              )}
-            </Menu>
-          </Box>
-        )
       },
     },
   ]
