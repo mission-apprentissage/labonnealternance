@@ -266,7 +266,7 @@ fileignoreconfig:
 - filename: ui/components/RDV/DemandeDeContact.tsx
   checksum: 0ba102126f1de5657601f172cb5348a7e0db77e5b0d06e124563f60c37ae3942
 - filename: ui/components/Ressources/conseilsEtAstuces.tsx
-  checksum: b9f16607c1fb319c2940223e7e9ce5acc48b8b5a5b519e2bb79210e3f0feaf17
+  checksum: b8cbddb1ff00fd527f64034a9a3e00a4613182abe2168380a7e334e2b9b7f749
 - filename: ui/components/Ressources/misesEnSituation.tsx
   checksum: 5730ed3668f818b36384d28402889e6489c3ac15b4ae2213493a3b91cf8e4f31
 - filename: ui/components/Ressources/ressourcesRecruteur.tsx
