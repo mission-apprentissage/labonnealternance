@@ -3,15 +3,10 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { useMemo } from "react"
-import { ILbaItemFormationJson, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { ILbaItem } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { localStorageGet } from "@/utils/localStorage"
-
-export const hasApplied = (item: ILbaItemFormationJson | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemFtJobJson | ILbaItemPartnerJobJson) => {
-  return localStorage.getItem(`application-${item.ideaType}-${item.id}`) !== null
-}
 
 export default function ItemDetailApplicationsStatus({ item }: { item: ILbaItem }) {
   const key = `application-${item.ideaType}-${item.id}`

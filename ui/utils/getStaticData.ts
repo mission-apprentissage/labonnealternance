@@ -1,6 +1,6 @@
 import { kebabCase, uniq } from "lodash-es"
 
-export const extractFromFile = (path, fs, txtDirectory, fileName) => {
+const extractFromFile = (path, fs, txtDirectory, fileName) => {
   const filePath = path.join(txtDirectory, fileName)
   const lineString = fs.readFileSync(filePath, "utf8")
   const arrayOfLines = lineString.match(/[^\r\n]+/g)

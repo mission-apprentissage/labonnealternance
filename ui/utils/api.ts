@@ -1,5 +1,5 @@
 import { captureException } from "@sentry/nextjs"
-import { IJobCreate, INewDelegations, INewSuperUser, IRecruiterJson, IRoutes, IUserWithAccountFields, removeUndefinedFields, type IBody } from "shared"
+import { IJobCreate, INewSuperUser, IRecruiterJson, IRoutes, IUserWithAccountFields, removeUndefinedFields, type IBody } from "shared"
 import { ApplicationIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -20,8 +20,6 @@ const errorHandler = (error: any): undefined => {
 export const getDelegationDetails = (establishment_id: string, token: string) =>
   apiGet("/formulaire/delegation/:establishment_id", { params: { establishment_id }, headers: { authorization: `Bearer ${token}` } }).catch(errorHandler)
 export const getFormulaire = (establishment_id: string) => apiGet("/formulaire/:establishment_id", { params: { establishment_id } }).catch(errorHandler)
-export const getFormulaireByToken = (establishment_id: string, token: string) =>
-  apiGet("/formulaire/:establishment_id/by-token", { params: { establishment_id }, headers: { authorization: `Bearer ${token}` } }).catch(errorHandler)
 export const postFormulaire = (userId: string, form) => apiPost("/user/:userId/formulaire", { params: { userId }, body: form })
 
 export const archiveFormulaire = (establishment_id: string) => apiDelete("/formulaire/:establishment_id", { params: { establishment_id } }).catch(errorHandler)
@@ -44,10 +42,6 @@ export const cancelOffreFromAdmin = (jobId: string, data: IRoutes["put"]["/formu
   apiPut("/formulaire/offre/f/:jobId/cancel", { params: { jobId }, body: data })
 export const extendOffre = (jobId: string) => apiPut(`/formulaire/offre/:jobId/extend`, { params: { jobId } })
 export const fillOffre = (jobId, token) => apiPut(`/formulaire/offre/:jobId/provided`, { params: { jobId }, headers: { authorization: `Bearer ${token}` } })
-export const createEtablissementDelegation = ({ data, jobId }: { jobId: string; data: INewDelegations }) =>
-  apiPost(`/formulaire/offre/:jobId/delegation`, { params: { jobId }, body: data })
-export const createEtablissementDelegationByToken = ({ data, jobId, token }: { jobId: string; data: INewDelegations; token: string }) =>
-  apiPost(`/formulaire/offre/:jobId/delegation/by-token`, { params: { jobId }, body: data, headers: { authorization: `Bearer ${token}` } })
 export const notifyLbaJobDetailView = async (jobId: string) => await apiPost("/v1/jobs/matcha/:id/stats/view-details", { params: { id: jobId } })
 /**
  * User API
@@ -188,8 +182,6 @@ export const getApplicationDataForIntention = async (applicationId: string, inte
 export const createEtablissement = (etablissement) => apiPost("/etablissement/creation", { body: etablissement })
 
 export const getRomeDetail = (rome: string) => apiGet("/rome/detail/:rome", { params: { rome } })
-export const getRelatedEtablissementsFromRome = async ({ rome, latitude, longitude, limit }: { rome: string; latitude: number; longitude: number; limit: number }) =>
-  apiGet(`/etablissement/cfas-proches`, { querystring: { rome, latitude, longitude, limit } })
 
 export const etablissementUnsubscribeDemandeDelegation = (establishment_siret: any, token: string) =>
   apiPost("/etablissement/:establishment_siret/proposition/unsubscribe", {
@@ -207,8 +199,6 @@ export const getOpcoUsers = () => apiGet("/user/opco", {})
 
 export const reportLbaItem = (itemId: string, type: LBA_ITEM_TYPE, reason: string, reasonDetails: string | undefined) =>
   apiPost("/report-company", { querystring: { type, itemId }, body: { reason, reasonDetails } })
-
-export const getMetiersDAvenir = () => apiGet("/metiersdavenir", {})
 
 export const getEligibleTrainingsForAppointments = (siret: string) =>
   apiGet("/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret", { params: { siret: siret } })

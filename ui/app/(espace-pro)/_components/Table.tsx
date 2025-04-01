@@ -4,7 +4,7 @@ import { useFlexLayout, useSortBy, useTable } from "react-table"
 
 import { ArrowDownLine, ArrowUpLine } from "@/theme/components/icons"
 
-export const Table = ({ data, columns }) => {
+const Table = ({ data, columns }) => {
   const tableData = useMemo(() => data, [data])
   const tableColumns = useMemo(() => columns, [columns])
 

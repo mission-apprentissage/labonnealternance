@@ -11,7 +11,7 @@ export type IWhisper = {
   lien: string | null
 }
 
-export const WHISPERS: IWhisper[] = [
+const WHISPERS: IWhisper[] = [
   {
     ideaType: "whisper",
     message: "Vous avez besoin de passer le permis ? Bénéficiez d'au moins 500€ d'aides dès maintenant.",

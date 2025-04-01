@@ -28,19 +28,6 @@ const getValueFromPath = (key) => {
   return res
 }
 
-const scrollToTop = (elementId) => {
-  if (elementId) {
-    document.getElementById(elementId).scrollTo({
-      top: 0,
-      left: 0,
-    })
-  } else {
-    if (typeof window !== "undefined") {
-      window.scrollTo(0, 0)
-    }
-  }
-}
-
 const scrollToNestedElement = ({ containerId, nestedElement, yOffsett = 100 }) => {
   const ancestorElement = document.getElementById(containerId)
 
@@ -64,4 +51,4 @@ const logError = (title, error = undefined) => {
   console.error(`Error ${title} sent to Sentry`)
 }
 
-export { getPathLink, getValueFromPath, logError, scrollToNestedElement, scrollToTop }
+export { getPathLink, getValueFromPath, logError, scrollToNestedElement }

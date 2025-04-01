@@ -5,7 +5,7 @@ import { useEffect } from "react"
 
 import { etablissementUnsubscribeDemandeDelegation } from "../../../../utils/api"
 
-export const PropositionOffreUnsubscribe = () => {
+const PropositionOffreUnsubscribe = () => {
   const router = useRouter()
 
   const { token } = router.query as { token: string | undefined }

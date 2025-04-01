@@ -34,7 +34,7 @@ export const AccessibilitePage = ({ recordMap }) => {
             darkMode={false}
             disableHeader={true}
             rootDomain={publicConfig.baseUrl}
-            className="disable-chakra"
+            className="notion-body"
             components={{
               nextImage: Image,
               nextLink: Link,

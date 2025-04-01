@@ -10,7 +10,6 @@ import theme from "../theme/index"
 import LogoProvider from "./contextLogo"
 import WidgetProvider from "./contextWidget"
 import DisplayContextProvider from "./DisplayContextProvider"
-import SearchResultContextProvider from "./SearchResultContextProvider"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,15 +23,13 @@ const Providers = ({ children }) => {
   return (
     <ChakraProvider theme={theme}>
       <PlausibleProvider domain={publicConfig.plausibleDomain} trackOutboundLinks={true} trackLocalhost={true} enabled={true}>
-        <SearchResultContextProvider>
-          <DisplayContextProvider>
-            <WidgetProvider>
-              <LogoProvider>
-                <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-              </LogoProvider>
-            </WidgetProvider>
-          </DisplayContextProvider>
-        </SearchResultContextProvider>
+        <DisplayContextProvider>
+          <WidgetProvider>
+            <LogoProvider>
+              <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+            </LogoProvider>
+          </WidgetProvider>
+        </DisplayContextProvider>
       </PlausibleProvider>
     </ChakraProvider>
   )

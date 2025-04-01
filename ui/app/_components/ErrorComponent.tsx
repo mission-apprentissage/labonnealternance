@@ -5,7 +5,7 @@ import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Box, Container, Typography } from "@mui/material"
 import * as Sentry from "@sentry/nextjs"
 import Image from "next/image"
-import { useEffect } from "react"
+import { useEffect, type PropsWithChildren } from "react"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { publicConfig } from "@/config.public"
@@ -33,7 +33,7 @@ function getErrorDescription(error: unknown): string | null {
   return null
 }
 
-export type ErrorProps = { error: Error & { digest?: string }; reset: () => void }
+export type ErrorProps = { error: unknown; reset: () => void }
 
 export function ErrorComponent({ error, reset }: ErrorProps) {
   useEffect(() => {
@@ -82,4 +82,16 @@ export function ErrorComponent({ error, reset }: ErrorProps) {
       </Box>
     </Container>
   )
+}
+
+const fallbackRender: Sentry.FallbackRender = ({ error, resetError }) => {
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+      <ErrorComponent error={error} reset={resetError} />
+    </Box>
+  )
+}
+
+export function ErrorBoundary({ children }: PropsWithChildren) {
+  return <Sentry.ErrorBoundary fallback={fallbackRender}>{children}</Sentry.ErrorBoundary>
 }

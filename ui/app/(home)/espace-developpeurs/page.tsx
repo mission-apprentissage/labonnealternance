@@ -1,10 +1,11 @@
 import { Box, Code, Container, Divider, Grid, GridItem, ListItem, Text, UnorderedList } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Metadata } from "next"
 
-import { DsfrLink } from "../../../components/dsfr/DsfrLink"
-import { PAGES } from "../../../utils/routes.utils"
-import { Breadcrumb } from "../../_components/Breadcrumb"
+import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = {
   title: PAGES.static.EspaceDeveloppeurs.getMetadata().title,
@@ -36,11 +37,11 @@ export default function EspaceDeveloppeurs() {
                 , sur lequel vous pourrez utiliser les différents jeux de données proposés, une fois votre compte créé :
               </Text>
 
-              <Grid mb={4} templateColumns="repeat(12, 1fr)" display="flex" justifyContent="center" gap={4}>
-                <Button className="fr-btn--secondary" priority="primary" size="large">
+              <Grid mb={fr.spacing("12v")} templateColumns="repeat(12, 1fr)" display="flex" justifyContent="center" gap={4}>
+                <Button priority="secondary" size="large">
                   <DsfrLink href="https://api.apprentissage.beta.gouv.fr/fr/explorer">Explorer l'API</DsfrLink>
                 </Button>
-                <Button className="fr-btn--secondary" priority="primary" size="large">
+                <Button priority="secondary" size="large">
                   <DsfrLink href="https://api.apprentissage.beta.gouv.fr/fr/documentation-technique">Voir la documentation technique</DsfrLink>
                 </Button>
               </Grid>

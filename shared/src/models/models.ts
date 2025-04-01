@@ -36,6 +36,7 @@ import rawFranceTravail from "./rawFranceTravail.model.js"
 import rawHelloWorkModel from "./rawHelloWork.model.js"
 import rawKelioModel from "./rawKelio.model.js"
 import rawMeteojobModel from "./rawMeteojob.model.js"
+import rawMonsterModel from "./rawMonster.model.js"
 import rawPassModel from "./rawPass.model.js"
 import rawRecruteursLbaModel from "./rawRecruteursLba.model.js"
 import rawRHAlternanceModel from "./rawRHAlternance.model.js"
@@ -90,6 +91,7 @@ const modelDescriptorMap = {
   [lbaCompanyLegacyModel.collectionName]: lbaCompanyLegacyModel,
   [opcoModel.collectionName]: opcoModel,
   [rawHelloWorkModel.collectionName]: rawHelloWorkModel,
+  [rawMonsterModel.collectionName]: rawMonsterModel,
   [rawPassModel.collectionName]: rawPassModel,
   [rawRecruteursLbaModel.collectionName]: rawRecruteursLbaModel,
   [recruiterModel.collectionName]: recruiterModel,

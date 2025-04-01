@@ -9,7 +9,7 @@ import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/
 import { RechercheForm, type RechercheFormProps } from "@/app/_components/RechercheForm/RechercheForm"
 import { RechercheFormTitle } from "@/app/_components/RechercheForm/RechercheFormTitle"
 
-export function HomeRechercheFormUI(props: Pick<RechercheFormProps, "onSubmit">) {
+function HomeRechercheFormUI(props: Pick<RechercheFormProps, "onSubmit">) {
   return (
     <Box
       sx={{
