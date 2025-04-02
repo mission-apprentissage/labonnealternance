@@ -1,19 +1,17 @@
 "use client"
-
-import { startReactDsfr } from "@codegouvfr/react-dsfr/next-appdir"
+import { DsfrProviderBase, type DsfrProviderProps, StartDsfrOnHydration } from "@codegouvfr/react-dsfr/next-app-router"
 import Link from "next/link"
 
 import { defaultColorScheme } from "./default-color-scheme"
 
-declare module "@codegouvfr/react-dsfr/next-appdir" {
+declare module "@codegouvfr/react-dsfr/next-app-router" {
   interface RegisterLink {
     Link: typeof Link
   }
 }
 
-startReactDsfr({ defaultColorScheme })
-
-export function StartDsfr() {
-  //Yes, leave null here.
-  return null
+export function DsfrProvider(props: DsfrProviderProps) {
+  return <DsfrProviderBase defaultColorScheme={defaultColorScheme} Link={Link} {...props} />
 }
+
+export { StartDsfrOnHydration }

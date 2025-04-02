@@ -1,18 +1,13 @@
-import { DsfrHead } from "@codegouvfr/react-dsfr/next-appdir/DsfrHead"
-import { DsfrProvider } from "@codegouvfr/react-dsfr/next-appdir/DsfrProvider"
-import { getHtmlAttributes } from "@codegouvfr/react-dsfr/next-appdir/getHtmlAttributes"
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter"
 import { Metadata } from "next"
-import Link from "next/link"
 import PlausibleProvider from "next-plausible"
 import { setupZodErrorMap } from "shared/helpers/zodHelpers/setupZodErrorMap"
 
 import RootTemplate from "@/app/client_only_providers"
 import { publicConfig } from "@/config.public"
+import { DsfrHead, getHtmlAttributes } from "@/dsfr-setup/server-only-index"
+import { DsfrProvider } from "@/dsfr-setup/start-dsfr"
 import { Matomo } from "@/tracking/trackingMatomo"
-
-import { defaultColorScheme } from "../dsfr-setup/default-color-scheme"
-import { StartDsfr } from "../dsfr-setup/start-dsfr"
 
 import "react-notion-x/src/styles.css"
 import "../public/styles/application.css"
@@ -40,11 +35,9 @@ const lang = "fr"
 
 export default function RootLayout({ children }: { children: JSX.Element }) {
   return (
-    <html {...getHtmlAttributes({ defaultColorScheme, lang })}>
+    <html {...getHtmlAttributes({ lang })}>
       <head>
-        <StartDsfr />
         <DsfrHead
-          Link={Link}
           preloadFonts={[
             //"Marianne-Light",
             //"Marianne-Light_Italic",
@@ -64,7 +57,7 @@ export default function RootLayout({ children }: { children: JSX.Element }) {
       <body>
         {
           <AppRouterCacheProvider>
-            <DsfrProvider lang={lang} defaultColorScheme={defaultColorScheme} Link={Link}>
+            <DsfrProvider lang={lang}>
               <RootTemplate>{children}</RootTemplate>
             </DsfrProvider>
           </AppRouterCacheProvider>
