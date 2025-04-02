@@ -42,12 +42,7 @@ async function getSession(request: NextRequest): Promise<{ user: IUserRecruteurP
   }
 }
 
-const verifyAuthentication = async (search: string, request: NextRequest) => {
-  const query = new URLSearchParams(search)
-  const token = query.get("token")
-  if (!token) {
-    return
-  }
+const verifyAuthentication = async (token: string, request: NextRequest) => {
   try {
     const { user, sessionToken } = await apiPost("/login/verification", {
       headers: {
@@ -82,12 +77,17 @@ export async function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers)
   const session = await getSession(request)
   const user = session?.user
+  const query = new URLSearchParams(search)
+  const token = query.get("token")
 
   if (pathname === "/espace-pro/authentification") {
+    if (token) {
+      return await verifyAuthentication(token, request)
+    }
     if (user) {
       return redirectAfterAuthentication(user, request)
     }
-    return await verifyAuthentication(search, request)
+    return
   }
 
   if (isConnectionRequired(pathname) && (!user || isUnallowedPathForUser(user, pathname))) {
