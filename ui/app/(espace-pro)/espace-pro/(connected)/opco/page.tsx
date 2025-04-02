@@ -100,7 +100,7 @@ function AdministrationOpco() {
     {
       Header: "Entreprise",
       id: "establishment_raison_sociale",
-      width: "300",
+      width: "280",
       accessor: "establishment_raison_sociale",
       sortType: (a, b) => sortReactTableString(a.original.establishment_raison_sociale, b.original.establishment_raison_sociale),
       Cell: ({
@@ -126,6 +126,7 @@ function AdministrationOpco() {
     {
       Header: "Nom",
       id: "first_name",
+      width: "200",
       accessor: ({ last_name, first_name }) => (
         <Text color="#666666" fontSize="14px">
           {first_name} {last_name}
@@ -134,7 +135,7 @@ function AdministrationOpco() {
     },
     {
       Header: "Email",
-      width: "200",
+      width: "250",
       accessor: "email",
       Cell: ({ value }) => (
         <Text color="#666666" fontSize="14px" noOfLines={2}>
@@ -165,22 +166,23 @@ function AdministrationOpco() {
       sortType: (a, b) => sortReactTableDate(a.original.createdAt, b.original.createdAt),
     },
     {
-      Header: "Origine",
-      accessor: "origin",
-      Cell: ({ value }) => (
-        <Text color="#666666" fontSize="14px" noOfLines={2}>
-          {value}
-        </Text>
-      ),
-      id: "origin",
-    },
-    {
       Header: "Offres",
       maxWidth: "70",
       id: "nombre_offres",
       disableSortBy: true,
       sortType: "basic",
       accessor: ({ jobs_count }) => jobs_count,
+    },
+    {
+      Header: "Origine",
+      accessor: "origin",
+      width: "200",
+      Cell: ({ value }) => (
+        <Text color="#666666" fontSize="14px" noOfLines={2}>
+          {value}
+        </Text>
+      ),
+      id: "origin",
     },
   ]
 
