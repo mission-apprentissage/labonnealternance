@@ -1,15 +1,19 @@
-import { Box, Button, Container, Flex, Heading, SimpleGrid, Stack, Text, useToast } from "@chakra-ui/react"
+"use client"
+
+import { Box, Flex, Heading, SimpleGrid, Stack, Text, useToast } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { useQuery } from "@tanstack/react-query"
 import { IJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { getDirectJobPath } from "shared/metier/lbaitemutils"
 
-import { LoadingEmptySpace } from "../.."
-import { dayjs } from "../../../../common/dayjs"
-import { publicConfig } from "../../../../config.public"
-import { Copy } from "../../../../theme/components/icons"
-import { getDelegationDetails, viewOffreDelegation } from "../../../../utils/api"
-import { RomeDetailReadOnly } from "../../../DepotOffre/RomeDetailReadOnly"
+import { dayjs } from "@/common/dayjs"
+import { RomeDetailReadOnly } from "@/components/DepotOffre/RomeDetailReadOnly"
+import { LoadingEmptySpace } from "@/components/espace_pro"
+import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
+import { publicConfig } from "@/config.public"
+import { getDelegationDetails, viewOffreDelegation } from "@/utils/api"
+import { PAGES } from "@/utils/routes.utils"
 
 export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token }: { idFormulaire: string; jobId: string; siretFormateur: string; token: string }) {
   const toast = useToast()
@@ -34,7 +38,8 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
    * @return {Promise<void>}
    */
   const copyInClipboard = () => {
-    navigator.clipboard.writeText(`${publicConfig.baseUrl}${getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id)}`)
+    const jobUrl = PAGES.dynamic.jobDetail({ type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, jobId: job._id }).getPath()
+    navigator.clipboard.writeText(`${publicConfig.baseUrl}${jobUrl}`)
     toast({
       title: "Lien copié.",
       position: "top-right",
@@ -50,7 +55,7 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
   const competencesRome = job.competences_rome ?? job?.rome_detail?.competences
 
   return (
-    <Container maxW="container.xl" mb={20}>
+    <DepotSimplifieStyling>
       <Box>
         <Heading fontSize="32px" mt={8} mb={6}>
           Détails de la demande
@@ -62,7 +67,14 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
         <Text fontSize="16px" mt={5}>
           Vous pouvez contacter directement l’entreprise pour évaluer son besoin, ou alors partager le lien vers l’offre à vos étudiants :
         </Text>
-        <Button mt={5} type="submit" variant="primary" leftIcon={<Copy width={5} />} onClick={copyInClipboard}>
+        <Button
+          style={{
+            marginTop: fr.spacing("4v"),
+          }}
+          type="submit"
+          priority="primary"
+          onClick={copyInClipboard}
+        >
           Copier l'url
         </Button>
       </Box>
@@ -161,6 +173,6 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
         </Box>
       </SimpleGrid>
       {competencesRome && <RomeDetailReadOnly romeReferentiel={job.rome_detail} competences={competencesRome} appellation={job.rome_appellation_label} />}
-    </Container>
+    </DepotSimplifieStyling>
   )
 }
