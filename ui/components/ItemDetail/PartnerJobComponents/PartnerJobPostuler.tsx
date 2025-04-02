@@ -7,6 +7,8 @@ import { SendPlausibleEvent } from "@/utils/plausible"
 import { CandidatureLba } from "../CandidatureLba/CandidatureLba"
 import CandidatureParTelephone from "../CandidatureParTelephone"
 
+const filteredPartnerLabels = ["Kelio", "Veritone"]
+
 export const PartnerJobPostuler = ({ job, isCollapsedHeader }: { job: ILbaItemPartnerJob; isCollapsedHeader: boolean }) => {
   // KBA fix enum shared/models/lbaItem.model.ts
   if (["Pourvue", "Annulée"].includes(job.job.status)) return null
@@ -33,7 +35,7 @@ export const PartnerJobPostuler = ({ job, isCollapsedHeader }: { job: ILbaItemPa
             })
           }
         >
-          Je postule sur {job.job.partner_label}
+          Je postule sur {filteredPartnerLabels.includes(job.job.partner_label) ? "un autre site" : job.job.partner_label}
         </Link>
       </Box>
     )
