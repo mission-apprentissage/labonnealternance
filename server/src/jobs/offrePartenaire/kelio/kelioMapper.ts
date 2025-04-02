@@ -140,7 +140,7 @@ export const kelioJobToJobsPartners = (job: IKelioJob): IComputedJobsPartners =>
     workplace_description: company.company_description,
     workplace_address_zipcode: address.postal_code || null,
     workplace_address_city: address.city,
-    workplace_address_label: [address.street_number, address.street, address.city, address.postal_code].join(" ").trim(),
+    workplace_address_label: [address.street_number, address.street, address.postal_code, address.city].join(" ").trim(),
     workplace_geopoint,
     apply_url: urlParsing.success ? urlParsing.data : null,
     offer_multicast: true,
