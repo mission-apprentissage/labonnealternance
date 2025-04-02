@@ -46,9 +46,9 @@ function Users() {
 
   const columns = [
     {
-      Header: "Actions",
+      Header: "",
       id: "action",
-      maxWidth: "80",
+      maxWidth: "40",
       disableSortBy: true,
       // isSticky: true,
       accessor: (row: IUserRecruteurJson) => {
@@ -108,7 +108,7 @@ function Users() {
     {
       Header: "Etablissement",
       id: "establishment_raison_sociale",
-      width: "300",
+      width: "350",
       accessor: "establishment_raison_sociale",
       sortType: (a, b) => sortReactTableString(a.original.establishment_raison_sociale, b.original.establishment_raison_sociale),
       Cell: ({
@@ -146,7 +146,7 @@ function Users() {
     {
       Header: "Type",
       id: "type",
-      maxWidth: "100",
+      maxWidth: "120",
       accessor: ({ type }) => (
         <Text color="#666666" fontSize="14px">
           {type}
@@ -156,6 +156,7 @@ function Users() {
     {
       Header: "Nom",
       id: "nom",
+      width: "200",
       accessor: ({ last_name, first_name }) => (
         <Text color="#666666" fontSize="14px">
           {first_name} {last_name}
@@ -164,7 +165,7 @@ function Users() {
     },
     {
       Header: "Email",
-      width: "200",
+      width: "250",
       accessor: "email",
       Cell: ({ value }) => (
         <Text color="#666666" fontSize="14px" noOfLines={2}>
@@ -191,6 +192,7 @@ function Users() {
           {dayjs(value).format("DD/MM/YYYY")}
         </Text>
       ),
+      maxWidth: "100",
       id: "createdAt",
       sortType: (a, b) => sortReactTableDate(a.original.createdAt, b.original.createdAt),
     },
@@ -202,6 +204,7 @@ function Users() {
           {value}
         </Text>
       ),
+      width: "300",
       id: "origine",
     },
   ]

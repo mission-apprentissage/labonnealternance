@@ -148,7 +148,7 @@ export const OffresTabs = ({
         {
           Header: "Vues",
           id: "views",
-          width: "90",
+          width: "120",
           accessor: ({ stats_detail_view = 0 }) => {
             return <NumberCell>{stats_detail_view}</NumberCell>
           },
@@ -166,7 +166,7 @@ export const OffresTabs = ({
     {
       Header: "",
       id: "action",
-      maxWidth: "50",
+      maxWidth: "40",
       disableFilters: true,
       disableSortBy: true,
       // isSticky: true,

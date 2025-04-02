@@ -107,7 +107,7 @@ function TableNew({ data = [], columns, description = undefined, exportable, sea
         {exportable && <ExportButtonNew data={tableData} />}
       </Flex>
 
-      <Box className="fr-table fr-table--bordered">
+      <Box className="fr-table">
         <Box className="fr-table__wrapper">
           <Box className="fr-table__container">
             <Box className="fr-table__content">
@@ -116,7 +116,7 @@ function TableNew({ data = [], columns, description = undefined, exportable, sea
                   {headerGroups.map((headerGroup, k) => (
                     <Box key={k} as="tr" {...headerGroup.getHeaderGroupProps({})}>
                       {headerGroup.headers.map((column, i) => (
-                        <Box key={i} as="th" {...column.getHeaderProps(column.getSortByToggleProps())}>
+                        <Box key={i} as="th" {...column.getHeaderProps(column.getSortByToggleProps())} role="hack">
                           <Flex flexDirection="column" w="full" alignItems="flex-start" justify="center">
                             <Text className="fr-cell__title">
                               {column.render("Header")}

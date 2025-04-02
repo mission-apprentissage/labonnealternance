@@ -79,7 +79,7 @@ function ListeEntreprise() {
     {
       Header: "",
       id: "action",
-      maxWidth: "50",
+      maxWidth: "40",
       disableSortBy: true,
       accessor: (row: IRecruiterJson) => {
         return (
