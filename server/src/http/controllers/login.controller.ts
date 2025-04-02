@@ -30,11 +30,11 @@ export default (server: Server) => {
       const { userId } = req.params
       const user = await getDbCollection("userswithaccounts").findOne({ _id: userId })
       if (!user) {
-        return res.status(400).send({ error: true, reason: "UNKNOWN" })
+        return res.status(400).send({ error: true, data: "UNKNOWN" })
       }
       const is_email_checked = isUserEmailChecked(user)
       if (is_email_checked) {
-        return res.status(400).send({ error: true, reason: "VERIFIED" })
+        return res.status(400).send({ error: true, data: "VERIFIED" })
       }
       await sendUserConfirmationEmail(user)
       return res.status(200).send({})
@@ -66,7 +66,7 @@ export default (server: Server) => {
         await sendUserConfirmationEmail(user)
         return res.status(400).send({
           error: true,
-          reason: "VERIFY",
+          data: "VERIFY",
         })
       }
 
