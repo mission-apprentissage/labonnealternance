@@ -42,9 +42,9 @@ function AdministrationOpco() {
 
   const columns = [
     {
-      Header: "Actions",
+      Header: "",
       id: "action",
-      maxWidth: "80",
+      maxWidth: "40",
       disableSortBy: true,
       accessor: (row) => {
         return (
