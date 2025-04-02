@@ -233,6 +233,12 @@ export const sendCandidateAppointmentHardbounceEmail = async (appointment: IAppo
     return
   }
 
+  const appointmentWithHardbounce = await getDbCollection("appointments").findOne({ _id: appointment._id, "to_applicant_mails.campaign": mailType.CFA_HARDBOUNCE })
+  if (appointmentWithHardbounce) {
+    sentryCaptureException(new Error("Appointment already processed for hardbounce"), { extra: { cle_ministere_educatif, applicant_id } })
+    return
+  }
+
   const email = await mailer.sendEmail({
     to: user.email,
     subject: `Le centre de formation ${training?.etablissement_formateur_raison_sociale} n’a pas reçu votre demande`,
