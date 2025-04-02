@@ -7,7 +7,7 @@ export default function ModalCloseButton({ onClose }: { onClose: () => void }) {
   return (
     <Box display={"flex"} alignSelf={"flex-end"}>
       <Button type="button" priority="tertiary no outline" onClick={onClose}>
-        fermer
+        Fermer
         <Text as={"span"} ml={2}>
           <Close boxSize={4} />
         </Text>

@@ -30,7 +30,7 @@ export function PublicHeader({ user, hideConnectionButton = false }: { user?: IU
         <HeaderQuickAccessItem
           key="connexion"
           quickAccessItem={{
-            iconId: null,
+            iconId: "fr-icon-lock-line",
             text: "Connexion",
             linkProps: {
               href: PAGES.static.authentification.getPath(),

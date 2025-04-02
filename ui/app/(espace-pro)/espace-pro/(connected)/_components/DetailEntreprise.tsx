@@ -76,7 +76,8 @@ export default function DetailEntreprise({ userRecruteur, recruiter }: { userRec
 
   const userMutation = useMutation({
     mutationFn: ({ userId, values, siret }: { userId: string; values: INewSuperUser; siret: string }) => {
-      return updateEntrepriseAdmin(userId, values, siret)
+      const { type, ...value } = values
+      return updateEntrepriseAdmin(userId, value, siret)
     },
     onSuccess: () => {
       client.invalidateQueries({
