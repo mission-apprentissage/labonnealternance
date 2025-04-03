@@ -1,6 +1,7 @@
 "use client"
 
-import { Box, Button, Checkbox, Editable, EditableInput, EditablePreview, Flex, Heading, HStack, Table, Tbody, Td, Text, Th, Thead, Tr, useToast, VStack } from "@chakra-ui/react"
+import { Box, Checkbox, Editable, EditableInput, EditablePreview, Flex, Heading, HStack, Table, Tbody, Td, Text, Th, Thead, Tr, useToast, VStack } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { useParams, useRouter } from "next/navigation"
 import { createRef } from "react"
 import { IEligibleTrainingsForAppointmentJson, IEtablissementJson, IETFAParametersJson } from "shared"
@@ -178,10 +179,10 @@ export default function RendezVousApprentissageDetailRendererClient({
                             {/* @ts-expect-error: TODO */}
                             <EditablePreview ref={emailFocusRef} />
                           </Editable>
-                          {/* @ts-expect-error: TODO */}
-                          <Button mt={4} variant="primary" onClick={() => saveEmail(parameter._id, emailRef.current.value, parameter.cle_ministere_educatif)}>
-                            OK
-                          </Button>
+                          <Box mt={4}>
+                            {/* @ts-expect-error: TODO */}
+                            <Button onClick={() => saveEmail(parameter._id, emailRef.current.value, parameter.cle_ministere_educatif)}>OK</Button>
+                          </Box>
                         </Td>
                         <Td align="center" fontSize="0.8em" px="1px">
                           <HStack spacing={0}>
