@@ -1,4 +1,3 @@
-import Button from "@codegouvfr/react-dsfr/Button"
 import { stringify } from "csv-stringify/sync"
 import dayjs from "dayjs"
 import { omit } from "lodash-es"
@@ -68,11 +67,9 @@ export default function ExportButtonNew({ data, datasetName = "export" }) {
   const fileName = `${datasetName}_${new Date().toJSON()}.csv`
 
   return (
-    <CSVLink data={csvData} filename={fileName} border="none">
-      <Button priority="tertiary no outline">
-        <DownloadLine mx="0.5rem" w="0.75rem" h="0.75rem" />
-        Exporter
-      </Button>
+    <CSVLink className="fr-link" data={csvData} filename={fileName} border="none">
+      <DownloadLine mr={2} mb={2} w="0.75rem" h="0.75rem" />
+      Exporter
     </CSVLink>
   )
 }
