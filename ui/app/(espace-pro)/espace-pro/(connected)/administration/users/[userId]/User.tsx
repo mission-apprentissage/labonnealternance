@@ -14,13 +14,20 @@ import { PAGES } from "@/utils/routes.utils"
 export default function User() {
   const { userId } = useParams() as { userId: string }
 
-  const { data: userRecruteur, isLoading } = useQuery({
-    queryKey: ["user"],
+  const {
+    data: userRecruteur,
+    isLoading,
+    refetch: refetchUserRecruteur,
+  } = useQuery({
+    queryKey: ["user", userId],
     queryFn: () => getUser(userId),
-    gcTime: 0,
     enabled: !!userId,
   })
-  const { data: recruiter, isLoading: recruiterLoading } = useQuery({
+  const {
+    data: recruiter,
+    isLoading: recruiterLoading,
+    refetch: refetchRecruiter,
+  } = useQuery({
     queryKey: ["recruiter", userRecruteur?.establishment_id],
     enabled: Boolean(userRecruteur?.establishment_id),
     queryFn: () => getFormulaire(userRecruteur.establishment_id),
@@ -38,7 +45,14 @@ export default function User() {
       </Box>
       <Container as="main" p={0} maxW="container.xl" flexGrow="1">
         <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.dynamic.backAdminRecruteurOffres({ user_id: userId, user_label: establishmentLabel })]} />
-        <DetailEntreprise userRecruteur={userRecruteur} recruiter={recruiter} />
+        <DetailEntreprise
+          userRecruteur={userRecruteur}
+          recruiter={recruiter}
+          onChange={() => {
+            refetchUserRecruteur()
+            refetchRecruiter()
+          }}
+        />
       </Container>
     </>
   )

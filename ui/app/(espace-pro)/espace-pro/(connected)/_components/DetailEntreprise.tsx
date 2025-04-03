@@ -1,10 +1,10 @@
 "use client"
 import { Badge, Box, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, SimpleGrid, Spinner, Stack, Text, useDisclosure, useToast } from "@chakra-ui/react"
 import { Button } from "@codegouvfr/react-dsfr/Button"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
 import { INewSuperUser, IUserStatusValidationJson } from "shared"
-import { AUTHTYPE, CFA, ENTREPRISE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import { AUTHTYPE, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
 import CustomInput from "@/app/(espace-pro)/_components/CustomInput"
@@ -19,18 +19,28 @@ import { ArrowRightLine } from "@/theme/components/icons"
 import { updateEntrepriseAdmin } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
-export default function DetailEntreprise({ userRecruteur, recruiter }: { userRecruteur: any; recruiter: any }) {
+type Variables = { userId: string; values: INewSuperUser; siret: string }
+
+export default function DetailEntreprise({ userRecruteur, recruiter, onChange }: { userRecruteur: any; recruiter: any; onChange?: (props: { opco?: OPCOS_LABEL }) => void }) {
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationModificationOpco = useDisclosure()
 
-  const client = useQueryClient()
   const toast = useToast()
   const { user } = useConnectedSessionClient()
 
   const ActivateUserButton = ({ userId }) => {
     const { activate } = useUserPermissionsActions(userId)
 
-    return <Button onClick={() => activate()}>Activer le compte</Button>
+    return (
+      <Button
+        onClick={async () => {
+          await activate()
+          onChange?.({})
+        }}
+      >
+        Activer le compte
+      </Button>
+    )
   }
 
   const DisableUserButton = () => {
@@ -75,14 +85,13 @@ export default function DetailEntreprise({ userRecruteur, recruiter }: { userRec
   }
 
   const userMutation = useMutation({
-    mutationFn: ({ userId, values, siret }: { userId: string; values: INewSuperUser; siret: string }) => {
+    mutationFn: async (variables: Variables) => {
+      const { userId, values, siret } = variables
       const { type, ...value } = values
-      return updateEntrepriseAdmin(userId, value, siret)
+      await updateEntrepriseAdmin(userId, value, siret)
+      onChange?.({ opco: "opco" in values ? values.opco : undefined })
     },
     onSuccess: () => {
-      client.invalidateQueries({
-        queryKey: ["user"],
-      })
       toast({
         title: "Mise à jour enregistrée avec succès",
         position: "top-right",
@@ -98,7 +107,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter }: { userRec
 
   return (
     <AnimationContainer>
-      <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={userRecruteur} />
+      <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={userRecruteur} onUpdate={() => onChange?.({})} />
 
       <Box borderBottom="1px solid #E3E3FD" mb={10}>
         <Heading fontSize="32px" noOfLines={2}>
