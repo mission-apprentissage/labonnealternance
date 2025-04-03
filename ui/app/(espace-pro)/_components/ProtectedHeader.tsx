@@ -1,6 +1,7 @@
 import { Header as DsfrHeader, HeaderQuickAccessItem } from "@codegouvfr/react-dsfr/Header"
 import { cookies } from "next/headers"
 
+import { AuthWatcher } from "@/app/(espace-pro)/_components/AuthWatcher"
 import { DsfrHeaderProps } from "@/app/_components/Header"
 import { getSession } from "@/utils/getSession"
 
@@ -66,5 +67,10 @@ export async function ProtectedHeader() {
     quickAccessItems: [...DsfrHeaderProps.quickAccessItems, ...extraItems],
   }
 
-  return <DsfrHeader {...props} />
+  return (
+    <>
+      <DsfrHeader {...props} />
+      <AuthWatcher user={user} />
+    </>
+  )
 }
