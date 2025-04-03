@@ -2,14 +2,14 @@
 
 import { Box, Container } from "@mui/material"
 
-import { PublicHeader } from "@/app/(espace-pro)/_components/PublicHeader"
+import { PublicHeaderSimple } from "@/app/(espace-pro)/_components/PublicHeader"
 import { Footer } from "@/app/_components/Footer"
 import NotFound from "@/app/_components/NotFound"
 
-export default function yo() {
+export default function NotFoundPage() {
   return (
     <Box sx={{ minHeight: "100vh", display: "grid", gridTemplateRows: "max-content 1fr min-content" }}>
-      <PublicHeader user={null} hideConnectionButton={true} />
+      <PublicHeaderSimple />
       <Container maxWidth="xl">
         <NotFound />
       </Container>

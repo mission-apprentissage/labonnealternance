@@ -3,6 +3,7 @@ import { Box } from "@mui/material"
 import type { PropsWithChildren } from "react"
 
 import { ConnectedHeader } from "@/app/(espace-pro)/espace-pro/(connected)/_components/ConnectedHeader"
+import { AuthWatcher } from "@/app/_components/AuthWatcher"
 import { Footer } from "@/app/_components/Footer"
 import { getSession } from "@/utils/getSession"
 
@@ -20,6 +21,7 @@ export default async function EspaceProConnecteLayout({ children }: PropsWithChi
       <ConnectedHeader user={user} />
       <Box sx={{ marginBottom: fr.spacing("4w") }}>{children}</Box>
       <Footer />
+      <AuthWatcher user={user} />
     </UserContextProvider>
   )
 }

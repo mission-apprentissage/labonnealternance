@@ -9,6 +9,7 @@ import { RiAccountCircleLine } from "react-icons/ri"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import { useAuth } from "@/context/UserContext"
 import { apiGet } from "@/utils/api.utils"
+import { PAGES } from "@/utils/routes.utils"
 
 import { AUTHTYPE } from "../../../common/contants"
 import { LogoContext } from "../../../context/contextLogo"
@@ -16,7 +17,7 @@ import { LockFill } from "../../../theme/components/icons"
 import { LbaNew } from "../../../theme/components/logos"
 import LogoAkto from "../assets/images/akto"
 
-const Header = () => {
+const Header = ({ onLogout }: { onLogout: () => void }) => {
   const { organisation } = useContext(LogoContext)
   const { user } = useAuth()
 
@@ -24,7 +25,8 @@ const Header = () => {
 
   const handleLogout = async () => {
     await apiGet("/auth/logout", {})
-    router.push("/")
+    router.push(PAGES.static.home.getPath())
+    onLogout()
   }
 
   return (
