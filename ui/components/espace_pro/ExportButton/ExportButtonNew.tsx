@@ -68,7 +68,7 @@ export default function ExportButtonNew({ data, datasetName = "export" }) {
 
   return (
     <CSVLink className="fr-link" data={csvData} filename={fileName} border="none">
-      <DownloadLine mr={2} mb={2} w="0.75rem" h="0.75rem" />
+      <DownloadLine mr={2} mb={1} w="0.75rem" h="0.75rem" />
       Exporter
     </CSVLink>
   )
