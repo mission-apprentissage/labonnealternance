@@ -14,12 +14,7 @@ import { PAGES } from "@/utils/routes.utils"
 export default function User() {
   const { userId } = useParams() as { userId: string }
 
-  const { data: userRecruteur, isLoading } = useQuery({
-    queryKey: ["user"],
-    queryFn: () => getUser(userId),
-    gcTime: 0,
-    enabled: !!userId,
-  })
+  const { data: userRecruteur, isLoading } = useQuery({ queryKey: ["user"], queryFn: () => getUser(userId), gcTime: 0, enabled: !!userId })
   const { data: recruiter, isLoading: recruiterLoading } = useQuery({
     queryKey: ["recruiter", userRecruteur?.establishment_id],
     enabled: Boolean(userRecruteur?.establishment_id),

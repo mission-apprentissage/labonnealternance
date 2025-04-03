@@ -49,26 +49,12 @@ export default function RendezVousApprentissageDetailRendererClient({
    */
   const saveEmail = async (parameterId, email, cle_ministere_educatif) => {
     if (!email && !z.string().email().safeParse(email).success) {
-      return toast({
-        title: "Email de contact non valide.",
-        status: "error",
-        isClosable: true,
-        position: "bottom-right",
-      })
+      return toast({ title: "Email de contact non valide.", status: "error", isClosable: true, position: "bottom-right" })
     }
 
-    await patchEligibleTrainingsForAppointment(parameterId, {
-      lieu_formation_email: email,
-      cle_ministere_educatif,
-      is_lieu_formation_email_customized: true,
-    })
+    await patchEligibleTrainingsForAppointment(parameterId, { lieu_formation_email: email, cle_ministere_educatif, is_lieu_formation_email_customized: true })
 
-    toast({
-      title: "Email de contact mis à jour.",
-      status: "success",
-      isClosable: true,
-      position: "bottom-right",
-    })
+    toast({ title: "Email de contact mis à jour.", status: "success", isClosable: true, position: "bottom-right" })
   }
 
   /**
@@ -80,12 +66,7 @@ export default function RendezVousApprentissageDetailRendererClient({
   const disableEmailOverriding = async (id, is_lieu_formation_email_customized) => {
     await patchEligibleTrainingsForAppointment(id, { is_lieu_formation_email_customized })
     if (is_lieu_formation_email_customized) {
-      toast({
-        title: "Lors de la prochaine synchronisation l'email ne sera pas écrasé car il est personnalisé.",
-        status: "success",
-        isClosable: true,
-        position: "bottom-right",
-      })
+      toast({ title: "Lors de la prochaine synchronisation l'email ne sera pas écrasé car il est personnalisé.", status: "success", isClosable: true, position: "bottom-right" })
     } else {
       toast({
         title: "L'email sera mis à jour automatiquement lors de la prochaine synchronisation avec le Catalogue.",
@@ -107,21 +88,17 @@ export default function RendezVousApprentissageDetailRendererClient({
   const onCheckboxChange = async ({ parameter, checked, referrer }) => {
     // Add referrer
     if (checked) {
-      await patchEligibleTrainingsForAppointment(parameter._id, {
-        referrers: parameter.referrers.map((ref) => ref).concat(referrer.name),
-      })
+      await patchEligibleTrainingsForAppointment(parameter._id, { referrers: parameter.referrers.map((ref) => ref).concat(referrer.name) })
       refreshPage()
     } else {
-      await patchEligibleTrainingsForAppointment(parameter._id, {
-        referrers: parameter.referrers.map((ref) => ref).filter((item) => item !== referrer.name),
-      })
+      await patchEligibleTrainingsForAppointment(parameter._id, { referrers: parameter.referrers.map((ref) => ref).filter((item) => item !== referrer.name) })
       refreshPage()
     }
   }
 
   return (
     <AdminLayout currentAdminPage={EAdminPages.RECHERCHE_RENDEZ_VOUS}>
-      <Breadcrumb pages={[PAGES.static.rendezVousApprentissageRecherche, PAGES.dynamic.rendezVousApprentissageDetail({ siret })]} />
+      <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.rendezVousApprentissageRecherche, PAGES.dynamic.rendezVousApprentissageDetail({ siret })]} />
       <Heading textStyle="h2" mt={5}>
         {title}
       </Heading>
@@ -194,13 +171,7 @@ export default function RendezVousApprentissageDetailRendererClient({
                         <Td onClick={() => emailFocusRef.current.focus()} fontSize="0.8em" px="1px">
                           <Editable
                             defaultValue={parameter?.lieu_formation_email}
-                            style={{
-                              border: "solid #dee2e6 1px",
-                              padding: 5,
-                              marginRight: 10,
-                              borderRadius: 4,
-                              minWidth: 225,
-                            }}
+                            style={{ border: "solid #dee2e6 1px", padding: 5, marginRight: 10, borderRadius: 4, minWidth: 225 }}
                           >
                             {/* @ts-expect-error: TODO */}
                             <EditableInput ref={emailRef} type="email" _focus={{ border: "none" }} />
@@ -250,13 +221,7 @@ export default function RendezVousApprentissageDetailRendererClient({
                                   isChecked={!!parameterReferrers}
                                   value={referrer.name}
                                   defaultChecked={!!parameterReferrers}
-                                  onChange={(event) =>
-                                    onCheckboxChange({
-                                      parameter,
-                                      referrer,
-                                      checked: event.target.checked,
-                                    })
-                                  }
+                                  onChange={(event) => onCheckboxChange({ parameter, referrer, checked: event.target.checked })}
                                 >
                                   <Text fontSize="0.8em">{referrer.name}</Text>
                                 </Checkbox>

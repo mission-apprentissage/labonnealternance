@@ -31,22 +31,12 @@ export default function RendezVousApprentissage() {
       const formations: IFormationCatalogueJson[] = await apiGet("/admin/formations", { querystring: { search_item: keywordEncoded } })
 
       if (!formations.length) {
-        toast({
-          title: "Aucun établissement trouvé dans le catalogue.",
-          status: "info",
-          isClosable: true,
-          position: "bottom-right",
-        })
+        toast({ title: "Aucun établissement trouvé dans le catalogue.", status: "info", isClosable: true, position: "bottom-right" })
       } else {
         router.push(PAGES.dynamic.rendezVousApprentissageDetail({ siret: formations[0].etablissement_formateur_siret }).getPath())
       }
     } catch (e) {
-      toast({
-        title: "Une erreur est survenue pendant la recherche.",
-        status: "error",
-        isClosable: true,
-        position: "bottom-right",
-      })
+      toast({ title: "Une erreur est survenue pendant la recherche.", status: "error", isClosable: true, position: "bottom-right" })
     } finally {
       setLoading(false)
     }
@@ -54,7 +44,7 @@ export default function RendezVousApprentissage() {
 
   return (
     <AdminLayout currentAdminPage={EAdminPages.RECHERCHE_RENDEZ_VOUS}>
-      <Breadcrumb pages={[PAGES.static.rendezVousApprentissageRecherche]} />
+      <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.rendezVousApprentissageRecherche]} />
       <Box border="1px solid #E0E5ED" bg="white">
         <Text fontWeight="500" textStyle="h6" p={4} px={6} borderBottom="1px solid #E0E5ED">
           Rechercher un établissement
