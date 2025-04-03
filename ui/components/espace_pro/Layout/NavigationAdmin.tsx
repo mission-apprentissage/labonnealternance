@@ -37,14 +37,7 @@ const NavigationAdmin = ({ currentPage }: { currentPage: EAdminPages }) => {
     <Box mt={4}>
       <Container as="header" maxW="container.xl" flexGrow="1">
         <Box className="fr-tabs">
-          <Tabs
-            className="fr-tabs__list"
-            value={selectedIndex}
-            onChange={handleTabsChange}
-            variant="scrollable" // Enables horizontal scrolling
-            scrollButtons="auto" // Show arrows when needed
-            allowScrollButtonsMobile
-          >
+          <Tabs className="fr-tabs__list" value={selectedIndex} onChange={handleTabsChange} variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile>
             <Tab label="Gestion des recruteurs" className="fr-tabs__tab" wrapped data-testid="recruiter_management_tab" />
             <Tab label="Entreprises de l'algorithme" className="fr-tabs__tab" wrapped data-testid="algo_company_tab" />
             <Tab label="Rendez-vous apprentissage" className="fr-tabs__tab" wrapped data-testid="recherche_rendez_vous_apprentissage_tab" />
