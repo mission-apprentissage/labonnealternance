@@ -2,16 +2,13 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import type { PropsWithChildren } from "react"
 
-import { PublicHeader } from "@/app/(espace-pro)/_components/PublicHeader"
+import { ProtectedHeader } from "@/app/(espace-pro)/_components/ProtectedHeader"
 import { Footer } from "@/app/_components/Footer"
-import { getSession } from "@/utils/getSession"
 
-export default async function PublicLayout({ children }: PropsWithChildren) {
-  const { user } = await getSession()
-
+export default function PublicLayout({ children }: PropsWithChildren) {
   return (
     <>
-      <PublicHeader user={user} />
+      <ProtectedHeader />
       <Box sx={{ marginBottom: fr.spacing("4w") }}>{children}</Box>
       <Footer />
     </>

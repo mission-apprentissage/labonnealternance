@@ -1,18 +1,15 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 
-import { PublicHeader } from "@/app/(espace-pro)/_components/PublicHeader"
+import { ProtectedHeader } from "@/app/(espace-pro)/_components/ProtectedHeader"
 import { Footer } from "@/app/_components/Footer"
 import WidgetTester from "@/app/_components/WidgetTester"
-import { getSession } from "@/utils/getSession"
 
-export default async function Page() {
-  const { user } = await getSession()
-
+export default function Page() {
   return (
     <html lang="en">
       <body>
-        <PublicHeader user={user} />
+        <ProtectedHeader />
         <Box
           maxWidth="xl"
           margin="auto"

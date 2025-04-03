@@ -1,21 +1,19 @@
-"use client"
-
 import { Header as DsfrHeader, HeaderQuickAccessItem } from "@codegouvfr/react-dsfr/Header"
-import { useRouter } from "next/navigation"
+import { cookies } from "next/headers"
+import { redirect } from "next/navigation"
 import { IUserRecruteurPublic } from "shared"
 
 import { DsfrHeaderProps } from "@/app/_components/Header"
-import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 
-export const ConnectedHeader = ({ user }: { user: IUserRecruteurPublic }) => {
-  const router = useRouter()
-
+export function ConnectedHeader({ user }: { user: IUserRecruteurPublic }) {
   const { quickAccessItems, ...rest } = DsfrHeaderProps
 
   const onLogout = async () => {
-    await apiGet("/auth/logout", {})
-    router.push(PAGES.static.authentification.getPath())
+    "use server"
+    const cookieStore = await cookies()
+    cookieStore.delete("lba_session")
+    redirect(PAGES.static.authentification.getPath())
   }
 
   return (

@@ -1,9 +1,15 @@
 import { isDynamicServerError } from "next/dist/client/components/hooks-server-context"
-import { headers } from "next/headers"
+import { cookies, headers } from "next/headers"
+import { cache } from "react"
 import { ComputedUserAccess, IUserRecruteurPublic } from "shared"
 
-export async function getSession(): Promise<{ user?: IUserRecruteurPublic | null; access?: ComputedUserAccess | null }> {
+async function getSessionFn(): Promise<{ user?: IUserRecruteurPublic | null; access?: ComputedUserAccess | null }> {
   try {
+    const cookieStore = await cookies()
+    if (!cookieStore.get("lba_session").value) {
+      return {}
+    }
+
     const headerStore = await headers()
     const sessionRaw = headerStore.get("x-session")
 
@@ -21,3 +27,5 @@ export async function getSession(): Promise<{ user?: IUserRecruteurPublic | null
     return {}
   }
 }
+
+export const getSession = cache(getSessionFn)

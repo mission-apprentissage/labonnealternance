@@ -8,7 +8,7 @@ import { Footer } from "@/app/_components/Footer"
 export default function ErrorPage(props: ErrorProps) {
   return (
     <Box sx={{ minHeight: "100vh", display: "grid", gridTemplateRows: "max-content 1fr min-content" }}>
-      <PublicHeader user={null} hideConnectionButton={true} />
+      <PublicHeader />
       <ErrorComponent {...props} />
       <Footer />
     </Box>

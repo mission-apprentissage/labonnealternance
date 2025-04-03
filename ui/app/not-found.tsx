@@ -9,7 +9,7 @@ import NotFound from "@/app/_components/NotFound"
 export default function yo() {
   return (
     <Box sx={{ minHeight: "100vh", display: "grid", gridTemplateRows: "max-content 1fr min-content" }}>
-      <PublicHeader user={null} hideConnectionButton={true} />
+      <PublicHeader />
       <Container maxWidth="xl">
         <NotFound />
       </Container>
