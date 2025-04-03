@@ -36,14 +36,12 @@ const NavigationAdmin = ({ currentPage }: { currentPage: EAdminPages }) => {
   return (
     <Box mt={4}>
       <Container as="header" maxW="container.xl" flexGrow="1">
-        <Box className="fr-tabs">
-          <Tabs className="fr-tabs__list" value={selectedIndex} onChange={handleTabsChange} variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile>
-            <Tab label="Gestion des recruteurs" className="fr-tabs__tab" wrapped data-testid="recruiter_management_tab" />
-            <Tab label="Entreprises de l'algorithme" className="fr-tabs__tab" wrapped data-testid="algo_company_tab" />
-            <Tab label="Rendez-vous apprentissage" className="fr-tabs__tab" wrapped data-testid="recherche_rendez_vous_apprentissage_tab" />
-            <Tab label="Gestion des administrateurs" className="fr-tabs__tab" wrapped data-testid="administrator_management_tab" />
-          </Tabs>
-        </Box>
+        <Tabs value={selectedIndex} onChange={handleTabsChange} variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile>
+          <Tab label="Gestion des recruteurs" wrapped data-testid="recruiter_management_tab" />
+          <Tab label="Entreprises de l'algorithme" wrapped data-testid="algo_company_tab" />
+          <Tab label="Rendez-vous apprentissage" wrapped data-testid="recherche_rendez_vous_apprentissage_tab" />
+          <Tab label="Gestion des administrateurs" wrapped data-testid="administrator_management_tab" />
+        </Tabs>
       </Container>
     </Box>
   )
