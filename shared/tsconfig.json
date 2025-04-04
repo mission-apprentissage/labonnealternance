@@ -1,6 +1,8 @@
 {
   "extends": "@tsconfig/node20/tsconfig.json",
   "compilerOptions": {
+    // Limit to ensure browser compatibility
+    "lib": ["es2022"],
     "declaration": true,
     "sourceMap": true,
     "declarationMap": true,
@@ -18,10 +20,10 @@
     "noErrorTruncation": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["**/*.ts"],
+  "include": ["./src/**/*.ts"],
   "exclude": ["**/node_modules"],
   "typeAcquisition": {
-    "enable": true,
+    "enable": false,
     "include": ["@types/node"]
   }
 }

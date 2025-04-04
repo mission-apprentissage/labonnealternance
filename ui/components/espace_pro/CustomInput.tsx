@@ -6,7 +6,7 @@ import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { Warning } from "../../theme/components/icons"
 import Link from "../Link"
 
-export const CustomInput = (props) => {
+const CustomInput = (props) => {
   const [field, meta] = useField(props)
   return (
     <Box pb={props.pb ?? "5"}>

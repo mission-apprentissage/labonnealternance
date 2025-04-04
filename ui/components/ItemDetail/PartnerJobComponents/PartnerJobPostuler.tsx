@@ -1,5 +1,6 @@
+"use client"
 import { Box, Link } from "@chakra-ui/react"
-import { ILbaItemPartnerJob } from "shared"
+import { ILbaItemPartnerJobJson } from "shared"
 
 import { focusWithin } from "@/theme/theme-lba-tools"
 import { SendPlausibleEvent } from "@/utils/plausible"
@@ -9,7 +10,7 @@ import CandidatureParTelephone from "../CandidatureParTelephone"
 
 const filteredPartnerLabels = ["Kelio", "Veritone", "France Travail", "BPCE"]
 
-export const PartnerJobPostuler = ({ job, isCollapsedHeader }: { job: ILbaItemPartnerJob; isCollapsedHeader: boolean }) => {
+export const PartnerJobPostuler = ({ job, isCollapsedHeader }: { job: ILbaItemPartnerJobJson; isCollapsedHeader: boolean }) => {
   // KBA fix enum shared/models/lbaItem.model.ts
   if (["Pourvue", "Annulée"].includes(job.job.status)) return null
   if (job.contact?.email) {

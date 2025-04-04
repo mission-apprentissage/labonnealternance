@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 import { IJob } from "shared"
-import { RECRUITER_STATUS } from "shared/constants"
+import { RECRUITER_STATUS } from "shared/constants/index"
 
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 

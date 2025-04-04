@@ -1,7 +1,6 @@
 import { useDisclosure } from "@chakra-ui/react"
 import { useState } from "react"
-import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
-import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 
@@ -17,7 +16,7 @@ export const CandidatureLbaModal = ({
   submitControls,
   fromWidget = false,
 }: {
-  item: ILbaItemLbaJob | ILbaItemLbaCompany | ILbaItemPartnerJob
+  item: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson
   modalControls: ReturnType<typeof useDisclosure>
   submitControls: ReturnType<typeof useSubmitCandidature>
   fromWidget?: boolean
@@ -25,7 +24,7 @@ export const CandidatureLbaModal = ({
   const [applicantEmail, setApplicantEmail] = useState<string>("")
   const { isOpen, onClose: onModalClose } = modalControls
   const { submitCandidature, isDone, isSuccess, isError, error, isLoading } = submitControls
-  const kind: LBA_ITEM_TYPE_OLD | null = item.ideaType || null
+  const kind = item.ideaType
 
   const onSubmit = (formValues: IApplicationSchemaInitValues) => {
     setApplicantEmail(formValues.applicant_email)
@@ -51,7 +50,7 @@ export const CandidatureLbaModal = ({
       modalContentProps={{
         maxWidth: 1152,
       }}
-      hideCloseButton={true}
+      hideCloseButton={isSuccess || isError ? false : true}
     >
       {content}
     </ModalReadOnly>

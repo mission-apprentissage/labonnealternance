@@ -1,5 +1,6 @@
 import { EmailIcon } from "@chakra-ui/icons"
-import { Box, Button, Editable, EditableInput, EditablePreview, Flex, Grid, Tag, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import { Box, Editable, EditableInput, EditablePreview, Flex, Grid, Tag, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { createRef, useEffect, useState } from "react"
 
 import "react-dates/initialize"
@@ -202,10 +203,12 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
               {/*  @ts-expect-error: TODO */}
               <EditableInput ref={emailGestionnaireRef} type="email" _focus={{ border: "none" }} />
             </Editable>
-            {/*  @ts-expect-error: TODO */}
-            <Button variant="primary" onClick={() => upsertEmailDecisionnaire(emailGestionnaireRef.current.value.toLowerCase())}>
-              <Disquette w="16px" h="16px" />
-            </Button>
+            <Box>
+              {/*  @ts-expect-error: TODO */}
+              <Button onClick={() => upsertEmailDecisionnaire(emailGestionnaireRef.current.value.toLowerCase())}>
+                <Disquette w="16px" h="16px" />
+              </Button>
+            </Box>
           </Flex>
         </Box>
       </Grid>

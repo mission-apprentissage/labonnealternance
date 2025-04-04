@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import { ZDiplomesMetiers } from "shared/models"
+import { ZDiplomesMetiers } from "shared/models/index"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { filterWrongRomes } from "@/services/formation.service"
@@ -34,7 +34,7 @@ const buildAcronyms = (intitule) => {
   return acronymeCourt + " " + acronymeLong
 }
 
-const updateDiplomeMetier = ({ initial, toAdd }) => {
+const updateDiplomeMetierList = ({ initial, toAdd }) => {
   if (toAdd.codes_romes) {
     toAdd.codes_romes.map((rome_code) => {
       if (initial.codes_romes.indexOf(rome_code) < 0) {
@@ -65,7 +65,7 @@ const getIntitulesFormations = async () => {
           codes_rncps: [formation.rncp_code],
         }
       } else {
-        diplomesMetiers[formation.intitule_long] = updateDiplomeMetier({
+        diplomesMetiers[formation.intitule_long] = updateDiplomeMetierList({
           initial: diplomesMetiers[formation.intitule_long],
           toAdd: formation,
         })
@@ -74,7 +74,7 @@ const getIntitulesFormations = async () => {
   }
 }
 
-export default async function () {
+export const updateDiplomeMetier = async () => {
   logger.info(" -- Start of DiplomesMetiers initializer -- ")
 
   logger.info(`Clearing diplomesmetiers...`)

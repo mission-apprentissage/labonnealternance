@@ -7,7 +7,7 @@ enum LOADING_ILLUSTRATION_TYPES {
   JOB = "JOB",
 }
 
-const ResultListsLoading = ({ jobSearchError, trainingSearchError, isTrainingSearchLoading, isJobSearchLoading }) => {
+const ResultListsLoading = ({ isTrainingSearchLoading, isJobSearchLoading }) => {
   const isLoading = isTrainingSearchLoading || isJobSearchLoading
 
   const getNextLoadingIllustration = (currentIllustrationIndex: number | null) => {
@@ -77,10 +77,6 @@ const ResultListsLoading = ({ jobSearchError, trainingSearchError, isTrainingSea
       clearInterval(interval)
     }
   }, [isLoading])
-
-  if (jobSearchError && trainingSearchError) {
-    return <></>
-  }
 
   const resultListProperties = {
     color: "grey.425",

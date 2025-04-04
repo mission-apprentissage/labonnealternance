@@ -1,11 +1,10 @@
 import { Box, Flex, Text } from "@chakra-ui/react"
-import React from "react"
 
 import ItemDistanceToCenter from "./ItemDistanceToCenter"
 
 export default function ItemDetailCard({ selectedItem }) {
   const res = selectedItem?.company?.mandataire ? (
-    <Box color="grey.700" textAlign="left" mt={6}>
+    <Box color="grey.700" textAlign="left" mt={2}>
       <Flex alignItems="center">
         <svg width="18" height="22" viewBox="0 0 18 22" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
@@ -28,7 +27,7 @@ export default function ItemDetailCard({ selectedItem }) {
       </Flex>
     </Box>
   ) : (
-    <Flex color="grey.700" direction="row" mt={6}>
+    <Flex color="grey.700" direction="row" mt={2}>
       <Box pt={1}>
         <svg width="18" height="22" viewBox="0 0 18 22" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path

@@ -1,4 +1,4 @@
-import { JOB_STATUS_ENGLISH } from "shared/models"
+import { JOB_STATUS_ENGLISH } from "shared/models/index"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"

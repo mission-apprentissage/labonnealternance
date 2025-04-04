@@ -8,11 +8,11 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-export const controlUserState = async (user: IUserWithAccount): Promise<{ error: boolean; reason?: string }> => {
+export const controlUserState = async (user: IUserWithAccount): Promise<{ error: boolean; data?: string }> => {
   const status = getLastStatusEvent(user.status)?.status
   switch (status) {
     case UserEventType.DESACTIVE:
-      return { error: true, reason: "DISABLED" }
+      return { error: true, data: "DISABLED" }
     case UserEventType.VALIDATION_EMAIL:
     case UserEventType.ACTIF: {
       const roles = await getDbCollection("rolemanagements").find({ user_id: user._id }).toArray()
@@ -31,10 +31,10 @@ export const controlUserState = async (user: IUserWithAccount): Promise<{ error:
           return { error: false }
         }
         if (entreprises.every((entreprise) => getLastStatusEvent(entreprise.status)?.status === EntrepriseStatus.DESACTIVE)) {
-          return { error: true, reason: "DISABLED" }
+          return { error: true, data: "DISABLED" }
         }
       }
-      return { error: true, reason: "VALIDATION" }
+      return { error: true, data: "VALIDATION" }
     }
     case null:
     case undefined:

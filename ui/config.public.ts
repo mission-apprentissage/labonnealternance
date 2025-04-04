@@ -1,4 +1,4 @@
-export interface PublicConfig {
+interface PublicConfig {
   sentry_dsn: string
   sentryDisabled?: boolean
   baseUrl: string

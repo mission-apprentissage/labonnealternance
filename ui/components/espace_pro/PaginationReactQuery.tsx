@@ -30,7 +30,7 @@ const NextLink = ({ nextPage, canNextPage }) => {
 const sequence = (from, to) => [...new Array(to - from + 1)].map((_, index) => index + from)
 const uniq = (array: number[]): number[] => [...new Set(array)]
 
-export function PaginationReactQuery({ pageCount, gotoPage: goToPageIndex, currentPage: pageIndex }) {
+function PaginationReactQuery({ pageCount, gotoPage: goToPageIndex, currentPage: pageIndex }) {
   if (Number.isNaN(pageCount) || pageCount <= 1) {
     return null
   }

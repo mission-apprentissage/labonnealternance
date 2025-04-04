@@ -1,26 +1,26 @@
 import { Box, Flex, Spinner, useToast } from "@chakra-ui/react"
+import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/router"
 import { useEffect } from "react"
-import { useQuery } from "react-query"
 
 import { etablissementUnsubscribeDemandeDelegation } from "../../../../utils/api"
 
-export const PropositionOffreUnsubscribe = () => {
+const PropositionOffreUnsubscribe = () => {
   const router = useRouter()
 
   const { token } = router.query as { token: string | undefined }
 
   const { siretFormateur } = router.query
   const toast = useToast()
-  const { isLoading, isError, isSuccess } = useQuery(
-    "proposition-offre-unsubscribe",
-    async () => {
+  const { isLoading, isError, isSuccess } = useQuery({
+    queryKey: ["proposition-offre-unsubscribe"],
+
+    queryFn: async () => {
       await etablissementUnsubscribeDemandeDelegation(siretFormateur, token)
     },
-    {
-      enabled: Boolean(siretFormateur),
-    }
-  )
+
+    enabled: Boolean(siretFormateur),
+  })
   useEffect(() => {
     if (isError) {
       toast({

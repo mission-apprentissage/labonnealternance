@@ -1,28 +1,17 @@
-import {
-  Button,
-  FormControl,
-  FormLabel,
-  Heading,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Select,
-  Text,
-  useDisclosure,
-} from "@chakra-ui/react"
+"use client"
+
+import { FormControl, FormLabel, Heading, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Text, useDisclosure } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
+import { Box } from "@mui/material"
 import { useState } from "react"
 import { IUserRecruteurJson } from "shared"
 
+import ModalCloseButton from "@/app/_components/ModalCloseButton"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 
 import { AUTHTYPE } from "../../common/contants"
-import { Close } from "../../theme/components/icons"
 
-export const ConfirmationDesactivationUtilisateur = ({
+const ConfirmationDesactivationUtilisateur = ({
   userRecruteur,
   onClose,
   isOpen,
@@ -71,12 +60,7 @@ export const ConfirmationDesactivationUtilisateur = ({
     <Modal closeOnOverlayClick={false} blockScrollOnMount={true} size="xl" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent mt={["0", "3.75rem"]} h={["100%", "auto"]} mb={0} borderRadius={0} data-testid="confirmation-desactivation-utilisateur-modal">
-        <Button display={"flex"} alignSelf={"flex-end"} color="bluefrance.500" fontSize={"epsilon"} onClick={onClose} variant="unstyled" p={6} fontWeight={400}>
-          fermer
-          <Text as={"span"} ml={2}>
-            <Close boxSize={4} />
-          </Text>
-        </Button>
+        <ModalCloseButton onClose={onClose} />
         <ModalHeader>
           <Heading as="h2" fontSize="1.5rem">
             <Text>Désactivation du compte</Text>
@@ -112,17 +96,18 @@ export const ConfirmationDesactivationUtilisateur = ({
         )}
 
         <ModalFooter>
-          <Button
-            variant="secondary"
-            mr={3}
-            onClick={() => {
-              onClose()
-              setReason(null)
-            }}
-          >
-            Annuler
-          </Button>
-          <Button variant="primary" onClick={() => handleUpdate()} isDisabled={!reason}>
+          <Box sx={{ marginRight: "10px" }}>
+            <Button
+              priority="secondary"
+              onClick={() => {
+                onClose()
+                setReason(null)
+              }}
+            >
+              Annuler
+            </Button>
+          </Box>
+          <Button onClick={() => handleUpdate()} disabled={!reason}>
             Supprimer
           </Button>
         </ModalFooter>

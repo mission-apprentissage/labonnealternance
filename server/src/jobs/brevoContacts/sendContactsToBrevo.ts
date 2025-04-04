@@ -3,7 +3,7 @@ import { pipeline } from "stream/promises"
 
 import { ColumnOption, stringify } from "csv-stringify/sync"
 import dayjs from "dayjs"
-import { AccessEntityType, AccessStatus } from "shared/models"
+import { AccessEntityType, AccessStatus } from "shared/models/index"
 import { UserEventType } from "shared/models/userWithAccount.model"
 import SibApiV3Sdk from "sib-api-v3-sdk"
 

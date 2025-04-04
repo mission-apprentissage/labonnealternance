@@ -42,7 +42,7 @@ function fuzzyTextFilterFn(rows, id, filterValue) {
 // Let the table remove the filter if the string is empty
 fuzzyTextFilterFn.autoRemove = (val) => !val
 
-export function TableNew({ data = [], columns, description = undefined, exportable, searchPlaceholder = "Rechercher par raison sociale, email ou téléphone..." }) {
+function TableNew({ data = [], columns, description = undefined, exportable, searchPlaceholder = "Rechercher par raison sociale, email ou téléphone..." }) {
   const tableData = useMemo(() => data, [data])
   const tableColumns = useMemo(() => columns, [columns])
 
@@ -107,52 +107,60 @@ export function TableNew({ data = [], columns, description = undefined, exportab
         {exportable && <ExportButtonNew data={tableData} />}
       </Flex>
 
-      <Box as="table" {...getTableProps()} w="100%" flex={1} fontSize="delta">
-        <Box as="thead" borderBottom="2px solid #3A3A3A">
-          {headerGroups.map((headerGroup, k) => (
-            <Box key={k} as="tr" {...headerGroup.getHeaderGroupProps({})} pb={4}>
-              {headerGroup.headers.map((column, i) => (
-                <Box key={i} as="th" {...column.getHeaderProps(column.getSortByToggleProps())} display={[i === 0 || i > 2 ? "none" : "flex", "flex"]} overflow="hidden" px={2}>
-                  <Flex flexDirection="column" w="full" alignItems="flex-start" justify="center">
-                    <Text fontWeight="700" textAlign="left" fontSize="14px">
-                      {column.render("Header")}
+      <Box className="fr-table">
+        <Box className="fr-table__wrapper">
+          <Box className="fr-table__container">
+            <Box className="fr-table__content">
+              <Box as="table" {...getTableProps()}>
+                <Box as="thead">
+                  {headerGroups.map((headerGroup, k) => (
+                    <Box key={k} as="tr" {...headerGroup.getHeaderGroupProps({})}>
+                      {headerGroup.headers.map((column, i) => (
+                        <Box key={i} as="th" {...column.getHeaderProps(column.getSortByToggleProps())} role="hack">
+                          <Flex flexDirection="column" w="full" alignItems="flex-start" justify="center">
+                            <Text className="fr-cell__title">
+                              {column.render("Header")}
 
-                      {column.isSorted ? (
-                        column.isSortedDesc ? (
-                          <ArrowDownLine pl={1} color="bluefrance.500" />
-                        ) : (
-                          <ArrowUpLine pl={1} color="bluefrance.500" />
-                        )
-                      ) : (
-                        column.canSort && (
-                          <Box as="span" pl={1}>
-                            <ArrowUpLine color="bluefrance.500" />
-                            <ArrowDownLine color="bluefrance.500" />
-                          </Box>
-                        )
-                      )}
-                    </Text>
-                  </Flex>
+                              {column.isSorted ? (
+                                column.isSortedDesc ? (
+                                  <ArrowDownLine pl={1} color="bluefrance.500" />
+                                ) : (
+                                  <ArrowUpLine pl={1} color="bluefrance.500" />
+                                )
+                              ) : (
+                                column.canSort && (
+                                  <Box as="span" pl={1}>
+                                    <ArrowUpLine color="bluefrance.500" />
+                                    <ArrowDownLine color="bluefrance.500" />
+                                  </Box>
+                                )
+                              )}
+                            </Text>
+                          </Flex>
+                        </Box>
+                      ))}
+                    </Box>
+                  ))}
                 </Box>
-              ))}
-            </Box>
-          ))}
-        </Box>
-        <Box as="tbody" {...getTableBodyProps()}>
-          {page.map((row, i) => {
-            prepareRow(row)
-            return (
-              <Box key={i} as="tr" backgroundColor={i % 2 ? "grey.200" : "white"} py={4} {...row.getRowProps()}>
-                {row.cells.map((cell, j) => {
-                  return (
-                    <Flex key={j} as="td" align="center" px={2} {...cell.getCellProps()}>
-                      {cell.render("Cell")}
-                    </Flex>
-                  )
-                })}
+                <Box as="tbody" {...getTableBodyProps()}>
+                  {page.map((row, i) => {
+                    prepareRow(row)
+                    return (
+                      <Box key={i} as="tr" {...row.getRowProps()}>
+                        {row.cells.map((cell, j) => {
+                          return (
+                            <Flex key={j} as="td" {...cell.getCellProps()} sx={cell.column.id === "action" ? { padding: "4px !important" } : {}}>
+                              {cell.render("Cell")}
+                            </Flex>
+                          )
+                        })}
+                      </Box>
+                    )
+                  })}
+                </Box>
               </Box>
-            )
-          })}
+            </Box>
+          </Box>
         </Box>
       </Box>
       <Box>

@@ -1,6 +1,6 @@
 import { createContext, FC, PropsWithChildren, useState } from "react"
 
-export type IContextWidget = {
+type IContextWidget = {
   isWidget: boolean
   mobile: boolean
 }
@@ -19,7 +19,7 @@ interface Props extends PropsWithChildren {
   initialWidget?: IContextWidget
 }
 
-export const WidgetProvider: FC<Props> = ({ initialWidget = { isWidget: false, mobile: false }, children }) => {
+const WidgetProvider: FC<Props> = ({ initialWidget = { isWidget: false, mobile: false }, children }) => {
   const [widget, setWidget] = useState<IContextWidget | undefined>(initialWidget)
 
   return <WidgetContext.Provider value={{ widget, setWidget }}>{children}</WidgetContext.Provider>

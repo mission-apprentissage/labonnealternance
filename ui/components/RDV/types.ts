@@ -1,48 +1,5 @@
 import { EReasonsKey } from "shared"
 
-type IAppointmentRequestRecapResponse = {
-  appointment: {
-    _id: string
-    cfa_intention_to_applicant: any
-    cfa_message_to_applicant_date: any
-    cfa_message_to_applicant: any
-    applicant_message_to_cfa: string
-    applicant_reasons: string[]
-    cle_ministere_educatif: string
-    applicant_id: string
-  }
-  user: {
-    _id: string
-    firstname: string
-    lastname: string
-    phone: string
-    email: string
-    type: string
-  }
-  etablissement: {
-    _id: string
-    training_intitule_long: string
-    etablissement_formateur_raison_sociale: string
-    lieu_formation_street: string
-    lieu_formation_email: string
-    lieu_formation_city: string
-    lieu_formation_zip_code: string
-  }
-}
-
-type IAppointmentRequestRecapResponseShort = {
-  user: {
-    firstname: string
-    lastname: string
-    phone: string
-    email: string
-  }
-  etablissement: {
-    etablissement_formateur_raison_sociale: string
-    lieu_formation_email: string
-  }
-}
-
 const reasons = [
   {
     key: EReasonsKey.MODALITE,
@@ -105,7 +62,5 @@ const reasons = [
     checked: false,
   },
 ]
-
-export type { IAppointmentRequestRecapResponse, IAppointmentRequestRecapResponseShort }
 
 export { reasons }

@@ -14,6 +14,7 @@ import { setZodLanguage } from "shared/helpers/zodWithOpenApi"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 
 import { localOrigin } from "@/common/utils/isOriginLocal"
+import { geoRouteController } from "@/http/controllers/_private/geo.private.controller"
 
 import { initSentryFastify } from "../common/sentry/sentry.fastify"
 import config from "../config"
@@ -36,7 +37,6 @@ import jobsEtFormationsV1Route from "./controllers/jobsEtFormations.controller"
 import login from "./controllers/login.controller"
 import metiers from "./controllers/metiers.controller"
 import metiersDAvenirRoute from "./controllers/metiersDAvenir.controller"
-import optoutRoute from "./controllers/optout.controller"
 import partnersRoute from "./controllers/partners.controller"
 import reportedCompanyController from "./controllers/reportedCompany.controller"
 import rome from "./controllers/rome.controller"
@@ -135,6 +135,7 @@ export async function bind(app: Server) {
       formationsRegionV1Route(typedSubApp)
       jobsEtFormationsV1Route(typedSubApp)
       reportedCompanyController(typedSubApp)
+      geoRouteController(typedSubApp)
 
       /**
        * Admin / Auth
@@ -157,7 +158,6 @@ export async function bind(app: Server) {
        */
       userRoute(typedSubApp)
       formulaireRoute(typedSubApp)
-      optoutRoute(typedSubApp)
       etablissementsRecruteurRoute(typedSubApp)
       jobsRouteV2(typedSubApp)
 

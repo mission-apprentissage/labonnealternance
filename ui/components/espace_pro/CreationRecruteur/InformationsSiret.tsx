@@ -1,8 +1,12 @@
-import { Box, Button, Flex, Heading, Link, ListItem, Stack, Text, UnorderedList } from "@chakra-ui/react"
-import { useRouter } from "next/router"
-import { CFA, ENTREPRISE } from "shared/constants"
+"use client"
 
-import { ExternalLinkLine, InfoCircle } from "../../../theme/components/icons"
+import { Box, Button, Flex, Heading, ListItem, Stack, Text, UnorderedList } from "@chakra-ui/react"
+import { useRouter } from "next/navigation"
+import { CFA, ENTREPRISE } from "shared/constants/index"
+
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
+
+import { InfoCircle } from "../../../theme/components/icons"
 
 import { CustomTabs } from "./CustomTabs"
 
@@ -25,11 +29,11 @@ export const InformationsSiret = ({ currentTab, onCurrentTabChange }: { currentT
   return <CustomTabs<TabId> panels={panels} currentTab={currentTab} onChange={onCurrentTabChange} />
 }
 
-const CatalogueLink = ({ url, children, bold = false, ...rest }: { url: string; children: React.ReactNode; bold?: boolean } & Parameters<typeof Link>[0]) => {
+const CatalogueLink = ({ href, children, bold = false, ...rest }: { href: string; children: React.ReactNode; bold?: boolean } & Parameters<typeof DsfrLink>[0]) => {
   return (
-    <Link href={url} {...(bold ? { variant: "classic" } : {})} isExternal style={bold ? {} : { textDecoration: "underline" }} {...rest}>
-      {children} <ExternalLinkLine h={3} />
-    </Link>
+    <DsfrLink href={href} {...(bold ? { variant: "classic" } : {})} external {...rest}>
+      {children}
+    </DsfrLink>
   )
 }
 
@@ -47,7 +51,7 @@ function InformationsEntreprise() {
         </span>
         <Text>
           Le numéro d’identification de votre entreprise peut être trouvé sur{" "}
-          <CatalogueLink url="https://annuaire-entreprises.data.gouv.fr/" aria-label="Site de l'annuaire des entreprises - nouvelle fenêtre">
+          <CatalogueLink href="https://annuaire-entreprises.data.gouv.fr/" aria-label="Site de l'annuaire des entreprises - nouvelle fenêtre">
             l’annuaire des entreprises
           </CatalogueLink>{" "}
           ou bien sur les registres de votre entreprise.
@@ -77,14 +81,14 @@ function InformationsCfa() {
           <ListItem>
             <span style={{ fontWeight: "700" }}>Être référencé dans le Catalogue.</span> Pour ajouter une offre de formation au Catalogue de l’offre de formation en apprentissage,
             merci de la déclarer auprès du Carif-Oref de votre région en allant sur la page suivante :{" "}
-            <CatalogueLink url="https://reseau.intercariforef.org/referencer-son-offre-de-formation" arial-label="Site intercariforef.org - nouvelle fenêtre">
+            <CatalogueLink href="https://reseau.intercariforef.org/referencer-son-offre-de-formation" arial-label="Site intercariforef.org - nouvelle fenêtre">
               "référencer son offre de formation"
             </CatalogueLink>
           </ListItem>
           <ListItem>
             <span style={{ fontWeight: "700" }}>Être certifié Qualiopi.</span>{" "}
             <CatalogueLink
-              url="https://travail-emploi.gouv.fr/formation-professionnelle/acteurs-cadre-et-qualite-de-la-formation-professionnelle/liste-organismes-certificateurs"
+              href="https://travail-emploi.gouv.fr/formation-professionnelle/acteurs-cadre-et-qualite-de-la-formation-professionnelle/liste-organismes-certificateurs"
               aria-label="Site travail-emploi.gouv.fr - nouvelle fenêtre"
             >
               La certification Qualiopi
@@ -102,7 +106,7 @@ function InformationsCfa() {
         <Text>
           Le numéro d’identification de votre organisme peut être trouvé sur le site Le numéro d’identification de votre entreprise peut être trouvé sur{" "}
           <CatalogueLink
-            url="https://catalogue.apprentissage.beta.gouv.fr/recherche/etablissements"
+            href="https://catalogue.apprentissage.beta.gouv.fr/recherche/etablissements"
             aria-label="Site du catalogue des offres de formations en apprentissage - nouvelle fenêtre"
           >
             le catalogue des offres de formations en apprentissage

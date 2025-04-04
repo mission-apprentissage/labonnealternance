@@ -58,20 +58,15 @@ async function getHeaders(options: IRequestOptions) {
     })
   }
 
-  try {
-    if (!global.window) {
-      throw new Error("Server side fetch is not supported (witing for NextJs 13")
-
-      // By default server-side we don't use headers
-      // But we need them for the api, as all routes are authenticated
-      // const { headers: nextHeaders } = await import("next/headers");
-      // const cookie = nextHeaders().get("cookie");
-      // if (cookie) {
-      //   headers.append("cookie", cookie);
-      // }
+  if (!global.window) {
+    // By default server-side we don't use headers
+    // But we need them for the api, as all routes are authenticated
+    const { headers: nextHeaders } = await import("next/headers")
+    const h = await nextHeaders()
+    const cookie = h.get("cookie")
+    if (cookie) {
+      headers.append("cookie", cookie)
     }
-  } catch (error) {
-    // We're in client, cookies will be includes
   }
 
   return headers
@@ -86,7 +81,7 @@ export function generateUrl(path: string, options: WithQueryStringAndPathParam =
   return removeAtEnd(baseUrl, "/") + generateUri(path, { params, querystring })
 }
 
-export interface ApiErrorContext {
+interface ApiErrorContext {
   path: string
   params: PathParam
   querystring: QueryString

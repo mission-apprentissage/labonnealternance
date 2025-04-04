@@ -14,7 +14,7 @@ interface Props extends PropsWithChildren {
   initialLogo?: string
 }
 
-export const LogoProvider: FC<Props> = ({ initialLogo, children }) => {
+const LogoProvider: FC<Props> = ({ initialLogo, children }) => {
   const [organisation, setOrganisation] = useState<string>(initialLogo)
 
   return <LogoContext.Provider value={{ organisation, setOrganisation }}>{children}</LogoContext.Provider>

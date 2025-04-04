@@ -20,10 +20,13 @@ export function getInitialSchemaValues(): IApplicationSchemaInitValues {
 }
 
 export const ApplicationFormikSchema = ZApplicationApiPrivate.pick({
-  applicant_first_name: true,
-  applicant_last_name: true,
-  applicant_email: true,
   applicant_attachment_name: true,
 }).extend({
-  applicant_phone: z.string().trim().refine(validatePhone, { message: "Téléphone non valide : veuillez utiliser le format international (+33XXX...) ou national (06XXX...)" }),
+  applicant_first_name: z.string({ required_error: "⚠ Le prénom est obligatoire" }).trim(),
+  applicant_last_name: z.string({ required_error: "⚠ Le nom est obligatoire" }).trim(),
+  applicant_email: z.string({ required_error: "⚠ L'adresse email est obligatoire" }).email("⚠ Adresse e-mail invalide").trim(),
+  applicant_phone: z
+    .string({ required_error: "⚠ Le téléphone est obligatoire" })
+    .trim()
+    .refine(validatePhone, { message: "Téléphone non valide : veuillez utiliser le format international (+33XXX...) ou national (06XXX...)" }),
 })

@@ -1,11 +1,11 @@
 import { badRequest, internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { INewSuperUser } from "shared"
-import { ADMIN, OPCO } from "shared/constants"
+import { ADMIN, OPCO } from "shared/constants/index"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { AccessStatus } from "shared/models/roleManagement.model"
 import { IUserStatusEvent, IUserWithAccount, UserEventType } from "shared/models/userWithAccount.model"
-import { assertUnreachable, getLastStatusEvent } from "shared/utils"
+import { assertUnreachable, getLastStatusEvent } from "shared/utils/index"
 
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { createAdminUser, createOpcoUser } from "@/services/userRecruteur.service"

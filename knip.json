@@ -1,0 +1,26 @@
+{
+  "workspaces": {
+    "server": {
+      "entry": ["src/main.ts!", "src/dev.ts", "src/migrations/*.ts!"],
+      "project": ["src/**/*.ts!", "tests/**/*.ts", "!src/**/*.test.ts!"]
+    },
+    "shared": {
+      "entry": ["src/**/*.ts", "!src/**/*.test.ts!"],
+      "project": ["src/**/*.ts", "!src/**/*.test.ts!"],
+      "includeEntryExports": true
+    },
+    "ui": {
+      "project": ["./**/*.{ts,tsx}", "!.next"],
+      "paths": {
+        "@/*": ["./*"]
+      },
+      "next": true,
+      "ignoreDependencies": ["@sentry/cli"]
+    },
+    ".": {
+      "husky": true,
+      "commitlint": true,
+      "project": ["!.husky/commitlint.config.js"]
+    }
+  }
+}

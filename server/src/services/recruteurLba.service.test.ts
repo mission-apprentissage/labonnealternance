@@ -1,7 +1,7 @@
 import { badRequest, notFound } from "@hapi/boom"
 import { generateApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
-import { ERecruteurLbaUpdateEventType } from "shared/models"
+import { ERecruteurLbaUpdateEventType } from "shared/models/index"
 import { IJobsPartnersRecruteurAlgoPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it } from "vitest"
 

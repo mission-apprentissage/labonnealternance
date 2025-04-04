@@ -1,4 +1,3 @@
-import { Button, Link } from "@chakra-ui/react"
 import { stringify } from "csv-stringify/sync"
 import dayjs from "dayjs"
 import { omit } from "lodash-es"
@@ -68,13 +67,9 @@ export default function ExportButtonNew({ data, datasetName = "export" }) {
   const fileName = `${datasetName}_${new Date().toJSON()}.csv`
 
   return (
-    <Link>
-      <CSVLink data={csvData} filename={fileName}>
-        <Button variant="pill" py={2}>
-          <DownloadLine mx="0.5rem" w="0.75rem" h="0.75rem" />
-          Exporter
-        </Button>
-      </CSVLink>
-    </Link>
+    <CSVLink className="fr-link" data={csvData} filename={fileName} border="none">
+      <DownloadLine mr={2} mb={1} w="0.75rem" h="0.75rem" />
+      Exporter
+    </CSVLink>
   )
 }

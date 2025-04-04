@@ -53,7 +53,7 @@ useMongo(mockData)
 
 describe("POST /v2/appointment", () => {
   const httpClient = useServer()
-  const expectedUrlPattern = /^https?:\/\/[^/]+\/espace-pro/
+  const expectedUrlPattern = /^https?:\/\/[^/]+\/rdva/
 
   it("Return 401 if no api key provided", async () => {
     const response = await httpClient().inject({ method: "POST", path: "/api/v2/appointment" })

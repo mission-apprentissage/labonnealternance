@@ -1,7 +1,7 @@
 import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
 import { ObjectId } from "mongodb"
-import { ENTREPRISE } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { ENTREPRISE } from "shared/constants/index"
 import { CFA, OPCOS_LABEL } from "shared/constants/recruteur"
 import { IJob, IRecruiter, getUserStatus, parseEnum, parseEnumOrError, zRoutes } from "shared/index"
 import { ICFA } from "shared/models/cfa.model"

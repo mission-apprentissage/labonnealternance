@@ -1,21 +1,32 @@
 {
   "name": "shared",
   "version": "0.0.0",
-  "main": "./index.ts",
-  "types": "./index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "author": "mna",
   "license": "MIT",
   "private": true,
   "type": "module",
   "sideEffects": [
-    "./helpers/zodWithOpenApi.ts"
+    "./dist/src/helpers/zodWithOpenApi.js"
   ],
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    },
+    "./*": {
+      "import": "./dist/src/*.js",
+      "types": "./dist/src/*.d.ts"
+    }
+  },
   "engines": {
     "node": ">=20",
     "npm": "please-use-yarn"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc -b",
+    "dev": "tsc -b -w"
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^7.1.1",
@@ -28,8 +39,8 @@
     "lodash-es": "^4.17.21",
     "luhn": "^2.4.1",
     "openapi3-ts": "^4.4.0",
-    "type-fest": "^4.26.0",
-    "zod": "3.23.8",
+    "type-fest": "^4.37.0",
+    "zod": "^3.24.1",
     "zod-i18n-map": "^2.27.0",
     "zod-mongodb-schema": "^1.0.2"
   },
@@ -38,6 +49,6 @@
     "@types/node": "^22.10.10",
     "eslint-plugin-zod": "^1.4.0",
     "mongodb": "^6.12.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.8.2"
   }
 }

@@ -257,7 +257,6 @@ export async function obfuscateCollections(): Promise<void> {
   if (config.env === "production") return
 
   const collectionsToEmpty: CollectionName[] = [
-    "optouts",
     "cache_geolocation",
     "cache_romeo",
     "cache_siret",

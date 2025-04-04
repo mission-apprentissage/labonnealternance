@@ -1,6 +1,6 @@
 import { Accordion, Box, Heading, Text } from "@chakra-ui/react"
 import styled from "@emotion/styled"
-import { IReferentielRomeForJob } from "shared"
+import { IReferentielRomeForJobJson } from "shared"
 
 import { CustomAccordion } from "./CustomAccordion"
 
@@ -34,8 +34,8 @@ export const RomeDetailReadOnly = ({
   romeReferentiel: { definition, acces_metier },
   competences,
 }: {
-  romeReferentiel: IReferentielRomeForJob
-  competences: IReferentielRomeForJob["competences"]
+  romeReferentiel: IReferentielRomeForJobJson
+  competences: IReferentielRomeForJobJson["competences"]
   appellation: string
 }) => {
   const definitionSplitted = definition.split("\\n")

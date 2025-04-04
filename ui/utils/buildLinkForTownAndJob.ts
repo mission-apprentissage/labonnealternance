@@ -1,22 +1,10 @@
 import { UrlObject } from "url"
 
-interface Town {
-  name: string
-  lat?: number
-  lon?: number
-  zip?: string
-  insee?: string
-}
+import { IStaticMetiers, IStaticVilles } from "./getStaticData"
 
-interface Job {
-  name: string
-  romes: string[]
-}
-
-export const buildLinkForTownAndJob = (town: Town, job: Job): UrlObject => {
+export const buildLinkForTownAndJob = (town: Partial<IStaticVilles>, job: IStaticMetiers): UrlObject => {
   const pathname = "/recherche"
   const query: Record<string, string | boolean | string[]> = {
-    display: "list",
     displayMap: false,
     job_name: encodeURIComponent(job.name),
     romes: job.romes.join(","),

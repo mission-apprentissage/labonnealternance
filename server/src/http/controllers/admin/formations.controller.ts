@@ -35,7 +35,7 @@ export default (server: Server) => {
         ],
       })
 
-      return res.send(response)
+      return res.status(200).send(response)
     }
   )
 }

@@ -41,7 +41,7 @@ const isConsentRemoved = () => {
   return getCookie(CONSENT_REMOVED_COOKIE_NAME) ? true : false
 }
 
-export const setReferer = () => {
+const setReferer = () => {
   if (document.referrer) {
     setCookie("referer", document.referrer)
   }

@@ -1,8 +1,8 @@
 import { internal, isBoom } from "@hapi/boom"
 import { AxiosResponse } from "axios"
 import FormData from "form-data"
-import { IAdresseV3, IAPIAdresse, IGeometry, IGeoPoint, IPointFeature, ZPointGeometry } from "shared/models"
-import { joinNonNullStrings } from "shared/utils"
+import { IAdresseV3, IAPIAdresse, IGeometry, IGeoPoint, IPointFeature, ZPointGeometry } from "shared/models/index"
+import { joinNonNullStrings } from "shared/utils/index"
 
 import { getHttpClient } from "@/common/utils/httpUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"

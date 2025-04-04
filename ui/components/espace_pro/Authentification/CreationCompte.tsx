@@ -1,12 +1,16 @@
+"use client"
+
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Alert, AlertIcon, Box, Heading, Link, SimpleGrid, Text } from "@chakra-ui/react"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 import { useContext, useEffect, useState } from "react"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
 import { searchEntreprise } from "@/services/searchEntreprises"
 import { ApiError } from "@/utils/api.utils"
+import { PAGES } from "@/utils/routes.utils"
+import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
 import { AUTHTYPE } from "../../../common/contants"
 import { LogoContext } from "../../../context/contextLogo"
@@ -14,7 +18,7 @@ import { WidgetContext } from "../../../context/contextWidget"
 import { getEntrepriseInformation, validateCfaCreation } from "../../../utils/api"
 import { Bandeau, BandeauProps } from "../Bandeau"
 import { InformationsSiret } from "../CreationRecruteur/InformationsSiret"
-import { AnimationContainer, AuthentificationLayout } from "../index"
+import { AnimationContainer } from "../index"
 
 import { SiretAutocomplete } from "./SiretAutocomplete"
 
@@ -38,20 +42,18 @@ const CreationCompteForm = ({
   const router = useRouter()
   const [isCfa, setIsCfa] = useState(false)
 
-  const nextUri = isWidget ? "/espace-pro/widget/entreprise/detail" : "/espace-pro/creation/detail"
-
   const submitSiret = ({ establishment_siret }, { setSubmitting, setFieldError }) => {
     setBandeau(null)
     const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
+
+    const nextUri = PAGES.dynamic.espaceProCreationDetail({ siret: formattedSiret, type: organisationType, origin, isWidget }).getPath()
+
     // validate establishment_siret
     if (organisationType === AUTHTYPE.ENTREPRISE) {
       getEntrepriseInformation(formattedSiret).then((entrepriseData) => {
         if (entrepriseData.error === true) {
           if (entrepriseData.statusCode >= 500) {
-            router.push({
-              pathname: nextUri,
-              query: { type: organisationType, origin, siret: formattedSiret },
-            })
+            router.push(nextUri)
           } else {
             setFieldError("establishment_siret", entrepriseData?.data?.errorCode === BusinessErrorCodes.NON_DIFFUSIBLE ? BusinessErrorCodes.NON_DIFFUSIBLE : entrepriseData.message)
             setIsCfa(entrepriseData?.data?.errorCode === BusinessErrorCodes.IS_CFA)
@@ -59,20 +61,14 @@ const CreationCompteForm = ({
           }
         } else if (entrepriseData.error === false) {
           setSubmitting(true)
-          router.push({
-            pathname: nextUri,
-            query: { siret: formattedSiret, type: organisationType, origin },
-          })
+          router.push(nextUri)
         }
       })
     } else {
       validateCfaCreation(formattedSiret)
         .then(() => {
           setSubmitting(false)
-          router.push({
-            pathname: nextUri,
-            query: { siret: formattedSiret, type: organisationType, origin },
-          })
+          router.push(nextUri)
         })
         .catch((error) => {
           if (error instanceof ApiError) {
@@ -143,7 +139,7 @@ const CreationCompteForm = ({
               variant="classic"
               onClick={() => {
                 setIsCfa(false)
-                router.push("/espace-pro/creation/cfa")
+                router.push(PAGES.static.espaceProCreationCfa.getPath())
               }}
             >
               veuillez utiliser ce lien
@@ -158,16 +154,16 @@ const CreationCompteForm = ({
 
 export default function CreationCompte({ type, isWidget = false, origin = "lba" }: { type: EntrepriseOrCfaType; isWidget?: boolean; origin?: string }) {
   const [organisationType, setOrganisationType] = useState<EntrepriseOrCfaType>(type)
-  const { setWidget, widget: wid } = useContext(WidgetContext)
+  const { setWidget } = useContext(WidgetContext)
   const { setOrganisation } = useContext(LogoContext)
   const [bandeau, setBandeau] = useState<BandeauProps>(null)
   const [selectedTab, setSelectedTab] = useState<EntrepriseOrCfaType>(type)
-  const router = useRouter()
-  const mobile = router.query.mobile === "true" ? true : false
+  const searchParams = useSearchParamsRecord()
+  const isMobile: boolean = searchParams.mobile === "true"
 
   useEffect(() => {
     if (isWidget) {
-      setWidget({ isWidget: true, mobile: mobile ?? false })
+      setWidget({ isWidget: true, mobile: isMobile ?? false })
       setOrganisation(origin ?? "lba")
     }
     /* eslint react-hooks/exhaustive-deps: 0 */
@@ -184,22 +180,20 @@ export default function CreationCompte({ type, isWidget = false, origin = "lba" 
   }
 
   return (
-    <AuthentificationLayout>
-      <AnimationContainer>
-        {bandeau && <Bandeau {...bandeau} />}
-        <SimpleGrid columns={[1, 1, 2, 2]} spacing={[0, 0, 4, 4]} mt={wid.isWidget ? 0 : { base: 4, md: 12 }}>
-          <Box mb={4}>
-            <Heading className="big">Vous recrutez des alternants ?</Heading>
-            <Text className="big" mt={2} mb={4}>
-              Pour diffuser gratuitement vos offres, précisez le nom ou le SIRET de votre établissement.
-            </Text>
-            <CreationCompteForm organisationType={organisationType} setBandeau={setBandeau} origin={origin} isWidget={isWidget} onSelectOrganisation={onSelectOrganisation} />
-          </Box>
-          <BorderedBox>
-            <InformationsSiret currentTab={selectedTab} onCurrentTabChange={setSelectedTab} />
-          </BorderedBox>
-        </SimpleGrid>
-      </AnimationContainer>
-    </AuthentificationLayout>
+    <AnimationContainer>
+      {bandeau && <Bandeau {...bandeau} />}
+      <SimpleGrid columns={[1, 1, 2, 2]} spacing={[0, 0, 4, 4]} mt={0}>
+        <Box mb={4}>
+          <Heading className="big">Vous recrutez des alternants ?</Heading>
+          <Text className="big" mt={2} mb={4}>
+            Pour diffuser gratuitement vos offres, précisez le nom ou le SIRET de votre établissement.
+          </Text>
+          <CreationCompteForm organisationType={organisationType} setBandeau={setBandeau} origin={origin} isWidget={isWidget} onSelectOrganisation={onSelectOrganisation} />
+        </Box>
+        <BorderedBox>
+          <InformationsSiret currentTab={selectedTab} onCurrentTabChange={setSelectedTab} />
+        </BorderedBox>
+      </SimpleGrid>
+    </AnimationContainer>
   )
 }
