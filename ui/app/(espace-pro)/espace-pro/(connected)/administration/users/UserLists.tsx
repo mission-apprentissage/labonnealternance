@@ -1,6 +1,7 @@
 "use client"
-import { Box, Button, Flex, Icon, Menu, MenuButton, MenuItem, MenuList, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure, useToast } from "@chakra-ui/react"
-import { Link } from "@mui/material"
+import { Box, Button, Flex, Icon, Menu, MenuButton, MenuItem, MenuList, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import { TabContext, TabList, TabPanel } from "@mui/lab"
+import { Tab, Link } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useParams } from "next/navigation"
@@ -17,7 +18,7 @@ import { apiGet } from "@/utils/api.utils"
 function Users() {
   const { newUser } = useParams() as { newUser: string }
   const [currentEntreprise, setCurrentEntreprise] = useState({})
-  const [tabIndex, setTabIndex] = useState(0)
+  const [tabIndex, setTabIndex] = useState("0")
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationActivationUtilisateur = useDisclosure()
   const toast = useToast()
@@ -220,30 +221,28 @@ function Users() {
         </Text>
       </Flex>
 
-      <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)} variant="search" isLazy>
-        <Box mx={8}>
-          <TabList>
-            <Tab width="300px">En attente de vérification ({data.awaiting.length})</Tab>
-            <Tab width="300px">Actifs</Tab>
-            <Tab width="300px">Désactivés ({data.disabled.length})</Tab>
-            <Tab width="300px">En erreur ({data.error.length})</Tab>
+      <TabContext value={tabIndex}>
+        <Box mx={8} className="fr-tabs">
+          <TabList className="fr-tabs__list" onChange={(_, index) => setTabIndex(index)} variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile>
+            <Tab label={`En attente de vérification (${data.awaiting.length})`} value="0" className="fr-tabs__tab" wrapped />
+            <Tab label="Actifs" value="1" className="fr-tabs__tab" wrapped />
+            <Tab label={`Désactivés (${data.disabled.length})`} value="2" className="fr-tabs__tab" wrapped />
+            <Tab label={`En erreur (${data.error.length})`} value="3" className="fr-tabs__tab" wrapped />
           </TabList>
         </Box>
-        <TabPanels mt={3}>
-          <TabPanel>
-            <TableNew columns={columns} data={data.awaiting} description={null} exportable={null} />
-          </TabPanel>
-          <TabPanel>
-            <TableNew columns={columns} data={data.active} description={null} exportable={null} />
-          </TabPanel>
-          <TabPanel>
-            <TableNew columns={columns} data={data.disabled} description={null} exportable={null} />
-          </TabPanel>
-          <TabPanel>
-            <TableNew columns={columns} data={data.error} description={null} exportable={null} />
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
+        <TabPanel value="0">
+          <TableNew columns={columns} data={data.awaiting} description={null} exportable={null} />
+        </TabPanel>
+        <TabPanel value="1">
+          <TableNew columns={columns} data={data.active} description={null} exportable={null} />
+        </TabPanel>
+        <TabPanel value="2">
+          <TableNew columns={columns} data={data.disabled} description={null} exportable={null} />
+        </TabPanel>
+        <TabPanel value="3">
+          <TableNew columns={columns} data={data.error} description={null} exportable={null} />
+        </TabPanel>
+      </TabContext>
     </>
   )
 }

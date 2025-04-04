@@ -1,7 +1,8 @@
 "use client"
 
-import { Box, Button, Flex, Icon, Menu, MenuButton, MenuItem, MenuList, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure, useToast } from "@chakra-ui/react"
-import { Link } from "@mui/material"
+import { Box, Button, Flex, Icon, Menu, MenuButton, MenuItem, MenuList, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import { TabContext, TabList, TabPanel } from "@mui/lab"
+import { Link, Tab } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useEffect, useState } from "react"
@@ -17,7 +18,7 @@ import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 function AdministrationOpco() {
   const { newUser } = useSearchParamsRecord()
   const [currentEntreprise, setCurrentEntreprise] = useState({})
-  const [tabIndex, setTabIndex] = useState(0)
+  const [tabIndex, setTabIndex] = useState("0")
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationActivationUtilisateur = useDisclosure()
   const toast = useToast()
@@ -61,7 +62,7 @@ function AdministrationOpco() {
                         Voir les informations
                       </Link>
                     </MenuItem>
-                    {tabIndex !== 1 && (
+                    {tabIndex !== "1" && (
                       <MenuItem>
                         <Link
                           underline="hover"
@@ -75,7 +76,7 @@ function AdministrationOpco() {
                         </Link>
                       </MenuItem>
                     )}
-                    {tabIndex !== 2 && (
+                    {tabIndex !== "2" && (
                       <MenuItem>
                         <Link
                           underline="hover"
@@ -203,28 +204,29 @@ function AdministrationOpco() {
         </Text>
       </Flex>
 
-      <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)} variant="search" isLazy>
-        <Box mx={8}>
-          <TabList>
-            <Tab width="300px">En attente de vérification ({data.awaiting.length})</Tab>
-            <Tab width="300px">Actives ({data.active.length})</Tab>
-            <Tab width="300px">Désactivées ({data.disable.length})</Tab>
+      <TabContext value={tabIndex}>
+        <Box mx={8} className="fr-tabs">
+          <TabList className="fr-tabs__list" onChange={(_, index) => setTabIndex(index)} variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile>
+            <Tab label={`En attente de vérification (${data.awaiting.length})`} value="0" className="fr-tabs__tab" wrapped />
+            <Tab label={`Actives ${data.active.length}`} value="1" className="fr-tabs__tab" wrapped />
+            <Tab label={`Désactivés (${data.disable.length})`} value="2" className="fr-tabs__tab" wrapped />
           </TabList>
         </Box>
-        <TabPanels mt={3}>
-          <TabPanel>
-            {/* @ts-expect-error: TODO */}
-            <TableNew
-              columns={columns}
-              data={data.awaiting}
-              description="Les entreprises en attente de vérification représentent pour votre OPCO de nouvelles opportunités d’accompagnement.  Vous pouvez contacter chacun des comptes en attente, vérifier qu’il s’agit bien d’une entreprise relevant de vos champs de compétences, et qu’il ne s’agit pas d’une tentative d’usurpation de compte."
-            />
-          </TabPanel>
-          <TabPanel>{isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={data.active} exportable />}</TabPanel>
+        <TabPanel value="0">
           {/* @ts-expect-error: TODO */}
-          <TabPanel>{isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={data.disable} />}</TabPanel>
-        </TabPanels>
-      </Tabs>
+          <TableNew
+            columns={columns}
+            data={data.awaiting}
+            description="Les entreprises en attente de vérification représentent pour votre OPCO de nouvelles opportunités d’accompagnement.  Vous pouvez contacter chacun des comptes en attente, vérifier qu’il s’agit bien d’une entreprise relevant de vos champs de compétences, et qu’il ne s’agit pas d’une tentative d’usurpation de compte."
+          />
+        </TabPanel>
+        <TabPanel value="1">{isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={data.active} exportable />}</TabPanel>
+
+        <TabPanel value="2">
+          {/* @ts-expect-error: TODO */}
+          {isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={data.disable} />}
+        </TabPanel>
+      </TabContext>
     </>
   )
 }

@@ -8,17 +8,8 @@ import NavigationAdmin, { EAdminPages } from "@/components/espace_pro/Layout/Nav
 export const AdminLayout = ({ currentAdminPage, children }: { currentAdminPage: EAdminPages; children: React.ReactNode }) => {
   return (
     <>
-      <header>
-        <NavigationAdmin currentPage={currentAdminPage} />
-      </header>
-      <Container
-        maxWidth="xl"
-        sx={{
-          paddingY: 0,
-          paddingRight: 0,
-          paddingLeft: fr.spacing("4w"),
-        }}
-      >
+      <NavigationAdmin currentPage={currentAdminPage} />
+      <Container maxWidth="xl" sx={{ paddingY: 0, paddingRight: 0, paddingLeft: fr.spacing("4w") }}>
         {children}
       </Container>
     </>
