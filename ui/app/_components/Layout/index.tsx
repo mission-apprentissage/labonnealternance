@@ -1,3 +1,4 @@
+"use server"
 import { Box, Container, Flex } from "@chakra-ui/react"
 
 import Footer from "@/components/footer"
@@ -6,7 +7,7 @@ import Header from "./Header"
 import NavigationAdmin, { EAdminPages } from "./NavigationAdmin"
 import NavigationMenu from "./NavigationMenu"
 
-export default function Layout({
+export default async function Layout({
   header = true,
   children,
   widget = false,

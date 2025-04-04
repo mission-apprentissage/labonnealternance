@@ -10,11 +10,11 @@ import { z } from "zod"
 
 import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import { EAdminPages } from "@/app/_components/Layout/NavigationAdmin"
 import { formatDate } from "@/common/dayjs"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { InfoPopover } from "@/components/espace_pro"
 import EtablissementComponent from "@/components/espace_pro/Admin/widgetParameters/components/EtablissementComponent"
-import { EAdminPages } from "@/components/espace_pro/Layout/NavigationAdmin"
 import { apiPatch } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 

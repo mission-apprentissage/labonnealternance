@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { IEtablissementJson } from "shared"
 
-import Layout from "@/components/espace_pro/Layout"
+import Layout from "@/app/_components/Layout"
 import { apiGet, apiPost } from "@/utils/api.utils"
 
 import { SuccessCircle } from "../../../../theme/components/icons"

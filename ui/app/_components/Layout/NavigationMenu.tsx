@@ -7,8 +7,8 @@ import { useState } from "react"
 import { useAuth } from "@/context/UserContext"
 
 import { AUTHTYPE } from "../../../common/contants"
+import Link from "../../../components/Link"
 import { Close, MenuFill } from "../../../theme/components/icons"
-import Link from "../../Link"
 
 const NavigationMenu = ({ rdva = false, ...props }) => {
   const [isOpen, setIsOpen] = useState(false)

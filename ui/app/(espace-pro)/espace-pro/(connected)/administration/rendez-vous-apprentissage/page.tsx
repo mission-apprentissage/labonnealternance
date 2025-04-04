@@ -8,7 +8,7 @@ import { IFormationCatalogueJson } from "shared"
 
 import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
-import { EAdminPages } from "@/components/espace_pro/Layout/NavigationAdmin"
+import { EAdminPages } from "@/app/_components/Layout/NavigationAdmin"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 

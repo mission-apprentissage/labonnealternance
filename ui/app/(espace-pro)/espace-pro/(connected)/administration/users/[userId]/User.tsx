@@ -7,7 +7,7 @@ import { useParams } from "next/navigation"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import DetailEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/DetailEntreprise"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
-import NavigationAdmin, { EAdminPages } from "@/components/espace_pro/Layout/NavigationAdmin"
+import NavigationAdmin, { EAdminPages } from "@/app/_components/Layout/NavigationAdmin"
 import { getFormulaire, getUser } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 

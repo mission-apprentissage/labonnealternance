@@ -1,7 +1,7 @@
 import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
 import UserLists from "@/app/(espace-pro)/espace-pro/(connected)/administration/users/UserLists"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
-import { EAdminPages } from "@/components/espace_pro/Layout/NavigationAdmin"
+import { EAdminPages } from "@/app/_components/Layout/NavigationAdmin"
 import { PAGES } from "@/utils/routes.utils"
 
 export default async function AccueilAdministration() {

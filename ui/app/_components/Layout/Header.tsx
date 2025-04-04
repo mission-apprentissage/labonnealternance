@@ -12,10 +12,10 @@ import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 
 import { AUTHTYPE } from "../../../common/contants"
+import LogoAkto from "../../../components/espace_pro/assets/images/akto"
 import { LogoContext } from "../../../context/contextLogo"
 import { LockFill } from "../../../theme/components/icons"
 import { LbaNew } from "../../../theme/components/logos"
-import LogoAkto from "../assets/images/akto"
 
 const Header = ({ onLogout }: { onLogout: () => void }) => {
   const { organisation } = useContext(LogoContext)

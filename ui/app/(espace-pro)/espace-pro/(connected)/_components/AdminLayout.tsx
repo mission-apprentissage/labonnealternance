@@ -3,7 +3,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Container } from "@mui/material"
 
-import NavigationAdmin, { EAdminPages } from "@/components/espace_pro/Layout/NavigationAdmin"
+import NavigationAdmin, { EAdminPages } from "@/app/_components/Layout/NavigationAdmin"
 
 export const AdminLayout = ({ currentAdminPage, children }: { currentAdminPage: EAdminPages; children: React.ReactNode }) => {
   return (
