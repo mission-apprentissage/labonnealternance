@@ -1,12 +1,14 @@
 "use client"
-import { Box } from "@chakra-ui/react"
-import Button from "@codegouvfr/react-dsfr/Button"
+import { Box, Link } from "@chakra-ui/react"
 import { ILbaItemPartnerJobJson } from "shared"
 
+import { focusWithin } from "@/theme/theme-lba-tools"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
 import { CandidatureLba } from "../CandidatureLba/CandidatureLba"
 import CandidatureParTelephone from "../CandidatureParTelephone"
+
+const filteredPartnerLabels = ["Kelio", "Veritone", "France Travail", "BPCE"]
 
 export const PartnerJobPostuler = ({ job, isCollapsedHeader }: { job: ILbaItemPartnerJobJson; isCollapsedHeader: boolean }) => {
   // KBA fix enum shared/models/lbaItem.model.ts
@@ -22,22 +24,20 @@ export const PartnerJobPostuler = ({ job, isCollapsedHeader }: { job: ILbaItemPa
   if (job.contact?.url) {
     return (
       <Box my={isCollapsedHeader ? 2 : 4}>
-        {/* @ts-ignore TODO */}
-        <Button
-          nativeButtonProps={{
-            "data-tracking-id": "postuler-offre-job-partner",
-          }}
-          linkProps={{
-            href: job.contact.url as string,
-          }}
+        <Link
+          data-tracking-id="postuler-offre-job-partner"
+          {...focusWithin}
+          variant="postuler"
+          href={job.contact.url}
+          target={job.job.partner_label}
           onClick={() =>
             SendPlausibleEvent(`Clic Postuler - Fiche entreprise Offre ${job.job.partner_label}`, {
               info_fiche: job.id,
             })
           }
         >
-          Je postule sur {job.job.partner_label}
-        </Button>
+          Je postule{filteredPartnerLabels.includes(job.job.partner_label) ? "" : ` sur ${job.job.partner_label}`}
+        </Link>
       </Box>
     )
   }

@@ -37,7 +37,7 @@ const importFormations = async () => {
           stats.failed++
         }
       }),
-      { parallel: 500 }
+      { parallel: 10 }
     )
 
     return stats
