@@ -377,7 +377,7 @@ const DemandeDeContact = (props: Props) => {
         </Text>
         <Text mt={6}>Vous allez recevoir un email de confirmation de votre demande de contact sur votre adresse email.</Text>
       </Box>
-      <Flex bg="#F9F8F6" mt="32px">
+      <Flex bg="#F9F8F6" my={4}>
         <Box w="100px" px="40px" py="16px">
           <BarberGuy w="34px" h="38px" />
         </Box>
