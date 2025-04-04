@@ -41,7 +41,7 @@ export default function ItemDetailApplicationsStatus({ item }: { item: ILbaItem 
         // py: fr.spacing("1v"),
         fontStyle: "italic",
       }}
-      className={fr.cx("ri-history-line", "fr-icon--sm")}
+      className={fr.cx("ri-history-line", "fr-icon--sm", "fr-text--xs")}
     >
       {message}
     </Typography>

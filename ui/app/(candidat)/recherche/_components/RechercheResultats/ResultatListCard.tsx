@@ -197,7 +197,10 @@ export function ResultCard({ item, active, params }: ResultCardProps) {
                 )}
               </Typography>
 
-              <Box component="span" sx={{ alignItems: "center", display: "flex", gap: fr.spacing("2w") }}>
+              <Box
+                component="span"
+                sx={{ alignItems: { xs: "left", sm: "left", md: "center" }, display: "flex", gap: fr.spacing("2w"), flexDirection: { xs: "column", sm: "column", md: "row" } }}
+              >
                 <DatePublication item={item} />
                 <CandidatureCount item={item} />
                 <ItemDetailApplicationsStatus item={item} />
