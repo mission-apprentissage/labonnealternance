@@ -53,7 +53,7 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
     <Flex>
       {shouldDisplayModifyButton && user.type !== AUTHTYPE.OPCO && (
         <Box mr={5}>
-          <Button className="fr-btn--secondary" onClick={() => router.push(PAGES.dynamic.modificationEntreprise().getPath())}>
+          <Button priority="secondary" onClick={() => router.push(PAGES.dynamic.modificationEntreprise().getPath())}>
             <Building mr={2} /> {user.type === AUTHTYPE.ENTREPRISE ? "Mes informations" : "Modifier l'entreprise"}
           </Button>
         </Box>
@@ -67,7 +67,7 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
   if (jobs.length === 0) {
     return (
       <Container maxW="container.xl" my={12}>
-        <Flex justify="space-between" align="center">
+        <Flex justify="space-between" align="center" flexWrap="wrap">
           <Text fontSize="2rem" fontWeight={700}>
             {entrepriseTitle}
           </Text>
@@ -80,7 +80,7 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
 
   return (
     <Container maxW="container.xl" my={5} pb={4}>
-      <Flex justify="space-between" align="center">
+      <Flex justify="space-between" align="center" flexWrap="wrap">
         <Text fontSize="2rem" fontWeight={700}>
           {establishment_raison_sociale ?? `SIRET ${establishment_siret}`}
         </Text>
