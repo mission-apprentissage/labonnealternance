@@ -11,7 +11,7 @@ export const getCookie = (cookieName) => {
     cookieMatch = cookiePattern.exec(document.cookie)
   return cookieMatch ? window.decodeURIComponent(cookieMatch[2]) : null
 }
-export const setCookie = (cookieName: string, value: string, msToExpire?: number) => {
+export const setCookie = (cookieName: string, value: string, msToExpire: number = 0) => {
   const expiryDate = new Date()
   expiryDate.setTime(new Date().getTime() + msToExpire)
   document.cookie = cookieName + "=" + window.encodeURIComponent(value) + (msToExpire ? ";expires=" + expiryDate.toString() : "") + ";path=/;domain=;SameSite=None; Secure"

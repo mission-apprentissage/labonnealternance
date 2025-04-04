@@ -1,3 +1,5 @@
+import type { IMetierEnrichiJson } from "shared"
+
 import { apiGet } from "../utils/api.utils"
 import memoize from "../utils/memoize"
 import { SendPlausibleEvent } from "../utils/plausible"
@@ -11,7 +13,7 @@ export const fetchRomes: IFetchRomes = memoize(async (value, errorCallbackFn) =>
   }
   fetchRomes.abortController = new AbortController()
   const { signal } = fetchRomes.abortController
-  let res = []
+  let res: IMetierEnrichiJson[] = []
 
   if (!isNonEmptyString(value)) return res
 
@@ -21,7 +23,7 @@ export const fetchRomes: IFetchRomes = memoize(async (value, errorCallbackFn) =>
     if (!response.labelsAndRomes && !response.labelsAndRomesForDiplomas) return []
 
     // transformation des textes des diplômes
-    let diplomas = []
+    let diplomas: IMetierEnrichiJson[] = []
 
     if (response.labelsAndRomesForDiplomas?.length) {
       diplomas = response.labelsAndRomesForDiplomas.map((diploma: any) => (diploma = { ...diploma, label: capitalizeFirstLetter(diploma.label) }))

@@ -14,7 +14,7 @@ const getPathLink = (anyItem: ILbaItemFormation2Json | ILbaItemLbaCompanyJson | 
 }
 
 const getValueFromPath = (key) => {
-  let res = ""
+  let res: string | null = ""
   if (typeof window !== "undefined") {
     // @ts-expect-error: TODO
     const url = new URL(window.location)
@@ -38,13 +38,13 @@ const scrollToNestedElement = ({ containerId, nestedElement, yOffsett = 100 }) =
     distanceFromAncestorTop += currentElement.offsetTop
     currentElement = currentElement.offsetParent
   }
-  ancestorElement.scrollTo({
+  ancestorElement?.scrollTo({
     top: distanceFromAncestorTop - yOffsett,
     behavior: "smooth",
   })
 }
 
-const logError = (title, error = undefined) => {
+const logError = (title, error: Error | string) => {
   const err = error instanceof Error ? error : new Error(error)
   err.name = title
 

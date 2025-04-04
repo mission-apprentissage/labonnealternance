@@ -45,7 +45,7 @@ export const PartnerJobPostuler = ({ job, isCollapsedHeader }: { job: ILbaItemPa
   if (job.contact?.phone) {
     return (
       <CandidatureParTelephone
-        companyName={job.company.name || null}
+        companyName={job.company?.name || null}
         contactName={job.contact.name || null}
         contactPhone={job.contact.phone || null}
         urlPostulation={job.contact.url || null}
