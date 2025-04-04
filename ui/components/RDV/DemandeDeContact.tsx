@@ -16,7 +16,6 @@ import {
   Modal,
   ModalBody,
   ModalContent,
-  ModalHeader,
   ModalOverlay,
   Radio,
   RadioGroup,
@@ -32,6 +31,7 @@ import { EReasonsKey } from "shared"
 import { EApplicantType } from "shared/constants/rdva"
 import * as Yup from "yup"
 
+import ModalCloseButton from "@/app/_components/ModalCloseButton"
 import { useLocalStorage } from "@/app/hooks/useLocalStorage"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { reasons } from "@/components/RDV/types"
@@ -40,7 +40,6 @@ import { apiGet, apiPost } from "@/utils/api.utils"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
 import InfoBanner from "../InfoBanner/InfoBanner"
-import LBAModalCloseButton from "../lbaModalCloseButton"
 
 type Props = {
   context: { cle_ministere_educatif: string; etablissement_formateur_entreprise_raison_sociale: string }
@@ -378,7 +377,7 @@ const DemandeDeContact = (props: Props) => {
         </Text>
         <Text mt={6}>Vous allez recevoir un email de confirmation de votre demande de contact sur votre adresse email.</Text>
       </Box>
-      <Flex bg="#F9F8F6" mt="32px">
+      <Flex bg="#F9F8F6" my={4}>
         <Box w="100px" px="40px" py="16px">
           <BarberGuy w="34px" h="38px" />
         </Box>
@@ -410,9 +409,8 @@ const DemandeDeContact = (props: Props) => {
           <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false} size={["full", "full", "full", "3xl"]}>
             <ModalOverlay />
             <ModalContent>
-              <ModalHeader mt={4} paddingTop="10px" paddingBottom="0" sx={{ textAlign: "right" }}>
-                <LBAModalCloseButton onClose={onClose} />
-              </ModalHeader>
+              <ModalCloseButton onClose={onClose} />
+
               <ModalBody data-testid="modalbody-contact-confirmation" mx={onSuccessSubmitResponse ? [0, 0, 12, 12] : [0, 0, 4, 4]}>
                 {onSuccessSubmitResponse ? (
                   <FormConfirmed />

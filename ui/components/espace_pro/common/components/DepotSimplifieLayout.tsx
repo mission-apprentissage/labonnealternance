@@ -47,6 +47,16 @@ export const DepotSimplifieStyling = ({ children }: { children: React.ReactNode 
           mb: 5,
         },
       },
+      "& .fr-table td": {
+        whiteSpace: "normal !important",
+        wordWrap: "break-word",
+        overflowWrap: "break-word",
+      },
+      "& .fr-table th": {
+        whiteSpace: "normal !important",
+        wordWrap: "break-word",
+        overflowWrap: "break-word",
+      },
     }}
   >
     {children}
