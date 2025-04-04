@@ -23,12 +23,15 @@ export default function Layout({
   adminPage?: EAdminPages
   displayNavigationMenu?: boolean
 }) {
+  const handleLogout = async () => {
+    "use server"
+  }
   return (
     <Container maxW="full" p="0">
       <Flex direction="column" h="100vh">
         {!widget && (
           <Box as="header">
-            {header && <Header />}
+            {header && <Header onLogout={handleLogout} />}
             {displayNavigationMenu && <NavigationMenu rdva={rdva} />}
             {adminPage && <NavigationAdmin currentPage={adminPage} />}
           </Box>

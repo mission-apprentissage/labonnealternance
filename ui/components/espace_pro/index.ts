@@ -7,7 +7,6 @@ import CustomInput from "./CustomInput"
 import DropdownCombobox from "./DropdownCombobox"
 import InfoPopover from "./InfoPopover"
 import InfoTooltip from "./InfoToolTip"
-import Layout from "./Layout"
 import LoadingEmptySpace from "./LoadingEmptySpace"
 import TableNew from "./TableNew"
 import UserValidationHistory from "./UserValidationHistory"
@@ -21,7 +20,6 @@ export {
   DropdownCombobox,
   InfoPopover,
   InfoTooltip,
-  Layout,
   LoadingEmptySpace,
   TableNew,
   UserValidationHistory,

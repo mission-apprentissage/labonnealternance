@@ -5,9 +5,9 @@ import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { IEtablissementJson } from "shared"
 
+import Layout from "@/components/espace_pro/Layout"
 import { apiGet, apiPost } from "@/utils/api.utils"
 
-import { Layout } from "../../../../../components/espace_pro"
 import { SuccessCircle } from "../../../../../theme/components/icons"
 
 type IAffelnetEtablissement = {
