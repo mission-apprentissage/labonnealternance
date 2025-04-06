@@ -194,7 +194,7 @@ function TrainingDetailPage({
 
           {!isCollapsedHeader && <hr style={{ paddingBottom: "1px" }} />}
 
-          <Flex flexDirection={{ base: "column", sm: "row" }} alignItems={{ sm: "left", md: "center" }} gap={2}>
+          <Flex flexDirection="row" alignItems="center" gap={2}>
             <Box flex={1}>
               {appliedDate ? (
                 <Box>
