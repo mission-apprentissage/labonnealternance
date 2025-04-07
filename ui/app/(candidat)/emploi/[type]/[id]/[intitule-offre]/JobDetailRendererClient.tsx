@@ -1,5 +1,7 @@
 "use client"
-import { Box, Flex, Text } from "@chakra-ui/react"
+import { Box, Flex } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Typography } from "@mui/material"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
@@ -17,7 +19,7 @@ import DidYouKnow from "@/components/ItemDetail/DidYouKnow"
 import GoingToContactQuestion, { getGoingtoId } from "@/components/ItemDetail/GoingToContactQuestion"
 import { getNavigationButtons } from "@/components/ItemDetail/ItemDetailServices/getButtons"
 import getJobPublishedTimeAndApplications from "@/components/ItemDetail/ItemDetailServices/getJobPublishedTimeAndApplications"
-import getTags from "@/components/ItemDetail/ItemDetailServices/getTags"
+import GetItemTag from "@/components/ItemDetail/ItemDetailServices/getTags"
 import ItemDetailCard from "@/components/ItemDetail/ItemDetailServices/ItemDetailCard"
 import JobItemCardHeader from "@/components/ItemDetail/ItemDetailServices/JobItemCardHeader"
 import { LbaJobDetail } from "@/components/ItemDetail/LbaJobComponents/LbaJobDetail"
@@ -103,31 +105,18 @@ function JobDetail({ selectedItem, resultList, params }: WithRecherchePageParams
       >
         <Box width="100%" pl={["0", 4]} pb={isCollapsedHeader ? "0" : 2}>
           <Flex justifyContent="flex-end">
-            {getTags({ kind, isCfa, isMandataire })}
+            {GetItemTag({ kind, isCfa, isMandataire })}
             {getNavigationButtons({ goPrev, goNext, handleClose })}
           </Flex>
-
           {!isCollapsedHeader && getJobPublishedTimeAndApplications({ item: selectedItem })}
           {!isCollapsedHeader && <JobItemCardHeader selectedItem={selectedItem} kind={kind} isMandataire={isMandataire} />}
 
-          <Text
-            as="h1"
-            fontSize={isCollapsedHeader ? "20px" : "28px"}
-            color={"pinksoft.600"}
-            sx={{
-              fontWeight: 700,
-              marginBottom: "4px",
-              paddingBottom: "0",
-              textAlign: "left",
-              wordBreak: "break-word",
-            }}
-          >
+          <Typography variant={"h3"} sx={{ color: fr.colors.decisions.border.default.blueCumulus.default }}>
             {actualTitle}
-          </Text>
+          </Typography>
 
           {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
           {!isCollapsedHeader && <hr style={{ paddingBottom: "1px" }} />}
-
           <Flex flexDirection="row" justifyContent="space-between" gap={2} alignItems="center">
             <Box>
               {isCandidatureLba(selectedItem) && <CandidatureLba item={selectedItem as ILbaItemLbaJobJson | ILbaItemLbaCompanyJson} />}

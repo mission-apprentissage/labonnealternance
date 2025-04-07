@@ -1,5 +1,6 @@
 "use client"
 import { Box, Flex, Image, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import { Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "next/dist/client/components/navigation"
@@ -17,7 +18,7 @@ import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
 import GoingToContactQuestion, { getGoingtoId } from "@/components/ItemDetail/GoingToContactQuestion"
 import { getNavigationButtons } from "@/components/ItemDetail/ItemDetailServices/getButtons"
 import getJobPublishedTimeAndApplications from "@/components/ItemDetail/ItemDetailServices/getJobPublishedTimeAndApplications"
-import getTags from "@/components/ItemDetail/ItemDetailServices/getTags"
+import GetItemTag from "@/components/ItemDetail/ItemDetailServices/getTags"
 import ItemDetailCard from "@/components/ItemDetail/ItemDetailServices/ItemDetailCard"
 import ItemGoogleSearchLink from "@/components/ItemDetail/ItemDetailServices/ItemGoogleSearchLink"
 import ItemLocalisation from "@/components/ItemDetail/ItemDetailServices/ItemLocalisation"
@@ -161,7 +162,7 @@ function TrainingDetailPage({
       >
         <Box width="100%" pl={["0", 4]} pb={isCollapsedHeader ? "0" : 2}>
           <Flex justifyContent="flex-end">
-            {getTags({ kind, isCfa, isMandataire })}
+            {GetItemTag({ kind, isCfa, isMandataire })}
             {getNavigationButtons({ goPrev, goNext, handleClose })}
           </Flex>
 
@@ -175,20 +176,9 @@ function TrainingDetailPage({
           {!isCollapsedHeader && getJobPublishedTimeAndApplications({ item: selectedItem })}
           {!isCollapsedHeader && <JobItemCardHeader selectedItem={selectedItem} kind={kind} isMandataire={isMandataire} />}
 
-          <Text
-            as="h1"
-            fontSize={isCollapsedHeader ? "20px" : "28px"}
-            color={"greensoft.500"}
-            sx={{
-              fontWeight: 700,
-              marginBottom: isCollapsedHeader ? "4px" : "11px",
-              paddingBottom: "0",
-              textAlign: "left",
-              wordBreak: "break-word",
-            }}
-          >
+          <Typography variant={"h3"} sx={{ color: fr.colors.decisions.border.default.greenEmeraude.default }}>
             {actualTitle}
-          </Text>
+          </Typography>
 
           {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
 

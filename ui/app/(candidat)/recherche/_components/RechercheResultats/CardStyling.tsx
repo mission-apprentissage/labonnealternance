@@ -6,8 +6,8 @@ export const CardStyling = ({ children }: { children: React.ReactNode }) => (
   <Box
     sx={{
       "& .fr-card.fr-enlarge-link:not(.fr-card--no-icon) .fr-card__content, .fr-card.fr-enlarge-button:not(.fr-card--no-icon) .fr-card__content": {
-        paddingBottom: fr.spacing("2v"),
-        paddingTop: fr.spacing("3v"),
+        px: fr.spacing("2w"),
+        py: fr.spacing("2w"),
       },
     }}
   >
