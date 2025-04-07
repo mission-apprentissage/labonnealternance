@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
-import { hashEmail, saveApplicationTrafficSourceIfAny, saveUserTrafficSourceIfAny } from "./trafficSource.service"
+import { hashEmail, saveApplicationTrafficSourceIfAny, saveJobTrafficSourceIfAny, saveUserTrafficSourceIfAny } from "./trafficSource.service"
 
 useMongo()
 
@@ -78,6 +78,17 @@ describe("Recording traffic source", () => {
       },
     })
 
+    const job_id = new ObjectId()
+    await saveJobTrafficSourceIfAny({
+      job_id: job_id,
+      source: {
+        referer: "referer3",
+        utm_campaign: "campaign",
+        utm_medium: "medium",
+        utm_source: "source",
+      },
+    })
+
     const resultEntreprise = await getDbCollection("trafficsources").findOne({ user_id: user_id_entreprise })
 
     expect.soft(resultEntreprise).toEqual(
@@ -88,6 +99,7 @@ describe("Recording traffic source", () => {
         utm_source: "source",
         traffic_type: TrafficType.ENTREPRISE,
         applicant_email_hash: null,
+        job_id: null,
         user_id: user_id_entreprise,
       })
     )
@@ -102,7 +114,22 @@ describe("Recording traffic source", () => {
         utm_source: "source",
         applicant_email_hash: null,
         traffic_type: TrafficType.CFA,
+        job_id: null,
         user_id: user_id_cfa,
+      })
+    )
+
+    const resultJob = await getDbCollection("trafficsources").findOne({ job_id })
+    expect.soft(resultJob).toEqual(
+      expect.objectContaining({
+        referer: "referer3",
+        utm_campaign: "campaign",
+        utm_medium: "medium",
+        utm_source: "source",
+        applicant_email_hash: null,
+        traffic_type: TrafficType.JOB,
+        user_id: null,
+        job_id: job_id,
       })
     )
   })

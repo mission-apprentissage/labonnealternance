@@ -359,6 +359,60 @@ export const getLbaJobByIdV2 = async ({ id, caller }: { id: string; caller?: str
   }
 }
 
+/**
+ * @description Retourne une offre LBA identifiée par son id pour la route d'API GET /v3/jobs/:id
+ */
+export const getLbaJobByIdV2AsJobResult = async ({ id, caller }: { id: string; caller?: string }): Promise<IJobResult | null> => {
+  try {
+    const rawJob = await getOffreAvecInfoMandataire(id)
+
+    if (!rawJob) {
+      throw badRequest()
+    }
+
+    if (caller) {
+      trackApiCall({ caller: caller, job_count: 1, result_count: 1, api_path: "job/offre_emploi_lba", response: "OK" })
+    }
+
+    const transformedJob = await transformOffreAvecMandataireToJobResult(rawJob)
+    return transformedJob
+  } catch (error) {
+    sentryCaptureException(error)
+    return null
+  }
+}
+
+/**
+ * @description Transforme une offre LBA en IJobResult
+ */
+async function transformOffreAvecMandataireToJobResult({ recruiter, job }: { recruiter: IRecruiter; job: IJob }): Promise<IJobResult> {
+  const contactInfo = await getLbaJobContactInfo(recruiter)
+
+  const jobResult = {
+    recruiter: {
+      ...recruiter,
+      ...contactInfo,
+    },
+    job: {
+      ...job,
+      rome_label: job.rome_appellation_label ?? job.rome_label,
+      rome_detail: {
+        numero: job?.rome_detail?.numero || "",
+        rome: job.rome_detail?.rome || { code_rome: "", intitule: "", code_ogr: "" },
+        appellations: job?.rome_detail?.appellations || [],
+        definition: job?.rome_detail?.definition || "",
+        acces_metier: job?.rome_detail?.acces_metier || "",
+        competences: job?.rome_detail?.competences as any,
+        competencesDeBase: job?.rome_detail?.competencesDeBase,
+        contextes_travail: job?.rome_detail?.contextes_travail,
+        mobilites: job?.rome_detail?.mobilites,
+      },
+    },
+  }
+
+  return jobResult
+}
+
 const getCity = (recruiter) => {
   let city = ""
   if (recruiter.establishment_location) {

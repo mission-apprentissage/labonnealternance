@@ -85,7 +85,7 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   const mandatoryFileError = formik.touched.applicant_attachment_name && formik.errors?.applicant_attachment_name
 
   return (
-    <Box p="20px" width="97%" border="1px dashed" borderColor={mandatoryFileError || showUnacceptedFileMessages ? "red.500" : "grey.600"} {...getRootProps()}>
+    <Box p="20px" border="1px dashed" borderColor={mandatoryFileError || showUnacceptedFileMessages ? "red.500" : "grey.600"} {...getRootProps()}>
       {fileLoading ? (
         <Flex ml={6} alignItems="center" direction="row">
           <Spinner mr={4} />

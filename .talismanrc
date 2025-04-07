@@ -2,7 +2,7 @@ fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: 6c3ade1ddaac4db86cb79aa5328c7546490450f3be8e356b001299417b68d14e
 - filename: .infra/vault/vault.yml
-  checksum: 415c766eab6874a05e6dff56b2763c157494b8ec65666e527d9144762829ca0f
+  checksum: 8ab8cb04152d0de5be955293ed191f7f4dd19fe9a990f044a5f6ffd32e2111b4
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
   checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
 - filename: cypress/pages/FlowAdminPage.ts
@@ -36,7 +36,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/user.controller.test.ts
   checksum: e01d1b9c54d1e6d0c98fd7984f32c3a93f3e9bde92887bdab320cb7af91fdd92
 - filename: server/src/http/controllers/v2/applications.controller.v2.test.ts
-  checksum: 1adc309b8df44e04275579a56f13b67c05fb91e946949d06fa92a0759b5eb344
+  checksum: 51358a158fbd04caebd42a56120fab182928b368206aa2892a008d14e177b0ac
 - filename: server/src/http/controllers/v2/appointment.controller.v2.test.ts
   checksum: bbbf100d65bae0d840c715f4b1d893986df7423f470f3ee300545959105f6ca4
 - filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts
@@ -71,8 +71,12 @@ fileignoreconfig:
   checksum: 6f28aee7664d1ec1e4b4da34b96b63e23781538b3fe3e8d50dddbdad3884fa3f
 - filename: server/src/jobs/offrePartenaire/importHelloWork.ts
   checksum: 26caf0b5a97ce2ff7451cc2717a3b36f38b20f94db6beb490b98b8311debfd25
+- filename: server/src/jobs/offrePartenaire/kelio/importKelio.test.input.xml
+  checksum: d40699cf149c9658080dcbeac6856adc01a215d5cc00e5c2271096d3cbb2aba4
 - filename: server/src/jobs/offrePartenaire/meteojob/importMeteojob.test.input.xml
   checksum: 62419cb750978e303756a8134f180ffa4febb9835fff97e48ed1024923bebc91
+- filename: server/src/jobs/offrePartenaire/pass/importPass.test.input.rss
+  checksum: c51265ef42491e55f550f2cd3387c3948cec82fad6debcfd2670e324a0c89dcf
 - filename: server/src/migrations/20241022093834-remove-multi-published.ts
   checksum: a807c70a69c4c8bfc2a0568b466a7f274fd3840169ef3ef4792885d63cb75217
 - filename: server/src/security/accessApiApprentissageService.ts
@@ -100,7 +104,7 @@ fileignoreconfig:
 - filename: server/src/services/jobs/jobOpportunity/__snapshots__/jobOpportunity.service.test.ts.snap
   checksum: 01dd54f682dc81ecc5ad2099f2cf01e8e6011c0d22c38607f7998d2ce28bf155
 - filename: server/src/services/jobs/jobOpportunity/jobOpportunity.service.test.ts
-  checksum: 019e2e69727a016ecf674f54423883c7c2ce93dd0f953de3e8d04cd87b4f859c
+  checksum: 6192b627272883a4090c0ec5758bf77373821e427585ce3ca1f4dfef4330c3cd
 - filename: server/src/services/partnerJob.service.test.ts
   checksum: b488a3b67b801c3fa5b012d2ba2b120b21af4f459b966c6629e6e681ead97913
 - filename: server/src/services/recruteurLba.service.test.ts
@@ -277,8 +281,6 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
-- filename: server/src/jobs/offrePartenaire/pass/importPass.test.input.rss
-  checksum: c51265ef42491e55f550f2cd3387c3948cec82fad6debcfd2670e324a0c89dcf
 scopeconfig:
 - scope: node
 custom_patterns:
