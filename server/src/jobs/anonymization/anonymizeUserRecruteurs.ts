@@ -9,8 +9,9 @@ const anonymize = async () => {
   const fromDate = dayjs().subtract(2, "years").toDate()
   const userWithAccountQuery = { $or: [{ last_action_date: { $lte: fromDate } }, { last_action_date: null, createdAt: { $lte: fromDate } }] }
   const usersToAnonymize = await getDbCollection("userswithaccounts").find(userWithAccountQuery).toArray()
-  const userIds = usersToAnonymize.map(({ _id }) => _id)
-  const recruiterQuery = { "jobs.managed_by": { $in: userIds } }
+  const userIds = usersToAnonymize.map(({ _id }) => _id.toString())
+  const recruiterQuery = { $or: [{ managed_by: { $in: userIds } }, { "jobs.managed_by": { $in: userIds } }] }
+
   await getDbCollection("userswithaccounts")
     .aggregate([
       {
