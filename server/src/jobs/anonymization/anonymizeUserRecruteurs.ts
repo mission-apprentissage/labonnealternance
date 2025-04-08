@@ -57,7 +57,7 @@ const anonymize = async () => {
         },
       },
       {
-        $merge: "anonymizedrecruiteurs",
+        $merge: "anonymized_recruiters",
       },
     ])
     .toArray()
