@@ -1,3 +1,4 @@
+import { updateDiplomeMetier } from "@/jobs/diplomesMetiers/updateDiplomesMetiers"
 import { importRecruteursLbaFromComputedToJobsPartners } from "@/jobs/offrePartenaire/fillComputedRecruteursLba"
 import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail/classifyJobsFranceTravail"
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
@@ -174,6 +175,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: anonimizeUsersWithAccounts,
     description: "Anonymize les userrecruteurs qui ne se sont pas connectés depuis plus de 2 ans",
+  },
+  {
+    fct: updateDiplomeMetier,
+    description: "Mise à jour des diplômes et romes associés",
   },
   // IMPORT RAW AND COMPUTED JOBS PARTNERS
   {

@@ -2,7 +2,7 @@ import { URL } from "url"
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { getDistance } from "geolib"
-import { IFormationCatalogue, IReferentielCommune } from "shared/models"
+import { IFormationCatalogue, IReferentielCommune } from "shared/models/index"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getCommuneByCodeInsee, getCommuneByCodePostal } from "@/services/referentiel/commune/commune.referentiel.service"

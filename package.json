@@ -46,8 +46,7 @@
     "test:ci": "yarn test --run",
     "test:ci:coverage": "yarn test:ci --coverage.include='ui' --coverage.include='server/src' --coverage.include='shared' --coverage.provider='v8' --coverage.enabled --coverage.all --coverage.exclude='**/tests' --coverage.exclude='**/.next'",
     "test:watch": "vitest --watch",
-    "typecheck": "yarn foreach:parallel run typecheck",
-    "typecheck:ci": "yarn foreach:ci run typecheck",
+    "typecheck": "tsc -b ui/tsconfig.json server/tsconfig.json shared/tsconfig.json",
     "vault:edit": ".bin/mna-lba vault:edit",
     "foreach:seq": "yarn workspaces foreach -Av --exclude mna-lba",
     "foreach:parallel": "yarn foreach:seq -pi",
@@ -58,12 +57,14 @@
     "e2e:recette": "cypress run --env ui=https://labonnealternance-recette.apprentissage.beta.gouv.fr,server=https://labonnealternance-recette.apprentissage.beta.gouv.fr,smtp=https://labonnealternance-recette.apprentissage.beta.gouv.fr/smtp",
     "e2e:convert": "chrome-recorder cypress/records/ui/*.json --output=cypress/e2e/ui; chrome-recorder cypress/records/ui_espace_pro/*.json --output=cypress/e2e/ui_espace_pro",
     "e2e:convert2": "node cypress/convertRecords.mjs",
-    "e2e:specific": "cypress run --spec=./cypress/e2e/create-cfa-account-autovalidated.cy.ts"
+    "e2e:specific": "cypress run --spec=./cypress/e2e/create-cfa-account-autovalidated.cy.ts",
+    "knip": "knip"
   },
   "dependencies": {
+    "@uidotdev/usehooks": "^2.4.1",
     "husky": "^8.0.3",
     "stream-json": "^1.9.1",
-    "type-fest": "^4.18.2"
+    "type-fest": "^4.37.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
@@ -92,14 +93,16 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-simple-import-sort": "^12.1.0",
     "eslint-plugin-unused-imports": "^3.2.0",
+    "knip": "^5.34.1",
     "lint-staged": "^14.0.1",
-    "node-talisman": "^1.29.10",
+    "node-talisman": "^1.29.14",
     "prettier": "^3.0.3",
     "semantic-release": "^21.1.1",
     "semantic-release-slack-bot": "^4.0.2",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.4.5",
-    "vite-tsconfig-paths": "^5.0.1",
+    "sharp": "^0.33.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2",
+    "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^2.0.5"
   },
   "commitlint": {

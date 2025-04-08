@@ -1,11 +1,12 @@
 import { badRequest, internal, notFound } from "@hapi/boom"
-import { IJob, JOB_STATUS, zRoutes } from "shared"
-import { OPCOS_LABEL } from "shared/constants"
+import { assertUnreachable, IJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob, JOB_STATUS, zRoutes } from "shared"
+import { OPCOS_LABEL } from "shared/constants/index"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { getSourceFromCookies } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
-import { getPartnerJobById } from "@/services/partnerJob.service"
+import { getPartnerJobById, getPartnerJobByIdV2 } from "@/services/partnerJob.service"
 import { Appellation } from "@/services/rome.service.types"
 import { getUserWithAccountByEmail, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
@@ -27,8 +28,8 @@ import {
 } from "../../services/formulaire.service"
 import { getFtJobFromId } from "../../services/ftjob.service"
 import { getJobsQuery } from "../../services/jobs/jobOpportunity/jobOpportunity.service"
-import { addOffreDetailView, getLbaJobById } from "../../services/lbajob.service"
-import { getCompanyFromSiret } from "../../services/recruteurLba.service"
+import { addOffreDetailView, getLbaJobById, getLbaJobByIdV2 } from "../../services/lbajob.service"
+import { getCompanyFromSiret, getRecruteurLbaFromDB } from "../../services/recruteurLba.service"
 import { getFicheMetierFromDB } from "../../services/rome.service"
 import { Server } from "../server"
 
@@ -373,6 +374,35 @@ export default (server: Server) => {
         return res.status(500).send(result)
       }
       return res.status(200).send(result)
+    }
+  )
+
+  server.get(
+    "/_private/jobs/:source/:id",
+    {
+      schema: zRoutes.get["/_private/jobs/:source/:id"],
+      config,
+    },
+    async (req, res) => {
+      const { source, id } = req.params
+      let result: ILbaItemLbaJob | ILbaItemPartnerJob | ILbaItemLbaCompany | null
+
+      switch (source) {
+        case LBA_ITEM_TYPE.RECRUTEURS_LBA:
+          result = await getRecruteurLbaFromDB(id)
+          break
+        case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
+          result = await getLbaJobByIdV2(id)
+          break
+
+        case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES:
+          result = await getPartnerJobByIdV2(id)
+          break
+
+        default:
+          assertUnreachable(source as never)
+      }
+      return res.send(result)
     }
   )
 

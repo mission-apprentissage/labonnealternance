@@ -1,17 +1,21 @@
 import { kebabCase, uniq } from "lodash-es"
 
-export const extractFromFile = (path, fs, txtDirectory, fileName) => {
+const extractFromFile = (path, fs, txtDirectory, fileName) => {
   const filePath = path.join(txtDirectory, fileName)
   const lineString = fs.readFileSync(filePath, "utf8")
   const arrayOfLines = lineString.match(/[^\r\n]+/g)
   return arrayOfLines
 }
 
-export const getStaticMetiers = (path, fs, txtDirectory, stubbedExtractionFunction = null) => {
+export type IStaticMetiers = {
+  name: string
+  slug: string
+  romes: string[]
+}
+
+export const getStaticMetiers = (path, fs, txtDirectory, stubbedExtractionFunction = null): IStaticMetiers[] => {
   const extractionFunction = stubbedExtractionFunction || extractFromFile
-
   const arrayOfJobLines = extractionFunction(path, fs, txtDirectory, "metiers.txt")
-
   const dataJobs = arrayOfJobLines.map(function (singleLine) {
     const splitted = singleLine.split("[")
     const actualName = splitted[0].trim()
@@ -27,11 +31,18 @@ export const getStaticMetiers = (path, fs, txtDirectory, stubbedExtractionFuncti
   return dataJobs
 }
 
-export const getStaticVilles = (path, fs, txtDirectory, stubbedExtractionFunction = null) => {
+export type IStaticVilles = {
+  slug: string
+  name: string
+  lon: string
+  lat: string
+  insee: string
+  zip: string
+}
+
+export const getStaticVilles = (path, fs, txtDirectory, stubbedExtractionFunction = null): IStaticVilles[] => {
   const extractionFunction = stubbedExtractionFunction || extractFromFile
-
   const arrayOfTownLines = extractionFunction(path, fs, txtDirectory, "villes.txt")
-
   const dataTowns = arrayOfTownLines.map(function (singleLine) {
     const splitted = singleLine.split("/")
     const townName = splitted[0].trim()

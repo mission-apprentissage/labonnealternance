@@ -1,5 +1,5 @@
 import { internal } from "@hapi/boom"
-import { IGeoPoint, IReferentielCommune } from "shared/models"
+import { IGeoPoint, IReferentielCommune } from "shared/models/index"
 
 import { getCommuneParCodeDepartement, getDepartements, IGeoApiCommune } from "@/common/apis/geoApiGouv/geoApiGouv"
 import { getDbCollection } from "@/common/utils/mongodbUtils"

@@ -1,6 +1,6 @@
 import { omit } from "lodash-es"
 import { ObjectId } from "mongodb"
-import { OPCOS_LABEL } from "shared/constants"
+import { OPCOS_LABEL } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { beforeEach, describe, expect, it, vi } from "vitest"

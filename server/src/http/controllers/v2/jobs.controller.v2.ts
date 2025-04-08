@@ -1,5 +1,5 @@
 import { badRequest, internal } from "@hapi/boom"
-import { ILbaItemFtJob, ILbaItemLbaJob, JOB_STATUS_ENGLISH, assertUnreachable, zRoutes } from "shared"
+import { JOB_STATUS_ENGLISH, zRoutes } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -10,8 +10,6 @@ import { trackApiCall } from "../../../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../../../common/utils/sentryUtils"
 import dayjs from "../../../services/dayjs.service"
 import { addExpirationPeriod, getFormulaires } from "../../../services/formulaire.service"
-import { getFtJobFromIdV2 } from "../../../services/ftjob.service"
-import { getLbaJobByIdV2 } from "../../../services/lbajob.service"
 import { Server } from "../../server"
 
 const config = {
@@ -174,40 +172,6 @@ export default (server: Server) => {
       }
       await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_expiration_date: addExpirationPeriod(dayjs()).toDate() } })
       return res.status(204).send()
-    }
-  )
-
-  server.get(
-    "/v2/jobs/:source/:id",
-    {
-      schema: zRoutes.get["/v2/jobs/:source/:id"],
-      onRequest: server.auth(zRoutes.get["/v2/jobs/:source/:id"]),
-      config,
-    },
-    async (req, res) => {
-      const { source, id } = req.params
-      const { caller } = req.query
-      let result: { job: ILbaItemLbaJob[] | ILbaItemFtJob } | null
-
-      switch (source) {
-        case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
-          result = await getLbaJobByIdV2({
-            id,
-            caller,
-          })
-          break
-
-        case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES:
-          result = await getFtJobFromIdV2({
-            id,
-            caller,
-          })
-          break
-
-        default:
-          assertUnreachable(source as never)
-      }
-      return res.send(result)
     }
   )
 

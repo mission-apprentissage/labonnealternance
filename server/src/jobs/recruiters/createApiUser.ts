@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto"
 
 import { ObjectId } from "mongodb"
-import { ICredential } from "shared/models"
+import { ICredential } from "shared/models/index"
 
 import { logger } from "../../common/logger"
 import { getDbCollection } from "../../common/utils/mongodbUtils"

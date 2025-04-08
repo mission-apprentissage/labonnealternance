@@ -1,6 +1,6 @@
 import { generateRoleManagementFixture } from "shared/fixtures/roleManagement.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
-import { IRoleManagement, IUserWithAccount } from "shared/models"
+import { IRoleManagement, IUserWithAccount } from "shared/models/index"
 
 import { getDbCollection } from "../../src/common/utils/mongodbUtils"
 import { createSessionToken } from "../../src/common/utils/session.service"

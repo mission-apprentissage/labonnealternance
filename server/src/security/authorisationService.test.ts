@@ -1,6 +1,6 @@
 import { FastifyRequest } from "fastify"
 import { ObjectId } from "mongodb"
-import { OPCOS_LABEL } from "shared/constants"
+import { OPCOS_LABEL } from "shared/constants/index"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { AuthStrategy, IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { AccessRessouces } from "shared/security/permissions"

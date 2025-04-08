@@ -1,4 +1,5 @@
-export function storageSet<T>(storage: Storage, key: string, value: T) {
+"use client"
+function storageSet<T>(storage: Storage, key: string, value: T) {
   try {
     if (storage) {
       const serializedValue = typeof value === "string" ? value : JSON.stringify(value)
@@ -12,7 +13,7 @@ export function storageSet<T>(storage: Storage, key: string, value: T) {
   }
 }
 
-export function storageGet(storage: Storage, key: string): string | null {
+function storageGet(storage: Storage, key: string): string | null {
   try {
     if (storage) {
       return storage.getItem(key)

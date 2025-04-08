@@ -1,5 +1,5 @@
-import { VALIDATION_UTILISATEUR } from "shared/constants"
-import { IUserStatusEvent, IUserWithAccount, UserEventType } from "shared/models"
+import { VALIDATION_UTILISATEUR } from "shared/constants/index"
+import { IUserStatusEvent, IUserWithAccount, UserEventType } from "shared/models/index"
 
 import { deduplicateBy } from "@/common/utils/array"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
