@@ -266,7 +266,7 @@ export const OffresTabs = ({
                           underline="hover"
                           target="_blank"
                           rel="noopener noreferrer"
-                          href={`${publicConfig.baseUrl}/recherche-formation?&caller=lba_recruteur&romes=${row.rome_code}&lon=${lon}&lat=${lat}`}
+                          href={`${publicConfig.baseUrl}/recherche-formation?romes=${row.rome_code}&lon=${lon}&lat=${lat}`}
                           aria-label="Lien vers les formations - nouvelle fenêtre"
                         >
                           Voir les centres de formations
