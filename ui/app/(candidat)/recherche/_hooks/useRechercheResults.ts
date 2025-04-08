@@ -214,7 +214,7 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
     }
 
     if (jobQuery.data.matchas && "results" in jobQuery.data.matchas) {
-      result += jobQuery.data.matchas.results.filter((job: ILbaItemLbaJob) => job.company.mandataire).length
+      result += (jobQuery.data.matchas.results as any[]).filter((job: ILbaItemLbaJob) => job.company.mandataire).length
     }
 
     return result
