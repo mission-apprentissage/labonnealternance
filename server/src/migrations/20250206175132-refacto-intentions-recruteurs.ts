@@ -1,5 +1,5 @@
 import { Db } from "mongodb"
-import { CompanyFeebackSendStatus } from "shared/models"
+import { CompanyFeebackSendStatus } from "shared/models/index"
 
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"

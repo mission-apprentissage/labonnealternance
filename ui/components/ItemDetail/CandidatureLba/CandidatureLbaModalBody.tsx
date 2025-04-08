@@ -1,14 +1,15 @@
-import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Button, Flex, FormControl, FormErrorMessage, FormLabel, Input, Link, Spinner, Text } from "@chakra-ui/react"
+import { Box, Flex, FormControl, FormErrorMessage, FormLabel, Input, Spinner, Text } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
 import emailMisspelled, { top100 } from "email-misspelled"
 import { useFormik } from "formik"
 import { useState } from "react"
-import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
-import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
+import ModalCloseButton from "@/app/_components/ModalCloseButton"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
-import { ModalReadOnlyCloseButton } from "@/components/ModalReadOnly"
 
 import CandidatureLbaFileDropzone from "./CandidatureLbaFileDropzone"
 import CandidatureLbaMandataireMessage from "./CandidatureLbaMandataireMessage"
@@ -29,8 +30,8 @@ export const CandidatureLbaModalBody = ({
 }: {
   isLoading: boolean
   company: string
-  item: ILbaItemLbaJob | ILbaItemLbaCompany | ILbaItemPartnerJob
-  kind: LBA_ITEM_TYPE_OLD
+  item: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson
+  kind: LBA_ITEM_TYPE | LBA_ITEM_TYPE_OLD
   fromWidget?: boolean
   onSubmit: (values: IApplicationSchemaInitValues) => void
   onClose: () => void
@@ -53,12 +54,14 @@ export const CandidatureLbaModalBody = ({
       </Box>
       <Box marginX={[6, 8, 8, 8, "69px"]} my={4}>
         {!fromWidget && (
-          <Flex justifyContent="flex-end" mr={-6}>
-            <ModalReadOnlyCloseButton onClick={onClose} />
-          </Flex>
+          <>
+            <Flex justifyContent="flex-end" mr={-6}>
+              <ModalCloseButton onClose={onClose} />
+            </Flex>
+          </>
         )}
         <Text as="h1" fontWeight={700} fontSize="24px" data-testid="CandidatureSpontaneeTitle">
-          {kind === LBA_ITEM_TYPE_OLD.MATCHA ? (
+          {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? (
             <>
               Postuler à l&apos;offre {fromWidget ? `${item.title} ` : ""}de {company}
             </>
@@ -83,15 +86,15 @@ export const CandidatureLbaModalBody = ({
           </Text>
           <Text>
             En remplissant ce formulaire, vous acceptez les{" "}
-            <Link href="/cgu" color="companygrey.800" textDecoration="underline" isExternal title="Conditions générales d'utilisation - nouvelle fenêtre">
-              Conditions générales d&apos;utilisation <ExternalLinkIcon mx="2px" />
-            </Link>{" "}
+            <DsfrLink href="/conditions-generales-utilisation" aria-description="Conditions générales d'utilisation - nouvelle fenêtre" external>
+              Conditions générales d&apos;utilisation
+            </DsfrLink>{" "}
             du service La bonne alternance et acceptez le partage de vos informations avec l&apos;établissement {company}.
             <br />
             Pour plus d'informations sur le traitement de vos données à caractère personnel, veuillez consulter la{" "}
-            <Link href="/politique-de-confidentialite" color="grey.800" textDecoration="underline" isExternal title="politique de confidentialité - nouvelle fenêtre">
-              Politique de confidentialité <ExternalLinkIcon mx="2px" />
-            </Link>{" "}
+            <DsfrLink href="/politique-de-confidentialite" aria-description="politique de confidentialité - nouvelle fenêtre" external>
+              Politique de confidentialité
+            </DsfrLink>{" "}
             de La bonne alternance.
           </Text>
         </Box>
@@ -103,18 +106,12 @@ export const CandidatureLbaModalBody = ({
               <Spinner mr={4} />
               <Text>Veuillez patienter</Text>
             </Flex>
-          ) : kind === LBA_ITEM_TYPE_OLD.LBA ? (
-            <Button
-              data-tracking-id="postuler-entreprise-algo"
-              aria-label="Envoyer la candidature spontanée"
-              variant="blackButton"
-              type="submit"
-              data-testid="candidature-not-sent"
-            >
+          ) : kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? (
+            <Button data-tracking-id="postuler-entreprise-algo" aria-label="Envoyer la candidature spontanée" type="submit" data-testid="candidature-not-sent">
               J'envoie ma candidature spontanée
             </Button>
           ) : (
-            <Button data-tracking-id="postuler-offre-lba" aria-label="Envoyer la candidature" variant="blackButton" type="submit" data-testid="candidature-not-sent">
+            <Button data-tracking-id="postuler-offre-lba" aria-label="Envoyer la candidature" type="submit" data-testid="candidature-not-sent">
               J'envoie ma candidature
             </Button>
           )}
@@ -133,8 +130,8 @@ const UserFields = ({ formik }: { formik: any }) => {
     formik.handleChange(e)
   }
 
-  const clickSuggestion = (e) => {
-    formik.setFieldValue("email", e.currentTarget.innerHTML)
+  const clickSuggestion = (value) => {
+    formik.setFieldValue("applicant_email", value)
     setSuggestedEmails([])
   }
 
@@ -180,20 +177,7 @@ const UserFields = ({ formik }: { formik: any }) => {
                 Voulez vous dire ?
               </Text>
               {suggestedEmails.map((suggestedEmail) => (
-                <Button
-                  key={suggestedEmail.corrected}
-                  onClick={clickSuggestion}
-                  textAlign="center"
-                  fontSize="12px"
-                  width="fit-content"
-                  px="5px"
-                  pb="3px"
-                  mr="5px"
-                  mt="3px"
-                  color="bluefrance.500"
-                  bg="#e3e3fd"
-                  borderRadius="40px"
-                >
+                <Button key={suggestedEmail.corrected} onClick={() => clickSuggestion(suggestedEmail.corrected)} priority="tertiary no outline" size="small">
                   {suggestedEmail.corrected}
                 </Button>
               ))}

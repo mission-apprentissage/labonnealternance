@@ -15,7 +15,7 @@ export const Bandeau = ({ header, description, lien = null, type }: BandeauProps
   const color = getBannerColor(type)
 
   return (
-    <Stack direction="row" spacing={0} mb={3} maxH={["auto", "88px"]}>
+    <Stack direction="row" spacing={0} mb={3} maxH={["auto", "88px"]} className="bandeau">
       <Box bg={color} w="40px" minW={["40px", "auto"]}>
         <Center>
           <Icon as={type === "success" ? CircleCheck : OctogoneCross} mt={3} w="22px" h="20px" />

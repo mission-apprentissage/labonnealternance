@@ -1,6 +1,6 @@
+import { useMutation } from "@tanstack/react-query"
 import { useContext } from "react"
-import { useMutation } from "react-query"
-import { IApplicationApiPrivate, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
+import { IApplicationApiPrivate, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 
 import { DisplayContext } from "@/context/DisplayContextProvider"
 import { getItemId } from "@/utils/getItemId"
@@ -11,7 +11,7 @@ import { apiPost } from "../../../../utils/api.utils"
 import { IApplicationSchemaInitValues } from "./getSchema"
 
 export const useSubmitCandidature = (
-  LbaJob: ILbaItemLbaJob | ILbaItemLbaCompany | ILbaItemPartnerJob,
+  LbaJob: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson,
   caller?: string
 ): {
   submitCandidature: (props: { formValues: IApplicationSchemaInitValues }) => void
@@ -21,7 +21,10 @@ export const useSubmitCandidature = (
   isDone: boolean
   error: unknown
 } => {
-  const { isLoading, error, isSuccess, isError, mutate } = useMutation(["submitCandidature", LbaJob.id], submitCandidature)
+  const { isPending, error, isSuccess, isError, mutate } = useMutation({
+    mutationKey: ["submitCandidature", LbaJob.id],
+    mutationFn: submitCandidature,
+  })
   const displayContext = useContext(DisplayContext)
   let finalSubmitCandidature = mutate
   if (displayContext) {
@@ -39,7 +42,7 @@ export const useSubmitCandidature = (
         },
       })
   }
-  return { submitCandidature: finalSubmitCandidature, isLoading, error, isSuccess, isError, isDone: isSuccess || isError }
+  return { submitCandidature: finalSubmitCandidature, isLoading: isPending, error, isSuccess, isError, isDone: isSuccess || isError }
 }
 
 async function submitCandidature({
@@ -48,7 +51,7 @@ async function submitCandidature({
   caller,
 }: {
   formValues: IApplicationSchemaInitValues
-  LbaJob: ILbaItemLbaJob | ILbaItemLbaCompany | ILbaItemPartnerJob
+  LbaJob: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson
   caller?: string
 }) {
   const payload: IApplicationApiPrivate = {

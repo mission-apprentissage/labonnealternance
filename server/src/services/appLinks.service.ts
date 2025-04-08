@@ -1,8 +1,8 @@
 import { ApplicationIntention } from "shared/constants/application"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { IJob } from "shared/models"
+import { IJob } from "shared/models/index"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
-import { zRoutes } from "shared/routes"
+import { zRoutes } from "shared/routes/index"
 
 import config from "@/config"
 import {
@@ -35,7 +35,7 @@ export function createAuthMagicLinkToken(user: UserForAccessToken) {
 
 export function createAuthMagicLink(user: UserForAccessToken) {
   const token = createAuthMagicLinkToken(user)
-  return `${config.publicUrl}/espace-pro/authentification/verification?token=${encodeURIComponent(token)}`
+  return `${config.publicUrl}/espace-pro/authentification?token=${encodeURIComponent(token)}`
 }
 
 export function createValidationMagicLink(user: IUserWithAccountForAccessToken) {
@@ -318,7 +318,7 @@ export function createRdvaAppointmentIdPageLink(email: string, siret: string, et
     }
   )
 
-  return `${config.publicUrl}/espace-pro/establishment/${etablissementId}/appointments/${appointmentId}?token=${encodeURIComponent(token)}`
+  return `${config.publicUrl}/detail-rendez-vous/${appointmentId}?token=${encodeURIComponent(token)}`
 }
 
 export function createRdvaShortRecapToken(email: string, appointmentId: string) {

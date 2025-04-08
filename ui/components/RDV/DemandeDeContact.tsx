@@ -1,4 +1,3 @@
-import { ExternalLinkIcon } from "@chakra-ui/icons"
 import {
   Accordion,
   AccordionButton,
@@ -6,7 +5,6 @@ import {
   AccordionItem,
   AccordionPanel,
   Box,
-  Button,
   Checkbox,
   CheckboxGroup,
   Flex,
@@ -15,11 +13,9 @@ import {
   FormLabel,
   Image,
   Input,
-  Link,
   Modal,
   ModalBody,
   ModalContent,
-  ModalHeader,
   ModalOverlay,
   Radio,
   RadioGroup,
@@ -27,25 +23,26 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
 import emailMisspelled, { top100 } from "email-misspelled"
 import { useFormik } from "formik"
 import { useEffect, useState } from "react"
 import { EReasonsKey } from "shared"
 import { EApplicantType } from "shared/constants/rdva"
-import { IAppointmentRequestContextCreateFormAvailableResponseSchema } from "shared/routes/appointments.routes"
 import * as Yup from "yup"
 
+import ModalCloseButton from "@/app/_components/ModalCloseButton"
+import { useLocalStorage } from "@/app/hooks/useLocalStorage"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { reasons } from "@/components/RDV/types"
 import { BarberGuy } from "@/theme/components/icons"
 import { apiGet, apiPost } from "@/utils/api.utils"
-import { localStorageSet } from "@/utils/localStorage"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
 import InfoBanner from "../InfoBanner/InfoBanner"
-import LBAModalCloseButton from "../lbaModalCloseButton"
 
 type Props = {
-  context: IAppointmentRequestContextCreateFormAvailableResponseSchema
+  context: { cle_ministere_educatif: string; etablissement_formateur_entreprise_raison_sociale: string }
   referrer: string
   showInModal: boolean
   isCollapsedHeader?: boolean
@@ -62,6 +59,8 @@ const DemandeDeContact = (props: Props) => {
   const [applicantType, setApplicantType] = useState<EApplicantType>(EApplicantType.ETUDIANT)
   const [onSuccessSubmitResponse, setOnSuccessSubmitResponse] = useState(null)
   const [error, setError] = useState<string | null>(null)
+
+  const { setLocalStorage } = useLocalStorage(`application-formation-${props.context.cle_ministere_educatif}`)
 
   useEffect(() => {
     if (isOpen) {
@@ -140,7 +139,7 @@ const DemandeDeContact = (props: Props) => {
           },
         })
 
-        localStorageSet(`application-formation-${props.context.cle_ministere_educatif}`, Date.now().toString())
+        setLocalStorage(Date.now())
 
         SendPlausibleEvent("Envoi Prendre RDV - Fiche formation", {
           info_fiche: `${props.context.cle_ministere_educatif}`,
@@ -185,7 +184,7 @@ const DemandeDeContact = (props: Props) => {
     setError(null)
   }
 
-  const formElement = () => (
+  const FormElement = () => (
     <form>
       <Flex direction={["column", "column", "row"]}>
         <Text mt={7} pb={2}>
@@ -202,7 +201,7 @@ const DemandeDeContact = (props: Props) => {
           </Stack>
         </RadioGroup>
       </Flex>
-      <Flex direction={["column", "column", "row"]} mt={6}>
+      <Flex direction={["column", "column", "row"]}>
         <FormControl data-testid="fieldset-lastname" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.lastname && formik.errors.lastname)}>
           <FormLabel htmlFor="lastname">Nom *</FormLabel>
           <Input
@@ -240,20 +239,7 @@ const DemandeDeContact = (props: Props) => {
                 Voulez vous dire ?
               </Text>
               {suggestedEmails.map((suggestedEmail) => (
-                <Button
-                  key={suggestedEmail.corrected}
-                  onClick={onClickEmailSuggestion}
-                  textAlign="center"
-                  fontSize="12px"
-                  width="fit-content"
-                  px="5px"
-                  pb="3px"
-                  mr="5px"
-                  mt="3px"
-                  color="bluefrance.500"
-                  bg="#e3e3fd"
-                  borderRadius="40px"
-                >
+                <Button key={suggestedEmail.corrected} onClick={onClickEmailSuggestion} priority="tertiary no outline" size="small">
                   {suggestedEmail.corrected}
                 </Button>
               ))}
@@ -279,7 +265,7 @@ const DemandeDeContact = (props: Props) => {
         <FormControl data-testid="fieldset-reasons" mt={{ base: 3, md: "0" }}>
           <FormLabel htmlFor="reasons">Quel(s) sujet(s) souhaitez-vous aborder ? *</FormLabel>
           <Accordion allowToggle borderLeftWidth={1} borderRightWidth={1} mr={4} width={["100%", "100%", "auto", "auto"]}>
-            <AccordionItem>
+            <AccordionItem _expanded={{ _last: { borderBottomWidth: "1px" } }} sx={{ _last: { borderBottomWidth: "0" } }}>
               <h2>
                 <AccordionButton
                   sx={{
@@ -314,6 +300,7 @@ const DemandeDeContact = (props: Props) => {
               </AccordionPanel>
             </AccordionItem>
           </Accordion>
+          {/* @ts-ignore TODO */}
           {applicantReasons.find(({ key, checked }) => key === EReasonsKey.AUTRE && checked) && (
             <FormControl data-testid="fieldset-applicantMessageToCfa">
               <Input
@@ -340,15 +327,15 @@ const DemandeDeContact = (props: Props) => {
         </Text>
         <Text mt={4}>
           En remplissant ce formulaire, vous acceptez les{" "}
-          <Link href="/cgu" color="grey.800" textDecoration="underline" isExternal title="Conditions générales d'utilisation - nouvelle fenêtre">
-            Conditions générales d&apos;utilisation <ExternalLinkIcon mx="2px" />
-          </Link>{" "}
+          <DsfrLink href="/conditions-generales-utilisation" external aria-description="Conditions générales d'utilisation - nouvelle fenêtre">
+            Conditions générales d&apos;utilisation
+          </DsfrLink>{" "}
           du service La bonne alternance et acceptez le partage de vos informations avec l&apos;établissement {props.context.etablissement_formateur_entreprise_raison_sociale}.
           <br />
           Pour plus d'informations sur le traitement de vos données à caractère personnel, veuillez consulter la{" "}
-          <Link href="/politique-de-confidentialite" color="grey.800" textDecoration="underline" isExternal title="politique de confidentialité - nouvelle fenêtre">
-            Politique de confidentialité <ExternalLinkIcon mx="2px" />
-          </Link>{" "}
+          <DsfrLink href="/politique-de-confidentialite" external aria-description="politique de confidentialité - nouvelle fenêtre">
+            Politique de confidentialité
+          </DsfrLink>{" "}
           de La bonne alternance.
         </Text>
       </Box>
@@ -361,22 +348,14 @@ const DemandeDeContact = (props: Props) => {
       )}
       <InfoBanner showInfo={false} showAlert={false} showOK={false} forceEnvBanner={true} />
       <Box mb={8} textAlign="right" mr={4}>
-        <Button
-          data-tracking-id="prendre-rdv-cfa"
-          aria-label="Envoyer la demande de contact"
-          variant="blackButton"
-          type="submit"
-          fontWeight="700"
-          onClick={submitForm}
-          isDisabled={formik.isSubmitting}
-        >
+        <Button data-tracking-id="prendre-rdv-cfa" aria-label="Envoyer la demande de contact" type="submit" onClick={submitForm} disabled={formik.isSubmitting}>
           J'envoie ma demande
         </Button>
       </Box>
     </form>
   )
 
-  const formConfirmed = () => (
+  const FormConfirmed = () => (
     <Box mt={2}>
       <Flex alignItems="center">
         <Image mr={2} src="/images/paperplane2.svg" aria-hidden={true} alt="" />
@@ -398,7 +377,7 @@ const DemandeDeContact = (props: Props) => {
         </Text>
         <Text mt={6}>Vous allez recevoir un email de confirmation de votre demande de contact sur votre adresse email.</Text>
       </Box>
-      <Flex bg="#F9F8F6" mt="32px">
+      <Flex bg="#F9F8F6" my={4}>
         <Box w="100px" px="40px" py="16px">
           <BarberGuy w="34px" h="38px" />
         </Box>
@@ -411,9 +390,9 @@ const DemandeDeContact = (props: Props) => {
           </Text>
           <Text fontSize="16px" mt="12px">
             <b>Pour préparer votre premier contact avec le centre formation,</b> répondez à notre quiz{" "}
-            <Link href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987" isExternal title="Prendre contact avec une école - nouvelle fenêtre">
-              <u>Prendre contact avec une école</u> <ExternalLinkIcon mt="-5px" />
-            </Link>
+            <DsfrLink href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987" aria-label="Prendre contact avec une école - nouvelle fenêtre">
+              Prendre contact avec une école
+            </DsfrLink>
           </Text>
         </Box>
       </Flex>
@@ -424,39 +403,23 @@ const DemandeDeContact = (props: Props) => {
     <Box data-testid="DemandeDeContact">
       <Box>
         <Box my={props.isCollapsedHeader ? 2 : 4}>
-          <Button
-            ml={1}
-            padding="8px 24px"
-            color="white"
-            background="bluefrance.500"
-            borderRadius="8px"
-            data-testid="prdvButton"
-            sx={{
-              textDecoration: "none",
-              _hover: {
-                background: "bluesoft.500",
-              },
-            }}
-            onClick={onOpen}
-            aria-label="Ouvrir le formulaire de demande de contact"
-          >
+          <Button data-testid="prdvButton" onClick={onOpen} aria-label="Ouvrir le formulaire de demande de contact">
             Je prends rendez-vous
           </Button>
           <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false} size={["full", "full", "full", "3xl"]}>
             <ModalOverlay />
             <ModalContent>
-              <ModalHeader mt={4} paddingTop="10px" paddingBottom="0" sx={{ textAlign: "right" }}>
-                <LBAModalCloseButton onClose={onClose} />
-              </ModalHeader>
+              <ModalCloseButton onClose={onClose} />
+
               <ModalBody data-testid="modalbody-contact-confirmation" mx={onSuccessSubmitResponse ? [0, 0, 12, 12] : [0, 0, 4, 4]}>
                 {onSuccessSubmitResponse ? (
-                  formConfirmed()
+                  <FormConfirmed />
                 ) : (
                   <>
                     <Text as="h1" fontWeight={700} fontSize="24px" data-testid="DemandeDeContactFormTitle" mb={4}>
                       Contacter {props.context.etablissement_formateur_entreprise_raison_sociale}
                     </Text>
-                    {formElement()}
+                    {FormElement()}
                   </>
                 )}
               </ModalBody>
@@ -466,7 +429,7 @@ const DemandeDeContact = (props: Props) => {
       </Box>
     </Box>
   ) : (
-    <Box>{onSuccessSubmitResponse ? formConfirmed() : formElement()}</Box>
+    <Box>{onSuccessSubmitResponse ? <FormConfirmed /> : <FormElement />}</Box>
   )
 }
 

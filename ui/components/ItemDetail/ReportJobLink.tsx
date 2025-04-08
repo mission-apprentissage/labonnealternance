@@ -1,18 +1,18 @@
-import { Button, Flex, Link, Text, Textarea, useDisclosure, Image, Box } from "@chakra-ui/react"
+"use client"
+import { Box, Flex, Image, Text, Textarea, useDisclosure } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { Formik } from "formik"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { z } from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
-import { InterrogationCircle } from "@/theme/components/icons/InterrogationCircle"
+import { useLocalStorage } from "@/app/hooks/useLocalStorage"
 import { reportLbaItem } from "@/utils/api"
 
 import { CustomFormControl } from "../espace_pro/CustomFormControl"
 import { CustomRadio } from "../espace_pro/CustomRadio"
 import { InfoTooltipOrModal } from "../InfoTooltipOrModal"
 import { ModalReadOnly } from "../ModalReadOnly"
-
-import { useLocalStorageTyped } from "./CandidatureLba/services/useLocalStorage"
 
 const additionalMessageByMotif = {
   "Offre offensante ou discriminatoire": "Pouvez-vous préciser l'offense ou la discrimination en question (dans la description de l'annonce, lors de l'entretien, etc) ?",
@@ -67,31 +67,34 @@ export const ReportJobLink = ({
   tooltip: React.ReactNode
   type: LBA_ITEM_TYPE
 }) => {
-  const [isReported, setReported] = useLocalStorageTyped<boolean>(`report-job-${itemId}`, false)
+  const { storedValue, setLocalStorage } = useLocalStorage(`report-job-${itemId}`, false)
   const { isOpen: isModalOpen, onClose: closeModal, onOpen: openModal } = useDisclosure()
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onReport = async ({ reason, reason_details }: IFormValues) => {
-    if (isReported) {
+    if (storedValue) {
       return
     }
-    setReported(true)
+    setLocalStorage(true)
     await reportLbaItem(itemId, type, reason, reason_details || undefined)
   }
 
   const content = contentByItemType[type] ?? contentByItemType.offres_emploi_lba
 
   return (
-    <Flex alignItems="center" gap="16px">
-      {isReported ? (
-        <Text color="#18753C" fontSize="16px">
-          ⚐ &nbsp;{linkLabelReported}
-        </Text>
+    <Flex alignItems="center">
+      {storedValue ? (
+        <Button priority="tertiary no outline" disabled iconId="ri-check-line" iconPosition="left" size="small">
+          {linkLabelReported}
+        </Button>
       ) : (
-        <Link textDecoration="underline" color="#3A3A3A" fontSize="16px" onClick={openModal}>
-          <span style={{ color: "#03053D" }}>⚐</span> &nbsp;{linkLabelNotReported}
-        </Link>
+        <Button priority="tertiary no outline" iconId="ri-flag-line" iconPosition="left" size="small" onClick={openModal}>
+          {linkLabelNotReported}
+        </Button>
       )}
+      <InfoTooltipOrModal tooltipContent={tooltip}>
+        <Button priority="tertiary no outline" iconId="ri-question-line" size="small" title="label" />
+      </InfoTooltipOrModal>
       <ModalReadOnly
         isOpen={isModalOpen}
         onClose={closeModal}
@@ -101,7 +104,7 @@ export const ReportJobLink = ({
           pb: [12, 16],
         }}
       >
-        {isReported ? (
+        {storedValue ? (
           <ReportedAcknowledgement />
         ) : (
           <>
@@ -136,27 +139,20 @@ export const ReportJobLink = ({
                         name="reason_details"
                         label={
                           <>
-                            <Text as="span" fontWeight={400}>
+                            <Box fontWeight={400}>
                               {additionalMessageByMotif[values.reason] ?? "Informations complémentaires"}
-                            </Text>
-                            <Text as="span" fontWeight={400} color="#666666">
-                              {" "}
-                              (Facultatif)
-                            </Text>
+                              <Box as="span" fontWeight={400} color="#666666">
+                                {" "}
+                                (Facultatif)
+                              </Box>
+                            </Box>
                           </>
                         }
                       >
                         <Textarea mb={7} data-testid="reason_details" name="reason_details" onBlur={handleBlur} onChange={handleChange} value={values.reason_details} />
                       </CustomFormControl>
                     )}
-                    <Button
-                      alignSelf="flex-end"
-                      variant="form"
-                      isDisabled={!(isValid && dirty) || isSubmitting}
-                      isActive={isValid && dirty}
-                      onClick={submitForm}
-                      data-testid="report_offer"
-                    >
+                    <Button disabled={!(isValid && dirty) || isSubmitting} onClick={submitForm} data-testid="report_offer">
                       Envoyer le signalement
                     </Button>
                   </Flex>
@@ -166,9 +162,6 @@ export const ReportJobLink = ({
           </>
         )}
       </ModalReadOnly>
-      <InfoTooltipOrModal tooltipContent={tooltip}>
-        <InterrogationCircle color="#000091" />
-      </InfoTooltipOrModal>
     </Flex>
   )
 }

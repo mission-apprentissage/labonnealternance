@@ -17,7 +17,7 @@ export default function (server: Server) {
     },
     async (req, res) => {
       const result = await getRomesAndLabelsFromTitleQuery(req.query)
-      return res.status(200).send(result)
+      return res.status(200).header("Cache-Control", "public, max-age=604800, s-maxage=604800, stale-while-revalidate=3600").send(result)
     }
   )
 

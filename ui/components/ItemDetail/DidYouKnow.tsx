@@ -1,6 +1,6 @@
-import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Link, Text } from "@chakra-ui/react"
-import React from "react"
+import { Box, Text } from "@chakra-ui/react"
+
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 import TagCandidatureSpontanee from "./TagCandidatureSpontanee"
 
@@ -12,22 +12,15 @@ const DidYouKnow = () => {
       </Text>
       <Text>
         Diversifiez vos démarches en envoyant aussi des candidatures spontanées aux entreprises qui n&apos;ont pas diffusé d&apos;offre! Repérez les tags suivants dans la liste de
-        résultats
+        résultats <TagCandidatureSpontanee />
       </Text>
-      <Box>
-        <TagCandidatureSpontanee />
-      </Box>
+
       <Text pb={4}>
         Un employeur vous a proposé un entretien ?
         <br />
-        <Link
-          isExternal
-          href="https://dinum.didask.com/courses/demonstration/60d1adbb877dae00003f0eac"
-          variant="basicUnderlined"
-          aria-label="Conseils de préparation à un entretien - nouvelle fenêtre"
-        >
-          On vous donne des conseils pour vous aider à le préparer. <ExternalLinkIcon mb="3px" ml="2px" />
-        </Link>
+        <DsfrLink href="https://dinum.didask.com/courses/demonstration/60d1adbb877dae00003f0eac" aria-label="Conseils de préparation à un entretien - nouvelle fenêtre">
+          On vous donne des conseils pour vous aider à le préparer.
+        </DsfrLink>
       </Text>
     </Box>
   )

@@ -64,7 +64,7 @@ const reducer = (state, action) => {
   }
 }
 
-export type IContextDisplay = {
+type IContextDisplay = {
   formValues: any
   setFormValues: (b: any) => void
   visiblePane: string

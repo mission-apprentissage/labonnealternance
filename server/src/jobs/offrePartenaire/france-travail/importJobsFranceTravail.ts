@@ -1,6 +1,6 @@
 import { ApiClient } from "api-alternance-sdk"
 import { ObjectId } from "bson"
-import { ZFTJobRaw, type IFTJobRaw } from "shared/models"
+import { ZFTJobRaw, type IFTJobRaw } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import rawFranceTravailModel from "shared/models/rawFranceTravail.model"
 

@@ -1,4 +1,4 @@
-import { JOB_STATUS } from "shared/models"
+import { JOB_STATUS } from "shared/models/index"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
