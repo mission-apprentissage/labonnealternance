@@ -93,7 +93,6 @@ function CandidatRechercheFiltersUI({
           },
           {
             label: `Formations${formationsCount != null ? ` (${formationsCount})` : ""}`,
-
             nativeInputProps: {
               checked: displayFormations,
               onChange: onFormationsChange,
@@ -191,7 +190,7 @@ function CandidatRechercheFiltersComponent(props: WithRecherchePageParams) {
   return (
     <CandidatRechercheFiltersUI
       entrepriseCount={result.status === "success" && result.jobStatus === "success" ? result.entrepriseCount : null}
-      formationsCount={result.status === "success" && result.formationStatus === "success" ? result.formationsCount : null}
+      formationsCount={result.status === "success" && (result.formationStatus === "success" || result.formationStatus === "disabled") ? result.formationsCount : null}
       partenariatCount={result.status === "success" && result.jobStatus === "success" ? result.partenariatCount : null}
       displayEntreprises={displayEntreprises}
       displayFormations={displayFormations}
