@@ -1,11 +1,15 @@
+import anonymizedRecruitersModel from "shared/models/anonymizedRecruiters.model"
+import recruiterModel from "shared/models/recruiter.model"
+import userWithAccountModel from "shared/models/userWithAccount.model"
+
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 export const up = async () => {
-  const usersToAnonymize = await getDbCollection("recruiters")
+  const usersToAnonymize = await getDbCollection(recruiterModel.collectionName)
     .aggregate([
       {
         $lookup: {
-          from: "userswithaccounts",
+          from: userWithAccountModel.collectionName,
           let: {
             managedByStr: "$managed_by",
           },
@@ -44,7 +48,7 @@ export const up = async () => {
   const userIds = usersToAnonymize.map(({ _id }) => _id)
   const recruiterQuery = { managed_by: { $in: userIds } }
 
-  await getDbCollection("recruiters")
+  await getDbCollection(recruiterModel.collectionName)
     .aggregate([
       {
         $match: recruiterQuery,
@@ -72,11 +76,11 @@ export const up = async () => {
         },
       },
       {
-        $merge: "anonymized_recruiters",
+        $merge: anonymizedRecruitersModel.collectionName,
       },
     ])
     .toArray()
-  await getDbCollection("recruiters").deleteMany(recruiterQuery)
+  await getDbCollection(recruiterModel.collectionName).deleteMany(recruiterQuery)
 }
 
 // set to false ONLY IF migration does not imply a breaking change (ex: update field value or add index)
