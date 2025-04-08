@@ -1,14 +1,9 @@
-import { Button, Image, Text } from "@chakra-ui/react"
+import { Image, Text } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { useEffect, useState } from "react"
-import { ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
-import { LBA_ITEM_TYPE_OLD, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
-import { buildJobUrl, buildTrainingUrl } from "shared/metier/lbaitemutils"
+import { ILbaItemFormationJson, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 
-const getPath = (item) => {
-  return item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION ? buildTrainingUrl(item.id, item.title) : buildJobUrl(oldItemTypeToNewItemType(item.ideaType), item.id, item.title)
-}
-
-const ShareLink = ({ item }: { item: ILbaItemFormation | ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemPartnerJob }) => {
+const ShareLink = ({ item }: { item: ILbaItemFormationJson | ILbaItemFtJobJson | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemPartnerJobJson }) => {
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
@@ -18,31 +13,14 @@ const ShareLink = ({ item }: { item: ILbaItemFormation | ILbaItemFtJob | ILbaIte
   const copyLink = (e) => {
     e.preventDefault()
 
-    const link = `${window.location.origin}${getPath(item)}${window.location.search}`
+    const link = window.location.toString()
     navigator.clipboard.writeText(link).then(function () {
       setCopied(true)
     })
   }
 
   return (
-    <Button
-      sx={copied ? {} : { borderBottom: "1px solid #000091" }}
-      mx={2}
-      mb={4}
-      px={0}
-      pb={0}
-      height={7}
-      borderRadius={0}
-      _hover={{ bg: "none" }}
-      _focus={{ bg: "none" }}
-      background="none"
-      border="none"
-      display="flex"
-      alignItems="center"
-      fontWeight={400}
-      onClick={copyLink}
-      data-tracking-id={`partager-${oldItemTypeToNewItemType(item.ideaType)}`}
-    >
+    <Button priority="tertiary no outline" onClick={copyLink} data-tracking-id={`partager-${item.ideaType}`}>
       {copied ? (
         <>
           <Image mr={2} src="/images/icons/share_copied_icon.svg" aria-hidden={true} alt="" />

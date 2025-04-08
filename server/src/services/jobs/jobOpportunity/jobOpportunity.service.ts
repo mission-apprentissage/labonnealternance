@@ -3,8 +3,8 @@ import { IApiAlternanceTokenData } from "api-alternance-sdk"
 import { DateTime } from "luxon"
 import { Document, Filter, ObjectId } from "mongodb"
 import { IGeoPoint, IJob, IJobCollectionName, ILbaItemPartnerJob, JOB_STATUS_ENGLISH, JobCollectionName, assertUnreachable, parseEnum, translateJobStatus } from "shared"
-import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
+import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import {
   IJobsPartnersOfferApi,
   IJobsPartnersOfferPrivate,

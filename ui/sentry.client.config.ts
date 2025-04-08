@@ -23,4 +23,13 @@ init({
     reportingObserverIntegration({ types: ["crash", "deprecation", "intervention"] }),
   ],
   ignoreErrors: ["AbortError"],
+  beforeSend(event) {
+    // Hydratation error comes from DSFR
+    if (event.extra?.arguments && Array.isArray(event.extra?.arguments) && event.extra?.arguments?.includes("https://react.dev/link/hydration-mismatch")) {
+      return null
+    }
+
+    console.log(event)
+    return event
+  },
 })

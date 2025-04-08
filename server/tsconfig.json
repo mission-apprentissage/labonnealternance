@@ -11,8 +11,7 @@
     "moduleResolution": "bundler",
     "paths": {
       "@/*": ["./src/*"],
-      "@tests/*": ["./tests/*"],
-      "shared/*": ["../shared/*"]
+      "@tests/*": ["./tests/*"]
     },
     "resolveJsonModule": true,
     /* JavaScript Support */
@@ -33,6 +32,11 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
+  "references": [{ "path": "../shared" }],
   "include": ["./**/*.ts", "./**/*.js"],
-  "exclude": ["**/node_modules", "coverage", "dist"]
+  "exclude": ["**/node_modules", "coverage", "dist"],
+  "typeAcquisition": {
+    "enable": false,
+    "include": ["@types/node"]
+  }
 }

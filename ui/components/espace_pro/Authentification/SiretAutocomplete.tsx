@@ -1,4 +1,5 @@
-import { Box, Button, Flex, Text } from "@chakra-ui/react"
+import { Box, Flex, Spinner, Text } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { captureException } from "@sentry/nextjs"
 import { Form, Formik, FormikHelpers, FormikValues } from "formik"
 import { useState } from "react"
@@ -87,10 +88,9 @@ export const SiretAutocomplete = ({
                 </Box>
               </Box>
             )}
-
             <Flex justify="flex-start" marginTop="32px">
-              <Button type="submit" variant="form" isActive={isValid} isDisabled={!isValid || isSubmitting} isLoading={isSubmitting}>
-                Continuer
+              <Button type="submit" disabled={!isValid || isSubmitting}>
+                {isSubmitting ? <Spinner mr={2} /> : null}Continuer
               </Button>
             </Flex>
           </Form>

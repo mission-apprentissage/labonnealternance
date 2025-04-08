@@ -124,13 +124,13 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
           {isDragActive ? (
             <Text ml={6}>Déposez le fichier ici</Text>
           ) : (
-            <Flex ml={6} direction="row" alignItems="center">
+            <Flex ml={6} direction="row" alignItems="center" gap={4}>
               <Image mr={2} alt="" src="/images/icons/candidature_file_upload.svg" />{" "}
               <Box>
-                <Text fontSize="14px" fontWeight={700} color="grey.700">
+                <Text fontSize="14px" fontWeight={700} color="grey.700" mb={0}>
                   Chargez votre CV ou déposez le ici
                 </Text>
-                <Text fontSize="12px" color="grey.700">
+                <Text fontSize="12px" color="grey.700" mb={0}>
                   Le CV doit être au format PDF ou DOCX et ne doit pas dépasser 3 Mo
                 </Text>
               </Box>

@@ -1,5 +1,6 @@
-import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Link, Text } from "@chakra-ui/react"
+import { Box, Text } from "@chakra-ui/react"
+
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 const AideApprentissage = () => {
   return (
@@ -14,14 +15,9 @@ const AideApprentissage = () => {
 
       <Box color="grey.700" mt={6}>
         Accéder à{" "}
-        <Link
-          variant="basicUnderlined"
-          href="https://www.1jeune1solution.gouv.fr/mes-aides"
-          aria-label="Accès à l'outil de simulation de 1jeune1solution - nouvelle fenêtre"
-          isExternal
-        >
-          l’outil de simulation 1jeune1solution <ExternalLinkIcon mx="2px" />
-        </Link>
+        <DsfrLink href="https://www.1jeune1solution.gouv.fr/mes-aides" aria-label="Accès à l'outil de simulation de 1jeune1solution - nouvelle fenêtre">
+          l’outil de simulation 1jeune1solution
+        </DsfrLink>
       </Box>
     </Box>
   )

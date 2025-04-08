@@ -1,15 +1,4 @@
 import dayjs from "dayjs"
-import relativeTime from "dayjs/plugin/relativeTime"
-
-import { NBR_EXPIRATION_J7 } from "../contants"
-
-/**
- * Format a date to YYYY-MM-DD.
- * @param {date} date - a JavaScript Date
- * @param {string} author - The author of the book.
- * @returns {string} - A string representation of the date : YYYY-MM-DD
- */
-export const formatDate = (date) => dayjs(date).format("YYYY-MM-DD")
 
 /**
  * Get the current date, as a formatted string : YYYY/MM/DD (separator can be changed)
@@ -28,15 +17,6 @@ export const getCurrentDate = (separator = "/") => {
 export const getCurrentHourMinute = (separator = "h") => {
   const currentDatetime = dayjs()
   return dayjs(currentDatetime).format(`HH`) + separator + dayjs(currentDatetime).format(`mm`)
-}
-
-export const willExpire = (date_expiration) => {
-  dayjs.extend(relativeTime)
-
-  const expire = dayjs(date_expiration)
-  const result = expire.diff(Date(), "days") > NBR_EXPIRATION_J7 ? false : true
-
-  return result
 }
 
 export const sortReactTableDate = (a, b) => {

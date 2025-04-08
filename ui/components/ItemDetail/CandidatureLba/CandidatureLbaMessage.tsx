@@ -1,15 +1,11 @@
 import { Box, Text, Textarea } from "@chakra-ui/react"
+import { Typography } from "@mui/material"
 
 const CandidatureLbaMessage = ({ formik }) => {
   return (
     <>
       <Box data-testid="fieldset-message" mt={4}>
-        <Text as="h2" mb="0" color="#161616">
-          Votre message au responsable du recrutement{" "}
-          <Text as="span" fontSize="14px" color="grey.600">
-            (Facultatif)
-          </Text>
-        </Text>
+        <Typography>Votre message au responsable du recrutement (Facultatif)</Typography>
         <Text mb={2} fontSize="14px" color="grey.600">
           Indiquez pourquoi vous souhaitez réaliser votre alternance dans son établissement. <br />
           Un message personnalisé augmente vos chances d&apos;obtenir un contact avec le recruteur. <br />

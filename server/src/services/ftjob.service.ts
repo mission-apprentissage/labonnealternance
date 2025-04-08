@@ -2,9 +2,11 @@ import { setTimeout } from "timers/promises"
 
 import { badRequest, notFound } from "@hapi/boom"
 import distance from "@turf/distance"
-import { NIVEAUX_POUR_OFFRES_PE } from "shared/constants"
-import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { NIVEAUX_POUR_OFFRES_PE } from "shared/constants/index"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
+import { ILbaItemPartnerJob } from "shared/models/index"
+import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 
 import { getFtJob, searchForFtJobs } from "@/common/apis/franceTravail/franceTravail.client"
 
@@ -122,6 +124,49 @@ const transformFtJob = ({ job, latitude = null, longitude = null }: { job: FTJob
           },
         ]
       : null,
+  }
+
+  return resultJob
+}
+
+/**
+ * Adaptation au modèle LBA et conservation des seules infos utilisées des offres
+ */
+export const transformFtJobV2 = (job: IJobsPartnersOfferPrivate): ILbaItemPartnerJob => {
+  const resultJob: ILbaItemPartnerJob = {
+    ideaType: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
+    id: job._id.toString(),
+    title: job.offer_title,
+    contact: {
+      email: job.apply_email,
+      phone: job.apply_phone,
+      url: job.apply_url,
+    },
+    place: {
+      distance: null,
+      zipCode: job.workplace_address_zipcode,
+      city: job.workplace_address_city,
+      longitude: job.workplace_geopoint.coordinates[0],
+      latitude: job.workplace_geopoint.coordinates[1],
+      fullAddress: job.workplace_address_label,
+    },
+    company: {
+      name: job.workplace_brand || job.workplace_name || job.workplace_legal_name,
+      description: job.workplace_description,
+      siret: job.workplace_siret,
+      opco: { label: job.workplace_opco, url: null },
+    },
+    job: {
+      id: job._id.toString(),
+      creationDate: job.offer_creation,
+      description: job.offer_description,
+      duration: job.contract_duration?.toString(),
+      type: job.contract_type,
+    },
+    romes: [{ code: job.offer_rome_codes.join(","), label: null }],
+    nafs: [{ code: job.workplace_naf_code, label: job.workplace_naf_label }],
+    token: "",
+    recipient_id: `partners_${job._id.toString()}`,
   }
 
   return resultJob
@@ -401,37 +446,5 @@ export const getFtJobFromId = async ({ id, caller }: { id: string; caller: strin
       manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from FT" })
     }
     throw error
-  }
-}
-/**
- * @description Retourne un tableau contenant la seule offre Pôle emploi identifiée
- */
-export const getFtJobFromIdV2 = async ({ id, caller }: { id: string; caller: string | undefined }): Promise<{ job: ILbaItemFtJob } | null> => {
-  try {
-    const job = await getFtJob(id)
-
-    if (job.status === 204 || job.data === "") {
-      throw notFound()
-    }
-    if (job.status === 400) {
-      throw badRequest()
-    }
-
-    const ftJob = transformFtJob({ job: job.data })
-
-    if (caller) {
-      trackApiCall({ caller, job_count: 1, result_count: 1, api_path: "job/offres_emploi_partenaires", response: "OK" })
-      // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
-      if (ftJob.company) {
-        ftJob.company.siret = null
-      }
-    }
-
-    return { job: ftJob }
-  } catch (error: any) {
-    if (!error.isBoom) {
-      sentryCaptureException(error)
-    }
-    return null // @KB il faut qu'on revoie ça
   }
 }

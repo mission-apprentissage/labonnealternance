@@ -1,5 +1,5 @@
 import { Filter } from "mongodb"
-import { JOB_STATUS_ENGLISH } from "shared/models"
+import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
 import { blockBadRomeJobsPartners } from "./blockBadRomeJobsPartners"
