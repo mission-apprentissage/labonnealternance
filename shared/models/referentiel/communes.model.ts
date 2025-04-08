@@ -25,6 +25,7 @@ export const referentielCommuneModel = {
   zod: zReferentielCommune,
   indexes: [
     [{ code: 1 }, { unique: true }],
+    [{ codesPostaux: 1 }, {}],
     [{ centre: "2dsphere" }, {}],
   ],
   collectionName,
