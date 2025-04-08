@@ -172,6 +172,54 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
     staleTime: 1000 * 60 * 60,
   })
 
+  const formationCount = useMemo(() => {
+    let result = 0
+
+    if (!formationQuery.isSuccess) {
+      return result
+    }
+
+    result += formationQuery.data.length
+
+    return result
+  }, [formationQuery.data, formationQuery.isSuccess])
+
+  const jobCount = useMemo(() => {
+    let result = 0
+
+    if (!jobQuery.isSuccess) {
+      return result
+    }
+
+    if (jobQuery.data.matchas && "results" in jobQuery.data.matchas) {
+      result += jobQuery.data.matchas.results.length
+    }
+
+    if (jobQuery.data.partnerJobs && "results" in jobQuery.data.partnerJobs) {
+      result += jobQuery.data.partnerJobs.results.length
+    }
+
+    if (jobQuery.data.lbaCompanies && "results" in jobQuery.data.lbaCompanies) {
+      result += jobQuery.data.lbaCompanies.results.length
+    }
+
+    return result
+  }, [jobQuery.data, jobQuery.isSuccess])
+
+  const jobPartenariatCount = useMemo(() => {
+    let result = 0
+
+    if (!jobQuery.isSuccess || !isJobsEnabled) {
+      return result
+    }
+
+    if (jobQuery.data.matchas && "results" in jobQuery.data.matchas) {
+      result += jobQuery.data.matchas.results.filter((job: ILbaItemLbaJob) => job.company.mandataire).length
+    }
+
+    return result
+  }, [jobQuery.data, jobQuery.isSuccess, isJobsEnabled])
+
   const jobs = useMemo(() => {
     const result: Array<Jsonify<ILbaItemLbaCompany | ILbaItemPartnerJob | ILbaItemLbaJob>> = []
 
@@ -280,9 +328,9 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
       jobs,
       jobsCount: jobs.length,
       formations,
-      formationsCount: formations.length,
-      entrepriseCount: jobs.filter((item) => !item.company.mandataire).length,
-      partenariatCount: jobs.filter((item) => item.company.mandataire).length,
+      formationsCount: formationCount,
+      entrepriseCount: jobCount,
+      partenariatCount: jobPartenariatCount,
     }
-  }, [jobQuery.data, isFormationEnabled, isJobsEnabled, jobs, formations, items, formationStatus, jobStatus])
+  }, [jobQuery.data, isFormationEnabled, isJobsEnabled, jobs, formations, items, formationStatus, jobStatus, jobCount, formationCount, jobPartenariatCount])
 }
