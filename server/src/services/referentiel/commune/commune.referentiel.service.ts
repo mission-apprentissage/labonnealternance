@@ -46,3 +46,15 @@ export async function getNearestCommuneByGeoPoint(geo: IGeoPoint): Promise<IRefe
 
   return commune
 }
+
+export async function getCommuneByCodeInsee(code: string): Promise<IReferentielCommune | null> {
+  return await getDbCollection("referentiel.communes").findOne({
+    code,
+  })
+}
+
+export async function getCommuneByCodePostal(codePostal: string): Promise<IReferentielCommune | null> {
+  return await getDbCollection("referentiel.communes").findOne({
+    codesPostaux: codePostal,
+  })
+}

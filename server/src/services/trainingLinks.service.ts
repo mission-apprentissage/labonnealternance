@@ -2,16 +2,16 @@ import { URL } from "url"
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { getDistance } from "geolib"
-import { IFormationCatalogue } from "shared/models/index"
+import { IFormationCatalogue, IReferentielCommune } from "shared/models/index"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getCommuneByCodeInsee, getCommuneByCodePostal } from "@/services/referentiel/commune/commune.referentiel.service"
 
 import { asyncForEach } from "../common/utils/asyncUtils"
 import config from "../config.js"
 
 import { getRomesFromRncp } from "./external/api-alternance/certification.service"
 import { filterWrongRomes } from "./formation.service"
-import { getGeolocation } from "./geolocation.service"
 
 interface IWish {
   id: string
@@ -40,7 +40,7 @@ interface ILinks {
 
 const defaultUtmData = { utm_source: "lba", utm_medium: "email", utm_campaign: "promotion-emploi-jeunes-voeux" }
 
-const buildEmploiUrl = ({ baseUrl = `${config.publicUrl}/recherche-emploi`, params }: { baseUrl?: string; params: Record<string, string | string[]> }) => {
+const buildEmploiUrl = ({ baseUrl = `${config.publicUrl}/recherche-emploi`, params }: { baseUrl?: string; params: Record<string, string | string[] | null | undefined> }) => {
   const url = new URL(baseUrl)
 
   Object.entries(params).forEach(([key, value]) => {
@@ -177,6 +177,30 @@ const getPrdvLink = async (wish: IWish): Promise<string> => {
   return ""
 }
 
+async function getWishCommune(wish: IWish): Promise<IReferentielCommune | null> {
+  if (wish.code_insee) {
+    const commune = await getCommuneByCodeInsee(wish.code_insee)
+    if (commune) return commune
+  }
+
+  if (wish.code_postal) {
+    const commune = await getCommuneByCodePostal(wish.code_postal)
+    if (commune) return commune
+  }
+
+  const code = wish.code_insee || wish.code_postal
+
+  if (code) {
+    const generalPostCode = code.replace(/\d{3}$/, "000")
+    const byCodeInsee = await getCommuneByCodeInsee(generalPostCode)
+    if (byCodeInsee) return byCodeInsee
+    const byCodePostal = await getCommuneByCodePostal(generalPostCode)
+    if (byCodePostal) return byCodePostal
+  }
+
+  return null
+}
+
 export const getLBALink = async (wish: IWish): Promise<string> => {
   // Try getting formations first
   const formations = await getTrainingsFromParameters(wish)
@@ -191,20 +215,10 @@ export const getLBALink = async (wish: IWish): Promise<string> => {
   }
 
   // Extract postcode and get coordinates if available
-  const postCode = wish.code_insee || wish.code_postal
-  let wLat, wLon
-  if (postCode) {
-    let geoFeature = await getGeolocation(postCode)
-
-    if (!geoFeature) {
-      const generalPostCode = postCode.replace(/\d{3}$/, "000")
-      geoFeature = await getGeolocation(generalPostCode)
-    }
-
-    if (geoFeature) {
-      ;[wLon, wLat] = geoFeature.geometry.coordinates
-    }
-  }
+  const commune = await getWishCommune(wish)
+  // GeoJSON coordinates are in [longitude, latitude] format
+  const wLon: string | null = commune?.centre.coordinates[0].toString() ?? null
+  const wLat: string | null = commune?.centre.coordinates[1].toString() ?? null
 
   // Get romes based on rncp or training database
   let romes = wish.rncp
@@ -216,7 +230,8 @@ export const getLBALink = async (wish: IWish): Promise<string> => {
   // Build url based on formations and coordinates
   if (formations?.length) {
     let formation = formations[0]
-    let lat, lon
+    let lat: string | null = null
+    let lon: string | null = null
     if (formations.length > 1 && wLat && wLon) {
       // Find closest formation if multiple and coordinates available
       formation = formations.reduce(
@@ -228,8 +243,9 @@ export const getLBALink = async (wish: IWish): Promise<string> => {
         },
         { distance: 999999999, ...formation }
       )
-      lat = formation.lieu_formation_geo_coordonnees?.split(",")[0]
-      lon = formation.lieu_formation_geo_coordonnees?.split(",")[1]
+      // Catalogue geo-coordinates are in [latitude, longitude] format
+      lat = formation.lieu_formation_geo_coordonnees?.split(",")[0] ?? null
+      lon = formation.lieu_formation_geo_coordonnees?.split(",")[1] ?? null
     } else {
       // Use formation coordinates or user coordinates
       lat = formation.lieu_formation_geo_coordonnees?.split(",")[0] || wLat
@@ -239,7 +255,7 @@ export const getLBALink = async (wish: IWish): Promise<string> => {
   } else {
     // No formations found, use user coordinates if available
     if (romes.length) {
-      return buildEmploiUrl({ params: { romes, lat: wLat ?? undefined, lon: wLon ?? undefined, radius: "60", ...utmParams } })
+      return buildEmploiUrl({ params: { romes, lat: wLat, lon: wLon, radius: "60", ...utmParams } })
     } else {
       return buildEmploiUrl({ baseUrl: config.publicUrl, params: { ...utmParams } })
     }
