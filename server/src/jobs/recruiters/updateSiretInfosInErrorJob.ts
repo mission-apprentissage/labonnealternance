@@ -1,9 +1,8 @@
 import { internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { IBusinessError, IRecruiter, JOB_STATUS } from "shared"
-import { ENTREPRISE } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { CFA, RECRUITER_STATUS } from "shared/constants/recruteur"
+import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
@@ -22,9 +21,7 @@ import { archiveFormulaire, sendMailNouvelleOffre, updateFormulaire } from "../.
 
 const updateEntreprisesInfosInError = async () => {
   const entreprises = await getDbCollection("entreprises")
-    .find({
-      $expr: { $in: [{ $arrayElemAt: ["$status.status", -1] }, [EntrepriseStatus.ERROR, EntrepriseStatus.A_METTRE_A_JOUR]] },
-    })
+    .find({ $expr: { $in: [{ $arrayElemAt: ["$status.status", -1] }, [EntrepriseStatus.ERROR, EntrepriseStatus.A_METTRE_A_JOUR]] } })
     .toArray()
   const stats = { success: 0, failure: 0, deactivated: 0 }
   logger.info(`Correction des entreprises en erreur: ${entreprises.length} entreprises à mettre à jour...`)
@@ -58,7 +55,7 @@ const updateEntreprisesInfosInError = async () => {
 
 const deactivationWarningOriginExclusion = ["opcoep-HUBE", "opcoep-CRM"]
 
-const warnDeactivatedRecruteur = async (recruiter: IRecruiter, error: IBusinessError) => {
+export const warnDeactivatedRecruteur = async (recruiter: IRecruiter, error: IBusinessError) => {
   if (!deactivationWarningOriginExclusion.includes(recruiter.origin ?? "")) {
     let errorMessage = error.message
     if (error.errorCode === BusinessErrorCodes.NON_DIFFUSIBLE) {
@@ -66,6 +63,9 @@ const warnDeactivatedRecruteur = async (recruiter: IRecruiter, error: IBusinessE
     }
     if (error.errorCode === BusinessErrorCodes.IS_CFA) {
       errorMessage = "entreprise rattachée à un code NAF 85"
+    }
+    if (error.errorCode === BusinessErrorCodes.CLOSED) {
+      errorMessage = "fermeture du compte La bonne alternance"
     }
 
     const { last_name, first_name, email, establishment_siret, establishment_raison_sociale, phone } = recruiter
@@ -75,11 +75,7 @@ const warnDeactivatedRecruteur = async (recruiter: IRecruiter, error: IBusinessE
 }
 
 const updateRecruteursSiretInfosInError = async () => {
-  const recruteurs = await getDbCollection("recruiters")
-    .find({
-      status: RECRUITER_STATUS.EN_ATTENTE_VALIDATION,
-    })
-    .toArray()
+  const recruteurs = await getDbCollection("recruiters").find({ status: RECRUITER_STATUS.EN_ATTENTE_VALIDATION }).toArray()
   const stats = { success: 0, failure: 0, deactivated: 0 }
   logger.info(`Correction des recruteurs en erreur: ${recruteurs.length} user recruteurs à mettre à jour...`)
   await asyncForEach(recruteurs, async (recruteur) => {
@@ -148,8 +144,5 @@ const updateRecruteursSiretInfosInError = async () => {
 export const updateSiretInfosInError = async () => {
   const userRecruteurResult = await updateEntreprisesInfosInError()
   const recruteurResult = await updateRecruteursSiretInfosInError()
-  return {
-    userRecruteurResult,
-    recruteurResult,
-  }
+  return { userRecruteurResult, recruteurResult }
 }
