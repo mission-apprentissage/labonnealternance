@@ -1,6 +1,7 @@
 import fs from "node:fs/promises"
 
-import { writeData, oleoduc } from "oleoduc"
+import { oleoduc, writeData } from "oleoduc"
+import { z } from "zod"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { streamGroupByCount } from "@/common/utils/streamUtils"
@@ -22,12 +23,19 @@ type LLMInputDocument = {
   appellations: string[]
 }
 
+const ZLLMOutput = z.record(z.array(z.string()))
+
 export const classifyRomesForDomainesMetiers = async () => {
   const domaineMetiers = await getDbCollection("domainesmetiers").find({}).toArray()
   const sousDomainesSet = new Set<string>()
   domaineMetiers.forEach((domaineMetier) => sousDomainesSet.add(domaineMetier.sous_domaine))
   const sousDomaines = [...sousDomainesSet].sort()
   console.log(sousDomaines)
+
+  let combinedOutput = {}
+  const inventedDomains = new Set<string>()
+  const stats = { inputSentSize: 0, receivedSize: 0, receivedMatchingInputSize: 0 }
+  let index = 0
 
   await oleoduc(
     getDbCollection("referentielromes")
@@ -42,24 +50,46 @@ export const classifyRomesForDomainesMetiers = async () => {
       }))
       const sentInputs = llmInputDocuments.slice(0, 30)
       const llmResponse = await classifyRomeDocuments(sentInputs, sousDomaines)
-      await fs.appendFile("./classifyRomesForDomainesMetiers.output.json", llmResponse)
+      console.log("llmResponse:", llmResponse)
+
       try {
-        const parsed = JSON.parse(llmResponse) as Record<string, string[]>
-        console.log("sent size", sentInputs.length)
-        console.log("received size", Object.keys(parsed).length)
-        console.log("received matching size", llmInputDocuments.filter((doc) => Object.keys(parsed).includes(doc.titre)).length)
-        console.log(
-          "invented domains",
-          Object.values(parsed).flatMap((arr) => arr.filter((item) => !sousDomainesSet.has(item)))
-        )
+        if (!llmResponse) {
+          throw new Error(`empty output`)
+        }
+        const parsed = ZLLMOutput.safeParse(JSON.parse(llmResponse))
+        if (!parsed.success) {
+          throw new Error(`output parsing error: ${JSON.stringify(parsed.error, null, 2)}`)
+        }
+        const { data: typedResponse } = parsed
+        const inputSentSize = sentInputs.length
+        const receivedSize = Object.keys(typedResponse).length
+        const receivedMatchingInputSize = llmInputDocuments.filter((doc) => Object.keys(typedResponse).includes(doc.titre)).length
+        Object.values(typedResponse)
+          .flatMap((arr) => arr.filter((item) => !sousDomainesSet.has(item)))
+          .forEach((domain) => {
+            inventedDomains.add(domain)
+          })
+        console.log({
+          inputSentSize,
+          receivedSize,
+          receivedMatchingInputSize,
+        })
+        stats.inputSentSize += inputSentSize
+        stats.receivedSize += receivedSize
+        stats.receivedMatchingInputSize += receivedMatchingInputSize
+        combinedOutput = { ...combinedOutput, ...typedResponse }
+        await fs.appendFile(`./classifyRomesForDomainesMetiers.output.${index}.json`, JSON.stringify(typedResponse, null, 2))
+        index++
       } catch (error) {
         console.error(error)
       }
     })
   )
+  console.log("invented domains", [...inventedDomains])
+  console.log(stats)
 }
 
-const classifyRomeDocuments = async (romeDocuments: LLMInputDocument[], sousDomaines: string[]): Promise<any> => {
+const classifyRomeDocuments = async (romeDocuments: LLMInputDocument[], sousDomaines: string[]) => {
   const messages: Message[] = [
     {
       role: "system",
@@ -132,10 +162,10 @@ Tu devras répondre :
     const response = await sendMistralMessages({
       messages,
       randomSeed: 45555,
-      maxTokens: 1024,
+      maxTokens: 2048,
     })
     if (!response) {
-      return null
+      return undefined
     }
     return response
   } catch (error) {
