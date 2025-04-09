@@ -17,7 +17,7 @@ import { processApplications } from "./applications/processApplications"
 import { processRecruiterIntentions } from "./applications/processRecruiterIntentions"
 import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
 import { obfuscateCollections } from "./database/obfuscateCollections"
-import { classifyRomesForDomainesMetiers } from "./domainesMetiers/classifyRomesForDomainesMetiers"
+import { classifyRomesForDomainesMetiers, classifyRomesForDomainesMetiersAnalyze } from "./domainesMetiers/classifyRomesForDomainesMetiers"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
@@ -301,5 +301,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: classifyRomesForDomainesMetiers,
     description: "Classifie les fiches ROME pour les domaines métiers",
+  },
+  {
+    fct: classifyRomesForDomainesMetiersAnalyze,
+    description: "Analyse les fichiers de sortie de classifyRomesForDomainesMetiers",
   },
 ]

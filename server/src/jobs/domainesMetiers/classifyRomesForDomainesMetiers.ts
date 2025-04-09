@@ -3,6 +3,8 @@ import fs from "node:fs/promises"
 import { oleoduc, writeData } from "oleoduc"
 import { z } from "zod"
 
+import { deduplicate } from "@/common/utils/array"
+import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { streamGroupByCount } from "@/common/utils/streamUtils"
 import { Message, sendMistralMessages } from "@/services/mistralai/mistralai.service"
@@ -26,21 +28,14 @@ type LLMInputDocument = {
 const ZLLMOutput = z.record(z.array(z.string()))
 
 export const classifyRomesForDomainesMetiers = async () => {
-  const domaineMetiers = await getDbCollection("domainesmetiers").find({}).toArray()
-  const sousDomainesSet = new Set<string>()
-  domaineMetiers.forEach((domaineMetier) => sousDomainesSet.add(domaineMetier.sous_domaine))
-  const sousDomaines = [...sousDomainesSet].sort()
-  console.log(sousDomaines)
-
-  let combinedOutput = {}
-  const inventedDomains = new Set<string>()
+  const sousDomaines = await getValidSousDomaines()
   const stats = { inputSentSize: 0, receivedSize: 0, receivedMatchingInputSize: 0 }
-  let index = 0
+  let index = await getCurrentIndex()
+  console.info({ index })
+  const currentMappings = await getAllMappings()
 
   await oleoduc(
-    getDbCollection("referentielromes")
-      .aggregate([{ $project: { _id: 0, "rome.intitule": 1, definition: 1, "appellations.libelle": 1 } }])
-      .stream(),
+    getMissingOutputQuery(currentMappings).stream(),
     streamGroupByCount(20),
     writeData(async (typedDocuments: RomeDocumentRaw[]) => {
       const llmInputDocuments: LLMInputDocument[] = typedDocuments.map(({ rome, definition, appellations }) => ({
@@ -48,9 +43,12 @@ export const classifyRomesForDomainesMetiers = async () => {
         definition,
         appellations: appellations.map(({ libelle }) => libelle),
       }))
-      const sentInputs = llmInputDocuments.slice(0, 30)
-      const llmResponse = await classifyRomeDocuments(sentInputs, sousDomaines)
-      console.log("llmResponse:", llmResponse)
+      console.info(
+        "sending",
+        llmInputDocuments.map((x) => x.titre)
+      )
+      const llmResponse = await classifyRomeDocuments(llmInputDocuments, sousDomaines)
+      console.info("llmResponse:", llmResponse)
 
       try {
         if (!llmResponse) {
@@ -61,15 +59,10 @@ export const classifyRomesForDomainesMetiers = async () => {
           throw new Error(`output parsing error: ${JSON.stringify(parsed.error, null, 2)}`)
         }
         const { data: typedResponse } = parsed
-        const inputSentSize = sentInputs.length
+        const inputSentSize = llmInputDocuments.length
         const receivedSize = Object.keys(typedResponse).length
         const receivedMatchingInputSize = llmInputDocuments.filter((doc) => Object.keys(typedResponse).includes(doc.titre)).length
-        Object.values(typedResponse)
-          .flatMap((arr) => arr.filter((item) => !sousDomainesSet.has(item)))
-          .forEach((domain) => {
-            inventedDomains.add(domain)
-          })
-        console.log({
+        console.info({
           inputSentSize,
           receivedSize,
           receivedMatchingInputSize,
@@ -77,16 +70,26 @@ export const classifyRomesForDomainesMetiers = async () => {
         stats.inputSentSize += inputSentSize
         stats.receivedSize += receivedSize
         stats.receivedMatchingInputSize += receivedMatchingInputSize
-        combinedOutput = { ...combinedOutput, ...typedResponse }
-        await fs.appendFile(`./classifyRomesForDomainesMetiers.output.${index}.json`, JSON.stringify(typedResponse, null, 2))
+        const filename = `./classifyRomesForDomainesMetiers.output.${index}.json`
+        console.info("writing", filename)
+        await fs.appendFile(filename, JSON.stringify(typedResponse, null, 2))
         index++
       } catch (error) {
         console.error(error)
       }
     })
   )
-  console.log("invented domains", [...inventedDomains])
-  console.log(stats)
+  console.info(stats)
+}
+
+export const classifyRomesForDomainesMetiersAnalyze = async () => {
+  const mappings = await getAllMappings()
+  const validDomains = await getValidSousDomaines()
+  const invalidDomains = deduplicate(Object.values(mappings).flatMap((array) => array.filter((domain) => !validDomains.includes(domain))))
+  console.log("invalid sous domaines", invalidDomains)
+
+  const missingOutput = await getMissingOutputQuery(mappings).toArray()
+  console.info("missing", missingOutput)
 }
 
 const classifyRomeDocuments = async (romeDocuments: LLMInputDocument[], sousDomaines: string[]) => {
@@ -144,9 +147,9 @@ Par exemple, si les fiches ROME sont :
 ]
 Tu devras répondre :
 {
-  "Conducteur / Conductrice d'engins agricoles": ["Agriculture", "Agriculture, Conduite, Mécanique"],
-  "Conducteur / Conductrice de ligne en industrie chimique": ["Industrie"],
-  "Grossiste en produits frais": ["Commerce, vente, Accueil, Administratif, secrétariat, Tourisme", "Commerce, vente, Alimentation"],
+  "Conducteur / Conductrice d'engins agricoles": ["Exploitation forestière, sylviculture", "Conduite d'engins agricoles"],
+  "Conducteur / Conductrice de ligne en industrie chimique": ["Chimie"],
+  "Grossiste en produits frais": ["Accueil, service client", "Vente en magasin : alimentation, produits frais, boissons"],
 }
   `,
     },
@@ -171,4 +174,63 @@ Tu devras répondre :
   } catch (error) {
     console.error(error)
   }
+}
+
+const getValidSousDomaines = async () => {
+  const domaineMetiers = await getDbCollection("domainesmetiers").find({}).toArray()
+  const sousDomainesSet = new Set<string>()
+  domaineMetiers.forEach((domaineMetier) => sousDomainesSet.add(domaineMetier.sous_domaine))
+  const sousDomaines = [...sousDomainesSet].sort()
+  return sousDomaines
+}
+
+const getCurrentIndex = async () => {
+  let index = 0
+  await asyncForEach(await fs.readdir("."), async (filename) => {
+    const reg = /classifyRomesForDomainesMetiers.output.([0-9]+).json/g
+    const match = reg.exec(filename)
+    if (!match) {
+      return
+    }
+    const fileIndex = parseInt(match[1], 10)
+    index = Math.max(index, fileIndex)
+  })
+  return index + 1
+}
+
+const getAllMappings = async (): Promise<Record<string, string[]>> => {
+  const outputFilename = `./classifyRomesForDomainesMetiers.output.json`
+  if ((await fs.stat(outputFilename)).isFile()) {
+    console.info("reading", outputFilename)
+    return JSON.parse((await fs.readFile(outputFilename)).toString())
+  }
+
+  let mappings: Record<string, string[]> = {}
+  await asyncForEach(await fs.readdir("."), async (filename) => {
+    if (!/classifyRomesForDomainesMetiers.output.[0-9]+.json/g.test(filename)) {
+      return
+    }
+    const json = JSON.parse((await fs.readFile(`./${filename}`)).toString()) as Record<string, string[]>
+    mappings = { ...mappings, ...json }
+  })
+  console.info("writing", outputFilename)
+  await fs.writeFile(outputFilename, JSON.stringify(mappings, null, 2))
+  return mappings
+}
+
+const getMissingOutputQuery = (mappings: Record<string, string[]>) => {
+  const treatedInputs = Object.keys(mappings)
+  return getDbCollection("referentielromes").find(
+    {
+      "rome.intitule": { $nin: treatedInputs },
+    },
+    {
+      projection: {
+        _id: 0,
+        "rome.intitule": 1,
+        definition: 1,
+        "appellations.libelle": 1,
+      },
+    }
+  )
 }
