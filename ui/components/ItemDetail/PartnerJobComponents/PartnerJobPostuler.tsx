@@ -30,11 +30,7 @@ export const PartnerJobPostuler = ({ job, isCollapsedHeader }: { job: ILbaItemPa
           variant="postuler"
           href={job.contact.url}
           target={job.job.partner_label}
-          onClick={() =>
-            SendPlausibleEvent(`Clic Postuler - Fiche entreprise Offre ${job.job.partner_label}`, {
-              info_fiche: job.id,
-            })
-          }
+          onClick={() => SendPlausibleEvent("Clic Postuler - Fiche emploi", { partner_label: job.job.partner_label, info_fiche: job.id })}
         >
           Je postule{filteredPartnerLabels.includes(job.job.partner_label) ? "" : ` sur ${job.job.partner_label}`}
         </Link>

@@ -35,9 +35,7 @@ export function CandidatureLba({ item }: { item: ILbaItemLbaJobJson | ILbaItemLb
 
   const openApplicationForm = () => {
     onOpen()
-    SendPlausibleEvent(kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "Clic Postuler - Fiche entreprise Offre LBA" : "Clic Postuler - Fiche entreprise Algo", {
-      info_fiche: getItemId(item),
-    })
+    SendPlausibleEvent("Clic Postuler - Fiche emploi", { partner_label: kind, info_fiche: getItemId(item) })
   }
 
   const hasAppliedValue = storedValue
