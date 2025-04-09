@@ -4,7 +4,6 @@ import config from "@/config"
 
 import { logger } from "../../common/logger"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
-import { ZChatCompletionResponse } from "../openai/openai.service"
 
 const mistral = new Mistral({
   apiKey: config.mistralai.apiKey,
@@ -24,7 +23,7 @@ export const sendMistralMessages = async ({
   randomSeed?: number
   maxTokens?: number
   responseFormat?: { type: "text" | "json_object" }
-}): Promise<any> => {
+}): Promise<string | null> => {
   try {
     const response = await mistral.chat.complete({
       model,
@@ -43,13 +42,7 @@ export const sendMistralMessages = async ({
       logger.info("No content from Mistral", response)
       return null
     }
-
-    const { data, error } = ZChatCompletionResponse.safeParse(JSON.parse(message))
-    if (error) {
-      console.log("Invalid response format", error)
-      return null
-    }
-    return data
+    return message
   } catch (error) {
     sentryCaptureException(error)
     console.error(error)
