@@ -84,12 +84,42 @@ export const classifyRomesForDomainesMetiers = async () => {
 
 export const classifyRomesForDomainesMetiersAnalyze = async () => {
   const mappings = await getAllMappings()
+  if (!Object.keys(mappings).length) {
+    throw new Error("no mappings found")
+  }
+  console.info("nombre de romes", Object.keys(mappings).length)
   const validDomains = await getValidSousDomaines()
   const invalidDomains = deduplicate(Object.values(mappings).flatMap((array) => array.filter((domain) => !validDomains.includes(domain))))
-  console.log("invalid sous domaines", invalidDomains)
+  console.info("invalid sous domaines", invalidDomains)
 
   const missingOutput = await getMissingOutputQuery(mappings).toArray()
   console.info("missing", missingOutput)
+
+  const romeIntitulesAndCodes = await getDbCollection("referentielromes")
+    .find({}, { projection: { _id: 0, "rome.intitule": 1, "rome.code_rome": 1 } })
+    .toArray()
+  const wrongIntitules = Object.keys(mappings).filter((intitule) => !romeIntitulesAndCodes.find((x) => x.rome.intitule === intitule))
+  console.info("mauvais intitulés", wrongIntitules)
+
+  const invertedMappings: Record<string, { code: string; intitule: string }[]> = {}
+  Object.entries(mappings).forEach(([intitule, domains]) => {
+    domains.forEach((domain) => {
+      let group = invertedMappings[domain]
+      if (!group) {
+        group = []
+        invertedMappings[domain] = group
+      }
+      const code = romeIntitulesAndCodes.find((x) => x.rome.intitule === intitule)?.rome.code_rome
+      if (!code) {
+        console.warn(`rome not found with intitule=${intitule}`)
+      }
+      group.push({ intitule, code: code ?? "" })
+    })
+  })
+  const validInverted = Object.fromEntries(Object.entries(invertedMappings).filter(([domain]) => validDomains.includes(domain)))
+  await fs.writeFile("./classifyRomesForDomainesMetiers.inverted.valid.json", JSON.stringify(validInverted, null, 2))
+  const invalidInverted = Object.fromEntries(Object.entries(invertedMappings).filter(([domain]) => !validDomains.includes(domain)))
+  await fs.writeFile("./classifyRomesForDomainesMetiers.inverted.invalid.json", JSON.stringify(invalidInverted, null, 2))
 }
 
 const classifyRomeDocuments = async (romeDocuments: LLMInputDocument[], sousDomaines: string[]) => {
@@ -200,7 +230,7 @@ const getCurrentIndex = async () => {
 
 const getAllMappings = async (): Promise<Record<string, string[]>> => {
   const outputFilename = `./classifyRomesForDomainesMetiers.output.json`
-  if ((await fs.stat(outputFilename)).isFile()) {
+  if (await doesFileExist(outputFilename)) {
     console.info("reading", outputFilename)
     return JSON.parse((await fs.readFile(outputFilename)).toString())
   }
@@ -233,4 +263,13 @@ const getMissingOutputQuery = (mappings: Record<string, string[]>) => {
       },
     }
   )
+}
+
+const doesFileExist = async (filename: string): Promise<boolean> => {
+  try {
+    const stat = await fs.stat(filename)
+    return stat.isFile()
+  } catch (err) {
+    return false
+  }
 }
