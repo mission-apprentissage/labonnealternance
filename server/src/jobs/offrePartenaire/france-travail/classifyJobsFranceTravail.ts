@@ -2,6 +2,7 @@ import { groupData, oleoduc, writeData } from "oleoduc"
 import { IFTJobRaw } from "shared"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import config from "@/config"
 
 import { logger } from "../../../common/logger"
 import { notifyToSlack } from "../../../common/utils/slackUtils"
@@ -30,6 +31,8 @@ Une fois que tu as déterminé si les offres sont de type CFA, Entreprise ou Ent
   ...
     ]}
 
+    Assure-toi de retourner une structure JSON valide
+
     ## Below some examples of the data already classified
     ${JSON.stringify(data.examples)}
   `,
@@ -53,11 +56,11 @@ Une fois que tu as déterminé si les offres sont de type CFA, Entreprise ou Ent
     const response = await sendMistralMessages({
       messages,
       randomSeed: 45555,
-      maxTokens: 1024,
     })
     if (!response) {
       return null
     }
+
     return response
   } catch (error) {
     console.error(error)
@@ -77,9 +80,12 @@ function mapDocument(rawFTDocuments: IFTJobRaw[]) {
 }
 
 export const classifyFranceTravailJobs = async () => {
+  if (config.env !== "production") return
   const rawFTDocumentsVerified = await getDbCollection("raw_francetravail")
     .find({ "_metadata.openai.human_verification": { $exists: true } })
+    .limit(40) // HARD LIMIT FOR FREE MISTRAL MODEL
     .toArray()
+
   const examples = mapDocument(rawFTDocumentsVerified)
   const queryFilter = { "_metadata.openai.type": { $exists: false } }
   const count = await getDbCollection("raw_francetravail").countDocuments(queryFilter)
@@ -91,6 +97,7 @@ export const classifyFranceTravailJobs = async () => {
     writeData(async (rawFTDocuments: IFTJobRaw[]) => {
       const offres = mapDocument(rawFTDocuments)
       const response = await checkFTOffer({ offres, examples })
+
       for (const rsp of response.offres) {
         await getDbCollection("raw_francetravail").findOneAndUpdate(
           { id: rsp.id as string },

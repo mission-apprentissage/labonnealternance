@@ -1,20 +1,16 @@
-import { Box, Button, Flex, Image, Modal, ModalContent, ModalHeader, ModalOverlay, Text, useDisclosure } from "@chakra-ui/react"
-import { useFormik } from "formik"
-import { useEffect, useState } from "react"
-import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
-import { JOB_STATUS } from "shared/models/job.model"
-import { toFormikValidationSchema } from "zod-formik-adapter"
+"use client"
+import { Box, Flex, Image, Text, useDisclosure } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
+import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson, JOB_STATUS } from "shared"
+import { LBA_ITEM_TYPE, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 
-import LBAModalCloseButton from "@/components/lbaModalCloseButton"
+import { useLocalStorage } from "@/app/hooks/useLocalStorage"
 
 import { getItemId } from "../../../utils/getItemId"
 import { SendPlausibleEvent } from "../../../utils/plausible"
-import ItemDetailApplicationsStatus, { hasApplied } from "../ItemDetailServices/ItemDetailApplicationStatus"
+import ItemDetailApplicationsStatus from "../ItemDetailServices/ItemDetailApplicationStatus"
 
-import CandidatureLbaFailed from "./CandidatureLbaFailed"
-import CandidatureLbaModalBody from "./CandidatureLbaModalBody"
-import CandidatureLbaWorked from "./CandidatureLbaWorked"
-import { ApplicationFormikSchema, getInitialSchemaValues } from "./services/getSchema"
+import { CandidatureLbaModal } from "./CandidatureLbaModal"
 import { useSubmitCandidature } from "./services/submitCandidature"
 
 export const NoCandidatureLba = () => {
@@ -23,86 +19,46 @@ export const NoCandidatureLba = () => {
       <Box fontSize="20px" mr={2}>
         🕵️
       </Box>
-      <Text color="#66673D" fontSize="12px" fontStyle="italic">
+      <Box color="#66673D" fontSize="12px" fontStyle="italic">
         Nous n’avons pas de contact pour cette entreprise, peut-être que vous en trouverez un sur internet !
-      </Text>
+      </Box>
     </Flex>
   )
 }
 
-const CandidatureLba = ({ item }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const [sendingState, setSendingState] = useState("not_sent")
-  const submitCandidature = useSubmitCandidature()
-  const kind: LBA_ITEM_TYPE_OLD = item?.ideaType || ""
-
-  const onModalClose = () => {
-    setSendingState("not_sent")
-    onClose()
-  }
+export function CandidatureLba({ item }: { item: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson }) {
+  const { storedValue } = useLocalStorage(`application-${oldItemTypeToNewItemType(item.ideaType)}-${item.id}`)
+  const modalControls = useDisclosure()
+  const submitControls = useSubmitCandidature(item)
+  const { onOpen } = modalControls
+  const kind = item.ideaType
 
   const openApplicationForm = () => {
     onOpen()
-    SendPlausibleEvent(kind === LBA_ITEM_TYPE_OLD.MATCHA ? "Clic Postuler - Fiche entreprise Offre LBA" : "Clic Postuler - Fiche entreprise Algo", {
+    SendPlausibleEvent(kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "Clic Postuler - Fiche entreprise Offre LBA" : "Clic Postuler - Fiche entreprise Algo", {
       info_fiche: getItemId(item),
     })
   }
 
-  useEffect(() => {
-    onModalClose()
-  }, [item])
-
-  const formik = useFormik({
-    initialValues: getInitialSchemaValues(),
-    validationSchema: toFormikValidationSchema(ApplicationFormikSchema),
-    onSubmit: async (formValues) => {
-      await submitCandidature({ formValues, setSendingState, LbaJob: item })
-    },
-  })
+  const hasAppliedValue = storedValue
+  const isActive = kind !== LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || (item as ILbaItemLbaJobJson).job.status === JOB_STATUS.ACTIVE
 
   return (
     <Box data-testid="CandidatureSpontanee">
+      <CandidatureLbaModal item={item} modalControls={modalControls} submitControls={submitControls} />
       <Box>
-        <ItemDetailApplicationsStatus item={item} />
-        {(kind !== LBA_ITEM_TYPE_OLD.MATCHA || item.job.status === JOB_STATUS.ACTIVE) && (!hasApplied(item) || sendingState === "ok_sent") && (
+        {hasAppliedValue ? (
+          /* @ts-ignore TODO */
+
+          <ItemDetailApplicationsStatus item={item} />
+        ) : isActive ? (
           <>
-            <Box my={4}>
-              <Button
-                ml={1}
-                padding="8px 24px"
-                color="white"
-                background="bluefrance.500"
-                borderRadius="8px"
-                sx={{
-                  textDecoration: "none",
-                  _hover: {
-                    background: "bluesoft.500",
-                  },
-                }}
-                onClick={openApplicationForm}
-                aria-label="Ouvrir le formulaire d'envoi de candidature spontanée"
-                data-testid="postuler-button"
-              >
-                J&apos;envoie ma candidature{kind === LBA_ITEM_TYPE_OLD.LBA ? " spontanée" : ""}
+            <Box my={2}>
+              <Button onClick={openApplicationForm} aria-label="Ouvrir le formulaire d'envoi de candidature spontanée" data-testid="postuler-button">
+                J&apos;envoie ma candidature{kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? " spontanée" : ""}
               </Button>
-              <Modal isOpen={isOpen} onClose={onModalClose} closeOnOverlayClick={false} size={["full", "full", "full", "3xl"]}>
-                <ModalOverlay />
-                <ModalContent>
-                  {/* @ts-expect-error: Chakra error */}
-                  <ModalHeader paddingTop="8px" paddingBottom="0" align="right">
-                    <LBAModalCloseButton onClose={onModalClose} />
-                  </ModalHeader>
-                  <form onSubmit={formik.handleSubmit}>
-                    {["not_sent", "currently_sending"].includes(sendingState) && (
-                      <CandidatureLbaModalBody formik={formik} sendingState={sendingState} company={item?.company?.name} item={item} kind={kind} />
-                    )}
-                    {sendingState === "ok_sent" && <CandidatureLbaWorked email={formik.values.applicant_email} company={item?.company?.name} />}
-                    {!["not_sent", "ok_sent", "currently_sending"].includes(sendingState) && <CandidatureLbaFailed sendingState={sendingState} />}
-                  </form>
-                </ModalContent>
-              </Modal>
             </Box>
-            {item?.company?.mandataire && (
+            {item.company?.mandataire && (
               <Box display="flex" alignItems="center" my={4}>
                 <Text as="span">
                   <Image src="/images/icons/small_info.svg" alt="" />
@@ -113,10 +69,10 @@ const CandidatureLba = ({ item }) => {
               </Box>
             )}
           </>
+        ) : (
+          <></>
         )}
       </Box>
     </Box>
   )
 }
-
-export default CandidatureLba

@@ -85,7 +85,7 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   const mandatoryFileError = formik.touched.applicant_attachment_name && formik.errors?.applicant_attachment_name
 
   return (
-    <Box p="20px" width="97%" border="1px dashed" borderColor={mandatoryFileError || showUnacceptedFileMessages ? "red.500" : "grey.600"} {...getRootProps()}>
+    <Box p="20px" border="1px dashed" borderColor={mandatoryFileError || showUnacceptedFileMessages ? "red.500" : "grey.600"} {...getRootProps()}>
       {fileLoading ? (
         <Flex ml={6} alignItems="center" direction="row">
           <Spinner mr={4} />
@@ -124,13 +124,13 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
           {isDragActive ? (
             <Text ml={6}>Déposez le fichier ici</Text>
           ) : (
-            <Flex ml={6} direction="row" alignItems="center">
+            <Flex ml={6} direction="row" alignItems="center" gap={4}>
               <Image mr={2} alt="" src="/images/icons/candidature_file_upload.svg" />{" "}
               <Box>
-                <Text fontSize="14px" fontWeight={700} color="grey.700">
+                <Text fontSize="14px" fontWeight={700} color="grey.700" mb={0}>
                   Chargez votre CV ou déposez le ici
                 </Text>
-                <Text fontSize="12px" color="grey.700">
+                <Text fontSize="12px" color="grey.700" mb={0}>
                   Le CV doit être au format PDF ou DOCX et ne doit pas dépasser 3 Mo
                 </Text>
               </Box>

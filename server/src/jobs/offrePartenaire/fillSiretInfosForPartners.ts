@@ -1,7 +1,7 @@
 import { Filter } from "mongodb"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
-import { isEnum } from "shared/utils"
+import { isEnum } from "shared/utils/index"
 
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodbUtils"

@@ -1,7 +1,7 @@
 import axios from "axios"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { z } from "shared/helpers/zodWithOpenApi"
-import { assertUnreachable, parseEnum } from "shared/utils"
+import { assertUnreachable, parseEnum } from "shared/utils/index"
 
 import config from "@/config"
 

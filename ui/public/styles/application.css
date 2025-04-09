@@ -2,6 +2,12 @@ body {
   overscroll-behavior: none;
 }
 
+body.is-modal-opened {
+  touch-action: none;
+  -webkit-overflow-scrolling: none;
+  overflow: hidden;
+}
+
 /**
 FORMIK
 */

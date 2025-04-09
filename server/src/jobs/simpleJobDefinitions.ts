@@ -1,5 +1,12 @@
-import { fillComputedRecruteursLba, importRecruteursLbaFromComputedToJobsPartners } from "@/jobs/offrePartenaire/fillComputedRecruteursLba"
-import { processRecruteursLba } from "@/jobs/offrePartenaire/processRecruteursLba"
+import { updateDiplomeMetier } from "@/jobs/diplomesMetiers/updateDiplomesMetiers"
+import { importRecruteursLbaFromComputedToJobsPartners } from "@/jobs/offrePartenaire/fillComputedRecruteursLba"
+import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail/classifyJobsFranceTravail"
+import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
+import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
+import { processMeteojob } from "@/jobs/offrePartenaire/meteojob/processMeteojob"
+import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
+import { processRecruteursLba } from "@/jobs/offrePartenaire/recruteur-lba/processRecruteursLba"
+import { processRhAlternance } from "@/jobs/offrePartenaire/rh-alternance/processRhAlternance"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
@@ -21,18 +28,13 @@ import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPa
 import { detectDuplicateJobPartners } from "./offrePartenaire/detectDuplicateJobPartners"
 import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
 import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
-import { classifyFranceTravailJobs } from "./offrePartenaire/france-travail/classifyJobsFranceTravail"
-import { importFranceTravailRaw, importFranceTravailToComputed } from "./offrePartenaire/france-travail/importJobsFranceTravail"
-import { importHelloWorkRaw, importHelloWorkToComputed } from "./offrePartenaire/hellowork/importHelloWork"
 import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromComputedToJobsPartners"
-import { importKelio } from "./offrePartenaire/kelio/importKelio"
-import { importMeteojobRaw, importMeteojobToComputed } from "./offrePartenaire/meteojob/importMeteojob"
-import { importPassRaw, importPassToComputed } from "./offrePartenaire/pass/importPass"
-import { processJobPartners } from "./offrePartenaire/processJobPartners"
+import { processKelio } from "./offrePartenaire/kelio/processKelio"
+import { processMonster } from "./offrePartenaire/monster/processMonster"
+import { processComputedAndImportToJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
 import { rankJobPartners } from "./offrePartenaire/rankJobPartners"
-import { importRecruteurLbaToComputed, importRecruteursLbaRaw, removeMissingRecruteursLbaFromRaw } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
-import { importRHAlternanceRaw, importRHAlternanceToComputed } from "./offrePartenaire/rh-alternance/importRHAlternance"
+import { removeMissingRecruteursLbaFromRaw } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
@@ -174,88 +176,58 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: anonimizeUsersWithAccounts,
     description: "Anonymize les userrecruteurs qui ne se sont pas connectés depuis plus de 2 ans",
   },
-  // IMPORT RAW JOBS PARTNERS
   {
-    fct: importHelloWorkRaw,
-    description: "Importe les offres hellowork dans la collection raw",
+    fct: updateDiplomeMetier,
+    description: "Mise à jour des diplômes et romes associés",
+  },
+  // IMPORT RAW AND COMPUTED JOBS PARTNERS
+  {
+    fct: processHellowork,
+    description: "Importe les offres hellowork dans la collection raw raw & computed",
   },
   {
-    fct: importRHAlternanceRaw,
-    description: "Importe les offres RHAlternance dans la collection raw",
+    fct: processRhAlternance,
+    description: "Importe les offres RH Alternance  dans la collection raw & computed",
   },
   {
-    fct: importKelio,
-    description: "Importe les offres kelio dans la collection raw",
+    fct: processMeteojob,
+    description: "Importe les offres Meteojob dans la collection raw & computed",
   },
   {
-    fct: importMeteojobRaw,
-    description: "Importe les offres Meteojob dans la collection raw",
+    fct: processFranceTravail,
+    description: "Importe les offres France Travail dans la collection raw & computed",
   },
   {
-    fct: importPassRaw,
-    description: "importe les offres Pass dans la collection raw",
+    fct: processMonster,
+    description: "Importe les offres Monster dans la collection raw & computed",
   },
   {
-    fct: importFranceTravailRaw,
-    description: "import des offres France Travail dans la collection raw",
+    fct: processKelio,
+    description: "Importe les offres Kelio dans la collection raw & computed",
   },
   {
-    fct: importRecruteursLbaRaw,
-    description: "import des recruteurs lba dans la collection raw",
-  },
-  {
-    fct: classifyFranceTravailJobs,
-    description: "Retirer les offres de CFA des offres France travail dans la collection raw",
-  },
-  // IMPORT RAW TO COMPUTED JOBS PARTNERS
-  {
-    fct: importHelloWorkToComputed,
-    description: "Importe les offres hellowork depuis raw vers computed",
-  },
-  {
-    fct: importMeteojobToComputed,
-    description: "Importe les offres Meteojob depuis raw vers computed",
-  },
-  {
-    fct: importRHAlternanceToComputed,
-    description: "Importe les offres RHAlternance depuis raw vers computed",
-  },
-  {
-    fct: importPassToComputed,
-    description: "Importe les offres Pass depuis raw vers computed",
-  },
-  {
-    fct: importFranceTravailToComputed,
-    description: "Importe les offres France Travail depuis raw vers computed",
-  },
-  {
-    fct: importRecruteurLbaToComputed,
-    description: "Importe les recruteurs lba depuis raw vers computed",
-  },
-  // IMPORT COMPUTED TO JOBS PARTNERS
-  {
-    fct: importFromComputedToJobsPartners,
-    description: "Met à jour la collection jobs_partners à partir de computed_jobs_partners",
+    fct: processPass,
+    description: "Importe les offres Pass dans la collection raw & computed",
   },
   // ENRICHIT COMPUTED JOBS PARTNERS
   {
     fct: fillComputedJobsPartners,
     description: "Enrichit la collection computed_jobs_partners avec les données provenant d'API externes",
   },
+  // GLOBAL ENRICHMENT FLOW FOR JOBS PARTNERS
+  {
+    fct: processComputedAndImportToJobPartners,
+    description: "Chaîne complète de traitement des jobs_partners",
+  },
+  // IMPORT COMPUTED TO JOBS PARTNERS
+  {
+    fct: importFromComputedToJobsPartners,
+    description: "Met à jour la collection jobs_partners à partir de computed_jobs_partners",
+  },
   // IMPORT COMPUTED RECRUTEURS_LBA TO JOBS PARTNERS
   {
     fct: importRecruteursLbaFromComputedToJobsPartners,
     description: "Met à jour la collection jobs_partners à partir de computed_jobs_partners pour les recruteurs_lba",
-  },
-  // ENRICHIT COMPUTED RECRUTEURS_LBA JOBS PARTNERS
-  {
-    fct: fillComputedRecruteursLba,
-    description: "Enrichit la collection computed_jobs_partners avec les données provenant d'API externes pour les recruteurs_lba",
-  },
-  // FLOW GLOBAL JOBS PARTNERS
-  {
-    fct: processJobPartners,
-    description: "Chaîne complète de traitement des jobs_partners",
   },
   {
     fct: processRecruteursLba,
@@ -272,6 +244,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: removeMissingRecruteursLbaFromRaw,
     description: "Met à jour la collection computed_jobs_partners en supprimant les entreprises qui ne sont plus dans raw_recruteurslba",
+  },
+  {
+    fct: classifyFranceTravailJobs,
+    description: "Classifie les offres France Travail en fonction de leur contenu",
   },
   {
     fct: processApplications,

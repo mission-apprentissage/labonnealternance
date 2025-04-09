@@ -1,12 +1,14 @@
-import { ExternalLinkIcon } from "@chakra-ui/icons"
+"use client"
 import { Accordion, Box, Flex, Image, Link, ListItem, Text, UnorderedList } from "@chakra-ui/react"
 import Head from "next/head"
 import React, { useEffect } from "react"
-import { ILbaItemLbaJob } from "shared"
+import { ILbaItemLbaJobJson, ILbaItemNaf } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
+
 import { DisplayContext } from "../../../context/DisplayContextProvider"
-import { notifyLbaJobDetailView } from "../../../services/notifyLbaJobDetailView"
+import { notifyLbaJobDetailView } from "../../../utils/api"
 import { SendPlausibleEvent } from "../../../utils/plausible"
 import { formatDate } from "../../../utils/strutils"
 import { getCompanySize } from "../ItemDetailServices/getCompanySize"
@@ -26,12 +28,7 @@ const getContractTypes = (contractTypes) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
 }
 
-export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJob; title: string }) => {
-  useEffect(() => {
-    // S'assurer que l'utilisateur voit bien le haut de la fiche au départ
-    document.getElementsByClassName("choiceCol")[0].scrollTo(0, 0)
-  }, []) // Utiliser le useEffect une seule fois : https://css-tricks.com/run-useeffect-only-once/
-
+export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: string }) => {
   useEffect(() => {
     SendPlausibleEvent("Affichage - Fiche entreprise Offre LBA", {
       info_fiche: `${job?.job?.id}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
@@ -205,12 +202,12 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJob; title: strin
           <Text as="span">{getCompanySize(job)}</Text>
         </Text>
 
-        {job.nafs[0]?.label && (
+        {(job.nafs as ILbaItemNaf[])[0]?.label && (
           <Text mt={1}>
             <Text as="span" fontWeight={700}>
               Secteur d'activité :{" "}
             </Text>
-            <Text as="span">{job.nafs[0].label}</Text>
+            <Text as="span">{(job.nafs as ILbaItemNaf[])[0].label}</Text>
           </Text>
         )}
 
@@ -220,9 +217,9 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJob; title: strin
               Téléphone :{" "}
             </Text>
             <Text as="span">
-              <Link ml="2px" isExternal variant="basicUnderlined" href={`tel:${job.contact.phone}`} aria-label="Appeler la société au téléphone">
-                {job.contact.phone} <ExternalLinkIcon mb="3px" ml="2px" />
-              </Link>
+              <DsfrLink href={`tel:${job.contact.phone}`} aria-label="Appeler la société au téléphone">
+                {job.contact.phone}
+              </DsfrLink>
             </Text>
           </Text>
         )}
@@ -244,9 +241,9 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJob; title: strin
               <Box fontWeight={700} pl="2px" mr={2}>
                 Téléphone :
               </Box>
-              <Link ml="2px" isExternal variant="basicUnderlined" href={`tel:${job.contact.phone}`} aria-label="Contacter par téléphone - nouvelle fenêtre">
-                {job.contact.phone} <ExternalLinkIcon mx="2px" />
-              </Link>
+              <DsfrLink href={`tel:${job.contact.phone}`} aria-label="Contacter par téléphone - nouvelle fenêtre">
+                {job.contact.phone}
+              </DsfrLink>
             </Flex>
           )}
 

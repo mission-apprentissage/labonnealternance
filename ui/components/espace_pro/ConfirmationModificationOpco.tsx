@@ -20,7 +20,7 @@ export default function ConfirmationModificationOpco(props) {
       <ModalOverlay />
       <ModalContent mt={["0", "3.75rem"]} h={["100%", "auto"]} mb={0} borderRadius={0}>
         <Button display={"flex"} alignSelf={"flex-end"} color="bluefrance.500" fontSize={"epsilon"} onClick={onClose} variant="unstyled" p={6} fontWeight={400}>
-          fermer
+          Fermer
           <Text as={"span"} ml={2}>
             <Close boxSize={4} />
           </Text>

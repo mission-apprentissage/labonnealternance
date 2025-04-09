@@ -1,5 +1,6 @@
-import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Center, Flex, GridItem, Image, Link, Text } from "@chakra-ui/react"
+import { Box, Center, Flex, GridItem, Image, Text } from "@chakra-ui/react"
+
+import { DsfrLink } from "../dsfr/DsfrLink"
 
 const boxProperties = {
   boxShadow: "0px 0px 12px 6px rgba(121, 121, 121, 0.4)",
@@ -15,10 +16,9 @@ export const CardForLink = ({ imageUrl, text, link, linkTitle, linkAriaLabel }: 
             <Text fontWeight={700} as="div">
               {text}
             </Text>
-            <Link href={link} isExternal variant="basicUnderlinedBlue" aria-label={linkAriaLabel}>
+            <DsfrLink href={link} aria-label={linkAriaLabel}>
               {linkTitle}
-              <ExternalLinkIcon mb="3px" ml="2px" />
-            </Link>
+            </DsfrLink>
           </Box>
         </Center>
       </Flex>

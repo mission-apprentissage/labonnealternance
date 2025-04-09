@@ -1,0 +1,263 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`importKelio > should test the import of kelio data into computed_job_partners 1`] = `
+[
+  {
+    "apply_phone": null,
+    "apply_url": "https://tada.talentview.io/jobs/0gmq0v?source=la_bonne_alternance",
+    "business_error": null,
+    "contract_duration": 12,
+    "contract_remote": null,
+    "contract_start": 2025-09-01T00:00:00.000Z,
+    "contract_type": [
+      "Apprentissage",
+      "Professionnalisation",
+    ],
+    "errors": [],
+    "jobs_in_success": [],
+    "offer_access_conditions": [],
+    "offer_creation": 2025-02-27T14:31:25.000Z,
+    "offer_description": "Créé en 1987 autour de la chaîne TADA, le Groupe TADA est un groupe plurimédia puissant qui rassemble chaque mois 52 millions de Français autour de ses programmes fédérateurs et éducatifs. De l’information au divertissement, il est un acteur majeur dans la production et la diffusion de contenus vidéos et audios à travers ses chaines de télévision (13 chaînes dont TADA, chaine de TV préférée des Français), sa plateforme AVOD TADA+ (20 millions de visiteurs par mois), ses stations de radio (3 stations dont RTL, 1ère radio privée française), ses activités dans le cinéma avec SND et la création de podcasts. Plus d’informations : https://groupeTADA.fr
+
+
+La Direction Ingénierie et Support TV gère les projets et le support technique de l’ensemble des moyens audiovisuels pour les activités TV/Vidéo du Groupe TADA.
+
+ 
+ 
+***
+ 
+Diversité, égalité, inclusion, respect, bienveillance : ces valeurs sont portées sur nos antennes mais aussi en interne, au sein de nos équipes. Notre objectif ? Que tous les talents puissent trouver leur place au sein de notre Groupe. Alors, postulez en restant vous-même : les personnalités et les différences font la force du Groupe TADA !
+ 
+***
+
+Vos missions : 
+  
+Dans le cadre de la mise en place des différents projets, elle doit mettre en œuvre des médiaflows spécifiques.
+
+
+Au sein de cette direction et rattaché(e) au Chef de Projet - Ingénierie Mediaflow et Content Management, l’Assistant Chef de Projet participe aux projets d’évolutions des processus métiers en lien avec les médias et des moyens techniques audiovisuels pour l’ensemble du Groupe TADA : Production, Post-production, Système de fabrication des news, Diffusion et Archivage.
+
+
+Au sein de cette équipe, le poste recherché est un poste d’Assistant Chef de Projet en charge du renouvellement du format vidéo basse résolution (format proxy) de nos programmes.
+Ce projet structurant impactera bon nombre d’outil au sein du GroupeTADA.
+
+
+Vos missions seront : 
+
+- Etude d’impact :
+
+o   Analyser l'utilisation actuelle du format proxy dans l'entreprise
+
+o   Identifier les systèmes et outils impactés par le changement
+
+o   Évaluer les risques et les bénéfices du renouvellement
+
+- Choix du nouveau format :
+
+o   Participer à la veille technologique sur les formats proxy existants
+
+o   Contribuer à l'analyse comparative des différentes options
+
+o   Assister l'équipe dans la sélection du format le plus adapté aux besoins de l'entreprise
+
+- Tests et validation :
+
+o   Élaborer des scénarios de test pour le nouveau format proxy
+
+o   Réaliser des tests d'intégration dans l'ensemble des outils de l'entreprise
+
+o   Documenter les résultats des tests et proposer des ajustements si nécessaire
+
+- Mise en œuvre :
+
+o   Participer à l'élaboration du plan de déploiement du nouveau format
+
+o   Assister à la migration des données existantes vers le nouveau format
+o   Contribuer à la formation des utilisateurs et à la création de documentation
+
+Les avantages au sein du Groupe TADA :
+
+- Télétravail selon les modalités du poste et en accord avec le manager.
+- Avantages sociaux du Groupe TADA : accès au restaurant d'entreprise,13ème mois, épargne salariale, indemnités déplacements (y compris mobilités douces).
+- Activités culturelles et sociales des CSE (cinéma, théâtre…).
+- Activités sportives (Pilate, sophrologie, foot, running…).
+- Invitation aux événements internes du Groupe (projections de films en avant-première, accès privilégié aux tournages des émission TV / radio du Groupe TADA …).
+- Participation aux moments de convivialité (Vœux, afterworks, tournois de pétanque, ateliers potager…).
+
+Profil recherché
+
+Vous suivez une formation de niveau technique de BAC+3 (Licence en Systèmes Audiovisuels et Numérique) à BAC +5 (Ingénieur) avec une spécialisation en média.
+Une première expérience est requise.
+Vous êtes rigoureux et avez un esprit de synthèse.
+Vous avez un bon relationnel.
+Compétence de gestion de projet : Rédaction de spécifications, suivi de planning, pilotage projet
+
+
+Les étapes pour ce recrutement : 
+
+- Vous êtes issu(e) d'une formation type Bac +4/5 en Communication, Ecole de commerce ou équivalent, avec des compétences techniques,
+- · Vous avez une très bonne maîtrise des outils internet et en particulier des réseaux sociaux,
+- · Vous avez un très bon rédactionnel,
+- · Vous faîtes preuve de rigueur &amp; d'organisation,
+- · Vous êtes créatif(ve), proactif(ve),
+- · La connaissance de Photoshop et d’outils de montage est un plus.
+
+ 
+***
+
+ 
+
+Date de début : Juillet 2025
+Durée : 12 mois",
+    "offer_desired_skills": [],
+    "offer_expiration": 2025-04-27T14:31:25.000Z,
+    "offer_multicast": true,
+    "offer_opening_count": 1,
+    "offer_origin": null,
+    "offer_rome_codes": null,
+    "offer_status": "Active",
+    "offer_status_history": [],
+    "offer_target_diploma": null,
+    "offer_title": "Alternance |Assistant(e) Chef de Projet H/F",
+    "offer_to_be_acquired_skills": [],
+    "partner_job_id": "147171",
+    "partner_label": "Kelio",
+    "updated_at": 2024-07-21T02:49:06.000Z,
+    "validated": false,
+    "workplace_address_city": "Neuilly-sur-Loire",
+    "workplace_address_label": "16 Rue Jacques Machin 99200 Neuilly-sur-Loire",
+    "workplace_address_street_label": null,
+    "workplace_address_zipcode": "99200",
+    "workplace_brand": null,
+    "workplace_description": "Diversité, égalité, inclusion, respect, bienveillance : ces valeurs sont portées sur nos antennes mais aussi en interne, au sein de nos équipes. . Notre objectif ? Que tous les talents puissent trouver leur place au sein de notre groupe. Alors, postulez en restant vous-même : les personnalités et les différences font la force du Groupe TAda.",
+    "workplace_geopoint": {
+      "coordinates": [
+        2.0675127,
+        49.8809,
+      ],
+      "type": "Point",
+    },
+    "workplace_idcc": null,
+    "workplace_legal_name": null,
+    "workplace_naf_code": null,
+    "workplace_naf_label": null,
+    "workplace_name": "Groupe Tada",
+    "workplace_opco": null,
+    "workplace_siret": null,
+    "workplace_size": null,
+    "workplace_website": null,
+  },
+  {
+    "apply_phone": null,
+    "apply_url": "https://groupe-TADA.talentview.io/jobs/cqhbxp?source=la_bonne_alternance",
+    "business_error": null,
+    "contract_duration": 12,
+    "contract_remote": null,
+    "contract_start": 2025-09-01T00:00:00.000Z,
+    "contract_type": [
+      "Apprentissage",
+      "Professionnalisation",
+    ],
+    "errors": [],
+    "jobs_in_success": [],
+    "offer_access_conditions": [],
+    "offer_creation": 2025-03-05T09:34:40.000Z,
+    "offer_description": "Créé en 1987 autour de la chaîne TADA, le Groupe TADA est un groupe plurimédia puissant qui rassemble chaque mois 52 millions de Français autour de ses programmes fédérateurs et éducatifs. De l’information au divertissement, il est un acteur majeur dans la production et la diffusion de contenus vidéos et audios à travers ses chaines de télévision (13 chaînes dont TADA, chaine de TV préférée des Français), sa plateforme AVOD TADA+ (20 millions de visiteurs par mois), ses stations de radio (3 stations dont RTL, 1ère radio privée française), ses activités dans le cinéma avec SND et la création de podcasts. Plus d’informations : https://groupeTADA.fr
+ 
+ 
+***
+ 
+Diversité, égalité, inclusion, respect, bienveillance : ces valeurs sont portées sur nos antennes mais aussi en interne, au sein de nos équipes. Notre objectif ? Que tous les talents puissent trouver leur place au sein de notre Groupe. Alors, postulez en restant vous-même : les personnalités et les différences font la force du Groupe TADA !
+ 
+***
+
+
+Vos missions 
+
+Sous la responsabilité du Directeur de l'ingénierie et du Support Postproduction studios, vous serez en charge, en tant que Technicien supérieur audiovisuel, de maintenir en condition opérationnelle les outils de fabrication des journaux TV, des magazines et de l'auto-promotion du Groupe TADA. 
+
+Vous apporterez votre support à l'exploitation des outils pour les monteurs et les journalistes et vous collaborerez également aux projets du Groupe TADA en lien avec les chefs de projets et les autres membres de l'équipe.
+
+ Ainsi, vos missions seront notamment les suivantes :
+
+-  Assurer le bon fonctionnement des équipements audiovisuels utilisés pour la production de nos programmes (environnement de post-production Avid, Adobe, habillage graphique Vizrt, Chyron, etc.).
+- Diagnostiquer et résoudre les problèmes techniques liés aux outils de production.
+- Assurer la coordination avec les fournisseurs pour la maintenance et les réparations.
+- Participer aux projets, réunions de planification, définition des solutions, accompagnement des utilisateurs.
+
+
+
+
+Les avantages au sein du Groupe TADA :
+
+- Télétravail selon les modalités du poste et en accord avec le manager.
+- Avantages sociaux du Groupe TADA : accès au restaurant d'entreprise,13ème mois, épargne salariale, indemnités déplacements (y compris mobilités douces).
+- Activités culturelles et sociales des CSE (cinéma, théâtre…).
+- Activités sportives (Pilate, sophrologie, foot, running…).
+- Invitation aux événements internes du Groupe (projections de films en avant-première, accès privilégié aux tournages des émission TV / radio du Groupe TADA …).
+- Participation aux moments de convivialité (Vœux, afterworks, tournois de pétanque, ateliers potager…).
+
+
+Profil recherché 
+
+- Vous êtes étudiant(e) licence professionnelle métiers de l’informatique, Systèmes Audiovisuels Numériques ou workflows audiovisuels et médias numériques. 
+- Vous êtes titulaire d’un Bac+2 dans les domaines de l’audiovisuel ou de l’informatique
+- Vous avez une bonne maîtrise de l'anglais
+- Vous avez un goût prononcé pour les médias
+- Et vous faites preuve de rigueur, de curiosité, d'adaptabilité et de dynamisme 
+
+
+Les étapes pour ce recrutement : 
+
+- Postulez à cette offre et joignez votre CV / lettre de motivation 
+- Votre candidature est étudiée par l’équipe RH 
+- Si votre profil est présélectionné, vous serez contacté(e) pour un entretien 
+- A l’issue de cet entretien et si votre présélection est confirmée, vous intégrerez le Groupe TADA
+
+
+***
+
+ 
+
+Date de début : Septembre 2025
+Durée : 12 mois",
+    "offer_desired_skills": [],
+    "offer_expiration": 2025-05-05T09:34:40.000Z,
+    "offer_multicast": true,
+    "offer_opening_count": 1,
+    "offer_origin": null,
+    "offer_rome_codes": null,
+    "offer_status": "Active",
+    "offer_status_history": [],
+    "offer_target_diploma": null,
+    "offer_title": "Alternance | Technicien supérieur audiovisuel H/F",
+    "offer_to_be_acquired_skills": [],
+    "partner_job_id": "147682",
+    "partner_label": "Kelio",
+    "updated_at": 2024-07-21T02:49:06.000Z,
+    "validated": false,
+    "workplace_address_city": "Neuilly-sur-Seine",
+    "workplace_address_label": "56 Avenue Charles de Gaulle 92200 Neuilly-sur-Seine",
+    "workplace_address_street_label": null,
+    "workplace_address_zipcode": "92200",
+    "workplace_brand": null,
+    "workplace_description": "Diversité, égalité, inclusion, respect, bienveillance : ces valeurs sont portées sur nos antennes mais aussi en interne, au sein de nos équipes. . Notre objectif ? Que tous les talents puissent trouver leur place au sein de notre groupe. Alors, postulez en restant vous-même : les personnalités et les différences font la force du Groupe TADA.",
+    "workplace_geopoint": {
+      "coordinates": [
+        2.273237599999999,
+        48.8811012,
+      ],
+      "type": "Point",
+    },
+    "workplace_idcc": null,
+    "workplace_legal_name": null,
+    "workplace_naf_code": null,
+    "workplace_naf_label": null,
+    "workplace_name": "Groupe TADA",
+    "workplace_opco": null,
+    "workplace_siret": null,
+    "workplace_size": null,
+    "workplace_website": null,
+  },
+]
+`;

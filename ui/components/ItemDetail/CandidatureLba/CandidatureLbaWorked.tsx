@@ -3,8 +3,8 @@ import React from "react"
 
 const CandidatureLbaWorked = ({ email, company }) => {
   return (
-    <Container data-testid="CandidatureSpontaneeWorked">
-      <Flex direction="row" alignItems="center" my={12}>
+    <Container data-testid="CandidatureSpontaneeWorked" mx={[6, 8]}>
+      <Flex direction="row" alignItems="center" my={4}>
         <Image src="/images/paperplane2.svg" aria-hidden={true} alt="" />
         <Box pl={4} ml={4}>
           <Text data-testid="application-success" as="h2" fontSize="20px" fontWeight={700}>

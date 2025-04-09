@@ -1,7 +1,7 @@
 import { Accordion, Badge, Box, Checkbox, Heading, Text } from "@chakra-ui/react"
 import styled from "@emotion/styled"
 import { useState } from "react"
-import { IReferentielRomeForJob } from "shared"
+import { IReferentielRomeForJobJson } from "shared"
 
 import { classNames } from "@/utils/classNames"
 
@@ -57,14 +57,14 @@ const CompetenceSelectionDiv = styled.div`
 `
 
 export const RomeDetail = ({
-  appellation,
+  title,
   romeReferentiel: { definition, competences, acces_metier },
   onChange,
   selectedCompetences,
 }: {
-  romeReferentiel: IReferentielRomeForJob
+  romeReferentiel: IReferentielRomeForJobJson
   selectedCompetences: Record<string, string[]>
-  appellation: string
+  title: string
   onChange: (groupKey: string, competence: string, newlyChecked: boolean) => void
 }) => {
   const isSelected = (accordionKey: string, competence: string) => (selectedCompetences[accordionKey] ?? []).includes(competence)
@@ -74,7 +74,7 @@ export const RomeDetail = ({
 
   return (
     <BorderedBox>
-      <Heading mb={4}>{appellation}</Heading>
+      <Heading mb={4}>{title}</Heading>
       <Text backgroundColor="#F5F5FE" padding={3} color="#000091" my={3}>
         Voici la description de l’offre qui sera consultable par les candidats.
         <br />

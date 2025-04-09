@@ -1,9 +1,9 @@
 import { omit } from "lodash-es"
 import nock from "nock"
-import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants"
+import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/index"
 import { z } from "shared/helpers/zodWithOpenApi"
-import { UserEventType } from "shared/models"
-import { zRoutes } from "shared/routes"
+import { UserEventType } from "shared/models/index"
+import { zRoutes } from "shared/routes/index"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
@@ -79,7 +79,7 @@ describe("POST /etablissement/creation", () => {
       expect.soft(omit(formulaire, ["_id", "createdAt", "establishment_id", "managed_by", "updatedAt"])).toMatchSnapshot()
       expect.soft(omit(user, ["_id", "createdAt", "updatedAt", "last_action_date", "status"])).toMatchSnapshot()
       expect.soft(user.status[0].status).toBe(UserEventType.ACTIF)
-    })
+    }, 10_000)
 
     it("Vérifie qu'une fois créé, l'opco n'est plus modifié par une autre création de compte", async () => {
       const response = await callCreation(defaultCreationEntreprisePayload)

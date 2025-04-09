@@ -4,7 +4,6 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getOffre } from "@/services/formulaire.service"
-import { getFtJobFromIdV2 } from "@/services/ftjob.service"
 
 export const reportCompany = async ({ reason, reasonDetails, itemId, type }: { reason: string; reasonDetails?: string; itemId: string; type: LBA_ITEM_TYPE }) => {
   const additionalInfos = await getReportAdditionalInfos(itemId, type)
@@ -45,28 +44,14 @@ const getReportAdditionalInfos = async (itemId: string, type: LBA_ITEM_TYPE) => 
       }
     }
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES: {
-      if (ObjectId.isValid(itemId)) {
-        const jobOpt = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(itemId) })
-        if (!jobOpt) return null
-        const { offer_title, workplace_name, workplace_siret, partner_label } = jobOpt
-        return {
-          siret: workplace_siret,
-          partnerLabel: partner_label,
-          jobTitle: offer_title,
-          companyName: workplace_name,
-        }
-      } else {
-        const ftJob = await getFtJobFromIdV2({ id: itemId, caller: undefined })
-        if (!ftJob) return null
-        const {
-          job: { company, title },
-        } = ftJob
-        return {
-          siret: company?.siret,
-          partnerLabel: "France Travail",
-          jobTitle: title,
-          companyName: company?.name,
-        }
+      const jobOpt = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(itemId) })
+      if (!jobOpt) return null
+      const { offer_title, workplace_name, workplace_siret, partner_label } = jobOpt
+      return {
+        siret: workplace_siret,
+        partnerLabel: partner_label,
+        jobTitle: offer_title,
+        companyName: workplace_name,
       }
     }
     default: {

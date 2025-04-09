@@ -26,15 +26,6 @@ export const FormCreatePageFooter = () => {
                 >
                   La bonne alternance <ExternalLinkIcon mx="2px" />
                 </Link>
-                . Il est développé par la{" "}
-                <Link
-                  href="https://beta.gouv.fr/incubateurs/mission-apprentissage.html"
-                  aria-label="Lien vers la mission interministérielle - nouvelle fenêtre"
-                  isExternal
-                  textDecoration="underline"
-                >
-                  Mission interministérielle pour l'apprentissage <ExternalLinkIcon mx="2px" />
-                </Link>
                 .
               </Box>
             </Box>

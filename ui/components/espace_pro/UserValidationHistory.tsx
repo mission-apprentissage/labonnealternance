@@ -1,10 +1,10 @@
 import { Badge, Box, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react"
 import dayjs from "dayjs"
-import { IUserStatusValidation } from "shared"
+import { IUserStatusValidationJson } from "shared"
 
 import LoadingEmptySpace from "./LoadingEmptySpace"
 
-export const UserValidationHistory = ({ histories }: { histories: IUserStatusValidation[] }) => {
+const UserValidationHistory = ({ histories }: { histories: IUserStatusValidationJson[] }) => {
   if (histories.length === 0) {
     return <LoadingEmptySpace />
   }

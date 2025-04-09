@@ -1,4 +1,4 @@
-import { OPCOS_LABEL } from "shared/constants"
+import { OPCOS_LABEL } from "shared/constants/index"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"

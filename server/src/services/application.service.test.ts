@@ -1,12 +1,12 @@
 import { badRequest, notFound } from "@hapi/boom"
 import { ObjectId } from "bson"
 import dayjs from "dayjs"
-import { RECRUITER_STATUS } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { RECRUITER_STATUS } from "shared/constants/index"
 import { applicationTestFile } from "shared/fixtures/application.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
-import { IReferentielRome, JOB_STATUS } from "shared/models"
+import { IReferentielRome, JOB_STATUS } from "shared/models/index"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -26,6 +26,7 @@ const fakeApplication = {
   applicant_attachment_name: "cv.pdf",
   applicant_attachment_content: applicationTestFile,
 }
+
 describe("Sending application", () => {
   beforeEach(async () => {
     const dateMoins1 = dayjs().add(-1, "day")

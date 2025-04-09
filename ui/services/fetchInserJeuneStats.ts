@@ -1,18 +1,19 @@
-import axios, { AxiosError } from "axios"
+import { ILbaItemFormation2Json } from "shared"
 
 import { inserJeuneApiUrl } from "../config/config"
 import { logError } from "../utils/tools"
 
-export default async function fetchInserJeuneStats(training) {
+export default async function fetchInserJeuneStats(training: ILbaItemFormation2Json) {
   if (!training) {
     return null
   }
   try {
-    const response = await axios.get(`${inserJeuneApiUrl}/api/inserjeunes/regionales/${training.place.zipCode}/certifications/${training.cfd}`)
-    return response.data
+    const response = await fetch(`${inserJeuneApiUrl}/api/inserjeunes/regionales/${training.place.zipCode}/certifications/${training.training.cfd}`)
+
+    return response.json()
   } catch (error) {
-    if (error instanceof AxiosError) {
-      if (error.response?.data?.message === "Pas de données disponibles") {
+    if (error instanceof Error) {
+      if (error.message === "Pas de données disponibles") {
         return null
       }
     }

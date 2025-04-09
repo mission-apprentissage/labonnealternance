@@ -1,10 +1,5 @@
 * @mission-apprentissage/lba
 
-.bin/ @mission-apprentissage/mna
-
-.husky/ @mission-apprentissage/mna
-
-.infra/ @mission-apprentissage/mna
 .infra/files/configs/mongodb/seed.gpg @mission-apprentissage/lba
 .infra/vault/vault.yml @mission-apprentissage/lba
 .infra/vault/.env_server @mission-apprentissage/lba

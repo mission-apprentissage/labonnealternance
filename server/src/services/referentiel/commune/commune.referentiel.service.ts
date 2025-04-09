@@ -1,5 +1,5 @@
 import { internal } from "@hapi/boom"
-import { IGeoPoint, IReferentielCommune } from "shared/models"
+import { IGeoPoint, IReferentielCommune } from "shared/models/index"
 
 import { getCommuneParCodeDepartement, getDepartements, IGeoApiCommune } from "@/common/apis/geoApiGouv/geoApiGouv"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -45,4 +45,16 @@ export async function getNearestCommuneByGeoPoint(geo: IGeoPoint): Promise<IRefe
   }
 
   return commune
+}
+
+export async function getCommuneByCodeInsee(code: string): Promise<IReferentielCommune | null> {
+  return await getDbCollection("referentiel.communes").findOne({
+    code,
+  })
+}
+
+export async function getCommuneByCodePostal(codePostal: string): Promise<IReferentielCommune | null> {
+  return await getDbCollection("referentiel.communes").findOne({
+    codesPostaux: codePostal,
+  })
 }

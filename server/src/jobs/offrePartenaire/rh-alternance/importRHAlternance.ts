@@ -1,19 +1,21 @@
 import { internal } from "@hapi/boom"
 import axios from "axios"
 import { ObjectId } from "mongodb"
-import { TRAINING_CONTRACT_TYPE } from "shared/constants"
+import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import rawRHAlternanceModel, { IRawRHAlternance } from "shared/models/rawRHAlternance.model"
-import { joinNonNullStrings } from "shared/utils"
+import { joinNonNullStrings } from "shared/utils/index"
 import { z } from "zod"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
+import { formatHtmlForPartnerDescription } from "@/common/utils/stringUtils"
 import config from "@/config"
 import dayjs from "@/services/dayjs.service"
 
+import { isCompanyInBlockedCfaList } from "../blockJobsPartnersFromCfaList"
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 import { rawToComputedJobsPartners } from "../rawToComputedJobsPartners"
 
@@ -100,7 +102,9 @@ export const rawRhAlternanceToComputedMapper =
     jobPostalCode,
   }: IRawRHAlternance["job"]): IComputedJobsPartners => {
     const offer_creation = jobSubmitDateTime ? dayjs.tz(jobSubmitDateTime).toDate() : now
-    const isValid: boolean = jobType === "Alternance"
+
+    const business_error = jobType === "Alternance" ? (isCompanyInBlockedCfaList(companyName ?? "") ? JOB_PARTNER_BUSINESS_ERROR.CFA : null) : JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA
+
     const computedJob: IComputedJobsPartners = {
       ...blankComputedJobPartner(),
       _id: new ObjectId(),
@@ -108,12 +112,12 @@ export const rawRhAlternanceToComputedMapper =
       partner_label: JOBPARTNERS_LABEL.RH_ALTERNANCE,
       contract_type: jobType === "Alternance" ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION] : [],
       offer_title: jobTitle,
-      offer_description:
+      offer_description: formatHtmlForPartnerDescription(
         (jobDescription ?? [])
           .map(({ descriptionHeadline, descriptionText }) => [descriptionHeadline, descriptionText].join(" : "))
           .filter((line) => line.length)
           .join("\n")
-          .replace(/<br\s*\/?>/g, "\r\n") || null,
+      ).trim(),
       offer_creation,
       offer_expiration: dayjs.tz(offer_creation).add(60, "days").toDate(),
       offer_opening_count: 1,
@@ -125,7 +129,7 @@ export const rawRhAlternanceToComputedMapper =
       workplace_address_city: jobCity,
       workplace_address_zipcode: jobPostalCode,
       apply_url: jobUrl,
-      business_error: isValid ? null : `expected jobType === "Alternance" but got ${jobType}`,
+      business_error,
       updated_at: now,
     }
     return computedJob

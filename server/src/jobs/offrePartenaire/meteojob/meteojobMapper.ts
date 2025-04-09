@@ -1,13 +1,14 @@
 import { ObjectId } from "mongodb"
-import { TRAINING_CONTRACT_TYPE } from "shared/constants"
+import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
 import dayjs from "shared/helpers/dayjs"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
 
-import { removeHtmlTagsFromString } from "@/common/utils/stringUtils"
+import { formatHtmlForPartnerDescription } from "@/common/utils/stringUtils"
 
+import { isCompanyInBlockedCfaList } from "../blockJobsPartnersFromCfaList"
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
 const ZMeteojobJobLocation = z.object({
@@ -131,12 +132,6 @@ export const ZMeteojobJob = z
 
 export type IMeteojobJob = z.output<typeof ZMeteojobJob>
 
-const sanitizeHtml = (text: string) => {
-  let sanitizedText = text.replace("<p>", "\r\n").replace("</p>", "\r\n").replace("<br>", "\r\n").replace("<br/>", "\r\n").replace("<br />", "\r\n")
-  sanitizedText = removeHtmlTagsFromString(sanitizedText) as string
-  return sanitizedText.trim()
-}
-
 export const meteojobJobToJobsPartners = (job: IMeteojobJob): IComputedJobsPartners => {
   const { $, title, description, link, publicationDate, lastModificationDate, position, industry, company, contract, workSchedule, benefits, profile } = job
   const workplaceLocation = job.workplace.locations.location instanceof Array ? job.workplace.locations.location[0] : job.workplace.locations.location
@@ -153,7 +148,7 @@ export const meteojobJobToJobsPartners = (job: IMeteojobJob): IComputedJobsPartn
   ${benefits ? `Avantages: ${benefits?.salary?._ ? benefits.salary._ : ""}\r\n\r\n` : ""}${benefits?.description ? `${benefits.description}\r\n\r\n` : ""}
   ${profile?.description ? `Profil: ${profile.description}` : ""}`
 
-  descriptionComputed = sanitizeHtml(descriptionComputed)
+  descriptionComputed = formatHtmlForPartnerDescription(descriptionComputed).trim()
 
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner(),
@@ -174,7 +169,7 @@ export const meteojobJobToJobsPartners = (job: IMeteojobJob): IComputedJobsPartn
       .toDate(),
 
     workplace_name: company.name,
-    workplace_description: company.description && company.description.length >= 30 ? sanitizeHtml(company.description) : null,
+    workplace_description: company.description && company.description.length >= 30 ? formatHtmlForPartnerDescription(company.description) : null,
     workplace_address_zipcode: workplaceLocation?.postalCode || null,
     workplace_address_city: workplaceLocation.city || null,
     workplace_address_label: workplaceLocation.$?.label || null,
@@ -195,6 +190,7 @@ export const meteojobJobToJobsPartners = (job: IMeteojobJob): IComputedJobsPartn
     offer_multicast: true,
     offer_to_be_acquired_skills: [],
     apply_url: urlParsing.success ? urlParsing.data : null,
+    business_error: isCompanyInBlockedCfaList(company.name) ? JOB_PARTNER_BUSINESS_ERROR.CFA : null,
   }
   return partnerJob
 }

@@ -1,6 +1,6 @@
 import { useToast } from "@chakra-ui/react"
+import { useQueryClient } from "@tanstack/react-query"
 import { useCallback } from "react"
-import { useQueryClient } from "react-query"
 import { assertUnreachable } from "shared"
 import { AccessStatus } from "shared/models/roleManagement.model"
 
@@ -11,7 +11,13 @@ export default function useUserHistoryUpdate() {
   return useCallback(
     async (status: AccessStatus, apiCall: () => Promise<unknown>) => {
       await apiCall()
-        .then(() => ["user-list-opco", "user-list"].map((x) => client.invalidateQueries(x)))
+        .then(() =>
+          ["user-list-opco", "user-list"].map((x) =>
+            client.invalidateQueries({
+              queryKey: [x],
+            })
+          )
+        )
         .then(() => {
           toast({
             description: `Utilisateur ${getDescription(status)}`,

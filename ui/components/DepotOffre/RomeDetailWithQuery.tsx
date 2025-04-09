@@ -1,9 +1,9 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Heading, Link, Progress, Text } from "@chakra-ui/react"
 import styled from "@emotion/styled"
+import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
 import { useEffect, useState } from "react"
-import { useQuery } from "react-query"
 
 import image from "@/public/assets/checkbox-list.webp"
 import { getRomeDetail } from "@/utils/api"
@@ -14,21 +14,23 @@ const fakeLoadingDuration = 1000
 
 export const RomeDetailWithQuery = ({
   rome,
-  appellation,
   onChange,
   selectedCompetences,
+  title,
 }: {
   rome: string
-  appellation: string
   onChange: (selectedCompetences: Record<string, string[]>) => void
   selectedCompetences: Record<string, string[]>
+  title: string
 }) => {
   const [fakeLoading, setFakeLoading] = useState<{ id: string; isLoading: boolean }>({ id: new Date().toISOString(), isLoading: true })
   const {
     data: romeReferentiel,
     isLoading,
     error,
-  } = useQuery(["getRomeDetail", rome], () => getRomeDetail(rome), {
+  } = useQuery({
+    queryKey: ["getRomeDetail", rome],
+    queryFn: () => getRomeDetail(rome),
     retry: false,
   })
 
@@ -64,7 +66,7 @@ export const RomeDetailWithQuery = ({
     <LoadingBox />
   ) : error ? (
     <Box border="1px solid #000091" p={5}>
-      <Heading mb={3}>{appellation}</Heading>
+      <Heading mb={3}>{title}</Heading>
       <Text fontSize="14px">
         La fiche métier n'a pas pu être trouvée, merci de le{" "}
         <Link
@@ -79,7 +81,7 @@ export const RomeDetailWithQuery = ({
       </Text>
     </Box>
   ) : (
-    <RomeDetail appellation={appellation} romeReferentiel={romeReferentiel} onChange={setCompetenceSelection} selectedCompetences={selectedCompetences} />
+    <RomeDetail title={title} romeReferentiel={romeReferentiel} onChange={setCompetenceSelection} selectedCompetences={selectedCompetences} />
   )
 }
 
