@@ -243,20 +243,10 @@ export const etablissementUnsubscribeDemandeDelegation = async (etablissementSir
   const unsubscribeOF = await getDbCollection("unsubscribedofs").findOne({ establishment_siret: etablissementSiret })
 
   if (!unsubscribeOF) {
-    const { etablissements } = await getCatalogueEtablissements(
-      {
-        siret: etablissementSiret,
-      },
-      { _id: 1 }
-    )
+    const { etablissements } = await getCatalogueEtablissements({ siret: etablissementSiret }, { _id: 1 })
     const [{ _id }] = etablissements
     if (!_id) return
-    await getDbCollection("unsubscribedofs").insertOne({
-      _id: new ObjectId(),
-      catalogue_id: _id,
-      establishment_siret: etablissementSiret,
-      unsubscribe_date: new Date(),
-    })
+    await getDbCollection("unsubscribedofs").insertOne({ _id: new ObjectId(), catalogue_id: _id, establishment_siret: etablissementSiret, unsubscribe_date: new Date() })
   }
 }
 
@@ -366,11 +356,7 @@ export const getOpcosData = async (sirets: string[]): Promise<{ opco: OPCOS_LABE
   const opcoFromCfaDock = await getOpcosDataFromCfaDock(sirets)
   sirets = sirets.filter((requestedSiret) => !opcoFromCfaDock.some(({ siret }) => siret === requestedSiret))
   const opcoFromFranceCompetences = await getOpcosDataFromFranceCompetence(sirets)
-  const savedOpcoDatas: Omit<IOpco, "_id">[] = [...opcoFromCfaDock, ...opcoFromFranceCompetences].map(({ siret, opco, idcc }) => ({
-    opco,
-    idcc,
-    siren: siret.substring(0, 9),
-  }))
+  const savedOpcoDatas: Omit<IOpco, "_id">[] = [...opcoFromCfaDock, ...opcoFromFranceCompetences].map(({ siret, opco, idcc }) => ({ opco, idcc, siren: siret.substring(0, 9) }))
   await insertOpcos(savedOpcoDatas)
   return [...opcoFromDB, ...opcoFromEntreprises, ...opcoFromCfaDock, ...opcoFromFranceCompetences]
 }
@@ -438,11 +424,7 @@ export const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_s
   if (nafCode?.startsWith("85")) {
     return errorFactory("L'entreprise partenaire ne doit pas relever du secteur de l'enseignement.", BusinessErrorCodes.IS_CFA)
   }
-  const recruteurOpt = await getFormulaire({
-    establishment_siret: siret,
-    cfa_delegated_siret,
-    status: { $in: [RECRUITER_STATUS.ACTIF, RECRUITER_STATUS.EN_ATTENTE_VALIDATION] },
-  })
+  const recruteurOpt = await getFormulaire({ establishment_siret: siret, cfa_delegated_siret, status: { $in: [RECRUITER_STATUS.ACTIF, RECRUITER_STATUS.EN_ATTENTE_VALIDATION] } })
   if (recruteurOpt) {
     return errorFactory("L'entreprise est déjà référencée comme partenaire.")
   }
@@ -532,26 +514,14 @@ export const validateEligibiliteCfa = async (siret: string, origin = "") => {
     throw badRequest("Le numéro siret indique un établissement fermé.", { reason: BusinessErrorCodes.CLOSED })
   }
   if (!referentiel.adresse) {
-    throw badRequest("Pour des raisons techniques, les organismes de formation à distance ne sont pas acceptés actuellement.", {
-      reason: BusinessErrorCodes.UNSUPPORTED,
-    })
+    throw badRequest("Pour des raisons techniques, les organismes de formation à distance ne sont pas acceptés actuellement.", { reason: BusinessErrorCodes.UNSUPPORTED })
   }
   const formattedReferentiel = formatReferentielData(referentiel)
   if (!formattedReferentiel.is_qualiopi) {
     throw badRequest("L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi", { reason: BusinessErrorCodes.NOT_QUALIOPI, ...formattedReferentiel })
   }
   const { address, address_detail, establishment_raison_sociale, geo_coordinates } = formattedReferentiel
-  const cfa = await upsertCfa(
-    siret,
-    {
-      address,
-      address_detail,
-      enseigne: null,
-      geo_coordinates,
-      raison_sociale: establishment_raison_sociale,
-    },
-    origin
-  )
+  const cfa = await upsertCfa(siret, { address, address_detail, enseigne: null, geo_coordinates, raison_sociale: establishment_raison_sociale }, origin)
   return { referentiel: formattedReferentiel, cfa }
 }
 
@@ -567,22 +537,8 @@ export const entrepriseOnboardingWorkflow = {
       opco,
       idcc,
       source,
-    }: {
-      siret: string
-      last_name: string
-      first_name: string
-      phone?: string
-      email: string
-      origin?: string | null
-      opco: OPCOS_LABEL
-      idcc?: string
-      source: ITrackingCookies
-    },
-    {
-      isUserValidated = false,
-    }: {
-      isUserValidated?: boolean
-    } = {}
+    }: { siret: string; last_name: string; first_name: string; phone?: string; email: string; origin?: string | null; opco: OPCOS_LABEL; idcc?: string; source: ITrackingCookies },
+    { isUserValidated = false }: { isUserValidated?: boolean } = {}
   ): Promise<IBusinessError | { formulaire: IRecruiter; user: IUserWithAccount; validated: boolean }> => {
     origin = origin ?? ""
     const formulaireExist = await getFormulaire({ establishment_siret: siret, email })
@@ -603,10 +559,7 @@ export const entrepriseOnboardingWorkflow = {
       }
     } catch (err: any) {
       isSiretInternalError = true
-      siretResponse = {
-        error: true,
-        message: `erreur lors de l'appel de l'api entreprise : ${err?.message ?? err + ""}`,
-      }
+      siretResponse = { error: true, message: `erreur lors de l'appel de l'api entreprise : ${err?.message ?? err + ""}` }
       sentryCaptureException(err)
     }
     const entreprise = await upsertEntrepriseData(siret, origin, siretResponse, isSiretInternalError)
@@ -614,13 +567,7 @@ export const entrepriseOnboardingWorkflow = {
 
     let validated = false
     const managingUser = await createOrganizationUser({
-      userFields: {
-        first_name,
-        last_name,
-        phone: phone ?? "",
-        origin,
-        email: formatedEmail,
-      },
+      userFields: { first_name, last_name, phone: phone ?? "", origin, email: formatedEmail },
       is_email_checked: false,
       organization: { type: ENTREPRISE, entreprise },
     })
@@ -628,17 +575,8 @@ export const entrepriseOnboardingWorkflow = {
 
     if (isUserValidated) {
       await modifyPermissionToUser(
-        {
-          user_id: managingUser._id,
-          authorized_id: entreprise._id.toString(),
-          authorized_type: AccessEntityType.ENTREPRISE,
-          origin,
-        },
-        {
-          validation_type: VALIDATION_UTILISATEUR.AUTO,
-          status: AccessStatus.GRANTED,
-          reason: "création par clef API",
-        }
+        { user_id: managingUser._id, authorized_id: entreprise._id.toString(), authorized_type: AccessEntityType.ENTREPRISE, origin },
+        { validation_type: VALIDATION_UTILISATEUR.AUTO, status: AccessStatus.GRANTED, reason: "création par clef API" }
       )
       validated = true
     } else {
@@ -695,10 +633,7 @@ export const entrepriseOnboardingWorkflow = {
       }
     } catch (err: any) {
       isSiretInternalError = true
-      siretResponse = {
-        error: true,
-        message: `erreur lors de l'appel de l'api entreprise : ${err?.message ?? err + ""}`,
-      }
+      siretResponse = { error: true, message: `erreur lors de l'appel de l'api entreprise : ${err?.message ?? err + ""}` }
       sentryCaptureException(err)
     }
     const entreprise = await upsertEntrepriseData(siret, origin, siretResponse, isSiretInternalError)
@@ -755,9 +690,7 @@ export const sendUserConfirmationEmail = async (user: IUserWithAccount) => {
     subject: "Confirmez votre adresse mail",
     template: getStaticFilePath("./templates/mail-confirmation-email.mjml.ejs"),
     data: {
-      images: {
-        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-      },
+      images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true` },
       last_name: removeHtmlTagsFromString(user.last_name),
       first_name: removeHtmlTagsFromString(user.first_name),
       confirmation_url: url,
@@ -790,10 +723,7 @@ export const sendEmailConfirmationEntreprise = async (
       subject: "Confirmez votre adresse mail",
       template: getStaticFilePath("./templates/mail-nouvelle-offre-depot-simplifie.mjml.ejs"),
       data: {
-        images: {
-          logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-          logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
-        },
+        images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`, logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true` },
         nom: removeHtmlTagsFromString(user.last_name),
         prenom: removeHtmlTagsFromString(user.first_name),
         email: removeHtmlTagsFromString(user.email),
@@ -831,10 +761,7 @@ export const sendMailCfaPremiumStart = (etablissement: IEtablissement, type: "af
     template: getStaticFilePath("./templates/mail-cfa-premium-start.mjml.ejs"),
     data: {
       ...(type === "affelnet" ? { isAffelnet: true } : type === "parcoursup" ? { isParcoursup: true } : {}),
-      images: {
-        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-        logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
-      },
+      images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`, logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true` },
       etablissement: {
         name: etablissement.raison_sociale,
         formateur_address: etablissement.formateur_address,
@@ -851,9 +778,11 @@ export const sendMailCfaPremiumStart = (etablissement: IEtablissement, type: "af
 export const isHardbounceEventFromEtablissement = async (payload) => {
   const messageId = payload["message-id"]
 
-  const etablissement = await getDbCollection("etablissements").findOne({ to_CFA_invite_optout_last_message_id: messageId })
-  if (etablissement) {
-    return true
+  if (messageId) {
+    const etablissement = await getDbCollection("etablissements").findOne({ to_CFA_invite_optout_last_message_id: messageId })
+    if (etablissement) {
+      return true
+    }
   }
   return false
 }

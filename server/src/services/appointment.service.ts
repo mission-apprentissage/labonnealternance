@@ -54,10 +54,7 @@ const getMailData = async (candidate: IUser, appointment: IAppointment, eligible
       formateur_city: eligibleTrainingsForAppointment.lieu_formation_city,
       email: eligibleTrainingsForAppointment.lieu_formation_email,
     },
-    formation: {
-      intitule: eligibleTrainingsForAppointment.training_intitule_long,
-      searchLink: lbaLink,
-    },
+    formation: { intitule: eligibleTrainingsForAppointment.training_intitule_long, searchLink: lbaLink },
     appointment: {
       reasons: appointment.applicant_reasons,
       referrerLink: referrerObj.url,
@@ -90,16 +87,7 @@ export const sendCandidateAppointmentEmail = async (
   })
   await findOneAndUpdate(
     { _id: appointment._id },
-    {
-      $push: {
-        to_applicant_mails: {
-          campaign: mailType.CANDIDAT_APPOINTMENT,
-          status: null,
-          message_id: email.messageId,
-          email_sent_at: dayjs().toDate(),
-        },
-      },
-    }
+    { $push: { to_applicant_mails: { campaign: mailType.CANDIDAT_APPOINTMENT, status: null, message_id: email.messageId, email_sent_at: dayjs().toDate() } } }
   )
 }
 
@@ -126,16 +114,7 @@ export const sendFormateurAppointmentEmail = async (
   })
   await findOneAndUpdate(
     { _id: appointment._id },
-    {
-      $push: {
-        to_cfa_mails: {
-          campaign: mailType.CANDIDAT_APPOINTMENT,
-          status: null,
-          message_id: email.messageId,
-          email_sent_at: dayjs().toDate(),
-        },
-      },
-    }
+    { $push: { to_cfa_mails: { campaign: mailType.CANDIDAT_APPOINTMENT, status: null, message_id: email.messageId, email_sent_at: dayjs().toDate() } } }
   )
 }
 
@@ -146,25 +125,14 @@ export const processAppointmentToApplicantWebhookEvent = async (payload) => {
   const eventDate = dayjs.utc(date).tz("Europe/Paris").toDate()
 
   // If mail sent from appointment (to the candidat)
-  const appointmentCandidatFound = await findOne({
-    "to_applicant_mails.message_id": messageId,
-  })
+  const appointmentCandidatFound = await findOne({ "to_applicant_mails.message_id": messageId })
   if (appointmentCandidatFound && appointmentCandidatFound.to_applicant_mails?.length) {
     // deuxième condition ci-dessus utile uniquement pour typescript car to_applicant_mails peut être null selon le typage
     const firstEmailEvent = appointmentCandidatFound.to_applicant_mails[0]
 
     await getDbCollection("appointments").updateOne(
       { _id: appointmentCandidatFound._id },
-      {
-        $push: {
-          to_applicant_mails: {
-            campaign: firstEmailEvent.campaign,
-            status: event,
-            message_id: firstEmailEvent.message_id,
-            webhook_status_at: eventDate,
-          },
-        },
-      }
+      { $push: { to_applicant_mails: { campaign: firstEmailEvent.campaign, status: event, message_id: firstEmailEvent.message_id, webhook_status_at: eventDate } } }
     )
     return false
   }
@@ -184,16 +152,7 @@ export const processAppointmentToCfaWebhookEvent = async (payload) => {
 
       await getDbCollection("appointments").updateOne(
         { _id: appointment._id },
-        {
-          $push: {
-            to_cfa_mails: {
-              campaign: firstEmailEvent.campaign,
-              status: event,
-              message_id: firstEmailEvent.message_id,
-              webhook_status_at: eventDate,
-            },
-          },
-        }
+        { $push: { to_cfa_mails: { campaign: firstEmailEvent.campaign, status: event, message_id: firstEmailEvent.message_id, webhook_status_at: eventDate } } }
       )
     }
 
@@ -205,9 +164,11 @@ export const processAppointmentToCfaWebhookEvent = async (payload) => {
 export const isHardbounceEventFromAppointmentApplicant = async (payload) => {
   const messageId = payload["message-id"]
 
-  const appointment = await findOne({ "to_applicant_mails.message_id": messageId })
-  if (appointment) {
-    return true
+  if (messageId) {
+    const appointment = await findOne({ "to_applicant_mails.message_id": messageId })
+    if (appointment) {
+      return true
+    }
   }
   return false
 }
@@ -248,27 +209,20 @@ export const sendCandidateAppointmentHardbounceEmail = async (appointment: IAppo
 
   await findOneAndUpdate(
     { _id: appointment._id },
-    {
-      $push: {
-        to_applicant_mails: {
-          campaign: mailType.CFA_HARDBOUNCE,
-          status: null,
-          message_id: email.messageId,
-          email_sent_at: dayjs().toDate(),
-        },
-      },
-    }
+    { $push: { to_applicant_mails: { campaign: mailType.CFA_HARDBOUNCE, status: null, message_id: email.messageId, email_sent_at: dayjs().toDate() } } }
   )
 }
 
 export const isHardbounceEventFromAppointmentCfa = async (payload) => {
   const messageId = payload["message-id"]
 
-  const appointment = await findOne({ "to_cfa_mails.message_id": messageId })
+  if (messageId) {
+    const appointment = await findOne({ "to_cfa_mails.message_id": messageId })
 
-  if (appointment) {
-    await sendCandidateAppointmentHardbounceEmail(appointment)
-    return true
+    if (appointment) {
+      await sendCandidateAppointmentHardbounceEmail(appointment)
+      return true
+    }
   }
   return false
 }
