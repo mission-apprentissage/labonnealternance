@@ -1,9 +1,9 @@
-import { ILbaItemCompany, ILbaItemFormation2, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "shared"
+import { ILbaItemCompany, ILbaItemFormation2Json, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson } from "shared"
 
 import { rawPostalAddress } from "./addressUtils"
 //import * as Sentry from "@sentry/react";
 
-const getPathLink = (anyItem: ILbaItemFormation2 | ILbaItemLbaCompany | ILbaItemCompany | ILbaItemLbaJob | ILbaItemFtJob) => {
+const getPathLink = (anyItem: ILbaItemFormation2Json | ILbaItemLbaCompanyJson | ILbaItemCompany | ILbaItemLbaJobJson | ILbaItemFtJobJson) => {
   let res = ""
   if (anyItem?.place) {
     res = `https://www.google.fr/maps/dir//${encodeURIComponent(rawPostalAddress(anyItem.place.fullAddress || anyItem.place.city))}/@${anyItem.place.latitude},${
@@ -26,19 +26,6 @@ const getValueFromPath = (key) => {
   }
 
   return res
-}
-
-const scrollToTop = (elementId) => {
-  if (elementId) {
-    document.getElementById(elementId).scrollTo({
-      top: 0,
-      left: 0,
-    })
-  } else {
-    if (typeof window !== "undefined") {
-      window.scrollTo(0, 0)
-    }
-  }
 }
 
 const scrollToNestedElement = ({ containerId, nestedElement, yOffsett = 100 }) => {
@@ -64,4 +51,4 @@ const logError = (title, error = undefined) => {
   console.error(`Error ${title} sent to Sentry`)
 }
 
-export { getPathLink, getValueFromPath, logError, scrollToNestedElement, scrollToTop }
+export { getPathLink, getValueFromPath, logError, scrollToNestedElement }

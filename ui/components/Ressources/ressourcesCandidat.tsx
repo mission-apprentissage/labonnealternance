@@ -1,4 +1,6 @@
-import { Box, Center, Flex, Image, Link, List, ListItem, Text } from "@chakra-ui/react"
+import { Box, Center, Flex, Image, List, ListItem, Text } from "@chakra-ui/react"
+
+import { DsfrLink } from "../dsfr/DsfrLink"
 
 import ConseilsEtAstuces from "./conseilsEtAstuces"
 import FonctionnementPlateforme from "./fonctionnementPlateforme"
@@ -36,56 +38,36 @@ const RessourcesCandidat = () => {
               </Text>
               <List>
                 <ListItem mb={2}>
-                  <Link
-                    href="/ressources/Tableau-de-suivi-des-candidatures-a-imprimer_La-bonne-alternance_PDF.pdf"
-                    isExternal
-                    data-tracking-id="telecharger-fichier-suivi-candid"
-                    variant="basicUnderlinedBlue"
-                  >
+                  <DsfrLink href="/ressources/Tableau-de-suivi-des-candidatures-a-imprimer_La-bonne-alternance_PDF.pdf" data-tracking-id="telecharger-fichier-suivi-candid">
                     <Flex>
                       <Image src="/images/icons/download_ico.svg" mr={1} alt="" aria-hidden="true" />
                       Tableau de suivi à imprimer - PDF
                     </Flex>
-                  </Link>
+                  </DsfrLink>
                 </ListItem>
                 <ListItem mb={2}>
-                  <Link
-                    href="/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_Excel.xlsx"
-                    isExternal
-                    data-tracking-id="telecharger-fichier-suivi-candid"
-                    variant="basicUnderlinedBlue"
-                  >
+                  <DsfrLink href="/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_Excel.xlsx" data-tracking-id="telecharger-fichier-suivi-candid">
                     <Flex>
                       <Image src="/images/icons/download_ico.svg" mr={1} alt="" aria-hidden="true" />
                       Tableau de suivi - Excel
                     </Flex>
-                  </Link>
+                  </DsfrLink>
                 </ListItem>
                 <ListItem mb={2}>
-                  <Link
-                    href="/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_Numbers.numbers"
-                    isExternal
-                    data-tracking-id="telecharger-fichier-suivi-candid"
-                    variant="basicUnderlinedBlue"
-                  >
+                  <DsfrLink href="/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_Numbers.numbers" data-tracking-id="telecharger-fichier-suivi-candid">
                     <Flex>
                       <Image src="/images/icons/download_ico.svg" mr={1} alt="" aria-hidden="true" />
                       Tableau de suivi - Numbers
                     </Flex>
-                  </Link>
+                  </DsfrLink>
                 </ListItem>
                 <ListItem>
-                  <Link
-                    href="/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_LibreOffice.ods"
-                    isExternal
-                    data-tracking-id="telecharger-fichier-suivi-candid"
-                    variant="basicUnderlinedBlue"
-                  >
+                  <DsfrLink href="/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_LibreOffice.ods" data-tracking-id="telecharger-fichier-suivi-candid">
                     <Flex>
                       <Image src="/images/icons/download_ico.svg" mr={1} alt="" aria-hidden="true" />
                       Tableau de suivi - LibreOffice
                     </Flex>
-                  </Link>
+                  </DsfrLink>
                 </ListItem>
               </List>
             </Box>

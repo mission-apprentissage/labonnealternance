@@ -1,4 +1,4 @@
-import { IFormationCatalogue, zFormationCatalogueSchema } from "shared/models"
+import { IFormationCatalogue, zFormationCatalogueSchema } from "shared/models/index"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"

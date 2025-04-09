@@ -21,6 +21,7 @@ import { ILbaItemLbaCompany } from "./lbaitem.shared.service.types"
 
 /**
  * Adaptation au modèle LBA d'une société issue de l'algo
+ * To remove once V1 is decommissioned
  */
 const transformCompany = ({
   company,
@@ -85,6 +86,7 @@ const transformCompany = ({
 
 /**
  * Adaptation au modèle LBA d'une société issue de l'algo avec les données minimales nécessaires pour l'ui LBA
+ * To remove once V1 is decommissioned
  */
 const transformCompanyWithMinimalData = ({
   company,
@@ -121,6 +123,101 @@ const transformCompanyWithMinimalData = ({
     applicationCount: applicationCount?.count || 0,
     token: generateApplicationToken({ company_siret: company.workplace_siret }),
     recipient_id: getRecipientID(JobCollectionName.recruteur, company.workplace_siret),
+  }
+
+  return resultCompany
+}
+
+/**
+ * Adaptation au modèle LBA d'une société issue de l'algo
+ */
+const transformCompanyV2 = ({
+  company,
+  applicationCountByCompany,
+}: {
+  company: IJobsPartnersRecruteurAlgoPrivate
+  applicationCountByCompany: IApplicationCount[]
+}): ILbaItemLbaCompany => {
+  const applicationCount = applicationCountByCompany.find((cmp) => company.workplace_siret == cmp._id)
+
+  const resultCompany: ILbaItemLbaCompany = {
+    ideaType: LBA_ITEM_TYPE.RECRUTEURS_LBA,
+    id: company.workplace_siret,
+    title: company.workplace_brand || company.workplace_legal_name,
+    contact: {
+      phone: company.apply_phone,
+      email: company.apply_email,
+    },
+    place: {
+      distance: null,
+      fullAddress: company.workplace_address_label,
+      longitude: company.workplace_geopoint.coordinates[0],
+      latitude: company.workplace_geopoint.coordinates[1],
+      city: company.workplace_address_city,
+      address: company.workplace_address_label,
+    },
+    company: {
+      name: company.workplace_legal_name,
+      siret: company.workplace_siret,
+      size: company.workplace_size,
+      url: company.workplace_website,
+      opco: {
+        label: company.workplace_opco,
+        url: null,
+      },
+    },
+    nafs: [
+      {
+        code: company.workplace_naf_code,
+        label: company.workplace_naf_label,
+      },
+    ],
+    applicationCount: applicationCount?.count || 0,
+    url: null,
+    token: generateApplicationToken({ company_siret: company.workplace_siret }),
+    recipient_id: `partners_${company._id.toString()}`,
+  }
+
+  return resultCompany
+}
+
+/**
+ * Adaptation au modèle LBA d'une société issue de l'algo avec les données minimales nécessaires pour l'ui LBA
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const transformCompanyWithMinimalDataV2 = ({
+  company,
+  applicationCountByCompany,
+}: {
+  company: IJobsPartnersRecruteurAlgoPrivate
+  applicationCountByCompany: IApplicationCount[]
+}): ILbaItemLbaCompany => {
+  const applicationCount = applicationCountByCompany.find((cmp) => company.workplace_siret == cmp._id)
+
+  const resultCompany: ILbaItemLbaCompany = {
+    ideaType: LBA_ITEM_TYPE.RECRUTEURS_LBA,
+    id: company.workplace_siret,
+    title: company.workplace_brand || company.workplace_legal_name,
+    place: {
+      distance: null,
+      fullAddress: company.workplace_address_label,
+      longitude: company.workplace_geopoint.coordinates[0],
+      latitude: company.workplace_geopoint.coordinates[1],
+      city: company.workplace_address_city,
+      address: company.workplace_address_label,
+    },
+    company: {
+      name: company.workplace_legal_name,
+      siret: company.workplace_siret,
+    },
+    nafs: [
+      {
+        label: company.workplace_naf_label,
+      },
+    ],
+    applicationCount: applicationCount?.count || 0,
+    token: generateApplicationToken({ company_siret: company.workplace_siret }),
+    recipient_id: `partners_${company._id.toString()}`,
   }
 
   return resultCompany
@@ -396,6 +493,33 @@ export const getCompanyFromSiret = async ({
       caller,
       errorTitle: "getting company by Siret from local ES",
     })
+  }
+}
+
+/**
+ * Retourne une société issue de l'algo identifiée par sont SIRET pour le front
+ */
+export const getRecruteurLbaFromDB = async (siret: string): Promise<ILbaItemLbaCompany> => {
+  try {
+    const lbaCompany = (await getDbCollection("jobs_partners").findOne({
+      workplace_siret: siret,
+      partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+    })) as IJobsPartnersRecruteurAlgoPrivate
+
+    if (!lbaCompany) {
+      throw badRequest("Company not found")
+    }
+
+    const applicationCountByCompany = await getApplicationByCompanyCount([lbaCompany.workplace_siret!])
+    const company = transformCompanyV2({
+      company: lbaCompany,
+      applicationCountByCompany,
+    })
+
+    return company
+  } catch (error) {
+    sentryCaptureException(error)
+    throw badRequest("Company not found")
   }
 }
 

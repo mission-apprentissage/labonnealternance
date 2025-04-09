@@ -1,5 +1,5 @@
 import { internal } from "@hapi/boom"
-import { IReferentielCommune, zReferentielCommune } from "shared/models"
+import { IReferentielCommune, zReferentielCommune } from "shared/models/index"
 import { z } from "zod"
 
 import { apiRateLimiter } from "@/common/utils/apiUtils"

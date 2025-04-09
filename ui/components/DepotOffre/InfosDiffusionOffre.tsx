@@ -1,5 +1,6 @@
-import { Box, Flex, Grid, Heading, Image, Link, Text } from "@chakra-ui/react"
+import { Box, Flex, Grid, Heading, Image, Text } from "@chakra-ui/react"
 
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { InfoCircle } from "@/theme/components/icons"
 
 import { BorderedBox } from "../espace_pro/common/components/BorderedBox"
@@ -14,16 +15,15 @@ export const InfosDiffusionOffre = () => {
         </Box>
         <Text mb={6}>Cela permettra à votre offre d’être visible des candidats intéressés.</Text>
       </Flex>
+      <br />
       <Text>
         Une fois créée, votre offre d’emploi sera immédiatement mise en ligne sur les sites suivants,&nbsp;
-        <Link
+        <DsfrLink
           aria-label="Liste des partenaires - nouvelle fenêtre"
-          isExternal
-          textDecoration="underline"
           href="https://mission-apprentissage.notion.site/Liste-des-partenaires-de-La-bonne-alternance-3e9aadb0170e41339bac486399ec4ac1"
         >
           et bien d’autres
-        </Link>
+        </DsfrLink>
         &nbsp;!
       </Text>
       <Grid

@@ -1,5 +1,5 @@
 import { Select } from "@chakra-ui/react"
-import { OPCOS_LABEL } from "shared/constants"
+import { OPCOS_LABEL } from "shared/constants/index"
 
 export const OpcoSelect = ({ name, onChange, value }) => {
   return (

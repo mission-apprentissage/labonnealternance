@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import { IPointFeature } from "shared/models"
+import { IPointFeature } from "shared/models/index"
 
 import { getDbCollection } from "../common/utils/mongodbUtils"
 

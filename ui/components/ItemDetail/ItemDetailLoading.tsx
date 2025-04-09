@@ -1,14 +1,9 @@
-import { LBA_ITEM_TYPE_OLD } from "@/../shared/constants/lbaitem"
 import { Box, Image, Progress, SkeletonCircle, SkeletonText, Text } from "@chakra-ui/react"
-import React, { useEffect, useState } from "react"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import "./ItemDetailLoading.css"
 
 const ItemDetailLoading = ({ type }) => {
-  const getNextLoadingIllustration = (currentIllustration) => {
-    const currentIndex = loadingIllustrations.findIndex((ill) => ill.src === currentIllustration.src)
-    return loadingIllustrations[(currentIndex + 1) % loadingIllustrations.length]
-  }
-
-  const loadingIllustrations: { src: string; text: string }[] =
+  const loadingIllustrations =
     type === LBA_ITEM_TYPE_OLD.FORMATION
       ? [
           {
@@ -16,7 +11,7 @@ const ItemDetailLoading = ({ type }) => {
             text: "Chargement du descriptif de la formation",
           },
           {
-            src: "/images/loading/search_training.svg",
+            src: "/images/loading/search_trainings.svg",
             text: "Vérification des coordonnées du centre de formation",
           },
           {
@@ -39,32 +34,6 @@ const ItemDetailLoading = ({ type }) => {
           },
         ]
 
-  const [currentIllustration, setCurrentIllustration] = useState(loadingIllustrations[0])
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null
-
-    let iterations = 0
-    let current = currentIllustration
-    interval = setInterval(() => {
-      if (iterations < 5) {
-        current = getNextLoadingIllustration(current)
-        setCurrentIllustration(current)
-      } else {
-        setCurrentIllustration({
-          src: "/images/loading/hourglass.svg",
-          text: "Hum... Ce chargement semble plus long que prévu",
-        })
-        clearInterval(interval)
-      }
-      iterations++
-    }, 1000)
-
-    return () => {
-      clearInterval(interval)
-    }
-  }, [])
-
   const resultListProperties = {
     color: "grey.425",
     fontWeight: 500,
@@ -76,8 +45,18 @@ const ItemDetailLoading = ({ type }) => {
     <Box pt="0">
       <Box {...resultListProperties}>
         <Box textAlign="center">
-          <Image margin="auto" src={currentIllustration.src} aria-hidden={true} alt="" />
-          <Text mt={1}>{currentIllustration.text}</Text>
+          <Box className="loading-animation">
+            {loadingIllustrations.map((item, index) => (
+              <div key={index} className="loading-item">
+                <Image margin="auto" src={item.src} aria-hidden={true} alt="" />
+                <Text mt={1}>{item.text}</Text>
+              </div>
+            ))}
+            <div className="loading-item">
+              <Image margin="auto" src="/images/loading/hourglass.svg" aria-hidden={true} alt="" />
+              <Text mt={1}>Hum... Ce chargement semble plus long que prévu</Text>
+            </div>
+          </Box>
 
           <Box maxWidth="400px" mx="auto" my={4}>
             <Progress colorScheme={type === LBA_ITEM_TYPE_OLD.FORMATION ? "teal" : "orange"} isIndeterminate size="sm" borderRadius="20px" />

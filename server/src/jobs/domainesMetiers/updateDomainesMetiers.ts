@@ -3,8 +3,8 @@ import path from "path"
 
 import { ObjectId } from "mongodb"
 import { oleoduc } from "oleoduc"
-import { IDomainesMetiers, ZDomainesMetiers } from "shared/models"
-import { removeAccents } from "shared/utils"
+import { IDomainesMetiers, ZDomainesMetiers } from "shared/models/index"
+import { removeAccents } from "shared/utils/index"
 import XLSX from "xlsx"
 
 import { initializeCacheMetiers } from "@/services/metiers.service"

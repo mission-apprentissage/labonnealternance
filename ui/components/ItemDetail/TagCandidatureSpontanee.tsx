@@ -1,9 +1,9 @@
 import { Image, Text } from "@chakra-ui/react"
-import React from "react"
+import { fr } from "@codegouvfr/react-dsfr"
 
 const tagProperties = {
-  color: "pinksoft.600",
-  background: "pinksoft.200",
+  color: fr.colors.decisions.background.actionHigh.blueCumulus.default,
+  background: fr.colors.decisions.background.contrast.blueCumulus.default,
 }
 
 const TagCandidatureSpontanee = () => {
@@ -11,7 +11,7 @@ const TagCandidatureSpontanee = () => {
     <Text as="span" variant="tag" {...tagProperties}>
       <Image width="16px" mb="-2px" src="/images/briefcase.svg" alt="" />
       <Text whiteSpace="nowrap" as="span" ml={1}>
-        Candidature spontanée
+        CANDIDATURE SPONTANÉE
       </Text>
     </Text>
   )

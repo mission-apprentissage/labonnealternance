@@ -1,7 +1,7 @@
 import { internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { JOB_STATUS } from "shared"
-import { ENTREPRISE } from "shared/constants"
+import { ENTREPRISE } from "shared/constants/index"
 import { CFA, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"

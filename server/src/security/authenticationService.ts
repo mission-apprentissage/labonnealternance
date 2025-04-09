@@ -75,8 +75,8 @@ async function authCookieSession(req: FastifyRequest): Promise<AccessUser2 | nul
     const userState = await controlUserState(user)
 
     if (userState?.error) {
-      if (userState.reason !== "VALIDATION") {
-        throw forbidden(`user state invalide : ${userState.reason}`)
+      if (userState.data !== "VALIDATION") {
+        throw forbidden(`user state invalide : ${userState.data}`)
       }
     }
 
