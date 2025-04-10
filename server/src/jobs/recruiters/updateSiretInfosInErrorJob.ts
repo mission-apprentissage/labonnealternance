@@ -64,9 +64,6 @@ export const warnDeactivatedRecruteur = async (recruiter: IRecruiter, error: IBu
     if (error.errorCode === BusinessErrorCodes.IS_CFA) {
       errorMessage = "entreprise rattachée à un code NAF 85"
     }
-    if (error.errorCode === BusinessErrorCodes.CLOSED) {
-      errorMessage = "fermeture du compte La bonne alternance"
-    }
 
     const { last_name, first_name, email, establishment_siret, establishment_raison_sociale, phone } = recruiter
 
