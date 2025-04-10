@@ -57,6 +57,9 @@ export const DepotSimplifieStyling = ({ children }: { children: React.ReactNode 
         wordWrap: "break-word",
         overflowWrap: "break-word",
       },
+      "& .fr-table": {
+        "--table-offset": "unset",
+      },
     }}
   >
     {children}
