@@ -5,6 +5,7 @@ import dayjs from "shared/helpers/dayjs"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 
+import { isCompanyInBlockedCfaList } from "../blockJobsPartnersFromCfaList"
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
 export const franceTravailJobsToJobsPartners = (job: IFTJobRaw): IComputedJobsPartners => {
@@ -18,6 +19,10 @@ export const franceTravailJobsToJobsPartners = (job: IFTJobRaw): IComputedJobsPa
   }
 
   if (["cfa", "entreprise_cfa"].includes(jobType)) {
+    businessError = JOB_PARTNER_BUSINESS_ERROR.CFA
+  }
+
+  if (job.entreprise.nom && isCompanyInBlockedCfaList(job.entreprise.nom)) {
     businessError = JOB_PARTNER_BUSINESS_ERROR.CFA
   }
 
