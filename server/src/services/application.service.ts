@@ -23,7 +23,7 @@ import {
 } from "shared"
 import { ApplicationIntention, ApplicationIntentionDefaultText, RefusalReasons } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { LBA_ITEM_TYPE, newItemTypeToOldItemType } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
@@ -359,29 +359,26 @@ export const sendApplicationV2 = async ({
  * email candidat et recruteur lors d'une candidature
  */
 const buildUrlsOfDetail = (application: IApplication, utm?: { utm_source?: string; utm_medium?: string; utm_campaign?: string }) => {
-  const { job_id, company_siret, job_origin } = application
+  const { job_id, company_siret, job_origin, job_title } = application
   const defaultUtm = { utm_source: "lba", utm_medium: "email", utm_campaign: "je-candidate" }
   const { utm_campaign, utm_medium, utm_source } = { ...defaultUtm, ...utm }
-  const urlSearchParams = new URLSearchParams()
-  urlSearchParams.append("display", "list")
-  urlSearchParams.append("page", "fiche")
-  urlSearchParams.append("type", newItemTypeToOldItemType(job_origin))
-  urlSearchParams.append("itemId", job_origin === LBA_ITEM_TYPE.RECRUTEURS_LBA ? company_siret! : job_id!) // could be switched to job_id, but need to change the direct access routes and UI
-  const paramsWithoutUtm = urlSearchParams.toString()
-  urlSearchParams.append("utm_source", utm_source)
-  urlSearchParams.append("utm_medium", utm_medium)
+  const url = new URL(`${publicUrl}/emploi/${job_origin}/${job_origin === LBA_ITEM_TYPE.RECRUTEURS_LBA ? company_siret! : job_id!}/${job_title}`)
+  const paramsWithoutUtm = url.toString()
+
+  url.searchParams.append("utm_source", utm_source)
+  url.searchParams.append("utm_medium", utm_medium)
   if (job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
-    urlSearchParams.append("utm_campaign", utm_campaign)
+    url.searchParams.append("utm_campaign", utm_campaign)
   }
   if (job_origin === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    urlSearchParams.append("utm_campaign", `${utm_campaign}-spontanement`)
+    url.searchParams.append("utm_campaign", `${utm_campaign}-spontanement`)
   }
   if (job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) {
-    urlSearchParams.append("utm_campaign", `${utm_campaign}-partenaire`)
+    url.searchParams.append("utm_campaign", `${utm_campaign}-partenaire`)
   }
-  const params = urlSearchParams.toString()
+  const params = url.toString()
   return {
-    urlWithoutUtm: `${publicUrl}/recherche?${paramsWithoutUtm}`,
+    urlWithoutUtm: paramsWithoutUtm,
     url: `${publicUrl}/recherche?${params}`,
   }
 }
@@ -1235,15 +1232,18 @@ const buildSendOtherApplicationsUrl = (application: IApplication, type: LBA_ITEM
 
   if (application_url) {
     const url = new URL(application_url)
-    const newParams = url.searchParams
-    if (newParams.get("job_name")) {
-      newParams.delete("page")
-      newParams.delete("type")
-      newParams.delete("itemId")
-      addUtmParamsToSendOtherApplications(type, newParams, "accuse-envoi-lien-recherche")
-      return `${publicUrl}${url.pathname}?${newParams.toString()}`
+    if (url.pathname.startsWith("/emploi/")) {
+      url.pathname = "/recherche"
     }
+    if (!url.searchParams.get("displayFormations")) {
+      url.searchParams.append("displayFormations", "false")
+    }
+    url.searchParams.append("utm_source", "lba-brevo-transactionnel")
+    url.searchParams.append("utm_medium", "email")
+    url.searchParams.append("utm_campaign", "accuse-envoi-lien-recherche")
+    return url.toString()
   }
+
   const searchParams = new URLSearchParams()
   addUtmParamsToSendOtherApplications(type, searchParams, "accuse-envoi-lien-home")
   return `${publicUrl}/?${searchParams.toString()}`
