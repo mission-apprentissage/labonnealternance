@@ -1,4 +1,5 @@
 import dayjs from "dayjs"
+import anonymizedRecruitersModel from "shared/models/anonymizedRecruiters.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -9,8 +10,9 @@ const anonymize = async () => {
   const fromDate = dayjs().subtract(2, "years").toDate()
   const userWithAccountQuery = { $or: [{ last_action_date: { $lte: fromDate } }, { last_action_date: null, createdAt: { $lte: fromDate } }] }
   const usersToAnonymize = await getDbCollection("userswithaccounts").find(userWithAccountQuery).toArray()
-  const userIds = usersToAnonymize.map(({ _id }) => _id)
-  const recruiterQuery = { "jobs.managed_by": { $in: userIds } }
+  const userIds = usersToAnonymize.map(({ _id }) => _id.toString())
+  const recruiterQuery = { managed_by: { $in: userIds } } //TODO: à mettre à jour quand multi compte
+
   await getDbCollection("userswithaccounts")
     .aggregate([
       {
@@ -56,7 +58,7 @@ const anonymize = async () => {
         },
       },
       {
-        $merge: "anonymizedrecruiteurs",
+        $merge: anonymizedRecruitersModel.collectionName,
       },
     ])
     .toArray()
