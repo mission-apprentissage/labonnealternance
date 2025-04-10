@@ -30,9 +30,7 @@ const getContractTypes = (contractTypes) => {
 
 export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: string }) => {
   useEffect(() => {
-    SendPlausibleEvent("Affichage - Fiche entreprise Offre LBA", {
-      info_fiche: `${job?.job?.id}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
-    })
+    SendPlausibleEvent("Affichage - Fiche emploi", { partner_label: job.ideaType, info_fiche: `${job?.job?.id}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}` })
     notifyLbaJobDetailView(job?.job?.id)
   }, [job?.job?.id])
 
@@ -123,13 +121,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: s
                 <Text fontSize="16px" lineHeight="24px" fontWeight="700" marginBottom="8px" color="#161616">
                   Cette offre vous semble inappropriée ? Voici les raisons pour lesquelles vous pouvez nous signaler une offre :
                 </Text>
-                <UnorderedList
-                  style={{
-                    color: "#383838",
-                    fontSize: "16px",
-                    lineHeight: "24px",
-                  }}
-                >
+                <UnorderedList style={{ color: "#383838", fontSize: "16px", lineHeight: "24px" }}>
                   <ListItem>Offre offensante ou discriminatoire</ListItem>
                   <ListItem>Offre inexacte ou expirée</ListItem>
                   <ListItem>Fausse offre provenant d’un centre de formation</ListItem>
