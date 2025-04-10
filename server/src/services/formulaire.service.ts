@@ -4,7 +4,6 @@ import { badRequest, internal, notFound } from "@hapi/boom"
 import equal from "fast-deep-equal"
 import { Filter, ObjectId, UpdateFilter } from "mongodb"
 import { IDelegation, IJob, IJobCreate, IJobWithRomeDetail, IRecruiter, IRecruiterWithApplicationCount, ITrackingCookies, IUserRecruteur, JOB_STATUS, removeAccents } from "shared"
-import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { OPCOS_LABEL, RECRUITER_STATUS, RECRUITER_USER_ORIGIN } from "shared/constants/recruteur"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
@@ -14,7 +13,6 @@ import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { warnDeactivatedRecruteur } from "@/jobs/recruiters/updateSiretInfosInErrorJob"
 
 import { asyncForEach } from "../common/utils/asyncUtils"
 import { getDbCollection } from "../common/utils/mongodbUtils"
@@ -381,7 +379,6 @@ export const archiveFormulaireByEstablishmentId = async (id: IRecruiter["establi
   }
 
   await archiveFormulaire(recruiter)
-  await warnDeactivatedRecruteur(recruiter, { error: true, errorCode: BusinessErrorCodes.CLOSED, message: "Formulaire archivé" })
 }
 
 export const archiveFormulaire = async (recruiter: IRecruiter) => {
