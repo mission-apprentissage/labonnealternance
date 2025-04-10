@@ -150,6 +150,11 @@ const nextConfig = {
         destination: "/recherche-formation",
         permanent: true,
       },
+      {
+        source: "/espace-pro/establishment/:etablissementId/appointments/:appointmentId",
+        destination: "/detail-rendez-vous/:appointmentId",
+        permanent: true,
+      },
     ]
   },
 }
