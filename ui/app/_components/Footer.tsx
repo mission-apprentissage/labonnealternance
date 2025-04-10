@@ -1,5 +1,7 @@
 import { Footer as DsfrFooter } from "@codegouvfr/react-dsfr/Footer"
 
+import { publicConfig } from "@/config.public"
+
 import { PAGES } from "../../utils/routes.utils"
 
 import { DsfrHeaderProps } from "./Header"
@@ -7,7 +9,7 @@ import { DsfrHeaderProps } from "./Header"
 export function Footer() {
   return (
     <DsfrFooter
-      accessibility="non compliant"
+      accessibility="partially compliant"
       accessibilityLinkProps={{
         href: PAGES.static.accessibilite.getPath(),
       }}
@@ -50,7 +52,7 @@ export function Footer() {
               linkProps: {
                 href: PAGES.static.codeSources.getPath(),
               },
-              text: "Code source",
+              text: `Code source v${publicConfig.version}`,
             },
             {
               linkProps: {
