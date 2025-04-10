@@ -8,7 +8,7 @@ import { processMeteojob } from "@/jobs/offrePartenaire/meteojob/processMeteojob
 import { processRhAlternance } from "@/jobs/offrePartenaire/rh-alternance/processRhAlternance"
 
 const timings = {
-  import_source: "0 2 * * *",
+  import_source: "0 0 * * *",
 }
 
 export const importers: Record<string, CronDef> = {
