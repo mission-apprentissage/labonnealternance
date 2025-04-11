@@ -27,7 +27,7 @@ export const HowTo = () => (
         justifyContent: "center",
       }}
     >
-      <Image fetchPriority="low" src="/images/howto1.svg" alt="" unoptimized width={286} height={141} style={{ width: "100%" }} />
+      <Image fetchPriority="high" src="/images/howto1.svg" alt="" unoptimized width={286} height={141} style={{ width: "100%" }} />
       <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("1w") }}>
         <Typography className={fr.cx("fr-text--bold", "fr-text--lg")}>Le job de vos rêves</Typography>
         <Typography>
@@ -64,7 +64,7 @@ export const HowTo = () => (
         position: "relative",
       }}
     >
-      <Image fetchPriority="low" src="/images/howto2.svg" alt="" unoptimized width={299} height={145} style={{ width: "100%" }} />
+      <Image fetchPriority="high" src="/images/howto2.svg" alt="" unoptimized width={299} height={145} style={{ width: "100%" }} />
       <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("1w") }}>
         <Typography className={fr.cx("fr-text--bold", "fr-text--lg")}>En un clin d’oeil</Typography>
         <Typography>
@@ -91,7 +91,7 @@ export const HowTo = () => (
         position: "relative",
       }}
     >
-      <Image fetchPriority="low" src="/images/howto3.svg" alt="" unoptimized width={285} height={140} style={{ width: "100%" }} />
+      <Image fetchPriority="high" src="/images/howto3.svg" alt="" unoptimized width={285} height={140} style={{ width: "100%" }} />
       <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("1w") }}>
         <Typography className={fr.cx("fr-text--bold", "fr-text--lg")}>Un contact facile</Typography>
         <Typography>
