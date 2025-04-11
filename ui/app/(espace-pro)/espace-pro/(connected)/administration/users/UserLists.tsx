@@ -148,7 +148,7 @@ function Users() {
     {
       Header: "Type",
       id: "type",
-      maxWidth: "120",
+      maxWidth: "140",
       accessor: ({ type }) => (
         <Text color="#666666" fontSize="14px">
           {type}
@@ -179,6 +179,7 @@ function Users() {
     {
       Header: "Téléphone",
       accessor: "phone",
+      width: "160",
       Cell: ({ value }) => (
         <Text color="#666666" fontSize="14px">
           {value}
@@ -194,7 +195,7 @@ function Users() {
           {dayjs(value).format("DD/MM/YYYY")}
         </Text>
       ),
-      maxWidth: "100",
+      width: "130",
       id: "createdAt",
       sortType: (a, b) => sortReactTableDate(a.original.createdAt, b.original.createdAt),
     },
