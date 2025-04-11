@@ -62,12 +62,12 @@ const ConfirmationDesactivationUtilisateur = ({
       <ModalContent mt={["0", "3.75rem"]} h={["100%", "auto"]} mb={0} borderRadius={0} data-testid="confirmation-desactivation-utilisateur-modal">
         <ModalCloseButton onClose={onClose} />
         <ModalHeader>
-          <Heading as="h2" fontSize="1.5rem">
-            <Text>Désactivation du compte</Text>
+          <Heading as="h2" mb={0} fontSize="1.5rem">
+            Désactivation du compte
           </Heading>
         </ModalHeader>
         <ModalBody pb={6}>
-          <Text>Vous êtes sur le point de désactiver le compte de l’entreprise {establishment_raison_sociale}. Pouvez-vous nous préciser pour quelle raison ?</Text>
+          <Text as="span">Vous êtes sur le point de désactiver le compte de l’entreprise {establishment_raison_sociale}. Pouvez-vous nous préciser pour quelle raison ?</Text>
           <FormControl isRequired mt={5}>
             <FormLabel>Motif de refus</FormLabel>
             <Select onChange={(e) => handleReason(e.target.value)}>
