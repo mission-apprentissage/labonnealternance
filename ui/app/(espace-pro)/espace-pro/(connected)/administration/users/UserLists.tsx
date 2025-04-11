@@ -137,7 +137,7 @@ function Users() {
                 {siretText}
               </Link>
             )}
-            <Text color="redmarianne" fontSize="14px">
+            <Text sx={{ maxWidth: "100%", textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden" }} color="redmarianne" fontSize="14px">
               {opco}
             </Text>
           </Flex>
