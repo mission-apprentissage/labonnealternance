@@ -23,7 +23,7 @@ import {
 } from "shared"
 import { ApplicationIntention, ApplicationIntentionDefaultText, RefusalReasons } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
@@ -486,7 +486,7 @@ const offreOrCompanyToCompanyFields = (
     const { rome_appellation_label, rome_label } = job
     const application = {
       company_siret: establishment_siret,
-      company_name: establishment_enseigne || establishment_raison_sociale || "Enseigne inconnue",
+      company_name: establishment_enseigne || establishment_raison_sociale || UNKNOWN_COMPANY,
       company_naf: naf_label ?? "",
       company_phone: phone,
       company_email: email,
@@ -500,7 +500,7 @@ const offreOrCompanyToCompanyFields = (
     const { workplace_siret, workplace_name, workplace_naf_label, apply_phone, apply_email, offer_title, workplace_address_label, workplace_legal_name } = job
     const application = {
       company_siret: workplace_siret || null,
-      company_name: workplace_name || workplace_legal_name || "Enseigne inconnue",
+      company_name: workplace_name || workplace_legal_name || UNKNOWN_COMPANY,
       company_naf: workplace_naf_label || "",
       company_phone: apply_phone,
       company_email: apply_email || "",
