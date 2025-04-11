@@ -4,7 +4,7 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 
-const ConfirmationActivationUtilsateur = (props) => {
+const ConfirmationActivationUtilisateur = (props) => {
   const { isOpen, onClose, establishment_raison_social, _id } = props
   const { activate } = useUserPermissionsActions(_id)
 
@@ -43,4 +43,4 @@ const ConfirmationActivationUtilsateur = (props) => {
   )
 }
 
-export default ConfirmationActivationUtilsateur
+export default ConfirmationActivationUtilisateur

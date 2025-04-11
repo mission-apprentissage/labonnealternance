@@ -9,7 +9,8 @@ import { useEffect, useState } from "react"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
-import { ConfirmationActivationUtilsateur, ConfirmationDesactivationUtilisateur, LoadingEmptySpace, TableNew } from "@/components/espace_pro"
+import { ConfirmationDesactivationUtilisateur, LoadingEmptySpace, TableNew } from "@/components/espace_pro"
+import ConfirmationActivationUtilisateur from "@/components/espace_pro/ConfirmationActivationUtilisateur"
 import { Parametre } from "@/theme/components/icons"
 import { getOpcoUsers } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
@@ -194,7 +195,7 @@ function AdministrationOpco() {
   return (
     <>
       <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={currentEntreprise} />
-      <ConfirmationActivationUtilsateur {...confirmationActivationUtilisateur} {...currentEntreprise} />
+      <ConfirmationActivationUtilisateur {...confirmationActivationUtilisateur} {...currentEntreprise} />
 
       <Breadcrumb pages={[PAGES.static.backOpcoHome]} />
 

@@ -1,7 +1,7 @@
 "use client"
 import { Box, Button, Flex, Icon, Menu, MenuButton, MenuItem, MenuList, Text, useDisclosure, useToast } from "@chakra-ui/react"
 import { TabContext, TabList, TabPanel } from "@mui/lab"
-import { Tab, Link } from "@mui/material"
+import { Link, Tab } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useParams } from "next/navigation"
@@ -11,7 +11,8 @@ import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
-import { ConfirmationActivationUtilsateur, ConfirmationDesactivationUtilisateur, TableNew } from "@/components/espace_pro"
+import { ConfirmationDesactivationUtilisateur, TableNew } from "@/components/espace_pro"
+import ConfirmationActivationUtilisateur from "@/components/espace_pro/ConfirmationActivationUtilisateur"
 import { Parametre } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
 
@@ -213,7 +214,7 @@ function Users() {
   return (
     <>
       <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={currentEntreprise} />
-      <ConfirmationActivationUtilsateur {...confirmationActivationUtilisateur} {...currentEntreprise} />
+      <ConfirmationActivationUtilisateur {...confirmationActivationUtilisateur} {...currentEntreprise} />
 
       <Flex align="center" justify="space-between" mb={12}>
         <Text fontSize="2rem" fontWeight={700}>
