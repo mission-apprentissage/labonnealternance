@@ -58,5 +58,9 @@ export const setTrackingCookies = (searchParamsRecord: Record<string, string>) =
     if (utm_medium) {
       setCookie("utm_medium", utm_medium)
     }
+  } else {
+    removeCookie("utm_campaign")
+    removeCookie("utm_source")
+    removeCookie("utm_medium")
   }
 }
