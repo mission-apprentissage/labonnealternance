@@ -1,6 +1,6 @@
 import AnimationContainer from "../../app/(espace-pro)/espace-pro/(connected)/_components/AnimationContainer"
 
-import ConfirmationActivationUtilsateur from "./ConfirmationActivationUtilsateur"
+import ConfirmationActivationUtilisateur from "./ConfirmationActivationUtilisateur"
 import ConfirmationDesactivationUtilisateur from "./ConfirmationDesactivationUtilisateur"
 import ConfirmationModificationOpco from "./ConfirmationModificationOpco"
 import CustomInput from "./CustomInput"
@@ -13,7 +13,7 @@ import UserValidationHistory from "./UserValidationHistory"
 
 export {
   AnimationContainer,
-  ConfirmationActivationUtilsateur,
+  ConfirmationActivationUtilisateur,
   ConfirmationDesactivationUtilisateur,
   ConfirmationModificationOpco,
   CustomInput,
