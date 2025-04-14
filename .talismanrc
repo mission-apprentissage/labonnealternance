@@ -281,12 +281,6 @@ fileignoreconfig:
   checksum: bd5e3fc26e296e4e0e8b51305082dcb718a355b2000bb0b2b45dd9751bc81269
 - filename: ui/components/footer.tsx
   checksum: e0dd3ec2ac813053ee5e672472b545719c95e49f0891cf2f8e1b5db484d00479
-- filename: ui/pages/accessibilite.tsx
-  checksum: d6a7c57500f9de5e47e305f89435b21d717f505acac7b45656931f7ecdd0fcca
-- filename: ui/pages/espace-pro/admin/eligible-trainings-for-appointment/search.tsx
-  checksum: 47a40c539f076c13460dbb9d0b6a6e05086289b8bd5a606e64b1ea30fdbf783d
-- filename: ui/pages/espace-pro/admin/widget-parameters/search.jsx
-  checksum: 4b65ee1cab8a6297037abb32ff06a72a54ccfaf2165745ed780f52699bb7a4c6
 - filename: ui/public/images/home_pics/illu-offreformation.svg
   checksum: 7ad0f32e8c39866d9f4a76dde67f66a90c022f98e9f1a4932c9013e264c35b86
 - filename: ui/public/images/home_pics/illu-plateformesjeunes.svg
