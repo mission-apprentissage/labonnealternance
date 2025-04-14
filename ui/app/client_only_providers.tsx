@@ -3,9 +3,11 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { createMuiDsfrThemeProvider } from "@codegouvfr/react-dsfr/mui"
 import { THEME_ID } from "@mui/material"
-import type { PropsWithChildren } from "react"
+import { useEffect, type PropsWithChildren } from "react"
 
 import Providers from "@/context/Providers"
+import { setIsTrackingEnabled, setTrackingCookies } from "@/tracking/trackingCookieUtils"
+import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
 // https://mui.com/material-ui/integrations/theme-scoping/?srsltid=AfmBOopC5sffoR7iiFA6HxJK-F1sIbPFTE8Bt9V2CZ9b2uGrAgJYXyNc
 // TODO: Move back to layout when chakra is removed
@@ -47,12 +49,19 @@ const { MuiDsfrThemeProvider } = createMuiDsfrThemeProvider({
   },
 })
 
-function RootTemplate({ children }: PropsWithChildren) {
+export default function RootTemplate({ children }: PropsWithChildren) {
+  const searchParamsRecord = useSearchParamsRecord()
+
+  useEffect(() => {
+    setIsTrackingEnabled()
+  }, [])
+  useEffect(() => {
+    setTrackingCookies(searchParamsRecord)
+  }, [searchParamsRecord])
+
   return (
     <MuiDsfrThemeProvider>
       <Providers>{children}</Providers>
     </MuiDsfrThemeProvider>
   )
 }
-
-export default RootTemplate
