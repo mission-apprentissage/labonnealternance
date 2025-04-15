@@ -4,7 +4,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
 [
   {
     "apply_email": null,
-    "apply_phone": "civile.gouv.fr",
+    "apply_phone": "06 23 97 71 88",
     "apply_url": "https://www.pass.fonction-publique.gouv.fr/offre/chargee-de-projet-formationcommunication",
     "business_error": null,
     "contract_duration": 24,
@@ -55,7 +55,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
   },
   {
     "apply_email": null,
-    "apply_phone": "civile.gouv.fr",
+    "apply_phone": "06 23 97 71 88",
     "apply_url": "https://www.pass.fonction-publique.gouv.fr/offre/chargee-de-projet-formationcommunication-0",
     "business_error": null,
     "contract_duration": 24,
