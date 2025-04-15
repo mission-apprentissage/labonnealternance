@@ -49,7 +49,7 @@ export const passJobToJobsPartners = (job: IPassJob): IComputedJobsPartners => {
   let phone: string | null = null
 
   if (contact) {
-    const [parsedEmail, parsedPhone] = contact.split("-").map((x) => {
+    const [parsedEmail, parsedPhone] = contact.split(" - ").map((x) => {
       const trimmed = x.trim()
       return trimmed === "" ? null : trimmed
     })
