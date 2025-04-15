@@ -866,7 +866,7 @@ function validateJobOffer(job: IJobOfferApiReadV3, id: ObjectId, context: JobOpp
 }
 
 export async function getLbaJobByIdV2AsJobOfferApi(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3 | null> {
-  const job = await getLbaJobByIdV2AsJobResult({ id: id.toString(), caller: context?.caller })
+  const job = await getLbaJobByIdV2AsJobResult({ id: id.toString() })
 
   if (!job) {
     const error = internal("jobOpportunity.service.ts-getLbaJobByIdV2AsJobOfferApi: job not found", { id })
