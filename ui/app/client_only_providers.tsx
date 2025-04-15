@@ -3,7 +3,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { createMuiDsfrThemeProvider } from "@codegouvfr/react-dsfr/mui"
 import { THEME_ID } from "@mui/material"
-import { useEffect, type PropsWithChildren } from "react"
+import { Suspense, useEffect, type PropsWithChildren } from "react"
 
 import Providers from "@/context/Providers"
 import { setIsTrackingEnabled, setTrackingCookies } from "@/tracking/trackingCookieUtils"
@@ -49,7 +49,7 @@ const { MuiDsfrThemeProvider } = createMuiDsfrThemeProvider({
   },
 })
 
-export default function RootTemplate({ children }: PropsWithChildren) {
+function Tracking() {
   const searchParamsRecord = useSearchParamsRecord()
 
   useEffect(() => {
@@ -59,8 +59,15 @@ export default function RootTemplate({ children }: PropsWithChildren) {
     setTrackingCookies(searchParamsRecord)
   }, [searchParamsRecord])
 
+  return null
+}
+
+export default function RootTemplate({ children }: PropsWithChildren) {
   return (
     <MuiDsfrThemeProvider>
+      <Suspense fallback={null}>
+        <Tracking />
+      </Suspense>
       <Providers>{children}</Providers>
     </MuiDsfrThemeProvider>
   )
