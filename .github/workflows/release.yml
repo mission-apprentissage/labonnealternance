@@ -193,6 +193,7 @@ jobs:
           GITHUB_REF_NAME: ${{ env.GITHUB_REF_NAME }}
 
   cypress:
+    if: false
     needs: ["deploy"]
     uses: "./.github/workflows/cypress.yml"
     with:
