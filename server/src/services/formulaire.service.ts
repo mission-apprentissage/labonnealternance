@@ -463,15 +463,6 @@ export const createFormulaire = async (payload: Partial<Omit<IRecruiter, "_id" |
 export const deleteFormulaire = async (id: IRecruiter["_id"]): Promise<IRecruiter | null> => await getDbCollection("recruiters").findOneAndDelete({ _id: id })
 
 /**
- * @description Remove all formulaires belonging to gestionnaire
- * @param {IUserRecruteur["establishment_siret"]} establishment_siret
- * @returns {Promise<IRecruiter>}
- */
-export const deleteFormulaireFromGestionnaire = async (siret: IUserRecruteur["establishment_siret"]): Promise<void> => {
-  await getDbCollection("recruiters").deleteMany({ cfa_delegated_siret: siret })
-}
-
-/**
  * @description Update existing formulaire and return updated version
  */
 export const updateFormulaire = async (establishment_id: IRecruiter["establishment_id"], payload: UpdateFilter<IRecruiter>): Promise<IRecruiter> => {
