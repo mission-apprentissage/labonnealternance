@@ -1,4 +1,4 @@
-FROM node:20-slim AS builder_root
+FROM node:23-slim AS builder_root
 WORKDIR /app
 RUN yarn set version 3.3.1
 COPY .yarn /app/.yarn
@@ -34,7 +34,7 @@ RUN yarn --cwd server build
 RUN mkdir -p /app/shared/node_modules && mkdir -p /app/server/node_modules
 
 # Production image, copy all the files and run next
-FROM node:20-slim AS server
+FROM node:23-slim AS server
 WORKDIR /app
 RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt/lists \
     apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
@@ -87,7 +87,7 @@ RUN yarn --cwd ui build
 # RUN --mount=type=cache,target=/app/ui/.next/cache yarn --cwd ui build
 
 # Production image, copy all the files and run next
-FROM node:20-slim AS ui
+FROM node:23-slim AS ui
 WORKDIR /app
 
 ENV NODE_ENV=production
