@@ -266,8 +266,8 @@ export const PAGES = {
       }),
       title: metier,
     }),
-    modificationEntreprise: (): IPage => ({
-      getPath: () => `/espace-pro/entreprise/compte` as string,
+    modificationEntreprise: (userType: string, establishment_id?: string): IPage => ({
+      getPath: () => (userType === "CFA" ? `/espace-pro/cfa/entreprise/${establishment_id}/informations` : "/espace-pro/entreprise/compte"),
       index: false,
       getMetadata: () => ({ title: "Modification entreprise" }),
       title: "Modification entreprise",
@@ -474,9 +474,9 @@ export const PAGES = {
       getPath: () => `/espace-pro/cfa/creation-entreprise/${siret}` as string,
       title: siret,
     }),
-    backCfaPageEntreprise: (establishment_id: string): IPage => ({
+    backCfaPageEntreprise: (establishment_id: string, establishmentLabel?: string): IPage => ({
       getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}` as string,
-      title: "Entreprise",
+      title: establishmentLabel ?? "Entreprise",
     }),
     backCfaEntrepriseCreationOffre: (establishment_id: string): IPage => ({
       getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}/creation-offre` as string,
