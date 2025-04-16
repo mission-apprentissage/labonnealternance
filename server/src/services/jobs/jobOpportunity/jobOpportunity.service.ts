@@ -233,7 +233,13 @@ export const getJobsQuery = async (
   return result
 }
 
-export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level, partners_to_exclude }: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivate[]> => {
+export const getJobsPartnersFromDB = async ({
+  romes,
+  geo,
+  target_diploma_level,
+  partners_to_exclude,
+  departements,
+}: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivate[]> => {
   const query: Filter<IJobsPartnersOfferPrivate> = {
     offer_multicast: true,
     offer_status: JOB_STATUS_ENGLISH.ACTIVE,
@@ -250,6 +256,23 @@ export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level, 
 
   if (target_diploma_level) {
     query["offer_target_diploma.european"] = { $in: [target_diploma_level, null] }
+  }
+
+  if (departements?.length) {
+    const normalizeDepartementToRegex = (code: string): RegExp[] => {
+      // Corse
+      if (code === "2A") return [/^200/, /^201/]
+      if (code === "2B") return [/^202/, /^206/]
+
+      // Cas DROM-COM (971 à 979)
+      if (/^97\d$/.test(code)) return [new RegExp(`^${code}`)]
+
+      // Cas général
+      return [new RegExp(`^${code}`)]
+    }
+
+    const departmentsRegex = departements.flatMap((code) => normalizeDepartementToRegex(code))
+    query.workplace_address_zipcode = { $in: departmentsRegex }
   }
 
   const filterStages: Document[] =
@@ -326,10 +349,16 @@ export const getJobsPartnersFromDBForUI = async ({ romes, geo, target_diploma_le
     .toArray()
 }
 
-export const getJobsPartnersForApi = async ({ romes, geo, target_diploma_level, partners_to_exclude }: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> => {
+export const getJobsPartnersForApi = async ({
+  romes,
+  geo,
+  target_diploma_level,
+  partners_to_exclude,
+  departements,
+}: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> => {
   // recruteurs_lba are available in a different array from the API returned payload
   const partnersToExclude = partners_to_exclude ? [...partners_to_exclude, JOBPARTNERS_LABEL.RECRUTEURS_LBA] : [JOBPARTNERS_LABEL.RECRUTEURS_LBA]
-  const jobsPartners = await getJobsPartnersFromDB({ romes, geo, target_diploma_level, partners_to_exclude: partnersToExclude })
+  const jobsPartners = await getJobsPartnersFromDB({ romes, geo, target_diploma_level, partners_to_exclude: partnersToExclude, departements })
 
   return jobsPartners.map((j) =>
     jobsRouteApiv3Converters.convertToJobOfferApiReadV3({
