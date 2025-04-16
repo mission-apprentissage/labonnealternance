@@ -37,7 +37,6 @@ export default function Page() {
         userRecruteur={recruiter}
         recruiter={recruiter}
         onChange={() => {
-          //refetchUserRecruteur()
           refetchRecruiter()
         }}
       />
