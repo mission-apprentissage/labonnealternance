@@ -1,5 +1,3 @@
-import { NextRouter } from "next/router"
-
 const COOKIE_REMOVE_TIME = -36 * 60 * 60 * 1000
 export const MTM_CONSENT_COOKIE_DURATION = 30 * 365 * 24 * 60 * 60 * 1000
 
@@ -46,19 +44,23 @@ const setReferer = () => {
     setCookie("referer", document.referrer)
   }
 }
-export const setTrackingCookies = (router: NextRouter) => {
+export const setTrackingCookies = (searchParamsRecord: Record<string, string>) => {
   if (!isConsentRemoved()) {
-    const { query } = router
-    const mtm_campaign = query?.mtm_campaign as string
-    const utm_campaign = mtm_campaign || (query?.utm_campaign as string)
-    if (utm_campaign) {
-      setCookie("utm_campaign", utm_campaign)
+    const { mtm_campaign, utm_campaign, utm_source, utm_medium } = searchParamsRecord
+
+    const utmCampaign = mtm_campaign || utm_campaign
+    if (utmCampaign) {
+      setCookie("utm_campaign", utmCampaign)
     }
-    if (query?.utm_source) {
-      setCookie("utm_source", query.utm_source as string)
+    if (utm_source) {
+      setCookie("utm_source", utm_source)
     }
-    if (query?.utm_medium) {
-      setCookie("utm_medium", query.utm_medium as string)
+    if (utm_medium) {
+      setCookie("utm_medium", utm_medium)
     }
+  } else {
+    removeCookie("utm_campaign")
+    removeCookie("utm_source")
+    removeCookie("utm_medium")
   }
 }

@@ -75,8 +75,6 @@ fileignoreconfig:
   checksum: d40699cf149c9658080dcbeac6856adc01a215d5cc00e5c2271096d3cbb2aba4
 - filename: server/src/jobs/offrePartenaire/meteojob/importMeteojob.test.input.xml
   checksum: 62419cb750978e303756a8134f180ffa4febb9835fff97e48ed1024923bebc91
-- filename: server/src/jobs/offrePartenaire/pass/importPass.test.input.rss
-  checksum: c51265ef42491e55f550f2cd3387c3948cec82fad6debcfd2670e324a0c89dcf
 - filename: server/src/migrations/20241022093834-remove-multi-published.ts
   checksum: a807c70a69c4c8bfc2a0568b466a7f274fd3840169ef3ef4792885d63cb75217
 - filename: server/src/security/accessApiApprentissageService.ts
@@ -281,12 +279,6 @@ fileignoreconfig:
   checksum: bd5e3fc26e296e4e0e8b51305082dcb718a355b2000bb0b2b45dd9751bc81269
 - filename: ui/components/footer.tsx
   checksum: e0dd3ec2ac813053ee5e672472b545719c95e49f0891cf2f8e1b5db484d00479
-- filename: ui/pages/accessibilite.tsx
-  checksum: d6a7c57500f9de5e47e305f89435b21d717f505acac7b45656931f7ecdd0fcca
-- filename: ui/pages/espace-pro/admin/eligible-trainings-for-appointment/search.tsx
-  checksum: 47a40c539f076c13460dbb9d0b6a6e05086289b8bd5a606e64b1ea30fdbf783d
-- filename: ui/pages/espace-pro/admin/widget-parameters/search.jsx
-  checksum: 4b65ee1cab8a6297037abb32ff06a72a54ccfaf2165745ed780f52699bb7a4c6
 - filename: ui/public/images/home_pics/illu-offreformation.svg
   checksum: 7ad0f32e8c39866d9f4a76dde67f66a90c022f98e9f1a4932c9013e264c35b86
 - filename: ui/public/images/home_pics/illu-plateformesjeunes.svg
@@ -299,6 +291,10 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
+- filename: server/src/jobs/offrePartenaire/pass/__snapshots__/importPass.test.ts.snap
+  checksum: 10cb946d65eb68907e1046a1bf267c111a33915a8d510dc73f201f306754689a
+- filename: server/src/jobs/offrePartenaire/pass/importPass.test.input.rss
+  checksum: 997465cfcd84fbd424d01574c22fd8fb11b62f6ea09fa03abc408b926018f6a6
 scopeconfig:
 - scope: node
 custom_patterns:

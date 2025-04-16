@@ -85,9 +85,11 @@ services:
       <<: *deploy-default
       resources:
         limits:
-          memory: 256m
+          memory: 768m
       replicas: 2
     env_file: .env_ui
+    environment:
+      NODE_OPTIONS: "--max_old_space_size=768"
     logging:
       driver: "fluentd"
       options:
