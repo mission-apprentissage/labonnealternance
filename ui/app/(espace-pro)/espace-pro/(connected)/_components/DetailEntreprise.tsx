@@ -21,7 +21,7 @@ import { PAGES } from "@/utils/routes.utils"
 
 type Variables = { userId: string; values: INewSuperUser; siret: string }
 
-export default function DetailEntreprise({ userRecruteur, recruiter, onChange }: { userRecruteur: any; recruiter: any; onChange?: (props: { opco?: OPCOS_LABEL }) => void }) {
+export default function DetailEntreprise({ userRecruteur, recruiter, onChange }: { userRecruteur: any; recruiter?: any; onChange?: (props: { opco?: OPCOS_LABEL }) => void }) {
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationModificationOpco = useDisclosure()
 
@@ -91,7 +91,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
 
       if (user.type === AUTHTYPE.CFA) {
         const { email, first_name, last_name, phone } = values
-        await updateEntrepriseCFA(recruiter.establishment_id, { email, first_name, last_name, phone })
+        await updateEntrepriseCFA(userRecruteur.establishment_id, { email, first_name, last_name, phone })
       } else {
         await updateEntrepriseAdmin(userId, value, siret)
       }

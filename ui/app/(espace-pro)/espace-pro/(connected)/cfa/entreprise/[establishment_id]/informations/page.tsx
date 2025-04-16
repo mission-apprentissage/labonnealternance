@@ -35,7 +35,6 @@ export default function Page() {
       />
       <DetailEntreprise
         userRecruteur={recruiter}
-        recruiter={recruiter}
         onChange={() => {
           refetchRecruiter()
         }}
