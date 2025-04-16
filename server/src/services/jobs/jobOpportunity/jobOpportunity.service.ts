@@ -25,6 +25,7 @@ import {
   type IJobSearchApiV3Response,
 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 
+import { normalizeDepartementToRegex } from "@/common/utils/geolib"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { getPartnerJobs } from "@/services/partnerJob.service"
 
@@ -259,18 +260,6 @@ export const getJobsPartnersFromDB = async ({
   }
 
   if (departements?.length) {
-    const normalizeDepartementToRegex = (code: string): RegExp[] => {
-      // Corse
-      if (code === "2A") return [/^200/, /^201/]
-      if (code === "2B") return [/^202/, /^206/]
-
-      // Cas DROM-COM (971 à 979)
-      if (/^97\d$/.test(code)) return [new RegExp(`^${code}`)]
-
-      // Cas général
-      return [new RegExp(`^${code}`)]
-    }
-
     const departmentsRegex = departements.flatMap((code) => normalizeDepartementToRegex(code))
     query.workplace_address_zipcode = { $in: departmentsRegex }
   }
@@ -633,6 +622,7 @@ async function findLbaJobOpportunities(query: IJobSearchApiV3QueryResolved): Pro
     romes: query.romes ?? null,
     niveau: null,
     limit: 150,
+    departements: query.departements ?? null,
   }
 
   if (query.target_diploma_level) {

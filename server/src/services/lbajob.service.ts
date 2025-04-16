@@ -11,7 +11,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
-import { roundDistance } from "../common/utils/geolib"
+import { normalizeDepartementToRegex, roundDistance } from "../common/utils/geolib"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 
@@ -124,11 +124,13 @@ export const getLbaJobsV2 = async ({
   romes,
   niveau,
   limit,
+  departements,
 }: {
   geo: { latitude: number; longitude: number; radius: number } | null
   romes: string[] | null
   niveau: INiveauPourLbaLabel | null
   limit: number
+  departements: string[] | null
 }): Promise<IJobResult[]> => {
   const jobFilters: Filter<IRecruiter> = {
     "jobs.job_status": JOB_STATUS.ACTIVE,
@@ -146,6 +148,11 @@ export const getLbaJobsV2 = async ({
   const query: Filter<IRecruiter> = {
     status: RECRUITER_STATUS.ACTIF,
     ...jobFilters,
+  }
+
+  if (departements?.length) {
+    const departmentsRegex = departements.flatMap(normalizeDepartementToRegex)
+    query["address_detail.code_postal"] = { $in: departmentsRegex }
   }
 
   const filterStage: Document[] =
