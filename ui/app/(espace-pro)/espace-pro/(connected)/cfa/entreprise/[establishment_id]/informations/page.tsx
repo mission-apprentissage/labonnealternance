@@ -30,7 +30,9 @@ export default function Page() {
 
   return (
     <>
-      <Breadcrumb pages={[PAGES.static.backCfaHome, PAGES.dynamic.backCfaPageEntreprise(establishment_id, establishmentLabel)]} />
+      <Breadcrumb
+        pages={[PAGES.static.backCfaHome, PAGES.dynamic.backCfaPageEntreprise(establishment_id, establishmentLabel), PAGES.dynamic.backCfaPageInformations(establishment_id)]}
+      />
       <DetailEntreprise
         userRecruteur={recruiter}
         recruiter={recruiter}
