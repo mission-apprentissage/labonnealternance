@@ -998,3 +998,8 @@ export const validateUserEmailFromJobId = async (jobId: ObjectId) => {
   if (!managed_by) return
   await validateUserWithAccountEmail(new ObjectId(managed_by))
 }
+
+export const updateCfaManagedRecruiter = async (establishment_id: string, payload: Partial<IRecruiter>) => {
+  const recruiter = await getDbCollection("recruiters").findOneAndUpdate({ establishment_id }, { $set: { ...payload, updatedAt: new Date() } }, { returnDocument: "after" })
+  return recruiter
+}

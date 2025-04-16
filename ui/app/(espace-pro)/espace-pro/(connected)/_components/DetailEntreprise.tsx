@@ -16,7 +16,7 @@ import { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationM
 import { OpcoSelect } from "@/components/espace_pro/CreationRecruteur/OpcoSelect"
 import { FieldWithValue } from "@/components/espace_pro/FieldWithValue"
 import { ArrowRightLine } from "@/theme/components/icons"
-import { updateEntrepriseAdmin } from "@/utils/api"
+import { updateEntrepriseAdmin, updateEntrepriseCFA } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
 type Variables = { userId: string; values: INewSuperUser; siret: string }
@@ -88,7 +88,13 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
     mutationFn: async (variables: Variables) => {
       const { userId, values, siret } = variables
       const { type, ...value } = values
-      await updateEntrepriseAdmin(userId, value, siret)
+
+      if (user.type === AUTHTYPE.CFA) {
+        const { email, first_name, last_name, phone } = values
+        await updateEntrepriseCFA(recruiter.establishment_id, { email, first_name, last_name, phone })
+      } else {
+        await updateEntrepriseAdmin(userId, value, siret)
+      }
       onChange?.({ opco: "opco" in values ? values.opco : undefined })
     },
     onSuccess: () => {

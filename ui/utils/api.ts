@@ -74,6 +74,11 @@ export const updateEntrepriseAdmin = async (userId: string, user: IBody<IRoutes[
   await apiPut("/admin/users/:userId/organization/:siret", { params: { userId, siret }, body: user })
 }
 
+// modification des informations de contact d'un recruiter par le CFA gestionnaire
+export const updateEntrepriseCFA = async (establishmentId: string, values: IBody<IRoutes["post"]["/formulaire/:establishment_id/informations"]>) => {
+  await apiPost("/formulaire/:establishment_id/informations", { params: { establishment_id: establishmentId }, body: values })
+}
+
 export const updateUser = async (userId: string, user: any) => {
   await apiPut("/admin/users/:userId", { params: { userId }, body: user })
 }
