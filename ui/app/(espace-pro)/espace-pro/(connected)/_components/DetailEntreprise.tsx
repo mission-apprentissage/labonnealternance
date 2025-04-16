@@ -3,6 +3,7 @@ import { Badge, Box, Flex, FormControl, FormErrorMessage, FormHelperText, FormLa
 import { Button } from "@codegouvfr/react-dsfr/Button"
 import { useMutation } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
+import { useRouter } from "next/navigation"
 import { INewSuperUser, IUserStatusValidationJson } from "shared"
 import { AUTHTYPE, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/recruteur"
 import * as Yup from "yup"
@@ -22,6 +23,7 @@ import { PAGES } from "@/utils/routes.utils"
 type Variables = { userId: string; values: INewSuperUser; siret: string }
 
 export default function DetailEntreprise({ userRecruteur, recruiter, onChange }: { userRecruteur: any; recruiter?: any; onChange?: (props: { opco?: OPCOS_LABEL }) => void }) {
+  const router = useRouter()
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationModificationOpco = useDisclosure()
 
@@ -119,14 +121,23 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
         <Heading fontSize="32px" noOfLines={2}>
           {establishmentLabel}
         </Heading>
-        <Flex align="center" justify="space-between" mb={5}>
-          <Flex align="center" justify="flex-start" maxW="50%">
-            <Box ml={5}>{getUserBadge(lastUserState)}</Box>
+        {user.type !== "CFA" && (
+          <Flex align="center" justify="space-between" mb={5}>
+            <Flex align="center" justify="flex-start" maxW="50%">
+              <Box ml={5}>{getUserBadge(lastUserState)}</Box>
+            </Flex>
+            <Stack direction={["column", "column", "column", "row"]} spacing="10px">
+              {getActionButtons(lastUserState, userRecruteur._id)}
+            </Stack>
           </Flex>
-          <Stack direction={["column", "column", "column", "row"]} spacing="10px">
-            {getActionButtons(lastUserState, userRecruteur._id)}
-          </Stack>
-        </Flex>
+        )}
+        {user.type === "CFA" && (
+          <Flex mb={5} justify="flex-end">
+            <Button priority="secondary" type="button" onClick={() => router.push(PAGES.dynamic.backCfaPageEntreprise(userRecruteur.establishment_id).getPath())}>
+              Fermer
+            </Button>
+          </Flex>
+        )}
       </Box>
       <Formik
         validateOnMount={true}
@@ -195,7 +206,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                           <FormErrorMessage>{errors.opco as string}</FormErrorMessage>
                         </FormControl>
                       )}
-                      <Flex justify="flex-end" mt={10}>
+                      <Flex justify="flex-end" my={5}>
                         <Button type="submit" disabled={!isValid || isSubmitting}>
                           {isSubmitting ? <Spinner mr={2} /> : <ArrowRightLine mr={2} />}Enregistrer
                         </Button>
