@@ -28,7 +28,7 @@ const fieldsRead = [
   "created_at",
 ] as const satisfies (keyof IComputedJobsPartners)[]
 const recruiterFieldsRead = ["_id", "status", "address_detail", "createdAt"] as const satisfies (keyof IRecruiter)[]
-const jobFieldsRead = ["_id", "rome_appellation_label", "job_status"] as const satisfies (keyof IJob)[]
+const jobFieldsRead = ["_id", "rome_appellation_label", "job_status", "offer_title_custom"] as const satisfies (keyof IJob)[]
 
 export const FAKE_RECRUITERS_JOB_PARTNER = "recruiters"
 
@@ -245,7 +245,7 @@ const detectDuplicateJobPartnersFactory = async (groupField: keyof IComputedJobs
         }
         const parsedAddress = ZGlobalAddress.safeParse(address_detail)
         return jobs.flatMap((job) => {
-          const { _id, rome_appellation_label, job_status } = job
+          const { _id, rome_appellation_label, job_status, offer_title_custom } = job
           if (job_status !== JOB_STATUS.ACTIVE) {
             return []
           }
@@ -254,7 +254,7 @@ const detectDuplicateJobPartnersFactory = async (groupField: keyof IComputedJobs
             collectionName: recruiterCollection,
             partner_job_id: _id.toString(),
             partner_label: FAKE_RECRUITERS_JOB_PARTNER,
-            offer_title: rome_appellation_label,
+            offer_title: offer_title_custom ?? rome_appellation_label,
             workplace_address_zipcode: parsedAddress.data?.code_postal || null,
             created_at: createdAt,
           }
