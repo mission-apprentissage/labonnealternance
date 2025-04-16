@@ -893,6 +893,7 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, co
         job_type: job.job_type,
         job_level_label: job.job_level_label,
         job_start_date: dayjs(job.job_start_date).format("DD/MM/YY"),
+        title: job.offer_title_custom,
       },
       lba_url: `${config.publicUrl}${getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id.toString())}`,
     },

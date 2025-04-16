@@ -27,11 +27,11 @@ const getReportAdditionalInfos = async (itemId: string, type: LBA_ITEM_TYPE) => 
         return null
       }
       const { establishment_siret, establishment_raison_sociale, establishment_enseigne } = recruiterOpt
-      const { rome_appellation_label } = jobOpt
+      const { rome_appellation_label, offer_title_custom } = jobOpt
       return {
         siret: establishment_siret,
         companyName: establishment_raison_sociale || establishment_enseigne,
-        jobTitle: rome_appellation_label,
+        jobTitle: offer_title_custom ?? rome_appellation_label,
       }
     }
     case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
