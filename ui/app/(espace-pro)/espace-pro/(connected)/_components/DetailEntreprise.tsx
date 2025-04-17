@@ -118,21 +118,27 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
       <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={userRecruteur} onUpdate={() => onChange?.({})} />
 
       <Box borderBottom="1px solid #E3E3FD" mb={10}>
-        <Heading fontSize="32px" noOfLines={2}>
-          {establishmentLabel}
-        </Heading>
         {user.type !== "CFA" && (
-          <Flex align="center" justify="space-between" mb={5}>
-            <Flex align="center" justify="flex-start" maxW="50%">
-              <Box ml={5}>{getUserBadge(lastUserState)}</Box>
+          <>
+            <Heading fontSize="32px" noOfLines={2}>
+              {establishmentLabel}
+            </Heading>
+            <Flex align="center" justify="space-between" mb={5}>
+              <Flex align="center" justify="flex-start" maxW="50%">
+                <Box ml={5}>{getUserBadge(lastUserState)}</Box>
+              </Flex>
+              <Stack direction={["column", "column", "column", "row"]} spacing="10px">
+                {getActionButtons(lastUserState, userRecruteur._id)}
+              </Stack>
             </Flex>
-            <Stack direction={["column", "column", "column", "row"]} spacing="10px">
-              {getActionButtons(lastUserState, userRecruteur._id)}
-            </Stack>
-          </Flex>
+          </>
         )}
         {user.type === "CFA" && (
-          <Flex mb={5} justify="flex-end">
+          <Flex mb={5} justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
+            <Heading fontSize="32px" mx={0} noOfLines={2}>
+              {establishmentLabel}
+            </Heading>
+
             <Button priority="secondary" type="button" onClick={() => router.push(PAGES.dynamic.backCfaPageEntreprise(userRecruteur.establishment_id).getPath())}>
               Fermer
             </Button>
@@ -216,9 +222,11 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                 </Box>
                 <Box>
                   <InformationLegaleEntreprise siret={userRecruteur.establishment_siret} type={userRecruteur.type as typeof CFA | typeof ENTREPRISE} />
-                  <Box my={4}>
-                    <FieldWithValue title="Origine" value={userRecruteur.origin} />
-                  </Box>
+                  {user.type !== "CFA" && (
+                    <Box my={4}>
+                      <FieldWithValue title="Origine" value={userRecruteur.origin} />
+                    </Box>
+                  )}
                 </Box>
               </SimpleGrid>
               {(user.type === AUTHTYPE.ADMIN || user.type === AUTHTYPE.OPCO) && (
