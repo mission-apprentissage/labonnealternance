@@ -11,7 +11,7 @@ export const fillRomeForPartners = async (addedMatchFilter?: Filter<IComputedJob
     job: COMPUTED_ERROR_SOURCE.API_ROMEO,
     sourceFields: ["offer_title", "workplace_naf_label"],
     filledFields,
-    groupSize: 50,
+    groupSize: 20,
     addedMatchFilter,
     getData: async (documents) => {
       const validDocuments = documents.flatMap((document) => (document.offer_title ? [document] : []))
