@@ -26,6 +26,7 @@ import {
   patchOffre,
   provideOffre,
   validateUserEmailFromJobId,
+  updateCfaManagedRecruiter,
 } from "../../services/formulaire.service"
 import { Server } from "../server"
 
@@ -303,6 +304,20 @@ export default (server: Server) => {
       const { jobId } = req.params
       const job = await createJobDelegations({ jobId, etablissementCatalogueIds })
       return res.status(200).send(job)
+    }
+  )
+
+  server.post(
+    "/formulaire/:establishment_id/informations",
+    {
+      schema: zRoutes.post["/formulaire/:establishment_id/informations"],
+      onRequest: [server.auth(zRoutes.post["/formulaire/:establishment_id/informations"])],
+    },
+    async (req, res) => {
+      const { establishment_id } = req.params
+      await updateCfaManagedRecruiter(establishment_id, req.body)
+
+      return res.status(200).send({ ok: true })
     }
   )
 
