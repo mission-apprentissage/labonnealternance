@@ -25,14 +25,6 @@ export enum JOBPARTNERS_LABEL {
   VERITONE = "Veritone",
 }
 
-export enum FILTER_JOBPARTNERS_LABEL {
-  HELLOWORK = JOBPARTNERS_LABEL.HELLOWORK,
-  RH_ALTERNANCE = JOBPARTNERS_LABEL.RH_ALTERNANCE,
-  METEOJOB = JOBPARTNERS_LABEL.METEOJOB,
-  MONSTER = JOBPARTNERS_LABEL.MONSTER,
-  KELIO = JOBPARTNERS_LABEL.KELIO,
-}
-
 export const ZJobsPartnersRecruiterApi = z.object({
   _id: zObjectId,
   workplace_siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
