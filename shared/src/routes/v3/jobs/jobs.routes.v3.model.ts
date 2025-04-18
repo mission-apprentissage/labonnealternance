@@ -82,7 +82,12 @@ export const zJobOfferApiReadV3 = z.object({
   }),
 })
 
+export const zJobOfferDetailApiReadV3 = zJobOfferApiReadV3.extend({
+  lba_url: z.string().url().describe("URL sur l'interface LBA").nullable().default(null),
+})
+
 export type IJobOfferApiReadV3 = z.output<typeof zJobOfferApiReadV3>
+export type IJobOfferDetailApiReadV3 = z.output<typeof zJobOfferDetailApiReadV3>
 
 export const zJobSearchApiV3Response = z.object({
   jobs: zJobOfferApiReadV3.array(),
