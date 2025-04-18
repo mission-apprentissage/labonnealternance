@@ -336,10 +336,10 @@ export const getJobsPartnersFromDBForUI = async ({ romes, geo, target_diploma_le
     .toArray()
 }
 
-export const getJobsPartnersForApi = async ({ romes, geo, target_diploma_level, partners_to_exclude }: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> => {
+export const getJobsPartnersForApi = async ({ romes, geo, target_diploma_level, partners_to_exclude, opco }: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> => {
   // recruteurs_lba are available in a different array from the API returned payload
   const partnersToExclude = partners_to_exclude ? [...partners_to_exclude, JOBPARTNERS_LABEL.RECRUTEURS_LBA] : [JOBPARTNERS_LABEL.RECRUTEURS_LBA]
-  const jobsPartners = await getJobsPartnersFromDB({ romes, geo, target_diploma_level, partners_to_exclude: partnersToExclude })
+  const jobsPartners = await getJobsPartnersFromDB({ romes, geo, target_diploma_level, partners_to_exclude: partnersToExclude, opco })
 
   return jobsPartners.map((j) =>
     jobsRouteApiv3Converters.convertToJobOfferApiReadV3({

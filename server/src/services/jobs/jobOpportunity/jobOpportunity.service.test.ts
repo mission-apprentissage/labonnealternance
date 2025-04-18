@@ -228,6 +228,7 @@ describe("findJobsOpportunities", () => {
         radius: 30,
         romes: ["M1602"],
         rncp: null,
+        opco: null,
       },
       new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
     )
@@ -307,6 +308,7 @@ describe("findJobsOpportunities", () => {
         radius: 30,
         romes: null,
         rncp: null,
+        opco: null,
       },
       new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
     )
@@ -395,6 +397,7 @@ describe("findJobsOpportunities", () => {
         radius: 30,
         romes: ["M1602"],
         rncp: null,
+        opco: null,
       },
       new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
     )
@@ -467,6 +470,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           rncp: "RNCP37098",
           romes: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -532,6 +536,7 @@ describe("findJobsOpportunities", () => {
             radius: 30,
             rncp: "RNCP37098",
             romes: null,
+            opco: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
@@ -553,6 +558,7 @@ describe("findJobsOpportunities", () => {
             radius: 30,
             rncp: "RNCP30000",
             romes: null,
+            opco: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
@@ -576,6 +582,7 @@ describe("findJobsOpportunities", () => {
             radius: 30,
             rncp: "RNCP9852",
             romes: null,
+            opco: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
@@ -606,6 +613,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           rncp: "RNCP13620",
           romes: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -678,6 +686,7 @@ describe("findJobsOpportunities", () => {
         radius: 30,
         romes: ["M1602"],
         rncp: "RNCP37098",
+        opco: null,
       },
       new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
     )
@@ -782,6 +791,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -800,6 +810,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -813,6 +824,7 @@ describe("findJobsOpportunities", () => {
           radius: 2,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -864,6 +876,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -932,6 +945,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -980,6 +994,7 @@ describe("findJobsOpportunities", () => {
             romes: ["M1602"],
             target_diploma_level: "4",
             rncp: null,
+            opco: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
@@ -1034,6 +1049,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1074,6 +1090,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["C1110"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1092,6 +1109,7 @@ describe("findJobsOpportunities", () => {
           radius: 1,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1132,6 +1150,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1195,6 +1214,7 @@ describe("findJobsOpportunities", () => {
             radius: 30,
             romes: ["M1602"],
             rncp: null,
+            opco: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
@@ -1263,6 +1283,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1302,6 +1323,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1336,6 +1358,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1356,6 +1379,7 @@ describe("findJobsOpportunities", () => {
           radius: 1,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1384,6 +1408,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1415,6 +1440,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1448,6 +1474,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1488,6 +1515,7 @@ describe("findJobsOpportunities", () => {
             romes: ["M1602"],
             target_diploma_level: "3",
             rncp: null,
+            opco: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
@@ -1539,6 +1567,7 @@ describe("findJobsOpportunities", () => {
             radius: 30,
             romes: ["D1104"],
             rncp: null,
+            opco: null,
             partners_to_exclude: [JOBPARTNERS_LABEL.HELLOWORK],
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
@@ -1558,6 +1587,7 @@ describe("findJobsOpportunities", () => {
             radius: 30,
             romes: ["D1104"],
             rncp: null,
+            opco: null,
             partners_to_exclude: [JOBPARTNERS_LABEL.RH_ALTERNANCE],
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
@@ -1575,6 +1605,7 @@ describe("findJobsOpportunities", () => {
             radius: 30,
             romes: ["D1104"],
             rncp: null,
+            opco: null,
             partners_to_exclude: [JOBPARTNERS_LABEL.RH_ALTERNANCE, JOBPARTNERS_LABEL.HELLOWORK],
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
@@ -1603,6 +1634,7 @@ describe("findJobsOpportunities", () => {
             radius: 30,
             romes: ["M1602"],
             rncp: null,
+            opco: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
@@ -1630,6 +1662,7 @@ describe("findJobsOpportunities", () => {
           radius: 100,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1672,6 +1705,7 @@ describe("findJobsOpportunities", () => {
             romes: ["M1602"],
             target_diploma_level,
             rncp: null,
+            opco: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
@@ -1740,6 +1774,7 @@ describe("findJobsOpportunities", () => {
           radius: 100,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1838,6 +1873,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: null,
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
