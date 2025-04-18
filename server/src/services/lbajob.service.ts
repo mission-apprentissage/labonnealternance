@@ -5,7 +5,7 @@ import { IJob, ILbaItemPartnerJob, IRecruiter, IReferentielRomeForJob, JOB_STATU
 import { FRANCE_LATITUDE, FRANCE_LONGITUDE } from "shared/constants/geolocation"
 import { NIVEAUX_POUR_LBA } from "shared/constants/index"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
-import { INiveauPourLbaLabel, RECRUITER_STATUS } from "shared/constants/recruteur"
+import { INiveauPourLbaLabel, OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -124,11 +124,13 @@ export const getLbaJobsV2 = async ({
   romes,
   niveau,
   limit,
+  opco,
 }: {
   geo: { latitude: number; longitude: number; radius: number } | null
   romes: string[] | null
   niveau: INiveauPourLbaLabel | null
   limit: number
+  opco?: OPCOS_LABEL | null
 }): Promise<IJobResult[]> => {
   const jobFilters: Filter<IRecruiter> = {
     "jobs.job_status": JOB_STATUS.ACTIVE,
@@ -146,6 +148,10 @@ export const getLbaJobsV2 = async ({
   const query: Filter<IRecruiter> = {
     status: RECRUITER_STATUS.ACTIF,
     ...jobFilters,
+  }
+
+  if (opco) {
+    query["opco"] = opco
   }
 
   const filterStage: Document[] =

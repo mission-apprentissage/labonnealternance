@@ -233,7 +233,13 @@ export const getJobsQuery = async (
   return result
 }
 
-export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level, partners_to_exclude }: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivate[]> => {
+export const getJobsPartnersFromDB = async ({
+  romes,
+  geo,
+  target_diploma_level,
+  partners_to_exclude,
+  opco,
+}: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivate[]> => {
   const query: Filter<IJobsPartnersOfferPrivate> = {
     offer_multicast: true,
     offer_status: JOB_STATUS_ENGLISH.ACTIVE,
@@ -250,6 +256,10 @@ export const getJobsPartnersFromDB = async ({ romes, geo, target_diploma_level, 
 
   if (target_diploma_level) {
     query["offer_target_diploma.european"] = { $in: [target_diploma_level, null] }
+  }
+
+  if (opco) {
+    query.workplace_opco = opco
   }
 
   const filterStages: Document[] =
