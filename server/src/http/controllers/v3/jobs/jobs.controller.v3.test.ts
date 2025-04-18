@@ -8,7 +8,7 @@ import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fi
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
-import { IGeoPoint, IRecruiter, IReferentielRome, JOB_STATUS } from "shared/models/index"
+import { IGeoPoint, IRecruiter, IReferentielRome, JOB_PARTNER_STATUS, JOB_STATUS } from "shared/models/index"
 import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { zJobOfferApiReadV3, type IJobOfferApiWriteV3Input } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
@@ -768,6 +768,105 @@ describe("GET /v3/jobs/:id", () => {
       statusCode: 404,
       error: "Not Found",
       message: `Aucune offre d'emploi trouvée pour l'ID: ${nonExistentId.toString()}`,
+    })
+  })
+})
+
+describe("GET /v3/jobs/:id/partner-status", () => {
+  let id: ObjectId
+
+  beforeEach(async () => {
+    // Génère un nouvel ID et nettoie les collections avant chaque test
+    id = new ObjectId()
+    await getDbCollection("jobs_partners").deleteMany({})
+    await getDbCollection("computed_jobs_partners").deleteMany({})
+  })
+
+  it("should return 401 if no api key provided", async () => {
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/v3/jobs/${id.toString()}/partner-status`,
+    })
+    expect(response.statusCode).toBe(401)
+    expect(response.json()).toEqual({
+      statusCode: 401,
+      error: "Unauthorized",
+      message: "Unable to parse token missing-bearer",
+    })
+  })
+
+  it("should return 401 if api key is invalid", async () => {
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/v3/jobs/${id.toString()}/partner-status`,
+      headers: { authorization: `Bearer ${fakeToken}` },
+    })
+    expect(response.statusCode).toBe(401)
+    expect(response.json()).toEqual({
+      statusCode: 401,
+      error: "Unauthorized",
+      message: "Unable to parse token invalid-signature",
+    })
+  })
+
+  it("should return PUBLISHED when job exists in jobs_partners", async () => {
+    // Insère une offre existante
+    const doc = generateJobsPartnersOfferPrivate({ _id: id })
+    await getDbCollection("jobs_partners").insertOne(doc)
+
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/v3/jobs/${id.toString()}/partner-status`,
+      headers: { authorization: `Bearer ${token}` },
+    })
+    expect(response.statusCode).toBe(200)
+    expect(response.json()).toEqual(JOB_PARTNER_STATUS.PUBLISHED)
+  })
+
+  it("should return NOT_PUBLISHED when computed_jobs_partner has errors", async () => {
+    await getDbCollection("computed_jobs_partners").insertOne({ _id: id, errors: [{ source: "COMPUTED_ERROR_SOURCE", error: "error1" }] })
+
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/v3/jobs/${id.toString()}/partner-status`,
+      headers: { authorization: `Bearer ${token}` },
+    })
+    expect(response.statusCode).toBe(200)
+    expect(response.json()).toEqual(JOB_PARTNER_STATUS.NOT_PUBLISHED)
+  })
+
+  it("should return WILL_BE_PUBLISHED when computed_jobs_partner has no errors", async () => {
+    await getDbCollection("computed_jobs_partners").insertOne({
+      _id: id,
+      errors: [],
+      created_at: undefined,
+      partner_label: "",
+      partner_job_id: "",
+      jobs_in_success: [],
+      validated: false,
+      business_error: null,
+    })
+
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/v3/jobs/${id.toString()}/partner-status`,
+      headers: { authorization: `Bearer ${token}` },
+    })
+    expect(response.statusCode).toBe(200)
+    expect(response.json()).toEqual(JOB_PARTNER_STATUS.WILL_BE_PUBLISHED)
+  })
+
+  it("should return 404 if job not found", async () => {
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/v3/jobs/${id.toString()}/partner-status`,
+      headers: { authorization: `Bearer ${token}` },
+    })
+    expect(response.statusCode).toBe(404)
+    expect(response.json()).toEqual({
+      statusCode: 404,
+      error: "Not Found",
+      message: "Job not found",
     })
   })
 })

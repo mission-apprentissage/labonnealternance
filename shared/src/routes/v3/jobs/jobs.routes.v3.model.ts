@@ -2,7 +2,7 @@ import { z } from "zod"
 
 import { OPCOS_LABEL, TRAINING_CONTRACT_TYPE } from "../../../constants/recruteur.js"
 import { extensions } from "../../../helpers/zodHelpers/zodPrimitives.js"
-import { JOB_STATUS_ENGLISH } from "../../../models/job.model.js"
+import { JOB_PARTNER_STATUS, JOB_STATUS_ENGLISH } from "../../../models/job.model.js"
 import {
   IJobsPartnersOfferApi,
   IJobsPartnersRecruiterApi,
@@ -83,6 +83,9 @@ export const zJobOfferApiReadV3 = z.object({
 })
 
 export type IJobOfferApiReadV3 = z.output<typeof zJobOfferApiReadV3>
+
+export const zJobOfferPartnerStatus = extensions.buildEnum(JOB_PARTNER_STATUS)
+export type IJobOfferPartnerStatus = z.output<typeof zJobOfferPartnerStatus>
 
 export const zJobSearchApiV3Response = z.object({
   jobs: zJobOfferApiReadV3.array(),

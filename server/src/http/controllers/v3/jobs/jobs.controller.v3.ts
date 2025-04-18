@@ -3,7 +3,14 @@ import { zRoutes } from "shared"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { JobOpportunityRequestContext } from "@/services/jobs/jobOpportunity/JobOpportunityRequestContext"
 
-import { createJobOffer, findJobOpportunityById, findJobsOpportunities, updateJobOffer, upsertJobOffer } from "../../../../services/jobs/jobOpportunity/jobOpportunity.service"
+import {
+  createJobOffer,
+  findJobOpportunityById,
+  findJobsOpportunities,
+  getJobPartnerStatus,
+  updateJobOffer,
+  upsertJobOffer,
+} from "../../../../services/jobs/jobOpportunity/jobOpportunity.service"
 import { Server } from "../../../server"
 
 const config = {
@@ -66,4 +73,13 @@ export const jobsApiV3Routes = (server: Server) => {
     const result = await findJobOpportunityById(req.params.id, new JobOpportunityRequestContext(zRoutes.get["/v3/jobs/:id"], "api-apprentissage"))
     return res.send(result)
   })
+
+  server.get(
+    "/v3/jobs/:id/partner-status",
+    { schema: zRoutes.get["/v3/jobs/:id/partner-status"], onRequest: server.auth(zRoutes.get["/v3/jobs/:id/partner-status"]) },
+    async (req, res) => {
+      const result = await getJobPartnerStatus(req.params.id, new JobOpportunityRequestContext(zRoutes.get["/v3/jobs/:id/partner-status"], "api-apprentissage"))
+      return res.send(result)
+    }
+  )
 }

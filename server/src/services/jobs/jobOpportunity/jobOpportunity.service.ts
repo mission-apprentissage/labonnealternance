@@ -2,7 +2,18 @@ import Boom, { badRequest, internal, notFound } from "@hapi/boom"
 import { IApiAlternanceTokenData } from "api-alternance-sdk"
 import { DateTime } from "luxon"
 import { Document, Filter, ObjectId } from "mongodb"
-import { IGeoPoint, IJob, IJobCollectionName, ILbaItemPartnerJob, JOB_STATUS_ENGLISH, JobCollectionName, assertUnreachable, parseEnum, translateJobStatus } from "shared"
+import {
+  IGeoPoint,
+  IJob,
+  IJobCollectionName,
+  ILbaItemPartnerJob,
+  JOB_PARTNER_STATUS,
+  JOB_STATUS_ENGLISH,
+  JobCollectionName,
+  assertUnreachable,
+  parseEnum,
+  translateJobStatus,
+} from "shared"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import {
@@ -14,6 +25,7 @@ import {
 } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import {
+  IJobOfferPartnerStatus,
   jobsRouteApiv3Converters,
   zJobOfferApiReadV3,
   zJobRecruiterApiReadV3,
@@ -922,4 +934,28 @@ export const getRecipientID = (type: IJobCollectionName, id: string) => {
     return `recruteur_${id}`
   }
   assertUnreachable(type)
+}
+
+export async function getJobPartnerStatus(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferPartnerStatus> {
+  try {
+    const existsInJobs = await getDbCollection("jobs_partners").findOne({ _id: id }, { projection: { _id: 1 } })
+    if (existsInJobs) return JOB_PARTNER_STATUS.PUBLISHED
+
+    const computed = await getDbCollection("computed_jobs_partners").findOne({ _id: id }, { projection: { errors: 1 } })
+    if (computed) return computed.errors.length > 0 ? JOB_PARTNER_STATUS.NOT_PUBLISHED : JOB_PARTNER_STATUS.WILL_BE_PUBLISHED
+
+    const error = internal("jobOpportunity.service.ts-getJobPartnerStatus: job not found", { id })
+    logger.error(error)
+    context.addWarning("JOB_NOT_FOUND")
+    sentryCaptureException(error)
+    throw Boom.notFound("Job not found")
+  } catch (err: unknown) {
+    if (Boom.isBoom(err)) {
+      throw err
+    }
+    const internalError = internal("Unexpected error in jobOpportunity.service.ts-getJobPartnerStatus: job not found", { id })
+    logger.error(internalError)
+    sentryCaptureException(internalError)
+    throw Boom.internal("Erreur inattendue dans getJobPartnerStatus")
+  }
 }

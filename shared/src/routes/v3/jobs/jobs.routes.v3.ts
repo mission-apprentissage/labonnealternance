@@ -3,7 +3,7 @@ import { zObjectId } from "zod-mongodb-schema"
 import { z } from "../../../helpers/zodWithOpenApi.js"
 import { IRoutesDef } from "../../common.routes.js"
 
-import { zJobOfferApiReadV3, zJobOfferApiWriteV3, zJobSearchApiV3Query, zJobSearchApiV3Response } from "./jobs.routes.v3.model.js"
+import { zJobOfferApiReadV3, zJobOfferApiWriteV3, zJobOfferPartnerStatus, zJobSearchApiV3Query, zJobSearchApiV3Response } from "./jobs.routes.v3.model.js"
 
 export const zJobsRoutesV3 = {
   get: {
@@ -31,6 +31,24 @@ export const zJobsRoutesV3 = {
       }),
       response: {
         "200": zJobOfferApiReadV3,
+      },
+      securityScheme: {
+        auth: "api-apprentissage",
+        access: null,
+        resources: {},
+      },
+      openapi: {
+        tags: ["V3 - Jobs"] as string[],
+      },
+    },
+    "/v3/jobs/:id/partner-status": {
+      method: "get",
+      path: "/v3/jobs/:id/partner-status",
+      params: z.object({
+        id: zObjectId,
+      }),
+      response: {
+        "200": zJobOfferPartnerStatus,
       },
       securityScheme: {
         auth: "api-apprentissage",
