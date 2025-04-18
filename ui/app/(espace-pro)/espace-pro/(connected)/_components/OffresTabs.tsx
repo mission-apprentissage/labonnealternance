@@ -266,7 +266,11 @@ export const OffresTabs = ({
                           underline="hover"
                           target="_blank"
                           rel="noopener noreferrer"
-                          href={`${publicConfig.baseUrl}/recherche-formation?romes=${row.rome_code}&lon=${lon}&lat=${lat}`}
+                          href={
+                            user.type === AUTHTYPE.ENTREPRISE
+                              ? `${publicConfig.baseUrl}/espace-pro/entreprise/offre/${row._id}/mise-en-relation`
+                              : `${publicConfig.baseUrl}/recherche-formation?romes=${row.rome_code}&lon=${lon}&lat=${lat}`
+                          }
                           aria-label="Lien vers les formations - nouvelle fenêtre"
                         >
                           Voir les centres de formations
