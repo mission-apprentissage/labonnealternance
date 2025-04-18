@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb"
+import { UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import dayjs from "shared/helpers/dayjs"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
@@ -75,7 +76,7 @@ export const monsterJobToJobsPartners = (job: IMonsterJob): IComputedJobsPartner
       .add(2, "months")
       .toDate(),
 
-    workplace_name: CompanyName,
+    workplace_name: CompanyName === "myJob.company" ? UNKNOWN_COMPANY : CompanyName,
     workplace_siret: siretParsing.success ? siretParsing.data : null,
     workplace_address_zipcode: JobPostalCode || null,
     workplace_address_city: JobCity,
