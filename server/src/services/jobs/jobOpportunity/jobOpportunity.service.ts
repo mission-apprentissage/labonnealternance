@@ -5,6 +5,7 @@ import { Document, Filter, ObjectId } from "mongodb"
 import { IGeoPoint, IJob, IJobCollectionName, ILbaItemPartnerJob, JOB_STATUS_ENGLISH, JobCollectionName, assertUnreachable, parseEnum, translateJobStatus } from "shared"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
+import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import {
   IJobsPartnersOfferApi,
   IJobsPartnersOfferPrivate,
@@ -14,8 +15,10 @@ import {
 } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import {
+  IJobOfferDetailApiReadV3,
   jobsRouteApiv3Converters,
   zJobOfferApiReadV3,
+  zJobOfferDetailApiReadV3,
   zJobRecruiterApiReadV3,
   type IJobOfferApiReadV3,
   type IJobOfferApiWriteV3,
@@ -819,12 +822,12 @@ export async function upsertJobOffer(data: IJobOfferApiWriteV3, partner_label: s
   return upsertJobOfferPrivate({ data, partner_label, partnerJobIdIfNew: partner_job_id, requestedByEmail, current })
 }
 
-export async function findJobOpportunityById(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3> {
+export async function findJobOpportunityById(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferDetailApiReadV3> {
   try {
     // Exécuter les requêtes en parallèle puis récupérer la première offre trouvée
     const results = await Promise.allSettled([getLbaJobByIdV2AsJobOfferApi(id, context), getJobsPartnersByIdAsJobOfferApi(id, context)])
 
-    const validResults = results.filter((res): res is PromiseFulfilledResult<IJobOfferApiReadV3> => res.status === "fulfilled" && res.value !== null)
+    const validResults = results.filter((res): res is PromiseFulfilledResult<IJobOfferDetailApiReadV3> => res.status === "fulfilled" && res.value !== null)
 
     const foundJob = validResults.length > 0 ? validResults[0].value : null
 
@@ -833,7 +836,7 @@ export async function findJobOpportunityById(id: ObjectId, context: JobOpportuni
       throw notFound(`Aucune offre d'emploi trouvée pour l'ID: ${id.toString()}`)
     }
 
-    return validateJobOffer(foundJob, id, context)
+    return validateJobDetailOffer(foundJob, id, context)
   } catch (error) {
     if (Boom.isBoom(error)) {
       throw error
@@ -846,11 +849,11 @@ export async function findJobOpportunityById(id: ObjectId, context: JobOpportuni
   }
 }
 
-function validateJobOffer(job: IJobOfferApiReadV3, id: ObjectId, context: JobOpportunityRequestContext): IJobOfferApiReadV3 {
-  const parsedJob = zJobOfferApiReadV3.safeParse(job)
+function validateJobDetailOffer(job: IJobOfferDetailApiReadV3, id: ObjectId, context: JobOpportunityRequestContext): IJobOfferDetailApiReadV3 {
+  const parsedJob = zJobOfferDetailApiReadV3.safeParse(job)
 
   if (!parsedJob.success) {
-    const error = internal("jobOpportunity.service.ts-validateJobOffer: invalid job offer", {
+    const error = internal("jobOpportunity.service.ts-validateJobDetailOffer: invalid job offer", {
       job,
       error: parsedJob.error.format(),
       id: id.toString(),
@@ -865,7 +868,7 @@ function validateJobOffer(job: IJobOfferApiReadV3, id: ObjectId, context: JobOpp
   return parsedJob.data
 }
 
-export async function getLbaJobByIdV2AsJobOfferApi(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3 | null> {
+export async function getLbaJobByIdV2AsJobOfferApi(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferDetailApiReadV3 | null> {
   const job = await getLbaJobByIdV2AsJobResult({ id: id.toString(), caller: context?.caller })
 
   if (!job) {
@@ -876,11 +879,14 @@ export async function getLbaJobByIdV2AsJobOfferApi(id: ObjectId, context: JobOpp
     throw new Error("Job not found")
   }
 
-  const transformedJob = convertLbaRecruiterToJobOfferApi([job])[0]
+  const transformedJob = {
+    ...convertLbaRecruiterToJobOfferApi([job])[0],
+    lba_url: `${config.publicUrl}${getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job.job._id.toString())}`,
+  }
   return transformedJob
 }
 
-export async function getJobsPartnersByIdAsJobOfferApi(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3 | null> {
+export async function getJobsPartnersByIdAsJobOfferApi(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferDetailApiReadV3 | null> {
   const job = await getDbCollection("jobs_partners").findOne({ _id: id })
 
   if (!job) {
@@ -891,12 +897,15 @@ export async function getJobsPartnersByIdAsJobOfferApi(id: ObjectId, context: Jo
     throw new Error("Job not found")
   }
 
-  const transformedJob = jobsRouteApiv3Converters.convertToJobOfferApiReadV3({
-    ...job,
-    contract_type: job.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
-    apply_url: job.apply_url ?? `${config.publicUrl}/recherche?type=partner&itemId=${job._id}`,
-    apply_recipient_id: job.apply_email ? `partners_${job._id}` : null,
-  })
+  const transformedJob = {
+    ...jobsRouteApiv3Converters.convertToJobOfferApiReadV3({
+      ...job,
+      contract_type: job.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
+      apply_url: job.apply_url ?? `${config.publicUrl}/recherche?type=partner&itemId=${job._id}`,
+      apply_recipient_id: job.apply_email ? `partners_${job._id}` : null,
+    }),
+    lba_url: `${config.publicUrl}${getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id.toString())}`,
+  }
 
   return transformedJob
 }
