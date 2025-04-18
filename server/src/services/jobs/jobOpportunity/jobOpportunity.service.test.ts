@@ -4,18 +4,20 @@ import omit from "lodash-es/omit"
 import { ObjectId } from "mongodb"
 import nock from "nock"
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, RECRUITER_STATUS, TRAINING_CONTRACT_TYPE } from "shared/constants/index"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
+import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import { IRecruiter, IReferentielRome, JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models/index"
 import { IJobsPartnersOfferPrivate, INiveauDiplomeEuropeen, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import {
   jobsRouteApiv3Converters,
-  zJobOfferApiReadV3,
   zJobOfferApiWriteV3,
+  zJobOfferDetailApiReadV3,
   zJobSearchApiV3Response,
   type IJobOfferApiWriteV3,
   type IJobOfferApiWriteV3Input,
@@ -2237,8 +2239,11 @@ describe("findJobOpportunityById tests", () => {
       // Vérifier que le résultat n'est pas null
       expect(result).not.toBeNull()
 
+      // Vérifier que l'url est correcte
+      expect(result?.lba_url).toEqual(`${config.publicUrl}${getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, jobPartnerId.toString())}`)
+
       // Utiliser le schéma Zod pour valider la structure
-      const validationResult = zJobOfferApiReadV3.safeParse(result)
+      const validationResult = zJobOfferDetailApiReadV3.safeParse(result)
 
       // Si la validation échoue, afficher les erreurs pour faciliter le débogage
       if (!validationResult.success) {
@@ -2282,7 +2287,7 @@ describe("findJobOpportunityById tests", () => {
       expect(result?.apply.recipient_id).toBeNull()
 
       // Utiliser le schéma Zod pour valider la structure
-      const validationResult = zJobOfferApiReadV3.safeParse(result)
+      const validationResult = zJobOfferDetailApiReadV3.safeParse(result)
 
       // Si la validation échoue, afficher les erreurs pour faciliter le débogage
       if (!validationResult.success) {
@@ -2327,7 +2332,7 @@ describe("findJobOpportunityById tests", () => {
       expect(result?.apply.recipient_id).toBe(`partners_${originalJob._id}`)
 
       // Utiliser le schéma Zod pour valider la structure
-      const validationResult = zJobOfferApiReadV3.safeParse(result)
+      const validationResult = zJobOfferDetailApiReadV3.safeParse(result)
 
       // Si la validation échoue, afficher les erreurs pour faciliter le débogage
       if (!validationResult.success) {
@@ -2378,7 +2383,10 @@ describe("findJobOpportunityById tests", () => {
       expect(result).not.toBeNull()
 
       // Valider que le résultat correspond au schéma attendu
-      const validationResult = zJobOfferApiReadV3.safeParse(result)
+      const validationResult = zJobOfferDetailApiReadV3.safeParse(result)
+
+      // Vérifier que l'url est correcte
+      expect(result?.lba_url).toEqual(`${config.publicUrl}${getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, jobId.toString())}`)
 
       // Afficher les erreurs en cas d'échec de validation
       if (!validationResult.success) {
@@ -2429,7 +2437,7 @@ describe("findJobOpportunityById tests", () => {
       expect(result).not.toBeNull()
 
       // Vérifier que l'objet retourné correspond bien au schéma IJobOfferApiReadV3
-      const validationResult = zJobOfferApiReadV3.safeParse(result)
+      const validationResult = zJobOfferDetailApiReadV3.safeParse(result)
       expect(validationResult.success).toBe(true)
 
       // En cas d'erreur, afficher les détails
@@ -2452,7 +2460,7 @@ describe("findJobOpportunityById tests", () => {
       expect(result).not.toBeNull()
 
       // Vérifier que l'objet retourné correspond bien au schéma IJobOfferApiReadV3
-      const validationResult = zJobOfferApiReadV3.safeParse(result)
+      const validationResult = zJobOfferDetailApiReadV3.safeParse(result)
       expect(validationResult.success).toBe(true)
 
       // En cas d'erreur, afficher les détails

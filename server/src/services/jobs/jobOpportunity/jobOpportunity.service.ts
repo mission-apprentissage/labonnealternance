@@ -904,7 +904,7 @@ export async function getJobsPartnersByIdAsJobOfferApi(id: ObjectId, context: Jo
       apply_url: job.apply_url ?? `${config.publicUrl}/recherche?type=partner&itemId=${job._id}`,
       apply_recipient_id: job.apply_email ? `partners_${job._id}` : null,
     }),
-    lba_url: `${config.publicUrl}${getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id.toString())}`,
+    lba_url: `${config.publicUrl}${getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, job._id.toString())}`,
   }
 
   return transformedJob
