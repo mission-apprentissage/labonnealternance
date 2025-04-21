@@ -5,6 +5,7 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter"
 import { Metadata } from "next"
 import Link from "next/link"
 import PlausibleProvider from "next-plausible"
+import type { PropsWithChildren } from "react"
 import { setupZodErrorMap } from "shared/helpers/zodHelpers/setupZodErrorMap"
 
 import RootTemplate from "@/app/client_only_providers"
@@ -38,7 +39,7 @@ setupZodErrorMap()
 
 const lang = "fr"
 
-export default function RootLayout({ children }: { children: JSX.Element }) {
+export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html {...getHtmlAttributes({ defaultColorScheme, lang })}>
       <head>

@@ -1,7 +1,7 @@
 import { badRequest, Boom, internal, isBoom } from "@hapi/boom"
 import { captureException } from "@sentry/node"
 import { FastifyError } from "fastify"
-import { ResponseValidationError } from "fastify-type-provider-zod"
+import { ResponseSerializationError } from "fastify-type-provider-zod"
 import joi, { ValidationError } from "joi"
 import { IResError } from "shared/routes/common.routes"
 import { ZodError } from "zod"
@@ -25,9 +25,9 @@ export function boomify(rawError: FastifyError | ValidationError | Boom<unknown>
     return rawError
   }
 
-  if (rawError instanceof ResponseValidationError) {
+  if (rawError instanceof ResponseSerializationError) {
     if (config.env === "local") {
-      const zodError = new ZodError(rawError.details.errors)
+      const zodError = rawError.cause
       return internal(rawError.message, {
         validationError: zodError.format(),
       })

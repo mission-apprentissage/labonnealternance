@@ -124,9 +124,6 @@ const config = {
     apiKey: env.get("LBA_FRANCE_COMPETENCE_API_KEY").required().asString(),
     bearerToken: env.get("LBA_FRANCE_COMPETENCE_TOKEN").required().asString(),
   },
-  tco: {
-    baseUrl: "https://tables-correspondances.apprentissage.beta.gouv.fr",
-  },
   apiApprentissage: {
     baseUrl: "https://api.apprentissage.beta.gouv.fr/api",
     apiKey: env.get("LBA_API_APPRENTISSAGE_KEY").required().asString(),

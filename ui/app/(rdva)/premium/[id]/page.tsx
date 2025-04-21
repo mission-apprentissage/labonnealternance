@@ -21,10 +21,6 @@ type IPremiumEtablissement = {
   premium_activation_date: any
 }
 
-/**
- * @description Premium form component.
- * @returns {JSX.Element}
- */
 export default function PremiumParcoursup() {
   const id = useSearchParams().get("id")
   const token = useSearchParams().get("token")
