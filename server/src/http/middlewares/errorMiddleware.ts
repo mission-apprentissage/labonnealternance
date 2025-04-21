@@ -1,7 +1,7 @@
 import { badRequest, Boom, internal, isBoom } from "@hapi/boom"
 import { captureException } from "@sentry/node"
 import { FastifyError } from "fastify"
-import { ResponseSerializationError } from "fastify-type-provider-zod"
+import { hasZodFastifySchemaValidationErrors, isResponseSerializationError } from "fastify-type-provider-zod"
 import joi, { ValidationError } from "joi"
 import { IResError } from "shared/routes/common.routes"
 import { ZodError } from "zod"
@@ -25,7 +25,7 @@ export function boomify(rawError: FastifyError | ValidationError | Boom<unknown>
     return rawError
   }
 
-  if (rawError instanceof ResponseSerializationError) {
+  if (isResponseSerializationError(rawError)) {
     if (config.env === "local") {
       const zodError = rawError.cause
       return internal(rawError.message, {
@@ -36,8 +36,21 @@ export function boomify(rawError: FastifyError | ValidationError | Boom<unknown>
     return internal("Une erreur est survenue")
   }
 
+  if (hasZodFastifySchemaValidationErrors(rawError)) {
+    const zodError = new ZodError(rawError.validation.map((v) => v.params.issue))
+    return badRequest(getZodMessageError(zodError, rawError.validationContext ?? ""), {
+      validationError: {
+        code: rawError.code,
+        issues: zodError.issues,
+        name: "ZodError",
+        statusCode: rawError.statusCode,
+        validationContext: rawError.validationContext,
+      },
+    })
+  }
+
   if (rawError instanceof ZodError) {
-    return badRequest(getZodMessageError(rawError, (rawError as unknown as FastifyError).validationContext ?? ""), { validationError: rawError })
+    return badRequest(getZodMessageError(rawError, ""), { validationError: rawError })
   }
 
   // Joi validation error throw from code
