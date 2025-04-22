@@ -101,14 +101,14 @@ export default function OptOutUnsubscribe() {
   }
 
   return (
-    <Box w="100%" pt={[4, 8]} px={[1, 1, 12, 24]}>
-      <Container border="1px solid #000091" mt={8} mb={20} maxW="996px" pl={20} pr={24} py={10}>
+    <Box w="100%" pt={[4]} px={[1, 1, 12, 24]}>
+      <Container maxW="996px" pl={20} pr={24}>
         <Breadcrumb pages={[PAGES.dynamic.prdvUnsubscribeOptout({ id })]} />
         <Heading textStyle="h2" mt={5}>
           {title}
         </Heading>
         {hasBeenUnsubscribed && (
-          <Flex>
+          <Flex mb={12}>
             <Box w="40px">
               <SuccessCircle width={33} fillHexaColor="#000091" />
             </Box>
@@ -120,7 +120,7 @@ export default function OptOutUnsubscribe() {
           </Flex>
         )}
         {isQuestionSent && (
-          <Flex>
+          <Flex mb={12}>
             <Box w="40px">
               <SuccessCircle width={33} fillHexaColor="#000091" />
             </Box>
