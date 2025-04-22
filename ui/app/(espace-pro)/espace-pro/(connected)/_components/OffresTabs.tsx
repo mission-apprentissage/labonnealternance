@@ -172,6 +172,18 @@ export const OffresTabs = ({
       // isSticky: true,
       accessor: (row) => {
         const [lat, lon] = (row.geo_coordinates ?? "").split(",")
+        const cfaOptionParams =
+          user.type === AUTHTYPE.ENTREPRISE
+            ? {
+                href: `${publicConfig.baseUrl}/espace-pro/entreprise/offre/${row._id}/mise-en-relation`,
+                "aria-label": "Lien vers les mise en relations avec des centres de formations",
+              }
+            : {
+                href: `${publicConfig.baseUrl}/recherche-formation?romes=${row.rome_code}&lon=${lon}&lat=${lat}`,
+                target: "_blank",
+                rel: "noopener noreferrer",
+                "aria-label": "Lien vers les formations - nouvelle fenêtre",
+              }
         const directLink = `${publicConfig.baseUrl}${buildJobUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, row._id, row.rome_appellation_label)}`
         const isDisable = row.job_status === "Annulée" || row.job_status === "Pourvue" || row.job_status === "En attente"
         return (
@@ -262,17 +274,7 @@ export const OffresTabs = ({
                     </MenuItem>
                     {user.type !== AUTHTYPE.CFA && (
                       <MenuItem>
-                        <Link
-                          underline="hover"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          href={
-                            user.type === AUTHTYPE.ENTREPRISE
-                              ? `${publicConfig.baseUrl}/espace-pro/entreprise/offre/${row._id}/mise-en-relation`
-                              : `${publicConfig.baseUrl}/recherche-formation?romes=${row.rome_code}&lon=${lon}&lat=${lat}`
-                          }
-                          aria-label="Lien vers les formations - nouvelle fenêtre"
-                        >
+                        <Link underline="hover" {...cfaOptionParams}>
                           Voir les centres de formations
                         </Link>
                       </MenuItem>
