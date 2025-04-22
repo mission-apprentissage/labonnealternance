@@ -84,7 +84,7 @@ export const zJobOfferApiReadV3 = z.object({
 
 export type IJobOfferApiReadV3 = z.output<typeof zJobOfferApiReadV3>
 
-export const zJobOfferPartnerStatus = extensions.buildEnum(JOB_PARTNER_STATUS)
+export const zJobOfferPartnerStatus = z.object({ status: extensions.buildEnum(JOB_PARTNER_STATUS) })
 export type IJobOfferPartnerStatus = z.output<typeof zJobOfferPartnerStatus>
 
 export const zJobSearchApiV3Response = z.object({
