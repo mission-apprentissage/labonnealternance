@@ -71,7 +71,7 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
             formateur_zip_code: etablissement.formateur_zip_code,
             formateur_city: etablissement.formateur_city,
             formateur_siret: etablissement.formateur_siret,
-            linkToUnsubscribe: `${config.publicUrl}/espace-pro/form/opt-out/unsubscribe/${etablissement._id}`,
+            linkToUnsubscribe: `${config.publicUrl}/optout/unsubscribe/${etablissement._id}`,
           },
         },
       })
