@@ -9054,6 +9054,54 @@ Limite : 1 appel(s) / 1 seconde(s)
         ],
       },
     },
+    "/v3/jobs/{id}/partner-status": {
+      "get": {
+        "parameters": [
+          {
+            "description": "Identifiant unique",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "description": "Identifiant unique",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "status": {
+                      "enum": [
+                        "WILL_BE_PUBLISHED",
+                        "PUBLISHED",
+                        "NOT_PUBLISHED",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "status",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-apprentissage": [],
+          },
+        ],
+        "tags": [
+          "V3 - Jobs",
+        ],
+      },
+    },
   },
   "servers": [
     {
