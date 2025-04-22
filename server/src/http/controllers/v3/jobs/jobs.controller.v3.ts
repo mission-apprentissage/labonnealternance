@@ -1,3 +1,5 @@
+import { zRoutes } from "shared"
+
 import { getUserFromRequest } from "@/security/authenticationService"
 import { JobOpportunityRequestContext } from "@/services/jobs/jobOpportunity/JobOpportunityRequestContext"
 

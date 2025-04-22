@@ -941,7 +941,7 @@ export async function getJobPartnerStatus(id: ObjectId, context: JobOpportunityR
     if (existsInJobs) return JOB_PARTNER_STATUS.PUBLISHED
 
     const computed = await getDbCollection("computed_jobs_partners").findOne({ _id: id }, { projection: { errors: 1, business_error: 1 } })
-    if (computed) return computed.errors.length > 0 || computed.business_error.length > 0 ? JOB_PARTNER_STATUS.NOT_PUBLISHED : JOB_PARTNER_STATUS.WILL_BE_PUBLISHED
+    if (computed) return computed.errors.length > 0 || (computed.business_error?.length ?? 0) > 0 ? JOB_PARTNER_STATUS.NOT_PUBLISHED : JOB_PARTNER_STATUS.WILL_BE_PUBLISHED
 
     logger.warn(`Aucune offre d'emploi trouvée pour l'ID: ${id.toString()}`, { context })
     throw notFound(`Aucune offre d'emploi trouvée pour l'ID: ${id.toString()}`)
