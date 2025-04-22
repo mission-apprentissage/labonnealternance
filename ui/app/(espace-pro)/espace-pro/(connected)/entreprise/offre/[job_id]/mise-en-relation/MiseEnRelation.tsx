@@ -3,7 +3,7 @@ import { Box, Button, Center, Checkbox, Container, Divider, Flex, Heading, Link,
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "next/navigation"
 import { useState } from "react"
-// import { IEtablissementCatalogueProcheWithDistance } from "shared/interface/etablissement.types"
+import { IEtablissementCatalogueProcheWithDistance } from "shared/interface/etablissement.types"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
@@ -146,7 +146,7 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
         {etablissements?.length > 0 && (
           <Box p={5}>
             <Flex>
-              <Box>
+              <Box minWidth={["100%", "100%", "50%"]}>
                 <Heading fontSize="32px">Ces centres de formation pourraient vous proposer des candidats</Heading>
                 <Text fontSize="20px">
                   Les centres de formation suivants proposent des formations en lien avec votre offre et sont localisés à proximité de votre entreprise.
@@ -155,7 +155,7 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
                 </Text>
 
                 <Box mt={5}>
-                  {etablissements.map((etablissement, index) => {
+                  {etablissements.map((etablissement: IEtablissementCatalogueProcheWithDistance, index) => {
                     return (
                       <Flex borderStyle="solid" borderWidth="1px" borderColor="#000091" py={4} key={etablissement._id} mb={4} data-testid={`cfa-${index}`}>
                         <Center w="70px">
