@@ -524,6 +524,10 @@ export const PAGES = {
       getPath: () => `/espace-pro/administration/rendez-vous-apprentissage/${siret}` as string,
       title: `Détail etablissement ${siret}`,
     }),
+    prdvUnsubscribeOptout: ({ id }: { id: string }): IPage => ({
+      getPath: () => `/optout/unsubscribe/${id}` as string,
+      title: `Désinscription à l'opt out`,
+    }),
   },
   notion: {},
 } as const satisfies IPages
