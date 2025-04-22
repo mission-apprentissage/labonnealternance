@@ -1,6 +1,7 @@
 "use client"
 
-import { Box, Button, Container, Stack, Text } from "@chakra-ui/react"
+import { Box, Container, Stack, Text } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { useParams, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { IEtablissementJson } from "shared"
@@ -141,12 +142,14 @@ export default function PremiumAffelnet() {
               <SuccessCircle fillHexaColor="#00AC8C" />
               <Text fontWeight="700">Dans un délai de 4 jours ouvrés après réception de la demande par e-mail</Text>
             </Stack>
-            <Button mt={5} mr={6} variant="primary" onClick={accept}>
-              Oui, j’accepte les conditions
-            </Button>
-            <Button mt={5} variant="secondary" onClick={refuse}>
-              Non, je ne suis pas prêt
-            </Button>
+            <Box mt={5} mr={6}>
+              <Button onClick={accept}>Oui, j’accepte les conditions</Button>
+            </Box>
+            <Box mt={5}>
+              <Button priority="secondary" onClick={refuse}>
+                Non, je ne suis pas prêt
+              </Button>
+            </Box>
             <Box>
               <Text mt={5}>
                 Le service sera activé sur toutes les formations éligibles à être affichées sur Choisir son affectation après la 3e, liées à votre SIRET{" "}
