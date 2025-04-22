@@ -1,5 +1,6 @@
 "use client"
-import { Box, Button, Center, Checkbox, Container, Divider, Flex, Heading, Link, Square, Text } from "@chakra-ui/react"
+import { Box, Center, Checkbox, Container, Divider, Flex, Heading, Link, Square, Text } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "next/navigation"
 import { useState } from "react"
@@ -55,7 +56,7 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
     queryFn: () => getFormulaire(establishment_id),
   })
 
-  const [isSubmitLoading /*, setIsSubmitLoading*/] = useState(false)
+  //const [isSubmitLoading /*, setIsSubmitLoading*/] = useState(false)
 
   const { job_id } = useParams() as { job_id: string }
 
@@ -74,7 +75,12 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
     gcTime: 0,
   })
 
-  const isSubmitButtonEnabled = (etablissements ?? []).find((item) => item.checked)
+  const [checkedEtablissements, setCheckedEtablissements] = useState<IEtablissementCatalogueProcheWithDistance[]>(etablissements ?? [])
+
+  console.log("avant checkedEtablissements", checkedEtablissements)
+  const isSubmitButtonEnabled = (checkedEtablissements ?? []).find((item) => item.checked)
+
+  console.log("----", isSubmitButtonEnabled)
 
   /**
    * @description Handles all checkboxes.
@@ -82,9 +88,9 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
    * @return {void}
    */
   const checkEtablissement = (etablissement) => {
-    const etablissementUpdated = etablissements.map((item) => (etablissement._id === item._id ? { ...item, checked: !etablissement.checked } : item))
-    console.log(etablissementUpdated)
-    //setEtablissements(etablissementUpdated)
+    const etablissementUpdated = checkedEtablissements.map((item) => (etablissement._id === item._id ? { ...item, checked: !etablissement.checked } : item))
+    console.log("estab: ", etablissementUpdated)
+    setCheckedEtablissements(etablissementUpdated)
   }
 
   //   const goToEndStep = ({ withDelegation }) => {
@@ -114,26 +120,6 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
 
   //     goToEndStep({ withDelegation: true })
   //   }
-
-  /**
-   * @description On mount, gets all related "etablissements".
-   * @returns {void}
-   */
-  //   useEffect(() => {
-  //     if (geo_coordinates) {
-  //       const [latitude, longitude] = (geo_coordinates as string).split(",")
-
-  //       getRelatedEtablissementsFromRome({ rome: job?.rome_detail?.code || job?.rome_code[0], latitude: parseFloat(latitude), longitude: parseFloat(longitude), limit: 10 }).then(
-  //         (data: IEtablissementCatalogueProcheWithDistance[]) => {
-  //           const etablissementUpdated = data.map((data, index) => ({
-  //             ...data,
-  //             checked: index < 3,
-  //           }))
-  //           setEtablissements(etablissementUpdated)
-  //         }
-  //       )
-  //     }
-  //   }, [geo_coordinates])
 
   if (isFormulaireLoading || isLoading || isEtablissementLoading) return <LoadingEmptySpace label="Chargement en cours" />
 
@@ -188,17 +174,11 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
                     )
                   })}
                 </Box>
-                <Button
-                  variant="form"
-                  isActive={isSubmitButtonEnabled}
-                  isDisabled={!isSubmitButtonEnabled}
-                  isLoading={isSubmitLoading}
-                  onClick={submit}
-                  my={1}
-                  data-testid="submit-delegation"
-                >
-                  Envoyer ma demande
-                </Button>
+                <Box my={1}>
+                  <Button disabled={!isSubmitButtonEnabled} onClick={submit} data-testid="submit-delegation">
+                    Envoyer ma demande
+                  </Button>
+                </Box>
               </Box>
               <InfoDelegation />
             </Flex>
