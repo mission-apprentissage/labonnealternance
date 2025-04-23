@@ -5,6 +5,7 @@ import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellow
 import { processKelio } from "@/jobs/offrePartenaire/kelio/processKelio"
 import { processMeteojob } from "@/jobs/offrePartenaire/meteojob/processMeteojob"
 import { processMonster } from "@/jobs/offrePartenaire/monster/processMonster"
+import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
 import { processRhAlternance } from "@/jobs/offrePartenaire/rh-alternance/processRhAlternance"
 
 const timings = {
@@ -54,10 +55,10 @@ export const importers: Record<string, CronDef> = {
     maxRuntimeInMinutes: 30,
     tag: "slave",
   },
-  // "Import PASS": {
-  //   cron_string: timings.import_source,
-  //   handler: processPass,
-  //   checkinMargin: 60,
-  //   maxRuntimeInMinutes: 30,
-  // },
+  "Import PASS": {
+    cron_string: timings.import_source,
+    handler: processPass,
+    checkinMargin: 10,
+    maxRuntimeInMinutes: 30,
+  },
 }

@@ -86,7 +86,7 @@ services:
       resources:
         limits:
           memory: 768m
-      replicas: 2
+      replicas: 4
     env_file: .env_ui
     environment:
       NODE_OPTIONS: "--max_old_space_size=768"

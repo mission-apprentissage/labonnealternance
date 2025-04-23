@@ -260,6 +260,37 @@ export const entrepriseIsNotMyOpco = async ({ reason, userId, requestedBy }: { r
   }
 }
 
+export const sendDeactivatedRecruteurMail = async ({
+  last_name: last_name,
+  first_name: first_name,
+  email: email,
+  phone: phone,
+  establishment_siret,
+  establishment_raison_sociale,
+  errorMessage,
+}) => {
+  await mailer.sendEmail({
+    to: email,
+    subject: "Votre compte a été désactivé sur La bonne alternance",
+    template: getStaticFilePath("./templates/mail-compte-desactive.mjml.ejs"),
+    data: {
+      images: {
+        accountDisabled: `${config.publicUrl}/images/image-compte-desactive.png?raw=true`,
+        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+        logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+      },
+      last_name: removeHtmlTagsFromString(last_name),
+      first_name: removeHtmlTagsFromString(first_name),
+      reason: removeHtmlTagsFromString(errorMessage),
+      email,
+      siret: removeHtmlTagsFromString(establishment_siret),
+      raison_sociale: removeHtmlTagsFromString(establishment_raison_sociale),
+      phone: removeHtmlTagsFromString(phone),
+      emailSupport: "mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Compte%20pro%20non%20validé",
+    },
+  })
+}
+
 export const deactivateUserRole = async ({ reason, userId, requestedBy }: { reason: string; userId: ObjectId; requestedBy: IUserWithAccount }) => {
   const user = await getDbCollection("userswithaccounts").findOne({ _id: userId })
   if (!user) throw badRequest()
@@ -281,25 +312,14 @@ export const deactivateUserRole = async ({ reason, userId, requestedBy }: { reas
   const { email, last_name, first_name, phone } = user
   const { siret, raison_sociale } = organization
   // send email to user to notify him his account has been disabled
-  await mailer.sendEmail({
-    to: email,
-    subject: "Votre compte a été désactivé sur La bonne alternance",
-    template: getStaticFilePath("./templates/mail-compte-desactive.mjml.ejs"),
-    data: {
-      images: {
-        accountDisabled: `${config.publicUrl}/images/image-compte-desactive.png?raw=true`,
-        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-        logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
-      },
-      last_name: removeHtmlTagsFromString(last_name),
-      first_name: removeHtmlTagsFromString(first_name),
-      reason: removeHtmlTagsFromString(reason),
-      email,
-      siret: removeHtmlTagsFromString(siret),
-      raison_sociale: removeHtmlTagsFromString(raison_sociale),
-      phone: removeHtmlTagsFromString(phone),
-      emailSupport: "mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Compte%20pro%20non%20validé",
-    },
+  await sendDeactivatedRecruteurMail({
+    email,
+    last_name,
+    first_name,
+    establishment_siret: siret,
+    establishment_raison_sociale: raison_sociale,
+    phone,
+    errorMessage: reason,
   })
 
   if (updatedRole.authorized_type === AccessEntityType.ENTREPRISE) {
