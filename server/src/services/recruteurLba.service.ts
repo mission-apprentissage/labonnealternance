@@ -2,6 +2,7 @@ import { badRequest, internal, notFound } from "@hapi/boom"
 import { Document, Filter, ObjectId } from "mongodb"
 import { ERecruteurLbaUpdateEventType, IApplication, IRecruteurLbaUpdateEvent, JobCollectionName } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { IJobsPartnersOfferPrivate, IJobsPartnersRecruteurAlgoPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { ILbaCompanyForContactUpdate } from "shared/routes/updateLbaCompany.routes"
 
@@ -264,13 +265,18 @@ const transformCompanies = ({
 type IRecruteursLbaSearchParams = {
   geo: { latitude: number; longitude: number; radius: number } | null
   romes: string[] | null
+  opco: OPCOS_LABEL | null
 }
 
-export const getRecruteursLbaFromDB = async ({ geo, romes }: IRecruteursLbaSearchParams): Promise<IJobsPartnersOfferPrivate[]> => {
+export const getRecruteursLbaFromDB = async ({ geo, romes, opco }: IRecruteursLbaSearchParams): Promise<IJobsPartnersOfferPrivate[]> => {
   const query: Filter<IJobsPartnersOfferPrivate> = { partner_label: LBA_ITEM_TYPE.RECRUTEURS_LBA }
 
   if (romes) {
     query.offer_rome_codes = { $in: romes }
+  }
+
+  if (opco) {
+    query.workplace_opco = opco
   }
 
   const filterStages: Document[] =
