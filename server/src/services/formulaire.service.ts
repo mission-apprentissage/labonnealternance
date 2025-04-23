@@ -37,17 +37,7 @@ export interface IOffreExtended extends IJob {
   supprimer: string
 }
 const romeDetailAndCandidatureCountAggregateStage = [
-  {
-    $addFields: {
-      jobs: {
-        $cond: {
-          if: { $isArray: "$jobs" },
-          then: "$jobs",
-          else: [],
-        },
-      },
-    },
-  },
+  { $addFields: { jobs: { $cond: { if: { $isArray: "$jobs" }, then: "$jobs", else: [] } } } },
   {
     $facet: {
       emptyJobs: [{ $match: { jobs: { $eq: [] } } }],
@@ -58,15 +48,7 @@ const romeDetailAndCandidatureCountAggregateStage = [
           $lookup: {
             from: "referentielromes",
             let: { rome_code: { $arrayElemAt: ["$jobs.rome_code", 0] } },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $eq: ["$rome.code_rome", "$$rome_code"],
-                  },
-                },
-              },
-            ],
+            pipeline: [{ $match: { $expr: { $eq: ["$rome.code_rome", "$$rome_code"] } } }],
             as: "referentielrome",
           },
         },
@@ -81,93 +63,26 @@ const romeDetailAndCandidatureCountAggregateStage = [
             as: "applications",
           },
         },
-        {
-          $set: {
-            "jobs.candidatures": { $size: "$applications" },
-          },
-        },
-        {
-          $group: {
-            _id: "$_id",
-            recruiters: { $first: "$$ROOT" },
-            jobs: {
-              $push: {
-                $mergeObjects: ["$jobs"],
-              },
-            },
-          },
-        },
-        {
-          $replaceRoot: {
-            newRoot: {
-              $mergeObjects: ["$recruiters", { jobs: "$jobs" }],
-            },
-          },
-        },
-        {
-          $project: {
-            referentielrome: 0,
-            "jobs.rome_detail._id": 0,
-            "jobs.rome_detail.couple_appellation_rome": 0,
-            "jobs.jobIdStr": 0,
-            applications: 0,
-          },
-        },
+        { $set: { "jobs.candidatures": { $size: "$applications" } } },
+        { $group: { _id: "$_id", recruiters: { $first: "$$ROOT" }, jobs: { $push: { $mergeObjects: ["$jobs"] } } } },
+        { $replaceRoot: { newRoot: { $mergeObjects: ["$recruiters", { jobs: "$jobs" }] } } },
+        { $project: { referentielrome: 0, "jobs.rome_detail._id": 0, "jobs.rome_detail.couple_appellation_rome": 0, "jobs.jobIdStr": 0, applications: 0 } },
       ],
     },
   },
-  {
-    $project: {
-      result: {
-        $cond: {
-          if: { $gt: [{ $size: "$emptyJobs" }, 0] },
-          then: { $arrayElemAt: ["$emptyJobs", 0] },
-          else: { $arrayElemAt: ["$nonEmptyJobs", 0] },
-        },
-      },
-    },
-  },
-  {
-    $replaceRoot: {
-      newRoot: "$result",
-    },
-  },
+  { $project: { result: { $cond: { if: { $gt: [{ $size: "$emptyJobs" }, 0] }, then: { $arrayElemAt: ["$emptyJobs", 0] }, else: { $arrayElemAt: ["$nonEmptyJobs", 0] } } } } },
+  { $replaceRoot: { newRoot: "$result" } },
 ]
 
 // étape d'aggragation mongo permettant de récupérer le rome_detail correspondant dans chaque job d'un recruiter
 export const romeDetailAggregateStages = [
-  {
-    $unwind: { path: "$jobs" },
-  },
-  {
-    $lookup: {
-      from: "referentielromes",
-      localField: "jobs.rome_code.0",
-      foreignField: "rome.code_rome",
-      as: "referentielrome",
-    },
-  },
-  {
-    $unwind: { path: "$referentielrome" },
-  },
-  {
-    $set: { "jobs.rome_detail": "$referentielrome" },
-  },
-  {
-    $group: {
-      _id: "$_id",
-      recruiters: {
-        $first: "$$ROOT",
-      },
-      jobs: { $push: "$jobs" },
-    },
-  },
-  {
-    $replaceRoot: { newRoot: { $mergeObjects: ["$recruiters", { jobs: "$jobs" }] } },
-  },
-  {
-    $project: { referentielrome: 0, "jobs.rome_detail._id": 0, "jobs.rome_detail.couple_appellation_rome": 0 },
-  },
+  { $unwind: { path: "$jobs" } },
+  { $lookup: { from: "referentielromes", localField: "jobs.rome_code.0", foreignField: "rome.code_rome", as: "referentielrome" } },
+  { $unwind: { path: "$referentielrome" } },
+  { $set: { "jobs.rome_detail": "$referentielrome" } },
+  { $group: { _id: "$_id", recruiters: { $first: "$$ROOT" }, jobs: { $push: "$jobs" } } },
+  { $replaceRoot: { newRoot: { $mergeObjects: ["$recruiters", { jobs: "$jobs" }] } } },
+  { $project: { referentielrome: 0, "jobs.rome_detail._id": 0, "jobs.rome_detail.couple_appellation_rome": 0 } },
 ]
 
 /**
@@ -207,15 +122,7 @@ export const getFormulaires = async (query: Filter<IRecruiter>, select: object, 
       : await response.toArray()
   const total = await getDbCollection("recruiters").countDocuments(query)
   const number_of_page = limit ? Math.ceil(total / limit) : undefined
-  return {
-    pagination: {
-      page,
-      result_per_page: limit,
-      number_of_page,
-      total,
-    },
-    data,
-  }
+  return { pagination: { page, result_per_page: limit, number_of_page, total }, data }
 }
 
 const isAuthorizedToPublishJob = async ({ userId, entrepriseId }: { userId: ObjectId; entrepriseId: ObjectId }) => {
@@ -348,23 +255,11 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
 
   const formations = await getCatalogueFormations(
     {
-      $or: [
-        {
-          etablissement_gestionnaire_id: { $in: etablissementCatalogueIds },
-        },
-        {
-          etablissement_formateur_id: { $in: etablissementCatalogueIds },
-        },
-      ],
+      $or: [{ etablissement_gestionnaire_id: { $in: etablissementCatalogueIds } }, { etablissement_formateur_id: { $in: etablissementCatalogueIds } }],
       etablissement_gestionnaire_courriel: { $nin: [null, ""] },
       catalogue_published: true,
     },
-    {
-      etablissement_gestionnaire_courriel: 1,
-      etablissement_formateur_siret: 1,
-      etablissement_gestionnaire_id: 1,
-      etablissement_formateur_id: 1,
-    }
+    { etablissement_gestionnaire_courriel: 1, etablissement_formateur_siret: 1, etablissement_gestionnaire_id: 1, etablissement_formateur_id: 1 }
   )
 
   await Promise.all(
@@ -409,24 +304,14 @@ export const getFormulaire = async (query: Filter<IRecruiter>): Promise<IRecruit
 
 export const getFormulaireWithRomeDetail = async (query: Filter<IRecruiter>): Promise<IRecruiter | null> => {
   const recruiterWithRomeDetail = (await getDbCollection("recruiters")
-    .aggregate([
-      {
-        $match: query,
-      },
-      ...romeDetailAggregateStages,
-    ])
+    .aggregate([{ $match: query }, ...romeDetailAggregateStages])
     .toArray()) as IRecruiter[]
 
   return recruiterWithRomeDetail.length ? recruiterWithRomeDetail[0] : await getFormulaire(query)
 }
 export const getFormulaireWithRomeDetailAndApplicationCount = async (query: Filter<IRecruiter>): Promise<IRecruiterWithApplicationCount | null> => {
   const recruiterWithRomeDetailAndApplicationCount = (await getDbCollection("recruiters")
-    .aggregate([
-      {
-        $match: query,
-      },
-      ...romeDetailAndCandidatureCountAggregateStage,
-    ])
+    .aggregate([{ $match: query }, ...romeDetailAndCandidatureCountAggregateStage])
     .toArray()) as IRecruiterWithApplicationCount[]
 
   return recruiterWithRomeDetailAndApplicationCount.length ? recruiterWithRomeDetailAndApplicationCount[0] : null
@@ -492,6 +377,7 @@ export const archiveFormulaireByEstablishmentId = async (id: IRecruiter["establi
   if (!recruiter) {
     throw internal("Recruiter not found")
   }
+
   await archiveFormulaire(recruiter)
 }
 
@@ -541,12 +427,7 @@ export async function getOffre(id: string | ObjectId) {
 export async function getOffreWithRomeDetail(id: string | ObjectId) {
   // return a Document type incompatible, to be checked
   const recruiter = (await getDbCollection("recruiters")
-    .aggregate([
-      {
-        $match: { "jobs._id": new ObjectId(id) },
-      },
-      ...romeDetailAggregateStages,
-    ])
+    .aggregate([{ $match: { "jobs._id": new ObjectId(id) } }, ...romeDetailAggregateStages])
     .toArray()) as IRecruiter[]
 
   return recruiter.length ? recruiter[0] : null
@@ -577,15 +458,7 @@ export async function createOffre(establishment_id: IRecruiter["establishment_id
  * @returns {Promise<IRecruiter>}
  */
 export async function updateOffre(id: string | ObjectId, payload: UpdateFilter<IJob>): Promise<IRecruiter> {
-  const recruiter = await getDbCollection("recruiters").findOneAndUpdate(
-    { "jobs._id": id },
-    {
-      $set: {
-        "jobs.$": payload,
-      },
-    },
-    { returnDocument: "after" }
-  )
+  const recruiter = await getDbCollection("recruiters").findOneAndUpdate({ "jobs._id": id }, { $set: { "jobs.$": payload } }, { returnDocument: "after" })
   if (!recruiter) {
     throw internal("Recruiter not found")
   }
@@ -607,9 +480,7 @@ export const patchOffre = async (id: IJob["_id"], payload: Partial<IJob>): Promi
 
   const recruiter = await getDbCollection("recruiters").findOneAndUpdate(
     { "jobs._id": id },
-    {
-      $set: { ...fields, "jobs.$.job_update_date": new Date(), updatedAt: new Date() },
-    },
+    { $set: { ...fields, "jobs.$.job_update_date": new Date(), updatedAt: new Date() } },
     { returnDocument: "after" }
   )
 
@@ -624,43 +495,11 @@ export const updateJobDelegation = async (jobId: IJob["_id"], delegation: IDeleg
   const now = new Date()
   await getDbCollection("recruiters").bulkWrite(
     [
-      {
-        updateOne: {
-          filter: { "jobs._id": jobId },
-          update: {
-            $set: {
-              updatedAt: now,
-              "jobs.$.job_update_date": now,
-            },
-          },
-        },
-      },
-      {
-        updateOne: {
-          filter: { "jobs._id": jobId },
-          update: {
-            $pull: {
-              "jobs.$.delegations": {
-                siret_code: delegation.siret_code,
-              },
-            },
-          },
-        },
-      },
-      {
-        updateOne: {
-          filter: { "jobs._id": jobId },
-          update: {
-            $push: {
-              "jobs.$.delegations": delegation,
-            },
-          },
-        },
-      },
+      { updateOne: { filter: { "jobs._id": jobId }, update: { $set: { updatedAt: now, "jobs.$.job_update_date": now } } } },
+      { updateOne: { filter: { "jobs._id": jobId }, update: { $pull: { "jobs.$.delegations": { siret_code: delegation.siret_code } } } } },
+      { updateOne: { filter: { "jobs._id": jobId }, update: { $push: { "jobs.$.delegations": delegation } } } },
     ],
-    {
-      ordered: true,
-    }
+    { ordered: true }
   )
 }
 
@@ -670,15 +509,7 @@ export const updateJobDelegation = async (jobId: IJob["_id"], delegation: IDeleg
  * @returns {Promise<boolean>}
  */
 export const provideOffre = async (id: IJob["_id"]): Promise<boolean> => {
-  await getDbCollection("recruiters").findOneAndUpdate(
-    { "jobs._id": id },
-    {
-      $set: {
-        "jobs.$.job_status": JOB_STATUS.POURVUE,
-        "jobs.$.job_update_date": new Date(),
-      },
-    }
-  )
+  await getDbCollection("recruiters").findOneAndUpdate({ "jobs._id": id }, { $set: { "jobs.$.job_status": JOB_STATUS.POURVUE, "jobs.$.job_update_date": new Date() } })
   return true
 }
 
@@ -691,13 +522,7 @@ export const cancelOffre = async (id: IJob["_id"]): Promise<boolean> => {
   const now = new Date()
   await getDbCollection("recruiters").findOneAndUpdate(
     { "jobs._id": id },
-    {
-      $set: {
-        "jobs.$.job_status": JOB_STATUS.ANNULEE,
-        "jobs.$.job_update_date": now,
-        "jobs.$.job_expiration_date": now,
-      },
-    }
+    { $set: { "jobs.$.job_status": JOB_STATUS.ANNULEE, "jobs.$.job_update_date": now, "jobs.$.job_expiration_date": now } }
   )
   return true
 }
@@ -734,11 +559,7 @@ export const extendOffre = async (id: IJob["_id"]): Promise<IJob> => {
   const recruiter = await getDbCollection("recruiters").findOneAndUpdate(
     { "jobs._id": id },
     {
-      $set: {
-        "jobs.$.job_expiration_date": addExpirationPeriod(dayjs()).toDate(),
-        "jobs.$.job_last_prolongation_date": now,
-        "jobs.$.job_update_date": now,
-      },
+      $set: { "jobs.$.job_expiration_date": addExpirationPeriod(dayjs()).toDate(), "jobs.$.job_last_prolongation_date": now, "jobs.$.job_update_date": now },
       $inc: { "jobs.$.job_prolongation_count": 1 },
     },
     { returnDocument: "after" }
@@ -756,12 +577,7 @@ export const extendOffre = async (id: IJob["_id"]): Promise<IJob> => {
 const activateAndExtendOffre = async (id: IJob["_id"]): Promise<IJob> => {
   const recruiter = await getDbCollection("recruiters").findOneAndUpdate(
     { "jobs._id": id },
-    {
-      $set: {
-        "jobs.$[x].job_expiration_date": addExpirationPeriod(dayjs()).toDate(),
-        "jobs.$[x].job_status": JOB_STATUS.ACTIVE,
-      },
-    },
+    { $set: { "jobs.$[x].job_expiration_date": addExpirationPeriod(dayjs()).toDate(), "jobs.$[x].job_status": JOB_STATUS.ACTIVE } },
     { arrayFilters: [{ "x._id": id }], returnDocument: "after" }
   )
   if (!recruiter) {
@@ -822,10 +638,7 @@ export const getJobWithRomeDetail = async (id: string | ObjectId): Promise<IJobW
 
   if (!referentielRome) return null
 
-  return {
-    ...job,
-    rome_detail: referentielRome,
-  }
+  return { ...job, rome_detail: referentielRome }
 }
 
 const getJobOrigin = async (recruiter: IRecruiter) => {
@@ -847,10 +660,7 @@ export async function sendDelegationMailToCFA(email: string, offre: IJob, recrui
     subject: `Une entreprise recrute dans votre domaine`,
     template: getStaticFilePath("./templates/mail-cfa-delegation.mjml.ejs"),
     data: {
-      images: {
-        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-        logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
-      },
+      images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`, logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true` },
       enterpriseName: recruiter.establishment_raison_sociale,
       jobName: offre.rome_appellation_label,
       contractType: (offre.job_type ?? []).join(", "),
@@ -880,10 +690,7 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, co
     subject: is_delegated ? `Votre offre d'alternance pour ${establishmentTitle} est publiée` : `Votre offre d'alternance est publiée`,
     template: getStaticFilePath("./templates/mail-nouvelle-offre.mjml.ejs"),
     data: {
-      images: {
-        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-        logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
-      },
+      images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`, logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true` },
       nom: removeHtmlTagsFromString(is_delegated ? contactCFA?.last_name : last_name),
       prenom: removeHtmlTagsFromString(is_delegated ? contactCFA?.first_name : first_name),
       raison_sociale: establishmentTitle,
@@ -952,10 +759,7 @@ const filterRomeDetails = (romeDetails, competencesRome) => {
 
               // Filter items in the category based on the map created above
               const filteredItems = category.items.filter((item) => competencesMap.has(generateKey(item)))
-              return {
-                libelle: category.libelle,
-                items: filteredItems,
-              }
+              return { libelle: category.libelle, items: filteredItems }
             }
           })
           // filter undefined if competencesCategory not found

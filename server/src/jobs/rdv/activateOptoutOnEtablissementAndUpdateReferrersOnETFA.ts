@@ -3,6 +3,7 @@ import { referrers } from "shared/constants/referers"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { createRdvaOptOutUnsubscribePageLink } from "@/services/appLinks.service"
 
 import { logger } from "../../common/logger"
 import config from "../../config"
@@ -53,6 +54,7 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
       ])
 
       if (!etablissement.gestionnaire_email) return
+      if (!etablissement.gestionnaire_siret) return
       // Send email
       await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
@@ -71,7 +73,7 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
             formateur_zip_code: etablissement.formateur_zip_code,
             formateur_city: etablissement.formateur_city,
             formateur_siret: etablissement.formateur_siret,
-            linkToUnsubscribe: `${config.publicUrl}/espace-pro/form/opt-out/unsubscribe/${etablissement._id}`,
+            linkToUnsubscribe: createRdvaOptOutUnsubscribePageLink(etablissement.gestionnaire_email, etablissement.gestionnaire_siret, etablissement._id.toString()),
           },
         },
       })
