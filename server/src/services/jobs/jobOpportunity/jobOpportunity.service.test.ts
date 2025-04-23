@@ -3,7 +3,7 @@ import { IApiAlternanceTokenData } from "api-alternance-sdk"
 import omit from "lodash-es/omit"
 import { ObjectId } from "mongodb"
 import nock from "nock"
-import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, RECRUITER_STATUS, TRAINING_CONTRACT_TYPE } from "shared/constants/index"
+import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, OPCOS_LABEL, RECRUITER_STATUS, TRAINING_CONTRACT_TYPE } from "shared/constants/index"
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
@@ -228,6 +228,7 @@ describe("findJobsOpportunities", () => {
         radius: 30,
         romes: ["M1602"],
         rncp: null,
+        opco: null,
       },
       new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
     )
@@ -307,6 +308,7 @@ describe("findJobsOpportunities", () => {
         radius: 30,
         romes: null,
         rncp: null,
+        opco: null,
       },
       new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
     )
@@ -395,6 +397,7 @@ describe("findJobsOpportunities", () => {
         radius: 30,
         romes: ["M1602"],
         rncp: null,
+        opco: null,
       },
       new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
     )
@@ -467,6 +470,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           rncp: "RNCP37098",
           romes: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -532,6 +536,7 @@ describe("findJobsOpportunities", () => {
             radius: 30,
             rncp: "RNCP37098",
             romes: null,
+            opco: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
@@ -553,6 +558,7 @@ describe("findJobsOpportunities", () => {
             radius: 30,
             rncp: "RNCP30000",
             romes: null,
+            opco: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
@@ -576,6 +582,7 @@ describe("findJobsOpportunities", () => {
             radius: 30,
             rncp: "RNCP9852",
             romes: null,
+            opco: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
@@ -606,6 +613,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           rncp: "RNCP13620",
           romes: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -678,6 +686,7 @@ describe("findJobsOpportunities", () => {
         radius: 30,
         romes: ["M1602"],
         rncp: "RNCP37098",
+        opco: null,
       },
       new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
     )
@@ -782,6 +791,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -800,6 +810,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -813,6 +824,7 @@ describe("findJobsOpportunities", () => {
           radius: 2,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -864,6 +876,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -932,6 +945,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -980,6 +994,7 @@ describe("findJobsOpportunities", () => {
             romes: ["M1602"],
             target_diploma_level: "4",
             rncp: null,
+            opco: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
@@ -1034,6 +1049,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1074,6 +1090,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["C1110"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1092,6 +1109,7 @@ describe("findJobsOpportunities", () => {
           radius: 1,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1132,6 +1150,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1195,6 +1214,7 @@ describe("findJobsOpportunities", () => {
             radius: 30,
             romes: ["M1602"],
             rncp: null,
+            opco: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
@@ -1263,6 +1283,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1302,6 +1323,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1336,6 +1358,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1356,6 +1379,7 @@ describe("findJobsOpportunities", () => {
           radius: 1,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1384,6 +1408,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1415,6 +1440,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1448,6 +1474,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1488,6 +1515,7 @@ describe("findJobsOpportunities", () => {
             romes: ["M1602"],
             target_diploma_level: "3",
             rncp: null,
+            opco: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
@@ -1539,6 +1567,7 @@ describe("findJobsOpportunities", () => {
             radius: 30,
             romes: ["D1104"],
             rncp: null,
+            opco: null,
             partners_to_exclude: [JOBPARTNERS_LABEL.HELLOWORK],
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
@@ -1558,6 +1587,7 @@ describe("findJobsOpportunities", () => {
             radius: 30,
             romes: ["D1104"],
             rncp: null,
+            opco: null,
             partners_to_exclude: [JOBPARTNERS_LABEL.RH_ALTERNANCE],
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
@@ -1575,6 +1605,7 @@ describe("findJobsOpportunities", () => {
             radius: 30,
             romes: ["D1104"],
             rncp: null,
+            opco: null,
             partners_to_exclude: [JOBPARTNERS_LABEL.RH_ALTERNANCE, JOBPARTNERS_LABEL.HELLOWORK],
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
@@ -1582,6 +1613,107 @@ describe("findJobsOpportunities", () => {
 
         expect.soft(results.jobs).toHaveLength(1)
         expect.soft(results.jobs[0].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA)
+      })
+    })
+
+    describe("when filtered by opco", () => {
+      const ctx = new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
+
+      beforeEach(async () => {
+        await getDbCollection("jobs_partners").deleteMany({})
+        await getDbCollection("recruiters").deleteMany({})
+
+        await getDbCollection("jobs_partners").insertMany([
+          generateJobsPartnersOfferPrivate({
+            offer_rome_codes: ["M1602"],
+            workplace_geopoint: parisFixture.centre,
+            offer_target_diploma: { european: "4", label: "BP, Bac, autres formations niveau (Bac)" },
+            partner_job_id: "job-id-1",
+            workplace_opco: OPCOS_LABEL.AFDAS,
+          }),
+          generateJobsPartnersOfferPrivate({
+            offer_rome_codes: ["M1602"],
+            workplace_geopoint: parisFixture.centre,
+            offer_target_diploma: { european: "4", label: "BP, Bac, autres formations niveau (Bac)" },
+            partner_job_id: "job-id-2",
+            workplace_opco: OPCOS_LABEL.AFDAS,
+          }),
+          generateJobsPartnersOfferPrivate({
+            offer_rome_codes: ["M1602"],
+            workplace_geopoint: parisFixture.centre,
+            offer_target_diploma: { european: "4", label: "BP, Bac, autres formations niveau (Bac)" },
+            partner_job_id: "job-id-3",
+            workplace_opco: OPCOS_LABEL.AKTO,
+          }),
+          generateJobsPartnersOfferPrivate({
+            offer_rome_codes: ["M1602"],
+            workplace_geopoint: parisFixture.centre,
+            offer_target_diploma: { european: "4", label: "BP, Bac, autres formations niveau (Bac)" },
+            partner_job_id: "job-id-4",
+            workplace_opco: OPCOS_LABEL.AKTO,
+          }),
+        ])
+      })
+
+      it("should return only jobs for the requested opco", async () => {
+        const resA = await findJobsOpportunities(
+          {
+            longitude: parisFixture.centre.coordinates[0],
+            latitude: parisFixture.centre.coordinates[1],
+            radius: 30,
+            romes: ["M1602"],
+            rncp: null,
+            opco: OPCOS_LABEL.AFDAS,
+          },
+          ctx
+        )
+        expect(resA.jobs).toHaveLength(2)
+        expect(resA.jobs.every((j) => j.workplace?.domain.opco === OPCOS_LABEL.AFDAS)).toBe(true)
+
+        const resB = await findJobsOpportunities(
+          {
+            longitude: parisFixture.centre.coordinates[0],
+            latitude: parisFixture.centre.coordinates[1],
+            radius: 30,
+            romes: ["M1602"],
+            rncp: null,
+            opco: OPCOS_LABEL.AKTO,
+          },
+          ctx
+        )
+        expect(resB.jobs).toHaveLength(2)
+        expect(resB.jobs.every((j) => j.workplace?.domain.opco === OPCOS_LABEL.AKTO)).toBe(true)
+      })
+
+      it("should return all jobs when opco is null", async () => {
+        const res = await findJobsOpportunities(
+          {
+            longitude: parisFixture.centre.coordinates[0],
+            latitude: parisFixture.centre.coordinates[1],
+            radius: 30,
+            romes: ["M1602"],
+            rncp: null,
+            opco: null,
+          },
+          ctx
+        )
+        expect(res.jobs).toHaveLength(4)
+      })
+
+      it("should return no jobs for an unknown opco", async () => {
+        // on cast pour satisfaire le type, mais on s'attend à rien
+        const res = await findJobsOpportunities(
+          {
+            longitude: parisFixture.centre.coordinates[0],
+            latitude: parisFixture.centre.coordinates[1],
+            radius: 30,
+            romes: ["M1602"],
+            rncp: null,
+            opco: "UNKNOWN_OPCO" as OPCOS_LABEL,
+          },
+          ctx
+        )
+        expect(res.jobs).toHaveLength(0)
       })
     })
   })
@@ -1603,6 +1735,7 @@ describe("findJobsOpportunities", () => {
             radius: 30,
             romes: ["M1602"],
             rncp: null,
+            opco: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
@@ -1630,6 +1763,7 @@ describe("findJobsOpportunities", () => {
           radius: 100,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1672,6 +1806,7 @@ describe("findJobsOpportunities", () => {
             romes: ["M1602"],
             target_diploma_level,
             rncp: null,
+            opco: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
@@ -1740,6 +1875,7 @@ describe("findJobsOpportunities", () => {
           radius: 100,
           romes: ["M1602"],
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1838,6 +1974,7 @@ describe("findJobsOpportunities", () => {
           radius: 30,
           romes: null,
           rncp: null,
+          opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )

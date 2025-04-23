@@ -5708,10 +5708,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tsconfig/node20@npm:^20.1.5":
-  version: 20.1.5
-  resolution: "@tsconfig/node20@npm:20.1.5"
-  checksum: 6d689785f7b6ffd09d2cd0565290235ddc650932f6c110701dd38732b3c0b57ba039a3663268ae4a16b855d55ec2fbd48a53910e5a5fc7f196caaa4074dd0a53
+"@tsconfig/node22@npm:^22.0.1":
+  version: 22.0.1
+  resolution: "@tsconfig/node22@npm:22.0.1"
+  checksum: da42f21f1b1f8e88d584fae44bca19514ea5b8eca9a60e8b10ecbabc8db5f4067259979ceea3798c16ae443b9c564268c00215093a7230948f29f950f33dd585
   languageName: node
   linkType: hard
 
@@ -19596,7 +19596,7 @@ __metadata:
   dependencies:
     "@asteasolutions/zod-to-openapi": ^7.3.0
     "@fastify/swagger": ^9.5.0
-    "@tsconfig/node20": ^20.1.5
+    "@tsconfig/node22": ^22.0.1
     "@types/node": ^22.14.1
     bson: ^6.10.3
     change-case: 5.4.4

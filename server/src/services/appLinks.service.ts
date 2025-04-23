@@ -220,7 +220,7 @@ export function createRdvaPremiumAffelnetPageLink(email: string, siret: string, 
     }
   )
 
-  return `${config.publicUrl}/espace-pro/form/premium/affelnet/${etablissementId}?token=${encodeURIComponent(token)}`
+  return `${config.publicUrl}/premium/affelnet/${etablissementId}?token=${encodeURIComponent(token)}`
 }
 
 /**
@@ -257,7 +257,7 @@ export function createRdvaPremiumParcoursupPageLink(email: string, siret: string
     }
   )
 
-  return `${config.publicUrl}/espace-pro/form/premium/${etablissementId}?token=${encodeURIComponent(token)}`
+  return `${config.publicUrl}/premium/${etablissementId}?token=${encodeURIComponent(token)}`
 }
 
 /**
@@ -286,7 +286,7 @@ export function createRdvaOptOutUnsubscribePageLink(email: string, siret: string
       expiresIn: "30d",
     }
   )
-  return `${config.publicUrl}/espace-pro/form/opt-out/unsubscribe/${etablissementId}?token=${encodeURIComponent(token)}`
+  return `${config.publicUrl}/optout/unsubscribe/${etablissementId}?token=${encodeURIComponent(token)}`
 }
 
 /**

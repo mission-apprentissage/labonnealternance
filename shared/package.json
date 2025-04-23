@@ -45,7 +45,7 @@
     "zod-mongodb-schema": "^1.0.2"
   },
   "devDependencies": {
-    "@tsconfig/node20": "^20.1.5",
+    "@tsconfig/node22": "^22.0.1",
     "@types/node": "^22.14.1",
     "eslint-plugin-zod": "^1.4.0",
     "mongodb": "^6.15.0",

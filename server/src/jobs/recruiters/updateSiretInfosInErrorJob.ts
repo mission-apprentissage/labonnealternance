@@ -1,14 +1,15 @@
 import { internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
-import { JOB_STATUS } from "shared"
-import { ENTREPRISE } from "shared/constants/index"
-import { CFA, RECRUITER_STATUS } from "shared/constants/recruteur"
+import { IBusinessError, IRecruiter, JOB_STATUS } from "shared"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { upsertEntrepriseData } from "@/services/organization.service"
+import { sendDeactivatedRecruteurMail } from "@/services/roleManagement.service"
 import { setEntrepriseInError } from "@/services/userRecruteur.service"
 
 import { logger } from "../../common/logger"
@@ -20,9 +21,7 @@ import { archiveFormulaire, sendMailNouvelleOffre, updateFormulaire } from "../.
 
 const updateEntreprisesInfosInError = async () => {
   const entreprises = await getDbCollection("entreprises")
-    .find({
-      $expr: { $in: [{ $arrayElemAt: ["$status.status", -1] }, [EntrepriseStatus.ERROR, EntrepriseStatus.A_METTRE_A_JOUR]] },
-    })
+    .find({ $expr: { $in: [{ $arrayElemAt: ["$status.status", -1] }, [EntrepriseStatus.ERROR, EntrepriseStatus.A_METTRE_A_JOUR]] } })
     .toArray()
   const stats = { success: 0, failure: 0, deactivated: 0 }
   logger.info(`Correction des entreprises en erreur: ${entreprises.length} entreprises à mettre à jour...`)
@@ -53,12 +52,27 @@ const updateEntreprisesInfosInError = async () => {
   })
   return stats
 }
+
+const deactivationWarningOriginExclusion = ["opcoep-HUBE", "opcoep-CRM"]
+
+export const warnDeactivatedRecruteur = async (recruiter: IRecruiter, error: IBusinessError) => {
+  if (!deactivationWarningOriginExclusion.includes(recruiter.origin ?? "")) {
+    let errorMessage = error.message
+    if (error.errorCode === BusinessErrorCodes.NON_DIFFUSIBLE) {
+      errorMessage = "informations de l’entreprise non diffusibles"
+    }
+    if (error.errorCode === BusinessErrorCodes.IS_CFA) {
+      errorMessage = "entreprise rattachée à un code NAF 85"
+    }
+
+    const { last_name, first_name, email, establishment_siret, establishment_raison_sociale, phone } = recruiter
+
+    await sendDeactivatedRecruteurMail({ email, last_name, first_name, establishment_siret, establishment_raison_sociale, phone, errorMessage })
+  }
+}
+
 const updateRecruteursSiretInfosInError = async () => {
-  const recruteurs = await getDbCollection("recruiters")
-    .find({
-      status: RECRUITER_STATUS.EN_ATTENTE_VALIDATION,
-    })
-    .toArray()
+  const recruteurs = await getDbCollection("recruiters").find({ status: RECRUITER_STATUS.EN_ATTENTE_VALIDATION }).toArray()
   const stats = { success: 0, failure: 0, deactivated: 0 }
   logger.info(`Correction des recruteurs en erreur: ${recruteurs.length} user recruteurs à mettre à jour...`)
   await asyncForEach(recruteurs, async (recruteur) => {
@@ -71,6 +85,7 @@ const updateRecruteursSiretInfosInError = async () => {
       if ("error" in siretResponse) {
         logger.warn(`Correction des recruteurs en erreur: recruteur id=${_id}, désactivation car création interdite, raison=${siretResponse.message}`)
         await archiveFormulaire(recruteur)
+        await warnDeactivatedRecruteur(recruteur, siretResponse)
         stats.deactivated++
       } else {
         await upsertEntrepriseData(establishment_siret, "script de reprise de données entreprise", siretResponse, false)
@@ -126,8 +141,5 @@ const updateRecruteursSiretInfosInError = async () => {
 export const updateSiretInfosInError = async () => {
   const userRecruteurResult = await updateEntreprisesInfosInError()
   const recruteurResult = await updateRecruteursSiretInfosInError()
-  return {
-    userRecruteurResult,
-    recruteurResult,
-  }
+  return { userRecruteurResult, recruteurResult }
 }
