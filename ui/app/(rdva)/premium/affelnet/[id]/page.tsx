@@ -94,7 +94,7 @@ export default function PremiumAffelnet() {
   }
 
   return (
-    <Box w="100%" pt={[4]} px={[1, 1, 12, 24]}>
+    <Box w="100%" py={[4, 4, 8]} px={[1, 1, 12, 24]}>
       <Container maxW="996px" pl={20} pr={24}>
         {hasRefused && !hasAccepted && (
           <Stack direction="row" alignItems="flex-start">
