@@ -1,7 +1,8 @@
 import { Filter } from "mongodb"
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
-import { getRomesInfos } from "../../services/cacheRomeo.service"
+import { MAX_ROMEO_PAYLOAD_SIZE } from "@/common/apis/franceTravail/franceTravail.client"
+import { getRomesInfos } from "@/services/cacheRomeo.service"
 
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 
@@ -11,7 +12,7 @@ export const fillRomeForPartners = async (addedMatchFilter?: Filter<IComputedJob
     job: COMPUTED_ERROR_SOURCE.API_ROMEO,
     sourceFields: ["offer_title", "workplace_naf_label"],
     filledFields,
-    groupSize: 20, // max 20 appellations pour les appels ROMEO
+    groupSize: MAX_ROMEO_PAYLOAD_SIZE,
     addedMatchFilter,
     getData: async (documents) => {
       const validDocuments = documents.flatMap((document) => (document.offer_title ? [document] : []))

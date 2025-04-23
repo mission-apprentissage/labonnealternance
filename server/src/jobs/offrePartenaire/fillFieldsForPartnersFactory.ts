@@ -1,6 +1,6 @@
 import { internal } from "@hapi/boom"
 import { AnyBulkWriteOperation, Filter } from "mongodb"
-import { oleoduc, writeData } from "oleoduc"
+import { oleoduc, writeData, groupData } from "oleoduc"
 import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
@@ -8,7 +8,6 @@ import { logger as globalLogger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
-import { streamGroupByCount } from "@/common/utils/streamUtils"
 
 /**
  * Fonction permettant de facilement enrichir un computedJobPartner avec de nouvelles données provenant d'une source async
@@ -68,6 +67,7 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
   logger.info(`${toUpdateCount} documents à traiter`)
   const counters = { total: 0, success: 0, error: 0 }
   const now = new Date()
+
   await oleoduc(
     getDbCollection("computed_jobs_partners")
       .find(queryFilter, {
@@ -78,7 +78,7 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
         },
       })
       .stream(),
-    streamGroupByCount(groupSize),
+    groupData({ size: groupSize }),
     writeData(
       async (documents: IComputedJobsPartners[]) => {
         counters.total += documents.length

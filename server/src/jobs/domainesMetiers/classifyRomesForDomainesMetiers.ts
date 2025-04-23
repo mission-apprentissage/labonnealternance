@@ -1,12 +1,11 @@
 import fs from "node:fs/promises"
 
-import { oleoduc, writeData } from "oleoduc"
+import { oleoduc, writeData, groupData } from "oleoduc"
 import { z } from "zod"
 
 import { deduplicate } from "@/common/utils/array"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { streamGroupByCount } from "@/common/utils/streamUtils"
 import { Message, sendMistralMessages } from "@/services/mistralai/mistralai.service"
 
 type RomeDocumentRaw = {
@@ -36,7 +35,7 @@ export const classifyRomesForDomainesMetiers = async () => {
 
   await oleoduc(
     getMissingOutputQuery(currentMappings).stream(),
-    streamGroupByCount(20),
+    groupData({ size: 20 }),
     writeData(async (typedDocuments: RomeDocumentRaw[]) => {
       const llmInputDocuments: LLMInputDocument[] = typedDocuments.map(({ rome, definition, appellations }) => ({
         titre: rome.intitule,
