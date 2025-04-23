@@ -13,7 +13,7 @@ export function Footer() {
       accessibilityLinkProps={{
         href: PAGES.static.accessibilite.getPath(),
       }}
-      contentDescription="La bonne alternance simplifie les mises en relation  entre les trois d’acteurs candidats, recruteurs et centres de formation, afin de faciliter les entrées en  alternance."
+      contentDescription="La bonne alternance simplifie les mises en relation entre les trois types d’acteurs candidats, recruteurs et centres de formation, afin de faciliter les entrées en alternance."
       operatorLogo={{
         alt: "France relance",
         imgUrl: "/images/france_relance.svg",
