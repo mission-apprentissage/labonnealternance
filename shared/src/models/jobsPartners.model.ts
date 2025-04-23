@@ -12,6 +12,10 @@ import { zOpcoLabel } from "./opco.model.js"
 
 const collectionName = "jobs_partners" as const
 
+// Les partenaires dans JOBPARTNERS_LABEL sont traités par flux
+// sauf ceux dans jobPartnersExcludedFromFlux
+// Les partenaires inconnus sont traités par Api
+
 export enum JOBPARTNERS_LABEL {
   OFFRES_EMPLOI_LBA = LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
   RECRUTEURS_LBA = LBA_ITEM_TYPE.RECRUTEURS_LBA,
@@ -24,6 +28,8 @@ export enum JOBPARTNERS_LABEL {
   KELIO = "Kelio",
   VERITONE = "Veritone",
 }
+
+export const jobPartnersExcludedFromFlux = [JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, JOBPARTNERS_LABEL.RECRUTEURS_LBA]
 
 export const ZJobsPartnersRecruiterApi = z.object({
   _id: zObjectId,
