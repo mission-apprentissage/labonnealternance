@@ -7588,6 +7588,20 @@ Limite : 1 appel(s) / 1 seconde(s)
               ],
             },
           },
+          {
+            "in": "query",
+            "name": "departements",
+            "required": false,
+            "schema": {
+              "items": {
+                "type": "string",
+              },
+              "type": [
+                "array",
+                "null",
+              ],
+            },
+          },
         ],
         "responses": {
           "200": {
