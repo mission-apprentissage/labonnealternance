@@ -43,9 +43,9 @@ export default function PriseDeRendezVous() {
           </Box>
         </Flex>
       </Box>
-      {isLoading && <Spinner display="block" mx="auto" size="xl" mt="10rem" />}
+      {isLoading && <Spinner display="block" mx="auto" size="xl" my="10rem" />}
       {data && "error" in data && (
-        <Box mt="5rem" textAlign="center">
+        <Box my="5rem" textAlign="center">
           {data.error as string}
         </Box>
       )}
