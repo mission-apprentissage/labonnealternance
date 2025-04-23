@@ -729,6 +729,7 @@ export const sendEmailConfirmationEntreprise = async (
         email: removeHtmlTagsFromString(user.email),
         confirmation_url: url,
         offre: {
+          job_title: offre.offer_title_custom,
           rome_appellation_label: offre.rome_appellation_label,
           job_type: offre.job_type,
           job_level_label: offre.job_level_label,

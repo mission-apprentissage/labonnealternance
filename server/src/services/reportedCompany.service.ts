@@ -18,7 +18,7 @@ export const reportCompany = async ({ reason, reasonDetails, itemId, type }: { r
   })
 }
 
-const getReportAdditionalInfos = async (itemId: string, type: LBA_ITEM_TYPE) => {
+export const getReportAdditionalInfos = async (itemId: string, type: LBA_ITEM_TYPE) => {
   switch (type) {
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
       const recruiterOpt = await getOffre(itemId)
@@ -27,15 +27,15 @@ const getReportAdditionalInfos = async (itemId: string, type: LBA_ITEM_TYPE) => 
         return null
       }
       const { establishment_siret, establishment_raison_sociale, establishment_enseigne } = recruiterOpt
-      const { rome_appellation_label } = jobOpt
+      const { rome_appellation_label, offer_title_custom } = jobOpt
       return {
         siret: establishment_siret,
         companyName: establishment_raison_sociale || establishment_enseigne,
-        jobTitle: rome_appellation_label,
+        jobTitle: offer_title_custom ?? rome_appellation_label,
       }
     }
     case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
-      const recruteur = await getDbCollection("jobs_partners").findOne({ siret: itemId, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
+      const recruteur = await getDbCollection("jobs_partners").findOne({ workplace_siret: itemId, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
       if (!recruteur) return null
       const { workplace_siret, workplace_legal_name, workplace_name } = recruteur
       return {
