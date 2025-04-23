@@ -7588,6 +7588,32 @@ Limite : 1 appel(s) / 1 seconde(s)
               ],
             },
           },
+          {
+            "in": "query",
+            "name": "opco",
+            "required": false,
+            "schema": {
+              "enum": [
+                "AFDAS",
+                "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
+                "ATLAS",
+                "Constructys",
+                "L'Opcommerce",
+                "OCAPIAT",
+                "OPCO 2i",
+                "Opco entreprises de proximité",
+                "Opco Mobilités",
+                "Opco Santé",
+                "Uniformation, l'Opco de la Cohésion sociale",
+                "inconnu",
+                "OPCO multiple",
+              ],
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+          },
         ],
         "responses": {
           "200": {
