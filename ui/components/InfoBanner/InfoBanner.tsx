@@ -30,8 +30,8 @@ const redBannerText = (
     <Text as="span" fontWeight={700}>
       Service temporairement dégradé.
     </Text>{" "}
-    Suite à un problème chez notre prestataire d'envoi d'emails, les connexions aux comptes et les envois de candidatures sont momentanément interrompus. Merci de revenir
-    ultérieurement. {/*<Link textDecoration="underline">En savoir plus</Link>*/}
+    Suite à un problème chez notre prestataire d'envoi d'emails, les connexions aux comptes et les envois de candidatures sont momentanément interrompus. Nous vous prions de nous
+    excuser pour la gêne occasionnée et vous invitons à revenir ultérieurement. {/*<Link textDecoration="underline">En savoir plus</Link>*/}
   </Text>
 )
 
