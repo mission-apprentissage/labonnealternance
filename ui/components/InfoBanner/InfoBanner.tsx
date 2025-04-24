@@ -28,10 +28,10 @@ const greenBannerText = (
 const redBannerText = (
   <Text>
     <Text as="span" fontWeight={700}>
-      Service temporairement indisponible.
+      Service temporairement dégradé.
     </Text>{" "}
-    Suite à un problème chez notre prestataire d'envoi d'emails, la connexion à votre compte est momentanément bloquée. Merci de revenir ultérieurement.{" "}
-    {/*<Link textDecoration="underline">En savoir plus</Link>*/}
+    Suite à un problème chez notre prestataire d'envoi d'emails, les connexions aux comptes et les envois de candidatures sont momentanément interrompus. Merci de revenir
+    ultérieurement. {/*<Link textDecoration="underline">En savoir plus</Link>*/}
   </Text>
 )
 
@@ -75,11 +75,13 @@ const InfoBanner = ({
   showAlert = false,
   showOK = false,
   forceEnvBanner = false,
+  showEnvAlert = true,
 }: {
   showInfo?: boolean
   showAlert?: boolean
   showOK?: boolean
   forceEnvBanner?: boolean
+  showEnvAlert?: boolean
 }) => {
   const { bannerStates, setBannerStates } = useContext(DisplayContext)
   const { isEnvClosed, isAlertClosed, isOKClosed, isInfoClosed } = bannerStates
@@ -94,7 +96,7 @@ const InfoBanner = ({
 
   return (
     <>
-      {env !== "production" && (forceEnvBanner || !isEnvClosed) && (
+      {showEnvAlert && env !== "production" && (forceEnvBanner || !isEnvClosed) && (
         <Box backgroundColor="#FFE9E6" p={2} mb={1}>
           <Flex alignItems="center-start" maxWidth="1310px" margin="auto" color="#B34000">
             <WarningIcon mr={4} mt={1} />
