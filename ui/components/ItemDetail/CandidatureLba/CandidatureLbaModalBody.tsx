@@ -99,7 +99,7 @@ export const CandidatureLbaModalBody = ({
           </Text>
         </Box>
 
-        <InfoBanner showInfo={false} showAlert={false} showOK={false} forceEnvBanner={true} />
+        <InfoBanner showInfo={false} showAlert={true} showOK={false} forceEnvBanner={true} />
         <Flex my={4} justifyContent="flex-end">
           {isLoading ? (
             <Flex alignItems="center" direction="row" data-testid="candidature-currently-sending">
