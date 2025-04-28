@@ -346,7 +346,7 @@ const DemandeDeContact = (props: Props) => {
           </Text>
         </Box>
       )}
-      <InfoBanner showInfo={false} showAlert={true} showOK={false} forceEnvBanner={true} />
+      <InfoBanner showInfo={false} showAlert={false} showOK={false} forceEnvBanner={true} />
       <Box mb={8} textAlign="right" mr={4}>
         <Button data-tracking-id="prendre-rdv-cfa" aria-label="Envoyer la demande de contact" type="submit" onClick={submitForm} disabled={formik.isSubmitting}>
           J'envoie ma demande
