@@ -94,7 +94,7 @@ export default function Authentification() {
         margin: "auto",
       }}
     >
-      <InfoBanner showInfo={false} showAlert={true} showOK={false} showEnvAlert={false} />
+      <InfoBanner showInfo={false} showAlert={false} showOK={false} showEnvAlert={false} />
       <Box
         sx={{
           maxWidth: "sm",
