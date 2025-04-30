@@ -107,8 +107,8 @@ export const OffresTabs = ({
           row: { id },
         },
       }) => {
-        const { rome_label, rome_appellation_label } = data[id]
-        return rome_appellation_label ?? rome_label
+        const { rome_label, rome_appellation_label, offer_title_custom } = data[id]
+        return offer_title_custom ?? rome_appellation_label ?? rome_label
       },
       width: "300",
       maxWidth: "300",

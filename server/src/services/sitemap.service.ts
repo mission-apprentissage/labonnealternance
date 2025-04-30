@@ -14,7 +14,7 @@ import config from "@/config"
 import dayjs from "@/services/dayjs.service"
 
 type AggregateRecruiter = Pick<Omit<IRecruiter, "jobs">, "updatedAt"> & {
-  jobs: Pick<IJob, "job_update_date" | "_id" | "rome_label" | "rome_appellation_label">
+  jobs: Pick<IJob, "job_update_date" | "_id" | "rome_label" | "rome_appellation_label" | "offer_title_custom">
 }
 
 const generateSitemapXml = async () => {
@@ -23,7 +23,7 @@ const generateSitemapXml = async () => {
       { $match: { status: RECRUITER_STATUS.ACTIF, "jobs.job_status": JOB_STATUS.ACTIVE } },
       { $unwind: { path: "$jobs" } },
       { $match: { "jobs.job_status": JOB_STATUS.ACTIVE } },
-      { $project: { updatedAt: 1, "jobs.job_update_date": 1, "jobs._id": 1, "jobs.rome_label": 1, "jobs.rome_appellation_label": 1 } },
+      { $project: { updatedAt: 1, "jobs.job_update_date": 1, "jobs._id": 1, "jobs.rome_label": 1, "jobs.rome_appellation_label": 1, "jobs.offer_title_custom": 1 } },
     ])
     .limit(Number.MAX_SAFE_INTEGER)
     .toArray()) as AggregateRecruiter[]
@@ -31,9 +31,9 @@ const generateSitemapXml = async () => {
   const sitemap = generateSitemapFromUrlEntries(
     documents.map((document) => {
       const { jobs: job, updatedAt } = document
-      const { job_update_date, _id, rome_label, rome_appellation_label } = job
+      const { job_update_date, _id, rome_label, rome_appellation_label, offer_title_custom } = job
       const lastMod = job_update_date && dayjs(updatedAt).isBefore(job_update_date) ? job_update_date : updatedAt
-      const jobTitle = rome_appellation_label ?? rome_label
+      const jobTitle = offer_title_custom ?? rome_appellation_label ?? rome_label
       const url = `${config.publicUrl}${buildJobUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, _id.toString(), jobTitle!)}`
       return {
         loc: url,
