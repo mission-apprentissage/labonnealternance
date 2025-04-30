@@ -2,34 +2,41 @@ import { internal } from "@hapi/boom"
 import { groupBy } from "lodash-es"
 import { ObjectId } from "mongodb"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { JOB_STATUS } from "shared/models/index"
+import { IJob, JOB_STATUS } from "shared/models/index"
 
+import { logger } from "@/common/logger"
+import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
+import { removeHtmlTagsFromString } from "@/common/utils/stringUtils"
+import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { createAuthMagicLink, createCancelJobLink, createProvidedJobLink } from "@/services/appLinks.service"
+import dayjs from "@/services/dayjs.service"
+import mailer from "@/services/mailer.service"
 
-import { logger } from "../../common/logger"
-import { asyncForEach } from "../../common/utils/asyncUtils"
-import { notifyToSlack } from "../../common/utils/slackUtils"
-import { removeHtmlTagsFromString } from "../../common/utils/stringUtils"
-import config from "../../config"
-import dayjs from "../../services/dayjs.service"
-import mailer from "../../services/mailer.service"
-
-export const recruiterOfferExpirationReminderJob = async (threshold: number /* number of days to expiration for the reminder email to be sent */) => {
+export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirationDate: number /* number of days to expiration for the reminder email to be sent */) => {
+  const dateRelanceFieldName = numberOfDaysToExpirationDate === 1 ? "relance_mail_expiration_J1" : numberOfDaysToExpirationDate === 7 ? "relance_mail_expiration_J7" : null
+  const additionalFilter = {}
+  if (dateRelanceFieldName) {
+    additionalFilter[`jobs.${dateRelanceFieldName}`] = null
+  }
+  const now = new Date()
   const recruiters = await getDbCollection("recruiters")
     .find({
-      $nor: [{ jobs: { $exists: false } }, { jobs: { $size: 0 } }],
       "jobs.job_status": JOB_STATUS.ACTIVE,
+      "jobs.job_expiration_date": { $gt: now },
+      ...additionalFilter,
     })
     .toArray()
 
   const jobsWithRecruteurs = recruiters.flatMap((recruiter) => {
     return recruiter.jobs.flatMap((job) => {
-      const remainingDays = dayjs(job.job_expiration_date).diff(dayjs(), "days")
-      if (job.job_status === JOB_STATUS.ACTIVE && remainingDays === threshold) {
+      const { job_status, job_expiration_date } = job
+      const remainingDays = dayjs(job_expiration_date).diff(dayjs(), "days")
+      if (job_status === JOB_STATUS.ACTIVE && remainingDays === numberOfDaysToExpirationDate && (!dateRelanceFieldName || !job[dateRelanceFieldName])) {
         return [{ ...job, recruiter }]
       } else {
         return []
@@ -40,7 +47,7 @@ export const recruiterOfferExpirationReminderJob = async (threshold: number /* n
   const nbOffres = jobsWithRecruteurs.length
   if (nbOffres === 0) {
     logger.info("Aucune offre à relancer aujourd'hui.")
-    await notifyToSlack({ subject: `RELANCE J+${threshold}`, message: `Aucune relance à effectuer.` })
+    await notifyToSlack({ subject: `RELANCE J+${numberOfDaysToExpirationDate}`, message: `Aucune relance à effectuer.` })
     return
   }
 
@@ -48,14 +55,16 @@ export const recruiterOfferExpirationReminderJob = async (threshold: number /* n
 
   if (nbOffres > 0) {
     logger.info(`${nbOffres} offres relancé aujourd'hui.`)
-    await notifyToSlack({ subject: `RELANCE J+${threshold}`, message: `*${nbOffres} offres* (${Object.keys(groupByRecruiterOffres).length} formulaires) ont été relancés.` })
+    await notifyToSlack({
+      subject: `RELANCE J+${numberOfDaysToExpirationDate}`,
+      message: `*${nbOffres} offres* (${Object.keys(groupByRecruiterOffres).length} formulaires) ont été relancés.`,
+    })
   }
 
   await asyncForEach(Object.values(groupByRecruiterOffres), async (jobsWithRecruiter) => {
     const recruiter = jobsWithRecruiter[0].recruiter
-    const { establishment_raison_sociale, is_delegated } = recruiter
+    const { establishment_raison_sociale, is_delegated, managed_by } = recruiter
     try {
-      const { managed_by } = recruiter.jobs[0]
       if (!managed_by) {
         throw internal(`inattendu : managed_by manquant pour le formulaire id=${recruiter._id}`)
       }
@@ -64,9 +73,11 @@ export const recruiterOfferExpirationReminderJob = async (threshold: number /* n
         throw internal(`inattendu : impossible de trouver l'utilisateur gérant le formulaire id=${recruiter._id}`)
       }
 
+      const subject = `${jobsWithRecruiter.length > 1 ? "Vos offres expirent" : "Votre offre expire"} ${numberOfDaysToExpirationDate === 1 ? "demain" : `dans ${numberOfDaysToExpirationDate} jours`}`
+
       await mailer.sendEmail({
         to: contactUser.email,
-        subject: "Vos offres expirent bientôt",
+        subject,
         template: getStaticFilePath("./templates/mail-expiration-offres.mjml.ejs"),
         data: {
           images: {
@@ -87,10 +98,17 @@ export const recruiterOfferExpirationReminderJob = async (threshold: number /* n
             supprimer: createCancelJobLink(userWithAccountToUserForToken(contactUser), job._id.toString(), LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
             pourvue: createProvidedJobLink(userWithAccountToUserForToken(contactUser), job._id.toString(), LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
           })),
-          threshold,
+          threshold: numberOfDaysToExpirationDate,
           connectionUrl: createAuthMagicLink(userWithAccountToUserForToken(contactUser)),
         },
       })
+      if (dateRelanceFieldName) {
+        const jobUpdate: Partial<IJob> = {}
+        jobUpdate[`jobs.$[elem].${dateRelanceFieldName}`] = now
+        await asyncForEach(jobsWithRecruiter, async (job) => {
+          await getDbCollection("recruiters").findOneAndUpdate({ "jobs._id": job._id }, { $set: jobUpdate }, { arrayFilters: [{ "elem._id": job._id }] })
+        })
+      }
     } catch (err) {
       const errorMessage = (err && typeof err === "object" && "message" in err && err.message) || err
       logger.error(err)
