@@ -41,9 +41,9 @@ export const zJobsRoutesV3 = {
         tags: ["V3 - Jobs"] as string[],
       },
     },
-    "/v3/jobs/:id/partner-status": {
+    "/v3/jobs/:id/status": {
       method: "get",
-      path: "/v3/jobs/:id/partner-status",
+      path: "/v3/jobs/:id/status",
       params: z.object({
         id: zObjectId,
       }),

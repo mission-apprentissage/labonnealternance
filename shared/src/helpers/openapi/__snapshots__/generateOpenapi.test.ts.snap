@@ -9054,7 +9054,7 @@ Limite : 1 appel(s) / 1 seconde(s)
         ],
       },
     },
-    "/v3/jobs/{id}/partner-status": {
+    "/v3/jobs/{id}/status": {
       "get": {
         "parameters": [
           {

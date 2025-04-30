@@ -773,7 +773,7 @@ describe("GET /v3/jobs/:id", () => {
   })
 })
 
-describe("GET /v3/jobs/:id/partner-status", () => {
+describe("GET /v3/jobs/:id/status", () => {
   const jobPartnerId = new ObjectId()
 
   const originalCreatedAt = new Date("2023-09-06T00:00:00.000+02:00")
@@ -811,7 +811,7 @@ describe("GET /v3/jobs/:id/partner-status", () => {
   it("should return 401 if no api key provided", async () => {
     const response = await httpClient().inject({
       method: "GET",
-      path: `/api/v3/jobs/${jobPartnerId}/partner-status`,
+      path: `/api/v3/jobs/${jobPartnerId}/status`,
     })
     expect(response.statusCode).toBe(401)
     expect(response.json()).toEqual({
@@ -824,7 +824,7 @@ describe("GET /v3/jobs/:id/partner-status", () => {
   it("should return 401 if api key is invalid", async () => {
     const response = await httpClient().inject({
       method: "GET",
-      path: `/api/v3/jobs/${jobPartnerId}/partner-status`,
+      path: `/api/v3/jobs/${jobPartnerId}/status`,
       headers: { authorization: `Bearer ${fakeToken}` },
     })
     expect(response.statusCode).toBe(401)
@@ -841,7 +841,7 @@ describe("GET /v3/jobs/:id/partner-status", () => {
 
     const response = await httpClient().inject({
       method: "GET",
-      path: `/api/v3/jobs/${nonExistentId}/partner-status`,
+      path: `/api/v3/jobs/${nonExistentId}/status`,
       headers: { authorization: `Bearer ${token}` },
     })
 
@@ -862,7 +862,7 @@ describe("GET /v3/jobs/:id/partner-status", () => {
   it("should return PUBLISHED when job exists in jobs_partners", async () => {
     const response = await httpClient().inject({
       method: "GET",
-      path: `/api/v3/jobs/${jobPartnerId}/partner-status`,
+      path: `/api/v3/jobs/${jobPartnerId}/status`,
       headers: { authorization: `Bearer ${token}` },
     })
     console.log("response :>> ", response.json())
@@ -896,7 +896,7 @@ describe("GET /v3/jobs/:id/partner-status", () => {
       // Récupération du statut de l'offre d'emploi
       const responseGetStatus = await httpClient().inject({
         method: "GET",
-        path: `/api/v3/jobs/${responseJson.id}/partner-status`,
+        path: `/api/v3/jobs/${responseJson.id}/status`,
         headers: { authorization: `Bearer ${token}` },
       })
 
@@ -931,7 +931,7 @@ describe("GET /v3/jobs/:id/partner-status", () => {
       // Récupération du statut de l'offre d'emploi
       const responseGetStatus = await httpClient().inject({
         method: "GET",
-        path: `/api/v3/jobs/${responseJson.id}/partner-status`,
+        path: `/api/v3/jobs/${responseJson.id}/status`,
         headers: { authorization: `Bearer ${token}` },
       })
 

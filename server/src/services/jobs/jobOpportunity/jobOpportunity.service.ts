@@ -850,8 +850,8 @@ export async function findJobOpportunityById(id: ObjectId, context: JobOpportuni
     const foundJob = validResults.length > 0 ? validResults[0].value : null
 
     if (!foundJob) {
-      logger.warn(`Aucune offre d'emploi trouvée pour l'ID: ${id.toString()}`, { context })
-      throw notFound(`Aucune offre d'emploi trouvée pour l'ID: ${id.toString()}`)
+      logger.warn(`No job offer found for ID: ${id.toString()}`, { context })
+      throw notFound(`No job offer found for ID: ${id.toString()}`)
     }
 
     return validateJobOffer(foundJob, id, context)
@@ -860,10 +860,10 @@ export async function findJobOpportunityById(id: ObjectId, context: JobOpportuni
       throw error
     }
 
-    const err = internal("Erreur inattendue dans findJobOpportunityById", { id, error })
+    const err = internal("Unexpected error in findJobOpportunityById", { id, error })
     logger.error(err)
     sentryCaptureException(err)
-    throw new Error("Erreur inattendue dans findJobOpportunityById")
+    throw new Error("Unexpected error in findJobOpportunityById")
   }
 }
 
@@ -941,18 +941,23 @@ export async function getJobPartnerStatus(id: ObjectId, context: JobOpportunityR
     if (existsInJobs) return JOB_PARTNER_STATUS.PUBLISHED
 
     const computed = await getDbCollection("computed_jobs_partners").findOne({ _id: id }, { projection: { errors: 1, business_error: 1 } })
-    if (computed) return computed.errors.length > 0 || (computed.business_error?.length ?? 0) > 0 ? JOB_PARTNER_STATUS.NOT_PUBLISHED : JOB_PARTNER_STATUS.WILL_BE_PUBLISHED
+    if (computed) {
+      if (computed.validated) {
+        return JOB_PARTNER_STATUS.WILL_BE_PUBLISHED
+      }
+      return computed.errors.length > 0 || (computed.business_error?.length ?? 0) > 0 ? JOB_PARTNER_STATUS.NOT_PUBLISHED : JOB_PARTNER_STATUS.WILL_BE_PUBLISHED
+    }
 
-    logger.warn(`Aucune offre d'emploi trouvée pour l'ID: ${id.toString()}`, { context })
-    throw notFound(`Aucune offre d'emploi trouvée pour l'ID: ${id.toString()}`)
+    logger.warn(`No job offer found for ID: ${id.toString()}`, { context })
+    throw notFound(`No job offer found for ID: ${id.toString()}`)
   } catch (error) {
     if (Boom.isBoom(error)) {
       throw error
     }
 
-    const err = internal("Erreur inattendue dans getJobPartnerStatus", { id, error })
+    const err = internal("Unexpected error in getJobPartnerStatus", { id, error })
     logger.error(err)
     sentryCaptureException(err)
-    throw new Error("Erreur inattendue dans getJobPartnerStatus")
+    throw new Error("Unexpected error in getJobPartnerStatus")
   }
 }

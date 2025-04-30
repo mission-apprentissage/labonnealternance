@@ -74,12 +74,8 @@ export const jobsApiV3Routes = (server: Server) => {
     return res.send(result)
   })
 
-  server.get(
-    "/v3/jobs/:id/partner-status",
-    { schema: zRoutes.get["/v3/jobs/:id/partner-status"], onRequest: server.auth(zRoutes.get["/v3/jobs/:id/partner-status"]) },
-    async (req, res) => {
-      const result = await getJobPartnerStatus(req.params.id, new JobOpportunityRequestContext(zRoutes.get["/v3/jobs/:id/partner-status"], "api-apprentissage"))
-      return res.send({ status: result })
-    }
-  )
+  server.get("/v3/jobs/:id/status", { schema: zRoutes.get["/v3/jobs/:id/status"], onRequest: server.auth(zRoutes.get["/v3/jobs/:id/status"]) }, async (req, res) => {
+    const result = await getJobPartnerStatus(req.params.id, new JobOpportunityRequestContext(zRoutes.get["/v3/jobs/:id/status"], "api-apprentissage"))
+    return res.send({ status: result })
+  })
 }
