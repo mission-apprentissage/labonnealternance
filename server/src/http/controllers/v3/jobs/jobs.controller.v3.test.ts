@@ -768,7 +768,7 @@ describe("GET /v3/jobs/:id", () => {
     expect(data).toMatchObject({
       statusCode: 404,
       error: "Not Found",
-      message: `Aucune offre d'emploi trouvée pour l'ID: ${nonExistentId.toString()}`,
+      message: `No job offer found for ID: ${nonExistentId.toString()}`,
     })
   })
 })
@@ -855,7 +855,7 @@ describe("GET /v3/jobs/:id/status", () => {
     expect(data).toMatchObject({
       statusCode: 404,
       error: "Not Found",
-      message: `Aucune offre d'emploi trouvée pour l'ID: ${nonExistentId.toString()}`,
+      message: `No job offer found for ID: ${nonExistentId.toString()}`,
     })
   })
 

@@ -2550,7 +2550,7 @@ describe("findJobOpportunityById tests", () => {
       const nonExistentId = new ObjectId()
 
       // Vérifier que la fonction lance une erreur
-      await expect(findJobOpportunityById(nonExistentId, context)).rejects.toThrowError("Aucune offre d'emploi trouvée")
+      await expect(findJobOpportunityById(nonExistentId, context)).rejects.toThrowError("No job offer found for ID: " + nonExistentId.toString())
     })
 
     it("should find an offer from jobs_partners collection on findJobOpportunityById", async () => {
