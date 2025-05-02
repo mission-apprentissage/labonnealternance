@@ -2,6 +2,7 @@
 import { Box, Center, Checkbox, Container, Divider, Flex, Heading, Link, Square, Text } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { useQuery } from "@tanstack/react-query"
+import Image from "next/image"
 import { useParams } from "next/navigation"
 import { useState } from "react"
 import { IEtablissementCatalogueProcheWithDistance } from "shared/interface/etablissement.types"
@@ -9,7 +10,7 @@ import { IEtablissementCatalogueProcheWithDistance } from "shared/interface/etab
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
-import { getFormulaire, getOffre, getRelatedEtablissementsFromRome } from "@/utils/api"
+import { getFormulaire, getRelatedEtablissementsFromRome } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
 // export const getRelatedEtablissementsFromRome = async ({ rome, latitude, longitude, limit }: { rome: string; latitude: number; longitude: number; limit: number }) =>
@@ -43,12 +44,36 @@ function InfoDelegation() {
     </Box>
   )
 }
+
+function AucunCFAProche({ title }: { title?: string }) {
+  return (
+    <Flex>
+      <Box minWidth={["100%", "100%", "50%"]}>
+        <Box p={6}>
+          <Image fetchPriority="high" src="/images/aucunCfa.svg" alt="" unoptimized width={287} height={169} style={{ width: "100%", maxWidth: "287px" }} />
+          <Heading fontSize="24px" mt={5}>
+            Aucun CFA à proximité
+          </Heading>
+          <Text mt={6}>
+            Votre offre :{" "}
+            <Text as="span" fontWeight={700}>
+              {title}
+            </Text>
+          </Text>
+          <Text mt={4}>Nous n’avons pas identifié de centre de formation dans un rayon de 100km autour de votre entreprise qui forme sur le métier pour lequel vous recrutez.</Text>
+        </Box>
+      </Box>
+      <InfoDelegation />
+    </Flex>
+  )
+}
 /**
  * @description "Mise en relation" page.
  * @return {JSX.Element}
  */
 export default function MiseEnRelation({ establishment_id }: { establishment_id: string }) {
   //const router = useRouter()
+  const { job_id } = useParams() as { job_id: string }
 
   const { data: formulaire, isLoading: isFormulaireLoading } = useQuery({
     queryKey: ["formulaire"],
@@ -56,22 +81,13 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
     queryFn: () => getFormulaire(establishment_id),
   })
 
-  //const [isSubmitLoading /*, setIsSubmitLoading*/] = useState(false)
-
-  const { job_id } = useParams() as { job_id: string }
-
-  const { data: offre, isLoading } = useQuery({
-    queryKey: ["offre"],
-    queryFn: () => getOffre(job_id),
-    enabled: Boolean(job_id),
-    gcTime: 0,
-  })
+  const offre = formulaire ? formulaire.jobs.find((offre) => offre._id === job_id) : null
 
   const { data: etablissements, isLoading: isEtablissementLoading } = useQuery({
     queryKey: ["etablissements"],
     queryFn: () =>
       getRelatedEtablissementsFromRome({ rome: offre.rome_code[0], latitude: formulaire.geopoint.coordinates[1], longitude: formulaire.geopoint.coordinates[0], limit: 10 }),
-    enabled: Boolean(formulaire),
+    enabled: !!formulaire?._id && !!offre?._id,
     gcTime: 0,
   })
 
@@ -121,7 +137,7 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
   //     goToEndStep({ withDelegation: true })
   //   }
 
-  if (isFormulaireLoading || isLoading || isEtablissementLoading) return <LoadingEmptySpace label="Chargement en cours" />
+  if (isFormulaireLoading || isEtablissementLoading) return <LoadingEmptySpace label="Chargement en cours" />
 
   console.log("etablissements", etablissements)
 
@@ -184,7 +200,7 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
             </Flex>
           </Box>
         )}
-        {etablissements?.length === 0 && <Box>RIEN</Box>}
+        {etablissements?.length === 0 && <AucunCFAProche title={offre.rome_appellation_label} />}
 
         {/*
         page pas de cfas proche
