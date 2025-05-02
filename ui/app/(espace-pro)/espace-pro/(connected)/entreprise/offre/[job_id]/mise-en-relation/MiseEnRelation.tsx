@@ -61,7 +61,48 @@ function AucunCFAProche({ title }: { title?: string }) {
 }
 
 function DelegationsEnregistrees() {
-  return <Text>Vos demandes de mise en relation ont bien été envoyées.</Text>
+  return (
+    <Box ml={10} display={{ base: "none", lg: "block" }}>
+      <Box border="1px solid #000091" p={6}>
+        <Flex>
+          <Image fetchPriority="high" src="/images/espace_pro/miseEnRelationEnvoyee.svg" alt="" unoptimized width={268} height={150} style={{ width: "100%", maxWidth: "268px" }} />
+          <Box>
+            <Heading fontSize="24px" mb={3} ml={5}>
+              Votre offre a été partagée aux CFA sélectionnés
+            </Heading>
+            <Box ml={5}>
+              Les écoles que vous avez sélectionnées ont reçu par email votre offre et vos coordonnées suivantes :
+              <Text mt={2}>
+                Prénom:{" "}
+                <Text as="span" fontWeight={700}>
+                  {}
+                </Text>
+              </Text>
+              <Text mt={2}>
+                Nom:{" "}
+                <Text as="span" fontWeight={700}>
+                  {}
+                </Text>
+              </Text>
+              <Text mt={2}>
+                Email:{" "}
+                <Text as="span" fontWeight={700}>
+                  {}
+                </Text>
+              </Text>
+              <Text mt={2}>
+                Numéro de téléphone:{" "}
+                <Text as="span" fontWeight={700}>
+                  {}
+                </Text>
+              </Text>
+              <Text mt={4}>Elles peuvent désormais vous recontacter pour vous proposer des candidats en adéquation avec vos besoins.</Text>
+            </Box>
+          </Box>
+        </Flex>
+      </Box>
+    </Box>
+  )
 }
 
 export default function MiseEnRelation({ establishment_id }: { establishment_id: string }) {
