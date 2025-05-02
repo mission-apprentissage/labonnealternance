@@ -211,10 +211,14 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
           </>
         )}
         {/*
-        style des éléments
-        submit du résultat
-        affichage du résultat
+        reste à faire :
+        display du résultat
+
+        load et affichage de la liste des cfa déjà contactés
+
+
         template Email
+        redirection email (conf next properties)
         automate envoi d'emails
         lien avec token
         connexion par token
