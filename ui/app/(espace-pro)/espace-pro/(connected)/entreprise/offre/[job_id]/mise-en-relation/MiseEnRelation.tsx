@@ -10,16 +10,8 @@ import { IEtablissementCatalogueProcheWithDistance } from "shared/interface/etab
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
-import { getFormulaire, getRelatedEtablissementsFromRome } from "@/utils/api"
+import { createEtablissementDelegation, createEtablissementDelegationByToken, getFormulaire, getRelatedEtablissementsFromRome } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
-
-// export const getRelatedEtablissementsFromRome = async ({ rome, latitude, longitude, limit }: { rome: string; latitude: number; longitude: number; limit: number }) =>
-//   apiGet(`/etablissement/cfas-proches`, { querystring: { rome, latitude, longitude, limit } })
-
-// export const createEtablissementDelegation = ({ data, jobId }: { jobId: string; data: INewDelegations }) =>
-//   apiPost(`/formulaire/offre/:jobId/delegation`, { params: { jobId }, body: data })
-// export const createEtablissementDelegationByToken = ({ data, jobId, token }: { jobId: string; data: INewDelegations; token: string }) =>
-//   apiPost(`/formulaire/offre/:jobId/delegation/by-token`, { params: { jobId }, body: data, headers: { authorization: `Bearer ${token}` } })
 
 function InfoDelegation() {
   return (
@@ -67,13 +59,13 @@ function AucunCFAProche({ title }: { title?: string }) {
     </Flex>
   )
 }
-/**
- * @description "Mise en relation" page.
- * @return {JSX.Element}
- */
+
+function DelegationsEnregistrees() {
+  return <Text>Vos demandes de mise en relation ont bien été envoyées.</Text>
+}
+
 export default function MiseEnRelation({ establishment_id }: { establishment_id: string }) {
-  //const router = useRouter()
-  const { job_id } = useParams() as { job_id: string }
+  const { job_id, token } = useParams() as { job_id: string; token?: string }
 
   const { data: formulaire, isLoading: isFormulaireLoading } = useQuery({
     queryKey: ["formulaire"],
@@ -91,128 +83,142 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
     gcTime: 0,
   })
 
-  const [checkedEtablissements, setCheckedEtablissements] = useState<IEtablissementCatalogueProcheWithDistance[]>(etablissements ?? [])
+  const [checkedEtablissements, setCheckedEtablissements] = useState<IEtablissementCatalogueProcheWithDistance[]>(
+    etablissements ? etablissements.filter((etablissement) => etablissement.checked) : []
+  )
 
-  console.log("avant checkedEtablissements", checkedEtablissements)
-  const isSubmitButtonEnabled = (checkedEtablissements ?? []).find((item) => item.checked)
-
-  console.log("----", isSubmitButtonEnabled)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [delegationsEnregistrees, setDelegationsEnregistrees] = useState(false)
 
   /**
    * @description Handles all checkboxes.
    * @param {Object} etablissement
    * @return {void}
    */
-  const checkEtablissement = (etablissement) => {
-    const etablissementUpdated = checkedEtablissements.map((item) => (etablissement._id === item._id ? { ...item, checked: !etablissement.checked } : item))
-    console.log("estab: ", etablissementUpdated)
-    setCheckedEtablissements(etablissementUpdated)
+  const changeEtablissement = (etablissement) => {
+    const index = checkedEtablissements.findIndex((item) => item._id === etablissement._id)
+    if (index === -1) {
+      setCheckedEtablissements([...checkedEtablissements, etablissement])
+    } else {
+      setCheckedEtablissements(checkedEtablissements.filter((_, i) => i !== index))
+    }
   }
 
-  //   const goToEndStep = ({ withDelegation }) => {
-  //     router.replace({
-  //       pathname: isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin",
-  //       query: { jobId: job._id.toString(), email, withDelegation, fromDashboard, userId, establishment_id, token },
-  //     })
-  //   }
+  const submit = async () => {
+    setIsSubmitting(true)
+    const etablissementCatalogueIds = checkedEtablissements.map((etablissement) => etablissement._id)
 
-  const submit = async () => {}
-  //   const submit = async () => {
-  //     setIsSubmitLoading(true)
-  //     const etablissementCatalogueIds = etablissements.filter((etablissement) => etablissement.checked).map((etablissement) => etablissement._id)
+    console.log("etablissementCatalogueIds", etablissementCatalogueIds)
 
-  //     await (
-  //       token
-  //         ? createEtablissementDelegationByToken({
-  //             jobId: job._id,
-  //             data: { etablissementCatalogueIds },
-  //             token: token as string,
-  //           })
-  //         : createEtablissementDelegation({
-  //             jobId: job._id,
-  //             data: { etablissementCatalogueIds },
-  //           })
-  //     ).finally(() => setIsSubmitLoading(false))
+    await (
+      token
+        ? createEtablissementDelegationByToken({
+            jobId: offre._id,
+            data: { etablissementCatalogueIds },
+            token: token as string,
+          })
+        : createEtablissementDelegation({
+            jobId: offre._id,
+            data: { etablissementCatalogueIds },
+          })
+    )
+      .then(() => {
+        setDelegationsEnregistrees(true)
+      })
+      .finally(() => setIsSubmitting(false))
 
-  //     goToEndStep({ withDelegation: true })
-  //   }
+    // goToEndStep({ withDelegation: true })
+  }
 
   if (isFormulaireLoading || isEtablissementLoading) return <LoadingEmptySpace label="Chargement en cours" />
-
-  console.log("etablissements", etablissements)
 
   return (
     <DepotSimplifieStyling>
       <Container maxW="container.xl">
         <Breadcrumb pages={[PAGES.static.backHomeEntreprise, PAGES.dynamic.backEntrepriseMiseEnRelation({ job_id })]} />
-        {etablissements?.length > 0 && (
-          <Box p={5}>
-            <Flex>
-              <Box minWidth={["100%", "100%", "50%"]}>
-                <Heading fontSize="32px">Ces centres de formation pourraient vous proposer des candidats</Heading>
-                <Text fontSize="20px">
-                  Les centres de formation suivants proposent des formations en lien avec votre offre et sont localisés à proximité de votre entreprise.
-                  <br />
-                  Choisissez ceux à qui vous souhaitez partager votre offre.
-                </Text>
+        {delegationsEnregistrees ? (
+          <DelegationsEnregistrees />
+        ) : (
+          <>
+            {etablissements?.length > 0 && (
+              <Box p={5}>
+                <Flex>
+                  <Box minWidth={["100%", "100%", "50%"]}>
+                    <Heading fontSize="32px">Ces centres de formation pourraient vous proposer des candidats</Heading>
+                    <Text fontSize="20px">
+                      Les centres de formation suivants proposent des formations en lien avec votre offre et sont localisés à proximité de votre entreprise.
+                      <br />
+                      Choisissez ceux à qui vous souhaitez partager votre offre.
+                    </Text>
 
-                <Box mt={5}>
-                  {etablissements.map((etablissement: IEtablissementCatalogueProcheWithDistance, index) => {
-                    return (
-                      <Flex borderStyle="solid" borderWidth="1px" borderColor="#000091" py={4} key={etablissement._id} mb={4} data-testid={`cfa-${index}`}>
-                        <Center w="70px">
-                          <Checkbox defaultChecked={etablissement.checked} onChange={() => checkEtablissement(etablissement)} />
-                        </Center>
-                        <Box flex="1">
-                          <Text size="16px" lineHeight="25px" fontWeight="400" color="#161616" textTransform="capitalize" pr={3}>
-                            {etablissement.entreprise_raison_sociale}
-                          </Text>
-                          <Text size="12px" lineHeight="25px" color="#666666" textTransform="capitalize" pr={3}>
-                            {etablissement?.numero_voie} {etablissement?.type_voie} {etablissement?.nom_voie}, {etablissement?.code_postal} {etablissement?.nom_departement}
-                          </Text>
-                          <Link
-                            href={`https://catalogue-apprentissage.intercariforef.org/etablissement/${etablissement.siret}`}
-                            isExternal
-                            aria-label="Etablissement sur le site du catalogue des formations en apprentissage - nouvelle fenêtre"
-                          >
-                            En savoir plus
-                          </Link>
-                        </Box>
-                        <Square>
-                          <Center height="90px">
-                            <Divider orientation="vertical" />
-                          </Center>
-                          <Text size="12px" fontWeight="700" color="#666666" px={4}>
-                            à {etablissement.distance_en_km} km
-                          </Text>
-                        </Square>
-                      </Flex>
-                    )
-                  })}
-                </Box>
-                <Box my={1}>
-                  <Button disabled={!isSubmitButtonEnabled} onClick={submit} data-testid="submit-delegation">
+                    <Box mt={5}>
+                      {etablissements.map((etablissement: IEtablissementCatalogueProcheWithDistance, index) => {
+                        return (
+                          <Flex borderStyle="solid" borderWidth="1px" borderColor="#000091" py={4} key={etablissement._id} mb={4} data-testid={`cfa-${index}`}>
+                            <Center w="70px">
+                              <Checkbox defaultChecked={etablissement.checked} onChange={() => changeEtablissement(etablissement)} />
+                            </Center>
+                            <Box flex="1">
+                              <Text size="16px" lineHeight="25px" fontWeight="400" color="#161616" textTransform="capitalize" pr={3}>
+                                {etablissement.entreprise_raison_sociale}
+                              </Text>
+                              <Text size="12px" lineHeight="25px" color="#666666" textTransform="capitalize" pr={3}>
+                                {etablissement?.numero_voie} {etablissement?.type_voie} {etablissement?.nom_voie}, {etablissement?.code_postal} {etablissement?.nom_departement}
+                              </Text>
+                              <Link
+                                href={`https://catalogue-apprentissage.intercariforef.org/etablissement/${etablissement.siret}`}
+                                isExternal
+                                aria-label="Etablissement sur le site du catalogue des formations en apprentissage - nouvelle fenêtre"
+                              >
+                                En savoir plus
+                              </Link>
+                            </Box>
+                            <Square>
+                              <Center height="90px">
+                                <Divider orientation="vertical" />
+                              </Center>
+                              <Text size="12px" fontWeight="700" color="#666666" px={4}>
+                                à {etablissement.distance_en_km} km
+                              </Text>
+                            </Square>
+                          </Flex>
+                        )
+                      })}
+                    </Box>
+                  </Box>
+                  <InfoDelegation />
+                </Flex>
+                <Box
+                  width="100%"
+                  my={1}
+                  position={"sticky"}
+                  bottom={0}
+                  left={0}
+                  bgColor="white"
+                  zIndex={1}
+                  p={5}
+                  style={{
+                    boxShadow: "0px -16px 16px -16px rgba(0, 0, 0, 0.32)",
+                  }}
+                >
+                  <Button disabled={checkedEtablissements.length === 0 || isSubmitting} onClick={submit} data-testid="submit-delegation">
                     Envoyer ma demande
                   </Button>
                 </Box>
               </Box>
-              <InfoDelegation />
-            </Flex>
-          </Box>
+            )}
+            {etablissements?.length === 0 && <AucunCFAProche title={offre.rome_appellation_label} />}
+          </>
         )}
-        {etablissements?.length === 0 && <AucunCFAProche title={offre.rome_appellation_label} />}
-
         {/*
-        page pas de cfas proche
         style des éléments
         submit du résultat
         affichage du résultat
-
         template Email
         automate envoi d'emails
         lien avec token
         connexion par token
-*/}
+        */}
       </Container>
     </DepotSimplifieStyling>
   )
