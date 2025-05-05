@@ -15,7 +15,7 @@ export const ZKelioJob = z
     html_description: z.string(),
     last_activation_at: z.string(),
     html_profile: z.string(),
-    contract_duration: z.string(),
+    contract_duration: z.string().nullable(),
     education_level: z.string().nullable(),
     job_start_date: z.string().nullable(),
     working_time: z.string(),
@@ -33,7 +33,7 @@ export const ZKelioJob = z
       company_description: z.string(),
     }),
     address: z.object({
-      city: z.string(),
+      city: z.string().nullable(),
       street: z.string().nullable(),
       country: z.string(),
       latitude: z.string(),

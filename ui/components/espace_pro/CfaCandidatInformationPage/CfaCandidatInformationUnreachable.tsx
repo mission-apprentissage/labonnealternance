@@ -1,9 +1,5 @@
 import { Box, Text } from "@chakra-ui/react"
 
-/**
- * @description CfaCandidatInformationUnreachable component.
- * @returns {JSX.Element}
- */
 export const CfaCandidatInformationUnreachable = () => {
   return (
     <Box mt={8} p={6} backgroundColor="#F5F5FE;">

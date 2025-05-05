@@ -14,6 +14,7 @@ init({
   enabled: !publicConfig.sentryDisabled,
   release: publicConfig.version,
   normalizeDepth: 8,
+  sendDefaultPii: true,
   integrations: [captureConsoleIntegration({ levels: ["error"] }), extraErrorDataIntegration({ depth: 8 })],
   ignoreErrors: ["AbortError"],
 })

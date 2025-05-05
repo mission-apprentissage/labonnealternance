@@ -1,13 +1,9 @@
 import { Box, Text, Flex } from "@chakra-ui/react"
+import type { PropsWithChildren } from "react"
 
 import { IconeLogo } from "../../../../theme/components/icons"
 
-/**
- * @description Form header component.
- * @param {JSX.Element} children - Component
- * @returns {JSX.Element}
- */
-export const FormHeaderComponent = ({ children }) => {
+export const FormHeaderComponent = ({ children }: PropsWithChildren) => {
   return (
     <Box bg="#F9F8F6">
       <Flex alignItems="center" flexDirection={["column", "column", "row"]}>

@@ -1,10 +1,6 @@
 import { Box, FormControl, FormErrorMessage, Text, Textarea } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 
-/**
- * @description CfaCandidatInformationForm component.
- * @returns {JSX.Element}
- */
 export const CfaCandidatInformationForm = (props) => {
   const formik = props.formik
 
