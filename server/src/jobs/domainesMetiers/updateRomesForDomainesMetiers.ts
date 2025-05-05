@@ -12,6 +12,19 @@ export const updateRomesForDomainesMetiers = async () => {
   console.info("Lecture de", filepath)
   const fileContent = await fs.readFile(filepath)
   const fileJson = JSON.parse(fileContent.toString()) as Record<string, { intitule: string; code: string }[]>
+  const copiedDomainMapping = {
+    "Production, réalisation de films": "Cinéma, Télévision, spectacle",
+    "Platrerie, pose de plaques": "Peinture en batiment, décor mural, finitions",
+    "Génie électrique": "Electricité, climatisation, domotique, électronique",
+  }
+  console.info("domaines copiés", copiedDomainMapping)
+  Object.entries(copiedDomainMapping).forEach(([newDomain, copiedDomain]) => {
+    const copiedDomainValues = fileJson[copiedDomain]
+    if (copiedDomainValues) {
+      fileJson[newDomain] = copiedDomainValues
+    }
+  })
+
   const fileDomains = Object.keys(fileJson)
   console.info(fileDomains.length, "domaines métiers dans le fichier")
 
