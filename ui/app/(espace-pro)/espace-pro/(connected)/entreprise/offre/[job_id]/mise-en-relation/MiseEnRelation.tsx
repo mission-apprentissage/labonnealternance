@@ -129,6 +129,8 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
   const router = useRouter()
   const { job_id, token } = useParams() as { job_id: string; token?: string }
 
+  const [checkedDisabledEtablissements, setCheckedDisabledEtablissements] = useState<IEtablissementCatalogueProcheWithDistance[]>([])
+
   const { data: formulaire, isLoading: isFormulaireLoading } = useQuery({
     queryKey: ["formulaire"],
     enabled: !!establishment_id,
@@ -139,8 +141,19 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
 
   const { data: etablissements, isLoading: isEtablissementLoading } = useQuery({
     queryKey: ["etablissements"],
-    queryFn: () =>
-      getRelatedEtablissementsFromRome({ rome: offre.rome_code[0], latitude: formulaire.geopoint.coordinates[1], longitude: formulaire.geopoint.coordinates[0], limit: 10 }),
+    queryFn: async () => {
+      const etablissements = await getRelatedEtablissementsFromRome({
+        rome: offre.rome_code[0],
+        latitude: formulaire.geopoint.coordinates[1],
+        longitude: formulaire.geopoint.coordinates[0],
+        limit: 10,
+      })
+      setCheckedDisabledEtablissements(
+        etablissements.filter((etablissement: IEtablissementCatalogueProcheWithDistance) => offre.delegations?.some((delegation) => etablissement.siret === delegation.siret_code))
+      )
+      return etablissements
+    },
+
     enabled: !!formulaire?._id && !!offre?._id,
     gcTime: 0,
   })
@@ -170,8 +183,6 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
     setIsSubmitting(true)
     const etablissementCatalogueIds = checkedEtablissements.map((etablissement) => etablissement._id)
 
-    console.log("etablissementCatalogueIds", etablissementCatalogueIds)
-
     await (
       token
         ? createEtablissementDelegationByToken({
@@ -186,10 +197,9 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
     )
       .then(() => {
         setDelegationsEnregistrees(true)
+        window.scrollTo(0, 0)
       })
       .finally(() => setIsSubmitting(false))
-
-    // goToEndStep({ withDelegation: true })
   }
 
   if (isFormulaireLoading || isEtablissementLoading) return <LoadingEmptySpace label="Chargement en cours" />
@@ -215,12 +225,29 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
 
                     <Box mt={5}>
                       {etablissements.map((etablissement: IEtablissementCatalogueProcheWithDistance, index) => {
+                        const isDisabled = checkedDisabledEtablissements.some((etab) => etab._id === etablissement._id)
                         return (
-                          <Flex borderStyle="solid" borderWidth="1px" borderColor="#000091" py={4} key={etablissement._id} mb={4} data-testid={`cfa-${index}`}>
+                          <Flex
+                            borderStyle="solid"
+                            borderWidth="1px"
+                            borderColor={isDisabled ? "#E5E5E5" : "#000091"}
+                            py={4}
+                            key={etablissement._id}
+                            mb={4}
+                            data-testid={`cfa-${index}`}
+                          >
                             <Center w="70px">
-                              <Checkbox defaultChecked={etablissement.checked} onChange={() => changeEtablissement(etablissement)} />
+                              <Checkbox disabled={isDisabled} defaultChecked={etablissement.checked || isDisabled} onChange={() => changeEtablissement(etablissement)} />
                             </Center>
                             <Box flex="1">
+                              {isDisabled && (
+                                <Flex backgroundColor="#F6F6F6">
+                                  <Image fetchPriority="high" src="/images/icons/chrono.svg" alt="" unoptimized width={16} height={16} />
+                                  <Text ml={2} fontSize="12px" color="#666666" mb={2}>
+                                    CFA déjà contacté
+                                  </Text>
+                                </Flex>
+                              )}
                               <Text size="16px" lineHeight="25px" fontWeight="400" color="#161616" textTransform="capitalize" pr={3}>
                                 {etablissement.entreprise_raison_sociale}
                               </Text>
@@ -274,11 +301,6 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
         )}
         {/*
         reste à faire :
-        display du résultat
-
-        load et affichage de la liste des cfa déjà contactés
-
-
         template Email
         redirection email (conf next properties)
         automate envoi d'emails
