@@ -3,8 +3,9 @@ import { Box, Center, Checkbox, Container, Divider, Flex, Heading, Link, Square,
 import Button from "@codegouvfr/react-dsfr/Button"
 import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { useState } from "react"
+import { ENTREPRISE } from "shared/constants/recruteur"
 import { IEtablissementCatalogueProcheWithDistance } from "shared/interface/etablissement.types"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
@@ -60,10 +61,22 @@ function AucunCFAProche({ title }: { title?: string }) {
   )
 }
 
-function DelegationsEnregistrees({ first_name, last_name, email, phone }: { first_name: string | null; last_name: string | null; email: string | null; phone: string | null }) {
+function DelegationsEnregistrees({
+  first_name,
+  last_name,
+  email,
+  phone,
+  router,
+}: {
+  first_name: string | null
+  last_name: string | null
+  email: string | null
+  phone: string | null
+  router: any
+}) {
   return (
     <Box ml={10} display={{ base: "none", lg: "block" }}>
-      <Box border="1px solid #000091" p={6}>
+      <Box border="1px solid #000091" p={6} mb={5}>
         <Flex>
           <Image fetchPriority="high" src="/images/espace_pro/miseEnRelationEnvoyee.svg" alt="" unoptimized width={268} height={150} style={{ width: "100%", maxWidth: "268px" }} />
           <Box>
@@ -101,11 +114,19 @@ function DelegationsEnregistrees({ first_name, last_name, email, phone }: { firs
           </Box>
         </Flex>
       </Box>
+      <Button
+        onClick={() => {
+          router.push(PAGES.dynamic.backHome({ userType: ENTREPRISE }).getPath())
+        }}
+      >
+        Retourner aux offres
+      </Button>
     </Box>
   )
 }
 
 export default function MiseEnRelation({ establishment_id }: { establishment_id: string }) {
+  const router = useRouter()
   const { job_id, token } = useParams() as { job_id: string; token?: string }
 
   const { data: formulaire, isLoading: isFormulaireLoading } = useQuery({
@@ -178,7 +199,7 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
       <Container maxW="container.xl">
         <Breadcrumb pages={[PAGES.static.backHomeEntreprise, PAGES.dynamic.backEntrepriseMiseEnRelation({ job_id })]} />
         {delegationsEnregistrees ? (
-          <DelegationsEnregistrees first_name={formulaire.first_name} last_name={formulaire.last_name} email={formulaire.email} phone={formulaire.phone} />
+          <DelegationsEnregistrees router={router} first_name={formulaire.first_name} last_name={formulaire.last_name} email={formulaire.email} phone={formulaire.phone} />
         ) : (
           <>
             {etablissements?.length > 0 && (
