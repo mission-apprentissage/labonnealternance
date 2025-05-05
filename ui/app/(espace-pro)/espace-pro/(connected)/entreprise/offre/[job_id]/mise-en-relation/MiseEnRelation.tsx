@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
 import { useParams, useRouter } from "next/navigation"
 import { useState } from "react"
+import { IJobWithRomeDetail } from "shared"
 import { ENTREPRISE } from "shared/constants/recruteur"
 import { IEtablissementCatalogueProcheWithDistance } from "shared/interface/etablissement.types"
 
@@ -137,7 +138,7 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
     queryFn: () => getFormulaire(establishment_id),
   })
 
-  const offre = formulaire ? formulaire.jobs.find((offre) => offre._id === job_id) : null
+  const offre = formulaire && formulaire?.jobs?.length ? formulaire.jobs.find((offre: IJobWithRomeDetail) => offre._id.toString() === job_id) : null
 
   const { data: etablissements, isLoading: isEtablissementLoading } = useQuery({
     queryKey: ["etablissements"],
@@ -158,9 +159,7 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
     gcTime: 0,
   })
 
-  const [checkedEtablissements, setCheckedEtablissements] = useState<IEtablissementCatalogueProcheWithDistance[]>(
-    etablissements ? etablissements.filter((etablissement) => etablissement.checked) : []
-  )
+  const [checkedEtablissements, setCheckedEtablissements] = useState<IEtablissementCatalogueProcheWithDistance[]>([])
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [delegationsEnregistrees, setDelegationsEnregistrees] = useState(false)
@@ -237,7 +236,7 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
                             data-testid={`cfa-${index}`}
                           >
                             <Center w="70px">
-                              <Checkbox disabled={isDisabled} defaultChecked={etablissement.checked || isDisabled} onChange={() => changeEtablissement(etablissement)} />
+                              <Checkbox disabled={isDisabled} defaultChecked={isDisabled} onChange={() => changeEtablissement(etablissement)} />
                             </Center>
                             <Box flex="1">
                               {isDisabled && (
