@@ -1,4 +1,4 @@
-import { badRequest, notFound } from "@hapi/boom"
+import { badRequest } from "@hapi/boom"
 import { ObjectId } from "bson"
 import dayjs from "dayjs"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
@@ -97,7 +97,7 @@ describe("Sending application", () => {
           recipient_id: { collectionName: "recruiters", jobId: "6081289803569600282e0000" },
         },
       })
-    ).rejects.toThrow(notFound(BusinessErrorCodes.NOTFOUND))
+    ).rejects.toThrow(badRequest(BusinessErrorCodes.NOTFOUND))
   })
 
   it("Should refuse sending application to expired job because of expiry date", async () => {
@@ -141,6 +141,6 @@ describe("Sending application", () => {
           recipient_id: { collectionName: "partners", jobId: "6081289803569600282e0003" },
         },
       })
-    ).rejects.toThrow(notFound(BusinessErrorCodes.NOTFOUND))
+    ).rejects.toThrow(badRequest(BusinessErrorCodes.NOTFOUND))
   })
 })

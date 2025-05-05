@@ -1,6 +1,7 @@
 import { Box, Checkbox, Heading, Image, Text } from "@chakra-ui/react"
 import styled from "@emotion/styled"
-import { AnimatePresence, domAnimation, LazyMotion, m } from "framer-motion"
+import { AnimatePresence, domAnimation, LazyMotion } from "motion/react"
+import * as motion from "motion/react-m"
 import { useState } from "react"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
@@ -60,7 +61,7 @@ export const CandidatureTasksChecklist = ({ kind }: { kind: LBA_ITEM_TYPE_OLD | 
         <Box width={363} minWidth={363} padding="124px 44px 44px 44px" height="100%">
           <AnimatePresence>
             {!isFullyChecked && (
-              <m.div
+              <motion.div
                 key="checkbox-list"
                 transition={{ duration: fadeOutDuration, delay: delayBeforeStartingAnimation }}
                 initial={{ opacity: 1 }}
@@ -79,11 +80,11 @@ export const CandidatureTasksChecklist = ({ kind }: { kind: LBA_ITEM_TYPE_OLD | 
                     </Checkbox>
                   ))}
                 </Box>
-              </m.div>
+              </motion.div>
             )}
           </AnimatePresence>
           {isFullyChecked && (
-            <m.div
+            <motion.div
               transition={{ delay: delayBeforeStartingAnimation + fadeOutDuration, duration: fadeInDuration }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -95,7 +96,7 @@ export const CandidatureTasksChecklist = ({ kind }: { kind: LBA_ITEM_TYPE_OLD | 
                 Bravo !<br />
                 Vous pouvez envoyer votre candidature en toute sérénité.
               </Heading>
-            </m.div>
+            </motion.div>
           )}
         </Box>
       </LazyMotion>

@@ -26,10 +26,6 @@ type IEtablissementPartial = Pick<
   | "premium_refusal_date"
 >
 
-/**
- * @description OptOutUnsubscribe component.
- * @returns {JSX.Element}
- */
 export default function OptOutUnsubscribe() {
   const radioOptions = {
     UNSUBSCRIBE_NO_DETAILS: "unsubscribe_no_details",
