@@ -60,7 +60,7 @@ function AucunCFAProche({ title }: { title?: string }) {
   )
 }
 
-function DelegationsEnregistrees() {
+function DelegationsEnregistrees({ first_name, last_name, email, phone }: { first_name: string | null; last_name: string | null; email: string | null; phone: string | null }) {
   return (
     <Box ml={10} display={{ base: "none", lg: "block" }}>
       <Box border="1px solid #000091" p={6}>
@@ -75,25 +75,25 @@ function DelegationsEnregistrees() {
               <Text mt={2}>
                 Prénom:{" "}
                 <Text as="span" fontWeight={700}>
-                  {}
+                  {first_name}
                 </Text>
               </Text>
               <Text mt={2}>
                 Nom:{" "}
                 <Text as="span" fontWeight={700}>
-                  {}
+                  {last_name}
                 </Text>
               </Text>
               <Text mt={2}>
                 Email:{" "}
                 <Text as="span" fontWeight={700}>
-                  {}
+                  {email}
                 </Text>
               </Text>
               <Text mt={2}>
                 Numéro de téléphone:{" "}
                 <Text as="span" fontWeight={700}>
-                  {}
+                  {phone}
                 </Text>
               </Text>
               <Text mt={4}>Elles peuvent désormais vous recontacter pour vous proposer des candidats en adéquation avec vos besoins.</Text>
@@ -178,7 +178,7 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
       <Container maxW="container.xl">
         <Breadcrumb pages={[PAGES.static.backHomeEntreprise, PAGES.dynamic.backEntrepriseMiseEnRelation({ job_id })]} />
         {delegationsEnregistrees ? (
-          <DelegationsEnregistrees />
+          <DelegationsEnregistrees first_name={formulaire.first_name} last_name={formulaire.last_name} email={formulaire.email} phone={formulaire.phone} />
         ) : (
           <>
             {etablissements?.length > 0 && (
