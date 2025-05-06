@@ -6,6 +6,11 @@ import createWithBundleAnalyzer from "@next/bundle-analyzer"
 import { withSentryConfig } from "@sentry/nextjs"
 import { Config } from "next-recompose-plugins"
 
+const cacheControls = {
+  month: "public, max-age=2592000, immutable",
+  year: "public, max-age=31536000, immutable",
+}
+
 const withBundleAnalyzer = createWithBundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
 })
@@ -81,6 +86,9 @@ const nextConfig = {
     dirs: ["."],
   },
   images: {
+    // Tout changement d'image devra passer par un changement de nom de fichier
+    // pour être pris en compte par le cache
+    minimumCacheTTL: 31 * 24 * 3_600, // 31 jours
     localPatterns: [
       {
         pathname: "/images/**",
@@ -130,6 +138,32 @@ const nextConfig = {
       {
         source: "/espace-pro/widget/:slug*",
         headers: [
+          {
+            key: "Content-Security-Policy",
+            value: inline(contentSecurityPolicy),
+          },
+        ],
+      },
+      {
+        source: "/:slug(favicon\\.ico|favicon|styles)/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: cacheControls.month,
+          },
+          {
+            key: "Content-Security-Policy",
+            value: inline(contentSecurityPolicy),
+          },
+        ],
+      },
+      {
+        source: "/:slug(assets|fonts|images|ressources)/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: cacheControls.year,
+          },
           {
             key: "Content-Security-Policy",
             value: inline(contentSecurityPolicy),

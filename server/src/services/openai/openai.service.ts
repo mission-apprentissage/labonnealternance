@@ -53,7 +53,7 @@ export const sendOpenAIMessages = async ({
       }),
     })
 
-    const json: OpenAI.Chat.Completions.ChatCompletion = await response.json()
+    const json: OpenAI.Chat.Completions.ChatCompletion = (await response.json()) as any
     if ("error" in json) {
       logger.error("Error from OpenAI", json.error)
       return null

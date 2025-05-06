@@ -1,16 +1,14 @@
-import type { PropsWithChildren } from "react"
+import { PropsWithChildren } from "react"
 
 import { PublicHeader } from "@/app/(espace-pro)/_components/PublicHeader"
 import { Footer } from "@/app/_components/Footer"
-import { getSession } from "@/utils/getSession"
+import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 
 export default async function HomeLayout({ children }: PropsWithChildren) {
-  const { user } = await getSession()
-
   return (
     <>
-      <PublicHeader user={user} hideConnectionButton={true} />
-      {children}
+      <PublicHeader />
+      <DepotSimplifieStyling>{children}</DepotSimplifieStyling>
       <Footer />
     </>
   )
