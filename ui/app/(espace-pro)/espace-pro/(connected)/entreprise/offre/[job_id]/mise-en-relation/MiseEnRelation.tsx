@@ -138,7 +138,8 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
     queryFn: () => getFormulaire(establishment_id),
   })
 
-  const offre = formulaire && formulaire?.jobs?.length ? formulaire.jobs.find((offre: IJobWithRomeDetail) => offre._id.toString() === job_id) : null
+  //@ts-ignore
+  const offre: IJobWithRomeDetail = formulaire && formulaire?.jobs?.length ? formulaire.jobs.find((job: IJobWithRomeDetail) => job._id?.toString() === job_id) : null
 
   const { data: etablissements, isLoading: isEtablissementLoading } = useQuery({
     queryKey: ["etablissements"],
@@ -149,7 +150,9 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
         longitude: formulaire.geopoint.coordinates[0],
         limit: 10,
       })
+
       setCheckedDisabledEtablissements(
+        //@ts-ignore
         etablissements.filter((etablissement: IEtablissementCatalogueProcheWithDistance) => offre.delegations?.some((delegation) => etablissement.siret === delegation.siret_code))
       )
       return etablissements
@@ -185,12 +188,12 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
     await (
       token
         ? createEtablissementDelegationByToken({
-            jobId: offre._id,
+            jobId: offre._id.toString(),
             data: { etablissementCatalogueIds },
             token: token as string,
           })
         : createEtablissementDelegation({
-            jobId: offre._id,
+            jobId: offre._id.toString(),
             data: { etablissementCatalogueIds },
           })
     )
