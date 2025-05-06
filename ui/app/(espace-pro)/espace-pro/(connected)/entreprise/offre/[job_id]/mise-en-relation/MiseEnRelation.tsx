@@ -208,14 +208,14 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
 
   return (
     <DepotSimplifieStyling>
-      <Container maxW="container.xl">
+      <Container p={0} maxW="container.xl">
         <Breadcrumb pages={[PAGES.static.backHomeEntreprise, PAGES.dynamic.backEntrepriseMiseEnRelation({ job_id })]} />
         {delegationsEnregistrees ? (
           <DelegationsEnregistrees router={router} first_name={formulaire.first_name} last_name={formulaire.last_name} email={formulaire.email} phone={formulaire.phone} />
         ) : (
           <>
             {etablissements?.length > 0 && (
-              <Box p={5}>
+              <Box p={{ base: 0, md: 5 }}>
                 <Flex>
                   <Box minWidth={["100%", "100%", "50%"]}>
                     <Heading fontSize="32px">Ces centres de formation pourraient vous proposer des candidats</Heading>
