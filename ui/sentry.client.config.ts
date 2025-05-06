@@ -22,6 +22,7 @@ init({
     httpClientIntegration({}),
     reportingObserverIntegration({ types: ["crash", "deprecation", "intervention"] }),
   ],
+  sendDefaultPii: true,
   ignoreErrors: ["AbortError"],
   beforeSend(event) {
     // Hydratation error comes from DSFR
