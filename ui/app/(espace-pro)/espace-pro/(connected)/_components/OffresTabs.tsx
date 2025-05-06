@@ -154,7 +154,7 @@ export const OffresTabs = ({
           },
         },
         {
-          Header: "Candidat(s)",
+          Header: "Candidats",
           id: "candidat",
           width: "170",
           accessor: ({ candidatures = 0 }) => <NumberCell>{Math.max(candidatures, 0)}</NumberCell>,
