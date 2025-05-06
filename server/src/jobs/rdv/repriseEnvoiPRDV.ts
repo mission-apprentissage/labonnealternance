@@ -14,9 +14,8 @@ export const repriseEnvoiEmailsPRDV = async () => {
     })
     .toArray()
 
-  let [found, successes, errors] = [0, 0, 0]
+  let [successes, errors] = [0, 0]
   await asyncForEach(appointments, async (appointment) => {
-    found++
     try {
       const referrerObj = getReferrerByKeyName(appointment.appointment_origin)
       const [user, eligibleTrainingsForAppointment, etablissement] = await Promise.all([
@@ -42,5 +41,5 @@ export const repriseEnvoiEmailsPRDV = async () => {
     }
   })
 
-  logger.info(`Reprises demande de rendez-vous terminées. à renvoyer : ${found}, succès : ${successes}, échecs: ${errors}`)
+  logger.info(`Reprises demande de rendez-vous terminées. à renvoyer : ${appointments.length}, succès : ${successes}, échecs: ${errors}`)
 }
