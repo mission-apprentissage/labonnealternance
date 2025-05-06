@@ -99,7 +99,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: s
         {job?.company?.mandataire && (
           <Text>
             Offre publiée par{" "}
-            <Text as="span" color="pinksoft.600" fontWeight={700}>
+            <Text as="span" fontWeight={700}>
               {job.company.name}
             </Text>{" "}
             pour une entreprise partenaire du centre de formation.
