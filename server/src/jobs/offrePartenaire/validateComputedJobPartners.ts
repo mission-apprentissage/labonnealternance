@@ -1,11 +1,10 @@
 import { AnyBulkWriteOperation, Filter } from "mongodb"
-import { oleoduc, writeData } from "oleoduc"
+import { oleoduc, writeData, groupData } from "oleoduc"
 import jobsPartnersModel from "shared/models/jobsPartners.model"
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { streamGroupByCount } from "@/common/utils/streamUtils"
 
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
@@ -23,7 +22,7 @@ export const validateComputedJobPartners = async (addedMatchFilter?: Filter<ICom
   const job = COMPUTED_ERROR_SOURCE.VALIDATION
   await oleoduc(
     getDbCollection("computed_jobs_partners").find(finalFilter).stream(),
-    streamGroupByCount(groupSize),
+    groupData({ size: groupSize }),
     writeData(
       async (documents: IComputedJobsPartners[]) => {
         counters.total += documents.length

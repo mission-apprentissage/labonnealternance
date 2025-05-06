@@ -1,10 +1,10 @@
 {
+  "extends": "@tsconfig/node22/tsconfig.json",
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig.json to read more about this file */
     /* Projects */
     "incremental": true /* Enable incremental compilation */,
     /* Language and Environment */
-    "target": "ES2022" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
     "lib": ["ES2023"] /* Specify a set of bundled library declaration files that describe the target runtime environment. */,
     /* Modules */
     "module": "ESNext",

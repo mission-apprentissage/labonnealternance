@@ -1,5 +1,7 @@
 import { Footer as DsfrFooter } from "@codegouvfr/react-dsfr/Footer"
 
+import { publicConfig } from "@/config.public"
+
 import { PAGES } from "../../utils/routes.utils"
 
 import { DsfrHeaderProps } from "./Header"
@@ -7,11 +9,11 @@ import { DsfrHeaderProps } from "./Header"
 export function Footer() {
   return (
     <DsfrFooter
-      accessibility="non compliant"
+      accessibility="partially compliant"
       accessibilityLinkProps={{
         href: PAGES.static.accessibilite.getPath(),
       }}
-      contentDescription="La bonne alternance simplifie les mises en relation  entre les trois d’acteurs candidats, recruteurs et centres de formation, afin de faciliter les entrées en  alternance."
+      contentDescription="La bonne alternance simplifie les mises en relation entre les trois types d’acteurs candidats, recruteurs et centres de formation, afin de faciliter les entrées en alternance."
       operatorLogo={{
         alt: "France relance",
         imgUrl: "/images/france_relance.svg",
@@ -50,7 +52,7 @@ export function Footer() {
               linkProps: {
                 href: PAGES.static.codeSources.getPath(),
               },
-              text: "Code source",
+              text: `Code source v${publicConfig.version}`,
             },
             {
               linkProps: {

@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { TRAINING_CONTRACT_TYPE } from "../../../constants/recruteur.js"
+import { OPCOS_LABEL, TRAINING_CONTRACT_TYPE } from "../../../constants/recruteur.js"
 import { extensions } from "../../../helpers/zodHelpers/zodPrimitives.js"
 import { JOB_STATUS_ENGLISH } from "../../../models/job.model.js"
 import {
@@ -99,6 +99,7 @@ export const zJobSearchApiV3Query = z
     romes: extensions.romeCodeArray().nullable().default(null),
     rncp: extensions.rncpCode().nullable().default(null),
     partners_to_exclude: z.array(extensions.buildEnum(JOBPARTNERS_LABEL)).nullish(),
+    opco: extensions.buildEnum(OPCOS_LABEL).nullable().default(null),
   })
   .superRefine((data, ctx) => {
     if (data.longitude == null && data.latitude != null) {

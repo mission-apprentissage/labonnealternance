@@ -4,8 +4,8 @@ import { Document, Filter, ObjectId } from "mongodb"
 import { IJob, ILbaItemPartnerJob, IRecruiter, IReferentielRomeForJob, JOB_STATUS } from "shared"
 import { FRANCE_LATITUDE, FRANCE_LONGITUDE } from "shared/constants/geolocation"
 import { NIVEAUX_POUR_LBA } from "shared/constants/index"
-import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
-import { INiveauPourLbaLabel, RECRUITER_STATUS } from "shared/constants/recruteur"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
+import { INiveauPourLbaLabel, OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -124,11 +124,13 @@ export const getLbaJobsV2 = async ({
   romes,
   niveau,
   limit,
+  opco,
 }: {
   geo: { latitude: number; longitude: number; radius: number } | null
   romes: string[] | null
   niveau: INiveauPourLbaLabel | null
   limit: number
+  opco?: OPCOS_LABEL | null
 }): Promise<IJobResult[]> => {
   const jobFilters: Filter<IRecruiter> = {
     "jobs.job_status": JOB_STATUS.ACTIVE,
@@ -146,6 +148,10 @@ export const getLbaJobsV2 = async ({
   const query: Filter<IRecruiter> = {
     status: RECRUITER_STATUS.ACTIF,
     ...jobFilters,
+  }
+
+  if (opco) {
+    query["opco"] = opco
   }
 
   const filterStage: Document[] =
@@ -473,7 +479,7 @@ function transformLbaJobPrivate({
     company: {
       // si mandataire contient les données du CFA
       siret: recruiter.establishment_siret,
-      name: recruiter.establishment_enseigne || recruiter.establishment_raison_sociale || "Enseigne inconnue",
+      name: recruiter.establishment_enseigne || recruiter.establishment_raison_sociale || UNKNOWN_COMPANY,
       size: recruiter.establishment_size,
       mandataire: recruiter.is_delegated,
       creationDate: recruiter.establishment_creation_date ? new Date(recruiter.establishment_creation_date) : null,
@@ -553,7 +559,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
       company: {
         // si mandataire contient les données du CFA
         siret: recruiter.establishment_siret,
-        name: recruiter.establishment_enseigne || recruiter.establishment_raison_sociale || "Enseigne inconnue",
+        name: recruiter.establishment_enseigne || recruiter.establishment_raison_sociale || UNKNOWN_COMPANY,
         size: recruiter.establishment_size,
         mandataire: recruiter.is_delegated,
         creationDate: recruiter.establishment_creation_date ? new Date(recruiter.establishment_creation_date) : null,
@@ -629,7 +635,7 @@ function transformLbaJobWithMinimalData({ recruiter, applicationCountByJob }: { 
       company: {
         // si mandataire contient les données du CFA
         siret: recruiter.establishment_siret,
-        name: recruiter.establishment_enseigne || recruiter.establishment_raison_sociale || "Enseigne inconnue",
+        name: recruiter.establishment_enseigne || recruiter.establishment_raison_sociale || UNKNOWN_COMPANY,
         mandataire: recruiter.is_delegated,
       },
       job: {

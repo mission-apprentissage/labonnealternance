@@ -295,24 +295,24 @@ program
 program
   .command("sync-sib-blocked")
   .description("Récupère auprès de Brevo la liste des adresses emails bloquées le jour précédent (défaut) ou toutes les adresses bloquées (option)")
-  .option("-all-addresses, [AllAddresses]", "pour récupérer toutes les adresses bloquées", false)
+  .option("-a, [AllAddresses]", "pour récupérer toutes les adresses bloquées", false)
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("brevo:blocked:sync"))
 
 program
   .command("update-geo-locations")
   .description("Procède à la géolocalisation de masse des sociétés dans le fichier des bonnes alternances")
-  .option("-force-recreate, [ForceRecreate]", "pour forcer la recréation", false)
-  .option("-source-file, [SourceFile]", "fichier source alternatif")
+  .option("-f, [ForceRecreate]", "pour forcer la recréation", false)
+  .option("-s, [SourceFile]", "fichier source alternatif")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("geo-locations:update"))
 
 program
   .command("update-opcos")
   .description("Procède à la résolution des opcos des sociétés dans le fichier des bonnes alternances")
-  .option("-clear-mongo, [ClearMongo]", "vide la collection des opcos", false)
-  .option("-force-recreate, [ForceRecreate]", "pour forcer la recréation", false)
-  .option("-source-file, [SourceFile]", "fichier source alternatif")
+  .option("-c, [ClearMongo]", "vide la collection des opcos", false)
+  .option("-f, [ForceRecreate]", "pour forcer la recréation", false)
+  .option("-s, [SourceFile]", "fichier source alternatif")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("opcos:update"))
 
@@ -340,7 +340,7 @@ program
   .command("import-referentiel-opco-constructys")
   .description("Importe les emails pour la collection ReferentielOpco depuis l'opco Constructys")
   .option("-q, --queued", "Run job asynchronously", false)
-  .option("-parallelism, [parallelism]", "Number of threads", "10")
+  .option("-p, [parallelism]", "Number of threads", "10")
   .action(createJobAction("referentiel-opco:constructys:import"))
 
 program

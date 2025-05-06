@@ -29,7 +29,7 @@ export default defineConfig((options) => {
     onSuccess: isWatched ? "yarn cli start --withProcessor" : "",
     // In watch mode doesn't exit cleanly as it causes EADDRINUSE error
     killSignal: "SIGKILL",
-    target: "es2022",
+    target: "es2024",
     platform: "node",
     format: ["esm"],
     splitting: true,

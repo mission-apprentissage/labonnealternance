@@ -1,8 +1,8 @@
 import { badRequest } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { FRANCE_LATITUDE, FRANCE_LONGITUDE } from "shared/constants/geolocation"
-import { NIVEAUX_POUR_LBA, TRAINING_REMOTE_TYPE } from "shared/constants/index"
-import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { NIVEAUX_POUR_LBA, OPCOS_LABEL, TRAINING_REMOTE_TYPE } from "shared/constants/index"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { ILbaItemPartnerJob, traductionJobStatus } from "shared/models/index"
 import { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance } from "shared/models/jobsPartners.model"
 
@@ -51,7 +51,7 @@ function transformPartnerJob(partnerJob: IJobsPartnersOfferPrivateWithDistance, 
     },
     company: {
       siret: partnerJob.workplace_siret,
-      name: partnerJob.workplace_name ?? partnerJob.workplace_brand ?? partnerJob.workplace_legal_name ?? "Enseigne inconnue",
+      name: partnerJob.workplace_name ?? partnerJob.workplace_brand ?? partnerJob.workplace_legal_name ?? UNKNOWN_COMPANY,
       size: partnerJob.workplace_size,
       opco: { label: partnerJob.workplace_opco, url: null },
       url: partnerJob.workplace_website,
@@ -108,7 +108,7 @@ function transformPartnerJobWithMinimalData(partnerJob: IJobsPartnersOfferPrivat
     },
     company: {
       siret: partnerJob.workplace_siret,
-      name: partnerJob.workplace_name ?? partnerJob.workplace_brand ?? partnerJob.workplace_legal_name ?? "Enseigne inconnue",
+      name: partnerJob.workplace_name ?? partnerJob.workplace_brand ?? partnerJob.workplace_legal_name ?? UNKNOWN_COMPANY,
       opco: { label: partnerJob.workplace_opco, url: null },
     },
     job: {
@@ -164,7 +164,10 @@ export const getPartnerJobs = async ({
       lon: hasLocation ? (longitude as number) : FRANCE_LONGITUDE,
       niveau: diploma ? NIVEAUX_POUR_LBA[diploma] : undefined,
       isMinimalData,
+      opco,
     }
+
+    const opcoParam = (params.opco ?? null) as OPCOS_LABEL | null
 
     const resolvedQuery = await resolveQuery({
       latitude: params.lat,
@@ -173,6 +176,7 @@ export const getPartnerJobs = async ({
       target_diploma_level: params.niveau,
       romes: params.romes,
       rncp: null,
+      opco: opcoParam,
     })
 
     const rawPartnerJobs = await getJobsPartnersFromDBForUI(resolvedQuery)

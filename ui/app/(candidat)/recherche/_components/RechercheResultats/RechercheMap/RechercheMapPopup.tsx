@@ -56,7 +56,7 @@ function RechercheMapPopupContent(props: WithRecherchePageParams<{ activeItems: 
           alignItems: "center",
         }}
       >
-        <Image src={type === "formation" ? "/images/icons/book.svg" : "/images/icons/job.svg"} width={40} height={40} alt="" unoptimized />
+        <Image src={type === "formation" ? "/images/icons/formation.svg" : "/images/icons/job.svg"} width={40} height={40} alt="" unoptimized />
         <Typography variant="h4">
           {type === "formation" ? `Formation${props.activeItems.length > 1 ? "s" : ""}` : `Opportunité${props.activeItems.length > 1 ? "s" : ""} d'emploi`}
         </Typography>

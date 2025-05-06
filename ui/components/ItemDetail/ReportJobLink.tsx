@@ -168,14 +168,14 @@ export const ReportJobLink = ({
 
 const ReportedAcknowledgement = () => {
   return (
-    <Box maxWidth={538} justifySelf="center">
-      <Flex gap={4} mb={6} alignItems="center">
+    <Box justifySelf="center">
+      <Flex mb={2} gap={4} alignItems="center">
         <Image width="56px" height="56px" src="/images/paperplane2.svg" alt="" />
-        <Text as="h1" fontSize="20px" fontWeight={700}>
+        <Text as="h1" fontSize="20px" lineHeight={6} fontWeight={700}>
           Votre signalement a bien été envoyé à notre équipe.
         </Text>
       </Flex>
-      <Text>Merci de votre participation à l’amélioration du service La bonne alternance.</Text>
+      <Text as="span">Merci de votre participation à l’amélioration du service La bonne alternance.</Text>
     </Box>
   )
 }

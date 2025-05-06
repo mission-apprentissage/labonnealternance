@@ -239,7 +239,7 @@ const DemandeDeContact = (props: Props) => {
                 Voulez vous dire ?
               </Text>
               {suggestedEmails.map((suggestedEmail) => (
-                <Button key={suggestedEmail.corrected} onClick={onClickEmailSuggestion} priority="tertiary no outline" size="small">
+                <Button type="button" key={suggestedEmail.corrected} onClick={onClickEmailSuggestion} priority="tertiary no outline" size="small">
                   {suggestedEmail.corrected}
                 </Button>
               ))}
@@ -429,7 +429,7 @@ const DemandeDeContact = (props: Props) => {
       </Box>
     </Box>
   ) : (
-    <Box>{onSuccessSubmitResponse ? <FormConfirmed /> : <FormElement />}</Box>
+    <Box>{onSuccessSubmitResponse ? <FormConfirmed /> : FormElement()}</Box>
   )
 }
 

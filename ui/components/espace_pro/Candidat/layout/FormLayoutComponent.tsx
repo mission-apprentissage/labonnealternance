@@ -4,13 +4,6 @@ import { FormCreatePageFooter } from "../FormCreatePageFooter"
 
 import { FormHeaderComponent } from "./FormHeaderComponent"
 
-/**
- * @description FormLayoutComponent.
- * @param {JSX.Element} children
- * @param {JSX.Element} headerText
- * @param {Object} rest
- * @returns {JSX.Element}
- */
 export const FormLayoutComponent = ({ children, headerText, ...rest }) => {
   return (
     <Container maxW="full" p={0} {...rest} boxShadow="0px 0px 24px rgba(30, 30, 30, 0.24)" maxWidth="82ch">

@@ -113,6 +113,7 @@ const excludedStartPaths = [
   "/espace-pro/widget/",
   "/espace-pro/creation/",
   "/espace-pro/offre/impression/",
+  "/espace-pro/proposition/formulaire/",
 ]
 const isConnectionRequired = (path: string) => {
   if (!path.startsWith("/espace-pro/")) {

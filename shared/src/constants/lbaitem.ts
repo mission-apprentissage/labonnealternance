@@ -1,5 +1,6 @@
 import { assertUnreachable } from "../utils/assertUnreachable.js"
 
+export const UNKNOWN_COMPANY = "Enseigne inconnue"
 /**
  * KBA 20240805
  * to be split and replaced with shared/models/jobsPartners.model.ts when private route V2 are active

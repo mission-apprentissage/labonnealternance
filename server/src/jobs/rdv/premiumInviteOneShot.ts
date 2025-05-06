@@ -1,5 +1,6 @@
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { createRdvaPremiumParcoursupPageLink } from "@/services/appLinks.service"
 
 import { logger } from "../../common/logger"
 import { isValidEmail } from "../../common/utils/isValidEmail"
@@ -43,6 +44,7 @@ export const premiumInviteOneShot = async () => {
       }
 
       if (!email) return
+      if (!etablissement.gestionnaire_siret) return null
 
       await mailer.sendEmail({
         to: email,
@@ -65,7 +67,7 @@ export const premiumInviteOneShot = async () => {
             formateur_city: etablissement.formateur_city,
             siret: etablissement.formateur_siret,
             email: etablissement.gestionnaire_email,
-            linkToForm: `${config.publicUrl}/espace-pro/form/premium/${etablissement._id}`,
+            linkToForm: createRdvaPremiumParcoursupPageLink(email, etablissement.gestionnaire_siret, etablissement._id.toString()),
             optOutActivatedAtDate: dayjs(etablissement.optout_activation_date).format("DD/MM/YYYY"),
             emailGestionnaire: etablissement.gestionnaire_email,
           },

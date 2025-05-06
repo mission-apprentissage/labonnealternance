@@ -45,7 +45,7 @@ describe("getRomeoPredictions", () => {
   it("should throw an error if the payload is too big", async () => {
     const payload = Array.from({ length: 51 }, (_, i) => ({ intitule: `Software Engineer ${i}`, identifiant: `${i}`, contexte: " " }))
 
-    await expect(getRomeoPredictions(payload)).rejects.toThrowError("Maximum recommanded array size is 50")
+    await expect(getRomeoPredictions(payload)).rejects.toThrowError("Maximum recommanded array size is 20")
   })
 
   it("should not request new token if the token exists in cache", async () => {

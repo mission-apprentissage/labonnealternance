@@ -1,5 +1,5 @@
 import { Box, Container } from "@chakra-ui/react"
-import React from "react"
+import React, { type PropsWithChildren } from "react"
 
 import Footer from "@/components/footer"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
@@ -7,12 +7,7 @@ import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import Header from "./Header"
 import NavigationMenu from "./NavigationMenu"
 
-/**
- * @description Beta layout component.
- * @param {JSX.Element} children
- * @return {JSX.Element}
- */
-const Layout = ({ children }) => {
+const Layout = ({ children }: PropsWithChildren) => {
   return (
     <Container maxW="full">
       <InfoBanner showInfo={false} />

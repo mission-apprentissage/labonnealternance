@@ -1,11 +1,5 @@
 import { Icon } from "@chakra-ui/react"
 
-/**
- * @description Success Circle icon.
- * @param {number} width - Icon width
- * @param {string} fillHexaColor - Hexa color
- * @returns {JSX.Element}
- */
 const SuccessCircle = ({ width = undefined, fillHexaColor, ...props }) => (
   <Icon width={width} height="100%" viewBox="0 0 34 34" {...props}>
     <path

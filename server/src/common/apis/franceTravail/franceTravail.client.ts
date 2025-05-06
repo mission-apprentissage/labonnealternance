@@ -201,8 +201,11 @@ type IRomeoOptions = {
   nbResultats?: number // betwwen 1 and 25, default 5
   seuilScorePrediction?: number
 }
+
+export const MAX_ROMEO_PAYLOAD_SIZE = 20
+
 export const getRomeoPredictions = async (payload: IRomeoPayload[], options: IRomeoOptions = { nomAppelant: "La bonne alternance" }): Promise<IRomeoAPIResponse | null> => {
-  if (payload.length > 50) throw Error("Maximum recommanded array size is 50") // Louis feeback https://mna-matcha.atlassian.net/browse/LBA-2232?focusedCommentId=13000
+  if (payload.length > MAX_ROMEO_PAYLOAD_SIZE) throw Error(`Maximum recommanded array size is ${MAX_ROMEO_PAYLOAD_SIZE}`) // Louis feeback https://mna-matcha.atlassian.net/browse/LBA-2232?focusedCommentId=13000
   const token = await getToken("ROMEO")
   return RomeoLimiter(async (client) => {
     try {

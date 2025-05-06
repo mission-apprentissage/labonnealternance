@@ -12,15 +12,15 @@ import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/us
 import { useNavigateToResultItemDetail } from "@/app/(candidat)/recherche/_hooks/useNavigateToResultItemDetail"
 import { useRechercheResults, type ILbaItem, type IUseRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import {
-  type IRecherchePageParams,
-  type WithRecherchePageParams,
   deserializeItemReferences,
   isItemReferenceInList,
   ItemReferenceLike,
   serializeItemReferences,
+  type IRecherchePageParams,
+  type WithRecherchePageParams,
 } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
-import "mapbox-gl/dist/mapbox-gl.css"
 import { ErrorBoundary } from "@/app/_components/ErrorComponent"
+import "mapbox-gl/dist/mapbox-gl.css"
 
 const FRANCE_CENTER: [number, number] = [2.213749, 46.227638]
 const FRANCE_ZOOM = 5
@@ -266,9 +266,9 @@ async function setupMap(container: HTMLDivElement): Promise<Mapbox> {
 
   console.log("Loading images!!!")
   await Promise.all([
-    loadImage("/images/icons/book.png", "formation", mapSingleton),
+    loadImage("/images/icons/formation.png", "formation", mapSingleton),
     loadImage("/images/icons/job.png", "job", mapSingleton),
-    loadImage("/images/icons/book_large_shadow.png", "formation-active", mapSingleton),
+    loadImage("/images/icons/formation_large_shadow.png", "formation-active", mapSingleton),
     loadImage("/images/icons/job_large_shadow.png", "job-active", mapSingleton),
   ])
 

@@ -79,6 +79,7 @@ export const recruiterOfferExpirationReminderJob = async (threshold: number /* n
           establishment_raison_sociale,
           is_delegated,
           offres: jobsWithRecruiter.map((job) => ({
+            job_title: job.offer_title_custom,
             rome_appellation_label: job.rome_appellation_label ?? job.rome_label,
             job_type: job.job_type,
             job_level_label: job.job_level_label,

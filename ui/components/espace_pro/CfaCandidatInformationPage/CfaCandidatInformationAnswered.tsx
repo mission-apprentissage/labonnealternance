@@ -2,10 +2,6 @@ import { Box, Text } from "@chakra-ui/react"
 
 import { getCurrentDate, getCurrentHourMinute } from "../../../common/utils/dateUtils"
 
-/**
- * @description CfaCandidatInformationAnswered component.
- * @returns {JSX.Element}
- */
 export const CfaCandidatInformationAnswered = (props) => {
   return (
     <Box mt={8} p={6} backgroundColor="#F5F5FE">

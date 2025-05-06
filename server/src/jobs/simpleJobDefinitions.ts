@@ -1,4 +1,5 @@
 import { updateDiplomeMetier } from "@/jobs/diplomesMetiers/updateDiplomesMetiers"
+import { updateRomesForDomainesMetiers } from "@/jobs/domainesMetiers/updateRomesForDomainesMetiers"
 import { importRecruteursLbaFromComputedToJobsPartners } from "@/jobs/offrePartenaire/fillComputedRecruteursLba"
 import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail/classifyJobsFranceTravail"
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
@@ -17,6 +18,7 @@ import { processApplications } from "./applications/processApplications"
 import { processRecruiterIntentions } from "./applications/processRecruiterIntentions"
 import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
 import { obfuscateCollections } from "./database/obfuscateCollections"
+import { classifyRomesForDomainesMetiers, classifyRomesForDomainesMetiersAnalyze } from "./domainesMetiers/classifyRomesForDomainesMetiers"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
@@ -296,5 +298,17 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: expireJobsPartners,
     description: "Change le status des offres dont la date d'expiration est dépassée",
+  },
+  {
+    fct: classifyRomesForDomainesMetiers,
+    description: "Classifie les fiches ROME pour les domaines métiers",
+  },
+  {
+    fct: classifyRomesForDomainesMetiersAnalyze,
+    description: "Analyse les fichiers de sortie de classifyRomesForDomainesMetiers",
+  },
+  {
+    fct: updateRomesForDomainesMetiers,
+    description: "Met à jour la correspondance entre les domaines métiers et les fiches romes",
   },
 ]

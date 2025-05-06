@@ -1,10 +1,5 @@
 import { Icon } from "@chakra-ui/react"
 
-/**
- * @description Copy icon.
- * @param {Object} props
- * @return {JSX.Element}
- */
 export const Copy = (props) => (
   <Icon viewBox="0 0 16 16" {...props}>
     <path

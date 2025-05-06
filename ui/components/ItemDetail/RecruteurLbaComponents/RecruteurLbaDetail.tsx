@@ -17,7 +17,8 @@ import { ReportJobLink } from "../ReportJobLink"
 
 const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompanyJson }) => {
   useEffect(() => {
-    SendPlausibleEvent("Affichage - Fiche entreprise Algo", {
+    SendPlausibleEvent("Affichage - Fiche emploi", {
+      partner_label: recruteurLba.ideaType,
       info_fiche: `${recruteurLba?.company?.siret}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
     })
     /* eslint react-hooks/exhaustive-deps: 0 */
@@ -226,13 +227,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
                 <Text fontSize="16px" lineHeight="24px" fontWeight="700" marginBottom="8px" color="#161616">
                   Cette entreprise vous semble peu recommandable ? Voici les raisons pour lesquelles vous pouvez nous signaler une entreprise :
                 </Text>
-                <UnorderedList
-                  style={{
-                    color: "#383838",
-                    fontSize: "16px",
-                    lineHeight: "24px",
-                  }}
-                >
+                <UnorderedList style={{ color: "#383838", fontSize: "16px", lineHeight: "24px" }}>
                   <ListItem>Informations trompeuses ou fausses</ListItem>
                   <ListItem>Non-respect des lois du travail </ListItem>
                   <ListItem>Fraude ou arnaque</ListItem>

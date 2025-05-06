@@ -2,7 +2,7 @@
 import { Flex, Spinner } from "@chakra-ui/react"
 import { useQuery } from "@tanstack/react-query"
 import { useSearchParams } from "next/navigation"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import WidgetCandidatureLba from "@/components/ItemDetail/CandidatureLba/WidgetCandidatureLba"
 import WidgetPostulerError from "@/components/ItemDetail/CandidatureLba/WidgetPostulerError"
@@ -17,9 +17,11 @@ export default function WidgetPostuler() {
 
   const fetchPostulerItem = (parameters) => {
     switch (parameters.type) {
+      case LBA_ITEM_TYPE_OLD.MATCHA: // To remove when 1J1S switched to V2
       case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
         return fetchLbaJobDetails({ id: parameters.itemId })
       }
+      case LBA_ITEM_TYPE_OLD.LBA: // To remove when 1J1S switched to V2
       case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
         return fetchLbaCompanyDetails({ id: parameters.itemId })
       }

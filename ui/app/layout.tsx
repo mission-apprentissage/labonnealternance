@@ -1,10 +1,12 @@
 import { DsfrHead } from "@codegouvfr/react-dsfr/next-appdir/DsfrHead"
 import { DsfrProvider } from "@codegouvfr/react-dsfr/next-appdir/DsfrProvider"
 import { getHtmlAttributes } from "@codegouvfr/react-dsfr/next-appdir/getHtmlAttributes"
+//import { Alert, AlertTitle } from "@mui/material"
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter"
 import { Metadata } from "next"
 import Link from "next/link"
 import PlausibleProvider from "next-plausible"
+import type { PropsWithChildren } from "react"
 import { setupZodErrorMap } from "shared/helpers/zodHelpers/setupZodErrorMap"
 
 import RootTemplate from "@/app/client_only_providers"
@@ -38,7 +40,7 @@ setupZodErrorMap()
 
 const lang = "fr"
 
-export default function RootLayout({ children }: { children: JSX.Element }) {
+export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html {...getHtmlAttributes({ defaultColorScheme, lang })}>
       <head>
@@ -63,11 +65,18 @@ export default function RootLayout({ children }: { children: JSX.Element }) {
       </head>
       <body>
         {
-          <AppRouterCacheProvider>
-            <DsfrProvider lang={lang} defaultColorScheme={defaultColorScheme} Link={Link}>
-              <RootTemplate>{children}</RootTemplate>
-            </DsfrProvider>
-          </AppRouterCacheProvider>
+          <>
+            {/* <Alert variant="filled" severity="error">
+              <AlertTitle>Service temporairement dégradé.</AlertTitle>
+              Suite à un problème chez notre prestataire d'envoi d'emails, les connexions aux comptes et les envois de candidatures sont momentanément interrompus. <br /> Nous vous
+              prions de nous excuser pour la gêne occasionnée et vous invitons à revenir ultérieurement.{" "}
+            </Alert> */}
+            <AppRouterCacheProvider>
+              <DsfrProvider lang={lang} defaultColorScheme={defaultColorScheme} Link={Link}>
+                <RootTemplate>{children}</RootTemplate>
+              </DsfrProvider>
+            </AppRouterCacheProvider>
+          </>
         }
       </body>
     </html>
