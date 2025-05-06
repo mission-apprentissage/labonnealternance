@@ -18,7 +18,7 @@ import { PAGES } from "@/utils/routes.utils"
 export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token }: { idFormulaire: string; jobId: string; siretFormateur: string; token: string }) {
   const toast = useToast()
 
-  const formulaireQuery = useQuery({
+  const { isError, data: formulaire } = useQuery({
     queryKey: ["getFormulaire", idFormulaire, token],
     queryFn: () => getDelegationDetails(idFormulaire, token),
     enabled: Boolean(idFormulaire && token),
@@ -30,7 +30,10 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
     enabled: Boolean(jobId && siretFormateur && token),
   })
 
-  const formulaire = formulaireQuery?.data
+  if (isError) {
+    throw new Error("Une erreur est survenue lors de la récupération des informations de l'entreprise.")
+  }
+
   const job = (formulaire?.jobs as IJobJson[])?.find((job) => job._id === jobId)
 
   /**
