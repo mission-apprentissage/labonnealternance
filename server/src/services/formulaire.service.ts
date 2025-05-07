@@ -653,7 +653,7 @@ export async function sendDelegationMailToCFA(email: string, offre: IJob, recrui
     data: {
       images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`, logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true` },
       enterpriseName: recruiter.establishment_raison_sociale,
-      jobName: offre.rome_appellation_label,
+      jobName: offre.offer_title_custom || offre.rome_appellation_label,
       contractType: (offre.job_type ?? []).join(", "),
       trainingLevel: offre.job_level_label,
       startDate: dayjs(offre.job_start_date).format("DD/MM/YYYY"),
