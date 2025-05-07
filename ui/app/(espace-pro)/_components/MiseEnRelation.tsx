@@ -3,7 +3,7 @@ import { Box, Center, Checkbox, Container, Divider, Flex, Heading, Link, Square,
 import Button from "@codegouvfr/react-dsfr/Button"
 import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
-import { useParams, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { IJobWithRomeDetail } from "shared"
 import { ENTREPRISE } from "shared/constants/recruteur"
@@ -126,9 +126,8 @@ function DelegationsEnregistrees({
   )
 }
 
-export default function MiseEnRelation({ establishment_id }: { establishment_id: string }) {
+export default function MiseEnRelation({ establishment_id, job_id, token }: { establishment_id: string; job_id: string; token?: string }) {
   const router = useRouter()
-  const { job_id, token } = useParams() as { job_id: string; token?: string }
 
   const [checkedDisabledEtablissements, setCheckedDisabledEtablissements] = useState<IEtablissementCatalogueProcheWithDistance[]>([])
 
