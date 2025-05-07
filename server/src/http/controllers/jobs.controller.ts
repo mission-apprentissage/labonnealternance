@@ -27,7 +27,7 @@ import {
   provideOffre,
 } from "../../services/formulaire.service"
 import { getFtJobFromId } from "../../services/ftjob.service"
-import { getJobsQuery } from "../../services/jobs/jobOpportunity/jobOpportunity.service"
+import { getJobsQuery, getJobsQueryPrivate } from "../../services/jobs/jobOpportunity/jobOpportunity.service"
 import { addOffreDetailView, getLbaJobById, getLbaJobByIdV2 } from "../../services/lbajob.service"
 import { getCompanyFromSiret, getRecruteurLbaFromDB } from "../../services/recruteurLba.service"
 import { getFicheMetierFromDB } from "../../services/rome.service"
@@ -368,7 +368,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { referer } = req.headers
       const { romes, rncp, caller, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl } = req.query
-      const result = await getJobsQuery({ romes, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, isMinimalData: true })
+      const result = await getJobsQueryPrivate({ romes, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, isMinimalData: true })
 
       if ("error" in result) {
         return res.status(500).send(result)
