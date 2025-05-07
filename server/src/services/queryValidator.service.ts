@@ -276,7 +276,7 @@ export const formationsQueryValidator = async (
   // présence d'identifiant de la source : caller
   validateCaller({ caller: query.caller, referer: query.referer }, error_messages)
 
-  validateRomeOrDomain({ romes: query.romes, romeDomain: query.romeDomain, romeLimit: 20 }, error_messages)
+  validateRomeOrDomain({ romes: query.romes, romeDomain: query.romeDomain, romeLimit: 100 }, error_messages)
 
   // coordonnées gps optionnelles : latitude et longitude
   if (query.latitude || query.longitude) {
