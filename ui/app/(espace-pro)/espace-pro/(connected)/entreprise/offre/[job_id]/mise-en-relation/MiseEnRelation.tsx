@@ -76,15 +76,15 @@ function DelegationsEnregistrees({
   router: any
 }) {
   return (
-    <Box ml={10} display={{ base: "none", lg: "block" }}>
-      <Box border="1px solid #000091" p={6} mb={5}>
-        <Flex>
+    <Box>
+      <Box border="1px solid #000091" p={{ base: 2, md: 6 }} mb={5}>
+        <Flex direction={{ base: "column", md: "row" }} alignItems={{ base: "center", md: "flex-start" }}>
           <Image fetchPriority="high" src="/images/espace_pro/miseEnRelationEnvoyee.svg" alt="" unoptimized width={268} height={150} style={{ width: "100%", maxWidth: "268px" }} />
-          <Box>
-            <Heading fontSize="24px" mb={3} ml={5}>
+          <Box mt={{ base: 4, md: 0 }} ml={{ base: 0, md: 5 }}>
+            <Heading fontSize="24px" mb={3}>
               Votre offre a été partagée aux CFA sélectionnés
             </Heading>
-            <Box ml={5}>
+            <Box>
               Les écoles que vous avez sélectionnées ont reçu par email votre offre et vos coordonnées suivantes :
               <Text mt={2}>
                 Prénom:{" "}
@@ -243,9 +243,9 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
                             </Center>
                             <Box flex="1">
                               {isDisabled && (
-                                <Flex backgroundColor="#F6F6F6">
-                                  <Image fetchPriority="high" src="/images/icons/chrono.svg" alt="" unoptimized width={16} height={16} />
-                                  <Text ml={2} fontSize="12px" color="#666666" mb={2}>
+                                <Flex alignItems="flex-start" backgroundColor="#F6F6F6">
+                                  <Image fetchPriority="high" src="/images/icons/chrono.svg" alt="" style={{ margin: "3px" }} unoptimized width={16} height={16} />
+                                  <Text fontSize="12px" color="#666666" mb={2}>
                                     CFA déjà contacté
                                   </Text>
                                 </Flex>
