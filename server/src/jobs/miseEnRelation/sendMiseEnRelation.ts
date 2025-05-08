@@ -128,10 +128,4 @@ export const sendMiseEnRelation = async () => {
       )
     }
   )
-
-  /*
-    
-    au moins 1 CFA correspondant à l'offre
-
-    */
 }
