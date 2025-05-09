@@ -6,6 +6,7 @@ import { ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { notifyJobDetailViewV3 } from "@/utils/api"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { SendPlausibleEvent } from "../../../utils/plausible"
@@ -26,6 +27,7 @@ const getContractTypes = (contractTypes) => {
 export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; title: string }) => {
   useEffect(() => {
     SendPlausibleEvent("Affichage - Fiche emploi", { partner_label: job.job.partner_label, info_fiche: `${job?.id}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}` })
+    notifyJobDetailViewV3(job?.id)
   }, [job?.id])
 
   const jobStartDate = job?.job?.jobStartDate ? formatDate(job.job.jobStartDate) : undefined

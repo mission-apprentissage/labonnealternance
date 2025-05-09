@@ -75,6 +75,18 @@ export const zJobsRoutesV3 = {
         resources: {},
       },
     },
+    "/v3/jobs/:id/stats/:eventType": {
+      method: "post",
+      path: "/v3/jobs/:id/stats/:eventType",
+      params: z.object({
+        eventType: z.enum(["detail_view", "postuler_click"]),
+        id: z.string(),
+      }),
+      response: {
+        "200": z.object({}),
+      },
+      securityScheme: null,
+    },
   },
   put: {
     "/v3/jobs/:id": {
