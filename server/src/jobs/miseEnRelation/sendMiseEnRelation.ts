@@ -109,8 +109,6 @@ export const sendMiseEnRelation = async () => {
     .toArray()) as JobForMER[]
 
   await asyncForEach(jobsWihoutEnoughApplications, async (job: JobForMER) => {
-    console.log(job)
-
     try {
       const etablissements = await getNearEtablissementsFromRomes({
         rome: job.rome_code,
@@ -121,15 +119,13 @@ export const sendMiseEnRelation = async () => {
         limit: 1,
       })
 
-      console.log("etablissements", etablissements.length)
-
       if (etablissements.some((etablissement) => etablissement.distance_en_km < 100)) {
         const jobTitle = job.offer_title_custom || job.rome_appellation_label || job.rome_label
         const jobUrl = new URL(`${config.publicUrl}/emploi/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${job.jobId}/${encodeURIComponent(jobTitle)}`)
         const user = await getUserWithAccountByEmail(job.email)
 
         if (!user || !jobTitle || !job.jobId) {
-          throw new Error(`User not found for send MER invitation. jobId=${job.jobId}`)
+          throw new Error(`Data not found for send MER invitation. jobId=${job.jobId}`)
         }
         await mailer.sendEmail({
           to: job.email,
@@ -177,5 +173,4 @@ export const sendMiseEnRelation = async () => {
     subject: "Invitations Mise en relation envoyées",
     message: `Offres concernées : ${jobsWihoutEnoughApplications.length}\r\nErreurs : ${counters.errors}\r\nInvitations envoyées : ${counters.successSent}\r\nOffres sans CFA proches : ${counters.successNoCFA}`,
   })
-  console.log("counters", counters)
 }
