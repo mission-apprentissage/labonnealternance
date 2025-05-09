@@ -1321,6 +1321,7 @@ const cfaCompanyList = [
   "OMNIS",
   "ONE 2 ONE",
   "ONE BUSINESS SCHOOL",
+  "ONE EDUCATION",
   "ONLINEFORMAPRO",
   "OPEN BAR",
   "OPENCLASSROOMS",
