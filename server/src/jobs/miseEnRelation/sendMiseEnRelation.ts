@@ -3,16 +3,40 @@ import { ObjectId } from "mongodb"
 import { JOB_STATUS } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
+import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
+import { createMERInvitationLink } from "@/services/appLinks.service"
 import { getNearEtablissementsFromRomes } from "@/services/catalogue.service"
 import mailer from "@/services/mailer.service"
+import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
+
+type JobForMER = {
+  jobId: string
+  establishment_id: string
+  application_count: number
+  first_name: string
+  last_name: string
+  email: string
+  job_creation_date: Date
+  geo_coordinates: string
+  offer_title_custom: string
+  rome_appellation_label: string
+  job_type: string[]
+  job_level_label: string
+  job_start_date: Date
+  rome_label: string
+  rome_code: string[]
+}
 
 export const sendMiseEnRelation = async () => {
   const fromDate = new Date(new Date().setDate(new Date().getDate() - 45))
   const toDate = new Date(new Date().setDate(new Date().getDate() - 5))
+
+  const counters: { errors: number; successSent: number; successNoCFA: number } = { errors: 0, successSent: 0, successNoCFA: 0 }
 
   const jobsWihoutEnoughApplications = (await getDbCollection("jobs")
     .aggregate([
@@ -64,6 +88,7 @@ export const sendMiseEnRelation = async () => {
       {
         $project: {
           jobId: 1,
+          establishment_id: 1,
           application_count: 1,
           first_name: 1,
           last_name: 1,
@@ -80,43 +105,12 @@ export const sendMiseEnRelation = async () => {
         },
       },
     ])
-    .toArray()) as {
-    jobId: string
-    application_count: number
-    first_name: string
-    last_name: string
-    email: string
-    job_creation_date: Date
-    geo_coordinates: string
-    offer_title_custom: string
-    rome_appellation_label: string
-    job_type: string[]
-    job_level_label: string
-    job_start_date: Date
-    rome_label: string
-    rome_code: string[]
-  }[]
+    .toArray()) as JobForMER[]
 
-  await asyncForEach(
-    jobsWihoutEnoughApplications,
-    async (job: {
-      jobId: string
-      application_count: number
-      first_name: string
-      last_name: string
-      email: string
-      job_creation_date: Date
-      geo_coordinates: string
-      offer_title_custom: string
-      rome_appellation_label: string
-      job_type: string[]
-      job_level_label: string
-      job_start_date: Date
-      rome_label: string
-      rome_code: string[]
-    }) => {
-      console.log(job)
+  await asyncForEach(jobsWihoutEnoughApplications, async (job: JobForMER) => {
+    console.log(job)
 
+    try {
       const etablissements = await getNearEtablissementsFromRomes({
         rome: job.rome_code,
         origin: {
@@ -129,11 +123,13 @@ export const sendMiseEnRelation = async () => {
       console.log("etablissements", etablissements.length)
 
       if (etablissements.some((etablissement) => etablissement.distance_en_km < 100)) {
-        console.log("envoi mail")
-        // TODO : envoyer le mail
-
         const jobTitle = job.offer_title_custom || job.rome_appellation_label || job.rome_label
         const jobUrl = new URL(`${config.publicUrl}/emploi/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${job.jobId}/${encodeURIComponent(jobTitle)}`)
+        const user = await getUserWithAccountByEmail(job.email)
+
+        if (!user || !jobTitle || !job.jobId) {
+          throw new Error(`User not found for send MER invitation. jobId=${job.jobId}`)
+        }
         await mailer.sendEmail({
           to: job.email,
           subject: "Partagez votre offre aux CFA proches de votre établissement",
@@ -147,14 +143,16 @@ export const sendMiseEnRelation = async () => {
             job_level_label: job.job_level_label,
             job_start_date: dayjs(job.job_start_date).format("DD/MM/YYYY"),
             job_url: jobUrl.toString(),
-            // ...(await getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj)),
-            // link: createRdvaAppointmentIdPageLink(appointment.cfa_recipient_email, etablissement.formateur_siret, etablissement._id.toString(), appointment._id.toString()),
+            link: createMERInvitationLink(user, job.jobId, job.establishment_id),
             images: {
               logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
               logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
             },
           },
         })
+        counters.successSent++
+      } else {
+        counters.successNoCFA++
       }
 
       const jobId = new ObjectId(job.jobId)
@@ -167,6 +165,16 @@ export const sendMiseEnRelation = async () => {
         },
         { arrayFilters: [{ "elem._id": jobId }] }
       )
+    } catch (error) {
+      logger.error(new Error(`Error while sending MER invitation. jobId=${job.jobId} error=${error}`))
+      counters.errors++
     }
-  )
+  })
+
+  await notifyToSlack({
+    error: counters.errors > 0 ? true : false,
+    subject: "Invitations Mise en relation envoyées",
+    message: `Offres concernées : ${jobsWihoutEnoughApplications.length}\r\nErreurs : ${counters.errors}\r\nInvitations envoyées : ${counters.successSent}\r\nOffres sans CFA proches : ${counters.successNoCFA}`,
+  })
+  console.log("counters", counters)
 }
