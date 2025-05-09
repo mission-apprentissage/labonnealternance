@@ -46,6 +46,7 @@ export const sendMiseEnRelation = async () => {
             $gte: fromDate,
             $lte: toDate,
           },
+          is_delegated: false,
           job_status: JOB_STATUS.ACTIVE,
           $or: [
             {
