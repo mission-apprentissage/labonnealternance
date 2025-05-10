@@ -1,5 +1,5 @@
 import { captureException } from "@sentry/nextjs"
-import { IJobCreate, INewSuperUser, IRecruiterJson, IRoutes, IUserWithAccountFields, removeUndefinedFields, type IBody } from "shared"
+import { IJobCreate, INewDelegations, INewSuperUser, IRecruiterJson, IRoutes, IUserWithAccountFields, removeUndefinedFields, type IBody } from "shared"
 import { ApplicationIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -43,6 +43,13 @@ export const cancelOffreFromAdmin = (jobId: string, data: IRoutes["put"]["/formu
 export const extendOffre = (jobId: string) => apiPut(`/formulaire/offre/:jobId/extend`, { params: { jobId } })
 export const fillOffre = (jobId, token) => apiPut(`/formulaire/offre/:jobId/provided`, { params: { jobId }, headers: { authorization: `Bearer ${token}` } })
 export const notifyLbaJobDetailView = async (jobId: string) => await apiPost("/v1/jobs/matcha/:id/stats/view-details", { params: { id: jobId } })
+export const getRelatedEtablissementsFromRome = async ({ rome, latitude, longitude, limit }: { rome: string; latitude: number; longitude: number; limit: number }) =>
+  apiGet(`/etablissement/cfas-proches`, { querystring: { rome, latitude, longitude, limit } })
+export const createEtablissementDelegation = ({ data, jobId }: { jobId: string; data: INewDelegations }) =>
+  apiPost(`/formulaire/offre/:jobId/delegation`, { params: { jobId }, body: data })
+export const createEtablissementDelegationByToken = ({ data, jobId, token }: { jobId: string; data: INewDelegations; token: string }) =>
+  apiPost(`/formulaire/offre/:jobId/delegation/by-token`, { params: { jobId }, body: data, headers: { authorization: `Bearer ${token}` } })
+
 /**
  * User API
  */

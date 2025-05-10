@@ -18,6 +18,8 @@ import { isValidEmail } from "../common/utils/isValidEmail"
 import { streamJsonArray } from "../common/utils/streamUtils"
 import config from "../config"
 
+const DISTANCE_MAX_CFA_PROCHE = 100
+
 export const affelnetSelectedFields = {
   _id: 1,
   email: 1,
@@ -191,10 +193,16 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin, limit }: { 
     // eslint-disable-next-line no-unsafe-optional-chaining
     const [latitude, longitude] = etablissement.geo_coordonnees?.split(",")
 
+    const distance_en_km = getDistanceInKm({ origin, destination: { latitude: parseFloat(latitude), longitude: parseFloat(longitude) } })
+
+    if (distance_en_km > DISTANCE_MAX_CFA_PROCHE) {
+      return []
+    }
+
     return [
       {
         ...etablissement,
-        distance_en_km: getDistanceInKm({ origin, destination: { latitude: parseFloat(latitude), longitude: parseFloat(longitude) } }),
+        distance_en_km,
       },
     ] as IEtablissementCatalogueProcheWithDistance[]
   })
