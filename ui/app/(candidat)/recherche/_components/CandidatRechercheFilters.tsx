@@ -42,85 +42,63 @@ function CandidatRechercheFiltersUI({
   displayFilters,
   forceOpenModal,
 }: CandidatRechercheFiltersUIProps) {
-  if (!displayFilters) {
-    return (
-      <Box
-        sx={{
-          display: "grid",
-          justifyContent: "flex-end",
-          gridTemplateColumns: "max-content",
-          alignItems: "baseline",
-        }}
-      >
-        <Box
-          sx={{
-            mt: fr.spacing("3v"),
-            display: {
-              xs: "none",
-              md: "block",
-            },
-          }}
-        >
-          <ToggleSwitch showCheckedHint={false} label="Afficher la carte" labelPosition="left" inputTitle="display_map" checked={displayMap} onChange={onDisplayMapChange} />
-        </Box>
-      </Box>
-    )
-  }
-
   return (
     <Box
       sx={{
         display: "grid",
-        justifyContent: "space-between",
-        gridTemplateColumns: "1fr max-content",
+        justifyContent: displayFilters ? "space-between" : "flex-end",
+        gridTemplateColumns: `${displayFilters ? "1fr " : ""}max-content`,
         alignItems: "baseline",
       }}
     >
-      <Checkbox
-        classes={{
-          root: fr.cx("fr-m-0", "fr-p-0"),
-          content: fr.cx("fr-m-0", "fr-p-0"),
-        }}
-        disabled={onEntrepriseChange === null || onFormationsChange === null || onPartenariatsChange === null}
-        options={[
-          {
-            label: `Entreprises${entrepriseCount != null ? ` (${entrepriseCount})` : ""}`,
-            nativeInputProps: {
-              checked: displayEntreprises,
-              onChange: onEntrepriseChange,
-              name: "entreprises",
+      {displayFilters && (
+        <Checkbox
+          classes={{
+            root: fr.cx("fr-m-0", "fr-p-0"),
+            content: fr.cx("fr-m-0", "fr-p-0"),
+          }}
+          disabled={onEntrepriseChange === null || onFormationsChange === null || onPartenariatsChange === null}
+          options={[
+            {
+              label: `Entreprises${entrepriseCount != null ? ` (${entrepriseCount})` : ""}`,
+              nativeInputProps: {
+                checked: displayEntreprises,
+                onChange: onEntrepriseChange,
+                name: "entreprises",
+              },
             },
-          },
-          {
-            label: `Formations${formationsCount != null ? ` (${formationsCount})` : ""}`,
-            nativeInputProps: {
-              checked: displayFormations,
-              onChange: onFormationsChange,
-              name: "formations",
+            {
+              label: `Formations${formationsCount != null ? ` (${formationsCount})` : ""}`,
+              nativeInputProps: {
+                checked: displayFormations,
+                onChange: onFormationsChange,
+                name: "formations",
+              },
             },
-          },
-          ...(partenariatCount
-            ? [
-                {
-                  label: `Partenariats${partenariatCount != null ? ` (${partenariatCount})` : ""}`,
-                  nativeInputProps: {
-                    checked: displayPartenariats,
-                    onChange: onPartenariatsChange,
-                    name: "partenariats",
+            ...(partenariatCount
+              ? [
+                  {
+                    label: `Partenariats${partenariatCount != null ? ` (${partenariatCount})` : ""}`,
+                    nativeInputProps: {
+                      checked: displayPartenariats,
+                      onChange: onPartenariatsChange,
+                      name: "partenariats",
+                    },
                   },
-                },
-              ]
-            : []),
-        ]}
-        orientation="horizontal"
-        small
-      />
+                ]
+              : []),
+          ]}
+          orientation="horizontal"
+          small
+        />
+      )}
       <Box
         sx={{
           display: {
             xs: "none",
             md: "block",
           },
+          marginTop: displayFilters ? 0 : fr.spacing("3v"),
         }}
       >
         <ToggleSwitch
