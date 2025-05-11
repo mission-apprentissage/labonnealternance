@@ -89,7 +89,7 @@ services:
       replicas: 4
     env_file: .env_ui
     environment:
-      NODE_OPTIONS: "--max_old_space_size=1024"
+      NODE_OPTIONS: "--max_old_space_size=1536"
     logging:
       driver: "fluentd"
       options:
