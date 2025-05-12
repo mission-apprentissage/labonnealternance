@@ -253,7 +253,7 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
                                 {etablissement.entreprise_raison_sociale}
                               </Text>
                               <Text size="12px" lineHeight="25px" color="#666666" textTransform="capitalize" pr={3}>
-                                {etablissement?.numero_voie} {etablissement?.type_voie} {etablissement?.nom_voie}, {etablissement?.code_postal} {etablissement?.nom_departement}
+                                {etablissement?.numero_voie} {etablissement?.type_voie} {etablissement?.nom_voie}, {etablissement?.code_postal} {etablissement?.localite}
                               </Text>
                               <Link
                                 href={`https://catalogue-apprentissage.intercariforef.org/etablissement/${etablissement.siret}`}

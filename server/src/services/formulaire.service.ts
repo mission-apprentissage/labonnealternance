@@ -31,6 +31,12 @@ import { getRomeDetailsFromDB } from "./rome.service"
 import { saveJobTrafficSourceIfAny } from "./trafficSource.service"
 import { isUserEmailChecked, validateUserWithAccountEmail } from "./userWithAccount.service"
 
+type ISentDelegation = {
+  raison_sociale: string
+  siret_code: string
+  adresse_etablissement: string
+}
+
 export interface IOffreExtended extends IJob {
   candidatures: number
   pourvue: string
@@ -252,6 +258,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
     }
   }
   const delegations: IDelegation[] = []
+  const sentDelegations: ISentDelegation[] = []
 
   const formations = await getCatalogueFormations(
     {
@@ -265,7 +272,14 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
   await Promise.all(
     etablissementCatalogueIds.map(async (etablissementId) => {
       const formation = formations.find((formation) => formation.etablissement_gestionnaire_id === etablissementId || formation.etablissement_formateur_id === etablissementId)
-      const { etablissement_formateur_siret: siret_code, etablissement_gestionnaire_courriel: email } = formation ?? {}
+      const {
+        etablissement_formateur_siret: siret_code,
+        etablissement_gestionnaire_courriel: email,
+        etablissement_formateur_entreprise_raison_sociale,
+        etablissement_formateur_code_postal,
+        etablissement_formateur_adresse,
+        etablissement_formateur_localite,
+      } = formation ?? {}
       if (!email || !siret_code) {
         // This shouldn't happen considering the query filter
         throw internal("Unexpected etablissement_gestionnaire_courriel", { jobId, etablissementCatalogueIds })
@@ -275,9 +289,34 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
 
       if (shouldSentMailToCfa) {
         await sendDelegationMailToCFA(email, offre, recruiter, siret_code)
+        sentDelegations.push({
+          raison_sociale: etablissement_formateur_entreprise_raison_sociale || "",
+          siret_code,
+          adresse_etablissement: `${etablissement_formateur_adresse}, ${etablissement_formateur_code_postal} ${etablissement_formateur_localite}`,
+        })
       }
     })
   )
+
+  if (sentDelegations.length) {
+    await mailer.sendEmail({
+      to: recruiter.email,
+      subject: `Votre offre a été partagée à ${sentDelegations.length} école(s)`,
+      template: getStaticFilePath("./templates/mail-mer-confirmation.mjml.ejs"),
+      data: {
+        first_name: recruiter.first_name,
+        last_name: recruiter.last_name,
+        email: recruiter.email,
+        phone: recruiter.phone,
+        job_title: offre.offer_title_custom || offre.rome_appellation_label || offre.rome_label,
+        delegations: sentDelegations,
+        images: {
+          logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+          logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+        },
+      },
+    })
+  }
 
   offre.delegations = offre.delegations?.concat(delegations) ?? delegations
   offre.job_delegation_count = offre.delegations.length
