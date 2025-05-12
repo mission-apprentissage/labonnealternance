@@ -3,7 +3,7 @@ import { Box, Center, Checkbox, Container, Divider, Flex, Heading, Link, Square,
 import Button from "@codegouvfr/react-dsfr/Button"
 import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
-import { useParams, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { IJobWithRomeDetail } from "shared"
 import { ENTREPRISE } from "shared/constants/recruteur"
@@ -12,7 +12,7 @@ import { IEtablissementCatalogueProcheWithDistance } from "shared/interface/etab
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
-import { createEtablissementDelegation, createEtablissementDelegationByToken, getFormulaire, getRelatedEtablissementsFromRome } from "@/utils/api"
+import { createEtablissementDelegation, createEtablissementDelegationByToken, getFormulaire, getFormulaireByToken, getRelatedEtablissementsFromRome } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
 function InfoDelegation() {
@@ -126,16 +126,15 @@ function DelegationsEnregistrees({
   )
 }
 
-export default function MiseEnRelation({ establishment_id }: { establishment_id: string }) {
+export default function MiseEnRelation({ establishment_id, job_id, token }: { establishment_id: string; job_id: string; token?: string }) {
   const router = useRouter()
-  const { job_id, token } = useParams() as { job_id: string; token?: string }
 
   const [checkedDisabledEtablissements, setCheckedDisabledEtablissements] = useState<IEtablissementCatalogueProcheWithDistance[]>([])
 
   const { data: formulaire, isLoading: isFormulaireLoading } = useQuery({
     queryKey: ["formulaire"],
     enabled: !!establishment_id,
-    queryFn: () => getFormulaire(establishment_id),
+    queryFn: () => (token ? getFormulaireByToken(establishment_id, token) : getFormulaire(establishment_id)),
   })
 
   //@ts-ignore
@@ -243,8 +242,8 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
                             </Center>
                             <Box flex="1">
                               {isDisabled && (
-                                <Flex alignItems="flex-start" backgroundColor="#F6F6F6">
-                                  <Image fetchPriority="high" src="/images/icons/chrono.svg" alt="" style={{ margin: "3px" }} unoptimized width={16} height={16} />
+                                <Flex alignItems="flex-start" backgroundColor="#F6F6F6" width="fit-content" px={2} py={1}>
+                                  <Image fetchPriority="high" src="/images/icons/chrono.svg" alt="" style={{ margin: "4px" }} unoptimized width={16} height={16} />
                                   <Text fontSize="12px" color="#666666" mb={2}>
                                     CFA déjà contacté
                                   </Text>
@@ -254,7 +253,7 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
                                 {etablissement.entreprise_raison_sociale}
                               </Text>
                               <Text size="12px" lineHeight="25px" color="#666666" textTransform="capitalize" pr={3}>
-                                {etablissement?.numero_voie} {etablissement?.type_voie} {etablissement?.nom_voie}, {etablissement?.code_postal} {etablissement?.nom_departement}
+                                {etablissement?.numero_voie} {etablissement?.type_voie} {etablissement?.nom_voie}, {etablissement?.code_postal} {etablissement?.localite}
                               </Text>
                               <Link
                                 href={`https://catalogue-apprentissage.intercariforef.org/etablissement/${etablissement.siret}`}
@@ -301,14 +300,6 @@ export default function MiseEnRelation({ establishment_id }: { establishment_id:
             {etablissements?.length === 0 && <AucunCFAProche title={offre.rome_appellation_label} />}
           </>
         )}
-        {/*
-        reste à faire :
-        template Email
-        redirection email (conf next properties)
-        automate envoi d'emails
-        lien avec token
-        connexion par token
-        */}
       </Container>
     </DepotSimplifieStyling>
   )

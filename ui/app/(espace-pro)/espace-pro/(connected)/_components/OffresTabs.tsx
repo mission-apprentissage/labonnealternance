@@ -275,7 +275,7 @@ export const OffresTabs = ({
                     {user.type !== AUTHTYPE.CFA && (
                       <MenuItem>
                         <Link underline="hover" {...cfaOptionParams}>
-                          Voir les centres de formations
+                          Voir les centres de formation
                         </Link>
                       </MenuItem>
                     )}

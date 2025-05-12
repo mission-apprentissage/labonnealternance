@@ -1,5 +1,6 @@
 import { updateDiplomeMetier } from "@/jobs/diplomesMetiers/updateDiplomesMetiers"
 import { updateRomesForDomainesMetiers } from "@/jobs/domainesMetiers/updateRomesForDomainesMetiers"
+import { sendMiseEnRelation } from "@/jobs/miseEnRelation/sendMiseEnRelation"
 import { importRecruteursLbaFromComputedToJobsPartners } from "@/jobs/offrePartenaire/fillComputedRecruteursLba"
 import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail/classifyJobsFranceTravail"
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
@@ -315,5 +316,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: repriseEnvoiEmailsPRDV,
     description: "Reprise de l'envoi des emails de prise de rendez-vous, job à usage limité",
+  },
+  {
+    fct: sendMiseEnRelation,
+    description: "Envoi de proposition de mise en relation avec des CFAs aux recruteurs",
   },
 ]
