@@ -242,8 +242,8 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
                             </Center>
                             <Box flex="1">
                               {isDisabled && (
-                                <Flex alignItems="flex-start" backgroundColor="#F6F6F6">
-                                  <Image fetchPriority="high" src="/images/icons/chrono.svg" alt="" style={{ margin: "3px" }} unoptimized width={16} height={16} />
+                                <Flex alignItems="flex-start" backgroundColor="#F6F6F6" width="fit-content" px={2} py={1}>
+                                  <Image fetchPriority="high" src="/images/icons/chrono.svg" alt="" style={{ margin: "4px" }} unoptimized width={16} height={16} />
                                   <Text fontSize="12px" color="#666666" mb={2}>
                                     CFA déjà contacté
                                   </Text>
