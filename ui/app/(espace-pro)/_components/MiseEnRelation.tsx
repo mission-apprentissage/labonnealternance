@@ -12,7 +12,7 @@ import { IEtablissementCatalogueProcheWithDistance } from "shared/interface/etab
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
-import { createEtablissementDelegation, createEtablissementDelegationByToken, getFormulaire, getRelatedEtablissementsFromRome } from "@/utils/api"
+import { createEtablissementDelegation, createEtablissementDelegationByToken, getFormulaire, getFormulaireByToken, getRelatedEtablissementsFromRome } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
 function InfoDelegation() {
@@ -134,7 +134,7 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
   const { data: formulaire, isLoading: isFormulaireLoading } = useQuery({
     queryKey: ["formulaire"],
     enabled: !!establishment_id,
-    queryFn: () => getFormulaire(establishment_id),
+    queryFn: () => (token ? getFormulaireByToken(establishment_id, token) : getFormulaire(establishment_id)),
   })
 
   //@ts-ignore
@@ -300,14 +300,6 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
             {etablissements?.length === 0 && <AucunCFAProche title={offre.rome_appellation_label} />}
           </>
         )}
-        {/*
-        reste à faire :
-        template Email
-        redirection email (conf next properties)
-        automate envoi d'emails
-        lien avec token
-        connexion par token
-        */}
       </Container>
     </DepotSimplifieStyling>
   )
