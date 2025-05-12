@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb"
 
 import updateDomainesMetiers from "@/jobs/domainesMetiers/updateDomainesMetiers"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
+import { sendMiseEnRelation } from "@/jobs/miseEnRelation/sendMiseEnRelation"
 import { importers } from "@/jobs/offrePartenaire/jobsPartners.importer"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
 import { generateSitemap } from "@/services/sitemap.service"
@@ -139,6 +140,11 @@ export async function setupJobProcessor() {
           "Creation de la collection JOBS pour metabase": {
             cron_string: "55 0 * * *",
             handler: createJobsCollectionForMetabase,
+            tag: "main",
+          },
+          "Envoi des invitations de mise en relation pour les offres à faibles candidatures": {
+            cron_string: "55 1 * * *",
+            handler: sendMiseEnRelation,
             tag: "main",
           },
           "Anonymisation des user recruteurs de plus de deux (2) ans": {
