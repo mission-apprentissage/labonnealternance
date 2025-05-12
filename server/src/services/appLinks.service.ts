@@ -477,7 +477,7 @@ export function createMERInvitationLink(user: IUserWithAccount, jobId: string, e
         },
       }),
       generateScope({
-        schema: zRoutes.get["/formulaire/:establishment_id"],
+        schema: zRoutes.get["/formulaire/:establishment_id/by-token"],
         options: {
           params: {
             establishment_id: establishmentId,
