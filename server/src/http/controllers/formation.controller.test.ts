@@ -109,7 +109,7 @@ describe("formationV1", () => {
     expect(response.statusCode).toBe(400)
     expect(JSON.parse(response.body)).toEqual({
       error: "wrong_parameters",
-      error_messages: ["romes : Too many rome codes. Maximum is 20.", "romes : Badly formatted rome codes. Rome code must be one letter followed by 4 digit number. ex : A1234"],
+      error_messages: ["romes : Badly formatted rome codes. Rome code must be one letter followed by 4 digit number. ex : A1234"],
     })
   })
 
