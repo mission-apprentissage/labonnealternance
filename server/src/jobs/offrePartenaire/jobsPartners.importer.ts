@@ -6,10 +6,12 @@ import { processKelio } from "@/jobs/offrePartenaire/kelio/processKelio"
 import { processMeteojob } from "@/jobs/offrePartenaire/meteojob/processMeteojob"
 import { processMonster } from "@/jobs/offrePartenaire/monster/processMonster"
 import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
+import { processComputedAndImportToJobPartners } from "@/jobs/offrePartenaire/processJobPartners"
 import { processRhAlternance } from "@/jobs/offrePartenaire/rh-alternance/processRhAlternance"
 
 const timings = {
   import_source: "0 0 * * *",
+  process_computed: "1 0 * * *",
 }
 
 export const importers: Record<string, CronDef> = {
@@ -31,7 +33,7 @@ export const importers: Record<string, CronDef> = {
     cron_string: timings.import_source,
     handler: processFranceTravail,
     checkinMargin: 30,
-    maxRuntimeInMinutes: 30,
+    maxRuntimeInMinutes: 120,
     tag: "slave",
   },
   "Import Meteojob": {
@@ -60,5 +62,14 @@ export const importers: Record<string, CronDef> = {
     handler: processPass,
     checkinMargin: 10,
     maxRuntimeInMinutes: 30,
+  },
+
+  // Leave at the end
+  "Process computed and import to Jobs Partners": {
+    cron_string: timings.process_computed,
+    handler: processComputedAndImportToJobPartners,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 120,
+    tag: "slave",
   },
 }
