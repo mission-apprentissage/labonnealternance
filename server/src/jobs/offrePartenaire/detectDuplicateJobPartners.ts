@@ -1,5 +1,5 @@
 import { groupBy } from "lodash-es"
-import { AnyBulkWriteOperation, Filter } from "mongodb"
+import { AggregationCursor, AnyBulkWriteOperation, Filter } from "mongodb"
 import { RECRUITER_STATUS } from "shared/constants/index"
 import { IJob, JOB_STATUS, JOB_STATUS_ENGLISH, ZGlobalAddress } from "shared/models/index"
 import { IComputedJobPartnersDuplicateRef } from "shared/models/jobPartnersDuplicateRef"
@@ -103,25 +103,23 @@ export const detectDuplicateJobPartners = async (addedMatchFilter?: Filter<IComp
 
 const computedJobPartnerStreamFactory = (groupField: keyof IComputedJobsPartners, computedJobPartnersFilter: Filter<IComputedJobsPartners>) => {
   logger.info(`début de detectDuplicateJobPartners groupé par le champ ${groupField}`)
-  return getDbCollection("computed_jobs_partners")
-    .aggregate([
-      { $match: computedJobPartnersFilter },
-      { $group: { _id: `$${groupField}`, documents: { $push: "$$ROOT" } } },
-      { $match: { _id: { $ne: null }, "documents.1": { $exists: true } } },
-      {
-        $project: {
-          _id: 1,
-          documents: {
-            $map: {
-              input: "$documents",
-              as: "document",
-              in: Object.fromEntries(fieldsRead.map((field) => [field, `$$document.${field}`])),
-            },
+  return getDbCollection("computed_jobs_partners").aggregate([
+    { $match: computedJobPartnersFilter },
+    { $group: { _id: `$${groupField}`, documents: { $push: "$$ROOT" } } },
+    { $match: { _id: { $ne: null }, "documents.1": { $exists: true } } },
+    {
+      $project: {
+        _id: 1,
+        documents: {
+          $map: {
+            input: "$documents",
+            as: "document",
+            in: Object.fromEntries(fieldsRead.map((field) => [field, `$$document.${field}`])),
           },
         },
       },
-    ])
-    .stream()
+    },
+  ]) as AggregationCursor<AggregationResult>
 }
 
 const computedJobPartnerVsRecruiterStreamFactory = (
@@ -132,104 +130,100 @@ const computedJobPartnerVsRecruiterStreamFactory = (
   logger.info(
     `début de detectDuplicateJobPartners entre computedJobPartners et recruiters, pour les champs computedJobPartnerField=${computedJobPartnerField} et recruiterField=${recruiterField}`
   )
-  return getDbCollection("computed_jobs_partners")
-    .aggregate([
-      { $match: computedJobPartnersFilter },
-      { $group: { _id: `$${computedJobPartnerField}`, documents: { $push: "$$ROOT" } } },
-      { $match: { _id: { $ne: null } } },
-      {
-        $project: {
-          _id: 1,
-          documents: {
-            $map: {
-              input: "$documents",
-              as: "document",
-              in: Object.fromEntries(fieldsRead.map((field) => [field, `$$document.${field}`])),
-            },
+  return getDbCollection("computed_jobs_partners").aggregate([
+    { $match: computedJobPartnersFilter },
+    { $group: { _id: `$${computedJobPartnerField}`, documents: { $push: "$$ROOT" } } },
+    { $match: { _id: { $ne: null } } },
+    {
+      $project: {
+        _id: 1,
+        documents: {
+          $map: {
+            input: "$documents",
+            as: "document",
+            in: Object.fromEntries(fieldsRead.map((field) => [field, `$$document.${field}`])),
           },
         },
       },
-      {
-        $lookup: {
-          from: recruiterCollection,
-          foreignField: recruiterField,
-          localField: "_id",
-          as: "recruiters",
-        },
+    },
+    {
+      $lookup: {
+        from: recruiterCollection,
+        foreignField: recruiterField,
+        localField: "_id",
+        as: "recruiters",
       },
-      {
-        $project: {
-          _id: 1,
-          documents: 1,
-          recruiters: {
-            $map: {
-              input: "$recruiters",
-              as: "recruiter",
-              in: {
-                ...Object.fromEntries(recruiterFieldsRead.map((field) => [field, `$$recruiter.${field}`])),
-                jobs: {
-                  $map: {
-                    input: "$$recruiter.jobs",
-                    as: "job",
-                    in: Object.fromEntries(jobFieldsRead.map((field) => [field, `$$job.${field}`])),
-                  },
+    },
+    {
+      $project: {
+        _id: 1,
+        documents: 1,
+        recruiters: {
+          $map: {
+            input: "$recruiters",
+            as: "recruiter",
+            in: {
+              ...Object.fromEntries(recruiterFieldsRead.map((field) => [field, `$$recruiter.${field}`])),
+              jobs: {
+                $map: {
+                  input: "$$recruiter.jobs",
+                  as: "job",
+                  in: Object.fromEntries(jobFieldsRead.map((field) => [field, `$$job.${field}`])),
                 },
               },
             },
           },
         },
       },
-    ])
-    .stream()
+    },
+  ]) as AggregationCursor<AggregationResult>
 }
 
 const computedJobPartnerVsJobPartnerStreamFactory = (computedJobPartnerField: keyof IComputedJobsPartners, computedJobPartnersFilter: Filter<IComputedJobsPartners>) => {
   logger.info(
     `début de detectDuplicateJobPartners entre computedJobPartners et jobPartners, pour les champs computedJobPartnerField=${computedJobPartnerField} et jobPartnerField=${computedJobPartnerField}`
   )
-  return getDbCollection("computed_jobs_partners")
-    .aggregate([
-      { $match: computedJobPartnersFilter },
-      { $group: { _id: `$${computedJobPartnerField}`, documents: { $push: "$$ROOT" } } },
-      { $match: { _id: { $ne: null } } },
-      {
-        $project: {
-          _id: 1,
-          documents: {
-            $map: {
-              input: "$documents",
-              as: "document",
-              in: Object.fromEntries(fieldsRead.map((field) => [field, `$$document.${field}`])),
-            },
+  return getDbCollection("computed_jobs_partners").aggregate([
+    { $match: computedJobPartnersFilter },
+    { $group: { _id: `$${computedJobPartnerField}`, documents: { $push: "$$ROOT" } } },
+    { $match: { _id: { $ne: null } } },
+    {
+      $project: {
+        _id: 1,
+        documents: {
+          $map: {
+            input: "$documents",
+            as: "document",
+            in: Object.fromEntries(fieldsRead.map((field) => [field, `$$document.${field}`])),
           },
         },
       },
-      {
-        $lookup: {
-          from: jobPartnerCollection,
-          foreignField: computedJobPartnerField,
-          localField: "_id",
-          as: "jobPartners",
-        },
+    },
+    {
+      $lookup: {
+        from: jobPartnerCollection,
+        foreignField: computedJobPartnerField,
+        localField: "_id",
+        as: "jobPartners",
       },
-      {
-        $project: {
-          _id: 1,
-          documents: 1,
-          jobPartners: {
-            $map: {
-              input: "$jobPartners",
-              as: "jobPartner",
-              in: Object.fromEntries([...fieldsRead, "offer_status"].map((field) => [field, `$$jobPartner.${field}`])),
-            },
+    },
+    {
+      $project: {
+        _id: 1,
+        documents: 1,
+        jobPartners: {
+          $map: {
+            input: "$jobPartners",
+            as: "jobPartner",
+            in: Object.fromEntries([...fieldsRead, "offer_status"].map((field) => [field, `$$jobPartner.${field}`])),
           },
         },
       },
-    ])
-    .stream()
+    },
+  ]) as AggregationCursor<AggregationResult>
 }
 
-const detectDuplicateJobPartnersFactory = async (groupField: keyof IComputedJobsPartners, documentStream: AsyncIterable<AggregationResult>) => {
+const detectDuplicateJobPartnersFactory = async (groupField: keyof IComputedJobsPartners, documentStream: AggregationCursor<AggregationResult>) => {
   let duplicateCount = 0
   let maxOfferPairCount = 0
   let offerPairCount = 0
