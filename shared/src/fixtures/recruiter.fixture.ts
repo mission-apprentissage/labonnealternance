@@ -15,7 +15,6 @@ export function generateJobFixture(data: Partial<IJob>): IJob {
     job_type: [TRAINING_CONTRACT_TYPE.APPRENTISSAGE],
     is_disabled_elligible: null,
     job_count: 1,
-    mer_sent: null,
     ...data,
   }
 }
