@@ -33,7 +33,7 @@ export const importers: Record<string, CronDef> = {
     cron_string: timings.import_source,
     handler: processFranceTravail,
     checkinMargin: 30,
-    maxRuntimeInMinutes: 30,
+    maxRuntimeInMinutes: 120,
     tag: "slave",
   },
   "Import Meteojob": {
@@ -68,8 +68,8 @@ export const importers: Record<string, CronDef> = {
   "Process computed and import to Jobs Partners": {
     cron_string: timings.process_computed,
     handler: processComputedAndImportToJobPartners,
-    checkinMargin: 10,
-    maxRuntimeInMinutes: 30,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 120,
     tag: "slave",
   },
 }
