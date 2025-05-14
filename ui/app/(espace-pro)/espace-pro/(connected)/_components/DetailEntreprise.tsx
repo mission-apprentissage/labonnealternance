@@ -3,6 +3,7 @@ import { Badge, Box, Flex, FormControl, FormErrorMessage, FormHelperText, FormLa
 import { Button } from "@codegouvfr/react-dsfr/Button"
 import { useMutation } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
+import { useRouter } from "next/navigation"
 import { INewSuperUser, IUserStatusValidationJson } from "shared"
 import { AUTHTYPE, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/recruteur"
 import * as Yup from "yup"
@@ -16,12 +17,13 @@ import { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationM
 import { OpcoSelect } from "@/components/espace_pro/CreationRecruteur/OpcoSelect"
 import { FieldWithValue } from "@/components/espace_pro/FieldWithValue"
 import { ArrowRightLine } from "@/theme/components/icons"
-import { updateEntrepriseAdmin } from "@/utils/api"
+import { updateEntrepriseAdmin, updateEntrepriseCFA } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
 type Variables = { userId: string; values: INewSuperUser; siret: string }
 
-export default function DetailEntreprise({ userRecruteur, recruiter, onChange }: { userRecruteur: any; recruiter: any; onChange?: (props: { opco?: OPCOS_LABEL }) => void }) {
+export default function DetailEntreprise({ userRecruteur, recruiter, onChange }: { userRecruteur: any; recruiter?: any; onChange?: (props: { opco?: OPCOS_LABEL }) => void }) {
+  const router = useRouter()
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationModificationOpco = useDisclosure()
 
@@ -88,7 +90,13 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
     mutationFn: async (variables: Variables) => {
       const { userId, values, siret } = variables
       const { type, ...value } = values
-      await updateEntrepriseAdmin(userId, value, siret)
+
+      if (user.type === AUTHTYPE.CFA) {
+        const { email, first_name, last_name, phone } = values
+        await updateEntrepriseCFA(userRecruteur.establishment_id, { email, first_name, last_name, phone })
+      } else {
+        await updateEntrepriseAdmin(userId, value, siret)
+      }
       onChange?.({ opco: "opco" in values ? values.opco : undefined })
     },
     onSuccess: () => {
@@ -110,17 +118,32 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
       <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={userRecruteur} onUpdate={() => onChange?.({})} />
 
       <Box borderBottom="1px solid #E3E3FD" mb={10}>
-        <Heading fontSize="32px" noOfLines={2}>
-          {establishmentLabel}
-        </Heading>
-        <Flex align="center" justify="space-between" mb={5}>
-          <Flex align="center" justify="flex-start" maxW="50%">
-            <Box ml={5}>{getUserBadge(lastUserState)}</Box>
+        {user.type !== "CFA" && (
+          <>
+            <Heading fontSize="32px" noOfLines={2}>
+              {establishmentLabel}
+            </Heading>
+            <Flex align="center" justify="space-between" mb={5}>
+              <Flex align="center" justify="flex-start" maxW="50%">
+                <Box ml={5}>{getUserBadge(lastUserState)}</Box>
+              </Flex>
+              <Stack direction={["column", "column", "column", "row"]} spacing="10px">
+                {getActionButtons(lastUserState, userRecruteur._id)}
+              </Stack>
+            </Flex>
+          </>
+        )}
+        {user.type === "CFA" && (
+          <Flex mb={5} justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
+            <Heading fontSize="32px" mx={0} noOfLines={2}>
+              {establishmentLabel}
+            </Heading>
+
+            <Button priority="secondary" type="button" onClick={() => router.push(PAGES.dynamic.backCfaPageEntreprise(userRecruteur.establishment_id).getPath())}>
+              Fermer
+            </Button>
           </Flex>
-          <Stack direction={["column", "column", "column", "row"]} spacing="10px">
-            {getActionButtons(lastUserState, userRecruteur._id)}
-          </Stack>
-        </Flex>
+        )}
       </Box>
       <Formik
         validateOnMount={true}
@@ -189,7 +212,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                           <FormErrorMessage>{errors.opco as string}</FormErrorMessage>
                         </FormControl>
                       )}
-                      <Flex justify="flex-end" mt={10}>
+                      <Flex justify="flex-end" my={5}>
                         <Button type="submit" disabled={!isValid || isSubmitting}>
                           {isSubmitting ? <Spinner mr={2} /> : <ArrowRightLine mr={2} />}Enregistrer
                         </Button>
@@ -199,9 +222,11 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                 </Box>
                 <Box>
                   <InformationLegaleEntreprise siret={userRecruteur.establishment_siret} type={userRecruteur.type as typeof CFA | typeof ENTREPRISE} />
-                  <Box my={4}>
-                    <FieldWithValue title="Origine" value={userRecruteur.origin} />
-                  </Box>
+                  {user.type !== "CFA" && (
+                    <Box my={4}>
+                      <FieldWithValue title="Origine" value={userRecruteur.origin} />
+                    </Box>
+                  )}
                 </Box>
               </SimpleGrid>
               {(user.type === AUTHTYPE.ADMIN || user.type === AUTHTYPE.OPCO) && (

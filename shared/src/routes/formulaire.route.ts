@@ -3,6 +3,7 @@ import { zObjectId } from "zod-mongodb-schema"
 import { z } from "../helpers/zodWithOpenApi.js"
 import { JOB_STATUS, ZJob, ZJobCreate } from "../models/job.model.js"
 import { ZRecruiter, ZRecruiterWithApplicationCount } from "../models/recruiter.model.js"
+import { ZUserWithAccountFields } from "../models/userWithAccount.model.js"
 
 import { IRoutesDef } from "./common.routes.js"
 
@@ -90,6 +91,22 @@ export const zFormulaireRoute = {
         access: "user:manage",
         resources: {
           user: [{ _id: { key: "userId", type: "params" } }],
+        },
+      },
+    },
+    "/formulaire/:establishment_id/informations": {
+      method: "post",
+      path: "/formulaire/:establishment_id/informations",
+      params: z.object({ establishment_id: z.string() }).strict(),
+      body: ZUserWithAccountFields.partial(),
+      response: {
+        "200": z.object({ ok: z.boolean() }).strict(),
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        access: "recruiter:manage",
+        resources: {
+          recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
         },
       },
     },
