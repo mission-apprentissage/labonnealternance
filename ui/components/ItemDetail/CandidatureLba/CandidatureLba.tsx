@@ -1,10 +1,9 @@
 "use client"
 import { Box, Flex, Image, Text, useDisclosure } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
+import { useState } from "react"
 import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson, JOB_STATUS } from "shared"
-import { LBA_ITEM_TYPE, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
-
-import { useLocalStorage } from "@/app/hooks/useLocalStorage"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { getItemId } from "../../../utils/getItemId"
 import { SendPlausibleEvent } from "../../../utils/plausible"
@@ -27,23 +26,26 @@ export const NoCandidatureLba = () => {
 }
 
 export function CandidatureLba({ item }: { item: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson }) {
-  const { storedValue } = useLocalStorage(`application-${oldItemTypeToNewItemType(item.ideaType)}-${item.id}`)
+  const [modalId, setModalId] = useState<number>(Math.random())
   const modalControls = useDisclosure()
   const submitControls = useSubmitCandidature(item)
+  const { applicationDate } = submitControls
   const { onOpen } = modalControls
   const kind = item.ideaType
 
   const openApplicationForm = () => {
+    // re-instancie la modal
+    setModalId(Math.random())
     onOpen()
     SendPlausibleEvent("Clic Postuler - Fiche emploi", { partner_label: kind, info_fiche: getItemId(item) })
   }
 
-  const hasAppliedValue = storedValue
+  const hasAppliedValue = Boolean(applicationDate)
   const isActive = kind !== LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || (item as ILbaItemLbaJobJson).job.status === JOB_STATUS.ACTIVE
 
   return (
     <Box data-testid="CandidatureSpontanee">
-      <CandidatureLbaModal item={item} modalControls={modalControls} submitControls={submitControls} />
+      <CandidatureLbaModal key={modalId} item={item} modalControls={modalControls} submitControls={submitControls} />
       <Box>
         {hasAppliedValue ? (
           /* @ts-ignore TODO */

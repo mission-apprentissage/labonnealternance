@@ -1,10 +1,11 @@
 import { useMutation } from "@tanstack/react-query"
 import { useContext } from "react"
 import { IApplicationApiPrivate, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
+import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 
+import { useLocalStorage } from "@/app/hooks/useLocalStorage"
 import { DisplayContext } from "@/context/DisplayContextProvider"
-import { getItemId } from "@/utils/getItemId"
-import { localStorageSet, sessionStorageSet } from "@/utils/localStorage"
+import { sessionStorageSet } from "@/utils/localStorage"
 
 import { apiPost } from "../../../../utils/api.utils"
 
@@ -20,10 +21,17 @@ export const useSubmitCandidature = (
   isError: boolean
   isDone: boolean
   error: unknown
+  applicationDate: Date | null
 } => {
+  const { storedValue: applicationDateString, setLocalStorage: setApplicationDate } = useLocalStorage<string>(
+    `application-${oldItemTypeToNewItemType(LbaJob.ideaType)}-${LbaJob.id}`
+  )
   const { isPending, error, isSuccess, isError, mutate } = useMutation({
     mutationKey: ["submitCandidature", LbaJob.id],
     mutationFn: submitCandidature,
+    onSuccess: () => {
+      setApplicationDate(Date.now().toString())
+    },
   })
   const displayContext = useContext(DisplayContext)
   let finalSubmitCandidature = mutate
@@ -42,7 +50,8 @@ export const useSubmitCandidature = (
         },
       })
   }
-  return { submitCandidature: finalSubmitCandidature, isLoading: isPending, error, isSuccess, isError, isDone: isSuccess || isError }
+  const applicationDate = applicationDateString ? new Date(applicationDateString) : null
+  return { submitCandidature: finalSubmitCandidature, isLoading: isPending, error, isSuccess, isError, isDone: isSuccess || isError, applicationDate }
 }
 
 async function submitCandidature({
@@ -68,7 +77,6 @@ async function submitCandidature({
     application_url: typeof window !== "undefined" ? window?.location?.href : null,
   }
 
-  await apiPost("/v2/_private/application", { body: payload, headers: { authorization: `Bearer ${LbaJob.token}` } }, {})
   sessionStorageSet("application-form-values", payload)
-  localStorageSet(`application-${LbaJob.ideaType}-${getItemId(LbaJob)}`, Date.now().toString())
+  await apiPost("/v2/_private/application", { body: payload, headers: { authorization: `Bearer ${LbaJob.token}` } }, {})
 }
