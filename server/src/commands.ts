@@ -239,11 +239,11 @@ program
   .action(createJobAction("api:user:disable"))
 
 program
-  .command("recruiterOfferExpirationReminderJob")
+  .command("relance-formulaire")
   .description("Envoie une relance par mail pour les offres expirant dans 7 jours")
   .requiredOption("--threshold <string>", "threshold")
   .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("recruiterOfferExpirationReminderJob"))
+  .action(createJobAction("formulaire:relance"))
 
 program
   .command("export-offre-pole-emploi")
