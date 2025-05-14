@@ -29,7 +29,6 @@ import { generateFranceTravailAccess } from "./franceTravail/generateFranceTrava
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
-import { processComputedAndImportToJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
 import { processRecruteursLba } from "./offrePartenaire/recruteur-lba/processRecruteursLba"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
@@ -118,14 +117,14 @@ export async function setupJobProcessor() {
             handler: generateSitemap,
             tag: "main",
           },
-          // "Send offer reminder email at J+7": {
-          //   cron_string: "20 0 * * *",
-          //   handler: () => addJob({ name: "formulaire:relance", payload: { threshold: "7" } }),
-          // },
-          // "Send offer reminder email at J+1": {
-          //   cron_string: "25 0 * * *",
-          //   handler: () => addJob({ name: "formulaire:relance", payload: { threshold: "1" } }),
-          // },
+          "Envoi des mails de relance pour l'expiration des offres à J+7": {
+            cron_string: "20 9 * * *",
+            handler: () => addJob({ name: "recruiterOfferExpirationReminderJob", payload: { threshold: "7" } }),
+          },
+          "Envoi des mails de relance pour l'expiration des offres à J+1": {
+            cron_string: "25 9 * * *",
+            handler: () => addJob({ name: "recruiterOfferExpirationReminderJob", payload: { threshold: "1" } }),
+          },
           "Envoi du rappel de validation des utilisateurs en attente aux OPCOs": {
             cron_string: "30 0 * * 1,3,5",
             handler: opcoReminderJob,
@@ -156,11 +155,11 @@ export async function setupJobProcessor() {
             handler: anonymizeAppointments,
             tag: "main",
           },
-          "Traitement computed et import dans la collection jobs_partners": {
-            cron_string: "00 3 * * *",
-            handler: processComputedAndImportToJobPartners,
-            tag: "slave",
-          },
+          // "Traitement computed et import dans la collection jobs_partners": {
+          //   cron_string: "00 3 * * *",
+          //   handler: processComputedAndImportToJobPartners,
+          //   tag: "slave",
+          // },
           "Import des formations depuis le Catalogue RCO": {
             cron_string: "15 2 * * *",
             handler: importCatalogueFormationJob,
@@ -297,7 +296,7 @@ export async function setupJobProcessor() {
           return
         },
       },
-      "formulaire:relance": {
+      recruiterOfferExpirationReminderJob: {
         handler: async (job) => {
           const { threshold } = job.payload as any
           await recruiterOfferExpirationReminderJob(parseInt(threshold))
