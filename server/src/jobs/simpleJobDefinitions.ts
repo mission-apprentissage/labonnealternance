@@ -8,6 +8,7 @@ import { processMeteojob } from "@/jobs/offrePartenaire/meteojob/processMeteojob
 import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
 import { processRecruteursLba } from "@/jobs/offrePartenaire/recruteur-lba/processRecruteursLba"
 import { processRhAlternance } from "@/jobs/offrePartenaire/rh-alternance/processRhAlternance"
+import { exportJobsToFranceTravail } from "@/jobs/partenaireExport/exportToFranceTravail"
 import { repriseEnvoiEmailsPRDV } from "@/jobs/rdv/repriseEnvoiPRDV"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
@@ -307,6 +308,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: classifyRomesForDomainesMetiersAnalyze,
     description: "Analyse les fichiers de sortie de classifyRomesForDomainesMetiers",
+  },
+  {
+    fct: exportJobsToFranceTravail,
+    description: "Envoie les offres LBA à France Travail",
   },
   {
     fct: updateRomesForDomainesMetiers,
