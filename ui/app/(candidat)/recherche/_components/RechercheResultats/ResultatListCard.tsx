@@ -179,7 +179,7 @@ export function ResultCard({ item, active, params }: ResultCardProps) {
                 className={fr.cx("fr-text--xs")}
               >
                 {getAdresse(item)}
-                {item.place.distance != null && (
+                {params.geo && item.place.distance != null && (
                   <>
                     <br />
                     <Typography
