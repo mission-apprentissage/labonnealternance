@@ -2,6 +2,8 @@ import { Filter } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
+import { logger } from "@/common/logger"
+
 import { blockBadRomeJobsPartners } from "./blockBadRomeJobsPartners"
 import { blockJobsPartnersWithNaf85 } from "./blockJobsPartnersWithNaf85"
 import { detectDuplicateJobPartners } from "./detectDuplicateJobPartners"
@@ -13,6 +15,7 @@ import { rankJobPartners } from "./rankJobPartners"
 import { validateComputedJobPartners } from "./validateComputedJobPartners"
 
 export const fillComputedJobsPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
+  logger.info("début de fillComputedJobsPartners")
   await fillOpcoInfosForPartners(addedMatchFilter)
   await fillSiretInfosForPartners(addedMatchFilter)
   await blockJobsPartnersWithNaf85(addedMatchFilter)
@@ -22,6 +25,7 @@ export const fillComputedJobsPartners = async (addedMatchFilter?: Filter<IComput
   await rankJobPartners(addedMatchFilter)
   await detectDuplicateJobPartners(addedMatchFilter)
   await validateComputedJobPartners(addedMatchFilter)
+  logger.info("fin de fillComputedJobsPartners")
 }
 
 export const blankComputedJobPartner = (): Omit<IComputedJobsPartners, "_id" | "partner_label" | "partner_job_id"> => ({
