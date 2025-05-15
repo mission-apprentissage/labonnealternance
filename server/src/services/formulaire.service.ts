@@ -301,7 +301,8 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
       }
     })
   )
-
+  const jobTitle = offre.offer_title_custom || offre.rome_appellation_label || offre.rome_label
+  const jobUrl = new URL(`${config.publicUrl}/emploi/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${offre._id}/${encodeURIComponent(jobTitle!)}`)
   if (sentDelegations.length) {
     await mailer.sendEmail({
       to: recruiter.email,
@@ -312,7 +313,8 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
         last_name: recruiter.last_name,
         email: recruiter.email,
         phone: recruiter.phone,
-        job_title: offre.offer_title_custom || offre.rome_appellation_label || offre.rome_label,
+        job_title: jobTitle,
+        job_url: jobUrl,
         delegations: sentDelegations,
         images: {
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
