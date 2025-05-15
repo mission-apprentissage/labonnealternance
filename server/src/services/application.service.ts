@@ -362,24 +362,24 @@ const buildUrlsOfDetail = (application: IApplication, utm?: { utm_source?: strin
   const { job_id, company_siret, job_origin, job_title } = application
   const defaultUtm = { utm_source: "lba", utm_medium: "email", utm_campaign: "je-candidate" }
   const { utm_campaign, utm_medium, utm_source } = { ...defaultUtm, ...utm }
-  const url = new URL(`${publicUrl}/emploi/${job_origin}/${job_origin === LBA_ITEM_TYPE.RECRUTEURS_LBA ? company_siret! : job_id!}/${job_title}`)
-  const paramsWithoutUtm = url.toString()
+  const idInUrl = job_origin === LBA_ITEM_TYPE.RECRUTEURS_LBA ? company_siret! : job_id!
+  const urlWithoutUtm = `${publicUrl}${getDirectJobPath(job_origin, idInUrl, job_title ?? undefined)}`
 
-  url.searchParams.append("utm_source", utm_source)
-  url.searchParams.append("utm_medium", utm_medium)
+  const searchParams = new URLSearchParams()
+  searchParams.append("utm_source", utm_source)
+  searchParams.append("utm_medium", utm_medium)
   if (job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
-    url.searchParams.append("utm_campaign", utm_campaign)
+    searchParams.append("utm_campaign", utm_campaign)
   }
   if (job_origin === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    url.searchParams.append("utm_campaign", `${utm_campaign}-spontanement`)
+    searchParams.append("utm_campaign", `${utm_campaign}-spontanement`)
   }
   if (job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) {
-    url.searchParams.append("utm_campaign", `${utm_campaign}-partenaire`)
+    searchParams.append("utm_campaign", `${utm_campaign}-partenaire`)
   }
-  const params = url.toString()
   return {
-    urlWithoutUtm: paramsWithoutUtm,
-    url: `${publicUrl}/recherche?${params}`,
+    urlWithoutUtm,
+    url: `${urlWithoutUtm}?${searchParams}`,
   }
 }
 
