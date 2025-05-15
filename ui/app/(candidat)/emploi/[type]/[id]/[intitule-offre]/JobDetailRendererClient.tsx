@@ -58,7 +58,7 @@ function JobDetail({ selectedItem, resultList, params }: WithRecherchePageParams
   const isMandataire = selectedItem?.company?.mandataire
   const handleClose = () => router.push(PAGES.dynamic.recherche(params).getPath())
 
-  const actualTitle = selectedItem.title
+  const actualTitle = kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && selectedItem?.nafs?.length > 0 && selectedItem.nafs[0]?.label ? selectedItem.nafs[0].label : selectedItem.title
 
   const maxScroll = 100
   const handleScroll = () => {
