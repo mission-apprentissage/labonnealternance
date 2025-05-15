@@ -12,6 +12,10 @@ import { zOpcoLabel } from "./opco.model.js"
 
 const collectionName = "jobs_partners" as const
 
+// Les partenaires dans JOBPARTNERS_LABEL sont traités par flux
+// sauf ceux dans jobPartnersExcludedFromFlux
+// Les partenaires inconnus sont traités par Api
+
 export enum JOBPARTNERS_LABEL {
   OFFRES_EMPLOI_LBA = LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
   RECRUTEURS_LBA = LBA_ITEM_TYPE.RECRUTEURS_LBA,
@@ -25,13 +29,7 @@ export enum JOBPARTNERS_LABEL {
   VERITONE = "Veritone",
 }
 
-export enum FILTER_JOBPARTNERS_LABEL {
-  HELLOWORK = JOBPARTNERS_LABEL.HELLOWORK,
-  RH_ALTERNANCE = JOBPARTNERS_LABEL.RH_ALTERNANCE,
-  METEOJOB = JOBPARTNERS_LABEL.METEOJOB,
-  MONSTER = JOBPARTNERS_LABEL.MONSTER,
-  KELIO = JOBPARTNERS_LABEL.KELIO,
-}
+export const jobPartnersExcludedFromFlux = [JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, JOBPARTNERS_LABEL.RECRUTEURS_LBA]
 
 export const ZJobsPartnersRecruiterApi = z.object({
   _id: zObjectId,
@@ -224,6 +222,9 @@ export default {
     [{ partner_label: 1, partner_job_id: 1 }, { unique: true }],
     [{ partner_label: 1 }, {}],
     [{ workplace_siret: 1 }, {}],
+    [{ workplace_brand: 1 }, {}],
+    [{ workplace_legal_name: 1 }, {}],
+    [{ workplace_name: 1 }, {}],
     [{ offer_status: 1 }, {}],
     [{ offer_expiration: 1 }, {}],
     [{ "duplicates.partner_job_id": 1 }, {}],
