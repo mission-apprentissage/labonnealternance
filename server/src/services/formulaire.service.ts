@@ -271,6 +271,10 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
 
   await Promise.all(
     etablissementCatalogueIds.map(async (etablissementId) => {
+      //TODO: il y a des cas particuliers où des formations ont un siret différent tout en ayant le même etablissement_id
+      // les délégations sont enregistrées sur le siret de la première formation trouvée
+      // le problème est visible lorsque deux formations avec des sirets différents sont proposées sur la ui. Seule une d'entre elle sera
+      // affichées comme délégation envoyée ce qui peut perturber l'utilisateur et le faire tenter de renvoyer la délégation
       const formation = formations.find((formation) => formation.etablissement_gestionnaire_id === etablissementId || formation.etablissement_formateur_id === etablissementId)
       const {
         etablissement_formateur_siret: siret_code,
