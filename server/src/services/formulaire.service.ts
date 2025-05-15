@@ -348,15 +348,6 @@ export const createFormulaire = async (payload: Partial<Omit<IRecruiter, "_id" |
 export const deleteFormulaire = async (id: IRecruiter["_id"]): Promise<IRecruiter | null> => await getDbCollection("recruiters").findOneAndDelete({ _id: id })
 
 /**
- * @description Remove all formulaires belonging to gestionnaire
- * @param {IUserRecruteur["establishment_siret"]} establishment_siret
- * @returns {Promise<IRecruiter>}
- */
-export const deleteFormulaireFromGestionnaire = async (siret: IUserRecruteur["establishment_siret"]): Promise<void> => {
-  await getDbCollection("recruiters").deleteMany({ cfa_delegated_siret: siret })
-}
-
-/**
  * @description Update existing formulaire and return updated version
  */
 export const updateFormulaire = async (establishment_id: IRecruiter["establishment_id"], payload: UpdateFilter<IRecruiter>): Promise<IRecruiter> => {
@@ -700,6 +691,7 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, co
         job_type: job.job_type,
         job_level_label: job.job_level_label,
         job_start_date: dayjs(job.job_start_date).format("DD/MM/YY"),
+        job_title: job.offer_title_custom,
       },
       lba_url: `${config.publicUrl}${getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id.toString())}`,
     },
@@ -810,4 +802,9 @@ export const validateUserEmailFromJobId = async (jobId: ObjectId) => {
   const { managed_by } = recruiterOpt ?? {}
   if (!managed_by) return
   await validateUserWithAccountEmail(new ObjectId(managed_by))
+}
+
+export const updateCfaManagedRecruiter = async (establishment_id: string, payload: Partial<IRecruiter>) => {
+  const recruiter = await getDbCollection("recruiters").findOneAndUpdate({ establishment_id }, { $set: { ...payload, updatedAt: new Date() } }, { returnDocument: "after" })
+  return recruiter
 }

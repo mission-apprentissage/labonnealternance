@@ -96,7 +96,7 @@ export async function bind(app: Server) {
   await app.register(fastifySwaggerUI, swaggerUiOptions)
 
   app.get("/api-docs/swagger.json", (_req, res) => {
-    return res.redirect(301, "/api/docs/json")
+    return res.redirect("/api/docs/json", 301)
   })
 
   app.register(fastifyCookie)

@@ -59,6 +59,7 @@ export const createJobsCollectionForMetabase = async () => {
           stats_detail_view: "$jobs.stats_detail_view",
           stats_search_view: "$jobs.stats_search_view",
           rome_detail: "$jobs.rome_detail",
+          offer_title_custom: "$jobs.offer_title_custom",
 
           // Champs de recruiters
           establishment_raison_sociale: 1,

@@ -86,6 +86,7 @@ const nextConfig = {
     dirs: ["."],
   },
   images: {
+    unoptimized: true,
     // Tout changement d'image devra passer par un changement de nom de fichier
     // pour être pris en compte par le cache
     minimumCacheTTL: 31 * 24 * 3_600, // 31 jours

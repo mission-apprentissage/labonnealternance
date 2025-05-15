@@ -107,8 +107,8 @@ export const OffresTabs = ({
           row: { id },
         },
       }) => {
-        const { rome_label, rome_appellation_label } = data[id]
-        return rome_appellation_label ?? rome_label
+        const { rome_label, rome_appellation_label, offer_title_custom } = data[id]
+        return offer_title_custom ?? rome_appellation_label ?? rome_label
       },
       width: "300",
       maxWidth: "300",
@@ -140,7 +140,7 @@ export const OffresTabs = ({
         {
           Header: "Recherches",
           id: "searches",
-          width: "150",
+          width: "170",
           accessor: ({ stats_search_view = 0 }) => {
             return <NumberCell>{stats_search_view}</NumberCell>
           },
@@ -156,7 +156,7 @@ export const OffresTabs = ({
         {
           Header: "Candidat(s)",
           id: "candidat",
-          width: "150",
+          width: "170",
           accessor: ({ candidatures = 0 }) => <NumberCell>{Math.max(candidatures, 0)}</NumberCell>,
         },
       ]
