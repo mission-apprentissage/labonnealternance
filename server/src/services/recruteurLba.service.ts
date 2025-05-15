@@ -21,6 +21,13 @@ import { generateApplicationToken } from "./appLinks.service"
 import { TLbaItemResult } from "./jobOpportunity.service.types"
 import { ILbaItemLbaCompany } from "./lbaitem.shared.service.types"
 
+const setDistance = (distance: number | null | undefined) => {
+  if (distance != null && distance != undefined && distance >= 0) {
+    return roundDistance(distance / 1000)
+  }
+  return null
+}
+
 /**
  * Adaptation au modèle LBA d'une société issue de l'algo
  * To remove once V1 is decommissioned
@@ -54,7 +61,7 @@ const transformCompany = ({
     title: company.workplace_brand || company.workplace_legal_name,
     contact,
     place: {
-      distance: company?.distance != null && company?.distance >= 0 ? roundDistance((company?.distance ?? 0) / 1000) : null,
+      distance: setDistance(company.distance),
       fullAddress: company.workplace_address_label,
       longitude: company.workplace_geopoint.coordinates[0],
       latitude: company.workplace_geopoint.coordinates[1],
@@ -106,7 +113,7 @@ const transformCompanyWithMinimalData = ({
     id: company.workplace_siret!,
     title: company.workplace_brand || company.workplace_legal_name,
     place: {
-      distance: company?.distance != null && company?.distance >= 0 ? roundDistance((company?.distance ?? 0) / 1000) : null,
+      distance: setDistance(company.distance),
       fullAddress: company.workplace_address_label,
       longitude: company.workplace_geopoint.coordinates[0],
       latitude: company.workplace_geopoint.coordinates[1],
@@ -151,7 +158,7 @@ const transformCompanyV2 = ({
       email: company.apply_email,
     },
     place: {
-      distance: company?.distance != null && company?.distance >= 0 ? roundDistance((company?.distance ?? 0) / 1000) : null,
+      distance: setDistance(company.distance),
       fullAddress: company.workplace_address_label,
       longitude: company.workplace_geopoint.coordinates[0],
       latitude: company.workplace_geopoint.coordinates[1],
@@ -201,7 +208,7 @@ const transformCompanyWithMinimalDataV2 = ({
     id: company.workplace_siret!,
     title: company.workplace_brand || company.workplace_legal_name,
     place: {
-      distance: company?.distance != null && company?.distance >= 0 ? roundDistance((company?.distance ?? 0) / 1000) : null,
+      distance: setDistance(company.distance),
       fullAddress: company.workplace_address_label,
       longitude: company.workplace_geopoint.coordinates[0],
       latitude: company.workplace_geopoint.coordinates[1],
