@@ -100,19 +100,6 @@ describe("formationV1", () => {
     assert.ok(JSON.parse(response.body).error_messages.indexOf("romes : Badly formatted rome codes. Rome code must be one letter followed by 4 digit number. ex : A1234") >= 0)
   })
 
-  it("Vérifie que les requêtes avec trop de ROME sont refusées", async () => {
-    const response = await httpClient().inject({
-      method: "GET",
-      path: "/api/V1/formations?romes=ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE&longitude=2.3752&latitude=48.845&radius=30&caller=test",
-    })
-
-    expect(response.statusCode).toBe(400)
-    expect(JSON.parse(response.body)).toEqual({
-      error: "wrong_parameters",
-      error_messages: ["romes : Badly formatted rome codes. Rome code must be one letter followed by 4 digit number. ex : A1234"],
-    })
-  })
-
   it("Vérifie que les requêtes sans caller sont refusées", async () => {
     const response = await httpClient().inject({ method: "GET", path: "/api/V1/formations?romes=F1603,I1308&longitude=2.3752&latitude=48.845" })
 

@@ -9,6 +9,7 @@ import { processMeteojob } from "@/jobs/offrePartenaire/meteojob/processMeteojob
 import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
 import { processRecruteursLba } from "@/jobs/offrePartenaire/recruteur-lba/processRecruteursLba"
 import { processRhAlternance } from "@/jobs/offrePartenaire/rh-alternance/processRhAlternance"
+import { renvoiMailCreationCompte } from "@/jobs/oneTimeJob/renvoiMailCreationCompte"
 import { repriseEnvoiEmailsPRDV } from "@/jobs/rdv/repriseEnvoiPRDV"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
@@ -320,5 +321,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: sendMiseEnRelation,
     description: "Envoi de proposition de mise en relation avec des CFAs aux recruteurs",
+  },
+  {
+    fct: renvoiMailCreationCompte,
+    description: "Envoi les mails de validation de compte",
   },
 ]
