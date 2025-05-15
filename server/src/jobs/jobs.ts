@@ -29,7 +29,6 @@ import { generateFranceTravailAccess } from "./franceTravail/generateFranceTrava
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
-import { processComputedAndImportToJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
 import { processRecruteursLba } from "./offrePartenaire/recruteur-lba/processRecruteursLba"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
@@ -156,11 +155,11 @@ export async function setupJobProcessor() {
             handler: anonymizeAppointments,
             tag: "main",
           },
-          "Traitement computed et import dans la collection jobs_partners": {
-            cron_string: "00 3 * * *",
-            handler: processComputedAndImportToJobPartners,
-            tag: "slave",
-          },
+          // "Traitement computed et import dans la collection jobs_partners": {
+          //   cron_string: "00 3 * * *",
+          //   handler: processComputedAndImportToJobPartners,
+          //   tag: "slave",
+          // },
           "Import des formations depuis le Catalogue RCO": {
             cron_string: "15 2 * * *",
             handler: importCatalogueFormationJob,
