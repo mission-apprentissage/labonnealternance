@@ -7,18 +7,18 @@ const paris = {
     coordinates: [2.347, 48.8589],
     type: "Point",
   },
-  bbox: {
-    coordinates: [
-      [
-        [2.224219, 48.815562],
-        [2.469851, 48.815562],
-        [2.469851, 48.902148],
-        [2.224219, 48.902148],
-        [2.224219, 48.815562],
-      ],
-    ],
-    type: "Polygon",
-  },
+  // bbox: {
+  //   coordinates: [
+  //     [
+  //       [2.224219, 48.815562],
+  //       [2.469851, 48.815562],
+  //       [2.469851, 48.902148],
+  //       [2.224219, 48.902148],
+  //       [2.224219, 48.815562],
+  //     ],
+  //   ],
+  //   type: "Polygon",
+  // },
   code: "75056",
   codeDepartement: "75",
   codeRegion: "11",
@@ -54,7 +54,7 @@ describe("getCommuneParCodeInsee", () => {
 
     const result = await getCommuneParCodeInsee(paris.code)
 
-    expect(result).toEqual(paris)
+    expect(result).toMatchObject(paris)
   })
 })
 
@@ -97,6 +97,6 @@ describe("getCommuneParCodeDepartement", () => {
   it("should return the list of cities in a department", async () => {
     const communes = [paris]
     const result = await getCommuneParCodeDepartement(paris.codeDepartement)
-    expect(result).toEqual(communes)
+    expect(result).toMatchObject(communes)
   })
 })

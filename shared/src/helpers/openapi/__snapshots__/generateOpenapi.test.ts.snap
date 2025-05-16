@@ -1031,6 +1031,13 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
+          "mer_sent": {
+            "description": "Date d'envoi de la mise en relation",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
           "offer_title_custom": {
             "description": "Titre de l'offre saisi par le recruteur",
             "maxLength": 150,
@@ -4881,6 +4888,9 @@ Limite : 5 appel(s) / 1 seconde(s)
                       "geo_coordonnees": {
                         "type": "string",
                       },
+                      "localite": {
+                        "type": "string",
+                      },
                       "nom_departement": {
                         "type": "string",
                       },
@@ -4914,6 +4924,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                       "nom_voie",
                       "code_postal",
                       "nom_departement",
+                      "localite",
                       "entreprise_raison_sociale",
                       "geo_coordonnees",
                       "distance_en_km",

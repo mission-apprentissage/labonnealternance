@@ -116,6 +116,7 @@ export const ZEtablissementCatalogueProche = ZEtablissementCatalogue.pick({
   nom_voie: true,
   code_postal: true,
   nom_departement: true,
+  localite: true,
   entreprise_raison_sociale: true,
   geo_coordonnees: true,
 })

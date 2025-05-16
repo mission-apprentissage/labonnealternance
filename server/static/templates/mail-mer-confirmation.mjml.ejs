@@ -1,0 +1,151 @@
+<mjml>
+    <mj-head>
+      <mj-preview></mj-preview>
+      <mj-breakpoint width="480px"></mj-breakpoint>
+      <mj-attributes>
+        <mj-all padding="0"></mj-all>
+      </mj-attributes>
+      <mj-style>
+        @media only screen and (max-width: 799px) {
+          .text > div {
+              text-align: inherit !important;
+          }
+      
+          .wrapper > table > tbody > tr > td {
+              padding-left: 0px !important;
+              padding-right: 0px !important;
+          }
+  
+          .section > table > tbody > tr > td {
+              padding-left: 20px !important;
+              padding-right: 20px !important;
+          }
+  
+          .column > table > tbody > tr > td {
+              padding-left: 0px !important;
+              padding-right: 0px !important;
+          }
+  
+          .padB40 {
+              padding-bottom: 40px !important;
+          }
+  
+          .image {
+              padding-left: 0px !important;
+              padding-right: 0px !important;
+          }
+  
+          .image > table {
+              text-align: center !important;
+              margin: 0 auto !important;
+          }
+  
+          .divider {
+              padding-left: 0px !important;
+              padding-right: 0px !important;
+          }
+  
+          .button > table {
+              width: 100% !important;
+          }
+  
+          .button > table > tbody > tr > td > a {
+              width: 80% !important;
+          }
+      }
+      </mj-style>
+      <mj-style inline="inline">
+        .column > table { border-collapse: separate; }
+      </mj-style>
+      <mj-font href="https://fonts.googleapis.com/css2?family=ABeeZee:wght@400&display=swap" name="ABeeZee"></mj-font>
+      <mj-font href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400&display=swap" name="DM Sans"></mj-font>
+      <mj-font href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@700&display=swap" name="Public Sans"></mj-font>
+    </mj-head>
+    <mj-body background-color="#f5f5fe" name="confirmation MER" width="800px">
+      <mj-wrapper border-radius="0px" css-class="wrapper" padding="32px 100px 32px 100px">
+        <mj-section border-radius="0px" css-class="section" name="mj-section_group">
+          <mj-group>
+            <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="14.83%">
+              <mj-image align="left" alt="Image" css-class="image" src="<%= data.images.logoRf %>" width="89px"></mj-image>
+            </mj-column>
+            <mj-column border-radius="0px" css-class="column" padding="0px 24px 0px 24px" vertical-align="middle" width="34.83%">
+              <mj-image align="left" alt="Image" css-class="image" padding="17px 0px 17px 0px" src="<%= data.images.logoLba %>" width="160px"></mj-image>
+            </mj-column>
+            <mj-column border-radius="0px" css-class="column" vertical-align="top" width="50.33%"></mj-column>
+          </mj-group>
+        </mj-section>
+        <mj-spacer height="24px"></mj-spacer>
+        <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="23px 22px 23px 22px">
+          <mj-group>
+            <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="-198.92000000000002%">
+              <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 12px 0px">
+                Bonjour <%= data.first_name %> <%= data.last_name %>,
+  <br/>
+              </mj-text>
+              <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px">
+                Votre offre <a href="<%= data.job_url %>" ><%= data.job_title %></a> a été partagée à <%= data.delegations.length %> école(s) :
+  <br/>
+              </mj-text>
+            </mj-column>
+            <% data.delegations.forEach(function(delegation) { %> 
+                <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="99.64%">
+                  <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="24px 0px 24px 0px">
+                    <span style="line-height: 24px; color: #242424;">Établissement :</span><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; line-height: 24px; font-weight: 700; color: #242424;"> <%= delegation.raison_sociale %></span>
+      <br/><span style="line-height: 24px; color: #242424;">Adresse : </span><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; line-height: 24px; font-weight: 700; color: #242424;"><%= delegation.adresse_etablissement %>
+      </span><br/><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; line-height: 24px; font-weight: 400; text-decoration: underline; color: #242424;"><a href="https://catalogue-apprentissage.intercariforef.org/etablissement/<%= delegation.siret_code %>">En savoir plus</a></span>
+      <br/>
+                  </mj-text>
+                  <mj-divider align="left" border-color="#cfcfcf" border-style="solid" border-width="1px" css-class="divider"></mj-divider>
+                </mj-column>
+            <% }) %>            
+          </mj-group>
+        </mj-section>
+        <mj-spacer height="24px"></mj-spacer>
+        <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="23px 22px 23px 22px">
+          <mj-group>
+            <mj-column border-radius="0px" css-class="column" padding="0px 2px 0px 0px" vertical-align="middle" width="99.64%">
+              <mj-text align="left" color="#161616" css-class="text" font-family="ABeeZee, Georgia, Times, Times New Roman, serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 0px 0px">
+                <span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">Les écoles que vous avez sélectionnées ont reçu par email votre offre et vos coordonnées suivantes :
+  </span><br/><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">
+  </span><br/><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">Prénom : </span><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 700;"><%= data.first_name %></span>
+  <br/><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">Nom : </span><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 700;"><%= data.last_name %>
+  </span><br/><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">Email : </span><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 700;"><%= data.email %></span>
+  <br/><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">Numéro de téléphone : </span><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 700;"><%= data.phone %><br/>
+  </span><br/><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">Elles peuvent désormais vous recontacter pour vous proposer des candidats en adéquation avec vos besoins.</span>
+  <br/>
+              </mj-text>
+            </mj-column>
+          </mj-group>
+        </mj-section>
+        <mj-spacer height="24px"></mj-spacer>
+        <mj-section border-radius="4px" css-class="section" name="mj-section_group">
+          <mj-group>
+            <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+              <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
+                Ce courriel est généré automatiquement, vous ne pouvez pas y répondre.
+  <br/>Pour toute question, consultez notre <a href="https://labonnealternance.apprentissage.beta.gouv.fr/faq#recruteur?utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_recruteur-votre-offre-a-ete-partagee_faq" style="text-decoration: underline; color: inherit;">FAQ</a> ou écrivez-nous à <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr" style="text-decoration: underline; color: inherit;">labonnealternance@apprentissage.beta.gouv.fr</a>
+  <br/>
+              </mj-text>
+            </mj-column>
+          </mj-group>
+        </mj-section>
+        <mj-spacer height="24px"></mj-spacer>
+        <mj-section border-radius="4px" css-class="section" name="mj-section_group">
+          <mj-group>
+            <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+              <mj-text align="left" color="#666666" css-class="text" font-family="DM Sans, Times, Georgia, serif" font-size="14px" font-weight="400" line-height="24px">
+                <span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">La bonne alternance est un site développé par la Mission interministérielle pour l'apprentissage, au sein de l’État, conformément aux missions d’intérêt public du ministère du Travail, du Plein emploi et de l’Insertion.
+  </span><br/><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">
+  </span><br/><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">Nous vous contactons car vous avez déposé une offre en alternance sur La bonne alternance.
+  </span><br/><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">
+  </span><br/><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">Nous ne faisons aucune utilisation commerciale de vos adresses e-mail. Vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse </span><a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Droit%20opposition" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">labonnealternance@apprentissage.beta.gouv.fr</a><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">
+  </span><br/><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">
+  </span><br/><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">Si vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL. Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la </span><a href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite?utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_recruteur-votre-offre-a-ete-partagee_politique-confidentialite" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">politique de confidentialité</a><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;"> de La bonne alternance.</span>
+  <br/>
+              </mj-text>
+            </mj-column>
+          </mj-group>
+        </mj-section>
+      </mj-wrapper>
+    </mj-body>
+  </mjml>
