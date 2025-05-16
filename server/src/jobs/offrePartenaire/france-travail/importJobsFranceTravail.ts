@@ -25,6 +25,7 @@ export const importFranceTravailRaw = async () => {
   const codesDepartements = departements.map((d) => d.codeInsee)
 
   for (const codeDepartement of codesDepartements) {
+    logger.info(`parsing departement ${codeDepartement}`)
     for await (const jobs of getAllFTJobsByDepartments(codeDepartement)) {
       const ops = jobs.map((rawFtJob): AnyBulkWriteOperation<IFTJobRaw> => {
         return {
