@@ -7,6 +7,7 @@ import { IJobsPartnersOfferPrivate, IJobsPartnersRecruteurAlgoPrivate, JOBPARTNE
 import { ILbaCompanyForContactUpdate } from "shared/routes/updateLbaCompany.routes"
 
 import { getRecipientID } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
+import { getOpcoLongName } from "@/services/opco.service"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
@@ -339,7 +340,7 @@ export const getCompanies = async ({
     }
 
     if (opco) {
-      query.workplace_opco = opco.toUpperCase()
+      query.workplace_opco = { $or: [opco.toUpperCase(), getOpcoLongName(opco.toUpperCase())] } // KBA : field opco_short_name does not exist anymore, to be removed once V1 decomissioned
     }
 
     // TODO 20250212 obsolete, to check if still used
