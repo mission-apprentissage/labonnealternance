@@ -8,8 +8,9 @@ import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fi
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
-import { IGeoPoint, IRecruiter, IReferentielRome, JOB_STATUS } from "shared/models/index"
+import { IGeoPoint, IRecruiter, IReferentielRome, JOB_PARTNER_STATUS, JOB_STATUS } from "shared/models/index"
 import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { zJobOfferApiReadV3, type IJobOfferApiWriteV3Input } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -767,7 +768,179 @@ describe("GET /v3/jobs/:id", () => {
     expect(data).toMatchObject({
       statusCode: 404,
       error: "Not Found",
-      message: `Aucune offre d'emploi trouvée pour l'ID: ${nonExistentId.toString()}`,
+      message: `No job offer found for ID: ${nonExistentId.toString()}`,
+    })
+  })
+})
+
+describe("GET /v3/jobs/:id/status", () => {
+  const jobPartnerId = new ObjectId()
+
+  const originalCreatedAt = new Date("2023-09-06T00:00:00.000+02:00")
+  const originalCreatedAtPlus2Months = new Date("2023-11-06T00:00:00.000+01:00")
+
+  const originalJob = generateJobsPartnersOfferPrivate({
+    _id: jobPartnerId,
+    created_at: originalCreatedAt,
+    offer_creation: originalCreatedAt,
+    offer_expiration: originalCreatedAtPlus2Months,
+  })
+
+  const data: IJobOfferApiWriteV3Input = {
+    contract: { start: originalCreatedAtPlus2Months.toJSON() },
+
+    offer: {
+      title: "Apprentis en développement web",
+      rome_codes: ["M1602"],
+      description: "Envie de devenir développeur web ? Rejoignez-nous !",
+    },
+
+    apply: { email: "mail@mail.com" },
+
+    workplace: {
+      siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
+    },
+  }
+
+  beforeEach(async () => {
+    await getDbCollection("jobs_partners").deleteMany({})
+    await getDbCollection("computed_jobs_partners").deleteMany({})
+    await getDbCollection("jobs_partners").insertOne(originalJob)
+  })
+
+  it("should return 401 if no api key provided", async () => {
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/v3/jobs/${jobPartnerId}/status`,
+    })
+    expect(response.statusCode).toBe(401)
+    expect(response.json()).toEqual({
+      statusCode: 401,
+      error: "Unauthorized",
+      message: "Unable to parse token missing-bearer",
+    })
+  })
+
+  it("should return 401 if api key is invalid", async () => {
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/v3/jobs/${jobPartnerId}/status`,
+      headers: { authorization: `Bearer ${fakeToken}` },
+    })
+    expect(response.statusCode).toBe(401)
+    expect(response.json()).toEqual({
+      statusCode: 401,
+      error: "Unauthorized",
+      message: "Unable to parse token invalid-signature",
+    })
+  })
+
+  it("should return error if job does not exist", async () => {
+    // Générer un ID inexistant
+    const nonExistentId = new ObjectId().toString()
+
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/v3/jobs/${nonExistentId}/status`,
+      headers: { authorization: `Bearer ${token}` },
+    })
+
+    // Vérifier que le statut HTTP est 404
+    expect(response.statusCode).toBe(404)
+
+    // Récupérer les données JSON de la réponse
+    const data = response.json()
+
+    // Vérifier que le message d'erreur est correct
+    expect(data).toMatchObject({
+      statusCode: 404,
+      error: "Not Found",
+      message: `No job offer found for ID: ${nonExistentId.toString()}`,
+    })
+  })
+
+  it("should return PUBLISHED when job exists in jobs_partners", async () => {
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/v3/jobs/${jobPartnerId}/status`,
+      headers: { authorization: `Bearer ${token}` },
+    })
+    console.log("response :>> ", response.json())
+    expect(response.statusCode).toBe(200)
+
+    const data = response.json()
+    expect(data).toMatchObject({
+      status: JOB_PARTNER_STATUS.PUBLISHED,
+    })
+  })
+
+  describe("should test computed_jobs_partner errors", () => {
+    it("should return WILL_BE_PUBLISHED when computed_jobs_partner has no errors", async () => {
+      // Ajout d'une nouvelle offre d'emploi + vérification de la création dans la collection computed_jobs_partners
+      const responsePostJob = await httpClient().inject({
+        method: "POST",
+        path: `/api/v3/jobs`,
+        body: data,
+        headers: { authorization: `Bearer ${token}` },
+      })
+
+      expect.soft(responsePostJob.statusCode).toBe(200)
+      const responseJson = responsePostJob.json()
+      expect(responseJson).toEqual({ id: expect.any(String) })
+      expect(await getDbCollection("computed_jobs_partners").countDocuments({ _id: new ObjectId(responseJson.id as string) })).toBe(1)
+      const doc = await getDbCollection("computed_jobs_partners").findOne({ _id: new ObjectId(responseJson.id as string) })
+
+      // Ensure that the job offer is associated to the correct permission
+      expect(doc?.partner_label).toBe("Un super Partenaire")
+
+      // Récupération du statut de l'offre d'emploi
+      const responseGetStatus = await httpClient().inject({
+        method: "GET",
+        path: `/api/v3/jobs/${responseJson.id}/status`,
+        headers: { authorization: `Bearer ${token}` },
+      })
+
+      expect(responseGetStatus.statusCode).toBe(200)
+
+      const getStatusData = responseGetStatus.json()
+      expect(getStatusData).toMatchObject({
+        status: JOB_PARTNER_STATUS.WILL_BE_PUBLISHED,
+      })
+    })
+
+    it("should return NOT_PUBLISHED when computed_jobs_partner has errors", async () => {
+      // Ajout d'une nouvelle offre d'emploi + vérification de la création dans la collection computed_jobs_partners
+      const responsePostJob = await httpClient().inject({
+        method: "POST",
+        path: `/api/v3/jobs`,
+        body: data,
+        headers: { authorization: `Bearer ${token}` },
+      })
+
+      expect.soft(responsePostJob.statusCode).toBe(200)
+      const responseJson = responsePostJob.json()
+      expect(responseJson).toEqual({ id: expect.any(String) })
+      expect(await getDbCollection("computed_jobs_partners").countDocuments({ _id: new ObjectId(responseJson.id as string) })).toBe(1)
+
+      // Update business_error  dans computed_jobs_partners
+      await getDbCollection("computed_jobs_partners").updateOne(
+        { _id: new ObjectId(responseJson.id as string) },
+        { $set: { business_error: JOB_PARTNER_BUSINESS_ERROR.CLOSED_COMPANY } }
+      )
+
+      // Récupération du statut de l'offre d'emploi
+      const responseGetStatus = await httpClient().inject({
+        method: "GET",
+        path: `/api/v3/jobs/${responseJson.id}/status`,
+        headers: { authorization: `Bearer ${token}` },
+      })
+
+      expect(responseGetStatus.statusCode).toBe(200)
+
+      const getStatusData = responseGetStatus.json()
+      expect(getStatusData).toMatchObject({
+        status: JOB_PARTNER_STATUS.NOT_PUBLISHED,
+      })
     })
   })
 })

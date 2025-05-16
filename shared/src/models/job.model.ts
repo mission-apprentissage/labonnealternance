@@ -23,6 +23,12 @@ export enum JOB_STATUS_ENGLISH {
   ANNULEE = "Cancelled",
 }
 
+export enum JOB_PARTNER_STATUS {
+  WILL_BE_PUBLISHED = "WILL_BE_PUBLISHED",
+  PUBLISHED = "PUBLISHED",
+  NOT_PUBLISHED = "NOT_PUBLISHED",
+}
+
 export function translateJobStatus(status: JOB_STATUS): JOB_STATUS_ENGLISH | undefined {
   switch (status) {
     case JOB_STATUS.ACTIVE:
