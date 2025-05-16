@@ -10,7 +10,6 @@ import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
 import { AdminUserForm } from "@/app/(espace-pro)/espace-pro/(connected)/administration/gestion-des-administrateurs/_components/AdminUserForm"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
-import { EAdminPages } from "@/app/_components/Layout/NavigationAdmin"
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
 import { sortReactTableString } from "@/common/utils/dateUtils"
 import { TableNew } from "@/components/espace_pro"
@@ -39,7 +38,7 @@ export default function GestionDesAdministrateurs() {
   }
 
   return (
-    <AdminLayout currentAdminPage={EAdminPages.GESTION_ADMINISTRATEURS}>
+    <AdminLayout currentAdminPage="GESTION_ADMINISTRATEURS">
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.backAdminGestionDesAdministrateurs]} />
       <Modal isOpen={newUser.isOpen} onClose={newUser.onClose} size="4xl">
         <ModalOverlay />

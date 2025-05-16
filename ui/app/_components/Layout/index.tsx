@@ -4,7 +4,7 @@ import { Box, Container, Flex } from "@chakra-ui/react"
 import Footer from "@/components/footer"
 
 import Header from "./Header"
-import NavigationAdmin, { EAdminPages } from "./NavigationAdmin"
+import NavigationAdmin, { type IAdminPage } from "./NavigationAdmin"
 import NavigationMenu from "./NavigationMenu"
 
 export default async function Layout({
@@ -21,7 +21,7 @@ export default async function Layout({
   widget?: boolean
   footer?: boolean
   rdva?: boolean
-  adminPage?: EAdminPages
+  adminPage?: IAdminPage
   displayNavigationMenu?: boolean
 }) {
   const handleLogout = async () => {

@@ -7,7 +7,7 @@ import { useParams } from "next/navigation"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import DetailEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/DetailEntreprise"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
-import NavigationAdmin, { EAdminPages } from "@/app/_components/Layout/NavigationAdmin"
+import NavigationAdmin from "@/app/_components/Layout/NavigationAdmin"
 import { getFormulaire, getUser } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -41,7 +41,7 @@ export default function User() {
   return (
     <>
       <Box as="header">
-        <NavigationAdmin currentPage={EAdminPages.GESTION_RECRUTEURS} />
+        <NavigationAdmin currentPage="GESTION_RECRUTEURS" />
       </Box>
       <Container as="main" p={0} maxW="container.xl" flexGrow="1">
         <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.dynamic.backAdminRecruteurOffres({ user_id: userId, user_label: establishmentLabel })]} />

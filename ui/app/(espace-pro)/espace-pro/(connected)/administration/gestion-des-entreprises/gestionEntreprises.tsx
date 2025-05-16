@@ -12,7 +12,6 @@ import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
-import { EAdminPages } from "@/app/_components/Layout/NavigationAdmin"
 import { phoneValidation } from "@/common/validation/fieldValidations"
 import { CustomInput } from "@/components/espace_pro"
 import { SearchLine } from "@/theme/components/icons"
@@ -180,7 +179,7 @@ export default function GestionEntreprises() {
   const [siret, setSiret] = useState<string>("")
 
   return (
-    <AdminLayout currentAdminPage={EAdminPages.ENTREPRISES_ALGO}>
+    <AdminLayout currentAdminPage="ENTREPRISES_ALGO">
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.backAdminGestionDesEntreprises]} />
       <Box px={4}>
         <Text fontSize="2rem" mb={4} fontWeight={700} as="h1">

@@ -8,7 +8,6 @@ import { IFormationCatalogueJson } from "shared"
 
 import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
-import { EAdminPages } from "@/app/_components/Layout/NavigationAdmin"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -43,7 +42,7 @@ export default function RendezVousApprentissage() {
   }
 
   return (
-    <AdminLayout currentAdminPage={EAdminPages.RECHERCHE_RENDEZ_VOUS}>
+    <AdminLayout currentAdminPage="RECHERCHE_RENDEZ_VOUS">
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.rendezVousApprentissageRecherche]} />
       <Box border="1px solid #E0E5ED" bg="white">
         <Text fontWeight="500" textStyle="h6" p={4} px={6} borderBottom="1px solid #E0E5ED">
