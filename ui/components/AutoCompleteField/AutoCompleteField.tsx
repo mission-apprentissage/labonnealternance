@@ -2,11 +2,8 @@ import { Box, Container, Flex, Input, Spinner, Text, VStack } from "@chakra-ui/r
 import { useCombobox } from "downshift" //https://github.com/downshift-js/downshift/tree/master/src/hooks/useCombobox
 import { useFormikContext } from "formik"
 import React, { useEffect, useState } from "react"
-import ReactHtmlParser from "react-html-parser"
 
 import { debounce } from "@/common/utils/debounce"
-
-import highlightItem from "../../services/hightlightItem"
 
 import findExactItemRank from "./findExactItemRank"
 import onInputValueChangeService from "./onInputValueChangeService"
@@ -145,7 +142,7 @@ export const AutoCompleteField = ({
           <React.Fragment key={index}>
             {returnTitleLi(item)}
             <Box key={index} {...itemProps} bg={highlightedIndex === index ? "#aaa" : ""} {...getItemProps({ item: item.label, index })}>
-              {ReactHtmlParser(highlightItem(item.label, inputValue))}
+              {item.label}
             </Box>
           </React.Fragment>
         )
