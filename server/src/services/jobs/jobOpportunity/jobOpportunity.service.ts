@@ -210,6 +210,7 @@ export const getJobsFromApi = async ({
             return LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
           case "lba":
             return LBA_ITEM_TYPE.RECRUTEURS_LBA
+          case "peJob":
           case "offres": // compatibility V1 to retreive FT jobs
             return LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES
 
