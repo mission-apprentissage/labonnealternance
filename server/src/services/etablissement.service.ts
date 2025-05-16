@@ -643,26 +643,53 @@ export const entrepriseOnboardingWorkflow = {
     const opcoResult = await getOpcoData(siret)
     const opco = opcoResult?.opco
 
-    const formulaireInfo = await createFormulaire(
-      {
-        ...entrepriseToRecruiter(entreprise),
-        first_name,
-        last_name,
-        phone,
-        email: formatedEmail,
-        status: "error" in siretResponse ? RECRUITER_STATUS.EN_ATTENTE_VALIDATION : RECRUITER_STATUS.ACTIF,
-        jobs: [],
-        cfa_delegated_siret,
-        is_delegated: true,
-        origin,
-        opco: (opco && parseEnum(OPCOS_LABEL, opco)) || OPCOS_LABEL.UNKNOWN_OPCO,
-        idcc: opcoResult?.idcc ?? null,
-        naf_label: "naf_label" in siretResponse ? siretResponse.naf_label : undefined,
-        naf_code: "naf_code" in siretResponse ? siretResponse.naf_code : undefined,
-      },
-      managedBy
-    )
-    return formulaireInfo
+    const existingFormulaire = await getDbCollection("recruiters").findOne({ cfa_delegated_siret, establishment_siret: siret })
+    if (existingFormulaire) {
+      console.log(siretResponse)
+      const result = await getDbCollection("recruiters").findOneAndUpdate(
+        { cfa_delegated_siret, establishment_siret: siret },
+        {
+          $set: {
+            ...entrepriseToRecruiter(entreprise),
+            first_name,
+            last_name,
+            phone,
+            email: formatedEmail,
+            status: "error" in siretResponse ? RECRUITER_STATUS.EN_ATTENTE_VALIDATION : RECRUITER_STATUS.ACTIF,
+            is_delegated: true,
+            opco: (opco && parseEnum(OPCOS_LABEL, opco)) || OPCOS_LABEL.UNKNOWN_OPCO,
+            idcc: opcoResult?.idcc ?? null,
+            naf_label: "naf_label" in siretResponse ? siretResponse.naf_label : undefined,
+            naf_code: "naf_code" in siretResponse ? siretResponse.naf_code : undefined,
+          },
+        }
+      )
+      if (!result) {
+        throw new Error(`inattendu: recruiter introuvable`)
+      }
+      return result
+    } else {
+      const formulaireInfo = await createFormulaire(
+        {
+          ...entrepriseToRecruiter(entreprise),
+          first_name,
+          last_name,
+          phone,
+          email: formatedEmail,
+          status: "error" in siretResponse ? RECRUITER_STATUS.EN_ATTENTE_VALIDATION : RECRUITER_STATUS.ACTIF,
+          jobs: [],
+          cfa_delegated_siret,
+          is_delegated: true,
+          origin,
+          opco: (opco && parseEnum(OPCOS_LABEL, opco)) || OPCOS_LABEL.UNKNOWN_OPCO,
+          idcc: opcoResult?.idcc ?? null,
+          naf_label: "naf_label" in siretResponse ? siretResponse.naf_label : undefined,
+          naf_code: "naf_code" in siretResponse ? siretResponse.naf_code : undefined,
+        },
+        managedBy
+      )
+      return formulaireInfo
+    }
   },
 }
 
