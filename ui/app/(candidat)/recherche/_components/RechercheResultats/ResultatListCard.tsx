@@ -146,6 +146,7 @@ export function ResultCard({ item, active, params }: ResultCardProps) {
           horizontal
           linkProps={{
             href: itemUrl,
+            prefetch: false,
           }}
           start={<ItemTag item={item} />}
           title={
