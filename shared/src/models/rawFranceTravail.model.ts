@@ -117,7 +117,10 @@ export type IFTJobRaw = z.output<typeof ZFTJobRaw>
 
 export default {
   zod: ZFTJobRaw,
-  indexes: [],
+  indexes: [
+    [{ updatedAt: 1, unpublishedAt: 1 }, {}],
+    [{ id: 1 }, { unique: true }],
+  ],
   collectionName: "raw_francetravail",
   authorizeAdditionalProperties: true,
 } as const satisfies IModelDescriptor

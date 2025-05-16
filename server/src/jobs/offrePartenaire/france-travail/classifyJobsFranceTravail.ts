@@ -1,3 +1,4 @@
+import type { AnyBulkWriteOperation } from "mongodb"
 import { groupData, oleoduc, writeData } from "oleoduc"
 import { IFTJobRaw } from "shared"
 
@@ -102,16 +103,22 @@ export const classifyFranceTravailJobs = async () => {
       const offres = mapDocument(rawFTDocuments)
       const response = await checkFTOffer({ offres, examples })
 
+      const ops: AnyBulkWriteOperation<IFTJobRaw>[] = []
       for (const rsp of response.offres) {
-        await getDbCollection("raw_francetravail").findOneAndUpdate(
-          { id: rsp.id as string },
-          {
-            $set: {
-              "_metadata.openai.type": rsp.type.toLowerCase(),
-              ...(rsp.cfa ? { "_metadata.openai.cfa": rsp.cfa } : {}),
+        ops.push({
+          updateOne: {
+            filter: { id: rsp.id as string },
+            update: {
+              $set: {
+                "_metadata.openai.type": rsp.type.toLowerCase(),
+                ...(rsp.cfa ? { "_metadata.openai.cfa": rsp.cfa } : {}),
+              },
             },
-          }
-        )
+          },
+        })
+      }
+      if (ops.length > 0) {
+        await getDbCollection("raw_francetravail").bulkWrite(ops, { ordered: false })
       }
     })
   )
