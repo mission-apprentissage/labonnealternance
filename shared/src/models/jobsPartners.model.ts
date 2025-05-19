@@ -95,9 +95,9 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   offer_opening_count: z.number().describe("Nombre de poste disponible"),
   offer_status: extensions.buildEnum(JOB_STATUS_ENGLISH).describe("Status de l'offre (surtout utilisé pour les offres ajouté par API)"),
   offer_status_history: z.array(ZJobsPartnersOfferHistoryEvent).describe("Historique de l'offre"),
-  stats_detail_view: z.number().nullish().describe("Nombre de vues de la page de détail"),
-  stats_search_view: z.number().nullish().describe("Nombre de vues sur une page de recherche"),
-  stats_postuler: z.number().nullish().describe("Nombre de clicks sur le bouton postuler"),
+  stats_detail_view: z.number().default(0).describe("Nombre de vues de la page de détail"),
+  stats_search_view: z.number().default(0).describe("Nombre de vues sur une page de recherche"),
+  stats_postuler: z.number().default(0).describe("Nombre de clicks sur le bouton postuler"),
 })
 
 const ZJobsPartnersRecruiterPrivateFields = z.object({
