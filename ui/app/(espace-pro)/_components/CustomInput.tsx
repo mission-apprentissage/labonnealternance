@@ -37,7 +37,7 @@ const CustomInput = (props) => {
             <Flex direction="row" alignItems="center">
               {meta.error === "Société inconnue" ? <Image src="/images/icons/crossInOctogon.svg" alt="" h="13px" aria-hidden="true" m={0} mt={1} /> : <Warning m={0} />}
               <Flex ml={1}>
-                <div>{parse(meta.error)}</div>
+                <div>{parse(meta.error || "")}</div>
                 {meta.error?.includes("déjà associé") && (
                   <Link href="/espace-pro/authentification" textColor="bluefrance.500" textDecoration="underline" ml={1}>
                     Connexion
