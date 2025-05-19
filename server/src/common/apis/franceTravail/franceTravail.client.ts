@@ -229,12 +229,10 @@ export const getRomeoPredictions = async (payload: IRomeoPayload[], options: IRo
   })
 }
 // Documentation https://francetravail.io/produits-partages/catalogue/offres-emploi/documentation#/api-reference/operations/recupererListeOffre
-export const getAllFTJobsByDepartments = async (departement: string) => {
+export async function* getAllFTJobsByDepartments(departement: string): AsyncGenerator<Omit<IFTJobRaw, "_id" | "createdAt">[], void, void> {
   const jobLimit = 150
   let start = 0
   let total = 1
-
-  let allJobs = [] as Omit<IFTJobRaw, "_id" | "createdAt">[]
 
   while (start < total) {
     // Construct the range for this "page"
@@ -263,7 +261,7 @@ export const getAllFTJobsByDepartments = async (departement: string) => {
         break
       }
 
-      allJobs = [...allJobs, ...(jobs.resultats as Omit<IFTJobRaw, "_id" | "createdAt">[])]
+      yield jobs.resultats as Omit<IFTJobRaw, "_id" | "createdAt">[]
 
       // Safely parse out the total
       // Usually, contentRange might look like "offres 0-149/9981"
@@ -295,5 +293,4 @@ export const getAllFTJobsByDepartments = async (departement: string) => {
       logger.error("Error while fetching jobs", error)
     }
   }
-  return allJobs
 }
