@@ -6,31 +6,28 @@ import { useRouter } from "next/navigation"
 
 import { PAGES } from "@/utils/routes.utils"
 
-export enum EAdminPages {
-  GESTION_RECRUTEURS = "GESTION_RECRUTEURS",
-  ENTREPRISES_ALGO = "ENTREPRISES_ALGO",
-  RECHERCHE_RENDEZ_VOUS = "RECHERCHE_RENDEZ_VOUS",
-  GESTION_ADMINISTRATEURS = "GESTION_ADMINISTRATEURS",
+const AdminPages = {
+  GESTION_RECRUTEURS: PAGES.static.backAdminHome.getPath(),
+  ENTREPRISES_ALGO: PAGES.static.backAdminGestionDesEntreprises.getPath(),
+  RECHERCHE_RENDEZ_VOUS: PAGES.static.rendezVousApprentissageRecherche.getPath(),
+  GESTION_ADMINISTRATEURS: PAGES.static.backAdminGestionDesAdministrateurs.getPath(),
+  GESTION_PROCESSEURS: PAGES.static.adminProcessor.getPath(),
 }
 
-const pageDefs = [
-  { page: EAdminPages.GESTION_RECRUTEURS, path: PAGES.static.backAdminHome.getPath() },
-  { page: EAdminPages.ENTREPRISES_ALGO, path: PAGES.static.backAdminGestionDesEntreprises.getPath() },
-  { page: EAdminPages.RECHERCHE_RENDEZ_VOUS, path: PAGES.static.rendezVousApprentissageRecherche.getPath() },
-  { page: EAdminPages.GESTION_ADMINISTRATEURS, path: PAGES.static.backAdminGestionDesAdministrateurs.getPath() },
-]
+export type IAdminPage = keyof typeof AdminPages
 
-const NavigationAdmin = ({ currentPage }: { currentPage: EAdminPages }) => {
+const NavigationAdmin = ({ currentPage }: { currentPage: IAdminPage }) => {
   const router = useRouter()
 
-  let selectedIndex = pageDefs.findIndex((page) => page.page === currentPage)
+  let selectedIndex = Object.keys(AdminPages).findIndex((page) => page === currentPage)
   if (selectedIndex === -1) {
     selectedIndex = 0
   }
 
   const handleTabsChange = (event, index) => {
-    const pageDef = pageDefs[index] ?? pageDefs[0]
-    router.push(pageDef.path)
+    const pageDef = Object.keys(AdminPages)[index]
+    const pagePath = AdminPages[pageDef as IAdminPage]
+    router.push(pagePath)
   }
 
   return (
@@ -41,6 +38,7 @@ const NavigationAdmin = ({ currentPage }: { currentPage: EAdminPages }) => {
           <Tab label="Entreprises de l'algorithme" wrapped data-testid="algo_company_tab" />
           <Tab label="Rendez-vous apprentissage" wrapped data-testid="recherche_rendez_vous_apprentissage_tab" />
           <Tab label="Gestion des administrateurs" wrapped data-testid="administrator_management_tab" />
+          <Tab label="Gestion des processeurs" wrapped data-testid="administrator_processeur_tab" />
         </Tabs>
       </Container>
     </Box>
