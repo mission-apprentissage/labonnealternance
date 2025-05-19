@@ -236,6 +236,11 @@ export const PAGES = {
         description: "Politique de confidentialité, traitement des données à caractère personnel sur le site de La bonne alternance.",
       }),
     },
+    adminProcessor: {
+      getPath: () => `/espace-pro/administration/processeur` as string,
+      index: false,
+      title: "Statut du processeur",
+    },
   },
   dynamic: {
     compte: ({ userType }: { userType: "CFA" | "ENTREPRISE" | "OPCO" | "ADMIN" }): IPage => ({
@@ -531,6 +536,26 @@ export const PAGES = {
     prdvUnsubscribeOptout: ({ id }: { id: string }): IPage => ({
       getPath: () => `/optout/unsubscribe/${id}` as string,
       title: `Désinscription à l'opt out`,
+    }),
+    adminProcessorJob: (name: string): IPage => ({
+      getPath: () => `/espace-pro/administration/processeur/job/${name}`,
+      index: false,
+      title: `Job ${name}`,
+    }),
+    adminProcessorJobInstance: (params: { name: string; id: string }): IPage => ({
+      getPath: () => `/espace-pro/administration/processeur/job/${params.name}/${params.id}`,
+      index: false,
+      title: `Tâche Job ${params.id}`,
+    }),
+    adminProcessorCron: (name: string): IPage => ({
+      getPath: () => `/espace-pro/administration/processeur/cron/${name}`,
+      index: false,
+      title: `CRON ${name}`,
+    }),
+    adminProcessorCronTask: (params: { name: string; id: string }): IPage => ({
+      getPath: () => `/espace-pro/administration/processeur/cron/${params.name}/${params.id}`,
+      index: false,
+      title: `Tâche CRON ${params.id}`,
     }),
   },
   notion: {},

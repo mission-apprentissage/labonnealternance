@@ -1,5 +1,5 @@
 import { captureException } from "@sentry/nextjs"
-import { IJobCreate, INewSuperUser, IRecruiterJson, IRoutes, IUserWithAccountFields, removeUndefinedFields, type IBody } from "shared"
+import { IJobCreate, INewDelegations, INewSuperUser, IRecruiterJson, IRoutes, IUserWithAccountFields, removeUndefinedFields, type IBody } from "shared"
 import { ApplicationIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -20,6 +20,9 @@ const errorHandler = (error: any): undefined => {
 export const getDelegationDetails = (establishment_id: string, token: string) =>
   apiGet("/formulaire/delegation/:establishment_id", { params: { establishment_id }, headers: { authorization: `Bearer ${token}` } }).catch(errorHandler)
 export const getFormulaire = (establishment_id: string) => apiGet("/formulaire/:establishment_id", { params: { establishment_id } }).catch(errorHandler)
+export const getFormulaireByToken = (establishment_id: string, token: string) =>
+  apiGet("/formulaire/:establishment_id/by-token", { params: { establishment_id }, headers: { authorization: `Bearer ${token}` } }).catch(errorHandler)
+
 export const postFormulaire = (userId: string, form) => apiPost("/user/:userId/formulaire", { params: { userId }, body: form })
 
 export const archiveFormulaire = (establishment_id: string) => apiDelete("/formulaire/:establishment_id", { params: { establishment_id } }).catch(errorHandler)
@@ -45,6 +48,13 @@ export const fillOffre = (jobId, token) => apiPut(`/formulaire/offre/:jobId/prov
 export const notifyLbaJobDetailView = async (jobId: string) => await apiPost("/v1/jobs/matcha/:id/stats/view-details", { params: { id: jobId } })
 export const notifyJobDetailViewV3 = (jobId: string) => apiPost("/v3/jobs/:id/stats/:eventType", { params: { id: jobId, eventType: "detail_view" } })
 export const notifyJobPostulerV3 = (jobId: string) => apiPost("/v3/jobs/:id/stats/:eventType", { params: { id: jobId, eventType: "postuler_click" } })
+export const getRelatedEtablissementsFromRome = async ({ rome, latitude, longitude, limit }: { rome: string; latitude: number; longitude: number; limit: number }) =>
+  apiGet(`/etablissement/cfas-proches`, { querystring: { rome, latitude, longitude, limit } })
+export const createEtablissementDelegation = ({ data, jobId }: { jobId: string; data: INewDelegations }) =>
+  apiPost(`/formulaire/offre/:jobId/delegation`, { params: { jobId }, body: data })
+export const createEtablissementDelegationByToken = ({ data, jobId, token }: { jobId: string; data: INewDelegations; token: string }) =>
+  apiPost(`/formulaire/offre/:jobId/delegation/by-token`, { params: { jobId }, body: data, headers: { authorization: `Bearer ${token}` } })
+
 /**
  * User API
  */
