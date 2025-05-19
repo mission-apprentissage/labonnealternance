@@ -595,7 +595,13 @@ export const extendOffre = async (id: IJob["_id"]): Promise<IJob> => {
   const recruiter = await getDbCollection("recruiters").findOneAndUpdate(
     { "jobs._id": id },
     {
-      $set: { "jobs.$.job_expiration_date": addExpirationPeriod(dayjs()).toDate(), "jobs.$.job_last_prolongation_date": now, "jobs.$.job_update_date": now },
+      $set: {
+        "jobs.$.job_expiration_date": addExpirationPeriod(dayjs()).toDate(),
+        "jobs.$.job_last_prolongation_date": now,
+        "jobs.$.job_update_date": now,
+        "jobs.$.relance_mail_expiration_J7": null,
+        "jobs.$.relance_mail_expiration_J1": null,
+      },
       $inc: { "jobs.$.job_prolongation_count": 1 },
     },
     { returnDocument: "after" }

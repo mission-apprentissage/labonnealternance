@@ -1047,10 +1047,17 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
-          "relance_mail_sent": {
-            "description": "Statut de l'envoi du mail de relance avant expiration",
+          "relance_mail_expiration_J1": {
+            "description": "Date de l'envoi du mail de relance avant expiration à J-1",
             "type": [
-              "boolean",
+              "string",
+              "null",
+            ],
+          },
+          "relance_mail_expiration_J7": {
+            "description": "Date de l'envoi du mail de relance avant expiration à J-7",
+            "type": [
+              "string",
               "null",
             ],
           },

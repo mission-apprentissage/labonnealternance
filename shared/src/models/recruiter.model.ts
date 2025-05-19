@@ -104,6 +104,10 @@ export default {
     [{ establishment_enseigne: 1 }, {}],
     [{ establishment_raison_sociale: 1 }, {}],
     [{ managed_by: 1 }, {}],
+    [{ "jobs.relance_mail_expiration_J1": 1 }, {}],
+    [{ "jobs.relance_mail_expiration_J7": 1 }, {}],
+    [{ "jobs.job_expiration_date": 1 }, {}],
+    [{ "jobs.job_status": 1 }, {}],
     [
       {
         "jobs.managed_by": 1,
