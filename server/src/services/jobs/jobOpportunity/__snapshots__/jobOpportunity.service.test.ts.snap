@@ -252,7 +252,7 @@ exports[`findJobsOpportunities > should execute query 2`] = `
     "apply": {
       "phone": "0100000000",
       "recipient_id": null,
-      "url": "http://localhost:3000/recherche?type=lba&itemId=11000001500013",
+      "url": "http://localhost:3000/emploi/recruteurs_lba/11000001500013",
     },
     "identifier": {
       "id": "000000000000000000000000",

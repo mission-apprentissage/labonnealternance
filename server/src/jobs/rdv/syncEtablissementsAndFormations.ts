@@ -120,14 +120,12 @@ export const syncEtablissementsAndFormations = async () => {
             }
           )
         } else {
+          // insert formation even if email if empty
           const emailRdv = await getEmailForRdv({
             email: formation.email,
             etablissement_gestionnaire_courriel: formation.etablissement_gestionnaire_courriel,
             etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret,
           })
-
-          // if no email, don't create the record
-          if (!emailRdv) return
 
           const now = new Date()
 
@@ -137,7 +135,7 @@ export const syncEtablissementsAndFormations = async () => {
             last_catalogue_sync_date: now,
             rco_formation_id: formation.id_rco_formation,
             training_id_catalogue: formation._id.toString(),
-            lieu_formation_email: emailRdv,
+            lieu_formation_email: emailRdv ?? null,
             parcoursup_id: formation.parcoursup_id,
             parcoursup_visible: formation.parcoursup_visible,
             affelnet_visible: formation.affelnet_visible,

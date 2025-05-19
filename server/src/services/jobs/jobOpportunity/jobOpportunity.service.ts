@@ -210,6 +210,7 @@ export const getJobsFromApi = async ({
             return LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
           case "lba":
             return LBA_ITEM_TYPE.RECRUTEURS_LBA
+          case "peJob":
           case "offres": // compatibility V1 to retreive FT jobs
             return LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES
 
@@ -507,7 +508,7 @@ export const getJobsPartnersForApi = async ({ romes, geo, target_diploma_level, 
     jobsRouteApiv3Converters.convertToJobOfferApiReadV3({
       ...j,
       contract_type: j.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
-      apply_url: j.apply_url ?? `${config.publicUrl}/recherche?type=partner&itemId=${j._id}`,
+      apply_url: j.apply_url ?? `${config.publicUrl}/emploi/${LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES}/${j._id}`,
       apply_recipient_id: j.apply_email ? getRecipientID(JobCollectionName.partners, j._id.toString()) : null,
     })
   )
@@ -538,7 +539,7 @@ export const convertLbaCompanyToJobRecruiterApi = (recruteursLba: IJobsPartnersO
         },
       },
       apply: {
-        url: `${config.publicUrl}/recherche?type=lba&itemId=${recruteurLba.workplace_siret}`,
+        url: `${config.publicUrl}/emploi/${LBA_ITEM_TYPE.RECRUTEURS_LBA}/${recruteurLba.workplace_siret}`,
         phone: recruteurLba.apply_phone,
         recipient_id: recruteurLba.apply_email ? getRecipientID(JobCollectionName.recruteur, recruteurLba.workplace_siret!) : null,
       },
@@ -646,7 +647,7 @@ export const convertLbaRecruiterToJobOfferApi = (offresEmploiLba: IJobResult[]):
           },
 
           apply: {
-            url: `${config.publicUrl}/recherche?type=matcha&itemId=${job._id}`,
+            url: `${config.publicUrl}/emploi/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${job._id}`,
             phone: recruiter.phone ?? null,
             recipient_id: getRecipientID(JobCollectionName.recruiters, job._id.toString()),
           },

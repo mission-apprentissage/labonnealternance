@@ -339,7 +339,7 @@ export const getCompanies = async ({
     }
 
     if (opco) {
-      query.workplace_opco = opco.toUpperCase()
+      query.workplace_opco = { $in: [opco.toUpperCase(), OPCOS_LABEL[opco?.toUpperCase()]] } // KBA : field opco_short_name does not exist anymore, to be removed once V1 decomissioned
     }
 
     // TODO 20250212 obsolete, to check if still used
