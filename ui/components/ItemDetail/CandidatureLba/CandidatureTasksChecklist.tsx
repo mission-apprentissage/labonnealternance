@@ -42,7 +42,7 @@ const TasksContainer = styled.div`
 `
 
 export const CandidatureTasksChecklist = ({ kind }: { kind: LBA_ITEM_TYPE_OLD | LBA_ITEM_TYPE }) => {
-  const tasks = kind === LBA_ITEM_TYPE_OLD.LBA ? OffreSpontaneTasks : OffreTasks
+  const tasks = kind === LBA_ITEM_TYPE_OLD.LBA || kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? OffreSpontaneTasks : OffreTasks
   const [checkedTasks, setCheckedTasks] = useState<Record<string, boolean>>({})
 
   const isFullyChecked = tasks.every((task) => Boolean(checkedTasks[task]))
