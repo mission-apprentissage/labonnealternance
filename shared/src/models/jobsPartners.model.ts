@@ -28,6 +28,12 @@ export enum JOBPARTNERS_LABEL {
   KELIO = "Kelio",
   VERITONE = "Veritone",
   GRDF = "GRDF",
+  DAHER = "Daher",
+  LOREAL = "L'Oréal",
+  CREDIT_MUTUEL = "Crédit Mutuel",
+  BPCE = "BPCE",
+  DECATHLON = "Decathlon",
+  INSTITUT_PASTEUR = "Institut Pasteur",
 }
 
 export const jobPartnersExcludedFromFlux = [JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, JOBPARTNERS_LABEL.RECRUTEURS_LBA]
