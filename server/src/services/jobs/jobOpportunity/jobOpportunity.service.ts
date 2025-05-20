@@ -386,6 +386,7 @@ export const getJobsQuery = async (
 
   if ("partnerJobs" in result && result.partnerJobs && "results" in result.partnerJobs) {
     job_count += result.partnerJobs.results.length
+    await incrementSearchViewCount(result.partnerJobs.results.flatMap((job) => (job?.id && ObjectId.isValid(job.id) ? [new ObjectId(job.id)] : [])))
   }
 
   if (query.caller) {
@@ -1085,3 +1086,23 @@ export const getRecipientID = (type: IJobCollectionName, id: string) => {
   }
   assertUnreachable(type)
 }
+
+const incrementJobCounter = (fieldName: keyof IJobsPartnersOfferPrivate) => async (ids: ObjectId[]) => {
+  try {
+    await getDbCollection("jobs_partners").updateMany(
+      { _id: { $in: ids } },
+      {
+        $inc: {
+          [fieldName]: 1,
+        },
+      }
+    )
+  } catch (err) {
+    logger.error(err)
+    sentryCaptureException(err)
+  }
+}
+
+export const incrementSearchViewCount = incrementJobCounter("stats_search_view")
+export const incrementDetailViewCount = (id: ObjectId) => incrementJobCounter("stats_detail_view")([id])
+export const incrementPostulerClickCount = (id: ObjectId) => incrementJobCounter("stats_postuler")([id])
