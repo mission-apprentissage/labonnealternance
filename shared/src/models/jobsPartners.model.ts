@@ -12,6 +12,10 @@ import { zOpcoLabel } from "./opco.model.js"
 
 const collectionName = "jobs_partners" as const
 
+// Les partenaires dans JOBPARTNERS_LABEL sont traités par flux
+// sauf ceux dans jobPartnersExcludedFromFlux
+// Les partenaires inconnus sont traités par Api
+
 export enum JOBPARTNERS_LABEL {
   OFFRES_EMPLOI_LBA = LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
   RECRUTEURS_LBA = LBA_ITEM_TYPE.RECRUTEURS_LBA,
@@ -23,15 +27,16 @@ export enum JOBPARTNERS_LABEL {
   METEOJOB = "Meteojob",
   KELIO = "Kelio",
   VERITONE = "Veritone",
+  GRDF = "GRDF",
+  DAHER = "Daher",
+  LOREAL = "L'Oréal",
+  CREDIT_MUTUEL = "Crédit Mutuel",
+  BPCE = "BPCE",
+  DECATHLON = "Decathlon",
+  INSTITUT_PASTEUR = "Institut Pasteur",
 }
 
-export enum FILTER_JOBPARTNERS_LABEL {
-  HELLOWORK = JOBPARTNERS_LABEL.HELLOWORK,
-  RH_ALTERNANCE = JOBPARTNERS_LABEL.RH_ALTERNANCE,
-  METEOJOB = JOBPARTNERS_LABEL.METEOJOB,
-  MONSTER = JOBPARTNERS_LABEL.MONSTER,
-  KELIO = JOBPARTNERS_LABEL.KELIO,
-}
+export const jobPartnersExcludedFromFlux = [JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, JOBPARTNERS_LABEL.RECRUTEURS_LBA]
 
 export const ZJobsPartnersRecruiterApi = z.object({
   _id: zObjectId,
@@ -95,6 +100,9 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   offer_opening_count: z.number().describe("Nombre de poste disponible"),
   offer_status: extensions.buildEnum(JOB_STATUS_ENGLISH).describe("Status de l'offre (surtout utilisé pour les offres ajouté par API)"),
   offer_status_history: z.array(ZJobsPartnersOfferHistoryEvent).describe("Historique de l'offre"),
+  stats_detail_view: z.number().default(0).describe("Nombre de vues de la page de détail"),
+  stats_search_view: z.number().default(0).describe("Nombre de vues sur une page de recherche"),
+  stats_postuler: z.number().default(0).describe("Nombre de clicks sur le bouton postuler"),
 })
 
 const ZJobsPartnersRecruiterPrivateFields = z.object({
