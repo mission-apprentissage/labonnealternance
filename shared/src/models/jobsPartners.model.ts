@@ -27,6 +27,7 @@ export enum JOBPARTNERS_LABEL {
   METEOJOB = "Meteojob",
   KELIO = "Kelio",
   VERITONE = "Veritone",
+  GRDF = "GRDF",
 }
 
 export const jobPartnersExcludedFromFlux = [JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, JOBPARTNERS_LABEL.RECRUTEURS_LBA]
