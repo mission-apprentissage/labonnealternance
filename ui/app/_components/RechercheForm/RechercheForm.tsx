@@ -86,17 +86,17 @@ export type RechercheFormProps = {
   onSubmit: null | ((result: Pick<IRecherchePageParams, "romes" | "diploma" | "job_name" | "geo" | "job_type" | "activeItems">) => unknown)
 }
 
-type IRomeSearchOption = IFormType["metier"] & { group?: string }
+export type IRomeSearchOption = IFormType["metier"] & { group?: string }
 
-function getMetierOptionKey(option: IRomeSearchOption) {
+export function getMetierOptionKey(option: IRomeSearchOption) {
   return `${option.type}:${option.label}`
 }
 
-function getMetierOptionLabel(option: IRomeSearchOption) {
+export function getMetierOptionLabel(option: IRomeSearchOption) {
   return option.label
 }
 
-async function fetchRomeSearchOptions(query: string): Promise<IRomeSearchOption[]> {
+export async function fetchRomeSearchOptions(query: string): Promise<IRomeSearchOption[]> {
   const data = await apiGet("/rome", { querystring: { title: query } })
 
   /* @ts-ignore TODO */
