@@ -14,7 +14,7 @@ const jobPartnersRankConfigByFlux: Partial<Record<JOBPARTNERS_LABEL, number>> = 
   "Crédit Mutuel": 0.7,
   BPCE: 0.7,
   Decathlon: 0.7,
-  "Institut Pasteur": 0.7  
+  "Institut Pasteur": 0.7,
 }
 
 const jobPartnersRankConfigByAPI: Record<string, number> = {}
