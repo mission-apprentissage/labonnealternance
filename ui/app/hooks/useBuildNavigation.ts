@@ -7,7 +7,7 @@ import { getItemReference, getResultItemUrl, type WithRecherchePageParams } from
 
 export function useBuildNavigation({ items, currentItem, params }: WithRecherchePageParams<{ items: IUseRechercheResultsSuccess["items"]; currentItem: ILbaItem }>) {
   const router = useRouter()
-  const currentIndex = items.findIndex((item) => currentItem.id === item.id)
+  const currentIndex = currentItem ? items.findIndex((item) => currentItem.id === item.id) : 0
   const nextItem = currentIndex == items.length - 1 ? 0 : items[currentIndex + 1]
   const previousItem = currentIndex == 0 ? items[items.length - 1] : items[currentIndex - 1]
   const nextUrl = useMemo(() => {
