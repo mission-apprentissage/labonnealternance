@@ -2,7 +2,7 @@ fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: b5006031bb5254e253e43023a9355016f20205f30377729895d8152fe475e9bb
 - filename: .infra/vault/vault.yml
-  checksum: e38bc02d4aa662ecb526a6b47ec4bb362ac620de3106bf0b2a23e0c0a7ba8527
+  checksum: ae7b98014dfb39f46937955df54350fea9bc4bb8906b87c1de1950ebbe532c73
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
   checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
 - filename: cypress/pages/FlowAdminPage.ts
@@ -213,6 +213,8 @@ fileignoreconfig:
   checksum: f5c14c3e59be0c6170d21f389882ed894e38081ef05545ffc66cc8a65ded252f
 - filename: ui/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap.tsx
   checksum: 77aa76bd83ebc2833a69d37454428e30ba751df7e5f8fd34200a250e656469b4
+- filename: ui/app/(candidat)/recherche/page.tsx
+  checksum: 08eeb75b0a0b4ef859ea9fff944077f347a53648ee93e26ea13b27f621f04d3e
 - filename: ui/app/(espace-pro)/_components/OffresGratuites.tsx
   checksum: a81881696ad47f4efd1e7956f1972f0425cce0b07dba4afbcc7c088fb5edd90d
 - filename: ui/app/(home)/faq/page.tsx
