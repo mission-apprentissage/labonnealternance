@@ -4,6 +4,7 @@ import omit from "lodash-es/omit"
 import { ObjectId } from "mongodb"
 import nock from "nock"
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, OPCOS_LABEL, RECRUITER_STATUS, TRAINING_CONTRACT_TYPE } from "shared/constants/index"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
@@ -2275,7 +2276,7 @@ describe("findJobOpportunityById tests", () => {
   const now = new Date("2025-02-28T00:00:00.000Z")
   const identity = {
     email: "mail@mailType.com",
-    organisation: "Some organisation",
+    organisation: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
     habilitations: { "applications:write": false, "appointments:write": false, "jobs:write": true },
   } as const satisfies IApiAlternanceTokenData
   const originalCreatedAt = new Date("2023-09-06T00:00:00.000+02:00")
@@ -2352,7 +2353,7 @@ describe("findJobOpportunityById tests", () => {
       expect(convertSpy).toHaveBeenCalledWith({
         ...originalJob,
         contract_type: originalJob.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
-        apply_url: originalJob.apply_url ?? `${config.publicUrl}/recherche?type=partner&itemId=${originalJob._id}`,
+        apply_url: originalJob.apply_url ?? `${config.publicUrl}/emploi/${originalJob.partner_label}/${originalJob._id}/${originalJob.offer_title}`,
         apply_recipient_id: originalJob.apply_email ? `partners_${originalJob._id}` : null,
       })
 
@@ -2385,7 +2386,7 @@ describe("findJobOpportunityById tests", () => {
       expect(convertSpy).toHaveBeenCalledWith({
         ...originalJob,
         contract_type: originalJob.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
-        apply_url: originalJob.apply_url ?? `${config.publicUrl}/recherche?type=partner&itemId=${originalJob._id}`,
+        apply_url: originalJob.apply_url ?? `${config.publicUrl}/emploi/${originalJob.partner_label}/${originalJob._id}/${originalJob.offer_title}`,
         apply_recipient_id: null, // Vérification dans l'appel à la conversion
       })
 
@@ -2421,7 +2422,7 @@ describe("findJobOpportunityById tests", () => {
       expect(convertSpy).toHaveBeenCalledWith({
         ...originalJob,
         contract_type: originalJob.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
-        apply_url: originalJob.apply_url ?? `${config.publicUrl}/recherche?type=partner&itemId=${originalJob._id}`,
+        apply_url: originalJob.apply_url ?? `${config.publicUrl}/emploi/${originalJob.partner_label}/${originalJob._id}/${originalJob.offer_title}`,
         apply_email: "test@mail.fr",
         apply_recipient_id: `partners_${originalJob._id}`, // Vérification dans l'appel à la conversion
       })

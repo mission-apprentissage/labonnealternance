@@ -58,6 +58,10 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     updated_at: new Date("2021-01-28T15:00:00.000Z"),
     offer_status_history: [],
 
+    stats_detail_view: 0,
+    stats_postuler: 0,
+    stats_search_view: 0,
+
     ...data,
   }
 }

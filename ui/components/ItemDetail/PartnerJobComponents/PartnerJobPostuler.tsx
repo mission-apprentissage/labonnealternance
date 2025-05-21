@@ -3,6 +3,7 @@ import { Box } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { ILbaItemPartnerJobJson } from "shared"
 
+import { notifyJobPostulerV3 } from "@/utils/api"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
 import { CandidatureLba } from "../CandidatureLba/CandidatureLba"
@@ -27,7 +28,10 @@ export const PartnerJobPostuler = ({ job, isCollapsedHeader }: { job: ILbaItemPa
         <Button
           linkProps={{
             href: job.contact.url,
-            onClick: () => SendPlausibleEvent("Clic Postuler - Fiche emploi", { partner_label: job.job.partner_label, info_fiche: job.id }),
+            onClick: () => {
+              SendPlausibleEvent("Clic Postuler - Fiche emploi", { partner_label: job.job.partner_label, info_fiche: job.id })
+              notifyJobPostulerV3(job.id)
+            },
           }}
           data-tracking-id="postuler-offre-job-partner"
         >
