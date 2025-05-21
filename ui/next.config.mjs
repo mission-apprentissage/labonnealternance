@@ -227,6 +227,11 @@ const sentryConfig = {
 
   // Automatically tree-shake Sentry logger statements to reduce bundle size
   disableLogger: true,
+
+  sourcemaps: {
+    disable: false,
+    deleteSourcemapsAfterUpload: false,
+  },
 }
 
 const NextJConfig = new Config(nextConfig)
