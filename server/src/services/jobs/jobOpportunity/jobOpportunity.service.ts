@@ -1080,7 +1080,6 @@ export async function getJobsPartnersByIdAsJobOfferApi(id: ObjectId): Promise<IJ
 export async function getJobsPartnersPublishing(id: ObjectId): Promise<IJobOfferPublishingV3 | null> {
   const job = await getDbCollection("jobs_partners").findOne({ _id: id })
   const computedJob = await getDbCollection("computed_jobs_partners").findOne({ _id: id })
-  console.log({ job, computedJob })
   if (job) {
     if (computedJob) {
       if (dayjs(job.updated_at).isAfter(computedJob.updated_at)) {

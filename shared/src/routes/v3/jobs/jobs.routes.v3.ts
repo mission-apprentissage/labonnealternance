@@ -33,7 +33,7 @@ export const zJobsRoutesV3 = {
         "200": zJobOfferApiReadV3,
       },
       securityScheme: {
-        auth: "api-key",
+        auth: "api-apprentissage",
         access: null,
         resources: {},
       },
@@ -51,7 +51,7 @@ export const zJobsRoutesV3 = {
         "200": zJobOfferPublishingV3,
       },
       securityScheme: {
-        auth: "api-key",
+        auth: "api-apprentissage",
         access: null,
         resources: {},
       },
