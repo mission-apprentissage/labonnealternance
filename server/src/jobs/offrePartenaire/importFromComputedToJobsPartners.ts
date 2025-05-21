@@ -77,7 +77,14 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
           { partner_job_id: partnerJobToUpsert.partner_job_id, partner_label: partnerJobToUpsert.partner_label },
           {
             $set: { ...partnerJobToUpsert },
-            $setOnInsert: { created_at: importDate, offer_status_history: [], _id: computedJobPartner._id },
+            $setOnInsert: {
+              created_at: importDate,
+              offer_status_history: [],
+              _id: computedJobPartner._id,
+              stats_detail_view: 0,
+              stats_postuler: 0,
+              stats_search_view: 0,
+            },
           },
           { upsert: true }
         )

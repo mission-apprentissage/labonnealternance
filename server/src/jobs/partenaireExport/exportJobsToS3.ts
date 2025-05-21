@@ -76,7 +76,6 @@ async function exportLbaJobsToS3() {
       phone: 0,
       first_name: 0,
       last_name: 0,
-      relance_mail_sent: 0,
       is_disabled_elligible: 0,
       establishment_id: 0,
       origin: 0,
@@ -85,6 +84,8 @@ async function exportLbaJobsToS3() {
       stats_detail_view: 0,
       stats_search_view: 0,
       job_status: 0,
+      relance_mail_expiration_J1: 0,
+      relance_mail_expiration_J7: 0,
     },
     fileName: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
   }

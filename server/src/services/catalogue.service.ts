@@ -18,6 +18,8 @@ import { isValidEmail } from "../common/utils/isValidEmail"
 import { streamJsonArray } from "../common/utils/streamUtils"
 import config from "../config"
 
+const DISTANCE_MAX_CFA_PROCHE = 100
+
 export const affelnetSelectedFields = {
   _id: 1,
   email: 1,
@@ -179,7 +181,7 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin, limit }: { 
       _id: { $in: Array.from(etablissementsToRetrieve) },
       certifie_qualite: true,
     },
-    { _id: 1, siret: 1, numero_voie: 1, type_voie: 1, nom_voie: 1, code_postal: 1, nom_departement: 1, entreprise_raison_sociale: 1, geo_coordonnees: 1 }
+    { _id: 1, siret: 1, numero_voie: 1, type_voie: 1, nom_voie: 1, code_postal: 1, localite: 1, nom_departement: 1, entreprise_raison_sociale: 1, geo_coordonnees: 1 }
   )
 
   let etablissementsRefined = etablissements.flatMap((etablissement) => {
@@ -191,10 +193,16 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin, limit }: { 
     // eslint-disable-next-line no-unsafe-optional-chaining
     const [latitude, longitude] = etablissement.geo_coordonnees?.split(",")
 
+    const distance_en_km = getDistanceInKm({ origin, destination: { latitude: parseFloat(latitude), longitude: parseFloat(longitude) } })
+
+    if (distance_en_km > DISTANCE_MAX_CFA_PROCHE) {
+      return []
+    }
+
     return [
       {
         ...etablissement,
-        distance_en_km: getDistanceInKm({ origin, destination: { latitude: parseFloat(latitude), longitude: parseFloat(longitude) } }),
+        distance_en_km,
       },
     ] as IEtablissementCatalogueProcheWithDistance[]
   })

@@ -1,10 +1,20 @@
-import { zRoutes } from "shared"
+import { badRequest } from "@hapi/boom"
+import { ObjectId } from "mongodb"
+import { assertUnreachable, zRoutes } from "shared"
 
+import { Server } from "@/http/server"
 import { getUserFromRequest } from "@/security/authenticationService"
+import {
+  createJobOffer,
+  findJobOpportunityById,
+  findJobsOpportunities,
+  incrementDetailViewCount,
+  incrementPostulerClickCount,
+  incrementSearchViewCount,
+  updateJobOffer,
+  upsertJobOffer,
+} from "@/services/jobs/jobOpportunity/jobOpportunity.service"
 import { JobOpportunityRequestContext } from "@/services/jobs/jobOpportunity/JobOpportunityRequestContext"
-
-import { createJobOffer, findJobOpportunityById, findJobsOpportunities, updateJobOffer, upsertJobOffer } from "../../../../services/jobs/jobOpportunity/jobOpportunity.service"
-import { Server } from "../../../server"
 
 const config = {
   rateLimit: {
@@ -44,6 +54,12 @@ export const jobsApiV3Routes = (server: Server) => {
 
   server.get("/v3/jobs/search", { schema: zRoutes.get["/v3/jobs/search"], onRequest: server.auth(zRoutes.get["/v3/jobs/search"]) }, async (req, res) => {
     const result = await findJobsOpportunities(req.query, new JobOpportunityRequestContext(zRoutes.get["/v3/jobs/search"], "api-apprentissage"))
+    await incrementSearchViewCount(
+      result.jobs.flatMap((job) => {
+        const id = job.identifier.id
+        return id && ObjectId.isValid(id) ? [new ObjectId(id)] : []
+      })
+    )
     return res.send(result)
   })
 
@@ -66,4 +82,34 @@ export const jobsApiV3Routes = (server: Server) => {
     const result = await findJobOpportunityById(req.params.id, new JobOpportunityRequestContext(zRoutes.get["/v3/jobs/:id"], "api-apprentissage"))
     return res.send(result)
   })
+
+  server.post(
+    "/v3/jobs/:id/stats/:eventType",
+    {
+      schema: zRoutes.post["/v3/jobs/:id/stats/:eventType"],
+      config,
+    },
+    async (req, res) => {
+      const { eventType, id } = req.params
+      if (!ObjectId.isValid(id)) {
+        throw badRequest("id is not valid")
+      }
+      const objectId = new ObjectId(id)
+
+      switch (eventType) {
+        case "detail_view": {
+          await incrementDetailViewCount(objectId)
+          break
+        }
+        case "postuler_click": {
+          await incrementPostulerClickCount(objectId)
+          break
+        }
+        default: {
+          assertUnreachable(eventType)
+        }
+      }
+      return res.status(200).send({})
+    }
+  )
 }

@@ -1,5 +1,6 @@
 import dayjs from "dayjs"
 import anonymizedRecruitersModel from "shared/models/anonymizedRecruiters.model"
+import anonymizedUsersWithAccountsModel from "shared/models/anonymizedUsersWithAccounts.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -26,7 +27,7 @@ const anonymize = async () => {
         },
       },
       {
-        $merge: "anonymizeduserswithaccounts",
+        $merge: anonymizedUsersWithAccountsModel.collectionName,
       },
     ])
     .toArray()
