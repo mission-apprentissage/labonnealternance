@@ -1,10 +1,13 @@
 import Boom, { badRequest, internal, notFound } from "@hapi/boom"
 import { IApiAlternanceTokenData } from "api-alternance-sdk"
+import dayjs from "dayjs"
 import { DateTime } from "luxon"
 import { Document, Filter, ObjectId } from "mongodb"
 import { IGeoPoint, IJob, IJobCollectionName, ILbaItemPartnerJob, JOB_STATUS_ENGLISH, JobCollectionName, assertUnreachable, parseEnum, translateJobStatus } from "shared"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
+import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import {
   IJobsPartnersOfferApi,
   IJobsPartnersOfferPrivate,
@@ -12,12 +15,14 @@ import {
   INiveauDiplomeEuropeen,
   JOBPARTNERS_LABEL,
 } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import {
+  IJobOfferApiReadV3,
+  IJobOfferPublishingV3,
+  JOB_PUBLISHING_STATUS,
   jobsRouteApiv3Converters,
   zJobOfferApiReadV3,
   zJobRecruiterApiReadV3,
-  type IJobOfferApiReadV3,
   type IJobOfferApiWriteV3,
   type IJobRecruiterApiReadV3,
   type IJobSearchApiV3Query,
@@ -994,11 +999,8 @@ export async function upsertJobOffer(data: IJobOfferApiWriteV3, partner_label: s
 export async function findJobOpportunityById(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3> {
   try {
     // Exécuter les requêtes en parallèle puis récupérer la première offre trouvée
-    const results = await Promise.allSettled([getLbaJobByIdV2AsJobOfferApi(id, context), getJobsPartnersByIdAsJobOfferApi(id, context)])
-
-    const validResults = results.filter((res): res is PromiseFulfilledResult<IJobOfferApiReadV3> => res.status === "fulfilled" && res.value !== null)
-
-    const foundJob = validResults.length > 0 ? validResults[0].value : null
+    const promises = await Promise.allSettled([getLbaJobByIdV2AsJobOfferApi(id, context), getJobsPartnersByIdAsJobOfferApi(id)])
+    const [foundJob] = promises.flatMap((promise) => (promise.status === "fulfilled" && promise.value !== null ? [promise.value] : []))
 
     if (!foundJob) {
       logger.warn(`Aucune offre d'emploi trouvée pour l'ID: ${id.toString()}`, { context })
@@ -1016,6 +1018,25 @@ export async function findJobOpportunityById(id: ObjectId, context: JobOpportuni
     sentryCaptureException(err)
     throw new Error("Erreur inattendue dans findJobOpportunityById")
   }
+}
+
+export async function findOfferPublishing(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferPublishingV3> {
+  const offerV2 = await getLbaJobByIdV2AsJobOfferApi(id, context)
+  if (offerV2) {
+    return {
+      publishing: {
+        status: JOB_PUBLISHING_STATUS.PUBLISHED,
+      },
+    }
+  }
+  const publishing = await getJobsPartnersPublishing(id)
+
+  if (!publishing) {
+    logger.warn(`Aucune offre d'emploi trouvée pour l'ID: ${id.toString()}`, { context })
+    throw notFound(`Aucune offre d'emploi trouvée pour l'ID: ${id.toString()}`)
+  }
+
+  return publishing
 }
 
 function validateJobOffer(job: IJobOfferApiReadV3, id: ObjectId, context: JobOpportunityRequestContext): IJobOfferApiReadV3 {
@@ -1041,36 +1062,88 @@ export async function getLbaJobByIdV2AsJobOfferApi(id: ObjectId, context: JobOpp
   const job = await getLbaJobByIdV2AsJobResult({ id: id.toString(), caller: context?.caller })
 
   if (!job) {
-    const error = internal("jobOpportunity.service.ts-getLbaJobByIdV2AsJobOfferApi: job not found", { id })
-    logger.error(error)
-    context.addWarning("JOB_NOT_FOUND")
-    sentryCaptureException(error)
-    throw new Error("Job not found")
+    return null
   }
 
   const transformedJob = convertLbaRecruiterToJobOfferApi([job])[0]
   return transformedJob
 }
 
-export async function getJobsPartnersByIdAsJobOfferApi(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3 | null> {
+export async function getJobsPartnersByIdAsJobOfferApi(id: ObjectId): Promise<IJobOfferApiReadV3 | null> {
   const job = await getDbCollection("jobs_partners").findOne({ _id: id })
-
   if (!job) {
-    const error = internal("jobOpportunity.service.ts-getJobsPartnersByIdAsJobOfferApi: job not found", { id })
-    logger.error(error)
-    context.addWarning("JOB_NOT_FOUND")
-    sentryCaptureException(error)
-    throw new Error("Job not found")
+    return null
   }
+  return jobsPartnersToApiV3Read(job)
+}
 
-  const transformedJob = jobsRouteApiv3Converters.convertToJobOfferApiReadV3({
+export async function getJobsPartnersPublishing(id: ObjectId): Promise<IJobOfferPublishingV3 | null> {
+  const job = await getDbCollection("jobs_partners").findOne({ _id: id })
+  const computedJob = await getDbCollection("computed_jobs_partners").findOne({ _id: id })
+  console.log({ job, computedJob })
+  if (job) {
+    if (computedJob) {
+      if (dayjs(job.updated_at).isAfter(computedJob.updated_at)) {
+        return jobsPartnersToPublishing()
+      } else {
+        return computedJobsPartnersToPublishing(computedJob)
+      }
+    } else {
+      return jobsPartnersToPublishing()
+    }
+  } else {
+    if (computedJob) {
+      return computedJobsPartnersToPublishing(computedJob)
+    } else {
+      return null
+    }
+  }
+}
+
+const jobsPartnersToApiV3Read = (job: IJobsPartnersOfferPrivate): IJobOfferApiReadV3 => ({
+  ...jobsRouteApiv3Converters.convertToJobOfferApiReadV3({
     ...job,
     contract_type: job.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
-    apply_url: job.apply_url ?? `${config.publicUrl}/recherche?type=partner&itemId=${job._id}`,
+    apply_url: job.apply_url ?? `${config.publicUrl}${getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, job._id.toString(), job.offer_title)}`,
     apply_recipient_id: job.apply_email ? `partners_${job._id}` : null,
-  })
+  }),
+})
 
-  return transformedJob
+const jobsPartnersToPublishing = (): IJobOfferPublishingV3 => ({
+  publishing: {
+    status: JOB_PUBLISHING_STATUS.PUBLISHED,
+  },
+})
+
+export const jobPartnerBusinessErrorLabels: Record<string, string> = {
+  [JOB_PARTNER_BUSINESS_ERROR.CFA]: "The offer is published by a training entity",
+  [JOB_PARTNER_BUSINESS_ERROR.CLOSED_COMPANY]: "The company is closed",
+  [JOB_PARTNER_BUSINESS_ERROR.DUPLICATE]: "The offer is considered as a duplicate of another published offer",
+  [JOB_PARTNER_BUSINESS_ERROR.EXPIRED]: "The offer has expired",
+  [BusinessErrorCodes.NON_DIFFUSIBLE]: "The company's contact informations are not publishable",
+  [JOB_PARTNER_BUSINESS_ERROR.ROME_BLACKLISTED]: "The offer's profession is not published",
+  [JOB_PARTNER_BUSINESS_ERROR.STAGE]: "The offer is considered an internship",
+  [JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA]: "The offer contains bad data",
+}
+
+const computedJobsPartnersToPublishing = (job: IComputedJobsPartners): IJobOfferPublishingV3 => {
+  const { business_error } = job
+  if (business_error) {
+    return {
+      publishing: {
+        status: JOB_PUBLISHING_STATUS.WILL_NOT_BE_PUBLISHED,
+        error: {
+          code: business_error,
+          label: jobPartnerBusinessErrorLabels[business_error] ?? business_error,
+        },
+      },
+    }
+  }
+  return {
+    publishing: {
+      status: JOB_PUBLISHING_STATUS.WILL_BE_PUBLISHED,
+    },
+  }
 }
 
 export const getRecipientID = (type: IJobCollectionName, id: string) => {

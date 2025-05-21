@@ -14,7 +14,7 @@ import { IRecruiter, IReferentielRome, JOB_STATUS, JOB_STATUS_ENGLISH } from "sh
 import { IJobsPartnersOfferPrivate, INiveauDiplomeEuropeen, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import {
   jobsRouteApiv3Converters,
-  zJobOfferApiReadV3,
+  zJobOfferApiReadForSearchV3,
   zJobOfferApiWriteV3,
   zJobSearchApiV3Response,
   type IJobOfferApiWriteV3,
@@ -2376,7 +2376,7 @@ describe("findJobOpportunityById tests", () => {
       expect(result).not.toBeNull()
 
       // Utiliser le schéma Zod pour valider la structure
-      const validationResult = zJobOfferApiReadV3.safeParse(result)
+      const validationResult = zJobOfferApiReadForSearchV3.safeParse(result)
 
       // Si la validation échoue, afficher les erreurs pour faciliter le débogage
       if (!validationResult.success) {
@@ -2420,7 +2420,7 @@ describe("findJobOpportunityById tests", () => {
       expect(result?.apply.recipient_id).toBeNull()
 
       // Utiliser le schéma Zod pour valider la structure
-      const validationResult = zJobOfferApiReadV3.safeParse(result)
+      const validationResult = zJobOfferApiReadForSearchV3.safeParse(result)
 
       // Si la validation échoue, afficher les erreurs pour faciliter le débogage
       if (!validationResult.success) {
@@ -2465,7 +2465,7 @@ describe("findJobOpportunityById tests", () => {
       expect(result?.apply.recipient_id).toBe(`partners_${originalJob._id}`)
 
       // Utiliser le schéma Zod pour valider la structure
-      const validationResult = zJobOfferApiReadV3.safeParse(result)
+      const validationResult = zJobOfferApiReadForSearchV3.safeParse(result)
 
       // Si la validation échoue, afficher les erreurs pour faciliter le débogage
       if (!validationResult.success) {
@@ -2516,7 +2516,7 @@ describe("findJobOpportunityById tests", () => {
       expect(result).not.toBeNull()
 
       // Valider que le résultat correspond au schéma attendu
-      const validationResult = zJobOfferApiReadV3.safeParse(result)
+      const validationResult = zJobOfferApiReadForSearchV3.safeParse(result)
 
       // Afficher les erreurs en cas d'échec de validation
       if (!validationResult.success) {
@@ -2567,7 +2567,7 @@ describe("findJobOpportunityById tests", () => {
       expect(result).not.toBeNull()
 
       // Vérifier que l'objet retourné correspond bien au schéma IJobOfferApiReadV3
-      const validationResult = zJobOfferApiReadV3.safeParse(result)
+      const validationResult = zJobOfferApiReadForSearchV3.safeParse(result)
       expect(validationResult.success).toBe(true)
 
       // En cas d'erreur, afficher les détails
@@ -2590,7 +2590,7 @@ describe("findJobOpportunityById tests", () => {
       expect(result).not.toBeNull()
 
       // Vérifier que l'objet retourné correspond bien au schéma IJobOfferApiReadV3
-      const validationResult = zJobOfferApiReadV3.safeParse(result)
+      const validationResult = zJobOfferApiReadForSearchV3.safeParse(result)
       expect(validationResult.success).toBe(true)
 
       // En cas d'erreur, afficher les détails
