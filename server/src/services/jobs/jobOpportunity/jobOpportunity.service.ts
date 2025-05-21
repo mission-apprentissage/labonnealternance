@@ -522,7 +522,7 @@ export const getJobsPartnersForApi = async ({
     jobsRouteApiv3Converters.convertToJobOfferApiReadV3({
       ...j,
       contract_type: j.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
-      apply_url: j.apply_url ?? `${config.publicUrl}/emploi/${LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES}/${j._id}`,
+      apply_url: getApplyUrl(j),
       apply_recipient_id: j.apply_email ? getRecipientID(JobCollectionName.partners, j._id.toString()) : null,
     })
   )
@@ -553,7 +553,7 @@ export const convertLbaCompanyToJobRecruiterApi = (recruteursLba: IJobsPartnersO
         },
       },
       apply: {
-        url: `${config.publicUrl}/emploi/${LBA_ITEM_TYPE.RECRUTEURS_LBA}/${recruteurLba.workplace_siret}`,
+        url: buildApplyUrl(recruteurLba.workplace_siret!, recruteurLba.workplace_legal_name!, LBA_ITEM_TYPE.RECRUTEURS_LBA),
         phone: recruteurLba.apply_phone,
         recipient_id: recruteurLba.apply_email ? getRecipientID(JobCollectionName.recruteur, recruteurLba.workplace_siret!) : null,
       },
@@ -661,7 +661,7 @@ export const convertLbaRecruiterToJobOfferApi = (offresEmploiLba: IJobResult[]):
           },
 
           apply: {
-            url: `${config.publicUrl}/emploi/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${job._id}`,
+            url: buildApplyUrl(job._id.toString(), job.custom_job_title ?? job.rome_appellation_label!, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
             phone: recruiter.phone ?? null,
             recipient_id: getRecipientID(JobCollectionName.recruiters, job._id.toString()),
           },
@@ -1082,11 +1082,34 @@ export async function getJobsPartnersByIdAsJobOfferApi(id: ObjectId, context: Jo
   const transformedJob = jobsRouteApiv3Converters.convertToJobOfferApiReadV3({
     ...job,
     contract_type: job.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
-    apply_url: job.apply_url ?? `${config.publicUrl}/recherche?type=partner&itemId=${job._id}`,
+    apply_url: getApplyUrl(job),
     apply_recipient_id: job.apply_email ? `partners_${job._id}` : null,
   })
 
   return transformedJob
+}
+
+export const getJobTypeFromPartnerLabel = (jobType: JOBPARTNERS_LABEL): LBA_ITEM_TYPE => {
+  if (jobType === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA) {
+    return LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
+  } else if (jobType === JOBPARTNERS_LABEL.RECRUTEURS_LBA) {
+    return LBA_ITEM_TYPE.RECRUTEURS_LBA
+  } else {
+    return LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES
+  }
+}
+
+export const buildApplyUrl = (jobId: string, jobTitle: string, jobType: LBA_ITEM_TYPE): string => {
+  return `${config.publicUrl}/emploi/${jobType}/${jobId}/${encodeURIComponent(jobTitle)}`
+}
+
+export const getApplyUrl = (job: IJobsPartnersOfferPrivate): string => {
+  if (job.apply_url) {
+    return job.apply_url
+  }
+  const jobType = getJobTypeFromPartnerLabel(job.partner_label as JOBPARTNERS_LABEL)
+
+  return `${config.publicUrl}/emploi/${jobType}/${job._id}/${encodeURIComponent(job.offer_title)}`
 }
 
 export const getRecipientID = (type: IJobCollectionName, id: string) => {
