@@ -252,7 +252,7 @@ exports[`findJobsOpportunities > should execute query 2`] = `
     "apply": {
       "phone": "0100000000",
       "recipient_id": null,
-      "url": "http://localhost:3000/emploi/recruteurs_lba/11000001500013/ASSEMBLEE NATIONALE",
+      "url": "http://localhost:3000/emploi/recruteurs_lba/11000001500013/ASSEMBLEE%20NATIONALE",
     },
     "identifier": {
       "id": "000000000000000000000000",
