@@ -201,8 +201,11 @@ type IRomeoOptions = {
   nbResultats?: number // betwwen 1 and 25, default 5
   seuilScorePrediction?: number
 }
+
+export const MAX_ROMEO_PAYLOAD_SIZE = 20
+
 export const getRomeoPredictions = async (payload: IRomeoPayload[], options: IRomeoOptions = { nomAppelant: "La bonne alternance" }): Promise<IRomeoAPIResponse | null> => {
-  if (payload.length > 50) throw Error("Maximum recommanded array size is 50") // Louis feeback https://mna-matcha.atlassian.net/browse/LBA-2232?focusedCommentId=13000
+  if (payload.length > MAX_ROMEO_PAYLOAD_SIZE) throw Error(`Maximum recommanded array size is ${MAX_ROMEO_PAYLOAD_SIZE}`) // Louis feeback https://mna-matcha.atlassian.net/browse/LBA-2232?focusedCommentId=13000
   const token = await getToken("ROMEO")
   return RomeoLimiter(async (client) => {
     try {
@@ -226,12 +229,10 @@ export const getRomeoPredictions = async (payload: IRomeoPayload[], options: IRo
   })
 }
 // Documentation https://francetravail.io/produits-partages/catalogue/offres-emploi/documentation#/api-reference/operations/recupererListeOffre
-export const getAllFTJobsByDepartments = async (departement: string) => {
+export async function* getAllFTJobsByDepartments(departement: string): AsyncGenerator<Omit<IFTJobRaw, "_id" | "createdAt">[], void, void> {
   const jobLimit = 150
   let start = 0
   let total = 1
-
-  let allJobs = [] as Omit<IFTJobRaw, "_id" | "createdAt">[]
 
   while (start < total) {
     // Construct the range for this "page"
@@ -260,7 +261,7 @@ export const getAllFTJobsByDepartments = async (departement: string) => {
         break
       }
 
-      allJobs = [...allJobs, ...(jobs.resultats as Omit<IFTJobRaw, "_id" | "createdAt">[])]
+      yield jobs.resultats as Omit<IFTJobRaw, "_id" | "createdAt">[]
 
       // Safely parse out the total
       // Usually, contentRange might look like "offres 0-149/9981"
@@ -292,5 +293,4 @@ export const getAllFTJobsByDepartments = async (departement: string) => {
       logger.error("Error while fetching jobs", error)
     }
   }
-  return allJobs
 }

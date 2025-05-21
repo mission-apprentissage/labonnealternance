@@ -1,8 +1,10 @@
+import type { AnyBulkWriteOperation } from "mongodb"
 import { groupData, oleoduc, writeData } from "oleoduc"
 import { IFTJobRaw } from "shared"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
+import { ZChatCompletionResponse } from "@/services/openai/openai.service"
 
 import { logger } from "../../../common/logger"
 import { notifyToSlack } from "../../../common/utils/slackUtils"
@@ -60,8 +62,11 @@ Une fois que tu as déterminé si les offres sont de type CFA, Entreprise ou Ent
     if (!response) {
       return null
     }
-
-    return response
+    const { data, error } = ZChatCompletionResponse.safeParse(JSON.parse(response))
+    if (error) {
+      throw new Error(`Invalid response format: ${JSON.stringify(error, null, 2)}`)
+    }
+    return data
   } catch (error) {
     console.error(error)
   }
@@ -98,16 +103,22 @@ export const classifyFranceTravailJobs = async () => {
       const offres = mapDocument(rawFTDocuments)
       const response = await checkFTOffer({ offres, examples })
 
+      const ops: AnyBulkWriteOperation<IFTJobRaw>[] = []
       for (const rsp of response.offres) {
-        await getDbCollection("raw_francetravail").findOneAndUpdate(
-          { id: rsp.id as string },
-          {
-            $set: {
-              "_metadata.openai.type": rsp.type.toLowerCase(),
-              ...(rsp.cfa ? { "_metadata.openai.cfa": rsp.cfa } : {}),
+        ops.push({
+          updateOne: {
+            filter: { id: rsp.id as string },
+            update: {
+              $set: {
+                "_metadata.openai.type": rsp.type.toLowerCase(),
+                ...(rsp.cfa ? { "_metadata.openai.cfa": rsp.cfa } : {}),
+              },
             },
-          }
-        )
+          },
+        })
+      }
+      if (ops.length > 0) {
+        await getDbCollection("raw_francetravail").bulkWrite(ops, { ordered: false })
       }
     })
   )

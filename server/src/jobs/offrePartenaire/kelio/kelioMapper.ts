@@ -15,7 +15,7 @@ export const ZKelioJob = z
     html_description: z.string(),
     last_activation_at: z.string(),
     html_profile: z.string(),
-    contract_duration: z.string(),
+    contract_duration: z.string().nullable(),
     education_level: z.string().nullable(),
     job_start_date: z.string().nullable(),
     working_time: z.string(),
@@ -33,7 +33,7 @@ export const ZKelioJob = z
       company_description: z.string(),
     }),
     address: z.object({
-      city: z.string(),
+      city: z.string().nullable(),
       street: z.string().nullable(),
       country: z.string(),
       latitude: z.string(),
@@ -57,7 +57,7 @@ export const ZKelioJob = z
 export type IKelioJob = z.output<typeof ZKelioJob>
 
 export const kelioJobToJobsPartners = (job: IKelioJob): IComputedJobsPartners => {
-  const { id, name, html_description, html_profile, address, url, company, created_at, job_type, contract_duration, job_start_date, education_level } = job
+  const { id, name, html_description, html_profile, address, url, company, created_at, last_activation_at, job_type, contract_duration, job_start_date, education_level } = job
 
   const workplace_geopoint: {
     type: "Point"
@@ -122,6 +122,7 @@ export const kelioJobToJobsPartners = (job: IKelioJob): IComputedJobsPartners =>
   const descriptionComputed = formatHtmlForPartnerDescription(html_description + html_profile).trim()
 
   const publicationDate = new Date(created_at)
+  const updatedDate = last_activation_at ? new Date(last_activation_at) : null
 
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner(),
@@ -134,7 +135,10 @@ export const kelioJobToJobsPartners = (job: IKelioJob): IComputedJobsPartners =>
     offer_description: descriptionComputed,
     offer_creation: publicationDate,
 
-    offer_expiration: dayjs.tz(publicationDate).add(2, "months").toDate(),
+    offer_expiration: dayjs
+      .tz(updatedDate ?? publicationDate)
+      .add(2, "months")
+      .toDate(),
 
     workplace_name: company.name,
     workplace_description: company.company_description,

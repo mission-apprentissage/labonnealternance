@@ -3,9 +3,9 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Container } from "@mui/material"
 
-import NavigationAdmin, { EAdminPages } from "@/app/_components/Layout/NavigationAdmin"
+import NavigationAdmin, { type IAdminPage } from "@/app/_components/Layout/NavigationAdmin"
 
-export const AdminLayout = ({ currentAdminPage, children }: { currentAdminPage: EAdminPages; children: React.ReactNode }) => {
+export const AdminLayout = ({ currentAdminPage, children }: { currentAdminPage: IAdminPage; children: React.ReactNode }) => {
   return (
     <>
       <NavigationAdmin currentPage={currentAdminPage} />

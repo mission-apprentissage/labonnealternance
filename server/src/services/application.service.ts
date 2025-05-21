@@ -310,7 +310,7 @@ export const sendApplicationV2 = async ({
     if (!job) {
       throw badRequest(BusinessErrorCodes.NOTFOUND)
     }
-    lbaJob = { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, job, recruiter: null }
+    lbaJob = { type: job.partner_label === LBA_ITEM_TYPE.RECRUTEURS_LBA ? LBA_ITEM_TYPE.RECRUTEURS_LBA : LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, job, recruiter: null }
   }
   if (collectionName === JobCollectionName.recruteur) {
     const job = await getDbCollection("jobs_partners").findOne({ workplace_siret: jobId })
@@ -483,14 +483,14 @@ const offreOrCompanyToCompanyFields = (
   if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     const { job, recruiter } = LbaJob
     const { address, is_delegated, establishment_siret, establishment_enseigne, establishment_raison_sociale, naf_label, phone, email } = recruiter
-    const { rome_appellation_label, rome_label } = job
+    const { rome_appellation_label, rome_label, offer_title_custom } = job
     const application = {
       company_siret: establishment_siret,
       company_name: establishment_enseigne || establishment_raison_sociale || UNKNOWN_COMPANY,
       company_naf: naf_label ?? "",
       company_phone: phone,
       company_email: email,
-      job_title: rome_appellation_label ?? rome_label ?? undefined,
+      job_title: offer_title_custom ?? rome_appellation_label ?? rome_label ?? undefined,
       company_address: is_delegated ? null : address,
       job_id: job._id.toString(),
     }

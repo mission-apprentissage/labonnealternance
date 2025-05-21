@@ -43,8 +43,8 @@ export const createJobsCollectionForMetabase = async () => {
           job_expiration_date: "$jobs.job_expiration_date",
           job_update_date: "$jobs.job_update_date",
           job_last_prolongation_date: "$jobs.job_last_prolongation_date",
+          job_mer_sent: "$jobs.job_mer_sent",
           job_prolongation_count: "$jobs.job_prolongation_count",
-          relance_mail_sent: "$jobs.relance_mail_sent",
           job_status: "$jobs.job_status",
           job_status_comment: "$jobs.job_status_comment",
           job_type: "$jobs.job_type",
@@ -59,6 +59,9 @@ export const createJobsCollectionForMetabase = async () => {
           stats_detail_view: "$jobs.stats_detail_view",
           stats_search_view: "$jobs.stats_search_view",
           rome_detail: "$jobs.rome_detail",
+          offer_title_custom: "$jobs.offer_title_custom",
+          relance_mail_expiration_J1: "$jobs.relance_mail_expiration_J1",
+          relance_mail_expiration_J7: "$jobs.relance_mail_expiration_J7",
 
           // Champs de recruiters
           establishment_raison_sociale: 1,

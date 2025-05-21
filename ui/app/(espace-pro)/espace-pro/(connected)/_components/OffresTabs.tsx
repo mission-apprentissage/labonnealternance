@@ -107,8 +107,8 @@ export const OffresTabs = ({
           row: { id },
         },
       }) => {
-        const { rome_label, rome_appellation_label } = data[id]
-        return rome_appellation_label ?? rome_label
+        const { rome_label, rome_appellation_label, offer_title_custom } = data[id]
+        return offer_title_custom ?? rome_appellation_label ?? rome_label
       },
       width: "300",
       maxWidth: "300",
@@ -140,7 +140,7 @@ export const OffresTabs = ({
         {
           Header: "Recherches",
           id: "searches",
-          width: "150",
+          width: "170",
           accessor: ({ stats_search_view = 0 }) => {
             return <NumberCell>{stats_search_view}</NumberCell>
           },
@@ -154,9 +154,9 @@ export const OffresTabs = ({
           },
         },
         {
-          Header: "Candidat(s)",
+          Header: "Candidats",
           id: "candidat",
-          width: "150",
+          width: "170",
           accessor: ({ candidatures = 0 }) => <NumberCell>{Math.max(candidatures, 0)}</NumberCell>,
         },
       ]
@@ -172,6 +172,18 @@ export const OffresTabs = ({
       // isSticky: true,
       accessor: (row) => {
         const [lat, lon] = (row.geo_coordinates ?? "").split(",")
+        const cfaOptionParams =
+          user.type === AUTHTYPE.ENTREPRISE
+            ? {
+                href: `${publicConfig.baseUrl}/espace-pro/entreprise/offre/${row._id}/mise-en-relation`,
+                "aria-label": "Lien vers les mise en relations avec des centres de formations",
+              }
+            : {
+                href: `${publicConfig.baseUrl}/recherche-formation?romes=${row.rome_code}&lon=${lon}&lat=${lat}`,
+                target: "_blank",
+                rel: "noopener noreferrer",
+                "aria-label": "Lien vers les formations - nouvelle fenêtre",
+              }
         const directLink = `${publicConfig.baseUrl}${buildJobUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, row._id, row.rome_appellation_label)}`
         const isDisable = row.job_status === "Annulée" || row.job_status === "Pourvue" || row.job_status === "En attente"
         return (
@@ -251,7 +263,7 @@ export const OffresTabs = ({
                         {copied ? (
                           <Flex>
                             <Image mr={2} src="/images/icons/share_copied_icon.svg" aria-hidden={true} alt="" />
-                            <Text mb={0} color="#18753C">
+                            <Text as="span" fontSize="14px" mb={0} color="#18753C">
                               Lien copié !
                             </Text>
                           </Flex>
@@ -262,14 +274,8 @@ export const OffresTabs = ({
                     </MenuItem>
                     {user.type !== AUTHTYPE.CFA && (
                       <MenuItem>
-                        <Link
-                          underline="hover"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          href={`${publicConfig.baseUrl}/recherche-formation?romes=${row.rome_code}&lon=${lon}&lat=${lat}`}
-                          aria-label="Lien vers les formations - nouvelle fenêtre"
-                        >
-                          Voir les centres de formations
+                        <Link underline="hover" {...cfaOptionParams}>
+                          Voir les centres de formation
                         </Link>
                       </MenuItem>
                     )}

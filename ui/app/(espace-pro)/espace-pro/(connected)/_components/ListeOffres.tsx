@@ -48,12 +48,11 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
     router.push(PAGES.dynamic.offreUpsert({ offerId: "creation", establishment_id, userType: user.type, raison_sociale: entrepriseTitle }).getPath())
   }
 
-  const shouldDisplayModifyButton = !hideModify && user.type !== AUTHTYPE.CFA
   const ActionButtons = (
     <Flex>
-      {shouldDisplayModifyButton && user.type !== AUTHTYPE.OPCO && (
+      {!hideModify && user.type !== AUTHTYPE.OPCO && (
         <Box mr={5}>
-          <Button priority="secondary" onClick={() => router.push(PAGES.dynamic.modificationEntreprise().getPath())}>
+          <Button priority="secondary" onClick={() => router.push(PAGES.dynamic.modificationEntreprise(user.type, establishment_id).getPath())}>
             <Building mr={2} /> {user.type === AUTHTYPE.ENTREPRISE ? "Mes informations" : "Modifier l'entreprise"}
           </Button>
         </Box>

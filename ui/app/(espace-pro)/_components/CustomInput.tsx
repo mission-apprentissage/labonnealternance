@@ -1,6 +1,7 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Image, Input } from "@chakra-ui/react"
 import { useField } from "formik"
+import parse from "html-react-parser"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 
 import Link from "@/app/_components/Link"
@@ -36,7 +37,7 @@ const CustomInput = (props) => {
             <Flex direction="row" alignItems="center">
               {meta.error === "Société inconnue" ? <Image src="/images/icons/crossInOctogon.svg" alt="" h="13px" aria-hidden="true" m={0} mt={1} /> : <Warning m={0} />}
               <Flex ml={1}>
-                <div dangerouslySetInnerHTML={{ __html: meta.error }} />
+                <div>{parse(meta.error || "")}</div>
                 {meta.error?.includes("déjà associé") && (
                   <Link href="/espace-pro/authentification" textColor="bluefrance.500" textDecoration="underline" ml={1}>
                     Connexion

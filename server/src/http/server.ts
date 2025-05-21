@@ -14,6 +14,7 @@ import { setZodLanguage } from "shared/helpers/zodWithOpenApi"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 
 import { localOrigin } from "@/common/utils/isOriginLocal"
+import { processorAdminRoutes } from "@/http/controllers/_private/admin/processor.admin.routes"
 import { geoRouteController } from "@/http/controllers/_private/geo.private.controller"
 
 import { initSentryFastify } from "../common/sentry/sentry.fastify"
@@ -96,7 +97,7 @@ export async function bind(app: Server) {
   await app.register(fastifySwaggerUI, swaggerUiOptions)
 
   app.get("/api-docs/swagger.json", (_req, res) => {
-    return res.redirect(301, "/api/docs/json")
+    return res.redirect("/api/docs/json", 301)
   })
 
   app.register(fastifyCookie)
@@ -141,6 +142,7 @@ export async function bind(app: Server) {
        * Admin / Auth
        */
       login(typedSubApp)
+      processorAdminRoutes(typedSubApp)
 
       /**
        * LBA-Organisme de formation

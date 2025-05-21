@@ -3,6 +3,7 @@ import { pipeline } from "stream/promises"
 
 import { ColumnOption, stringify } from "csv-stringify/sync"
 import dayjs from "dayjs"
+import { groupData } from "oleoduc"
 import { AccessEntityType, AccessStatus } from "shared/models/index"
 import { UserEventType } from "shared/models/userWithAccount.model"
 import SibApiV3Sdk from "sib-api-v3-sdk"
@@ -12,7 +13,6 @@ import { sleep } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
-import { streamGroupByCount } from "@/common/utils/streamUtils"
 import config from "@/config"
 
 type IBrevoContact = {
@@ -259,7 +259,7 @@ const sendContacts = async (type: AccessEntityType) => {
     },
   })
 
-  await pipeline(cursor, streamGroupByCount(2000), postingTransform)
+  await pipeline(cursor, groupData({ size: 2000 }), postingTransform)
 }
 
 export const sendContactsToBrevo = async () => {

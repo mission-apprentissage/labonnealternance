@@ -2,7 +2,7 @@
 // The config you add here will be used whenever a users loads a page in their browser.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
-import { captureConsoleIntegration, extraErrorDataIntegration, httpClientIntegration, init, reportingObserverIntegration } from "@sentry/nextjs"
+import { captureConsoleIntegration, captureRouterTransitionStart, extraErrorDataIntegration, httpClientIntegration, init, reportingObserverIntegration } from "@sentry/nextjs"
 
 import { publicConfig } from "./config.public"
 
@@ -22,6 +22,7 @@ init({
     httpClientIntegration({}),
     reportingObserverIntegration({ types: ["crash", "deprecation", "intervention"] }),
   ],
+  sendDefaultPii: true,
   ignoreErrors: ["AbortError"],
   beforeSend(event) {
     // Hydratation error comes from DSFR
@@ -33,3 +34,5 @@ init({
     return event
   },
 })
+
+export const onRouterTransitionStart = captureRouterTransitionStart

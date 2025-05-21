@@ -92,6 +92,8 @@ jobs:
           image: ghcr.io/mission-apprentissage/mna_lba_server:${{ needs.release.outputs.VERSION }}
           to: ghcr.io/mission-apprentissage/mna_lba_server:${{ needs.release.outputs.PREV_VERSION }}
           sarif-file: sarif-server.output.json
+          only-vex-affected: true
+          only-severities: "critical,high,medium"
 
       - name: Server Docker Upload SARIF result
         uses: github/codeql-action/upload-sarif@v2
@@ -106,6 +108,8 @@ jobs:
           image: ghcr.io/mission-apprentissage/mna_lba_ui:${{ needs.release.outputs.VERSION }}-production
           to: ghcr.io/mission-apprentissage/mna_lba_ui:${{ needs.release.outputs.PREV_VERSION }}-production
           sarif-file: sarif-ui.output.json
+          only-vex-affected: true
+          only-severities: "critical,high,medium"
 
       - name: UI Docker Upload SARIF result
         uses: github/codeql-action/upload-sarif@v2
@@ -168,6 +172,9 @@ jobs:
 
       - name: Install dependencies
         run: yarn install
+
+      - name: typecheck
+        run: yarn typecheck
 
       - name: Build sourcemaps
         run: yarn build

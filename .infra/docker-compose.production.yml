@@ -27,11 +27,11 @@ services:
       <<: *deploy-default
       resources:
         limits:
-          memory: 2g
+          memory: 1g
       replicas: 2
     stop_grace_period: 2m
     environment:
-      NODE_OPTIONS: "--max_old_space_size=2048"
+      NODE_OPTIONS: "--max_old_space_size=768"
     volumes:
       - /opt/app/data/server:/data
       - /opt/app/.env_server:/app/server/.env
@@ -55,12 +55,12 @@ services:
       <<: *deploy-default
       resources:
         limits:
-          memory: 1g
+          memory: 2g
       replicas: 2
     command: ["yarn", "cli", "job_processor:start"]
     environment:
       INSTANCE_ID: "runner-{% raw %}{{.Task.Slot}}{% endraw %}"
-      NODE_OPTIONS: "--max_old_space_size=1024"
+      NODE_OPTIONS: "--max_old_space_size=1536"
     stop_grace_period: 5m
     volumes:
       - /opt/app/data/server:/data
@@ -85,11 +85,11 @@ services:
       <<: *deploy-default
       resources:
         limits:
-          memory: 768m
-      replicas: 2
+          memory: 2g
+      replicas: 4
     env_file: .env_ui
     environment:
-      NODE_OPTIONS: "--max_old_space_size=768"
+      NODE_OPTIONS: "--max_old_space_size=1536"
     logging:
       driver: "fluentd"
       options:

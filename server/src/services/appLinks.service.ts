@@ -220,7 +220,7 @@ export function createRdvaPremiumAffelnetPageLink(email: string, siret: string, 
     }
   )
 
-  return `${config.publicUrl}/espace-pro/form/premium/affelnet/${etablissementId}?token=${encodeURIComponent(token)}`
+  return `${config.publicUrl}/premium/affelnet/${etablissementId}?token=${encodeURIComponent(token)}`
 }
 
 /**
@@ -257,7 +257,7 @@ export function createRdvaPremiumParcoursupPageLink(email: string, siret: string
     }
   )
 
-  return `${config.publicUrl}/espace-pro/form/premium/${etablissementId}?token=${encodeURIComponent(token)}`
+  return `${config.publicUrl}/premium/${etablissementId}?token=${encodeURIComponent(token)}`
 }
 
 /**
@@ -286,7 +286,7 @@ export function createRdvaOptOutUnsubscribePageLink(email: string, siret: string
       expiresIn: "30d",
     }
   )
-  return `${config.publicUrl}/espace-pro/form/opt-out/unsubscribe/${etablissementId}?token=${encodeURIComponent(token)}`
+  return `${config.publicUrl}/optout/unsubscribe/${etablissementId}?token=${encodeURIComponent(token)}`
 }
 
 /**
@@ -461,4 +461,35 @@ export function generateApplicationToken({ company_siret, jobId }: IApplicationT
       },
     }),
   ])
+}
+
+export function createMERInvitationLink(user: IUserWithAccount, jobId: string, establishmentId: string): string {
+  const token = generateAccessToken(
+    userWithAccountToUserForToken(user),
+    [
+      generateScope({
+        schema: zRoutes.post["/formulaire/offre/:jobId/delegation/by-token"],
+        options: {
+          params: {
+            jobId,
+          },
+          querystring: undefined,
+        },
+      }),
+      generateScope({
+        schema: zRoutes.get["/formulaire/:establishment_id/by-token"],
+        options: {
+          params: {
+            establishment_id: establishmentId,
+          },
+          querystring: undefined,
+        },
+      }),
+    ],
+    {
+      expiresIn: "30d",
+    }
+  )
+
+  return `${config.publicUrl}/espace-pro/mise-en-relation/${establishmentId}/${jobId}?token=${encodeURIComponent(token)}`
 }

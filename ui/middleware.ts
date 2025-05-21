@@ -80,6 +80,8 @@ export async function middleware(request: NextRequest) {
   const query = new URLSearchParams(search)
   const token = query.get("token")
 
+  console.log("request-pathname", pathname)
+
   if (pathname === "/espace-pro/authentification") {
     if (token) {
       return await verifyAuthentication(token, request)
@@ -113,6 +115,8 @@ const excludedStartPaths = [
   "/espace-pro/widget/",
   "/espace-pro/creation/",
   "/espace-pro/offre/impression/",
+  "/espace-pro/proposition/formulaire/",
+  "/espace-pro/mise-en-relation/",
 ]
 const isConnectionRequired = (path: string) => {
   if (!path.startsWith("/espace-pro/")) {

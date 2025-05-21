@@ -38,9 +38,6 @@ export const RomeDetailReadOnly = ({
   competences: IReferentielRomeForJobJson["competences"]
   appellation: string
 }) => {
-  const definitionSplitted = definition.split("\\n")
-  const accesFormatted = acces_metier.split("\\n").join("<br><br>")
-
   return (
     <Box border="1px solid #000091" p={5} mb={5}>
       <Heading fontSize="24px" mb="16px" lineHeight="32px">
@@ -48,11 +45,7 @@ export const RomeDetailReadOnly = ({
       </Heading>
       <Accordion defaultIndex={[0]} allowMultiple>
         <CustomAccordion id="metier" header={<AccordionHeader>Descriptif du métier</AccordionHeader>}>
-          <ul style={{ marginLeft: 16 }}>
-            {definitionSplitted.map((x) => (
-              <li key={x}>{x}</li>
-            ))}
-          </ul>
+          <Text>{definition}</Text>
         </CustomAccordion>
         {competences?.savoir_etre_professionnel && (
           <CustomAccordion id="qualites" header={<AccordionHeader>Qualités souhaitées pour ce métier</AccordionHeader>}>
@@ -89,7 +82,7 @@ export const RomeDetailReadOnly = ({
         )}
 
         <CustomAccordion id="accessibilite" header={<AccordionHeader>À qui ce métier est-il accessible ?</AccordionHeader>}>
-          <span dangerouslySetInnerHTML={{ __html: accesFormatted }}></span>
+          <Text>{acces_metier}</Text>
         </CustomAccordion>
       </Accordion>
       <Text fontSize="14px" color="#3A3A3A" lineHeight="24px">
