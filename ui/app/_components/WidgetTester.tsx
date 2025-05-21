@@ -169,6 +169,7 @@ const WidgetTester = () => {
                       <Text as="strong">Métier (pour renseigner le champ romes)</Text>
                     </Box>
                     <Box>
+                      {/* OLD COMPONENT DEPRECATED -> USE ui/app/_components/FormComponents/AutocompleteAsync.tsx */}
                       <AutoCompleteField
                         id="widgetTesterJobField"
                         items={[]}
@@ -193,6 +194,7 @@ const WidgetTester = () => {
                       <Text as="strong">Localité (pour renseigner lat et lon)</Text>
                     </Box>
                     <Box>
+                      {/* OLD COMPONENT DEPRECATED -> USE ui/app/_components/FormComponents/AutocompleteAsync.tsx */}
                       <AutoCompleteField
                         id="widgetTesterPlaceField"
                         items={[]}

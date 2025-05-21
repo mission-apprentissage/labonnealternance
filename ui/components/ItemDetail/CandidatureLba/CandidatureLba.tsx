@@ -5,6 +5,7 @@ import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson, JOB
 import { LBA_ITEM_TYPE, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 
 import { useLocalStorage } from "@/app/hooks/useLocalStorage"
+import { notifyJobPostulerV3 } from "@/utils/api"
 
 import { getItemId } from "../../../utils/getItemId"
 import { SendPlausibleEvent } from "../../../utils/plausible"
@@ -36,6 +37,7 @@ export function CandidatureLba({ item }: { item: ILbaItemLbaJobJson | ILbaItemLb
   const openApplicationForm = () => {
     onOpen()
     SendPlausibleEvent("Clic Postuler - Fiche emploi", { partner_label: kind, info_fiche: getItemId(item) })
+    notifyJobPostulerV3(item.id)
   }
 
   const hasAppliedValue = storedValue

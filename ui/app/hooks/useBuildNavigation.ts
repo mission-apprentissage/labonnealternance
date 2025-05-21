@@ -7,7 +7,8 @@ import { getItemReference, getResultItemUrl, type WithRecherchePageParams } from
 
 export function useBuildNavigation({ items, currentItem, params }: WithRecherchePageParams<{ items: IUseRechercheResultsSuccess["items"]; currentItem: ILbaItem }>) {
   const router = useRouter()
-  const currentIndex = items.findIndex((item) => currentItem.id === item.id)
+  // TODO: quand nous aurons la pagination partout il ne sera pas nécessaire de gérer le cas où currentItem est null (conséquence de lien partagé recherche France entière)
+  const currentIndex = currentItem ? items.findIndex((item) => currentItem.id === item.id) : 0
   const nextItem = currentIndex == items.length - 1 ? 0 : items[currentIndex + 1]
   const previousItem = currentIndex == 0 ? items[items.length - 1] : items[currentIndex - 1]
   const nextUrl = useMemo(() => {

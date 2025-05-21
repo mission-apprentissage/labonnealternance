@@ -69,9 +69,6 @@ export const RomeDetail = ({
 }) => {
   const isSelected = (accordionKey: string, competence: string) => (selectedCompetences[accordionKey] ?? []).includes(competence)
 
-  const definitionSplitted = definition.split("\\n")
-  const accesFormatted = acces_metier.split("\\n").join("<br><br>")
-
   return (
     <BorderedBox>
       <Heading mb={4}>{title}</Heading>
@@ -97,13 +94,7 @@ export const RomeDetail = ({
             </AccordionHeader>
           }
         >
-          <ul>
-            {definitionSplitted.map((x) => (
-              <li key={x} style={{ marginLeft: "20px", marginRight: 0, marginBottom: 0 }}>
-                {x}
-              </li>
-            ))}
-          </ul>
+          <Text>{definition}</Text>
         </CustomAccordion>
         {competences?.savoir_etre_professionnel && (
           <RequiredCompetenceAccordion
@@ -134,7 +125,7 @@ export const RomeDetail = ({
         )}
 
         <CustomAccordion id="accessibilite" header={<AccordionHeader>À qui ce métier est-il accessible ?</AccordionHeader>}>
-          <Text dangerouslySetInnerHTML={{ __html: accesFormatted }}></Text>
+          <Text>{acces_metier}</Text>
         </CustomAccordion>
       </Accordion>
       <Text fontSize="14px" color="#3A3A3A" lineHeight="24px">

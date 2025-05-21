@@ -78,7 +78,8 @@ export const ZJobFields = z
     job_update_date: z.date().nullish().describe("Date de dernière mise à jour de l'offre"),
     job_last_prolongation_date: z.date().nullish().describe("Date de dernière prolongation de l'offre"),
     job_prolongation_count: z.number().nullish().describe("Nombre de fois où l'offre a été prolongée"),
-    relance_mail_sent: z.boolean().nullish().describe("Statut de l'envoi du mail de relance avant expiration"),
+    relance_mail_expiration_J7: z.date().nullish().describe("Date de l'envoi du mail de relance avant expiration à J-7"),
+    relance_mail_expiration_J1: z.date().nullish().describe("Date de l'envoi du mail de relance avant expiration à J-1"),
     job_status: extensions.buildEnum(JOB_STATUS).describe("Statut de l'offre"),
     job_status_comment: z.string().nullish().describe("Raison de la suppression de l'offre"),
     job_type: ZJobType,
@@ -95,6 +96,7 @@ export const ZJobFields = z
     stats_search_view: z.number().nullish().describe("Nombre de vues sur une page de recherche"),
     managed_by: z.string().nullish().describe("Id de l'utilisateur gérant l'offre"),
     competences_rome: ZRomeCompetence.nullish().describe("Compétences du code ROME sélectionnées par le recruteur"),
+    mer_sent: z.date().nullish().describe("Date d'envoi de la mise en relation"),
     offer_title_custom: z
       .string()
       .min(3, "L’intitulé est trop court. Sa taille doit être comprise entre 3 et 150 caractères.")

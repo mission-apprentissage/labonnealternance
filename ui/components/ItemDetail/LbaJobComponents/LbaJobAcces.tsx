@@ -8,8 +8,6 @@ const LbaJobAcces = ({ job }) => {
 
   if (!accesEmploi) return <></>
 
-  const accesFormatted = accesEmploi.split("\\n").join("<br><br>")
-
   const onClick = (e) => {
     setTimeout(() => {
       scrollToNestedElement({ containerId: "itemDetailColumn", nestedElement: e.target, yOffsett: 220 })
@@ -28,7 +26,7 @@ const LbaJobAcces = ({ job }) => {
           </AccordionButton>
 
           <AccordionPanel pb={4}>
-            <Text as="span" dangerouslySetInnerHTML={{ __html: accesFormatted }}></Text>
+            <Text as="span">{accesEmploi}</Text>
           </AccordionPanel>
         </>
       )}
