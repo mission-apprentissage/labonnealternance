@@ -1,136 +1,261 @@
 "use client"
 
 import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Button, Container, Grid, GridItem, Input, Link, Radio, RadioGroup, Select, Stack, Text } from "@chakra-ui/react"
-import { ErrorMessage, Field, Form, Formik } from "formik"
-import React, { useState } from "react"
+import { Container, Grid, GridItem, Link, Text } from "@chakra-ui/react"
+import { Button } from "@codegouvfr/react-dsfr/Button"
+import { Box } from "@mui/material"
+import { Formik, FormikProps } from "formik"
+import { useState } from "react"
 
-import { AutoCompleteField, autoCompleteToStringFunction, compareAutoCompleteValues } from "@/components/AutoCompleteField/AutoCompleteField"
+import { AutocompleteAsync } from "@/app/_components/FormComponents/AutocompleteAsync"
+import { InputFormField } from "@/app/_components/FormComponents/InputFormField"
+import { SelectFormField } from "@/app/_components/FormComponents/SelectFormField"
+import {
+  fetchLieuOptions,
+  fetchRomeSearchOptions,
+  getMetierOptionKey,
+  getMetierOptionLabel,
+  IFormType,
+  IRomeSearchOption,
+  niveauOptions,
+  radiusOptions,
+} from "@/app/_components/RechercheForm/RechercheForm"
+import { baseUrl } from "@/config/config"
 
-import { baseUrl } from "../../config/config"
-import { fetchAddresses } from "../../services/baseAdresse"
-import domainChanged from "../../services/domainChanged"
+type IFormTypeWidget = IFormType & {
+  job_name?: string
+  opco?: string
+  opcoUrl?: string
+  caller?: string
+  scope: string
+}
 
-const WidgetTester = () => {
-  const [locationRadius, setLocationRadius] = useState("0")
-  const [scope, setScope] = useState("")
-  const [frozenJob, setFrozenJob] = useState("")
-  const [widgetParams, setWidgetParams] = useState(null)
-  const [shownRomes, setShownRomes] = useState(null)
-  const [shownSearchCenter, setShownSearchCenter] = useState(null)
-  const [_domainError, setDomainError] = useState(false)
+const scopeOptions = [
+  {
+    value: "/recherche",
+    label: "Tout",
+  },
+  {
+    value: "/recherche-emploi",
+    label: "Emplois uniquement",
+  },
+  {
+    value: "/recherche-formation",
+    label: "Formations uniquement",
+  },
+]
 
-  const jobChanged = async function (val, setLoadingState) {
-    const res = await domainChanged(val, setDomainError)
-    setLoadingState("done")
-    return res
+const opcoOptions = [
+  {
+    value: "",
+    label: "Indifférent",
+  },
+  {
+    value: "AFDAS",
+    label: "AFDAS",
+  },
+  {
+    value: "AKTO",
+    label: "AKTO",
+  },
+  {
+    value: "ATLAS",
+    label: "ATLAS",
+  },
+  {
+    value: "CONSTRUCTYS",
+    label: "CONSTRUCTYS",
+  },
+  {
+    value: "OPCOMMERCE",
+    label: "OPCOMMERCE",
+  },
+  {
+    value: "OCAPIAT",
+    label: "OCAPIAT",
+  },
+  {
+    value: "OPCO2I",
+    label: "OPCO2I",
+  },
+  {
+    value: "EP",
+    label: "EP",
+  },
+  {
+    value: "MOBILITE",
+    label: "MOBILITE",
+  },
+  {
+    value: "SANTE",
+    label: "SANTE",
+  },
+  {
+    value: "UNIFORMATION",
+    label: "UNIFORMATION",
+  },
+]
+
+const opcoUrlOptions = [
+  {
+    value: "",
+    label: "Indifférent",
+  },
+  {
+    value: "www.jecompte.fr",
+    label: "www.jecompte.fr",
+  },
+  {
+    value: "www.concepteursdavenirs.fr",
+    label: "www.concepteursdavenirs.fr",
+  },
+  {
+    value: "www.jinvestislavenir.fr",
+    label: "www.jinvestislavenir.fr",
+  },
+  {
+    value: "www.jassuremonfutur.fr",
+    label: "www.jassuremonfutur.fr",
+  },
+]
+
+function WidgetFormComponent(props: FormikProps<IFormTypeWidget>) {
+  return (
+    <Box component={"form"} onSubmit={props.handleSubmit}>
+      <Grid>
+        <GridItem mt={4}>
+          <AutocompleteAsync
+            noOptionsText="Nous ne parvenons pas à identifier le métier ou la formation que vous cherchez, veuillez reformuler votre recherche"
+            id="metier"
+            key="metier"
+            label="Métier ou formation * (pour renseigner le champ romes)"
+            fetchOptions={fetchRomeSearchOptions}
+            getOptionKey={getMetierOptionKey}
+            getOptionLabel={getMetierOptionLabel}
+            groupBy={(option: IRomeSearchOption) => option.group}
+            placeholder="Indiquer un métier ou une formation"
+            disabled={false}
+          />
+        </GridItem>
+        <GridItem mt={4}>
+          <AutocompleteAsync
+            noOptionsText="Nous ne parvenons pas à identifier le lieu que vous cherchez, veuillez reformuler votre recherche"
+            id="lieu"
+            label="Lieu (pour renseigner lat et lon)"
+            fetchOptions={fetchLieuOptions}
+            getOptionKey={(option) => option.label}
+            getOptionLabel={(option) => option.label}
+            placeholder="À quel endroit ?"
+            disabled={false}
+          />
+        </GridItem>
+        <GridItem mt={4}>
+          <SelectFormField
+            id="radius"
+            label="Rayon de recherche (radius)"
+            style={{
+              marginBottom: 0,
+            }}
+            options={radiusOptions.map((option) => ({ ...option, selected: option.value === props.values.radius }))}
+            disabled={false}
+          />
+        </GridItem>
+        <GridItem mt={4}>
+          <SelectFormField
+            id="niveau"
+            label="Niveau d'études visé"
+            style={{
+              marginBottom: 0,
+              textWrap: "nowrap",
+            }}
+            options={niveauOptions.map((option) => ({ ...option, selected: option.value === props.values.niveau }))}
+            disabled={false}
+          />
+        </GridItem>
+        <GridItem mt={4}>
+          <SelectFormField
+            id="scope"
+            label="Périmètre (scope)"
+            style={{
+              marginBottom: 0,
+              textWrap: "nowrap",
+            }}
+            options={scopeOptions.map((option) => ({ ...option, selected: option.value === props.values.niveau }))}
+            disabled={false}
+          />
+        </GridItem>
+        <GridItem mt={4}>
+          <SelectFormField
+            id="opco"
+            label="Filtrage des opportunités d'emploi pour un OPCO. Optionnel (opco)"
+            style={{
+              marginBottom: 0,
+              textWrap: "nowrap",
+            }}
+            options={opcoOptions.map((option) => ({ ...option, selected: option.value === props.values.opco }))}
+            disabled={false}
+          />
+        </GridItem>
+        <GridItem mt={4}>
+          <SelectFormField
+            id="opcoUrl"
+            label="Filtrage des opportunités d'emploi par un site d'OPCO. Optionnel (opcoUrl)"
+            style={{
+              marginBottom: 0,
+              textWrap: "nowrap",
+            }}
+            options={opcoUrlOptions.map((option) => ({ ...option, selected: option.value === props.values.opcoUrl }))}
+            disabled={false}
+          />
+        </GridItem>
+        <GridItem mt={4}>
+          <InputFormField
+            id="caller"
+            label="Identifiant appelant (caller)"
+            style={{
+              marginBottom: 0,
+              textWrap: "nowrap",
+            }}
+            disabled={false}
+          />
+        </GridItem>
+        <GridItem mt={4}>
+          <InputFormField
+            id="job_name"
+            label="Nom d'affichage du métier. Optionnel (job_name)"
+            style={{
+              marginBottom: 0,
+              textWrap: "nowrap",
+            }}
+            disabled={false}
+          />
+        </GridItem>
+        <GridItem my={4}>
+          <Button type="submit" title="Rafraîchir les widgets" disabled={false}>
+            Rafraîchir les widgets
+          </Button>
+        </GridItem>
+      </Grid>
+    </Box>
+  )
+}
+
+export function WidgetTester() {
+  const initialValues = {
+    radius: "30",
+    niveau: "",
+    metier: null,
+    lieu: null,
+    job_name: "",
+    opcoUrl: "",
+    opco: "",
+    scope: "/recherche",
+    caller: "",
   }
 
-  const addressChanged = async function (val, setLoadingState) {
-    const res = await fetchAddresses(val)
-    setLoadingState("done")
-    return res
-  }
-
-  const handleRadiusChange = (radius, setFieldValue) => {
-    setLocationRadius(radius)
-
-    setTimeout(() => {
-      setFieldValue("radius", radius)
-    }, 0)
-  }
-
-  const handleScopeChange = (scope, setFieldValue) => {
-    setScope(scope)
-
-    setTimeout(() => {
-      setFieldValue("scope", scope)
-    }, 0)
-  }
-
-  const handleFrozenChange = (frozenJob, setFieldValue) => {
-    setFrozenJob(frozenJob)
-
-    setTimeout(() => {
-      setFieldValue("frozen_job", frozenJob)
-    }, 0)
-  }
-
-  // Mets à jours les valeurs de champs du formulaire Formik à partir de l'item sélectionné dans l'AutoCompleteField
-  const updateValuesFromJobAutoComplete = (item, setFieldValue) => {
-    //setTimeout perme d'éviter un conflit de setState
-    setTimeout(() => {
-      setFieldValue("job", item)
-      setShownRomes(item)
-    }, 0)
-  }
-
-  // Mets à jours les valeurs de champs du formulaire Formik à partir de l'item sélectionné dans l'AutoCompleteField
-  const updateValuesFromPlaceAutoComplete = (item, setFieldValue) => {
-    //setTimeout perme d'éviter un conflit de setState
-    setTimeout(() => {
-      setFieldValue("location", item)
-      setShownSearchCenter(item)
-    }, 0)
-  }
-
-  const showSearchCenter = () => {
-    return (
-      shownSearchCenter &&
-      shownSearchCenter.value &&
-      shownSearchCenter.value.coordinates && <Box>{`Lat : ${shownSearchCenter.value.coordinates[1]} - Lon : ${shownSearchCenter.value.coordinates[0]}`}</Box>
-    )
-  }
-
-  const showSelectedRomes = () => {
-    return shownRomes && shownRomes.romes && <Box>{`Romes : ${shownRomes.romes.join()}`}</Box>
-  }
-
-  const handleSearchSubmit = async (values) => {
-    const res = {
-      romes: values.job && values.job.romes ? values.job.romes.join() : null,
-      location: values.location && values.location.value ? values.location.value.coordinates : null,
-      radius: values.radius || null,
-      scope: values.scope || null,
-      caller: values.caller || null,
-      opco: values.opco || null,
-      opcoUrl: values.opcoUrl || null,
-      jobName: values.jobName || null,
-      frozenJob: values.frozen_job || null,
-    }
-
-    setWidgetParams(res)
-  }
-
-  const getIdeaUrlWithParams = () => {
-    let ideaUrl = baseUrl
-    ideaUrl = ideaUrl.replace("5", "3")
-
-    let path = "recherche"
-
-    if (widgetParams) {
-      if (widgetParams.scope === "job") path = "recherche-emploi"
-      else if (widgetParams.scope === "training") path = "recherche-formation"
-
-      ideaUrl = `${ideaUrl}/${path}`
-
-      ideaUrl += "?"
-      ideaUrl += widgetParams.caller ? `&caller=${encodeURIComponent(widgetParams.caller)}` : ""
-      ideaUrl += widgetParams.romes ? `&romes=${widgetParams.romes}` : ""
-      ideaUrl += widgetParams.location ? `&lon=${widgetParams.location[0]}&lat=${widgetParams.location[1]}` : ""
-      ideaUrl += widgetParams.radius ? `&radius=${widgetParams.radius}` : ""
-      ideaUrl += widgetParams.opco ? `&opco=${encodeURIComponent(widgetParams.opco)}` : ""
-      ideaUrl += widgetParams.opcoUrl ? `&opcoUrl=${encodeURIComponent(widgetParams.opcoUrl)}` : ""
-      ideaUrl += widgetParams.jobName ? `&job_name=${encodeURIComponent(widgetParams.jobName)}` : ""
-      ideaUrl += widgetParams.frozenJob ? "&frozen_job=1" : ""
-    } else ideaUrl = `${ideaUrl}/${path}`
-
-    return ideaUrl
-  }
+  const [widgetUrl, setWidgetUrl] = useState(`${baseUrl}/recherche`)
 
   const getWidget = (params) => {
-    const ideaUrl = getIdeaUrlWithParams()
-
     return (
       <iframe
         title={params.title}
@@ -140,280 +265,88 @@ const WidgetTester = () => {
           height: `${params.height}px`,
           width: params.width ? `${params.width}px` : "100%",
         }}
-        src={ideaUrl}
+        src={widgetUrl}
       />
     )
   }
 
-  const getForm = () => {
-    return (
-      <Formik
-        initialValues={{
-          job: {},
-          location: {},
-          radius: 0,
-          scope: "",
-          caller: "adresse_contact@mail.com identifiant_appelant",
-          opco: "",
-          opcoUrl: "",
-        }}
-        onSubmit={handleSearchSubmit}
-      >
-        {({ isSubmitting, setFieldValue }) => (
-          <Container variant="responsiveContainer">
-            <Form>
-              <Grid>
-                <GridItem mt={8}>
-                  <Box>
-                    <Box as="label" htmlFor="jobField">
-                      <Text as="strong">Métier (pour renseigner le champ romes)</Text>
-                    </Box>
-                    <Box>
-                      {/* OLD COMPONENT DEPRECATED -> USE ui/app/_components/FormComponents/AutocompleteAsync.tsx */}
-                      <AutoCompleteField
-                        id="widgetTesterJobField"
-                        items={[]}
-                        itemToStringFunction={autoCompleteToStringFunction}
-                        onSelectedItemChangeFunction={updateValuesFromJobAutoComplete}
-                        compareItemFunction={compareAutoCompleteValues}
-                        onInputValueChangeFunction={jobChanged}
-                        name="jobField"
-                        placeholder="Indiquez un métier ou diplôme"
-                        inputVariant="homeAutocomplete"
-                        searchPlaceholder="Indiquez le métier recherché ci-dessus"
-                      />
-                    </Box>
-                    {showSelectedRomes()}
-                    <ErrorMessage name="job" component="Box" />
-                  </Box>
-                </GridItem>
-
-                <GridItem mt={8}>
-                  <Box>
-                    <Box as="label" htmlFor="placeField">
-                      <Text as="strong">Localité (pour renseigner lat et lon)</Text>
-                    </Box>
-                    <Box>
-                      {/* OLD COMPONENT DEPRECATED -> USE ui/app/_components/FormComponents/AutocompleteAsync.tsx */}
-                      <AutoCompleteField
-                        id="widgetTesterPlaceField"
-                        items={[]}
-                        itemToStringFunction={autoCompleteToStringFunction}
-                        onSelectedItemChangeFunction={updateValuesFromPlaceAutoComplete}
-                        compareItemFunction={compareAutoCompleteValues}
-                        onInputValueChangeFunction={addressChanged}
-                        scrollParentId="choiceColumn"
-                        name="placeField"
-                        placeholder="Adresse, ville ou code postal"
-                        inputVariant="homeAutocomplete"
-                        searchPlaceholder="Indiquez le lieu recherché ci-dessus"
-                      />
-                    </Box>
-                    {showSearchCenter()}
-                    <ErrorMessage name="location" component="Box" />
-                  </Box>
-                </GridItem>
-
-                <GridItem mt={8}>
-                  <Box>
-                    <Box as="label">
-                      <Text as="strong">Rayon de recherche (radius)</Text>
-                    </Box>
-                    <Field type="hidden" value={locationRadius} name="locationRadius" />
-                    <Box>
-                      <RadioGroup
-                        value={locationRadius}
-                        onChange={(value) => {
-                          setLocationRadius(value)
-                          handleRadiusChange(value, setFieldValue)
-                        }}
-                      >
-                        <Stack direction="row">
-                          <Radio value="0">Non défini</Radio>
-                          <Radio value="10">10km</Radio>
-                          <Radio value="30">30km</Radio>
-                          <Radio value="60">60km</Radio>
-                          <Radio value="100">100km</Radio>
-                        </Stack>
-                      </RadioGroup>
-                    </Box>
-                  </Box>
-                </GridItem>
-
-                <GridItem mt={8}>
-                  <Box>
-                    <Box as="label">
-                      <Text as="strong">Périmètre (scope)</Text>
-                    </Box>
-                    <Field type="hidden" value={scope} name="scope" />
-                    <Box>
-                      <RadioGroup
-                        value={scope}
-                        onChange={(value) => {
-                          setScope(value)
-                          handleScopeChange(value, setFieldValue)
-                        }}
-                      >
-                        <Stack direction="row">
-                          <Radio value="">Tout</Radio>
-                          <Radio value="training">Formations uniquement</Radio>
-                          <Radio value="job">Emplois uniquement</Radio>
-                        </Stack>
-                      </RadioGroup>
-                    </Box>
-                  </Box>
-                </GridItem>
-
-                <GridItem mt={8}>
-                  <Box>
-                    <Box as="label">
-                      <Text as="strong">Identifiant appelant (caller)</Text>
-                    </Box>
-                    <Box>
-                      <Field as={Input} variant="outline" type="text" name="caller" />
-                      <Text variant="defaultAutocomplete">Nous vous contacterons à cette adresse email en cas d'évolution du service</Text>
-                    </Box>
-                  </Box>
-                </GridItem>
-
-                <GridItem mt={8}>
-                  <Box>
-                    <Box as="label">
-                      <Text as="strong">Filtrage des opportunités d&apos;emploi pour un OPCO. Optionnel (opco)</Text>
-                    </Box>
-                    <Select name="opco" onChange={(evt) => setFieldValue("opco", evt.target.value)}>
-                      <option></option>
-                      <option>AFDAS</option>
-                      <option>AKTO</option>
-                      <option>ATLAS</option>
-                      <option>CONSTRUCTYS</option>
-                      <option>OPCOMMERCE</option>
-                      <option>OCAPIAT</option>
-                      <option>OPCO2I</option>
-                      <option>EP</option>
-                      <option>MOBILITE</option>
-                      <option>SANTE</option>
-                      <option>UNIFORMATION</option>
-                    </Select>
-                  </Box>
-                </GridItem>
-
-                <GridItem mt={8}>
-                  <Box>
-                    <Box as="label">
-                      <Text as="strong">Filtrage des opportunités d&apos;emploi par un site d'OPCO. Optionnel (opcoUrl)</Text>
-                    </Box>
-                    <Select name="opco" onChange={(evt) => setFieldValue("opcoUrl", evt.target.value)}>
-                      <option></option>
-                      <option>www.jecompte.fr</option>
-                      <option>www.concepteursdavenirs.fr</option>
-                      <option>www.jinvestislavenir.fr</option>
-                      <option>www.jassuremonfutur.fr</option>
-                    </Select>
-                  </Box>
-                </GridItem>
-
-                <GridItem mt={8}>
-                  <Box>
-                    <Box as="label">
-                      <Text as="strong">Le métier est il figé ? (frozen_job)</Text>
-                    </Box>
-                    <Field type="hidden" value={scope} name="scope" />
-                    <Box>
-                      <RadioGroup
-                        value={frozenJob}
-                        onChange={(value) => {
-                          setFrozenJob(value)
-                          handleFrozenChange(value, setFieldValue)
-                        }}
-                      >
-                        <Stack direction="row">
-                          <Radio value="">Non</Radio>
-                          <Radio value="1">Oui</Radio>
-                        </Stack>
-                      </RadioGroup>
-                    </Box>
-                    <Text variant="defaultAutocomplete">
-                      L&apos;utilisateur ne pourra pas faire une recherche sur d&apos;autres métiers (romes) que ceux que vous avez spécifiés.
-                    </Text>
-                  </Box>
-                </GridItem>
-
-                <GridItem mt={8}>
-                  <Box>
-                    <Box as="label">
-                      <Text as="strong">Nom du métier (job_name)</Text>
-                    </Box>
-                    <Field as={Input} variant="outline" type="text" name="jobName" />
-                    <Text variant="defaultAutocomplete">
-                      La phrase suivante apparaîtra sur le formulaire: &quot;Vous souhaitez travailler dans le domaine de [votre saisie]&quot;.
-                    </Text>
-                  </Box>
-                </GridItem>
-              </Grid>
-              <GridItem mt={8}>
-                <Button type="submit" variant="editorialPrimary" disabled={isSubmitting}>
-                  Mettre à jour les widgets
-                </Button>
-              </GridItem>
-            </Form>
-          </Container>
-        )}
-      </Formik>
-    )
-  }
-
   return (
-    <Box>
-      <Box>
-        <Text as="h1" pl={6}>
-          Test du Widget La bonne alternance
-        </Text>
-        <Text pl={6}>
-          La documentation est ici :{" "}
-          <Link
-            href="https://mission-apprentissage.gitbook.io/la-bonne-alternance/documentation"
-            aria-label="Accès à la documentation - nouvelle fenêtre"
-            target="docIdea"
-            isExternal
-            fontSize={14}
-            fontWeight={700}
-            color="grey.425"
-          >
-            https://mission-apprentissage.gitbook.io/la-bonne-alternance/documentation <ExternalLinkIcon mx="2px" />
-          </Link>
-        </Text>
-      </Box>
-      <Container variant="responsiveContainer">
-        <Grid>
-          <GridItem>{getForm()}</GridItem>
+    <Container p={12} my={0} mb={[0, 12]} variant="pageContainer">
+      <Text as="h1" pl={6}>
+        Test du Widget La bonne alternance
+      </Text>
+      <Text pl={6}>
+        La documentation est ici :{" "}
+        <Link
+          href="https://mission-apprentissage.gitbook.io/la-bonne-alternance/documentation"
+          aria-label="Accès à la documentation - nouvelle fenêtre"
+          target="docIdea"
+          isExternal
+          fontSize={14}
+          fontWeight={700}
+          color="grey.425"
+        >
+          https://mission-apprentissage.gitbook.io/la-bonne-alternance/documentation <ExternalLinkIcon mx="2px" />
+        </Link>
+      </Text>
+      <Formik<IFormTypeWidget>
+        initialValues={initialValues}
+        enableReinitialize
+        //validate={validate}
+        validateOnBlur={false}
+        onSubmit={async (values) => {
+          console.log("values", values)
+          // await props?.onSubmit({
+          //   romes: values.metier.romes,
+          //   geo: values.lieu ? { address: values.lieu.label, latitude: values.lieu.latitude, longitude: values.lieu.longitude, radius: parseInt(values.radius) } : null,
+          //   diploma: values.niveau || null,
+          //   job_name: values.metier.label,
+          //   job_type: values.metier.type,
+          //   activeItems: [],
+          // })
 
-          <GridItem mt={8}>
-            URL associée à l&apos;attribut <Text as="strong">src</Text> de l&apos;iframe : {getIdeaUrlWithParams()}
-          </GridItem>
-        </Grid>
-        <Grid>
-          <GridItem>
-            <hr />
-            <Text as="h3">Largeur 360 px - hauteur 640 px</Text>
-            {getWidget({
-              title: "mobile",
-              height: 640,
-              width: 360,
-            })}
-          </GridItem>
-          <GridItem>
-            <hr />
-            <Text as="h3">Largeur 100% - hauteur 800 px</Text>
-            {getWidget({
-              title: "desktop",
-              height: 800,
-            })}
-          </GridItem>
-        </Grid>
-      </Container>
-    </Box>
+          let ideaUrl = baseUrl
+          ideaUrl = ideaUrl.replace("5", "3")
+
+          const path = values.scope
+
+          ideaUrl = `${ideaUrl}${path}`
+
+          ideaUrl += "?"
+          ideaUrl += values.caller ? `&caller=${encodeURIComponent(values.caller)}` : ""
+          ideaUrl += values.metier ? `&romes=${values.metier.romes}` : ""
+          ideaUrl += values.lieu ? `&lon=${values.lieu.longitude}&lat=${values.lieu.latitude}` : ""
+          ideaUrl += values.radius ? `&radius=${values.radius}` : ""
+          ideaUrl += values.opco ? `&opco=${encodeURIComponent(values.opco)}` : ""
+          ideaUrl += values.opcoUrl ? `&opcoUrl=${encodeURIComponent(values.opcoUrl)}` : ""
+          ideaUrl += values.job_name ? `&job_name=${encodeURIComponent(values.job_name)}` : values?.metier?.label ? `&job_name=${values.metier.label}` : ""
+
+          setWidgetUrl(ideaUrl)
+        }}
+        component={WidgetFormComponent}
+      />
+      <Grid>
+        <GridItem my={8}>
+          URL associée à l&apos;attribut <Text as="strong">src</Text> de l&apos;iframe : <Text as="strong">{widgetUrl}</Text>
+        </GridItem>
+        <GridItem>
+          <hr />
+          <Text as="h3">Largeur 360 px - hauteur 640 px</Text>
+          {getWidget({
+            title: "mobile",
+            height: 640,
+            width: 360,
+          })}
+        </GridItem>
+        <GridItem>
+          <hr />
+          <Text as="h3">Largeur 100% - hauteur 800 px</Text>
+          {getWidget({
+            title: "desktop",
+            height: 800,
+          })}
+        </GridItem>
+      </Grid>
+    </Container>
   )
 }
-
-export default WidgetTester

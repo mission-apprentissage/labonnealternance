@@ -32,7 +32,7 @@ const schema = z.object({
     .nullable(),
 })
 
-type IFormType = z.output<typeof schema>
+export type IFormType = z.output<typeof schema>
 
 export const niveauOptions = [
   {
@@ -112,7 +112,7 @@ export async function fetchRomeSearchOptions(query: string): Promise<IRomeSearch
   ]
 }
 
-async function fetchLieuOptions(query: string): Promise<IFormType["lieu"][]> {
+export async function fetchLieuOptions(query: string): Promise<IFormType["lieu"][]> {
   const data = await searchAddress(query)
 
   return data.map((item) => ({
