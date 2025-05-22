@@ -3,9 +3,10 @@ import { Document, Filter, ObjectId } from "mongodb"
 import { ERecruteurLbaUpdateEventType, IApplication, IRecruteurLbaUpdateEvent, JobCollectionName } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
-import { IJobsPartnersOfferPrivate, IJobsPartnersRecruteurAlgoPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, IJobsPartnersRecruteurAlgoPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { ILbaCompanyForContactUpdate } from "shared/routes/updateLbaCompany.routes"
 
+import { roundDistance } from "@/common/utils/geolib"
 import { getRecipientID } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
@@ -20,6 +21,13 @@ import { generateApplicationToken } from "./appLinks.service"
 import { TLbaItemResult } from "./jobOpportunity.service.types"
 import { ILbaItemLbaCompany } from "./lbaitem.shared.service.types"
 
+const setDistance = (distance: number | null | undefined) => {
+  if (distance != null && distance != undefined && distance >= 0) {
+    return roundDistance(distance / 1000)
+  }
+  return null
+}
+
 /**
  * Adaptation au modèle LBA d'une société issue de l'algo
  * To remove once V1 is decommissioned
@@ -29,7 +37,7 @@ const transformCompany = ({
   contactAllowedOrigin,
   applicationCountByCompany,
 }: {
-  company: IJobsPartnersRecruteurAlgoPrivate
+  company: IJobsPartnersOfferPrivateWithDistance
   caller?: string | null
   contactAllowedOrigin: boolean
   applicationCountByCompany: IApplicationCount[]
@@ -49,11 +57,11 @@ const transformCompany = ({
   const resultCompany: ILbaItemLbaCompany = {
     ideaType: LBA_ITEM_TYPE_OLD.LBA,
     // ideaType: LBA_ITEM_TYPE.RECRUTEURS_LBA,
-    id: company.workplace_siret,
+    id: company.workplace_siret!,
     title: company.workplace_brand || company.workplace_legal_name,
     contact,
     place: {
-      distance: null,
+      distance: setDistance(company.distance),
       fullAddress: company.workplace_address_label,
       longitude: company.workplace_geopoint.coordinates[0],
       latitude: company.workplace_geopoint.coordinates[1],
@@ -78,8 +86,8 @@ const transformCompany = ({
     ],
     applicationCount: applicationCount?.count || 0,
     url: null,
-    token: generateApplicationToken({ company_siret: company.workplace_siret }),
-    recipient_id: getRecipientID(JobCollectionName.recruteur, company.workplace_siret),
+    token: generateApplicationToken({ company_siret: company.workplace_siret! }),
+    recipient_id: getRecipientID(JobCollectionName.recruteur, company.workplace_siret!),
   }
 
   return resultCompany
@@ -93,7 +101,7 @@ const transformCompanyWithMinimalData = ({
   company,
   applicationCountByCompany,
 }: {
-  company: IJobsPartnersRecruteurAlgoPrivate
+  company: IJobsPartnersOfferPrivateWithDistance
   applicationCountByCompany: IApplicationCount[]
 }): ILbaItemLbaCompany => {
   // format différent selon accès aux bonnes boîtes par recherche ou par siret
@@ -102,10 +110,10 @@ const transformCompanyWithMinimalData = ({
 
   const resultCompany: ILbaItemLbaCompany = {
     ideaType: LBA_ITEM_TYPE_OLD.LBA,
-    id: company.workplace_siret,
+    id: company.workplace_siret!,
     title: company.workplace_brand || company.workplace_legal_name,
     place: {
-      distance: null,
+      distance: setDistance(company.distance),
       fullAddress: company.workplace_address_label,
       longitude: company.workplace_geopoint.coordinates[0],
       latitude: company.workplace_geopoint.coordinates[1],
@@ -122,8 +130,8 @@ const transformCompanyWithMinimalData = ({
       },
     ],
     applicationCount: applicationCount?.count || 0,
-    token: generateApplicationToken({ company_siret: company.workplace_siret }),
-    recipient_id: getRecipientID(JobCollectionName.recruteur, company.workplace_siret),
+    token: generateApplicationToken({ company_siret: company.workplace_siret! }),
+    recipient_id: getRecipientID(JobCollectionName.recruteur, company.workplace_siret!),
   }
 
   return resultCompany
@@ -136,21 +144,21 @@ const transformCompanyV2 = ({
   company,
   applicationCountByCompany,
 }: {
-  company: IJobsPartnersRecruteurAlgoPrivate
+  company: IJobsPartnersOfferPrivateWithDistance
   applicationCountByCompany: IApplicationCount[]
 }): ILbaItemLbaCompany => {
   const applicationCount = applicationCountByCompany.find((cmp) => company.workplace_siret == cmp._id)
 
   const resultCompany: ILbaItemLbaCompany = {
     ideaType: LBA_ITEM_TYPE.RECRUTEURS_LBA,
-    id: company.workplace_siret,
+    id: company.workplace_siret!,
     title: company.workplace_brand || company.workplace_legal_name,
     contact: {
       phone: company.apply_phone,
       email: company.apply_email,
     },
     place: {
-      distance: null,
+      distance: setDistance(company.distance),
       fullAddress: company.workplace_address_label,
       longitude: company.workplace_geopoint.coordinates[0],
       latitude: company.workplace_geopoint.coordinates[1],
@@ -175,7 +183,7 @@ const transformCompanyV2 = ({
     ],
     applicationCount: applicationCount?.count || 0,
     url: null,
-    token: generateApplicationToken({ company_siret: company.workplace_siret }),
+    token: generateApplicationToken({ company_siret: company.workplace_siret! }),
     recipient_id: `partners_${company._id.toString()}`,
   }
 
@@ -190,17 +198,17 @@ const transformCompanyWithMinimalDataV2 = ({
   company,
   applicationCountByCompany,
 }: {
-  company: IJobsPartnersRecruteurAlgoPrivate
+  company: IJobsPartnersOfferPrivateWithDistance
   applicationCountByCompany: IApplicationCount[]
 }): ILbaItemLbaCompany => {
   const applicationCount = applicationCountByCompany.find((cmp) => company.workplace_siret == cmp._id)
 
   const resultCompany: ILbaItemLbaCompany = {
     ideaType: LBA_ITEM_TYPE.RECRUTEURS_LBA,
-    id: company.workplace_siret,
+    id: company.workplace_siret!,
     title: company.workplace_brand || company.workplace_legal_name,
     place: {
-      distance: null,
+      distance: setDistance(company.distance),
       fullAddress: company.workplace_address_label,
       longitude: company.workplace_geopoint.coordinates[0],
       latitude: company.workplace_geopoint.coordinates[1],
@@ -217,7 +225,7 @@ const transformCompanyWithMinimalDataV2 = ({
       },
     ],
     applicationCount: applicationCount?.count || 0,
-    token: generateApplicationToken({ company_siret: company.workplace_siret }),
+    token: generateApplicationToken({ company_siret: company.workplace_siret! }),
     recipient_id: `partners_${company._id.toString()}`,
   }
 
@@ -339,7 +347,7 @@ export const getCompanies = async ({
     }
 
     if (opco) {
-      query.workplace_opco = opco.toUpperCase()
+      query.workplace_opco = { $in: [opco.toUpperCase(), OPCOS_LABEL[opco?.toUpperCase()]] } // KBA : field opco_short_name does not exist anymore, to be removed once V1 decomissioned
     }
 
     // TODO 20250212 obsolete, to check if still used

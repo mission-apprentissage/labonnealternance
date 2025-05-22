@@ -146,6 +146,7 @@ export function ResultCard({ item, active, params }: ResultCardProps) {
           horizontal
           linkProps={{
             href: itemUrl,
+            prefetch: false,
           }}
           start={<ItemTag item={item} />}
           title={
@@ -179,7 +180,7 @@ export function ResultCard({ item, active, params }: ResultCardProps) {
                 className={fr.cx("fr-text--xs")}
               >
                 {getAdresse(item)}
-                {item.place.distance != null && (
+                {params.geo && item.place.distance != null && (
                   <>
                     <br />
                     <Typography

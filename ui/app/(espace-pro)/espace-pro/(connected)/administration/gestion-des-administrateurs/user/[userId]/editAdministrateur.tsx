@@ -5,7 +5,6 @@ import { useParams, useRouter } from "next/navigation"
 import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
 import { AdminUserForm } from "@/app/(espace-pro)/espace-pro/(connected)/administration/gestion-des-administrateurs/_components/AdminUserForm"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
-import { EAdminPages } from "@/app/_components/Layout/NavigationAdmin"
 import { LoadingEmptySpace } from "@/components/espace_pro"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
@@ -36,7 +35,7 @@ export default function EditAdministrateur() {
   const { userId } = useParams() as { userId: string }
 
   return (
-    <AdminLayout currentAdminPage={EAdminPages.GESTION_ADMINISTRATEURS}>
+    <AdminLayout currentAdminPage="GESTION_ADMINISTRATEURS">
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.backAdminGestionDesAdministrateurs, PAGES.dynamic.backEditAdministrator({ userId })]} />
       <AdminUserView userId={userId} />
     </AdminLayout>

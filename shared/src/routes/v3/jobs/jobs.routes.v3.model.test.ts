@@ -525,6 +525,9 @@ describe("convertToJobOfferApiReadV3", () => {
       workplace_size: null,
       workplace_website: null,
       offer_status_history: [],
+      stats_detail_view: 0,
+      stats_postuler: 0,
+      stats_search_view: 0,
     }
 
     const expected: IJobOfferApiReadV3 = {

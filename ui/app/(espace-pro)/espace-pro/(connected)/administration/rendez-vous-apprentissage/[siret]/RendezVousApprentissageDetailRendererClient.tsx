@@ -10,7 +10,6 @@ import { z } from "zod"
 
 import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
-import { EAdminPages } from "@/app/_components/Layout/NavigationAdmin"
 import { formatDate } from "@/common/dayjs"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { InfoPopover } from "@/components/espace_pro"
@@ -98,7 +97,7 @@ export default function RendezVousApprentissageDetailRendererClient({
   }
 
   return (
-    <AdminLayout currentAdminPage={EAdminPages.RECHERCHE_RENDEZ_VOUS}>
+    <AdminLayout currentAdminPage="RECHERCHE_RENDEZ_VOUS">
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.rendezVousApprentissageRecherche, PAGES.dynamic.rendezVousApprentissageDetail({ siret })]} />
       <Heading textStyle="h2" mt={5}>
         {title}

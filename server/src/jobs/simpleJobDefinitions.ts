@@ -1,5 +1,6 @@
 import { updateDiplomeMetier } from "@/jobs/diplomesMetiers/updateDiplomesMetiers"
 import { updateRomesForDomainesMetiers } from "@/jobs/domainesMetiers/updateRomesForDomainesMetiers"
+import { sendMiseEnRelation } from "@/jobs/miseEnRelation/sendMiseEnRelation"
 import { importRecruteursLbaFromComputedToJobsPartners } from "@/jobs/offrePartenaire/fillComputedRecruteursLba"
 import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail/classifyJobsFranceTravail"
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
@@ -8,6 +9,8 @@ import { processMeteojob } from "@/jobs/offrePartenaire/meteojob/processMeteojob
 import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
 import { processRecruteursLba } from "@/jobs/offrePartenaire/recruteur-lba/processRecruteursLba"
 import { processRhAlternance } from "@/jobs/offrePartenaire/rh-alternance/processRhAlternance"
+import { renvoiMailCreationCompte } from "@/jobs/oneTimeJob/renvoiMailCreationCompte"
+import { exportJobsToFranceTravail } from "@/jobs/partenaireExport/exportToFranceTravail"
 import { repriseEnvoiEmailsPRDV } from "@/jobs/rdv/repriseEnvoiPRDV"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
@@ -309,11 +312,23 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Analyse les fichiers de sortie de classifyRomesForDomainesMetiers",
   },
   {
+    fct: exportJobsToFranceTravail,
+    description: "Envoie les offres LBA à France Travail",
+  },
+  {
     fct: updateRomesForDomainesMetiers,
     description: "Met à jour la correspondance entre les domaines métiers et les fiches romes",
   },
   {
     fct: repriseEnvoiEmailsPRDV,
     description: "Reprise de l'envoi des emails de prise de rendez-vous, job à usage limité",
+  },
+  {
+    fct: sendMiseEnRelation,
+    description: "Envoi de proposition de mise en relation avec des CFAs aux recruteurs",
+  },
+  {
+    fct: renvoiMailCreationCompte,
+    description: "Envoi les mails de validation de compte",
   },
 ]

@@ -5,6 +5,8 @@ import { useState } from "react"
 import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson, JOB_STATUS } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
+import { notifyJobPostulerV3 } from "@/utils/api"
+
 import { getItemId } from "../../../utils/getItemId"
 import { SendPlausibleEvent } from "../../../utils/plausible"
 import ItemDetailApplicationsStatus from "../ItemDetailServices/ItemDetailApplicationStatus"
@@ -38,6 +40,7 @@ export function CandidatureLba({ item }: { item: ILbaItemLbaJobJson | ILbaItemLb
     setModalId(Math.random())
     onOpen()
     SendPlausibleEvent("Clic Postuler - Fiche emploi", { partner_label: kind, info_fiche: getItemId(item) })
+    notifyJobPostulerV3(item.id)
   }
 
   const hasAppliedValue = Boolean(applicationDate)
