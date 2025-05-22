@@ -47,6 +47,10 @@ export const extendOffre = (jobId: string) => apiPut(`/formulaire/offre/:jobId/e
 export const fillOffre = (jobId, token) => apiPut(`/formulaire/offre/:jobId/provided`, { params: { jobId }, headers: { authorization: `Bearer ${token}` } })
 export const notifyLbaJobDetailView = async (jobId: string) => await apiPost("/v1/jobs/matcha/:id/stats/view-details", { params: { id: jobId } })
 export const notifyJobDetailViewV3 = (jobId: string) => apiPost("/v3/jobs/:id/stats/:eventType", { params: { id: jobId, eventType: "detail_view" } })
+export const notifyJobSearchViewV3 = (ids: string[]) => {
+  if (!ids.length) return
+  return apiPost("/v3/jobs/stats/search_view", { body: ids })
+}
 export const notifyJobPostulerV3 = (jobId: string) => apiPost("/v3/jobs/:id/stats/:eventType", { params: { id: jobId, eventType: "postuler_click" } })
 export const getRelatedEtablissementsFromRome = async ({ rome, latitude, longitude, limit }: { rome: string; latitude: number; longitude: number; limit: number }) =>
   apiGet(`/etablissement/cfas-proches`, { querystring: { rome, latitude, longitude, limit } })

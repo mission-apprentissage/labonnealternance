@@ -87,6 +87,15 @@ export const zJobsRoutesV3 = {
       },
       securityScheme: null,
     },
+    "/v3/jobs/stats/search_view": {
+      method: "post",
+      path: "/v3/jobs/stats/search_view",
+      body: z.array(zObjectId),
+      response: {
+        "200": z.object({}),
+      },
+      securityScheme: null,
+    },
   },
   put: {
     "/v3/jobs/:id": {

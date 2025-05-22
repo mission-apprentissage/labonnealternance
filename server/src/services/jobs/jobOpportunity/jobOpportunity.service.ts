@@ -386,7 +386,6 @@ export const getJobsQuery = async (
 
   if ("partnerJobs" in result && result.partnerJobs && "results" in result.partnerJobs) {
     job_count += result.partnerJobs.results.length
-    await incrementSearchViewCount(result.partnerJobs.results.flatMap((job) => (job?.id && ObjectId.isValid(job.id) ? [new ObjectId(job.id)] : [])))
   }
 
   if (query.caller) {
