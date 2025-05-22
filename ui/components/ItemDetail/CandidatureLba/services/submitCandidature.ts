@@ -1,14 +1,20 @@
 import { useMutation } from "@tanstack/react-query"
 import { useContext } from "react"
 import { IApplicationApiPrivate, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
+import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 
+import { ILbaItem } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
+import { useLocalStorage } from "@/app/hooks/useLocalStorage"
 import { DisplayContext } from "@/context/DisplayContextProvider"
-import { getItemId } from "@/utils/getItemId"
-import { localStorageSet, sessionStorageSet } from "@/utils/localStorage"
+import { sessionStorageSet } from "@/utils/localStorage"
 
 import { apiPost } from "../../../../utils/api.utils"
 
 import { IApplicationSchemaInitValues } from "./getSchema"
+
+export const useStoredApplicationDate = (item: ILbaItem) => {
+  return useLocalStorage<number>(`application-${oldItemTypeToNewItemType(item.ideaType)}-${item.id}`)
+}
 
 export const useSubmitCandidature = (
   LbaJob: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson,
@@ -20,10 +26,15 @@ export const useSubmitCandidature = (
   isError: boolean
   isDone: boolean
   error: unknown
+  applicationDate: Date | null
 } => {
+  const { storedValue: applicationDateTimestamp, setLocalStorage: setApplicationDate } = useStoredApplicationDate(LbaJob)
   const { isPending, error, isSuccess, isError, mutate } = useMutation({
     mutationKey: ["submitCandidature", LbaJob.id],
     mutationFn: submitCandidature,
+    onSuccess: () => {
+      setApplicationDate(Date.now())
+    },
   })
   const displayContext = useContext(DisplayContext)
   let finalSubmitCandidature = mutate
@@ -42,7 +53,8 @@ export const useSubmitCandidature = (
         },
       })
   }
-  return { submitCandidature: finalSubmitCandidature, isLoading: isPending, error, isSuccess, isError, isDone: isSuccess || isError }
+  const applicationDate = applicationDateTimestamp ? new Date(applicationDateTimestamp) : null
+  return { submitCandidature: finalSubmitCandidature, isLoading: isPending, error, isSuccess, isError, isDone: isSuccess || isError, applicationDate }
 }
 
 async function submitCandidature({
@@ -68,7 +80,6 @@ async function submitCandidature({
     application_url: typeof window !== "undefined" ? window?.location?.href : null,
   }
 
-  await apiPost("/v2/_private/application", { body: payload, headers: { authorization: `Bearer ${LbaJob.token}` } }, {})
   sessionStorageSet("application-form-values", payload)
-  localStorageSet(`application-${LbaJob.ideaType}-${getItemId(LbaJob)}`, Date.now().toString())
+  await apiPost("/v2/_private/application", { body: payload, headers: { authorization: `Bearer ${LbaJob.token}` } }, {})
 }
