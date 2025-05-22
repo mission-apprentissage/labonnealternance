@@ -3,6 +3,7 @@ import { useContext } from "react"
 import { IApplicationApiPrivate, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 
+import { ILbaItem } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { useLocalStorage } from "@/app/hooks/useLocalStorage"
 import { DisplayContext } from "@/context/DisplayContextProvider"
 import { sessionStorageSet } from "@/utils/localStorage"
@@ -10,6 +11,10 @@ import { sessionStorageSet } from "@/utils/localStorage"
 import { apiPost } from "../../../../utils/api.utils"
 
 import { IApplicationSchemaInitValues } from "./getSchema"
+
+export const useStoredApplicationDate = (item: ILbaItem) => {
+  return useLocalStorage<number>(`application-${oldItemTypeToNewItemType(item.ideaType)}-${item.id}`)
+}
 
 export const useSubmitCandidature = (
   LbaJob: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson,
@@ -23,14 +28,12 @@ export const useSubmitCandidature = (
   error: unknown
   applicationDate: Date | null
 } => {
-  const { storedValue: applicationDateString, setLocalStorage: setApplicationDate } = useLocalStorage<string>(
-    `application-${oldItemTypeToNewItemType(LbaJob.ideaType)}-${LbaJob.id}`
-  )
+  const { storedValue: applicationDateTimestamp, setLocalStorage: setApplicationDate } = useStoredApplicationDate(LbaJob)
   const { isPending, error, isSuccess, isError, mutate } = useMutation({
     mutationKey: ["submitCandidature", LbaJob.id],
     mutationFn: submitCandidature,
     onSuccess: () => {
-      setApplicationDate(Date.now().toString())
+      setApplicationDate(Date.now())
     },
   })
   const displayContext = useContext(DisplayContext)
@@ -50,7 +53,7 @@ export const useSubmitCandidature = (
         },
       })
   }
-  const applicationDate = applicationDateString ? new Date(applicationDateString) : null
+  const applicationDate = applicationDateTimestamp ? new Date(applicationDateTimestamp) : null
   return { submitCandidature: finalSubmitCandidature, isLoading: isPending, error, isSuccess, isError, isDone: isSuccess || isError, applicationDate }
 }
 
