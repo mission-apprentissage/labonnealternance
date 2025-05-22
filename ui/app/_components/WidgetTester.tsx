@@ -1,14 +1,13 @@
 "use client"
 
 import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Container, Grid, GridItem, Link, Text } from "@chakra-ui/react"
+import { Container, FormLabel, Grid, GridItem, Input, Link, Text } from "@chakra-ui/react"
 import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
 import { Formik, FormikProps } from "formik"
 import { useState } from "react"
 
 import { AutocompleteAsync } from "@/app/_components/FormComponents/AutocompleteAsync"
-import { InputFormField } from "@/app/_components/FormComponents/InputFormField"
 import { SelectFormField } from "@/app/_components/FormComponents/SelectFormField"
 import {
   fetchLieuOptions,
@@ -209,26 +208,16 @@ function WidgetFormComponent(props: FormikProps<IFormTypeWidget>) {
           />
         </GridItem>
         <GridItem mt={4}>
-          <InputFormField
-            id="caller"
-            label="Identifiant appelant (caller)"
-            style={{
-              marginBottom: 0,
-              textWrap: "nowrap",
-            }}
-            disabled={false}
-          />
+          <FormLabel fontWeight={400} htmlFor="caller">
+            Identifiant appelant (caller)
+          </FormLabel>
+          <Input onChange={props.handleChange} id="caller" name="caller" type="text" placeholder="ex: nom_site" />
         </GridItem>
         <GridItem mt={4}>
-          <InputFormField
-            id="job_name"
-            label="Nom d'affichage du métier. Optionnel (job_name)"
-            style={{
-              marginBottom: 0,
-              textWrap: "nowrap",
-            }}
-            disabled={false}
-          />
+          <FormLabel fontWeight={400} htmlFor="job_name">
+            Nom d'affichage du métier. Optionnel (job_name)
+          </FormLabel>
+          <Input onChange={props.handleChange} id="job_name" name="job_name" type="text" placeholder="Ex: Assistant ressources humaines" />
         </GridItem>
         <GridItem my={4}>
           <Button type="submit" title="Rafraîchir les widgets" disabled={false}>
@@ -292,19 +281,8 @@ export function WidgetTester() {
       <Formik<IFormTypeWidget>
         initialValues={initialValues}
         enableReinitialize
-        //validate={validate}
         validateOnBlur={false}
         onSubmit={async (values) => {
-          console.log("values", values)
-          // await props?.onSubmit({
-          //   romes: values.metier.romes,
-          //   geo: values.lieu ? { address: values.lieu.label, latitude: values.lieu.latitude, longitude: values.lieu.longitude, radius: parseInt(values.radius) } : null,
-          //   diploma: values.niveau || null,
-          //   job_name: values.metier.label,
-          //   job_type: values.metier.type,
-          //   activeItems: [],
-          // })
-
           let ideaUrl = baseUrl
           ideaUrl = ideaUrl.replace("5", "3")
 
