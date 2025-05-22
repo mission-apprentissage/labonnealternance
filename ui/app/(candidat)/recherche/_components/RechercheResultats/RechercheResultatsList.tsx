@@ -3,7 +3,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import { useVirtualizer } from "@tanstack/react-virtual"
-import { useEffect, useMemo, useRef } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 
 import { RechercheResultatsFooter } from "@/app/(candidat)/recherche/_components/RechercheResultats/Footer"
 import { ResultCard } from "@/app/(candidat)/recherche/_components/RechercheResultats/ResultatListCard"
@@ -14,6 +14,7 @@ import { useWhispers, type IWhisper } from "@/app/(candidat)/recherche/_hooks/us
 import { isItemReferenceInList, type WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { ErrorMessage } from "@/components"
 import ResultListsLoading from "@/components/SearchForTrainingsAndJobs/components/ResultListsLoading"
+import { notifyJobSearchViewV3 } from "@/utils/api"
 
 export function RechercheResultatsList(props: WithRecherchePageParams) {
   const result = useRechercheResults(props.params)
@@ -55,6 +56,32 @@ export function RechercheResultatsList(props: WithRecherchePageParams) {
     // Scroll to top when search param changes
     columnVirtualizer.scrollToIndex(Math.max(index, 0), { align: "start" })
   }, [props.params, columnVirtualizer, items])
+
+  const [notifyViewState, setNotifyViewState] = useState({ viewedItems: new Set<string>(), lastNotifyServer: new Date() })
+  const notifiedViewedItems = useMemo(() => {
+    if (typeof window === "undefined") return
+    return new Set<string>()
+  }, [])
+
+  useEffect(() => {
+    // limite les appels toutes les 2 secondes
+    if (typeof window === "undefined" || new Date().getTime() - notifyViewState.lastNotifyServer.getTime() < 2_000 /* 2 secondes*/) return
+    const idsToSend: string[] = []
+    for (const id of notifyViewState.viewedItems) {
+      if (!notifiedViewedItems.has(id)) {
+        idsToSend.push(id)
+      }
+    }
+    if (!idsToSend.length) {
+      return
+    }
+    idsToSend.forEach((id) => {
+      notifiedViewedItems.add(id)
+    })
+    setNotifyViewState({ viewedItems: new Set<string>(), lastNotifyServer: new Date() })
+    notifyJobSearchViewV3(idsToSend)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [columnVirtualizer.getVirtualIndexes(), notifyViewState, notifiedViewedItems])
 
   if (result.status === "idle") {
     return <RechercheResultatsPlaceholder />
@@ -137,6 +164,9 @@ export function RechercheResultatsList(props: WithRecherchePageParams) {
               }
 
               const item = items[virtualRow.index]
+              if (item.ideaType !== "whisper") {
+                notifyViewState.viewedItems.add(item.id)
+              }
 
               return (
                 <Box

@@ -80,8 +80,6 @@ export async function middleware(request: NextRequest) {
   const query = new URLSearchParams(search)
   const token = query.get("token")
 
-  console.log("request-pathname", pathname)
-
   if (pathname === "/espace-pro/authentification") {
     if (token) {
       return await verifyAuthentication(token, request)
