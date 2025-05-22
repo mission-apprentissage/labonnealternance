@@ -34,7 +34,7 @@ const schema = z.object({
 
 type IFormType = z.output<typeof schema>
 
-const niveauOptions = [
+export const niveauOptions = [
   {
     value: "",
     label: "Indifférent",
