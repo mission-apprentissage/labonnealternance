@@ -50,10 +50,10 @@ export const sendMiseEnRelation = async () => {
           job_status: JOB_STATUS.ACTIVE,
           $or: [
             {
-              job_mer_sent: null,
+              mer_sent: null,
             },
             {
-              job_mer_sent: {
+              mer_sent: {
                 $exists: false,
               },
             },
