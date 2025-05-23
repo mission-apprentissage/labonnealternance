@@ -11,7 +11,7 @@
     "npm": "please-use-yarn"
   },
   "scripts": {
-    "cli": "LBA_LOG_DESTINATIONS=stderr node --expose-gc dist/index.js",
+    "cli": "LBA_LOG_DESTINATIONS=stderr node dist/index.js",
     "build:dev": "tsup-node",
     "dev": "tsup-node --env.TSUP_WATCH true",
     "build": "tsup-node --env.NODE_ENV production",
