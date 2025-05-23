@@ -34,6 +34,7 @@ export enum JOBPARTNERS_LABEL {
   BPCE = "BPCE",
   DECATHLON = "Decathlon",
   INSTITUT_PASTEUR = "Institut Pasteur",
+  LAPOSTE = "La Poste",
 }
 
 export const jobPartnersExcludedFromFlux = [JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, JOBPARTNERS_LABEL.RECRUTEURS_LBA]

@@ -3,6 +3,7 @@ import { CronDef } from "job-processor"
 // import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
 import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
 import { processKelio } from "@/jobs/offrePartenaire/kelio/processKelio"
+import { processLaposte } from "@/jobs/offrePartenaire/laposte/processLaposte"
 import { processMeteojob } from "@/jobs/offrePartenaire/meteojob/processMeteojob"
 import { processMonster } from "@/jobs/offrePartenaire/monster/processMonster"
 import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
@@ -53,6 +54,13 @@ export const importers: Record<string, CronDef> = {
   "Import Kelio": {
     cron_string: timings.import_source,
     handler: processKelio,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 30,
+    tag: "slave",
+  },
+  "Import La Poste": {
+    cron_string: timings.import_source,
+    handler: processLaposte,
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
     tag: "slave",

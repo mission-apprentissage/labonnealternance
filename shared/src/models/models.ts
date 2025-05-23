@@ -35,6 +35,7 @@ import opcoModel from "./opco.model.js"
 import rawFranceTravail from "./rawFranceTravail.model.js"
 import rawHelloWorkModel from "./rawHelloWork.model.js"
 import rawKelioModel from "./rawKelio.model.js"
+import rawLaposteModel from "./rawLaposte.model.js"
 import rawMeteojobModel from "./rawMeteojob.model.js"
 import rawMonsterModel from "./rawMonster.model.js"
 import rawPassModel from "./rawPass.model.js"
@@ -110,6 +111,7 @@ const modelDescriptorMap = {
   [cacheInfosSiretModel.collectionName]: cacheInfosSiretModel,
   [referentielCommuneModel.collectionName]: referentielCommuneModel,
   [rawKelioModel.collectionName]: rawKelioModel,
+  [rawLaposteModel.collectionName]: rawLaposteModel,
   [rawMeteojobModel.collectionName]: rawMeteojobModel,
   [rawRHAlternanceModel.collectionName]: rawRHAlternanceModel,
   [rawFranceTravail.collectionName]: rawFranceTravail,
