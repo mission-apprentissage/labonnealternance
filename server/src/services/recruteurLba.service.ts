@@ -6,7 +6,7 @@ import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, IJobsPartnersRecruteurAlgoPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { ILbaCompanyForContactUpdate } from "shared/routes/updateLbaCompany.routes"
 
-import { roundDistance } from "@/common/utils/geolib"
+import { normalizeDepartementToRegex, roundDistance } from "@/common/utils/geolib"
 import { getRecipientID } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
@@ -273,14 +273,20 @@ const transformCompanies = ({
 type IRecruteursLbaSearchParams = {
   geo: { latitude: number; longitude: number; radius: number } | null
   romes: string[] | null
+  departements?: string[] | null
   opco: OPCOS_LABEL | null
 }
 
-export const getRecruteursLbaFromDB = async ({ geo, romes, opco }: IRecruteursLbaSearchParams): Promise<IJobsPartnersOfferPrivate[]> => {
+export const getRecruteursLbaFromDB = async ({ geo, romes, opco, departements }: IRecruteursLbaSearchParams): Promise<IJobsPartnersOfferPrivate[]> => {
   const query: Filter<IJobsPartnersOfferPrivate> = { partner_label: LBA_ITEM_TYPE.RECRUTEURS_LBA }
 
   if (romes) {
     query.offer_rome_codes = { $in: romes }
+  }
+
+  if (departements?.length) {
+    const departmentsRegex = departements.flatMap((code) => normalizeDepartementToRegex(code))
+    query.workplace_address_zipcode = { $in: departmentsRegex }
   }
 
   if (opco) {
