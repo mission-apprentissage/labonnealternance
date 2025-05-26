@@ -94,7 +94,7 @@ function sendLogsToSlack() {
 
   return {
     name: "slack",
-    level: "error",
+    level: "fatal",
     stream,
   }
 }
