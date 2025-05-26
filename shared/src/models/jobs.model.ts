@@ -10,7 +10,7 @@ export default {
   zod: ZJobs,
   indexes: [
     [{ jobId: 1 }, {}],
-    [{ recruiterStatus: 1, job_creation_date: 1, job_status: 1, job_mer_sent: 1 }, {}],
+    [{ recruiterStatus: 1, job_creation_date: 1, job_status: 1, mer_sent: 1 }, {}],
   ],
   collectionName,
   authorizeAdditionalProperties: true,
