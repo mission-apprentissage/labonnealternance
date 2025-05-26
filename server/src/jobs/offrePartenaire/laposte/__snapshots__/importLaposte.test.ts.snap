@@ -15,7 +15,7 @@ exports[`importLaposte > should test the import of La Poste data into computed_j
     "errors": [],
     "jobs_in_success": [],
     "offer_access_conditions": [],
-    "offer_creation": 2025-05-21T22:11:18.000Z,
+    "offer_creation": 2025-05-22T00:11:18.000Z,
     "offer_description": "- Métier : Responsable commercial
 - Fiche métier : https://www.laposterecrute.fr/fichemetier/responsable-commercial
 - Filière : Commercial
@@ -91,7 +91,7 @@ La Poste Groupe change, nos métiers évoluent. Etre toujours au plus près des 
     "errors": [],
     "jobs_in_success": [],
     "offer_access_conditions": [],
-    "offer_creation": 2025-05-21T22:11:19.000Z,
+    "offer_creation": 2025-05-22T00:11:19.000Z,
     "offer_description": "- Métier : Responsable collecte distribution
 - Fiche métier : https://www.laposterecrute.fr/fichemetier/responsable-collecte-distribution
 - Filière : Distribution / Livraison
