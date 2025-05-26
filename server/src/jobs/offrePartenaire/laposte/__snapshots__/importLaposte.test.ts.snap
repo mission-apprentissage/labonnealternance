@@ -1,0 +1,158 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`importLaposte > should test the import of La Poste data into computed_job_partners 1`] = `
+[
+  {
+    "apply_phone": null,
+    "apply_url": "https://www.laposterecrute.fr/offre/2025-xxxxx1",
+    "business_error": null,
+    "contract_duration": 12,
+    "contract_remote": "onsite",
+    "contract_start": null,
+    "contract_type": [
+      "Apprentissage",
+    ],
+    "errors": [],
+    "jobs_in_success": [],
+    "offer_access_conditions": [],
+    "offer_creation": 2025-05-21T22:11:18.000Z,
+    "offer_description": "- Métier : Responsable commercial
+- Fiche métier : https://www.laposterecrute.fr/fichemetier/responsable-commercial
+- Filière : Commercial
+- Expérience : 0-1 an
+- Temps de travail hebdomadaire : 35
+
+Description de la mission :
+
+Vous souhaitez acquérir de l'expérience dans le développement commercial B to B, développer le chiffre d’affaires d’une zone de marché ? Animer des équipes autour des produits et techniques de vente ? La Poste Groupe et son CFA Formaposte Sud Est vous proposent un parcours en alternance de 12 mois, qui combine la préparation d’un Bachelor Responsable en Développement Commercial et Marketing avec IFC Valence reconnu par le Ministère du Travail de Niveau 6 (Bac+3), avec l’apprentissage du métier de Commercial B to B en plateforme de distribution courrier. Les missions du Commercial B to B: Vous commercialisez les offres courrier/colis auprès de client professionnel Vous renforcez la connaissance des clients du Groupe La Poste pour fidéliser et conquérir de nouveaux prospects. Vous pilotez les indicateurs commerciaux pour atteindre les objectifs de votre secteur Vous animez les équipes managériales et opérationnelles autour des nouveaux services pour une atteinte collective du chiffre d’affaires Vous assurez la bonne remontée d’informations entre les différentes équipes de votre secteur Vous accompagnez les équipes dans les espaces de vente pour développer et personnaliser la relation client
+
+Profil recherché : Afin d'être éligible pour cette formation, vous devez : Vous êtes titulaire (ou en cours d'obtention) d'un diplôme de niveau BAC+2 Etre éligible au contrat d'apprentissage (- de 30 ans /pas de limite d'âge pour les personnes possédant une RQTH) Justifier d'une première expérience professionnelle Permis B souhaité
+
+Formation et expérience :
+
+Intégrer un centre de formation, Formaposte Sud Est et obtenir un Bachelor Responsable en Développement Commercial avec La Poste et bénéficier d'une rémunération (entre 1 000 € et 1790 €* BRUT selon votre âge et votre contrat).  * Salaire donné à titre indicatif, peut varier lors de votre entrée en formation
+
+Profil candidat :
+
+Afin d'être éligible pour cette formation, vous devez : Vous êtes titulaire (ou en cours d'obtention) d'un diplôme de niveau BAC+2 Etre éligible au contrat d'apprentissage (- de 30 ans /pas de limite d'âge pour les personnes possédant une RQTH) Justifier d'une première expérience professionnelle Permis B souhaité. Intégrer un centre de formation, Formaposte Sud Est et obtenir un Bachelor Responsable en Développement Commercial avec  IFC Valence. Intégrer une entreprise, La Poste et bénéficier d'une rémunération (entre 1 000 € et 1790 €* BRUT selon votre âge et votre contrat).  * Salaire donné à titre indicatif, peut varier lors de votre entrée en formation",
+    "offer_desired_skills": [],
+    "offer_expiration": 2025-07-21T22:11:18.000Z,
+    "offer_multicast": true,
+    "offer_opening_count": 1,
+    "offer_origin": null,
+    "offer_rome_codes": null,
+    "offer_status": "Active",
+    "offer_status_history": [],
+    "offer_target_diploma": {
+      "european": "6",
+      "label": "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
+    },
+    "offer_title": "Alternance Commercial B to B F/H",
+    "offer_to_be_acquired_skills": [],
+    "partner_job_id": "2025-XXXX1",
+    "partner_label": "La Poste",
+    "updated_at": 2024-07-21T02:49:06.000Z,
+    "validated": false,
+    "workplace_address_city": "Aubenas",
+    "workplace_address_label": "Aubenas",
+    "workplace_address_street_label": null,
+    "workplace_address_zipcode": null,
+    "workplace_brand": null,
+    "workplace_description": "Service : autre compagnie
+
+La Poste Groupe change, nos métiers évoluent. Etre toujours au plus près des Français, développer la confiance dans le numérique et être acteur de la transformation écologique, c'est aussi le sens de notre métier. Rejoindre La Poste Groupe, c'est rejoindre une entreprise responsable, riche de ses 232 000 collaborateurs ! Pour l'égalité des chances, La Poste fait vivre la diversité. Nos postes sont ouverts à toutes et à tous. Vous aussi, engagez-vous à nos côtés pour donner du sens à votre métier.",
+    "workplace_geopoint": {
+      "coordinates": [
+        4.591775,
+        43.612671,
+      ],
+      "type": "Point",
+    },
+    "workplace_idcc": null,
+    "workplace_legal_name": null,
+    "workplace_naf_code": null,
+    "workplace_naf_label": null,
+    "workplace_name": "La Poste",
+    "workplace_opco": null,
+    "workplace_siret": null,
+    "workplace_size": null,
+    "workplace_website": null,
+  },
+  {
+    "apply_phone": null,
+    "apply_url": "https://www.laposterecrute.fr/offre/2025-xxxxx9",
+    "business_error": null,
+    "contract_duration": 24,
+    "contract_remote": null,
+    "contract_start": null,
+    "contract_type": [
+      "Apprentissage",
+    ],
+    "errors": [],
+    "jobs_in_success": [],
+    "offer_access_conditions": [],
+    "offer_creation": 2025-05-21T22:11:19.000Z,
+    "offer_description": "- Métier : Responsable collecte distribution
+- Fiche métier : https://www.laposterecrute.fr/fichemetier/responsable-collecte-distribution
+- Filière : Distribution / Livraison
+- Expérience : 0-1 an
+- Temps de travail hebdomadaire : 35
+
+Description de la mission :
+
+Vous souhaitez acquérir de l'expérience dans le management, l’accompagnement au changement, l’amélioration de l’expérience client en lien avec les équipes de votre site ? Vous cherchez un job au cœur de l’action, dynamique, polyvalent ? La Poste Groupe et son CFA Formaposte vous proposent un parcours en alternance de 24 mois, qui combine la
+
+Profil recherché : Afin d'être éligible pour cette formation, vous devez :  Être éligible au contrat d'apprentissage (- de 30 ans/pas de limite d'âge pour les personnes possédant une RQTH)  Être titulaire d'un BAC+3 Être mobile au sein des lieux où les postes sont à pourvoir Expérience professionnelle de 6 mois Permis B souhaité
+
+Formation et expérience :
+
+Intégrer un centre de formation, Formaposte Sud Est et obtenir Mastère Manager de Projets Innovants &amp; Entrepreneuriat en partenariat avec La Poste et bénéficier d'une rémunération (entre 1 467 € et 2 067 €* BRUT selon votre âge et votre contrat). * Salaire donné à titre indicatif, peut varier lors de votre entrée en formation.
+
+Profil candidat :
+
+Afin d'être éligible pour cette formation, vous devez :  Être éligible au contrat d'apprentissage (- de 30 ans/pas de limite d'âge pour les personnes possédant une RQTH)  Être titulaire d'un BAC+3 Être mobile au sein des lieux où les postes sont à pourvoir Expérience professionnelle de 6 mois Permis B souhaité. Intégrer un centre de formation, Formaposte Sud Est et obtenir Mastère Manager de Projets Innovants &amp; Entrepreneuriat en partenariat avec La Poste et bénéficier d'une rémunération (entre 1 467 € et 2 067 €* BRUT selon votre âge et votre contrat). * Salaire donné à titre indicatif, peut varier lors de votre entrée en formation.",
+    "offer_desired_skills": [],
+    "offer_expiration": 2025-07-21T22:11:19.000Z,
+    "offer_multicast": true,
+    "offer_opening_count": 1,
+    "offer_origin": null,
+    "offer_rome_codes": null,
+    "offer_status": "Active",
+    "offer_status_history": [],
+    "offer_target_diploma": {
+      "european": "7",
+      "label": "Master, titre ingénieur, autres formations niveau (Bac+5)",
+    },
+    "offer_title": "Alternance Responsable production F/H",
+    "offer_to_be_acquired_skills": [],
+    "partner_job_id": "2025-xxxx9",
+    "partner_label": "La Poste",
+    "updated_at": 2024-07-21T02:49:06.000Z,
+    "validated": false,
+    "workplace_address_city": "La Seyne-sur-Mer",
+    "workplace_address_label": "La Seyne-sur-Mer",
+    "workplace_address_street_label": null,
+    "workplace_address_zipcode": null,
+    "workplace_brand": null,
+    "workplace_description": "Service : nom compagnie
+
+La Poste Groupe change, nos métiers évoluent. Etre toujours au plus près des Français, développer la confiance dans le numérique et être acteur de la transformation écologique, c'est aussi le sens de notre métier. Rejoindre La Poste Groupe, c'est rejoindre une entreprise responsable, riche de ses 232 000 collaborateurs ! Pour l'égalité des chances, La Poste fait vivre la diversité. Nos postes sont ouverts à toutes et à tous. Vous aussi, engagez-vous à nos côtés pour donner du sens à votre métier.",
+    "workplace_geopoint": {
+      "coordinates": [
+        4.979651,
+        42.193147,
+      ],
+      "type": "Point",
+    },
+    "workplace_idcc": null,
+    "workplace_legal_name": null,
+    "workplace_naf_code": null,
+    "workplace_naf_label": null,
+    "workplace_name": "La Poste",
+    "workplace_opco": null,
+    "workplace_siret": null,
+    "workplace_size": null,
+    "workplace_website": null,
+  },
+]
+`;
