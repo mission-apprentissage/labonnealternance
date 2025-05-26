@@ -43,7 +43,7 @@ export const createJobsCollectionForMetabase = async () => {
           job_expiration_date: "$jobs.job_expiration_date",
           job_update_date: "$jobs.job_update_date",
           job_last_prolongation_date: "$jobs.job_last_prolongation_date",
-          job_mer_sent: "$jobs.job_mer_sent",
+          mer_sent: "$jobs.mer_sent",
           job_prolongation_count: "$jobs.job_prolongation_count",
           job_status: "$jobs.job_status",
           job_status_comment: "$jobs.job_status_comment",
