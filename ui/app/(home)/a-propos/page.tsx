@@ -169,7 +169,7 @@ export default function APropos() {
                 <DsfrLink href="https://beta.gouv.fr" aria-label="Accéder au site de beta gouv point fr - nouvelle fenêtre">
                   beta.gouv.fr
                 </DsfrLink>{" "}
-                et suit à ce titre une démarche spécifique de conception de services numériques.
+                et suit à ce titre une démarche spécifique de conception de services numériques. Depuis 2025, le service est édité par la Délégation générale à l’emploi et à la formation professionnelle (DGEFP).
               </Text>
             </GridItem>
           </Grid>
