@@ -2335,32 +2335,19 @@ describe("findJobOpportunityById tests", () => {
     })
 
     it("should throw a job not found error on getJobsPartnersByIdAsJobOfferApi", async () => {
-      // Créer un contexte de requête mock
-      const context = {
-        addWarning: vi.fn(),
-      } as unknown as JobOpportunityRequestContext
-
       // Utiliser un ID qui n'existe pas dans la base de données
       const nonExistentId = new ObjectId()
 
       // Vérifier que la fonction lance bien une erreur
-      await expect(getJobsPartnersByIdAsJobOfferApi(nonExistentId, context)).rejects.toThrow("Job not found")
-
-      // Vérifier que la méthode addWarning a été appelée avec le bon message
-      expect(context.addWarning).toHaveBeenCalledWith("JOB_NOT_FOUND")
+      await expect(getJobsPartnersByIdAsJobOfferApi(nonExistentId)).rejects.toThrow("Job not found")
     })
 
     it("should return a job offer with correct format on getJobsPartnersByIdAsJobOfferApi", async () => {
-      // Créer un contexte de requête mock
-      const context = {
-        addWarning: vi.fn(),
-      } as unknown as JobOpportunityRequestContext
-
       // Mock de la fonction de conversion pour vérifier qu'elle est appelée avec les bons paramètres
       const convertSpy = vi.spyOn(jobsRouteApiv3Converters, "convertToJobOfferApiReadV3")
 
       // Appeler la fonction avec l'ID existant
-      const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId, context)
+      const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId)
 
       // Vérifier que la fonction de conversion a été appelée avec les bons paramètres
       expect(convertSpy).toHaveBeenCalledWith({
@@ -2369,9 +2356,6 @@ describe("findJobOpportunityById tests", () => {
         apply_url: originalJob.apply_url ?? `${config.publicUrl}/emploi/${originalJob.partner_label}/${originalJob._id}/${originalJob.offer_title}`,
         apply_recipient_id: originalJob.apply_email ? `partners_${originalJob._id}` : null,
       })
-
-      // Vérifier que addWarning n'a pas été appelé car le job a été trouvé
-      expect(context.addWarning).not.toHaveBeenCalled()
 
       // Vérifier que le résultat n'est pas null
       expect(result).not.toBeNull()
@@ -2392,16 +2376,11 @@ describe("findJobOpportunityById tests", () => {
       await getDbCollection("jobs_partners").deleteMany({})
       await getDbCollection("jobs_partners").insertOne({ ...originalJob, apply_email: null })
 
-      // Créer un contexte de requête mock
-      const context = {
-        addWarning: vi.fn(),
-      } as unknown as JobOpportunityRequestContext
-
       // Mock de la fonction de conversion pour vérifier qu'elle est appelée avec les bons paramètres
       const convertSpy = vi.spyOn(jobsRouteApiv3Converters, "convertToJobOfferApiReadV3")
 
       // Appeler la fonction avec l'ID existant
-      const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId, context)
+      const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId)
 
       // Vérifier que la fonction de conversion a été appelée avec les bons paramètres
       expect(convertSpy).toHaveBeenCalledWith({
@@ -2410,9 +2389,6 @@ describe("findJobOpportunityById tests", () => {
         apply_url: originalJob.apply_url ?? `${config.publicUrl}/emploi/${originalJob.partner_label}/${originalJob._id}/${originalJob.offer_title}`,
         apply_recipient_id: null, // Vérification dans l'appel à la conversion
       })
-
-      // Vérifier que addWarning n'a pas été appelé car le job a été trouvé
-      expect(context.addWarning).not.toHaveBeenCalled()
 
       // Vérifier que le résultat n'est pas null
       expect(result).not.toBeNull()
@@ -2436,16 +2412,11 @@ describe("findJobOpportunityById tests", () => {
       await getDbCollection("jobs_partners").deleteMany({})
       await getDbCollection("jobs_partners").insertOne({ ...originalJob, apply_email: "test@mail.fr" })
 
-      // Créer un contexte de requête mock
-      const context = {
-        addWarning: vi.fn(),
-      } as unknown as JobOpportunityRequestContext
-
       // Mock de la fonction de conversion pour vérifier qu'elle est appelée avec les bons paramètres
       const convertSpy = vi.spyOn(jobsRouteApiv3Converters, "convertToJobOfferApiReadV3")
 
       // Appeler la fonction avec l'ID existant
-      const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId, context)
+      const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId)
 
       // Vérifier que la fonction de conversion a été appelée avec les bons paramètres
       expect(convertSpy).toHaveBeenCalledWith({
@@ -2455,9 +2426,6 @@ describe("findJobOpportunityById tests", () => {
         apply_email: "test@mail.fr",
         apply_recipient_id: `partners_${originalJob._id}`, // Vérification dans l'appel à la conversion
       })
-
-      // Vérifier que addWarning n'a pas été appelé car le job a été trouvé
-      expect(context.addWarning).not.toHaveBeenCalled()
 
       // Vérifier que le résultat n'est pas null
       expect(result).not.toBeNull()
