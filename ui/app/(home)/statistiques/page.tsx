@@ -177,23 +177,6 @@ export default function Statistiques() {
                     ></iframe>
                   </Box>
 
-                  <Box mb={8} px={{ base: 1, sm: 2, md: 4 }} py={4} border="2px solid #E5E5E5" borderRadius="5px">
-                    <Text mb={8} fontWeight={700} fontSize="28px" color="bluefrance.500" as="h3">
-                      Les modules pédagogiques
-                    </Text>
-                    <Divider variant="pageTitleDivider" mt={6} mb={2} />
-                    <iframe
-                      width="100%"
-                      // @ts-expect-error: ?
-                      border="none"
-                      height="280px"
-                      title="stats_modules_pedagogiques"
-                      // onLoad={metabaseIframeOnLoad}
-                      src={`${publicConfig.baseUrl}/metabase/public/dashboard/abf6bcc2-0da5-4f1d-a063-6f7dec80c363`}
-                      loading="lazy"
-                    ></iframe>
-                  </Box>
-
                   <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
                     <Box mb={8} px={{ base: 1, sm: 2, md: 4 }} py={4} border="2px solid #E5E5E5" borderRadius="5px">
                       <Text mb={8} fontWeight={700} fontSize="28px" color="bluefrance.500" as="h3">
