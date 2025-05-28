@@ -184,7 +184,7 @@ const computedJobPartnerVsJobPartnerStreamFactory = (computedJobPartnerField: ke
     `début de detectDuplicateJobPartners entre computedJobPartners et jobPartners, pour les champs computedJobPartnerField=${computedJobPartnerField} et jobPartnerField=${computedJobPartnerField}`
   )
 
-  const commonProjectFields = { $project: Object.fromEntries(fieldsRead.map((field) => [field, 1])) }
+  const commonProjectFields = Object.fromEntries(fieldsRead.map((field) => [field, 1]))
 
   return getDbCollection("computed_jobs_partners").aggregate([
     { $match: computedJobPartnersFilter },
@@ -197,23 +197,25 @@ const computedJobPartnerVsJobPartnerStreamFactory = (computedJobPartnerField: ke
     { $group: { _id: `$${computedJobPartnerField}`, documents: { $push: "$$ROOT" } } },
     { $match: { _id: { $ne: null } } },
     {
-      from: jobPartnerCollection,
-      let: { localId: "$_id" },
-      pipeline: [
-        {
-          $match: {
-            $expr: { $eq: [`$${computedJobPartnerField}`, "$$localId"] },
+      $lookup: {
+        from: jobPartnerCollection,
+        let: { localId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: [`$${computedJobPartnerField}`, "$$localId"] },
+            },
           },
-        },
-        {
-          $project: {
-            ...commonProjectFields,
-            [computedJobPartnerField]: 1,
-            offer_status: 1,
+          {
+            $project: {
+              ...commonProjectFields,
+              [computedJobPartnerField]: 1,
+              offer_status: 1,
+            },
           },
-        },
-      ],
-      as: "jobPartners",
+        ],
+        as: "jobPartners",
+      },
     },
   ]) as AggregationCursor<AggregationResult>
 }
