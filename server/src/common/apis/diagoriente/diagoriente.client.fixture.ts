@@ -2,10 +2,6 @@ import nock from "nock"
 
 import { IDiagorienteClassification, IDiagorienteClassificationResponse } from "@/common/apis/diagoriente/diagoriente.client"
 
-export const generateDiagorienteRomeClassifierBody = () => {}
-
-export const generateDiagorienteRomeClassifierResponse = () => {}
-
 export const nockDiagorienteAccessToken = () => {
   return nock("https://analytics-auth.atlantis.diagotech.dev").post("/realms/esi-auth-keycloack/protocol/openid-connect/token").reply(200, {
     access_token: "access_token",
