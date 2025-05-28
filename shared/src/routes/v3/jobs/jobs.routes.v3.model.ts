@@ -99,6 +99,7 @@ export const zJobSearchApiV3Query = z
     romes: extensions.romeCodeArray().nullable().default(null),
     rncp: extensions.rncpCode().nullable().default(null),
     partners_to_exclude: z.array(extensions.buildEnum(JOBPARTNERS_LABEL)).nullish(),
+    departements: z.array(z.string()).nullish(),
     opco: extensions.buildEnum(OPCOS_LABEL).nullable().default(null),
   })
   .superRefine((data, ctx) => {
