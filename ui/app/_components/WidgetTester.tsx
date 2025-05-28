@@ -24,7 +24,6 @@ import { baseUrl } from "@/config/config"
 type IFormTypeWidget = IFormType & {
   job_name?: string
   opco?: string
-  opcoUrl?: string
   caller?: string
   scope: string
 }
@@ -92,29 +91,6 @@ const opcoOptions = [
   {
     value: "UNIFORMATION",
     label: "UNIFORMATION",
-  },
-]
-
-const opcoUrlOptions = [
-  {
-    value: "",
-    label: "Indifférent",
-  },
-  {
-    value: "www.jecompte.fr",
-    label: "www.jecompte.fr",
-  },
-  {
-    value: "www.concepteursdavenirs.fr",
-    label: "www.concepteursdavenirs.fr",
-  },
-  {
-    value: "www.jinvestislavenir.fr",
-    label: "www.jinvestislavenir.fr",
-  },
-  {
-    value: "www.jassuremonfutur.fr",
-    label: "www.jassuremonfutur.fr",
   },
 ]
 
@@ -196,18 +172,6 @@ function WidgetFormComponent(props: FormikProps<IFormTypeWidget>) {
           />
         </GridItem>
         <GridItem mt={4}>
-          <SelectFormField
-            id="opcoUrl"
-            label="Filtrage des opportunités d'emploi par un site d'OPCO. Optionnel (opcoUrl)"
-            style={{
-              marginBottom: 0,
-              textWrap: "nowrap",
-            }}
-            options={opcoUrlOptions.map((option) => ({ ...option, selected: option.value === props.values.opcoUrl }))}
-            disabled={false}
-          />
-        </GridItem>
-        <GridItem mt={4}>
           <FormLabel fontWeight={400} htmlFor="caller">
             Identifiant appelant (caller)
           </FormLabel>
@@ -236,7 +200,6 @@ export function WidgetTester() {
     metier: null,
     lieu: null,
     job_name: "",
-    opcoUrl: "",
     opco: "",
     scope: "/recherche",
     caller: "",
@@ -283,23 +246,22 @@ export function WidgetTester() {
         enableReinitialize
         validateOnBlur={false}
         onSubmit={async (values) => {
-          let ideaUrl = baseUrl
-          ideaUrl = ideaUrl.replace("5", "3")
+          let iFrameUrl = baseUrl
+          iFrameUrl = iFrameUrl.replace("5", "3")
 
           const path = values.scope
 
-          ideaUrl = `${ideaUrl}${path}`
+          iFrameUrl = `${iFrameUrl}${path}`
 
-          ideaUrl += "?"
-          ideaUrl += values.caller ? `&caller=${encodeURIComponent(values.caller)}` : ""
-          ideaUrl += values.metier ? `&romes=${values.metier.romes}` : ""
-          ideaUrl += values.lieu ? `&lon=${values.lieu.longitude}&lat=${values.lieu.latitude}` : ""
-          ideaUrl += values.radius ? `&radius=${values.radius}` : ""
-          ideaUrl += values.opco ? `&opco=${encodeURIComponent(values.opco)}` : ""
-          ideaUrl += values.opcoUrl ? `&opcoUrl=${encodeURIComponent(values.opcoUrl)}` : ""
-          ideaUrl += values.job_name ? `&job_name=${encodeURIComponent(values.job_name)}` : values?.metier?.label ? `&job_name=${values.metier.label}` : ""
+          iFrameUrl += "?"
+          iFrameUrl += values.caller ? `&caller=${encodeURIComponent(values.caller)}` : ""
+          iFrameUrl += values.metier ? `&romes=${values.metier.romes}` : ""
+          iFrameUrl += values.lieu ? `&lon=${values.lieu.longitude}&lat=${values.lieu.latitude}` : ""
+          iFrameUrl += values.radius ? `&radius=${values.radius}` : ""
+          iFrameUrl += values.opco ? `&opco=${encodeURIComponent(values.opco)}` : ""
+          iFrameUrl += values.job_name ? `&job_name=${encodeURIComponent(values.job_name)}` : values?.metier?.label ? `&job_name=${values.metier.label}` : ""
 
-          setWidgetUrl(ideaUrl)
+          setWidgetUrl(iFrameUrl)
         }}
         component={WidgetFormComponent}
       />
