@@ -54,12 +54,6 @@ export const jobsApiV3Routes = (server: Server) => {
 
   server.get("/v3/jobs/search", { schema: zRoutes.get["/v3/jobs/search"], onRequest: server.auth(zRoutes.get["/v3/jobs/search"]) }, async (req, res) => {
     const result = await findJobsOpportunities(req.query, new JobOpportunityRequestContext(zRoutes.get["/v3/jobs/search"], "api-apprentissage"))
-    await incrementSearchViewCount(
-      result.jobs.flatMap((job) => {
-        const id = job.identifier.id
-        return id && ObjectId.isValid(id) ? [new ObjectId(id)] : []
-      })
-    )
     return res.send(result)
   })
 
@@ -109,6 +103,19 @@ export const jobsApiV3Routes = (server: Server) => {
           assertUnreachable(eventType)
         }
       }
+      return res.status(200).send({})
+    }
+  )
+
+  server.post(
+    "/v3/jobs/stats/search_view",
+    {
+      schema: zRoutes.post["/v3/jobs/stats/search_view"],
+      config,
+    },
+    async (req, res) => {
+      const ids = req.body
+      await incrementSearchViewCount(ids)
       return res.status(200).send({})
     }
   )
