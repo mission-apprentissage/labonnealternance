@@ -57,7 +57,7 @@ export function RechercheResultatsList(props: WithRecherchePageParams) {
     columnVirtualizer.scrollToIndex(Math.max(index, 0), { align: "start" })
   }, [props.params, columnVirtualizer, items])
 
-  const [notifyViewState, setNotifyViewState] = useState({ viewedItems: new Set<string>(), lastNotifyServer: new Date() })
+  const [notifyViewState, setNotifyViewState] = useState({ viewedItems: new Set<string>(), lastNotifyServer: new Date(0) })
   const notifiedViewedItems = useMemo(() => {
     if (typeof window === "undefined") return
     return new Set<string>()
@@ -65,7 +65,7 @@ export function RechercheResultatsList(props: WithRecherchePageParams) {
 
   useEffect(() => {
     // limite les appels toutes les 2 secondes
-    if (typeof window === "undefined" || new Date().getTime() - notifyViewState.lastNotifyServer.getTime() < 2_000 /* 2 secondes*/) return
+    if (typeof window === "undefined" || new Date().getTime() - notifyViewState.lastNotifyServer.getTime() < 3_000 /* 3 secondes*/) return
     const idsToSend: string[] = []
     for (const id of notifyViewState.viewedItems) {
       if (!notifiedViewedItems.has(id)) {
