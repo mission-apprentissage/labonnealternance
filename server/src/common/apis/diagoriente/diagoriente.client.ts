@@ -1,4 +1,5 @@
 import { internal } from "@hapi/boom"
+import { IDiagorienteClassificationResponseSchema, IDiagorienteClassificationSchema, ZDiagorienteClassificationResponseSchema } from "shared"
 import { z } from "zod"
 
 import getApiClient from "@/common/apis/client"
@@ -13,7 +14,7 @@ const authParams = {
   grant_type: "client_credentials",
 }
 
-export const ZDiagorienteAuthApi = z.object({
+const ZDiagorienteAuthApi = z.object({
   access_token: z.string(),
   expires_in: z.number(),
   refresh_expires_in: z.number(),
@@ -45,30 +46,11 @@ const getDiagorienteToken = async (access: IAuthParams): Promise<string> => {
   }
 }
 
-export const ZDiagorienteClassificationSchema = z.array(
-  z.object({
-    id: z.string(),
-    title: z.string(),
-    sector: z.string(),
-    description: z.string(),
-  })
-)
-export type IDiagorienteClassification = z.infer<typeof ZDiagorienteClassificationSchema>
-
-const diagorienteClassificationResponseSchema = z.array(
-  z.object({
-    job_offer_id: z.string(),
-    code_rome: z.string(),
-    intitule_rome: z.string(),
-  })
-)
-export type IDiagorienteClassificationResponse = z.infer<typeof diagorienteClassificationResponseSchema>
-
-export const getDiagorienteRomeClassification = async (data: IDiagorienteClassification): Promise<IDiagorienteClassificationResponse> => {
+export const getDiagorienteRomeClassification = async (data: IDiagorienteClassificationSchema[]): Promise<IDiagorienteClassificationResponseSchema[]> => {
   if (data.length > 10) throw internal("Trop de données à envoyer à l'API Diagoriente, limiter la requête à 10 éléments")
   const token = await getDiagorienteToken(authParams)
   const { data: response } = await axiosClient.post("https://semafor.diagoriente.beta.gouv.fr/rome_classifier", data, { headers: { Authorization: `Bearer ${token}` } })
-  const validation = diagorienteClassificationResponseSchema.safeParse(response)
+  const validation = z.array(ZDiagorienteClassificationResponseSchema).safeParse(response)
   if (!validation.success) throw internal("getRomeClassificationFromDiagoriente: format de réponse non valide", { error: validation.error })
   return validation.data
 }
