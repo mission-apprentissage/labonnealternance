@@ -1,6 +1,5 @@
 import nock from "nock"
-
-import { IDiagorienteClassification, IDiagorienteClassificationResponse } from "@/common/apis/diagoriente/diagoriente.client"
+import { IDiagorienteClassificationResponseSchema, IDiagorienteClassificationSchema } from "shared"
 
 export const nockDiagorienteAccessToken = () => {
   return nock("https://analytics-auth.atlantis.diagotech.dev").post("/realms/esi-auth-keycloack/protocol/openid-connect/token").reply(200, {
@@ -15,6 +14,6 @@ export const nockDiagorienteAccessToken = () => {
   })
 }
 
-export function nockDiagorienteRomeClassifier(payload: IDiagorienteClassification, response: IDiagorienteClassificationResponse) {
+export function nockDiagorienteRomeClassifier(payload: IDiagorienteClassificationSchema[], response: IDiagorienteClassificationResponseSchema[]) {
   return nock("https://semafor.diagoriente.beta.gouv.fr").post("/rome_classifier", payload).matchHeader(`authorization`, `Bearer access_token`).reply(200, response)
 }
