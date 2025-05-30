@@ -25,7 +25,7 @@ const ZCacheDiagoriente = z
     _id: zObjectId,
   })
   .extend({
-    ...ZDiagorienteClassificationSchema.pick({ title: true }).shape,
+    ...ZDiagorienteClassificationSchema.pick({ title: true, sector: true }).shape,
     ...ZDiagorienteClassificationResponseSchema.omit({ job_offer_id: true }).shape,
   })
 

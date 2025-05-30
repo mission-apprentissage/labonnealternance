@@ -19,7 +19,7 @@ export const getRomesInfosFromDiagoriente = async (queries: IDiagorienteClassifi
       return []
     }
     const { title, sector, description } = query
-    return [{ title, sector: sector ?? undefined, description: description, id: index.toString() }]
+    return [{ title, sector: sector ?? "", description: description, id: index.toString() }]
   })
   if (!notFoundQueries.length) {
     return cachedRomes
@@ -29,7 +29,7 @@ export const getRomesInfosFromDiagoriente = async (queries: IDiagorienteClassifi
   const mappedApiResponse = notFoundQueries
     .map((payload) => {
       const result = apiResponse.find(({ job_offer_id }) => job_offer_id === payload.id)
-      return result ? { id: payload.id, title: payload.title, intitule_rome: result.intitule_rome, code_rome: result.code_rome } : null
+      return result ? { id: payload.id, title: payload.title, sector: payload.sector, intitule_rome: result.intitule_rome, code_rome: result.code_rome } : null
     })
     .filter((x) => x !== null)
 
@@ -38,6 +38,7 @@ export const getRomesInfosFromDiagoriente = async (queries: IDiagorienteClassifi
       mappedApiResponse.map((result) => ({
         _id: new ObjectId(),
         title: result.title,
+        sector: result.sector,
         intitule_rome: result.intitule_rome,
         code_rome: result.code_rome,
       }))
