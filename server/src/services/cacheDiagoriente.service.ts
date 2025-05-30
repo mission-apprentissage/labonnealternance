@@ -8,18 +8,18 @@ import { getDbCollection } from "../common/utils/mongodbUtils"
 const getRomesFromCacheDiagoriente = async (queries: IDiagorienteClassificationSchema[]): Promise<(string | null)[]> => {
   const results = await getDbCollection("cache_diagoriente").find({ $or: queries }).toArray()
   return queries.map((query) => {
-    return results.find(({ title }) => title === query.title)?.code_rome ?? null
+    return results.find(({ title, sector }) => title === query.title && sector === query.sector)?.code_rome ?? null
   })
 }
 
 export const getRomesInfosFromDiagoriente = async (queries: IDiagorienteClassificationSchema[]): Promise<(string | null)[]> => {
   const cachedRomes = await getRomesFromCacheDiagoriente(queries)
-  const notFoundQueries = queries.flatMap((query, index) => {
-    if (cachedRomes[index] !== null) {
+  const notFoundQueries = queries.flatMap((query) => {
+    if (cachedRomes[query.id] !== null) {
       return []
     }
-    const { title, sector, description } = query
-    return [{ title, sector: sector ?? "", description: description, id: index.toString() }]
+    const { title, sector, description, id } = query
+    return [{ title, sector: sector ?? "", description: description ?? "", id }]
   })
   if (!notFoundQueries.length) {
     return cachedRomes
@@ -44,5 +44,5 @@ export const getRomesInfosFromDiagoriente = async (queries: IDiagorienteClassifi
       }))
     )
   }
-  return queries.map((_query, index) => cachedRomes[index] ?? mappedApiResponse.find(({ id }) => id === index.toString())?.code_rome ?? null)
+  return queries.map((_query) => cachedRomes[_query.id] ?? mappedApiResponse.find(({ id }) => id === _query.id)?.code_rome ?? null)
 }
