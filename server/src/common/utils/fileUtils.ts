@@ -2,8 +2,6 @@ import { Options as CsvParseOptions, parse } from "csv-parse"
 import { isEmpty, pickBy } from "lodash-es"
 import XLSX from "xlsx"
 
-import config from "../../config"
-
 import { FTPClient } from "./ftpUtils"
 
 export const readXLSXFile = (localPath) => {
@@ -27,7 +25,7 @@ export const parseCsv = (options: CsvParseOptions = {}) => {
 
 export const fileDownloader = async (filePath: string, remoteFileName: string, ftp: { user: string; password: string }) => {
   const opt = {
-    host: config.ftp.host,
+    host: "",
     user: ftp.user,
     password: ftp.password,
     port: 21,

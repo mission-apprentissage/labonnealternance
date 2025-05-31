@@ -77,8 +77,7 @@ const config = {
   diagoriente: {
     clientId: env.get("LBA_DIAGORIENTE_CLIENT_ID").required().asString(),
     clientSecret: env.get("LBA_DIAGORIENTE_CLIENT_SECRET").required().asString(),
-    queryUrl: env.get("LBA_DIAGORIENTE_QUERY_URL").required().asString(),
-    realm: env.get("LBA_DIAGORIENTE_REALM").required().asString(),
+    authUrl: "https://analytics-auth.atlantis.diagotech.dev/realms/esi-auth-keycloack/protocol/openid-connect/token",
   },
   franceTravailDepotOffres: {
     login: env.get("LBA_FRANCE_TRAVAIL_DEPOT_OFFRES_LOGIN").required().asString(),

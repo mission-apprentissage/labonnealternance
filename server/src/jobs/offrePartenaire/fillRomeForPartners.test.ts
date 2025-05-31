@@ -1,9 +1,9 @@
 import nock from "nock"
-import { cacheRomeFixture, cacheRomeResultFixture } from "shared/fixtures/cacheRome.fixture"
-import { IRomeoAPIResponse } from "shared/models/cacheRomeo.model"
+import { IDiagorienteClassificationResponseSchema } from "shared"
+import { cacheDiagorienteFixture } from "shared/fixtures/cacheDiagoriente.fixture"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { nockFranceTravailRomeo, nockFranceTravailTokenAccessRomeo } from "@/common/apis/franceTravail/franceTravail.client.fixture"
+import { nockDiagorienteAccessToken, nockDiagorienteRomeClassifier } from "@/common/apis/diagoriente/diagoriente.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
 import { useMongo } from "@tests/utils/mongo.test.utils"
@@ -19,13 +19,11 @@ describe("fillRomeForPartners", () => {
     vi.useFakeTimers()
     vi.setSystemTime(now)
 
-    nock("https://api.francetravail.io").post(/.*/).reply(404)
-
     return async () => {
       vi.useRealTimers()
       nock.cleanAll()
       await getDbCollection("computed_jobs_partners").deleteMany({})
-      await getDbCollection("cache_romeo").deleteMany({})
+      await getDbCollection("cache_diagoriente").deleteMany({})
     }
   })
 
@@ -42,16 +40,13 @@ describe("fillRomeForPartners", () => {
         offer_rome_codes: null,
       },
     ])
-    const cacheRomeo = cacheRomeFixture({
-      intitule: title,
-      contexte: nafLabel,
-      metiersRome: [
-        cacheRomeResultFixture({
-          codeRome: romeCode,
-        }),
-      ],
+    const cacheDiagoriente = cacheDiagorienteFixture({
+      title,
+      sector: nafLabel,
+      code_rome: romeCode,
+      intitule_rome: "Chef de partie, second de cuisine",
     })
-    await getDbCollection("cache_romeo").insertOne(cacheRomeo)
+    await getDbCollection("cache_diagoriente").insertOne(cacheDiagoriente)
     // when
     await fillRomeForPartners()
     // then
@@ -65,7 +60,7 @@ describe("fillRomeForPartners", () => {
   it("should enrich with api", async () => {
     // given
     const romeCode = "J1501"
-    await givenSomeComputedJobPartners([
+    const computedJob = await givenSomeComputedJobPartners([
       {
         offer_title: title,
         workplace_naf_label: nafLabel,
@@ -73,33 +68,24 @@ describe("fillRomeForPartners", () => {
       },
     ])
     nock.cleanAll()
-    nockFranceTravailTokenAccessRomeo()
-    const apiResponse: IRomeoAPIResponse = [
+    const apiResponseDiagoriente: IDiagorienteClassificationResponseSchema[] = [
       {
-        intitule: title,
-        identifiant: "0",
-        contexte: nafLabel,
-        metiersRome: [
-          cacheRomeResultFixture({
-            codeRome: romeCode,
-            scorePrediction: 0.8,
-          }),
-          cacheRomeResultFixture({
-            codeRome: "ignored",
-            scorePrediction: 0.7,
-          }),
-        ],
+        job_offer_id: computedJob[0]._id.toString(),
+        code_rome: romeCode,
+        intitule_rome: "Chef de partie, second de cuisine",
       },
     ]
-    nockFranceTravailRomeo(
+    nockDiagorienteAccessToken()
+    nockDiagorienteRomeClassifier(
       [
         {
-          intitule: title,
-          identifiant: "0",
-          contexte: nafLabel,
+          id: computedJob[0]._id.toString(),
+          title,
+          sector: nafLabel,
+          description: computedJob[0].offer_description!,
         },
       ],
-      apiResponse
+      apiResponseDiagoriente
     )
     // when
     await fillRomeForPartners()

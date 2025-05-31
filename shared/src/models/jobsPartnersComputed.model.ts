@@ -12,6 +12,8 @@ export enum COMPUTED_ERROR_SOURCE {
   API_OPCO = "api_opco",
   API_ADRESSE = "api_adresse",
   API_ROMEO = "api_romeo",
+  API_DIAGORIENTE = "api_diagoriente",
+  API_NAF = "api_naf",
   VALIDATION = "validation",
   RANKING = "ranking",
   REMOVE_NAF_85 = "REMOVE_NAF_85",
