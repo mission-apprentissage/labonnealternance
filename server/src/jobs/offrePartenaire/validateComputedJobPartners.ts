@@ -14,7 +14,7 @@ const zodModel = jobsPartnersModel.zod
 type BulkOperation = AnyBulkWriteOperation<IComputedJobsPartners>
 
 export const validateComputedJobPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
-  logger.info(`validation des computed_job_partners`)
+  logger.info("validation des computed_job_partners")
   const finalFilter = { $and: [{ business_error: null }, ...(addedMatchFilter ? [addedMatchFilter] : [])] }
   const toUpdateCount = await getDbCollection("computed_jobs_partners").countDocuments(finalFilter)
   logger.info(`${toUpdateCount} documents à traiter`)

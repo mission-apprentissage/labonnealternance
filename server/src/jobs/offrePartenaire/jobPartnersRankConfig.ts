@@ -7,6 +7,9 @@ const jobPartnersRankConfigByFlux: Partial<Record<JOBPARTNERS_LABEL, number>> = 
   Hellowork: 0.24,
   "France Travail": 0.22,
   "RH Alternance": 0.3,
+}
+
+const jobPartnersRankConfigByAPI: Record<string, number> = {
   Veritone: 0.7,
   GRDF: 0.7,
   Daher: 0.7,
@@ -16,8 +19,6 @@ const jobPartnersRankConfigByFlux: Partial<Record<JOBPARTNERS_LABEL, number>> = 
   Decathlon: 0.7,
   "Institut Pasteur": 0.7,
 }
-
-const jobPartnersRankConfigByAPI: Record<string, number> = {}
 
 export const jobPartnersRankConfig = {
   ...jobPartnersRankConfigByAPI,
