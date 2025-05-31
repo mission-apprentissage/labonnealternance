@@ -29,6 +29,8 @@ const ZCacheDiagoriente = z
     ...ZDiagorienteClassificationResponseSchema.omit({ job_offer_id: true }).shape,
   })
 
+export type ICacheDiagoriente = z.output<typeof ZCacheDiagoriente>
+
 export default {
   zod: ZCacheDiagoriente,
   indexes: [[{ title: 1 }, {}]],

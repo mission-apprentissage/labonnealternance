@@ -9,7 +9,7 @@ import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 export const fillRomeForPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
   const filledFields = ["offer_rome_codes"] as const satisfies (keyof IComputedJobsPartners)[]
   return fillFieldsForPartnersFactory({
-    job: COMPUTED_ERROR_SOURCE.API_ROMEO,
+    job: COMPUTED_ERROR_SOURCE.API_DIAGORIENTE,
     sourceFields: ["offer_title", "workplace_naf_label", "offer_description"],
     filledFields,
     groupSize: MAX_ROMEO_PAYLOAD_SIZE,
