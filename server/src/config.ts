@@ -63,17 +63,6 @@ const config = {
       },
     },
   },
-  ftp: {
-    host: env.get("LBA_FTP_HOST").required().asString(),
-    constructys: {
-      user: env.get("LBA_FTP_CONSTRUCTYS_USER").required().asString(),
-      password: env.get("LBA_FTP_CONSTRUCTYS_PASSWORD").required().asString(),
-    },
-    ocapiat: {
-      user: env.get("LBA_FTP_OCAPIAT_USER").required().asString(),
-      password: env.get("LBA_FTP_OCAPIAT_PASSWORD").required().asString(),
-    },
-  },
   diagoriente: {
     clientId: env.get("LBA_DIAGORIENTE_CLIENT_ID").required().asString(),
     clientSecret: env.get("LBA_DIAGORIENTE_CLIENT_SECRET").required().asString(),
