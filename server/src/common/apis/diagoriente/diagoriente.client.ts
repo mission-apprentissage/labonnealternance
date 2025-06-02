@@ -59,7 +59,7 @@ export const getDiagorienteRomeClassification = async (data: IDiagorienteClassif
   if (data.length > 10) throw internal("Trop de données à envoyer à l'API Diagoriente, limiter la requête à 10 éléments")
   const token = await getDiagorienteToken(authParams)
   const { data: response } = await axiosClient.post("https://semafor.diagoriente.beta.gouv.fr/rome_classifier", data, {
-    timeout: 100000,
+    timeout: 50_000,
     headers: { Authorization: `Bearer ${token}` },
   })
   const validation = z.array(ZDiagorienteClassificationResponseSchema).safeParse(response)
