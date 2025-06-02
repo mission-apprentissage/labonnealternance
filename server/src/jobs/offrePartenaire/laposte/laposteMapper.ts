@@ -5,8 +5,6 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
 
-//import { formatHtmlForPartnerDescription } from "@/common/utils/stringUtils"
-
 import { formatHtmlForPartnerDescription } from "@/common/utils/stringUtils"
 
 import { isCompanyInBlockedCfaList } from "../blockJobsPartnersFromCfaList"
@@ -46,36 +44,17 @@ export const ZLaposteJob = z
 
 export type ILaposteJob = z.output<typeof ZLaposteJob>
 
-export const laposteJobToJobsPartners = (job: ILaposteJob): IComputedJobsPartners => {
-  const workplace_geopoint: {
-    type: "Point"
-    coordinates: [number, number]
-  } = {
-    type: "Point",
-    coordinates: [job.longitude, job.latitude],
-  }
-
-  let business_error: string | null = null
-  if (isCompanyInBlockedCfaList(job.company)) {
-    business_error = JOB_PARTNER_BUSINESS_ERROR.CFA
-  }
-  let contract_type: ("Apprentissage" | "Professionnalisation")[] = []
-  if (job["type-de-contrat"] !== "Alternance") {
-    business_error = JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA
-  } else {
-    contract_type = [TRAINING_CONTRACT_TYPE.APPRENTISSAGE]
-  }
-
-  let contract_duration: number | null = null
-  switch (job["duree-du-contrat"]) {
+const getContractDuration = (duration: string | null): number | null => {
+  switch (duration) {
     case "12 ou 24 mois":
     case "12 à 24 mois":
-      contract_duration = 12
-      break
+      return 12
     default:
-      contract_duration = job["duree-du-contrat"] ? parseInt(job["duree-du-contrat"]) : null
+      return duration ? parseInt(duration) : null
   }
+}
 
+const getOfferTargetDiploma = (job: ILaposteJob, contract_duration: number | null) => {
   let offer_target_diploma: { european: "3" | "4" | "5" | "6" | "7"; label: string } | null = null
   let european: "3" | "4" | "5" | "6" | "7" | null = null
   switch (job["niveau-de-formation-requis"]) {
@@ -98,9 +77,11 @@ export const laposteJobToJobsPartners = (job: ILaposteJob): IComputedJobsPartner
     default:
       throw new Error(`Niveau de formation non géré : ${job["niveau-de-formation-requis"]}`)
   }
-
   offer_target_diploma = european && { european, label: NIVEAU_DIPLOME_LABEL[european] }
+  return offer_target_diploma
+}
 
+const getDescription = (job: ILaposteJob): string => {
   let descriptionComputed = ""
   descriptionComputed += job.metier ? "- Métier : " + job.metier + "\r\n" : ""
   descriptionComputed += job["fiche-metier"] ? "- Fiche métier : https://www.laposterecrute.fr" + job["fiche-metier"] + "\r\n" : ""
@@ -109,13 +90,38 @@ export const laposteJobToJobsPartners = (job: ILaposteJob): IComputedJobsPartner
   descriptionComputed +=
     job["remuneration-brute-annuelle"] && job["remuneration-brute-annuelle"] !== "0" ? "- Rémunération brute annuelle: " + job["remuneration-brute-annuelle"] + "\r\n" : ""
   descriptionComputed += job["temps-de-travail-hebdomadaire"] ? "- Temps de travail hebdomadaire : " + job["temps-de-travail-hebdomadaire"] + "\r\n" : ""
-
   descriptionComputed += `\r\nDescription de la mission :\r\n\r\n${job["description-de-la-mission"]}\r\n\r\n`
   descriptionComputed += job["profil-recherche"] ? `Profil recherché : ${job["profil-recherche"]}\r\n\r\n` : ""
   descriptionComputed += job["formation-et-experience"] ? `Formation et expérience :\r\n\r\n${job["formation-et-experience"]}\r\n\r\n` : ""
   descriptionComputed += job["profil-candidat"] ? `Profil candidat :\r\n\r\n${job["profil-candidat"]}\r\n\r\n` : ""
+  return formatHtmlForPartnerDescription(descriptionComputed).trim()
+}
 
-  descriptionComputed = formatHtmlForPartnerDescription(descriptionComputed).trim()
+export const laposteJobToJobsPartners = (job: ILaposteJob): IComputedJobsPartners => {
+  const workplace_geopoint: {
+    type: "Point"
+    coordinates: [number, number]
+  } = {
+    type: "Point",
+    coordinates: [job.longitude, job.latitude],
+  }
+
+  let business_error: string | null = null
+  if (isCompanyInBlockedCfaList(job.company)) {
+    business_error = JOB_PARTNER_BUSINESS_ERROR.CFA
+  }
+  let contract_type: ("Apprentissage" | "Professionnalisation")[] = []
+  if (job["type-de-contrat"] !== "Alternance") {
+    business_error = JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA
+  } else {
+    contract_type = [TRAINING_CONTRACT_TYPE.APPRENTISSAGE]
+  }
+
+  const contract_duration = getContractDuration(job["duree-du-contrat"])
+
+  const offer_target_diploma = getOfferTargetDiploma(job, contract_duration)
+
+  const descriptionComputed = getDescription(job)
 
   const publicationDate = new Date()
   const [day, month, yearAndTime] = job["date-de-mise-a-jour"].split("-")
