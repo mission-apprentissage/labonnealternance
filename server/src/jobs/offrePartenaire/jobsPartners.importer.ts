@@ -1,6 +1,6 @@
 import { CronDef } from "job-processor"
 
-// import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
+import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
 import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
 import { processKelio } from "@/jobs/offrePartenaire/kelio/processKelio"
 import { processLaposte } from "@/jobs/offrePartenaire/laposte/processLaposte"
@@ -30,13 +30,13 @@ export const importers: Record<string, CronDef> = {
     maxRuntimeInMinutes: 30,
     tag: "slave",
   },
-  // "Import France Travail": {
-  //   cron_string: timings.import_source,
-  //   handler: processFranceTravail,
-  //   checkinMargin: 350,
-  //   maxRuntimeInMinutes: 120,
-  //   tag: "slave",
-  // },
+  "Import France Travail": {
+    cron_string: timings.import_source,
+    handler: processFranceTravail,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 120,
+    tag: "slave",
+  },
   "Import Meteojob": {
     cron_string: timings.import_source,
     handler: processMeteojob,

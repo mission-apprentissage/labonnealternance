@@ -26,15 +26,9 @@ export enum JOBPARTNERS_LABEL {
   MONSTER = "Monster",
   METEOJOB = "Meteojob",
   KELIO = "Kelio",
-  VERITONE = "Veritone",
-  GRDF = "GRDF",
-  DAHER = "Daher",
-  LOREAL = "L'Oréal",
-  CREDIT_MUTUEL = "Crédit Mutuel",
-  BPCE = "BPCE",
-  DECATHLON = "Decathlon",
-  INSTITUT_PASTEUR = "Institut Pasteur",
   LAPOSTE = "La Poste",
+  // Attention : les partner labels par API ne doivent PAS être ajoutés : par définition, nous ne connaissons pas leurs valeurs.
+  // De nouvelles valeurs peuvent être ajoutées par les clients Api
 }
 
 export const jobPartnersExcludedFromFlux = [JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, JOBPARTNERS_LABEL.RECRUTEURS_LBA]

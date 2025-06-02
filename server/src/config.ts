@@ -63,22 +63,10 @@ const config = {
       },
     },
   },
-  ftp: {
-    host: env.get("LBA_FTP_HOST").required().asString(),
-    constructys: {
-      user: env.get("LBA_FTP_CONSTRUCTYS_USER").required().asString(),
-      password: env.get("LBA_FTP_CONSTRUCTYS_PASSWORD").required().asString(),
-    },
-    ocapiat: {
-      user: env.get("LBA_FTP_OCAPIAT_USER").required().asString(),
-      password: env.get("LBA_FTP_OCAPIAT_PASSWORD").required().asString(),
-    },
-  },
   diagoriente: {
     clientId: env.get("LBA_DIAGORIENTE_CLIENT_ID").required().asString(),
     clientSecret: env.get("LBA_DIAGORIENTE_CLIENT_SECRET").required().asString(),
-    queryUrl: env.get("LBA_DIAGORIENTE_QUERY_URL").required().asString(),
-    realm: env.get("LBA_DIAGORIENTE_REALM").required().asString(),
+    authUrl: "https://analytics-auth.atlantis.diagotech.dev/realms/esi-auth-keycloack/protocol/openid-connect/token",
   },
   franceTravailDepotOffres: {
     login: env.get("LBA_FRANCE_TRAVAIL_DEPOT_OFFRES_LOGIN").required().asString(),

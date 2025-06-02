@@ -56,7 +56,7 @@ type TreatedDocument = ProjectedComputedJobPartner & {
 export const detectDuplicateJobPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
   const startDate = new Date()
   // @ts-ignore
-  const computedJobPartnersFilter: Filter<IComputedJobsPartners> = { $and: [{ business_error: null }, ...(addedMatchFilter ? [addedMatchFilter] : [])] }
+  const computedJobPartnersFilter: Filter<IComputedJobsPartners> = { $and: [{ business_error: null }, { offer_status: "Active" }, ...(addedMatchFilter ? [addedMatchFilter] : [])] }
 
   await getDbCollection("computed_jobs_partners").updateMany(computedJobPartnersFilter, { $set: { duplicates: [] } })
   const jobPartnerFields: (keyof IComputedJobsPartners)[] = ["workplace_siret", "workplace_brand", "workplace_legal_name", "workplace_name"]
@@ -183,41 +183,38 @@ const computedJobPartnerVsJobPartnerStreamFactory = (computedJobPartnerField: ke
   logger.info(
     `début de detectDuplicateJobPartners entre computedJobPartners et jobPartners, pour les champs computedJobPartnerField=${computedJobPartnerField} et jobPartnerField=${computedJobPartnerField}`
   )
+
+  const commonProjectFields = Object.fromEntries(fieldsRead.map((field) => [field, 1]))
+
   return getDbCollection("computed_jobs_partners").aggregate([
     { $match: computedJobPartnersFilter },
+    {
+      $project: {
+        ...commonProjectFields,
+        [computedJobPartnerField]: 1,
+      },
+    },
     { $group: { _id: `$${computedJobPartnerField}`, documents: { $push: "$$ROOT" } } },
     { $match: { _id: { $ne: null } } },
     {
-      $project: {
-        _id: 1,
-        documents: {
-          $map: {
-            input: "$documents",
-            as: "document",
-            in: Object.fromEntries(fieldsRead.map((field) => [field, `$$document.${field}`])),
-          },
-        },
-      },
-    },
-    {
       $lookup: {
         from: jobPartnerCollection,
-        foreignField: computedJobPartnerField,
-        localField: "_id",
-        as: "jobPartners",
-      },
-    },
-    {
-      $project: {
-        _id: 1,
-        documents: 1,
-        jobPartners: {
-          $map: {
-            input: "$jobPartners",
-            as: "jobPartner",
-            in: Object.fromEntries([...fieldsRead, "offer_status"].map((field) => [field, `$$jobPartner.${field}`])),
+        let: { localId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: [`$${computedJobPartnerField}`, "$$localId"] },
+            },
           },
-        },
+          {
+            $project: {
+              ...commonProjectFields,
+              [computedJobPartnerField]: 1,
+              offer_status: 1,
+            },
+          },
+        ],
+        as: "jobPartners",
       },
     },
   ]) as AggregationCursor<AggregationResult>
