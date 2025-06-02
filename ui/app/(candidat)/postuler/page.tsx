@@ -2,6 +2,8 @@
 import { Flex, Spinner } from "@chakra-ui/react"
 import { useQuery } from "@tanstack/react-query"
 import { useSearchParams } from "next/navigation"
+import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import WidgetCandidatureLba from "@/components/ItemDetail/CandidatureLba/WidgetCandidatureLba"
@@ -39,7 +41,7 @@ export default function WidgetPostuler() {
   }
 
   // @ts-ignore TODO
-  const { isLoading, isFetching, isError, data, error } = useQuery({
+  const { isLoading, isFetching, isError, data, error }: { data: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson } = useQuery({
     queryKey: ["jobDetail"],
     queryFn: () => fetchPostulerItem({ type, itemId, caller }),
     enabled: Boolean(type) && Boolean(itemId) && Boolean(caller),
@@ -67,6 +69,10 @@ export default function WidgetPostuler() {
 
   if (isError) {
     return <WidgetPostulerError error={error.name} />
+  }
+
+  if (data?.contact?.email === null) {
+    return <WidgetPostulerError error={BusinessErrorCodes.INTERNAL_EMAIL} />
   }
 
   return <WidgetCandidatureLba item={data} caller={caller} />
