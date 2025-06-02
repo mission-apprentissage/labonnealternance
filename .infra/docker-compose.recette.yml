@@ -1,6 +1,6 @@
 services:
   smtp:
-    image: axllent/mailpit:v1.15
+    image: axllent/mailpit:v1.25
     deploy:
       resources:
         limits:
