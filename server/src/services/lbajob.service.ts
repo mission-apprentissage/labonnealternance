@@ -151,7 +151,7 @@ export const getLbaJobsV2 = async ({
   }
 
   if (opco) {
-    query["opco"] = opco
+    query.opco = opco
   }
 
   const filterStage: Document[] =

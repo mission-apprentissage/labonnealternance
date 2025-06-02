@@ -782,6 +782,10 @@ async function findLbaJobOpportunities(query: IJobSearchApiV3QueryResolved): Pro
     payload.niveau = NIVEAU_DIPLOME_LABEL[query.target_diploma_level]
   }
 
+  if (query.opco) {
+    payload.opco = query.opco
+  }
+
   const lbaJobs = await getLbaJobsV2(payload)
 
   return convertLbaRecruiterToJobOfferApi(lbaJobs)
