@@ -48,7 +48,7 @@ const getContractDuration = (duration: string | null): number | null => {
   switch (duration) {
     case "12 ou 24 mois":
     case "12 à 24 mois":
-      return 12
+      return null
     default:
       return duration ? parseInt(duration) : null
   }
@@ -91,8 +91,6 @@ const getDescription = (job: ILaposteJob): string => {
     job["remuneration-brute-annuelle"] && job["remuneration-brute-annuelle"] !== "0" ? "- Rémunération brute annuelle: " + job["remuneration-brute-annuelle"] + "\r\n" : ""
   descriptionComputed += job["temps-de-travail-hebdomadaire"] ? "- Temps de travail hebdomadaire : " + job["temps-de-travail-hebdomadaire"] + "\r\n" : ""
   descriptionComputed += `\r\nDescription de la mission :\r\n\r\n${job["description-de-la-mission"]}\r\n\r\n`
-  descriptionComputed += job["profil-recherche"] ? `Profil recherché : ${job["profil-recherche"]}\r\n\r\n` : ""
-  descriptionComputed += job["formation-et-experience"] ? `Formation et expérience :\r\n\r\n${job["formation-et-experience"]}\r\n\r\n` : ""
   descriptionComputed += job["profil-candidat"] ? `Profil candidat :\r\n\r\n${job["profil-candidat"]}\r\n\r\n` : ""
   return formatHtmlForPartnerDescription(descriptionComputed).trim()
 }
