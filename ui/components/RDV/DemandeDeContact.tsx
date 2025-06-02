@@ -32,7 +32,6 @@ import { EApplicantType } from "shared/constants/rdva"
 import * as Yup from "yup"
 
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
-import { useLocalStorage } from "@/app/hooks/useLocalStorage"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { reasons } from "@/components/RDV/types"
 import { BarberGuy } from "@/theme/components/icons"
@@ -46,12 +45,19 @@ type Props = {
   referrer: string
   showInModal: boolean
   isCollapsedHeader?: boolean
+  onRdvSuccess: () => void
 }
 
 /**
  * "Demande de contact" modal.
  */
-const DemandeDeContact = (props: Props) => {
+export const DemandeDeContact = ({
+  context: { cle_ministere_educatif, etablissement_formateur_entreprise_raison_sociale },
+  referrer,
+  showInModal,
+  isCollapsedHeader,
+  onRdvSuccess,
+}: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [suggestedEmails, setSuggestedEmails] = useState([])
   const [applicantReasons, setApplicantReasons] = useState<typeof reasons>(reasons)
@@ -60,19 +66,17 @@ const DemandeDeContact = (props: Props) => {
   const [onSuccessSubmitResponse, setOnSuccessSubmitResponse] = useState(null)
   const [error, setError] = useState<string | null>(null)
 
-  const { setLocalStorage } = useLocalStorage(`application-formation-${props.context.cle_ministere_educatif}`)
-
   useEffect(() => {
     if (isOpen) {
       SendPlausibleEvent("Clic Prendre RDV - Fiche formation", {
-        info_fiche: `${props.context.cle_ministere_educatif}`,
+        info_fiche: `${cle_ministere_educatif}`,
       })
     }
-  }, [props.context.cle_ministere_educatif, isOpen])
+  }, [cle_ministere_educatif, isOpen])
 
   useEffect(() => {
     resetForm()
-  }, [props.context.cle_ministere_educatif])
+  }, [cle_ministere_educatif])
 
   const emailChecker = emailMisspelled({ maxMisspelled: 3, domains: top100 })
 
@@ -126,9 +130,9 @@ const DemandeDeContact = (props: Props) => {
             email: values.email,
             type: applicantType,
             applicantMessageToCfa: values.applicantMessageToCfa,
-            cleMinistereEducatif: props.context.cle_ministere_educatif,
+            cleMinistereEducatif: cle_ministere_educatif,
             applicantReasons: applicantReasons.filter(({ checked }) => checked).map(({ key }) => key),
-            appointmentOrigin: props.referrer,
+            appointmentOrigin: referrer,
           },
         })
 
@@ -139,10 +143,10 @@ const DemandeDeContact = (props: Props) => {
           },
         })
 
-        setLocalStorage(Date.now())
+        onRdvSuccess()
 
         SendPlausibleEvent("Envoi Prendre RDV - Fiche formation", {
-          info_fiche: `${props.context.cle_ministere_educatif}`,
+          info_fiche: `${cle_ministere_educatif}`,
         })
 
         setOnSuccessSubmitResponse(response)
@@ -330,7 +334,7 @@ const DemandeDeContact = (props: Props) => {
           <DsfrLink href="/conditions-generales-utilisation" external aria-description="Conditions générales d'utilisation - nouvelle fenêtre">
             Conditions générales d&apos;utilisation
           </DsfrLink>{" "}
-          du service La bonne alternance et acceptez le partage de vos informations avec l&apos;établissement {props.context.etablissement_formateur_entreprise_raison_sociale}.
+          du service La bonne alternance et acceptez le partage de vos informations avec l&apos;établissement {etablissement_formateur_entreprise_raison_sociale}.
           <br />
           Pour plus d'informations sur le traitement de vos données à caractère personnel, veuillez consulter la{" "}
           <DsfrLink href="/politique-de-confidentialite" external aria-description="politique de confidentialité - nouvelle fenêtre">
@@ -399,10 +403,10 @@ const DemandeDeContact = (props: Props) => {
     </Box>
   )
 
-  return props.showInModal ? (
+  return showInModal ? (
     <Box data-testid="DemandeDeContact">
       <Box>
-        <Box my={props.isCollapsedHeader ? 2 : 4}>
+        <Box my={isCollapsedHeader ? 2 : 4}>
           <Button data-testid="prdvButton" onClick={onOpen} aria-label="Ouvrir le formulaire de demande de contact">
             Je prends rendez-vous
           </Button>
@@ -417,7 +421,7 @@ const DemandeDeContact = (props: Props) => {
                 ) : (
                   <>
                     <Text as="h1" fontWeight={700} fontSize="24px" data-testid="DemandeDeContactFormTitle" mb={4}>
-                      Contacter {props.context.etablissement_formateur_entreprise_raison_sociale}
+                      Contacter {etablissement_formateur_entreprise_raison_sociale}
                     </Text>
                     {FormElement()}
                   </>
@@ -432,5 +436,3 @@ const DemandeDeContact = (props: Props) => {
     <Box>{onSuccessSubmitResponse ? <FormConfirmed /> : FormElement()}</Box>
   )
 }
-
-export default DemandeDeContact

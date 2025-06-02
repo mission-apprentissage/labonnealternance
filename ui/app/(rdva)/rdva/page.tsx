@@ -4,8 +4,9 @@ import { Box, Container, Flex, Spinner, Text } from "@chakra-ui/react"
 import { useQuery } from "@tanstack/react-query"
 import { useSearchParams } from "next/navigation"
 
+import { useFormationPrdvTracker } from "@/app/hooks/useFormationPrdvTracker"
 import { ContactCfaSummary } from "@/components/espace_pro/Candidat/layout/ContactCfaSummary"
-import DemandeDeContact from "@/components/RDV/DemandeDeContact"
+import { DemandeDeContact } from "@/components/RDV/DemandeDeContact"
 import { IconeLogo } from "@/theme/components/icons"
 import { getPrdvContext } from "@/utils/api"
 
@@ -22,6 +23,10 @@ export default function PriseDeRendezVous() {
     enabled: !!cleMinistereEducatif,
     gcTime: 0,
   })
+
+  const { setPrdvDone } = useFormationPrdvTracker(cleMinistereEducatif)
+
+  const { cle_ministere_educatif, etablissement_formateur_entreprise_raison_sociale } = data ?? {}
 
   return (
     <Container maxWidth="82ch" mt={5}>
@@ -58,8 +63,14 @@ export default function PriseDeRendezVous() {
             codePostal={data?.code_postal}
             ville={data?.localite}
           />
-          {/* @ts-ignore TODO */}
-          <DemandeDeContact context={data} referrer={referrer} showInModal={false} />
+          {cle_ministere_educatif && etablissement_formateur_entreprise_raison_sociale && (
+            <DemandeDeContact
+              context={{ cle_ministere_educatif, etablissement_formateur_entreprise_raison_sociale }}
+              referrer={referrer}
+              showInModal={false}
+              onRdvSuccess={setPrdvDone}
+            />
+          )}
         </>
       )}
     </Container>
