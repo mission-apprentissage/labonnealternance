@@ -79,11 +79,18 @@ export const jobsApiV3Routes = (server: Server) => {
     return res.send(result)
   })
 
-  server.get("/v3/jobs/:id/publishing", { schema: zRoutes.get["/v3/jobs/:id/publishing"], onRequest: server.auth(zRoutes.get["/v3/jobs/:id/publishing"]) }, async (req, res) => {
-    const { id } = req.params
-    const result = await findOfferPublishing(id, new JobOpportunityRequestContext(zRoutes.get["/v3/jobs/:id/publishing"], "api-apprentissage"))
-    return res.send(result)
-  })
+  server.get(
+    "/v3/jobs/:id/publishing-informations",
+    {
+      schema: zRoutes.get["/v3/jobs/:id/publishing-informations"],
+      onRequest: server.auth(zRoutes.get["/v3/jobs/:id/publishing-informations"]),
+    },
+    async (req, res) => {
+      const { id } = req.params
+      const result = await findOfferPublishing(id, new JobOpportunityRequestContext(zRoutes.get["/v3/jobs/:id/publishing-informations"], "api-apprentissage"))
+      return res.send(result)
+    }
+  )
 
   server.post(
     "/v3/jobs/:id/stats/:eventType",
