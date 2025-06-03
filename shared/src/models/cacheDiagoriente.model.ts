@@ -15,8 +15,8 @@ export type IDiagorienteClassificationSchema = z.output<typeof ZDiagorienteClass
 
 export const ZDiagorienteClassificationResponseSchema = z.object({
   job_offer_id: z.string(),
-  code_rome: z.string(),
-  intitule_rome: z.string(),
+  code_rome: z.string().nullable(),
+  intitule_rome: z.string().nullable(),
 })
 export type IDiagorienteClassificationResponseSchema = z.output<typeof ZDiagorienteClassificationResponseSchema>
 
