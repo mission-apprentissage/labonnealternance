@@ -9071,6 +9071,84 @@ Limite : 1 appel(s) / 1 seconde(s)
         ],
       },
     },
+    "/v3/jobs/{id}/publishing-informations": {
+      "get": {
+        "parameters": [
+          {
+            "description": "Identifiant unique",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "description": "Identifiant unique",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "publishing": {
+                      "description": "Informations about the publishing of the last update of the offer. Indeed, the publishing process usually takes around 10 minutes",
+                      "properties": {
+                        "error": {
+                          "properties": {
+                            "code": {
+                              "description": "Code of the error preventing the offer to be published",
+                              "type": "string",
+                            },
+                            "label": {
+                              "description": "Description of the error preventing the offer to be published",
+                              "type": "string",
+                            },
+                          },
+                          "required": [
+                            "code",
+                            "label",
+                          ],
+                          "type": [
+                            "object",
+                            "null",
+                          ],
+                        },
+                        "status": {
+                          "description": "Publishing status",
+                          "enum": [
+                            "WILL_BE_PUBLISHED",
+                            "PUBLISHED",
+                            "WILL_NOT_BE_PUBLISHED",
+                          ],
+                          "type": "string",
+                        },
+                      },
+                      "required": [
+                        "status",
+                      ],
+                      "type": "object",
+                    },
+                  },
+                  "required": [
+                    "publishing",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-apprentissage": [],
+          },
+        ],
+        "tags": [
+          "V3 - Jobs",
+        ],
+      },
+    },
   },
   "servers": [
     {
