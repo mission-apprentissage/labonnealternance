@@ -37,7 +37,6 @@ import jobsV1Route from "./controllers/jobs.controller"
 import jobsEtFormationsV1Route from "./controllers/jobsEtFormations.controller"
 import login from "./controllers/login.controller"
 import metiers from "./controllers/metiers.controller"
-import metiersDAvenirRoute from "./controllers/metiersDAvenir.controller"
 import partnersRoute from "./controllers/partners.controller"
 import reportedCompanyController from "./controllers/reportedCompany.controller"
 import rome from "./controllers/rome.controller"
@@ -130,7 +129,6 @@ export async function bind(app: Server) {
       updateLbaCompany(typedSubApp)
       application(typedSubApp)
       unsubscribeLbaCompany(typedSubApp)
-      metiersDAvenirRoute(typedSubApp)
       jobsV1Route(typedSubApp)
       formationsV1Route(typedSubApp)
       formationsRegionV1Route(typedSubApp)

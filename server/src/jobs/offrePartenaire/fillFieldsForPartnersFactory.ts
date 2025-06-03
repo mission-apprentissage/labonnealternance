@@ -81,6 +81,9 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
     groupData({ size: groupSize }),
     writeData(
       async (documents: IComputedJobsPartners[]) => {
+        if (!documents.length) {
+          return
+        }
         counters.total += documents.length
         counters.total % 1000 === 0 && logger.info(`processing document ${counters.total}`)
         try {

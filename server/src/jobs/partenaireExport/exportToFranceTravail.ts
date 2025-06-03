@@ -4,8 +4,12 @@ import { Readable, Transform, pipeline } from "stream"
 import { promisify } from "util"
 
 import { stringify } from "csv-stringify"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
+import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import { JOB_STATUS } from "shared/models/index"
+
+import config from "@/config"
 
 import { sendCsvToFranceTravail } from "../../common/apis/franceTravail/franceTravail.client"
 import { logger } from "../../common/logger"
@@ -49,7 +53,7 @@ const formatData = (offre) => {
     Par_ref_offre: `${ntcCle}-${offre.jobId}`,
     Par_cle: "LABONNEALTERNANCE",
     Par_nom: "LABONNEALTERNANCE",
-    Par_URL_offre: `https://labonnealternance.apprentissage.beta.gouv.fr/recherche?&type=matcha&itemId=${offre.jobId}`,
+    Par_URL_offre: `${config.publicUrl}${getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, offre.jobId, offre.rome_detail.rome.intitule)}`,
     Code_rome: offre.rome_code[0],
     Code_OGR: appellation.code_ogr,
     Libelle_metier_OGR: appellation.libelle,

@@ -1,4 +1,8 @@
+"use server"
+
 import { Metadata } from "next"
+import { permanentRedirect } from "next/navigation"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { RecherchePageComponent } from "@/app/(candidat)/recherche/_components/RecherchePageComponent"
 import { parseRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
@@ -13,6 +17,12 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 }
 
 export default async function RecherchePage({ searchParams }: Props) {
-  const params = parseRecherchePageParams(new URLSearchParams(await searchParams), "default")
+  const urlSearchParams = new URLSearchParams(await searchParams)
+  // TODO A supprimer à partir du 12/07/2025
+  // redirection des anciennes urls de type https://labonnealternance.apprentissage.beta.gouv.fr/recherche?&type=matcha&itemId=67cb12fe3a8f0f83ab4bdd23
+  if (urlSearchParams.get("type") === "matcha" && urlSearchParams.get("itemId")) {
+    permanentRedirect(PAGES.dynamic.jobDetail({ type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, jobId: urlSearchParams.get("itemId") }).getPath())
+  }
+  const params = parseRecherchePageParams(urlSearchParams, "default")
   return <RecherchePageComponent params={params} />
 }
