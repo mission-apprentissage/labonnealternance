@@ -8,12 +8,12 @@ import {
   createJobOffer,
   findJobOpportunityById,
   findJobsOpportunities,
+  findOfferPublishing,
   incrementDetailViewCount,
   incrementPostulerClickCount,
   incrementSearchViewCount,
   updateJobOffer,
   upsertJobOffer,
-  findOfferPublishing,
 } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
 import { JobOpportunityRequestContext } from "@/services/jobs/jobOpportunity/JobOpportunityRequestContext"
 
