@@ -15,7 +15,6 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vite
 
 import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
-import { searchForFtJobs } from "@/common/apis/franceTravail/franceTravail.client"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
 import { getApiApprentissageTestingToken, getApiApprentissageTestingTokenFromInvalidPrivateKey } from "@tests/utils/jwt.test.utils"
@@ -84,7 +83,6 @@ describe("GET /v3/jobs/search", () => {
     await getDbCollection("referentiel.communes").insertMany(generateReferentielCommuneFixtures([parisFixture, clichyFixture, levalloisFixture, marseilleFixture]))
     await getDbCollection("jobs_partners").insertOne(jobPartnerOffer)
     await getDbCollection("jobs_partners").insertOne(recruteurLba)
-    vi.mocked(searchForFtJobs).mockResolvedValue(null)
   })
 
   it("should return 401 if no api key provided", async () => {
