@@ -2334,12 +2334,12 @@ describe("findJobOpportunityById tests", () => {
       }
     })
 
-    it("should throw a job not found error on getJobsPartnersByIdAsJobOfferApi", async () => {
+    it("should return null when not found", async () => {
       // Utiliser un ID qui n'existe pas dans la base de données
       const nonExistentId = new ObjectId()
 
       // Vérifier que la fonction lance bien une erreur
-      await expect(getJobsPartnersByIdAsJobOfferApi(nonExistentId)).rejects.toThrow("Job not found")
+      expect(await getJobsPartnersByIdAsJobOfferApi(nonExistentId)).toEqual(null)
     })
 
     it("should return a job offer with correct format on getJobsPartnersByIdAsJobOfferApi", async () => {
@@ -2452,7 +2452,7 @@ describe("findJobOpportunityById tests", () => {
       await getDbCollection("recruiters").insertOne(lbaJob)
     })
 
-    it("should throw a job not found error on getLbaJobByIdV2AsJobOfferApi", async () => {
+    it("should return null when not found", async () => {
       // Créer un contexte de requête mock
       const context = {
         addWarning: vi.fn(),
@@ -2461,8 +2461,7 @@ describe("findJobOpportunityById tests", () => {
       // Utiliser un ID qui n'existe pas dans la base de données
       const nonExistentId = new ObjectId()
 
-      // Vérifier que la fonction lance bien une erreur
-      await expect(getLbaJobByIdV2AsJobOfferApi(nonExistentId, context)).rejects.toThrow("Job not found")
+      expect(await getLbaJobByIdV2AsJobOfferApi(nonExistentId, context)).toEqual(null)
 
       // Vérifier que la méthode addWarning a été appelée avec le bon message
       expect(context.addWarning).toHaveBeenCalledWith("JOB_NOT_FOUND")

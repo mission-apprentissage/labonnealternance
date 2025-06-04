@@ -1061,6 +1061,7 @@ export async function getLbaJobByIdV2AsJobOfferApi(id: ObjectId, context: JobOpp
   const job = await getLbaJobByIdV2AsJobResult({ id: id.toString(), caller: context?.caller })
 
   if (!job) {
+    context.addWarning("JOB_NOT_FOUND")
     return null
   }
 
