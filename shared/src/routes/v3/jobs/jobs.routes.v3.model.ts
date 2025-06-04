@@ -122,12 +122,13 @@ export const zJobSearchApiV3Query = z
     rncp: extensions.rncpCode().nullable().default(null),
     partners_to_exclude: z
       .union([extensions.buildEnum(JOBPARTNERS_LABEL), z.array(extensions.buildEnum(JOBPARTNERS_LABEL))])
-      .optional()
-      .transform((v) => (v ? (Array.isArray(v) ? v : [v]) : [])),
+      .transform((v) => (v ? (Array.isArray(v) ? v : [v]) : []))
+      .nullish(),
     departements: z
       .union([z.string(), z.array(z.string())])
-      .optional()
-      .transform((v) => (v ? (Array.isArray(v) ? v : [v]) : [])),
+      .transform((v) => (v ? (Array.isArray(v) ? v : [v]) : []))
+      .nullish(),
+
     opco: extensions.buildEnum(OPCOS_LABEL).nullable().default(null),
   })
   .superRefine((data, ctx) => {
