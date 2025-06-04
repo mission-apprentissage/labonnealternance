@@ -120,8 +120,14 @@ export const zJobSearchApiV3Query = z
     target_diploma_level: zDiplomaEuropeanLevel.optional(),
     romes: extensions.romeCodeArray().nullable().default(null),
     rncp: extensions.rncpCode().nullable().default(null),
-    partners_to_exclude: z.array(extensions.buildEnum(JOBPARTNERS_LABEL)).nullish(),
-    departements: z.array(z.string()).nullish(),
+    partners_to_exclude: z
+      .union([extensions.buildEnum(JOBPARTNERS_LABEL), z.array(extensions.buildEnum(JOBPARTNERS_LABEL))])
+      .optional()
+      .transform((v) => (v ? (Array.isArray(v) ? v : [v]) : [])),
+    departements: z
+      .union([z.string(), z.array(z.string())])
+      .optional()
+      .transform((v) => (v ? (Array.isArray(v) ? v : [v]) : [])),
     opco: extensions.buildEnum(OPCOS_LABEL).nullable().default(null),
   })
   .superRefine((data, ctx) => {
