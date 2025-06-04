@@ -29,6 +29,7 @@ import {
   type IJobSearchApiV3Response,
 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 
+import { normalizeDepartementToRegex } from "@/common/utils/geolib"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { getPartnerJobs } from "@/services/partnerJob.service"
 
@@ -404,6 +405,7 @@ export const getJobsPartnersFromDB = async ({
   geo,
   target_diploma_level,
   partners_to_exclude,
+  departements,
   opco,
 }: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivate[]> => {
   const query: Filter<IJobsPartnersOfferPrivate> = {
@@ -422,6 +424,11 @@ export const getJobsPartnersFromDB = async ({
 
   if (target_diploma_level) {
     query["offer_target_diploma.european"] = { $in: [target_diploma_level, null] }
+  }
+
+  if (departements?.length) {
+    const departmentsRegex = departements.flatMap((code) => normalizeDepartementToRegex(code))
+    query.workplace_address_zipcode = { $in: departmentsRegex }
   }
 
   if (opco) {
@@ -502,10 +509,17 @@ export const getJobsPartnersFromDBForUI = async ({ romes, geo, target_diploma_le
     .toArray()
 }
 
-export const getJobsPartnersForApi = async ({ romes, geo, target_diploma_level, partners_to_exclude, opco }: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> => {
+export const getJobsPartnersForApi = async ({
+  romes,
+  geo,
+  target_diploma_level,
+  partners_to_exclude,
+  departements,
+  opco,
+}: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> => {
   // recruteurs_lba are available in a different array from the API returned payload
   const partnersToExclude = partners_to_exclude ? [...partners_to_exclude, JOBPARTNERS_LABEL.RECRUTEURS_LBA] : [JOBPARTNERS_LABEL.RECRUTEURS_LBA]
-  const jobsPartners = await getJobsPartnersFromDB({ romes, geo, target_diploma_level, partners_to_exclude: partnersToExclude, opco })
+  const jobsPartners = await getJobsPartnersFromDB({ romes, geo, target_diploma_level, partners_to_exclude: partnersToExclude, opco, departements })
 
   return jobsPartners.map((j) =>
     jobsRouteApiv3Converters.convertToJobOfferApiReadV3({
@@ -780,10 +794,15 @@ async function findLbaJobOpportunities(query: IJobSearchApiV3QueryResolved): Pro
     romes: query.romes ?? null,
     niveau: null,
     limit: 150,
+    departements: query.departements ?? null,
   }
 
   if (query.target_diploma_level) {
     payload.niveau = NIVEAU_DIPLOME_LABEL[query.target_diploma_level]
+  }
+
+  if (query.opco) {
+    payload.opco = query.opco
   }
 
   const lbaJobs = await getLbaJobsV2(payload)
