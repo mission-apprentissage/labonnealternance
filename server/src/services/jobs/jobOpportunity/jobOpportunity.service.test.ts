@@ -1720,6 +1720,122 @@ describe("findJobsOpportunities", () => {
     })
   })
 
+  describe("when filtered by codesDepartements", () => {
+    beforeEach(async () => {
+      await getDbCollection("jobs_partners").deleteMany({})
+      await getDbCollection("recruiters").deleteMany({})
+
+      await getDbCollection("jobs_partners").insertMany([
+        generateJobsPartnersOfferPrivate({
+          offer_rome_codes: ["M1602"],
+          workplace_address_zipcode: "75008",
+          workplace_geopoint: parisFixture.centre,
+          partner_job_id: "job-id-dept-75",
+        }),
+        generateJobsPartnersOfferPrivate({
+          offer_rome_codes: ["M1602"],
+          workplace_address_zipcode: "77100",
+          workplace_geopoint: parisFixture.centre,
+          partner_job_id: "job-id-dept-77",
+        }),
+        generateJobsPartnersOfferPrivate({
+          offer_rome_codes: ["M1602"],
+          workplace_address_zipcode: "20000",
+          workplace_geopoint: parisFixture.centre,
+          partner_job_id: "job-id-dept-2A",
+        }),
+        generateJobsPartnersOfferPrivate({
+          offer_rome_codes: ["M1602"],
+          workplace_address_zipcode: "20200",
+          workplace_geopoint: parisFixture.centre,
+          partner_job_id: "job-id-dept-2B",
+        }),
+        generateJobsPartnersOfferPrivate({
+          offer_rome_codes: ["M1602"],
+          workplace_address_zipcode: "97110",
+          workplace_geopoint: parisFixture.centre,
+          partner_job_id: "job-id-dept-971",
+        }),
+      ])
+    })
+
+    it("should return jobs for a single department code", async () => {
+      const results = await findJobsOpportunities(
+        {
+          longitude: parisFixture.centre.coordinates[0],
+          latitude: parisFixture.centre.coordinates[1],
+          radius: 30,
+          romes: ["M1602"],
+          rncp: null,
+          departements: ["75"],
+          opco: null,
+        },
+        new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
+      )
+
+      expect(results.jobs).toHaveLength(1)
+      expect(results.jobs[0].identifier.partner_job_id).toBe("job-id-dept-75")
+    })
+
+    it("should return jobs for a list of department codes", async () => {
+      const results = await findJobsOpportunities(
+        {
+          longitude: parisFixture.centre.coordinates[0],
+          latitude: parisFixture.centre.coordinates[1],
+          radius: 30,
+          romes: ["M1602"],
+          departements: ["75", "77"],
+          rncp: null,
+          opco: null,
+        },
+        new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
+      )
+
+      const zipcodes = results.jobs.map((j) => j.identifier.partner_job_id)
+      expect(zipcodes).toContain("job-id-dept-75")
+      expect(zipcodes).toContain("job-id-dept-77")
+      expect(results.jobs).toHaveLength(2)
+    })
+
+    it("should return jobs for Corse departments (2A, 2B)", async () => {
+      const results = await findJobsOpportunities(
+        {
+          longitude: parisFixture.centre.coordinates[0],
+          latitude: parisFixture.centre.coordinates[1],
+          radius: 30,
+          romes: ["M1602"],
+          departements: ["2A", "2B"],
+          rncp: null,
+          opco: null,
+        },
+        new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
+      )
+
+      const zipcodes = results.jobs.map((j) => j.identifier.partner_job_id)
+      expect(zipcodes).toContain("job-id-dept-2A")
+      expect(zipcodes).toContain("job-id-dept-2B")
+      expect(results.jobs).toHaveLength(2)
+    })
+
+    it("should return jobs for DROM-COM departments", async () => {
+      const results = await findJobsOpportunities(
+        {
+          longitude: parisFixture.centre.coordinates[0],
+          latitude: parisFixture.centre.coordinates[1],
+          radius: 30,
+          romes: ["M1602"],
+          departements: ["971"],
+          rncp: null,
+          opco: null,
+        },
+        new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
+      )
+
+      expect(results.jobs).toHaveLength(1)
+      expect(results.jobs[0].identifier.partner_job_id).toBe("job-id-dept-971")
+    })
+  })
+
   describe("france travail jobs", () => {
     beforeEach(async () => {
       await getDbCollection("jobs_partners").deleteMany({})
@@ -2334,33 +2450,20 @@ describe("findJobOpportunityById tests", () => {
       }
     })
 
-    it("should throw a job not found error on getJobsPartnersByIdAsJobOfferApi", async () => {
-      // Créer un contexte de requête mock
-      const context = {
-        addWarning: vi.fn(),
-      } as unknown as JobOpportunityRequestContext
-
+    it("should return null when not found", async () => {
       // Utiliser un ID qui n'existe pas dans la base de données
       const nonExistentId = new ObjectId()
 
       // Vérifier que la fonction lance bien une erreur
-      await expect(getJobsPartnersByIdAsJobOfferApi(nonExistentId, context)).rejects.toThrow("Job not found")
-
-      // Vérifier que la méthode addWarning a été appelée avec le bon message
-      expect(context.addWarning).toHaveBeenCalledWith("JOB_NOT_FOUND")
+      expect(await getJobsPartnersByIdAsJobOfferApi(nonExistentId)).toEqual(null)
     })
 
     it("should return a job offer with correct format on getJobsPartnersByIdAsJobOfferApi", async () => {
-      // Créer un contexte de requête mock
-      const context = {
-        addWarning: vi.fn(),
-      } as unknown as JobOpportunityRequestContext
-
       // Mock de la fonction de conversion pour vérifier qu'elle est appelée avec les bons paramètres
       const convertSpy = vi.spyOn(jobsRouteApiv3Converters, "convertToJobOfferApiReadV3")
 
       // Appeler la fonction avec l'ID existant
-      const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId, context)
+      const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId)
 
       // Vérifier que la fonction de conversion a été appelée avec les bons paramètres
       expect(convertSpy).toHaveBeenCalledWith({
@@ -2369,9 +2472,6 @@ describe("findJobOpportunityById tests", () => {
         apply_url: originalJob.apply_url ?? `${config.publicUrl}/emploi/${originalJob.partner_label}/${originalJob._id}/${originalJob.offer_title}`,
         apply_recipient_id: originalJob.apply_email ? `partners_${originalJob._id}` : null,
       })
-
-      // Vérifier que addWarning n'a pas été appelé car le job a été trouvé
-      expect(context.addWarning).not.toHaveBeenCalled()
 
       // Vérifier que le résultat n'est pas null
       expect(result).not.toBeNull()
@@ -2392,16 +2492,11 @@ describe("findJobOpportunityById tests", () => {
       await getDbCollection("jobs_partners").deleteMany({})
       await getDbCollection("jobs_partners").insertOne({ ...originalJob, apply_email: null })
 
-      // Créer un contexte de requête mock
-      const context = {
-        addWarning: vi.fn(),
-      } as unknown as JobOpportunityRequestContext
-
       // Mock de la fonction de conversion pour vérifier qu'elle est appelée avec les bons paramètres
       const convertSpy = vi.spyOn(jobsRouteApiv3Converters, "convertToJobOfferApiReadV3")
 
       // Appeler la fonction avec l'ID existant
-      const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId, context)
+      const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId)
 
       // Vérifier que la fonction de conversion a été appelée avec les bons paramètres
       expect(convertSpy).toHaveBeenCalledWith({
@@ -2410,9 +2505,6 @@ describe("findJobOpportunityById tests", () => {
         apply_url: originalJob.apply_url ?? `${config.publicUrl}/emploi/${originalJob.partner_label}/${originalJob._id}/${originalJob.offer_title}`,
         apply_recipient_id: null, // Vérification dans l'appel à la conversion
       })
-
-      // Vérifier que addWarning n'a pas été appelé car le job a été trouvé
-      expect(context.addWarning).not.toHaveBeenCalled()
 
       // Vérifier que le résultat n'est pas null
       expect(result).not.toBeNull()
@@ -2436,16 +2528,11 @@ describe("findJobOpportunityById tests", () => {
       await getDbCollection("jobs_partners").deleteMany({})
       await getDbCollection("jobs_partners").insertOne({ ...originalJob, apply_email: "test@mail.fr" })
 
-      // Créer un contexte de requête mock
-      const context = {
-        addWarning: vi.fn(),
-      } as unknown as JobOpportunityRequestContext
-
       // Mock de la fonction de conversion pour vérifier qu'elle est appelée avec les bons paramètres
       const convertSpy = vi.spyOn(jobsRouteApiv3Converters, "convertToJobOfferApiReadV3")
 
       // Appeler la fonction avec l'ID existant
-      const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId, context)
+      const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId)
 
       // Vérifier que la fonction de conversion a été appelée avec les bons paramètres
       expect(convertSpy).toHaveBeenCalledWith({
@@ -2455,9 +2542,6 @@ describe("findJobOpportunityById tests", () => {
         apply_email: "test@mail.fr",
         apply_recipient_id: `partners_${originalJob._id}`, // Vérification dans l'appel à la conversion
       })
-
-      // Vérifier que addWarning n'a pas été appelé car le job a été trouvé
-      expect(context.addWarning).not.toHaveBeenCalled()
 
       // Vérifier que le résultat n'est pas null
       expect(result).not.toBeNull()
@@ -2484,7 +2568,7 @@ describe("findJobOpportunityById tests", () => {
       await getDbCollection("recruiters").insertOne(lbaJob)
     })
 
-    it("should throw a job not found error on getLbaJobByIdV2AsJobOfferApi", async () => {
+    it("should return null when not found", async () => {
       // Créer un contexte de requête mock
       const context = {
         addWarning: vi.fn(),
@@ -2493,8 +2577,7 @@ describe("findJobOpportunityById tests", () => {
       // Utiliser un ID qui n'existe pas dans la base de données
       const nonExistentId = new ObjectId()
 
-      // Vérifier que la fonction lance bien une erreur
-      await expect(getLbaJobByIdV2AsJobOfferApi(nonExistentId, context)).rejects.toThrow("Job not found")
+      expect(await getLbaJobByIdV2AsJobOfferApi(nonExistentId, context)).toEqual(null)
 
       // Vérifier que la méthode addWarning a été appelée avec le bon message
       expect(context.addWarning).toHaveBeenCalledWith("JOB_NOT_FOUND")

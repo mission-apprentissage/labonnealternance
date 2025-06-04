@@ -11,7 +11,7 @@ import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { getFtJob, searchForFtJobs } from "@/common/apis/franceTravail/franceTravail.client"
 
 import { IApiError, manageApiError } from "../common/utils/errorManager"
-import { roundDistance } from "../common/utils/geolib"
+import { matchesDepartment, roundDistance } from "../common/utils/geolib"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 
@@ -312,12 +312,14 @@ export const getFtJobsV2 = async ({
   radius,
   jobLimit,
   diploma,
+  departements,
 }: {
   romes: string[] | null
   insee: string | null
   radius: number
   jobLimit: number
   diploma: keyof typeof NIVEAUX_POUR_OFFRES_PE | null | undefined
+  departements?: string[] | null
 }): Promise<FTResponse> => {
   const distance = radius || 10
 
@@ -352,7 +354,14 @@ export const getFtJobsV2 = async ({
     return { resultats: [] }
   }
 
-  return jobs.data || { resultats: [] }
+  const filteredJobs = departements?.length
+    ? jobs.data.resultats.filter((job: any) => {
+        const codePostal = job?.lieuTravail?.codePostal
+        return typeof codePostal === "string" && matchesDepartment(codePostal, departements)
+      })
+    : jobs.data.resultats
+
+  return { resultats: filteredJobs }
 }
 
 /**

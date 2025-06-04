@@ -84,6 +84,28 @@ export const zJobOfferApiReadV3 = z.object({
 
 export type IJobOfferApiReadV3 = z.output<typeof zJobOfferApiReadV3>
 
+export enum JOB_PUBLISHING_STATUS {
+  WILL_BE_PUBLISHED = "WILL_BE_PUBLISHED",
+  PUBLISHED = "PUBLISHED",
+  WILL_NOT_BE_PUBLISHED = "WILL_NOT_BE_PUBLISHED",
+}
+
+export const zJobOfferPublishingV3 = z.object({
+  publishing: z
+    .object({
+      status: extensions.buildEnum(JOB_PUBLISHING_STATUS).describe("Publishing status"),
+      error: z
+        .object({
+          code: z.string().describe("Code of the error preventing the offer to be published"),
+          label: z.string().describe("Description of the error preventing the offer to be published"),
+        })
+        .nullish(),
+    })
+    .describe("Informations about the publishing of the last update of the offer. Indeed, the publishing process usually takes around 10 minutes"),
+})
+
+export type IJobOfferPublishingV3 = z.output<typeof zJobOfferPublishingV3>
+
 export const zJobSearchApiV3Response = z.object({
   jobs: zJobOfferApiReadV3.array(),
   recruiters: zJobRecruiterApiReadV3.array(),
@@ -99,6 +121,7 @@ export const zJobSearchApiV3Query = z
     romes: extensions.romeCodeArray().nullable().default(null),
     rncp: extensions.rncpCode().nullable().default(null),
     partners_to_exclude: z.array(extensions.buildEnum(JOBPARTNERS_LABEL)).nullish(),
+    departements: z.array(z.string()).nullish(),
     opco: extensions.buildEnum(OPCOS_LABEL).nullable().default(null),
   })
   .superRefine((data, ctx) => {

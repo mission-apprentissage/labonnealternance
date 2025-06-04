@@ -26,3 +26,20 @@ export const convertStringCoordinatesToGeoPoint = (coordinates: string): IGeoPoi
     coordinates: [parseFloat(coords[1]), parseFloat(coords[0])],
   }
 }
+
+export const normalizeDepartementToRegex = (code: string): RegExp[] => {
+  // Corse
+  if (code === "2A") return [/^200/, /^201/]
+  if (code === "2B") return [/^202/, /^206/]
+
+  // Cas DROM-COM (971 à 979)
+  if (/^97\d$/.test(code)) return [new RegExp(`^${code}`)]
+
+  // Cas général
+  return [new RegExp(`^${code}`)]
+}
+
+export const matchesDepartment = (codePostal: string, departements: string[]): boolean => {
+  const regexList = departements.flatMap(normalizeDepartementToRegex)
+  return regexList.some((regex) => regex.test(codePostal))
+}
