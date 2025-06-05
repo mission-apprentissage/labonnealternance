@@ -8,6 +8,7 @@ import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellow
 import { processLaposte } from "@/jobs/offrePartenaire/laposte/processLaposte"
 import { processMeteojob } from "@/jobs/offrePartenaire/meteojob/processMeteojob"
 import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
+import { processFillRomeStandalone } from "@/jobs/offrePartenaire/processFillRomeStandalone"
 import { processRecruteursLba } from "@/jobs/offrePartenaire/recruteur-lba/processRecruteursLba"
 import { processRhAlternance } from "@/jobs/offrePartenaire/rh-alternance/processRhAlternance"
 import { renvoiMailCreationCompte } from "@/jobs/oneTimeJob/renvoiMailCreationCompte"
@@ -229,6 +230,11 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processComputedAndImportToJobPartners,
     description: "Chaîne complète de traitement des jobs_partners",
+  },
+  // PROCESS ROMMAGE STANDALONE
+  {
+    fct: processFillRomeStandalone,
+    description: "Chaîne complète de traitement des romes pour les jobs_partners",
   },
   // IMPORT COMPUTED TO JOBS PARTNERS
   {

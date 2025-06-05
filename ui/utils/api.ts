@@ -48,6 +48,7 @@ export const fillOffre = (jobId, token) => apiPut(`/formulaire/offre/:jobId/prov
 export const notifyLbaJobDetailView = async (jobId: string) => await apiPost("/v1/jobs/matcha/:id/stats/view-details", { params: { id: jobId } })
 export const notifyJobDetailViewV3 = (jobId: string) => apiPost("/v3/jobs/:id/stats/:eventType", { params: { id: jobId, eventType: "detail_view" } })
 export const notifyJobSearchViewV3 = (ids: string[]) => {
+  ids = ids.filter((id) => /^[0-9a-f]{24}$/gi.test(id))
   if (!ids.length) return
   return apiPost("/v3/jobs/stats/search_view", { body: ids })
 }
