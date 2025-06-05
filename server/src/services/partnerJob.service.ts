@@ -221,18 +221,13 @@ export const getPartnerJobById = async ({ id, caller }: { id: ObjectId; caller?:
 }
 
 export const getPartnerJobByIdV2 = async (id: string): Promise<ILbaItemPartnerJob> => {
-  try {
-    const rawPartnerJob = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(id) })
+  const rawPartnerJob = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(id) })
 
-    if (!rawPartnerJob) {
-      throw badRequest("Job not found")
-    }
-
-    const partnerJob = transformPartnerJob(rawPartnerJob, "V2")
-
-    return partnerJob
-  } catch (error) {
-    sentryCaptureException(error)
-    throw badRequest("getPartnerJobByIdV2 - error sent to sentry")
+  if (!rawPartnerJob) {
+    throw badRequest("Job not found")
   }
+
+  const partnerJob = transformPartnerJob(rawPartnerJob, "V2")
+
+  return partnerJob
 }

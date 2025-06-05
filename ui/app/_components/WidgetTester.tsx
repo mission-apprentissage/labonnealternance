@@ -230,7 +230,7 @@ export function WidgetTester() {
       <Text pl={6}>
         La documentation est ici :{" "}
         <Link
-          href="https://mission-apprentissage.gitbook.io/la-bonne-alternance/documentation"
+          href="https://www.data.gouv.fr/fr/dataservices/api-la-bonne-alternance/"
           aria-label="Accès à la documentation - nouvelle fenêtre"
           target="docIdea"
           isExternal
@@ -238,7 +238,7 @@ export function WidgetTester() {
           fontWeight={700}
           color="grey.425"
         >
-          https://mission-apprentissage.gitbook.io/la-bonne-alternance/documentation <ExternalLinkIcon mx="2px" />
+          https://www.data.gouv.fr/fr/dataservices/api-la-bonne-alternance/ <ExternalLinkIcon mx="2px" />
         </Link>
       </Text>
       <Formik<IFormTypeWidget>

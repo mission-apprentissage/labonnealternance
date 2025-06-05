@@ -239,16 +239,24 @@ export const sendApplication = async ({
   }
 }
 
-async function validateApplicationFileType(base64String: string) {
-  // Remove the data URL part if it's present
-  const base64Data = base64String.replace(/^data:[^;]+;base64,/, "")
-  // Convert base64 string to a buffer
-  const buffer = Buffer.from(base64Data, "base64")
-  // Get the file type from the buffer
-  const type = await fileTypeFromBuffer(buffer)
+async function identifyFileType(base64String: string) {
+  try {
+    // Remove the data URL part if it's present
+    const base64Data = base64String.replace(/^data:[^;]+;base64,/, "")
+    // Convert base64 string to a buffer
+    const buffer = Buffer.from(base64Data, "base64")
+    // Get the file type from the buffer
+    const type = await fileTypeFromBuffer(buffer)
+    return type
+  } catch (err) {
+    return undefined
+  }
+}
 
+async function validateApplicationFileType(base64String: string) {
+  const type = await identifyFileType(base64String)
   if (!type) {
-    sentryCaptureException("Application file type could not be determined", { extra: { responseData: base64Data } })
+    sentryCaptureException("Application file type could not be determined", { extra: { responseData: base64String } })
     throw badRequest(BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED)
   }
 

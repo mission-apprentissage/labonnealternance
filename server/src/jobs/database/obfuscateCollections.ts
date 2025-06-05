@@ -281,6 +281,7 @@ export async function obfuscateCollections(): Promise<void> {
     "raw_pass",
     "raw_hellowork",
     "raw_kelio",
+    "raw_laposte",
     "raw_rhalternance",
     "computed_jobs_partners",
   ]
