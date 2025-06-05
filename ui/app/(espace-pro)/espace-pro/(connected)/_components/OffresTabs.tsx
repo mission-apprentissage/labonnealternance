@@ -184,7 +184,7 @@ export const OffresTabs = ({
                 rel: "noopener noreferrer",
                 "aria-label": "Lien vers les formations - nouvelle fenêtre",
               }
-        const directLink = `${publicConfig.baseUrl}${buildJobUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, row._id, row.rome_appellation_label)}`
+        const directLink = `${publicConfig.baseUrl}${buildJobUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, row._id, row.rome_appellation_label || undefined)}`
         const isDisable = row.job_status === "Annulée" || row.job_status === "Pourvue" || row.job_status === "En attente"
         return (
           <Box display={isDisable ? "none" : "block"}>
