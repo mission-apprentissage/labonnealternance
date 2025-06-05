@@ -8,6 +8,7 @@ import {
   createJobOffer,
   findJobOpportunityById,
   findJobsOpportunities,
+  findOfferPublishing,
   incrementDetailViewCount,
   incrementPostulerClickCount,
   incrementSearchViewCount,
@@ -73,9 +74,23 @@ export const jobsApiV3Routes = (server: Server) => {
   )
 
   server.get("/v3/jobs/:id", { schema: zRoutes.get["/v3/jobs/:id"], onRequest: server.auth(zRoutes.get["/v3/jobs/:id"]) }, async (req, res) => {
-    const result = await findJobOpportunityById(req.params.id, new JobOpportunityRequestContext(zRoutes.get["/v3/jobs/:id"], "api-apprentissage"))
+    const { id } = req.params
+    const result = await findJobOpportunityById(id, new JobOpportunityRequestContext(zRoutes.get["/v3/jobs/:id"], "api-apprentissage"))
     return res.send(result)
   })
+
+  server.get(
+    "/v3/jobs/:id/publishing-informations",
+    {
+      schema: zRoutes.get["/v3/jobs/:id/publishing-informations"],
+      onRequest: server.auth(zRoutes.get["/v3/jobs/:id/publishing-informations"]),
+    },
+    async (req, res) => {
+      const { id } = req.params
+      const result = await findOfferPublishing(id, new JobOpportunityRequestContext(zRoutes.get["/v3/jobs/:id/publishing-informations"], "api-apprentissage"))
+      return res.send(result)
+    }
+  )
 
   server.post(
     "/v3/jobs/:id/stats/:eventType",

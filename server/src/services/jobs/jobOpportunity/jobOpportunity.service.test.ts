@@ -3,7 +3,7 @@ import { IApiAlternanceTokenData } from "api-alternance-sdk"
 import omit from "lodash-es/omit"
 import { ObjectId } from "mongodb"
 import nock from "nock"
-import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, OPCOS_LABEL, RECRUITER_STATUS, TRAINING_CONTRACT_TYPE } from "shared/constants/index"
+import { NIVEAUX_POUR_LBA, OPCOS_LABEL, RECRUITER_STATUS, TRAINING_CONTRACT_TYPE } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
@@ -12,7 +12,7 @@ import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, ma
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import { IRecruiter, IReferentielRome, JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models/index"
-import { IJobsPartnersOfferPrivate, INiveauDiplomeEuropeen, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import {
   jobsRouteApiv3Converters,
   zJobOfferApiReadV3,
@@ -24,14 +24,11 @@ import {
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
-import { searchForFtJobs } from "@/common/apis/franceTravail/franceTravail.client"
-import { generateFtJobFixture } from "@/common/apis/franceTravail/franceTravail.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
 import config from "../../../config"
-import { FTJob } from "../../ftjob.service.types"
 
 import {
   createJobOffer,
@@ -187,19 +184,6 @@ describe("findJobsOpportunities", () => {
       partner_job_id: "job-id-3",
     }),
   ]
-  const ftJobs: FTJob[] = [
-    generateFtJobFixture({
-      id: "1",
-      romeCode: "M1602",
-      lieuTravail: {
-        libelle: "Paris",
-        latitude: parisFixture.centre.coordinates[1].toString(),
-        longitude: parisFixture.centre.coordinates[0].toString(),
-        codePostal: parisFixture.codesPostaux[0],
-        commune: parisFixture.code,
-      },
-    }),
-  ]
   const romes: IReferentielRome[] = [
     generateReferentielRome({
       rome: {
@@ -220,8 +204,6 @@ describe("findJobsOpportunities", () => {
   })
 
   it("should execute query", async () => {
-    vi.mocked(searchForFtJobs).mockResolvedValue({ data: { resultats: ftJobs }, contentRange: "" })
-
     const results = await findJobsOpportunities(
       {
         longitude: parisFixture.centre.coordinates[0],
@@ -245,9 +227,6 @@ describe("findJobsOpportunities", () => {
           }),
         }),
         expect.objectContaining({
-          identifier: { id: null, partner_job_id: ftJobs[0].id, partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL },
-        }),
-        expect.objectContaining({
           identifier: { id: partnerJobs[0]._id, partner_job_id: partnerJobs[0].partner_job_id, partner_label: partnerJobs[0].partner_label },
           workplace: expect.objectContaining({
             location: expect.objectContaining({
@@ -268,20 +247,6 @@ describe("findJobsOpportunities", () => {
       warnings: [],
     })
 
-    expect(searchForFtJobs).toHaveBeenCalledTimes(1)
-    expect(searchForFtJobs).toHaveBeenNthCalledWith(
-      1,
-      {
-        codeROME: "M1602",
-        commune: "75101", // Special case for paris
-        sort: 2,
-        natureContrat: "E2,FS",
-        range: "0-149",
-        distance: 30,
-      },
-      { throwOnError: true }
-    )
-
     expect(
       results.jobs.map((j) => {
         j.identifier.id = ""
@@ -300,8 +265,6 @@ describe("findJobsOpportunities", () => {
   })
 
   it("should support query without rncp or rome filter", async () => {
-    vi.mocked(searchForFtJobs).mockResolvedValue({ data: { resultats: ftJobs }, contentRange: "" })
-
     const results = await findJobsOpportunities(
       {
         longitude: parisFixture.centre.coordinates[0],
@@ -334,9 +297,6 @@ describe("findJobsOpportunities", () => {
               geopoint: lbaJobs[2].geopoint,
             }),
           }),
-        }),
-        expect.objectContaining({
-          identifier: { id: null, partner_job_id: ftJobs[0].id, partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL },
         }),
         expect.objectContaining({
           identifier: { id: partnerJobs[0]._id, partner_job_id: partnerJobs[0].partner_job_id, partner_label: partnerJobs[0].partner_label },
@@ -373,24 +333,9 @@ describe("findJobsOpportunities", () => {
       ],
       warnings: [],
     })
-
-    expect(searchForFtJobs).toHaveBeenCalledTimes(1)
-    expect(searchForFtJobs).toHaveBeenNthCalledWith(
-      1,
-      {
-        commune: "75101", // Special case for paris
-        sort: 2,
-        natureContrat: "E2,FS",
-        range: "0-149",
-        distance: 30,
-      },
-      { throwOnError: true }
-    )
   })
 
   it("should support query without geo filter", async () => {
-    vi.mocked(searchForFtJobs).mockResolvedValue({ data: { resultats: ftJobs }, contentRange: "" })
-
     const results = await findJobsOpportunities(
       {
         longitude: null,
@@ -416,9 +361,6 @@ describe("findJobsOpportunities", () => {
           identifier: { id: lbaJobs[0].jobs[0]._id, partner_job_id: lbaJobs[0].jobs[0]._id.toString(), partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA },
         }),
         expect.objectContaining({
-          identifier: { id: null, partner_job_id: ftJobs[0].id, partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL },
-        }),
-        expect.objectContaining({
           identifier: { id: partnerJobs[1]._id, partner_job_id: partnerJobs[1].partner_job_id, partner_label: partnerJobs[1].partner_label },
         }),
         expect.objectContaining({
@@ -441,23 +383,10 @@ describe("findJobsOpportunities", () => {
       ],
       warnings: [],
     })
-    expect(searchForFtJobs).toHaveBeenCalledTimes(1)
-    expect(searchForFtJobs).toHaveBeenNthCalledWith(
-      1,
-      {
-        sort: 2,
-        natureContrat: "E2,FS",
-        range: "0-149",
-        codeROME: "M1602",
-      },
-      { throwOnError: true }
-    )
   })
 
   describe("searching by rncp code", async () => {
     it("should return jobs corresponding to the romes codes associated with the requested rncp code", async () => {
-      vi.mocked(searchForFtJobs).mockResolvedValue({ data: { resultats: [] }, contentRange: "" })
-
       const scopeApiAlternance = nock("https://api.apprentissage.beta.gouv.fr:443")
         .get("/api/certification/v1")
         .query({ "identifiant.rncp": certificationFixtures["RNCP37098-46T31203"].identifiant.rncp })
@@ -512,20 +441,6 @@ describe("findJobsOpportunities", () => {
         warnings: [],
       })
       expect(scopeApiAlternance.isDone()).toBeTruthy()
-      expect(searchForFtJobs).toHaveBeenCalledTimes(1)
-      expect(searchForFtJobs).toHaveBeenNthCalledWith(
-        1,
-        {
-          // Code ROME correspondant au code RNCP
-          codeROME: "D1210,D1212,D1209,D1214,D1211",
-          commune: "75101", // Special case for paris
-          sort: 2,
-          natureContrat: "E2,FS",
-          range: "0-149",
-          distance: 30,
-        },
-        { throwOnError: true }
-      )
     })
 
     // TODO: Fix this test
@@ -594,8 +509,6 @@ describe("findJobsOpportunities", () => {
     })
 
     it("should resolve RNCP continuity", async () => {
-      vi.mocked(searchForFtJobs).mockResolvedValue({ data: { resultats: [] }, contentRange: "" })
-
       const scopeApiAlternance = nock("https://api.apprentissage.beta.gouv.fr:443")
         .get("/api/certification/v1")
         .query({ "identifiant.rncp": "RNCP37098" })
@@ -655,26 +568,11 @@ describe("findJobsOpportunities", () => {
         ],
         warnings: [],
       })
-      expect(searchForFtJobs).toHaveBeenCalledTimes(1)
-      expect(searchForFtJobs).toHaveBeenCalledWith(
-        {
-          // Code ROME correspondant au code RNCP
-          codeROME: "D1210,D1212,D1209,D1214,D1211",
-          commune: "75101", // Special case for paris
-          sort: 2,
-          natureContrat: "E2,FS",
-          range: "0-149",
-          distance: 30,
-        },
-        { throwOnError: true }
-      )
       expect(scopeApiAlternance.isDone()).toBeTruthy()
     })
   })
 
   it("should RNCP & ROME filter appliy as OR condition", async () => {
-    vi.mocked(searchForFtJobs).mockResolvedValue({ data: { resultats: ftJobs }, contentRange: "" })
-
     const scopeApiAlternance = nock("https://api.apprentissage.beta.gouv.fr:443")
       .get("/api/certification/v1")
       .query({ "identifiant.rncp": certificationFixtures["RNCP37098-46T31203"].identifiant.rncp })
@@ -715,9 +613,6 @@ describe("findJobsOpportunities", () => {
           }),
         }),
         expect.objectContaining({
-          identifier: { id: null, partner_job_id: ftJobs[0].id, partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL },
-        }),
-        expect.objectContaining({
           identifier: { id: partnerJobs[0]._id, partner_job_id: partnerJobs[0].partner_job_id, partner_label: partnerJobs[0].partner_label },
           workplace: expect.objectContaining({
             location: expect.objectContaining({
@@ -753,18 +648,6 @@ describe("findJobsOpportunities", () => {
       warnings: [],
     })
 
-    expect(searchForFtJobs).toHaveBeenCalledTimes(1)
-    expect(searchForFtJobs).toHaveBeenCalledWith(
-      {
-        codeROME: "M1602,D1210,D1212,D1209,D1214,D1211",
-        commune: "75101", // Special case for paris
-        sort: 2,
-        natureContrat: "E2,FS",
-        range: "0-149",
-        distance: 30,
-      },
-      { throwOnError: true }
-    )
     expect(scopeApiAlternance.isDone()).toBeTruthy()
   })
 
@@ -837,8 +720,6 @@ describe("findJobsOpportunities", () => {
 
   describe("labonnealternance jobs", () => {
     beforeEach(async () => {
-      vi.mocked(searchForFtJobs).mockResolvedValue({ data: { resultats: [] }, contentRange: "" })
-
       await getDbCollection("jobs_partners").deleteMany({})
     })
 
@@ -1339,9 +1220,6 @@ describe("findJobsOpportunities", () => {
   })
 
   describe("jobs partners", () => {
-    beforeEach(async () => {
-      vi.mocked(searchForFtJobs).mockResolvedValue({ data: { resultats: [] }, contentRange: "" })
-    })
     it("should limit jobs to 150", async () => {
       const extraOffers: IJobsPartnersOfferPrivate[] = Array.from({ length: 300 }, (e, idx) =>
         generateJobsPartnersOfferPrivate({
@@ -1720,181 +1598,124 @@ describe("findJobsOpportunities", () => {
     })
   })
 
-  describe("france travail jobs", () => {
+  describe("when filtered by codesDepartements", () => {
     beforeEach(async () => {
       await getDbCollection("jobs_partners").deleteMany({})
       await getDbCollection("recruiters").deleteMany({})
+
+      await getDbCollection("jobs_partners").insertMany([
+        generateJobsPartnersOfferPrivate({
+          offer_rome_codes: ["M1602"],
+          workplace_address_zipcode: "75008",
+          workplace_geopoint: parisFixture.centre,
+          partner_job_id: "job-id-dept-75",
+        }),
+        generateJobsPartnersOfferPrivate({
+          offer_rome_codes: ["M1602"],
+          workplace_address_zipcode: "77100",
+          workplace_geopoint: parisFixture.centre,
+          partner_job_id: "job-id-dept-77",
+        }),
+        generateJobsPartnersOfferPrivate({
+          offer_rome_codes: ["M1602"],
+          workplace_address_zipcode: "20000",
+          workplace_geopoint: parisFixture.centre,
+          partner_job_id: "job-id-dept-2A",
+        }),
+        generateJobsPartnersOfferPrivate({
+          offer_rome_codes: ["M1602"],
+          workplace_address_zipcode: "20200",
+          workplace_geopoint: parisFixture.centre,
+          partner_job_id: "job-id-dept-2B",
+        }),
+        generateJobsPartnersOfferPrivate({
+          offer_rome_codes: ["M1602"],
+          workplace_address_zipcode: "97110",
+          workplace_geopoint: parisFixture.centre,
+          partner_job_id: "job-id-dept-971",
+        }),
+      ])
     })
 
-    describe("when france travail api returns an error", () => {
-      it("should ignore france travail jobs", async () => {
-        vi.mocked(searchForFtJobs).mockRejectedValue(new Error("oops"))
-
-        const results = await findJobsOpportunities(
-          {
-            longitude: parisFixture.centre.coordinates[0],
-            latitude: parisFixture.centre.coordinates[1],
-            radius: 30,
-            romes: ["M1602"],
-            rncp: null,
-            opco: null,
-          },
-          new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
-        )
-
-        const parseResult = zJobSearchApiV3Response.safeParse(results)
-        expect.soft(parseResult.success).toBeTruthy()
-        expect(parseResult.error).toBeUndefined()
-        expect(results.jobs).toHaveLength(0)
-        expect(results.warnings).toEqual([
-          {
-            code: "FRANCE_TRAVAIL_API_ERROR",
-            message: "Unable to retrieve job offers from France Travail API",
-          },
-        ])
-      })
-    })
-
-    it("should select jobs within the radius", async () => {
-      vi.mocked(searchForFtJobs).mockResolvedValue({ data: { resultats: [] }, contentRange: "" })
-
+    it("should return jobs for a single department code", async () => {
       const results = await findJobsOpportunities(
         {
-          longitude: clichyFixture.centre.coordinates[0],
-          latitude: clichyFixture.centre.coordinates[1],
-          radius: 100,
+          longitude: parisFixture.centre.coordinates[0],
+          latitude: parisFixture.centre.coordinates[1],
+          radius: 30,
           romes: ["M1602"],
           rncp: null,
+          departements: ["75"],
           opco: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
-      const parseResult = zJobSearchApiV3Response.safeParse(results)
-      expect.soft(parseResult.success).toBeTruthy()
-      expect(parseResult.error).toBeUndefined()
-      expect(results.jobs).toHaveLength(0)
-      expect(results.warnings).toHaveLength(0)
-
-      expect(searchForFtJobs).toHaveBeenCalledTimes(1)
-      expect(searchForFtJobs).toHaveBeenCalledWith(
-        {
-          codeROME: "M1602",
-          commune: clichyFixture.code,
-          sort: 2,
-          natureContrat: "E2,FS",
-          range: "0-149",
-          distance: 100,
-        },
-        { throwOnError: true }
-      )
-    })
-
-    describe("when searching for jobs with a specific diploma", () => {
-      it.each<[INiveauDiplomeEuropeen, (typeof NIVEAUX_POUR_OFFRES_PE)[keyof typeof NIVEAUX_POUR_OFFRES_PE]]>([
-        ["3", "NV5"],
-        ["4", "NV4"],
-        ["5", "NV3"],
-        ["6", "NV2"],
-        ["7", "NV1"],
-      ])("should support filter by diploma %s as level %s", async (target_diploma_level, ftLevel) => {
-        vi.mocked(searchForFtJobs).mockResolvedValue({ data: { resultats: [] }, contentRange: "" })
-
-        const results = await findJobsOpportunities(
-          {
-            longitude: clichyFixture.centre.coordinates[0],
-            latitude: clichyFixture.centre.coordinates[1],
-            radius: 30,
-            romes: ["M1602"],
-            target_diploma_level,
-            rncp: null,
-            opco: null,
-          },
-          new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
-        )
-
-        const parseResult = zJobSearchApiV3Response.safeParse(results)
-        expect.soft(parseResult.success).toBeTruthy()
-        expect(parseResult.error).toBeUndefined()
-        expect(results.jobs).toHaveLength(0)
-        expect(results.warnings).toHaveLength(0)
-
-        expect(searchForFtJobs).toHaveBeenCalledTimes(1)
-        expect(searchForFtJobs).toHaveBeenCalledWith(
-          {
-            codeROME: "M1602",
-            commune: clichyFixture.code,
-            sort: 2,
-            natureContrat: "E2,FS",
-            range: "0-149",
-            distance: 30,
-            niveauFormation: ftLevel,
-          },
-          { throwOnError: true }
-        )
-      })
-    })
-
-    it("should remove jobs without geoloc", async () => {
-      const ftJobWithoutGeoloc = generateFtJobFixture({
-        id: "2507875",
-        intitule: "Assistant manager supermarché en alternance H/F",
-        description: "RESPONSABILITÉS : \n\n - La mise en rayon, l'étiquetage et la vérification des dates de consommation",
-        dateCreation: "2024-08-17T17:18:18.000Z",
-        dateActualisation: "2024-08-17T17:18:18.000Z",
-        lieuTravail: {
-          libelle: "59 - Nord",
-        },
-        romeCode: "D1507",
-        romeLibelle: "Employé / Employée de libre-service",
-        appellationlibelle: "Employé / Employée de libre-service",
-        entreprise: {
-          nom: "CFA ALTERLINE",
-          description: "Tu cherches un moyen de t'insérer dans le monde du travail tout en obtenant un diplôme reconnu par l'Etat ?",
-          entrepriseAdaptee: false,
-        },
-        typeContrat: "CDD",
-        typeContratLibelle: "Contrat à durée déterminée - 12 Mois",
-        natureContrat: "Contrat apprentissage",
-        experienceExige: "D",
-        experienceLibelle: "Débutant accepté",
-        salaire: {},
-        dureeTravailLibelle: "35 H  Travail en journée",
-        dureeTravailLibelleConverti: "Temps plein",
-        alternance: true,
-        nombrePostes: 1,
-        accessibleTH: false,
-        qualificationCode: "5",
-        qualificationLibelle: "Employé non qualifié",
-      })
-
-      vi.mocked(searchForFtJobs).mockResolvedValue({ data: { resultats: [ftJobs[0], ftJobWithoutGeoloc] }, contentRange: "" })
-
-      const results = await findJobsOpportunities(
-        {
-          longitude: clichyFixture.centre.coordinates[0],
-          latitude: clichyFixture.centre.coordinates[1],
-          radius: 100,
-          romes: ["M1602"],
-          rncp: null,
-          opco: null,
-        },
-        new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
-      )
-
-      const parseResult = zJobSearchApiV3Response.safeParse(results)
-      expect.soft(parseResult.success).toBeTruthy()
-      expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(1)
-      expect(results.warnings).toHaveLength(0)
-      expect(results.jobs[0].identifier.partner_job_id).toEqual(ftJobs[0].id)
+      expect(results.jobs[0].identifier.partner_job_id).toBe("job-id-dept-75")
+    })
+
+    it("should return jobs for a list of department codes", async () => {
+      const results = await findJobsOpportunities(
+        {
+          longitude: parisFixture.centre.coordinates[0],
+          latitude: parisFixture.centre.coordinates[1],
+          radius: 30,
+          romes: ["M1602"],
+          departements: ["75", "77"],
+          rncp: null,
+          opco: null,
+        },
+        new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
+      )
+
+      const zipcodes = results.jobs.map((j) => j.identifier.partner_job_id)
+      expect(zipcodes).toContain("job-id-dept-75")
+      expect(zipcodes).toContain("job-id-dept-77")
+      expect(results.jobs).toHaveLength(2)
+    })
+
+    it("should return jobs for Corse departments (2A, 2B)", async () => {
+      const results = await findJobsOpportunities(
+        {
+          longitude: parisFixture.centre.coordinates[0],
+          latitude: parisFixture.centre.coordinates[1],
+          radius: 30,
+          romes: ["M1602"],
+          departements: ["2A", "2B"],
+          rncp: null,
+          opco: null,
+        },
+        new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
+      )
+
+      const zipcodes = results.jobs.map((j) => j.identifier.partner_job_id)
+      expect(zipcodes).toContain("job-id-dept-2A")
+      expect(zipcodes).toContain("job-id-dept-2B")
+      expect(results.jobs).toHaveLength(2)
+    })
+
+    it("should return jobs for DROM-COM departments", async () => {
+      const results = await findJobsOpportunities(
+        {
+          longitude: parisFixture.centre.coordinates[0],
+          latitude: parisFixture.centre.coordinates[1],
+          radius: 30,
+          romes: ["M1602"],
+          departements: ["971"],
+          rncp: null,
+          opco: null,
+        },
+        new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
+      )
+
+      expect(results.jobs).toHaveLength(1)
+      expect(results.jobs[0].identifier.partner_job_id).toBe("job-id-dept-971")
     })
   })
 
   describe("when searching with location", () => {
     it("should sort by source, distance and then by creation date", async () => {
-      vi.mocked(searchForFtJobs).mockResolvedValue({ data: { resultats: ftJobs }, contentRange: "" })
-
       const extraLbaJob = generateRecruiterFixture({
         establishment_siret: "20003277900015",
         establishment_raison_sociale: "EXTRA LBA JOB 1",
@@ -2022,12 +1843,6 @@ describe("findJobsOpportunities", () => {
             partner_job_id: extraLbaJob.jobs[0]._id.toString(),
             workplace_legal_name: extraLbaJob.establishment_raison_sociale,
           },
-          {
-            _id: null,
-            partner_job_id: ftJobs[0].id,
-            partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL,
-            workplace_legal_name: null,
-          },
           // Paris
           {
             _id: partnerJobs[0]._id,
@@ -2080,19 +1895,6 @@ describe("findJobsOpportunities", () => {
           },
         ],
       })
-
-      expect(searchForFtJobs).toHaveBeenCalledTimes(1)
-      expect(searchForFtJobs).toHaveBeenNthCalledWith(
-        1,
-        {
-          commune: "75101", // Special case for paris
-          sort: 2, // Sort by distance and then by creation date
-          natureContrat: "E2,FS",
-          range: "0-149",
-          distance: 30,
-        },
-        { throwOnError: true }
-      )
     })
   })
 })
@@ -2334,33 +2136,20 @@ describe("findJobOpportunityById tests", () => {
       }
     })
 
-    it("should throw a job not found error on getJobsPartnersByIdAsJobOfferApi", async () => {
-      // Créer un contexte de requête mock
-      const context = {
-        addWarning: vi.fn(),
-      } as unknown as JobOpportunityRequestContext
-
+    it("should return null when not found", async () => {
       // Utiliser un ID qui n'existe pas dans la base de données
       const nonExistentId = new ObjectId()
 
       // Vérifier que la fonction lance bien une erreur
-      await expect(getJobsPartnersByIdAsJobOfferApi(nonExistentId, context)).rejects.toThrow("Job not found")
-
-      // Vérifier que la méthode addWarning a été appelée avec le bon message
-      expect(context.addWarning).toHaveBeenCalledWith("JOB_NOT_FOUND")
+      expect(await getJobsPartnersByIdAsJobOfferApi(nonExistentId)).toEqual(null)
     })
 
     it("should return a job offer with correct format on getJobsPartnersByIdAsJobOfferApi", async () => {
-      // Créer un contexte de requête mock
-      const context = {
-        addWarning: vi.fn(),
-      } as unknown as JobOpportunityRequestContext
-
       // Mock de la fonction de conversion pour vérifier qu'elle est appelée avec les bons paramètres
       const convertSpy = vi.spyOn(jobsRouteApiv3Converters, "convertToJobOfferApiReadV3")
 
       // Appeler la fonction avec l'ID existant
-      const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId, context)
+      const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId)
 
       // Vérifier que la fonction de conversion a été appelée avec les bons paramètres
       expect(convertSpy).toHaveBeenCalledWith({
@@ -2369,9 +2158,6 @@ describe("findJobOpportunityById tests", () => {
         apply_url: originalJob.apply_url ?? `${config.publicUrl}/emploi/${originalJob.partner_label}/${originalJob._id}/${originalJob.offer_title}`,
         apply_recipient_id: originalJob.apply_email ? `partners_${originalJob._id}` : null,
       })
-
-      // Vérifier que addWarning n'a pas été appelé car le job a été trouvé
-      expect(context.addWarning).not.toHaveBeenCalled()
 
       // Vérifier que le résultat n'est pas null
       expect(result).not.toBeNull()
@@ -2392,16 +2178,11 @@ describe("findJobOpportunityById tests", () => {
       await getDbCollection("jobs_partners").deleteMany({})
       await getDbCollection("jobs_partners").insertOne({ ...originalJob, apply_email: null })
 
-      // Créer un contexte de requête mock
-      const context = {
-        addWarning: vi.fn(),
-      } as unknown as JobOpportunityRequestContext
-
       // Mock de la fonction de conversion pour vérifier qu'elle est appelée avec les bons paramètres
       const convertSpy = vi.spyOn(jobsRouteApiv3Converters, "convertToJobOfferApiReadV3")
 
       // Appeler la fonction avec l'ID existant
-      const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId, context)
+      const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId)
 
       // Vérifier que la fonction de conversion a été appelée avec les bons paramètres
       expect(convertSpy).toHaveBeenCalledWith({
@@ -2410,9 +2191,6 @@ describe("findJobOpportunityById tests", () => {
         apply_url: originalJob.apply_url ?? `${config.publicUrl}/emploi/${originalJob.partner_label}/${originalJob._id}/${originalJob.offer_title}`,
         apply_recipient_id: null, // Vérification dans l'appel à la conversion
       })
-
-      // Vérifier que addWarning n'a pas été appelé car le job a été trouvé
-      expect(context.addWarning).not.toHaveBeenCalled()
 
       // Vérifier que le résultat n'est pas null
       expect(result).not.toBeNull()
@@ -2436,16 +2214,11 @@ describe("findJobOpportunityById tests", () => {
       await getDbCollection("jobs_partners").deleteMany({})
       await getDbCollection("jobs_partners").insertOne({ ...originalJob, apply_email: "test@mail.fr" })
 
-      // Créer un contexte de requête mock
-      const context = {
-        addWarning: vi.fn(),
-      } as unknown as JobOpportunityRequestContext
-
       // Mock de la fonction de conversion pour vérifier qu'elle est appelée avec les bons paramètres
       const convertSpy = vi.spyOn(jobsRouteApiv3Converters, "convertToJobOfferApiReadV3")
 
       // Appeler la fonction avec l'ID existant
-      const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId, context)
+      const result = await getJobsPartnersByIdAsJobOfferApi(jobPartnerId)
 
       // Vérifier que la fonction de conversion a été appelée avec les bons paramètres
       expect(convertSpy).toHaveBeenCalledWith({
@@ -2455,9 +2228,6 @@ describe("findJobOpportunityById tests", () => {
         apply_email: "test@mail.fr",
         apply_recipient_id: `partners_${originalJob._id}`, // Vérification dans l'appel à la conversion
       })
-
-      // Vérifier que addWarning n'a pas été appelé car le job a été trouvé
-      expect(context.addWarning).not.toHaveBeenCalled()
 
       // Vérifier que le résultat n'est pas null
       expect(result).not.toBeNull()
@@ -2484,7 +2254,7 @@ describe("findJobOpportunityById tests", () => {
       await getDbCollection("recruiters").insertOne(lbaJob)
     })
 
-    it("should throw a job not found error on getLbaJobByIdV2AsJobOfferApi", async () => {
+    it("should return null when not found", async () => {
       // Créer un contexte de requête mock
       const context = {
         addWarning: vi.fn(),
@@ -2493,8 +2263,7 @@ describe("findJobOpportunityById tests", () => {
       // Utiliser un ID qui n'existe pas dans la base de données
       const nonExistentId = new ObjectId()
 
-      // Vérifier que la fonction lance bien une erreur
-      await expect(getLbaJobByIdV2AsJobOfferApi(nonExistentId, context)).rejects.toThrow("Job not found")
+      expect(await getLbaJobByIdV2AsJobOfferApi(nonExistentId, context)).toEqual(null)
 
       // Vérifier que la méthode addWarning a été appelée avec le bon message
       expect(context.addWarning).toHaveBeenCalledWith("JOB_NOT_FOUND")

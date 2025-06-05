@@ -58,7 +58,7 @@ export const ZFTJobRaw = z
     intitule: z.string(),
     description: z.string(),
     dateCreation: z.string(),
-    dateActualisation: z.string(),
+    dateActualisation: z.string().optional(),
     lieuTravail: z.object({
       libelle: z.string(),
       latitude: z.number().optional(),
@@ -74,7 +74,7 @@ export const ZFTJobRaw = z
     typeContratLibelle: z.string(),
     natureContrat: z.string(),
     experienceExige: z.string(),
-    experienceLibelle: z.string(),
+    experienceLibelle: z.string().optional(),
     competences: z.array(z.object({ code: z.string().optional(), libelle: z.string(), exigence: z.string() }).passthrough()).optional(),
     permis: z.array(z.object({}).passthrough()).optional(),
     salaire: z.union([z.array(z.object({}).passthrough()), z.object({}).passthrough()]),
