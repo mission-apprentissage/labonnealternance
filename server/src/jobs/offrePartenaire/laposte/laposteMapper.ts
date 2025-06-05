@@ -56,6 +56,12 @@ const getContractDuration = (duration: string | null): number | null => {
 
 const getOfferTargetDiploma = (job: ILaposteJob, contract_duration: number | null) => {
   let offer_target_diploma: { european: "3" | "4" | "5" | "6" | "7"; label: string } | null = null
+
+  if (contract_duration === null) {
+    // If contract duration is null, we cannot determine the diploma level
+    return null
+  }
+
   let european: "3" | "4" | "5" | "6" | "7" | null = null
   switch (job["niveau-de-formation-requis"]) {
     case "Inférieur au Bac":
