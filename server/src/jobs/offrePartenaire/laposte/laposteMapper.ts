@@ -24,7 +24,7 @@ export const ZLaposteJob = z
     localite: z.string().nullable().describe("ex : 83126 LA SEYNE SUR MER"),
     longitude: z.coerce.number(),
     latitude: z.coerce.number(),
-    contexte: z.string().describe("description"),
+    contexte: z.string().nullable().describe("description"),
     filiere: z.string().describe("ex : Distribution / Livraison<"),
     metier: z.string().nullable().describe("ex: Responsable collecte distribution"),
     "fiche-metier": z.string().nullable().describe("slug à coller après https://www.laposterecrute.fr ex: /fichemetier/responsable-collecte-distribution"),
@@ -46,8 +46,8 @@ export type ILaposteJob = z.output<typeof ZLaposteJob>
 
 const getContractDuration = (duration: string | null): number | null => {
   switch (duration) {
-    case "12 ou 24 mois":
-    case "12 à 24 mois":
+    case "12 ou 24":
+    case "12 à 24":
       return null
     default:
       return duration ? parseInt(duration) : null
@@ -139,7 +139,7 @@ export const laposteJobToJobsPartners = (job: ILaposteJob): IComputedJobsPartner
     workplace_geopoint,
     workplace_address_city: job["localisation-du-poste"],
     workplace_address_label: job["localisation-du-poste"],
-    workplace_description: `Service : ${job.company}\r\n\r\n` + job.contexte,
+    workplace_description: `Service : ${job.company}${job.contexte ? `\r\n\r\n${job.contexte}` : ""}`,
     offer_description: descriptionComputed,
     offer_creation: updatedDate ?? publicationDate,
     offer_expiration: dayjs
@@ -150,7 +150,7 @@ export const laposteJobToJobsPartners = (job: ILaposteJob): IComputedJobsPartner
     contract_type,
     contract_remote: !job.teletravail ? null : job.teletravail === "Oui" ? TRAINING_REMOTE_TYPE.hybrid : TRAINING_REMOTE_TYPE.onsite,
     offer_target_diploma,
-    contract_duration: contract_duration,
+    contract_duration,
     offer_multicast: true,
     business_error,
   }
