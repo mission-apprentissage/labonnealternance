@@ -4,7 +4,9 @@ import { OPCOS_LABEL } from "shared/constants/index"
 export const OpcoSelect = ({ name, onChange, value }) => {
   return (
     <Select variant="outline" size="md" name={name} mr={3} onChange={(e) => onChange?.(e.target.value)} value={value}>
-      <option hidden>Sélectionnez un OPCO</option>
+      <option value={OPCOS_LABEL.UNKNOWN_OPCO} hidden>
+        Sélectionnez un OPCO
+      </option>
       <option value={OPCOS_LABEL.AFDAS}>AFDAS</option>
       <option value={OPCOS_LABEL.AKTO}>AKTO</option>
       <option value={OPCOS_LABEL.ATLAS}>ATLAS</option>
