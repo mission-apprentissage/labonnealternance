@@ -10,7 +10,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
-import { removeHtmlTagsFromString } from "@/common/uhttps://docs.google.com/presentation/d/1CDZCbtqfGT31jarxs1-D99fmm-9RWwJwGkiROYy1LF0/edit?slide=id.g35faa2b1eaf_1_20#slide=id.g35faa2b1eaf_1_20tils/stringUtils"
+import { removeHtmlTagsFromString } from "@/common/utils/stringUtils"
 import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { createAuthMagicLink, createCancelJobLink, createProvidedJobLink } from "@/services/appLinks.service"
@@ -73,7 +73,7 @@ export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirati
         throw internal(`inattendu : impossible de trouver l'utilisateur gérant le formulaire id=${recruiter._id}`)
       }
 
-      const subject = `"Votre offre expire" ${numberOfDaysToExpirationDate === 1 ? "demain" : `dans ${numberOfDaysToExpirationDate} jours`}`
+      const subject = `Votre offre expire ${numberOfDaysToExpirationDate === 1 ? "demain" : `dans ${numberOfDaysToExpirationDate} jours`}`
 
       await mailer.sendEmail({
         to: contactUser.email,
