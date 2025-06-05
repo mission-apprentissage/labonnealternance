@@ -52,14 +52,7 @@ export default function TrainingDetailRendererClient({ training, params }: WithR
   const { appliedDate, setPrdvDone } = useFormationPrdvTracker(training.id)
 
   const detailPage = (
-    <TrainingDetailPage
-      selectedItem={training}
-      priseDeRendezVous={appliedDate ? false : training.training.elligibleForAppointment}
-      appliedDate={appliedDate}
-      resultList={result.status === "success" ? result.items : []}
-      params={params}
-      onRdvSuccess={setPrdvDone}
-    />
+    <TrainingDetailPage selectedItem={training} appliedDate={appliedDate} resultList={result.status === "success" ? result.items : []} params={params} onRdvSuccess={setPrdvDone} />
   )
 
   if (params?.displayMap) {
@@ -77,14 +70,12 @@ export default function TrainingDetailRendererClient({ training, params }: WithR
 
 function TrainingDetailPage({
   selectedItem,
-  priseDeRendezVous,
   appliedDate,
   resultList,
   params,
   onRdvSuccess,
 }: WithRecherchePageParams<{
   selectedItem: ILbaItemFormation2Json
-  priseDeRendezVous: boolean
   appliedDate: string | null
   resultList: IUseRechercheResultsSuccess["items"]
   onRdvSuccess: () => void
@@ -111,6 +102,8 @@ function TrainingDetailPage({
     currentScroll += isCollapsedHeader ? 100 : -100
     setIsCollapsedHeader(currentScroll > maxScroll)
   }
+
+  const { elligibleForAppointment } = selectedItem.training
 
   const stickyHeaderProperties: CSSProperties = isCollapsedHeader
     ? {
@@ -171,7 +164,7 @@ function TrainingDetailPage({
 
           <Flex flexDirection="row" alignItems="center" gap={2}>
             <Box flex={1}>
-              {appliedDate ? (
+              {Boolean(appliedDate) && (
                 <Box>
                   <Text color="grey.600" as="span" px={2} backgroundColor="#FEF7DA">
                     <Text as="span">👍 </Text>
@@ -180,8 +173,9 @@ function TrainingDetailPage({
                     </Text>
                   </Text>
                 </Box>
-              ) : (
-                priseDeRendezVous && <DemandeDeContact isCollapsedHeader={isCollapsedHeader} context={contextPRDV} referrer="LBA" showInModal onRdvSuccess={onRdvSuccess} />
+              )}
+              {elligibleForAppointment && (
+                <DemandeDeContact hideButton={Boolean(appliedDate)} isCollapsedHeader={isCollapsedHeader} context={contextPRDV} referrer="LBA" onRdvSuccess={onRdvSuccess} />
               )}
             </Box>
             <ShareLink item={selectedItem} />
@@ -193,7 +187,7 @@ function TrainingDetailPage({
 
       <AideApprentissage />
 
-      {!priseDeRendezVous && <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />}
+      {!elligibleForAppointment && <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />}
     </Box>
   )
 }

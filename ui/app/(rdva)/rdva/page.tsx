@@ -3,10 +3,12 @@
 import { Box, Container, Flex, Spinner, Text } from "@chakra-ui/react"
 import { useQuery } from "@tanstack/react-query"
 import { useSearchParams } from "next/navigation"
+import { useState } from "react"
 
 import { useFormationPrdvTracker } from "@/app/hooks/useFormationPrdvTracker"
 import { ContactCfaSummary } from "@/components/espace_pro/Candidat/layout/ContactCfaSummary"
-import { DemandeDeContact } from "@/components/RDV/DemandeDeContact"
+import { DemandeDeContactConfirmation } from "@/components/RDV/DemandeDeContactConfirmation"
+import { DemandeDeContactForm } from "@/components/RDV/DemandeDeContactForm"
 import { IconeLogo } from "@/theme/components/icons"
 import { getPrdvContext } from "@/utils/api"
 
@@ -14,19 +16,9 @@ import { getPrdvContext } from "@/utils/api"
  * Appointment form page.
  */
 export default function PriseDeRendezVous() {
-  const cleMinistereEducatif = useSearchParams().get("cleMinistereEducatif")
-  const referrer = useSearchParams().get("referrer")
-
-  const { data, isLoading } = useQuery({
-    queryKey: ["getPrdvForm", cleMinistereEducatif],
-    queryFn: () => getPrdvContext(cleMinistereEducatif, referrer),
-    enabled: !!cleMinistereEducatif,
-    gcTime: 0,
-  })
-
-  const { setPrdvDone } = useFormationPrdvTracker(cleMinistereEducatif)
-
-  const { cle_ministere_educatif, etablissement_formateur_entreprise_raison_sociale } = data ?? {}
+  const searchParams = useSearchParams()
+  const cleMinistereEducatif = searchParams.get("cleMinistereEducatif")
+  const referrer = searchParams.get("referrer")
 
   return (
     <Container maxWidth="82ch" mt={5}>
@@ -48,31 +40,67 @@ export default function PriseDeRendezVous() {
           </Box>
         </Flex>
       </Box>
-      {isLoading && <Spinner display="block" mx="auto" size="xl" my="10rem" />}
-      {data && "error" in data && (
-        <Box my="5rem" textAlign="center">
-          {data.error as string}
-        </Box>
-      )}
-      {data && "intitule_long" in data && (
-        <>
-          <ContactCfaSummary
-            entrepriseRaisonSociale={data?.etablissement_formateur_entreprise_raison_sociale}
-            intitule={data?.intitule_long}
-            adresse={data?.lieu_formation_adresse}
-            codePostal={data?.code_postal}
-            ville={data?.localite}
-          />
-          {cle_ministere_educatif && etablissement_formateur_entreprise_raison_sociale && (
-            <DemandeDeContact
-              context={{ cle_ministere_educatif, etablissement_formateur_entreprise_raison_sociale }}
-              referrer={referrer}
-              showInModal={false}
-              onRdvSuccess={setPrdvDone}
-            />
-          )}
-        </>
-      )}
+      <PageContent cleMinistereEducatif={cleMinistereEducatif} referrer={referrer} />
     </Container>
+  )
+}
+
+const PageContent = ({ cleMinistereEducatif, referrer }: { cleMinistereEducatif: string; referrer: string }) => {
+  const {
+    data,
+    isLoading,
+    error: fetchError,
+    isError,
+  } = useQuery({
+    queryKey: ["getPrdvForm", cleMinistereEducatif],
+    queryFn: () => getPrdvContext(cleMinistereEducatif, referrer),
+    enabled: !!cleMinistereEducatif,
+    gcTime: 0,
+  })
+
+  const { setPrdvDone } = useFormationPrdvTracker(cleMinistereEducatif)
+  const [confirmation, setConfirmation] = useState<{ appointmentId: string; token: string } | null>(null)
+
+  if (isLoading) return <Spinner display="block" mx="auto" size="xl" my="10rem" />
+  let error: string | null = null
+  if (fetchError) {
+    error = fetchError + ""
+  } else if (isError) {
+    error = "Une erreur inattendue est survenue. Veuillez réessayer plus tard."
+  } else if (data && "error" in data) {
+    error = data.error + ""
+  }
+  if (error) {
+    return (
+      <Box my="5rem" textAlign="center">
+        {error}
+      </Box>
+    )
+  }
+
+  if (confirmation) {
+    return <DemandeDeContactConfirmation {...confirmation} />
+  }
+  if (!data) return null
+
+  const { cle_ministere_educatif, etablissement_formateur_entreprise_raison_sociale } = data
+  const context = { cle_ministere_educatif, etablissement_formateur_entreprise_raison_sociale }
+
+  const localOnSuccess = (props: { appointmentId: string; token: string }) => {
+    setPrdvDone()
+    setConfirmation(props)
+  }
+
+  return (
+    <>
+      <ContactCfaSummary
+        entrepriseRaisonSociale={data?.etablissement_formateur_entreprise_raison_sociale}
+        intitule={data?.intitule_long}
+        adresse={data?.lieu_formation_adresse}
+        codePostal={data?.code_postal}
+        ville={data?.localite}
+      />
+      <DemandeDeContactForm context={context} referrer={referrer} onRdvSuccess={localOnSuccess} />
+    </>
   )
 }
