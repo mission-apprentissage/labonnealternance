@@ -41,7 +41,7 @@ const TasksContainer = styled.div`
   }
 `
 
-export const CandidatureTasksChecklist = ({ kind }: { kind: LBA_ITEM_TYPE_OLD | LBA_ITEM_TYPE }) => {
+export const CandidatureTasksChecklist = ({ kind }: { kind: LBA_ITEM_TYPE | LBA_ITEM_TYPE_OLD }) => {
   const tasks = kind === LBA_ITEM_TYPE_OLD.LBA || kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? OffreSpontaneTasks : OffreTasks
   const [checkedTasks, setCheckedTasks] = useState<Record<string, boolean>>({})
 

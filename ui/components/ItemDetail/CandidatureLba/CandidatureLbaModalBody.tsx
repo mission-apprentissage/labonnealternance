@@ -47,6 +47,9 @@ export const CandidatureLbaModalBody = ({
     formik.values.applicant_attachment_content = fileValue?.applicant_attachment_content || null
   }
 
+  const isOffre =
+    kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES || kind === LBA_ITEM_TYPE_OLD.MATCHA || kind === LBA_ITEM_TYPE_OLD.PARTNER_JOB
+
   return (
     <form onSubmit={formik.handleSubmit} style={{ display: "flex", height: "100%", alignItems: "stretch" }}>
       <Box display={["none", "none", "none", "block"]}>
@@ -61,7 +64,7 @@ export const CandidatureLbaModalBody = ({
           </>
         )}
         <Text as="h1" fontWeight={700} fontSize="24px" data-testid="CandidatureSpontaneeTitle">
-          {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? (
+          {isOffre ? (
             <>
               Postuler à l&apos;offre {fromWidget ? `${item.title} ` : ""}de {company}
             </>
@@ -106,13 +109,13 @@ export const CandidatureLbaModalBody = ({
               <Spinner mr={4} />
               <Text>Veuillez patienter</Text>
             </Flex>
-          ) : kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? (
-            <Button data-tracking-id="postuler-entreprise-algo" aria-label="Envoyer la candidature spontanée" type="submit" data-testid="candidature-not-sent">
-              J'envoie ma candidature spontanée
-            </Button>
-          ) : (
+          ) : isOffre ? (
             <Button data-tracking-id="postuler-offre-lba" aria-label="Envoyer la candidature" type="submit" data-testid="candidature-not-sent">
               J'envoie ma candidature
+            </Button>
+          ) : (
+            <Button data-tracking-id="postuler-entreprise-algo" aria-label="Envoyer la candidature spontanée" type="submit" data-testid="candidature-not-sent">
+              J'envoie ma candidature spontanée
             </Button>
           )}
         </Flex>
