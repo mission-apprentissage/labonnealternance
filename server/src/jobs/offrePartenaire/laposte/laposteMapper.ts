@@ -72,7 +72,7 @@ const getOfferTargetDiploma = (job: ILaposteJob, contract_duration: number | nul
     case "Bac+4":
     case "Bac+5":
     case "Supérieur à Bac+5":
-      offer_target_diploma = { european: "7", label: NIVEAU_DIPLOME_LABEL["7"] }
+      european = "7"
       break
     default:
       throw new Error(`Niveau de formation non géré : ${job["niveau-de-formation-requis"]}`)
