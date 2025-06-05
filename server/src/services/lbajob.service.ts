@@ -347,26 +347,21 @@ export const getLbaJobById = async ({ id, caller }: { id: ObjectId; caller?: str
  * @description Retourne une offre LBA identifiée par son id
  */
 export const getLbaJobByIdV2 = async (id: string): Promise<ILbaItemLbaJob> => {
-  try {
-    const rawJob = await getOffreAvecInfoMandataire(id)
+  const rawJob = await getOffreAvecInfoMandataire(id)
 
-    if (!rawJob) {
-      throw badRequest("Job not found")
-    }
-
-    const applicationCountByJob = await getApplicationByJobCount([id])
-
-    const job = transformLbaJobPrivate({
-      recruiter: rawJob.recruiter,
-      job: rawJob.job,
-      applicationCountByJob,
-    })
-
-    return job
-  } catch (error) {
-    sentryCaptureException(error)
-    throw badRequest("getLbaJobByIdV2 - error while getting job, error sent to sentry")
+  if (!rawJob) {
+    throw badRequest("Job not found")
   }
+
+  const applicationCountByJob = await getApplicationByJobCount([id])
+
+  const job = transformLbaJobPrivate({
+    recruiter: rawJob.recruiter,
+    job: rawJob.job,
+    applicationCountByJob,
+  })
+
+  return job
 }
 
 /**

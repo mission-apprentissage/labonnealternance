@@ -520,27 +520,22 @@ export const getCompanyFromSiret = async ({
  * Retourne une société issue de l'algo identifiée par sont SIRET pour le front
  */
 export const getRecruteurLbaFromDB = async (siret: string): Promise<ILbaItemLbaCompany> => {
-  try {
-    const lbaCompany = (await getDbCollection("jobs_partners").findOne({
-      workplace_siret: siret,
-      partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
-    })) as IJobsPartnersRecruteurAlgoPrivate
+  const lbaCompany = (await getDbCollection("jobs_partners").findOne({
+    workplace_siret: siret,
+    partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+  })) as IJobsPartnersRecruteurAlgoPrivate
 
-    if (!lbaCompany) {
-      throw badRequest("Company not found")
-    }
-
-    const applicationCountByCompany = await getApplicationByCompanyCount([lbaCompany.workplace_siret!])
-    const company = transformCompanyV2({
-      company: lbaCompany,
-      applicationCountByCompany,
-    })
-
-    return company
-  } catch (error) {
-    sentryCaptureException(error)
+  if (!lbaCompany) {
     throw badRequest("Company not found")
   }
+
+  const applicationCountByCompany = await getApplicationByCompanyCount([lbaCompany.workplace_siret!])
+  const company = transformCompanyV2({
+    company: lbaCompany,
+    applicationCountByCompany,
+  })
+
+  return company
 }
 
 /**
