@@ -67,10 +67,10 @@ const getOfferTargetDiploma = (job: ILaposteJob, contract_duration: number | nul
     case "Inférieur au Bac":
       break
     case "Bac":
-      european = contract_duration && contract_duration >= 12 ? (contract_duration > 24 ? "6" : "5") : "4"
+      european = contract_duration && contract_duration >= 24 ? (contract_duration >= 36 ? "6" : "5") : "4"
       break
     case "Bac+2":
-      european = contract_duration && contract_duration >= 12 ? (contract_duration > 24 ? "7" : "6") : "5"
+      european = contract_duration && contract_duration >= 12 ? (contract_duration >= 24 ? "7" : "6") : "5"
       break
     case "Bac+3":
       european = contract_duration && contract_duration > 12 ? "7" : "6"

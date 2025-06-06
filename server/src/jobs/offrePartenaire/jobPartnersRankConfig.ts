@@ -7,6 +7,7 @@ const jobPartnersRankConfigByFlux: Partial<Record<JOBPARTNERS_LABEL, number>> = 
   Hellowork: 0.24,
   "France Travail": 0.22,
   "RH Alternance": 0.3,
+  "La Poste": 0.7,
 }
 
 const jobPartnersRankConfigByAPI: Record<string, number> = {
