@@ -69,7 +69,7 @@ export async function setupJobProcessor() {
       : {
           ...importers,
           "Génération du token France Travail pour la récupération des offres": {
-            cron_string: "*/5 * * * *",
+            cron_string: "*/15 * * * *",
             handler: generateFranceTravailAccess,
             tag: "main",
           },
