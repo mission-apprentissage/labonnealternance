@@ -10,8 +10,7 @@ export const PostezVotreOffre = () => (
         <Text as="h2" variant="homeEditorialH2" mb={{ base: "3", lg: "5" }}>
           Postez votre offre d'alternance en quelques secondes
         </Text>
-        {/* @ts-expect-error: TODO */}
-        <Box variant="homeEditorialText">
+        <Box>
           Exprimez votre besoin en quelques clics, nous générons votre offre instantanément. Retrouvez vos offres dans votre compte en vous connectant avec votre email uniquement.
         </Box>
       </Box>
