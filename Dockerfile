@@ -54,7 +54,6 @@ COPY ./server/static /app/server/static
 
 EXPOSE 5000
 WORKDIR /app/server
-CMD ["node", "dist/index.js", "start"]
 
 
 ##############################################################
