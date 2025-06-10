@@ -1,54 +1,6 @@
 import nock from "nock"
-import { IRomeoAPIResponse } from "shared/models/cacheRomeo.model"
 
 import { FTJob, FTResponse } from "@/services/ftjob.service.types"
-
-export const franceTravailRomeoFixture = {
-  "Software Engineer": [
-    {
-      contexte: " ",
-      identifiant: "0",
-      intitule: "Software Engineer",
-      metiersRome: [
-        {
-          codeAppellation: "404251",
-          codeRome: "E1206",
-          libelleAppellation: "Software Designer",
-          libelleRome: "UX - UI Designer",
-          scorePrediction: 0.832,
-        },
-        {
-          codeAppellation: "404250",
-          codeRome: "E1206",
-          libelleAppellation: "Software Design Specialist Designer",
-          libelleRome: "UX - UI Designer",
-          scorePrediction: 0.764,
-        },
-        {
-          codeAppellation: "404252",
-          codeRome: "E1206",
-          libelleAppellation: "Software design leader",
-          libelleRome: "UX - UI Designer",
-          scorePrediction: 0.754,
-        },
-        {
-          codeAppellation: "404307",
-          codeRome: "M1813",
-          libelleAppellation: "Ingénieur / Ingénieure progiciel",
-          libelleRome: "Intégrateur / Intégratrice logiciels métiers",
-          scorePrediction: 0.752,
-        },
-        {
-          codeAppellation: "404278",
-          codeRome: "M1811",
-          libelleAppellation: "Data engineer",
-          libelleRome: "Data engineer",
-          scorePrediction: 0.744,
-        },
-      ],
-    },
-  ],
-} as const satisfies Record<string, IRomeoAPIResponse>
 
 export function generateFtJobFixture(data: Partial<FTJob>): FTJob {
   return {
