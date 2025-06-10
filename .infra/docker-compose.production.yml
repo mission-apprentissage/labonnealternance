@@ -30,6 +30,7 @@ services:
           memory: 1g
       replicas: 2
     stop_grace_period: 2m
+    command: ["yarn", "cli", "start"]
     environment:
       NODE_OPTIONS: "--max_old_space_size=768"
     volumes:
