@@ -1181,6 +1181,24 @@ const incrementJobCounter = (fieldName: keyof IJobsPartnersOfferPrivate) => asyn
   }
 }
 
+const incrementJobCounterBySiret = (fieldName: keyof IJobsPartnersOfferPrivate) => async (ids: string[]) => {
+  try {
+    await getDbCollection("jobs_partners").updateMany(
+      { workplace_siret: { $in: ids } },
+      {
+        $inc: {
+          [fieldName]: 1,
+        },
+      }
+    )
+  } catch (err) {
+    logger.error(err)
+    sentryCaptureException(err)
+  }
+}
+
 export const incrementSearchViewCount = incrementJobCounter("stats_search_view")
 export const incrementDetailViewCount = (id: ObjectId) => incrementJobCounter("stats_detail_view")([id])
 export const incrementPostulerClickCount = (id: ObjectId) => incrementJobCounter("stats_postuler")([id])
+
+export const incrementPostulerClickCountBySiret = (id: string) => incrementJobCounterBySiret("stats_postuler")([id])

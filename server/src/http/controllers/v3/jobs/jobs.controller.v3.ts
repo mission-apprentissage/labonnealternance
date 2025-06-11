@@ -1,6 +1,7 @@
 import { badRequest } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { assertUnreachable, zRoutes } from "shared"
+import { validateSIRET } from "shared/validators/siretValidator"
 
 import { Server } from "@/http/server"
 import { getUserFromRequest } from "@/security/authenticationService"
@@ -11,6 +12,7 @@ import {
   findOfferPublishing,
   incrementDetailViewCount,
   incrementPostulerClickCount,
+  incrementPostulerClickCountBySiret,
   incrementSearchViewCount,
   updateJobOffer,
   upsertJobOffer,
@@ -100,18 +102,28 @@ export const jobsApiV3Routes = (server: Server) => {
     },
     async (req, res) => {
       const { eventType, id } = req.params
-      if (!ObjectId.isValid(id)) {
+      const isObjectId = ObjectId.isValid(id)
+      const isSIRET = validateSIRET(id)
+
+      if (!isObjectId && !isSIRET) {
         throw badRequest("id is not valid")
       }
-      const objectId = new ObjectId(id)
 
       switch (eventType) {
         case "detail_view": {
-          await incrementDetailViewCount(objectId)
+          if (isObjectId) {
+            await incrementDetailViewCount(new ObjectId(id))
+          } else {
+            assertUnreachable("should not be a SIRET for detail_view event" as never)
+          }
           break
         }
         case "postuler_click": {
-          await incrementPostulerClickCount(objectId)
+          if (isObjectId) {
+            await incrementPostulerClickCount(new ObjectId(id))
+          } else {
+            await incrementPostulerClickCountBySiret(id)
+          }
           break
         }
         default: {

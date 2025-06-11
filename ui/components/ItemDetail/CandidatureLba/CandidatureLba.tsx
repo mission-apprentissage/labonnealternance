@@ -37,7 +37,7 @@ export function CandidatureLba({ item }: { item: ILbaItemLbaJobJson | ILbaItemLb
   const openApplicationForm = () => {
     onOpen()
     SendPlausibleEvent("Clic Postuler - Fiche emploi", { partner_label: kind, info_fiche: getItemId(item) })
-    notifyJobPostulerV3(item.id)
+    notifyJobPostulerV3(item.id) // ici item.id est le workplace_siret dans le cas d'un recruteur_lba et l'id du job dans le cas d'un offre emploi lba
   }
 
   const hasAppliedValue = storedValue
