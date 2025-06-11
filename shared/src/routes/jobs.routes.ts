@@ -253,7 +253,6 @@ export const zV1JobsRoutes = {
           sources: zSourcesParams,
           diploma: zDiplomaParam,
           opco: zOpcoParams,
-          opcoUrl: zOpcoUrlParams,
         })
         .strict()
         .passthrough(),
