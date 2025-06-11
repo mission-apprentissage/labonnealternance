@@ -81,7 +81,7 @@ export async function setupJobProcessor() {
           "Traitement complet des jobs_partners par API": {
             cron_string: "*/10 * * * *",
             handler: processJobPartnersForApi,
-            tag: "main",
+            tag: "slave",
           },
           "Expiration des offres jobs_partners": {
             cron_string: "*/30 * * * *",
