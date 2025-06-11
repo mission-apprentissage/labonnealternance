@@ -3,7 +3,6 @@ import React from "react"
 import { publicConfig } from "@/config.public"
 
 export const HeadLaBonneAlternance = () => {
-  console.log("computing head")
   const { disableRobots } = publicConfig
   return (
     <>
