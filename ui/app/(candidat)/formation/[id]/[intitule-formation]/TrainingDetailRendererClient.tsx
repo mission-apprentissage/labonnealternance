@@ -166,11 +166,17 @@ function TrainingDetailPage({
             <Box flex={1}>
               {Boolean(appliedDate) && (
                 <Box>
-                  <Text color="grey.600" as="span" px={2} backgroundColor="#FEF7DA">
-                    <Text as="span">👍 </Text>
-                    <Text as="span" fontStyle="italic">
-                      Super, vous avez déjà pris contact le {appliedDate}.
-                    </Text>
+                  <Text
+                    as="span"
+                    className={fr.cx("ri-history-line", "fr-icon--sm", "fr-text--xs")}
+                    px={2}
+                    fontStyle="italic"
+                    sx={{
+                      backgroundColor: fr.colors.decisions.background.contrast.info.default,
+                      color: fr.colors.decisions.background.actionHigh.info.default,
+                    }}
+                  >
+                    Super, vous avez déjà pris contact le {appliedDate}.
                   </Text>
                 </Box>
               )}
