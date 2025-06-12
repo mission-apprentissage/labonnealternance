@@ -14,7 +14,6 @@ import appointmentsModel from "./appointments.model.js"
 import cacheDiagorienteModel from "./cacheDiagoriente.model.js"
 import cacheGeolocationModel from "./cacheGeolocation.model.js"
 import cacheInfosSiretModel from "./cacheInfosSiret.model.js"
-import cacheRomeoModel from "./cacheRomeo.model.js"
 import cfaModel from "./cfa.model.js"
 import { IModelDescriptor } from "./common.js"
 import credentialsModel from "./credentials.model.js"
@@ -36,6 +35,7 @@ import opcoModel from "./opco.model.js"
 import rawFranceTravail from "./rawFranceTravail.model.js"
 import rawHelloWorkModel from "./rawHelloWork.model.js"
 import rawKelioModel from "./rawKelio.model.js"
+import rawLaposteModel from "./rawLaposte.model.js"
 import rawMeteojobModel from "./rawMeteojob.model.js"
 import rawMonsterModel from "./rawMonster.model.js"
 import rawPassModel from "./rawPass.model.js"
@@ -72,7 +72,6 @@ const modelDescriptorMap = {
   [applicantEmailLogModel.collectionName]: applicantEmailLogModel,
   [applicationsModel.collectionName]: applicationsModel,
   [cacheDiagorienteModel.collectionName]: cacheDiagorienteModel,
-  [cacheRomeoModel.collectionName]: cacheRomeoModel,
   [cacheGeolocationModel.collectionName]: cacheGeolocationModel,
   [cfaModel.collectionName]: cfaModel,
   [credentialsModel.collectionName]: credentialsModel,
@@ -112,6 +111,7 @@ const modelDescriptorMap = {
   [cacheInfosSiretModel.collectionName]: cacheInfosSiretModel,
   [referentielCommuneModel.collectionName]: referentielCommuneModel,
   [rawKelioModel.collectionName]: rawKelioModel,
+  [rawLaposteModel.collectionName]: rawLaposteModel,
   [rawMeteojobModel.collectionName]: rawMeteojobModel,
   [rawRHAlternanceModel.collectionName]: rawRHAlternanceModel,
   [rawFranceTravail.collectionName]: rawFranceTravail,

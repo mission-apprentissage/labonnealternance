@@ -7583,25 +7583,47 @@ Limite : 1 appel(s) / 1 seconde(s)
             "name": "partners_to_exclude",
             "required": false,
             "schema": {
-              "items": {
-                "enum": [
-                  "offres_emploi_lba",
-                  "OFFRES_EMPLOI_LBA",
-                  "recruteurs_lba",
-                  "RECRUTEURS_LBA",
-                  "Hellowork",
-                  "France Travail",
-                  "RH Alternance",
-                  "PASS",
-                  "Monster",
-                  "Meteojob",
-                  "Kelio",
-                ],
-                "type": "string",
-              },
-              "type": [
-                "array",
-                "null",
+              "anyOf": [
+                {
+                  "enum": [
+                    "offres_emploi_lba",
+                    "OFFRES_EMPLOI_LBA",
+                    "recruteurs_lba",
+                    "RECRUTEURS_LBA",
+                    "Hellowork",
+                    "France Travail",
+                    "RH Alternance",
+                    "PASS",
+                    "Monster",
+                    "Meteojob",
+                    "Kelio",
+                    "La Poste",
+                  ],
+                  "type": "string",
+                },
+                {
+                  "items": {
+                    "enum": [
+                      "offres_emploi_lba",
+                      "OFFRES_EMPLOI_LBA",
+                      "recruteurs_lba",
+                      "RECRUTEURS_LBA",
+                      "Hellowork",
+                      "France Travail",
+                      "RH Alternance",
+                      "PASS",
+                      "Monster",
+                      "Meteojob",
+                      "Kelio",
+                      "La Poste",
+                    ],
+                    "type": "string",
+                  },
+                  "type": "array",
+                },
+                {
+                  "type": "null",
+                },
               ],
             },
           },
@@ -7610,12 +7632,19 @@ Limite : 1 appel(s) / 1 seconde(s)
             "name": "departements",
             "required": false,
             "schema": {
-              "items": {
-                "type": "string",
-              },
-              "type": [
-                "array",
-                "null",
+              "anyOf": [
+                {
+                  "type": "string",
+                },
+                {
+                  "items": {
+                    "type": "string",
+                  },
+                  "type": "array",
+                },
+                {
+                  "type": "null",
+                },
               ],
             },
           },

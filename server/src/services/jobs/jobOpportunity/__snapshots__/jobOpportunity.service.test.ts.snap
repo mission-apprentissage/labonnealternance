@@ -132,65 +132,6 @@ exports[`findJobsOpportunities > should execute query 1`] = `
       "duration": null,
       "remote": null,
       "start": null,
-      "type": [],
-    },
-    "identifier": {
-      "id": "",
-      "partner_job_id": "",
-      "partner_label": "France Travail",
-    },
-    "offer": {
-      "access_conditions": [],
-      "description": "Attention il te faut une super motivation pour ce job",
-      "desired_skills": [],
-      "opening_count": 1,
-      "publication": {
-        "creation": 2024-01-01T00:00:00.000Z,
-        "expiration": null,
-      },
-      "rome_codes": [
-        "M1602",
-      ],
-      "status": "Active",
-      "target_diploma": null,
-      "title": "Super offre d'apprentissage",
-      "to_be_acquired_skills": [],
-    },
-    "workplace": {
-      "brand": null,
-      "description": "",
-      "domain": {
-        "idcc": null,
-        "naf": null,
-        "opco": null,
-      },
-      "legal_name": null,
-      "location": {
-        "address": "Paris",
-        "geopoint": {
-          "coordinates": [
-            2.347,
-            48.8589,
-          ],
-          "type": "Point",
-        },
-      },
-      "name": "",
-      "siret": null,
-      "size": null,
-      "website": null,
-    },
-  },
-  {
-    "apply": {
-      "phone": null,
-      "recipient_id": null,
-      "url": "",
-    },
-    "contract": {
-      "duration": null,
-      "remote": null,
-      "start": null,
       "type": [
         "Apprentissage",
         "Professionnalisation",

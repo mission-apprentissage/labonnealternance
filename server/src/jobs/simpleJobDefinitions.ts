@@ -5,6 +5,7 @@ import { importRecruteursLbaFromComputedToJobsPartners } from "@/jobs/offreParte
 import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail/classifyJobsFranceTravail"
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
 import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
+import { processLaposte } from "@/jobs/offrePartenaire/laposte/processLaposte"
 import { processMeteojob } from "@/jobs/offrePartenaire/meteojob/processMeteojob"
 import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
 import { processFillRomeStandalone } from "@/jobs/offrePartenaire/processFillRomeStandalone"
@@ -211,6 +212,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processKelio,
     description: "Importe les offres Kelio dans la collection raw & computed",
+  },
+  {
+    fct: processLaposte,
+    description: "Importe les offres La Poste dans la collection raw & computed",
   },
   {
     fct: processPass,
