@@ -8,7 +8,7 @@ import config from "@/config"
 
 import getApiClient from "../client"
 
-const client = getApiClient({ timeout: 5000 }, { cache: true })
+const client = getApiClient({ timeout: 5000 })
 
 const apiParams = {
   token: config.entreprise.apiKey,
