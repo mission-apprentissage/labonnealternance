@@ -4,19 +4,21 @@ import FormData from "form-data"
 import { IAdresseV3, IAPIAdresse, IGeometry, IGeoPoint, IPointFeature, ZPointGeometry } from "shared/models/index"
 import { joinNonNullStrings } from "shared/utils/index"
 
-import { getHttpClient } from "@/common/utils/httpUtils"
+import getApiClient from "@/common/apis/client"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 
 import { getGeolocationFromCache, saveGeolocationInCache } from "./cacheGeolocation.service"
 
 const API_ADRESSE_URL = "https://api-adresse.data.gouv.fr"
 
+const client = getApiClient({ timeout: 2_000 })
+
 export const getGeolocationFromApiAdresse = async (address: string, trys = 0) => {
   try {
     let response: AxiosResponse<IAPIAdresse> | null = null
 
     if (trys < 5) {
-      response = await getHttpClient({ timeout: 2000 }).get(`${API_ADRESSE_URL}/search?q=${encodeURIComponent(address.toUpperCase())}&limit=1`)
+      response = await client.get(`${API_ADRESSE_URL}/search?q=${encodeURIComponent(address.toUpperCase())}&limit=1`)
       if (response?.status === 429) {
         await new Promise((resolve) => setTimeout(resolve, 1000))
         return await getGeolocationFromApiAdresse(address, trys++)
@@ -48,7 +50,7 @@ export const getReverseGeolocationFromApiAdresse = async (lon: number, lat: numb
     let response: AxiosResponse<IAPIAdresse> | null = null
     let trys = 0
     while (trys < 3) {
-      response = await getHttpClient().get(`${API_ADRESSE_URL}/reverse/?lon=${lon}&lat=${lat}&type=municipality&limit=1`)
+      response = await client.get(`${API_ADRESSE_URL}/reverse/?lon=${lon}&lat=${lat}&type=municipality&limit=1`)
       if (response?.status === 429) {
         console.warn("429 ", new Date())
         trys++
@@ -162,7 +164,7 @@ export const addressDetailToStreetLabel = (address: IAdresseV3): string | null =
 }
 
 export const getBulkGeoLocation = async (form: FormData) => {
-  return await getHttpClient().post("https://api-adresse.data.gouv.fr/search/csv/", form, {
+  return await client.post("https://api-adresse.data.gouv.fr/search/csv/", form, {
     headers: {
       ...form.getHeaders(),
     },
