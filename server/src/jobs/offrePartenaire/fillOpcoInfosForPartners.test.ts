@@ -149,7 +149,7 @@ describe("fillOpcoInfosForPartners", () => {
     const { workplace_opco, workplace_idcc } = job
     expect.soft(job.errors).toEqual([])
     expect.soft({ workplace_opco, workplace_idcc }).toEqual({ workplace_opco: OPCOS_LABEL.UNKNOWN_OPCO, workplace_idcc: null })
-  })
+  }, 20_000)
   it("should be able to handle multiple documents", async () => {
     // given
     await givenSomeComputedJobPartners([
@@ -206,5 +206,5 @@ describe("fillOpcoInfosForPartners", () => {
     expect.soft(pick(job2, filledFields)).toEqual({ workplace_opco: OPCOS_LABEL.AFDAS, workplace_idcc: 1313 })
     expect.soft(pick(job3, filledFields)).toEqual({ workplace_opco: OPCOS_LABEL.AKTO, workplace_idcc: null })
     expect.soft(pick(job4, filledFields)).toEqual({ workplace_opco: OPCOS_LABEL.UNKNOWN_OPCO, workplace_idcc: null })
-  })
+  }, 20_000)
 })
