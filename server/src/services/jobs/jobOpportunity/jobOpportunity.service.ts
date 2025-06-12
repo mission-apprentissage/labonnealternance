@@ -54,7 +54,6 @@ export const getJobsFromApiPrivate = async ({
   sources,
   diploma,
   opco,
-  opcoUrl,
   api = "jobV1/jobs",
   isMinimalData,
 }: {
@@ -68,7 +67,6 @@ export const getJobsFromApiPrivate = async ({
   // sources?: LBA_ITEM_TYPE
   diploma?: string
   opco?: string
-  opcoUrl?: string
   api?: string
   isMinimalData: boolean
 }): Promise<
@@ -112,7 +110,6 @@ export const getJobsFromApiPrivate = async ({
             caller,
             api,
             opco,
-            opcoUrl,
             isMinimalData,
           })
         : null,
@@ -126,7 +123,6 @@ export const getJobsFromApiPrivate = async ({
             caller,
             diploma,
             opco,
-            opcoUrl,
             isMinimalData,
           })
         : null,
@@ -140,7 +136,6 @@ export const getJobsFromApiPrivate = async ({
             caller,
             diploma,
             opco,
-            opcoUrl,
             isMinimalData,
           })
         : null,
