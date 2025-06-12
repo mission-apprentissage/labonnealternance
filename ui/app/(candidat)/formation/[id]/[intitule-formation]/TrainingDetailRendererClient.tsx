@@ -5,7 +5,7 @@ import { Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "next/dist/client/components/navigation"
 import { useRouter } from "next/navigation"
-import { Fragment, useEffect, useMemo, useState } from "react"
+import { CSSProperties, Fragment, useEffect, useState } from "react"
 import { ILbaItemFormation2Json } from "shared"
 import { LBA_ITEM_TYPE, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 
@@ -13,6 +13,7 @@ import { RechercheCarte } from "@/app/(candidat)/recherche/_components/Recherche
 import { IUseRechercheResultsSuccess, useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { useBuildNavigation } from "@/app/hooks/useBuildNavigation"
+import { useFormationPrdvTracker } from "@/app/hooks/useFormationPrdvTracker"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
 import GoingToContactQuestion, { getGoingtoId } from "@/components/ItemDetail/GoingToContactQuestion"
@@ -25,7 +26,7 @@ import ItemLocalisation from "@/components/ItemDetail/ItemDetailServices/ItemLoc
 import JobItemCardHeader from "@/components/ItemDetail/ItemDetailServices/JobItemCardHeader"
 import ShareLink from "@/components/ItemDetail/ShareLink"
 import StatsInserJeunes from "@/components/ItemDetail/StatsInserJeunes"
-import DemandeDeContact from "@/components/RDV/DemandeDeContact"
+import { DemandeDeContact } from "@/components/RDV/DemandeDeContact"
 import { isCfaEntreprise } from "@/services/cfaEntreprise"
 import fetchInserJeuneStats from "@/services/fetchInserJeuneStats"
 import { SendPlausibleEvent } from "@/utils/plausible"
@@ -43,64 +44,41 @@ const dontBreakOutCssParameters = {
 export default function TrainingDetailRendererClient({ training, params }: WithRecherchePageParams<{ training: ILbaItemFormation2Json }>) {
   const result = useRechercheResults(params)
 
-  const trainingReference = useMemo(() => {
-    return {
-      id: training.id,
-      ideaType: newItemTypeToOldItemType(training.type),
-    }
-  }, [training])
+  const trainingReference = {
+    id: training.id,
+    ideaType: newItemTypeToOldItemType(training.type),
+  }
 
-  const appliedDate = useMemo(() => {
-    if (globalThis.window == null) return null
-    const storedValue = globalThis.window.localStorage.getItem(`application-${training.type}-${training.id}`)
-    if (storedValue) {
-      return new Date(parseInt(storedValue, 10)).toLocaleDateString("fr-FR", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
-    }
-    return null
-  }, [training.type, training.id])
+  const { appliedDate, setPrdvDone } = useFormationPrdvTracker(training.id)
+
+  const detailPage = (
+    <TrainingDetailPage selectedItem={training} appliedDate={appliedDate} resultList={result.status === "success" ? result.items : []} params={params} onRdvSuccess={setPrdvDone} />
+  )
 
   if (params?.displayMap) {
     return (
       <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", height: "100vh", overflow: "hidden" }}>
-        <TrainingDetailPage
-          selectedItem={training}
-          priseDeRendezVous={appliedDate ? false : training.training.elligibleForAppointment}
-          appliedDate={appliedDate}
-          resultList={result.status === "success" ? result.items : []}
-          params={params}
-        />
+        {detailPage}
         {/* TODO : remove extended search button from map view */}
         <RechercheCarte item={trainingReference} variant="detail" params={params} />
       </Box>
     )
   }
 
-  return (
-    <TrainingDetailPage
-      selectedItem={training}
-      priseDeRendezVous={appliedDate ? false : training.training.elligibleForAppointment}
-      appliedDate={appliedDate}
-      resultList={result.status === "success" ? result.items : []}
-      params={params}
-    />
-  )
+  return detailPage
 }
 
 function TrainingDetailPage({
   selectedItem,
-  priseDeRendezVous,
   appliedDate,
   resultList,
   params,
+  onRdvSuccess,
 }: WithRecherchePageParams<{
   selectedItem: ILbaItemFormation2Json
-  priseDeRendezVous: boolean
   appliedDate: string | null
   resultList: IUseRechercheResultsSuccess["items"]
+  onRdvSuccess: () => void
 }>) {
   const kind: LBA_ITEM_TYPE = selectedItem?.type
   const actualTitle = selectedItem.training.title
@@ -125,7 +103,9 @@ function TrainingDetailPage({
     setIsCollapsedHeader(currentScroll > maxScroll)
   }
 
-  const stickyHeaderProperties = isCollapsedHeader
+  const { elligibleForAppointment } = selectedItem.training
+
+  const stickyHeaderProperties: CSSProperties = isCollapsedHeader
     ? {
         position: "sticky",
         zIndex: "1",
@@ -150,15 +130,14 @@ function TrainingDetailPage({
       }}
       {...swipeHandlers}
     >
-      {/* @ts-expect-error: TODO */}
       <Box
         as="header"
         sx={{
           filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
           padding: "10px 20px 0px 10px",
+          ...stickyHeaderProperties,
         }}
         background="white"
-        {...stickyHeaderProperties}
       >
         <Box width="100%" pl={["0", 4]} pb={isCollapsedHeader ? "0" : 2}>
           <Flex justifyContent="flex-end">
@@ -181,22 +160,28 @@ function TrainingDetailPage({
           </Typography>
 
           {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
-
           {!isCollapsedHeader && <hr style={{ paddingBottom: "1px" }} />}
 
           <Flex flexDirection="row" alignItems="center" gap={2}>
             <Box flex={1}>
-              {appliedDate ? (
+              {Boolean(appliedDate) && (
                 <Box>
-                  <Text color="grey.600" as="span" px={2} backgroundColor="#FEF7DA">
-                    <Text as="span">👍 </Text>
-                    <Text as="span" fontStyle="italic">
-                      Super, vous avez déjà pris contact le {appliedDate}.
-                    </Text>
+                  <Text
+                    as="span"
+                    className={fr.cx("ri-history-line", "fr-icon--sm", "fr-text--xs")}
+                    px={2}
+                    fontStyle="italic"
+                    sx={{
+                      backgroundColor: fr.colors.decisions.background.contrast.info.default,
+                      color: fr.colors.decisions.background.actionHigh.info.default,
+                    }}
+                  >
+                    Super, vous avez déjà pris contact le {appliedDate}.
                   </Text>
                 </Box>
-              ) : (
-                priseDeRendezVous && <DemandeDeContact isCollapsedHeader={isCollapsedHeader} context={contextPRDV} referrer="LBA" showInModal />
+              )}
+              {elligibleForAppointment && (
+                <DemandeDeContact hideButton={Boolean(appliedDate)} isCollapsedHeader={isCollapsedHeader} context={contextPRDV} referrer="LBA" onRdvSuccess={onRdvSuccess} />
               )}
             </Box>
             <ShareLink item={selectedItem} />
@@ -208,7 +193,7 @@ function TrainingDetailPage({
 
       <AideApprentissage />
 
-      {!priseDeRendezVous && <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />}
+      {!elligibleForAppointment && <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />}
     </Box>
   )
 }
