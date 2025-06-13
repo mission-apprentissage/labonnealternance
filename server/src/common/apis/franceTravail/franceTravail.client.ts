@@ -5,7 +5,6 @@ import { internal } from "@hapi/boom"
 import { ObjectId } from "bson"
 import FormData from "form-data"
 import { IFTJobRaw } from "shared"
-import { IRomeoAPIResponse } from "shared/models/cacheRomeo.model"
 import { IFranceTravailAccess, IFranceTravailAccessType } from "shared/models/franceTravailAccess.model"
 
 import { sleep } from "@/common/utils/asyncUtils"
@@ -20,13 +19,7 @@ import { sentryCaptureException } from "../../utils/sentryUtils"
 import { notifyToSlack } from "../../utils/slackUtils"
 import getApiClient from "../client"
 
-const axiosClient = getApiClient({}, { cache: false })
-
-const RomeoLimiter = apiRateLimiter("apiRomeo", {
-  nbRequests: 1,
-  durationInSeconds: 1,
-  client: axiosClient,
-})
+const axiosClient = getApiClient({})
 
 const OffreFranceTravailLimiter = apiRateLimiter("apiOffreFT", {
   nbRequests: 10,
@@ -51,12 +44,6 @@ export const ACCESS_PARAMS = {
     client_id: config.esdClientId,
     client_secret: config.esdClientSecret,
     scope: `application_${config.esdClientId} api_offresdemploiv2 o2dsoffre`,
-  }),
-  ROMEO: querystring.stringify({
-    grant_type: "client_credentials",
-    client_id: config.esdClientId,
-    client_secret: config.esdClientSecret,
-    scope: `application_${config.esdClientId} api_romeov2`,
   }),
 }
 
@@ -191,43 +178,6 @@ export const sendCsvToFranceTravail = async (csvPath: string): Promise<void> => 
   }
 }
 
-export type IRomeoPayload = {
-  intitule: string
-  identifiant: string
-  contexte?: string
-}
-type IRomeoOptions = {
-  nomAppelant: string
-  nbResultats?: number // betwwen 1 and 25, default 5
-  seuilScorePrediction?: number
-}
-
-export const MAX_ROMEO_PAYLOAD_SIZE = 20
-
-export const getRomeoPredictions = async (payload: IRomeoPayload[], options: IRomeoOptions = { nomAppelant: "La bonne alternance" }): Promise<IRomeoAPIResponse | null> => {
-  if (payload.length > MAX_ROMEO_PAYLOAD_SIZE) throw Error(`Maximum recommanded array size is ${MAX_ROMEO_PAYLOAD_SIZE}`) // Louis feeback https://mna-matcha.atlassian.net/browse/LBA-2232?focusedCommentId=13000
-  const token = await getToken("ROMEO")
-  return RomeoLimiter(async (client) => {
-    try {
-      const result = await client.post(
-        `${config.franceTravailIO.baseUrl}/romeo/v2/predictionMetiers`,
-        { appellations: payload, options },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      return result.data
-    } catch (error: any) {
-      logger.error("error", error)
-      sentryCaptureException(error, { extra: { responseData: error.response?.data } })
-      return null
-    }
-  })
-}
 // Documentation https://francetravail.io/produits-partages/catalogue/offres-emploi/documentation#/api-reference/operations/recupererListeOffre
 export async function* getAllFTJobsByDepartments(departement: string): AsyncGenerator<Omit<IFTJobRaw, "_id" | "createdAt">[], void, void> {
   const jobLimit = 150

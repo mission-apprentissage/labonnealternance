@@ -25,8 +25,7 @@ import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
-import { FCGetOpcoInfos } from "@/common/apis/franceCompetences/franceCompetencesClient"
-import { asyncForEach } from "@/common/utils/asyncUtils"
+//import { FCGetOpcoInfos } from "@/common/apis/franceCompetences/franceCompetencesClient"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -315,13 +314,13 @@ const getOpcoFromCfaDockByIdcc = async (siret: string): Promise<{ opco: string; 
   }
 }
 
-const getOpcoFromFranceCompetences = async (siret: string): Promise<{ opco: string; idcc: null } | undefined> => {
-  const opcoOpt = await FCGetOpcoInfos(siret)
-  return opcoOpt ? { opco: opcoOpt, idcc: null } : undefined
-}
+// const getOpcoFromFranceCompetences = async (siret: string): Promise<{ opco: string; idcc: null } | undefined> => {
+//   const opcoOpt = await FCGetOpcoInfos(siret)
+//   return opcoOpt ? { opco: opcoOpt, idcc: null } : undefined
+// }
 
 const getOpcoDataRaw = async (siret: string): Promise<{ opco: string; idcc: number | null } | undefined> => {
-  return (await getOpcoFromCfaDock(siret)) ?? (await getOpcoFromCfaDockByIdcc(siret)) ?? (await getOpcoFromFranceCompetences(siret))
+  return (await getOpcoFromCfaDock(siret)) ?? (await getOpcoFromCfaDockByIdcc(siret)) // ?? (await getOpcoFromFranceCompetences(siret))
 }
 
 export const getOpcoData = async (siret: string): Promise<{ opco: string; idcc: number | null } | null> => {
@@ -355,10 +354,14 @@ export const getOpcosData = async (sirets: string[]): Promise<{ opco: OPCOS_LABE
   sirets = sirets.filter((requestedSiret) => !opcoFromEntreprises.some(({ siret }) => siret === requestedSiret))
   const opcoFromCfaDock = await getOpcosDataFromCfaDock(sirets)
   sirets = sirets.filter((requestedSiret) => !opcoFromCfaDock.some(({ siret }) => siret === requestedSiret))
-  const opcoFromFranceCompetences = await getOpcosDataFromFranceCompetence(sirets)
-  const savedOpcoDatas: Omit<IOpco, "_id">[] = [...opcoFromCfaDock, ...opcoFromFranceCompetences].map(({ siret, opco, idcc }) => ({ opco, idcc, siren: siret.substring(0, 9) }))
+  //const opcoFromFranceCompetences = await getOpcosDataFromFranceCompetence(sirets)
+  const savedOpcoDatas: Omit<IOpco, "_id">[] = [...opcoFromCfaDock /*, ...opcoFromFranceCompetences*/].map(({ siret, opco, idcc }) => ({
+    opco,
+    idcc,
+    siren: siret.substring(0, 9),
+  }))
   await insertOpcos(savedOpcoDatas)
-  return [...opcoFromDB, ...opcoFromEntreprises, ...opcoFromCfaDock, ...opcoFromFranceCompetences]
+  return [...opcoFromDB, ...opcoFromEntreprises, ...opcoFromCfaDock /*, ...opcoFromFranceCompetences*/]
 }
 
 const getOpcosDataFromEntreprises = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc: number | null; siret: string }[]> => {
@@ -398,24 +401,24 @@ const getOpcosDataFromCfaDock = async (sirets: string[]): Promise<{ opco: OPCOS_
   }
 }
 
-const getOpcosDataFromFranceCompetence = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc: null; siret: string }[]> => {
-  if (!sirets.length) {
-    return []
-  }
-  const results = [] as { opco: OPCOS_LABEL; idcc: null; siret: string }[]
-  await asyncForEach(sirets, async (siret) => {
-    try {
-      const result = await getOpcoFromFranceCompetences(siret)
-      const opco = parseEnum(OPCOS_LABEL, result?.opco)
-      if (opco) {
-        results.push({ siret, opco, idcc: null })
-      }
-    } catch (err) {
-      captureException(err)
-    }
-  })
-  return results
-}
+// const getOpcosDataFromFranceCompetence = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc: null; siret: string }[]> => {
+//   if (!sirets.length) {
+//     return []
+//   }
+//   const results = [] as { opco: OPCOS_LABEL; idcc: null; siret: string }[]
+//   await asyncForEach(sirets, async (siret) => {
+//     try {
+//       const result = await getOpcoFromFranceCompetences(siret)
+//       const opco = parseEnum(OPCOS_LABEL, result?.opco)
+//       if (opco) {
+//         results.push({ siret, opco, idcc: null })
+//       }
+//     } catch (err) {
+//       captureException(err)
+//     }
+//   })
+//   return results
+// }
 
 export type EntrepriseData = IFormatAPIEntreprise & { geo_coordinates: string; geopoint: IGeoPoint }
 
