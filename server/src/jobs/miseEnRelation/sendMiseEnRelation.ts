@@ -33,8 +33,8 @@ type JobForMER = {
 }
 
 export const sendMiseEnRelation = async () => {
-  const fromDate = new Date(new Date().setDate(new Date().getDate() - 45))
-  const toDate = new Date(new Date().setDate(new Date().getDate() - 5))
+  const fromDate = new Date(Date.now() - 45 * 24 * 60 * 60 * 1000)
+  const toDate = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
 
   const counters: { errors: number; successSent: number; successNoCFA: number } = { errors: 0, successSent: 0, successNoCFA: 0 }
 
