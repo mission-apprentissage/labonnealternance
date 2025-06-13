@@ -14,17 +14,17 @@ import { fillSiretInfosForPartners } from "./fillSiretInfosForPartners"
 import { rankJobPartners } from "./rankJobPartners"
 import { validateComputedJobPartners } from "./validateComputedJobPartners"
 
-export const fillComputedJobsPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
+export const fillComputedJobsPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>, shouldNotifySlack = true) => {
   logger.info("début de fillComputedJobsPartners")
   await fillOpcoInfosForPartners(addedMatchFilter)
   await fillSiretInfosForPartners(addedMatchFilter)
   await blockJobsPartnersWithNaf85(addedMatchFilter)
-  await fillLocationInfosForPartners(addedMatchFilter)
+  await fillLocationInfosForPartners(addedMatchFilter, shouldNotifySlack)
   await fillRomeForPartners(addedMatchFilter)
   await blockBadRomeJobsPartners(addedMatchFilter)
   await rankJobPartners(addedMatchFilter)
   await detectDuplicateJobPartners(addedMatchFilter)
-  await validateComputedJobPartners(addedMatchFilter)
+  await validateComputedJobPartners(addedMatchFilter, shouldNotifySlack)
   logger.info("fin de fillComputedJobsPartners")
 }
 
