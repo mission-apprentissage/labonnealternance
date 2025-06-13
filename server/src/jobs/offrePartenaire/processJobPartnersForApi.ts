@@ -12,7 +12,7 @@ const excludedJobPartnersFromApi = Object.values(JOBPARTNERS_LABEL)
 export const processJobPartnersForApi = async () => {
   logger.info("début de processJobPartnersForApi")
   const processId: string = new ObjectId().toString()
-  await getDbCollection("computed_jobs_partners").updateMany({ partner_label: { $nin: excludedJobPartnersFromApi } }, { $set: { currently_processed_id: processId } })
+  await getDbCollection("computed_jobs_partners").updateMany({ partner_label: { $nin: excludedJobPartnersFromApi } }, { $set: { currently_processed_id: processId, errors: [] } })
   const filter = { currently_processed_id: processId }
   await fillComputedJobsPartners(filter)
   await importFromComputedToJobsPartners(filter)
