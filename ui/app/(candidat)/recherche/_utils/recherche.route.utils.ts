@@ -75,6 +75,7 @@ const zRecherchePageParams = z.object({
     })
     .array()
     .optional(),
+  opco: z.string().nullish(),
 })
 
 export type IRecherchePageParams = Required<z.output<typeof zRecherchePageParams>>
@@ -111,6 +112,9 @@ export function buildRecherchePageParams(params: Partial<IRecherchePageParams>, 
   }
   if (params?.activeItems?.length > 0) {
     query.set("activeItems", serializeItemReferences(params.activeItems))
+  }
+  if (params?.opco) {
+    query.set("opco", params.opco)
   }
 
   // In mode formations-only & jobs-only theses params cannot be modified
@@ -159,6 +163,8 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
 
   const displayMap = search.get("displayMap") === "true"
 
+  const opco = search.get("opco") || null
+
   if (mode === "formations-only") {
     return {
       romes,
@@ -168,6 +174,7 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
       job_type,
       displayMap,
       activeItems,
+      opco,
       displayEntreprises: false,
       displayFormations: true,
       displayPartenariats: false,
@@ -188,6 +195,7 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
       displayFormations: false,
       displayPartenariats: true,
       displayFilters: false,
+      opco,
     }
   }
 
@@ -196,7 +204,7 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
   const displayPartenariats = search.get("displayPartenariats") !== "false"
   const displayFilters = search.get("displayFilters") !== "false"
 
-  return { romes, geo, diploma, job_name, job_type, activeItems, displayMap, displayEntreprises, displayFormations, displayPartenariats, displayFilters }
+  return { romes, geo, diploma, job_name, job_type, activeItems, displayMap, displayEntreprises, displayFormations, displayPartenariats, displayFilters, opco }
 }
 
 export function detectModeFromParams(params: IRecherchePageParams): IRechercheMode {

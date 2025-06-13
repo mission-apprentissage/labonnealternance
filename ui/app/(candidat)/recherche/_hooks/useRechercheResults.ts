@@ -128,6 +128,10 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
       query.diploma = params.diploma
     }
 
+    if (params.opco) {
+      query.opco = params.opco
+    }
+
     return query
   }, [params])
 

@@ -30,6 +30,7 @@ const schema = z.object({
       latitude: z.number(),
     })
     .nullable(),
+  opco: z.string().nullish(),
 })
 
 export type IFormType = z.output<typeof schema>
@@ -82,8 +83,8 @@ export const radiusOptions = [
 
 export type RechercheFormProps = {
   type: "home" | "recherche"
-  initialValue?: Pick<IRecherchePageParams, "romes" | "diploma" | "job_name" | "geo" | "job_type"> | null
-  onSubmit: null | ((result: Pick<IRecherchePageParams, "romes" | "diploma" | "job_name" | "geo" | "job_type" | "activeItems">) => unknown)
+  initialValue?: Pick<IRecherchePageParams, "romes" | "diploma" | "job_name" | "geo" | "job_type" | "opco"> | null
+  onSubmit: null | ((result: Pick<IRecherchePageParams, "romes" | "diploma" | "job_name" | "geo" | "job_type" | "activeItems" | "opco">) => unknown)
 }
 
 export type IRomeSearchOption = IFormType["metier"] & { group?: string }
@@ -301,8 +302,9 @@ export function RechercheForm(props: RechercheFormProps) {
               latitude: props.initialValue.geo.latitude,
               longitude: props.initialValue.geo.longitude,
             },
+      opco: props.initialValue?.opco ?? null,
     }
-  }, [props.initialValue?.geo, props.initialValue?.diploma, props.initialValue?.job_name, props.initialValue?.job_type, props.initialValue?.romes])
+  }, [props.initialValue?.geo, props.initialValue?.diploma, props.initialValue?.job_name, props.initialValue?.job_type, props.initialValue?.romes, props.initialValue.opco])
 
   const isEnabled = props.onSubmit != null
   const context = useMemo(() => {
@@ -324,6 +326,7 @@ export function RechercheForm(props: RechercheFormProps) {
             job_name: values.metier.label,
             job_type: values.metier.type,
             activeItems: [],
+            opco: initialValues?.opco ?? null,
           })
         }}
         component={RechercheFormComponent}
