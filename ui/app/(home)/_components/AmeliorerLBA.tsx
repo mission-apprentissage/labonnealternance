@@ -1,5 +1,4 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 
@@ -39,15 +38,15 @@ export const AmeliorerLBA = () => (
         <strong>Profitez-en pour poser vos questions en direct !</strong>, nous organisons des webinaires spécialement conçus pour les recruteurs afin de vous présenter toutes les
         fonctionnalités de notre plateforme.
       </Typography>
-      <Button priority="secondary" size="large">
-        <DsfrLink
-          href="https://app.livestorm.co/la-bonne-alternance/premiers-pas-sur-la-bonne-alternance-maximisez-votre-experience"
-          aria-label="M'inscrire au webinaire - nouvelle fenêtre"
-          size="lg"
-        >
-          M'inscrire au webinaire
-        </DsfrLink>
-      </Button>
+
+      <DsfrLink
+        href="https://app.livestorm.co/la-bonne-alternance/premiers-pas-sur-la-bonne-alternance-maximisez-votre-experience"
+        aria-label="M'inscrire au webinaire - nouvelle fenêtre"
+        size="lg"
+        className={fr.cx("fr-btn", "fr-btn--lg", "fr-btn--secondary", "fr-btn--icon-right")}
+      >
+        M'inscrire au webinaire
+      </DsfrLink>
     </Box>
   </Box>
 )
