@@ -26,7 +26,7 @@ const ZDiagorienteAuthApi = z.object({
 })
 type IAuthParams = typeof authParams
 
-const axiosClient = getApiClient({}, { cache: false })
+const axiosClient = getApiClient({})
 
 let diagorienteToken: string | null = null
 
