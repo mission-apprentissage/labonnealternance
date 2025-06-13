@@ -10,9 +10,8 @@ import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import { countFormations, getAllFormationsFromCatalogue } from "../../services/catalogue.service"
 
-const importFormations = async () => {
-  logger.info(`Début import`)
-
+export const importCatalogueFormationJob = async () => {
+  logger.info(" -- Import formations catalogue -- ")
   const stats = {
     total: 0,
     created: 0,
@@ -20,40 +19,7 @@ const importFormations = async () => {
   }
 
   try {
-    await oleoduc(
-      await getAllFormationsFromCatalogue(),
-      writeData(async (formation) => {
-        stats.total++
-        try {
-          // use MongoDB to add only add selected field from getAllFormationFromCatalogue() function and speedup the process
-          delete formation._id // break parsing / insertion otherwise
-          formation.lieu_formation_geopoint = convertStringCoordinatesToGeoPoint(formation.lieu_formation_geo_coordonnees)
-          const parsedFormation = zFormationCatalogueSchemaNew.parse(formation)
-
-          await getDbCollection("formationcatalogues").insertOne({ _id: new ObjectId(), ...parsedFormation })
-          stats.created++
-        } catch (e) {
-          logger.error("Erreur enregistrement de formation", e)
-          stats.failed++
-        }
-      }),
-      { parallel: 10 }
-    )
-
-    return stats
-  } catch (error) {
-    // stop here if not able to get trainings (keep existing ones)
-    logger.error(`Error fetching formations from Catalogue`, error)
-    throw new Error("Error fetching formations from Catalogue")
-  }
-}
-
-export const importCatalogueFormationJob = async () => {
-  logger.info(" -- Import formations catalogue -- ")
-
-  try {
     const countCatalogue = await countFormations()
-
     // if catalogue is empty, stop the process
     if (!countCatalogue) {
       await notifyToSlack({
@@ -65,7 +31,31 @@ export const importCatalogueFormationJob = async () => {
 
     await getDbCollection("formationcatalogues").deleteMany({})
 
-    const stats = await importFormations()
+    try {
+      await oleoduc(
+        await getAllFormationsFromCatalogue(),
+        writeData(async (formation) => {
+          stats.total++
+          try {
+            // use MongoDB to add only add selected field from getAllFormationFromCatalogue() function and speedup the process
+            delete formation._id // break parsing / insertion otherwise
+            formation.lieu_formation_geopoint = convertStringCoordinatesToGeoPoint(formation.lieu_formation_geo_coordonnees)
+            const parsedFormation = zFormationCatalogueSchemaNew.parse(formation)
+
+            await getDbCollection("formationcatalogues").insertOne({ _id: new ObjectId(), ...parsedFormation })
+            stats.created++
+          } catch (e) {
+            logger.error("Erreur enregistrement de formation", e)
+            stats.failed++
+          }
+        }),
+        { parallel: 10 }
+      )
+    } catch (error) {
+      // stop here if not able to get trainings (keep existing ones)
+      logger.error(`Error fetching formations from Catalogue`, error)
+      throw new Error("Error fetching formations from Catalogue")
+    }
 
     logger.info(`Fin traitement`)
 
