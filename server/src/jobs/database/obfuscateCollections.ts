@@ -258,7 +258,6 @@ export async function obfuscateCollections(): Promise<void> {
 
   const collectionsToEmpty: CollectionName[] = [
     "cache_geolocation",
-    "cache_romeo",
     "cache_siret",
     "unsubscribedrecruteurslba",
     "unsubscribedofs",
