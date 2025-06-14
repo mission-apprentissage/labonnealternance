@@ -32,6 +32,7 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
   groupSize,
   replaceMatchFilter,
   addedMatchFilter,
+  shouldNotifySlack = true,
 }: {
   job: COMPUTED_ERROR_SOURCE
   sourceFields: readonly SourceFields[]
@@ -40,6 +41,7 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
   groupSize: number
   replaceMatchFilter?: Filter<IComputedJobsPartners>
   addedMatchFilter?: Filter<IComputedJobsPartners>
+  shouldNotifySlack?: boolean
 }) => {
   const logger = globalLogger.child({ job })
   logger.info(`job ${job} : début d'enrichissement des données`)
@@ -177,7 +179,7 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
   const message = `job ${job} : enrichissement terminé. total=${counters.total}, success=${counters.success}, errors=${counters.error}`
   logger.info(message)
 
-  if (counters.error > 0) {
+  if (counters.error > 0 && shouldNotifySlack) {
     await notifyToSlack({
       subject: `computedJobPartners: enrichissement de données`,
       message,

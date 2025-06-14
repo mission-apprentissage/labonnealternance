@@ -13,7 +13,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 
-export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
+export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>, shouldNotifySlack = true) => {
   logger.info(`import dans jobs_partners commencé`)
   const filters: Filter<IComputedJobsPartners>[] = [{ validated: true, business_error: null }]
   if (addedMatchFilter) {
@@ -115,10 +115,12 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
   await pipeline(stream, transform)
 
   const message = `import dans jobs_partners terminé. total=${counters.total}, success=${counters.success}, errors=${counters.error}`
-  await notifyToSlack({
-    subject: `jobsPartners: import de données`,
-    message,
-  })
+  if (shouldNotifySlack) {
+    await notifyToSlack({
+      subject: `jobsPartners: import de données`,
+      message,
+    })
+  }
 
   logger.info(`import dans jobs_partners terminé`, counters)
 }
