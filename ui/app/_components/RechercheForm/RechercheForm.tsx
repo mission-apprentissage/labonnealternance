@@ -304,7 +304,7 @@ export function RechercheForm(props: RechercheFormProps) {
             },
       opco: props.initialValue?.opco ?? null,
     }
-  }, [props.initialValue?.geo, props.initialValue?.diploma, props.initialValue?.job_name, props.initialValue?.job_type, props.initialValue?.romes, props.initialValue.opco])
+  }, [props.initialValue?.geo, props.initialValue?.diploma, props.initialValue?.job_name, props.initialValue?.job_type, props.initialValue?.romes, props.initialValue?.opco])
 
   const isEnabled = props.onSubmit != null
   const context = useMemo(() => {
