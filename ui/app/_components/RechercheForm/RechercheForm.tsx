@@ -256,18 +256,20 @@ function RechercheFormComponent(props: FormikProps<IFormType>) {
               },
       }}
     >
-      <AutocompleteAsync
-        noOptionsText="Nous ne parvenons pas à identifier le métier ou la formation que vous cherchez, veuillez reformuler votre recherche"
-        id="metier"
-        key="metier"
-        label="Métier ou formation *"
-        fetchOptions={fetchRomeSearchOptions}
-        getOptionKey={getMetierOptionKey}
-        getOptionLabel={getMetierOptionLabel}
-        groupBy={(option: IRomeSearchOption) => option.group}
-        placeholder="Indiquer un métier ou une formation"
-        disabled={!isEnabled}
-      />
+      {!props?.values?.rncp && (
+        <AutocompleteAsync
+          noOptionsText="Nous ne parvenons pas à identifier le métier ou la formation que vous cherchez, veuillez reformuler votre recherche"
+          id="metier"
+          key="metier"
+          label="Métier ou formation *"
+          fetchOptions={fetchRomeSearchOptions}
+          getOptionKey={getMetierOptionKey}
+          getOptionLabel={getMetierOptionLabel}
+          groupBy={(option: IRomeSearchOption) => option.group}
+          placeholder="Indiquer un métier ou une formation"
+          disabled={!isEnabled}
+        />
+      )}
       <AutocompleteAsync
         noOptionsText="Nous ne parvenons pas à identifier le lieu que vous cherchez, veuillez reformuler votre recherche"
         id="lieu"

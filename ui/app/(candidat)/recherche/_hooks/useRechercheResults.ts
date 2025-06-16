@@ -135,7 +135,6 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
     if (params.rncp) {
       query.rncp = params.rncp
     }
-    //localhost:3000/recherche-emploi?&caller=MonMaster&rncp=RNCP23745&lon=2.442388&lat=48.788799
     return query
   }, [params])
 
@@ -158,7 +157,7 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
   }, [params])
 
   const isFormationEnabled = formationQuerystring.romes.length > 0 && params.displayFormations
-  const isJobsEnabled = jobQuerystring.romes.length > 0 && (params.displayEntreprises || params.displayPartenariats)
+  const isJobsEnabled = (jobQuerystring.romes.length > 0 || jobQuerystring.rncp) && (params.displayEntreprises || params.displayPartenariats)
 
   const formationQuery = useQuery<Jsonify<ILbaItemFormation>[]>({
     queryKey: ["/v1/_private/formations/min", formationQuerystring],
