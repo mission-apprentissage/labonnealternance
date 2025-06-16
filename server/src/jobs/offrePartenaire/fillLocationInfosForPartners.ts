@@ -6,7 +6,7 @@ import { getCityFromProperties, getGeolocation, getStreetFromProperties } from "
 
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 
-export const fillLocationInfosForPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
+export const fillLocationInfosForPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>, shouldNotifySlack = true) => {
   const sourceFields = ["workplace_address_label"] as const satisfies (keyof IComputedJobsPartners)[]
 
   const filledFields = [
@@ -61,5 +61,6 @@ export const fillLocationInfosForPartners = async (addedMatchFilter?: Filter<ICo
 
       return [result]
     },
+    shouldNotifySlack,
   })
 }
