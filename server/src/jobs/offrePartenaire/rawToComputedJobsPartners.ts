@@ -1,6 +1,8 @@
+import { Writable } from "node:stream"
+import { pipeline } from "node:stream/promises"
+
 import { internal } from "@hapi/boom"
 import { Filter } from "mongodb"
-import { oleoduc, writeData } from "oleoduc"
 import { z } from "shared/helpers/zodWithOpenApi"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
@@ -28,20 +30,27 @@ export const rawToComputedJobsPartners = async <ZodInput extends AnyZodObject>({
   rawFilterQuery?: Filter<CollectionName>
 }) => {
   logger.info(`début d'import dans computed_jobs_partners pour partner_label=${partnerLabel}`)
+
   const deletedCount = await getDbCollection("computed_jobs_partners").countDocuments({ partner_label: partnerLabel })
   logger.info(`suppression de ${deletedCount} documents dans computed_jobs_partners pour partner_label=${partnerLabel}`)
   await getDbCollection("computed_jobs_partners").deleteMany({ partner_label: partnerLabel })
+
   const counters = { total: 0, success: 0, error: 0 }
   const importDate = new Date()
-  await oleoduc(
-    getDbCollection(collectionSource).find(rawFilterQuery).stream(),
-    writeData(
-      async (document: any) => {
+
+  const sourceStream = getDbCollection(collectionSource).find(rawFilterQuery).stream()
+
+  await pipeline(
+    sourceStream,
+    new Writable({
+      objectMode: true,
+      async write(document: any, _encoding, callback) {
         counters.total++
         try {
           const rawJob = documentJobRoot ? document[documentJobRoot] : document
           const parsedDocument = zodInput.parse(rawJob)
           const computedJobPartner = mapper(parsedDocument)
+
           await getDbCollection("computed_jobs_partners").insertOne({
             ...computedJobPartner,
             partner_label: partnerLabel,
@@ -49,6 +58,7 @@ export const rawToComputedJobsPartners = async <ZodInput extends AnyZodObject>({
             updated_at: importDate,
             offer_status_history: [],
           })
+
           counters.success++
         } catch (err) {
           counters.error++
@@ -57,10 +67,11 @@ export const rawToComputedJobsPartners = async <ZodInput extends AnyZodObject>({
           newError.cause = err
           sentryCaptureException(newError)
         }
+        callback()
       },
-      { parallel: 10 }
-    )
+    })
   )
+
   const message = `import dans computed_jobs_partners pour partner_label=${partnerLabel} terminé. total=${counters.total}, success=${counters.success}, errors=${counters.error}`
   logger.info(message)
   await notifyToSlack({
