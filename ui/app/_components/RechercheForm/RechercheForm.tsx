@@ -129,10 +129,8 @@ export async function fetchLieuOptions(query: string): Promise<IFormType["lieu"]
 }
 
 function validate(values: IFormType) {
-  console.log("validate : ", values)
   const errors: Partial<FormErrors> = {}
   const result = schema.safeParse(values)
-  console.log("result", result)
   if (!result.success) {
     result.error.issues.forEach((issue) => {
       if (issue.path.length > 0) {
@@ -141,17 +139,11 @@ function validate(values: IFormType) {
       }
     })
   } else {
-    // If RNCP is present, metier must be null. If RNCP is missing, metier is required.
-    // if (values.rncp && values.metier.label) {
-    //   errors.metier = "Le métier doit être vide si un RNCP est renseigné."
-    // } else
-
     if (!values.rncp && (values.metier === null || !values?.metier?.label)) {
       errors.metier = "Le métier est requis si aucun RNCP n'est renseigné."
     }
   }
 
-  console.log("errors", errors)
   return errors
 }
 
