@@ -1,5 +1,7 @@
+import { Transform, Writable } from "node:stream"
+import { pipeline } from "node:stream/promises"
+
 import type { AnyBulkWriteOperation } from "mongodb"
-import { groupData, oleoduc, writeData } from "oleoduc"
 import { IFTJobRaw } from "shared"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -86,26 +88,49 @@ function mapDocument(rawFTDocuments: IFTJobRaw[]) {
 
 export const classifyFranceTravailJobs = async () => {
   if (config.env !== "production") return
+
   const rawFTDocumentsVerified = await getDbCollection("raw_francetravail")
     .find({ "_metadata.openai.human_verification": { $exists: true } })
-    .limit(40) // HARD LIMIT FOR FREE MISTRAL MODEL
+    .limit(40)
     .toArray()
 
   const examples = mapDocument(rawFTDocumentsVerified)
   const queryFilter = { "_metadata.openai.type": { $exists: false } }
+
   const count = await getDbCollection("raw_francetravail").countDocuments(queryFilter)
   logger.info(`Classification de ${count} jobs depuis raw_francetravail`)
 
-  await oleoduc(
-    await getDbCollection("raw_francetravail").find(queryFilter).stream(),
-    groupData({ size: 10 }),
-    writeData(async (rawFTDocuments: IFTJobRaw[]) => {
-      const offres = mapDocument(rawFTDocuments)
-      const response = await checkFTOffer({ offres, examples })
+  const cursor = getDbCollection("raw_francetravail").find(queryFilter).stream()
 
-      const ops: AnyBulkWriteOperation<IFTJobRaw>[] = []
-      for (const rsp of response.offres) {
-        ops.push({
+  const batchSize = 10
+  let buffer: IFTJobRaw[] = []
+
+  const groupStream = new Transform({
+    objectMode: true,
+    transform(chunk, _encoding, callback) {
+      buffer.push(chunk)
+      if (buffer.length >= batchSize) {
+        this.push(buffer)
+        buffer = []
+      }
+      callback()
+    },
+    flush(callback) {
+      if (buffer.length > 0) {
+        this.push(buffer)
+      }
+      callback()
+    },
+  })
+
+  const classifyStream = new Writable({
+    objectMode: true,
+    async write(documents: IFTJobRaw[], _encoding, callback) {
+      try {
+        const offres = mapDocument(documents)
+        const response = await checkFTOffer({ offres, examples })
+
+        const ops: AnyBulkWriteOperation<IFTJobRaw>[] = response.offres.map((rsp) => ({
           updateOne: {
             filter: { id: rsp.id as string },
             update: {
@@ -115,15 +140,26 @@ export const classifyFranceTravailJobs = async () => {
               },
             },
           },
-        })
-      }
-      if (ops.length > 0) {
-        await getDbCollection("raw_francetravail").bulkWrite(ops, { ordered: false })
-      }
-    })
-  )
+        }))
 
-  await notifyToSlack({ subject: "Classification des offres France Travail", message: `Classification de ${count} terminées` })
+        if (ops.length > 0) {
+          await getDbCollection("raw_francetravail").bulkWrite(ops, { ordered: false })
+        }
+
+        callback()
+      } catch (err: any) {
+        logger.error("Erreur de classification d’un batch France Travail", err)
+        callback(err)
+      }
+    },
+  })
+
+  await pipeline(cursor, groupStream, classifyStream)
+
+  await notifyToSlack({
+    subject: "Classification des offres France Travail",
+    message: `Classification de ${count} terminées`,
+  })
 
   logger.info(`Classification terminée`)
 }
