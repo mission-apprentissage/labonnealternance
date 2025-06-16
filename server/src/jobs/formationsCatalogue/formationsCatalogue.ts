@@ -1,5 +1,7 @@
+import { Readable, Writable } from "node:stream"
+import { pipeline } from "node:stream/promises"
+
 import { ObjectId } from "mongodb"
-import { oleoduc, writeData } from "oleoduc"
 import { zFormationCatalogueSchemaNew } from "shared/models/index"
 
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
@@ -20,7 +22,6 @@ export const importCatalogueFormationJob = async () => {
 
   try {
     const countCatalogue = await countFormations()
-    // if catalogue is empty, stop the process
     if (!countCatalogue) {
       await notifyToSlack({
         subject: "IMPORT FORMATION",
@@ -31,35 +32,42 @@ export const importCatalogueFormationJob = async () => {
 
     await getDbCollection("formationcatalogues").deleteMany({})
 
-    try {
-      await oleoduc(
-        await getAllFormationsFromCatalogue(),
-        writeData(async (formation) => {
+    const formations = await getAllFormationsFromCatalogue()
+
+    await pipeline(
+      Readable.from(formations, { objectMode: true }),
+      new Writable({
+        objectMode: true,
+        async write(formation, _encoding, callback) {
           stats.total++
           try {
-            // use MongoDB to add only add selected field from getAllFormationFromCatalogue() function and speedup the process
-            delete formation._id // break parsing / insertion otherwise
+            delete formation._id
             formation.lieu_formation_geopoint = convertStringCoordinatesToGeoPoint(formation.lieu_formation_geo_coordonnees)
+
             const parsedFormation = zFormationCatalogueSchemaNew.parse(formation)
 
-            await getDbCollection("formationcatalogues").insertOne({ _id: new ObjectId(), ...parsedFormation })
+            await getDbCollection("formationcatalogues").insertOne({
+              _id: new ObjectId(),
+              ...parsedFormation,
+            })
+
             stats.created++
           } catch (e) {
             logger.error("Erreur enregistrement de formation", e)
             stats.failed++
           }
-        }),
-        { parallel: 10 }
-      )
-    } catch (error) {
-      // stop here if not able to get trainings (keep existing ones)
-      logger.error(`Error fetching formations from Catalogue`, error)
-      throw new Error("Error fetching formations from Catalogue")
-    }
+
+          callback()
+        },
+      })
+    )
 
     logger.info(`Fin traitement`)
-
-    await notifyToSlack({ subject: "IMPORT FORMATION", message: `Import formations catalogue terminé. ${stats.created} OK. ${stats.failed} erreur(s)`, error: false })
+    await notifyToSlack({
+      subject: "IMPORT FORMATION",
+      message: `Import formations catalogue terminé. ${stats.created} OK. ${stats.failed} erreur(s)`,
+      error: false,
+    })
 
     return {
       result: "Import formations catalogue terminé",
@@ -69,6 +77,10 @@ export const importCatalogueFormationJob = async () => {
   } catch (error) {
     sentryCaptureException(error)
     logger.error(error)
-    await notifyToSlack({ subject: "IMPORT FORMATION", message: `ECHEC Import formations catalogue`, error: true })
+    await notifyToSlack({
+      subject: "IMPORT FORMATION",
+      message: `ECHEC Import formations catalogue`,
+      error: true,
+    })
   }
 }
