@@ -29,7 +29,7 @@ export enum JOB_PARTNER_BUSINESS_ERROR {
   WRONG_DATA = "WRONG_DATA",
 }
 
-export const ZComputedJobsPartners = extensions
+export const ZComputedJobsPartnersBase = extensions
   .optionalToNullish(ZJobsPartnersOfferPrivate.partial())
   .omit({
     _id: true,
@@ -42,23 +42,45 @@ export const ZComputedJobsPartners = extensions
     partner_job_id: ZJobsPartnersOfferPrivate.shape.partner_job_id,
     partner_label: ZJobsPartnersOfferPrivate.shape.partner_label,
     created_at: ZJobsPartnersOfferPrivate.shape.created_at,
-    jobs_in_success: z.array(extensions.buildEnum(COMPUTED_ERROR_SOURCE)),
-    errors: z.array(
-      z
-        .object({
-          source: extensions.buildEnum(COMPUTED_ERROR_SOURCE),
-          error: z.string(),
-        })
-        .nullable()
-        .describe("Détail des erreurs rencontrées lors de la récupération des données obligatoires")
-    ),
-    validated: z.boolean().default(false).describe("Toutes les données nécessaires au passage vers jobs_partners sont présentes et valides (validation zod)"),
-    business_error: z.string().nullable().default(null),
-    currently_processed_id: z
-      .string()
-      .nullish()
-      .describe("Si le champ est rempli, l'offre est en train d'être traitée. Les offres ayant le même id sont traitées dans le même batch"),
   })
+
+export const ZComputedJobsPartnersWrite = ZComputedJobsPartnersBase.omit({
+  _id: true,
+  created_at: true,
+  updated_at: true,
+  duplicates: true,
+  rank: true,
+  stats_detail_view: true,
+  stats_postuler: true,
+  stats_search_view: true,
+
+  offer_creation: true,
+  offer_expiration: true,
+}).extend({
+  offer_creation: z.string().datetime(),
+  offer_expiration: z.string().datetime(),
+})
+
+export type IComputedJobsPartnersWrite = z.output<typeof ZComputedJobsPartnersWrite>
+
+export const ZComputedJobsPartners = ZComputedJobsPartnersBase.extend({
+  jobs_in_success: z.array(extensions.buildEnum(COMPUTED_ERROR_SOURCE)),
+  errors: z.array(
+    z
+      .object({
+        source: extensions.buildEnum(COMPUTED_ERROR_SOURCE),
+        error: z.string(),
+      })
+      .nullable()
+      .describe("Détail des erreurs rencontrées lors de la récupération des données obligatoires")
+  ),
+  validated: z.boolean().default(false).describe("Toutes les données nécessaires au passage vers jobs_partners sont présentes et valides (validation zod)"),
+  business_error: z.string().nullable().default(null),
+  currently_processed_id: z
+    .string()
+    .nullish()
+    .describe("Si le champ est rempli, l'offre est en train d'être traitée. Les offres ayant le même id sont traitées dans le même batch"),
+})
 export type IComputedJobsPartners = z.output<typeof ZComputedJobsPartners>
 
 export default {
