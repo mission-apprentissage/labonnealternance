@@ -13,7 +13,7 @@ const zodModel = jobsPartnersModel.zod
 
 type BulkOperation = AnyBulkWriteOperation<IComputedJobsPartners>
 
-export const validateComputedJobPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
+export const validateComputedJobPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>, shouldNotifySlack = true) => {
   logger.info("validation des computed_job_partners")
   const finalFilter = { $and: [{ business_error: null }, ...(addedMatchFilter ? [addedMatchFilter] : [])] }
   const toUpdateCount = await getDbCollection("computed_jobs_partners").countDocuments(finalFilter)
@@ -76,8 +76,10 @@ export const validateComputedJobPartners = async (addedMatchFilter?: Filter<ICom
     )
   )
   logger.info(`validation terminé`, counters)
-  await notifyToSlack({
-    subject: `computedJobPartners: validation des offres`,
-    message: `validation terminé. total=${counters.total}, success=${counters.success}, errors=${counters.error}`,
-  })
+  if (shouldNotifySlack) {
+    await notifyToSlack({
+      subject: `computedJobPartners: validation des offres`,
+      message: `validation terminé. total=${counters.total}, success=${counters.success}, errors=${counters.error}`,
+    })
+  }
 }
