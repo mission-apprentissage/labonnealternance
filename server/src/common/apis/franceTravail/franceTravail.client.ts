@@ -19,7 +19,7 @@ import { sentryCaptureException } from "../../utils/sentryUtils"
 import { notifyToSlack } from "../../utils/slackUtils"
 import getApiClient from "../client"
 
-const axiosClient = getApiClient({}, { cache: false })
+const axiosClient = getApiClient({})
 
 const OffreFranceTravailLimiter = apiRateLimiter("apiOffreFT", {
   nbRequests: 10,
