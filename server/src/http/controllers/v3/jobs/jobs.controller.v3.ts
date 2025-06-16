@@ -13,6 +13,7 @@ import {
   incrementPostulerClickCount,
   incrementSearchViewCount,
   updateJobOffer,
+  upsertJobsPartnersMulti,
   upsertJobOffer,
 } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
 import { JobOpportunityRequestContext } from "@/services/jobs/jobOpportunity/JobOpportunityRequestContext"
@@ -69,6 +70,20 @@ export const jobsApiV3Routes = (server: Server) => {
       const { partner_label, partner_job_id } = req.body
       const user = getUserFromRequest(req, zRoutes.post["/v3/jobs/multi-partner"]).value
       const id = await upsertJobOffer(req.body, partner_label, partner_job_id, user.email)
+      return res.status(200).send({ id })
+    }
+  )
+
+  server.post(
+    "/v4/jobs/multi-partner",
+    {
+      schema: zRoutes.post["/v4/jobs/multi-partner"],
+      onRequest: server.auth(zRoutes.post["/v4/jobs/multi-partner"]),
+      config,
+    },
+    async (req, res) => {
+      const user = getUserFromRequest(req, zRoutes.post["/v3/jobs/multi-partner"]).value
+      const id = await upsertJobsPartnersMulti({ data: req.body, requestedByEmail: user.email })
       return res.status(200).send({ id })
     }
   )
