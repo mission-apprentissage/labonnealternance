@@ -132,6 +132,10 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
       query.opco = params.opco
     }
 
+    if (params.rncp) {
+      query.rncp = params.rncp
+    }
+    //localhost:3000/recherche-emploi?&caller=MonMaster&rncp=RNCP23745&lon=2.442388&lat=48.788799
     return query
   }, [params])
 

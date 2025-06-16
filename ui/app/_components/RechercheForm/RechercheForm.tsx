@@ -7,7 +7,6 @@ import { Formik, FormikProps } from "formik"
 import { createContext, useContext, useMemo } from "react"
 import { type IMetierEnrichi } from "shared"
 import { z } from "zod"
-import { toFormikValidate } from "zod-formik-adapter"
 
 import { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { AutocompleteAsync } from "@/app/_components/FormComponents/AutocompleteAsync"
@@ -31,9 +30,15 @@ const schema = z.object({
     })
     .nullable(),
   opco: z.string().nullish(),
+  rncp: z.string().nullish(),
 })
 
 export type IFormType = z.output<typeof schema>
+
+type FormErrors = {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  [K in keyof z.infer<typeof schema>]: string
+}
 
 export const niveauOptions = [
   {
@@ -83,8 +88,8 @@ export const radiusOptions = [
 
 export type RechercheFormProps = {
   type: "home" | "recherche"
-  initialValue?: Pick<IRecherchePageParams, "romes" | "diploma" | "job_name" | "geo" | "job_type" | "opco"> | null
-  onSubmit: null | ((result: Pick<IRecherchePageParams, "romes" | "diploma" | "job_name" | "geo" | "job_type" | "activeItems" | "opco">) => unknown)
+  initialValue?: Pick<IRecherchePageParams, "romes" | "diploma" | "job_name" | "geo" | "job_type" | "opco" | "rncp"> | null
+  onSubmit: null | ((result: Pick<IRecherchePageParams, "romes" | "diploma" | "job_name" | "geo" | "job_type" | "activeItems" | "opco" | "rncp">) => unknown)
 }
 
 export type IRomeSearchOption = IFormType["metier"] & { group?: string }
@@ -123,7 +128,32 @@ export async function fetchLieuOptions(query: string): Promise<IFormType["lieu"]
   }))
 }
 
-const validate = toFormikValidate(schema)
+function validate(values: IFormType) {
+  console.log("validate : ", values)
+  const errors: Partial<FormErrors> = {}
+  const result = schema.safeParse(values)
+  console.log("result", result)
+  if (!result.success) {
+    result.error.issues.forEach((issue) => {
+      if (issue.path.length > 0) {
+        const key = issue.path[0] as keyof IFormType
+        errors[key] = issue.message
+      }
+    })
+  } else {
+    // If RNCP is present, metier must be null. If RNCP is missing, metier is required.
+    // if (values.rncp && values.metier.label) {
+    //   errors.metier = "Le métier doit être vide si un RNCP est renseigné."
+    // } else
+
+    if (!values.rncp && (values.metier === null || !values?.metier?.label)) {
+      errors.metier = "Le métier est requis si aucun RNCP n'est renseigné."
+    }
+  }
+
+  console.log("errors", errors)
+  return errors
+}
 
 const RechercheFormContext = createContext<{
   type: RechercheFormProps["type"]
@@ -303,8 +333,17 @@ export function RechercheForm(props: RechercheFormProps) {
               longitude: props.initialValue.geo.longitude,
             },
       opco: props.initialValue?.opco ?? null,
+      rncp: props.initialValue?.rncp ?? null,
     }
-  }, [props.initialValue?.geo, props.initialValue?.diploma, props.initialValue?.job_name, props.initialValue?.job_type, props.initialValue?.romes, props.initialValue.opco])
+  }, [
+    props.initialValue?.geo,
+    props.initialValue?.diploma,
+    props.initialValue?.job_name,
+    props.initialValue?.job_type,
+    props.initialValue?.romes,
+    props.initialValue?.opco,
+    props.initialValue?.rncp,
+  ])
 
   const isEnabled = props.onSubmit != null
   const context = useMemo(() => {
@@ -320,13 +359,14 @@ export function RechercheForm(props: RechercheFormProps) {
         validateOnBlur={false}
         onSubmit={async (values) => {
           await props?.onSubmit({
-            romes: values.metier.romes,
+            romes: values?.metier?.romes,
             geo: values.lieu ? { address: values.lieu.label, latitude: values.lieu.latitude, longitude: values.lieu.longitude, radius: parseInt(values.radius) } : null,
             diploma: values.niveau || null,
             job_name: values.metier.label,
             job_type: values.metier.type,
             activeItems: [],
             opco: initialValues?.opco ?? null,
+            rncp: initialValues?.rncp ?? null,
           })
         }}
         component={RechercheFormComponent}
