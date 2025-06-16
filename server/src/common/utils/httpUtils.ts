@@ -1,9 +1,9 @@
 import http from "http"
 import https from "https"
+import { Transform } from "node:stream"
 
 import axios, { AxiosRequestConfig, CreateAxiosDefaults } from "axios"
 import { FastifyRequest } from "fastify"
-import { compose, transformData } from "oleoduc"
 import { ITrackingCookies } from "shared/models/index"
 
 import { logger } from "../logger"
@@ -57,10 +57,13 @@ async function _fetch(url: string, options: Partial<FetchOptions> = {}) {
 
 async function fetchStream(url: string, options: Partial<FetchOptions> = {}) {
   const response = await _fetch(url, { ...options, responseType: "stream" })
-  return compose(
-    response.data,
-    transformData((d: any) => d.toString())
-  )
+  const transform = new Transform({
+    readableObjectMode: true,
+    transform(chunk, _encoding, callback) {
+      callback(null, chunk.toString())
+    },
+  })
+  return response.data.pipe(transform)
 }
 
 async function fetchJson(url: string, options: Partial<FetchOptions> = {}) {
