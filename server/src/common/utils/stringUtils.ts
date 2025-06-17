@@ -7,7 +7,8 @@ export const removeHtmlTagsFromString = (text: string | null | undefined, keepBr
   return text
 }
 
-export const formatHtmlForPartnerDescription = (text: string) => {
+export const formatHtmlForPartnerDescription = (text: string | null) => {
+  if (text === null) return ""
   let sanitizedText = text
     .replace(/&amp;/g, "&")
     .replace(/<li><p>|<li>/g, "- ")

@@ -25,6 +25,7 @@ import {
 
 import { normalizeDepartementToRegex } from "@/common/utils/geolib"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { formatHtmlForPartnerDescription } from "@/common/utils/stringUtils"
 import { getPartnerJobs } from "@/services/partnerJob.service"
 
 import { logger } from "../../../common/logger"
@@ -879,7 +880,7 @@ async function upsertJobOfferPrivate({
     contract_remote: data.contract.remote,
 
     offer_title: data.offer.title,
-    offer_description: data.offer.description,
+    offer_description: formatHtmlForPartnerDescription(data.offer.description),
     offer_target_diploma:
       offer_target_diploma_european === null
         ? null
@@ -898,7 +899,7 @@ async function upsertJobOfferPrivate({
     offer_multicast: data.offer.multicast,
 
     workplace_siret: data.workplace.siret,
-    workplace_description: data.workplace.description,
+    workplace_description: formatHtmlForPartnerDescription(data.workplace.description),
     workplace_website: data.workplace.website,
     workplace_name: data.workplace.name,
     workplace_address_label: data.workplace.location?.address,
