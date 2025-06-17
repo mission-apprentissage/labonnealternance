@@ -5,7 +5,6 @@ import axios, { AxiosInstance } from "axios"
 import { got } from "got"
 import { sortBy } from "lodash-es"
 import { ObjectId } from "mongodb"
-import { compose } from "oleoduc"
 import { IEtablissementCatalogue, IEtablissementCatalogueProche, IEtablissementCatalogueProcheWithDistance } from "shared/interface/etablissement.types"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -251,7 +250,7 @@ export const getAllFormationsFromCatalogue = async () => {
     const params = convertQueryIntoParams(query, options)
     const response = await fetchStream(`${config.catalogueUrl}${config.formationsEndPoint}.json?${params}`)
 
-    return compose(response, streamJsonArray())
+    return response.pipe(streamJsonArray())
   }
 
   return streamFormations(query, {
