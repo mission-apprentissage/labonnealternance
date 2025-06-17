@@ -27,6 +27,7 @@ export enum JOB_PARTNER_BUSINESS_ERROR {
   CFA = "CFA",
   ROME_BLACKLISTED = "ROME_BLACKLISTED",
   WRONG_DATA = "WRONG_DATA",
+  GEOLOCATION_NOT_FOUND = "GEOLOCATION_NOT_FOUND",
 }
 
 export const ZComputedJobsPartnersBase = extensions

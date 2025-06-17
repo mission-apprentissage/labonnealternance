@@ -1,5 +1,5 @@
 import { Filter } from "mongodb"
-import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { joinNonNullStrings } from "shared/utils/index"
 
 import { getCityFromProperties, getGeolocation, getStreetFromProperties } from "@/services/geolocation.service"
@@ -15,6 +15,7 @@ export const fillLocationInfosForPartners = async (addedMatchFilter?: Filter<ICo
     "workplace_address_city",
     "workplace_address_zipcode",
     "workplace_geopoint",
+    "business_error",
   ] as const satisfies (keyof IComputedJobsPartners)[]
 
   return fillFieldsForPartnersFactory({
@@ -30,10 +31,20 @@ export const fillLocationInfosForPartners = async (addedMatchFilter?: Filter<ICo
         return []
       }
 
-      const geolocation = await getGeolocation(workplace_address_label!)
+      const geolocation = await getGeolocation(workplace_address_label)
 
       if (!geolocation) {
-        return []
+        if (document.workplace_geopoint) {
+          // on est capable de geolocaliser l'offre => non bloquant
+          return []
+        } else {
+          // pas de geolocalisation => l'offre ne doit pas être publiée
+          const result: Pick<IComputedJobsPartners, (typeof filledFields)[number] | "_id"> = {
+            _id: document._id,
+            business_error: JOB_PARTNER_BUSINESS_ERROR.GEOLOCATION_NOT_FOUND,
+          }
+          return [result]
+        }
       }
       /*
         A ce stade, nous avons trouvé un match via la ban.
@@ -57,6 +68,7 @@ export const fillLocationInfosForPartners = async (addedMatchFilter?: Filter<ICo
         workplace_address_city: found_city ?? null,
         workplace_address_zipcode: found_zipcode ?? null,
         workplace_geopoint: found_geopoint ?? null,
+        business_error: document.business_error ?? null,
       }
 
       return [result]
