@@ -1093,26 +1093,31 @@ const jobsPartnersToPublishing = (): IJobOfferPublishingV3 => ({
   },
 })
 
-export const jobPartnerBusinessErrorLabels: Record<string, string> = {
+const otherErrorsLabels: Record<string, string> = {
+  [BusinessErrorCodes.NON_DIFFUSIBLE]: "The company's contact informations are not publishable",
+}
+
+const jobPartnerBusinessErrorLabels: Record<JOB_PARTNER_BUSINESS_ERROR, string> = {
   [JOB_PARTNER_BUSINESS_ERROR.CFA]: "The offer is published by a training entity",
   [JOB_PARTNER_BUSINESS_ERROR.CLOSED_COMPANY]: "The company is closed",
   [JOB_PARTNER_BUSINESS_ERROR.DUPLICATE]: "The offer is considered as a duplicate of another published offer",
   [JOB_PARTNER_BUSINESS_ERROR.EXPIRED]: "The offer has expired",
-  [BusinessErrorCodes.NON_DIFFUSIBLE]: "The company's contact informations are not publishable",
   [JOB_PARTNER_BUSINESS_ERROR.ROME_BLACKLISTED]: "The offer's profession is not published",
   [JOB_PARTNER_BUSINESS_ERROR.STAGE]: "The offer is considered an internship",
   [JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA]: "The offer contains bad data",
+  [JOB_PARTNER_BUSINESS_ERROR.GEOLOCATION_NOT_FOUND]: "We were unable to geolocate the offer's address",
 }
 
 const computedJobsPartnersToPublishing = (job: IComputedJobsPartners): IJobOfferPublishingV3 => {
   const { business_error } = job
   if (business_error) {
+    const allLabels = { ...jobPartnerBusinessErrorLabels, ...otherErrorsLabels }
     return {
       publishing: {
         status: JOB_PUBLISHING_STATUS.WILL_NOT_BE_PUBLISHED,
         error: {
           code: business_error,
-          label: jobPartnerBusinessErrorLabels[business_error] ?? business_error,
+          label: allLabels[business_error] ?? business_error,
         },
       },
     }
