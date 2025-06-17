@@ -247,8 +247,6 @@ export function WidgetTester() {
         validateOnBlur={false}
         onSubmit={async (values) => {
           let iFrameUrl = baseUrl
-          iFrameUrl = iFrameUrl.replace("5", "3")
-
           const path = values.scope
 
           iFrameUrl = `${iFrameUrl}${path}`
