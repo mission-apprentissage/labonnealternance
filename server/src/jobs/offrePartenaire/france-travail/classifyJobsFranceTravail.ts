@@ -7,6 +7,7 @@ import { IFTJobRaw } from "shared"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 // import config from "@/config"
 import { groupStreamData } from "@/common/utils/streamUtils"
+import config from "@/config"
 import { ZChatCompletionResponse } from "@/services/openai/openai.service"
 
 import { logger } from "../../../common/logger"
@@ -88,7 +89,7 @@ function mapDocument(rawFTDocuments: IFTJobRaw[]) {
 }
 
 export const classifyFranceTravailJobs = async () => {
-  // if (config.env !== "production") return
+  if (config.env !== "production") return
 
   const rawFTDocumentsVerified = await getDbCollection("raw_francetravail")
     .find({ "_metadata.openai.human_verification": { $exists: true } })
@@ -109,7 +110,7 @@ export const classifyFranceTravailJobs = async () => {
     objectMode: true,
     async write(documents: IFTJobRaw[], _encoding, callback) {
       try {
-        console.log(documents.length, "documents")
+        if (!documents.length) return callback()
         const offres = mapDocument(documents)
         const response = await checkFTOffer({ offres, examples })
 
