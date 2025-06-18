@@ -8,7 +8,7 @@ import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import { NIVEAUX_POUR_LBA, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import { IJobsPartnersOfferApi, IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import { IComputedJobsPartners, IComputedJobsPartnersWrite, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import {
   IJobOfferApiReadV3,
   IJobOfferPublishingV3,
@@ -54,7 +54,6 @@ export const getJobsFromApiPrivate = async ({
   sources,
   diploma,
   opco,
-  opcoUrl,
   api = "jobV1/jobs",
   isMinimalData,
 }: {
@@ -68,7 +67,6 @@ export const getJobsFromApiPrivate = async ({
   // sources?: LBA_ITEM_TYPE
   diploma?: string
   opco?: string
-  opcoUrl?: string
   api?: string
   isMinimalData: boolean
 }): Promise<
@@ -112,7 +110,6 @@ export const getJobsFromApiPrivate = async ({
             caller,
             api,
             opco,
-            opcoUrl,
             isMinimalData,
           })
         : null,
@@ -126,7 +123,6 @@ export const getJobsFromApiPrivate = async ({
             caller,
             diploma,
             opco,
-            opcoUrl,
             isMinimalData,
           })
         : null,
@@ -140,7 +136,6 @@ export const getJobsFromApiPrivate = async ({
             caller,
             diploma,
             opco,
-            opcoUrl,
             isMinimalData,
           })
         : null,
@@ -1098,26 +1093,31 @@ const jobsPartnersToPublishing = (): IJobOfferPublishingV3 => ({
   },
 })
 
-export const jobPartnerBusinessErrorLabels: Record<string, string> = {
+const otherErrorsLabels: Record<string, string> = {
+  [BusinessErrorCodes.NON_DIFFUSIBLE]: "The company's contact informations are not publishable",
+}
+
+const jobPartnerBusinessErrorLabels: Record<JOB_PARTNER_BUSINESS_ERROR, string> = {
   [JOB_PARTNER_BUSINESS_ERROR.CFA]: "The offer is published by a training entity",
   [JOB_PARTNER_BUSINESS_ERROR.CLOSED_COMPANY]: "The company is closed",
   [JOB_PARTNER_BUSINESS_ERROR.DUPLICATE]: "The offer is considered as a duplicate of another published offer",
   [JOB_PARTNER_BUSINESS_ERROR.EXPIRED]: "The offer has expired",
-  [BusinessErrorCodes.NON_DIFFUSIBLE]: "The company's contact informations are not publishable",
   [JOB_PARTNER_BUSINESS_ERROR.ROME_BLACKLISTED]: "The offer's profession is not published",
   [JOB_PARTNER_BUSINESS_ERROR.STAGE]: "The offer is considered an internship",
   [JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA]: "The offer contains bad data",
+  [JOB_PARTNER_BUSINESS_ERROR.GEOLOCATION_NOT_FOUND]: "We were unable to geolocate the offer's address",
 }
 
 const computedJobsPartnersToPublishing = (job: IComputedJobsPartners): IJobOfferPublishingV3 => {
   const { business_error } = job
   if (business_error) {
+    const allLabels = { ...jobPartnerBusinessErrorLabels, ...otherErrorsLabels }
     return {
       publishing: {
         status: JOB_PUBLISHING_STATUS.WILL_NOT_BE_PUBLISHED,
         error: {
           code: business_error,
-          label: jobPartnerBusinessErrorLabels[business_error] ?? business_error,
+          label: allLabels[business_error] ?? business_error,
         },
       },
     }
@@ -1184,3 +1184,54 @@ const incrementJobCounter = (fieldName: keyof IJobsPartnersOfferPrivate) => asyn
 export const incrementSearchViewCount = incrementJobCounter("stats_search_view")
 export const incrementDetailViewCount = (id: ObjectId) => incrementJobCounter("stats_detail_view")([id])
 export const incrementPostulerClickCount = (id: ObjectId) => incrementJobCounter("stats_postuler")([id])
+
+export async function upsertJobsPartnersMulti({ data, requestedByEmail }: { data: IComputedJobsPartnersWrite; requestedByEmail: string }): Promise<ObjectId> {
+  const now = new Date()
+  const { partner_label, partner_job_id } = data
+
+  let current = await getDbCollection("jobs_partners").findOne<IJobsPartnersOfferPrivate>({ partner_label, partner_job_id })
+  if (!current) {
+    current = await getDbCollection("computed_jobs_partners").findOne<IJobsPartnersOfferPrivate>({ partner_label, partner_job_id })
+  }
+
+  const { created_at, _id } = {
+    _id: current?._id ?? new ObjectId(),
+    created_at: current?.created_at ?? now,
+  } satisfies Partial<IJobsPartnersOfferPrivate>
+
+  const offerCreation = current?.offer_creation ?? new Date(data.offer_creation)
+  const offerExpiration = current?.offer_expiration ?? DateTime.fromJSDate(created_at, { zone: "Europe/Paris" }).plus({ months: 2 }).startOf("day").toJSDate()
+  const offerStatus = current?.offer_status ?? JOB_STATUS_ENGLISH.ACTIVE
+
+  const writableData: Omit<IComputedJobsPartners, InvariantFields> = {
+    ...data,
+    offer_creation: offerCreation,
+    offer_expiration: offerExpiration,
+    offer_status: offerStatus,
+    updated_at: now,
+    business_error: null,
+    errors: [],
+    validated: false,
+    jobs_in_success: [],
+    currently_processed_id: null,
+  }
+
+  await getDbCollection("computed_jobs_partners").updateOne({ _id }, { $set: writableData, $setOnInsert: { created_at, _id, offer_status_history: [] } }, { upsert: true })
+  if (current && current.offer_status !== offerStatus) {
+    await getDbCollection("computed_jobs_partners").updateOne(
+      { _id },
+      {
+        $push: {
+          offer_status_history: {
+            date: now,
+            status: offerStatus,
+            reason: "créée / modifiée par API",
+            granted_by: requestedByEmail,
+          },
+        },
+      }
+    )
+  }
+
+  return _id
+}

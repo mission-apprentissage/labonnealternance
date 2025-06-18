@@ -33,17 +33,19 @@ import { PAGES } from "@/utils/routes.utils"
 export default function JobDetailRendererClient({ job, params }: WithRecherchePageParams<{ job: ILbaItemJobsGlobal }>) {
   const result = useRechercheResults(params)
 
+  const jobDetail = <JobDetail selectedItem={job} resultList={result.status === "success" ? result.items : []} params={params} />
+
   if (params?.displayMap) {
     return (
       <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", height: "100vh", overflow: "hidden" }}>
-        <JobDetail selectedItem={job} resultList={result.status === "success" ? result.items : []} params={params} />
+        {jobDetail}
         {/* TODO : remove extended search button from map view */}
         <RechercheCarte item={job} variant="detail" params={params} />
       </Box>
     )
   }
 
-  return <JobDetail selectedItem={job} resultList={result.status === "success" ? result.items : []} params={params} />
+  return jobDetail
 }
 
 function JobDetail({ selectedItem, resultList, params }: WithRecherchePageParams<{ selectedItem: ILbaItemJobsGlobal; resultList: IUseRechercheResultsSuccess["items"] }>) {
