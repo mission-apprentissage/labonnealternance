@@ -1,6 +1,5 @@
 import http from "http"
 import https from "https"
-import { Transform } from "node:stream"
 
 import axios, { AxiosRequestConfig, CreateAxiosDefaults } from "axios"
 import { FastifyRequest } from "fastify"
@@ -55,15 +54,9 @@ async function _fetch(url: string, options: Partial<FetchOptions> = {}) {
   })
 }
 
-async function fetchStream(url: string, options: Partial<FetchOptions> = {}) {
+async function fetchStream(url: string, options: Partial<FetchOptions> = {}): Promise<NodeJS.ReadableStream> {
   const response = await _fetch(url, { ...options, responseType: "stream" })
-  const transform = new Transform({
-    readableObjectMode: true,
-    transform(chunk, _encoding, callback) {
-      callback(null, chunk.toString())
-    },
-  })
-  return response.data.pipe(transform)
+  return response.data
 }
 
 async function fetchJson(url: string, options: Partial<FetchOptions> = {}) {

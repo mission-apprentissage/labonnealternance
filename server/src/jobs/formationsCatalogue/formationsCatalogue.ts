@@ -1,8 +1,11 @@
-import { Readable, Writable } from "node:stream"
+import { Transform, Writable } from "node:stream"
 import { pipeline } from "node:stream/promises"
 
 import { ObjectId } from "mongodb"
 import { zFormationCatalogueSchemaNew } from "shared/models/index"
+import streamJson from "stream-json"
+// eslint-disable-next-line import/extensions
+import streamers from "stream-json/streamers/StreamArray.js"
 
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -32,10 +35,18 @@ export const importCatalogueFormationJob = async () => {
 
     await getDbCollection("formationcatalogues").deleteMany({})
 
-    const formations = await getAllFormationsFromCatalogue()
+    const formationsStream = await getAllFormationsFromCatalogue()
 
     await pipeline(
-      Readable.from(formations, { objectMode: true }),
+      formationsStream,
+      streamJson.parser(),
+      streamers.streamArray(),
+      new Transform({
+        objectMode: true,
+        transform(chunk, _encoding, callback) {
+          callback(null, chunk.value)
+        },
+      }),
       new Writable({
         objectMode: true,
         async write(formation, _encoding, callback) {
