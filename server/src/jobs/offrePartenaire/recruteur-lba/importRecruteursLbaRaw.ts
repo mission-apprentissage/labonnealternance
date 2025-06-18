@@ -17,6 +17,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
+import { isEmailBlacklisted } from "@/services/application.service"
 
 import { recruteursLbaToJobPartners } from "./recruteursLbaMapper"
 
@@ -139,10 +140,13 @@ export const importRecruteurLbaToComputed = async () => {
         try {
           const parsedDocument = zodInput.parse(document)
           const { apply_email, apply_phone, updated_at, ...rest } = mapper(parsedDocument)
+
+          const isEmailBl = apply_email ? await isEmailBlacklisted(apply_email) : false
+
           await getDbCollection("computed_jobs_partners").updateOne(
             { workplace_siret: rest.workplace_siret },
             {
-              $set: { apply_email, apply_phone, updated_at: importDate },
+              $set: { apply_email: isEmailBl ? null : apply_email, apply_phone, updated_at: importDate },
               $setOnInsert: { ...rest, offer_status_history: [], _id: new ObjectId() },
             },
             {
