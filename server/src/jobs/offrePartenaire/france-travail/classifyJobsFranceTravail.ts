@@ -1,11 +1,12 @@
-import { Transform, Writable } from "node:stream"
+import { Writable } from "node:stream"
 import { pipeline } from "node:stream/promises"
 
 import type { AnyBulkWriteOperation } from "mongodb"
 import { IFTJobRaw } from "shared"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import config from "@/config"
+// import config from "@/config"
+import { groupStreamData } from "@/common/utils/streamUtils"
 import { ZChatCompletionResponse } from "@/services/openai/openai.service"
 
 import { logger } from "../../../common/logger"
@@ -87,7 +88,7 @@ function mapDocument(rawFTDocuments: IFTJobRaw[]) {
 }
 
 export const classifyFranceTravailJobs = async () => {
-  if (config.env !== "production") return
+  // if (config.env !== "production") return
 
   const rawFTDocumentsVerified = await getDbCollection("raw_francetravail")
     .find({ "_metadata.openai.human_verification": { $exists: true } })
@@ -103,30 +104,12 @@ export const classifyFranceTravailJobs = async () => {
   const cursor = getDbCollection("raw_francetravail").find(queryFilter).stream()
 
   const batchSize = 10
-  let buffer: IFTJobRaw[] = []
-
-  const groupStream = new Transform({
-    objectMode: true,
-    transform(chunk, _encoding, callback) {
-      buffer.push(chunk)
-      if (buffer.length >= batchSize) {
-        this.push(buffer)
-        buffer = []
-      }
-      callback()
-    },
-    flush(callback) {
-      if (buffer.length > 0) {
-        this.push(buffer)
-      }
-      callback()
-    },
-  })
 
   const classifyStream = new Writable({
     objectMode: true,
     async write(documents: IFTJobRaw[], _encoding, callback) {
       try {
+        console.log(documents.length, "documents")
         const offres = mapDocument(documents)
         const response = await checkFTOffer({ offres, examples })
 
@@ -154,7 +137,7 @@ export const classifyFranceTravailJobs = async () => {
     },
   })
 
-  await pipeline(cursor, groupStream, classifyStream)
+  await pipeline(cursor, groupStreamData({ size: batchSize }), classifyStream)
 
   await notifyToSlack({
     subject: "Classification des offres France Travail",

@@ -1,4 +1,4 @@
-import { Transform, Writable } from "node:stream"
+import { Writable } from "node:stream"
 import { pipeline } from "node:stream/promises"
 
 import type { AnyBulkWriteOperation, Filter } from "mongodb"
@@ -7,6 +7,7 @@ import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobs
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { groupStreamData } from "@/common/utils/streamUtils"
 
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
@@ -28,26 +29,6 @@ export const validateComputedJobPartners = async (addedMatchFilter?: Filter<ICom
   const counters = { total: 0, success: 0, error: 0 }
   const job = COMPUTED_ERROR_SOURCE.VALIDATION
   const cursor = getDbCollection("computed_jobs_partners").find(finalFilter).stream()
-
-  let buffer: IComputedJobsPartners[] = []
-
-  const groupStream = new Transform({
-    objectMode: true,
-    transform(doc, _encoding, callback) {
-      buffer.push(doc)
-      if (buffer.length >= groupSize) {
-        this.push(buffer)
-        buffer = []
-      }
-      callback()
-    },
-    flush(callback) {
-      if (buffer.length > 0) {
-        this.push(buffer)
-      }
-      callback()
-    },
-  })
 
   const validateStream = new Writable({
     objectMode: true,
@@ -102,7 +83,7 @@ export const validateComputedJobPartners = async (addedMatchFilter?: Filter<ICom
     },
   })
 
-  await pipeline(cursor, groupStream, validateStream)
+  await pipeline(cursor, groupStreamData({ size: groupSize }), validateStream)
 
   logger.info(`validation terminé`, counters)
 

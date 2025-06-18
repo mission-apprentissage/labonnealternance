@@ -16,6 +16,7 @@ import { getS3FileLastUpdate, s3ReadAsStream } from "@/common/utils/awsUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
+import { groupStreamData } from "@/common/utils/streamUtils"
 import config from "@/config"
 
 import { recruteursLbaToJobPartners } from "./recruteursLbaMapper"
@@ -86,54 +87,29 @@ const importRecruteursLbaToRawCollection = async () => {
   const now = new Date()
   let count = 0
 
-  // Buffer batch de 10 000 éléments
-  let batch: any[] = []
-
-  // Transform stream pour parser et filtrer avec Zod
-  const transformStream = new Transform({
+  const validationStream = new Transform({
     objectMode: true,
     transform(chunk, encoding, callback) {
-      try {
-        const recruteur = { createdAt: now, _id: new ObjectId(), ...chunk.value }
-        if (!ZRecruteursLbaRaw.safeParse(recruteur).success) {
-          return callback() // ignore les entrées invalides sans erreur
-        }
-        batch.push(recruteur)
-        if (batch.length >= 10_000) {
-          // insert batch dans la DB, puis vider le batch
-          getDbCollection("raw_recruteurslba")
-            .insertMany(batch)
-            .then(() => {
-              count += batch.length
-              batch = []
-              callback()
-            })
-            .catch((err) => callback(err))
-        } else {
-          callback()
-        }
-      } catch (err: any) {
-        callback(err)
+      const recruteur = { createdAt: now, _id: new ObjectId(), ...chunk.value }
+      if (!ZRecruteursLbaRaw.safeParse(recruteur).success) {
+        return callback() // ignore les entrées invalides sans erreur
       }
-    },
-    final(callback) {
-      // Insertion du dernier batch restant
-      if (batch.length > 0) {
-        getDbCollection("raw_recruteurslba")
-          .insertMany(batch)
-          .then(() => {
-            count += batch.length
-            batch = []
-            callback()
-          })
-          .catch((err) => callback(err))
-      } else {
-        callback()
-      }
+      callback(null, recruteur)
     },
   })
 
-  await pipeline(createReadStream(PREDICTION_FILE_PATH), parser(), streamArray(), transformStream)
+  const insertionStream = new Transform({
+    objectMode: true,
+    transform(chunk, encoding, callback) {
+      const filtered = chunk.filter((item) => item)
+      if (!filtered.length) return
+      count += filtered.length
+      getDbCollection("raw_recruteurslba").insertMany(filtered)
+      callback()
+    },
+  })
+
+  await pipeline(createReadStream(PREDICTION_FILE_PATH), parser(), streamArray(), validationStream, groupStreamData({ size: 10_000 }), insertionStream)
 
   const message = `import recruteurs lba terminé : ${count} recruteurs importées`
   logger.info(message)
