@@ -25,13 +25,16 @@ const fieldRankValues: Partial<Record<(typeof sourceFields)[number], number>> = 
 
 export const rankJobPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
   const filledFields = ["rank"] as const satisfies (keyof IComputedJobsPartners)[]
+
+  const filters: Filter<IComputedJobsPartners>[] = [{ business_error: null }]
+  if (addedMatchFilter) filters.push(addedMatchFilter)
+
   return fillFieldsForPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.RANKING,
     sourceFields,
     filledFields,
-    replaceMatchFilter: {},
+    replaceMatchFilter: { $and: filters },
     groupSize: 1_000,
-    addedMatchFilter,
     getData: async (documents) => {
       return documents.map((document) => {
         const { _id, partner_label } = document
