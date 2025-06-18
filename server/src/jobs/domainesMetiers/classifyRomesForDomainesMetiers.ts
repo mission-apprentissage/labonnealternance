@@ -1,5 +1,5 @@
 import fs from "node:fs/promises"
-import { Transform } from "node:stream"
+import { Writable } from "node:stream"
 import { pipeline } from "node:stream/promises"
 
 import { z } from "zod"
@@ -7,6 +7,7 @@ import { z } from "zod"
 import { deduplicate } from "@/common/utils/array"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { groupStreamData } from "@/common/utils/streamUtils"
 import { Message, sendMistralMessages } from "@/services/mistralai/mistralai.service"
 
 type RomeDocumentRaw = {
@@ -28,38 +29,12 @@ type LLMInputDocument = {
 const ZLLMOutput = z.record(z.array(z.string()))
 
 export const classifyRomesForDomainesMetiers = async () => {
+  const BATCH_SIZE = 20
   const sousDomaines = await getValidSousDomaines()
   const stats = { inputSentSize: 0, receivedSize: 0, receivedMatchingInputSize: 0 }
   let index = await getCurrentIndex()
   console.info({ index })
   const currentMappings = await getAllMappings()
-
-  const BATCH_SIZE = 20
-  let buffer: RomeDocumentRaw[] = []
-
-  await pipeline(
-    getMissingOutputQuery(currentMappings).stream(),
-    new Transform({
-      objectMode: true,
-      async transform(doc, _, callback) {
-        buffer.push(doc)
-        if (buffer.length >= BATCH_SIZE) {
-          const batch = buffer
-          buffer = []
-          await processBatch(batch)
-        }
-        callback()
-      },
-      async flush(callback) {
-        if (buffer.length > 0) {
-          await processBatch(buffer)
-        }
-        callback()
-      },
-    })
-  )
-
-  console.info(stats)
 
   async function processBatch(typedDocuments: RomeDocumentRaw[]) {
     const llmInputDocuments: LLMInputDocument[] = typedDocuments.map(({ rome, definition, appellations }) => ({
@@ -103,6 +78,20 @@ export const classifyRomesForDomainesMetiers = async () => {
       console.error(error)
     }
   }
+
+  await pipeline(
+    getMissingOutputQuery(currentMappings).stream(),
+    groupStreamData({ size: BATCH_SIZE }),
+    new Writable({
+      objectMode: true,
+      async write(documents, _, callback) {
+        await processBatch(documents)
+        callback()
+      },
+    })
+  )
+
+  console.info(stats)
 }
 
 export const classifyRomesForDomainesMetiersAnalyze = async () => {
