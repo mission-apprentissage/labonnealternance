@@ -2,8 +2,20 @@ import { randomUUID } from "node:crypto"
 
 import { badRequest, internal, notFound } from "@hapi/boom"
 import equal from "fast-deep-equal"
-import { Filter, ObjectId, UpdateFilter } from "mongodb"
-import { IDelegation, IJob, IJobCreate, IJobWithRomeDetail, IRecruiter, IRecruiterWithApplicationCount, ITrackingCookies, IUserRecruteur, JOB_STATUS, removeAccents } from "shared"
+import { ChangeStreamUpdateDocument, Filter, ObjectId, UpdateFilter } from "mongodb"
+import {
+  assertUnreachable,
+  IDelegation,
+  IJob,
+  IJobCreate,
+  IJobWithRomeDetail,
+  IRecruiter,
+  IRecruiterWithApplicationCount,
+  ITrackingCookies,
+  IUserRecruteur,
+  JOB_STATUS,
+  removeAccents,
+} from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { OPCOS_LABEL, RECRUITER_STATUS, RECRUITER_USER_ORIGIN } from "shared/constants/recruteur"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
@@ -12,6 +24,7 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
+import { logger } from "@/common/logger"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { asyncForEach } from "../common/utils/asyncUtils"
@@ -858,4 +871,41 @@ export const validateUserEmailFromJobId = async (jobId: ObjectId) => {
 export const updateCfaManagedRecruiter = async (establishment_id: string, payload: Partial<IRecruiter>) => {
   const recruiter = await getDbCollection("recruiters").findOneAndUpdate({ establishment_id }, { $set: { ...payload, updatedAt: new Date() } }, { returnDocument: "after" })
   return recruiter
+}
+
+export const startRecruiterChangeStream = async () => {
+  logger.info("Starting recruiter change stream")
+
+  const recruiters = getDbCollection("recruiters")
+
+  const changeStream = recruiters.watch()
+
+  changeStream.on("change", (change) => {
+    logger.info("Change detected:", change)
+
+    switch (change.operationType) {
+      case "insert":
+        logger.info("New document inserted:", change.fullDocument)
+        // Handle new document
+        break
+      case "update": {
+        logger.info("Document updated:", change.updateDescription)
+
+        updateJobsPartnersFromRecruiterUpdate(change)
+
+        break
+      }
+      case "delete": // should not happen, as we don't delete recruiters but should not polute with errors
+        break
+      default:
+        assertUnreachable(`Unexpected change operation type ${change.operationType}` as never)
+    }
+  })
+}
+
+const updateJobsPartnersFromRecruiterUpdate = async (change: ChangeStreamUpdateDocument<IRecruiter>) => {
+  console.log("Updating jobs partners from recruiter update", change, change.documentKey._id, change.updateDescription)
+
+  // const recruiterId = change.documentKey._id
+  // const updatedFields = change.updateDescription.updatedFields
 }
