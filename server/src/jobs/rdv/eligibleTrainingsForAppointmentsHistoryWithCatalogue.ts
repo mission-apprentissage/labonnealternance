@@ -1,5 +1,4 @@
-import { Transform } from "node:stream"
-import { pipeline } from "node:stream/promises"
+import { ObjectId } from "bson"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -13,46 +12,37 @@ export const eligibleTrainingsForAppointmentsHistoryWithCatalogue = async () => 
   logger.info("Cron #eligibleTrainingsForAppointmentsHistoryWithCatalogue started.")
 
   const control = await getDbCollection("formationcatalogues").countDocuments()
-  if (control === 0) {
-    return
-  }
+  if (control === 0) return
 
   const stats = {
     AncientElligibleTrainingCount: await getDbCollection("eligible_trainings_for_appointments").countDocuments(),
     NewElligibleTrainingCount: 0,
   }
 
-  const transformer = new Transform({
-    objectMode: true,
-    async transform(formation, _, callback) {
-      try {
-        const exist = await getDbCollection("formationcatalogues").findOne({
-          cle_ministere_educatif: formation.cle_ministere_educatif,
-        })
+  // 1. Récupère tous les `cle_ministere_educatif` valides
+  const validCleMinisteres = await getDbCollection("formationcatalogues").distinct("cle_ministere_educatif")
 
-        delete formation._id
+  // 2. Récupère tous les trainings "orphelins"
+  const orphanTrainings = await getDbCollection("eligible_trainings_for_appointments")
+    .find({ cle_ministere_educatif: { $nin: validCleMinisteres } })
+    .toArray()
 
-        if (!exist) {
-          await getDbCollection("eligible_trainings_for_appointments_histories").insertOne({
-            ...formation,
-            email_rdv: undefined,
-            historization_date: new Date(),
-          })
+  if (orphanTrainings.length > 0) {
+    const now = new Date()
 
-          await getDbCollection("eligible_trainings_for_appointments").deleteOne({
-            cle_ministere_educatif: formation.cle_ministere_educatif,
-          })
-        }
+    await getDbCollection("eligible_trainings_for_appointments_histories").insertMany(
+      orphanTrainings.map(({ _id, ...doc }) => ({
+        ...doc,
+        _id: new ObjectId(),
+        email_rdv: undefined,
+        historization_date: now,
+      }))
+    )
 
-        callback()
-      } catch (err: any) {
-        logger.error(err, "Error processing formation")
-        callback(err)
-      }
-    },
-  })
-
-  await pipeline(getDbCollection("eligible_trainings_for_appointments").find({}).stream(), transformer)
+    await getDbCollection("eligible_trainings_for_appointments").deleteMany({
+      cle_ministere_educatif: { $in: orphanTrainings.map((d) => d.cle_ministere_educatif) },
+    })
+  }
 
   stats.NewElligibleTrainingCount = await getDbCollection("eligible_trainings_for_appointments").countDocuments()
 
