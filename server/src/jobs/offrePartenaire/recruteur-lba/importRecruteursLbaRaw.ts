@@ -6,6 +6,7 @@ import { pipeline } from "node:stream/promises"
 
 import { internal } from "@hapi/boom"
 import { ObjectId } from "bson"
+import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import rawRecruteursLbaModel, { ZRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
@@ -136,7 +137,6 @@ export const importRecruteurLbaToComputed = async () => {
   const collectionSource = rawRecruteursLbaModel.collectionName
   const partnerLabel = JOBPARTNERS_LABEL.RECRUTEURS_LBA
   const zodInput = ZRecruteursLbaRaw
-  const mapper = recruteursLbaToJobPartners
 
   logger.info(`début d'import dans computed_jobs_partners pour partner_label=${partnerLabel}`)
   const counters = { total: 0, success: 0, error: 0 }
@@ -148,7 +148,15 @@ export const importRecruteurLbaToComputed = async () => {
       counters.total++
       try {
         const parsedDocument = zodInput.parse(document)
-        const { apply_email, apply_phone, updated_at, ...rest } = mapper(parsedDocument)
+        const { apply_email, apply_phone, updated_at, ...rest } = recruteursLbaToJobPartners(parsedDocument)
+        const { workplace_address_zipcode } = rest
+
+        if (!extensions.zipCode().safeParse(workplace_address_zipcode).success) {
+          counters.error++
+          logger.warn(`received bad zip code for id=${document._id} partner_label=${partnerLabel}. zip code=${workplace_address_zipcode}`)
+          callback()
+          return
+        }
 
         await getDbCollection("computed_jobs_partners").updateOne(
           { workplace_siret: rest.workplace_siret },
@@ -173,6 +181,7 @@ export const importRecruteurLbaToComputed = async () => {
         counters.error++
         const newError = internal(`error converting raw job to partner_label job for id=${document._id} partner_label=${partnerLabel}`)
         logger.error(newError.message, err)
+        logger.error(JSON.stringify(err))
         newError.cause = err
         sentryCaptureException(newError)
         callback()

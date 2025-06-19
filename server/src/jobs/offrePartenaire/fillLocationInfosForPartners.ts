@@ -1,12 +1,15 @@
-import { Filter } from "mongodb"
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { joinNonNullStrings } from "shared/utils/index"
 
+import { FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 import { getCityFromProperties, getGeolocation, getStreetFromProperties } from "@/services/geolocation.service"
 
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 
-export const fillLocationInfosForPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>, shouldNotifySlack = true) => {
+const API_ADRESSE_MIN_SCORE = 0.7 // entre 0 et 1, 1 signifiant que l'api est certaine de sa réponse
+// j'ai pu constater des adresses à strasbourg alors que la vraie adresse est à Caen avec un score à 0.52 : https://api-adresse.data.gouv.fr/search?q=General%20Eisenhower%2014000%20CAEN
+
+export const fillLocationInfosForPartners = async ({ addedMatchFilter, shouldNotifySlack }: FillComputedJobsPartnersContext) => {
   const sourceFields = ["workplace_address_label"] as const satisfies (keyof IComputedJobsPartners)[]
 
   const filledFields = [
@@ -31,7 +34,11 @@ export const fillLocationInfosForPartners = async (addedMatchFilter?: Filter<ICo
         return []
       }
 
-      const geolocation = await getGeolocation(workplace_address_label)
+      let geolocation = await getGeolocation(workplace_address_label)
+      const score = geolocation?.properties.score
+      if (score && score <= API_ADRESSE_MIN_SCORE) {
+        geolocation = null
+      }
 
       if (!geolocation) {
         if (document.workplace_geopoint) {
