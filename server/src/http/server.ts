@@ -107,6 +107,7 @@ export async function bind(app: Server) {
     app.register(fastifyCors, {
       origin: config.publicUrl,
       credentials: true,
+      methods: ["GET", "POST", "HEAD", "PUT", "PATCH", "DELETE", "OPTIONS"],
     })
   } else {
     app.register(fastifyCors, {
