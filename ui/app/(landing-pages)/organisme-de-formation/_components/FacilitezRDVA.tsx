@@ -14,7 +14,10 @@ export function FacilitezRDVA() {
         </Text>
         <Text fontSize="14px" mt={6}>
           *Vous pouvez à tout moment vous désinscrire de ce service en{" "}
-          <DsfrLink href="mailto:labonnealternance@beta.gouv.fr?subject=CFA désactivation RDVA" aria-label="Adresse email de l'équipe La bonne alternance">
+          <DsfrLink
+            href={`mailto:labonnealternance@beta.gouv.fr?subject=${encodeURIComponent("CFA désactivation RDVA")}`}
+            aria-label="Adresse email de l'équipe La bonne alternance"
+          >
             contactant notre équipe
           </DsfrLink>
           .
