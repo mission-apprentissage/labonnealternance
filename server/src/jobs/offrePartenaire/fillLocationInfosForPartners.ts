@@ -1,7 +1,7 @@
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { joinNonNullStrings } from "shared/utils/index"
 
-import { FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
+import { defaultFillComputedJobsPartnersContext, FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 import { getCityFromProperties, getGeolocation, getStreetFromProperties } from "@/services/geolocation.service"
 
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
@@ -9,7 +9,7 @@ import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 const API_ADRESSE_MIN_SCORE = 0.7 // entre 0 et 1, 1 signifiant que l'api est certaine de sa réponse
 // j'ai pu constater des adresses à strasbourg alors que la vraie adresse est à Caen avec un score à 0.52 : https://api-adresse.data.gouv.fr/search?q=General%20Eisenhower%2014000%20CAEN
 
-export const fillLocationInfosForPartners = async ({ addedMatchFilter, shouldNotifySlack }: FillComputedJobsPartnersContext) => {
+export const fillLocationInfosForPartners = async ({ addedMatchFilter, shouldNotifySlack }: FillComputedJobsPartnersContext = defaultFillComputedJobsPartnersContext) => {
   const sourceFields = ["workplace_address_label"] as const satisfies (keyof IComputedJobsPartners)[]
 
   const filledFields = [

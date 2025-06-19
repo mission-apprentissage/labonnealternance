@@ -19,10 +19,13 @@ export type FillComputedJobsPartnersContext = {
   shouldNotifySlack: boolean
 }
 
+export const defaultFillComputedJobsPartnersContext: FillComputedJobsPartnersContext = {
+  shouldNotifySlack: true,
+}
+
 export const fillComputedJobsPartners = async (partialContext: Partial<FillComputedJobsPartnersContext> = {}) => {
   logger.info("début de fillComputedJobsPartners")
-  const { shouldNotifySlack = true } = partialContext
-  const context: FillComputedJobsPartnersContext = { ...partialContext, shouldNotifySlack }
+  const context: FillComputedJobsPartnersContext = { ...defaultFillComputedJobsPartnersContext, ...partialContext }
 
   await fillOpcoInfosForPartners(context)
   await fillSiretInfosForPartners(context)

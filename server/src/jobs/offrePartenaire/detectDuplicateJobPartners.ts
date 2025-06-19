@@ -14,7 +14,7 @@ import { deduplicate, getPairs } from "@/common/utils/array"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
-import { FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
+import { defaultFillComputedJobsPartnersContext, FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 // champs utilisés pour les projections
 const fieldsRead = [
@@ -54,7 +54,7 @@ type TreatedDocument = ProjectedComputedJobPartner & {
   collectionName: typeof recruiterCollection | typeof jobPartnerCollection | typeof computedJobPartnerCollection
 }
 
-export const detectDuplicateJobPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext) => {
+export const detectDuplicateJobPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext = defaultFillComputedJobsPartnersContext) => {
   const startDate = new Date()
   // @ts-ignore
   const computedJobPartnersFilter: Filter<IComputedJobsPartners> = { $and: [{ business_error: null }, { offer_status: "Active" }, ...(addedMatchFilter ? [addedMatchFilter] : [])] }

@@ -3,14 +3,14 @@ import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERRO
 import { isEnum } from "shared/utils/index"
 
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
-import { FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
+import { defaultFillComputedJobsPartnersContext, FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 import { getSiretInfos } from "@/services/cacheInfosSiret.service"
 import { formatEntrepriseData } from "@/services/etablissement.service"
 import { addressDetailToStreetLabel } from "@/services/geolocation.service"
 
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 
-export const fillSiretInfosForPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext) => {
+export const fillSiretInfosForPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext = defaultFillComputedJobsPartnersContext) => {
   const filledFields = [
     "workplace_size",
     "workplace_name",

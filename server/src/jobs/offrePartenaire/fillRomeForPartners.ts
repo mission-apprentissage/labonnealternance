@@ -1,12 +1,12 @@
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
 import { MAX_DIAGORIENTE_PAYLOAD_SIZE } from "@/common/apis/diagoriente/diagoriente.client"
-import { FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
+import { defaultFillComputedJobsPartnersContext, FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 import { getRomesInfosFromDiagoriente } from "@/services/cacheDiagoriente.service"
 
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 
-export const fillRomeForPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext) => {
+export const fillRomeForPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext = defaultFillComputedJobsPartnersContext) => {
   const filledFields = ["offer_rome_codes"] as const satisfies (keyof IComputedJobsPartners)[]
   return fillFieldsForPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.API_DIAGORIENTE,
