@@ -19,7 +19,7 @@ export const processJobPartnersForApi = async () => {
   )
 
   const filter = { currently_processed_id: processId }
-  await fillComputedJobsPartners(filter, false)
+  await fillComputedJobsPartners({ addedMatchFilter: filter, shouldNotifySlack: false })
   await importFromComputedToJobsPartners(filter, false)
   await getDbCollection("computed_jobs_partners").deleteMany({ $and: [filter, { validated: true }] })
   await getDbCollection("computed_jobs_partners").updateMany(filter, { $set: { currently_processed_id: null } })

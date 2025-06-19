@@ -8,6 +8,6 @@ export const jobPartnersByFlux = Object.values(JOBPARTNERS_LABEL).filter((jobPar
 export const processFillRomeStandalone = async () => {
   logger.info("début de processFillRomeStandalone")
   const filter = { partner_label: { $in: jobPartnersByFlux } }
-  await fillRomeForPartners(filter)
+  await fillRomeForPartners({ addedMatchFilter: filter, shouldNotifySlack: true })
   logger.info("fin de processFillRomeStandalone")
 }

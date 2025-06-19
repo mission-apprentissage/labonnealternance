@@ -58,8 +58,8 @@ const wgs84 = "EPSG:4326"
 // Définition de Lambert 93 (au cas où proj4 ne l'aurait pas déjà en base)
 proj4.defs(lambert93, "+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 " + "+x_0=700000 +y_0=6600000 +ellps=GRS80 +units=m +no_defs")
 
-const getWorkplaceGeolocation = (x, y): IComputedJobsPartners["workplace_geopoint"] => {
-  if (x === 0 || y === 0) return null
+const getWorkplaceGeolocation = (x: number | null, y: number | null): IComputedJobsPartners["workplace_geopoint"] => {
+  if (x === 0 || y === 0 || x === null || y === null) return null
   // proj4 returns latitude first
   const [latitude, longitude] = proj4(lambert93, wgs84, [x, y])
   return { type: "Point", coordinates: [longitude, latitude] }

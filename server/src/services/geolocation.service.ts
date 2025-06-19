@@ -12,9 +12,19 @@ import { getGeolocationFromCache, saveGeolocationInCache } from "./cacheGeolocat
 const API_ADRESSE_URL = "https://api-adresse.data.gouv.fr"
 
 const client = getApiClient({ timeout: 2_000 })
+const startCharRegex = () => new RegExp("[0-9a-zA-Z]")
 
 export const getGeolocationFromApiAdresse = async (address: string, trys = 0) => {
   try {
+    let firstChar = address.at(0)
+    while (firstChar && !startCharRegex().test(firstChar)) {
+      address = address.substring(1)
+      firstChar = address.at(0)
+    }
+    if (!address) {
+      return null
+    }
+
     let response: AxiosResponse<IAPIAdresse> | null = null
 
     if (trys < 5) {

@@ -26,6 +26,11 @@ export const franceTravailJobsToJobsPartners = (job: IFTJobRaw): IComputedJobsPa
     businessError = JOB_PARTNER_BUSINESS_ERROR.CFA
   }
 
+  const workplace_address_label = getAddressLabel(job.lieuTravail)
+  if (!workplace_address_label) {
+    businessError = JOB_PARTNER_BUSINESS_ERROR.GEOLOCATION_NOT_FOUND
+  }
+
   return {
     ...blankComputedJobPartner(),
     _id: new ObjectId(),
@@ -47,13 +52,14 @@ export const franceTravailJobsToJobsPartners = (job: IFTJobRaw): IComputedJobsPa
     offer_multicast: true,
     workplace_name: job.entreprise.nom,
     workplace_description: job.entreprise.description,
-    workplace_address_label: job.lieuTravail.libelle,
-    workplace_geopoint: job.lieuTravail.longitude
-      ? {
-          type: "Point",
-          coordinates: [job.lieuTravail.longitude!, job.lieuTravail.latitude!],
-        }
-      : null,
+    workplace_address_label,
+    workplace_geopoint:
+      job.lieuTravail.longitude && job.lieuTravail.latitude
+        ? {
+            type: "Point",
+            coordinates: [job.lieuTravail.longitude, job.lieuTravail.latitude],
+          }
+        : null,
     workplace_siret: job.entreprise.siret,
     workplace_naf_code: job.codeNAF,
     workplace_naf_label: job.secteurActiviteLibelle,
@@ -91,6 +97,12 @@ function getFTContractType(natureContrat: string) {
   } else {
     return [TRAINING_CONTRACT_TYPE.APPRENTISSAGE]
   }
+}
+
+function getAddressLabel({ codePostal, libelle }: IFTJobRaw["lieuTravail"]): string | null {
+  const dashIndex = libelle.indexOf("-")
+  const city = dashIndex === -1 ? null : libelle.substring(dashIndex + 2)
+  return [codePostal, city].filter((x) => x).join(" ") || null
 }
 
 export function exactractFTContractDuration(typeContratLibelle: string): number | null {

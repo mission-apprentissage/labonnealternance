@@ -1,12 +1,12 @@
-import { Filter } from "mongodb"
 import { OPCOS_LABEL } from "shared/constants/index"
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
+import { defaultFillComputedJobsPartnersContext, FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 import { getOpcosData } from "@/services/etablissement.service"
 
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 
-export const fillOpcoInfosForPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
+export const fillOpcoInfosForPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext = defaultFillComputedJobsPartnersContext) => {
   const filledFields = ["workplace_idcc", "workplace_opco"] as const satisfies (keyof IComputedJobsPartners)[]
   return fillFieldsForPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.API_OPCO,
