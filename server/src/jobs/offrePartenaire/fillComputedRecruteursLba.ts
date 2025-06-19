@@ -7,7 +7,6 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import { blockBadRomeJobsPartners } from "@/jobs/offrePartenaire/blockBadRomeJobsPartners"
 import { FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
-import { fillLocationInfosForPartners } from "@/jobs/offrePartenaire/fillLocationInfosForPartners"
 import { fillOpcoInfosForPartners } from "@/jobs/offrePartenaire/fillOpcoInfosForPartners"
 import { removeMissingRecruteursLbaFromRaw } from "@/jobs/offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
 import { validateComputedJobPartners } from "@/jobs/offrePartenaire/validateComputedJobPartners"
@@ -21,7 +20,6 @@ export const fillComputedRecruteursLba = async () => {
 
   await removeMissingRecruteursLbaFromRaw()
   await fillOpcoInfosForPartners(context)
-  await fillLocationInfosForPartners(context)
   await blockBadRomeJobsPartners(context)
   await validateComputedJobPartners(context)
 }
