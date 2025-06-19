@@ -18,6 +18,7 @@ import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import { groupStreamData } from "@/common/utils/streamUtils"
 import config from "@/config"
+import { isEmailBlacklisted } from "@/services/application.service"
 
 import { recruteursLbaToJobPartners } from "./recruteursLbaMapper"
 
@@ -141,7 +142,6 @@ export const importRecruteurLbaToComputed = async () => {
   logger.info(`début d'import dans computed_jobs_partners pour partner_label=${partnerLabel}`)
   const counters = { total: 0, success: 0, error: 0 }
   const importDate = new Date()
-
   const transformStream = new Transform({
     objectMode: true,
     async transform(document, _encoding, callback) {
@@ -150,11 +150,13 @@ export const importRecruteurLbaToComputed = async () => {
         const parsedDocument = zodInput.parse(document)
         const { apply_email, apply_phone, updated_at, ...rest } = mapper(parsedDocument)
 
+        const isEmailBl = apply_email ? await isEmailBlacklisted(apply_email) : false
+
         await getDbCollection("computed_jobs_partners").updateOne(
           { workplace_siret: rest.workplace_siret },
           {
             $set: {
-              apply_email,
+              apply_email: isEmailBl ? null : apply_email,
               apply_phone,
               updated_at: importDate,
             },
@@ -166,7 +168,6 @@ export const importRecruteurLbaToComputed = async () => {
           },
           { upsert: true }
         )
-
         counters.success++
         callback()
       } catch (err) {
