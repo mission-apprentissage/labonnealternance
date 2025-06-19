@@ -14,7 +14,7 @@ export const processJobPartnersForApi = async () => {
   const processId: string = new ObjectId().toString()
   const last2Days = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
   await getDbCollection("computed_jobs_partners").updateMany(
-    { partner_label: { $nin: excludedJobPartnersFromApi }, created_at: { $gte: last2Days } },
+    { partner_label: { $nin: excludedJobPartnersFromApi }, updated_at: { $gte: last2Days } },
     { $set: { currently_processed_id: processId, errors: [] } }
   )
 
