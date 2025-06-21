@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto"
 
 import { badRequest, internal, notFound } from "@hapi/boom"
 import equal from "fast-deep-equal"
-import { ChangeStreamUpdateDocument, Filter, ObjectId, UpdateFilter } from "mongodb"
+import { ChangeStreamInsertDocument, ChangeStreamUpdateDocument, Filter, ObjectId, UpdateFilter } from "mongodb"
 import {
   assertUnreachable,
   IDelegation,
@@ -14,12 +14,15 @@ import {
   ITrackingCookies,
   IUserRecruteur,
   JOB_STATUS,
+  JOB_STATUS_ENGLISH,
   removeAccents,
 } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { OPCOS_LABEL, RECRUITER_STATUS, RECRUITER_USER_ORIGIN } from "shared/constants/recruteur"
+import { NIVEAUX_POUR_LBA, OPCOS_LABEL, RECRUITER_STATUS, RECRUITER_USER_ORIGIN, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
+import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
@@ -878,34 +881,168 @@ export const startRecruiterChangeStream = async () => {
 
   const recruiters = getDbCollection("recruiters")
 
-  const changeStream = recruiters.watch()
+  const changeRecruiterStream = recruiters.watch()
 
-  changeStream.on("change", (change) => {
+  changeRecruiterStream.on("change", async (change) => {
     logger.info("Change detected:", change)
 
     switch (change.operationType) {
       case "insert":
-        logger.info("New document inserted:", change.fullDocument)
-        // Handle new document
+      case "update":
+        await updateJobsPartnersFromRecruiterUpdate(change)
         break
-      case "update": {
-        logger.info("Document updated:", change.updateDescription)
-
-        updateJobsPartnersFromRecruiterUpdate(change)
-
-        break
-      }
-      case "delete": // should not happen, as we don't delete recruiters but should not polute with errors
+      case "delete":
+        // n'arrivera pas car les formulaires ne sont pas supprimés, mais archivés
         break
       default:
         assertUnreachable(`Unexpected change operation type ${change.operationType}` as never)
     }
   })
+
+  // interrogation sur le côté bloquant du change stream sur
+  const anonymizedRecruiters = getDbCollection("anonymized_recruiters")
+  const changeAnonymizedRecruiterStream = anonymizedRecruiters.watch()
+  changeAnonymizedRecruiterStream.on("change", async (change) => {
+    logger.info("Change detected on anonymized recruiters:", change)
+
+    if (change.operationType === "insert") {
+      logger.info("New document inserted in anonymized:", change.fullDocument)
+
+      await updateJobsPartnersFromRecruiterDelete(change.documentKey._id)
+    }
+  })
 }
 
-const updateJobsPartnersFromRecruiterUpdate = async (change: ChangeStreamUpdateDocument<IRecruiter>) => {
-  console.log("Updating jobs partners from recruiter update", change, change.documentKey._id, change.updateDescription)
+const updateJobsPartnersFromRecruiterUpdate = async (change: ChangeStreamUpdateDocument<IRecruiter> | ChangeStreamInsertDocument<IRecruiter>) => {
+  logger.info("Updating jobs partners from recruiter update", change, change.documentKey._id)
+
+  const recruiter = await getDbCollection("recruiters").findOne({ _id: change.documentKey._id })
+
+  logger.info("recruiter found", recruiter)
+
+  if (recruiter?.jobs?.length) {
+    asyncForEach(recruiter.jobs, async (job) => {
+      const jobId = job._id.toString()
+      logger.info("upserting job partners for job", jobId)
+      await upsertJobPartnersFromRecruiter(recruiter, job)
+    })
+  }
+
+  // cas simple
+
+  // si modif sur un formulaire
+  // charger le formulaire
+  // parcourir tous les jobs et upsert les jobs_partners avec les datas courantes tirée du job et du formulaire
 
   // const recruiterId = change.documentKey._id
   // const updatedFields = change.updateDescription.updatedFields
+}
+
+function getDiplomaLevel(label: string | null | undefined): IComputedJobsPartners["offer_target_diploma"] {
+  if (!label) {
+    return null
+  }
+  switch (label) {
+    case NIVEAUX_POUR_LBA["3 (CAP...)"]:
+      return { european: "3", label }
+    case NIVEAUX_POUR_LBA["4 (Bac, Bac pro...)"]:
+      return { european: "4", label }
+    case NIVEAUX_POUR_LBA["5 (BTS, DEUST...)"]:
+      return { european: "5", label }
+    case NIVEAUX_POUR_LBA["6 (Licence, BUT...)"]:
+      return { european: "6", label }
+    case NIVEAUX_POUR_LBA["7 (Master, titre ingénieur...)"]:
+      return { european: "7", label }
+    default:
+      return null
+  }
+}
+
+function getOfferStatus(job_status: JOB_STATUS, recruiter_status: RECRUITER_STATUS): JOB_STATUS_ENGLISH {
+  if (recruiter_status !== RECRUITER_STATUS.ACTIF) {
+    return JOB_STATUS_ENGLISH.ANNULEE
+  }
+  switch (job_status) {
+    case JOB_STATUS.ACTIVE:
+      return JOB_STATUS_ENGLISH.ACTIVE
+    case JOB_STATUS.POURVUE:
+      return JOB_STATUS_ENGLISH.POURVUE
+    case JOB_STATUS.ANNULEE:
+    case JOB_STATUS.EN_ATTENTE:
+      return JOB_STATUS_ENGLISH.ANNULEE
+    default:
+      assertUnreachable(`Unexpected job status ${job_status} in getOfferStatus` as never)
+  }
+}
+
+const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) => {
+  const now = new Date()
+
+  const partnerJobToUpsert: Partial<IJobsPartnersOfferPrivate> = {
+    updated_at: /*job.job_update_date ??*/ now, // QUESTION : l'updated at de l'offre ou celui qui a suscité une modification du job partner ?
+    created_at: job.job_creation_date ?? now,
+    partner_label: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
+    partner_job_id: job._id.toString(),
+    contract_start: job.job_start_date ?? null,
+    contract_duration: job.job_duration ?? null,
+    workplace_legal_name: recruiter.establishment_raison_sociale,
+    workplace_brand: recruiter.establishment_enseigne,
+    workplace_siret: recruiter.establishment_siret,
+    workplace_geopoint: recruiter.geopoint ?? undefined,
+    workplace_address_label: recruiter.address ?? undefined,
+    workplace_address_zipcode: recruiter.address_detail?.code_postal ?? null,
+    workplace_address_city: recruiter.address_detail?.libelle_commune ?? null,
+    apply_phone: recruiter.phone ?? null,
+    apply_email: recruiter.email,
+    offer_origin: recruiter.origin ?? null,
+    workplace_opco: recruiter.opco ?? null,
+    workplace_idcc: recruiter.idcc ?? null,
+    workplace_naf_code: recruiter.naf_code ?? null,
+    workplace_naf_label: recruiter.naf_label ?? null,
+    workplace_size: recruiter.establishment_size ?? null,
+    offer_target_diploma: getDiplomaLevel(job.job_level_label),
+    //offer_to_be_acquired_skills: job.competences_rome ?? [],
+    offer_title: job.offer_title_custom ?? job.rome_appellation_label ?? undefined,
+    offer_rome_codes: job.rome_code ?? null,
+    offer_creation: job.job_creation_date,
+    offer_expiration: job.job_expiration_date,
+    offer_status: getOfferStatus(job.job_status, recruiter.status),
+    //job_status_comment: job.job_status_comment ?? null,
+    //job_delegation_count: job.job_delegation_count ?? 0,
+    //delegations: job.delegations ?? null,
+    //is_disabled_elligible: job.is_disabled_elligible ?? false,
+    //job_rythm: job.job_rythm,
+    contract_type: [TRAINING_CONTRACT_TYPE.APPRENTISSAGE],
+    offer_opening_count: job.job_count ?? 1,
+
+    contract_remote: null,
+    offer_access_conditions: [],
+    offer_description: "",
+    offer_desired_skills: [],
+    offer_status_history: [],
+    offer_to_be_acquired_skills: [],
+    workplace_address_street_label: null,
+    workplace_description: null,
+    workplace_name: null,
+    workplace_website: null,
+  }
+
+  await getDbCollection("jobs_partners").findOneAndUpdate(
+    { partner_job_id: job._id.toString(), partner_label: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA },
+    { $set: partnerJobToUpsert, $setOnInsert: { _id: new ObjectId() } },
+    { upsert: true }
+  )
+  // REFLECHIR A LA MIGRATION DE DEMARRAGE
+  // REFLECHIR A LA REPRISE SUR INTERRUPTION
+}
+
+const updateJobsPartnersFromRecruiterDelete = async (id: ObjectId) => {
+  logger.info("Updating jobs partners from recruiter anonymized", id)
+
+  // récupération les jobs associés au formulaire archivé
+  const recruiter = await getDbCollection("anonymized_recruiters").findOne({ _id: id })
+
+  const jobIds = recruiter?.jobs?.map((job) => job._id) ?? []
+
+  console.log("jobIds à anonymize / désactiver dans partner_jobs sur la base de partner_job_id et partner_label=", jobIds)
 }
