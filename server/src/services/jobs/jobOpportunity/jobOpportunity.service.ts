@@ -72,10 +72,8 @@ export const getJobsFromApiPrivate = async ({
 }): Promise<
   | IApiError
   | {
-      peJobs: null
-      matchas: TLbaItemResult<ILbaItemLbaJob> | null
+      lbaJobs: TLbaItemResult<ILbaItemLbaJob> | null
       lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null
-      lbbCompanies: null
       partnerJobs: TLbaItemResult<ILbaItemPartnerJob> | null
     }
 > => {
@@ -99,7 +97,7 @@ export const getJobsFromApiPrivate = async ({
     const jobSources = !convertedSource ? allLbaItemType : convertedSource.split(",")
     const finalRadius = radius ?? 0
 
-    const [lbaCompanies, matchas, partnerJobs] = await Promise.all([
+    const [lbaCompanies, lbaJobs, partnerJobs] = await Promise.all([
       jobSources.includes(LBA_ITEM_TYPE.RECRUTEURS_LBA)
         ? getSomeCompanies({
             romes,
@@ -141,7 +139,7 @@ export const getJobsFromApiPrivate = async ({
         : null,
     ])
 
-    return { peJobs: null, matchas, lbaCompanies, lbbCompanies: null, partnerJobs }
+    return { lbaJobs, lbaCompanies, partnerJobs }
   } catch (err) {
     if (caller) {
       trackApiCall({ caller, api_path: api, response: "Error" })
@@ -293,11 +291,9 @@ export const getJobsQueryPrivate = async (
 ): Promise<
   | IApiError
   | {
-      peJobs: TLbaItemResult<ILbaItemFtJob> | null
-      matchas: TLbaItemResult<ILbaItemLbaJob> | null
+      lbaJobs: TLbaItemResult<ILbaItemLbaJob> | null
       lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null
       partnerJobs: TLbaItemResult<ILbaItemPartnerJob> | null
-      lbbCompanies: null
     }
 > => {
   const parameterControl = await jobsQueryValidatorPrivate(query)
@@ -318,9 +314,9 @@ export const getJobsQueryPrivate = async (
     job_count += result.lbaCompanies.results.length
   }
 
-  if ("matchas" in result && result.matchas && "results" in result.matchas) {
-    job_count += result.matchas.results.length
-    await incrementLbaJobsViewCount(result.matchas.results.flatMap((job) => (job?.id ? [job.id] : [])))
+  if ("lbaJobs" in result && result.lbaJobs && "results" in result.lbaJobs) {
+    job_count += result.lbaJobs.results.length
+    await incrementLbaJobsViewCount(result.lbaJobs.results.flatMap((job) => (job?.id ? [job.id] : [])))
   }
 
   if ("partnerJobs" in result && result.partnerJobs && "results" in result.partnerJobs) {

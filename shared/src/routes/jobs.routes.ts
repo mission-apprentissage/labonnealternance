@@ -269,16 +269,7 @@ export const zV1JobsRoutes = {
                 .nullable(),
               ZApiError,
             ]),
-            peJobs: z.union([
-              z
-                .object({
-                  results: z.array(ZLbaItemFtJob),
-                })
-                .strict()
-                .nullable(),
-              ZApiError,
-            ]),
-            matchas: z.union([
+            lbaJobs: z.union([
               z
                 .object({
                   results: z.array(ZLbaItemLbaJob),
@@ -296,7 +287,6 @@ export const zV1JobsRoutes = {
                 .nullable(),
               ZApiError,
             ]),
-            lbbCompanies: z.null(), // always null until removal
           })
           .strict(),
         "400": z.union([ZResError, ZLbacError, ZApiError]),

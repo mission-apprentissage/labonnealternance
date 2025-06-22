@@ -921,21 +921,12 @@ const updateJobsPartnersFromRecruiterUpdate = async (change: ChangeStreamUpdateD
   logger.info("recruiter found", recruiter)
 
   if (recruiter?.jobs?.length) {
-    asyncForEach(recruiter.jobs, async (job) => {
+    await asyncForEach(recruiter.jobs, async (job) => {
       const jobId = job._id.toString()
       logger.info("upserting job partners for job", jobId)
       await upsertJobPartnersFromRecruiter(recruiter, job)
     })
   }
-
-  // cas simple
-
-  // si modif sur un formulaire
-  // charger le formulaire
-  // parcourir tous les jobs et upsert les jobs_partners avec les datas courantes tirée du job et du formulaire
-
-  // const recruiterId = change.documentKey._id
-  // const updatedFields = change.updateDescription.updatedFields
 }
 
 function getDiplomaLevel(label: string | null | undefined): IComputedJobsPartners["offer_target_diploma"] {
