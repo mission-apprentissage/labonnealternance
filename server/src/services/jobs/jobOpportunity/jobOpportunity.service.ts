@@ -653,7 +653,7 @@ export const convertLbaRecruiterToJobOfferApi = (offresEmploiLba: IJobResult[]):
           },
 
           apply: {
-            url: buildApplyUrl(job._id.toString(), job.custom_job_title ?? job.rome_appellation_label!, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
+            url: buildApplyUrl(job._id.toString(), job.offer_title_custom ?? job.rome_appellation_label!, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
             phone: recruiter.phone ?? null,
             recipient_id: getRecipientID(JobCollectionName.recruiters, job._id.toString()),
           },

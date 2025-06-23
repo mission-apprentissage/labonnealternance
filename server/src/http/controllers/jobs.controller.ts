@@ -173,7 +173,7 @@ export default (server: Server) => {
         job_rythm: body.job_rythm,
         custom_address: body.custom_address,
         custom_geo_coordinates: body.custom_geo_coordinates,
-        custom_job_title: body.custom_job_title,
+        offer_title_custom: body.custom_job_title, // TODO: 23/06/2025 custom_job_title est obsolète, à supprimer lorsque fin d'usage par opco EP
         managed_by: user._id.toString(),
       }
 
