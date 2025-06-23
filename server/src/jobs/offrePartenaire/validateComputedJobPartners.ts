@@ -8,6 +8,7 @@ import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobs
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { groupStreamData } from "@/common/utils/streamUtils"
+import { FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
@@ -16,7 +17,7 @@ const zodModel = jobsPartnersModel.zod
 
 type BulkOperation = AnyBulkWriteOperation<IComputedJobsPartners>
 
-export const validateComputedJobPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>, shouldNotifySlack = true) => {
+export const validateComputedJobPartners = async ({ addedMatchFilter, shouldNotifySlack }: FillComputedJobsPartnersContext) => {
   logger.info("validation des computed_job_partners")
 
   const finalFilter: Filter<IComputedJobsPartners> = {
