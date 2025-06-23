@@ -562,12 +562,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "contact": {
             "$ref": "#/components/schemas/Contact",
           },
-          "detailsLoaded": {
-            "type": [
-              "boolean",
-              "null",
-            ],
-          },
           "diploma": {
             "description": "Le diplôme délivré par la formation.",
             "example": "CERTIFICAT D'APTITUDES PROFESSIONNELLES",
@@ -1591,12 +1585,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "contact": {
             "$ref": "#/components/schemas/Contact",
           },
-          "detailsLoaded": {
-            "type": [
-              "boolean",
-              "null",
-            ],
-          },
           "id": {
             "type": [
               "string",
@@ -1855,12 +1843,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "contact": {
             "$ref": "#/components/schemas/Contact",
-          },
-          "detailsLoaded": {
-            "type": [
-              "boolean",
-              "null",
-            ],
           },
           "id": {
             "type": [
@@ -2678,12 +2660,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "contact": {
             "$ref": "#/components/schemas/Contact",
           },
-          "detailsLoaded": {
-            "type": [
-              "boolean",
-              "null",
-            ],
-          },
           "id": {
             "type": "string",
           },
@@ -2946,12 +2922,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "contact": {
             "$ref": "#/components/schemas/Contact",
-          },
-          "detailsLoaded": {
-            "type": [
-              "boolean",
-              "null",
-            ],
           },
           "id": {
             "type": [
