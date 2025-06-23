@@ -29,6 +29,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { logger } from "@/common/logger"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { anonymizeLbaJobsPartners } from "@/services/partnerJob.service"
 
 import { asyncForEach } from "../common/utils/asyncUtils"
 import { getDbCollection } from "../common/utils/mongodbUtils"
@@ -1028,12 +1029,12 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
 }
 
 const updateJobsPartnersFromRecruiterDelete = async (id: ObjectId) => {
-  logger.info("Updating jobs partners from recruiter anonymized", id)
-
   // récupération les jobs associés au formulaire archivé
   const recruiter = await getDbCollection("anonymized_recruiters").findOne({ _id: id })
 
   const jobIds = recruiter?.jobs?.map((job) => job._id) ?? []
 
-  console.log("jobIds à anonymize / désactiver dans partner_jobs sur la base de partner_job_id et partner_label=", jobIds)
+  if (jobIds.length) {
+    await anonymizeLbaJobsPartners({ partner_job_ids: jobIds })
+  }
 }

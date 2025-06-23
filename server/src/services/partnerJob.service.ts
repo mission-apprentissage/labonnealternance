@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb"
 import { FRANCE_LATITUDE, FRANCE_LONGITUDE } from "shared/constants/geolocation"
 import { NIVEAUX_POUR_LBA, OPCOS_LABEL, TRAINING_REMOTE_TYPE } from "shared/constants/index"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
-import { ILbaItemPartnerJob, traductionJobStatus } from "shared/models/index"
+import { ILbaItemPartnerJob, JOB_STATUS_ENGLISH, traductionJobStatus } from "shared/models/index"
 import { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
 import { IApiError, manageApiError } from "@/common/utils/errorManager"
@@ -232,4 +232,33 @@ export const getPartnerJobByIdV2 = async (id: string): Promise<ILbaItemPartnerJo
   const partnerJob = transformPartnerJob(rawPartnerJob, "V2")
 
   return partnerJob
+}
+
+export const anonymizeLbaJobsPartners = async ({ partner_job_ids }: { partner_job_ids: string[] }) => {
+  const jobsPartnersCollection = getDbCollection("jobs_partners")
+  const now = new Date()
+  const result = await jobsPartnersCollection.updateMany(
+    { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, partner_job_id: { $in: partner_job_ids } },
+    {
+      $set: {
+        apply_email: null,
+        apply_phone: null,
+        apply_url: null,
+        offer_description: "",
+        workplace_description: null,
+        offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+        updated_at: now,
+        offer_status_history: [
+          {
+            status: JOB_STATUS_ENGLISH.ANNULEE,
+            reason: "recruiter has been anonymized",
+            date: now,
+            granted_by: "lba",
+          },
+        ],
+      },
+    }
+  )
+
+  return result
 }
