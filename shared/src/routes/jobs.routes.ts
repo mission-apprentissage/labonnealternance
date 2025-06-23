@@ -250,7 +250,6 @@ export const zV1JobsRoutes = {
           longitude: ZLongitudeParam,
           radius: ZRadiusParam,
           insee: zInseeParams,
-          sources: zSourcesParams,
           diploma: zDiplomaParam,
           opco: zOpcoParams,
         })

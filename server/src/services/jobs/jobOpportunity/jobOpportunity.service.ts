@@ -51,7 +51,6 @@ export const getJobsFromApiPrivate = async ({
   latitude,
   longitude,
   radius,
-  sources,
   diploma,
   opco,
   api = "jobV1/jobs",
@@ -63,8 +62,6 @@ export const getJobsFromApiPrivate = async ({
   latitude?: number
   longitude?: number
   radius?: number
-  sources?: string
-  // sources?: LBA_ITEM_TYPE
   diploma?: string
   opco?: string
   api?: string
@@ -78,65 +75,42 @@ export const getJobsFromApiPrivate = async ({
     }
 > => {
   try {
-    const convertedSource = sources
-      ?.split(",")
-      .map((source) => {
-        switch (source) {
-          case "partnerJob": // once API consumer shifted to v3, remove case "offres" as it fetches from FT API
-          case "matcha":
-            return LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
-          case "lba":
-            return LBA_ITEM_TYPE.RECRUTEURS_LBA
-
-          default:
-            return
-        }
-      })
-      .join(",")
-
-    const jobSources = !convertedSource ? allLbaItemType : convertedSource.split(",")
     const finalRadius = radius ?? 0
 
     const [lbaCompanies, lbaJobs, partnerJobs] = await Promise.all([
-      jobSources.includes(LBA_ITEM_TYPE.RECRUTEURS_LBA)
-        ? getSomeCompanies({
-            romes,
-            latitude,
-            longitude,
-            radius: finalRadius,
-            referer,
-            caller,
-            api,
-            opco,
-            isMinimalData,
-          })
-        : null,
-      jobSources.includes(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA)
-        ? getLbaJobs({
-            romes,
-            latitude,
-            longitude,
-            radius: finalRadius,
-            api,
-            caller,
-            diploma,
-            opco,
-            isMinimalData,
-          })
-        : null,
-      jobSources.includes(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA)
-        ? getPartnerJobs({
-            romes,
-            latitude,
-            longitude,
-            radius: finalRadius,
-            api,
-            caller,
-            diploma,
-            opco,
-            isMinimalData,
-          })
-        : null,
+      getSomeCompanies({
+        romes,
+        latitude,
+        longitude,
+        radius: finalRadius,
+        referer,
+        caller,
+        api,
+        opco,
+        isMinimalData,
+      }),
+      getLbaJobs({
+        romes,
+        latitude,
+        longitude,
+        radius: finalRadius,
+        api,
+        caller,
+        diploma,
+        opco,
+        isMinimalData,
+      }),
+      getPartnerJobs({
+        romes,
+        latitude,
+        longitude,
+        radius: finalRadius,
+        api,
+        caller,
+        diploma,
+        opco,
+        isMinimalData,
+      }),
     ])
 
     return { lbaJobs, lbaCompanies, partnerJobs }

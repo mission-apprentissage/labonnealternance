@@ -115,7 +115,6 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
   const jobQuerystring = useMemo((): IQuery<IGetRoutes["/v1/_private/jobs/min"]> => {
     const query: IQuery<IGetRoutes["/v1/_private/jobs/min"]> = {
       romes: params.romes.join(","),
-      sources: "lba,matcha,partnerJob",
     }
 
     if (params.geo) {
