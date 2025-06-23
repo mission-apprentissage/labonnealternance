@@ -4,7 +4,7 @@ import { FRANCE_LATITUDE, FRANCE_LONGITUDE } from "shared/constants/geolocation"
 import { NIVEAUX_POUR_LBA, OPCOS_LABEL, TRAINING_REMOTE_TYPE } from "shared/constants/index"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { ILbaItemPartnerJob, traductionJobStatus } from "shared/models/index"
-import { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance } from "shared/models/jobsPartners.model"
+import { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
 import { IApiError, manageApiError } from "@/common/utils/errorManager"
 import { roundDistance } from "@/common/utils/geolib"
@@ -136,6 +136,7 @@ export const getPartnerJobs = async ({
   diploma,
   caller,
   isMinimalData,
+  force_partner_label,
 }: {
   romes?: string
   radius?: number
@@ -147,6 +148,7 @@ export const getPartnerJobs = async ({
   diploma?: string
   caller?: string | null
   isMinimalData: boolean
+  force_partner_label?: JOBPARTNERS_LABEL
 }) => {
   if (radius === 0) {
     radius = 10
@@ -179,7 +181,7 @@ export const getPartnerJobs = async ({
       opco: opcoParam,
     })
 
-    const rawPartnerJobs = await getJobsPartnersFromDBForUI(resolvedQuery)
+    const rawPartnerJobs = await getJobsPartnersFromDBForUI({ ...resolvedQuery, force_partner_label })
 
     let partnerJobs: ILbaItemPartnerJob[] = transformPartnerJobs({ partnerJobs: rawPartnerJobs, isMinimalData })
 

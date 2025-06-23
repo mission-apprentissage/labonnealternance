@@ -69,7 +69,7 @@ export const getJobsFromApiPrivate = async ({
 }): Promise<
   | IApiError
   | {
-      lbaJobs: TLbaItemResult<ILbaItemLbaJob> | null
+      lbaJobs: TLbaItemResult<ILbaItemPartnerJob> | null
       lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null
       partnerJobs: TLbaItemResult<ILbaItemPartnerJob> | null
     }
@@ -89,7 +89,7 @@ export const getJobsFromApiPrivate = async ({
         opco,
         isMinimalData,
       }),
-      getLbaJobs({
+      getPartnerJobs({
         romes,
         latitude,
         longitude,
@@ -99,6 +99,7 @@ export const getJobsFromApiPrivate = async ({
         diploma,
         opco,
         isMinimalData,
+        force_partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
       }),
       getPartnerJobs({
         romes,
@@ -265,7 +266,7 @@ export const getJobsQueryPrivate = async (
 ): Promise<
   | IApiError
   | {
-      lbaJobs: TLbaItemResult<ILbaItemLbaJob> | null
+      lbaJobs: TLbaItemResult<ILbaItemPartnerJob> | null
       lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null
       partnerJobs: TLbaItemResult<ILbaItemPartnerJob> | null
     }
@@ -431,11 +432,16 @@ export const getJobsPartnersFromDB = async ({
     .toArray()
 }
 
-export const getJobsPartnersFromDBForUI = async ({ romes, geo, target_diploma_level }: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivateWithDistance[]> => {
+export const getJobsPartnersFromDBForUI = async ({
+  romes,
+  geo,
+  target_diploma_level,
+  force_partner_label,
+}: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivateWithDistance[]> => {
   const query: Filter<IJobsPartnersOfferPrivate> = {
     offer_status: JOB_STATUS_ENGLISH.ACTIVE,
     offer_expiration: { $gt: new Date() },
-    partner_label: { $ne: JOBPARTNERS_LABEL.RECRUTEURS_LBA }, // until offers are not merged together from the endpoint, lba companies are fetched into another service.
+    partner_label: force_partner_label ? force_partner_label : { $not: { $in: [JOBPARTNERS_LABEL.RECRUTEURS_LBA, JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA] } }, // until offers are not merged together from the endpoint, lba companies are fetched into another service.
   }
 
   if (romes) {

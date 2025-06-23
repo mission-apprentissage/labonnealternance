@@ -271,7 +271,7 @@ export const zV1JobsRoutes = {
             lbaJobs: z.union([
               z
                 .object({
-                  results: z.array(ZLbaItemLbaJob),
+                  results: z.array(ZLbaItemPartnerJob),
                 })
                 .strict()
                 .nullable(),
