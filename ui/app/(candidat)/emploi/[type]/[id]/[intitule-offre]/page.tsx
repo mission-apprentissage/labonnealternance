@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
-import { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
+import { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, /*ILbaItemLbaJobJson, */ ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import JobDetailRendererClient from "@/app/(candidat)/emploi/[type]/[id]/[intitule-offre]/JobDetailRendererClient"
@@ -12,7 +12,7 @@ export default async function JobOfferPage({ params, searchParams }: { params: P
 
   const typeToJobMap = {
     [LBA_ITEM_TYPE.RECRUTEURS_LBA]: "ILbaItemLbaCompanyJson",
-    [LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA]: "ILbaItemLbaJobJson",
+    //[LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA]: "ILbaItemLbaJobJson",
     [LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES]: "ILbaItemPartnerJobJson",
   } as const
 
@@ -22,7 +22,7 @@ export default async function JobOfferPage({ params, searchParams }: { params: P
 
   return (
     <JobDetailRendererClient
-      job={job as ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemPartnerJobJson}
+      job={job as ILbaItemLbaCompanyJson /*| ILbaItemLbaJobJson*/ | ILbaItemPartnerJobJson}
       params={parseRecherchePageParams(new URLSearchParams(await searchParams), "default")}
     />
   )

@@ -125,6 +125,7 @@ export const ZJobsPartnersOfferPrivate = ZJobsPartnersOfferApi.omit({
     apply_url: ZJobsPartnersOfferApi.shape.apply_url.nullable().default(null),
     rank: z.number().nullish().describe("Valeur indiquant la qualité de l'offre. Plus la valeur est élevée, plus la qualité de l'offre est importante"),
     duplicates: z.array(ZComputedJobPartnersDuplicateRef).nullish().describe("Référence les autres offres en duplicata avec celle-ci"),
+    applicationCount: z.number().nullish().describe("Nombre de candidatures pour cette offre"),
   })
 
 export const ZJobsPartnersOfferPrivateWithDistance = ZJobsPartnersOfferPrivate.extend({

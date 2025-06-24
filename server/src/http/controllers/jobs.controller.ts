@@ -28,7 +28,7 @@ import {
 } from "../../services/formulaire.service"
 import { getFtJobFromId } from "../../services/ftjob.service"
 import { getJobsQuery, getJobsQueryPrivate } from "../../services/jobs/jobOpportunity/jobOpportunity.service"
-import { addOffreDetailView, getLbaJobById, getLbaJobByIdV2 } from "../../services/lbajob.service"
+import { addOffreDetailView, getLbaJobById } from "../../services/lbajob.service"
 import { getCompanyFromSiret, getRecruteurLbaFromDB } from "../../services/recruteurLba.service"
 import { getFicheMetierFromDB } from "../../services/rome.service"
 import { Server } from "../server"
@@ -391,9 +391,9 @@ export default (server: Server) => {
         case LBA_ITEM_TYPE.RECRUTEURS_LBA:
           result = await getRecruteurLbaFromDB(id)
           break
-        case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
+        /*case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
           result = await getLbaJobByIdV2(id)
-          break
+          break*/
 
         case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES:
           result = await getPartnerJobByIdV2(id)

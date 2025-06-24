@@ -517,6 +517,7 @@ export const ZLbaItemPartnerJob = z
     nafs: z.array(ZLbaItemNaf).nullish(),
     token: z.string(),
     recipient_id: z.string().describe("Identifiant personnalisé (ID mongoDB préfixé du nom de la collection) envoyé au server pour la candidature"),
+    applicationCount: z.number().nullish(),
   })
   .strict()
   .openapi("PartnerJob")
