@@ -51,7 +51,7 @@ export const processHardBounceWebhookEvent = async (
 
   let origin = BlackListOrigins.CAMPAIGN
 
-  if ([BrevoEventStatus.HARD_BOUNCE, BrevoEventStatus.BLOCKED, BrevoEventStatus.SPAM, BrevoEventStatus.UNSUBSCRIBED].includes(event)) {
+  if ([BrevoEventStatus.HARDBOUNCE, BrevoEventStatus.BLOCKED, BrevoEventStatus.SPAM, BrevoEventStatus.UNSUBSCRIBED].includes(event)) {
     if (await processApplicationHardbounceEvent(payload, _mockedFn)) {
       origin = BlackListOrigins.CANDIDATURE_SPONTANEE_RECRUTEUR
     } else if (await processApplicationCandidateHardbounceEvent(payload)) {

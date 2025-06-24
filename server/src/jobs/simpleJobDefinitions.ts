@@ -1,3 +1,4 @@
+import { removeBrevoContacts } from "@/jobs/anonymization/removeBrevoContacts"
 import { updateDiplomeMetier } from "@/jobs/diplomesMetiers/updateDiplomesMetiers"
 import { updateRomesForDomainesMetiers } from "@/jobs/domainesMetiers/updateRomesForDomainesMetiers"
 import { sendMiseEnRelation } from "@/jobs/miseEnRelation/sendMiseEnRelation"
@@ -322,5 +323,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: renvoiMailCreationCompte,
     description: "Envoi les mails de validation de compte",
+  },
+  {
+    fct: removeBrevoContacts,
+    description: "Anonymise les contacts Brevo dont la date de creation est supérieure à 2 ans",
   },
 ]
