@@ -1,6 +1,7 @@
 import { addJob, initJobProcessor } from "job-processor"
 import { ObjectId } from "mongodb"
 
+import { anonymizeBrevoContacts } from "@/jobs/anonymization/anonymizeBrevoContacts"
 import updateDomainesMetiers from "@/jobs/domainesMetiers/updateDomainesMetiers"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
 import { sendMiseEnRelation } from "@/jobs/miseEnRelation/sendMiseEnRelation"
@@ -274,6 +275,11 @@ export async function setupJobProcessor() {
           "Traitement des recruteur LBA par la pipeline jobs partners": {
             cron_string: "0 10 * * SUN",
             handler: processRecruteursLba,
+            tag: "main",
+          },
+          "Suppression des contacts Brevo de plus de deux ans": {
+            cron_string: "0 8 * * SUN",
+            handler: anonymizeBrevoContacts,
             tag: "main",
           },
         },

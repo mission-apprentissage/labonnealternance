@@ -1856,6 +1856,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@getbrevo/brevo@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "@getbrevo/brevo@npm:2.2.0"
+  dependencies:
+    bluebird: ^3.5.0
+    request: ^2.81.0
+    rewire: ^7.0.0
+  checksum: cb9e1edbf755b8fced2d72c414c2f52ebfcea9b3f6858599720b0190d88d19a22dc83672802f2d84adce416db7a4cf0163a677cd724ddf106e39355a97d32608
+  languageName: node
+  linkType: hard
+
 "@hapi/boom@npm:^10.0.1":
   version: 10.0.1
   resolution: "@hapi/boom@npm:10.0.1"
@@ -7523,7 +7534,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bluebird@npm:^3.7.2":
+"bluebird@npm:^3.5.0, bluebird@npm:^3.7.2":
   version: 3.7.2
   resolution: "bluebird@npm:3.7.2"
   checksum: 869417503c722e7dc54ca46715f70e15f4d9c602a423a02c825570862d12935be59ed9c7ba34a9b31f186c017c23cac6b54e35446f8353059c101da73eac22ef
@@ -10384,7 +10395,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^8.57.1":
+"eslint@npm:^8.47.0, eslint@npm:^8.57.1":
   version: 8.57.1
   resolution: "eslint@npm:8.57.1"
   dependencies:
@@ -18553,7 +18564,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"request@npm:^2.51.0, request@npm:^2.88.2":
+"request@npm:^2.51.0, request@npm:^2.81.0, request@npm:^2.88.2":
   version: 2.88.2
   resolution: "request@npm:2.88.2"
   dependencies:
@@ -18791,6 +18802,15 @@ __metadata:
   version: 1.1.0
   resolution: "reusify@npm:1.1.0"
   checksum: 64cb3142ac5e9ad689aca289585cb41d22521f4571f73e9488af39f6b1bd62f0cbb3d65e2ecc768ec6494052523f473f1eb4b55c3e9014b3590c17fc6a03e22a
+  languageName: node
+  linkType: hard
+
+"rewire@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "rewire@npm:7.0.0"
+  dependencies:
+    eslint: ^8.47.0
+  checksum: 3188d57fa525901ec1d8f6c7e62290065a71b96912c654f3a68d922e54b1fbd9bb300e0e889b618e744e7c3ce0ddaa74270a38b660f421ed3b167859fcfd9939
   languageName: node
   linkType: hard
 
@@ -19259,6 +19279,7 @@ __metadata:
     "@fastify/rate-limit": ^10.2.2
     "@fastify/swagger": ^9.5.0
     "@fastify/swagger-ui": ^5.2.2
+    "@getbrevo/brevo": ^2.2.0
     "@hapi/boom": ^10.0.1
     "@mistralai/mistralai": ^1.6.0
     "@sentry/node": ^9.13.0
