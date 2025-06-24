@@ -88,7 +88,6 @@
     "rate-limiter-flexible": "^7.0.0",
     "sanitize-html": "^2.16.0",
     "shared": "workspace:*",
-    "sib-api-v3-sdk": "^8.5.0",
     "stream-json": "^1.9.1",
     "string-similarity": "^4.0.4",
     "type-fest": "^4.40.0",

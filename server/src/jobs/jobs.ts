@@ -55,7 +55,7 @@ import { recruiterOfferExpirationReminderJob } from "./recruiters/recruiterOffer
 import { resetApiKey } from "./recruiters/resetApiKey"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import { SimpleJobDefinition, simpleJobDefinitions } from "./simpleJobDefinitions"
-import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
+import { updateBrevoBlockedEmails } from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 import { controlApplications } from "./verifications/controlApplications"
 import { controlAppointments } from "./verifications/controlAppointments"
 

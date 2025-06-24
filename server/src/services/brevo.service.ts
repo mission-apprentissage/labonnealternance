@@ -1,18 +1,10 @@
-import SibApiV3Sdk from "sib-api-v3-sdk"
+import brevo, { CreateWebhook } from "@getbrevo/brevo"
 
 import { logger } from "../common/logger"
 import config from "../config"
 
-const defaultClient = SibApiV3Sdk.ApiClient.instance
-
-const apiKey = defaultClient.authentications["api-key"]
-apiKey.apiKey = config.smtp.brevoApiKey
-
-const apiInstance = new SibApiV3Sdk.WebhooksApi()
-
-let emailWebhook = new SibApiV3Sdk.CreateWebhook()
-
-let hardBounceWebhook = new SibApiV3Sdk.CreateWebhook()
+const clientBrevo = new brevo.WebhooksApi()
+clientBrevo.setApiKey(brevo.WebhooksApiApiKeys.apiKey, config.smtp.brevoApiKey)
 
 export const enum BrevoEventStatus {
   HARD_BOUNCE = "hard_bounce",
@@ -26,16 +18,16 @@ export const enum BrevoEventStatus {
   CLIQUE = "click",
 }
 
-emailWebhook = {
+const emailWebhook = {
   description: "Changements d'états des emails de candidatures ou de rendez-vous ou de marketing",
   url: `${config.publicUrl}/api/emails/webhook?apiKey=${config.smtp.brevoWebhookApiKey}`,
-  events: ["delivered", "request", "click", "uniqueOpened"],
+  events: [CreateWebhook.EventsEnum.Delivered, CreateWebhook.EventsEnum.Request, CreateWebhook.EventsEnum.Click, CreateWebhook.EventsEnum.UniqueOpened],
 }
 
-hardBounceWebhook = {
+const hardBounceWebhook = {
   description: "Hardbounce des emails de candidatures ou de rendez-vous ou de marketing",
   url: `${config.publicUrl}/api/emails/webhookHardbounce?apiKey=${config.smtp.brevoWebhookApiKey}`,
-  events: [BrevoEventStatus.HARDBOUNCE_WEBHOOK_INIT, BrevoEventStatus.BLOCKED, BrevoEventStatus.SPAM, BrevoEventStatus.UNSUBSCRIBED],
+  events: [CreateWebhook.EventsEnum.HardBounce, CreateWebhook.EventsEnum.Blocked, CreateWebhook.EventsEnum.Spam, CreateWebhook.EventsEnum.Unsubscribed],
 }
 
 /**
@@ -46,16 +38,21 @@ export const initBrevoWebhooks = () => {
     return
   }
 
-  apiInstance.createWebhook({ ...emailWebhook, type: "transactional" }).then(
-    function (data) {
-      logger.info("Brevo webhook API called successfully for email (appointment, application) status changes. Returned data: " + JSON.stringify(data))
-    },
-    function (error) {
-      logger.error("Brevo webhook API Error for email (appointment, application) status changes. Returned data: " + error.response.res.text)
-    }
-  )
+  clientBrevo
+    .createWebhook({
+      ...emailWebhook,
+      type: CreateWebhook.TypeEnum.Transactional,
+    })
+    .then(
+      function (data) {
+        logger.info("Brevo webhook API called successfully for email (appointment, application) status changes. Returned data: " + JSON.stringify(data))
+      },
+      function (error) {
+        logger.error("Brevo webhook API Error for email (appointment, application) status changes. Returned data: " + error.response.res.text)
+      }
+    )
 
-  apiInstance.createWebhook({ ...hardBounceWebhook, type: "transactional" }).then(
+  clientBrevo.createWebhook({ ...hardBounceWebhook, type: CreateWebhook.TypeEnum.Transactional }).then(
     function (data) {
       logger.info("Brevo webhook API called successfully for transactional hardbounces. Returned data: " + JSON.stringify(data))
     },
@@ -64,11 +61,11 @@ export const initBrevoWebhooks = () => {
     }
   )
 
-  apiInstance
+  clientBrevo
     .createWebhook({
       ...hardBounceWebhook,
-      events: [BrevoEventStatus.HARDBOUNCE_WEBHOOK_INIT, BrevoEventStatus.SPAM, BrevoEventStatus.UNSUBSCRIBED],
-      type: "marketing",
+      events: [CreateWebhook.EventsEnum.HardBounce, CreateWebhook.EventsEnum.Spam, CreateWebhook.EventsEnum.Unsubscribed],
+      type: CreateWebhook.TypeEnum.Marketing,
     })
     .then(
       function (data) {

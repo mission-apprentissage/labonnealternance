@@ -1,5 +1,5 @@
+import brevo from "@getbrevo/brevo"
 import { EApplicantRole } from "shared/constants/rdva"
-import SibApiV3Sdk from "sib-api-v3-sdk"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { BlackListOrigins } from "@/services/application.service"
@@ -72,11 +72,8 @@ export const saveBlacklistEmails = async (contacts) => {
 const updateBlockedEmails = async ({ AllAddresses }: { AllAddresses?: boolean }) => {
   logger.info(`Début mise à jour blacklist Brevo`)
 
-  const defaultClient = SibApiV3Sdk.ApiClient.instance
-  const apiKey = defaultClient.authentications["api-key"]
-  apiKey.apiKey = config.smtp.brevoApiKey
-
-  const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi()
+  const clientBrevo = new brevo.TransactionalEmailsApi()
+  clientBrevo.setApiKey(brevo.TransactionalEmailsApiApiKeys.apiKey, config.smtp.brevoApiKey)
 
   const yesterday = new Date()
   yesterday.setDate(yesterday.getDate() - 1)
@@ -86,36 +83,30 @@ const updateBlockedEmails = async ({ AllAddresses }: { AllAddresses?: boolean })
   const senders = [config.transactionalEmail, config.publicEmail]
   let total = 0
   let offset = 0
-  const startDate = AllAddresses ? null : todayStr
-  const endDate = AllAddresses ? null : todayStr
+  const startDate = AllAddresses ? todayStr : undefined
+  const endDate = AllAddresses ? todayStr : undefined
 
-  const opts = {
-    startDate,
-    endDate,
-    limit,
-    offset,
-    senders,
-  }
+  let result = await clientBrevo.getTransacBlockedContacts(startDate, endDate, limit, offset, senders)
 
-  let result = await apiInstance.getTransacBlockedContacts(opts)
+  if (!result.body.count || result.body.count === 0) return
 
-  total = result.count
+  total = result.body.count
 
   if (!Number.isFinite(total)) {
     return
   }
 
   while (offset < total) {
-    await saveBlacklistEmails(result.contacts)
+    await saveBlacklistEmails(result.body.contacts)
 
     offset += limit
-    result = await apiInstance.getTransacBlockedContacts({ ...opts, offset })
+    result = await clientBrevo.getTransacBlockedContacts(startDate, endDate, limit, offset, senders)
   }
 }
 
 let blacklistedAddressCount = 0
 
-export default async function ({ AllAddresses }: { AllAddresses?: boolean }) {
+export async function updateBrevoBlockedEmails({ AllAddresses }: { AllAddresses?: boolean }) {
   blacklistedAddressCount = 0
 
   try {
