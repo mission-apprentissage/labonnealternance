@@ -1,6 +1,7 @@
 import { updateDiplomeMetier } from "@/jobs/diplomesMetiers/updateDiplomesMetiers"
 import { updateRomesForDomainesMetiers } from "@/jobs/domainesMetiers/updateRomesForDomainesMetiers"
 import { sendMiseEnRelation } from "@/jobs/miseEnRelation/sendMiseEnRelation"
+import { processAtlas } from "@/jobs/offrePartenaire/atlas/processAtlas"
 import { importRecruteursLbaFromComputedToJobsPartners } from "@/jobs/offrePartenaire/fillComputedRecruteursLba"
 import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail/classifyJobsFranceTravail"
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
@@ -216,6 +217,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processPass,
     description: "Importe les offres Pass dans la collection raw & computed",
+  },
+  {
+    fct: processAtlas,
+    description: "Importe les offres Atlas dans la collection raw & computed",
   },
   // ENRICHIT COMPUTED JOBS PARTNERS
   {

@@ -1,5 +1,6 @@
 import { CronDef } from "job-processor"
 
+import { processAtlas } from "@/jobs/offrePartenaire/atlas/processAtlas"
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
 import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
 import { processKelio } from "@/jobs/offrePartenaire/kelio/processKelio"
@@ -68,6 +69,12 @@ export const importers: Record<string, CronDef> = {
   "Import PASS": {
     cron_string: timings.import_source,
     handler: processPass,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 30,
+  },
+  "Import Atlas": {
+    cron_string: timings.import_source,
+    handler: processAtlas,
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
