@@ -39,7 +39,7 @@ const deleteContactsFromBrevo = async (contactIds: string[]): Promise<void> => {
   }
 }
 
-export const anonymizeBrevoContacts = async (): Promise<void> => {
+export const removeBrevoContacts = async (): Promise<void> => {
   const twoYearsAgo = new Date()
   twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2)
 

@@ -1,7 +1,7 @@
 import { addJob, initJobProcessor } from "job-processor"
 import { ObjectId } from "mongodb"
 
-import { anonymizeBrevoContacts } from "@/jobs/anonymization/anonymizeBrevoContacts"
+import { removeBrevoContacts } from "@/jobs/anonymization/removeBrevoContacts"
 import updateDomainesMetiers from "@/jobs/domainesMetiers/updateDomainesMetiers"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
 import { sendMiseEnRelation } from "@/jobs/miseEnRelation/sendMiseEnRelation"
@@ -279,7 +279,7 @@ export async function setupJobProcessor() {
           },
           "Suppression des contacts Brevo de plus de deux ans": {
             cron_string: "0 8 * * SUN",
-            handler: anonymizeBrevoContacts,
+            handler: removeBrevoContacts,
             tag: "main",
           },
         },
