@@ -7,8 +7,7 @@ const clientBrevo = new brevo.WebhooksApi()
 clientBrevo.setApiKey(brevo.WebhooksApiApiKeys.apiKey, config.smtp.brevoApiKey)
 
 export const enum BrevoEventStatus {
-  HARD_BOUNCE = "hard_bounce",
-  HARDBOUNCE_WEBHOOK_INIT = "hardBounce",
+  HARDBOUNCE = "hardBounce",
   BLOCKED = "blocked",
   SPAM = "spam",
   UNSUBSCRIBED = "unsubscribed",

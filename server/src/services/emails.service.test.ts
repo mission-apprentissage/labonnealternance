@@ -29,7 +29,7 @@ describe("email blaklist events", () => {
   const fakeMessageId_1 = "<fake_id@domain.net>"
 
   const baseWebHookPayload: IBrevoWebhookEvent = {
-    event: BrevoEventStatus.HARD_BOUNCE,
+    event: BrevoEventStatus.HARDBOUNCE,
     email: blacklistedEmail,
     id: 1,
     date: "2024-10-15 11:00:00",
@@ -63,7 +63,7 @@ describe("email blaklist events", () => {
   })
 
   it("Unidentified hardbounce should register campaign origin", async () => {
-    baseWebHookPayload.event = BrevoEventStatus.HARD_BOUNCE
+    baseWebHookPayload.event = BrevoEventStatus.HARDBOUNCE
     const applicant = generateApplicantFixture({ email: blacklistedEmail })
     await getDbCollection("applicants").insertOne(applicant)
     await processHardBounceWebhookEvent(baseWebHookPayload)
@@ -71,7 +71,7 @@ describe("email blaklist events", () => {
     const blEvent = await getDbCollection("emailblacklists").findOne({ email: blacklistedEmail })
     expect.soft(blEvent).toEqual(
       expect.objectContaining({
-        blacklisting_origin: `${BlackListOrigins.CAMPAIGN} (${BrevoEventStatus.HARD_BOUNCE})`,
+        blacklisting_origin: `${BlackListOrigins.CAMPAIGN} (${BrevoEventStatus.HARDBOUNCE})`,
         email: blacklistedEmail,
       })
     )
@@ -156,14 +156,14 @@ describe("email blaklist events", () => {
     await getDbCollection("emailblacklists").deleteMany({})
     await getDbCollection("users").deleteMany({})
     await getDbCollection("userswithaccounts").insertOne(generateUserWithAccountFixture({ email: blacklistedEmail }))
-    baseBlockedAddress[0].reason.code = BrevoBlockedReasons.HARD_BOUNCE
+    baseBlockedAddress[0].reason.code = BrevoBlockedReasons.HARDBOUNCE
 
     await saveBlacklistEmails(baseBlockedAddress)
 
     blEvent = await getDbCollection("emailblacklists").findOne({ email: blacklistedEmail })
     expect.soft(blEvent).toEqual(
       expect.objectContaining({
-        blacklisting_origin: `${BlackListOrigins.USER_WITH_ACCOUNT} (${BrevoEventStatus.HARD_BOUNCE})`,
+        blacklisting_origin: `${BlackListOrigins.USER_WITH_ACCOUNT} (${BrevoEventStatus.HARDBOUNCE})`,
         email: blacklistedEmail,
       })
     )
@@ -243,7 +243,7 @@ describe("email blaklist events", () => {
         ],
       })
     )
-    baseWebHookPayload.event = BrevoEventStatus.HARD_BOUNCE
+    baseWebHookPayload.event = BrevoEventStatus.HARDBOUNCE
     baseWebHookPayload["message-id"] = fakeMessageId_1
 
     await processHardBounceWebhookEvent(baseWebHookPayload)
@@ -251,7 +251,7 @@ describe("email blaklist events", () => {
     const blEvent = await getDbCollection("emailblacklists").findOne({ email: blacklistedEmail })
     expect.soft(blEvent).toEqual(
       expect.objectContaining({
-        blacklisting_origin: `${BlackListOrigins.PRDV_CANDIDAT} (${BrevoEventStatus.HARD_BOUNCE})`,
+        blacklisting_origin: `${BlackListOrigins.PRDV_CANDIDAT} (${BrevoEventStatus.HARDBOUNCE})`,
         email: blacklistedEmail,
       })
     )
@@ -263,7 +263,7 @@ describe("email blaklist events", () => {
         to_CFA_invite_optout_last_message_id: fakeMessageId_1,
       })
     )
-    baseWebHookPayload.event = BrevoEventStatus.HARD_BOUNCE
+    baseWebHookPayload.event = BrevoEventStatus.HARDBOUNCE
     baseWebHookPayload["message-id"] = fakeMessageId_1
 
     await processHardBounceWebhookEvent(baseWebHookPayload)
@@ -271,7 +271,7 @@ describe("email blaklist events", () => {
     const blEvent = await getDbCollection("emailblacklists").findOne({ email: blacklistedEmail })
     expect.soft(blEvent).toEqual(
       expect.objectContaining({
-        blacklisting_origin: `${BlackListOrigins.PRDV_INVITATION} (${BrevoEventStatus.HARD_BOUNCE})`,
+        blacklisting_origin: `${BlackListOrigins.PRDV_INVITATION} (${BrevoEventStatus.HARDBOUNCE})`,
         email: blacklistedEmail,
       })
     )

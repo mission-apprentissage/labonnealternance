@@ -36,7 +36,7 @@ export const saveBlacklistEmails = async (contacts) => {
           break
         }
         case BrevoBlockedReasons.HARD_BOUNCE: {
-          reason = BrevoEventStatus.HARD_BOUNCE
+          reason = BrevoEventStatus.HARDBOUNCE
           break
         }
         case BrevoBlockedReasons.SPAM: {
