@@ -132,6 +132,9 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
       query.opco = params.opco
     }
 
+    if (params.rncp) {
+      query.rncp = params.rncp
+    }
     return query
   }, [params])
 
@@ -154,7 +157,7 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
   }, [params])
 
   const isFormationEnabled = formationQuerystring.romes.length > 0 && params.displayFormations
-  const isJobsEnabled = jobQuerystring.romes.length > 0 && (params.displayEntreprises || params.displayPartenariats)
+  const isJobsEnabled = (jobQuerystring.romes.length > 0 || jobQuerystring.rncp) && (params.displayEntreprises || params.displayPartenariats)
 
   const formationQuery = useQuery<Jsonify<ILbaItemFormation>[]>({
     queryKey: ["/v1/_private/formations/min", formationQuerystring],

@@ -2,7 +2,7 @@ fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: b5006031bb5254e253e43023a9355016f20205f30377729895d8152fe475e9bb
 - filename: .infra/vault/vault.yml
-  checksum: 16e5dbef674c9219492e338fbcff11e20686c8d24494b41c7cdcd43e516cc8e8
+  checksum: 0b4df1fe60226577f964e5f893a610d060ba7f6ed80506b47fe5e5276f1c62cb
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
   checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
 - filename: cypress/pages/FlowAdminPage.ts
@@ -297,6 +297,8 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
+- filename: ui/components/head.tsx
+  checksum: fd94387931e07a6150e82417ef13ec3c03cad372e69e95c4be60d360ee285ead
 scopeconfig:
 - scope: node
 custom_patterns:

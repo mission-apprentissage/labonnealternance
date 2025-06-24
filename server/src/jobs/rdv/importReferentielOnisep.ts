@@ -1,18 +1,17 @@
 import { createReadStream } from "node:fs"
 import { writeFile } from "node:fs/promises"
-import { pipeline } from "stream/promises"
+import { Transform, Writable } from "node:stream"
+import { pipeline } from "node:stream/promises"
 
 import axios from "axios"
 import { ObjectId } from "mongodb"
-import { filterData, oleoduc, transformData, writeData } from "oleoduc"
 import { IReferentielOnisep } from "shared/models/index"
 
+import { logger } from "@/common/logger"
+import { parseCsv } from "@/common/utils/fileUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-
-import { logger } from "../../common/logger"
-import { parseCsv } from "../../common/utils/fileUtils"
-import { sentryCaptureException } from "../../common/utils/sentryUtils"
-import { notifyToSlack } from "../../common/utils/slackUtils"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 
 type TCsvRow = {
   "ID formation MA": string
@@ -23,10 +22,6 @@ type TCsvRow = {
   "Clé ministère éducatif MA": string
 }
 
-/**
- * @description Retrieve and save un database ONISEP mapping.
- * @returns {Promise<void>}
- */
 export const importReferentielOnisep = async () => {
   logger.info("Cron #importReferentielOnisep started.")
   const stats = {
@@ -37,28 +32,29 @@ export const importReferentielOnisep = async () => {
     filePath: "./widget_mna_ideo.csv",
   }
 
-  // Large file of ~50k lines
+  // Téléchargement du CSV
   const { data } = await axios.get("https://data.lheo.org/export/csv/relations/widget-mna-ideo/widget_mna_ideo", {
     maxContentLength: Infinity,
   })
-
-  // Save file locally
   await writeFile(stats.filePath, data, { encoding: "utf-8" })
 
-  // Count number of formation before import
+  // Étape 1 — compter les lignes
   await pipeline(
     createReadStream(stats.filePath, { encoding: "utf-8" }),
     parseCsv(),
-    transformData(() => {
-      stats.csvRows += 1
+    new Writable({
+      objectMode: true,
+      write(_, __, callback) {
+        stats.csvRows++
+        callback()
+      },
     })
   )
 
-  // If there a too few formations, it's probably a bug, we stop the process and send a Slack notification
   if (stats.csvRows < stats.minCsvRowsThreshold) {
     await notifyToSlack({
       subject: "IMPORT ONISEP MAPPING (id_action_ideo2 > cle_ministere_educatif)",
-      message: `Import du mapping Onisep avorté car le fichier ne comporte pas de formations (suspicions de bug). ${stats.csvRows} formations / ${stats.minCsvRowsThreshold} minimum attendu`,
+      message: `Import du mapping Onisep avorté : ${stats.csvRows} lignes / minimum requis : ${stats.minCsvRowsThreshold}`,
       error: true,
     })
     return
@@ -66,25 +62,42 @@ export const importReferentielOnisep = async () => {
 
   await getDbCollection("referentieloniseps").deleteMany({})
 
+  // Étape 2 — transformer et insérer les lignes valides
   try {
-    await oleoduc(
+    await pipeline(
       createReadStream(stats.filePath, { encoding: "utf-8" }),
       parseCsv(),
-      filterData((row: TCsvRow) => row["ID action IDEO2"] && row["Clé ministère éducatif MA"]),
-      transformData((row: TCsvRow) => {
-        const refOnisep: IReferentielOnisep = {
-          _id: new ObjectId(),
-          id_action_ideo2: row["ID action IDEO2"],
-          cle_ministere_educatif: row["Clé ministère éducatif MA"],
-          created_at: new Date(),
-        }
-        return refOnisep
+      new Transform({
+        objectMode: true,
+        transform(row: TCsvRow, _, callback) {
+          if (row["ID action IDEO2"] && row["Clé ministère éducatif MA"]) {
+            const refOnisep: IReferentielOnisep = {
+              _id: new ObjectId(),
+              id_action_ideo2: row["ID action IDEO2"],
+              cle_ministere_educatif: row["Clé ministère éducatif MA"],
+              created_at: new Date(),
+            }
+            callback(null, refOnisep)
+          } else {
+            callback() // Skip row
+          }
+        },
       }),
-      writeData((transformedData: IReferentielOnisep) => getDbCollection("referentieloniseps").insertOne(transformedData), { parallel: 10 })
+      new Writable({
+        objectMode: true,
+        highWaterMark: 10,
+        write: async (doc: IReferentielOnisep, _, callback) => {
+          try {
+            await getDbCollection("referentieloniseps").insertOne(doc)
+            callback()
+          } catch (err: any) {
+            callback(err)
+          }
+        },
+      })
     )
 
     stats.afterImportationDatabaseRows = await getDbCollection("referentieloniseps").estimatedDocumentCount({})
-
     await notifyToSlack({
       subject: "IMPORT ONISEP",
       message: `Import du mapping Onisep — existantes: ${stats.beforeImportationDatabaseRows} / importées: ${stats.afterImportationDatabaseRows}`,
@@ -97,5 +110,6 @@ export const importReferentielOnisep = async () => {
     })
     sentryCaptureException(error)
   }
+
   logger.info("Cron #importReferentielOnisep done.")
 }

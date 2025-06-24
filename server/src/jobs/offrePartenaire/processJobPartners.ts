@@ -11,7 +11,7 @@ export const jobPartnersByFlux = Object.values(JOBPARTNERS_LABEL).filter((jobPar
 export const processComputedAndImportToJobPartners = async () => {
   logger.info("début de processComputedAndImportToJobPartners")
   const filter = { partner_label: { $in: jobPartnersByFlux } }
-  await fillComputedJobsPartners(filter)
+  await fillComputedJobsPartners({ addedMatchFilter: filter })
   await importFromComputedToJobsPartners(filter)
   await cancelRemovedJobsPartners()
   logger.info("fin de processComputedAndImportToJobPartners")

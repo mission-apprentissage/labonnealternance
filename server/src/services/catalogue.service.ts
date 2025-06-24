@@ -5,7 +5,6 @@ import axios, { AxiosInstance } from "axios"
 import { got } from "got"
 import { sortBy } from "lodash-es"
 import { ObjectId } from "mongodb"
-import { compose } from "oleoduc"
 import { IEtablissementCatalogue, IEtablissementCatalogueProche, IEtablissementCatalogueProcheWithDistance } from "shared/interface/etablissement.types"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -15,7 +14,6 @@ import { logger } from "../common/logger"
 import { getDistanceInKm } from "../common/utils/geolib"
 import { fetchStream } from "../common/utils/httpUtils"
 import { isValidEmail } from "../common/utils/isValidEmail"
-import { streamJsonArray } from "../common/utils/streamUtils"
 import config from "../config"
 
 const DISTANCE_MAX_CFA_PROCHE = 100
@@ -232,10 +230,6 @@ const convertQueryIntoParams = (query: object, options: object = {}): string => 
   })
 }
 
-/**
- * @description Get all formations through the CARIF OREF catalogue API.
- * @returns {Stream<Object[]>}
- */
 export const getAllFormationsFromCatalogue = async () => {
   const now: Date = new Date()
   const tags: number[] = [now.getFullYear(), now.getFullYear() + 1, now.getFullYear() + (now.getMonth() < 8 ? -1 : 2)]
@@ -243,15 +237,14 @@ export const getAllFormationsFromCatalogue = async () => {
   const count = (await countFormations()) ?? null
   const query = { published: true, catalogue_published: true, tags: { $in: tags.map(String) } }
 
-  if (!count) return
+  if (!count) throw new Error("Aucune formation trouvée dans le catalogue")
 
   logger.info(`${count} formation(s) à importer from ${config.catalogueUrl}${config.formationsEndPoint}.json`)
 
   const streamFormations = async (query, options) => {
     const params = convertQueryIntoParams(query, options)
     const response = await fetchStream(`${config.catalogueUrl}${config.formationsEndPoint}.json?${params}`)
-
-    return compose(response, streamJsonArray())
+    return response
   }
 
   return streamFormations(query, {

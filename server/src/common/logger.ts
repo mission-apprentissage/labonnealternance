@@ -1,14 +1,14 @@
+import { Transform, Writable } from "node:stream"
 import util from "util"
 
 import bunyan from "bunyan"
 import BunyanSlack from "bunyan-slack"
 import chalk from "chalk"
 import { isEmpty, omit, throttle } from "lodash-es"
-import { compose, transformData, writeData } from "oleoduc"
 
 import config from "@/config"
 
-function prettyPrintStream(outputName) {
+function prettyPrintStream(outputName: "stdout" | "stderr") {
   const levels = {
     10: chalk.grey.bold("TRACE"),
     20: chalk.green.bold("DEBUG"),
@@ -18,38 +18,38 @@ function prettyPrintStream(outputName) {
     60: chalk.magenta.bold("FATAL"),
   }
 
-  return compose(
-    transformData((raw: any) => {
-      const stack = raw.err?.stack
-      const message = stack ? `${raw.msg}\n${stack}` : raw.msg
-      const rest = omit(raw, [
-        //Bunyan core fields https://github.com/trentm/node-bunyan#core-fields
-        "v",
-        "level",
-        "name",
-        "hostname",
-        "pid",
-        "time",
-        "msg",
-        "src",
-        //Error fields already serialized with https://github.com/trentm/node-bunyan#standard-serializers
-        "err.name",
-        "err.stack",
-        "err.message",
-        "err.code",
-        "err.signal",
-        //Misc
-        "context",
-      ])
+  const transform = new Transform({
+    objectMode: true,
+    transform(raw, _, callback) {
+      try {
+        const stack = raw.err?.stack
+        const message = stack ? `${raw.msg}\n${stack}` : raw.msg
+        const rest = omit(raw, ["v", "level", "name", "hostname", "pid", "time", "msg", "src", "err.name", "err.stack", "err.message", "err.code", "err.signal", "context"])
 
-      const params = [util.format("[%s][%s][%s] %s", raw.time.toISOString()), levels[raw.level], raw.context || "global", message]
-      if (!isEmpty(rest)) {
-        params.push(chalk.gray(`\n${util.inspect(rest, { depth: null })}`))
+        const params = [util.format("[%s][%s][%s] %s", raw.time.toISOString(), levels[raw.level], raw.context || "global", message)]
+
+        if (!isEmpty(rest)) {
+          params.push(chalk.gray(`\n${util.inspect(rest, { depth: null })}`))
+        }
+
+        callback(null, params)
+      } catch (err: any) {
+        callback(err)
       }
-      return params
-    }),
-    writeData((data: any) => console[outputName === "stdout" ? "log" : "error"](...data))
-  )
+    },
+  })
+
+  const writer = new Writable({
+    objectMode: true,
+    write(data, _, callback) {
+      console[outputName === "stdout" ? "log" : "error"](...data)
+      callback()
+    },
+  })
+
+  // Combine transform and writer into a duplex-like stream
+  transform.pipe(writer)
+  return transform
 }
 
 function sendLogsToConsole(outputName) {
