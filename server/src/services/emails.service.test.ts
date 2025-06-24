@@ -156,7 +156,7 @@ describe("email blaklist events", () => {
     await getDbCollection("emailblacklists").deleteMany({})
     await getDbCollection("users").deleteMany({})
     await getDbCollection("userswithaccounts").insertOne(generateUserWithAccountFixture({ email: blacklistedEmail }))
-    baseBlockedAddress[0].reason.code = BrevoBlockedReasons.HARDBOUNCE
+    baseBlockedAddress[0].reason.code = BrevoBlockedReasons.HARD_BOUNCE
 
     await saveBlacklistEmails(baseBlockedAddress)
 
