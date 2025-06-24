@@ -131,9 +131,15 @@ const computedJobPartnerVsRecruiterStreamFactory = (
   logger.info(
     `début de detectDuplicateJobPartners entre computedJobPartners et recruiters, pour les champs computedJobPartnerField=${computedJobPartnerField} et recruiterField=${recruiterField}`
   )
+
   return getDbCollection("computed_jobs_partners").aggregate([
     { $match: computedJobPartnersFilter },
-    { $group: { _id: `$${computedJobPartnerField}`, documents: { $push: "$$ROOT" } } },
+    {
+      $group: {
+        _id: `$${computedJobPartnerField}`,
+        documents: { $push: "$$ROOT" },
+      },
+    },
     { $match: { _id: { $ne: null } } },
     {
       $project: {
@@ -161,13 +167,25 @@ const computedJobPartnerVsRecruiterStreamFactory = (
         documents: 1,
         recruiters: {
           $map: {
-            input: "$recruiters",
+            input: {
+              $filter: {
+                input: "$recruiters",
+                as: "recruiter",
+                cond: { $eq: ["$$recruiter.status", "Actif"] },
+              },
+            },
             as: "recruiter",
             in: {
               ...Object.fromEntries(recruiterFieldsRead.map((field) => [field, `$$recruiter.${field}`])),
               jobs: {
                 $map: {
-                  input: "$$recruiter.jobs",
+                  input: {
+                    $filter: {
+                      input: "$$recruiter.jobs",
+                      as: "job",
+                      cond: { $eq: ["$$job.job_status", "Active"] },
+                    },
+                  },
                   as: "job",
                   in: Object.fromEntries(jobFieldsRead.map((field) => [field, `$$job.${field}`])),
                 },
