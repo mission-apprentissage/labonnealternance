@@ -215,7 +215,7 @@ export const getPartnerJobs = async ({
     let applicationCountByJob: null | IApplicationCount[] = null
 
     if (force_partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA) {
-      const ids = rawPartnerJobs.map(({ _id }) => _id.toString())
+      const ids = rawPartnerJobs.map(({ partner_job_id }) => partner_job_id)
       applicationCountByJob = await getApplicationByJobCount(ids)
     }
     let partnerJobs: ILbaItemPartnerJob[] = transformPartnerJobs({ partnerJobs: rawPartnerJobs, isMinimalData, applicationCountByJob })
