@@ -391,10 +391,9 @@ export default (server: Server) => {
         case LBA_ITEM_TYPE.RECRUTEURS_LBA:
           result = await getRecruteurLbaFromDB(id)
           break
-        /*case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
-          result = await getLbaJobByIdV2(id)
-          break*/
-
+        case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
+          result = await getPartnerJobByIdV2(id)
+          break
         case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES:
           result = await getPartnerJobByIdV2(id)
           break
