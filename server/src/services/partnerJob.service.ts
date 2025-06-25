@@ -47,6 +47,9 @@ function transformPartnerJob(
   const latitude = partnerJob.workplace_geopoint.coordinates[1]
   const id = partnerJob._id.toString()
 
+  const recipient_id =
+    version === "V1" ? `partners_${id}` : partnerJob.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA ? `recruiters_${partnerJob.partner_job_id}` : `partners_${id}`
+
   const resultJob: ILbaItemPartnerJob = {
     id,
     ideaType:
@@ -57,7 +60,7 @@ function transformPartnerJob(
           : LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
     title: partnerJob.offer_title,
     token: generateApplicationToken({ jobId: id }),
-    recipient_id: `partners_${id}`,
+    recipient_id,
     place: {
       //lieu de l'offre. contient ville de l'entreprise et geoloc de l'entreprise
       distance: partnerJob?.distance != null && partnerJob?.distance >= 0 ? roundDistance((partnerJob?.distance ?? 0) / 1000) : null,
@@ -111,6 +114,8 @@ function transformPartnerJob(
 
   return resultJob
 }
+
+//TODO: travailler toutes les urls des emails de candidatures
 
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
