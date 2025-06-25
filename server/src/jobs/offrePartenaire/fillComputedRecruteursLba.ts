@@ -6,7 +6,7 @@ import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import { blockBadRomeJobsPartners } from "@/jobs/offrePartenaire/blockBadRomeJobsPartners"
-import { fillLocationInfosForPartners } from "@/jobs/offrePartenaire/fillLocationInfosForPartners"
+import { FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 import { fillOpcoInfosForPartners } from "@/jobs/offrePartenaire/fillOpcoInfosForPartners"
 import { removeMissingRecruteursLbaFromRaw } from "@/jobs/offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
 import { validateComputedJobPartners } from "@/jobs/offrePartenaire/validateComputedJobPartners"
@@ -16,11 +16,12 @@ const filter: Filter<IComputedJobsPartners | IJobsPartnersOfferPrivate> = {
 }
 
 export const fillComputedRecruteursLba = async () => {
+  const context: FillComputedJobsPartnersContext = { addedMatchFilter: filter, shouldNotifySlack: false }
+
   await removeMissingRecruteursLbaFromRaw()
-  await fillOpcoInfosForPartners(filter)
-  await fillLocationInfosForPartners(filter)
-  await blockBadRomeJobsPartners(filter)
-  await validateComputedJobPartners(filter)
+  await fillOpcoInfosForPartners(context)
+  await blockBadRomeJobsPartners(context)
+  await validateComputedJobPartners(context)
 }
 
 export const importRecruteursLbaFromComputedToJobsPartners = async () => {

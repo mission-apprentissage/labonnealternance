@@ -1,11 +1,13 @@
 import fs from "node:fs/promises"
+import { Writable } from "node:stream"
+import { pipeline } from "node:stream/promises"
 
-import { oleoduc, writeData, groupData } from "oleoduc"
 import { z } from "zod"
 
 import { deduplicate } from "@/common/utils/array"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { groupStreamData } from "@/common/utils/streamUtils"
 import { Message, sendMistralMessages } from "@/services/mistralai/mistralai.service"
 
 type RomeDocumentRaw = {
@@ -27,57 +29,68 @@ type LLMInputDocument = {
 const ZLLMOutput = z.record(z.array(z.string()))
 
 export const classifyRomesForDomainesMetiers = async () => {
+  const BATCH_SIZE = 20
   const sousDomaines = await getValidSousDomaines()
   const stats = { inputSentSize: 0, receivedSize: 0, receivedMatchingInputSize: 0 }
   let index = await getCurrentIndex()
   console.info({ index })
   const currentMappings = await getAllMappings()
 
-  await oleoduc(
-    getMissingOutputQuery(currentMappings).stream(),
-    groupData({ size: 20 }),
-    writeData(async (typedDocuments: RomeDocumentRaw[]) => {
-      const llmInputDocuments: LLMInputDocument[] = typedDocuments.map(({ rome, definition, appellations }) => ({
-        titre: rome.intitule,
-        definition,
-        appellations: appellations.map(({ libelle }) => libelle),
-      }))
-      console.info(
-        "sending",
-        llmInputDocuments.map((x) => x.titre)
-      )
-      const llmResponse = await classifyRomeDocuments(llmInputDocuments, sousDomaines)
-      console.info("llmResponse:", llmResponse)
+  async function processBatch(typedDocuments: RomeDocumentRaw[]) {
+    const llmInputDocuments: LLMInputDocument[] = typedDocuments.map(({ rome, definition, appellations }) => ({
+      titre: rome.intitule,
+      definition,
+      appellations: appellations.map(({ libelle }) => libelle),
+    }))
 
-      try {
-        if (!llmResponse) {
-          throw new Error(`empty output`)
-        }
-        const parsed = ZLLMOutput.safeParse(JSON.parse(llmResponse))
-        if (!parsed.success) {
-          throw new Error(`output parsing error: ${JSON.stringify(parsed.error, null, 2)}`)
-        }
-        const { data: typedResponse } = parsed
-        const inputSentSize = llmInputDocuments.length
-        const receivedSize = Object.keys(typedResponse).length
-        const receivedMatchingInputSize = llmInputDocuments.filter((doc) => Object.keys(typedResponse).includes(doc.titre)).length
-        console.info({
-          inputSentSize,
-          receivedSize,
-          receivedMatchingInputSize,
-        })
-        stats.inputSentSize += inputSentSize
-        stats.receivedSize += receivedSize
-        stats.receivedMatchingInputSize += receivedMatchingInputSize
-        const filename = `./classifyRomesForDomainesMetiers.output.${index}.json`
-        console.info("writing", filename)
-        await fs.appendFile(filename, JSON.stringify(typedResponse, null, 2))
-        index++
-      } catch (error) {
-        console.error(error)
+    console.info(
+      "sending",
+      llmInputDocuments.map((x) => x.titre)
+    )
+
+    const llmResponse = await classifyRomeDocuments(llmInputDocuments, sousDomaines)
+    console.info("llmResponse:", llmResponse)
+
+    try {
+      if (!llmResponse) throw new Error(`empty output`)
+
+      const parsed = ZLLMOutput.safeParse(JSON.parse(llmResponse))
+      if (!parsed.success) {
+        throw new Error(`output parsing error: ${JSON.stringify(parsed.error, null, 2)}`)
       }
+
+      const { data: typedResponse } = parsed
+      const inputSentSize = llmInputDocuments.length
+      const receivedSize = Object.keys(typedResponse).length
+      const receivedMatchingInputSize = llmInputDocuments.filter((doc) => Object.keys(typedResponse).includes(doc.titre)).length
+
+      console.info({ inputSentSize, receivedSize, receivedMatchingInputSize })
+
+      stats.inputSentSize += inputSentSize
+      stats.receivedSize += receivedSize
+      stats.receivedMatchingInputSize += receivedMatchingInputSize
+
+      const filename = `./classifyRomesForDomainesMetiers.output.${index}.json`
+      console.info("writing", filename)
+      await fs.appendFile(filename, JSON.stringify(typedResponse, null, 2))
+      index++
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  await pipeline(
+    getMissingOutputQuery(currentMappings).stream(),
+    groupStreamData({ size: BATCH_SIZE }),
+    new Writable({
+      objectMode: true,
+      async write(documents, _, callback) {
+        await processBatch(documents)
+        callback()
+      },
     })
   )
+
   console.info(stats)
 }
 

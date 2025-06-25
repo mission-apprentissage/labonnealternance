@@ -1,16 +1,16 @@
-import { Filter } from "mongodb"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { isEnum } from "shared/utils/index"
 
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
+import { defaultFillComputedJobsPartnersContext, FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 import { getSiretInfos } from "@/services/cacheInfosSiret.service"
 import { formatEntrepriseData } from "@/services/etablissement.service"
 import { addressDetailToStreetLabel } from "@/services/geolocation.service"
 
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 
-export const fillSiretInfosForPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
+export const fillSiretInfosForPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext = defaultFillComputedJobsPartnersContext) => {
   const filledFields = [
     "workplace_size",
     "workplace_name",

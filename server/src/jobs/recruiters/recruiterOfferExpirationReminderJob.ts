@@ -73,7 +73,7 @@ export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirati
         throw internal(`inattendu : impossible de trouver l'utilisateur gérant le formulaire id=${recruiter._id}`)
       }
 
-      const subject = `${jobsWithRecruiter.length > 1 ? "Vos offres expirent" : "Votre offre expire"} ${numberOfDaysToExpirationDate === 1 ? "demain" : `dans ${numberOfDaysToExpirationDate} jours`}`
+      const subject = `Votre offre expire ${numberOfDaysToExpirationDate === 1 ? "demain" : `dans ${numberOfDaysToExpirationDate} jours`}`
 
       await mailer.sendEmail({
         to: contactUser.email,

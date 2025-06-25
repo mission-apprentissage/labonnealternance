@@ -1,11 +1,12 @@
-import { createReadStream, createWriteStream, existsSync, mkdirSync, unlinkSync } from "fs"
-import { createRequire } from "module"
+import { createReadStream, createWriteStream, existsSync, mkdirSync, unlinkSync } from "node:fs"
+import { createRequire } from "node:module"
+import path from "node:path"
+import { Transform } from "node:stream"
 import { pipeline } from "node:stream/promises"
-import path from "path"
 
 import { internal } from "@hapi/boom"
 import { ObjectId } from "bson"
-import { groupData, oleoduc, transformData, writeData } from "oleoduc"
+import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import rawRecruteursLbaModel, { ZRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
@@ -16,7 +17,9 @@ import { getS3FileLastUpdate, s3ReadAsStream } from "@/common/utils/awsUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
+import { groupStreamData } from "@/common/utils/streamUtils"
 import config from "@/config"
+import { isEmailBlacklisted } from "@/services/application.service"
 
 import { recruteursLbaToJobPartners } from "./recruteursLbaMapper"
 
@@ -82,28 +85,37 @@ const importRecruteursLbaToRawCollection = async () => {
   logger.info("deleting old data")
   await getDbCollection("raw_recruteurslba").deleteMany({})
   logger.info("import starting...")
-  let count = 0
+
   const now = new Date()
-  await oleoduc(
-    createReadStream(PREDICTION_FILE_PATH),
-    parser(),
-    streamArray(),
-    transformData((doc) => {
-      const recruteur = { createdAt: now, _id: new ObjectId(), ...doc.value }
-      if (!ZRecruteursLbaRaw.safeParse(recruteur).success) return null
-      return recruteur
-    }),
-    groupData({ size: 10_000 }),
-    writeData((array) => {
-      const filtered = array.filter((item) => item)
+  let count = 0
+
+  const validationStream = new Transform({
+    objectMode: true,
+    transform(chunk, encoding, callback) {
+      const recruteur = { createdAt: now, _id: new ObjectId(), ...chunk.value }
+      if (!ZRecruteursLbaRaw.safeParse(recruteur).success) {
+        return callback() // ignore les entrées invalides sans erreur
+      }
+      callback(null, recruteur)
+    },
+  })
+
+  const insertionStream = new Transform({
+    objectMode: true,
+    transform(chunk, encoding, callback) {
+      const filtered = chunk.filter((item) => item)
       if (!filtered.length) return
       count += filtered.length
       getDbCollection("raw_recruteurslba").insertMany(filtered)
-    })
-  )
+      callback()
+    },
+  })
+
+  await pipeline(createReadStream(PREDICTION_FILE_PATH), parser(), streamArray(), validationStream, groupStreamData({ size: 10_000 }), insertionStream)
+
   const message = `import recruteurs lba terminé : ${count} recruteurs importées`
   logger.info(message)
-  notifyToSlack({
+  await notifyToSlack({
     subject: `import des offres recruteurs lba dans raw`,
     message,
   })
@@ -126,43 +138,63 @@ export const importRecruteurLbaToComputed = async () => {
   const collectionSource = rawRecruteursLbaModel.collectionName
   const partnerLabel = JOBPARTNERS_LABEL.RECRUTEURS_LBA
   const zodInput = ZRecruteursLbaRaw
-  const mapper = recruteursLbaToJobPartners
 
   logger.info(`début d'import dans computed_jobs_partners pour partner_label=${partnerLabel}`)
   const counters = { total: 0, success: 0, error: 0 }
   const importDate = new Date()
-  await oleoduc(
-    getDbCollection(collectionSource).find({}).stream(),
-    writeData(
-      async (document: any) => {
-        counters.total++
-        try {
-          const parsedDocument = zodInput.parse(document)
-          const { apply_email, apply_phone, updated_at, ...rest } = mapper(parsedDocument)
-          await getDbCollection("computed_jobs_partners").updateOne(
-            { workplace_siret: rest.workplace_siret },
-            {
-              $set: { apply_email, apply_phone, updated_at: importDate },
-              $setOnInsert: { ...rest, offer_status_history: [], _id: new ObjectId() },
-            },
-            {
-              upsert: true,
-            }
-          )
-          counters.success++
-        } catch (err) {
+  const transformStream = new Transform({
+    objectMode: true,
+    async transform(document, _encoding, callback) {
+      counters.total++
+      try {
+        const parsedDocument = zodInput.parse(document)
+        const { apply_email, apply_phone, updated_at, ...rest } = recruteursLbaToJobPartners(parsedDocument)
+        const { workplace_address_zipcode } = rest
+
+        if (!extensions.zipCode().safeParse(workplace_address_zipcode).success) {
           counters.error++
-          const newError = internal(`error converting raw job to partner_label job for id=${document._id} partner_label=${partnerLabel}`)
-          logger.error(newError.message, err)
-          newError.cause = err
-          sentryCaptureException(newError)
+          logger.warn(`received bad zip code for id=${document._id} partner_label=${partnerLabel}. zip code=${workplace_address_zipcode}`)
+          callback()
+          return
         }
-      },
-      { parallel: 10 }
-    )
-  )
+
+        const isEmailBl = apply_email ? await isEmailBlacklisted(apply_email) : false
+
+        await getDbCollection("computed_jobs_partners").updateOne(
+          { workplace_siret: rest.workplace_siret },
+          {
+            $set: {
+              apply_email: isEmailBl ? null : apply_email,
+              apply_phone,
+              updated_at: importDate,
+            },
+            $setOnInsert: {
+              ...rest,
+              offer_status_history: [],
+              _id: new ObjectId(),
+            },
+          },
+          { upsert: true }
+        )
+        counters.success++
+        callback()
+      } catch (err) {
+        counters.error++
+        const newError = internal(`error converting raw job to partner_label job for id=${document._id} partner_label=${partnerLabel}`)
+        logger.error(newError.message, err)
+        logger.error(JSON.stringify(err))
+        newError.cause = err
+        sentryCaptureException(newError)
+        callback()
+      }
+    },
+  })
+
+  await pipeline(getDbCollection(collectionSource).find({}).stream(), transformStream)
+
   const message = `import dans computed_jobs_partners pour partner_label=${partnerLabel} terminé. total=${counters.total}, success=${counters.success}, errors=${counters.error}`
   logger.info(message)
+
   await notifyToSlack({
     subject: `mapping Raw => computed_jobs_partners`,
     message,

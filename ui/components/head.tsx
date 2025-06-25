@@ -1,9 +1,11 @@
-import Head from "next/head"
 import React from "react"
 
-const HeadLaBonneAlternance = () => {
+import { publicConfig } from "@/config.public"
+
+export const HeadLaBonneAlternance = () => {
+  const { disableRobots } = publicConfig
   return (
-    <Head>
+    <>
       <title>La bonne alternance | Trouvez votre alternance</title>
       <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no" />
       <link rel="canonical" href="http://labonnealternance.apprentissage.beta.gouv.fr" />
@@ -15,7 +17,7 @@ const HeadLaBonneAlternance = () => {
       <meta name="msapplication-config" content="/favicon/browserconfig.xml" />
       <meta name="msapplication-TileColor" content="#ffffff" />
       <meta name="theme-color" content="#ffffff" />
-      <meta id="robots-meta" name="robots" content="index, follow" />
+      <meta id="robots-meta" name="robots" content={disableRobots ? "noindex, nofollow" : "index, follow"} />
       <meta name="keywords" content="contrat offres alternance emploi formation apprentissage" />
       <meta
         name="description"
@@ -30,8 +32,6 @@ const HeadLaBonneAlternance = () => {
         property="og:description"
         content="Vous ne trouvez pas de contrat ou d'offres d'alternance ? Essayez La bonne alternance ! Trouvez ici les formations en alternance et les entreprises qui recrutent régulièrement en alternance"
       />
-    </Head>
+    </>
   )
 }
-
-export default HeadLaBonneAlternance
