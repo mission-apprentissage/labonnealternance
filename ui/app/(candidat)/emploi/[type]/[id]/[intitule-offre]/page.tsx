@@ -12,7 +12,7 @@ export default async function JobOfferPage({ params, searchParams }: { params: P
 
   const typeToJobMap = {
     [LBA_ITEM_TYPE.RECRUTEURS_LBA]: "ILbaItemLbaCompanyJson",
-    //[LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA]: "ILbaItemLbaJobJson",
+    [LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA]: "ILbaItemPartnerJobJson",
     [LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES]: "ILbaItemPartnerJobJson",
   } as const
 

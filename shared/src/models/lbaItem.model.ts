@@ -499,7 +499,7 @@ export type ILbaItemLbaJobReturnedByAPI = Jsonify<z.output<typeof ZLbaItemLbaJob
 
 export const ZLbaItemPartnerJob = z
   .object({
-    ideaType: z.enum([LBA_ITEM_TYPE_OLD.PARTNER_JOB, LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES]),
+    ideaType: z.enum([LBA_ITEM_TYPE_OLD.PARTNER_JOB, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES]),
     title: z.string(), // partnerJob -> offer_title
     contact: ZLbaItemContact.nullish(),
     place: ZLbaItemPlace.nullable(),

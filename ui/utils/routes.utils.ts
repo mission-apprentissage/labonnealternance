@@ -460,7 +460,6 @@ export const PAGES = {
     jobDetail: (params: { type: Exclude<LBA_ITEM_TYPE, LBA_ITEM_TYPE.FORMATION>; jobId: string } & Partial<IRecherchePageParams>): IPage => {
       const jobTitle = params.job_name ?? "Offre"
       const search = buildRecherchePageParams(params, "default")
-
       return {
         getPath: () => `/emploi/${params.type}/${encodeURIComponent(params.jobId)}/${toKebabCase(jobTitle)}?${search}` as string,
         title: jobTitle,

@@ -267,7 +267,7 @@ export const getJobsQueryPrivate = async (
   | IApiError
   | {
       lbaJobs: TLbaItemResult<ILbaItemPartnerJob> | null
-      lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null
+      lbaCompanies: TLbaItemResult<ILbaItemPartnerJob> | null
       partnerJobs: TLbaItemResult<ILbaItemPartnerJob> | null
     }
 > => {
