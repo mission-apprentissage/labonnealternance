@@ -39,7 +39,7 @@ import { processKelio } from "./offrePartenaire/kelio/processKelio"
 import { processMonster } from "./offrePartenaire/monster/processMonster"
 import { processComputedAndImportToJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
-import { removeMissingRecruteursLbaFromRaw } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
+import { removeMissingRecruteursLbaFromComputedJobPartners } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
@@ -256,7 +256,7 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Met à jour la collection jobs_partners en mettant à 'Annulé' les offres qui ne sont plus dans computed_jobs_partners",
   },
   {
-    fct: removeMissingRecruteursLbaFromRaw,
+    fct: removeMissingRecruteursLbaFromComputedJobPartners,
     description: "Met à jour la collection computed_jobs_partners en supprimant les entreprises qui ne sont plus dans raw_recruteurslba",
   },
   {
