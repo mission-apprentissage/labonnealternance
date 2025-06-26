@@ -74,7 +74,11 @@ export const upsertEntrepriseData = async (
   }
   let savedEntreprise: IEntreprise
   if (existingEntreprise) {
-    const updatedEntreprise = await getDbCollection("entreprises").findOneAndUpdate({ siret }, { $set: entrepriseFields }, { returnDocument: "after" })
+    const updatedEntreprise = await getDbCollection("entreprises").findOneAndUpdate(
+      { siret },
+      { $set: { ...entrepriseFields, updatedAt: new Date() } },
+      { returnDocument: "after" }
+    )
     if (!updatedEntreprise) {
       throw internal("inattendu: aucune entreprise trouvée")
     }

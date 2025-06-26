@@ -12,6 +12,7 @@ import { processRecruteursLba } from "@/jobs/offrePartenaire/recruteur-lba/proce
 import { processRhAlternance } from "@/jobs/offrePartenaire/rh-alternance/processRhAlternance"
 import { processAtlas } from "@/jobs/offrePartenaire/veritone/atlas/processAtlas"
 import { processMeteojob } from "@/jobs/offrePartenaire/veritone/meteojob/processMeteojob"
+import { analyzeClosedCompanies } from "@/jobs/oneTimeJob/analyzeClosedCompanies"
 import { renvoiMailCreationCompte } from "@/jobs/oneTimeJob/renvoiMailCreationCompte"
 import { exportJobsToFranceTravail } from "@/jobs/partenaireExport/exportToFranceTravail"
 import { repriseEnvoiEmailsPRDV } from "@/jobs/rdv/repriseEnvoiPRDV"
@@ -39,7 +40,7 @@ import { processKelio } from "./offrePartenaire/kelio/processKelio"
 import { processMonster } from "./offrePartenaire/monster/processMonster"
 import { processComputedAndImportToJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
-import { removeMissingRecruteursLbaFromRaw } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
+import { removeMissingRecruteursLbaFromComputedJobPartners } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
@@ -260,7 +261,7 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Met à jour la collection jobs_partners en mettant à 'Annulé' les offres qui ne sont plus dans computed_jobs_partners",
   },
   {
-    fct: removeMissingRecruteursLbaFromRaw,
+    fct: removeMissingRecruteursLbaFromComputedJobPartners,
     description: "Met à jour la collection computed_jobs_partners en supprimant les entreprises qui ne sont plus dans raw_recruteurslba",
   },
   {
@@ -328,4 +329,5 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: renvoiMailCreationCompte,
     description: "Envoi les mails de validation de compte",
   },
+  { fct: analyzeClosedCompanies, description: "analyze les recruiters dont l'entreprise a fermé. Le script suppose que la collection cache_siret est remplie au mieux" },
 ]

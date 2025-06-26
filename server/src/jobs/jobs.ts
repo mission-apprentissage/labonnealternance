@@ -273,7 +273,7 @@ export async function setupJobProcessor() {
           },
           "Traitement des recruteur LBA par la pipeline jobs partners": {
             cron_string: "0 10 * * SUN",
-            handler: processRecruteursLba,
+            handler: () => processRecruteursLba(),
             tag: "main",
           },
         },
