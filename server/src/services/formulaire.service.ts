@@ -971,6 +971,7 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
   const now = new Date()
 
   const partnerJobToUpsert: Partial<IJobsPartnersOfferPrivate> = {
+    _id: job._id,
     updated_at: /*job.job_update_date ??*/ now, // QUESTION : l'updated at de l'offre ou celui qui a suscité une modification du job partner ?
     created_at: job.job_creation_date ?? now,
     partner_label: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
@@ -1019,11 +1020,7 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
     workplace_website: null,
   }
 
-  await getDbCollection("jobs_partners").findOneAndUpdate(
-    { partner_job_id: job._id.toString(), partner_label: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA },
-    { $set: partnerJobToUpsert, $setOnInsert: { _id: new ObjectId() } },
-    { upsert: true }
-  )
+  await getDbCollection("jobs_partners").findOneAndUpdate({ _id: job._id }, { $set: partnerJobToUpsert }, { upsert: true })
   // REFLECHIR A LA MIGRATION DE DEMARRAGE
   // REFLECHIR A LA REPRISE SUR INTERRUPTION
 }

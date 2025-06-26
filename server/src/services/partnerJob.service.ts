@@ -47,8 +47,7 @@ function transformPartnerJob(
   const latitude = partnerJob.workplace_geopoint.coordinates[1]
   const id = partnerJob._id.toString()
 
-  const recipient_id =
-    version === "V1" ? `partners_${id}` : partnerJob.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA ? `recruiters_${partnerJob.partner_job_id}` : `partners_${id}`
+  const recipient_id = version === "V1" ? `partners_${id}` : partnerJob.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA ? `recruiters_${id}` : `partners_${id}`
 
   const resultJob: ILbaItemPartnerJob = {
     id,
@@ -109,7 +108,7 @@ function transformPartnerJob(
   }
 
   if (applicationCountByJob) {
-    resultJob.applicationCount = applicationCountByJob.find(({ _id }) => _id === partnerJob.partner_job_id)?.count ?? 0
+    resultJob.applicationCount = applicationCountByJob.find(({ _id }) => _id === id)?.count ?? 0
   }
 
   return resultJob
@@ -123,10 +122,11 @@ function transformPartnerJob(
 function transformPartnerJobWithMinimalData(partnerJob: IJobsPartnersOfferPrivateWithDistance, applicationCountByJob: null | IApplicationCount[]): ILbaItemPartnerJob {
   const longitude = partnerJob.workplace_geopoint.coordinates[0]
   const latitude = partnerJob.workplace_geopoint.coordinates[1]
+  const id = partnerJob._id.toString()
 
   const resultJob: ILbaItemPartnerJob = {
     ideaType: partnerJob.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA : LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
-    id: partnerJob._id.toString(),
+    id,
     title: partnerJob.offer_title,
     place: {
       //lieu de l'offre. contient ville de l'entreprise et geoloc de l'entreprise
@@ -149,7 +149,7 @@ function transformPartnerJobWithMinimalData(partnerJob: IJobsPartnersOfferPrivat
   }
 
   if (applicationCountByJob) {
-    const applicationCount = applicationCountByJob.find(({ _id }) => _id === partnerJob.partner_job_id)
+    const applicationCount = applicationCountByJob.find(({ _id }) => _id === id)
     resultJob.applicationCount = applicationCount?.count ?? 0
   }
 
@@ -262,10 +262,8 @@ export const getPartnerJobById = async ({ id, caller }: { id: ObjectId; caller?:
   }
 }
 
-export const getPartnerJobByIdV2 = async (id: string, type?: JOBPARTNERS_LABEL): Promise<ILbaItemPartnerJob> => {
-  const rawPartnerJob = await getDbCollection("jobs_partners").findOne(
-    type === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA ? { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, partner_job_id: id } : { _id: new ObjectId(id) }
-  )
+export const getPartnerJobByIdV2 = async (id: string): Promise<ILbaItemPartnerJob> => {
+  const rawPartnerJob = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(id) })
 
   if (!rawPartnerJob) {
     throw badRequest("Job not found")
@@ -273,7 +271,7 @@ export const getPartnerJobByIdV2 = async (id: string, type?: JOBPARTNERS_LABEL):
 
   let applicationCountByJob: null | IApplicationCount[] = null
   if (rawPartnerJob.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA) {
-    applicationCountByJob = await getApplicationByJobCount([rawPartnerJob.partner_job_id])
+    applicationCountByJob = await getApplicationByJobCount([id])
   }
 
   const partnerJob = transformPartnerJob(rawPartnerJob, "V2", applicationCountByJob)

@@ -514,7 +514,7 @@ const offreOrCompanyToCompanyFields = (
       company_email: apply_email || "",
       job_title: offer_title ?? undefined,
       company_address: workplace_address_label,
-      job_id: job.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA ? job.partner_job_id : job._id.toString(),
+      job_id: job._id.toString(),
     }
     return application
   } else {
