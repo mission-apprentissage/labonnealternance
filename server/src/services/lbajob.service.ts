@@ -397,7 +397,7 @@ async function transformOffreAvecMandataireToJobResult({ recruiter, job }: { rec
   return jobResult
 }
 
-const getCity = (recruiter) => {
+export const getCity = (recruiter) => {
   let city = ""
   if (recruiter.establishment_location) {
     // cas mandataire
