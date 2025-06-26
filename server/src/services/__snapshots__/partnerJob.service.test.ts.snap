@@ -20,7 +20,7 @@ exports[`partnerJob.service > should execute query with full data 1`] = `
         "url": "https://apply.com",
       },
       "id": "675209e704377be3d437bbb9",
-      "ideaType": "partnerJob",
+      "ideaType": "offres_emploi_partenaires",
       "job": {
         "creationDate": 2021-01-01T00:00:00.000Z,
         "description": "Attention il te faut une super motivation pour ce job",
@@ -85,7 +85,7 @@ exports[`partnerJob.service > should execute query with minimalData 1`] = `
         "siret": null,
       },
       "id": "675209e704377be3d437bbb9",
-      "ideaType": "partnerJob",
+      "ideaType": "offres_emploi_partenaires",
       "job": {
         "creationDate": 2021-01-01T00:00:00.000Z,
       },
