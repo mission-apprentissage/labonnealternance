@@ -2480,6 +2480,12 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
       "PartnerJob": {
         "additionalProperties": false,
         "properties": {
+          "applicationCount": {
+            "type": [
+              "number",
+              "null",
+            ],
+          },
           "company": {
             "additionalProperties": false,
             "description": "Les informations de la société. Selon le contexte il peut s'agir du centre de formation ou de l'entreprise offrant une opportunité d'emploi.",
@@ -2666,6 +2672,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "ideaType": {
             "enum": [
               "partnerJob",
+              "offres_emploi_lba",
               "offres_emploi_partenaires",
             ],
             "type": "string",
