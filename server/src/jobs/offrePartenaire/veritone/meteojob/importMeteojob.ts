@@ -1,12 +1,11 @@
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import rawMeteojobModel from "shared/models/rawMeteojob.model"
 
-import config from "../../../config"
-import { importFromStreamInXml } from "../importFromStreamInXml"
-import { importFromUrlInXml } from "../importFromUrlInXml"
-import { rawToComputedJobsPartners } from "../rawToComputedJobsPartners"
-
-import { meteojobJobToJobsPartners, ZMeteojobJob } from "./meteojobMapper"
+import config from "@/config"
+import { importFromStreamInXml } from "@/jobs/offrePartenaire/importFromStreamInXml"
+import { importFromUrlInXml } from "@/jobs/offrePartenaire/importFromUrlInXml"
+import { rawToComputedJobsPartners } from "@/jobs/offrePartenaire/rawToComputedJobsPartners"
+import { veritoneJobToJobsPartners, ZVeritoneJob } from "@/jobs/offrePartenaire/veritone/veritoneMapper"
 
 const rawCollectionName = rawMeteojobModel.collectionName
 const offerXmlTag = "job"
@@ -23,8 +22,8 @@ export const importMeteojobToComputed = async () => {
   await rawToComputedJobsPartners({
     collectionSource: rawCollectionName,
     partnerLabel: JOBPARTNERS_LABEL.METEOJOB,
-    zodInput: ZMeteojobJob,
-    mapper: meteojobJobToJobsPartners,
+    zodInput: ZVeritoneJob,
+    mapper: (job) => veritoneJobToJobsPartners(job, JOBPARTNERS_LABEL.METEOJOB),
     documentJobRoot: offerXmlTag,
   })
 }

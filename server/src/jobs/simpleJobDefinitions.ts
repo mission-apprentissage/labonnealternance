@@ -6,11 +6,12 @@ import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
 import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
 import { processLaposte } from "@/jobs/offrePartenaire/laposte/processLaposte"
-import { processMeteojob } from "@/jobs/offrePartenaire/meteojob/processMeteojob"
 import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
 import { processFillRomeStandalone } from "@/jobs/offrePartenaire/processFillRomeStandalone"
 import { processRecruteursLba } from "@/jobs/offrePartenaire/recruteur-lba/processRecruteursLba"
 import { processRhAlternance } from "@/jobs/offrePartenaire/rh-alternance/processRhAlternance"
+import { processAtlas } from "@/jobs/offrePartenaire/veritone/atlas/processAtlas"
+import { processMeteojob } from "@/jobs/offrePartenaire/veritone/meteojob/processMeteojob"
 import { analyzeClosedCompanies } from "@/jobs/oneTimeJob/analyzeClosedCompanies"
 import { renvoiMailCreationCompte } from "@/jobs/oneTimeJob/renvoiMailCreationCompte"
 import { exportJobsToFranceTravail } from "@/jobs/partenaireExport/exportToFranceTravail"
@@ -217,6 +218,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processPass,
     description: "Importe les offres Pass dans la collection raw & computed",
+  },
+  {
+    fct: processAtlas,
+    description: "Importe les offres Atlas dans la collection raw & computed",
   },
   // ENRICHIT COMPUTED JOBS PARTNERS
   {

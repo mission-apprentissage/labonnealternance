@@ -1,0 +1,370 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`importAtlas > should test the import of Atlas data into computed_job_partners 1`] = `
+[
+  {
+    "apply_phone": null,
+    "apply_url": "https://annoncesatlas.opco-atlas.fr/jobads/74876?utm_source=labonnealternance&utm_medium=aggregator-free&utm_campaign=alternance",
+    "business_error": null,
+    "contract_duration": 1,
+    "contract_remote": null,
+    "contract_start": null,
+    "contract_type": [
+      "Apprentissage",
+      "Professionnalisation",
+    ],
+    "errors": [],
+    "jobs_in_success": [],
+    "offer_access_conditions": [
+      "débutant à 1 an",
+      "1-2 ans",
+      "3-5 ans",
+    ],
+    "offer_creation": 2025-06-02T07:01:02.283Z,
+    "offer_description": "We are looking for interns and apprentices to join us and power the development of our business.
+ 
+ 
+ 
+Missions:
+ 
+ - Support consulting missions in B2B
+ - Support market studies for our customers
+ - Join the team in charge of animating the leading European community on Product as a Service and Innovative Business Models: connect with members, develop influence with European Intitutions.
+ 
+
+Secteur: Cabinets de conseils
+
+
+  Poste: Strategy Consultant
+
+
+  Temps Plein
+
+
+  Avantages: 1 000 € - 1 800 € par mois
+
+
+  Profil: 
+Profile and competencies :
+ 
+ - Master 1 or 2 in International Business, Marketing, Strategy – ESG is a plus.
+ - Autonomy and entrepreneurial spirit
+ - Full professional proficiency in French and English, both written and spoken.
+ - Professional use of Microsoft tools (Word, Excel, Powerpoint, Teams…)
+ - A significant experience outside of France.
+ - Proven communication skills both in French and English.",
+    "offer_desired_skills": [],
+    "offer_expiration": 2025-08-02T07:01:02.283Z,
+    "offer_multicast": true,
+    "offer_opening_count": 1,
+    "offer_origin": null,
+    "offer_rome_codes": null,
+    "offer_status": "Active",
+    "offer_status_history": [],
+    "offer_target_diploma": null,
+    "offer_title": "Strategy and Sustainability Consultant",
+    "offer_to_be_acquired_skills": [],
+    "partner_job_id": "74876",
+    "partner_label": "annonces Atlas",
+    "updated_at": 2024-07-21T02:49:06.000Z,
+    "validated": false,
+    "workplace_address_city": "Clermont-Ferrand",
+    "workplace_address_label": "Clermont-Ferrand (63)",
+    "workplace_address_street_label": null,
+    "workplace_address_zipcode": "63000",
+    "workplace_brand": null,
+    "workplace_description": "
+JOHNSTON CIRCULAR is a consulting company which purpose is to accelerate the environmental shift of our economy through :
+ 
+ - supporting businesses in their exploration and adoption of innovative and sustainable business models: product as a service and other circular- and use-oriented models.
+ - generating influence and impact at the European level: animating “PACCT FOR SUSTAINABILITY” the leading international network of professionals dedicated to Product as a Service and innovative business models to drive the environmental transformation of businesses
+  
+Visit our websites:
+ 
+·       https://johnstoncircular.com
+ 
+·       www.pacct-sustainability.org
+ 
+ If you want to know more about us:
+ 
+·       Les Echos: https://www.lesechos.fr/thema/articles/economie-de-la-fonctionnalite-ce-sont-des-modeles-tres-vertueux-dun-point-de-vue-environnemental-2030918
+ 
+·       Video at Building Bridges : https://www.youtube.com/live/T83lnqn1mi0?feature=shared&amp;t=1063
+",
+    "workplace_geopoint": {
+      "coordinates": [
+        3.08694,
+        45.77972,
+      ],
+      "type": "Point",
+    },
+    "workplace_idcc": null,
+    "workplace_legal_name": null,
+    "workplace_naf_code": null,
+    "workplace_naf_label": null,
+    "workplace_name": "JOHNSTON CIRCULAR",
+    "workplace_opco": null,
+    "workplace_siret": null,
+    "workplace_size": null,
+    "workplace_website": null,
+  },
+  {
+    "apply_phone": null,
+    "apply_url": "https://annoncesatlas.opco-atlas.fr/jobads/76278?utm_source=labonnealternance&utm_medium=aggregator-free&utm_campaign=alternance",
+    "business_error": null,
+    "contract_duration": 1,
+    "contract_remote": null,
+    "contract_start": null,
+    "contract_type": [
+      "Apprentissage",
+      "Professionnalisation",
+    ],
+    "errors": [],
+    "jobs_in_success": [],
+    "offer_access_conditions": [],
+    "offer_creation": 2025-06-03T07:42:20.020Z,
+    "offer_description": "Votre rôle au sein de votre future équipe
+ 
+Intégré.e au service communication (une team de 4 personnes ultra motivées), vous serez épaulé.e par la Responsable Com’ pour :
+ 
+Faire rayonner LABÉO auprès de nos clients, partenaires, prospects et institutions. Votre mission ? Mettre en valeur nos expertises, nos actus (elles sont nombreuses !) et nos projets via différents canaux.
+ 
+Vos missions (et elles envoient) :
+Création de contenus print &amp; digitaux
+ 
+·         Rédaction et design de supports variés : articles, photos, vidéos, plaquettes, infographies, etc.
+ 
+·         Réflexion sur les formats, mise en page, retouches visuelles et autres idées créatives à nous partager !
+ 
+Organisation d’événements
+ 
+·         Pilotage d’événements internes de A à Z (on te fait confiance !)
+ 
+·         Participation active aux temps forts LABÉO, qu’ils soient pros ou festifs (on en organise une vingtaine par an !)
+ 
+Communication digitale
+ 
+·         Rédaction de contenus pour notre site web, LinkedIn et nos newsletters
+ 
+·         Création de visuels avec la suite Adobe ou Canva
+ 
+ 
+ 
+Modalités du contrat
+ 
+Type de contrat : Contrat d’apprentissage
+ 
+Temps de travail : Temps plein, 35h hebdomadaires
+ 
+Lieu de travail : LABÉO Frank Duncombe, Saint-Contest, Normandie
+ 
+ 
+ 
+Ce que nous avons à vous offrir
+En intégrant notre équipe, vous bénéficierez d’avantages qui facilitent votre quotidien et reconnaissent votre engagement :
+ 
+·         Comité Social et Économique (CSE) offrant divers avantages pour les salariés.
+ 
+·         Titres restaurant pour alléger vos frais de repas.
+ 
+·         Mutuelle santé pour vous et votre famille.
+ 
+·         Prise en charge des frais de transport en commun pour faciliter vos trajets domicile-travail.
+ 
+Nous mettons tout en œuvre pour créer un environnement de travail motivant et bienveillant, où votre bien-être est une priorité.
+
+Secteur: Communication, Publicité, Edition
+
+
+  Poste: Assistant de communication (H/F)
+
+
+  Temps Plein
+
+
+  Avantages: À partir de 780 € par mois
+
+
+  Profil: 
+Votre profil idéal
+ 
+·         Étudiant.e en com’ (bac+2 à bac+3)
+ 
+·         À l’aise avec la suite Adobe (Illustrator, InDesign, Photoshop), Canva, WordPress
+ 
+·         La maîtrise d’un logiciel de montage vidéo serait un plus
+ 
+·         Vous êtes curieux.se, créatif.ve, organisé.e, autonome et surtout… plein.e d’idées !
+ 
+·         Vous avez une vraie plume (orthographe irréprochable) et vous aimez les challenges ? Nous vous attendons !
+ 
+·         Détenteur du permis de conduire, vous pourrez vous rendre sur nos différents sites ou chez nos prestataires",
+    "offer_desired_skills": [],
+    "offer_expiration": 2025-08-03T07:42:20.020Z,
+    "offer_multicast": true,
+    "offer_opening_count": 1,
+    "offer_origin": null,
+    "offer_rome_codes": null,
+    "offer_status": "Active",
+    "offer_status_history": [],
+    "offer_target_diploma": null,
+    "offer_title": "ASSISTANT.E COMMUNICATION EN ALTERNANCE - SAINT-CONTEST (14)",
+    "offer_to_be_acquired_skills": [],
+    "partner_job_id": "76278",
+    "partner_label": "annonces Atlas",
+    "updated_at": 2024-07-21T02:49:06.000Z,
+    "validated": false,
+    "workplace_address_city": "Caen",
+    "workplace_address_label": "Caen (14)",
+    "workplace_address_street_label": null,
+    "workplace_address_zipcode": "14000",
+    "workplace_brand": null,
+    "workplace_description": "
+Rejoignez nos équipes et donner du sens à votre vie professionnelle en participant à la vie d’un laboratoire à l’impact direct sur les acteurs et l’économie locale. Venez apporter votre dynamisme à un laboratoire reconnu pour sa compétence globale pour l’environnement et la santé publique, sa qualité de service, sa proximité et sa polyvalence. 
+ 
+ 
+ 
+Entreprise 
+ 
+LABÉO, c’est un GIP (Groupement d’Intérêt Public) qui rassemble près de 400 pros passionné.es : vétérinaires, pharmaciens, biologistes, ingénieur.es, technicien.nes… Notre mission ? Contribuer à la santé animale, végétale et environnementale à travers analyses, expertise et recherche de haut niveau technologique. Un vrai labo multi-talents au service du vivant !
+ 
+ 
+ 
+Localisation : Saint Contest, un cadre agréable aux portes de Caen
+ 
+Le laboratoire Frank Duncombe est basé à Saint Contest, à proximité de Caen, ville dynamique et paisible offrant un cadre de vie alliant nature, patrimoine et proximité de la mer. Proche des transports et des loisirs, vous pourrez concilier facilement vie professionnelle et personnelle. Et pour agrémenter votre quotidien, une vue imprenable sur nos moutons, ajoutant une touche de tranquillité et de charme à votre environnement de travail !
+",
+    "workplace_geopoint": {
+      "coordinates": [
+        -0.37056,
+        49.18222,
+      ],
+      "type": "Point",
+    },
+    "workplace_idcc": null,
+    "workplace_legal_name": null,
+    "workplace_naf_code": null,
+    "workplace_naf_label": null,
+    "workplace_name": "LABEO",
+    "workplace_opco": null,
+    "workplace_siret": null,
+    "workplace_size": null,
+    "workplace_website": null,
+  },
+  {
+    "apply_phone": null,
+    "apply_url": "https://annoncesatlas.opco-atlas.fr/jobads/76279?utm_source=labonnealternance&utm_medium=aggregator-free&utm_campaign=alternance",
+    "business_error": null,
+    "contract_duration": 1,
+    "contract_remote": null,
+    "contract_start": null,
+    "contract_type": [
+      "Apprentissage",
+      "Professionnalisation",
+    ],
+    "errors": [],
+    "jobs_in_success": [],
+    "offer_access_conditions": [],
+    "offer_creation": 2025-06-03T13:35:40.612Z,
+    "offer_description": "Rattaché(e) à l’adjointe DRH, vos missions seront les suivantes : 
+   
+ -  
+Contrôle de gestion social : production des différents reportings RH, calcul de l’index égalité F/H et mise à jour de la BDESE, réalisation du BSI. 
+ 
+    
+ -  
+Recrutements : participer aux recrutements pour l’entreprise. 
+ 
+    
+ -  
+Développement RH : contribuer à divers travaux RH (inclusion, égalité Homme/Femme, RSE, réalisation de supports de webinar …) 
+ 
+  
+
+Secteur: Assurance, Mutualité
+
+
+  Poste: DRH (H/F)
+
+
+  Temps Plein
+
+
+  Avantages: 1 000 € - 2 100 € par mois
+
+
+  Profil:  
+ -  
+Etudiant(e) en Master 2 Ressources Humaines.  
+ 
+    
+ -  
+Bonne maîtrise du Pack Office Microsoft 365 et l’environnement OnveDrive / SharePoint. 
+ 
+    
+ -  
+Bonne communication écrite et orale, grande aisance avec les chiffres. Excellent relationnel et bon esprit d’équipe. Très bon sens de l’organisation. Autonomie, réactivité, rigueur et polyvalence.  
+ 
+    
+ -  
+Un ou des stages dans le domaine des Ressources Humaines (gestion administrative de la formation, administration du personnel, développement RH, etc) seraient un plus.",
+    "offer_desired_skills": [],
+    "offer_expiration": 2025-08-03T13:35:40.612Z,
+    "offer_multicast": true,
+    "offer_opening_count": 1,
+    "offer_origin": null,
+    "offer_rome_codes": null,
+    "offer_status": "Active",
+    "offer_status_history": [],
+    "offer_target_diploma": null,
+    "offer_title": "Alternant RH",
+    "offer_to_be_acquired_skills": [],
+    "partner_job_id": "76279",
+    "partner_label": "annonces Atlas",
+    "updated_at": 2024-07-21T02:49:06.000Z,
+    "validated": false,
+    "workplace_address_city": "Paris",
+    "workplace_address_label": "Paris 08 (75)",
+    "workplace_address_street_label": null,
+    "workplace_address_zipcode": "75000",
+    "workplace_brand": null,
+    "workplace_description": " 
+CCR propose aux assureurs opérant en France des couvertures pour les risques à caractère exceptionnel. 
+   
+Entreprise détenue à 100% par l’État, CCR assure, sur certaines activités, des missions essentielles pour les pouvoirs publics. Les réassurances publiques avec la garantie de l’Etat couvrent de façon pérenne : 
+   
+ -  
+Les risques de catastrophes naturelles dans le cadre du régime d’indemnisation, 
+ 
+    
+ -  
+Les risques d’attentats et d’actes de terrorisme, 
+ 
+    
+ -  
+La responsabilité Civile de l’exploitant nucléaire. 
+ 
+    
+CCR propose également des solutions de réassurance temporaires en cas de besoin, ex. réassurance crédit public au moment de la crise financière de 2008. CCR assure par ailleurs la gestion de certains fonds publics. 
+   
+40 ans après sa mise en place, l’efficacité du régime Cat Nat du point de vue assurantiel n’est plus à démontrer. La priorité désormais doit être au renforcement de la prévention des risques en amont de l’indemnisation des sinistres. Forte de l’expertise développée depuis de nombreuses années, CCR entend pleinement contribuer à cette nouvelle étape pour une plus grande solidarité des territoires et une meilleure protection des populations. 
+ ",
+    "workplace_geopoint": {
+      "coordinates": [
+        2.34864,
+        48.85339,
+      ],
+      "type": "Point",
+    },
+    "workplace_idcc": null,
+    "workplace_legal_name": null,
+    "workplace_naf_code": null,
+    "workplace_naf_label": null,
+    "workplace_name": "CAISSE CENTRALE DE REASSURANCE",
+    "workplace_opco": null,
+    "workplace_siret": null,
+    "workplace_size": null,
+    "workplace_website": null,
+  },
+]
+`;

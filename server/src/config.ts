@@ -144,6 +144,7 @@ const config = {
   kelioUrl: env.get("KELIO_FLUX_URL").required().asString(),
   laposteUrl: env.get("LAPOSTE_FLUX_URL").required().asString(),
   meteojobUrl: env.get("METEOJOB_FLUX_URL").required().asString(),
+  atlasUrl: env.get("ATLAS_FLUX_URL").required().asString(),
   passUrl: "https://www.pass.fonction-publique.gouv.fr/flux/offres",
   openai: {
     apiKey: env.get("OPENAI_API_KEY").required().asString(),

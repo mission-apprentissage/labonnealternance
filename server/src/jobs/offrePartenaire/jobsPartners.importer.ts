@@ -4,11 +4,12 @@ import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/proc
 import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
 import { processKelio } from "@/jobs/offrePartenaire/kelio/processKelio"
 import { processLaposte } from "@/jobs/offrePartenaire/laposte/processLaposte"
-import { processMeteojob } from "@/jobs/offrePartenaire/meteojob/processMeteojob"
 import { processMonster } from "@/jobs/offrePartenaire/monster/processMonster"
 import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
 import { processComputedAndImportToJobPartners } from "@/jobs/offrePartenaire/processJobPartners"
 import { processRhAlternance } from "@/jobs/offrePartenaire/rh-alternance/processRhAlternance"
+import { processAtlas } from "@/jobs/offrePartenaire/veritone/atlas/processAtlas"
+import { processMeteojob } from "@/jobs/offrePartenaire/veritone/meteojob/processMeteojob"
 
 const timings = {
   import_source: "0 0 * * *",
@@ -68,6 +69,12 @@ export const importers: Record<string, CronDef> = {
   "Import PASS": {
     cron_string: timings.import_source,
     handler: processPass,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 30,
+  },
+  "Import Atlas": {
+    cron_string: timings.import_source,
+    handler: processAtlas,
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },

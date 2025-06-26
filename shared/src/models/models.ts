@@ -32,6 +32,7 @@ import jobsModel from "./jobs.model.js"
 import jobsPartnersModel from "./jobsPartners.model.js"
 import jobsPartnersComputedModel from "./jobsPartnersComputed.model.js"
 import opcoModel from "./opco.model.js"
+import rawAtlasModel from "./rawAtlas.model.js"
 import rawFranceTravail from "./rawFranceTravail.model.js"
 import rawHelloWorkModel from "./rawHelloWork.model.js"
 import rawKelioModel from "./rawKelio.model.js"
@@ -110,6 +111,7 @@ const modelDescriptorMap = {
   [reportedCompanyModel.collectionName]: reportedCompanyModel,
   [cacheInfosSiretModel.collectionName]: cacheInfosSiretModel,
   [referentielCommuneModel.collectionName]: referentielCommuneModel,
+  [rawAtlasModel.collectionName]: rawAtlasModel,
   [rawKelioModel.collectionName]: rawKelioModel,
   [rawLaposteModel.collectionName]: rawLaposteModel,
   [rawMeteojobModel.collectionName]: rawMeteojobModel,

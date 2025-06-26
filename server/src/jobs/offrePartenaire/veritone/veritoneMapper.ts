@@ -11,7 +11,7 @@ import { formatHtmlForPartnerDescription } from "@/common/utils/stringUtils"
 import { isCompanyInBlockedCfaList } from "../blockJobsPartnersFromCfaList"
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
-const ZMeteojobJobLocation = z.object({
+const ZVeritonejobJobLocation = z.object({
   $: z.object({
     label: z.string(),
     lat: z.string().nullish(),
@@ -23,11 +23,11 @@ const ZMeteojobJobLocation = z.object({
   state: z.object({ _: z.string(), $: z.object({ code: z.string() }) }).nullish(),
   country: z.object({ _: z.string(), $: z.object({ code: z.string() }) }),
 })
-type IMeteojobJobLocation = z.output<typeof ZMeteojobJobLocation>
+type IVeritonejobJobLocation = z.output<typeof ZVeritonejobJobLocation>
 
 const CONTRAT_ALTERNANCE = "Alternance / Apprentissage"
 
-export const ZMeteojobJob = z
+export const ZVeritoneJob = z
   .object({
     $: z.object({ id: z.string(), reference: z.string(), lang: z.string().nullish() }),
     title: z.string(),
@@ -44,7 +44,7 @@ export const ZMeteojobJob = z
     }),
     workplace: z.object({
       locations: z.object({
-        location: z.union([ZMeteojobJobLocation, z.array(ZMeteojobJobLocation)]),
+        location: z.union([ZVeritonejobJobLocation, z.array(ZVeritonejobJobLocation)]),
       }),
     }),
     contract: z.object({
@@ -130,9 +130,9 @@ export const ZMeteojobJob = z
   })
   .passthrough()
 
-export type IMeteojobJob = z.output<typeof ZMeteojobJob>
+export type IVertioneJob = z.output<typeof ZVeritoneJob>
 
-export const meteojobJobToJobsPartners = (job: IMeteojobJob): IComputedJobsPartners => {
+export const veritoneJobToJobsPartners = (job: IVertioneJob, partner_label: JOBPARTNERS_LABEL): IComputedJobsPartners => {
   const { $, title, description, link, publicationDate, lastModificationDate, position, industry, company, contract, workSchedule, benefits, profile } = job
   const workplaceLocation = job.workplace.locations.location instanceof Array ? job.workplace.locations.location[0] : job.workplace.locations.location
   const workplace_geopoint = geolocToLatLon(workplaceLocation)
@@ -155,7 +155,7 @@ export const meteojobJobToJobsPartners = (job: IMeteojobJob): IComputedJobsPartn
     _id: new ObjectId(),
     created_at,
     updated_at: lastModificationDate ? new Date(lastModificationDate) : created_at,
-    partner_label: JOBPARTNERS_LABEL.METEOJOB,
+    partner_label: partner_label,
     partner_job_id: $.id,
 
     offer_title: title,
@@ -195,7 +195,7 @@ export const meteojobJobToJobsPartners = (job: IMeteojobJob): IComputedJobsPartn
   return partnerJob
 }
 
-const geolocToLatLon = (location: IMeteojobJobLocation): IComputedJobsPartners["workplace_geopoint"] => {
+const geolocToLatLon = (location: IVeritonejobJobLocation): IComputedJobsPartners["workplace_geopoint"] => {
   const { lat, lng } = location.$
   if (!lat || !lng) return null
   const latitude = parseFloat(lat)
