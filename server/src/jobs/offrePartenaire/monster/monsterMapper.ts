@@ -60,7 +60,7 @@ export const monsterJobToJobsPartners = (job: IMonsterJob): IComputedJobsPartner
   const created_at = new Date()
   const publicationDate = new Date(JobActiveDate)
 
-  const workplace_siret = siretParsing.success ? siretParsing.data : null
+  const siret = siretParsing.success ? siretParsing.data : null
 
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner(),
@@ -79,7 +79,7 @@ export const monsterJobToJobsPartners = (job: IMonsterJob): IComputedJobsPartner
       .toDate(),
 
     workplace_name: CompanyName === "myJob.company" ? UNKNOWN_COMPANY : CompanyName,
-    workplace_siret,
+    workplace_siret: siret === "81262237100043" ? null : siret,
     workplace_address_zipcode: JobPostalCode || null,
     workplace_address_city: JobCity,
     workplace_address_label: [JobCity, JobPostalCode].join(" ").trim(),
@@ -87,7 +87,7 @@ export const monsterJobToJobsPartners = (job: IMonsterJob): IComputedJobsPartner
     apply_url: urlParsing.success ? urlParsing.data : null,
     offer_multicast: true,
     contract_type: [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
-    business_error: isCompanyInBlockedCfaList(CompanyName) ? JOB_PARTNER_BUSINESS_ERROR.CFA : workplace_siret === "81262237100043" ? JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA : null,
+    business_error: isCompanyInBlockedCfaList(CompanyName) ? JOB_PARTNER_BUSINESS_ERROR.CFA : null,
   }
   return partnerJob
 }
