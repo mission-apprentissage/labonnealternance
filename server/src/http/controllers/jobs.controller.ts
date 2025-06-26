@@ -2,6 +2,7 @@ import { badRequest, internal, notFound } from "@hapi/boom"
 import { assertUnreachable, IJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob, JOB_STATUS, zRoutes } from "shared"
 import { OPCOS_LABEL } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
 import { getSourceFromCookies } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -392,7 +393,7 @@ export default (server: Server) => {
           result = await getRecruteurLbaFromDB(id)
           break
         case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
-          result = await getPartnerJobByIdV2(id)
+          result = await getPartnerJobByIdV2(id, JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA)
           break
         case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES:
           result = await getPartnerJobByIdV2(id)

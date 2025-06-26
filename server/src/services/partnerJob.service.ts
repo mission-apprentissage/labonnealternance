@@ -262,8 +262,10 @@ export const getPartnerJobById = async ({ id, caller }: { id: ObjectId; caller?:
   }
 }
 
-export const getPartnerJobByIdV2 = async (id: string): Promise<ILbaItemPartnerJob> => {
-  const rawPartnerJob = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(id) })
+export const getPartnerJobByIdV2 = async (id: string, type?: JOBPARTNERS_LABEL): Promise<ILbaItemPartnerJob> => {
+  const rawPartnerJob = await getDbCollection("jobs_partners").findOne(
+    type === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA ? { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, partner_job_id: id } : { _id: new ObjectId(id) }
+  )
 
   if (!rawPartnerJob) {
     throw badRequest("Job not found")
