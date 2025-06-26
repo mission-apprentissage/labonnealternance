@@ -78,7 +78,9 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: s
                 })}
               </Flex>
             ) : (
-              "Indifférent"
+              <Text as="span" ml={2} mb={1}>
+                Indifférent
+              </Text>
             )}
           </Flex>
 
