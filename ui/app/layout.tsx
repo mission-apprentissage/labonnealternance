@@ -10,6 +10,7 @@ import type { PropsWithChildren } from "react"
 import { setupZodErrorMap } from "shared/helpers/zodHelpers/setupZodErrorMap"
 
 import RootTemplate from "@/app/client_only_providers"
+import { HeadLaBonneAlternance } from "@/components/head"
 import { publicConfig } from "@/config.public"
 import { Matomo } from "@/tracking/trackingMatomo"
 
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html {...getHtmlAttributes({ defaultColorScheme, lang })}>
       <head>
+        <HeadLaBonneAlternance />
         <StartDsfr />
         <DsfrHead
           Link={Link}
