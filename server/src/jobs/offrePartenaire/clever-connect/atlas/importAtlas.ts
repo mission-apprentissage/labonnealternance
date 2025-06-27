@@ -2,10 +2,10 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import rawAtlasModel from "shared/models/rawAtlas.model"
 
 import config from "@/config"
+import { veritoneJobToJobsPartners, ZVeritoneJob } from "@/jobs/offrePartenaire/clever-connect/veritoneMapper"
 import { importFromStreamInXml } from "@/jobs/offrePartenaire/importFromStreamInXml"
 import { importFromUrlInXml } from "@/jobs/offrePartenaire/importFromUrlInXml"
 import { rawToComputedJobsPartners } from "@/jobs/offrePartenaire/rawToComputedJobsPartners"
-import { veritoneJobToJobsPartners, ZVeritoneJob } from "@/jobs/offrePartenaire/veritone/veritoneMapper"
 
 const rawCollectionName = rawAtlasModel.collectionName
 const offerXmlTag = "job"

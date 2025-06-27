@@ -1,5 +1,7 @@
 import { CronDef } from "job-processor"
 
+import { processAtlas } from "@/jobs/offrePartenaire/clever-connect/atlas/processAtlas"
+import { processMeteojob } from "@/jobs/offrePartenaire/clever-connect/meteojob/processMeteojob"
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
 import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
 import { processKelio } from "@/jobs/offrePartenaire/kelio/processKelio"
@@ -8,8 +10,6 @@ import { processMonster } from "@/jobs/offrePartenaire/monster/processMonster"
 import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
 import { processComputedAndImportToJobPartners } from "@/jobs/offrePartenaire/processJobPartners"
 import { processRhAlternance } from "@/jobs/offrePartenaire/rh-alternance/processRhAlternance"
-import { processAtlas } from "@/jobs/offrePartenaire/veritone/atlas/processAtlas"
-import { processMeteojob } from "@/jobs/offrePartenaire/veritone/meteojob/processMeteojob"
 
 const timings = {
   import_source: "0 0 * * *",

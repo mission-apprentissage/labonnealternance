@@ -3,7 +3,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { veritoneJobToJobsPartners } from "@/jobs/offrePartenaire/veritone/veritoneMapper"
+import { veritoneJobToJobsPartners } from "@/jobs/offrePartenaire/clever-connect/veritoneMapper"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")
 
