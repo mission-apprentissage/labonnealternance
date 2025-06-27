@@ -39,9 +39,12 @@ import rawKelioModel from "./rawKelio.model.js"
 import rawLaposteModel from "./rawLaposte.model.js"
 import rawMeteojobModel from "./rawMeteojob.model.js"
 import rawMonsterModel from "./rawMonster.model.js"
+import rawNosTalentsNosEmploisModel from "./rawNosTalentsNosEmplois.model.js"
 import rawPassModel from "./rawPass.model.js"
 import rawRecruteursLbaModel from "./rawRecruteursLba.model.js"
 import rawRHAlternanceModel from "./rawRHAlternance.model.js"
+import rawToulouseMetropoleModel from "./rawToulouseMetropole.model.js"
+import rawViteUnEmploiModel from "./rawViteUnEmploi.model.js"
 import recruiterModel from "./recruiter.model.js"
 import lbaCompanyLegacyModel from "./recruteurLbaLegacy.model.js"
 import recruteurLbaUpdateEventModel from "./recruteurLbaUpdateEvent.model.js"
@@ -96,6 +99,9 @@ const modelDescriptorMap = {
   [rawMonsterModel.collectionName]: rawMonsterModel,
   [rawPassModel.collectionName]: rawPassModel,
   [rawRecruteursLbaModel.collectionName]: rawRecruteursLbaModel,
+  [rawViteUnEmploiModel.collectionName]: rawViteUnEmploiModel,
+  [rawNosTalentsNosEmploisModel.collectionName]: rawNosTalentsNosEmploisModel,
+  [rawToulouseMetropoleModel.collectionName]: rawToulouseMetropoleModel,
   [recruiterModel.collectionName]: recruiterModel,
   [recruteurLbaUpdateEventModel.collectionName]: recruteurLbaUpdateEventModel,
   [referentielOnisepModel.collectionName]: referentielOnisepModel,

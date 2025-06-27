@@ -3,11 +3,11 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { veritoneJobToJobsPartners } from "@/jobs/offrePartenaire/veritone/veritoneMapper"
+import { cleverConnectJobToJobsPartners } from "@/jobs/offrePartenaire/clever-connect/cleverConnectMapper"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")
 
-describe("veritoneJobToJobsPartners", () => {
+describe("cleverConnectJobToJobsPartners", () => {
   beforeEach(() => {
     vi.useFakeTimers()
     vi.setSystemTime(now)
@@ -17,9 +17,9 @@ describe("veritoneJobToJobsPartners", () => {
     }
   })
 
-  it("should convert a meteojob job to a computed_partner job", () => {
+  it("should convert a clever connect job to a computed_partner job", () => {
     expect(
-      veritoneJobToJobsPartners(
+      cleverConnectJobToJobsPartners(
         {
           $: {
             id: "43954570",
@@ -193,9 +193,9 @@ describe("veritoneJobToJobsPartners", () => {
     })
   })
 
-  it("should convert a meteojob job to a computed_partner job", () => {
+  it("should convert a clever connect job to a computed_partner job", () => {
     expect(
-      veritoneJobToJobsPartners(
+      cleverConnectJobToJobsPartners(
         {
           $: {
             id: "43954570",

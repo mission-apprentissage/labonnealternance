@@ -1,6 +1,13 @@
 import { updateDiplomeMetier } from "@/jobs/diplomesMetiers/updateDiplomesMetiers"
 import { updateRomesForDomainesMetiers } from "@/jobs/domainesMetiers/updateRomesForDomainesMetiers"
 import { sendMiseEnRelation } from "@/jobs/miseEnRelation/sendMiseEnRelation"
+import {
+  processMeteojob,
+  processAtlas,
+  processViteUnEmploi,
+  processNosTalentsNosEmplois,
+  processToulouseMetropole,
+} from "@/jobs/offrePartenaire/clever-connect/processCleverConnect"
 import { importRecruteursLbaFromComputedToJobsPartners } from "@/jobs/offrePartenaire/fillComputedRecruteursLba"
 import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail/classifyJobsFranceTravail"
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
@@ -10,8 +17,6 @@ import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
 import { processFillRomeStandalone } from "@/jobs/offrePartenaire/processFillRomeStandalone"
 import { processRecruteursLba } from "@/jobs/offrePartenaire/recruteur-lba/processRecruteursLba"
 import { processRhAlternance } from "@/jobs/offrePartenaire/rh-alternance/processRhAlternance"
-import { processAtlas } from "@/jobs/offrePartenaire/veritone/atlas/processAtlas"
-import { processMeteojob } from "@/jobs/offrePartenaire/veritone/meteojob/processMeteojob"
 import { analyzeClosedCompanies } from "@/jobs/oneTimeJob/analyzeClosedCompanies"
 import { renvoiMailCreationCompte } from "@/jobs/oneTimeJob/renvoiMailCreationCompte"
 import { exportJobsToFranceTravail } from "@/jobs/partenaireExport/exportToFranceTravail"
@@ -222,6 +227,18 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processAtlas,
     description: "Importe les offres Atlas dans la collection raw & computed",
+  },
+  {
+    fct: processViteUnEmploi,
+    description: "Importe les offres Vite un Emploi  dans la collection raw & computed",
+  },
+  {
+    fct: processNosTalentsNosEmplois,
+    description: "Importe les offres Nos Talents Nos Emplois dans la collection raw & computed",
+  },
+  {
+    fct: processToulouseMetropole,
+    description: "Importe les offres Toulouse Métropole dans la collection raw & computed",
   },
   // ENRICHIT COMPUTED JOBS PARTNERS
   {
