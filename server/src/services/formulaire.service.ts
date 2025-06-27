@@ -916,9 +916,12 @@ export const startRecruiterChangeStream = async () => {
 
 const updateJobsPartnersFromRecruiterUpdate = async (change: ChangeStreamUpdateDocument<IRecruiter> | ChangeStreamInsertDocument<IRecruiter>) => {
   logger.info("Updating jobs partners from recruiter update", change, change.documentKey._id)
+  await updateJobsPartnersFromRecruiterById(change.documentKey._id)
+}
 
-  const recruiter = await getDbCollection("recruiters").findOne({ _id: change.documentKey._id })
-
+export const updateJobsPartnersFromRecruiterById = async (recruiterId: ObjectId) => {
+  logger.info("Updating jobs partners from recruiter by id", recruiterId)
+  const recruiter = await getDbCollection("recruiters").findOne({ _id: recruiterId })
   logger.info("recruiter found", recruiter)
 
   if (recruiter?.jobs?.length) {
