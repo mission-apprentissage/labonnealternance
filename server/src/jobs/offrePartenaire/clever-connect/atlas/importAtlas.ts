@@ -14,7 +14,7 @@ export const importAtlasRaw = async (sourceStream?: NodeJS.ReadableStream) => {
   if (sourceStream) {
     await importFromStreamInXml({ destinationCollection: rawCollectionName, offerXmlTag, stream: sourceStream, partnerLabel: JOBPARTNERS_LABEL.ATLAS })
   } else {
-    await importFromUrlInXml({ destinationCollection: rawCollectionName, url: config.atlasUrl, offerXmlTag, partnerLabel: JOBPARTNERS_LABEL.ATLAS })
+    await importFromUrlInXml({ destinationCollection: rawCollectionName, url: config.cleverConnect.atlasUrl, offerXmlTag, partnerLabel: JOBPARTNERS_LABEL.ATLAS })
   }
 }
 

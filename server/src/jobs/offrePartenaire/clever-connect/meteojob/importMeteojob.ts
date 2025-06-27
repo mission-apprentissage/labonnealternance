@@ -14,7 +14,7 @@ export const importMeteojobRaw = async (sourceStream?: NodeJS.ReadableStream) =>
   if (sourceStream) {
     await importFromStreamInXml({ destinationCollection: rawCollectionName, offerXmlTag, stream: sourceStream, partnerLabel: JOBPARTNERS_LABEL.METEOJOB })
   } else {
-    await importFromUrlInXml({ destinationCollection: rawCollectionName, url: config.meteojobUrl, offerXmlTag, partnerLabel: JOBPARTNERS_LABEL.METEOJOB })
+    await importFromUrlInXml({ destinationCollection: rawCollectionName, url: config.cleverConnect.meteojobUrl, offerXmlTag, partnerLabel: JOBPARTNERS_LABEL.METEOJOB })
   }
 }
 
