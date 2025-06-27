@@ -153,6 +153,7 @@ export type IJobSearchApiV3Response = z.output<typeof zJobSearchApiV3Response>
 export type IJobSearchApiV3Query = z.output<typeof zJobSearchApiV3Query>
 export type IJobSearchApiV3QueryResolved = Omit<IJobSearchApiV3Query, "latitude" | "longitude" | "radius" | "rncp"> & {
   geo: { latitude: number; longitude: number; radius: number } | null
+  force_partner_label?: JOBPARTNERS_LABEL
 }
 
 export const zJobOfferApiWriteV3 = z.object({

@@ -58,7 +58,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: s
             </Box>
           )}
           <Box my={2}>
-            <strong>Nature du contrat : </strong> {getContractTypes(job?.job?.contractType)}
+            <strong>Nature du contrat : </strong> {getContractTypes(job?.job?.type)}
           </Box>
           {job?.job?.quantiteContrat > 1 && (
             <Box my={2}>
@@ -78,7 +78,9 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: s
                 })}
               </Flex>
             ) : (
-              "Indifférent"
+              <Text as="span" ml={2} mb={1}>
+                Indifférent
+              </Text>
             )}
           </Flex>
 

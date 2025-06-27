@@ -11,29 +11,24 @@ const LbaJobTechniques = ({ job }) => {
   }
 
   return (
-    job?.job?.romeDetails?.competences?.savoirs?.length && (
+    job?.job?.offer_desired_skills?.length && (
       <AccordionItem borderBottom="1px solid #E5E5E5" onClick={onClick} key={"techniques"}>
         {({ isExpanded }) => (
           <>
             <AccordionButton fontSize="1rem" fontWeight={700} color="#161616">
               <Box as="span" flex="1" textAlign="left">
-                Domaines et techniques de travail
+                Qualités souhaitées pour ce métier
               </Box>
               {isExpanded ? <MinusIcon fontSize="10px" /> : <AddIcon fontSize="10px" />}
             </AccordionButton>
 
             <AccordionPanel pb={4}>
               <Box pl="12px">
-                {job.job.romeDetails.competences.savoirs.map((competence) => (
-                  <Box key={competence.code} mb={2}>
-                    <Text as="span" ml={3} fontWeight={700}>
-                      {competence.libelle}
-                    </Text>
-                    {competence.items.map((item, idx) => (
-                      <Box key={idx} pl={6}>
-                        <Text as="span">&bull; {item.libelle}</Text>
-                      </Box>
-                    ))}
+                {job.job.offer_desired_skills.map((competence, idx) => (
+                  <Box key={idx} mb={2}>
+                    <Box key={idx} pl={6}>
+                      <Text as="span">&bull; {competence}</Text>
+                    </Box>
                   </Box>
                 ))}
               </Box>

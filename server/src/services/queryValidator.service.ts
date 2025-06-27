@@ -199,7 +199,7 @@ export const validateCaller = ({ caller, referer }: { caller: string | null | un
  */
 export const jobsQueryValidatorPrivate = async (query: TJobSearchQuery): Promise<{ result: "passed"; romes: string | undefined } | { error: string; error_messages: string[] }> => {
   const error_messages = []
-  const { caller, referer, latitude, longitude, insee, radius, sources } = query
+  const { caller, referer, latitude, longitude, insee, radius } = query
 
   // présence d'identifiant de la source : caller
   validateCaller({ caller, referer }, error_messages)
@@ -220,9 +220,6 @@ export const jobsQueryValidatorPrivate = async (query: TJobSearchQuery): Promise
       validateInsee(insee, error_messages)
     }
   }
-
-  // source mal formée si présente
-  validateApiSources(sources, error_messages)
 
   if (error_messages.length) return { error: "wrong_parameters", error_messages }
 

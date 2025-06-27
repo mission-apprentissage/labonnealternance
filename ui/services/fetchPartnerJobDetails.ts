@@ -1,15 +1,15 @@
-import { ILbaItemPartnerJobJson, ILbaItemPartnerJobReturnedByAPI } from "shared"
+import { ILbaItemPartnerJobJson } from "shared"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { apiGet } from "@/utils/api.utils"
 
 const fetchPartnerJobDetails = async (job): Promise<ILbaItemPartnerJobJson> => {
-  const response: ILbaItemPartnerJobReturnedByAPI = await apiGet("/v1/jobs/partnerJob/:id", { params: { id: job.id }, querystring: {} })
+  const partnerJob: ILbaItemPartnerJobJson = (await apiGet("/_private/jobs/:source/:id", {
+    params: { id: job.id, source: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES },
+  })) as ILbaItemPartnerJobJson
 
-  // @ts-expect-error
-  const [firstJob]: [ILbaItemPartnerJobJson] = response.partnerJobs ?? []
-  if (firstJob) {
-    firstJob.detailsLoaded = true
-    return firstJob
+  if (partnerJob) {
+    return partnerJob
   } else {
     throw new Error("unexpected_error")
   }

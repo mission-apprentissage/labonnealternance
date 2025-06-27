@@ -4,6 +4,7 @@ import { AccordionButton, AccordionItem, AccordionPanel, Box, Text } from "@chak
 import { scrollToNestedElement } from "@/utils/tools"
 
 const LbaJobCompetences = ({ job }) => {
+  console.log("LbaJobCompetences job", job)
   const onClick = (e) => {
     setTimeout(() => {
       scrollToNestedElement({ containerId: "itemDetailColumn", nestedElement: e.target, yOffsett: 220 })
@@ -11,7 +12,7 @@ const LbaJobCompetences = ({ job }) => {
   }
 
   return (
-    job?.job?.romeDetails?.competences?.savoir_faire?.length && (
+    job?.job?.offer_to_be_acquired_skills?.length && (
       <AccordionItem borderBottom="1px solid #E5E5E5" onClick={onClick} key={"competences"}>
         {({ isExpanded }) => (
           <>
@@ -24,16 +25,11 @@ const LbaJobCompetences = ({ job }) => {
 
             <AccordionPanel pb={4}>
               <Box pl="12px">
-                {job.job.romeDetails.competences.savoir_faire.map((competence) => (
-                  <Box key={competence.code} mb={2}>
-                    <Text as="span" ml={3} fontWeight={700}>
-                      {competence.libelle}
+                {job.job.offer_to_be_acquired_skills.map((competence, idx) => (
+                  <Box key={idx} mb={2}>
+                    <Text as="span" ml={3}>
+                      &bull; {competence}
                     </Text>
-                    {competence.items.map((item, idx) => (
-                      <Box key={idx} pl={6}>
-                        <Text as="span">&bull; {item.libelle}</Text>
-                      </Box>
-                    ))}
                   </Box>
                 ))}
               </Box>
