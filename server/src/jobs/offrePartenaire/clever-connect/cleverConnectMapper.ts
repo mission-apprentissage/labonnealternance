@@ -11,7 +11,7 @@ import { formatHtmlForPartnerDescription } from "@/common/utils/stringUtils"
 import { isCompanyInBlockedCfaList } from "../blockJobsPartnersFromCfaList"
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
-const ZVeritonejobJobLocation = z.object({
+const ZCleverConnectjobJobLocation = z.object({
   $: z.object({
     label: z.string(),
     lat: z.string().nullish(),
@@ -23,11 +23,11 @@ const ZVeritonejobJobLocation = z.object({
   state: z.object({ _: z.string(), $: z.object({ code: z.string() }) }).nullish(),
   country: z.object({ _: z.string(), $: z.object({ code: z.string() }) }),
 })
-type IVeritonejobJobLocation = z.output<typeof ZVeritonejobJobLocation>
+type ICleverConnectjobJobLocation = z.output<typeof ZCleverConnectjobJobLocation>
 
 const CONTRAT_ALTERNANCE = "Alternance / Apprentissage"
 
-export const ZVeritoneJob = z
+export const ZCleverConnectJob = z
   .object({
     $: z.object({ id: z.string(), reference: z.string(), lang: z.string().nullish() }),
     title: z.string(),
@@ -44,7 +44,7 @@ export const ZVeritoneJob = z
     }),
     workplace: z.object({
       locations: z.object({
-        location: z.union([ZVeritonejobJobLocation, z.array(ZVeritonejobJobLocation)]),
+        location: z.union([ZCleverConnectjobJobLocation, z.array(ZCleverConnectjobJobLocation)]),
       }),
     }),
     contract: z.object({
@@ -130,9 +130,9 @@ export const ZVeritoneJob = z
   })
   .passthrough()
 
-export type IVertioneJob = z.output<typeof ZVeritoneJob>
+export type ICleverConnectJob = z.output<typeof ZCleverConnectJob>
 
-export const veritoneJobToJobsPartners = (job: IVertioneJob, partner_label: JOBPARTNERS_LABEL): IComputedJobsPartners => {
+export const cleverConnectJobToJobsPartners = (job: ICleverConnectJob, partner_label: JOBPARTNERS_LABEL): IComputedJobsPartners => {
   const { $, title, description, link, publicationDate, lastModificationDate, position, industry, company, contract, workSchedule, benefits, profile } = job
   const workplaceLocation = job.workplace.locations.location instanceof Array ? job.workplace.locations.location[0] : job.workplace.locations.location
   const workplace_geopoint = geolocToLatLon(workplaceLocation)
@@ -195,7 +195,7 @@ export const veritoneJobToJobsPartners = (job: IVertioneJob, partner_label: JOBP
   return partnerJob
 }
 
-const geolocToLatLon = (location: IVeritonejobJobLocation): IComputedJobsPartners["workplace_geopoint"] => {
+const geolocToLatLon = (location: ICleverConnectjobJobLocation): IComputedJobsPartners["workplace_geopoint"] => {
   const { lat, lng } = location.$
   if (!lat || !lng) return null
   const latitude = parseFloat(lat)

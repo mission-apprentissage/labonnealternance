@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`importMeteojob > should test the import of Meteojob data into computed_job_partners 1`] = `
+exports[`importCleverConnect > should test the import of clever connect data into computed_job_partners 1`] = `
 [
   {
     "apply_phone": null,
