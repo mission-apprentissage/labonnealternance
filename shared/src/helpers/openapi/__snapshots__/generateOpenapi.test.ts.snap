@@ -7702,7 +7702,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                                 ],
                               },
                               "recipient_id": {
-                                "description": "Identifiant permettant de candidaté via l'API, généré à la volé pour les offres LBA uniquement",
+                                "description": "Identifiant permettant de candidater via l'API ou le widget /postuler, généré à la volée pour les opportunités dont on dispose de l'adresse email. Si null il n'est pas possible d'utiliser le widget /postuler ou d'utiliser la route api pour postuler",
                                 "type": [
                                   "string",
                                   "null",
@@ -8121,7 +8121,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                                 ],
                               },
                               "recipient_id": {
-                                "description": "Identifiant permettant de candidaté via l'API, généré à la volé pour les offres LBA uniquement",
+                                "description": "Identifiant permettant de candidater via l'API ou le widget /postuler, généré à la volée pour les opportunités dont on dispose de l'adresse email. Si null il n'est pas possible d'utiliser le widget /postuler ou d'utiliser la route api pour postuler",
                                 "type": [
                                   "string",
                                   "null",
@@ -8404,7 +8404,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                           ],
                         },
                         "recipient_id": {
-                          "description": "Identifiant permettant de candidaté via l'API, généré à la volé pour les offres LBA uniquement",
+                          "description": "Identifiant permettant de candidater via l'API ou le widget /postuler, généré à la volée pour les opportunités dont on dispose de l'adresse email. Si null il n'est pas possible d'utiliser le widget /postuler ou d'utiliser la route api pour postuler",
                           "type": [
                             "string",
                             "null",
