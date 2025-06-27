@@ -399,10 +399,7 @@ async function transformOffreAvecMandataireToJobResult({ recruiter, job }: { rec
 
 export const getCity = (recruiter) => {
   let city = ""
-  if (recruiter.establishment_location) {
-    // cas mandataire
-    city = recruiter.establishment_location
-  } else if (recruiter.address_detail && "localite" in recruiter.address_detail) {
+  if (recruiter.address_detail && "localite" in recruiter.address_detail) {
     city = recruiter.address_detail.localite
   } else if (recruiter.address_detail && "libelle_commune" in recruiter.address_detail) {
     city = recruiter.address_detail.libelle_commune
@@ -618,7 +615,7 @@ export const incrementLbaJobsViewCount = async (jobIds: string[]) => {
   }
 }
 
-const getLbaJobContactInfo = async (recruiter: IJobResult["recruiter"]): Promise<Partial<IJobResult["recruiter"]>> => {
+export const getLbaJobContactInfo = async (recruiter: IJobResult["recruiter"]): Promise<Partial<IJobResult["recruiter"]>> => {
   if (recruiter.is_delegated && recruiter.cfa_delegated_siret) {
     const { managed_by } = recruiter
     if (!managed_by) {

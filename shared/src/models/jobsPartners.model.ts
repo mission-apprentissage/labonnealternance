@@ -77,6 +77,8 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   contract_duration: z.number().int().min(0).nullable().describe("Durée du contrat en mois"),
   contract_type: z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)).describe("type de contrat, formaté à l'insertion"),
   contract_remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).nullable().describe("Format de travail de l'offre"),
+  contract_rythm: z.string().nullish().describe("Rythme de l'alternance, formaté à l'insertion, exemple : 2 semaines entreprise / 1 semaine école"),
+  contract_is_disabled_elligible: z.boolean().nullish().default(null).describe("Indique si l'offre est éligible aux personnes en situation de handicap"),
 
   offer_title: z.string().min(3).describe("Titre de l'offre"),
   offer_rome_codes: z.array(extensions.romeCode()).describe("Code rome de l'offre"),
@@ -88,13 +90,15 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
     })
     .nullable(),
   offer_desired_skills: z.array(z.string()).describe("Compétence attendues par le candidat pour l'offre"),
-  offer_to_be_acquired_skills: z.array(z.string()).describe("Compétence acuqises durant l'alternance"),
+  offer_to_be_acquired_skills: z.array(z.string()).describe("Compétence acquises durant l'alternance"),
+  offer_to_be_acquired_knowledge: z.array(z.string()).nullish().describe("Connaissances acquises durant l'alternance"),
   offer_access_conditions: z.array(z.string()).describe("Conditions d'accès à l'offre"),
   offer_creation: z.date().nullable().describe("Date de creation de l'offre").openapi({ format: "date-time" }),
   offer_expiration: z.date().nullable().describe("Date d'expiration de l'offre. Si pas présente, mettre à creation_date + 60j").openapi({ format: "date-time" }),
   offer_opening_count: z.number().describe("Nombre de poste disponible"),
   offer_status: extensions.buildEnum(JOB_STATUS_ENGLISH).describe("Status de l'offre (surtout utilisé pour les offres ajouté par API)"),
   offer_status_history: z.array(ZJobsPartnersOfferHistoryEvent).describe("Historique de l'offre"),
+
   stats_detail_view: z.number().default(0).describe("Nombre de vues de la page de détail"),
   stats_search_view: z.number().default(0).describe("Nombre de vues sur une page de recherche"),
   stats_postuler: z.number().default(0).describe("Nombre de clicks sur le bouton postuler"),
@@ -126,6 +130,7 @@ export const ZJobsPartnersOfferPrivate = ZJobsPartnersOfferApi.omit({
     rank: z.number().nullish().describe("Valeur indiquant la qualité de l'offre. Plus la valeur est élevée, plus la qualité de l'offre est importante"),
     duplicates: z.array(ZComputedJobPartnersDuplicateRef).nullish().describe("Référence les autres offres en duplicata avec celle-ci"),
     applicationCount: z.number().nullish().describe("Nombre de candidatures pour cette offre"),
+    is_delegated: z.boolean().nullish().describe("Indique si l'offre est déléguée à un mandataire"),
   })
 
 export const ZJobsPartnersOfferPrivateWithDistance = ZJobsPartnersOfferPrivate.extend({

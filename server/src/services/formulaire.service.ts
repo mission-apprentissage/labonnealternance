@@ -41,7 +41,7 @@ import { createViewDelegationLink } from "./appLinks.service"
 import { getCatalogueFormations } from "./catalogue.service"
 import dayjs from "./dayjs.service"
 import { sendEmailConfirmationEntreprise } from "./etablissement.service"
-import { getCity, replaceRecruiterFieldsWithCfaFields } from "./lbajob.service"
+import { getCity, getLbaJobContactInfo, replaceRecruiterFieldsWithCfaFields } from "./lbajob.service"
 import mailer from "./mailer.service"
 import { getComputedUserAccess, getGrantedRoles } from "./roleManagement.service"
 import { getRomeDetailsFromDB } from "./rome.service"
@@ -922,7 +922,7 @@ const updateJobsPartnersFromRecruiterUpdate = async (change: ChangeStreamUpdateD
 export const updateJobsPartnersFromRecruiterById = async (recruiterId: ObjectId) => {
   logger.info("Updating jobs partners from recruiter by id", recruiterId)
   const recruiter = await getDbCollection("recruiters").findOne({ _id: recruiterId })
-  logger.info("recruiter found", recruiter)
+  logger.info("recruiter found", recruiter?.address)
 
   if (recruiter?.jobs?.length) {
     await asyncForEach(recruiter.jobs, async (job) => {
@@ -975,42 +975,52 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
 
   const romeDetails = await getRomeDetailsFromDB(job.rome_code[0])
 
+  const lbaJobContactInfo = recruiter.is_delegated ? await getLbaJobContactInfo(recruiter) : null
   const { definition, acces_metier } = romeDetails ?? {}
 
   const partnerJobToUpsert: Partial<IJobsPartnersOfferPrivate> = {
     _id: job._id,
-    updated_at: /*job.job_update_date ??*/ now, // QUESTION : l'updated at de l'offre ou celui qui a suscité une modification du job partner ?
+    updated_at: job.job_update_date ?? now,
     created_at: job.job_creation_date ?? now,
     partner_label: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
     partner_job_id: job._id.toString(),
+    is_delegated: recruiter.is_delegated,
+
     contract_start: job.job_start_date ?? null,
     contract_duration: job.job_duration ?? null,
-    workplace_legal_name: recruiter.establishment_enseigne || recruiter.establishment_raison_sociale || UNKNOWN_COMPANY,
-    workplace_brand: recruiter.establishment_enseigne,
-    workplace_siret: recruiter.establishment_siret,
+    contract_type: job.job_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
+    contract_is_disabled_elligible: job.is_disabled_elligible ?? null,
+    contract_rythm: job.job_rythm ?? null,
+
+    workplace_legal_name:
+      (lbaJobContactInfo?.establishment_raison_sociale || lbaJobContactInfo?.establishment_enseigne) ??
+      (recruiter.establishment_raison_sociale || recruiter.establishment_enseigne || UNKNOWN_COMPANY),
+    workplace_brand: lbaJobContactInfo?.establishment_enseigne ?? recruiter.establishment_enseigne,
+    workplace_siret: lbaJobContactInfo?.establishment_siret ?? recruiter.establishment_siret,
     workplace_geopoint: recruiter.geopoint ?? undefined,
-    workplace_address_label: (recruiter.is_delegated ? null : recruiter.address) ?? undefined,
+    workplace_address_label: (recruiter.is_delegated ? lbaJobContactInfo?.address : recruiter.address) ?? "",
     workplace_address_zipcode: recruiter.address_detail?.code_postal ?? null,
     workplace_address_city: getCity(recruiter) ?? null,
-    apply_phone: recruiter.phone ?? null,
-    apply_email: recruiter.email,
-    offer_origin: recruiter.origin ?? null,
+
+    apply_phone: (lbaJobContactInfo ? lbaJobContactInfo?.phone : recruiter.phone) ?? null,
+    apply_email: recruiter.is_delegated ? lbaJobContactInfo?.email : recruiter.email,
+
     workplace_opco: recruiter.opco ?? null,
     workplace_idcc: recruiter.idcc ?? null,
     workplace_naf_code: recruiter.naf_code ?? null,
     workplace_naf_label: recruiter.naf_label ?? null,
     workplace_size: recruiter.establishment_size ?? null,
+    offer_origin: recruiter.origin ?? null,
     offer_target_diploma: getDiplomaLevel(job.job_level_label),
     offer_desired_skills: job.competences_rome?.savoir_etre_professionnel?.map((savoirEtre) => savoirEtre.libelle) ?? [],
     offer_to_be_acquired_skills: job.competences_rome?.savoir_faire?.map((savoirFaire) => savoirFaire.libelle) ?? [],
     offer_access_conditions: acces_metier ? [acces_metier] : [],
-    offer_title: job.offer_title_custom ?? job.rome_appellation_label ?? undefined,
+    offer_title: job.offer_title_custom ?? job.rome_appellation_label ?? job.rome_label ?? "Offre",
     offer_rome_codes: job.rome_code ?? null,
     offer_description: job.job_description ?? definition ?? "",
     offer_creation: job.job_creation_date,
     offer_expiration: job.job_expiration_date,
     offer_status: getOfferStatus(job.job_status, recruiter.status),
-    contract_type: job.job_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
     offer_opening_count: job.job_count ?? 1,
 
     contract_remote: null,
@@ -1019,16 +1029,20 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
     workplace_description: null,
     workplace_name: null,
     workplace_website: null,
-
-    //job_status_comment: job.job_status_comment ?? null,
-    //job_delegation_count: job.job_delegation_count ?? 0,offer_to_be_acquired_skills
-    //delegations: job.delegations ?? null,
-    //is_disabled_elligible: job.is_disabled_elligible ?? false,
-    //job_rythm: job.job_rythm,
   }
 
-  await getDbCollection("jobs_partners").findOneAndUpdate({ _id: job._id }, { $set: partnerJobToUpsert }, { upsert: true })
-  // REFLECHIR A LA MIGRATION DE DEMARRAGE
+  await getDbCollection("jobs_partners").findOneAndUpdate(
+    { _id: job._id },
+    {
+      $set: partnerJobToUpsert,
+      $setOnInsert: {
+        stats_detail_view: 0,
+        stats_search_view: 0,
+        stats_postuler: 0,
+      },
+    },
+    { upsert: true }
+  )
   // REFLECHIR A LA REPRISE SUR INTERRUPTION
 }
 
