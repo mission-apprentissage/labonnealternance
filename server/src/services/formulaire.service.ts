@@ -882,8 +882,11 @@ export const startRecruiterChangeStream = async () => {
 
   const recruiters = getDbCollection("recruiters")
 
-  const changeRecruiterStream = recruiters.watch()
-
+  const changeRecruiterStream =
+    recruiters.watch(/*{
+    resumeAfter: null, // Start from the beginning of the stream
+  }*/)
+  //changeRecruiterStream.resumeToken
   changeRecruiterStream.on("change", async (change) => {
     logger.info("Change detected:", change)
 
@@ -970,6 +973,11 @@ function getOfferStatus(job_status: JOB_STATUS, recruiter_status: RECRUITER_STAT
   }
 }
 
+function getSkillsFromRome(skills) {
+  if (!skills) return []
+  return skills.flatMap((skill) => skill.items.map((subSkill) => `${skill.libelle}\t${subSkill.libelle}`))
+}
+
 const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) => {
   const now = new Date()
 
@@ -1013,7 +1021,8 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
     offer_origin: recruiter.origin ?? null,
     offer_target_diploma: getDiplomaLevel(job.job_level_label),
     offer_desired_skills: job.competences_rome?.savoir_etre_professionnel?.map((savoirEtre) => savoirEtre.libelle) ?? [],
-    offer_to_be_acquired_skills: job.competences_rome?.savoir_faire?.map((savoirFaire) => savoirFaire.libelle) ?? [],
+    offer_to_be_acquired_skills: getSkillsFromRome(job.competences_rome?.savoir_faire),
+    offer_to_be_acquired_knowledge: getSkillsFromRome(job.competences_rome?.savoirs),
     offer_access_conditions: acces_metier ? [acces_metier] : [],
     offer_title: job.offer_title_custom ?? job.rome_appellation_label ?? job.rome_label ?? "Offre",
     offer_rome_codes: job.rome_code ?? null,

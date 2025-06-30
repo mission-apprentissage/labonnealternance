@@ -4,12 +4,13 @@ import { AccordionButton, AccordionItem, AccordionPanel, Box, Text } from "@chak
 import { scrollToNestedElement } from "@/utils/tools"
 
 const LbaJobCompetences = ({ job }) => {
-  console.log("LbaJobCompetences job", job)
   const onClick = (e) => {
     setTimeout(() => {
       scrollToNestedElement({ containerId: "itemDetailColumn", nestedElement: e.target, yOffsett: 220 })
     }, 200)
   }
+
+  let currentSkillGroup = null
 
   return (
     job?.job?.offer_to_be_acquired_skills?.length && (
@@ -25,13 +26,27 @@ const LbaJobCompetences = ({ job }) => {
 
             <AccordionPanel pb={4}>
               <Box pl="12px">
-                {job.job.offer_to_be_acquired_skills.map((competence, idx) => (
-                  <Box key={idx} mb={2}>
-                    <Text as="span" ml={3}>
-                      &bull; {competence}
-                    </Text>
-                  </Box>
-                ))}
+                {job.job.offer_to_be_acquired_skills.map((competence, idx) => {
+                  const [group, skill] = competence.split("\t")
+                  let title = <></>
+
+                  if (group !== currentSkillGroup) {
+                    currentSkillGroup = group
+                    title = (
+                      <Text as="span" ml={3} fontWeight={700}>
+                        {group}
+                      </Text>
+                    )
+                  }
+                  return (
+                    <Box key={idx} mb={2}>
+                      {title}
+                      <Box pl={6}>
+                        <Text as="span">&bull; {skill}</Text>
+                      </Box>
+                    </Box>
+                  )
+                })}
               </Box>
             </AccordionPanel>
           </>

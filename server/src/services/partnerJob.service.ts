@@ -93,6 +93,7 @@ function transformPartnerJob(
       status: partnerJob.offer_status && traductionJobStatus(partnerJob.offer_status),
       offer_desired_skills: partnerJob.offer_desired_skills,
       offer_to_be_acquired_skills: partnerJob.offer_to_be_acquired_skills,
+      offer_to_be_acquired_knowledge: partnerJob.offer_to_be_acquired_knowledge,
       offer_access_conditions: partnerJob.offer_access_conditions,
     },
 
