@@ -1,3 +1,4 @@
+import { isArray } from "lodash-es"
 import { ObjectId } from "mongodb"
 import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "shared/constants/index"
 import dayjs from "shared/helpers/dayjs"
@@ -183,6 +184,7 @@ export const cleverConnectJobToJobsPartners = (job: ICleverConnectJob, partner_l
         : profile?.experienceLevels?.experienceLevel?._
           ? [profile.experienceLevels.experienceLevel._]
           : [],
+    offer_target_diploma: getOfferTargetDiploma(job),
 
     workplace_name: company.name,
     workplace_description: company.description && company.description.length >= 30 ? formatHtmlForPartnerDescription(company.description) : null,
@@ -217,7 +219,6 @@ const getContractDuration = (job: ICleverConnectJob): IComputedJobsPartners["con
       return parseInt(cleverConnectContractDuration)
     case "week":
       return Math.round((parseInt(cleverConnectContractDuration) * 7) / (365 / 12))
-
     default:
       break
   }
@@ -229,13 +230,10 @@ const getRemoteStatus = (job: ICleverConnectJob): IComputedJobsPartners["contrac
   switch (cleverConnectRemoteStatus) {
     case "full":
       return TRAINING_REMOTE_TYPE.remote
-
     case "occasional":
       return TRAINING_REMOTE_TYPE.hybrid
-
     case "none":
       return TRAINING_REMOTE_TYPE.onsite
-
     default:
       break
   }
@@ -250,4 +248,46 @@ const geolocToLatLon = (location: ICleverConnectjobJobLocation): IComputedJobsPa
     type: "Point",
     coordinates: [longitude, latitude],
   }
+}
+
+const CleverConnectDegreeMap: Record<string, IComputedJobsPartners["offer_target_diploma"]> = {
+  bepc: { european: "3", label: "Cap, autres formations niveau (Infrabac)" },
+  bep: { european: "3", label: "Cap, autres formations niveau (Infrabac)" },
+  cap: { european: "3", label: "Cap, autres formations niveau (Infrabac)" },
+  cqp: { european: "3", label: "Cap, autres formations niveau (Infrabac)" },
+  bp: { european: "4", label: "BP, Bac, autres formations niveau (Bac)" },
+  bac_pro: { european: "4", label: "BP, Bac, autres formations niveau (Bac)" },
+  bac: { european: "4", label: "BP, Bac, autres formations niveau (Bac)" },
+  "bac+1": { european: "4", label: "BP, Bac, autres formations niveau (Bac)" },
+  "bac+2": { european: "5", label: "BTS, DEUST, autres formations niveau (Bac+2)" },
+  deug: { european: "5", label: "BTS, DEUST, autres formations niveau (Bac+2)" },
+  bts: { european: "5", label: "BTS, DEUST, autres formations niveau (Bac+2)" },
+  dma: { european: "5", label: "BTS, DEUST, autres formations niveau (Bac+2)" },
+  "bac+3": { european: "6", label: "Licence, Maîtrise, autres formations niveau (Bac+3 à Bac+4)" },
+  license: { european: "6", label: "Licence, Maîtrise, autres formations niveau (Bac+3 à Bac+4)" },
+  "bac+4": { european: "6", label: "Licence, Maîtrise, autres formations niveau (Bac+3 à Bac+4)" },
+  maitrise: { european: "6", label: "Licence, Maîtrise, autres formations niveau (Bac+3 à Bac+4)" },
+  "bac+5": { european: "7", label: "Master, titre ingénieur, autres formations niveau (Bac+5)" },
+  dea: { european: "7", label: "Master, titre ingénieur, autres formations niveau (Bac+5)" },
+  master: { european: "7", label: "Master, titre ingénieur, autres formations niveau (Bac+5)" },
+  business: { european: "7", label: "Master, titre ingénieur, autres formations niveau (Bac+5)" },
+  engineering: { european: "7", label: "Master, titre ingénieur, autres formations niveau (Bac+5)" },
+  mastere: { european: "7", label: "Master, titre ingénieur, autres formations niveau (Bac+5)" },
+  phd: { european: "7", label: "Master, titre ingénieur, autres formations niveau (Bac+5)" },
+  "bac+7": { european: "7", label: "Master, titre ingénieur, autres formations niveau (Bac+5)" },
+  gcse_o_level: { european: "3", label: "Cap, autres formations niveau (Infrabac)" },
+  a_level: { european: "4", label: "BP, Bac, autres formations niveau (Bac)" },
+  t_level: { european: "4", label: "BP, Bac, autres formations niveau (Bac)" },
+  btec_l3: { european: "4", label: "BP, Bac, autres formations niveau (Bac)" },
+  btec: { european: "5", label: "BTS, DEUST, autres formations niveau (Bac+2)" },
+  dhe: { european: "5", label: "BTS, DEUST, autres formations niveau (Bac+2)" },
+  foundation: { european: "5", label: "BTS, DEUST, autres formations niveau (Bac+2)" },
+  pgce: { european: "6", label: "Licence, Maîtrise, autres formations niveau (Bac+3 à Bac+4)" },
+  cert_he: { european: "5", label: "BTS, DEUST, autres formations niveau (Bac+2)" },
+}
+
+const getOfferTargetDiploma = (job: ICleverConnectJob): IComputedJobsPartners["offer_target_diploma"] => {
+  if (!job.profile?.degrees) return null
+  const cleverConnectDegreeCode = isArray(job.profile.degrees.degree) ? job.profile.degrees.degree[0].$.code : job.profile.degrees.degree.$.code
+  return CleverConnectDegreeMap[cleverConnectDegreeCode]
 }
