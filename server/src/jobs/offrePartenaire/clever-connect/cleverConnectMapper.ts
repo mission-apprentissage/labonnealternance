@@ -141,23 +141,15 @@ export const ZCleverConnectJob = z
 export type ICleverConnectJob = z.output<typeof ZCleverConnectJob>
 
 export const cleverConnectJobToJobsPartners = (job: ICleverConnectJob, partner_label: JOBPARTNERS_LABEL): IComputedJobsPartners => {
-  const { $, title, description, link, publicationDate, lastModificationDate, position, industry, company, contract, workSchedule, benefits, profile } = job
+  const { $, title, link, publicationDate, lastModificationDate, company } = job
   const startDate = job.contract.startDate && job.contract.startDate.endsWith("Z") ? new Date(job.contract.startDate.slice(0, -1)) : null
-  const workplaceLocation = job.workplace.locations.location instanceof Array ? job.workplace.locations.location[0] : job.workplace.locations.location
+  const workplaceLocation = isArray(job.workplace.locations.location) ? job.workplace.locations.location[0] : job.workplace.locations.location
   const workplace_geopoint = geolocToLatLon(workplaceLocation)
 
   const urlParsing = extensions.url().safeParse(link)
   const creationDate = new Date(publicationDate)
 
   const created_at = new Date()
-
-  let descriptionComputed = `${description}\r\n\r\n${industry ? `Secteur: ${industry}\r\n\r\n` : ""}
-  ${position ? `Poste: ${position}\r\n\r\n` : ""}
-  ${workSchedule ? `${workSchedule.types.type._}\r\n\r\n` : ""}
-  ${benefits ? `Avantages: ${benefits?.salary?._ ? benefits.salary._ : ""}\r\n\r\n` : ""}${benefits?.description ? `${benefits.description}\r\n\r\n` : ""}
-  ${profile?.description ? `Profil: ${profile.description}` : ""}`
-
-  descriptionComputed = formatHtmlForPartnerDescription(descriptionComputed).trim()
 
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner(),
@@ -168,8 +160,7 @@ export const cleverConnectJobToJobsPartners = (job: ICleverConnectJob, partner_l
     partner_job_id: $.id,
 
     offer_title: title,
-    offer_description: descriptionComputed,
-    offer_rome_codes: undefined,
+    offer_description: getOfferDescription(job),
     offer_creation: creationDate,
     offer_expiration: dayjs
       .tz(creationDate || created_at)
@@ -178,12 +169,7 @@ export const cleverConnectJobToJobsPartners = (job: ICleverConnectJob, partner_l
     offer_multicast: true,
     offer_to_be_acquired_skills: [],
     offer_desired_skills: [],
-    offer_access_conditions:
-      profile?.experienceLevels?.experienceLevel instanceof Array
-        ? profile?.experienceLevels?.experienceLevel?.map((l) => l._)
-        : profile?.experienceLevels?.experienceLevel?._
-          ? [profile.experienceLevels.experienceLevel._]
-          : [],
+    offer_access_conditions: getAccessConditions(job),
     offer_target_diploma: getOfferTargetDiploma(job),
 
     workplace_name: company.name,
@@ -193,11 +179,7 @@ export const cleverConnectJobToJobsPartners = (job: ICleverConnectJob, partner_l
     workplace_address_label: workplaceLocation.$?.label || null,
     workplace_geopoint,
 
-    contract_type:
-      (!(contract.types.type instanceof Array) && contract.types.type?._ === CONTRAT_ALTERNANCE) ||
-      (contract.types.type instanceof Array && contract.types.type.find((type) => type._ === CONTRAT_ALTERNANCE))
-        ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION]
-        : undefined,
+    contract_type: getContratType(job),
     contract_duration: getContractDuration(job),
     contract_remote: getRemoteStatus(job),
     contract_start: startDate,
@@ -206,6 +188,18 @@ export const cleverConnectJobToJobsPartners = (job: ICleverConnectJob, partner_l
     business_error: isCompanyInBlockedCfaList(company.name) ? JOB_PARTNER_BUSINESS_ERROR.CFA : null,
   }
   return partnerJob
+}
+
+const getAccessConditions = (job: ICleverConnectJob): IComputedJobsPartners["offer_access_conditions"] => {
+  if (!job.profile?.experienceLevels) return null
+  return isArray(job.profile.experienceLevels.experienceLevel) ? job.profile.experienceLevels.experienceLevel.map((l) => l._) : [job.profile.experienceLevels.experienceLevel._]
+}
+
+const getContratType = (job: ICleverConnectJob): IComputedJobsPartners["contract_type"] => {
+  const cleverConnectContratType = isArray(job.contract.types.type) ? job.contract.types.type : [job.contract.types.type]
+  const contratType = cleverConnectContratType.some((type) => type._ === CONTRAT_ALTERNANCE)
+  if (contratType) return [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION]
+  return undefined
 }
 
 const getContractDuration = (job: ICleverConnectJob): IComputedJobsPartners["contract_duration"] => {
@@ -291,4 +285,31 @@ const getOfferTargetDiploma = (job: ICleverConnectJob): IComputedJobsPartners["o
   const cleverConnectDegreeCode = isArray(job.profile.degrees.degree) ? job.profile.degrees.degree[0].$.code : job.profile.degrees.degree.$.code
   if (cleverConnectDegreeCode === "none") return null
   return CleverConnectDegreeMap[cleverConnectDegreeCode]
+}
+
+const getOfferDescription = (job: ICleverConnectJob): IComputedJobsPartners["offer_description"] => {
+  const { description, industry, position, workSchedule, benefits, profile } = job
+
+  let descriptionComputed = `${description}\r\n\r\n`
+
+  if (industry) {
+    descriptionComputed += `Secteur: ${industry}\r\n\r\n`
+  }
+  if (position) {
+    descriptionComputed += `Poste: ${position}\r\n\r\n`
+  }
+  if (workSchedule?.types?.type?._) {
+    descriptionComputed += `${workSchedule.types.type._}\r\n\r\n`
+  }
+  if (benefits?.salary?._) {
+    descriptionComputed += `Avantages: ${benefits.salary._}\r\n\r\n`
+  }
+  if (benefits?.description) {
+    descriptionComputed += `${benefits.description}\r\n\r\n`
+  }
+  if (profile?.description) {
+    descriptionComputed += `Profil: ${profile.description}`
+  }
+
+  return formatHtmlForPartnerDescription(descriptionComputed.trim())
 }
