@@ -1,4 +1,5 @@
 const cfaCompanyList = [
+  "Afpa pays de Savoie",
   "AFTEC Caen",
   "iscod alternance",
   "AFTEC Rennes",
