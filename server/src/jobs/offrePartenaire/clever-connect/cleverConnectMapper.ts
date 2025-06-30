@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
+import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "shared/constants/index"
 import dayjs from "shared/helpers/dayjs"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
@@ -46,6 +46,12 @@ export const ZCleverConnectJob = z
       locations: z.object({
         location: z.union([ZCleverConnectjobJobLocation, z.array(ZCleverConnectjobJobLocation)]),
       }),
+      remote: z
+        .object({
+          _: z.string(),
+          $: z.object({ code: z.string() }),
+        })
+        .nullish(),
     }),
     contract: z.object({
       types: z.object({
@@ -68,6 +74,7 @@ export const ZCleverConnectJob = z
           $: z.object({ value: z.string(), unit: z.string() }),
         })
         .nullish(),
+      startDate: z.string().nullish(),
     }),
     workSchedule: z
       .object({
@@ -134,6 +141,7 @@ export type ICleverConnectJob = z.output<typeof ZCleverConnectJob>
 
 export const cleverConnectJobToJobsPartners = (job: ICleverConnectJob, partner_label: JOBPARTNERS_LABEL): IComputedJobsPartners => {
   const { $, title, description, link, publicationDate, lastModificationDate, position, industry, company, contract, workSchedule, benefits, profile } = job
+  const startDate = job.contract.startDate && job.contract.startDate.endsWith("Z") ? new Date(job.contract.startDate.slice(0, -1)) : null
   const workplaceLocation = job.workplace.locations.location instanceof Array ? job.workplace.locations.location[0] : job.workplace.locations.location
   const workplace_geopoint = geolocToLatLon(workplaceLocation)
 
@@ -162,24 +170,12 @@ export const cleverConnectJobToJobsPartners = (job: ICleverConnectJob, partner_l
     offer_description: descriptionComputed,
     offer_rome_codes: undefined,
     offer_creation: creationDate,
-
     offer_expiration: dayjs
       .tz(creationDate || created_at)
       .add(2, "months")
       .toDate(),
-
-    workplace_name: company.name,
-    workplace_description: company.description && company.description.length >= 30 ? formatHtmlForPartnerDescription(company.description) : null,
-    workplace_address_zipcode: workplaceLocation?.postalCode || null,
-    workplace_address_city: workplaceLocation.city || null,
-    workplace_address_label: workplaceLocation.$?.label || null,
-    workplace_geopoint,
-    contract_type:
-      (!(contract.types.type instanceof Array) && contract.types.type?._ === CONTRAT_ALTERNANCE) ||
-      (contract.types.type instanceof Array && contract.types.type.find((type) => type._ === CONTRAT_ALTERNANCE))
-        ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION]
-        : undefined,
-    contract_duration: contract?.length?.$?.value ? parseInt(contract.length.$.value) : null,
+    offer_multicast: true,
+    offer_to_be_acquired_skills: [],
     offer_desired_skills: [],
     offer_access_conditions:
       profile?.experienceLevels?.experienceLevel instanceof Array
@@ -187,12 +183,62 @@ export const cleverConnectJobToJobsPartners = (job: ICleverConnectJob, partner_l
         : profile?.experienceLevels?.experienceLevel?._
           ? [profile.experienceLevels.experienceLevel._]
           : [],
-    offer_multicast: true,
-    offer_to_be_acquired_skills: [],
+
+    workplace_name: company.name,
+    workplace_description: company.description && company.description.length >= 30 ? formatHtmlForPartnerDescription(company.description) : null,
+    workplace_address_zipcode: workplaceLocation?.postalCode || null,
+    workplace_address_city: workplaceLocation.city || null,
+    workplace_address_label: workplaceLocation.$?.label || null,
+    workplace_geopoint,
+
+    contract_type:
+      (!(contract.types.type instanceof Array) && contract.types.type?._ === CONTRAT_ALTERNANCE) ||
+      (contract.types.type instanceof Array && contract.types.type.find((type) => type._ === CONTRAT_ALTERNANCE))
+        ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION]
+        : undefined,
+    contract_duration: getContractDuration(job),
+    contract_remote: getRemoteStatus(job),
+    contract_start: startDate,
+
     apply_url: urlParsing.success ? urlParsing.data : null,
     business_error: isCompanyInBlockedCfaList(company.name) ? JOB_PARTNER_BUSINESS_ERROR.CFA : null,
   }
   return partnerJob
+}
+
+const getContractDuration = (job: ICleverConnectJob): IComputedJobsPartners["contract_duration"] => {
+  const cleverConnectContractDuration = job.contract?.length?.$.value
+  const cleverConnectContractDurationUnit = job.contract?.length?.$.unit
+  if (!cleverConnectContractDuration || !cleverConnectContractDurationUnit) return null
+  switch (cleverConnectContractDurationUnit) {
+    case "year":
+      return parseInt(cleverConnectContractDuration) * 12
+    case "month":
+      return parseInt(cleverConnectContractDuration)
+    case "week":
+      return Math.round((parseInt(cleverConnectContractDuration) * 7) / (365 / 12))
+
+    default:
+      break
+  }
+}
+
+const getRemoteStatus = (job: ICleverConnectJob): IComputedJobsPartners["contract_remote"] => {
+  const cleverConnectRemoteStatus = job.workplace.remote?.$.code
+  if (!cleverConnectRemoteStatus) return null
+  switch (cleverConnectRemoteStatus) {
+    case "full":
+      return TRAINING_REMOTE_TYPE.remote
+
+    case "occasional":
+      return TRAINING_REMOTE_TYPE.hybrid
+
+    case "none":
+      return TRAINING_REMOTE_TYPE.onsite
+
+    default:
+      break
+  }
 }
 
 const geolocToLatLon = (location: ICleverConnectjobJobLocation): IComputedJobsPartners["workplace_geopoint"] => {
