@@ -10,181 +10,204 @@ import { logger } from "../../common/logger"
 import { getEmailForRdv } from "../../services/eligibleTrainingsForAppointment.service"
 import { findFirstNonBlacklistedEmail } from "../../services/formation.service"
 
-const hasDateProperty = (etablissements, propertyName) => {
-  return etablissements.some((etab) => etab[propertyName] !== null && etab[propertyName] !== undefined)
-}
+const anyHasFieldWithValue = (etabs: any[], field: string) => etabs.some((e) => e[field] != null)
 
-export const syncEtablissementsAndFormations = async () => {
-  logger.info("Cron #syncEtablissementsAndFormations started.")
+const processFormation = async (formation: any, bulkTrainings: any[], bulkEtablissements: any[]) => {
+  const eligible = formation.eligible
+  const etablissements = formation.etablissements
+  const existInReferentielOnisep = formation.onisep
 
-  const readable = getDbCollection("formationcatalogues").find({}).stream()
+  const hasPremiumAffelnetActivation = anyHasFieldWithValue(etablissements, "premium_affelnet_activation_date")
+  const hasOptOutRefusal = anyHasFieldWithValue(etablissements, "optout_refusal_date")
+  const hasOptOutActivation = anyHasFieldWithValue(etablissements, "optout_activation_date")
+  const hasPremiumRefusal = anyHasFieldWithValue(etablissements, "premium_refusal_date")
+  const hasPremiumActivation = anyHasFieldWithValue(etablissements, "premium_activation_date")
+  const hasPremiumAffelnetRefusal = anyHasFieldWithValue(etablissements, "premium_affelnet_refusal_date")
 
-  const writable = new Writable({
-    objectMode: true,
-    async write(formation, _encoding, callback) {
-      try {
-        const [eligibleTrainingsForAppointment, etablissements, existInReferentielOnisep] = await Promise.all([
-          getDbCollection("eligible_trainings_for_appointments").findOne(
-            { cle_ministere_educatif: formation.cle_ministere_educatif },
-            { projection: { lieu_formation_email: 1, is_lieu_formation_email_customized: 1 } }
-          ),
-          getDbCollection("etablissements")
-            .find(
-              { gestionnaire_siret: formation.etablissement_gestionnaire_siret },
-              {
-                projection: {
-                  premium_affelnet_activation_date: 1,
-                  optout_refusal_date: 1,
-                  optout_activation_date: 1,
-                  premium_refusal_date: 1,
-                  premium_activation_date: 1,
-                  premium_affelnet_refusal_date: 1,
-                  gestionnaire_email: 1,
-                },
-              }
-            )
-            .toArray(),
-          getDbCollection("referentieloniseps").findOne({ cle_ministere_educatif: formation.cle_ministere_educatif }),
-        ])
+  const emailArray = etablissements.map((e) => ({ email: e.gestionnaire_email }))
+  let gestionnaireEmail = await findFirstNonBlacklistedEmail(emailArray)
 
-        const hasPremiumAffelnetActivation = hasDateProperty(etablissements, "premium_affelnet_activation_date")
-        const hasOptOutRefusal = hasDateProperty(etablissements, "optout_refusal_date")
-        const hasOptOutActivation = hasDateProperty(etablissements, "optout_activation_date")
-        const hasPremiumRefusal = hasDateProperty(etablissements, "premium_refusal_date")
-        const hasPremiumActivation = hasDateProperty(etablissements, "premium_activation_date")
-        const hasPremiumAffelnetRefusal = hasDateProperty(etablissements, "premium_affelnet_refusal_date")
+  const referrersToActivate: string[] = []
+  if (hasOptOutActivation && !hasOptOutRefusal) {
+    referrersToActivate.push(referrers.LBA.name, referrers.JEUNE_1_SOLUTION.name)
+    if (existInReferentielOnisep) referrersToActivate.push(referrers.ONISEP.name)
+  }
+  if (hasPremiumActivation && !hasPremiumRefusal && formation.parcoursup_visible) {
+    referrersToActivate.push(referrers.PARCOURSUP.name)
+  }
+  if (hasPremiumAffelnetActivation && !hasPremiumAffelnetRefusal && formation.affelnet_visible) {
+    referrersToActivate.push(referrers.AFFELNET.name)
+  }
 
-        const emailArray = etablissements.map((etab) => ({ email: etab.gestionnaire_email }))
-        let gestionnaireEmail = await findFirstNonBlacklistedEmail(emailArray)
+  const now = new Date()
 
-        const referrersToActivate: string[] = []
-        if (hasOptOutActivation && !hasOptOutRefusal) {
-          referrersToActivate.push(referrers.LBA.name, referrers.JEUNE_1_SOLUTION.name)
-          if (existInReferentielOnisep) referrersToActivate.push(referrers.ONISEP.name)
-        }
+  if (eligible) {
+    let emailRdv = eligible.lieu_formation_email
+    if (!eligible?.is_lieu_formation_email_customized) {
+      emailRdv = await getEmailForRdv({
+        email: formation.email,
+        etablissement_gestionnaire_courriel: formation.etablissement_gestionnaire_courriel,
+        etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret,
+      })
+    }
 
-        if (hasPremiumActivation && !hasPremiumRefusal && formation.parcoursup_visible) {
-          referrersToActivate.push(referrers.PARCOURSUP.name)
-        }
-        if (hasPremiumAffelnetActivation && !hasPremiumAffelnetRefusal && formation.affelnet_visible) {
-          referrersToActivate.push(referrers.AFFELNET.name)
-        }
-
-        if (eligibleTrainingsForAppointment) {
-          let emailRdv = eligibleTrainingsForAppointment.lieu_formation_email
-          if (!eligibleTrainingsForAppointment?.is_lieu_formation_email_customized) {
-            emailRdv = await getEmailForRdv({
-              email: formation.email,
-              etablissement_gestionnaire_courriel: formation.etablissement_gestionnaire_courriel,
-              etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret,
-            })
-          }
-
-          await getDbCollection("eligible_trainings_for_appointments").updateOne(
-            { _id: eligibleTrainingsForAppointment._id },
-            {
-              $set: {
-                training_id_catalogue: formation._id.toString(),
-                lieu_formation_email: emailRdv,
-                parcoursup_id: formation.parcoursup_id,
-                parcoursup_visible: formation.parcoursup_visible,
-                affelnet_visible: formation.affelnet_visible,
-                training_code_formation_diplome: formation.cfd,
-                etablissement_formateur_zip_code: formation.etablissement_formateur_code_postal,
-                training_intitule_long: formation.intitule_long,
-                referrers: referrersToActivate,
-                is_catalogue_published: formation.published,
-                last_catalogue_sync_date: new Date(),
-                lieu_formation_street: formation.lieu_formation_adresse,
-                lieu_formation_city: formation.localite,
-                lieu_formation_zip_code: formation.code_postal,
-                etablissement_formateur_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
-                etablissement_formateur_street: formation.etablissement_formateur_adresse,
-                departement_etablissement_formateur: formation.etablissement_formateur_nom_departement,
-                etablissement_formateur_city: formation.etablissement_formateur_localite,
-              },
-            }
-          )
-        } else {
-          const emailRdv = await getEmailForRdv({
-            email: formation.email,
-            etablissement_gestionnaire_courriel: formation.etablissement_gestionnaire_courriel,
-            etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret,
-          })
-
-          const now = new Date()
-
-          await getDbCollection("eligible_trainings_for_appointments").insertOne({
-            _id: new ObjectId(),
-            created_at: now,
-            last_catalogue_sync_date: now,
-            rco_formation_id: formation.id_rco_formation,
+    bulkTrainings.push({
+      updateOne: {
+        filter: { _id: eligible._id },
+        update: {
+          $set: {
             training_id_catalogue: formation._id.toString(),
-            lieu_formation_email: emailRdv ?? null,
+            lieu_formation_email: emailRdv,
             parcoursup_id: formation.parcoursup_id,
             parcoursup_visible: formation.parcoursup_visible,
             affelnet_visible: formation.affelnet_visible,
-            cle_ministere_educatif: formation.cle_ministere_educatif,
             training_code_formation_diplome: formation.cfd,
+            etablissement_formateur_zip_code: formation.etablissement_formateur_code_postal,
             training_intitule_long: formation.intitule_long,
             referrers: referrersToActivate,
             is_catalogue_published: formation.published,
+            last_catalogue_sync_date: now,
             lieu_formation_street: formation.lieu_formation_adresse,
             lieu_formation_city: formation.localite,
             lieu_formation_zip_code: formation.code_postal,
             etablissement_formateur_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
             etablissement_formateur_street: formation.etablissement_formateur_adresse,
-            etablissement_formateur_zip_code: formation.etablissement_formateur_code_postal,
             departement_etablissement_formateur: formation.etablissement_formateur_nom_departement,
             etablissement_formateur_city: formation.etablissement_formateur_localite,
-            etablissement_formateur_siret: formation.etablissement_formateur_siret,
-            etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret,
-          })
-        }
-
-        if (!gestionnaireEmail) {
-          gestionnaireEmail = await getEmailForRdv(
-            {
-              etablissement_gestionnaire_courriel: formation.etablissement_gestionnaire_courriel,
-              etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret,
-            },
-            "etablissement_gestionnaire_courriel"
-          )
-        }
-
-        await getDbCollection("etablissements").updateMany(
-          {
-            $and: [
-              {
-                formateur_siret: formation.etablissement_formateur_siret,
-                gestionnaire_siret: formation.etablissement_gestionnaire_siret,
-              },
-            ],
           },
-          {
-            $set: {
-              gestionnaire_siret: formation.etablissement_gestionnaire_siret,
-              gestionnaire_email: gestionnaireEmail,
-              raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
-              formateur_siret: formation.etablissement_formateur_siret,
-              formateur_address: formation.etablissement_formateur_adresse,
-              formateur_zip_code: formation.etablissement_formateur_code_postal,
-              formateur_city: formation.etablissement_formateur_localite,
-              last_catalogue_sync_date: new Date(),
-            },
-          },
-          { upsert: true }
-        )
+        },
+      },
+    })
+  } else {
+    const emailRdv = await getEmailForRdv({
+      email: formation.email,
+      etablissement_gestionnaire_courriel: formation.etablissement_gestionnaire_courriel,
+      etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret,
+    })
 
+    bulkTrainings.push({
+      insertOne: {
+        document: {
+          _id: new ObjectId(),
+          created_at: now,
+          last_catalogue_sync_date: now,
+          rco_formation_id: formation.id_rco_formation,
+          training_id_catalogue: formation._id.toString(),
+          lieu_formation_email: emailRdv ?? null,
+          parcoursup_id: formation.parcoursup_id,
+          parcoursup_visible: formation.parcoursup_visible,
+          affelnet_visible: formation.affelnet_visible,
+          cle_ministere_educatif: formation.cle_ministere_educatif,
+          training_code_formation_diplome: formation.cfd,
+          training_intitule_long: formation.intitule_long,
+          referrers: referrersToActivate,
+          is_catalogue_published: formation.published,
+          lieu_formation_street: formation.lieu_formation_adresse,
+          lieu_formation_city: formation.localite,
+          lieu_formation_zip_code: formation.code_postal,
+          etablissement_formateur_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
+          etablissement_formateur_street: formation.etablissement_formateur_adresse,
+          etablissement_formateur_zip_code: formation.etablissement_formateur_code_postal,
+          departement_etablissement_formateur: formation.etablissement_formateur_nom_departement,
+          etablissement_formateur_city: formation.etablissement_formateur_localite,
+          etablissement_formateur_siret: formation.etablissement_formateur_siret,
+          etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret,
+        },
+      },
+    })
+  }
+
+  if (!gestionnaireEmail) {
+    gestionnaireEmail = await getEmailForRdv(
+      {
+        etablissement_gestionnaire_courriel: formation.etablissement_gestionnaire_courriel,
+        etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret,
+      },
+      "etablissement_gestionnaire_courriel"
+    )
+  }
+
+  bulkEtablissements.push({
+    updateMany: {
+      filter: {
+        formateur_siret: formation.etablissement_formateur_siret,
+        gestionnaire_siret: formation.etablissement_gestionnaire_siret,
+      },
+      update: {
+        $set: {
+          gestionnaire_siret: formation.etablissement_gestionnaire_siret,
+          gestionnaire_email: gestionnaireEmail,
+          raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
+          formateur_siret: formation.etablissement_formateur_siret,
+          formateur_address: formation.etablissement_formateur_adresse,
+          formateur_zip_code: formation.etablissement_formateur_code_postal,
+          formateur_city: formation.etablissement_formateur_localite,
+          last_catalogue_sync_date: now,
+        },
+      },
+      upsert: true,
+    },
+  })
+}
+
+export const syncEtablissementsAndFormations = async () => {
+  logger.info("Cron #syncEtablissementsAndFormations started.")
+
+  const bulkTrainings: any[] = []
+  const bulkEtablissements: any[] = []
+
+  const formationsStream = getDbCollection("formationcatalogues")
+    .aggregate([
+      {
+        $lookup: {
+          from: "eligible_trainings_for_appointments",
+          localField: "cle_ministere_educatif",
+          foreignField: "cle_ministere_educatif",
+          as: "eligible",
+        },
+      },
+      { $unwind: { path: "$eligible", preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: "etablissements",
+          localField: "etablissement_gestionnaire_siret",
+          foreignField: "gestionnaire_siret",
+          as: "etablissements",
+        },
+      },
+      {
+        $lookup: {
+          from: "referentieloniseps",
+          localField: "cle_ministere_educatif",
+          foreignField: "cle_ministere_educatif",
+          as: "onisep",
+        },
+      },
+      { $unwind: { path: "$onisep", preserveNullAndEmptyArrays: true } },
+    ])
+    .stream()
+
+  const writable = new Writable({
+    objectMode: true,
+    async write(formation, _, callback) {
+      try {
+        await processFormation(formation, bulkTrainings, bulkEtablissements)
         callback()
       } catch (err: any) {
-        logger.error(err, "Erreur dans syncEtablissementsAndFormations")
+        logger.error(err, "Erreur dans processFormation")
         callback(err)
       }
     },
   })
 
-  await pipeline(readable, writable)
+  await pipeline(formationsStream, writable)
+
+  if (bulkTrainings.length) {
+    await getDbCollection("eligible_trainings_for_appointments").bulkWrite(bulkTrainings)
+  }
+  if (bulkEtablissements.length) {
+    await getDbCollection("etablissements").bulkWrite(bulkEtablissements)
+  }
 
   logger.info("Cron #syncEtablissementsAndFormations done.")
 }
