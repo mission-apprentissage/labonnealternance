@@ -27,6 +27,10 @@ export enum JOBPARTNERS_LABEL {
   METEOJOB = "Meteojob",
   KELIO = "Kelio",
   LAPOSTE = "La Poste",
+  ATLAS = "annonces Atlas",
+  NOS_TALENTS_NOS_EMPLOIS = "Nos Talents Nos Emplois",
+  VITE_UN_EMPLOI = "Vite un emploi",
+  TOULOUSE_METROPOLE = "Toulouse metropole",
   // Attention : les partner labels par API ne doivent PAS être ajoutés : par définition, nous ne connaissons pas leurs valeurs.
   // De nouvelles valeurs peuvent être ajoutées par les clients Api
 }

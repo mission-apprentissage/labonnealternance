@@ -129,8 +129,8 @@ export const laposteJobToJobsPartners = (job: ILaposteJob): IComputedJobsPartner
 
   const publicationDate = new Date()
   const [day, month, yearAndTime] = job["date-de-mise-a-jour"].split("-")
-  const [year, time] = yearAndTime.split(" ")
-  const isoString = `${year}-${month}-${day}T${time}`
+  const [year, _] = yearAndTime.split(" ")
+  const isoString = `${year}-${month}-${day}`
 
   const updatedDate = new Date(isoString)
 
