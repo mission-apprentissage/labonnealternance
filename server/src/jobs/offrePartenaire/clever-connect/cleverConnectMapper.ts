@@ -289,5 +289,6 @@ const CleverConnectDegreeMap: Record<string, IComputedJobsPartners["offer_target
 const getOfferTargetDiploma = (job: ICleverConnectJob): IComputedJobsPartners["offer_target_diploma"] => {
   if (!job.profile?.degrees) return null
   const cleverConnectDegreeCode = isArray(job.profile.degrees.degree) ? job.profile.degrees.degree[0].$.code : job.profile.degrees.degree.$.code
+  if (cleverConnectDegreeCode === "none") return null
   return CleverConnectDegreeMap[cleverConnectDegreeCode]
 }
