@@ -13,6 +13,7 @@ import { processRecruteursLba } from "@/jobs/offrePartenaire/recruteur-lba/proce
 import { processRhAlternance } from "@/jobs/offrePartenaire/rh-alternance/processRhAlternance"
 import { analyzeClosedCompanies } from "@/jobs/oneTimeJob/analyzeClosedCompanies"
 import { renvoiMailCreationCompte } from "@/jobs/oneTimeJob/renvoiMailCreationCompte"
+import { exportJobsToS3V2 } from "@/jobs/partenaireExport/exportJobsToS3V2"
 import { exportJobsToFranceTravail } from "@/jobs/partenaireExport/exportToFranceTravail"
 import { repriseEnvoiEmailsPRDV } from "@/jobs/rdv/repriseEnvoiPRDV"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
@@ -324,5 +325,12 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: renvoiMailCreationCompte,
     description: "Envoi les mails de validation de compte",
   },
-  { fct: analyzeClosedCompanies, description: "analyze les recruiters dont l'entreprise a fermé. Le script suppose que la collection cache_siret est remplie au mieux" },
+  {
+    fct: analyzeClosedCompanies,
+    description: "analyze les recruiters dont l'entreprise a fermé. Le script suppose que la collection cache_siret est remplie au mieux",
+  },
+  {
+    fct: exportJobsToS3V2,
+    description: "export des offres sur S3 (V2)",
+  },
 ]
