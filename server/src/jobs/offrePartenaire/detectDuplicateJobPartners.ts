@@ -14,6 +14,7 @@ import { deduplicate, getPairs } from "@/common/utils/array"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
+import { defaultFillComputedJobsPartnersContext, FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 // champs utilisés pour les projections
 const fieldsRead = [
@@ -53,7 +54,7 @@ type TreatedDocument = ProjectedComputedJobPartner & {
   collectionName: typeof recruiterCollection | typeof jobPartnerCollection | typeof computedJobPartnerCollection
 }
 
-export const detectDuplicateJobPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
+export const detectDuplicateJobPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext = defaultFillComputedJobsPartnersContext) => {
   const startDate = new Date()
   // @ts-ignore
   const computedJobPartnersFilter: Filter<IComputedJobsPartners> = { $and: [{ business_error: null }, { offer_status: "Active" }, ...(addedMatchFilter ? [addedMatchFilter] : [])] }
@@ -130,9 +131,15 @@ const computedJobPartnerVsRecruiterStreamFactory = (
   logger.info(
     `début de detectDuplicateJobPartners entre computedJobPartners et recruiters, pour les champs computedJobPartnerField=${computedJobPartnerField} et recruiterField=${recruiterField}`
   )
+
   return getDbCollection("computed_jobs_partners").aggregate([
     { $match: computedJobPartnersFilter },
-    { $group: { _id: `$${computedJobPartnerField}`, documents: { $push: "$$ROOT" } } },
+    {
+      $group: {
+        _id: `$${computedJobPartnerField}`,
+        documents: { $push: "$$ROOT" },
+      },
+    },
     { $match: { _id: { $ne: null } } },
     {
       $project: {
@@ -160,13 +167,25 @@ const computedJobPartnerVsRecruiterStreamFactory = (
         documents: 1,
         recruiters: {
           $map: {
-            input: "$recruiters",
+            input: {
+              $filter: {
+                input: "$recruiters",
+                as: "recruiter",
+                cond: { $eq: ["$$recruiter.status", "Actif"] },
+              },
+            },
             as: "recruiter",
             in: {
               ...Object.fromEntries(recruiterFieldsRead.map((field) => [field, `$$recruiter.${field}`])),
               jobs: {
                 $map: {
-                  input: "$$recruiter.jobs",
+                  input: {
+                    $filter: {
+                      input: "$$recruiter.jobs",
+                      as: "job",
+                      cond: { $eq: ["$$job.job_status", "Active"] },
+                    },
+                  },
                   as: "job",
                   in: Object.fromEntries(jobFieldsRead.map((field) => [field, `$$job.${field}`])),
                 },

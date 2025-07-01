@@ -139,11 +139,18 @@ const config = {
   rhalternance: {
     apiKey: env.get("RH_ALTERNANCE_API_KEY").required().asString(),
   },
+  cleverConnect: {
+    meteojobUrl: env.get("METEOJOB_FLUX_URL").required().asString(),
+    atlasUrl: env.get("ATLAS_FLUX_URL").required().asString(),
+    nosTaletsNosEmplois: env.get("NOS_TALENTS_NOS_EMPLOIS_FLUX_URL").required().asString(),
+    viteUnEmploi: env.get("VITE_UN_EMPLOI_FLUX_URL").required().asString(),
+    toulouseMetropole: env.get("TOULOUSE_METROPOLE_FLUX_URL").required().asString(),
+  },
   helloworkUrl: env.get("HELLOWORK_FLUX_URL").required().asString(),
   monsterUrl: env.get("MONSTER_FLUX_URL").required().asString(),
   kelioUrl: env.get("KELIO_FLUX_URL").required().asString(),
   laposteUrl: env.get("LAPOSTE_FLUX_URL").required().asString(),
-  meteojobUrl: env.get("METEOJOB_FLUX_URL").required().asString(),
+
   passUrl: "https://www.pass.fonction-publique.gouv.fr/flux/offres",
   openai: {
     apiKey: env.get("OPENAI_API_KEY").required().asString(),

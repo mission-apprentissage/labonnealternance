@@ -1161,7 +1161,13 @@ export const incrementSearchViewCount = incrementJobCounter("stats_search_view")
 export const incrementDetailViewCount = (id: ObjectId) => incrementJobCounter("stats_detail_view")([id])
 export const incrementPostulerClickCount = (id: ObjectId) => incrementJobCounter("stats_postuler")([id])
 
-export async function upsertJobsPartnersMulti({ data, requestedByEmail }: { data: IComputedJobsPartnersWrite; requestedByEmail: string }): Promise<ObjectId> {
+export async function upsertJobsPartnersMulti({
+  data,
+  requestedByEmail,
+}: {
+  data: IComputedJobsPartnersWrite
+  requestedByEmail: string
+}): Promise<{ id: ObjectId; modified: boolean }> {
   const now = new Date()
   const { partner_label, partner_job_id } = data
 
@@ -1179,11 +1185,14 @@ export async function upsertJobsPartnersMulti({ data, requestedByEmail }: { data
   const offerExpiration = current?.offer_expiration ?? DateTime.fromJSDate(created_at, { zone: "Europe/Paris" }).plus({ months: 2 }).startOf("day").toJSDate()
   const offerStatus = current?.offer_status ?? JOB_STATUS_ENGLISH.ACTIVE
 
-  const writableData: Omit<IComputedJobsPartners, InvariantFields> = {
+  const userWrittenFields = {
     ...data,
     offer_creation: offerCreation,
     offer_expiration: offerExpiration,
     offer_status: offerStatus,
+  }
+
+  const technicalFields = {
     updated_at: now,
     business_error: null,
     errors: [],
@@ -1191,8 +1200,18 @@ export async function upsertJobsPartnersMulti({ data, requestedByEmail }: { data
     jobs_in_success: [],
     currently_processed_id: null,
   }
-
-  await getDbCollection("computed_jobs_partners").updateOne({ _id }, { $set: writableData, $setOnInsert: { created_at, _id, offer_status_history: [] } }, { upsert: true })
+  const writtenFields: Omit<IComputedJobsPartners, InvariantFields> = { ...userWrittenFields, ...technicalFields }
+  let modified: boolean
+  if (current) {
+    const updateResult = await getDbCollection("computed_jobs_partners").updateOne({ _id }, { $set: userWrittenFields })
+    modified = Boolean(updateResult.modifiedCount)
+    if (modified) {
+      await getDbCollection("computed_jobs_partners").updateOne({ _id }, { $set: technicalFields })
+    }
+  } else {
+    modified = true
+    await getDbCollection("computed_jobs_partners").insertOne({ ...writtenFields, created_at, _id, offer_status_history: [], partner_label, partner_job_id })
+  }
   if (current && current.offer_status !== offerStatus) {
     await getDbCollection("computed_jobs_partners").updateOne(
       { _id },
@@ -1209,5 +1228,5 @@ export async function upsertJobsPartnersMulti({ data, requestedByEmail }: { data
     )
   }
 
-  return _id
+  return { id: _id, modified }
 }

@@ -12,5 +12,5 @@ export const removeFTCfaFromJobsPartners = async () => {
     .find({ business_error: JOB_PARTNER_BUSINESS_ERROR.CFA, partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL }, { projection: { _id: 0, partner_job_id: 1 } })
     .toArray()
   const idsToRemove = jobFromCfa.map((x) => x.partner_job_id)
-  await getDbCollection("jobs_partners").deleteMany({ partner_job_id: { $in: idsToRemove } })
+  await getDbCollection("jobs_partners").deleteMany({ partner_job_id: { $in: idsToRemove }, partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL })
 }

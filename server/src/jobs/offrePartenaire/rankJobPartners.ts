@@ -1,6 +1,8 @@
 import { Filter } from "mongodb"
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
+import { FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
+
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 import { jobPartnersRankConfig, jobPartnersRankDefaultFactor } from "./jobPartnersRankConfig"
 
@@ -23,15 +25,18 @@ const fieldRankValues: Partial<Record<(typeof sourceFields)[number], number>> = 
   workplace_website: 10,
 }
 
-export const rankJobPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
+export const rankJobPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext) => {
   const filledFields = ["rank"] as const satisfies (keyof IComputedJobsPartners)[]
+
+  const filters: Filter<IComputedJobsPartners>[] = [{ business_error: null }]
+  if (addedMatchFilter) filters.push(addedMatchFilter)
+
   return fillFieldsForPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.RANKING,
     sourceFields,
     filledFields,
-    replaceMatchFilter: {},
+    replaceMatchFilter: { $and: filters },
     groupSize: 1_000,
-    addedMatchFilter,
     getData: async (documents) => {
       return documents.map((document) => {
         const { _id, partner_label } = document

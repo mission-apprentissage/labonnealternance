@@ -2,7 +2,7 @@ fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: b5006031bb5254e253e43023a9355016f20205f30377729895d8152fe475e9bb
 - filename: .infra/vault/vault.yml
-  checksum: 16e5dbef674c9219492e338fbcff11e20686c8d24494b41c7cdcd43e516cc8e8
+  checksum: 0431797d3cb9c6b9fd2e922dcf32e7d8d53f75aba3e50aa073832cffb602979b
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
   checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
 - filename: cypress/pages/FlowAdminPage.ts
@@ -13,6 +13,8 @@ fileignoreconfig:
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
   checksum: e03b5dac5c70accc532a744505fb928c9b2da6b233f360fe95ad127dbc0a5d6d
+- filename: server/sample.json
+  checksum: b4adc5dbb74a0afa7e48436c9ffaf2f370aedfcc216b474aabaaaf8fcab5cd0a
 - filename: server/src/common/apis/apiReferentielCatalogue.fixture.ts
   checksum: 845d2420a673b7fcb76c834ac58509ff5634c9910d8ed0f8304554835d6fd224
 - filename: server/src/common/utils/awsUtils.ts
@@ -79,6 +81,12 @@ fileignoreconfig:
   checksum: 10cb946d65eb68907e1046a1bf267c111a33915a8d510dc73f201f306754689a
 - filename: server/src/jobs/offrePartenaire/pass/importPass.test.input.rss
   checksum: 997465cfcd84fbd424d01574c22fd8fb11b62f6ea09fa03abc408b926018f6a6
+- filename: server/src/jobs/offrePartenaire/recruteur-lba/__snapshots__/processRecruteursLba.test.ts.snap
+  checksum: e904e8a118130aee6751aa0ca30a48260e37912be10c25ccd2f46c7ea325a28b
+- filename: server/src/jobs/offrePartenaire/recruteur-lba/__tests__/processRecruteursLba.test.1.json
+  checksum: e201980c6db433d36acd65c802fe6da698b922387d574e1a20483fd96cd951bb
+- filename: server/src/jobs/offrePartenaire/recruteur-lba/processRecruteursLba.test.ts
+  checksum: b1f33d9c2c01bcb249d01b801847d4e71c21e4c6395e124c26012f2200576d04
 - filename: server/src/migrations/20241022093834-remove-multi-published.ts
   checksum: a807c70a69c4c8bfc2a0568b466a7f274fd3840169ef3ef4792885d63cb75217
 - filename: server/src/security/accessApiApprentissageService.ts
@@ -201,6 +209,8 @@ fileignoreconfig:
   checksum: f4f3e429e6a7871a218f19eead273c0477636ed3c19b9e4dfd9e55bde1bc7dc8
 - filename: shared/routes/v3/jobs/jobs.routes.v3.model.ts
   checksum: 94f2736d7791571d7888a50f53e36e2af246f22c1c832b85477c34cb5328af0d
+- filename: shared/src/fixtures/recruiterRaw.fixture.ts
+  checksum: 9216d7b2d5123d6e72e22056c488e991ecf1cfda9a112c47fd9374b3c9c03dc0
 - filename: shared/src/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap
   checksum: ac7786e3082174e9164d4634a9432511815d79828f0e408ad75c0532a18ddd98
 - filename: shared/src/routes/appointments.routes.ts

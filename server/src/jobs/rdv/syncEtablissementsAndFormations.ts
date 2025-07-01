@@ -1,5 +1,7 @@
+import { Writable } from "node:stream"
+import { pipeline } from "node:stream/promises"
+
 import { ObjectId } from "mongodb"
-import { oleoduc, writeData } from "oleoduc"
 import { referrers } from "shared/constants/referers"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -12,29 +14,23 @@ const hasDateProperty = (etablissements, propertyName) => {
   return etablissements.some((etab) => etab[propertyName] !== null && etab[propertyName] !== undefined)
 }
 
-/**
- * @description Gets Catalogue etablissments informations and insert in etablissement collection.
- * @returns {Promise<void>}
- */
 export const syncEtablissementsAndFormations = async () => {
   logger.info("Cron #syncEtablissementsAndFormations started.")
 
-  await oleoduc(
-    getDbCollection("formationcatalogues").find({}).stream(),
-    writeData(
-      async (formation) => {
+  const readable = getDbCollection("formationcatalogues").find({}).stream()
+
+  const writable = new Writable({
+    objectMode: true,
+    async write(formation, _encoding, callback) {
+      try {
         const [eligibleTrainingsForAppointment, etablissements, existInReferentielOnisep] = await Promise.all([
           getDbCollection("eligible_trainings_for_appointments").findOne(
-            {
-              cle_ministere_educatif: formation.cle_ministere_educatif,
-            },
+            { cle_ministere_educatif: formation.cle_ministere_educatif },
             { projection: { lieu_formation_email: 1, is_lieu_formation_email_customized: 1 } }
           ),
           getDbCollection("etablissements")
             .find(
-              {
-                gestionnaire_siret: formation.etablissement_gestionnaire_siret,
-              },
+              { gestionnaire_siret: formation.etablissement_gestionnaire_siret },
               {
                 projection: {
                   premium_affelnet_activation_date: 1,
@@ -58,34 +54,24 @@ export const syncEtablissementsAndFormations = async () => {
         const hasPremiumActivation = hasDateProperty(etablissements, "premium_activation_date")
         const hasPremiumAffelnetRefusal = hasDateProperty(etablissements, "premium_affelnet_refusal_date")
 
-        const emailArray = etablissements.map((etab) => {
-          return { email: etab.gestionnaire_email }
-        })
+        const emailArray = etablissements.map((etab) => ({ email: etab.gestionnaire_email }))
         let gestionnaireEmail = await findFirstNonBlacklistedEmail(emailArray)
 
-        // Activate opt_out referrers
         const referrersToActivate: string[] = []
         if (hasOptOutActivation && !hasOptOutRefusal) {
-          referrersToActivate.push(referrers.LBA.name)
-          referrersToActivate.push(referrers.JEUNE_1_SOLUTION.name)
-          if (existInReferentielOnisep) {
-            referrersToActivate.push(referrers.ONISEP.name)
-          }
+          referrersToActivate.push(referrers.LBA.name, referrers.JEUNE_1_SOLUTION.name)
+          if (existInReferentielOnisep) referrersToActivate.push(referrers.ONISEP.name)
         }
 
-        // Activate parcoursup premium referrer
         if (hasPremiumActivation && !hasPremiumRefusal && formation.parcoursup_visible) {
           referrersToActivate.push(referrers.PARCOURSUP.name)
         }
-        // Activate affelnet premium referrer
         if (hasPremiumAffelnetActivation && !hasPremiumAffelnetRefusal && formation.affelnet_visible) {
           referrersToActivate.push(referrers.AFFELNET.name)
         }
 
         if (eligibleTrainingsForAppointment) {
           let emailRdv = eligibleTrainingsForAppointment.lieu_formation_email
-
-          // Don't override "email" if this field is true
           if (!eligibleTrainingsForAppointment?.is_lieu_formation_email_customized) {
             emailRdv = await getEmailForRdv({
               email: formation.email,
@@ -120,7 +106,6 @@ export const syncEtablissementsAndFormations = async () => {
             }
           )
         } else {
-          // insert formation even if email if empty
           const emailRdv = await getEmailForRdv({
             email: formation.email,
             etablissement_gestionnaire_courriel: formation.etablissement_gestionnaire_courriel,
@@ -159,13 +144,23 @@ export const syncEtablissementsAndFormations = async () => {
 
         if (!gestionnaireEmail) {
           gestionnaireEmail = await getEmailForRdv(
-            { etablissement_gestionnaire_courriel: formation.etablissement_gestionnaire_courriel, etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret },
+            {
+              etablissement_gestionnaire_courriel: formation.etablissement_gestionnaire_courriel,
+              etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret,
+            },
             "etablissement_gestionnaire_courriel"
           )
         }
 
         await getDbCollection("etablissements").updateMany(
-          { $and: [{ formateur_siret: formation.etablissement_formateur_siret, gestionnaire_siret: formation.etablissement_gestionnaire_siret }] },
+          {
+            $and: [
+              {
+                formateur_siret: formation.etablissement_formateur_siret,
+                gestionnaire_siret: formation.etablissement_gestionnaire_siret,
+              },
+            ],
+          },
           {
             $set: {
               gestionnaire_siret: formation.etablissement_gestionnaire_siret,
@@ -178,14 +173,18 @@ export const syncEtablissementsAndFormations = async () => {
               last_catalogue_sync_date: new Date(),
             },
           },
-          {
-            upsert: true,
-          }
+          { upsert: true }
         )
-      },
-      { parallel: 5 }
-    )
-  )
+
+        callback()
+      } catch (err: any) {
+        logger.error(err, "Erreur dans syncEtablissementsAndFormations")
+        callback(err)
+      }
+    },
+  })
+
+  await pipeline(readable, writable)
 
   logger.info("Cron #syncEtablissementsAndFormations done.")
 }

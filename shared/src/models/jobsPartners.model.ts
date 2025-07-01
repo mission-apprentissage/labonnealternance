@@ -27,6 +27,10 @@ export enum JOBPARTNERS_LABEL {
   METEOJOB = "Meteojob",
   KELIO = "Kelio",
   LAPOSTE = "La Poste",
+  ATLAS = "annonces Atlas",
+  NOS_TALENTS_NOS_EMPLOIS = "Nos Talents Nos Emplois",
+  VITE_UN_EMPLOI = "Vite un emploi",
+  TOULOUSE_METROPOLE = "Toulouse metropole",
   // Attention : les partner labels par API ne doivent PAS être ajoutés : par définition, nous ne connaissons pas leurs valeurs.
   // De nouvelles valeurs peuvent être ajoutées par les clients Api
 }
@@ -51,7 +55,12 @@ export const ZJobsPartnersRecruiterApi = z.object({
 
   apply_url: z.string().url().describe("URL pour candidater"),
   apply_phone: z.string().nullable().describe("Téléphone de contact"),
-  apply_recipient_id: z.string().nullish().describe("Identifiant permettant de candidaté via l'API, généré à la volé pour les offres LBA uniquement"),
+  apply_recipient_id: z
+    .string()
+    .nullish()
+    .describe(
+      "Identifiant permettant de candidater via l'API ou le widget /postuler, généré à la volée pour les opportunités dont on dispose de l'adresse email. Si null il n'est pas possible d'utiliser le widget /postuler ou d'utiliser la route api pour postuler"
+    ),
 })
 
 export const zDiplomaEuropeanLevel = z.enum(["3", "4", "5", "6", "7"])
