@@ -1,4 +1,4 @@
-import { Transform, TransformCallback, TransformOptions } from "node:stream"
+import Stream, { Transform, TransformCallback, TransformOptions } from "node:stream"
 import { Readable } from "stream"
 
 type AccumulateDataOptions<TAcc> = TransformOptions & { accumulator?: TAcc }
@@ -70,4 +70,38 @@ export function stringToStream(str: string) {
   stream.push(str)
   stream.push(null)
   return stream
+}
+
+export async function streamToString(stream: Stream.Readable) {
+  const chunks: Buffer<any>[] = []
+  for await (const chunk of stream) {
+    chunks.push(Buffer.from(chunk))
+  }
+  return Buffer.concat(chunks).toString("utf8")
+}
+
+export async function concatStreams(readableStreams: Stream.Readable[], transform: Stream.Transform) {
+  let ended = 0
+  function onEnd() {
+    ended += 1
+    if (ended === readableStreams.length) {
+      transform.end()
+    }
+  }
+
+  readableStreams.forEach((readable) => {
+    readable.on("data", (chunk) => transform.write(chunk))
+    readable.on("end", onEnd)
+  })
+}
+
+export async function waitForStreamEnd(readable: Stream.Readable | Stream.Writable) {
+  if (readable.closed) {
+    return Promise.resolve()
+  }
+  return new Promise((resolve, reject) => {
+    readable.on("close", resolve)
+    readable.on("end", resolve)
+    readable.on("error", reject)
+  })
 }
