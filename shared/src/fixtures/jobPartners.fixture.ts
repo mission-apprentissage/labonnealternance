@@ -37,6 +37,7 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     contract_duration: null,
     contract_type: ["Apprentissage", "Professionnalisation"],
     contract_remote: null,
+    contract_is_disabled_elligible: null,
 
     offer_title: "Une super offre d'alternance",
     offer_rome_codes: [],
