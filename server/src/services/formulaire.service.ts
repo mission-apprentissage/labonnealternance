@@ -23,6 +23,7 @@ import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { IResumeTokenData } from "shared/models/resumeTokens.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
@@ -30,6 +31,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { logger } from "@/common/logger"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { anonymizeLbaJobsPartners } from "@/services/partnerJob.service"
+import { getResumeToken, storeResumeToken } from "@/services/resumeToken.service"
 
 import { asyncForEach } from "../common/utils/asyncUtils"
 import { getDbCollection } from "../common/utils/mongodbUtils"
@@ -881,11 +883,9 @@ export const startRecruiterChangeStream = async () => {
   logger.info("Starting recruiter change stream")
 
   const recruiters = getDbCollection("recruiters")
+  const resumeRecruiterToken = await getResumeToken("recruiters")
+  const changeRecruiterStream = recruiters.watch([], resumeRecruiterToken ? { resumeAfter: resumeRecruiterToken.resumeTokenData } : {})
 
-  const changeRecruiterStream =
-    recruiters.watch(/*{
-    resumeAfter: null, // Start from the beginning of the stream
-  }*/)
   //changeRecruiterStream.resumeToken
   changeRecruiterStream.on("change", async (change) => {
     logger.info("Change detected:", change)
@@ -894,6 +894,7 @@ export const startRecruiterChangeStream = async () => {
       case "insert":
       case "update":
         await updateJobsPartnersFromRecruiterUpdate(change)
+        await storeResumeToken("recruiters", change._id as IResumeTokenData)
         break
       case "delete":
         // n'arrivera pas car les formulaires ne sont pas supprimés, mais archivés
@@ -905,7 +906,8 @@ export const startRecruiterChangeStream = async () => {
 
   // interrogation sur le côté bloquant du change stream sur
   const anonymizedRecruiters = getDbCollection("anonymized_recruiters")
-  const changeAnonymizedRecruiterStream = anonymizedRecruiters.watch()
+  const resumeAnonymizedRecruiterToken = await getResumeToken("anonymized_recruiters")
+  const changeAnonymizedRecruiterStream = anonymizedRecruiters.watch([], resumeAnonymizedRecruiterToken ? { resumeAfter: resumeAnonymizedRecruiterToken.resumeTokenData } : {})
   changeAnonymizedRecruiterStream.on("change", async (change) => {
     logger.info("Change detected on anonymized recruiters:", change)
 
@@ -913,6 +915,7 @@ export const startRecruiterChangeStream = async () => {
       logger.info("New document inserted in anonymized:", change.fullDocument)
 
       await updateJobsPartnersFromRecruiterDelete(change.documentKey._id)
+      await storeResumeToken("anonymized_recruiters", change._id as IResumeTokenData)
     }
   })
 }
