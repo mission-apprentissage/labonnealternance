@@ -254,7 +254,6 @@ const ZLbaItemJob = z
     offer_desired_skills: z.array(z.string()).nullish(), // partner -> offer_desired_skills,
     offer_to_be_acquired_skills: z.array(z.string()).nullish(), // partner -> offer_to_be_acquired_skills,
     offer_to_be_acquired_knowledge: z.array(z.string()).nullish(),
-    offer_desired_skills: z.array(z.string()).nullish(),
     offer_access_conditions: z.array(z.string()).nullish(), // partner -> offer_access_conditions
   })
   .strict()
