@@ -24,11 +24,10 @@ const LbaJobQualites = ({ job }) => {
 
             <AccordionPanel pb={4}>
               <Box pl="12px" mt={4}>
-                {job?.job?.offer_desired_skills.map((competence, idx) => (
+                {job.job.offer_desired_skills.map((competence, idx) => (
                   <Box key={idx} mt={2}>
-                    <Text as="span" ml={3}>
-                      &bull;
-                      {competence}
+                    <Text as="span" pl={6}>
+                      &bull; {competence}
                     </Text>
                   </Box>
                 ))}

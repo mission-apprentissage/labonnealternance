@@ -105,7 +105,6 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: s
 
         <Accordion allowToggle defaultIndex={0}>
           <JobDescription job={job} />
-          <LbaJobQualites job={job} />
         </Accordion>
         <Box marginTop="10px">
           <ReportJobLink
@@ -153,6 +152,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: s
           <Box mb={4}>
             <Accordion allowToggle>
               <LbaJobCompetences job={job} />
+              <LbaJobQualites job={job} />
               <LbaJobTechniques job={job} />
               <LbaJobAcces job={job} />
             </Accordion>
