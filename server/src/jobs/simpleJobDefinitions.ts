@@ -13,6 +13,7 @@ import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
 import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
 import { processLaposte } from "@/jobs/offrePartenaire/laposte/processLaposte"
+import { syncLbaJobsIntoJobsPartners } from "@/jobs/offrePartenaire/lbaJobToJobsPartners"
 import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
 import { processFillRomeStandalone } from "@/jobs/offrePartenaire/processFillRomeStandalone"
 import { processRecruteursLba } from "@/jobs/offrePartenaire/recruteur-lba/processRecruteursLba"
@@ -346,5 +347,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: renvoiMailCreationCompte,
     description: "Envoi les mails de validation de compte",
   },
-  { fct: analyzeClosedCompanies, description: "analyze les recruiters dont l'entreprise a fermé. Le script suppose que la collection cache_siret est remplie au mieux" },
+  { fct: analyzeClosedCompanies, description: "analyze les recruiters dont -'entreprise a fermé. Le script suppose que la collection cache_siret est remplie au mieux" },
+  { fct: syncLbaJobsIntoJobsPartners, description: "Synchronise les offres LBA dans la collection jobs_partners à partir de la collection recruiters sur les comptes actifs" },
 ]
