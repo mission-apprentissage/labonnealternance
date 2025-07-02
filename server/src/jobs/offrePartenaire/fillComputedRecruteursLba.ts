@@ -8,7 +8,10 @@ import { notifyToSlack } from "@/common/utils/slackUtils"
 import { blockBadRomeJobsPartners } from "@/jobs/offrePartenaire/blockBadRomeJobsPartners"
 import { FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 import { fillOpcoInfosForPartners } from "@/jobs/offrePartenaire/fillOpcoInfosForPartners"
-import { removeMissingRecruteursLbaFromRaw } from "@/jobs/offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
+import {
+  removeMissingRecruteursLbaFromComputedJobPartners,
+  removeUnsubscribedRecruteursLbaFromComputedJobPartners,
+} from "@/jobs/offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
 import { validateComputedJobPartners } from "@/jobs/offrePartenaire/validateComputedJobPartners"
 
 const filter: Filter<IComputedJobsPartners | IJobsPartnersOfferPrivate> = {
@@ -18,7 +21,8 @@ const filter: Filter<IComputedJobsPartners | IJobsPartnersOfferPrivate> = {
 export const fillComputedRecruteursLba = async () => {
   const context: FillComputedJobsPartnersContext = { addedMatchFilter: filter, shouldNotifySlack: false }
 
-  await removeMissingRecruteursLbaFromRaw()
+  await removeMissingRecruteursLbaFromComputedJobPartners()
+  await removeUnsubscribedRecruteursLbaFromComputedJobPartners()
   await fillOpcoInfosForPartners(context)
   await blockBadRomeJobsPartners(context)
   await validateComputedJobPartners(context)

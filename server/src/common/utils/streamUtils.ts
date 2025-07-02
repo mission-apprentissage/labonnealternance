@@ -1,4 +1,5 @@
 import { Transform, TransformCallback, TransformOptions } from "node:stream"
+import { Readable } from "stream"
 
 type AccumulateDataOptions<TAcc> = TransformOptions & { accumulator?: TAcc }
 
@@ -62,4 +63,11 @@ export function groupStreamData<TInput>(options: GroupDataOptions<TInput> = {}):
       accumulator: [],
     }
   )
+}
+
+export function stringToStream(str: string) {
+  const stream = new Readable()
+  stream.push(str)
+  stream.push(null)
+  return stream
 }

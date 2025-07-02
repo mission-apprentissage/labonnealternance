@@ -60,6 +60,8 @@ export const monsterJobToJobsPartners = (job: IMonsterJob): IComputedJobsPartner
   const created_at = new Date()
   const publicationDate = new Date(JobActiveDate)
 
+  const siret = siretParsing.success ? siretParsing.data : null
+
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner(),
     _id: new ObjectId(),
@@ -77,7 +79,7 @@ export const monsterJobToJobsPartners = (job: IMonsterJob): IComputedJobsPartner
       .toDate(),
 
     workplace_name: CompanyName === "myJob.company" ? UNKNOWN_COMPANY : CompanyName,
-    workplace_siret: siretParsing.success ? siretParsing.data : null,
+    workplace_siret: siret === "81262237100043" ? null : siret,
     workplace_address_zipcode: JobPostalCode || null,
     workplace_address_city: JobCity,
     workplace_address_label: [JobCity, JobPostalCode].join(" ").trim(),

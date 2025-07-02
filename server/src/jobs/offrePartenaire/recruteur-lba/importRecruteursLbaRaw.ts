@@ -1,7 +1,7 @@
 import { createReadStream, createWriteStream, existsSync, mkdirSync, unlinkSync } from "node:fs"
 import { createRequire } from "node:module"
 import path from "node:path"
-import { Transform } from "node:stream"
+import Stream, { Transform } from "node:stream"
 import { pipeline } from "node:stream/promises"
 
 import { internal } from "@hapi/boom"
@@ -66,14 +66,13 @@ export const checkIfAlgoFileAlreadyProcessed = async (): Promise<boolean> => {
   return false
 }
 
-const getRecruteursLbaFileFromS3 = async ({ from, to }) => {
-  logger.info(`Downloading algo file from S3 Bucket`)
+const getRecruteursLbaFileFromS3 = async ({ from, to }: { from: Stream.Readable; to: string }) => {
+  logger.info(`Downloading algo file from S3 Bucket to ${to}`)
   await createAssetsFolder()
-  const readStream = await s3ReadAsStream("storage", from)
   const writeStream = createWriteStream(to)
 
   try {
-    await pipeline(readStream, writeStream)
+    await pipeline(from, writeStream)
     logger.info("File transfer completed successfully")
   } catch (error) {
     logger.error("Error during file transfer:", error)
@@ -92,8 +91,9 @@ const importRecruteursLbaToRawCollection = async () => {
   const validationStream = new Transform({
     objectMode: true,
     transform(chunk, encoding, callback) {
-      const recruteur = { createdAt: now, _id: new ObjectId(), ...chunk.value }
-      if (!ZRecruteursLbaRaw.safeParse(recruteur).success) {
+      const recruteur = { ...chunk.value, createdAt: now, _id: new ObjectId() }
+      const parseResult = ZRecruteursLbaRaw.safeParse(recruteur)
+      if (!parseResult.success) {
         return callback() // ignore les entrées invalides sans erreur
       }
       callback(null, recruteur)
@@ -104,7 +104,10 @@ const importRecruteursLbaToRawCollection = async () => {
     objectMode: true,
     transform(chunk, encoding, callback) {
       const filtered = chunk.filter((item) => item)
-      if (!filtered.length) return
+      if (!filtered.length) {
+        callback()
+        return
+      }
       count += filtered.length
       getDbCollection("raw_recruteurslba").insertMany(filtered)
       callback()
@@ -121,10 +124,13 @@ const importRecruteursLbaToRawCollection = async () => {
   })
 }
 
-export const importRecruteursLbaRaw = async () => {
+export const importRecruteursLbaRaw = async (sourceFileReadStream?: Stream.Readable) => {
   try {
-    await getRecruteursLbaFileFromS3({ from: S3_FILE, to: PREDICTION_FILE_PATH })
+    logger.info(`début de importRecruteursLbaRaw`)
+    const readStream = sourceFileReadStream ?? (await s3ReadAsStream("storage", S3_FILE))
+    await getRecruteursLbaFileFromS3({ from: readStream, to: PREDICTION_FILE_PATH })
     await importRecruteursLbaToRawCollection()
+    logger.info(`fin de importRecruteursLbaRaw`)
   } catch (err) {
     await notifyToSlack({ subject: `import des offres recruteurs lba dans raw`, message: `import recruteurs lba terminé : echec de l'import`, error: true })
     logger.error(err)
@@ -135,9 +141,7 @@ export const importRecruteursLbaRaw = async () => {
 }
 
 export const importRecruteurLbaToComputed = async () => {
-  const collectionSource = rawRecruteursLbaModel.collectionName
   const partnerLabel = JOBPARTNERS_LABEL.RECRUTEURS_LBA
-  const zodInput = ZRecruteursLbaRaw
 
   logger.info(`début d'import dans computed_jobs_partners pour partner_label=${partnerLabel}`)
   const counters = { total: 0, success: 0, error: 0 }
@@ -147,7 +151,7 @@ export const importRecruteurLbaToComputed = async () => {
     async transform(document, _encoding, callback) {
       counters.total++
       try {
-        const parsedDocument = zodInput.parse(document)
+        const parsedDocument = ZRecruteursLbaRaw.parse(document)
         const { apply_email, apply_phone, updated_at, ...rest } = recruteursLbaToJobPartners(parsedDocument)
         const { workplace_address_zipcode } = rest
 
@@ -190,19 +194,19 @@ export const importRecruteurLbaToComputed = async () => {
     },
   })
 
-  await pipeline(getDbCollection(collectionSource).find({}).stream(), transformStream)
+  await pipeline(getDbCollection(rawRecruteursLbaModel.collectionName).find({}).stream(), transformStream)
 
   const message = `import dans computed_jobs_partners pour partner_label=${partnerLabel} terminé. total=${counters.total}, success=${counters.success}, errors=${counters.error}`
   logger.info(message)
 
   await notifyToSlack({
-    subject: `mapping Raw => computed_jobs_partners`,
+    subject: `mapping Raw recruteurs LBA => computed_jobs_partners`,
     message,
     error: counters.error > 0,
   })
 }
 
-export const removeMissingRecruteursLbaFromRaw = async () => {
+export const removeMissingRecruteursLbaFromComputedJobPartners = async () => {
   logger.info("clean-up recruteurs_lba in computed_jobs_partners from raw")
   const results = (await getDbCollection("computed_jobs_partners")
     .aggregate([
@@ -226,6 +230,37 @@ export const removeMissingRecruteursLbaFromRaw = async () => {
     await getDbCollection("computed_jobs_partners").deleteMany({ _id: { $in: idsToRemove } })
   }
   const message = `clean-up dans computed_jobs_partners pour partner_label=${JOBPARTNERS_LABEL.RECRUTEURS_LBA} terminé. total=${idsToRemove.length}`
+  logger.info(message)
+  await notifyToSlack({
+    subject: `mapping Raw => computed_jobs_partners`,
+    message,
+  })
+}
+
+export const removeUnsubscribedRecruteursLbaFromComputedJobPartners = async () => {
+  logger.info("debut removeUnsubscribedRecruteursLbaFromComputedJobPartners")
+  const results = (await getDbCollection("computed_jobs_partners")
+    .aggregate([
+      { $match: { partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA } },
+      {
+        $lookup: {
+          from: "unsubscribedrecruteurslba",
+          localField: "workplace_siret",
+          foreignField: "siret",
+          as: "matching",
+        },
+      },
+      { $match: { "matching.0": { $exists: true } } },
+      { $project: { _id: 1 } },
+    ])
+    .toArray()) as IComputedJobsPartners[]
+
+  const idsToRemove = results.map(({ _id }) => _id)
+
+  if (idsToRemove.length) {
+    await getDbCollection("computed_jobs_partners").deleteMany({ _id: { $in: idsToRemove } })
+  }
+  const message = `suppression dans computed_jobs_partners des recruteurs désinscrits terminée. total=${idsToRemove.length}`
   logger.info(message)
   await notifyToSlack({
     subject: `mapping Raw => computed_jobs_partners`,

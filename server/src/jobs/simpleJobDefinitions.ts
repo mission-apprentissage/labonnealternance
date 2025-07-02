@@ -2,16 +2,23 @@ import { removeBrevoContacts } from "@/jobs/anonymization/removeBrevoContacts"
 import { updateDiplomeMetier } from "@/jobs/diplomesMetiers/updateDiplomesMetiers"
 import { updateRomesForDomainesMetiers } from "@/jobs/domainesMetiers/updateRomesForDomainesMetiers"
 import { sendMiseEnRelation } from "@/jobs/miseEnRelation/sendMiseEnRelation"
+import {
+  processMeteojob,
+  processAtlas,
+  processViteUnEmploi,
+  processNosTalentsNosEmplois,
+  processToulouseMetropole,
+} from "@/jobs/offrePartenaire/clever-connect/processCleverConnect"
 import { importRecruteursLbaFromComputedToJobsPartners } from "@/jobs/offrePartenaire/fillComputedRecruteursLba"
 import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail/classifyJobsFranceTravail"
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
 import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
 import { processLaposte } from "@/jobs/offrePartenaire/laposte/processLaposte"
-import { processMeteojob } from "@/jobs/offrePartenaire/meteojob/processMeteojob"
 import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
 import { processFillRomeStandalone } from "@/jobs/offrePartenaire/processFillRomeStandalone"
 import { processRecruteursLba } from "@/jobs/offrePartenaire/recruteur-lba/processRecruteursLba"
 import { processRhAlternance } from "@/jobs/offrePartenaire/rh-alternance/processRhAlternance"
+import { analyzeClosedCompanies } from "@/jobs/oneTimeJob/analyzeClosedCompanies"
 import { renvoiMailCreationCompte } from "@/jobs/oneTimeJob/renvoiMailCreationCompte"
 import { exportJobsToFranceTravail } from "@/jobs/partenaireExport/exportToFranceTravail"
 import { repriseEnvoiEmailsPRDV } from "@/jobs/rdv/repriseEnvoiPRDV"
@@ -39,7 +46,7 @@ import { processKelio } from "./offrePartenaire/kelio/processKelio"
 import { processMonster } from "./offrePartenaire/monster/processMonster"
 import { processComputedAndImportToJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
-import { removeMissingRecruteursLbaFromRaw } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
+import { removeMissingRecruteursLbaFromComputedJobPartners } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
@@ -218,6 +225,22 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: processPass,
     description: "Importe les offres Pass dans la collection raw & computed",
   },
+  {
+    fct: processAtlas,
+    description: "Importe les offres Atlas dans la collection raw & computed",
+  },
+  {
+    fct: processViteUnEmploi,
+    description: "Importe les offres Vite un Emploi  dans la collection raw & computed",
+  },
+  {
+    fct: processNosTalentsNosEmplois,
+    description: "Importe les offres Nos Talents Nos Emplois dans la collection raw & computed",
+  },
+  {
+    fct: processToulouseMetropole,
+    description: "Importe les offres Toulouse Métropole dans la collection raw & computed",
+  },
   // ENRICHIT COMPUTED JOBS PARTNERS
   {
     fct: fillComputedJobsPartners,
@@ -256,7 +279,7 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Met à jour la collection jobs_partners en mettant à 'Annulé' les offres qui ne sont plus dans computed_jobs_partners",
   },
   {
-    fct: removeMissingRecruteursLbaFromRaw,
+    fct: removeMissingRecruteursLbaFromComputedJobPartners,
     description: "Met à jour la collection computed_jobs_partners en supprimant les entreprises qui ne sont plus dans raw_recruteurslba",
   },
   {
@@ -328,4 +351,5 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: removeBrevoContacts,
     description: "Anonymise les contacts Brevo dont la date de creation est supérieure à 2 ans",
   },
+  { fct: analyzeClosedCompanies, description: "analyze les recruiters dont l'entreprise a fermé. Le script suppose que la collection cache_siret est remplie au mieux" },
 ]
