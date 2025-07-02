@@ -1,3 +1,4 @@
+import he from "he"
 import sanitizeHtml from "sanitize-html"
 
 export const removeHtmlTagsFromString = (text: string | null | undefined, keepBr?: boolean) => {
@@ -5,6 +6,10 @@ export const removeHtmlTagsFromString = (text: string | null | undefined, keepBr
   const sanitizeOptions = keepBr ? { allowedTags: ["br"], allowedAttributes: {} } : { allowedTags: [], allowedAttributes: {} }
   text = sanitizeHtml(text, sanitizeOptions)
   return text
+}
+
+export const decodeHtmlEntities = (text: string) => {
+  return he.decode(text)
 }
 
 export const formatHtmlForPartnerDescription = (text: string) => {
