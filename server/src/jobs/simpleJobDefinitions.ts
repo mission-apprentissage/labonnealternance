@@ -348,7 +348,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: renvoiMailCreationCompte,
     description: "Envoi les mails de validation de compte",
   },
-  { fct: analyzeClosedCompanies, description: "analyze les recruiters dont -'entreprise a fermé. Le script suppose que la collection cache_siret est remplie au mieux" },
   { fct: syncLbaJobsIntoJobsPartners, description: "Synchronise les offres LBA dans la collection jobs_partners à partir de la collection recruiters sur les comptes actifs" },
   {
     fct: removeBrevoContacts,
