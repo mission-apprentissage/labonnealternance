@@ -226,3 +226,11 @@ export const getEligibleTrainingsForAppointments = (siret: string) =>
   apiGet("/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret", { params: { siret: siret } })
 
 export const getEtablissement = (siret: string) => apiGet("/admin/etablissements/siret-formateur/:siret", { params: { siret: siret } })
+
+export async function unsubscribeCompany({ email, reason }: { email: string; reason: string }) {
+  return apiPost("/unsubscribe", { body: { email, reason } })
+}
+
+export async function unsubscribeCompanySirets({ email, reason, sirets }: { email: string; reason: string; sirets: string[] }) {
+  return apiPost("/unsubscribe/sirets", { body: { email, reason, sirets } })
+}

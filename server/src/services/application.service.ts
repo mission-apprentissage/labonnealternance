@@ -957,10 +957,10 @@ export const processApplicationCandidateHardbounceEvent = async (payload) => {
   return false
 }
 
-export const obfuscateLbaCompanyApplications = async (company_siret: string) => {
+export const obfuscateLbaCompanyApplications = async (sirets: string[]) => {
   const fakeEmail = "faux_email@faux-domaine-compagnie.com"
   await getDbCollection("applications").updateMany(
-    { job_origin: LBA_ITEM_TYPE.RECRUTEURS_LBA, company_siret },
+    { job_origin: LBA_ITEM_TYPE.RECRUTEURS_LBA, company_siret: { $in: sirets } },
     { $set: { to_company_message_id: fakeEmail, company_email: fakeEmail } }
   )
 }
