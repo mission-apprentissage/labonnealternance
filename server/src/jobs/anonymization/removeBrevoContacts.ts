@@ -2,6 +2,7 @@ import brevo, { GetContactDetails } from "@getbrevo/brevo"
 
 import { logger } from "@/common/logger"
 import { sleep } from "@/common/utils/asyncUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
 
 const getAllContactsFromBrevo = async (offset = 0, accumulated: GetContactDetails[] = []): Promise<GetContactDetails[]> => {
@@ -45,7 +46,7 @@ export const removeBrevoContacts = async (): Promise<void> => {
 
   const contacts = await getAllContactsFromBrevo()
   if (!contacts || contacts.length === 0) {
-    logger.info("No contacts found in Brevo")
+    logger.info("No contacts found to anonymize")
     return
   }
 
@@ -61,4 +62,6 @@ export const removeBrevoContacts = async (): Promise<void> => {
   logger.info(`Found ${contactsToAnonymize.length} contacts to anonymize`)
 
   await deleteContactsFromBrevo(contactsToAnonymize)
+
+  await notifyToSlack({ subject: "Anonymisation des contacts Brevo", message: `Anonymisation de ${contactsToAnonymize.length} contacts Brevo` })
 }
