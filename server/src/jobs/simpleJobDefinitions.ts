@@ -1,3 +1,4 @@
+import { removeBrevoContacts } from "@/jobs/anonymization/removeBrevoContacts"
 import { updateDiplomeMetier } from "@/jobs/diplomesMetiers/updateDiplomesMetiers"
 import { updateRomesForDomainesMetiers } from "@/jobs/domainesMetiers/updateRomesForDomainesMetiers"
 import { sendMiseEnRelation } from "@/jobs/miseEnRelation/sendMiseEnRelation"
@@ -349,4 +350,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   },
   { fct: analyzeClosedCompanies, description: "analyze les recruiters dont -'entreprise a fermé. Le script suppose que la collection cache_siret est remplie au mieux" },
   { fct: syncLbaJobsIntoJobsPartners, description: "Synchronise les offres LBA dans la collection jobs_partners à partir de la collection recruiters sur les comptes actifs" },
+  {
+    fct: removeBrevoContacts,
+    description: "Anonymise les contacts Brevo dont la date de creation est supérieure à 2 ans",
+  },
+  { fct: analyzeClosedCompanies, description: "analyze les recruiters dont l'entreprise a fermé. Le script suppose que la collection cache_siret est remplie au mieux" },
 ]
