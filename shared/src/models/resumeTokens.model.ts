@@ -1,15 +1,18 @@
 import { z } from "zod"
 
-import { IModelDescriptor } from "./common.js"
+import { IModelDescriptor, zObjectId } from "./common.js"
 
 const collectionName = "resumetokens" as const
 
-const ZResumeTokenData = z.object({
-  data: z.string().describe("Token de reprise de flux MongoDB"),
-})
+const ZResumeTokenData = z
+  .object({
+    data: z.string().describe("Token de reprise de flux MongoDB"),
+  })
+  .strict()
 
 export const ZResumeToken = z
   .object({
+    _id: zObjectId,
     resumeTokenData: ZResumeTokenData,
     collection: z.string().describe("Nom de la collection pour laquelle le token est stocké"),
     updatedAt: z.date(),
