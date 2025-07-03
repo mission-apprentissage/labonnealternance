@@ -26,12 +26,11 @@ readonly PASSPHRASE="$ROOT_DIR/.bin/SEED_PASSPHRASE.txt"
 readonly VAULT_FILE="${ROOT_DIR}/.infra/vault/vault.yml"
 
 delete_cleartext() {
-  rm -f "$PASSPHRASE"
+  shred -f -n 10 -u "$PASSPHRASE"
 }
 trap delete_cleartext EXIT
 
-
-rm -f /tmp/deploy.log.gpg
+shred -f -n 10 -u /tmp/deploy.log.gpg
 
 gh run download "$RUN_ID" -n "logs-$JOB_ID" -D /tmp
 
