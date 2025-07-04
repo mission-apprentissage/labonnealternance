@@ -11,7 +11,7 @@ import { Entreprise } from "@/app/(landing-pages)/acces-recruteur/_components/En
 import { GerezOffres } from "@/app/(landing-pages)/acces-recruteur/_components/GerezOffres"
 import { OrganismesMandataires } from "@/app/(landing-pages)/acces-recruteur/_components/OrganismesMandataires"
 import { PostezVotreOffre } from "@/app/(landing-pages)/acces-recruteur/_components/PostezVotreOffre"
-import PageContainer from "@/app/_components/Layout/PageContainer"
+import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 
 import { PAGES } from "../../../utils/routes.utils"
 import { Breadcrumb } from "../../_components/Breadcrumb"
@@ -26,7 +26,8 @@ export default function AccesRecruteur() {
     <Box>
       <Box>
         <Breadcrumb pages={[PAGES.static.accesRecruteur]} />
-        <PageContainer>
+
+        <DefaultContainer>
           <Entreprise />
 
           <Box sx={{ p: fr.spacing("3w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
@@ -55,7 +56,7 @@ export default function AccesRecruteur() {
           <Box />
 
           <FollowLinkedIn />
-        </PageContainer>
+        </DefaultContainer>
       </Box>
     </Box>
   )
