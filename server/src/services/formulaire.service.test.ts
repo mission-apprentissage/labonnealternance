@@ -13,7 +13,7 @@ import { beforeEach, describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
-import { createJob } from "./formulaire.service"
+import { createJob, startRecruiterChangeStream } from "./formulaire.service"
 
 useMongo()
 
@@ -77,6 +77,8 @@ describe("createJob", () => {
   }
 
   it("should insert a job", async () => {
+    const { changeRecruiterStream, changeAnonymizedRecruiterStream } = await startRecruiterChangeStream() //{ changeRecruiterStream: null, changeAnonymizedRecruiterStream: null }
+
     const job = generateValidJobWritable()
     const result = await createJob({ user, establishment_id: recruiter.establishment_id, job })
 
@@ -88,6 +90,10 @@ describe("createJob", () => {
 
     const partnerJob = await getDbCollection("jobs_partners").findOne({ partner_job_id: result.jobs[0]._id.toString() })
     expect.soft(partnerJob?.offer_title).toEqual(job.rome_appellation_label)
+    expect.soft(omit(partnerJob, "_id", "created_at", "offer_creation", "partner_job_id", "updated_at")).toMatchSnapshot()
+
+    changeRecruiterStream.close()
+    changeAnonymizedRecruiterStream.close()
   })
 
   it("should raise a bad request when savoir_etre_professionnel do not match referentiel rome", async () => {
