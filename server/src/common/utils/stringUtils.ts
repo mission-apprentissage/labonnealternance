@@ -1,15 +1,25 @@
 import he from "he"
 import sanitizeHtml from "sanitize-html"
 
-export const removeHtmlTagsFromString = (text: string | null | undefined, keepBr?: boolean) => {
+export const removeHtmlTagsFromString = (text: string | null | undefined, keepBr: boolean = false): string => {
   if (!text) return ""
-  const sanitizeOptions = keepBr ? { allowedTags: ["br"], allowedAttributes: {} } : { allowedTags: [], allowedAttributes: {} }
-  text = sanitizeHtml(text, sanitizeOptions)
-  return text
+
+  const sanitizeOptions = {
+    allowedTags: keepBr ? ["br"] : [],
+    allowedAttributes: {},
+  }
+
+  return sanitizeHtml(text, sanitizeOptions)
 }
 
-export const decodeHtmlEntities = (text: string) => {
+export const decodeHtmlEntities = (text: string | null | undefined): string => {
+  if (!text) return ""
   return he.decode(text)
+}
+
+export const sanitizeTextField = (text: string | null | undefined, keepBr: boolean = false): string => {
+  const decoded = decodeHtmlEntities(text)
+  return removeHtmlTagsFromString(decoded, keepBr)
 }
 
 export const formatHtmlForPartnerDescription = (text: string) => {
