@@ -1,6 +1,6 @@
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
-import { removeHtmlTagsFromString, sanitizeTextField } from "@/common/utils/stringUtils"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
 import { FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
@@ -21,7 +21,7 @@ export const formatTextFieldsJobsPartners = async ({ addedMatchFilter }: FillCom
           _id,
           workplace_description: sanitizeTextField(workplace_description),
           offer_description: sanitizeTextField(offer_description),
-          offer_title: removeHtmlTagsFromString(offer_title),
+          offer_title: sanitizeTextField(offer_title),
         }
         return result
       })
