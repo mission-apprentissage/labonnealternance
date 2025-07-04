@@ -886,10 +886,7 @@ export const startRecruiterChangeStream = async () => {
   const resumeRecruiterToken = await getResumeToken("recruiters")
   const changeRecruiterStream = recruiters.watch([], resumeRecruiterToken ? { resumeAfter: resumeRecruiterToken.resumeTokenData } : {})
 
-  //changeRecruiterStream.resumeToken
   changeRecruiterStream.on("change", async (change) => {
-    logger.info("Change detected:", change)
-
     switch (change.operationType) {
       case "insert":
       case "update":
@@ -909,31 +906,27 @@ export const startRecruiterChangeStream = async () => {
   const resumeAnonymizedRecruiterToken = await getResumeToken("anonymized_recruiters")
   const changeAnonymizedRecruiterStream = anonymizedRecruiters.watch([], resumeAnonymizedRecruiterToken ? { resumeAfter: resumeAnonymizedRecruiterToken.resumeTokenData } : {})
   changeAnonymizedRecruiterStream.on("change", async (change) => {
-    logger.info("Change detected on anonymized recruiters:", change)
-
     if (change.operationType === "insert") {
-      logger.info("New document inserted in anonymized:", change.fullDocument)
-
       await updateJobsPartnersFromRecruiterDelete(change.documentKey._id)
       await storeResumeToken("anonymized_recruiters", change._id as IResumeTokenData)
     }
   })
+
+  return {
+    changeRecruiterStream,
+    changeAnonymizedRecruiterStream,
+  }
 }
 
 const updateJobsPartnersFromRecruiterUpdate = async (change: ChangeStreamUpdateDocument<IRecruiter> | ChangeStreamInsertDocument<IRecruiter>) => {
-  logger.info("Updating jobs partners from recruiter update", change, change.documentKey._id)
   await updateJobsPartnersFromRecruiterById(change.documentKey._id)
 }
 
 export const updateJobsPartnersFromRecruiterById = async (recruiterId: ObjectId) => {
-  logger.info("Updating jobs partners from recruiter by id", recruiterId)
   const recruiter = await getDbCollection("recruiters").findOne({ _id: recruiterId })
-  logger.info("recruiter found", recruiter?.address)
 
   if (recruiter?.jobs?.length) {
     await asyncForEach(recruiter.jobs, async (job) => {
-      const jobId = job._id.toString()
-      logger.info("upserting job partners for job", jobId)
       await upsertJobPartnersFromRecruiter(recruiter, job)
     })
   }
@@ -1055,15 +1048,11 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
     },
     { upsert: true }
   )
-  // REFLECHIR A LA REPRISE SUR INTERRUPTION
 }
 
 const updateJobsPartnersFromRecruiterDelete = async (id: ObjectId) => {
-  // récupération les jobs associés au formulaire archivé
   const recruiter = await getDbCollection("anonymized_recruiters").findOne({ _id: id })
-
   const jobIds = recruiter?.jobs?.map((job) => job._id) ?? []
-
   if (jobIds.length) {
     await anonymizeLbaJobsPartners({ partner_job_ids: jobIds })
   }

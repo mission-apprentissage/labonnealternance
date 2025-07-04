@@ -37,6 +37,11 @@ describe("createJob", () => {
       establishment_siret: entreprise.siret,
       opco: entreprise.opco,
       jobs: [],
+      geopoint: {
+        type: "Point",
+        coordinates: [2.3522, 48.8566],
+      },
+      geo_coordinates: "48.8566,2.3522",
       email,
       _id: new ObjectId("670ce30b57a50d6875c141f9"),
       establishment_creation_date: new Date("2024-10-14T09:23:21.588Z"),
@@ -78,7 +83,13 @@ describe("createJob", () => {
     expect.soft(omit(result, "jobs")).toMatchSnapshot()
     expect.soft(result.jobs.length).toEqual(1)
     expect.soft(omit(result.jobs[0], "job_creation_date", "job_update_date", "_id", "job_expiration_date")).toMatchSnapshot()
+
+    await new Promise((r) => setTimeout(r, 200))
+
+    const partnerJob = await getDbCollection("jobs_partners").findOne({ partner_job_id: result.jobs[0]._id.toString() })
+    expect.soft(partnerJob?.offer_title).toEqual(job.rome_appellation_label)
   })
+
   it("should raise a bad request when savoir_etre_professionnel do not match referentiel rome", async () => {
     const job = generateValidJobWritable()
     job.competences_rome!.savoir_etre_professionnel = [
