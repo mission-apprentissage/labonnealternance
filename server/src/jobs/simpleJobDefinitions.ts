@@ -14,6 +14,7 @@ import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
 import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
 import { processLaposte } from "@/jobs/offrePartenaire/laposte/processLaposte"
+import { syncLbaJobsIntoJobsPartners } from "@/jobs/offrePartenaire/lbaJobToJobsPartners"
 import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
 import { processFillRomeStandalone } from "@/jobs/offrePartenaire/processFillRomeStandalone"
 import { processRecruteursLba } from "@/jobs/offrePartenaire/recruteur-lba/processRecruteursLba"
@@ -347,6 +348,7 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: renvoiMailCreationCompte,
     description: "Envoi les mails de validation de compte",
   },
+  { fct: syncLbaJobsIntoJobsPartners, description: "Synchronise les offres LBA dans la collection jobs_partners à partir de la collection recruiters sur les comptes actifs" },
   {
     fct: removeBrevoContacts,
     description: "Anonymise les contacts Brevo dont la date de creation est supérieure à 2 ans",

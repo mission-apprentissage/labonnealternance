@@ -488,6 +488,7 @@ describe("convertToJobOfferApiReadV3", () => {
       contract_remote: TRAINING_REMOTE_TYPE.onsite,
       contract_start: startOfNextMonth,
       contract_type: ["Apprentissage"],
+      contract_is_disabled_elligible: null,
       offer_access_conditions: ["Ce métier est accessible avec un diplôme de fin d'études secondaires"],
       offer_creation: yesterday,
       offer_description: "Exécute des travaux administratifs courants",
