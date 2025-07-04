@@ -1,4 +1,5 @@
-import { Box, Container, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box } from "@mui/material"
 import type { Metadata } from "next"
 
 import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActions"
@@ -10,6 +11,7 @@ import { Entreprise } from "@/app/(landing-pages)/acces-recruteur/_components/En
 import { GerezOffres } from "@/app/(landing-pages)/acces-recruteur/_components/GerezOffres"
 import { OrganismesMandataires } from "@/app/(landing-pages)/acces-recruteur/_components/OrganismesMandataires"
 import { PostezVotreOffre } from "@/app/(landing-pages)/acces-recruteur/_components/PostezVotreOffre"
+import PageContainer from "@/app/_components/Layout/PageContainer"
 
 import { PAGES } from "../../../utils/routes.utils"
 import { Breadcrumb } from "../../_components/Breadcrumb"
@@ -22,12 +24,12 @@ export const metadata: Metadata = {
 export default function AccesRecruteur() {
   return (
     <Box>
-      <Box as="main">
+      <Box>
         <Breadcrumb pages={[PAGES.static.accesRecruteur]} />
-        <Container my={0} px={0} variant="pageContainer" bg="white">
+        <PageContainer>
           <Entreprise />
 
-          <Box as="section" p={{ base: 3, md: 6, lg: 12 }} borderRadius={10} bg="grey.100">
+          <Box sx={{ p: fr.spacing("3w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
             <PostezVotreOffre />
             <OffresGratuites />
             <OrganismesMandataires />
@@ -39,23 +41,21 @@ export default function AccesRecruteur() {
             <AlgoRecruiter withLinks={true} />
           </Box>
 
-          <Box as="section" backgroundColor="white" pb={12}>
+          <Box sx={{ backgroundColor: fr.colors.decisions.background.default.grey.default, pb: fr.spacing("12w") }}>
             <PromoRessources target="recruteur" />
           </Box>
 
-          <Box as="section" pb={24} backgroundColor="white">
-            <Text as="h2" align="center" variant="homeEditorialH2">
-              Vous souhaitez recruter un alternant pour votre entreprise ?
-            </Text>
-            <Box display="flex" justifyContent="center" alignItems="center">
+          <Box sx={{ backgroundColor: fr.colors.decisions.background.default.grey.default, pb: fr.spacing("24v") }}>
+            <Box sx={{ typography: "h2", textAlign: "center" }}> Vous souhaitez recruter un alternant pour votre entreprise ?</Box>
+            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
               <ConnectionActions service="entreprise" />
             </Box>
           </Box>
 
-          <Box as="section"></Box>
+          <Box />
 
           <FollowLinkedIn />
-        </Container>
+        </PageContainer>
       </Box>
     </Box>
   )
