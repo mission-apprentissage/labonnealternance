@@ -54,8 +54,8 @@ export const removeBrevoContacts = async (): Promise<void> => {
 
   const contactsToAnonymize = contacts
     .filter((contact) => {
-      const createdAt = new Date(contact.createdAt)
-      return createdAt < twoYearsAgo
+      const modifiedAt = new Date(contact.modifiedAt)
+      return modifiedAt < twoYearsAgo
     })
     .map((contacts) => contacts.id.toString())
 

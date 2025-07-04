@@ -26,7 +26,7 @@ elif [ ! -z "$DOCUMENT_CONTENT" ] && [ "$DOCUMENT_CONTENT" != "$(cat "${vault_pa
     # Renommer l'ancien fichier
     mv "$vault_password_file" "$previous_vault_password_file"
     # echo "vault-password existant renommé en .vault-password-previous.gpg."
-    
+
     # Créer un nouveau fichier avec le contenu actuel
     echo "$DOCUMENT_CONTENT" > "$vault_password_file"
     # echo "Nouveau vault-password créé avec succès."
@@ -41,7 +41,7 @@ elif [ ! -z "$DOCUMENT_CONTENT" ] && [ "$DOCUMENT_CONTENT" != "$(cat "${vault_pa
 
     gpg --quiet --batch --use-agent --decrypt "${previous_vault_password_file}" > "${previous_vault_password_file_clear_text}"
     gpg --quiet --batch --use-agent --decrypt "${vault_password_file}" > "${vault_password_file_clear_text}"
-    
+
     ansible-vault rekey \
     --vault-id "${previous_vault_password_file_clear_text}" \
     --new-vault-id "${vault_password_file_clear_text}" \
@@ -49,7 +49,6 @@ elif [ ! -z "$DOCUMENT_CONTENT" ] && [ "$DOCUMENT_CONTENT" != "$(cat "${vault_pa
 
     delete_cleartext
 fi
-
 
 decrypt_password() {
   ## Decrypt
@@ -61,8 +60,6 @@ decrypt_password() {
     echo "not-yet-generated"
   fi
 
-  gpgconf --kill gpg-agent
 }
-
 
 decrypt_password
