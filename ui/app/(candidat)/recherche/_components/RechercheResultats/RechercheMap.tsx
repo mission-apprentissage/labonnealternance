@@ -264,6 +264,8 @@ async function setupMap(container: HTMLDivElement): Promise<Mapbox> {
 
   mapSingleton.getCanvas().setAttribute("aria-label", "Localisation géographique des employeurs et/ou formations en alternance")
 
+  await onceLoaded(mapSingleton)
+
   console.log("Loading images!!!")
   await Promise.all([
     loadImage("/images/icons/formation.png", "formation", mapSingleton),
@@ -277,8 +279,6 @@ async function setupMap(container: HTMLDivElement): Promise<Mapbox> {
   await createLayer("job", mapSingleton)
   await createLayer("formation", mapSingleton)
   await createLayer("active", mapSingleton)
-
-  await onceLoaded(mapSingleton)
 
   return mapSingleton
 }

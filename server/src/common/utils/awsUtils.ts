@@ -33,7 +33,7 @@ export async function s3ReadAsStream(bucket: Bucket, key: string) {
     const webStream = object.Body?.transformToWebStream()
     return Readable.fromWeb(webStream as any)
   } catch (error: any) {
-    const newError = internal(`Error reading S3 file stream`, { key: key, bucket: getBucketName(bucket) })
+    const newError = internal(`Error reading S3 file stream`, { key, bucket: getBucketName(bucket) })
     newError.cause = error.message
     throw newError
   }
