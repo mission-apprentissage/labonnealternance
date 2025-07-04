@@ -6,7 +6,7 @@ const collectionName = "resumetokens" as const
 
 const ZResumeTokenData = z
   .object({
-    data: z.string().describe("Token de reprise de flux MongoDB"),
+    _data: z.string().describe("Token de reprise de flux MongoDB"),
   })
   .strict()
 

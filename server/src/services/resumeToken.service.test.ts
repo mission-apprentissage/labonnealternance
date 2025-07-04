@@ -17,14 +17,14 @@ describe("Resume Token Service", () => {
   it("should store and retrieve a resume token", async () => {
     const collectionName: CollectionName = "recruiters"
 
-    const resumeTokenData: IResumeTokenData = { data: "test_token_data" }
+    const resumeTokenData: IResumeTokenData = { _data: "test_token_data" }
 
     await storeResumeToken(collectionName, resumeTokenData)
     const storedToken = await getResumeToken(collectionName)
 
     expect(storedToken).toBeDefined()
     expect(storedToken?.collection).toBe(collectionName)
-    expect(storedToken?.resumeTokenData.data).toBe(resumeTokenData.data)
+    expect(storedToken?.resumeTokenData._data).toBe(resumeTokenData._data)
   })
 
   it("should return null if no resume token exists for the collection", async () => {
