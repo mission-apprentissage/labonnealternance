@@ -90,7 +90,7 @@ describe("createJob", () => {
 
     const partnerJob = await getDbCollection("jobs_partners").findOne({ partner_job_id: result.jobs[0]._id.toString() })
     expect.soft(partnerJob?.offer_title).toEqual(job.rome_appellation_label)
-    expect.soft(omit(partnerJob, "_id", "created_at", "offer_creation", "partner_job_id", "updated_at")).toMatchSnapshot()
+    expect.soft(omit(partnerJob, "_id", "created_at", "offer_creation", "partner_job_id", "updated_at", "offer_expiration")).toMatchSnapshot()
 
     changeRecruiterStream.close()
     changeAnonymizedRecruiterStream.close()

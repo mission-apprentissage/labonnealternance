@@ -120,7 +120,6 @@ exports[`createJob > should insert a job 3`] = `
   "offer_desired_skills": [
     "Faire preuve de rigueur et de précision",
   ],
-  "offer_expiration": 2025-09-03T22:00:00.000Z,
   "offer_opening_count": 1,
   "offer_origin": null,
   "offer_rome_codes": [
