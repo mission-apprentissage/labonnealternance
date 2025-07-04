@@ -10,8 +10,7 @@ export const OrganismesMandataires = () => (
         <Text as="h2" variant="homeEditorialH2" mb={{ base: "3", lg: "5" }}>
           Identifiez facilement les organismes de formation en lien avec votre offre d’emploi
         </Text>
-        {/* @ts-expect-error: TODO */}
-        <Box variant="homeEditorialText">Vous pouvez choisir d’être accompagné par les centres de formation et votre OPCO de rattachement, afin d’accélérer vos recrutements.</Box>
+        <Box>Vous pouvez choisir d’être accompagné par les centres de formation et votre OPCO de rattachement, afin d’accélérer vos recrutements.</Box>
       </Box>
     </SimpleGrid>
   </Box>
