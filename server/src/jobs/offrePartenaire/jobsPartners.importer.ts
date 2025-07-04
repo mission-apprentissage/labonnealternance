@@ -109,5 +109,6 @@ export const importers: Record<string, CronDef> = {
     checkinMargin: 350,
     maxRuntimeInMinutes: 120,
     tag: "slave",
+    resumable: true,
   },
 }
