@@ -5,8 +5,6 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
 
-import { formatHtmlForPartnerDescription } from "@/common/utils/stringUtils"
-
 import { isCompanyInBlockedCfaList } from "../blockJobsPartnersFromCfaList"
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
@@ -98,7 +96,7 @@ const getDescription = (job: ILaposteJob): string => {
   descriptionComputed += job["temps-de-travail-hebdomadaire"] ? "- Temps de travail hebdomadaire : " + job["temps-de-travail-hebdomadaire"] + "\r\n" : ""
   descriptionComputed += `\r\nDescription de la mission :\r\n\r\n${job["description-de-la-mission"]}\r\n\r\n`
   descriptionComputed += job["profil-candidat"] ? `Profil candidat :\r\n\r\n${job["profil-candidat"]}\r\n\r\n` : ""
-  return formatHtmlForPartnerDescription(descriptionComputed).trim()
+  return descriptionComputed.trim()
 }
 
 export const laposteJobToJobsPartners = (job: ILaposteJob): IComputedJobsPartners => {
