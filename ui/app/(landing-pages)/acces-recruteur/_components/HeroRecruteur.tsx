@@ -2,6 +2,10 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Grid2 as Grid, Typography } from "@mui/material"
 import Image from "next/image"
 
+import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActions"
+import { FollowLinkedIn } from "@/app/(espace-pro)/_components/FollowLinkedIn"
+import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
+import { AlgoRecruiter } from "@/app/(landing-pages)/acces-recruteur/_components/AlgoRecruiter"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 const PostezVotreOffre = () => {
@@ -119,7 +123,7 @@ const GerezOffres = () => {
 
 export const HeroRecruteur = () => {
   return (
-    <Grid container spacing={10} sx={{ alignItems: "center", justifyContent: "center" }}>
+    <Grid container spacing={fr.spacing("8w")} sx={{ alignItems: "center", justifyContent: "center" }}>
       <Grid>
         <Box sx={{ p: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
           <Grid container spacing={10} sx={{ alignItems: "center", justifyContent: "center" }}>
@@ -133,6 +137,25 @@ export const HeroRecruteur = () => {
         <Box sx={{ p: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
           <GerezOffres />
         </Box>
+      </Grid>
+      <Grid>
+        <AlgoRecruiter withLinks={true} />
+      </Grid>
+      <Grid>
+        <Box sx={{ backgroundColor: fr.colors.decisions.background.default.grey.default }}>
+          <PromoRessources target="recruteur" />
+        </Box>
+      </Grid>
+      <Grid>
+        <Box sx={{ backgroundColor: fr.colors.decisions.background.default.grey.default }}>
+          <Box sx={{ typography: "h2", textAlign: "center" }}> Vous souhaitez recruter un alternant pour votre entreprise ?</Box>
+          <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <ConnectionActions service="entreprise" />
+          </Box>
+        </Box>
+      </Grid>
+      <Grid>
+        <FollowLinkedIn />
       </Grid>
     </Grid>
   )
