@@ -1,3 +1,4 @@
+import fs from "node:fs/promises"
 import Stream from "stream"
 
 import { ObjectId } from "mongodb"
@@ -8,7 +9,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { streamToString } from "@/common/utils/streamUtils"
-import { exportJobsToS3V2 } from "@/jobs/partenaireExport/exportJobsToS3V2"
+import { EXPORT_JOBS_TO_S3_V2_FILENAME, exportJobsToS3V2 } from "@/jobs/partenaireExport/exportJobsToS3V2"
 import { createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
@@ -56,6 +57,12 @@ describe("exportJobsToS3V2", () => {
       vi.useRealTimers()
       await getDbCollection("jobs_partners").deleteMany({})
       await getDbCollection("recruiters").deleteMany({})
+      const filepath = new URL(`./${EXPORT_JOBS_TO_S3_V2_FILENAME}`, import.meta.url).pathname
+      try {
+        await fs.unlink(filepath)
+      } catch (err) {
+        console.warn(`could not delete ${filepath}`)
+      }
     }
   })
 
