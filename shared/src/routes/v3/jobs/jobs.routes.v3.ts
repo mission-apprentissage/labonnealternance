@@ -60,6 +60,24 @@ export const zJobsRoutesV3 = {
         tags: ["V3 - Jobs"] as string[],
       },
     },
+    "/v3/jobs/export": {
+      method: "get",
+      path: "/v3/jobs/export",
+      response: {
+        "200": z.object({
+          url: z.string(),
+          lastUpdate: z.date(),
+        }),
+      },
+      securityScheme: {
+        auth: "api-apprentissage",
+        access: null,
+        resources: {},
+      },
+      openapi: {
+        tags: ["V3 - Jobs"] as string[],
+      },
+    },
   },
   post: {
     "/v3/jobs": {
