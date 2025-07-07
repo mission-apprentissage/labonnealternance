@@ -30,13 +30,13 @@ export const fillComputedJobsPartners = async (partialContext: Partial<FillCompu
 
   await fillOpcoInfosForPartners(context)
   await fillSiretInfosForPartners(context)
+  await blockJobsPartnersWithNaf85(context)
   await fillLocationInfosForPartners(context)
   await fillRomeForPartners(context)
+  await blockBadRomeJobsPartners(context)
 
   await formatTextFieldsJobsPartners(context)
 
-  await blockJobsPartnersWithNaf85(context)
-  await blockBadRomeJobsPartners(context)
   await rankJobPartners(context)
   await detectDuplicateJobPartners(context)
 

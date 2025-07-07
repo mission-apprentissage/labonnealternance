@@ -64,7 +64,7 @@ export const monsterJobToJobsPartners = (job: IMonsterJob): IComputedJobsPartner
     partner_job_id: postingId,
 
     offer_title: title,
-    offer_description: JobBody && JobBody.trim(),
+    offer_description: JobBody,
     offer_creation: publicationDate,
 
     offer_expiration: dayjs

@@ -19,7 +19,7 @@ export const decodeHtmlEntities = (text: string | null | undefined): string => {
 
 export const sanitizeTextField = (text: string | null | undefined, keepBr: boolean = false): string => {
   const decoded = decodeHtmlEntities(text)
-  return removeHtmlTagsFromString(decoded, keepBr)
+  return removeHtmlTagsFromString(decoded.trim(), keepBr)
 }
 
 export const formatHtmlForPartnerDescription = (text: string) => {

@@ -10,10 +10,11 @@ const fields = ["workplace_description", "workplace_name", "offer_description", 
 export const formatTextFieldsJobsPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext) => {
   return fillFieldsForPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.BLOCK_BAD_ROME,
-    sourceFields: fields,
+    sourceFields: ["offer_title"],
     filledFields: fields,
     groupSize: 500,
     addedMatchFilter,
+    replaceMatchFilter: [{ $or: { workplace_description: { $ne: null }, workplace_name: { $ne: null }, offer_description: { $ne: null } } }],
     getData: async (documents) => {
       return documents.map((document) => {
         const { _id, workplace_description, offer_description, offer_title, workplace_name } = document
