@@ -16,10 +16,11 @@ export const formatTextFieldsJobsPartners = async ({ addedMatchFilter }: FillCom
     addedMatchFilter,
     getData: async (documents) => {
       return documents.map((document) => {
-        const { _id, workplace_description, offer_description, offer_title } = document
+        const { _id, workplace_description, offer_description, offer_title, workplace_name } = document
         const result: Pick<IComputedJobsPartners, (typeof fields)[number] | "_id"> = {
           _id,
           workplace_description: sanitizeTextField(workplace_description),
+          workplace_name: sanitizeTextField(workplace_name),
           offer_description: sanitizeTextField(offer_description),
           offer_title: sanitizeTextField(offer_title),
         }
