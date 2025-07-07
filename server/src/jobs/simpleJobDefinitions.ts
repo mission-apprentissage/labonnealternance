@@ -360,8 +360,4 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: removeBrevoContacts,
     description: "Anonymise les contacts Brevo dont la date de creation est supérieure à 2 ans",
   },
-  {
-    fct: analyzeClosedCompanies,
-    description: "analyze les recruiters dont l'entreprise a fermé. Le script suppose que la collection cache_siret est remplie au mieux",
-  },
 ]
