@@ -4,13 +4,10 @@ import type { Metadata } from "next"
 
 import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActions"
 import { FollowLinkedIn } from "@/app/(espace-pro)/_components/FollowLinkedIn"
-import { OffresGratuites } from "@/app/(espace-pro)/_components/OffresGratuites"
 import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
 import { AlgoRecruiter } from "@/app/(landing-pages)/acces-recruteur/_components/AlgoRecruiter"
 import { Entreprise } from "@/app/(landing-pages)/acces-recruteur/_components/Entreprise"
-import { GerezOffres } from "@/app/(landing-pages)/acces-recruteur/_components/GerezOffres"
-import { OrganismesMandataires } from "@/app/(landing-pages)/acces-recruteur/_components/OrganismesMandataires"
-import { PostezVotreOffre } from "@/app/(landing-pages)/acces-recruteur/_components/PostezVotreOffre"
+import { HeroRecruteur } from "@/app/(landing-pages)/acces-recruteur/_components/HeroRecruteur"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 
 import { PAGES } from "../../../utils/routes.utils"
@@ -30,13 +27,9 @@ export default function AccesRecruteur() {
         <DefaultContainer>
           <Entreprise />
 
-          <Box sx={{ p: fr.spacing("3w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
-            <PostezVotreOffre />
-            <OffresGratuites />
-            <OrganismesMandataires />
-          </Box>
+          <HeroRecruteur />
 
-          <GerezOffres />
+          {/* <GerezOffres /> */}
 
           <Box>
             <AlgoRecruiter withLinks={true} />
