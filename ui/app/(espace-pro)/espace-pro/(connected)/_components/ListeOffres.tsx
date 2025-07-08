@@ -2,7 +2,7 @@
 import { Box, Container, Flex } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
-import { Stack, Typography } from "@mui/material"
+import { Box, Stack, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
@@ -102,11 +102,11 @@ const EmptySpace = () => (
       <Image src="/images/espace_pro/add-offer.svg" width="246" height="170" alt="" />
     </Flex>
 
-    <Box w={["100%", "100%", "100%", "600px"]}>
+    <Box px={{ xs: fr.spacing("2w") }} width={{ xs: "100%", lg: "600px" }}>
       <Typography variant="h2" sx={{ mb: fr.spacing("3w") }}>
         Ajoutez votre première offre d’emploi en alternance.
       </Typography>
-      <Typography fontSize="1.375rem">
+      <Typography>
         Décrivez vos besoins de recrutement pour les afficher sur le site <span style={{ fontWeight: "700" }}>La bonne alternance</span> dès aujourd’hui.
       </Typography>
     </Box>
