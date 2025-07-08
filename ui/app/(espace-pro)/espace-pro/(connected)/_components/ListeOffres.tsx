@@ -1,5 +1,5 @@
 "use client"
-import { Box, Container, Flex } from "@chakra-ui/react"
+import { Container } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Box, Stack, Typography } from "@mui/material"
@@ -52,7 +52,7 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
   }
 
   const ActionButtons = (
-    <Flex>
+    <Box sx={{ display: "flex", alignItems: "center" }}>
       {!hideModify && user.type !== AUTHTYPE.OPCO && (
         <Box mr={5}>
           <Button priority="secondary" onClick={() => router.push(PAGES.dynamic.modificationEntreprise(user.type, establishment_id).getPath())}>
@@ -63,18 +63,18 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
       <Button onClick={navigateToCreation}>
         <Plus mr={2} /> Ajouter une offre
       </Button>
-    </Flex>
+    </Box>
   )
 
   if (jobs.length === 0) {
     return (
       <Container maxW="container.xl" my={12}>
-        <Flex justify="space-between" align="center" flexWrap="wrap">
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" }}>
           <Typography fontSize="2rem" fontWeight={700}>
             {entrepriseTitle}
           </Typography>
           {ActionButtons}
-        </Flex>
+        </Box>
         <EmptySpace />
       </Container>
     )
@@ -82,12 +82,12 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
 
   return (
     <Container maxW="container.xl" my={5} pb={4}>
-      <Flex justify="space-between" align="center" flexWrap="wrap">
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" }}>
         <Typography fontSize="2rem" fontWeight={700}>
           {establishment_raison_sociale ?? `SIRET ${establishment_siret}`}
         </Typography>
         {ActionButtons}
-      </Flex>
+      </Box>
       <Typography fontWeight="700" py={fr.spacing("3w")}>
         Offres de recrutement en alternance
       </Typography>
@@ -98,9 +98,9 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
 
 const EmptySpace = () => (
   <Stack direction={{ xs: "column", lg: "row" }} spacing="32px" sx={{ mt: fr.spacing("4w"), py: fr.spacing("5w"), border: "1px solid", borderColor: "grey.400" }}>
-    <Flex justify={["center", "center", "center", "flex-end"]} align={["center", "center", "center", "flex-start"]} w={["100%", "100%", "100%", "350px"]} h="150px">
+    <Box sx={{ display: "flex", justifyContent: { xs: "center", lg: "flex-end" }, align: { xs: "center", lg: "flex-start" } }} width={{ xs: "100%", lg: "350px" }} height="150px">
       <Image src="/images/espace_pro/add-offer.svg" width="246" height="170" alt="" />
-    </Flex>
+    </Box>
 
     <Box px={{ xs: fr.spacing("2w") }} width={{ xs: "100%", lg: "600px" }}>
       <Typography variant="h2" sx={{ mb: fr.spacing("3w") }}>
