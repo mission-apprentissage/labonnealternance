@@ -1,5 +1,4 @@
 "use client"
-import { Container } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Box, Stack, Typography } from "@mui/material"
@@ -54,9 +53,9 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
   const ActionButtons = (
     <Box sx={{ display: "flex", alignItems: "center" }}>
       {!hideModify && user.type !== AUTHTYPE.OPCO && (
-        <Box mr={5}>
+        <Box mr={fr.spacing("3w")}>
           <Button priority="secondary" onClick={() => router.push(PAGES.dynamic.modificationEntreprise(user.type, establishment_id).getPath())}>
-            <Building mr={2} /> {user.type === AUTHTYPE.ENTREPRISE ? "Mes informations" : "Modifier l'entreprise"}
+            <Building mr={fr.spacing("1w")} /> {user.type === AUTHTYPE.ENTREPRISE ? "Mes informations" : "Modifier l'entreprise"}
           </Button>
         </Box>
       )}
@@ -68,7 +67,7 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
 
   if (jobs.length === 0) {
     return (
-      <Container maxW="container.xl" my={12}>
+      <Box sx={{ width: "100%", maxWidth: "1280px", my: fr.spacing("3v"), px: fr.spacing("2w") }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" }}>
           <Typography fontSize="2rem" fontWeight={700}>
             {entrepriseTitle}
@@ -76,12 +75,12 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
           {ActionButtons}
         </Box>
         <EmptySpace />
-      </Container>
+      </Box>
     )
   }
 
   return (
-    <Container maxW="container.xl" my={5} pb={4}>
+    <Box sx={{ width: "100%", maxWidth: "1280px", my: fr.spacing("3v"), px: fr.spacing("2w") }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" }}>
         <Typography fontSize="2rem" fontWeight={700}>
           {establishment_raison_sociale ?? `SIRET ${establishment_siret}`}
@@ -92,7 +91,7 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
         Offres de recrutement en alternance
       </Typography>
       <OffresTabs showStats={showStats} recruiter={data} buildOfferEditionUrl={getOffreEditionUrl} />
-    </Container>
+    </Box>
   )
 }
 
