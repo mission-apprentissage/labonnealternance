@@ -2,7 +2,7 @@ fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: b5006031bb5254e253e43023a9355016f20205f30377729895d8152fe475e9bb
 - filename: .infra/vault/vault.yml
-  checksum: 0431797d3cb9c6b9fd2e922dcf32e7d8d53f75aba3e50aa073832cffb602979b
+  checksum: d14c8ff5a9ab2d59ff5a8c6d05d4639b8893efeb0b0feadb94ef2b0d8b6a0766
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
   checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
 - filename: cypress/pages/FlowAdminPage.ts
@@ -87,6 +87,10 @@ fileignoreconfig:
   checksum: e201980c6db433d36acd65c802fe6da698b922387d574e1a20483fd96cd951bb
 - filename: server/src/jobs/offrePartenaire/recruteur-lba/processRecruteursLba.test.ts
   checksum: b1f33d9c2c01bcb249d01b801847d4e71c21e4c6395e124c26012f2200576d04
+- filename: server/src/jobs/partenaireExport/__snapshots__/exportJobsToS3V2.test.ts.snap
+  checksum: 999d858719a80721fc1801792c0db66df0f35d54f20d0b8c0d1e159532fe7d2f
+- filename: server/src/jobs/partenaireExport/exportJobsToS3V2.test.ts
+  checksum: 3cc8e98e8945fbd4b50e65ff62bcbfcc13e2846443b916335af82c467fa4ed5f
 - filename: server/src/migrations/20241022093834-remove-multi-published.ts
   checksum: a807c70a69c4c8bfc2a0568b466a7f274fd3840169ef3ef4792885d63cb75217
 - filename: server/src/security/accessApiApprentissageService.ts
@@ -209,6 +213,8 @@ fileignoreconfig:
   checksum: f4f3e429e6a7871a218f19eead273c0477636ed3c19b9e4dfd9e55bde1bc7dc8
 - filename: shared/routes/v3/jobs/jobs.routes.v3.model.ts
   checksum: 94f2736d7791571d7888a50f53e36e2af246f22c1c832b85477c34cb5328af0d
+- filename: shared/src/fixtures/jobPartners.fixture.ts
+  checksum: e280d6b82495cae5cfba648c9f4c250d1ad4039cfc1fe650a31d2cc410abbc64
 - filename: shared/src/fixtures/recruiterRaw.fixture.ts
   checksum: 9216d7b2d5123d6e72e22056c488e991ecf1cfda9a112c47fd9374b3c9c03dc0
 - filename: shared/src/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap

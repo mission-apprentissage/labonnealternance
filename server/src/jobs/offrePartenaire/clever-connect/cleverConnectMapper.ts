@@ -191,7 +191,7 @@ export const cleverConnectJobToJobsPartners = (job: ICleverConnectJob, partner_l
 }
 
 const getAccessConditions = (job: ICleverConnectJob): IComputedJobsPartners["offer_access_conditions"] => {
-  if (!job.profile?.experienceLevels) return null
+  if (!job.profile?.experienceLevels) return []
   return isArray(job.profile.experienceLevels.experienceLevel) ? job.profile.experienceLevels.experienceLevel.map((l) => l._) : [job.profile.experienceLevels.experienceLevel._]
 }
 
