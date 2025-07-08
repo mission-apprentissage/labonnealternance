@@ -1,6 +1,8 @@
 "use client"
-import { Box, Container, Flex, Heading, Image, Stack, Text } from "@chakra-ui/react"
+import { Box, Container, Flex, Heading, Image, Stack } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
+import { Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
@@ -67,9 +69,9 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
     return (
       <Container maxW="container.xl" my={12}>
         <Flex justify="space-between" align="center" flexWrap="wrap">
-          <Text fontSize="2rem" fontWeight={700}>
+          <Typography fontSize="2rem" fontWeight={700}>
             {entrepriseTitle}
-          </Text>
+          </Typography>
           {ActionButtons}
         </Flex>
         <EmptySpace />
@@ -80,14 +82,14 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
   return (
     <Container maxW="container.xl" my={5} pb={4}>
       <Flex justify="space-between" align="center" flexWrap="wrap">
-        <Text fontSize="2rem" fontWeight={700}>
+        <Typography fontSize="2rem" fontWeight={700}>
           {establishment_raison_sociale ?? `SIRET ${establishment_siret}`}
-        </Text>
+        </Typography>
         {ActionButtons}
       </Flex>
-      <Text fontWeight="700" py={6}>
+      <Typography fontWeight="700" py={fr.spacing("3w")}>
         Offres de recrutement en alternance
-      </Text>
+      </Typography>
       <OffresTabs showStats={showStats} recruiter={data} buildOfferEditionUrl={getOffreEditionUrl} />
     </Container>
   )
@@ -103,9 +105,9 @@ const EmptySpace = () => (
       <Heading fontSize="2rem" pb={7}>
         Ajoutez votre première offre d’emploi en alternance.
       </Heading>
-      <Text fontSize="1.375rem">
+      <Typography fontSize="1.375rem">
         Décrivez vos besoins de recrutement pour les afficher sur le site <span style={{ fontWeight: "700" }}>La bonne alternance</span> dès aujourd’hui.
-      </Text>
+      </Typography>
     </Box>
   </Stack>
 )
