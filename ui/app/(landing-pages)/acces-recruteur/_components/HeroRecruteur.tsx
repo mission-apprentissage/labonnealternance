@@ -206,7 +206,9 @@ export const HeroRecruteur = () => {
         </Box>
       </Grid>
       <Grid>
-        <FollowLinkedIn />
+        <Box sx={{ p: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.alt.blueFrance.default }}>
+          <FollowLinkedIn />
+        </Box>
       </Grid>
     </Grid>
   )
