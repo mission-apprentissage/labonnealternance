@@ -1,20 +1,19 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Grid2 as Grid, Typography } from "@mui/material"
+import { Box, Grid2 as Grid, List, ListItem, ListItemIcon, Typography } from "@mui/material"
 import Image from "next/image"
 
 import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActions"
 import { FollowLinkedIn } from "@/app/(espace-pro)/_components/FollowLinkedIn"
 import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
-import { AlgoRecruiter } from "@/app/(landing-pages)/acces-recruteur/_components/AlgoRecruiter"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 const PostezVotreOffre = () => {
   return (
     <Grid container spacing={2} sx={{ alignItems: "center", justifyContent: "center" }}>
-      <Grid size={{ sm: 12, md: 6 }}>
+      <Grid size={{ xs: 12, md: 6 }}>
         <Image src="/images/home_pics/illu-offreemploi.svg" width={529} height={280} alt="" />
       </Grid>
-      <Grid size={{ sm: 12, md: 6 }}>
+      <Grid size={{ xs: 12, md: 6 }}>
         <Typography component="h3" variant="h3" sx={{ mb: 2 }}>
           Postez votre offre d'alternance en quelques secondes
         </Typography>
@@ -29,7 +28,7 @@ const PostezVotreOffre = () => {
 export const OffresGratuites = () => {
   return (
     <Grid container spacing={2} sx={{ alignItems: "center", justifyContent: "center" }}>
-      <Grid size={{ sm: 12, md: 6 }} sx={{ order: { xs: 2, md: 1 } }}>
+      <Grid size={{ xs: 12, md: 6 }} sx={{ order: { xs: 2, md: 1 } }}>
         <Typography component="h3" variant="h3" sx={{ mb: 2 }}>
           Vos offres sont diffusées gratuitement au plus près des candidats
         </Typography>
@@ -60,7 +59,7 @@ export const OffresGratuites = () => {
           .
         </Typography>
       </Grid>
-      <Grid size={{ sm: 12, md: 6 }} sx={{ order: { xs: 1, md: 2 } }}>
+      <Grid size={{ xs: 12, md: 6 }} sx={{ order: { xs: 1, md: 2 } }}>
         <Image src="/images/home_pics/illu-plateformesjeunes.svg" alt="" aria-hidden={true} width={504} height={292} />
       </Grid>
     </Grid>
@@ -70,10 +69,10 @@ export const OffresGratuites = () => {
 const OrganismesMandataires = () => {
   return (
     <Grid container spacing={2} sx={{ alignItems: "center", justifyContent: "center" }}>
-      <Grid size={{ sm: 12, md: 6 }}>
+      <Grid size={{ xs: 12, md: 6 }}>
         <Image src="/images/home_pics/illu-solliciterCFA.svg" alt="" aria-hidden={true} width={561} height={378} />
       </Grid>
-      <Grid size={{ sm: 12, md: 6 }}>
+      <Grid size={{ xs: 12, md: 6 }}>
         <Typography component="h3" variant="h3" sx={{ mb: 2 }}>
           Identifiez facilement les organismes de formation en lien avec votre offre d’emploi
         </Typography>
@@ -86,10 +85,10 @@ const OrganismesMandataires = () => {
 const GerezOffres = () => {
   return (
     <Grid container spacing={2} sx={{ alignItems: "center", justifyContent: "center" }}>
-      <Grid size={{ sm: 12, md: 6 }}>
+      <Grid size={{ xs: 12, md: 6 }}>
         <Image src="/images/home_pics/illu-candidatures.svg" alt="" width={571} height={308} />
       </Grid>
-      <Grid container size={{ sm: 12, md: 6 }} spacing={fr.spacing("3w")} sx={{ alignItems: "center", justifyContent: "left" }}>
+      <Grid container size={{ xs: 12, md: 6 }} spacing={fr.spacing("3w")} sx={{ alignItems: "center", justifyContent: "left" }}>
         <Grid>
           <Box
             component="span"
@@ -121,6 +120,58 @@ const GerezOffres = () => {
   )
 }
 
+export const AlgoRecruteur = ({ withLinks = false }: { withLinks?: boolean }) => {
+  return (
+    <Box sx={{ p: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.alt.blueFrance.default }}>
+      <Grid container spacing={fr.spacing("8w")} sx={{ alignItems: "center", justifyContent: "center" }}>
+        <Grid size={{ xs: 12, md: 7 }}>
+          <Typography sx={{ mb: 2, fontSize: "40px", fontWeight: "700", lineHeight: "48px" }}>
+            La bonne alternance révèle
+            <br />
+            <Typography component={"span"} sx={{ color: "#0063BC", fontSize: "40px", fontWeight: "700", lineHeight: "48px" }}>
+              le marché caché de l&apos;emploi
+            </Typography>{" "}
+          </Typography>
+          {/* <Typography component="h3" variant="h3" sx={{ mb: 2, color: "#0063BC" }}>
+            le marché caché de l&apos;emploi
+          </Typography> */}
+          <Box component="hr" sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: "4px solid #0063CB", opacity: 1 }} />
+          <List>
+            <ListItem sx={{ alignItems: "flex-start", px: 0 }}>
+              <ListItemIcon sx={{ minWidth: "30px" }}>
+                <Box component={"span"} className={fr.cx("ri-circle-fill", "fr-icon--xs")} />
+              </ListItemIcon>
+              <Typography>
+                <span className="fr-text--bold">Celles ayant émis un besoin en recrutement </span>sur notre plateforme ainsi que sur France Travail et ses sites partenaires
+              </Typography>
+            </ListItem>
+            <ListItem sx={{ alignItems: "flex-start", px: 0 }}>
+              <ListItemIcon sx={{ minWidth: "30px" }}>
+                <Box component={"span"} className={fr.cx("ri-circle-fill", "fr-icon--xs")} />
+              </ListItemIcon>
+              <Typography>
+                <span className="fr-text--bold">
+                  Celles n&apos;ayant pas diffusé d&apos;offres, mais ayant été identifiées comme &quot;à fort potentiel d&apos;embauche en alternance&quot;
+                </span>{" "}
+                grâce à l'analyse de diverses données publiques (données de recrutement, données financières, etc.). La bonne alternance identifie ainsi chaque mois une liste
+                restreinte d'entreprises à fort potentiel d'embauche en alternance pour faciliter les démarches de candidatures spontanées de ses utilisateurs.
+              </Typography>
+            </ListItem>
+          </List>
+          {withLinks && (
+            <DsfrLink arrow="right" href="/desinscription" aria-label="Accès au formulaire de désinscription au service d'envoi de candidatures spontanées">
+              Je ne souhaite plus recevoir de candidature spontanée
+            </DsfrLink>
+          )}
+        </Grid>
+        <Grid size={{ xs: 12, md: 5 }}>
+          <Image src="/images/icons/algo_recruiter.svg" alt="" width={398} height={431} />
+        </Grid>
+      </Grid>
+    </Box>
+  )
+}
+
 export const HeroRecruteur = () => {
   return (
     <Grid container spacing={fr.spacing("8w")} sx={{ alignItems: "center", justifyContent: "center" }}>
@@ -139,7 +190,7 @@ export const HeroRecruteur = () => {
         </Box>
       </Grid>
       <Grid>
-        <AlgoRecruiter withLinks={true} />
+        <AlgoRecruteur withLinks={true} />
       </Grid>
       <Grid>
         <Box sx={{ backgroundColor: fr.colors.decisions.background.default.grey.default }}>
