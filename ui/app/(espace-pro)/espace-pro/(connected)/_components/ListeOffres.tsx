@@ -1,11 +1,12 @@
 "use client"
-import { Box, Container, Flex, Heading, Image, Stack } from "@chakra-ui/react"
+import { Box, Container, Flex } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
-import { Typography } from "@mui/material"
+import { Stack, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { IJobJson } from "shared"
 import { AUTHTYPE } from "shared/constants/index"
@@ -96,15 +97,15 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
 }
 
 const EmptySpace = () => (
-  <Stack direction={["column", "column", "column", "row"]} mt={12} pt={12} py={8} border="1px solid" borderColor="grey.400" spacing="32px">
+  <Stack direction={{ xs: "column", lg: "row" }} spacing="32px" sx={{ mt: fr.spacing("4w"), py: fr.spacing("5w"), border: "1px solid", borderColor: "grey.400" }}>
     <Flex justify={["center", "center", "center", "flex-end"]} align={["center", "center", "center", "flex-start"]} w={["100%", "100%", "100%", "350px"]} h="150px">
-      <Image src="/images/espace_pro/add-offer.svg" alt="" />
+      <Image src="/images/espace_pro/add-offer.svg" width="246" height="170" alt="" />
     </Flex>
 
     <Box w={["100%", "100%", "100%", "600px"]}>
-      <Heading fontSize="2rem" pb={7}>
+      <Typography variant="h2" sx={{ mb: fr.spacing("3w") }}>
         Ajoutez votre première offre d’emploi en alternance.
-      </Heading>
+      </Typography>
       <Typography fontSize="1.375rem">
         Décrivez vos besoins de recrutement pour les afficher sur le site <span style={{ fontWeight: "700" }}>La bonne alternance</span> dès aujourd’hui.
       </Typography>
