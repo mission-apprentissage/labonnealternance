@@ -1,4 +1,4 @@
-import { Badge, Button, Flex, Icon, Menu, MenuButton, MenuItem, MenuList, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import { Badge, Button, Icon, Menu, MenuButton, MenuItem, MenuList, useDisclosure, useToast } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Link, Typography } from "@mui/material"
 import { useQueryClient } from "@tanstack/react-query"
@@ -263,12 +263,12 @@ export const OffresTabs = ({
                         aria-label="Copier le lien de partage de l'offre dans le presse papier"
                       >
                         {copied ? (
-                          <Flex>
-                            <Image mr={2} src="/images/icons/share_copied_icon.svg" aria-hidden={true} alt="" />
-                            <Text as="span" fontSize="14px" mb={0} color="#18753C">
+                          <Box sx={{ display: "flex" }}>
+                            <Image width="17" height="24" src="/images/icons/share_copied_icon.svg" aria-hidden={true} alt="" />
+                            <Typography component="span" ml={fr.spacing("1w")} fontSize="14px" mb={0} color="#18753C">
                               Lien copié !
-                            </Text>
-                          </Flex>
+                            </Typography>
+                          </Box>
                         ) : (
                           "Partager l'offre"
                         )}
@@ -315,8 +315,8 @@ export const OffresTabs = ({
 
 const NumberCell = ({ children }) => {
   return (
-    <Box as="span" textAlign="right" w="100%" pr={5}>
+    <Typography component="span" sx={{ textAlign: "right", width: "100%", pr: fr.spacing("4v") }}>
       <Badge colorScheme="blue">{children}</Badge>
-    </Box>
+    </Typography>
   )
 }
