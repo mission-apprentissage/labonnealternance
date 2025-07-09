@@ -29,7 +29,7 @@ export default function Ressources() {
   const displayedTab = tabs.find((x) => x.tabId === selectedTabId) ?? firstTab
 
   return (
-    <Box>
+    <Box mb={fr.spacing("3w")}>
       <Breadcrumb pages={[PAGES.static.ressources]} />
 
       <DefaultContainer>
