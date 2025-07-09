@@ -1,23 +1,16 @@
-import { Badge, Button, Icon, Menu, MenuButton, MenuItem, MenuList, useDisclosure, useToast } from "@chakra-ui/react"
+import { Badge, useDisclosure } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Link, Typography } from "@mui/material"
-import { useQueryClient } from "@tanstack/react-query"
+import { Box, Typography } from "@mui/material"
 import dayjs from "dayjs"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { IJobJson, IRecruiterJson, JOB_STATUS } from "shared"
-import { AUTHTYPE, RECRUITER_STATUS } from "shared/constants/index"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { buildJobUrl } from "shared/metier/lbaitemutils"
+import { RECRUITER_STATUS } from "shared/constants/index"
 
 import Table from "@/app/(espace-pro)/_components/Table"
 import ConfirmationSuppressionOffre from "@/app/(espace-pro)/espace-pro/(connected)/_components/ConfirmationSuppressionOffre"
+import { OffresTabsMenu } from "@/app/(espace-pro)/espace-pro/(connected)/_components/OffresTabsMenu"
 import { sortReactTableDate } from "@/common/utils/dateUtils"
-import { publicConfig } from "@/config.public"
-import { useAuth } from "@/context/UserContext"
-import { Parametre } from "@/theme/components/icons"
-import { extendOffre } from "@/utils/api"
 
 const displayJobStatus = (status: JOB_STATUS, recruiter: IRecruiterJson) => {
   if (recruiter.status === RECRUITER_STATUS.EN_ATTENTE_VALIDATION) {
@@ -73,13 +66,8 @@ export const OffresTabs = ({
   showStats?: boolean
   buildOfferEditionUrl: (offerId: string) => string
 }) => {
-  const router = useRouter()
-  const toast = useToast()
-  const client = useQueryClient()
-  const { user } = useAuth()
   const confirmationSuppression = useDisclosure()
-  const [currentOffre, setCurrentOffre] = useState()
-  const [copied, setCopied] = useState(false)
+  const [currentOffre /*, setCurrentOffre*/] = useState()
 
   /* @ts-ignore TODO */
   const jobs: (IJobJson & { candidatures: number; geo_coordinates: string })[] = recruiter?.jobs ?? []
@@ -173,132 +161,7 @@ export const OffresTabs = ({
       disableSortBy: true,
       // isSticky: true,
       accessor: (row) => {
-        const [lat, lon] = (row.geo_coordinates ?? "").split(",")
-        const cfaOptionParams =
-          user.type === AUTHTYPE.ENTREPRISE
-            ? {
-                href: `${publicConfig.baseUrl}/espace-pro/entreprise/offre/${row._id}/mise-en-relation`,
-                "aria-label": "Lien vers les mise en relations avec des centres de formations",
-              }
-            : {
-                href: `${publicConfig.baseUrl}/recherche-formation?romes=${row.rome_code}&lon=${lon}&lat=${lat}`,
-                target: "_blank",
-                rel: "noopener noreferrer",
-                "aria-label": "Lien vers les formations - nouvelle fenêtre",
-              }
-        const directLink = `${publicConfig.baseUrl}${buildJobUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, row._id, row.rome_appellation_label || undefined)}`
-        const isDisable = row.job_status === "Annulée" || row.job_status === "Pourvue" || row.job_status === "En attente"
-        return (
-          <Box display={isDisable ? "none" : "block"}>
-            <Menu
-              onOpen={() => {
-                setCopied(false)
-              }}
-            >
-              {({ isOpen }) => (
-                <>
-                  <MenuButton isActive={isOpen} as={Button} variant="navdot">
-                    <Icon as={Parametre} color="bluefrance.500" />
-                  </MenuButton>
-                  <MenuList>
-                    <MenuItem>
-                      <Link component="button" underline="hover" onClick={() => router.push(buildOfferEditionUrl(row._id))}>
-                        Editer l'offre
-                      </Link>
-                    </MenuItem>
-                    <MenuItem>
-                      <Link
-                        component="button"
-                        underline="hover"
-                        onClick={() => {
-                          extendOffre(row._id)
-                            .then((job) =>
-                              toast({
-                                title: `Date d'expiration : ${dayjs(job.job_expiration_date).format("DD/MM/YYYY")}`,
-                                position: "top-right",
-                                status: "success",
-                                duration: 2000,
-                                isClosable: true,
-                              })
-                            )
-                            .finally(() =>
-                              client.invalidateQueries({
-                                queryKey: ["offre-liste"],
-                              })
-                            )
-                        }}
-                      >
-                        Prolonger l'offre
-                      </Link>
-                    </MenuItem>
-                    <MenuItem>
-                      <Link underline="hover" target="_blank" rel="noopener noreferrer" href={directLink} aria-label="Lien vers l'offre - nouvelle fenêtre">
-                        Voir l'offre en ligne
-                      </Link>
-                    </MenuItem>
-                    {row.job_status !== JOB_STATUS.EN_ATTENTE && (
-                      <MenuItem>
-                        <Link
-                          underline="hover"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          href={`${publicConfig.baseUrl}/espace-pro/offre/impression/${row._id}`}
-                          aria-label="Lien vers la page d'impression de l'offre - nouvelle fenêtre"
-                        >
-                          Imprimer l'offre
-                        </Link>
-                      </MenuItem>
-                    )}
-                    <MenuItem>
-                      <Link
-                        underline="hover"
-                        onClick={(e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
-                          navigator.clipboard.writeText(directLink).then(function () {
-                            setCopied(true)
-                          })
-                        }}
-                        component="button"
-                        aria-label="Copier le lien de partage de l'offre dans le presse papier"
-                      >
-                        {copied ? (
-                          <Box sx={{ display: "flex" }}>
-                            <Image width="17" height="24" src="/images/icons/share_copied_icon.svg" aria-hidden={true} alt="" />
-                            <Typography component="span" ml={fr.spacing("1w")} fontSize="14px" mb={0} color="#18753C">
-                              Lien copié !
-                            </Typography>
-                          </Box>
-                        ) : (
-                          "Partager l'offre"
-                        )}
-                      </Link>
-                    </MenuItem>
-                    {user.type !== AUTHTYPE.CFA && (
-                      <MenuItem>
-                        <Link underline="hover" {...cfaOptionParams}>
-                          Voir les centres de formation
-                        </Link>
-                      </MenuItem>
-                    )}
-                    <MenuItem>
-                      <Link
-                        underline="hover"
-                        component="button"
-                        onClick={() => {
-                          confirmationSuppression.onOpen()
-                          setCurrentOffre(row)
-                        }}
-                      >
-                        Supprimer l'offre
-                      </Link>
-                    </MenuItem>
-                  </MenuList>
-                </>
-              )}
-            </Menu>
-          </Box>
-        )
+        return <OffresTabsMenu buildOfferEditionUrl={buildOfferEditionUrl} row={row} />
       },
     },
     ...commonColumns,
