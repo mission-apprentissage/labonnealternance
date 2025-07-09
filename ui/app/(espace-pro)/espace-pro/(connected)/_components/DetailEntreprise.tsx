@@ -114,7 +114,6 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
 
   const lastUserState: IUserStatusValidationJson = userRecruteur.status.at(-1)
   const establishmentLabel = userRecruteur.establishment_raison_sociale ?? userRecruteur.establishment_siret
-  console.log(userMutation.error)
 
   return (
     <AnimationContainer>
