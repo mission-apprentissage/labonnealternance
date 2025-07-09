@@ -372,7 +372,7 @@ export const getLbaJobByIdV2AsJobResult = async ({ id, caller }: { id: string; c
     const rawJob = await getOffreAvecInfoMandataire(id)
 
     if (!rawJob) {
-      throw badRequest()
+      return null
     }
 
     if (caller) {
