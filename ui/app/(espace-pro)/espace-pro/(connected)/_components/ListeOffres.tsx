@@ -55,7 +55,9 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
       {!hideModify && user.type !== AUTHTYPE.OPCO && (
         <Box mr={fr.spacing("3w")}>
           <Button priority="secondary" onClick={() => router.push(PAGES.dynamic.modificationEntreprise(user.type, establishment_id).getPath())}>
-            <Building mr={fr.spacing("1w")} /> {user.type === AUTHTYPE.ENTREPRISE ? "Mes informations" : "Modifier l'entreprise"}
+            <Building mr={fr.spacing("1w")} />
+            <Typography className={fr.cx("fr-icon-hotel-line")} />
+            {user.type === AUTHTYPE.ENTREPRISE ? "Mes informations" : "Modifier l'entreprise"}
           </Button>
         </Box>
       )}
