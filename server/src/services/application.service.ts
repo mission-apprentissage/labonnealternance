@@ -1248,7 +1248,7 @@ const buildSendOtherApplicationsUrl = (application: IApplication, type: LBA_ITEM
     }
     url.searchParams.append("utm_source", "lba-brevo-transactionnel")
     url.searchParams.append("utm_medium", "email")
-    url.searchParams.append("utm_campaign", "accuse-envoi-lien-recherche")
+    url.searchParams.append("utm_campaign", "accuse-envoi-candidature-lien-recherche")
     return url.toString()
   }
 
