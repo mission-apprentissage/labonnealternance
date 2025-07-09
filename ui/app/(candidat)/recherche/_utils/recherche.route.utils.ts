@@ -95,7 +95,10 @@ export function buildRecherchePageParams(params: Partial<IRecherchePageParams>, 
   if (params.geo) {
     query.set("lat", params.geo.latitude.toString())
     query.set("lon", params.geo.longitude.toString())
-    query.set("radius", params.geo.radius.toString())
+    const radius = params.geo.radius
+    if (radius !== undefined) {
+      query.set("radius", radius.toString())
+    }
 
     if (params.geo.address) {
       query.set("address", params.geo.address)
@@ -157,7 +160,7 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
           address: search.get("address") ?? null,
           latitude: parseFloat(rawLat),
           longitude: parseFloat(rawLon),
-          radius: parseInt(search.get("radius") ?? "30"),
+          radius: parseInt(search.get("radius") ?? "30", 10),
         }
       : null
 

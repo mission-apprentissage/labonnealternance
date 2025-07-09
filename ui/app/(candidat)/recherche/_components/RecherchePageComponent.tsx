@@ -13,35 +13,25 @@ import { PAGES } from "@/utils/routes.utils"
 
 function RechercheHeader(props: WithRecherchePageParams) {
   return (
-    <Box
-      sx={{
-        boxShadow: 2,
-        backgroundColor: fr.colors.decisions.background.default.grey.default,
-        zIndex: 5,
-      }}
-    >
+    <>
       <Box
         sx={{
-          p: fr.spacing("3v"),
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "1fr",
-            lg: "max-content 1fr",
-          },
-          gap: fr.spacing("4w"),
-          alignItems: "center",
-          justifyContent: "space-between",
-          maxWidth: "xl",
-          margin: "auto",
+          boxShadow: 2,
+          backgroundColor: fr.colors.decisions.background.default.grey.default,
+          zIndex: 5,
         }}
       >
         <Box
           sx={{
-            display: {
-              xs: "none",
-              lg: "block",
+            padding: fr.spacing("3v"),
+            maxWidth: "xl",
+            margin: "auto",
+            display: "flex",
+            gap: {
+              md: fr.spacing("4w"),
+              lg: fr.spacing("8w"),
             },
-            alignSelf: "start",
+            alignItems: "center",
           }}
         >
           <Link
@@ -53,13 +43,23 @@ function RechercheHeader(props: WithRecherchePageParams) {
           >
             <Image src="/images/logo-violet-seul.svg" width={40} height={44} alt="Retour page d'accueil de La bonne alternance" unoptimized />
           </Link>
-        </Box>
-        <Box>
-          <CandidatRechercheForm {...props} />
-          <CandidatRechercheFilters {...props} />
+          <Box sx={{ flex: 1 }}>
+            <CandidatRechercheForm {...props} />
+          </Box>
         </Box>
       </Box>
-    </Box>
+      <Box
+        sx={{
+          maxWidth: "xl",
+          alignSelf: "center",
+          width: "100%",
+          marginTop: fr.spacing("2w"),
+          marginBottom: fr.spacing("4w"),
+        }}
+      >
+        <CandidatRechercheFilters {...props} />
+      </Box>
+    </>
   )
 }
 
@@ -69,13 +69,22 @@ export function RecherchePageComponent(props: WithRecherchePageParams) {
       sx={{
         backgroundColor: fr.colors.decisions.background.alt.grey.default,
         height: "100vh",
-        gridTemplateRows: "min-content 1fr",
-        display: "grid",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       <RechercheHeader {...props} />
       <Suspense fallback={<RechercheResultatsPlaceholder />}>
-        <RechercheResultats {...props} />
+        <Box
+          sx={{
+            overflow: "hidden",
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <RechercheResultats {...props} />
+        </Box>
       </Suspense>
     </Box>
   )

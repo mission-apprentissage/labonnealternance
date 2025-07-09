@@ -1,14 +1,19 @@
 "use client"
 
+import { fr } from "@codegouvfr/react-dsfr"
 import { createModal } from "@codegouvfr/react-dsfr/Modal"
 import { prDsfrLoaded } from "@codegouvfr/react-dsfr/start"
 import { Box } from "@mui/material"
 import { captureException } from "@sentry/nextjs"
 import { useCallback, useEffect } from "react"
 
+import { RechercheLieuAutocomplete } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheLieuAutocomplete"
+import { RechercheMetierAutocomplete } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheMetierAutocomplete"
+import { RechercheResultTypeCheckbox } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheResultTypeCheckbox"
+import { RechercheSubmitButton } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheSubmitButton"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
-import type { IRecherchePageParams, WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
-import { RechercheForm } from "@/app/_components/RechercheForm/RechercheForm"
+import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+import { IRechercheForm, RechercheForm, rechercheFormToRechercheParams, UserItemTypes } from "@/app/_components/RechercheForm/RechercheForm"
 import { RechercheFormTitle } from "@/app/_components/RechercheForm/RechercheFormTitle"
 import { apiGet } from "@/utils/api.utils"
 
@@ -18,14 +23,23 @@ export const candidatRechercheFormModal = createModal({
 })
 
 export function CandidatRechercheForm(props: WithRecherchePageParams) {
+  const { displayEntreprises, displayFormations } = props.params
+  const checkedItemTypes: UserItemTypes[] = []
+  if (displayEntreprises) {
+    checkedItemTypes.push(UserItemTypes.EMPLOI)
+  }
+  if (displayFormations) {
+    checkedItemTypes.push(UserItemTypes.FORMATIONS)
+  }
+
   const navigateToRecherchePage = useNavigateToRecherchePage(props.params)
 
   const onSubmit = useCallback(
-    (result: Pick<IRecherchePageParams, "romes" | "diploma" | "job_name" | "geo" | "job_type" | "activeItems">) => {
+    (result: IRechercheForm) => {
       prDsfrLoaded.then(() => {
         candidatRechercheFormModal.close()
       })
-      navigateToRecherchePage(result)
+      navigateToRecherchePage(rechercheFormToRechercheParams(result))
     },
     [navigateToRecherchePage]
   )
@@ -55,6 +69,50 @@ export function CandidatRechercheForm(props: WithRecherchePageParams) {
     }
   }, [props.params, navigateToRecherchePage])
 
+  const rechercheForm = (
+    <RechercheForm onSubmit={onSubmit} rechercheParams={props.params}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "flex-end",
+          gap: fr.spacing("2w"),
+        }}
+      >
+        <Box
+          sx={{
+            "& .fr-fieldset__content": {
+              display: "flex",
+              flexDirection: "column",
+              gap: fr.spacing("1w"),
+
+              "& .fr-checkbox-group": {
+                marginTop: "-0.75rem",
+                marginBottom: "-0.75rem",
+              },
+            },
+          }}
+        >
+          <RechercheResultTypeCheckbox
+            checked={checkedItemTypes}
+            onChange={(newValues) =>
+              navigateToRecherchePage({
+                displayEntreprises: newValues.includes(UserItemTypes.EMPLOI),
+                displayFormations: newValues.includes(UserItemTypes.FORMATIONS),
+              })
+            }
+          />
+        </Box>
+        <Box sx={{ flex: 450 }}>
+          <RechercheMetierAutocomplete />
+        </Box>
+        <Box sx={{ flex: 250 }}>
+          <RechercheLieuAutocomplete />
+        </Box>
+        <RechercheSubmitButton />
+      </Box>
+    </RechercheForm>
+  )
+
   return (
     <Box>
       <Box
@@ -66,7 +124,7 @@ export function CandidatRechercheForm(props: WithRecherchePageParams) {
         }}
       >
         <candidatRechercheFormModal.Component title={<RechercheFormTitle />} topAnchor size="large">
-          <RechercheForm type="recherche" onSubmit={onSubmit} initialValue={props.params} />
+          {rechercheForm}
         </candidatRechercheFormModal.Component>
       </Box>
 
@@ -78,7 +136,7 @@ export function CandidatRechercheForm(props: WithRecherchePageParams) {
           },
         }}
       >
-        <RechercheForm type="recherche" onSubmit={onSubmit} initialValue={props.params} />
+        {rechercheForm}
       </Box>
     </Box>
   )

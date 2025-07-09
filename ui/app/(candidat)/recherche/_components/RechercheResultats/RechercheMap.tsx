@@ -516,12 +516,14 @@ function RechercheCarteInternal(props: RechercheCarteProps) {
 
   return (
     <Box
+      id="RechercheCarte"
       sx={{
         background: "center no-repeat url('/images/static_map.svg'), #fff",
         backgroundSize: "auto",
         position: "relative",
         overflow: "hidden",
         height: "100%",
+        flex: 1,
       }}
     >
       <Box
@@ -539,6 +541,7 @@ function RechercheCarteInternal(props: RechercheCarteProps) {
 }
 
 export function RechercheCarte(props: RechercheCarteProps) {
+  console.log("render RechercheCarte")
   return (
     <ErrorBoundary>
       <RechercheCarteInternal {...props} />

@@ -106,6 +106,7 @@ export function RechercheResultatsList(props: WithRecherchePageParams) {
         width: "100%",
         contain: "strict",
         pb: fr.spacing("10w"),
+        flex: 1,
       }}
     >
       <Box sx={{ maxWidth: "xl", margin: "auto" }}>

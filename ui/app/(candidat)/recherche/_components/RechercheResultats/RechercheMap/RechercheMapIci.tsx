@@ -6,18 +6,16 @@ import { Box } from "@mui/material"
 import { LngLat, Map as Mapbox } from "mapbox-gl"
 import { useCallback, useEffect, useState } from "react"
 
+import { RADIUS_OPTIONS_VALUES } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheRayonSelect"
 import { earthCircumferenceKm, mapboxTileSize } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
 import type { IRecherchePageParams, WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
-import { radiusOptions } from "@/app/_components/RechercheForm/RechercheForm"
 
 type RechercheMapIciProps = {
   map: Mapbox
   radius: number | null
   searchArea: { center: [number, number]; zoom: number }
 }
-
-const RADIUS_OPTIONS_VALUES = radiusOptions.map((option) => parseFloat(option.value))
 
 const MAX_RADIUS = Math.max(...RADIUS_OPTIONS_VALUES)
 
