@@ -13,7 +13,7 @@ import { AUTHTYPE } from "shared/constants/index"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { OffresTabs } from "@/app/(espace-pro)/espace-pro/(connected)/_components/OffresTabs"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
-import { Building, Plus } from "@/theme/components/icons"
+import { Plus } from "@/theme/components/icons"
 import { getFormulaire } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -55,8 +55,7 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
       {!hideModify && user.type !== AUTHTYPE.OPCO && (
         <Box mr={fr.spacing("3w")}>
           <Button priority="secondary" onClick={() => router.push(PAGES.dynamic.modificationEntreprise(user.type, establishment_id).getPath())}>
-            <Building mr={fr.spacing("1w")} />
-            <Typography className={fr.cx("fr-icon-hotel-line")} />
+            <Typography mr={fr.spacing("1w")} className={fr.cx("fr-icon-hotel-line")} />
             {user.type === AUTHTYPE.ENTREPRISE ? "Mes informations" : "Modifier l'entreprise"}
           </Button>
         </Box>
