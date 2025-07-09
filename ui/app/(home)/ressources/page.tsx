@@ -1,10 +1,12 @@
 "use client"
 
-import { Box, Container, Grid, GridItem, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import { SideMenu } from "@codegouvfr/react-dsfr/SideMenu"
 import Tabs from "@codegouvfr/react-dsfr/Tabs"
+import { Box, Typography } from "@mui/material"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
+import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { useUrlHash } from "@/app/hooks/useUrlHash"
 import RessourcesCandidat from "@/components/Ressources/ressourcesCandidat"
 import RessourcesCFA from "@/components/Ressources/ressourcesCFA"
@@ -30,14 +32,27 @@ export default function Ressources() {
     <Box>
       <Breadcrumb pages={[PAGES.static.ressources]} />
 
-      <Container p={{ base: 2, md: 0 }} my={0} mb={[0, 12]} variant="whitePageContainer">
-        <Box as="h1" mb={8}>
-          <Text as="span" display="block" mb={1} variant="editorialContentH1">
+      <DefaultContainer>
+        <Box mb={fr.spacing("3w")}>
+          <Typography component={"h1"} variant="h1" sx={{ color: "#0063BC" }}>
             Ressources
-          </Text>
+          </Typography>
         </Box>
-        <Grid templateColumns="repeat(5, 1fr)" gap={10}>
-          <GridItem display={{ base: "none", lg: "block" }} colSpan={{ base: 0, lg: 1 }}>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "repeat(1, 1fr)",
+              lg: "repeat(5, 1fr)",
+            },
+          }}
+        >
+          <Box
+            sx={{
+              display: { xs: "none", lg: "block" },
+              gridColumn: { lg: "span 1" },
+            }}
+          >
             <SideMenu
               align="left"
               burgerMenuButtonText="Dans cette rubrique"
@@ -49,9 +64,14 @@ export default function Ressources() {
                 text: label,
               }))}
             />
-          </GridItem>
-          <GridItem colSpan={{ base: 5, lg: 4 }}>
-            <Box display={{ base: "block", lg: "none" }} mb={6}>
+          </Box>
+
+          <Box
+            sx={{
+              gridColumn: { xs: "span 1", lg: "span 4" },
+            }}
+          >
+            <Box sx={{ display: { xs: "block", lg: "none" }, mb: 6 }}>
               <Tabs
                 selectedTabId={selectedTabId}
                 tabs={tabs.map(({ label, tabId }) => ({ label, tabId }))}
@@ -62,10 +82,11 @@ export default function Ressources() {
                 <></>
               </Tabs>
             </Box>
+
             {displayedTab.content}
-          </GridItem>
-        </Grid>
-      </Container>
+          </Box>
+        </Box>
+      </DefaultContainer>
     </Box>
   )
 }
