@@ -723,10 +723,6 @@ export const incrementLbaJobsViewCount = async (jobIds: string[]) => {
 const getLbaJobContactInfo = async (recruiter: IJobResult["recruiter"]): Promise<Partial<IJobResult["recruiter"]>> => {
   if (recruiter.is_delegated && recruiter.cfa_delegated_siret) {
     const { managed_by } = recruiter
-    if (!managed_by) {
-      throw internal(`managed_by est manquant pour le recruiter avec id=${recruiter._id}`)
-    }
-
     const [cfa, cfaUser] = await Promise.all([
       getDbCollection("cfas").findOne({ siret: recruiter.cfa_delegated_siret }),
       getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(managed_by) }),

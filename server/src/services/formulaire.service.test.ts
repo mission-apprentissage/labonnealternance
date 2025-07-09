@@ -59,7 +59,6 @@ describe("createJob", () => {
 
   const generateValidJobWritable = () => {
     return generateJobFixture({
-      managed_by: user._id.toString(),
       rome_code: [referentielRome.rome.code_rome],
       rome_label: referentielRome.rome.intitule,
       rome_appellation_label: referentielRome.appellations[0].libelle,

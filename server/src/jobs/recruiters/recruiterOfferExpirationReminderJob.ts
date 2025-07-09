@@ -65,9 +65,6 @@ export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirati
     const recruiter = jobsWithRecruiter[0].recruiter
     const { establishment_raison_sociale, is_delegated, managed_by } = recruiter
     try {
-      if (!managed_by) {
-        throw internal(`inattendu : managed_by manquant pour le formulaire id=${recruiter._id}`)
-      }
       const contactUser = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(managed_by) })
       if (!contactUser) {
         throw internal(`inattendu : impossible de trouver l'utilisateur gérant le formulaire id=${recruiter._id}`)

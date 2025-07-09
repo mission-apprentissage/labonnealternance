@@ -93,9 +93,6 @@ const updateRecruteursSiretInfosInError = async () => {
         const entrepriseData: Partial<EntrepriseData> = siretResponse
         const updatedRecruiter = await updateFormulaire(establishment_id, { ...entrepriseData, status: RECRUITER_STATUS.ACTIF })
         const { managed_by } = updatedRecruiter
-        if (!managed_by) {
-          throw internal(`inattendu : managed_by vide`)
-        }
         const managingUser = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(managed_by) })
         if (!managingUser) {
           throw internal(`inattendu : managingUser non trouvé pour _id=${managed_by}`)
