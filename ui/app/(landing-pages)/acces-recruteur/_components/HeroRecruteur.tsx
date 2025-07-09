@@ -132,9 +132,6 @@ export const AlgoRecruteur = ({ withLinks = false }: { withLinks?: boolean }) =>
               le marché caché de l&apos;emploi
             </Typography>{" "}
           </Typography>
-          {/* <Typography component="h3" variant="h3" sx={{ mb: 2, color: "#0063BC" }}>
-            le marché caché de l&apos;emploi
-          </Typography> */}
           <Box component="hr" sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: "4px solid #0063CB", opacity: 1 }} />
           <List>
             <ListItem sx={{ alignItems: "flex-start", px: 0 }}>
