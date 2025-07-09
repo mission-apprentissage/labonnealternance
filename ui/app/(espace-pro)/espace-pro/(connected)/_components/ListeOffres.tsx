@@ -61,7 +61,7 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
         </Box>
       )}
       <Button onClick={navigateToCreation}>
-        <Plus mr={2} /> Ajouter une offre
+        <Plus sx={{ mr: fr.spacing("1w") }} /> Ajouter une offre
       </Button>
     </Box>
   )
