@@ -79,6 +79,7 @@ const recruiter = generateRecruiterFixture({
   geopoint: parisFixture.centre,
   status: RECRUITER_STATUS.ACTIF,
   email: recruiterEmailFixture,
+  managed_by: user._id.toString(),
   jobs: [
     {
       rome_code: ["M1602"],
@@ -126,6 +127,7 @@ const userToken = buildUserForToken(applicationFixture, user)
 const intentionToken = generateApplicationReplyToken(userToken, applicationFixture._id.toString(), ApplicationIntention.ENTRETIEN)
 
 const mockData = async () => {
+  await getDbCollection("userswithaccounts").insertOne(user)
   await getDbCollection("jobs_partners").insertOne(recruteur)
   await getDbCollection("recruiters").insertOne(recruiter)
   await getDbCollection("referentielromes").insertOne(referentielRome)

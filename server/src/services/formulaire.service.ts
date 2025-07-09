@@ -183,13 +183,14 @@ export const createJob = async ({
   }
   const creationDate = new Date()
   const { job_start_date } = job
-  const updatedJob: Partial<IJob> = Object.assign(job, {
+  const addedFields: Partial<IJob> = {
     job_status: newJobStatus,
     job_start_date,
     job_creation_date: creationDate,
     job_expiration_date: addExpirationPeriod(creationDate).toDate(),
     job_update_date: creationDate,
-  })
+  }
+  const updatedJob: Partial<IJob> = Object.assign(job, addedFields)
   // insert job
   const updatedFormulaire = await createOffre(establishment_id, updatedJob)
   const { jobs } = updatedFormulaire
