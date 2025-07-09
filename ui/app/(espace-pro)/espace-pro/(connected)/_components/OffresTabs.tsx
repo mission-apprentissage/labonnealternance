@@ -1,7 +1,9 @@
-import { Badge, Box, Button, Flex, Icon, Image, Menu, MenuButton, MenuItem, MenuList, Text, useDisclosure, useToast } from "@chakra-ui/react"
-import { Link } from "@mui/material"
+import { Badge, Button, Flex, Icon, Menu, MenuButton, MenuItem, MenuList, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Link, Typography } from "@mui/material"
 import { useQueryClient } from "@tanstack/react-query"
 import dayjs from "dayjs"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { IJobJson, IRecruiterJson, JOB_STATUS } from "shared"
@@ -84,13 +86,13 @@ export const OffresTabs = ({
 
   if (jobs.length === 0) {
     return (
-      <Box py={6} backgroundColor="bluefrance.250">
-        <Flex width="fit-content" m="auto" alignItems="center">
-          <Image src="/images/espace_pro/no-job.svg" alt="" aria-hidden={true} />
-          <Text ml={2} fontWeight={700} color="#161616" as="span">
+      <Box sx={{ py: fr.spacing("3w"), backgroundColor: "#F5F5FE" }}>
+        <Box sx={{ display: "flex", width: "fit-content", m: "auto", alignItems: "center" }}>
+          <Image src="/images/espace_pro/no-job.svg" alt="" aria-hidden={true} width="118" height="70" />
+          <Typography component="span" ml={fr.spacing("1w")} fontWeight={700} color="#161616">
             Aucune offre déposée
-          </Text>
-        </Flex>
+          </Typography>
+        </Box>
       </Box>
     )
   }
