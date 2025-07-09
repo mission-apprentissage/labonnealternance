@@ -3,6 +3,7 @@ import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
 import { logger } from "@/common/logger"
+import { formatTextFieldsJobsPartners } from "@/jobs/offrePartenaire/formatTextFieldsJobsPartners"
 
 import { blockBadRomeJobsPartners } from "./blockBadRomeJobsPartners"
 import { blockJobsPartnersWithNaf85 } from "./blockJobsPartnersWithNaf85"
@@ -33,8 +34,12 @@ export const fillComputedJobsPartners = async (partialContext: Partial<FillCompu
   await fillLocationInfosForPartners(context)
   await fillRomeForPartners(context)
   await blockBadRomeJobsPartners(context)
+
+  await formatTextFieldsJobsPartners(context)
+
   await rankJobPartners(context)
   await detectDuplicateJobPartners(context)
+
   await validateComputedJobPartners(context)
   logger.info("fin de fillComputedJobsPartners")
 }
