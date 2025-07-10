@@ -14,7 +14,7 @@ const cfaCompanyList = [
   "ISFOI",
   "PÔLE FORMATION UIMM BRETAGNE - BRUZ",
   "PÔLE FORMATION UIMM BRETAGNE - PLERIN",
-  "IFAC Campus des Métiers BREST"
+  "IFAC Campus des Métiers BREST",
   "IFCV - Formations en Alternance",
   "IPAC Bachelor Factory Bordeaux",
   "IGENSIA Alternance",
