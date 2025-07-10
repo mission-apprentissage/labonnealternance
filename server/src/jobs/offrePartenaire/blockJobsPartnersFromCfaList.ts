@@ -1,3 +1,5 @@
+import { stringNormaliser } from "@/common/utils/stringUtils"
+
 const cfaCompanyList = [
   "Afpa pays de Savoie",
   "AFTEC Caen",
@@ -1640,4 +1642,7 @@ const cfaCompanyList = [
   "ZONE 01 ROUEN",
 ]
 
-export const isCompanyInBlockedCfaList = (companyName: string): boolean => cfaCompanyList.includes(companyName.toUpperCase())
+export const isCompanyInBlockedCfaList = (nom: string): boolean => {
+  const nomNormalise = stringNormaliser(nom)
+  return cfaCompanyList.some((cfa) => stringNormaliser(cfa) === nomNormalise)
+}
