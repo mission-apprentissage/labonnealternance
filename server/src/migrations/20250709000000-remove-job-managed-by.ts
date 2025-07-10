@@ -8,6 +8,7 @@ export const up = async (_db: Db) => {
     { $unset: { "jobs.$[elem].managed_by": "" } },
     {
       arrayFilters: [{ "elem.managed_by": { $exists: true } }],
+      bypassDocumentValidation: true,
     }
   )
 }

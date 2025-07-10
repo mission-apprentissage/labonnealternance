@@ -1024,13 +1024,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
-          "managed_by": {
-            "description": "NE PLUS UTILISER",
-            "type": [
-              "string",
-              "null",
-            ],
-          },
           "mer_sent": {
             "description": "Date d'envoi de la mise en relation",
             "type": [
