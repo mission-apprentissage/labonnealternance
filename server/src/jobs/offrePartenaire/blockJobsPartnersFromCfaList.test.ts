@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 
 import { isCompanyInBlockedCfaList } from "@/jobs/offrePartenaire/blockJobsPartnersFromCfaList"
 
-describe("cfaExiste (insensible à la casse et aux accents)", () => {
+describe("isCompanyInBlockedCfaList (insensible à la casse et aux accents)", () => {
   it("devrait trouver les CFA avec casse et accents exacts", () => {
     expect(isCompanyInBlockedCfaList("AFTEC Caen")).toBe(true)
     expect(isCompanyInBlockedCfaList("École de Management Appliqué (EMA)")).toBe(true)
