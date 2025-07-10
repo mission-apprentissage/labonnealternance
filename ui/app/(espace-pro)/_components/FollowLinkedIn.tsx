@@ -4,9 +4,12 @@ import { Grid2 as Grid, Typography } from "@mui/material"
 
 export const FollowLinkedIn = () => {
   return (
-    <Grid container spacing={fr.spacing("15w")} sx={{ alignItems: "center", justifyContent: "center" }}>
+    <Grid container spacing={fr.spacing("4w")} sx={{ alignItems: "center", justifyContent: "center" }}>
       <Grid size={{ xs: 12, md: 9 }}>
-        <Typography>La mission ministérielle pour l’apprentissage construit des services numériques qui facilitent les entrées en apprentissage.</Typography>
+        <Typography sx={{ fontWeight: "700", mb: fr.spacing("2w") }}>
+          La bonne alternance est édité par la Délégation générale à l’emploi et à la formation professionnelle (DGEFP) et conçoit des services numériques qui facilitent les
+          entrées en apprentissage.
+        </Typography>
         <Typography sx={{ fontSize: "32px", fontWeight: "700", color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Rendez-vous sur LinkedIn pour suivre nos actualités
         </Typography>
@@ -18,7 +21,7 @@ export const FollowLinkedIn = () => {
           iconId="ri-linkedin-box-fill"
           iconPosition="right"
         >
-          Voir notre page
+          Voir notre page LinkedIn
         </Button>
       </Grid>
     </Grid>
