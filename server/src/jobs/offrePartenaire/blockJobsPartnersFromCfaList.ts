@@ -1,4 +1,4 @@
-import { stringNormaliser } from "@/common/utils/stringUtils"
+import { removeAccents } from "shared"
 
 const cfaCompanyList = [
   "Afpa pays de Savoie",
@@ -1641,6 +1641,10 @@ const cfaCompanyList = [
   "ZLS",
   "ZONE 01 ROUEN",
 ]
+
+export const stringNormaliser = (str: string) => {
+  return removeAccents(str.toLowerCase())
+}
 
 export const isCompanyInBlockedCfaList = (nom: string): boolean => {
   const nomNormalise = stringNormaliser(nom)

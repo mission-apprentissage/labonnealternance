@@ -21,10 +21,3 @@ export const formatHtmlForPartnerDescription = (text: string) => {
   sanitizedText = removeHtmlTagsFromString(sanitizedText) as string
   return sanitizedText
 }
-
-export const stringNormaliser = (str: string): string => {
-  return str
-    .normalize("NFD") // Décompose les caractères accentués
-    .replace(/[\u0300-\u036f]/g, "") // Supprime les diacritiques (accents)
-    .toLowerCase() // Met en minuscules
-}
