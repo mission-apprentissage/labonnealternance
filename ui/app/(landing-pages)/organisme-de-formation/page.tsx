@@ -3,8 +3,8 @@ import type { Metadata } from "next"
 
 import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActions"
 import { FollowLinkedIn } from "@/app/(espace-pro)/_components/FollowLinkedIn"
-import { OffresGratuites } from "@/app/(espace-pro)/_components/OffresGratuites"
 import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
+import { OffresGratuites } from "@/app/(landing-pages)/acces-recruteur/_components/HeroRecruteur"
 import { BientotCFA } from "@/app/(landing-pages)/organisme-de-formation/_components/BientotCFA"
 import { CFA } from "@/app/(landing-pages)/organisme-de-formation/_components/CFA"
 import { FacilitezRDVA } from "@/app/(landing-pages)/organisme-de-formation/_components/FacilitezRDVA"
@@ -12,6 +12,8 @@ import { GerezEntreprise } from "@/app/(landing-pages)/organisme-de-formation/_c
 import OffresAutoExposees from "@/app/(landing-pages)/organisme-de-formation/_components/OffresAutoExposees"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { PAGES } from "@/utils/routes.utils"
+
+OffresGratuites
 
 export const metadata: Metadata = {
   title: PAGES.static.organismeDeFormation.getMetadata().title,
