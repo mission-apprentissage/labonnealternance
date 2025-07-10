@@ -1,5 +1,6 @@
-import { Button, Icon, useDisclosure, useToast } from "@chakra-ui/react"
+import { useDisclosure, useToast } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
+import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Box, ClickAwayListener, Grow, Link, MenuItem, MenuList, Paper, Popper, Typography } from "@mui/material"
 import { useQueryClient } from "@tanstack/react-query"
 import dayjs from "dayjs"
@@ -13,7 +14,6 @@ import { buildJobUrl } from "shared/metier/lbaitemutils"
 
 import { publicConfig } from "@/config.public"
 import { useAuth } from "@/context/UserContext"
-import { Parametre } from "@/theme/components/icons"
 import { extendOffre } from "@/utils/api"
 
 export const OffresTabsMenu = ({ row, buildOfferEditionUrl }: { row: any; buildOfferEditionUrl: (offerId: string) => string }) => {
@@ -35,7 +35,7 @@ export const OffresTabsMenu = ({ row, buildOfferEditionUrl }: { row: any; buildO
     if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
       return
     }
-
+    setCopied(false)
     setOpen(false)
   }
 
@@ -82,9 +82,10 @@ export const OffresTabsMenu = ({ row, buildOfferEditionUrl }: { row: any; buildO
         aria-expanded={open ? "true" : undefined}
         aria-haspopup="true"
         onClick={handleToggle}
-      >
-        <Icon as={Parametre} color="bluefrance.500" />
-      </Button>
+        priority="tertiary no outline"
+        iconId="fr-icon-settings-5-line"
+        title="Actions sur l'offre"
+      />
       <Popper open={open} anchorEl={anchorRef.current} role={undefined} placement="bottom-start" transition disablePortal>
         {({ TransitionProps, placement }) => (
           <Grow
@@ -93,15 +94,19 @@ export const OffresTabsMenu = ({ row, buildOfferEditionUrl }: { row: any; buildO
               transformOrigin: placement === "bottom-start" ? "left top" : "left bottom",
             }}
           >
-            <Paper>
+            <Paper sx={{ border: "1px solid", width: "max-content", minWidth: "200px", maxWidth: "300px" }}>
               <ClickAwayListener onClickAway={handleClose}>
-                <MenuList autoFocusItem={open} id="composition-menu" aria-labelledby="composition-button" onKeyDown={handleListKeyDown}>
-                  <MenuItem>
+                <MenuList sx={{ py: 0, mt: "0 !important" }} autoFocusItem={open} id="composition-menu" aria-labelledby="composition-button" onKeyDown={handleListKeyDown}>
+                  <MenuItem disableGutters sx={{ py: fr.spacing("1v"), mx: `${fr.spacing("1w")} !important`, mb: `0 !important`, fontSize: "14px !important", minHeight: "24px" }}>
                     <Link component="button" underline="hover" onClick={() => router.push(buildOfferEditionUrl(row._id))}>
                       Editer l'offre
                     </Link>
                   </MenuItem>
-                  <MenuItem>
+                  <MenuItem
+                    disableGutters
+                    dense
+                    sx={{ py: fr.spacing("1v"), mx: `${fr.spacing("1w")} !important`, mb: `0 !important`, fontSize: "14px !important", minHeight: "24px" }}
+                  >
                     <Link
                       component="button"
                       underline="hover"
@@ -127,13 +132,21 @@ export const OffresTabsMenu = ({ row, buildOfferEditionUrl }: { row: any; buildO
                       Prolonger l'offre
                     </Link>
                   </MenuItem>
-                  <MenuItem onClick={handleClose}>
+                  <MenuItem
+                    disableGutters
+                    onClick={handleClose}
+                    sx={{ py: fr.spacing("1v"), mx: `${fr.spacing("1w")} !important`, mb: `0 !important`, fontSize: "14px !important", minHeight: "24px" }}
+                  >
                     <Link underline="hover" target="_blank" rel="noopener noreferrer" href={directLink} aria-label="Lien vers l'offre - nouvelle fenêtre">
                       Voir l'offre en ligne
                     </Link>
                   </MenuItem>
                   {row.job_status !== JOB_STATUS.EN_ATTENTE && (
-                    <MenuItem onClick={handleClose}>
+                    <MenuItem
+                      disableGutters
+                      onClick={handleClose}
+                      sx={{ py: fr.spacing("1v"), mx: `${fr.spacing("1w")} !important`, mb: `0 !important`, fontSize: "14px !important", minHeight: "24px" }}
+                    >
                       <Link
                         underline="hover"
                         target="_blank"
@@ -145,7 +158,7 @@ export const OffresTabsMenu = ({ row, buildOfferEditionUrl }: { row: any; buildO
                       </Link>
                     </MenuItem>
                   )}
-                  <MenuItem>
+                  <MenuItem disableGutters sx={{ py: fr.spacing("1v"), mx: `${fr.spacing("1w")} !important`, mb: `0 !important`, fontSize: "14px !important", minHeight: "24px" }}>
                     <Link
                       underline="hover"
                       onClick={(e) => {
@@ -171,13 +184,21 @@ export const OffresTabsMenu = ({ row, buildOfferEditionUrl }: { row: any; buildO
                     </Link>
                   </MenuItem>
                   {user.type !== AUTHTYPE.CFA && (
-                    <MenuItem onClick={handleClose}>
+                    <MenuItem
+                      onClick={handleClose}
+                      disableGutters
+                      sx={{ py: fr.spacing("1v"), mx: `${fr.spacing("1w")} !important`, mb: `0 !important`, fontSize: "14px !important", minHeight: "24px" }}
+                    >
                       <Link underline="hover" {...cfaOptionParams}>
                         Voir les centres de formation
                       </Link>
                     </MenuItem>
                   )}
-                  <MenuItem onClick={handleClose}>
+                  <MenuItem
+                    onClick={handleClose}
+                    disableGutters
+                    sx={{ py: fr.spacing("1v"), mx: `${fr.spacing("1w")} !important`, mb: `0 !important`, fontSize: "14px !important", minHeight: "24px" }}
+                  >
                     <Link
                       underline="hover"
                       component="button"
