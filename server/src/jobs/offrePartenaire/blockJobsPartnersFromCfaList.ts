@@ -10,7 +10,7 @@ const cfaCompanyList = [
   "AFTEC Brest",
   "Tetranergy Business School Réunion",
   "Tetranergy Business School Rodez",
-  "CFA HORIZON REUNION BUSINESS SCHOOL"
+  "CFA HORIZON REUNION BUSINESS SCHOOL",
   "OUTREMER ACADEMY",
   "GROUPE ENDEMIA FORMATION",
   "ISFOI",
