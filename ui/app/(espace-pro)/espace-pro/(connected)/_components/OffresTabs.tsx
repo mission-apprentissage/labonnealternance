@@ -67,7 +67,7 @@ export const OffresTabs = ({
   buildOfferEditionUrl: (offerId: string) => string
 }) => {
   const confirmationSuppression = useDisclosure()
-  const [currentOffre /*, setCurrentOffre*/] = useState()
+  const [currentOffre, setCurrentOffre] = useState()
 
   /* @ts-ignore TODO */
   const jobs: (IJobJson & { candidatures: number; geo_coordinates: string })[] = recruiter?.jobs ?? []
@@ -86,6 +86,11 @@ export const OffresTabs = ({
   }
 
   const jobsWithGeoCoords = jobs.map((job) => ({ ...job, geo_coordinates: recruiter.geo_coordinates }))
+
+  const openSuppression = (row) => {
+    setCurrentOffre(row)
+    confirmationSuppression.onOpen()
+  }
 
   const commonColumns = [
     {
@@ -161,7 +166,7 @@ export const OffresTabs = ({
       disableSortBy: true,
       // isSticky: true,
       accessor: (row) => {
-        return <OffresTabsMenu buildOfferEditionUrl={buildOfferEditionUrl} row={row} />
+        return <OffresTabsMenu openSuppression={openSuppression} buildOfferEditionUrl={buildOfferEditionUrl} row={row} />
       },
     },
     ...commonColumns,

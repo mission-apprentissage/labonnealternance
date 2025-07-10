@@ -1,4 +1,4 @@
-import { useDisclosure, useToast } from "@chakra-ui/react"
+import { useToast } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Box, ClickAwayListener, Grow, Link, MenuItem, MenuList, Paper, Popper, Typography } from "@mui/material"
@@ -16,13 +16,19 @@ import { publicConfig } from "@/config.public"
 import { useAuth } from "@/context/UserContext"
 import { extendOffre } from "@/utils/api"
 
-export const OffresTabsMenu = ({ row, buildOfferEditionUrl }: { row: any; buildOfferEditionUrl: (offerId: string) => string }) => {
+export const OffresTabsMenu = ({
+  row,
+  openSuppression,
+  buildOfferEditionUrl,
+}: {
+  row: any
+  openSuppression: (row: any) => any
+  buildOfferEditionUrl: (offerId: string) => string
+}) => {
   const router = useRouter()
   const toast = useToast()
   const client = useQueryClient()
   const { user } = useAuth()
-  const confirmationSuppression = useDisclosure()
-  const [, /*currentOffre*/ setCurrentOffre] = useState()
   const [copied, setCopied] = useState(false)
   const [open, setOpen] = useState(false)
   const anchorRef = useRef<HTMLButtonElement>(null)
@@ -203,8 +209,7 @@ export const OffresTabsMenu = ({ row, buildOfferEditionUrl }: { row: any; buildO
                       underline="hover"
                       component="button"
                       onClick={() => {
-                        confirmationSuppression.onOpen()
-                        setCurrentOffre(row)
+                        openSuppression(row)
                       }}
                     >
                       Supprimer l'offre
