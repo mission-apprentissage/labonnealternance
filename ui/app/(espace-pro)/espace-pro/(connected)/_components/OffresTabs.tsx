@@ -1,4 +1,4 @@
-import { Badge, useDisclosure } from "@chakra-ui/react"
+import { useDisclosure } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import dayjs from "dayjs"
@@ -7,6 +7,7 @@ import { useState } from "react"
 import { IJobJson, IRecruiterJson, JOB_STATUS } from "shared"
 import { RECRUITER_STATUS } from "shared/constants/index"
 
+import Badge from "@/app/(espace-pro)/_components/Badge"
 import Table from "@/app/(espace-pro)/_components/Table"
 import ConfirmationSuppressionOffre from "@/app/(espace-pro)/espace-pro/(connected)/_components/ConfirmationSuppressionOffre"
 import { OffresTabsMenu } from "@/app/(espace-pro)/espace-pro/(connected)/_components/OffresTabsMenu"
@@ -184,7 +185,7 @@ export const OffresTabs = ({
 const NumberCell = ({ children }) => {
   return (
     <Typography component="span" sx={{ textAlign: "right", width: "100%", pr: fr.spacing("4v") }}>
-      <Badge colorScheme="blue">{children}</Badge>
+      <Badge variant="stat_number">{children}</Badge>
     </Typography>
   )
 }
