@@ -1,6 +1,6 @@
 "use client"
 
-import { Box, Flex, Modal, ModalContent, ModalHeader, ModalOverlay, useDisclosure } from "@chakra-ui/react"
+import { Box, Flex, Modal, ModalContent, ModalHeader, ModalOverlay } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
@@ -11,6 +11,7 @@ import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_componen
 import { AdminUserForm } from "@/app/(espace-pro)/espace-pro/(connected)/administration/gestion-des-administrateurs/_components/AdminUserForm"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
+import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableString } from "@/common/utils/dateUtils"
 import { TableNew } from "@/components/espace_pro"
 import { ArrowRightLine2 } from "@/theme/components/icons"

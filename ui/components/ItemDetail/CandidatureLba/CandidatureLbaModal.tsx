@@ -1,7 +1,7 @@
-import { useDisclosure } from "@chakra-ui/react"
 import { useState } from "react"
 import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 
+import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 
 import CandidatureLbaFailed from "./CandidatureLbaFailed"
