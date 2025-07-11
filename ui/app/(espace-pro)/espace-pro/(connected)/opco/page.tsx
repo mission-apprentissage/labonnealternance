@@ -1,6 +1,6 @@
 "use client"
 
-import { Box, Button, Flex, Icon, Menu, MenuButton, MenuItem, MenuList, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import { Box, Button, Flex, Icon, Menu, MenuButton, MenuItem, MenuList, Text, useToast } from "@chakra-ui/react"
 import { TabContext, TabList, TabPanel } from "@mui/lab"
 import { Link, Tab } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
@@ -8,6 +8,7 @@ import dayjs from "dayjs"
 import { useEffect, useState } from "react"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
 import { ConfirmationDesactivationUtilisateur, LoadingEmptySpace, TableNew } from "@/components/espace_pro"
 import ConfirmationActivationUtilisateur from "@/components/espace_pro/ConfirmationActivationUtilisateur"

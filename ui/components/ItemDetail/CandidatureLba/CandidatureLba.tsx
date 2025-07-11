@@ -1,10 +1,11 @@
 "use client"
-import { Box, Flex, Image, Text, useDisclosure } from "@chakra-ui/react"
+import { Box, Flex, Image, Text } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { useState } from "react"
 import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson, JOB_STATUS } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
+import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { notifyJobPostulerV3 } from "@/utils/api"
 
 import { getItemId } from "../../../utils/getItemId"

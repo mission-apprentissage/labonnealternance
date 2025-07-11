@@ -1,5 +1,5 @@
 "use client"
-import { Box, Button, Flex, Icon, Menu, MenuButton, MenuItem, MenuList, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import { Box, Button, Flex, Icon, Menu, MenuButton, MenuItem, MenuList, Text, useToast } from "@chakra-ui/react"
 import { TabContext, TabList, TabPanel } from "@mui/lab"
 import { Link, Tab } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
@@ -10,6 +10,7 @@ import { getLastStatusEvent, IUserRecruteurJson, IUserStatusValidationJson } fro
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
+import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
 import { ConfirmationDesactivationUtilisateur, TableNew } from "@/components/espace_pro"
 import ConfirmationActivationUtilisateur from "@/components/espace_pro/ConfirmationActivationUtilisateur"

@@ -1,11 +1,12 @@
 import { EmailIcon } from "@chakra-ui/icons"
-import { Box, Editable, EditableInput, EditablePreview, Flex, Grid, Tag, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import { Box, Editable, EditableInput, EditablePreview, Flex, Grid, Tag, Text, useToast } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { createRef, useEffect, useState } from "react"
 
 import "react-dates/initialize"
 import "react-dates/lib/css/_datepicker.css"
 
+import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { apiGet, apiPatch } from "@/utils/api.utils"
 
 import { dayjs } from "../../../../../common/dayjs"

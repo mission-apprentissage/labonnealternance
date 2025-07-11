@@ -1,6 +1,6 @@
 "use client"
 
-import { Box, Button as ChakraButton, Container, Flex, Heading, Icon, Image, Menu, MenuButton, MenuItem, MenuList, Stack, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import { Box, Button as ChakraButton, Container, Flex, Heading, Icon, Image, Menu, MenuButton, MenuItem, MenuList, Stack, Text, useToast } from "@chakra-ui/react"
 import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Link } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
@@ -10,6 +10,7 @@ import { useEffect, useState } from "react"
 import { IRecruiter, IRecruiterJson } from "shared"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
 import { AnimationContainer, LoadingEmptySpace, TableNew } from "@/components/espace_pro"
 import { ConfirmationSuppressionEntreprise } from "@/components/espace_pro/ConfirmationSuppressionEntreprise"

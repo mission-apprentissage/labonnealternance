@@ -1,4 +1,6 @@
-import { Box, Container, Flex, Heading, Link, Text, useDisclosure } from "@chakra-ui/react"
+import { Box, Container, Flex, Heading, Link, Text } from "@chakra-ui/react"
+
+import { useDisclosure } from "@/common/hooks/useDisclosure"
 
 import { focusWithin } from "../../theme/theme-lba-tools"
 import { ModalReadOnly } from "../ModalReadOnly"
