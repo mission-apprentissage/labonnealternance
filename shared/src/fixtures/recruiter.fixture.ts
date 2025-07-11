@@ -37,6 +37,7 @@ export function generateRecruiterFixture(data: RecruiterFixtureInput = {}): IRec
     status: RECRUITER_STATUS.ACTIF,
     createdAt: new Date("2021-01-28T15:00:00.000Z"),
     updatedAt: new Date("2021-02-03T17:00:00.000Z"),
+    managed_by: new ObjectId().toString(),
     address_detail: {
       numero_voie: "15",
       type_voie: "RUE",

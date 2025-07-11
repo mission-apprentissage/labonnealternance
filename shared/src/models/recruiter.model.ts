@@ -42,7 +42,7 @@ const ZRecruiterWritable = z
     naf_label: z.string().nullish().describe("Libellé NAF de l'établissement"),
     establishment_size: z.string().nullish().describe("Tranche d'effectif salariale de l'établissement"),
     establishment_creation_date: z.date().nullish().describe("Date de creation de l'établissement"),
-    managed_by: z.string().nullish().describe("Id de l'utilisateur gestionnaire"),
+    managed_by: z.string().describe("Id de l'utilisateur gestionnaire"),
   })
   .openapi("RecruiterWritable")
 
@@ -108,12 +108,6 @@ export default {
     [{ "jobs.relance_mail_expiration_J7": 1 }, {}],
     [{ "jobs.job_expiration_date": 1 }, {}],
     [{ "jobs.job_status": 1 }, {}],
-    [
-      {
-        "jobs.managed_by": 1,
-      },
-      {},
-    ],
 
     // Support API v2 request (by ROME without location)
     [

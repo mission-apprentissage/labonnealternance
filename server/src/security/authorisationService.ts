@@ -329,7 +329,7 @@ function canAccessRecruiter(userAccess: ComputedUserAccess, resource: RecruiterR
     return true
   }
   const { managed_by } = resource.recruiter
-  return Boolean(managed_by && userAccess.users.includes(managed_by))
+  return Boolean(userAccess.users.includes(managed_by))
 }
 
 function canAccessJob(userAccess: ComputedUserAccess, resource: JobResource): boolean {

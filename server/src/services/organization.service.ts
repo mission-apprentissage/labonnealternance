@@ -119,7 +119,7 @@ export const upsertEntrepriseData = async (
       const userAndOrganization: UserAndOrganization = { user, organization: { entreprise: savedEntreprise, type: ENTREPRISE } }
       const result = await autoValidateUserRoleOnCompany(userAndOrganization, origin)
       if (result.validated) {
-        const recruiter = recruiters.find((recruiter) => recruiter.managed_by?.toString() === user._id.toString())
+        const recruiter = recruiters.find((recruiter) => recruiter.managed_by.toString() === user._id.toString())
         if (!recruiter) {
           return
         }

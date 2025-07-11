@@ -2,7 +2,7 @@ import { internal } from "@hapi/boom"
 import { groupBy } from "lodash-es"
 import { ObjectId } from "mongodb"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { IJob, JOB_STATUS } from "shared/models/index"
+import { JOB_STATUS } from "shared/models/index"
 
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
@@ -65,9 +65,6 @@ export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirati
     const recruiter = jobsWithRecruiter[0].recruiter
     const { establishment_raison_sociale, is_delegated, managed_by } = recruiter
     try {
-      if (!managed_by) {
-        throw internal(`inattendu : managed_by manquant pour le formulaire id=${recruiter._id}`)
-      }
       const contactUser = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(managed_by) })
       if (!contactUser) {
         throw internal(`inattendu : impossible de trouver l'utilisateur gérant le formulaire id=${recruiter._id}`)
@@ -103,10 +100,14 @@ export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirati
         },
       })
       if (dateRelanceFieldName) {
-        const jobUpdate: Partial<IJob> = {}
-        jobUpdate[`jobs.$[elem].${dateRelanceFieldName}`] = now
         await asyncForEach(jobsWithRecruiter, async (job) => {
-          await getDbCollection("recruiters").findOneAndUpdate({ "jobs._id": job._id }, { $set: jobUpdate }, { arrayFilters: [{ "elem._id": job._id }] })
+          await getDbCollection("recruiters").findOneAndUpdate(
+            { "jobs._id": job._id },
+            {
+              $set: { [`jobs.$[elem].${dateRelanceFieldName}`]: now },
+            },
+            { arrayFilters: [{ "elem._id": job._id }] }
+          )
         })
       }
     } catch (err) {

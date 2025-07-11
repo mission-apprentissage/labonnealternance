@@ -174,7 +174,6 @@ export default (server: Server) => {
         custom_address: body.custom_address,
         custom_geo_coordinates: body.custom_geo_coordinates,
         custom_job_title: body.custom_job_title,
-        managed_by: user._id.toString(),
       }
 
       const updatedRecruiter = await createOffre(establishmentId, job)

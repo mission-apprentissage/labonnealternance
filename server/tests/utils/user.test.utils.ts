@@ -189,6 +189,7 @@ export async function saveRecruiter(data: Partial<IRecruiter>) {
     naf_label: "naf_label",
     establishment_size: "establishment_size",
     establishment_creation_date: new Date(),
+    managed_by: new ObjectId().toString(),
     ...data,
   }
   await getDbCollection("recruiters").insertOne(recruiter)
@@ -248,11 +249,7 @@ export const saveEntrepriseUserTest = async (
       establishment_siret: entreprise.siret,
       opco: entreprise.opco,
       managed_by: user._id.toString(),
-      jobs: [
-        {
-          managed_by: user._id.toString(),
-        },
-      ],
+      jobs: [{}],
       ...recruiterProps,
     })
   )
@@ -274,11 +271,7 @@ export const saveCfaUserTest = async (userProps: Partial<IUserWithAccount> = {})
       cfa_delegated_siret: cfa.siret,
       status: RECRUITER_STATUS.ACTIF,
       managed_by: user._id.toString(),
-      jobs: [
-        {
-          managed_by: user._id.toString(),
-        },
-      ],
+      jobs: [{}],
     })
   )
   return { user, role, cfa, recruiter }
