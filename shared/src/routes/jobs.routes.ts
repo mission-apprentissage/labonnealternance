@@ -250,7 +250,6 @@ export const zV1JobsRoutes = {
           longitude: ZLongitudeParam,
           radius: ZRadiusParam,
           insee: zInseeParams,
-          sources: zSourcesParams,
           diploma: zDiplomaParam,
           opco: zOpcoParams,
         })
@@ -269,19 +268,10 @@ export const zV1JobsRoutes = {
                 .nullable(),
               ZApiError,
             ]),
-            peJobs: z.union([
+            lbaJobs: z.union([
               z
                 .object({
-                  results: z.array(ZLbaItemFtJob),
-                })
-                .strict()
-                .nullable(),
-              ZApiError,
-            ]),
-            matchas: z.union([
-              z
-                .object({
-                  results: z.array(ZLbaItemLbaJob),
+                  results: z.array(ZLbaItemPartnerJob),
                 })
                 .strict()
                 .nullable(),
@@ -296,7 +286,6 @@ export const zV1JobsRoutes = {
                 .nullable(),
               ZApiError,
             ]),
-            lbbCompanies: z.null(), // always null until removal
           })
           .strict(),
         "400": z.union([ZResError, ZLbacError, ZApiError]),

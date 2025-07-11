@@ -253,6 +253,7 @@ const ZLbaItemJob = z
     origin: z.string().nullish(), // partner -> offer_origin
     offer_desired_skills: z.array(z.string()).nullish(), // partner -> offer_desired_skills,
     offer_to_be_acquired_skills: z.array(z.string()).nullish(), // partner -> offer_to_be_acquired_skills,
+    offer_to_be_acquired_knowledge: z.array(z.string()).nullish(),
     offer_access_conditions: z.array(z.string()).nullish(), // partner -> offer_access_conditions
   })
   .strict()
@@ -369,7 +370,6 @@ export const ZLbaItemFormation = z
       example: "5e8dfad720ff3b2161269d86",
       description: "L'identifiant de la formation dans le catalogue du Réseau des Carif-Oref.",
     }), // formation -> id
-    detailsLoaded: z.boolean().nullish(),
     idRco: z.string().nullish(), // formation -> id_formation
     idRcoFormation: z.string().nullish(), // formation -> id_rco_formation
 
@@ -487,7 +487,6 @@ export const ZLbaItemLbaJob = z
     romes: z.array(ZLbaItemRome).nullish(),
     nafs: z.array(ZLbaItemNaf).nullish(),
     applicationCount: z.number(), // calcul en fonction du nombre de candidatures enregistrées
-    detailsLoaded: z.boolean().nullish(),
     token: z.string(),
     recipient_id: z.string().describe("Identifiant personnalisé (ID mongoDB préfixé du nom de la collection) envoyé au server pour la candidature"),
   })
@@ -501,7 +500,7 @@ export type ILbaItemLbaJobReturnedByAPI = Jsonify<z.output<typeof ZLbaItemLbaJob
 
 export const ZLbaItemPartnerJob = z
   .object({
-    ideaType: z.enum([LBA_ITEM_TYPE_OLD.PARTNER_JOB, LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES]),
+    ideaType: z.enum([LBA_ITEM_TYPE_OLD.PARTNER_JOB, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES]),
     title: z.string(), // partnerJob -> offer_title
     contact: ZLbaItemContact.nullish(),
     place: ZLbaItemPlace.nullable(),
@@ -517,9 +516,9 @@ export const ZLbaItemPartnerJob = z
     job: ZLbaItemJob,
     romes: z.array(ZLbaItemRome).nullish(),
     nafs: z.array(ZLbaItemNaf).nullish(),
-    detailsLoaded: z.boolean().nullish(),
     token: z.string(),
     recipient_id: z.string().describe("Identifiant personnalisé (ID mongoDB préfixé du nom de la collection) envoyé au server pour la candidature"),
+    applicationCount: z.number().nullish(),
   })
   .strict()
   .openapi("PartnerJob")
@@ -541,7 +540,6 @@ export const ZLbaItemLbaCompany = z
     url: z.string().nullish(), // partner -> workplace_website
     nafs: z.array(ZLbaItemNaf).nullish(),
     applicationCount: z.number(), // calcul en fonction du nombre de candidatures enregistrées
-    detailsLoaded: z.boolean().nullish(),
     token: z.string().nullish(), // KBA 2024_05_20 : for API V2 only, remove nullish when fully migrated
     recipient_id: z.string().describe("Identifiant personnalisé (ID mongoDB préfixé du nom de la collection) envoyé au server pour la candidature"),
   })
@@ -565,7 +563,6 @@ export const ZLbaItemFtJob = z
     job: ZLbaItemJob.nullish(),
     romes: z.array(ZLbaItemRome).nullish(),
     nafs: z.array(ZLbaItemNaf).nullish(),
-    detailsLoaded: z.boolean().nullish(),
   })
   .strict()
   .openapi("PeJob")

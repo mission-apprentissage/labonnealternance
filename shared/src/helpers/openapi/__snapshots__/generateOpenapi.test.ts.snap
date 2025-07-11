@@ -562,12 +562,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "contact": {
             "$ref": "#/components/schemas/Contact",
           },
-          "detailsLoaded": {
-            "type": [
-              "boolean",
-              "null",
-            ],
-          },
           "diploma": {
             "description": "Le diplôme délivré par la formation.",
             "example": "CERTIFICAT D'APTITUDES PROFESSIONNELLES",
@@ -1591,12 +1585,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "contact": {
             "$ref": "#/components/schemas/Contact",
           },
-          "detailsLoaded": {
-            "type": [
-              "boolean",
-              "null",
-            ],
-          },
           "id": {
             "type": [
               "string",
@@ -1856,12 +1844,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "contact": {
             "$ref": "#/components/schemas/Contact",
           },
-          "detailsLoaded": {
-            "type": [
-              "boolean",
-              "null",
-            ],
-          },
           "id": {
             "type": [
               "string",
@@ -2064,6 +2046,15 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "offer_desired_skills": {
+            "items": {
+              "type": "string",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
+          "offer_to_be_acquired_knowledge": {
             "items": {
               "type": "string",
             },
@@ -2498,6 +2489,12 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
       "PartnerJob": {
         "additionalProperties": false,
         "properties": {
+          "applicationCount": {
+            "type": [
+              "number",
+              "null",
+            ],
+          },
           "company": {
             "additionalProperties": false,
             "description": "Les informations de la société. Selon le contexte il peut s'agir du centre de formation ou de l'entreprise offrant une opportunité d'emploi.",
@@ -2678,18 +2675,13 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "contact": {
             "$ref": "#/components/schemas/Contact",
           },
-          "detailsLoaded": {
-            "type": [
-              "boolean",
-              "null",
-            ],
-          },
           "id": {
             "type": "string",
           },
           "ideaType": {
             "enum": [
               "partnerJob",
+              "offres_emploi_lba",
               "offres_emploi_partenaires",
             ],
             "type": "string",
@@ -2946,12 +2938,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "contact": {
             "$ref": "#/components/schemas/Contact",
-          },
-          "detailsLoaded": {
-            "type": [
-              "boolean",
-              "null",
-            ],
           },
           "id": {
             "type": [
@@ -7391,7 +7377,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                       },
                       "to_be_acquired_skills": {
                         "default": [],
-                        "description": "Compétence acuqises durant l'alternance",
+                        "description": "Compétence acquises durant l'alternance",
                         "items": {
                           "type": "string",
                         },
@@ -7937,7 +7923,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                                 "type": "string",
                               },
                               "to_be_acquired_skills": {
-                                "description": "Compétence acuqises durant l'alternance",
+                                "description": "Compétence acquises durant l'alternance",
                                 "items": {
                                   "type": "string",
                                 },
@@ -8639,7 +8625,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                           "type": "string",
                         },
                         "to_be_acquired_skills": {
-                          "description": "Compétence acuqises durant l'alternance",
+                          "description": "Compétence acquises durant l'alternance",
                           "items": {
                             "type": "string",
                           },
@@ -9060,7 +9046,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                       },
                       "to_be_acquired_skills": {
                         "default": [],
-                        "description": "Compétence acuqises durant l'alternance",
+                        "description": "Compétence acquises durant l'alternance",
                         "items": {
                           "type": "string",
                         },
