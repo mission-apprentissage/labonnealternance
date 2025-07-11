@@ -1,4 +1,3 @@
-import { useDisclosure } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import dayjs from "dayjs"
@@ -11,6 +10,7 @@ import Badge from "@/app/(espace-pro)/_components/Badge"
 import Table from "@/app/(espace-pro)/_components/Table"
 import ConfirmationSuppressionOffre from "@/app/(espace-pro)/espace-pro/(connected)/_components/ConfirmationSuppressionOffre"
 import { OffresTabsMenu } from "@/app/(espace-pro)/espace-pro/(connected)/_components/OffresTabsMenu"
+import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate } from "@/common/utils/dateUtils"
 
 const displayJobStatus = (status: JOB_STATUS, recruiter: IRecruiterJson) => {
