@@ -31,9 +31,5 @@ const variants = {
 }
 
 export default function LbaBadge({ variant = "neutral", children, ...props }) {
-  return (
-    <Badge sx={{ ...variants[variant], px: fr.spacing("1v") }} {...props}>
-      {children}
-    </Badge>
-  )
+  return <Badge sx={{ ...props, ...variants[variant], px: fr.spacing("1v") }}>{children}</Badge>
 }
