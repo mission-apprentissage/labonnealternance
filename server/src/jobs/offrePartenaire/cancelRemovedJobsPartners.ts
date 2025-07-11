@@ -1,5 +1,4 @@
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
-import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -73,9 +72,7 @@ export const cancelRemovedJobsPartners = async () => {
                   {
                     $eq: ["$partner_job_id", "$$partnerJobId"],
                   },
-                  {
-                    $eq: ["$business_error", JOB_PARTNER_BUSINESS_ERROR.EXPIRED],
-                  },
+                  { $ne: ["$business_error", null] },
                 ],
               },
             },
