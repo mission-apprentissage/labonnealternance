@@ -27,6 +27,7 @@ export const defaultFillComputedJobsPartnersContext: FillComputedJobsPartnersCon
 export const fillComputedJobsPartners = async (partialContext: Partial<FillComputedJobsPartnersContext> = {}) => {
   logger.info("début de fillComputedJobsPartners")
   const context: FillComputedJobsPartnersContext = { ...defaultFillComputedJobsPartnersContext, ...partialContext }
+  await formatTextFieldsJobsPartners(context)
 
   await fillOpcoInfosForPartners(context)
   await fillSiretInfosForPartners(context)
@@ -34,8 +35,6 @@ export const fillComputedJobsPartners = async (partialContext: Partial<FillCompu
   await fillLocationInfosForPartners(context)
   await fillRomeForPartners(context)
   await blockBadRomeJobsPartners(context)
-
-  await formatTextFieldsJobsPartners(context)
 
   await rankJobPartners(context)
   await detectDuplicateJobPartners(context)
