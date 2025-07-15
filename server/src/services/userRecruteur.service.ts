@@ -13,7 +13,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
 import { getDbCollection } from "../common/utils/mongodbUtils"
-import { removeHtmlTagsFromString } from "../common/utils/stringUtils"
+import { sanitizeTextField } from "../common/utils/stringUtils"
 import config from "../config"
 
 import { createAuthMagicLink } from "./appLinks.service"
@@ -377,10 +377,10 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) =>
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
         logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
       },
-      last_name: removeHtmlTagsFromString(last_name),
-      first_name: removeHtmlTagsFromString(first_name),
+      last_name: sanitizeTextField(last_name),
+      first_name: sanitizeTextField(first_name),
       confirmation_url: createAuthMagicLink(userWithAccountToUserForToken(user)),
-      email: removeHtmlTagsFromString(user.email),
+      email: sanitizeTextField(user.email),
       establishment_name: organization.raison_sociale,
     },
   })

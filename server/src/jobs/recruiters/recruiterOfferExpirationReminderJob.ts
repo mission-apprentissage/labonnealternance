@@ -10,7 +10,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
-import { removeHtmlTagsFromString } from "@/common/utils/stringUtils"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
 import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { createAuthMagicLink, createCancelJobLink, createProvidedJobLink } from "@/services/appLinks.service"
@@ -85,8 +85,8 @@ export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirati
             logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
             logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
           },
-          last_name: removeHtmlTagsFromString(contactUser.last_name),
-          first_name: removeHtmlTagsFromString(contactUser.first_name),
+          last_name: sanitizeTextField(contactUser.last_name),
+          first_name: sanitizeTextField(contactUser.first_name),
           establishment_raison_sociale,
           is_delegated,
           offres: jobsWithRecruiter.map((job) => ({
