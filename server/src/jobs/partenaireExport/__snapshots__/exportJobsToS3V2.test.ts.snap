@@ -1,0 +1,551 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`exportJobsToS3V2 > should produce jobs 1`] = `
+[
+  {
+    "apply": {
+      "phone": "0123456789",
+      "recipient_id": "partners_66c52e00c8f12f66f971106f",
+      "url": "https://apply.com",
+    },
+    "contract": {
+      "duration": 6,
+      "remote": "onsite",
+      "start": "2021-01-28T15:00:00.000Z",
+      "type": [
+        "Apprentissage",
+        "Professionnalisation",
+      ],
+    },
+    "identifier": {
+      "id": "66c52e00c8f12f66f971106f",
+      "partner_job_id": "id_1",
+      "partner_label": "Hellowork",
+    },
+    "offer": {
+      "access_conditions": [
+        "offer_access_conditions",
+      ],
+      "description": "Attention il te faut une super motivation pour ce job",
+      "desired_skills": [
+        "offer_desired_skills",
+      ],
+      "opening_count": 1,
+      "publication": {
+        "creation": "2021-01-28T15:00:00.000Z",
+        "expiration": "2050-01-01T00:00:00.000Z",
+      },
+      "rome_codes": [
+        "D1102",
+      ],
+      "status": "Active",
+      "target_diploma": {
+        "european": "3",
+        "label": "Master",
+      },
+      "title": "Une super offre d'alternance",
+      "to_be_acquired_skills": [
+        "offer_to_be_acquired_skills",
+      ],
+    },
+    "workplace": {
+      "brand": "workplace_brand",
+      "description": "workplace_description",
+      "domain": {
+        "idcc": 1003,
+        "naf": {
+          "code": "6201Z",
+          "label": "Programmation informatique",
+        },
+        "opco": "ATLAS",
+      },
+      "legal_name": "workplace_legal_name",
+      "location": {
+        "address": "126 RUE DE L'UNIVERSITE 75007 PARIS",
+        "geopoint": {
+          "coordinates": [
+            0,
+            0,
+          ],
+          "type": "Point",
+        },
+      },
+      "name": "workplace_name",
+      "siret": "13002526500013",
+      "size": "0-50",
+      "website": "http://workplace_website.com",
+    },
+  },
+  {
+    "apply": {
+      "phone": "0123456789",
+      "recipient_id": "partners_66c52e00393b331450d8bedc",
+      "url": "https://apply.com",
+    },
+    "contract": {
+      "duration": 6,
+      "remote": "onsite",
+      "start": "2021-01-28T15:00:00.000Z",
+      "type": [
+        "Apprentissage",
+        "Professionnalisation",
+      ],
+    },
+    "identifier": {
+      "id": "66c52e00393b331450d8bedc",
+      "partner_job_id": "id_2",
+      "partner_label": "Hellowork",
+    },
+    "offer": {
+      "access_conditions": [
+        "offer_access_conditions",
+      ],
+      "description": "Attention il te faut une super motivation pour ce job",
+      "desired_skills": [
+        "offer_desired_skills",
+      ],
+      "opening_count": 1,
+      "publication": {
+        "creation": "2021-01-28T15:00:00.000Z",
+        "expiration": "2050-01-01T00:00:00.000Z",
+      },
+      "rome_codes": [
+        "D1102",
+      ],
+      "status": "Active",
+      "target_diploma": {
+        "european": "3",
+        "label": "Master",
+      },
+      "title": "Une super offre d'alternance",
+      "to_be_acquired_skills": [
+        "offer_to_be_acquired_skills",
+      ],
+    },
+    "workplace": {
+      "brand": "workplace_brand",
+      "description": "workplace_description",
+      "domain": {
+        "idcc": 1003,
+        "naf": {
+          "code": "6201Z",
+          "label": "Programmation informatique",
+        },
+        "opco": "ATLAS",
+      },
+      "legal_name": "workplace_legal_name",
+      "location": {
+        "address": "126 RUE DE L'UNIVERSITE 75007 PARIS",
+        "geopoint": {
+          "coordinates": [
+            0,
+            0,
+          ],
+          "type": "Point",
+        },
+      },
+      "name": "workplace_name",
+      "siret": "13002526500013",
+      "size": "0-50",
+      "website": "http://workplace_website.com",
+    },
+  },
+  {
+    "apply": {
+      "phone": null,
+      "recipient_id": null,
+      "url": "http://localhost:3000//emploi/offres_emploi_lba/66c52e0088651f3c2cd0d785/boulanger",
+    },
+    "contract": {
+      "duration": null,
+      "remote": null,
+      "start": "2021-01-28T15:00:00.000Z",
+      "type": [
+        "Apprentissage",
+      ],
+    },
+    "identifier": {
+      "id": "66c52e0088651f3c2cd0d785",
+      "partner_job_id": "66c52e0088651f3c2cd0d785",
+      "partner_label": "offres_emploi_lba",
+    },
+    "offer": {
+      "access_conditions": [],
+      "description": "",
+      "desired_skills": [],
+      "opening_count": 1,
+      "publication": {
+        "creation": null,
+        "expiration": null,
+      },
+      "rome_codes": [
+        "M1602",
+      ],
+      "status": "Active",
+      "target_diploma": null,
+      "title": "Boulanger",
+      "to_be_acquired_skills": [],
+    },
+    "workplace": {
+      "brand": null,
+      "description": null,
+      "domain": {
+        "idcc": 1000,
+        "naf": null,
+        "opco": "ATLAS",
+      },
+      "legal_name": null,
+      "location": {
+        "address": "3 rue du loup 75001 Paris",
+        "geopoint": {
+          "coordinates": [
+            0,
+            0,
+          ],
+          "type": "Point",
+        },
+      },
+      "name": null,
+      "siret": "11000001500013",
+      "size": null,
+      "website": null,
+    },
+  },
+  {
+    "apply": {
+      "phone": null,
+      "recipient_id": null,
+      "url": "http://localhost:3000//emploi/offres_emploi_lba/66c52e00f03faa7ce1aaccbc/patissier",
+    },
+    "contract": {
+      "duration": null,
+      "remote": null,
+      "start": "2021-01-28T15:00:00.000Z",
+      "type": [
+        "Apprentissage",
+      ],
+    },
+    "identifier": {
+      "id": "66c52e00f03faa7ce1aaccbc",
+      "partner_job_id": "66c52e00f03faa7ce1aaccbc",
+      "partner_label": "offres_emploi_lba",
+    },
+    "offer": {
+      "access_conditions": [],
+      "description": "",
+      "desired_skills": [],
+      "opening_count": 1,
+      "publication": {
+        "creation": null,
+        "expiration": null,
+      },
+      "rome_codes": [
+        "M1602",
+      ],
+      "status": "Active",
+      "target_diploma": null,
+      "title": "Patissier",
+      "to_be_acquired_skills": [],
+    },
+    "workplace": {
+      "brand": null,
+      "description": null,
+      "domain": {
+        "idcc": 1000,
+        "naf": null,
+        "opco": "ATLAS",
+      },
+      "legal_name": null,
+      "location": {
+        "address": "3 rue du loup 75001 Paris",
+        "geopoint": {
+          "coordinates": [
+            0,
+            0,
+          ],
+          "type": "Point",
+        },
+      },
+      "name": null,
+      "siret": "11000001500013",
+      "size": null,
+      "website": null,
+    },
+  },
+]
+`;
+
+exports[`exportJobsToS3V2 > should publish jobs 1`] = `
+[
+  {
+    "apply": {
+      "phone": "0123456789",
+      "recipient_id": "partners_66c52e00c8f12f66f971106f",
+      "url": "https://apply.com",
+    },
+    "contract": {
+      "duration": 6,
+      "remote": "onsite",
+      "start": "2021-01-28T15:00:00.000Z",
+      "type": [
+        "Apprentissage",
+        "Professionnalisation",
+      ],
+    },
+    "identifier": {
+      "id": "66c52e00c8f12f66f971106f",
+      "partner_job_id": "id_1",
+      "partner_label": "Hellowork",
+    },
+    "offer": {
+      "access_conditions": [
+        "offer_access_conditions",
+      ],
+      "description": "Attention il te faut une super motivation pour ce job",
+      "desired_skills": [
+        "offer_desired_skills",
+      ],
+      "opening_count": 1,
+      "publication": {
+        "creation": "2021-01-28T15:00:00.000Z",
+        "expiration": "2050-01-01T00:00:00.000Z",
+      },
+      "rome_codes": [
+        "D1102",
+      ],
+      "status": "Active",
+      "target_diploma": {
+        "european": "3",
+        "label": "Master",
+      },
+      "title": "Une super offre d'alternance",
+      "to_be_acquired_skills": [
+        "offer_to_be_acquired_skills",
+      ],
+    },
+    "workplace": {
+      "brand": "workplace_brand",
+      "description": "workplace_description",
+      "domain": {
+        "idcc": 1003,
+        "naf": {
+          "code": "6201Z",
+          "label": "Programmation informatique",
+        },
+        "opco": "ATLAS",
+      },
+      "legal_name": "workplace_legal_name",
+      "location": {
+        "address": "126 RUE DE L'UNIVERSITE 75007 PARIS",
+        "geopoint": {
+          "coordinates": [
+            0,
+            0,
+          ],
+          "type": "Point",
+        },
+      },
+      "name": "workplace_name",
+      "siret": "13002526500013",
+      "size": "0-50",
+      "website": "http://workplace_website.com",
+    },
+  },
+  {
+    "apply": {
+      "phone": "0123456789",
+      "recipient_id": "partners_66c52e00393b331450d8bedc",
+      "url": "https://apply.com",
+    },
+    "contract": {
+      "duration": 6,
+      "remote": "onsite",
+      "start": "2021-01-28T15:00:00.000Z",
+      "type": [
+        "Apprentissage",
+        "Professionnalisation",
+      ],
+    },
+    "identifier": {
+      "id": "66c52e00393b331450d8bedc",
+      "partner_job_id": "id_2",
+      "partner_label": "Hellowork",
+    },
+    "offer": {
+      "access_conditions": [
+        "offer_access_conditions",
+      ],
+      "description": "Attention il te faut une super motivation pour ce job",
+      "desired_skills": [
+        "offer_desired_skills",
+      ],
+      "opening_count": 1,
+      "publication": {
+        "creation": "2021-01-28T15:00:00.000Z",
+        "expiration": "2050-01-01T00:00:00.000Z",
+      },
+      "rome_codes": [
+        "D1102",
+      ],
+      "status": "Active",
+      "target_diploma": {
+        "european": "3",
+        "label": "Master",
+      },
+      "title": "Une super offre d'alternance",
+      "to_be_acquired_skills": [
+        "offer_to_be_acquired_skills",
+      ],
+    },
+    "workplace": {
+      "brand": "workplace_brand",
+      "description": "workplace_description",
+      "domain": {
+        "idcc": 1003,
+        "naf": {
+          "code": "6201Z",
+          "label": "Programmation informatique",
+        },
+        "opco": "ATLAS",
+      },
+      "legal_name": "workplace_legal_name",
+      "location": {
+        "address": "126 RUE DE L'UNIVERSITE 75007 PARIS",
+        "geopoint": {
+          "coordinates": [
+            0,
+            0,
+          ],
+          "type": "Point",
+        },
+      },
+      "name": "workplace_name",
+      "siret": "13002526500013",
+      "size": "0-50",
+      "website": "http://workplace_website.com",
+    },
+  },
+  {
+    "apply": {
+      "phone": null,
+      "recipient_id": null,
+      "url": "http://localhost:3000//emploi/offres_emploi_lba/66c52e0088651f3c2cd0d785/boulanger",
+    },
+    "contract": {
+      "duration": null,
+      "remote": null,
+      "start": "2021-01-28T15:00:00.000Z",
+      "type": [
+        "Apprentissage",
+      ],
+    },
+    "identifier": {
+      "id": "66c52e0088651f3c2cd0d785",
+      "partner_job_id": "66c52e0088651f3c2cd0d785",
+      "partner_label": "offres_emploi_lba",
+    },
+    "offer": {
+      "access_conditions": [],
+      "description": "",
+      "desired_skills": [],
+      "opening_count": 1,
+      "publication": {
+        "creation": null,
+        "expiration": null,
+      },
+      "rome_codes": [
+        "M1602",
+      ],
+      "status": "Active",
+      "target_diploma": null,
+      "title": "Boulanger",
+      "to_be_acquired_skills": [],
+    },
+    "workplace": {
+      "brand": null,
+      "description": null,
+      "domain": {
+        "idcc": 1000,
+        "naf": null,
+        "opco": "ATLAS",
+      },
+      "legal_name": null,
+      "location": {
+        "address": "3 rue du loup 75001 Paris",
+        "geopoint": {
+          "coordinates": [
+            0,
+            0,
+          ],
+          "type": "Point",
+        },
+      },
+      "name": null,
+      "siret": "11000001500013",
+      "size": null,
+      "website": null,
+    },
+  },
+  {
+    "apply": {
+      "phone": null,
+      "recipient_id": null,
+      "url": "http://localhost:3000//emploi/offres_emploi_lba/66c52e00f03faa7ce1aaccbc/patissier",
+    },
+    "contract": {
+      "duration": null,
+      "remote": null,
+      "start": "2021-01-28T15:00:00.000Z",
+      "type": [
+        "Apprentissage",
+      ],
+    },
+    "identifier": {
+      "id": "66c52e00f03faa7ce1aaccbc",
+      "partner_job_id": "66c52e00f03faa7ce1aaccbc",
+      "partner_label": "offres_emploi_lba",
+    },
+    "offer": {
+      "access_conditions": [],
+      "description": "",
+      "desired_skills": [],
+      "opening_count": 1,
+      "publication": {
+        "creation": null,
+        "expiration": null,
+      },
+      "rome_codes": [
+        "M1602",
+      ],
+      "status": "Active",
+      "target_diploma": null,
+      "title": "Patissier",
+      "to_be_acquired_skills": [],
+    },
+    "workplace": {
+      "brand": null,
+      "description": null,
+      "domain": {
+        "idcc": 1000,
+        "naf": null,
+        "opco": "ATLAS",
+      },
+      "legal_name": null,
+      "location": {
+        "address": "3 rue du loup 75001 Paris",
+        "geopoint": {
+          "coordinates": [
+            0,
+            0,
+          ],
+          "type": "Point",
+        },
+      },
+      "name": null,
+      "siret": "11000001500013",
+      "size": null,
+      "website": null,
+    },
+  },
+]
+`;

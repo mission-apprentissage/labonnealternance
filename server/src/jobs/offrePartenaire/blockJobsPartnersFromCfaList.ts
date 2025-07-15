@@ -1,3 +1,5 @@
+import { removeAccents } from "shared"
+
 const cfaCompanyList = [
   "Afpa pays de Savoie",
   "AFTEC Caen",
@@ -6,6 +8,15 @@ const cfaCompanyList = [
   "IFAE",
   "AFTEC Vannes",
   "AFTEC Brest",
+  "Tetranergy Business School Réunion",
+  "Tetranergy Business School Rodez",
+  "CFA HORIZON REUNION BUSINESS SCHOOL",
+  "OUTREMER ACADEMY",
+  "GROUPE ENDEMIA FORMATION",
+  "ISFOI",
+  "PÔLE FORMATION UIMM BRETAGNE - BRUZ",
+  "PÔLE FORMATION UIMM BRETAGNE - PLERIN",
+  "IFAC Campus des Métiers BREST",
   "IFCV - Formations en Alternance",
   "IPAC Bachelor Factory Bordeaux",
   "IGENSIA Alternance",
@@ -1640,4 +1651,11 @@ const cfaCompanyList = [
   "ZONE 01 ROUEN",
 ]
 
-export const isCompanyInBlockedCfaList = (companyName: string): boolean => cfaCompanyList.includes(companyName.toUpperCase())
+export const stringNormaliser = (str: string) => {
+  return removeAccents(str.toLowerCase())
+}
+
+export const isCompanyInBlockedCfaList = (nom: string): boolean => {
+  const nomNormalise = stringNormaliser(nom)
+  return cfaCompanyList.some((cfa) => stringNormaliser(cfa) === nomNormalise)
+}
