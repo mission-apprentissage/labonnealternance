@@ -11,10 +11,10 @@ export const up = async () => {
     .toArray()
   asyncForEach(jobs, async (job) => {
     const result = {
-      workplace_description: sanitizeTextField(job.workplace_description),
-      workplace_name: sanitizeTextField(job.workplace_name),
-      offer_description: sanitizeTextField(job.offer_description),
-      offer_title: sanitizeTextField(job.offer_title),
+      workplace_description: sanitizeTextField(job.workplace_description, true),
+      workplace_name: sanitizeTextField(job.workplace_name, true),
+      offer_description: sanitizeTextField(job.offer_description, true),
+      offer_title: sanitizeTextField(job.offer_title, true),
     }
     await getDbCollection("jobs_partners").updateOne({ _id: job._id }, { $set: result })
   })
