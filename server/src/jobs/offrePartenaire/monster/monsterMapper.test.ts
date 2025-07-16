@@ -55,7 +55,7 @@ describe("monsterJobToJobsPartners", () => {
       contract_duration: null,
       offer_title: "Chargé d'Affaires Professionnels - Territoire de Boulogne Billancourt (92) H/F",
       offer_description:
-        "Missions, équipe et environnement de travail, ça donne quoi ?Première banque de l’Union Européenne, Pognon inc. est au service de plus de 7 millions de clients particuliers et  clients professionnels (artisans, professions libérales, TPE) en France.Notre objectif en tant que banque...",
+        "<strong>Missions, équipe et environnement de travail, ça donne quoi ?</strong>Première banque de l’Union Européenne, Pognon inc. est au service de plus de 7 millions de clients particuliers et  clients professionnels (artisans, professions libérales, TPE) en France.Notre objectif en tant que banque...",
       offer_status: "Active",
       offer_target_diploma: null,
       offer_desired_skills: [],
