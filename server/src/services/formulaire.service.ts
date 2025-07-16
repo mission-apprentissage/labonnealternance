@@ -884,7 +884,7 @@ const startChangeStream = (collectionName: "recruiters" | "anonymized_recruiters
 
   if (collectionName === "recruiters") {
     changeStream
-      .once("change", async (change) => {
+      .on("change", async (change) => {
         switch (change.operationType) {
           case "insert":
           case "update":
