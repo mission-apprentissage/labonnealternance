@@ -40,6 +40,7 @@ describe("createJob", () => {
       email,
       _id: new ObjectId("670ce30b57a50d6875c141f9"),
       establishment_creation_date: new Date("2024-10-14T09:23:21.588Z"),
+      managed_by: "686e82f6965b78f107bf44c1",
     })
     referentielRome = generateReferentielRome()
     await getDbCollection("userswithaccounts").insertOne(user)
@@ -59,7 +60,6 @@ describe("createJob", () => {
 
   const generateValidJobWritable = () => {
     return generateJobFixture({
-      managed_by: user._id.toString(),
       rome_code: [referentielRome.rome.code_rome],
       rome_label: referentielRome.rome.intitule,
       rome_appellation_label: referentielRome.appellations[0].libelle,
