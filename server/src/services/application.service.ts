@@ -42,7 +42,7 @@ import { UserForAccessToken, userWithAccountToUserForToken } from "@/security/ac
 import { logger } from "../common/logger"
 import { manageApiError } from "../common/utils/errorManager"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
-import { removeHtmlTagsFromString } from "../common/utils/stringUtils"
+import { sanitizeTextField } from "../common/utils/stringUtils"
 import config from "../config"
 
 import { getApplicantFromDB, getOrCreateApplicant } from "./applicant.service"
@@ -817,8 +817,8 @@ export const sendMailToApplicant = async ({
           partner,
           ...images,
           email,
-          phone: removeHtmlTagsFromString(removeUrlsFromText(phone)),
-          comment: prepareMessageForMail(removeHtmlTagsFromString(company_feedback)),
+          phone: sanitizeTextField(removeUrlsFromText(phone)),
+          comment: prepareMessageForMail(sanitizeTextField(company_feedback)),
         },
       })
       break
@@ -834,7 +834,7 @@ export const sendMailToApplicant = async ({
           jobSourceType,
           partner,
           ...images,
-          comment: prepareMessageForMail(removeHtmlTagsFromString(company_feedback)),
+          comment: prepareMessageForMail(sanitizeTextField(company_feedback)),
           reasons: refusal_reasons,
         },
       })
@@ -963,10 +963,10 @@ export const obfuscateLbaCompanyApplications = async (company_siret: string) => 
 const sanitizeApplicantForEmail = (applicant: IApplicant) => {
   const { firstname, lastname, email, phone } = applicant
   return {
-    applicant_email: removeHtmlTagsFromString(email),
-    applicant_first_name: removeHtmlTagsFromString(firstname),
-    applicant_last_name: removeHtmlTagsFromString(lastname),
-    applicant_phone: removeHtmlTagsFromString(phone),
+    applicant_email: sanitizeTextField(email),
+    applicant_first_name: sanitizeTextField(firstname),
+    applicant_last_name: sanitizeTextField(lastname),
+    applicant_phone: sanitizeTextField(phone),
   }
 }
 // get data from applicant
@@ -992,22 +992,22 @@ const sanitizeApplicationForEmail = (application: IApplication) => {
     job_searched_by_user,
   } = application
   return {
-    applicant_attachment_name: removeHtmlTagsFromString(applicant_attachment_name),
-    job_searched_by_user: removeHtmlTagsFromString(job_searched_by_user),
-    applicant_message_to_company: removeHtmlTagsFromString(applicant_message_to_company, true),
-    company_recruitment_intention: removeHtmlTagsFromString(company_recruitment_intention),
-    company_feedback: removeHtmlTagsFromString(company_feedback),
+    applicant_attachment_name: sanitizeTextField(applicant_attachment_name),
+    job_searched_by_user: sanitizeTextField(job_searched_by_user),
+    applicant_message_to_company: sanitizeTextField(applicant_message_to_company, true),
+    company_recruitment_intention: sanitizeTextField(company_recruitment_intention),
+    company_feedback: sanitizeTextField(company_feedback),
     company_feedback_date: company_feedback_date,
     company_siret: company_siret,
-    company_email: removeHtmlTagsFromString(company_email),
-    company_phone: removeHtmlTagsFromString(company_phone),
+    company_email: sanitizeTextField(company_email),
+    company_phone: sanitizeTextField(company_phone),
     company_name: company_name,
     company_naf: company_naf,
     company_address: company_address,
     job_origin: job_origin,
-    job_title: removeHtmlTagsFromString(job_title),
+    job_title: sanitizeTextField(job_title),
     job_id: job_id,
-    caller: removeHtmlTagsFromString(caller),
+    caller: sanitizeTextField(caller),
     created_at: created_at,
     last_update_at: last_update_at,
   }

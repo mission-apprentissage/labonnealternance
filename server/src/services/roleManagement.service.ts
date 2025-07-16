@@ -12,7 +12,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import config from "@/config"
 
 import { getDbCollection } from "../common/utils/mongodbUtils"
-import { removeHtmlTagsFromString } from "../common/utils/stringUtils"
+import { sanitizeTextField } from "../common/utils/stringUtils"
 
 import { activateRecruiter, archiveDelegatedFormulaire, archiveFormulaire, checkForJobActivations, getFormulaireFromUserIdOrError } from "./formulaire.service"
 import mailer from "./mailer.service"
@@ -279,13 +279,13 @@ export const sendDeactivatedRecruteurMail = async ({
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
         logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
       },
-      last_name: removeHtmlTagsFromString(last_name),
-      first_name: removeHtmlTagsFromString(first_name),
-      reason: removeHtmlTagsFromString(errorMessage),
+      last_name: sanitizeTextField(last_name),
+      first_name: sanitizeTextField(first_name),
+      reason: sanitizeTextField(errorMessage),
       email,
-      siret: removeHtmlTagsFromString(establishment_siret),
-      raison_sociale: removeHtmlTagsFromString(establishment_raison_sociale),
-      phone: removeHtmlTagsFromString(phone),
+      siret: sanitizeTextField(establishment_siret),
+      raison_sociale: sanitizeTextField(establishment_raison_sociale),
+      phone: sanitizeTextField(phone),
       emailSupport: "mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Compte%20pro%20non%20validé",
     },
   })

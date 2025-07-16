@@ -9,7 +9,7 @@ import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
 
 import { getDbCollection } from "../common/utils/mongodbUtils"
-import { removeHtmlTagsFromString } from "../common/utils/stringUtils"
+import { sanitizeTextField } from "../common/utils/stringUtils"
 
 import { createRdvaAppointmentIdPageLink } from "./appLinks.service"
 import mailer from "./mailer.service"
@@ -41,11 +41,11 @@ const getMailData = async (candidate: IUser, appointment: IAppointment, eligible
   const mailData = {
     appointmentId: appointment._id,
     user: {
-      firstname: removeHtmlTagsFromString(candidate.firstname),
-      lastname: removeHtmlTagsFromString(candidate.lastname),
-      phone: removeHtmlTagsFromString(candidate.phone),
-      email: removeHtmlTagsFromString(candidate.email),
-      applicant_message_to_cfa: removeHtmlTagsFromString(appointment.applicant_message_to_cfa),
+      firstname: sanitizeTextField(candidate.firstname),
+      lastname: sanitizeTextField(candidate.lastname),
+      phone: sanitizeTextField(candidate.phone),
+      email: sanitizeTextField(candidate.email),
+      applicant_message_to_cfa: sanitizeTextField(appointment.applicant_message_to_cfa),
     },
     etablissement: {
       name: eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale,
@@ -58,7 +58,7 @@ const getMailData = async (candidate: IUser, appointment: IAppointment, eligible
     appointment: {
       reasons: appointment.applicant_reasons,
       referrerLink: referrerObj.url,
-      appointment_origin: removeHtmlTagsFromString(referrerObj.full_name),
+      appointment_origin: sanitizeTextField(referrerObj.full_name),
       created_at: appointment.created_at,
     },
     images: {
