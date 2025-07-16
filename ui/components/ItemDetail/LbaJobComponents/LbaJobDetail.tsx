@@ -54,7 +54,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: s
           </Box>
           {job?.job?.dureeContrat && (
             <Box my={2}>
-              <strong>Durée du contrat : </strong> {job?.job?.dureeContrat} mois
+              <strong>Durée du contrat : </strong> {job?.job?.dureeContrat}
             </Box>
           )}
           <Box my={2}>
