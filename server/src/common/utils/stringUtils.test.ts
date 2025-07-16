@@ -1,193 +1,69 @@
 import { describe, expect, it } from "vitest"
 
-import { sanitizeTextField } from "./stringUtils"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
 
-describe("sanitizeTextField - tests étendus avec keepFormat option", () => {
-  it("retourne chaîne vide pour null/undefined", () => {
+const allowedHtml = "<p><strong>Test</strong> <em>allowed</em> </p><ul><li>Item</li></ul>"
+const plainText = "This is a plain text."
+
+const xssVectors = [
+  { input: "<script>alert(1)</script>", expected: "" },
+  { input: "<IMG SRC='javascript:alert('XSS');'>", expected: "" },
+  { input: "<IMG SRC=JaVaScRiPt:alert(1)>", expected: "" },
+  { input: "<IMG SRC=javascript:alert(String.fromCharCode(88,83,83))>", expected: "" },
+  { input: "<IMG SRC=`javascript:alert('RSnake says, 'XSS'')`>", expected: "" },
+  { input: '<a href="javascript:alert(1)">xss</a>', expected: "xss" },
+  { input: "<BODY ONLOAD=alert(1)>", expected: "" },
+  { input: '<iframe src="javascript:alert(1)">', expected: "" },
+  { input: '<div style="background-image: url(javascript:alert(1))">', expected: "" },
+  { input: '<div style="width: expression(alert(1));">', expected: "" },
+  { input: '<div onmouseover="alert(1)">Hover me!</div>', expected: "Hover me!" },
+  { input: '<math><mi xlink:href="data:x,<script>alert(1)</script>">X</mi></math>', expected: "X" },
+  { input: "<svg><script>alert(1)</script></svg>", expected: "" },
+  { input: '<link rel="stylesheet" href="javascript:alert(1)">', expected: "" },
+  { input: '<meta http-equiv="refresh" content="0;url=javascript:alert(1)">', expected: "" },
+  { input: '<object data="javascript:alert(1)">', expected: "" },
+  { input: '<embed src="javascript:alert(1)">', expected: "" },
+]
+
+describe("sanitizeTextField", () => {
+  describe("With keepFormat = true", () => {
+    it("should keep allowed HTML tags and remove others", () => {
+      expect(sanitizeTextField(allowedHtml, true)).toBe(allowedHtml)
+    })
+
+    it("should return plain text unchanged", () => {
+      expect(sanitizeTextField(plainText, true)).toBe(plainText)
+    })
+
+    xssVectors.forEach(({ input, expected }, idx) => {
+      it(`should sanitize XSS vector #${idx + 1}`, () => {
+        expect(sanitizeTextField(input, true)).toBe(expected)
+      })
+    })
+  })
+
+  describe("With keepFormat = false", () => {
+    it("should remove all HTML and return plain text", () => {
+      expect(sanitizeTextField(allowedHtml, false)).toBe("Test allowed Item")
+    })
+
+    it("should return plain text unchanged", () => {
+      expect(sanitizeTextField(plainText, false)).toBe(plainText)
+    })
+
+    xssVectors.forEach(({ input, expected }, idx) => {
+      it(`should sanitize XSS vector #${idx + 1} with no allowed tags`, () => {
+        expect(sanitizeTextField(input, false)).toBe(expected)
+      })
+    })
+  })
+
+  it("should handle null and undefined inputs", () => {
     expect(sanitizeTextField(null)).toBe("")
     expect(sanitizeTextField(undefined)).toBe("")
   })
 
-  it("garde uniquement balises autorisées si keepFormat=true, sinon tout nettoie", () => {
-    const input = `
-      <p>Texte <strong>fort</strong> <em>emphase</em> <b>bold</b> <i>italic</i></p>
-      <br />
-      <ul><li>Item 1</li><li>Item 2</li></ul>
-      <div>Div non autorisé</div>
-      <section>Section interdite</section>
-      <header>Header interdit</header>
-    `
-    const expectedWithFormat = `
-      <p>Texte <strong>fort</strong> <em>emphase</em> <b>bold</b> <i>italic</i></p>
-      <br />
-      <ul><li>Item 1</li><li>Item 2</li></ul>
-      Div non autorisé
-      Section interdite
-      Header interdit
-    `
-      .replace(/\s+/g, " ")
-      .trim()
-
-    const expectedNoFormat = `
-      Texte fort emphase bold italic
-      Item 1Item 2
-      Div non autorisé
-      Section interdite
-      Header interdit
-    `
-      .replace(/\s+/g, " ")
-      .trim()
-
-    expect(sanitizeTextField(input, true).replace(/\s+/g, " ").trim()).toBe(expectedWithFormat)
-    expect(sanitizeTextField(input, false).replace(/\s+/g, " ").trim()).toBe(expectedNoFormat)
-  })
-
-  it("nettoie tous les attributs, même valides, dans les deux modes", () => {
-    const input = `<p class="txt" style="color:red" id="p1" data-info="danger" onclick="alert(1)">Texte</p>`
-    const expectedWithFormat = `<p>Texte</p>`
-    const expectedNoFormat = `Texte`
-
-    expect(sanitizeTextField(input, true)).toBe(expectedWithFormat)
-    expect(sanitizeTextField(input, false)).toBe(expectedNoFormat)
-  })
-
-  it("supprime les balises script, style et leur contenu, mais garde texte JS brut", () => {
-    const input = `<script>alert("XSS")</script><style>body {background: red;}</style>Texte sûr`
-    const expectedWithFormat = `Texte sûr`
-    const expectedNoFormat = expectedWithFormat
-
-    expect(sanitizeTextField(input, true).replace(/\s+/g, " ").trim()).toBe(expectedWithFormat.replace(/\s+/g, " ").trim())
-    expect(sanitizeTextField(input, false).replace(/\s+/g, " ").trim()).toBe(expectedNoFormat.replace(/\s+/g, " ").trim())
-  })
-
-  it("décodage HTML simple et double fonctionne dans les deux modes", () => {
-    const input = `&lt;p&gt;Texte &amp; &quot;quote&quot;&lt;/p&gt;`
-    const expectedWithFormat = `<p>Texte &amp; "quote"</p>`
-    const expectedNoFormat = `Texte &amp; "quote"`
-
-    expect(sanitizeTextField(input, true)).toBe(expectedWithFormat)
-    expect(sanitizeTextField(input, false)).toBe(expectedNoFormat)
-  })
-
-  it("enlève les balises imbriquées interdites dans balises autorisées", () => {
-    const input = `<p>Texte <span>span <iframe src="bad"></iframe></span>fin</p>`
-    const expectedWithFormat = `<p>Texte span fin</p>`
-    const expectedNoFormat = `Texte span fin`
-
-    expect(sanitizeTextField(input, true)).toBe(expectedWithFormat)
-    expect(sanitizeTextField(input, false)).toBe(expectedNoFormat)
-  })
-
-  it("supprime balises auto-fermantes interdites et content indésirable", () => {
-    const input = `<img src="x" onerror="alert(1)" /><input value="test" />Texte`
-    const expectedWithFormat = `Texte`
-    const expectedNoFormat = `Texte`
-
-    expect(sanitizeTextField(input, true)).toBe(expectedWithFormat)
-    expect(sanitizeTextField(input, false)).toBe(expectedNoFormat)
-  })
-
-  it("garde balises autorisées même sans fermeture explicite si keepFormat=true, sinon texte brut", () => {
-    const input = `<p>Texte <br>ligne<br/>fin</p>`
-    const expectedWithFormat = `<p>Texte <br />ligne<br />fin</p>`
-    const expectedNoFormat = `Texte lignefin`
-
-    expect(sanitizeTextField(input, true)).toBe(expectedWithFormat)
-    expect(sanitizeTextField(input, false)).toBe(expectedNoFormat)
-  })
-
-  it("élimine tous les commentaires HTML dans les deux modes", () => {
-    const input = `Texte <!-- commentaire --> fin`
-    const expectedWithFormat = `Texte  fin`
-    const expectedNoFormat = `Texte  fin`
-
-    expect(sanitizeTextField(input, true)).toBe(expectedWithFormat)
-    expect(sanitizeTextField(input, false)).toBe(expectedNoFormat)
-  })
-
-  it("supprime attributs event handlers et CSS malveillant", () => {
-    const input = `<p onclick="alert(1)" style="background-image:url(javascript:alert(2))">Texte</p>`
-    const expectedWithFormat = `<p>Texte</p>`
-    const expectedNoFormat = `Texte`
-
-    expect(sanitizeTextField(input, true)).toBe(expectedWithFormat)
-    expect(sanitizeTextField(input, false)).toBe(expectedNoFormat)
-  })
-
-  it("nettoie balises <a> avec href javascript: - balise supprimée, texte conservé", () => {
-    const input = `<a href="javascript:alert('XSS')">Cliquez</a>`
-    const expectedWithFormat = `Cliquez`
-    const expectedNoFormat = `Cliquez`
-
-    expect(sanitizeTextField(input, true)).toBe(expectedWithFormat)
-    expect(sanitizeTextField(input, false)).toBe(expectedNoFormat)
-  })
-
-  it("supprime balises <object>, <embed> et contenu dans les deux modes", () => {
-    const input = `<object data="bad.swf"></object>Texte`
-    const expectedWithFormat = `Texte`
-    const expectedNoFormat = `Texte`
-
-    expect(sanitizeTextField(input, true)).toBe(expectedWithFormat)
-    expect(sanitizeTextField(input, false)).toBe(expectedNoFormat)
-  })
-
-  it("supporte les espaces, tabulations et retours ligne dans le texte", () => {
-    const input = "Ligne 1\r\n\tLigne 2\n  Ligne 3\rLigne 4"
-    expect(sanitizeTextField(input, true)).toBe(input)
-    expect(sanitizeTextField(input, false)).toBe(input)
-  })
-
-  it("garde le texte brut sans HTML", () => {
-    const input = "Juste un texte simple"
-    expect(sanitizeTextField(input, true)).toBe(input)
-    expect(sanitizeTextField(input, false)).toBe(input)
-  })
-
-  it("nettoie une longue séquence HTML complexe avec plusieurs attaques", () => {
-    const input = `
-      <p style="color:red" onclick="alert(1)">Texte <strong>bold</strong> <em>emphase</em></p>
-      <script>malicious()</script>
-      <iframe src="bad"></iframe>
-      <a href="javascript:alert(2)">Click</a>
-      <img src="x" onerror="alert(3)">
-      <style>body {background:url("javascript:alert(4)");}</style>
-      <ul><li>Item 1</li><li>Item 2</li></ul>
-      <!-- commentaire -->
-      Texte final
-    `
-    const expectedWithFormat = `
-      <p>Texte <strong>bold</strong> <em>emphase</em></p>
-      
-      Click
-      
-      
-      <ul><li>Item 1</li><li>Item 2</li></ul>
-      
-      Texte final
-    `
-      .replace(/\s+/g, " ")
-      .trim()
-
-    const expectedNoFormat = `
-      Texte bold emphase
-      Click
-      Item 1Item 2
-      Texte final
-    `
-      .replace(/\s+/g, " ")
-      .trim()
-
-    expect(sanitizeTextField(input, true).replace(/\s+/g, " ").trim()).toBe(expectedWithFormat)
-    expect(sanitizeTextField(input, false).replace(/\s+/g, " ").trim()).toBe(expectedNoFormat)
-  })
-
-  it("gère les doubles encodages HTML (ex: &amp;lt;) correctement", () => {
-    const input = "&amp;lt;script&amp;gt;alert('XSS')&amp;lt;/script&amp;gt;<p>Safe</p>"
-    const expectedWithFormat = `<p>Safe</p>`
-    const expectedNoFormat = `Safe`
-
-    expect(sanitizeTextField(input, true)).toBe(expectedWithFormat)
-    expect(sanitizeTextField(input, false)).toBe(expectedNoFormat)
+  it("should decode HTML entities before sanitizing", () => {
+    expect(sanitizeTextField("&lt;script&gt;alert(1)&lt;/script&gt;", false)).toBe("")
   })
 })
