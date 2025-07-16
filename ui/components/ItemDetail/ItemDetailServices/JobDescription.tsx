@@ -2,6 +2,7 @@ import { AddIcon, MinusIcon } from "@chakra-ui/icons"
 import { AccordionButton, AccordionItem, AccordionPanel, Box, Text } from "@chakra-ui/react"
 import React from "react"
 import { ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { scrollToNestedElement } from "@/utils/tools"
 
@@ -16,26 +17,16 @@ export const JobDescription = ({ job }: { job: ILbaItemPartnerJobJson | ILbaItem
   if (validCustomDescription || employeurDescription) {
     return (
       <>
-        {validCustomDescription && <JobDescriptionAccordion title="Description de l'offre">{validCustomDescription}</JobDescriptionAccordion>}
+        {validCustomDescription && (
+          <JobDescriptionAccordion title={`Description ${job.job.partner_label === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? " du métier" : "de l'offre"}`}>
+            {validCustomDescription}
+          </JobDescriptionAccordion>
+        )}
         {employeurDescription && <JobDescriptionAccordion title="Description de l'employeur">{employeurDescription}</JobDescriptionAccordion>}
       </>
     )
   }
-  const romeDefinition = job?.job?.romeDetails?.definition
-  if (romeDefinition) {
-    return (
-      <JobDescriptionAccordion title="Description du métier">
-        {romeDefinition.split("\\n").map((definition, i) => (
-          <Box key={i} mt={2}>
-            &bull;
-            <Text as="span" ml={3}>
-              {definition}
-            </Text>
-          </Box>
-        ))}
-      </JobDescriptionAccordion>
-    )
-  }
+
   return null
 }
 
