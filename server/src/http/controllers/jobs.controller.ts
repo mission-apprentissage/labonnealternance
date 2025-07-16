@@ -174,7 +174,6 @@ export default (server: Server) => {
         custom_address: body.custom_address,
         custom_geo_coordinates: body.custom_geo_coordinates,
         offer_title_custom: body.custom_job_title, // TODO: 23/06/2025 custom_job_title est obsolète, à supprimer lorsque fin d'usage par opco EP
-        managed_by: user._id.toString(),
       }
 
       const updatedRecruiter = await createOffre(establishmentId, job)
