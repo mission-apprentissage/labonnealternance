@@ -1,3 +1,5 @@
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
@@ -5,7 +7,7 @@ import { sanitizeTextField } from "@/common/utils/stringUtils"
 export const up = async () => {
   const jobs = await getDbCollection("jobs_partners")
     .find(
-      { $or: [{ workplace_description: { $ne: null } }, { workplace_name: { $ne: null } }] },
+      { $or: [{ workplace_description: { $ne: null } }, { workplace_name: { $ne: null } }], partner_label: { $ne: JOBPARTNERS_LABEL.RECRUTEURS_LBA } },
       { projection: { _id: 1, workplace_description: 1, workplace_name: 1, offer_description: 1, offer_title: 1 } }
     )
     .toArray()
