@@ -24,7 +24,7 @@ import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
-import { IResumeTokenData } from "shared/models/resumeTokens.model"
+import { IResumeToken, IResumeTokenData } from "shared/models/resumeTokens.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
@@ -878,51 +878,57 @@ export const updateCfaManagedRecruiter = async (establishment_id: string, payloa
   return recruiter
 }
 
+const startChangeStream = (collectionName: "recruiters" | "anonymized_recruiters", resumeToken: IResumeToken | null) => {
+  const collection = getDbCollection(collectionName)
+  const changeStream = collection.watch([], resumeToken ? { resumeAfter: resumeToken.resumeTokenData } : {})
+
+  if (collectionName === "recruiters") {
+    changeStream.on("change", async (change) => {
+      switch (change.operationType) {
+        case "insert":
+        case "update":
+          await updateJobsPartnersFromRecruiterUpdate(change)
+          await storeResumeToken("recruiters", change._id as IResumeTokenData)
+          break
+        case "delete":
+          // n'arrivera pas car les formulaires ne sont pas supprimés, mais archivés
+          break
+        default:
+          assertUnreachable(`Unexpected change operation type ${change.operationType}` as never)
+      }
+    })
+  } else if (collectionName === "anonymized_recruiters") {
+    changeStream.on("change", async (change) => {
+      if (change.operationType === "insert") {
+        await updateJobsPartnersFromRecruiterDelete(change.documentKey._id)
+        await storeResumeToken("anonymized_recruiters", change._id as IResumeTokenData)
+      }
+    })
+  }
+
+  return changeStream
+}
+
 export const startRecruiterChangeStream = async () => {
   logger.info("Starting recruiter change stream")
 
-  const recruiters = getDbCollection("recruiters")
   const resumeRecruiterToken = await getResumeToken("recruiters")
   let changeRecruiterStream: ChangeStream<IRecruiter> | null = null
   try {
-    changeRecruiterStream = recruiters.watch([], resumeRecruiterToken ? { resumeAfter: resumeRecruiterToken.resumeTokenData } : {})
+    changeRecruiterStream = startChangeStream("recruiters", resumeRecruiterToken)
   } catch (error) {
     logger.error(`Error starting recruiter change stream with resumeToken ${resumeRecruiterToken?.resumeTokenData}. Starting without resumeToken`, error)
-    changeRecruiterStream = recruiters.watch([], {})
+    changeRecruiterStream = startChangeStream("recruiters", null)
   }
 
-  changeRecruiterStream.on("change", async (change) => {
-    switch (change.operationType) {
-      case "insert":
-      case "update":
-        await updateJobsPartnersFromRecruiterUpdate(change)
-        await storeResumeToken("recruiters", change._id as IResumeTokenData)
-        break
-      case "delete":
-        // n'arrivera pas car les formulaires ne sont pas supprimés, mais archivés
-        break
-      default:
-        assertUnreachable(`Unexpected change operation type ${change.operationType}` as never)
-    }
-  })
-
-  const anonymizedRecruiters = getDbCollection("anonymized_recruiters")
   const resumeAnonymizedRecruiterToken = await getResumeToken("anonymized_recruiters")
-
   let changeAnonymizedRecruiterStream: ChangeStream<IAnonymizedRecruiter> | null = null
   try {
-    changeAnonymizedRecruiterStream = anonymizedRecruiters.watch([], resumeAnonymizedRecruiterToken ? { resumeAfter: resumeAnonymizedRecruiterToken.resumeTokenData } : {})
+    changeAnonymizedRecruiterStream = startChangeStream("anonymized_recruiters", resumeAnonymizedRecruiterToken)
   } catch (error) {
     logger.error(`Error starting anonymized recruiters change stream with resumeToken ${resumeAnonymizedRecruiterToken?.resumeTokenData}. Starting without resumeToken`, error)
-    changeAnonymizedRecruiterStream = anonymizedRecruiters.watch([], {})
+    changeAnonymizedRecruiterStream = startChangeStream("anonymized_recruiters", null)
   }
-
-  changeAnonymizedRecruiterStream.on("change", async (change) => {
-    if (change.operationType === "insert") {
-      await updateJobsPartnersFromRecruiterDelete(change.documentKey._id)
-      await storeResumeToken("anonymized_recruiters", change._id as IResumeTokenData)
-    }
-  })
 
   return {
     changeRecruiterStream,
