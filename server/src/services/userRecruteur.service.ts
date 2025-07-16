@@ -234,9 +234,18 @@ export const updateUserWithAccountFields = async (userId: ObjectId, fields: Part
   const newEmail = email?.toLocaleLowerCase()
 
   if (newEmail) {
-    const exist = await getDbCollection("userswithaccounts").findOne({ email: newEmail, _id: { $ne: userId } })
-    if (exist) {
-      return { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS }
+    const oldUser = await getDbCollection("userswithaccounts").findOne({ _id: userId })
+    if (!oldUser) {
+      throw new Error(`inattendu: user id=${userId} introuvable`)
+    }
+    const oldEmail = oldUser.email
+    const emailHasChanged = oldEmail !== newEmail
+    if (emailHasChanged) {
+      const userExist = await getDbCollection("userswithaccounts").findOne({ email: newEmail })
+      const recruiterExist = await getDbCollection("recruiters").findOne({ email: newEmail })
+      if (userExist || recruiterExist) {
+        return { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS }
+      }
     }
   }
 
@@ -252,7 +261,7 @@ export const updateUserWithAccountFields = async (userId: ObjectId, fields: Part
     throw badRequest("user not found")
   }
   await getDbCollection("recruiters").updateMany(
-    { "jobs.managed_by": userId.toString() },
+    { managed_by: userId.toString() },
     { $set: { ...removeUndefinedFields({ first_name, last_name, phone, email: newEmail }), updatedAt: new Date() } }
   )
   return newUser
