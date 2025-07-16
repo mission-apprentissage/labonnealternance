@@ -315,6 +315,8 @@ fileignoreconfig:
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
 - filename: ui/app/(landing-pages)/acces-recruteur/_components/HeroRecruteur.tsx
   checksum: e2471ac7e6886e3361b2c0debf2f8b296d5c96270c5324ee2059b788fbe354ff
+- filename: ui/app/(landing-pages)/acces-recruteur/_components/OffresGratuites.tsx
+  checksum: 8892d3fb6a4dcffe5938305ec58ae29964f76419ab4211656b0af262eea7dce8
 scopeconfig:
 - scope: node
 custom_patterns:
