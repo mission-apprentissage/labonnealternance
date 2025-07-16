@@ -13,6 +13,7 @@ import { AutocompleteAsync } from "@/app/_components/FormComponents/Autocomplete
 import { SelectFormField } from "@/app/_components/FormComponents/SelectFormField"
 import { searchAddress } from "@/services/baseAdresse"
 import { apiGet } from "@/utils/api.utils"
+import { SendPlausibleEvent } from "@/utils/plausible"
 
 const schema = z.object({
   radius: z.string(),
@@ -110,12 +111,22 @@ export async function fetchRomeSearchOptions(query: string): Promise<IRomeSearch
   /* @ts-ignore TODO */
   const diplomes: IMetierEnrichi[] = data.labelsAndRomesForDiplomas ?? []
 
-  return [
+  const res = [
     ...metiers.slice(0, 4).map((item: IMetierEnrichi) => ({ romes: item.romes, type: item.type, label: item.label, group: "Métiers" })),
     ...diplomes.slice(0, 4).map((item: IMetierEnrichi) => ({ romes: item.romes, type: item.type, label: item.label, group: "Formations" })),
     ...metiers.slice(4).map((item: IMetierEnrichi) => ({ romes: item.romes, type: item.type, label: item.label, group: "Autres Métiers" })),
     ...diplomes.slice(4).map((item: IMetierEnrichi) => ({ romes: item.romes, type: item.type, label: item.label, group: "Autres Formations" })),
   ]
+
+  if (query.length > 2) {
+    if (res.length > 0) {
+      SendPlausibleEvent("Mots clefs les plus recherchés", { terme: `${query.toLowerCase()} - ${res.length}` })
+    } else {
+      SendPlausibleEvent("Mots clefs ne retournant aucun résultat", { terme: query.toLowerCase() })
+    }
+  }
+
+  return res
 }
 
 export async function fetchLieuOptions(query: string): Promise<IFormType["lieu"][]> {
