@@ -11,7 +11,7 @@ import { getComputedUserAccess, getGrantedRoles, getPublicUserRecruteurPropsOrEr
 import { getUserWithAccountByEmail, isUserEmailChecked, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
 import { startSession, stopSession } from "../../common/utils/session.service"
-import { removeHtmlTagsFromString } from "../../common/utils/stringUtils"
+import { sanitizeTextField } from "../../common/utils/stringUtils"
 import config from "../../config"
 import { sendUserConfirmationEmail } from "../../services/etablissement.service"
 import { controlUserState } from "../../services/login.service"
@@ -79,8 +79,8 @@ export default (server: Server) => {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
             logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
           },
-          last_name: removeHtmlTagsFromString(removeUrlsFromText(last_name)),
-          first_name: removeHtmlTagsFromString(removeUrlsFromText(first_name)),
+          last_name: sanitizeTextField(removeUrlsFromText(last_name)),
+          first_name: sanitizeTextField(removeUrlsFromText(first_name)),
           connexion_url: createAuthMagicLink(userWithAccountToUserForToken(user)),
         },
       })

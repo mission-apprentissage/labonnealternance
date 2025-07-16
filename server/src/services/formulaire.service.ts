@@ -16,7 +16,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { asyncForEach } from "../common/utils/asyncUtils"
 import { getDbCollection } from "../common/utils/mongodbUtils"
-import { removeHtmlTagsFromString } from "../common/utils/stringUtils"
+import { sanitizeTextField } from "../common/utils/stringUtils"
 import config from "../config"
 
 import { getUserManagingOffer } from "./application.service"
@@ -732,8 +732,8 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, co
     template: getStaticFilePath("./templates/mail-nouvelle-offre.mjml.ejs"),
     data: {
       images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`, logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true` },
-      nom: removeHtmlTagsFromString(is_delegated ? contactCFA?.last_name : last_name),
-      prenom: removeHtmlTagsFromString(is_delegated ? contactCFA?.first_name : first_name),
+      nom: sanitizeTextField(is_delegated ? contactCFA?.last_name : last_name),
+      prenom: sanitizeTextField(is_delegated ? contactCFA?.first_name : first_name),
       raison_sociale: establishmentTitle,
       mandataire: recruiter.is_delegated,
       offre: {
