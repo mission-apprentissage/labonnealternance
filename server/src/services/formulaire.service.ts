@@ -883,27 +883,35 @@ const startChangeStream = (collectionName: "recruiters" | "anonymized_recruiters
   const changeStream = collection.watch([], resumeToken ? { resumeAfter: resumeToken.resumeTokenData } : {})
 
   if (collectionName === "recruiters") {
-    changeStream.on("change", async (change) => {
-      switch (change.operationType) {
-        case "insert":
-        case "update":
-          await updateJobsPartnersFromRecruiterUpdate(change)
-          await storeResumeToken("recruiters", change._id as IResumeTokenData)
-          break
-        case "delete":
-          // n'arrivera pas car les formulaires ne sont pas supprimés, mais archivés
-          break
-        default:
-          assertUnreachable(`Unexpected change operation type ${change.operationType}` as never)
-      }
-    })
+    changeStream
+      .on("change", async (change) => {
+        switch (change.operationType) {
+          case "insert":
+          case "update":
+            await updateJobsPartnersFromRecruiterUpdate(change)
+            await storeResumeToken("recruiters", change._id as IResumeTokenData)
+            break
+          case "delete":
+            // n'arrivera pas car les formulaires ne sont pas supprimés, mais archivés
+            break
+          default:
+            assertUnreachable(`Unexpected change operation type ${change.operationType}` as never)
+        }
+      })
+      .once("error", (error) => {
+        logger.error(`Error in change stream for ${collectionName}:`, error)
+      })
   } else if (collectionName === "anonymized_recruiters") {
-    changeStream.on("change", async (change) => {
-      if (change.operationType === "insert") {
-        await updateJobsPartnersFromRecruiterDelete(change.documentKey._id)
-        await storeResumeToken("anonymized_recruiters", change._id as IResumeTokenData)
-      }
-    })
+    changeStream
+      .on("change", async (change) => {
+        if (change.operationType === "insert") {
+          await updateJobsPartnersFromRecruiterDelete(change.documentKey._id)
+          await storeResumeToken("anonymized_recruiters", change._id as IResumeTokenData)
+        }
+      })
+      .once("error", (error) => {
+        logger.error(`Error in change stream for ${collectionName}:`, error)
+      })
   }
 
   return changeStream
