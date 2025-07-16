@@ -2,10 +2,9 @@ import { randomUUID } from "node:crypto"
 
 import { badRequest, internal, notFound } from "@hapi/boom"
 import equal from "fast-deep-equal"
-import { ChangeStream, ChangeStreamInsertDocument, ChangeStreamUpdateDocument, Filter, ObjectId, UpdateFilter } from "mongodb"
+import { ChangeStreamInsertDocument, ChangeStreamUpdateDocument, Filter, ObjectId, UpdateFilter } from "mongodb"
 import {
   assertUnreachable,
-  IAnonymizedRecruiter,
   IDelegation,
   IJob,
   IJobCreate,
@@ -879,12 +878,13 @@ export const updateCfaManagedRecruiter = async (establishment_id: string, payloa
 }
 
 const startChangeStream = (collectionName: "recruiters" | "anonymized_recruiters", resumeToken: IResumeToken | null) => {
+  logger.info(`Starting change stream for ${collectionName} with resumeToken:`, resumeToken)
   const collection = getDbCollection(collectionName)
   const changeStream = collection.watch([], resumeToken ? { resumeAfter: resumeToken.resumeTokenData } : {})
 
   if (collectionName === "recruiters") {
     changeStream
-      .on("change", async (change) => {
+      .once("change", async (change) => {
         switch (change.operationType) {
           case "insert":
           case "update":
@@ -900,6 +900,8 @@ const startChangeStream = (collectionName: "recruiters" | "anonymized_recruiters
       })
       .once("error", (error) => {
         logger.error(`Error in change stream for ${collectionName}:`, error)
+        changeStream.close()
+        startChangeStream(collectionName, null)
       })
   } else if (collectionName === "anonymized_recruiters") {
     changeStream
@@ -911,6 +913,8 @@ const startChangeStream = (collectionName: "recruiters" | "anonymized_recruiters
       })
       .once("error", (error) => {
         logger.error(`Error in change stream for ${collectionName}:`, error)
+        changeStream.close()
+        startChangeStream(collectionName, null)
       })
   }
 
@@ -921,24 +925,10 @@ export const startRecruiterChangeStream = async () => {
   logger.info("Starting recruiter change stream")
 
   const resumeRecruiterToken = await getResumeToken("recruiters")
-  logger.info("Resume token for recruiters:", resumeRecruiterToken)
-  let changeRecruiterStream: ChangeStream<IRecruiter> | null = null
-  try {
-    changeRecruiterStream = startChangeStream("recruiters", resumeRecruiterToken)
-  } catch (error) {
-    logger.error(`Error starting recruiter change stream with resumeToken ${resumeRecruiterToken?.resumeTokenData}. Starting without resumeToken`, error)
-    changeRecruiterStream = startChangeStream("recruiters", null)
-  }
+  const changeRecruiterStream = startChangeStream("recruiters", resumeRecruiterToken)
 
   const resumeAnonymizedRecruiterToken = await getResumeToken("anonymized_recruiters")
-  logger.info("Resume token for anonymized_recruiters:", resumeAnonymizedRecruiterToken)
-  let changeAnonymizedRecruiterStream: ChangeStream<IAnonymizedRecruiter> | null = null
-  try {
-    changeAnonymizedRecruiterStream = startChangeStream("anonymized_recruiters", resumeAnonymizedRecruiterToken)
-  } catch (error) {
-    logger.error(`Error starting anonymized recruiters change stream with resumeToken ${resumeAnonymizedRecruiterToken?.resumeTokenData}. Starting without resumeToken`, error)
-    changeAnonymizedRecruiterStream = startChangeStream("anonymized_recruiters", null)
-  }
+  const changeAnonymizedRecruiterStream = startChangeStream("anonymized_recruiters", resumeAnonymizedRecruiterToken)
 
   return {
     changeRecruiterStream,
