@@ -428,17 +428,13 @@ const buildReplyLink = (application: IApplication, applicant: IApplicant, intent
   return `${config.publicUrl}/formulaire-intention?${searchParams.toString()}`
 }
 
-export const getUser2ManagingOffer = async (job: Pick<IJob, "managed_by" | "_id">): Promise<IUserWithAccount> => {
-  const { managed_by } = job
-  if (managed_by) {
-    const user = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(managed_by) })
-    if (!user) {
-      throw new Error(`could not find offer manager with id=${managed_by}`)
-    }
-    return user
-  } else {
-    throw new Error(`unexpected: managed_by is empty for offer with id=${job._id}`)
+export const getUserManagingOffer = async (recruiter: IRecruiter): Promise<IUserWithAccount> => {
+  const { managed_by } = recruiter
+  const user = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(managed_by) })
+  if (!user) {
+    throw new Error(`could not find offer manager with id=${managed_by}`)
   }
+  return user
 }
 
 /**
@@ -455,7 +451,7 @@ const buildRecruiterEmailUrlsAndParameters = async (application: IApplication, a
     if (jobOrCompany.type !== LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
       throw internal(`inattendu : type !== ${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}`)
     }
-    user = await getUser2ManagingOffer(jobOrCompany.job)
+    user = await getUserManagingOffer(jobOrCompany.recruiter)
   }
   if (application.job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) {
     const jobOrCompany = await getJobOrCompany(application)
@@ -1248,7 +1244,7 @@ const buildSendOtherApplicationsUrl = (application: IApplication, type: LBA_ITEM
     }
     url.searchParams.append("utm_source", "lba-brevo-transactionnel")
     url.searchParams.append("utm_medium", "email")
-    url.searchParams.append("utm_campaign", "accuse-envoi-lien-recherche")
+    url.searchParams.append("utm_campaign", "accuse-envoi-candidature-lien-recherche")
     return url.toString()
   }
 
@@ -1309,9 +1305,7 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
     if (!recruiter) throw internal(`Société pour ${application.job_origin} introuvable`)
 
     const { managed_by } = recruiter
-    if (managed_by) {
-      await validateUserWithAccountEmail(new ObjectId(managed_by))
-    }
+    await validateUserWithAccountEmail(new ObjectId(managed_by))
     recruiter_phone = recruiter.phone || ""
   }
 

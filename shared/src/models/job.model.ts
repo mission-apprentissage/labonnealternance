@@ -94,7 +94,6 @@ export const ZJobFields = z
     custom_job_title: z.string().nullish().describe("Titre personnalisée de l'offre"),
     stats_detail_view: z.number().nullish().describe("Nombre de vues de la page de détail"),
     stats_search_view: z.number().nullish().describe("Nombre de vues sur une page de recherche"),
-    managed_by: z.string().nullish().describe("Id de l'utilisateur gérant l'offre"),
     competences_rome: ZRomeCompetence.nullish().describe("Compétences du code ROME sélectionnées par le recruteur"),
     mer_sent: z.date().nullish().describe("Date d'envoi de la mise en relation"),
     offer_title_custom: z
