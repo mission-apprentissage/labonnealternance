@@ -4,35 +4,37 @@ import { Box, Grid2 as Grid } from "@mui/material"
 import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActions"
 import { FollowLinkedIn } from "@/app/(espace-pro)/_components/FollowLinkedIn"
 import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
-import { AlgoRecruteur } from "@/app/(landing-pages)/acces-recruteur/_components/AlgoRecruiter"
-import { Entreprise } from "@/app/(landing-pages)/acces-recruteur/_components/Entreprise"
-import { GerezOffres } from "@/app/(landing-pages)/acces-recruteur/_components/GerezOffres"
 import { OffresGratuites } from "@/app/(landing-pages)/acces-recruteur/_components/OffresGratuites"
-import { OrganismesMandataires } from "@/app/(landing-pages)/acces-recruteur/_components/OrganismesMandataires"
-import { PostezVotreOffre } from "@/app/(landing-pages)/acces-recruteur/_components/PostezVotreOffre"
+import { BientotCFA } from "@/app/(landing-pages)/organisme-de-formation/_components/BientotCFA"
+import { CFA } from "@/app/(landing-pages)/organisme-de-formation/_components/CFA"
+import { FacilitezRDVA } from "@/app/(landing-pages)/organisme-de-formation/_components/FacilitezRDVA"
+import { GerezEntreprise } from "@/app/(landing-pages)/organisme-de-formation/_components/GerezEntreprise"
+import { OffresAutoExposees } from "@/app/(landing-pages)/organisme-de-formation/_components/OffresAutoExposees"
 
-export const HeroRecruteur = () => {
+export const HeroCFA = () => {
   return (
     <Grid container spacing={fr.spacing("8w")} sx={{ alignItems: "center", justifyContent: "center" }}>
       <Grid>
-        <Entreprise />
+        <CFA />
       </Grid>
       <Grid>
         <Box sx={{ p: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
           <Grid container spacing={10} sx={{ alignItems: "center", justifyContent: "center" }}>
-            <PostezVotreOffre />
-            <OffresGratuites />
-            <OrganismesMandataires />
+            <OffresAutoExposees />
+            <FacilitezRDVA />
           </Grid>
         </Box>
       </Grid>
       <Grid>
         <Box sx={{ p: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
-          <GerezOffres />
+          <GerezEntreprise />
+          <OffresGratuites />
         </Box>
       </Grid>
       <Grid>
-        <AlgoRecruteur withLinks={true} />
+        <Box sx={{ p: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
+          <BientotCFA />
+        </Box>
       </Grid>
       <Grid>
         <Box sx={{ backgroundColor: fr.colors.decisions.background.default.grey.default }}>
