@@ -1024,13 +1024,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
-          "managed_by": {
-            "description": "Id de l'utilisateur gérant l'offre",
-            "type": [
-              "string",
-              "null",
-            ],
-          },
           "mer_sent": {
             "description": "Date d'envoi de la mise en relation",
             "type": [
@@ -3316,10 +3309,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "managed_by": {
             "description": "Id de l'utilisateur gestionnaire",
-            "type": [
-              "string",
-              "null",
-            ],
+            "type": "string",
           },
           "naf_code": {
             "description": "Code NAF de l'établissement",
@@ -3388,6 +3378,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "jobs",
           "opco",
           "idcc",
+          "managed_by",
         ],
         "type": "object",
       },
