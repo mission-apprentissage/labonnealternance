@@ -1055,7 +1055,7 @@ export async function getJobsPartnersPublishing(id: ObjectId): Promise<IJobOffer
   }
 }
 
-const jobsPartnersToApiV3Read = (job: IJobsPartnersOfferPrivate): IJobOfferApiReadV3 =>
+export const jobsPartnersToApiV3Read = (job: IJobsPartnersOfferPrivate): IJobOfferApiReadV3 =>
   jobsRouteApiv3Converters.convertToJobOfferApiReadV3({
     ...job,
     contract_type: job.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],

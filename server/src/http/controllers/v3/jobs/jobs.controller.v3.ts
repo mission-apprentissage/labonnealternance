@@ -2,7 +2,9 @@ import { badRequest } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { assertUnreachable, zRoutes } from "shared"
 
+import { getS3FileLastUpdate, s3SignedUrl } from "@/common/utils/awsUtils"
 import { Server } from "@/http/server"
+import { EXPORT_JOBS_TO_S3_V2_FILENAME } from "@/jobs/partenaireExport/exportJobsToS3V2"
 import { getUserFromRequest } from "@/security/authenticationService"
 import {
   createJobOffer,
@@ -13,8 +15,8 @@ import {
   incrementPostulerClickCount,
   incrementSearchViewCount,
   updateJobOffer,
-  upsertJobsPartnersMulti,
   upsertJobOffer,
+  upsertJobsPartnersMulti,
 } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
 import { JobOpportunityRequestContext } from "@/services/jobs/jobOpportunity/JobOpportunityRequestContext"
 
@@ -150,6 +152,28 @@ export const jobsApiV3Routes = (server: Server) => {
       const ids = req.body
       await incrementSearchViewCount(ids)
       return res.status(200).send({})
+    }
+  )
+
+  server.get(
+    "/v3/jobs/export",
+    {
+      schema: zRoutes.get["/v3/jobs/export"],
+      onRequest: server.auth(zRoutes.get["/v3/jobs/export"]),
+      config: {
+        rateLimit: {
+          max: 1,
+          timeWindow: "1s",
+        },
+      },
+    },
+    async (req, res) => {
+      const url = await s3SignedUrl("storage", EXPORT_JOBS_TO_S3_V2_FILENAME, { expiresIn: 120 })
+      const lastUpdate = await getS3FileLastUpdate("storage", EXPORT_JOBS_TO_S3_V2_FILENAME)
+      if (!lastUpdate) {
+        throw new Error("inattendu: lastUpdate vide")
+      }
+      return res.send({ url, lastUpdate })
     }
   )
 }

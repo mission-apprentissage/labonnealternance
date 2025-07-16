@@ -38,6 +38,7 @@ exports[`createJob > should insert a job 1`] = `
   },
   "idcc": null,
   "is_delegated": false,
+  "managed_by": "686e82f6965b78f107bf44c1",
   "opco": null,
   "status": "Actif",
   "updatedAt": 2021-02-03T17:00:00.000Z,
@@ -91,7 +92,6 @@ exports[`createJob > should insert a job 2`] = `
   "job_type": [
     "Apprentissage",
   ],
-  "managed_by": "670ce1ded6ce30c3c90a0e1d",
   "rome_appellation_label": "Agent administratif / Agente administrative",
   "rome_code": [
     "M1602",

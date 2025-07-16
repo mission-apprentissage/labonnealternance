@@ -6,6 +6,7 @@ import updateDomainesMetiers from "@/jobs/domainesMetiers/updateDomainesMetiers"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
 import { sendMiseEnRelation } from "@/jobs/miseEnRelation/sendMiseEnRelation"
 import { importers } from "@/jobs/offrePartenaire/jobsPartners.importer"
+import { exportJobsToS3V2 } from "@/jobs/partenaireExport/exportJobsToS3V2"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
@@ -276,6 +277,10 @@ export async function setupJobProcessor() {
             cron_string: "0 10 * * SUN",
             handler: () => processRecruteursLba(),
             tag: "main",
+          },
+          "Export des offres sur S3 v2": {
+            cron_string: "0 3 * * *",
+            handler: () => exportJobsToS3V2(),
           },
           "Suppression des contacts Brevo de plus de deux ans": {
             cron_string: "0 8 * * SUN",

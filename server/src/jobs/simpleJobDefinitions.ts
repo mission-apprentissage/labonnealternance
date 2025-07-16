@@ -21,6 +21,7 @@ import { processRecruteursLba } from "@/jobs/offrePartenaire/recruteur-lba/proce
 import { processRhAlternance } from "@/jobs/offrePartenaire/rh-alternance/processRhAlternance"
 import { analyzeClosedCompanies } from "@/jobs/oneTimeJob/analyzeClosedCompanies"
 import { renvoiMailCreationCompte } from "@/jobs/oneTimeJob/renvoiMailCreationCompte"
+import { exportJobsToS3V2 } from "@/jobs/partenaireExport/exportJobsToS3V2"
 import { exportJobsToFranceTravail } from "@/jobs/partenaireExport/exportToFranceTravail"
 import { repriseEnvoiEmailsPRDV } from "@/jobs/rdv/repriseEnvoiPRDV"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
@@ -350,8 +351,15 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   },
   { fct: syncLbaJobsIntoJobsPartners, description: "Synchronise les offres LBA dans la collection jobs_partners à partir de la collection recruiters sur les comptes actifs" },
   {
+    fct: analyzeClosedCompanies,
+    description: "analyze les recruiters dont l'entreprise a fermé. Le script suppose que la collection cache_siret est remplie au mieux",
+  },
+  {
+    fct: exportJobsToS3V2,
+    description: "export des offres sur S3 (V2)",
+  },
+  {
     fct: removeBrevoContacts,
     description: "Anonymise les contacts Brevo dont la date de creation est supérieure à 2 ans",
   },
-  { fct: analyzeClosedCompanies, description: "analyze les recruiters dont l'entreprise a fermé. Le script suppose que la collection cache_siret est remplie au mieux" },
 ]

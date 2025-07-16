@@ -1,5 +1,6 @@
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -21,11 +22,28 @@ describe("Canceling jobs_partners that have been removed from computed_jobs_part
     await createJobPartner({ partner_job_id: "existing_3", partner_label: JOBPARTNERS_LABEL.HELLOWORK, offer_status: JOB_STATUS_ENGLISH.ACTIVE })
     await createJobPartner({ partner_job_id: "existing_4", partner_label: JOBPARTNERS_LABEL.HELLOWORK, offer_status: JOB_STATUS_ENGLISH.ACTIVE })
     await createJobPartner({ partner_job_id: "existing_5", partner_label: JOBPARTNERS_LABEL.HELLOWORK, offer_status: JOB_STATUS_ENGLISH.ACTIVE })
+    await createJobPartner({ partner_job_id: "existing_6", partner_label: JOBPARTNERS_LABEL.HELLOWORK, offer_status: JOB_STATUS_ENGLISH.ACTIVE })
+    await createJobPartner({ partner_job_id: "existing_7", partner_label: JOBPARTNERS_LABEL.HELLOWORK, offer_status: JOB_STATUS_ENGLISH.ACTIVE })
+    await createJobPartner({ partner_job_id: "existing_8", partner_label: JOBPARTNERS_LABEL.HELLOWORK, offer_status: JOB_STATUS_ENGLISH.ACTIVE })
 
     await createComputedJobPartner({ partner_job_id: "computed_1", partner_label: JOBPARTNERS_LABEL.RH_ALTERNANCE, validated: true })
     await createComputedJobPartner({ partner_job_id: "computed_2", partner_label: JOBPARTNERS_LABEL.RH_ALTERNANCE, validated: false })
     await createComputedJobPartner({ partner_job_id: "existing_3", partner_label: JOBPARTNERS_LABEL.HELLOWORK, validated: true })
     await createComputedJobPartner({ partner_job_id: "existing_4", partner_label: JOBPARTNERS_LABEL.HELLOWORK, validated: true })
+    await createComputedJobPartner({ partner_job_id: "existing_5", partner_label: JOBPARTNERS_LABEL.HELLOWORK, business_error: JOB_PARTNER_BUSINESS_ERROR.CFA, validated: false })
+    await createComputedJobPartner({ partner_job_id: "existing_6", partner_label: JOBPARTNERS_LABEL.HELLOWORK, business_error: JOB_PARTNER_BUSINESS_ERROR.CFA, validated: false })
+    await createComputedJobPartner({
+      partner_job_id: "existing_7",
+      partner_label: JOBPARTNERS_LABEL.HELLOWORK,
+      business_error: JOB_PARTNER_BUSINESS_ERROR.EXPIRED,
+      validated: false,
+    })
+    await createComputedJobPartner({
+      partner_job_id: "existing_8",
+      partner_label: JOBPARTNERS_LABEL.HELLOWORK,
+      business_error: JOB_PARTNER_BUSINESS_ERROR.EXPIRED,
+      validated: false,
+    })
 
     return async () => {
       await getDbCollection("computed_jobs_partners").deleteMany({})
@@ -38,10 +56,9 @@ describe("Canceling jobs_partners that have been removed from computed_jobs_part
 
     // les éléments de jobs_partners qui ne sont plus dans computed doivent être taggés Annulé
     const countCanceledJobsPartners = await getDbCollection("jobs_partners").countDocuments({
-      partner_job_id: { $in: ["existing_2", "existing_5"] },
       offer_status: JOB_STATUS_ENGLISH.ANNULEE,
     })
-    expect.soft(countCanceledJobsPartners).toEqual(2)
+    expect.soft(countCanceledJobsPartners).toEqual(5)
 
     // les éléments de jobs_partners qui ne sont pas des collections à vérifier sont intouchés
     const countNotCanceledJobsPartners = await getDbCollection("jobs_partners").countDocuments({
@@ -59,6 +76,6 @@ describe("Canceling jobs_partners that have been removed from computed_jobs_part
 
     // aucun éléments de jobs_partners n'a été retiré de la collection
     const countJobsPartners = await getDbCollection("jobs_partners").countDocuments({})
-    expect.soft(countJobsPartners).toEqual(5)
+    expect.soft(countJobsPartners).toEqual(8)
   })
 })

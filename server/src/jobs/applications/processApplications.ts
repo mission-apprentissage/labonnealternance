@@ -96,7 +96,7 @@ const processApplicationGroup = async (applicationFilter: Filter<IApplication>, 
           await processApplicationEmails.sendEmailsIfNeeded(application, applicant)
           results.success++
         } catch (err3) {
-          await getDbCollection("applications").findOneAndUpdate({ _id: application._id }, { $set: { scan_status: ApplicationScanStatus.DO_NOT_SEND } })
+          await getDbCollection("applications").findOneAndUpdate({ _id: application._id }, { $set: { scan_status: ApplicationScanStatus.UNKNOWN_ERROR } })
           throw err3
         }
       }
