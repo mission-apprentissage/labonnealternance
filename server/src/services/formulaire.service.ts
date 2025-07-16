@@ -901,7 +901,6 @@ export const startRecruiterChangeStream = async () => {
     }
   })
 
-  // interrogation sur le côté bloquant du change stream sur
   const anonymizedRecruiters = getDbCollection("anonymized_recruiters")
   const resumeAnonymizedRecruiterToken = await getResumeToken("anonymized_recruiters")
   const changeAnonymizedRecruiterStream = anonymizedRecruiters.watch([], resumeAnonymizedRecruiterToken ? { resumeAfter: resumeAnonymizedRecruiterToken.resumeTokenData } : {})
