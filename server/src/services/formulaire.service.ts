@@ -913,7 +913,7 @@ export const startRecruiterChangeStream = async () => {
   logger.info("Starting recruiter change stream")
 
   const resumeRecruiterToken = await getResumeToken("recruiters")
-  logger.info(`Resume token for recruiters: ${resumeRecruiterToken?.resumeTokenData}`, resumeRecruiterToken)
+  logger.info("Resume token for recruiters:", resumeRecruiterToken)
   let changeRecruiterStream: ChangeStream<IRecruiter> | null = null
   try {
     changeRecruiterStream = startChangeStream("recruiters", resumeRecruiterToken)
@@ -923,7 +923,7 @@ export const startRecruiterChangeStream = async () => {
   }
 
   const resumeAnonymizedRecruiterToken = await getResumeToken("anonymized_recruiters")
-  logger.info(`Resume token for anonymized_recruiters: ${resumeAnonymizedRecruiterToken?.resumeTokenData}`, resumeAnonymizedRecruiterToken)
+  logger.info("Resume token for anonymized_recruiters:", resumeAnonymizedRecruiterToken)
   let changeAnonymizedRecruiterStream: ChangeStream<IAnonymizedRecruiter> | null = null
   try {
     changeAnonymizedRecruiterStream = startChangeStream("anonymized_recruiters", resumeAnonymizedRecruiterToken)
