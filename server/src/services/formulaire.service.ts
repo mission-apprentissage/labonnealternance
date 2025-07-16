@@ -2,9 +2,10 @@ import { randomUUID } from "node:crypto"
 
 import { badRequest, internal, notFound } from "@hapi/boom"
 import equal from "fast-deep-equal"
-import { ChangeStreamInsertDocument, ChangeStreamUpdateDocument, Filter, ObjectId, UpdateFilter } from "mongodb"
+import { ChangeStream, ChangeStreamInsertDocument, ChangeStreamUpdateDocument, Filter, ObjectId, UpdateFilter } from "mongodb"
 import {
   assertUnreachable,
+  IAnonymizedRecruiter,
   IDelegation,
   IJob,
   IJobCreate,
@@ -882,7 +883,13 @@ export const startRecruiterChangeStream = async () => {
 
   const recruiters = getDbCollection("recruiters")
   const resumeRecruiterToken = await getResumeToken("recruiters")
-  const changeRecruiterStream = recruiters.watch([], resumeRecruiterToken ? { resumeAfter: resumeRecruiterToken.resumeTokenData } : {})
+  let changeRecruiterStream: ChangeStream<IRecruiter> | null = null
+  try {
+    changeRecruiterStream = recruiters.watch([], resumeRecruiterToken ? { resumeAfter: resumeRecruiterToken.resumeTokenData } : {})
+  } catch (error) {
+    logger.error(`Error starting recruiter change stream with resumeToken ${resumeRecruiterToken?.resumeTokenData}. Starting without resumeToken`, error)
+    changeRecruiterStream = recruiters.watch([], {})
+  }
 
   changeRecruiterStream.on("change", async (change) => {
     switch (change.operationType) {
@@ -901,7 +908,15 @@ export const startRecruiterChangeStream = async () => {
 
   const anonymizedRecruiters = getDbCollection("anonymized_recruiters")
   const resumeAnonymizedRecruiterToken = await getResumeToken("anonymized_recruiters")
-  const changeAnonymizedRecruiterStream = anonymizedRecruiters.watch([], resumeAnonymizedRecruiterToken ? { resumeAfter: resumeAnonymizedRecruiterToken.resumeTokenData } : {})
+
+  let changeAnonymizedRecruiterStream: ChangeStream<IAnonymizedRecruiter> | null = null
+  try {
+    changeAnonymizedRecruiterStream = anonymizedRecruiters.watch([], resumeAnonymizedRecruiterToken ? { resumeAfter: resumeAnonymizedRecruiterToken.resumeTokenData } : {})
+  } catch (error) {
+    logger.error(`Error starting anonymized recruiters change stream with resumeToken ${resumeAnonymizedRecruiterToken?.resumeTokenData}. Starting without resumeToken`, error)
+    changeAnonymizedRecruiterStream = anonymizedRecruiters.watch([], {})
+  }
+
   changeAnonymizedRecruiterStream.on("change", async (change) => {
     if (change.operationType === "insert") {
       await updateJobsPartnersFromRecruiterDelete(change.documentKey._id)
