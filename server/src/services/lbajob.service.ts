@@ -1,4 +1,4 @@
-import { badRequest, internal } from "@hapi/boom"
+import { internal } from "@hapi/boom"
 import dayjs from "dayjs"
 import { Document, Filter, ObjectId } from "mongodb"
 import { IJob, ILbaItemPartnerJob, IRecruiter, IReferentielRomeForJob, JOB_STATUS } from "shared"
