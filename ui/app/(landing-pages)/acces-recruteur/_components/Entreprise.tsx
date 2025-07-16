@@ -1,25 +1,32 @@
-import { Box, Image, Show, SimpleGrid, Text } from "@chakra-ui/react"
+import { Box, Grid2 as Grid, Typography } from "@mui/material"
+import Image from "next/image"
 
 import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActions"
 
-export const Entreprise = () => (
-  <Box as="section" p={3} mb={{ base: "2", md: "0" }} backgroundColor="white">
-    <SimpleGrid columns={{ sm: 1, md: 2 }} spacing="40px" mb={12}>
-      <Box>
-        <Text as="h1" variant="homeEditorialH1" mb={3}>
+export const Entreprise = () => {
+  return (
+    <Grid container spacing={5}>
+      <Grid size={{ xs: 12, md: 5 }}>
+        <Typography variant="h2" component="h2" sx={{ mb: 2, color: "#000091" }}>
           Vous êtes une entreprise
-        </Text>
-        <Text as="h2" variant="homeEditorialH2" mb={{ base: "3", lg: "5" }}>
+        </Typography>
+
+        <Typography variant="h3" component="h3">
           Diffusez simplement et gratuitement vos offres en alternance
-        </Text>
-        <Box>Exprimez vos besoins en alternance afin d’être visible auprès des jeunes en recherche de contrat, et des centres de formation pouvant vous accompagner.</Box>
+        </Typography>
+
+        <Typography sx={{ mb: 2 }}>
+          Exprimez vos besoins en alternance afin d’être visible auprès des jeunes en recherche de contrat, et des centres de formation pouvant vous accompagner.
+        </Typography>
+
         <ConnectionActions service="entreprise" />
-      </Box>
-      <Show above="md">
+      </Grid>
+
+      <Grid size={{ xs: 0, md: 7 }}>
         <Box>
-          <Image src="/images/home_pics/illu-votrebesoin.svg" alt="" />
+          <Image src="/images/home_pics/illu-votrebesoin.svg" alt="" width={716} height={414} />
         </Box>
-      </Show>
-    </SimpleGrid>
-  </Box>
-)
+      </Grid>
+    </Grid>
+  )
+}

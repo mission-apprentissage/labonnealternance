@@ -1,27 +1,30 @@
-import { Box, Grid, GridItem, Image, Show, Text } from "@chakra-ui/react"
+import { Box, Grid2 as Grid, Typography } from "@mui/material"
+import Image from "next/image"
 
 import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActions"
 
-export function CFA() {
+export const CFA = () => {
   return (
-    <Box mt="8">
-      <Grid templateColumns={{ base: "1fr", md: "repeat(12, 1fr)" }}>
-        <GridItem colSpan={{ base: 1, md: 5 }}>
-          <Text as="h1" variant="homeEditorialH1" mb={3}>
-            Vous êtes un organisme de formation
-          </Text>
-          <Text as="h2" variant="homeEditorialH2">
-            Attirez des candidats en offrant plus de visibilité à vos formations et offres d’emplois
-          </Text>
-          <Box my="6">Créez le compte de votre CFA pour diffuser les offres de vos entreprises partenaires, et recevoir les candidatures.</Box>
-          <ConnectionActions service="cfa" />
-        </GridItem>
-        <GridItem colSpan={{ base: 1, md: 7 }}>
-          <Show above="md">
-            <Image src="/images/home_pics/illu-entreprisesmandatees.svg" aria-hidden={true} alt=""></Image>
-          </Show>
-        </GridItem>
+    <Grid container spacing={5}>
+      <Grid size={{ xs: 12, md: 5 }}>
+        <Typography variant="h2" component="h2" sx={{ mb: 2, color: "#000091" }}>
+          Vous êtes un organisme de formation
+        </Typography>
+
+        <Typography variant="h3" component="h3">
+          Attirez des candidats en offrant plus de visibilité à vos formations et offres d’emplois
+        </Typography>
+
+        <Typography sx={{ mb: 2 }}>Créez le compte de votre CFA pour diffuser les offres de vos entreprises partenaires, et recevoir les candidatures.</Typography>
+
+        <ConnectionActions service="cfa" />
       </Grid>
-    </Box>
+
+      <Grid size={{ xs: 0, md: 7 }}>
+        <Box>
+          <Image src="/images/home_pics/illu-entreprisesmandatees.svg" alt="" width={678} height={337} />
+        </Box>
+      </Grid>
+    </Grid>
   )
 }
