@@ -284,7 +284,7 @@ export const getPartnerJobByIdV2 = async (id: string): Promise<ILbaItemPartnerJo
 export const anonymizeLbaJobsPartners = async ({ partner_job_ids }: { partner_job_ids: string[] }) => {
   const jobsPartnersCollection = getDbCollection("jobs_partners")
   const now = new Date()
-  const result = await jobsPartnersCollection.updateMany(
+  await jobsPartnersCollection.updateMany(
     { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, partner_job_id: { $in: partner_job_ids } },
     {
       $set: {
@@ -306,6 +306,4 @@ export const anonymizeLbaJobsPartners = async ({ partner_job_ids }: { partner_jo
       },
     }
   )
-
-  return result
 }
