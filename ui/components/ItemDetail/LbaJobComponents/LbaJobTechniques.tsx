@@ -19,7 +19,7 @@ const LbaJobTechniques = ({ job }) => {
           <>
             <AccordionButton fontSize="1rem" fontWeight={700} color="#161616">
               <Box as="span" flex="1" textAlign="left">
-                Savoirs qui seront acquis durant l'alternance
+                Domaines et techniques de travail
               </Box>
               {isExpanded ? <MinusIcon fontSize="10px" /> : <AddIcon fontSize="10px" />}
             </AccordionButton>
