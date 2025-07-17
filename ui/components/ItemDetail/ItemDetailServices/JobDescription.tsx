@@ -51,7 +51,7 @@ export const JobDescriptionAccordion = ({ title, children, items }: { title: str
 
             <AccordionPanel pb={4}>
               <Box pl="12px" mt={4}>
-                {children && <Text whiteSpace="pre-wrap">{children}</Text>}
+                {children && <Text whiteSpace="pre-wrap" dangerouslySetInnerHTML={{ __html: children }} />}
                 {items?.length > 0 &&
                   items.map((item, i) => (
                     <Box key={`accordion_${title}_${i}`}>

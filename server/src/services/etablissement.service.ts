@@ -34,7 +34,7 @@ import { getUserWithAccountByEmail, isUserEmailChecked } from "@/services/userWi
 
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
-import { removeHtmlTagsFromString } from "../common/utils/stringUtils"
+import { sanitizeTextField } from "../common/utils/stringUtils"
 import config from "../config"
 
 import { createValidationMagicLink } from "./appLinks.service"
@@ -714,8 +714,8 @@ export const sendUserConfirmationEmail = async (user: IUserWithAccount) => {
     template: getStaticFilePath("./templates/mail-confirmation-email.mjml.ejs"),
     data: {
       images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true` },
-      last_name: removeHtmlTagsFromString(user.last_name),
-      first_name: removeHtmlTagsFromString(user.first_name),
+      last_name: sanitizeTextField(user.last_name),
+      first_name: sanitizeTextField(user.first_name),
       confirmation_url: url,
     },
   })
@@ -747,9 +747,9 @@ export const sendEmailConfirmationEntreprise = async (
       template: getStaticFilePath("./templates/mail-nouvelle-offre-depot-simplifie.mjml.ejs"),
       data: {
         images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`, logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true` },
-        nom: removeHtmlTagsFromString(user.last_name),
-        prenom: removeHtmlTagsFromString(user.first_name),
-        email: removeHtmlTagsFromString(user.email),
+        nom: sanitizeTextField(user.last_name),
+        prenom: sanitizeTextField(user.first_name),
+        email: sanitizeTextField(user.email),
         confirmation_url: url,
         offre: {
           job_title: offre.offer_title_custom,

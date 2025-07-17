@@ -21,12 +21,6 @@ const Text = {
       lineHeight: "36px",
       fontWeight: 700,
     },
-    homeEditorialText: {
-      color: "#161616",
-      fontSize: "18px",
-      lineHeight: "28px",
-      fontWeight: 400,
-    },
     editorialContentH1: {
       color: "info",
       fontSize: "40px",
