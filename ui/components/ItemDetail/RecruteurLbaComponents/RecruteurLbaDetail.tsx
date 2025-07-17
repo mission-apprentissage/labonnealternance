@@ -1,6 +1,6 @@
 import { AddIcon, MinusIcon } from "@chakra-ui/icons"
 import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Flex, Image, ListItem, /*Link,*/ Text, UnorderedList } from "@chakra-ui/react"
-import { useContext, useEffect } from "react"
+import { SyntheticEvent, useContext, useEffect } from "react"
 import { ILbaItemLbaCompanyJson, ILbaItemNaf } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
@@ -31,9 +31,9 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
 
   const { formValues } = useContext(DisplayContext)
 
-  const onClick = (e) => {
+  const onClick = (e: SyntheticEvent) => {
     setTimeout(() => {
-      scrollToNestedElement({ containerId: "itemDetailColumn", nestedElement: e.target, yOffsett: 220 })
+      scrollToNestedElement({ containerId: "itemDetailColumn", nestedElement: e.target as HTMLElement, yOffsett: 220 })
     }, 200)
   }
 

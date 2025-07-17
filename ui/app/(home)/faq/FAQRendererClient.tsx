@@ -2,6 +2,7 @@
 import { Box, Container, Divider, Grid, GridItem, Text } from "@chakra-ui/react"
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs"
 import dynamic from "next/dynamic"
+import { ExtendedRecordMap } from "notion-types"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { useUrlHash } from "@/app/hooks/useUrlHash"
@@ -10,7 +11,13 @@ import { PAGES } from "@/utils/routes.utils"
 
 const NotionRenderer = dynamic(() => import("react-notion-x").then((mod) => mod.NotionRenderer), { ssr: false })
 
-export default function FAQRendererClient({ recruteur, organisme, candidat }) {
+interface Props {
+  recruteur: ExtendedRecordMap
+  organisme: ExtendedRecordMap
+  candidat: ExtendedRecordMap
+}
+
+export default function FAQRendererClient({ recruteur, organisme, candidat }: Props) {
   const tabs = [
     { tabId: "candidat", label: "Candidat", recordMap: candidat },
     { tabId: "recruteur", label: "Recruteur", recordMap: recruteur },

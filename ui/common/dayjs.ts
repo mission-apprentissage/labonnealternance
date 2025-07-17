@@ -22,7 +22,7 @@ dayjs.extend(advancedFormat)
  * @param {string} date
  * @returns {string|void}
  */
-const formatDate = (date) => {
+const formatDate = (date: string | number | Date | null | undefined) => {
   if (!date) {
     return
   }

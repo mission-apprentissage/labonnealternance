@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useParams } from "next/dist/client/components/navigation"
 import { useRouter } from "next/navigation"
 import { CSSProperties, Fragment, useEffect, useState } from "react"
-import { ILbaItemFormation2Json } from "shared"
+import { ILbaItemFormation2Json, ILbaItemTraining2 } from "shared"
 import { LBA_ITEM_TYPE, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 
 import { RechercheCarte } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
@@ -193,7 +193,7 @@ function TrainingDetailPage({
 
       <AideApprentissage />
 
-      {!elligibleForAppointment && <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />}
+      {!priseDeRendezVous && <GoingToContactQuestion kind={kind} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />}
     </Box>
   )
 }
@@ -333,7 +333,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
   )
 }
 
-const TrainingDescriptionDetails = ({ training }) => {
+const TrainingDescriptionDetails = ({ training }: { training: ILbaItemTraining2 }) => {
   return (
     <>
       {training.description && training.description.length > 30 && (
@@ -363,7 +363,7 @@ const TrainingDescriptionDetails = ({ training }) => {
           <Image src="/images/icons/training-academic-cap.svg" alt="" />
           <Box pl={4} whiteSpace="pre-wrap">
             <Typography sx={{ fontWeight: "700" }}>Sessions de formation</Typography>
-            {training["sessions"][0].isPermanentEntry
+            {training.sessions?.[0]?.isPermanentEntry
               ? "Il est possible de s’inscrire à cette formation tout au long de l’année."
               : training["sessions"].map((session, i) => (
                   <Fragment key={i}>

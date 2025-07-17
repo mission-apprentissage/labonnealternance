@@ -12,7 +12,7 @@ import * as Yup from "yup"
 
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 import { infosOpcos } from "@/theme/components/logos/infosOpcos"
-import { ApiError } from "@/utils/api.utils"
+import { ApiError, apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 
 import { AUTHTYPE } from "../../../../common/contants"
@@ -22,7 +22,7 @@ import { AnimationContainer, CustomInput } from "../../../../components/espace_p
 import { InformationOpco } from "../../../../components/espace_pro/InformationOpco"
 import { WidgetContext } from "../../../../context/contextWidget"
 import { ArrowRightLine } from "../../../../theme/components/icons"
-import { createEtablissement, getEntrepriseOpco } from "../../../../utils/api"
+import { getEntrepriseOpco } from "../../../../utils/api"
 
 const Formulaire = ({
   onSubmit,
@@ -99,7 +99,7 @@ const Formulaire = ({
                     <FormControl>
                       <FormLabel>OPCO</FormLabel>
                       <FormHelperText pb={2}>Pour vous accompagner dans vos recrutements, votre OPCO accède à vos informations sur La bonne alternance.</FormHelperText>
-                      <OpcoSelect name="opco" onChange={(newValue) => setFieldValue("opco", newValue)} value={values.opco} />
+                      <OpcoSelect name="opco" onChange={(newValue) => setFieldValue("opco", newValue)} value={values.opco as OPCOS_LABEL} />
                       <FormErrorMessage>{errors.opco as string}</FormErrorMessage>
                     </FormControl>
                   )}
@@ -170,7 +170,7 @@ export const InformationCreationCompte = ({
     if (type === AUTHTYPE.CFA) {
       payload.opco = OPCOS_LABEL.UNKNOWN_OPCO
     }
-    createEtablissement(payload)
+    apiPost("/etablissement/creation", { body: payload })
       .then((data) => {
         if (!data) {
           throw new Error("no data")

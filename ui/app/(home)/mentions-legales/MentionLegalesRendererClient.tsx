@@ -1,6 +1,7 @@
 "use client"
 import { Box, Container, Divider, Grid, GridItem, Text } from "@chakra-ui/react"
 import dynamic from "next/dynamic"
+import type { ExtendedRecordMap } from "notion-types"
 
 import { publicConfig } from "@/config.public"
 
@@ -9,7 +10,7 @@ import { Breadcrumb } from "../../_components/Breadcrumb"
 
 const NotionRenderer = dynamic(() => import("react-notion-x").then((mod) => mod.NotionRenderer))
 
-export default function MentionLegalesRendererClient({ mentionsLegales }) {
+export default function MentionLegalesRendererClient({ mentionsLegales }: { mentionsLegales: ExtendedRecordMap }) {
   return (
     <Box>
       <Breadcrumb pages={[PAGES.static.mentionsLegales]} />

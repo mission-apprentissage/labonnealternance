@@ -1,7 +1,7 @@
-import { Icon } from "@chakra-ui/react"
+import { Icon, IconProps } from "@chakra-ui/react"
 import React from "react"
 
-export function Plus(props) {
+export function Plus(props: IconProps) {
   return (
     <Icon width="10px" height="10px" viewBox="0 0 10 10" {...props}>
       <path

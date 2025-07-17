@@ -1,6 +1,6 @@
-import { Icon } from "@chakra-ui/react"
+import { Icon, IconProps } from "@chakra-ui/react"
 
-export function MailCloud(props) {
+export function MailCloud(props: IconProps) {
   return (
     <Icon viewBox="0 0 322 181" w="322px" h="181px" {...props}>
       <path

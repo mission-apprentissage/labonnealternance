@@ -9,7 +9,7 @@ import { useAuth } from "@/context/UserContext"
 import { AUTHTYPE } from "../../../common/contants"
 import { DownloadLine } from "../../../theme/components/icons"
 
-const formatDate = (date) => dayjs(date).format("YYYY-MM-DD")
+const formatDate = (date: string | number | Date) => dayjs(date).format("YYYY-MM-DD")
 
 export default function ExportButtonNew({ data, datasetName = "export" }) {
   const { user } = useAuth()

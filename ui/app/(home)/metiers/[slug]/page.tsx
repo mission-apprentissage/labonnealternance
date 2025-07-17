@@ -1,4 +1,3 @@
-import fs from "fs"
 import path from "path"
 
 import { Box, Container, Divider, Text, VStack } from "@chakra-ui/react"
@@ -13,12 +12,12 @@ import { Breadcrumb } from "../../../_components/Breadcrumb"
 
 const getTowns = () => {
   const txtDirectory = path.join(process.cwd(), "config")
-  const towns = getStaticVilles(path, fs, txtDirectory)
+  const towns = getStaticVilles(txtDirectory)
   return towns
 }
 const getMetiers = () => {
   const txtDirectory = path.join(process.cwd(), "config")
-  const jobs = getStaticMetiers(path, fs, txtDirectory)
+  const jobs = getStaticMetiers(txtDirectory)
   return jobs
 }
 

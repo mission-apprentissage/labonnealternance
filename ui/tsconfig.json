@@ -4,7 +4,7 @@
     // Limit to ensure browser compatibility
     "lib": ["dom", "dom.iterable", "es2022"],
     // need to be removed once fully switched to nextjs app router
-    "strict": false,
+    "strict": true,
     "strictNullChecks": false,
 
     "baseUrl": ".",
