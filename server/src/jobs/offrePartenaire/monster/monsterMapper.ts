@@ -7,8 +7,6 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
 
-import { formatHtmlForPartnerDescription } from "@/common/utils/stringUtils"
-
 import { isCompanyInBlockedCfaList } from "../blockJobsPartnersFromCfaList"
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
@@ -53,12 +51,10 @@ export const monsterJobToJobsPartners = (job: IMonsterJob): IComputedJobsPartner
   const urlParsing = z.string().url().safeParse(guid)
   const siretParsing = extensions.siret.safeParse(siretNumber)
 
-  let descriptionComputed = JobBody
-
-  descriptionComputed = formatHtmlForPartnerDescription(descriptionComputed).trim()
-
   const created_at = new Date()
   const publicationDate = new Date(JobActiveDate)
+
+  const siret = siretParsing.success ? siretParsing.data : null
 
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner(),
@@ -68,7 +64,7 @@ export const monsterJobToJobsPartners = (job: IMonsterJob): IComputedJobsPartner
     partner_job_id: postingId,
 
     offer_title: title,
-    offer_description: descriptionComputed,
+    offer_description: JobBody,
     offer_creation: publicationDate,
 
     offer_expiration: dayjs
@@ -77,7 +73,7 @@ export const monsterJobToJobsPartners = (job: IMonsterJob): IComputedJobsPartner
       .toDate(),
 
     workplace_name: CompanyName === "myJob.company" ? UNKNOWN_COMPANY : CompanyName,
-    workplace_siret: siretParsing.success ? siretParsing.data : null,
+    workplace_siret: siret === "81262237100043" ? null : siret,
     workplace_address_zipcode: JobPostalCode || null,
     workplace_address_city: JobCity,
     workplace_address_label: [JobCity, JobPostalCode].join(" ").trim(),

@@ -1,18 +1,17 @@
 "use client"
 import { Accordion, Box, Flex, Image, ListItem, Text, UnorderedList } from "@chakra-ui/react"
-import Head from "next/head"
 import React, { useEffect } from "react"
 import { ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { JobPostingSchema } from "@/components/ItemDetail/JobPostingSchema"
 import { notifyJobDetailViewV3 } from "@/utils/api"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { SendPlausibleEvent } from "../../../utils/plausible"
 import { formatDate } from "../../../utils/strutils"
 import { getCompanySize } from "../ItemDetailServices/getCompanySize"
-import { getJobPostingSchema } from "../ItemDetailServices/getJobPostingSchema"
 import ItemDistanceToCenter from "../ItemDetailServices/ItemDistanceToCenter"
 import ItemGoogleSearchLink from "../ItemDetailServices/ItemGoogleSearchLink"
 import ItemLocalisation from "../ItemDetailServices/ItemLocalisation"
@@ -34,13 +33,9 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
 
   const { formValues } = React.useContext(DisplayContext)
 
-  const jobPostingSchema = getJobPostingSchema({ title, description: job?.job?.description || null, id: job?.id, job })
-
   return (
     <>
-      <Head>
-        <script type="application/ld+json">{JSON.stringify(jobPostingSchema)}</script>
-      </Head>
+      <JobPostingSchema title={title} description={job?.job?.description || null} id={job?.id} job={job} />
       <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
         <Text as="h2" variant="itemDetailH2" mt={2} mb={4}>
           Description de l&apos;offre

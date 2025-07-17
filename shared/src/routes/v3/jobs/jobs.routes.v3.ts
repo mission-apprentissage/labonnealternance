@@ -1,9 +1,10 @@
 import { zObjectId } from "zod-mongodb-schema"
 
 import { z } from "../../../helpers/zodWithOpenApi.js"
+import { ZComputedJobsPartnersWrite } from "../../../models/jobsPartnersComputed.model.js"
 import { IRoutesDef } from "../../common.routes.js"
 
-import { zJobOfferPublishingV3, zJobOfferApiReadV3, zJobOfferApiWriteV3, zJobSearchApiV3Query, zJobSearchApiV3Response } from "./jobs.routes.v3.model.js"
+import { zJobOfferApiReadV3, zJobOfferApiWriteV3, zJobOfferPublishingV3, zJobSearchApiV3Query, zJobSearchApiV3Response } from "./jobs.routes.v3.model.js"
 
 export const zJobsRoutesV3 = {
   get: {
@@ -59,6 +60,24 @@ export const zJobsRoutesV3 = {
         tags: ["V3 - Jobs"] as string[],
       },
     },
+    "/v3/jobs/export": {
+      method: "get",
+      path: "/v3/jobs/export",
+      response: {
+        "200": z.object({
+          url: z.string(),
+          lastUpdate: z.date(),
+        }),
+      },
+      securityScheme: {
+        auth: "api-apprentissage",
+        access: null,
+        resources: {},
+      },
+      openapi: {
+        tags: ["V3 - Jobs"] as string[],
+      },
+    },
   },
   post: {
     "/v3/jobs": {
@@ -84,6 +103,19 @@ export const zJobsRoutesV3 = {
         partner_label: z.string(),
         partner_job_id: z.string(),
       }),
+      response: {
+        "200": z.object({ id: zObjectId }),
+      },
+      securityScheme: {
+        auth: "api-key",
+        access: null,
+        resources: {},
+      },
+    },
+    "/v4/jobs/multi-partner": {
+      method: "post",
+      path: "/v4/jobs/multi-partner",
+      body: ZComputedJobsPartnersWrite,
       response: {
         "200": z.object({ id: zObjectId }),
       },

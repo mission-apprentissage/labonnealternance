@@ -1,5 +1,6 @@
-import { Filter } from "mongodb"
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+
+import { FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 
@@ -7,7 +8,7 @@ const sourceFields = ["offer_rome_codes"] as const satisfies (keyof IComputedJob
 
 const blacklistedRomes: string[] = ["K2202", "G1605", "I1201", "L1102", "N4104"]
 
-export const blockBadRomeJobsPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>) => {
+export const blockBadRomeJobsPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext) => {
   const filledFields = ["business_error"] as const satisfies (keyof IComputedJobsPartners)[]
   return fillFieldsForPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.BLOCK_BAD_ROME,

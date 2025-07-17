@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`importMeteojob > should test the import of hellowork data into computed_job_partners 1`] = `
+exports[`importCleverConnect > should test the import of clever connect data into computed_job_partners 1`] = `
 [
   {
     "apply_phone": null,
@@ -23,42 +23,17 @@ exports[`importMeteojob > should test the import of hellowork data into computed
       "11-20 ans",
     ],
     "offer_creation": 2025-02-25T02:46:50.131Z,
-    "offer_description": "- Identifier les pièces détachées sur les différents logiciels constructeurs.
-
-- Gérer les appels téléphoniques et les emails pour répondre à chaque demande.
-
-- Gérer les commandes et réceptions fournisseurs.
-
-- Réaliser les ventes clients au comptoir.
-
-- Préparer les commandes clients et techniciens.
-
-- Assurer les différents mouvements de stock via notre logiciel.
-
-- Gérer les problèmes de retour pièces.
-
-- Participer à la bonne tenue du magasin (étiquetage, rangement et nettoyage).
-
-Vous êtes emmené à faire une semaine d'école à Nantes par mois.
+    "offer_description": "<p>- Identifier les pièces détachées sur les différents logiciels constructeurs.</p><p>- Gérer les appels téléphoniques et les emails pour répondre à chaque demande.</p><p>- Gérer les commandes et réceptions fournisseurs.</p><p>- Réaliser les ventes clients au comptoir.</p><p>- Préparer les commandes clients et techniciens.</p><p>- Assurer les différents mouvements de stock via notre logiciel.</p><p>- Gérer les problèmes de retour pièces.</p><p>- Participer à la bonne tenue du magasin (étiquetage, rangement et nettoyage).</p><p>Vous êtes emmené à faire une semaine d'école à Nantes par mois.</p>
 
 Secteur: Recrutement et placement
 
+Poste: Vendeur-magasinier (H/F)
 
-  Poste: Vendeur-magasinier (H/F)
+Temps Plein
 
+Avantages: À partir de 11,88 € par an
 
-  Temps Plein
-
-
-  Avantages: À partir de 11,88 € par an
-
-
-  Profil: 
-- Vous êtes organisé, polyvalent, curieux et vous avez le sens du contact.
-
-Vous avez des connaissances en mécanique, électricité, hydraulique et en informatique, et ou vous avez une première expérience dans la recherche de pièce en automobile ou autre.
-
-Alors n'hésitez pas et postulez dès maintenant afin de rejoindre une équipe dynamique dans une société à taille humaine.",
+Profil: <ul><li><p>Vous êtes organisé, polyvalent, curieux et vous avez le sens du contact.</p><p>Vous avez des connaissances en mécanique, électricité, hydraulique et en informatique, et ou vous avez une première expérience dans la recherche de pièce en automobile ou autre.</p><p>Alors n'hésitez pas et postulez dès maintenant afin de rejoindre une équipe dynamique dans une société à taille humaine.</p></li></ul>",
     "offer_desired_skills": [],
     "offer_expiration": 2025-04-25T02:46:50.131Z,
     "offer_multicast": true,
@@ -116,17 +91,13 @@ Alors n'hésitez pas et postulez dès maintenant afin de rejoindre une équipe d
 
 Secteur: Services à domicile
 
+Poste: Assistant de vie (H/F)
 
-  Poste: Assistant de vie (H/F)
+Temps Partiel
 
+Avantages: À partir de 11,88 € par heure
 
-  Temps Partiel
-
-
-  Avantages: À partir de 11,88 € par heure
-
-
-  Profil: VOTRE PROFILSi aider les autres est votre mission et la bienveillance votre super-pouvoir, alors ce poste est fait pour vous ! Votre super sens relationnel et votre adaptabilité à toute situation seront vos atouts tout au long de votre expérience chez nous. AVEC AZAÉ AIX EN PROVENCE VOUS BÉNÉFICIEZ … * D'une formation diplômante et certifiante (BAC+2) reconnue par l'état et d'une expérience terrain * De notre mutuelle d'entreprise , l'accès à notre comité d'entreprise, les tickets restaurants à 7€, Des indemnités kilométriques à 0.47€ par kilomètre, Le remboursement des transports en commun (pris en charge jusqu'à 100%)Nous sommes signataire de la charte de la diversité. En ce sens, nous nous engageons à étudier chaque candidature avec la même importance.",
+Profil: VOTRE PROFILSi aider les autres est votre mission et la bienveillance votre super-pouvoir, alors ce poste est fait pour vous ! Votre super sens relationnel et votre adaptabilité à toute situation seront vos atouts tout au long de votre expérience chez nous. AVEC AZAÉ AIX EN PROVENCE VOUS BÉNÉFICIEZ … * D'une formation diplômante et certifiante (BAC+2) reconnue par l'état et d'une expérience terrain * De notre mutuelle d'entreprise , l'accès à notre comité d'entreprise, les tickets restaurants à 7€, Des indemnités kilométriques à 0.47€ par kilomètre, Le remboursement des transports en commun (pris en charge jusqu'à 100%)Nous sommes signataire de la charte de la diversité. En ce sens, nous nous engageons à étudier chaque candidature avec la même importance.",
     "offer_desired_skills": [],
     "offer_expiration": 2025-04-25T03:53:02.912Z,
     "offer_multicast": true,
@@ -135,7 +106,10 @@ Secteur: Services à domicile
     "offer_rome_codes": null,
     "offer_status": "Active",
     "offer_status_history": [],
-    "offer_target_diploma": null,
+    "offer_target_diploma": {
+      "european": "5",
+      "label": "BTS, DEUST, autres formations niveau (Bac+2)",
+    },
     "offer_title": "Assistant(e) de Vie aux familles en alternance H/F",
     "offer_to_be_acquired_skills": [],
     "partner_job_id": "00000400",
@@ -186,62 +160,17 @@ Secteur: Services à domicile
       "11-20 ans",
     ],
     "offer_creation": 2025-02-25T02:46:34.914Z,
-    "offer_description": "- Commercialisation de tous les produits de formations en apprentissage et titre professionnel
-
-- Une expertise sur les financements POEI, POEC et sur l'alternance dans le département 86.
-
-
+    "offer_description": "<ul><li><p>Commercialisation de tous les produits de formations en apprentissage et titre professionnel</p></li><li><p>Une expertise sur les financements POEI, POEC et sur l'alternance dans le département 86.</p></li></ul>
 
 Secteur: Recrutement et placement
 
+Poste: Commercial (H/F)
 
-  Poste: Commercial (H/F)
+Temps Plein
 
+Avantages: 26 000 € - 30 000 € par an
 
-  Temps Plein
-
-
-  Avantages: 26 000 € - 30 000 € par an
-
-
-  Profil: 
-- Adepte du terrain
-
-- Défier les objectifs commerciaux
-
-- Enrichir des ventes et des marges
-
-- Prospecter, Négocier, Fidéliser et Satisfaire les clients existants
-
-- Etre engagé et orienté dans la politique RSE, Handicap, QVCT dans l'innovation et l'humain.
-
-
-Rémunération Et Avantages :
-
-- Salaire selon profil sur 13 mois avec un variable mensuel
-
-- Variable garanti pendant les 3 premiers mois dès la prise de poste
-
-- Véhicule de service 5 places et carte essence
-
-- Outils de communication (PC, tablette et téléphone)
-
-- Participation / Intéressement / Tickets restaurant 9.50€
-
-- 19 RTT
-
-- CET / Plan d'Epargne Retraite Collectif PERCOL
-
-- CSE
-
-- Un programme d'intégration et d'accompagnement tout au long de votre parcours professionnel
-
-- Des possibilités d'évolution professionnelle et de développement des compétences (catalogue de formations à disposition)
-
-
-Cette offre vous intéresse et votre profil correspond à celui recherché, contactez-nous sans attendre ou postulez en ligne via notre application téléchargeable sur votre smartphone : « MY Tralal »
-
-Tralal Intérim POITIERSA bientôt chez Tralal …",
+Profil: <ul><li><p>Adepte du terrain</p></li><li><p>Défier les objectifs commerciaux</p></li><li><p>Enrichir des ventes et des marges</p></li><li><p>Prospecter, Négocier, Fidéliser et Satisfaire les clients existants</p></li><li><p>Etre engagé et orienté dans la politique RSE, Handicap, QVCT dans l'innovation et l'humain.</p><br><br></li></ul><p>Rémunération Et Avantages :</p><ul><li><p>Salaire selon profil sur 13 mois avec un variable mensuel</p></li><li><p>Variable garanti pendant les 3 premiers mois dès la prise de poste</p></li><li><p>Véhicule de service 5 places et carte essence</p></li><li><p>Outils de communication (PC, tablette et téléphone)</p></li><li><p>Participation / Intéressement / Tickets restaurant 9.50€</p></li><li><p>19 RTT</p></li><li><p>CET / Plan d'Epargne Retraite Collectif PERCOL</p></li><li><p>CSE</p></li><li><p>Un programme d'intégration et d'accompagnement tout au long de votre parcours professionnel</p></li><li><p>Des possibilités d'évolution professionnelle et de développement des compétences (catalogue de formations à disposition)</p></li></ul><p>Cette offre vous intéresse et votre profil correspond à celui recherché, contactez-nous sans attendre ou postulez en ligne via notre application téléchargeable sur votre smartphone : « MY Tralal »</p><p>Tralal Intérim POITIERSA bientôt chez Tralal …</p>",
     "offer_desired_skills": [],
     "offer_expiration": 2025-04-25T02:46:34.914Z,
     "offer_multicast": true,
@@ -250,7 +179,10 @@ Tralal Intérim POITIERSA bientôt chez Tralal …",
     "offer_rome_codes": null,
     "offer_status": "Active",
     "offer_status_history": [],
-    "offer_target_diploma": null,
+    "offer_target_diploma": {
+      "european": "4",
+      "label": "BP, Bac, autres formations niveau (Bac)",
+    },
     "offer_title": "Commercial(e) H/F",
     "offer_to_be_acquired_skills": [],
     "partner_job_id": "00000629",
@@ -262,11 +194,7 @@ Tralal Intérim POITIERSA bientôt chez Tralal …",
     "workplace_address_street_label": null,
     "workplace_address_zipcode": "86000",
     "workplace_brand": null,
-    "workplace_description": "
-Vous avez envie de diversifier vos expériences professionnelles, de gagner en liberté et en sérénité ? Vous êtes au bon endroit ! Avec nos 190 agences réparties sur tout le territoire, nous sommes toujours plus proches de vous. Il y a plein de raisons de donner raison à notre intérim, découvrez l'intérim fait pour vous !
-
-L'agence RAS Intérim de Poitiers recherche un(e) commercial(e) H/F pour l'un de nos clients spécialisé dans la formation à Poitiers.
-",
+    "workplace_description": "<p>Vous avez envie de diversifier vos expériences professionnelles, de gagner en liberté et en sérénité ? Vous êtes au bon endroit ! Avec nos 190 agences réparties sur tout le territoire, nous sommes toujours plus proches de vous. Il y a plein de raisons de donner raison à notre intérim, découvrez l'intérim fait pour vous !</p><p>L'agence RAS Intérim de Poitiers recherche un(e) commercial(e) H/F pour l'un de nos clients spécialisé dans la formation à Poitiers.</p>",
     "workplace_geopoint": {
       "coordinates": [
         0.33528,

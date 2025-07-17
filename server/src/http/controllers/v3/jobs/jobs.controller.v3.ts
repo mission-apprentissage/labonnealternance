@@ -2,7 +2,9 @@ import { badRequest } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { assertUnreachable, zRoutes } from "shared"
 
+import { getS3FileLastUpdate, s3SignedUrl } from "@/common/utils/awsUtils"
 import { Server } from "@/http/server"
+import { EXPORT_JOBS_TO_S3_V2_FILENAME } from "@/jobs/partenaireExport/exportJobsToS3V2"
 import { getUserFromRequest } from "@/security/authenticationService"
 import {
   createJobOffer,
@@ -14,6 +16,7 @@ import {
   incrementSearchViewCount,
   updateJobOffer,
   upsertJobOffer,
+  upsertJobsPartnersMulti,
 } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
 import { JobOpportunityRequestContext } from "@/services/jobs/jobOpportunity/JobOpportunityRequestContext"
 
@@ -69,6 +72,23 @@ export const jobsApiV3Routes = (server: Server) => {
       const { partner_label, partner_job_id } = req.body
       const user = getUserFromRequest(req, zRoutes.post["/v3/jobs/multi-partner"]).value
       const id = await upsertJobOffer(req.body, partner_label, partner_job_id, user.email)
+      return res.status(200).send({ id })
+    }
+  )
+
+  server.post(
+    "/v4/jobs/multi-partner",
+    {
+      schema: zRoutes.post["/v4/jobs/multi-partner"],
+      onRequest: server.auth(zRoutes.post["/v4/jobs/multi-partner"]),
+      config,
+    },
+    async (req, res) => {
+      const user = getUserFromRequest(req, zRoutes.post["/v4/jobs/multi-partner"]).value
+      const { id, modified } = await upsertJobsPartnersMulti({ data: req.body, requestedByEmail: user.email })
+      if (!modified) {
+        return res.status(304).send()
+      }
       return res.status(200).send({ id })
     }
   )
@@ -132,6 +152,28 @@ export const jobsApiV3Routes = (server: Server) => {
       const ids = req.body
       await incrementSearchViewCount(ids)
       return res.status(200).send({})
+    }
+  )
+
+  server.get(
+    "/v3/jobs/export",
+    {
+      schema: zRoutes.get["/v3/jobs/export"],
+      onRequest: server.auth(zRoutes.get["/v3/jobs/export"]),
+      config: {
+        rateLimit: {
+          max: 1,
+          timeWindow: "1s",
+        },
+      },
+    },
+    async (req, res) => {
+      const url = await s3SignedUrl("storage", EXPORT_JOBS_TO_S3_V2_FILENAME, { expiresIn: 120 })
+      const lastUpdate = await getS3FileLastUpdate("storage", EXPORT_JOBS_TO_S3_V2_FILENAME)
+      if (!lastUpdate) {
+        throw new Error("inattendu: lastUpdate vide")
+      }
+      return res.send({ url, lastUpdate })
     }
   )
 }

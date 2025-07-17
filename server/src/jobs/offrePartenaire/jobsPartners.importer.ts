@@ -1,10 +1,16 @@
 import { CronDef } from "job-processor"
 
+import {
+  processMeteojob,
+  processAtlas,
+  processViteUnEmploi,
+  processNosTalentsNosEmplois,
+  processToulouseMetropole,
+} from "@/jobs/offrePartenaire/clever-connect/processCleverConnect"
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
 import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
 import { processKelio } from "@/jobs/offrePartenaire/kelio/processKelio"
 import { processLaposte } from "@/jobs/offrePartenaire/laposte/processLaposte"
-import { processMeteojob } from "@/jobs/offrePartenaire/meteojob/processMeteojob"
 import { processMonster } from "@/jobs/offrePartenaire/monster/processMonster"
 import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
 import { processComputedAndImportToJobPartners } from "@/jobs/offrePartenaire/processJobPartners"
@@ -71,6 +77,30 @@ export const importers: Record<string, CronDef> = {
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
+  "Import Atlas": {
+    cron_string: timings.import_source,
+    handler: processAtlas,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 30,
+  },
+  "Import Vite un emploi": {
+    cron_string: timings.import_source,
+    handler: processViteUnEmploi,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 30,
+  },
+  "Import Nos Talents Nos Emplois": {
+    cron_string: timings.import_source,
+    handler: processNosTalentsNosEmplois,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 30,
+  },
+  "Import Toulouse Metropole": {
+    cron_string: timings.import_source,
+    handler: processToulouseMetropole,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 30,
+  },
 
   // Leave at the end
   "Process computed and import to Jobs Partners": {
@@ -79,5 +109,6 @@ export const importers: Record<string, CronDef> = {
     checkinMargin: 350,
     maxRuntimeInMinutes: 120,
     tag: "slave",
+    resumable: true,
   },
 }

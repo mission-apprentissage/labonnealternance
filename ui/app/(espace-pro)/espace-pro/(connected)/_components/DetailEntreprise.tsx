@@ -1,6 +1,8 @@
 "use client"
 import { Badge, Box, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, SimpleGrid, Spinner, Stack, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
+import { Alert } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/navigation"
@@ -211,6 +213,11 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                           />
                           <FormErrorMessage>{errors.opco as string}</FormErrorMessage>
                         </FormControl>
+                      )}
+                      {userMutation.error && (
+                        <Alert sx={{ marginTop: fr.spacing("2w") }} severity="error">
+                          {userMutation.error + ""}
+                        </Alert>
                       )}
                       <Flex justify="flex-end" my={5}>
                         <Button type="submit" disabled={!isValid || isSubmitting}>

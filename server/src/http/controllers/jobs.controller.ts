@@ -174,7 +174,6 @@ export default (server: Server) => {
         custom_address: body.custom_address,
         custom_geo_coordinates: body.custom_geo_coordinates,
         custom_job_title: body.custom_job_title,
-        managed_by: user._id.toString(),
       }
 
       const updatedRecruiter = await createOffre(establishmentId, job)
@@ -367,8 +366,8 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { referer } = req.headers
-      const { romes, rncp, caller, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl } = req.query
-      const result = await getJobsQueryPrivate({ romes, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, isMinimalData: true })
+      const { romes, rncp, caller, latitude, longitude, radius, insee, sources, diploma, opco } = req.query
+      const result = await getJobsQueryPrivate({ romes, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, isMinimalData: true })
 
       if ("error" in result) {
         return res.status(500).send(result)

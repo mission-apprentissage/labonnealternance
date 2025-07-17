@@ -13,6 +13,7 @@ interface PublicConfig {
   apiEndpoint: string
   version: string
   plausibleDomain: string
+  disableRobots?: boolean
 }
 
 const SENTRY_DSN = "https://d04df44068da41a19f478822fe1d58ea@sentry.apprentissage.beta.gouv.fr/8"
@@ -54,6 +55,7 @@ function getRecettePublicConfig(): PublicConfig {
     apiEndpoint: `https://${host}/api`,
     version: getVersion(),
     plausibleDomain: "labonnealternance-recette2.apprentissage.beta.gouv.fr",
+    disableRobots: true,
   }
 }
 
@@ -74,6 +76,7 @@ function getPentestPublicConfig(): PublicConfig {
     apiEndpoint: `https://${host}/api`,
     version: getVersion(),
     plausibleDomain: "labonnealternance-recette2.apprentissage.beta.gouv.fr",
+    disableRobots: true,
   }
 }
 
@@ -101,6 +104,7 @@ function getPreviewPublicConfig(): PublicConfig {
     apiEndpoint: `https://${host}/api`,
     version,
     plausibleDomain: "labonnealternance-recette2.apprentissage.beta.gouv.fr",
+    disableRobots: true,
   }
 }
 
@@ -122,6 +126,7 @@ function getLocalPublicConfig(): PublicConfig {
     inserJeuneApiUrl: "https://exposition.inserjeunes.beta.gouv.fr",
     version: getVersion(),
     plausibleDomain: "labonnealternance-recette2.apprentissage.beta.gouv.fr",
+    disableRobots: true,
   }
 }
 

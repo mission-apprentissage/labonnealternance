@@ -10,7 +10,7 @@ import { CfaCandidatInformationAnswered } from "@/components/espace_pro/CfaCandi
 import { CfaCandidatInformationForm } from "@/components/espace_pro/CfaCandidatInformationPage/CfaCandidatInformationForm"
 import { CfaCandidatInformationOther } from "@/components/espace_pro/CfaCandidatInformationPage/CfaCandidatInformationOther"
 import { CfaCandidatInformationUnreachable } from "@/components/espace_pro/CfaCandidatInformationPage/CfaCandidatInformationUnreachable"
-import { reasons } from "@/components/RDV/types"
+import { RdvReasons } from "@/components/RDV/RdvReasons"
 import { apiPost } from "@/utils/api.utils"
 
 export default function DetailRendezVousRendererClient({ appointmentId, appointment, token }: { appointmentId: string; appointment: IAppointmentRecapJson; token: string }) {
@@ -125,7 +125,7 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
             <Text as="p" my="2">
               <UnorderedList>
                 {(appointment.appointment?.applicant_reasons || []).map((reason, i) => {
-                  return <ListItem key={i}>{reasons.find((item) => item.key === reason).title}</ListItem>
+                  return <ListItem key={i}>{RdvReasons.find((item) => item.key === reason).title}</ListItem>
                 })}
               </UnorderedList>
             </Text>

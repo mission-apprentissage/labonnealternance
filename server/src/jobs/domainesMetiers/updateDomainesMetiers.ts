@@ -1,8 +1,8 @@
 import fs from "fs"
 import path from "path"
+import { pipeline } from "stream/promises"
 
 import { ObjectId } from "mongodb"
-import { oleoduc } from "oleoduc"
 import { IDomainesMetiers, ZDomainesMetiers } from "shared/models/index"
 import { removeAccents } from "shared/utils/index"
 import XLSX from "xlsx"
@@ -24,7 +24,7 @@ const downloadAndSaveFile = async (from = "currentDomainesMetiers.xlsx") => {
   logger.info(`Downloading and save file ${from} from S3 Bucket...`)
 
   await createAssetsFolder()
-  await oleoduc(s3ReadAsStream("storage", from), fs.createWriteStream(FILEPATH))
+  await pipeline(await s3ReadAsStream("storage", from), fs.createWriteStream(FILEPATH))
 }
 
 export default async function (optionalFileName?: string) {

@@ -1,17 +1,26 @@
+import { removeBrevoContacts } from "@/jobs/anonymization/removeBrevoContacts"
 import { updateDiplomeMetier } from "@/jobs/diplomesMetiers/updateDiplomesMetiers"
 import { updateRomesForDomainesMetiers } from "@/jobs/domainesMetiers/updateRomesForDomainesMetiers"
 import { sendMiseEnRelation } from "@/jobs/miseEnRelation/sendMiseEnRelation"
+import {
+  processMeteojob,
+  processAtlas,
+  processViteUnEmploi,
+  processNosTalentsNosEmplois,
+  processToulouseMetropole,
+} from "@/jobs/offrePartenaire/clever-connect/processCleverConnect"
 import { importRecruteursLbaFromComputedToJobsPartners } from "@/jobs/offrePartenaire/fillComputedRecruteursLba"
 import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail/classifyJobsFranceTravail"
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
 import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
 import { processLaposte } from "@/jobs/offrePartenaire/laposte/processLaposte"
-import { processMeteojob } from "@/jobs/offrePartenaire/meteojob/processMeteojob"
 import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
 import { processFillRomeStandalone } from "@/jobs/offrePartenaire/processFillRomeStandalone"
 import { processRecruteursLba } from "@/jobs/offrePartenaire/recruteur-lba/processRecruteursLba"
 import { processRhAlternance } from "@/jobs/offrePartenaire/rh-alternance/processRhAlternance"
+import { analyzeClosedCompanies } from "@/jobs/oneTimeJob/analyzeClosedCompanies"
 import { renvoiMailCreationCompte } from "@/jobs/oneTimeJob/renvoiMailCreationCompte"
+import { exportJobsToS3V2 } from "@/jobs/partenaireExport/exportJobsToS3V2"
 import { exportJobsToFranceTravail } from "@/jobs/partenaireExport/exportToFranceTravail"
 import { repriseEnvoiEmailsPRDV } from "@/jobs/rdv/repriseEnvoiPRDV"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
@@ -30,10 +39,7 @@ import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formation
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
-import { blockBadRomeJobsPartners } from "./offrePartenaire/blockBadRomeJobsPartners"
-import { blockJobsPartnersWithNaf85 } from "./offrePartenaire/blockJobsPartnersWithNaf85"
 import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
-import { detectDuplicateJobPartners } from "./offrePartenaire/detectDuplicateJobPartners"
 import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
 import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
 import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromComputedToJobsPartners"
@@ -41,8 +47,7 @@ import { processKelio } from "./offrePartenaire/kelio/processKelio"
 import { processMonster } from "./offrePartenaire/monster/processMonster"
 import { processComputedAndImportToJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
-import { rankJobPartners } from "./offrePartenaire/rankJobPartners"
-import { removeMissingRecruteursLbaFromRaw } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
+import { removeMissingRecruteursLbaFromComputedJobPartners } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
@@ -221,6 +226,22 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: processPass,
     description: "Importe les offres Pass dans la collection raw & computed",
   },
+  {
+    fct: processAtlas,
+    description: "Importe les offres Atlas dans la collection raw & computed",
+  },
+  {
+    fct: processViteUnEmploi,
+    description: "Importe les offres Vite un Emploi  dans la collection raw & computed",
+  },
+  {
+    fct: processNosTalentsNosEmplois,
+    description: "Importe les offres Nos Talents Nos Emplois dans la collection raw & computed",
+  },
+  {
+    fct: processToulouseMetropole,
+    description: "Importe les offres Toulouse Métropole dans la collection raw & computed",
+  },
   // ENRICHIT COMPUTED JOBS PARTNERS
   {
     fct: fillComputedJobsPartners,
@@ -259,7 +280,7 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Met à jour la collection jobs_partners en mettant à 'Annulé' les offres qui ne sont plus dans computed_jobs_partners",
   },
   {
-    fct: removeMissingRecruteursLbaFromRaw,
+    fct: removeMissingRecruteursLbaFromComputedJobPartners,
     description: "Met à jour la collection computed_jobs_partners en supprimant les entreprises qui ne sont plus dans raw_recruteurslba",
   },
   {
@@ -274,10 +295,7 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: processRecruiterIntentions,
     description: "Emission des intentions des recruteurs.",
   },
-  {
-    fct: detectDuplicateJobPartners,
-    description: "Detect duplicate offers in the computed_jobs_partners collection",
-  },
+
   {
     fct: sendContactsToBrevo,
     description: "Envoi à Brevo la liste des contacts",
@@ -297,18 +315,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: resetInvitationDates,
     description: "Permet de réinitialiser les dates d'invitation et de refus des établissements pour la prise de rendez-vous",
-  },
-  {
-    fct: rankJobPartners,
-    description: "Calcule le rank des computed job partners",
-  },
-  {
-    fct: blockBadRomeJobsPartners,
-    description: "Bloque les jobs partners avec des mauvais code ROME",
-  },
-  {
-    fct: blockJobsPartnersWithNaf85,
-    description: "Passe les jobs partners en business erreur pour ceux qui ont un naf commençant par 85",
   },
   {
     fct: expireJobsPartners,
@@ -341,5 +347,17 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: renvoiMailCreationCompte,
     description: "Envoi les mails de validation de compte",
+  },
+  {
+    fct: analyzeClosedCompanies,
+    description: "analyze les recruiters dont l'entreprise a fermé. Le script suppose que la collection cache_siret est remplie au mieux",
+  },
+  {
+    fct: exportJobsToS3V2,
+    description: "export des offres sur S3 (V2)",
+  },
+  {
+    fct: removeBrevoContacts,
+    description: "Anonymise les contacts Brevo dont la date de creation est supérieure à 2 ans",
   },
 ]

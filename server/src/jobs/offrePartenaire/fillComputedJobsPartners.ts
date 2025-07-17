@@ -3,6 +3,7 @@ import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
 import { logger } from "@/common/logger"
+import { formatTextFieldsJobsPartners } from "@/jobs/offrePartenaire/formatTextFieldsJobsPartners"
 
 import { blockBadRomeJobsPartners } from "./blockBadRomeJobsPartners"
 import { blockJobsPartnersWithNaf85 } from "./blockJobsPartnersWithNaf85"
@@ -14,17 +15,31 @@ import { fillSiretInfosForPartners } from "./fillSiretInfosForPartners"
 import { rankJobPartners } from "./rankJobPartners"
 import { validateComputedJobPartners } from "./validateComputedJobPartners"
 
-export const fillComputedJobsPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>, shouldNotifySlack = true) => {
+export type FillComputedJobsPartnersContext = {
+  addedMatchFilter?: Filter<IComputedJobsPartners>
+  shouldNotifySlack: boolean
+}
+
+export const defaultFillComputedJobsPartnersContext: FillComputedJobsPartnersContext = {
+  shouldNotifySlack: true,
+}
+
+export const fillComputedJobsPartners = async (partialContext: Partial<FillComputedJobsPartnersContext> = {}) => {
   logger.info("début de fillComputedJobsPartners")
-  await fillOpcoInfosForPartners(addedMatchFilter)
-  await fillSiretInfosForPartners(addedMatchFilter)
-  await blockJobsPartnersWithNaf85(addedMatchFilter)
-  await fillLocationInfosForPartners(addedMatchFilter, shouldNotifySlack)
-  await fillRomeForPartners(addedMatchFilter)
-  await blockBadRomeJobsPartners(addedMatchFilter)
-  await rankJobPartners(addedMatchFilter)
-  await detectDuplicateJobPartners(addedMatchFilter)
-  await validateComputedJobPartners(addedMatchFilter, shouldNotifySlack)
+  const context: FillComputedJobsPartnersContext = { ...defaultFillComputedJobsPartnersContext, ...partialContext }
+  await formatTextFieldsJobsPartners(context)
+
+  await fillOpcoInfosForPartners(context)
+  await fillSiretInfosForPartners(context)
+  await blockJobsPartnersWithNaf85(context)
+  await fillLocationInfosForPartners(context)
+  await fillRomeForPartners(context)
+  await blockBadRomeJobsPartners(context)
+
+  await rankJobPartners(context)
+  await detectDuplicateJobPartners(context)
+
+  await validateComputedJobPartners(context)
   logger.info("fin de fillComputedJobsPartners")
 }
 

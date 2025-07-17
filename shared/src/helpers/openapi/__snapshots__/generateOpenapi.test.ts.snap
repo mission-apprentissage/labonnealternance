@@ -1024,13 +1024,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
-          "managed_by": {
-            "description": "Id de l'utilisateur gérant l'offre",
-            "type": [
-              "string",
-              "null",
-            ],
-          },
           "mer_sent": {
             "description": "Date d'envoi de la mise en relation",
             "type": [
@@ -3316,10 +3309,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "managed_by": {
             "description": "Id de l'utilisateur gestionnaire",
-            "type": [
-              "string",
-              "null",
-            ],
+            "type": "string",
           },
           "naf_code": {
             "description": "Code NAF de l'établissement",
@@ -3388,6 +3378,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "jobs",
           "opco",
           "idcc",
+          "managed_by",
         ],
         "type": "object",
       },
@@ -7497,6 +7488,42 @@ Limite : 1 appel(s) / 1 seconde(s)
         ],
       },
     },
+    "/v3/jobs/export": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "lastUpdate": {
+                      "type": "string",
+                    },
+                    "url": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "url",
+                    "lastUpdate",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-apprentissage": [],
+          },
+        ],
+        "tags": [
+          "V3 - Jobs",
+        ],
+      },
+    },
     "/v3/jobs/search": {
       "get": {
         "parameters": [
@@ -7598,6 +7625,10 @@ Limite : 1 appel(s) / 1 seconde(s)
                     "Meteojob",
                     "Kelio",
                     "La Poste",
+                    "annonces Atlas",
+                    "Nos Talents Nos Emplois",
+                    "Vite un emploi",
+                    "Toulouse metropole",
                   ],
                   "type": "string",
                 },
@@ -7616,6 +7647,10 @@ Limite : 1 appel(s) / 1 seconde(s)
                       "Meteojob",
                       "Kelio",
                       "La Poste",
+                      "annonces Atlas",
+                      "Nos Talents Nos Emplois",
+                      "Vite un emploi",
+                      "Toulouse metropole",
                     ],
                     "type": "string",
                   },
@@ -7694,7 +7729,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                                 ],
                               },
                               "recipient_id": {
-                                "description": "Identifiant permettant de candidaté via l'API, généré à la volé pour les offres LBA uniquement",
+                                "description": "Identifiant permettant de candidater via l'API ou le widget /postuler, généré à la volée pour les opportunités dont on dispose de l'adresse email. Si null il n'est pas possible d'utiliser le widget /postuler ou d'utiliser la route api pour postuler",
                                 "type": [
                                   "string",
                                   "null",
@@ -8113,7 +8148,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                                 ],
                               },
                               "recipient_id": {
-                                "description": "Identifiant permettant de candidaté via l'API, généré à la volé pour les offres LBA uniquement",
+                                "description": "Identifiant permettant de candidater via l'API ou le widget /postuler, généré à la volée pour les opportunités dont on dispose de l'adresse email. Si null il n'est pas possible d'utiliser le widget /postuler ou d'utiliser la route api pour postuler",
                                 "type": [
                                   "string",
                                   "null",
@@ -8396,7 +8431,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                           ],
                         },
                         "recipient_id": {
-                          "description": "Identifiant permettant de candidaté via l'API, généré à la volé pour les offres LBA uniquement",
+                          "description": "Identifiant permettant de candidater via l'API ou le widget /postuler, généré à la volée pour les opportunités dont on dispose de l'adresse email. Si null il n'est pas possible d'utiliser le widget /postuler ou d'utiliser la route api pour postuler",
                           "type": [
                             "string",
                             "null",

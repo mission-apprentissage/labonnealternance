@@ -5,7 +5,6 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
 
-import { removeHtmlTagsFromString } from "../../../common/utils/stringUtils"
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
 export const ZPassJob = z
@@ -92,7 +91,7 @@ export const passJobToJobsPartners = (job: IPassJob): IComputedJobsPartners => {
     contract_start: contractStart,
     contract_duration: contractDuration,
     offer_title: title,
-    offer_description: removeHtmlTagsFromString(description),
+    offer_description: description,
     offer_target_diploma: parseDiploma(dcType),
     offer_creation: creationDate,
     offer_expiration: offerExpiration,

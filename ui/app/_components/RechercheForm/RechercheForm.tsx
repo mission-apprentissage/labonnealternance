@@ -7,13 +7,13 @@ import { Formik, FormikProps } from "formik"
 import { createContext, useContext, useMemo } from "react"
 import { type IMetierEnrichi } from "shared"
 import { z } from "zod"
-import { toFormikValidate } from "zod-formik-adapter"
 
 import { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { AutocompleteAsync } from "@/app/_components/FormComponents/AutocompleteAsync"
 import { SelectFormField } from "@/app/_components/FormComponents/SelectFormField"
 import { searchAddress } from "@/services/baseAdresse"
 import { apiGet } from "@/utils/api.utils"
+import { SendPlausibleEvent } from "@/utils/plausible"
 
 const schema = z.object({
   radius: z.string(),
@@ -30,9 +30,16 @@ const schema = z.object({
       latitude: z.number(),
     })
     .nullable(),
+  opco: z.string().nullish(),
+  rncp: z.string().nullish(),
 })
 
 export type IFormType = z.output<typeof schema>
+
+type FormErrors = {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  [K in keyof z.infer<typeof schema>]: string
+}
 
 export const niveauOptions = [
   {
@@ -82,8 +89,8 @@ export const radiusOptions = [
 
 export type RechercheFormProps = {
   type: "home" | "recherche"
-  initialValue?: Pick<IRecherchePageParams, "romes" | "diploma" | "job_name" | "geo" | "job_type"> | null
-  onSubmit: null | ((result: Pick<IRecherchePageParams, "romes" | "diploma" | "job_name" | "geo" | "job_type" | "activeItems">) => unknown)
+  initialValue?: Pick<IRecherchePageParams, "romes" | "diploma" | "job_name" | "geo" | "job_type" | "opco" | "rncp"> | null
+  onSubmit: null | ((result: Pick<IRecherchePageParams, "romes" | "diploma" | "job_name" | "geo" | "job_type" | "activeItems" | "opco" | "rncp">) => unknown)
 }
 
 export type IRomeSearchOption = IFormType["metier"] & { group?: string }
@@ -104,12 +111,22 @@ export async function fetchRomeSearchOptions(query: string): Promise<IRomeSearch
   /* @ts-ignore TODO */
   const diplomes: IMetierEnrichi[] = data.labelsAndRomesForDiplomas ?? []
 
-  return [
+  const res = [
     ...metiers.slice(0, 4).map((item: IMetierEnrichi) => ({ romes: item.romes, type: item.type, label: item.label, group: "Métiers" })),
     ...diplomes.slice(0, 4).map((item: IMetierEnrichi) => ({ romes: item.romes, type: item.type, label: item.label, group: "Formations" })),
     ...metiers.slice(4).map((item: IMetierEnrichi) => ({ romes: item.romes, type: item.type, label: item.label, group: "Autres Métiers" })),
     ...diplomes.slice(4).map((item: IMetierEnrichi) => ({ romes: item.romes, type: item.type, label: item.label, group: "Autres Formations" })),
   ]
+
+  if (query.length > 2) {
+    if (res.length > 0) {
+      SendPlausibleEvent("Mots clefs les plus recherchés", { terme: `${query.toLowerCase()} - ${res.length}` })
+    } else {
+      SendPlausibleEvent("Mots clefs ne retournant aucun résultat", { terme: query.toLowerCase() })
+    }
+  }
+
+  return res
 }
 
 export async function fetchLieuOptions(query: string): Promise<IFormType["lieu"][]> {
@@ -122,7 +139,24 @@ export async function fetchLieuOptions(query: string): Promise<IFormType["lieu"]
   }))
 }
 
-const validate = toFormikValidate(schema)
+function validate(values: IFormType) {
+  const errors: Partial<FormErrors> = {}
+  const result = schema.safeParse(values)
+  if (!result.success) {
+    result.error.issues.forEach((issue) => {
+      if (issue.path.length > 0) {
+        const key = issue.path[0] as keyof IFormType
+        errors[key] = issue.message
+      }
+    })
+  } else {
+    if (!values.rncp && (values.metier === null || !values?.metier?.label)) {
+      errors.metier = "Le métier est requis si aucun RNCP n'est renseigné."
+    }
+  }
+
+  return errors
+}
 
 const RechercheFormContext = createContext<{
   type: RechercheFormProps["type"]
@@ -225,18 +259,20 @@ function RechercheFormComponent(props: FormikProps<IFormType>) {
               },
       }}
     >
-      <AutocompleteAsync
-        noOptionsText="Nous ne parvenons pas à identifier le métier ou la formation que vous cherchez, veuillez reformuler votre recherche"
-        id="metier"
-        key="metier"
-        label="Métier ou formation *"
-        fetchOptions={fetchRomeSearchOptions}
-        getOptionKey={getMetierOptionKey}
-        getOptionLabel={getMetierOptionLabel}
-        groupBy={(option: IRomeSearchOption) => option.group}
-        placeholder="Indiquer un métier ou une formation"
-        disabled={!isEnabled}
-      />
+      {!props?.values?.rncp && (
+        <AutocompleteAsync
+          noOptionsText="Nous ne parvenons pas à identifier le métier ou la formation que vous cherchez, veuillez reformuler votre recherche"
+          id="metier"
+          key="metier"
+          label="Métier ou formation *"
+          fetchOptions={fetchRomeSearchOptions}
+          getOptionKey={getMetierOptionKey}
+          getOptionLabel={getMetierOptionLabel}
+          groupBy={(option: IRomeSearchOption) => option.group}
+          placeholder="Indiquer un métier ou une formation"
+          disabled={!isEnabled}
+        />
+      )}
       <AutocompleteAsync
         noOptionsText="Nous ne parvenons pas à identifier le lieu que vous cherchez, veuillez reformuler votre recherche"
         id="lieu"
@@ -301,8 +337,18 @@ export function RechercheForm(props: RechercheFormProps) {
               latitude: props.initialValue.geo.latitude,
               longitude: props.initialValue.geo.longitude,
             },
+      opco: props.initialValue?.opco ?? null,
+      rncp: props.initialValue?.rncp ?? null,
     }
-  }, [props.initialValue?.geo, props.initialValue?.diploma, props.initialValue?.job_name, props.initialValue?.job_type, props.initialValue?.romes])
+  }, [
+    props.initialValue?.geo,
+    props.initialValue?.diploma,
+    props.initialValue?.job_name,
+    props.initialValue?.job_type,
+    props.initialValue?.romes,
+    props.initialValue?.opco,
+    props.initialValue?.rncp,
+  ])
 
   const isEnabled = props.onSubmit != null
   const context = useMemo(() => {
@@ -318,12 +364,14 @@ export function RechercheForm(props: RechercheFormProps) {
         validateOnBlur={false}
         onSubmit={async (values) => {
           await props?.onSubmit({
-            romes: values.metier.romes,
+            romes: values?.metier?.romes,
             geo: values.lieu ? { address: values.lieu.label, latitude: values.lieu.latitude, longitude: values.lieu.longitude, radius: parseInt(values.radius) } : null,
             diploma: values.niveau || null,
             job_name: values.metier.label,
             job_type: values.metier.type,
             activeItems: [],
+            opco: initialValues?.opco ?? null,
+            rncp: initialValues?.rncp ?? null,
           })
         }}
         component={RechercheFormComponent}

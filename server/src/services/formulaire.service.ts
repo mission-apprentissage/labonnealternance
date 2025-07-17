@@ -16,10 +16,10 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { asyncForEach } from "../common/utils/asyncUtils"
 import { getDbCollection } from "../common/utils/mongodbUtils"
-import { removeHtmlTagsFromString } from "../common/utils/stringUtils"
+import { sanitizeTextField } from "../common/utils/stringUtils"
 import config from "../config"
 
-import { getUser2ManagingOffer } from "./application.service"
+import { getUserManagingOffer } from "./application.service"
 import { createViewDelegationLink } from "./appLinks.service"
 import { getCatalogueFormations } from "./catalogue.service"
 import dayjs from "./dayjs.service"
@@ -183,14 +183,14 @@ export const createJob = async ({
   }
   const creationDate = new Date()
   const { job_start_date } = job
-  const updatedJob: Partial<IJob> = Object.assign(job, {
+  const addedFields: Partial<IJob> = {
     job_status: newJobStatus,
     job_start_date,
     job_creation_date: creationDate,
     job_expiration_date: addExpirationPeriod(creationDate).toDate(),
     job_update_date: creationDate,
-    managed_by: userId.toString(),
-  })
+  }
+  const updatedJob: Partial<IJob> = Object.assign(job, addedFields)
   // insert job
   const updatedFormulaire = await createOffre(establishment_id, updatedJob)
   const { jobs } = updatedFormulaire
@@ -220,7 +220,7 @@ export const createJob = async ({
       throw internal(`unexpected: could not find user recruteur CFA that created the job`)
     }
     // get CFA informations if formulaire is handled by a CFA
-    contactCFA = await getUser2ManagingOffer(createdJob)
+    contactCFA = await getUserManagingOffer(updatedFormulaire)
     if (!contactCFA) {
       throw internal(`unexpected: could not find user recruteur CFA that created the job`)
     }
@@ -244,7 +244,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
     throw internal("Offre not found", { jobId, etablissementCatalogueIds })
   }
   const offre = getJobFromRecruiter(recruiter, jobId.toString())
-  const managingUser = await getUser2ManagingOffer(offre)
+  const managingUser = await getUserManagingOffer(recruiter)
   const entreprise = await getDbCollection("entreprises").findOne({ siret: recruiter.establishment_siret })
   let shouldSentMailToCfa = false
   if (entreprise) {
@@ -640,7 +640,6 @@ export const checkForJobActivations = async (recruiter: IRecruiter) => {
   const awaitingJobs = recruiter.jobs.filter((job) => job.job_status === JOB_STATUS.EN_ATTENTE)
   if (!awaitingJobs.length) return
   const { managed_by } = recruiter
-  if (!managed_by) return
   const managedByObjectId = new ObjectId(managed_by)
   const [userOpt, entreprise, roles] = await Promise.all([
     getDbCollection("userswithaccounts").findOne({ _id: managedByObjectId }),
@@ -684,7 +683,7 @@ export const getJobWithRomeDetail = async (id: string | ObjectId): Promise<IJobW
 }
 
 const getJobOrigin = async (recruiter: IRecruiter) => {
-  const userWithAccount = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(recruiter.managed_by!) })
+  const userWithAccount = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(recruiter.managed_by) })
   return (userWithAccount && userWithAccount.origin && RECRUITER_USER_ORIGIN[userWithAccount.origin]) ?? "La bonne alternance"
 }
 
@@ -733,8 +732,8 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, co
     template: getStaticFilePath("./templates/mail-nouvelle-offre.mjml.ejs"),
     data: {
       images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`, logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true` },
-      nom: removeHtmlTagsFromString(is_delegated ? contactCFA?.last_name : last_name),
-      prenom: removeHtmlTagsFromString(is_delegated ? contactCFA?.first_name : first_name),
+      nom: sanitizeTextField(is_delegated ? contactCFA?.last_name : last_name),
+      prenom: sanitizeTextField(is_delegated ? contactCFA?.first_name : first_name),
       raison_sociale: establishmentTitle,
       mandataire: recruiter.is_delegated,
       offre: {
@@ -851,7 +850,6 @@ const validateFieldsFromReferentielRome = async (job) => {
 export const validateUserEmailFromJobId = async (jobId: ObjectId) => {
   const recruiterOpt = await getOffre(jobId)
   const { managed_by } = recruiterOpt ?? {}
-  if (!managed_by) return
   await validateUserWithAccountEmail(new ObjectId(managed_by))
 }
 

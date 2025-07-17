@@ -5,8 +5,6 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
 
-import { formatHtmlForPartnerDescription } from "@/common/utils/stringUtils"
-
 import { isCompanyInBlockedCfaList } from "../blockJobsPartnersFromCfaList"
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
@@ -119,7 +117,7 @@ export const kelioJobToJobsPartners = (job: IKelioJob): IComputedJobsPartners =>
 
   const urlParsing = z.string().url().safeParse(url)
 
-  const descriptionComputed = formatHtmlForPartnerDescription(html_description + html_profile).trim()
+  const descriptionComputed = html_description + html_profile.trim()
 
   const publicationDate = new Date(created_at)
   const updatedDate = last_activation_at ? new Date(last_activation_at) : null
