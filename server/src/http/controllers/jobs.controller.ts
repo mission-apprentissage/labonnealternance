@@ -28,7 +28,7 @@ import {
 } from "../../services/formulaire.service"
 import { getFtJobFromId } from "../../services/ftjob.service"
 import { getJobsQuery, getJobsQueryPrivate } from "../../services/jobs/jobOpportunity/jobOpportunity.service"
-import { addOffreDetailView, getLbaJobById, getLbaJobByIdV2 } from "../../services/lbajob.service"
+import { addOffreDetailView, getLbaJobById } from "../../services/lbajob.service"
 import { getCompanyFromSiret, getRecruteurLbaFromDB } from "../../services/recruteurLba.service"
 import { getFicheMetierFromDB } from "../../services/rome.service"
 import { Server } from "../server"
@@ -173,7 +173,7 @@ export default (server: Server) => {
         job_rythm: body.job_rythm,
         custom_address: body.custom_address,
         custom_geo_coordinates: body.custom_geo_coordinates,
-        custom_job_title: body.custom_job_title,
+        offer_title_custom: body.custom_job_title, // TODO: 23/06/2025 custom_job_title est obsolète, à supprimer lorsque fin d'usage par opco EP
       }
 
       const updatedRecruiter = await createOffre(establishmentId, job)
@@ -366,8 +366,8 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { referer } = req.headers
-      const { romes, rncp, caller, latitude, longitude, radius, insee, sources, diploma, opco } = req.query
-      const result = await getJobsQueryPrivate({ romes, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, isMinimalData: true })
+      const { romes, rncp, caller, latitude, longitude, radius, insee, diploma, opco } = req.query
+      const result = await getJobsQueryPrivate({ romes, rncp, caller, referer, latitude, longitude, radius, insee, diploma, opco, isMinimalData: true })
 
       if ("error" in result) {
         return res.status(500).send(result)
@@ -391,9 +391,6 @@ export default (server: Server) => {
           result = await getRecruteurLbaFromDB(id)
           break
         case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
-          result = await getLbaJobByIdV2(id)
-          break
-
         case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES:
           result = await getPartnerJobByIdV2(id)
           break

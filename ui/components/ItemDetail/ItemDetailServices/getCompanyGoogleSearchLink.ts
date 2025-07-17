@@ -4,12 +4,12 @@ export const getCompanyGoogleSearchLink = (item: ILbaItemLbaJobJson | ILbaItemLb
   let placePart = ""
 
   if (item?.company?.mandataire) {
-    placePart = item.company.place.address
+    placePart = item.place.city
   } else {
     if (item.place.city) {
       placePart = `${item.place.city} ${item.place.zipCode ?? ""}`
     } else {
-      placePart = item.place.address ?? item.place.fullAddress
+      placePart = item.place?.address ?? item.place.fullAddress
     }
   }
 

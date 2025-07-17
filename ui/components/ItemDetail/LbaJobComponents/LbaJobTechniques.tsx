@@ -10,8 +10,10 @@ const LbaJobTechniques = ({ job }) => {
     }, 200)
   }
 
+  let currentSkillGroup = null
+
   return (
-    job?.job?.romeDetails?.competences?.savoirs?.length && (
+    job?.job?.offer_to_be_acquired_knowledge?.length && (
       <AccordionItem borderBottom="1px solid #E5E5E5" onClick={onClick} key={"techniques"}>
         {({ isExpanded }) => (
           <>
@@ -24,18 +26,27 @@ const LbaJobTechniques = ({ job }) => {
 
             <AccordionPanel pb={4}>
               <Box pl="12px">
-                {job.job.romeDetails.competences.savoirs.map((competence) => (
-                  <Box key={competence.code} mb={2}>
-                    <Text as="span" ml={3} fontWeight={700}>
-                      {competence.libelle}
-                    </Text>
-                    {competence.items.map((item, idx) => (
-                      <Box key={idx} pl={6}>
-                        <Text as="span">&bull; {item.libelle}</Text>
+                {job.job.offer_to_be_acquired_knowledge.map((competence, idx) => {
+                  const [group, skill] = competence.split("\t")
+                  let title = <></>
+
+                  if (group !== currentSkillGroup) {
+                    currentSkillGroup = group
+                    title = (
+                      <Text as="span" ml={3} fontWeight={700}>
+                        {group}
+                      </Text>
+                    )
+                  }
+                  return (
+                    <Box key={idx} mb={2}>
+                      {title}
+                      <Box pl={6}>
+                        <Text as="span">&bull; {skill}</Text>
                       </Box>
-                    ))}
-                  </Box>
-                ))}
+                    </Box>
+                  )
+                })}
               </Box>
             </AccordionPanel>
           </>

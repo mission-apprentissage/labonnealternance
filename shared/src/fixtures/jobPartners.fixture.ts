@@ -38,6 +38,7 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     contract_duration: null,
     contract_type: ["Apprentissage", "Professionnalisation"],
     contract_remote: null,
+    contract_is_disabled_elligible: null,
 
     offer_title: "Une super offre d'alternance",
     offer_rome_codes: [],
@@ -45,6 +46,7 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     offer_target_diploma: null,
     offer_desired_skills: [],
     offer_to_be_acquired_skills: [],
+    offer_to_be_acquired_knowledge: [],
     offer_access_conditions: [],
     offer_creation: null,
     offer_expiration,
@@ -99,6 +101,7 @@ export function generateJobsPartnersFull(data: Partial<IJobsPartnersOfferPrivate
     contract_duration: 6,
     contract_type: ["Apprentissage", "Professionnalisation"],
     contract_remote: TRAINING_REMOTE_TYPE.onsite,
+    contract_is_disabled_elligible: null,
 
     offer_title: "Une super offre d'alternance",
     offer_rome_codes: ["D1102"],
@@ -175,6 +178,7 @@ export function generateComputedJobsPartnersFixture(data: Partial<IComputedJobsP
     offer_target_diploma: null,
     offer_desired_skills: [],
     offer_to_be_acquired_skills: [],
+    offer_to_be_acquired_knowledge: [],
     offer_access_conditions: [],
     offer_creation: null,
     offer_expiration: null,

@@ -66,6 +66,7 @@ export const blankComputedJobPartner = (): Omit<IComputedJobsPartners, "_id" | "
   offer_target_diploma: null,
   offer_title: null,
   offer_to_be_acquired_skills: [],
+  offer_to_be_acquired_knowledge: [],
   updated_at: null,
   validated: false,
   workplace_address_city: null,

@@ -11,7 +11,7 @@ const LbaJobQualites = ({ job }) => {
   }
 
   return (
-    job?.job?.romeDetails?.competences.savoir_etre_professionnel?.length && (
+    job?.job?.offer_desired_skills?.length && (
       <AccordionItem borderBottom="1px solid #E5E5E5" onClick={onClick} key={"qualites"}>
         {({ isExpanded }) => (
           <>
@@ -24,11 +24,10 @@ const LbaJobQualites = ({ job }) => {
 
             <AccordionPanel pb={4}>
               <Box pl="12px" mt={4}>
-                {job.job.romeDetails.competences.savoir_etre_professionnel.map((competence) => (
-                  <Box key={competence.code} mt={2}>
-                    &bull;
-                    <Text as="span" ml={3}>
-                      {competence.libelle}
+                {job.job.offer_desired_skills.map((competence, idx) => (
+                  <Box key={idx} mt={2}>
+                    <Text as="span" pl={6}>
+                      &bull; {competence}
                     </Text>
                   </Box>
                 ))}
