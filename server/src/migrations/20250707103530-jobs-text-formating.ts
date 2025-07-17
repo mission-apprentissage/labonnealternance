@@ -11,7 +11,7 @@ export const up = async () => {
       { projection: { _id: 1, workplace_description: 1, workplace_name: 1, offer_description: 1, offer_title: 1 } }
     )
     .toArray()
-  asyncForEach(jobs, async (job) => {
+  await asyncForEach(jobs, async (job) => {
     const result = {
       workplace_description: sanitizeTextField(job.workplace_description, true),
       workplace_name: sanitizeTextField(job.workplace_name, true),
