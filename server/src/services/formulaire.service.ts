@@ -954,10 +954,11 @@ function getDiplomaLevel(label: string | null | undefined): IComputedJobsPartner
   if (!label) {
     return null
   }
+
   switch (label) {
     case NIVEAUX_POUR_LBA["3 (CAP...)"]:
       return { european: "3", label }
-    case NIVEAUX_POUR_LBA["4 (Bac, Bac pro...)"]:
+    case NIVEAUX_POUR_LBA["4 (BAC...)"]:
       return { european: "4", label }
     case NIVEAUX_POUR_LBA["5 (BTS, DEUST...)"]:
       return { european: "5", label }
