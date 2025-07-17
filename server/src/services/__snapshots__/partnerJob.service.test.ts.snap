@@ -95,6 +95,7 @@ exports[`partnerJob.service > should execute query with minimalData 1`] = `
         "creationDate": 2021-01-01T00:00:00.000Z,
       },
       "place": {
+        "city": "PARIS",
         "distance": 0,
         "fullAddress": "126 RUE DE L'UNIVERSITE 75007 PARIS",
         "latitude": 48.8589,
