@@ -1,12 +1,13 @@
 "use client"
 
-import { FormControl, FormLabel, Heading, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Text, useDisclosure } from "@chakra-ui/react"
+import { FormControl, FormLabel, Heading, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Text } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
 import { useState } from "react"
 import { IUserRecruteurJson } from "shared"
 
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
+import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 
 import { AUTHTYPE } from "../../common/contants"

@@ -1,5 +1,7 @@
-import { Text, useDisclosure } from "@chakra-ui/react"
+import { Text } from "@chakra-ui/react"
 import { ReactElement } from "react"
+
+import { useDisclosure } from "@/common/hooks/useDisclosure"
 
 import { ModalReadOnly } from "./ModalReadOnly"
 
