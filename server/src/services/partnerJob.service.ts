@@ -77,6 +77,7 @@ function transformPartnerJob(
       size: partnerJob.workplace_size,
       opco: { label: partnerJob.workplace_opco, url: null },
       url: partnerJob.workplace_website,
+      mandataire: partnerJob.is_delegated,
     },
     job: {
       id: partnerJob.partner_job_id,
@@ -141,6 +142,7 @@ function transformPartnerJobWithMinimalData(partnerJob: IJobsPartnersOfferPrivat
       siret: partnerJob.workplace_siret,
       name: partnerJob.workplace_name ?? partnerJob.workplace_brand ?? partnerJob.workplace_legal_name ?? UNKNOWN_COMPANY,
       opco: { label: partnerJob.workplace_opco, url: null },
+      mandataire: partnerJob.is_delegated,
     },
     job: {
       creationDate: partnerJob.offer_creation ? new Date(partnerJob.offer_creation) : null,
