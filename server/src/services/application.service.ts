@@ -1301,7 +1301,7 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
   const { recruiter, job, type } = jobOrCompany ?? {}
   let recruiter_phone = ""
 
-  if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA || type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
+  if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     if (!recruiter) throw internal(`Société pour ${application.job_origin} introuvable`)
 
     const { managed_by } = recruiter
@@ -1309,7 +1309,7 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
     recruiter_phone = recruiter.phone || ""
   }
 
-  if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) {
+  if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES || type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     recruiter_phone = job.apply_phone || ""
   }
 
