@@ -136,6 +136,7 @@ function transformPartnerJobWithMinimalData(partnerJob: IJobsPartnersOfferPrivat
       //lieu de l'offre. contient ville de l'entreprise et geoloc de l'entreprise
       distance: partnerJob?.distance != null && partnerJob?.distance >= 0 ? roundDistance((partnerJob?.distance ?? 0) / 1000) : null,
       fullAddress: partnerJob.workplace_address_label,
+      city: partnerJob.workplace_address_city,
       latitude,
       longitude,
     },

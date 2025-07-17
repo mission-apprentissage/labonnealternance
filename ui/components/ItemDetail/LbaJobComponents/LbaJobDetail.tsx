@@ -227,7 +227,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: s
           </Text>
 
           <Text my={2}>Le centre de formation peut vous renseigner sur les formations qu’il propose.</Text>
-          <ItemLocalisation item={job.company} />
+          <ItemLocalisation item={job} />
 
           {job?.contact?.phone && (
             <Flex mt={2} mb={4}>

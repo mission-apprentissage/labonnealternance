@@ -399,7 +399,10 @@ async function transformOffreAvecMandataireToJobResult({ recruiter, job }: { rec
 
 export const getCity = (recruiter) => {
   let city = ""
-  if (recruiter.address_detail && "localite" in recruiter.address_detail) {
+  if (recruiter.establishment_location) {
+    // cas mandataire
+    city = recruiter.establishment_location
+  } else if (recruiter.address_detail && "localite" in recruiter.address_detail) {
     city = recruiter.address_detail.localite
   } else if (recruiter.address_detail && "libelle_commune" in recruiter.address_detail) {
     city = recruiter.address_detail.libelle_commune
