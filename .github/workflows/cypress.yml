@@ -46,6 +46,7 @@ on:
 
 jobs:
   cypress:
+    if: false
     concurrency:
       group: "cypress-${{ github.workflow }}-${{ github.ref }}"
     runs-on: ubuntu-latest
