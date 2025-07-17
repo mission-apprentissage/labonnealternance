@@ -97,6 +97,7 @@ function transformPartnerJob(
       offer_to_be_acquired_knowledge: partnerJob.offer_to_be_acquired_knowledge,
       offer_access_conditions: partnerJob.offer_access_conditions,
       elligibleHandicap: partnerJob.contract_is_disabled_elligible ?? null,
+      contract_rythm: partnerJob.contract_rythm ?? null,
     },
 
     contact: {

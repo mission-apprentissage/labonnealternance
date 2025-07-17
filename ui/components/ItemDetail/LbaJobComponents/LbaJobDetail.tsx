@@ -65,6 +65,11 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: s
               <strong>Nombre de postes disponibles : </strong> {job?.job?.quantiteContrat}
             </Box>
           )}
+          {job?.job?.contract_rythm && (
+            <Box my={2}>
+              <strong>Rythme de l'alternance : </strong> {job?.job?.contract_rythm}
+            </Box>
+          )}
           <Flex direction="row" wrap="wrap">
             <strong>Niveau visé en fin d&apos;études : </strong>{" "}
             {job?.target_diploma_level ? (
@@ -83,7 +88,6 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: s
               </Text>
             )}
           </Flex>
-
           {job?.job?.elligibleHandicap && (
             <Flex mt={2} p={2} background="white" justifyContent="center" fontSize="12px" alignItems="center" direction="row">
               <Box width="30px" minWidth="30px" mr={2}>
