@@ -5,6 +5,7 @@ exports[`partnerJob.service > should execute query with full data 1`] = `
   "results": [
     {
       "company": {
+        "mandataire": undefined,
         "name": "Enseigne inconnue",
         "opco": {
           "label": null,
@@ -79,6 +80,7 @@ exports[`partnerJob.service > should execute query with minimalData 1`] = `
   "results": [
     {
       "company": {
+        "mandataire": undefined,
         "name": "Enseigne inconnue",
         "opco": {
           "label": null,
@@ -110,6 +112,7 @@ exports[`partnerJob.service > should find offer by id 1`] = `
   "partnerJobs": [
     {
       "company": {
+        "mandataire": undefined,
         "name": "Enseigne inconnue",
         "opco": {
           "label": null,
