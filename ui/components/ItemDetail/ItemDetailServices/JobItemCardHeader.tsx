@@ -1,4 +1,5 @@
 import { Text } from "@chakra-ui/react"
+import { ILbaItemJobsGlobal } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 const detailActivityProperties = {
@@ -10,7 +11,14 @@ const detailActivityProperties = {
   color: "grey.600",
 }
 
-export default function JobItemCardHeader({ selectedItem, kind, isMandataire, isCollapsedHeader = undefined }) {
+interface JobItemCardHeaderProps {
+  selectedItem: ILbaItemJobsGlobal
+  kind: LBA_ITEM_TYPE
+  isMandataire: boolean
+  isCollapsedHeader?: boolean
+}
+
+export default function JobItemCardHeader({ selectedItem, kind, isMandataire, isCollapsedHeader = undefined }: JobItemCardHeaderProps) {
   let res = <></>
   const companyName = selectedItem?.company?.name
 

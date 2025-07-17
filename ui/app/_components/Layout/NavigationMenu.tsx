@@ -1,8 +1,8 @@
 "use client"
 
-import { Box, Container, Flex, Text } from "@chakra-ui/react"
+import { Box, Container, Flex, FlexProps, Text, TextProps } from "@chakra-ui/react"
 import { useRouter } from "next/router"
-import { useState } from "react"
+import { PropsWithChildren, useState } from "react"
 
 import { useAuth } from "@/context/UserContext"
 
@@ -23,7 +23,7 @@ const NavigationMenu = ({ rdva = false, ...props }) => {
   )
 }
 
-const NavToggle = ({ toggle, isOpen }) => {
+const NavToggle = ({ toggle, isOpen }: { toggle: () => unknown; isOpen: boolean }) => {
   return (
     <Box display={{ base: "block", md: "none" }} onClick={toggle} py={4} position={isOpen ? "absolute" : "relative"} top={0}>
       {isOpen ? <Close boxSize={8} /> : <MenuFill boxSize={8} />}
@@ -31,7 +31,7 @@ const NavToggle = ({ toggle, isOpen }) => {
   )
 }
 
-const NavItem = ({ children, to = "/", ...rest }) => {
+const NavItem = ({ children, to = "/", ...rest }: PropsWithChildren<{ to?: string } & TextProps>) => {
   const router = useRouter()
   const isActive = router.pathname === to
 
@@ -51,7 +51,7 @@ const NavItem = ({ children, to = "/", ...rest }) => {
   )
 }
 
-const NavLinks = ({ isOpen, rdva = false }) => {
+const NavLinks = ({ isOpen, rdva = false }: { isOpen: boolean; rdva?: boolean }) => {
   const { user } = useAuth()
   if (!user) return null
   if (user.type === AUTHTYPE.OPCO) return null
@@ -67,7 +67,7 @@ const NavLinks = ({ isOpen, rdva = false }) => {
   )
 }
 
-const NavBarContainer = ({ children, ...props }) => {
+const NavBarContainer = ({ children, ...props }: PropsWithChildren<FlexProps>) => {
   return (
     <Box w="full" boxShadow="md">
       <Container maxW="container.xl">

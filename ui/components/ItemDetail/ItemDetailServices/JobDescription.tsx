@@ -1,6 +1,6 @@
 import { AddIcon, MinusIcon } from "@chakra-ui/icons"
 import { AccordionButton, AccordionItem, AccordionPanel, Box, Text } from "@chakra-ui/react"
-import React from "react"
+import React, { SyntheticEvent } from "react"
 import { ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 
 import { scrollToNestedElement } from "@/utils/tools"
@@ -40,9 +40,9 @@ export const JobDescription = ({ job }: { job: ILbaItemPartnerJobJson | ILbaItem
 }
 
 export const JobDescriptionAccordion = ({ title, children, items }: { title: string; children?: React.ReactNode; items?: string[] }) => {
-  const onClick = (e) => {
+  const onClick = (e: SyntheticEvent) => {
     setTimeout(() => {
-      scrollToNestedElement({ containerId: "itemDetailColumn", nestedElement: e.target, yOffsett: 220 })
+      scrollToNestedElement({ containerId: "itemDetailColumn", nestedElement: e.target as HTMLElement, yOffsett: 220 })
     }, 200)
   }
 

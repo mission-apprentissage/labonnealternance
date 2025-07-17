@@ -19,7 +19,7 @@ export const getCurrentHourMinute = (separator = "h") => {
   return dayjs(currentDatetime).format(`HH`) + separator + dayjs(currentDatetime).format(`mm`)
 }
 
-export const sortReactTableDate = (a, b) => {
+export const sortReactTableDate = (a: string | number | Date, b: string | number | Date) => {
   const val = dayjs(a).isAfter(dayjs(b))
 
   if (val) {
@@ -29,7 +29,7 @@ export const sortReactTableDate = (a, b) => {
   }
 }
 
-export const sortReactTableString = (a, b) => {
+export const sortReactTableString = (a: string, b: string) => {
   const val = a.localeCompare(b, "fr")
 
   // localeCompare can return -2, check if val is negative or positive

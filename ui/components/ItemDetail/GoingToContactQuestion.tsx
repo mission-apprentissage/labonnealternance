@@ -1,22 +1,24 @@
 import { Box, Button, Flex } from "@chakra-ui/react"
-import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { ILbaItemJobsGlobal } from "shared"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { useLocalStorage } from "@/app/hooks/useLocalStorage"
 
-import { getItemId } from "../../utils/getItemId"
 import { SendPlausibleEvent } from "../../utils/plausible"
 
-const GoingToContactQuestion = ({ kind, uniqId, item }) => {
-  const { storedValue, setLocalStorage } = useLocalStorage(uniqId)
+interface GoingToContactQuestionProps {
+  kind: LBA_ITEM_TYPE
+  item: ILbaItemJobsGlobal
+}
 
-  const workplace = kind === LBA_ITEM_TYPE_OLD.FORMATION ? "cet établissement" : "cette entreprise"
+const GoingToContactQuestion = ({ kind, item }: GoingToContactQuestionProps) => {
+  const { storedValue, setLocalStorage } = useLocalStorage(getGoingtoId(kind, item))
+
+  const workplace = kind === LBA_ITEM_TYPE.FORMATION ? "cet établissement" : "cette entreprise"
 
   const getType = () => {
-    if (kind === LBA_ITEM_TYPE_OLD.FORMATION) {
+    if (kind === LBA_ITEM_TYPE.FORMATION) {
       return "formation"
-    }
-    if (kind === LBA_ITEM_TYPE_OLD.PEJOB) {
-      return "entreprise Offre FT"
     }
     return "entreprise Algo"
   }
@@ -58,7 +60,7 @@ const GoingToContactQuestion = ({ kind, uniqId, item }) => {
             onClick={() => {
               setLocalStorage(true)
               SendPlausibleEvent(`Clic Je vais contacter - Fiche ${typeForEventTracking}`, {
-                info_fiche: getItemId(item),
+                info_fiche: item.id,
               })
             }}
           >
@@ -77,7 +79,7 @@ const GoingToContactQuestion = ({ kind, uniqId, item }) => {
             onClick={() => {
               setLocalStorage(true)
               SendPlausibleEvent(`Clic Je ne vais pas contacter - Fiche ${typeForEventTracking}`, {
-                info_fiche: getItemId(item),
+                info_fiche: item.id,
               })
             }}
           >
@@ -89,8 +91,8 @@ const GoingToContactQuestion = ({ kind, uniqId, item }) => {
   )
 }
 
-export function getGoingtoId(kind, item) {
-  return `goingto-${kind}-${getItemId(item)}`
+export function getGoingtoId(kind: LBA_ITEM_TYPE_OLD | LBA_ITEM_TYPE, item: ILbaItemJobsGlobal) {
+  return `goingto-${kind}-${item.id}`
 }
 
 export default GoingToContactQuestion

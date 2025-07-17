@@ -7,7 +7,12 @@ enum LOADING_ILLUSTRATION_TYPES {
   JOB = "JOB",
 }
 
-const ResultListsLoading = ({ isTrainingSearchLoading, isJobSearchLoading }) => {
+interface Props {
+  isTrainingSearchLoading: boolean
+  isJobSearchLoading: boolean
+}
+
+const ResultListsLoading = ({ isTrainingSearchLoading, isJobSearchLoading }: Props) => {
   const isLoading = isTrainingSearchLoading || isJobSearchLoading
 
   const getNextLoadingIllustration = (currentIllustrationIndex: number | null) => {

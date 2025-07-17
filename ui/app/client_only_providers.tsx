@@ -49,7 +49,7 @@ const { MuiDsfrThemeProvider } = createMuiDsfrThemeProvider({
   },
 })
 
-function Tracking() {
+function Tracking(): null {
   const searchParamsRecord = useSearchParamsRecord()
 
   useEffect(() => {

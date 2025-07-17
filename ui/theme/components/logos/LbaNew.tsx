@@ -1,6 +1,6 @@
-import { Icon } from "@chakra-ui/react"
+import { Icon, IconProps } from "@chakra-ui/react"
 
-export function LbaNew(props) {
+export function LbaNew(props: IconProps) {
   return (
     <Icon width="179px" height="66px" viewBox="0 0 352 91" {...props}>
       <path

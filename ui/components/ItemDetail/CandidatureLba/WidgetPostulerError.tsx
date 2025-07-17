@@ -30,7 +30,7 @@ const getErrorText = (error: string) => {
   }
 }
 
-export function WidgetPostulerError({ error }) {
+export function WidgetPostulerError({ error }: { error: string }) {
   const errorText = getErrorText(error)
   return (
     <Box width="250px" textAlign="center" m="auto" my={8}>

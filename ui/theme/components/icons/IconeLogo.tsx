@@ -1,7 +1,7 @@
-import { Icon } from "@chakra-ui/react"
+import { Icon, IconProps } from "@chakra-ui/react"
 import React from "react"
 
-export function IconeLogo(props) {
+export function IconeLogo(props: IconProps) {
   return (
     <Icon viewBox="0 0 263 186" fill="none" {...props}>
       <mask id="mask0_1376:10522" style={{ maskType: "alpha" }} maskUnits="userSpaceOnUse" x="0" y="0" width="263" height="186">

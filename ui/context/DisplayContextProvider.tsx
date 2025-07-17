@@ -1,4 +1,4 @@
-import React, { createContext, useReducer } from "react"
+import React, { createContext, PropsWithChildren, useReducer } from "react"
 
 import { defaultFilters } from "../components/SearchForTrainingsAndJobs/services/utils"
 
@@ -14,7 +14,7 @@ import { defaultFilters } from "../components/SearchForTrainingsAndJobs/services
 //   }
 // }
 
-const initialState = {
+const initialState: IDisplayState = {
   formValues: null,
   visiblePane: "resultList",
   isFormVisible: true,
@@ -35,9 +35,17 @@ const actions = {
   SET_SHOULD_MAP_BE_VISIBLE: "SET_SHOULD_MAP_BE_VISIBLE",
   SET_ACTIVE_FILTERS: "SET_ACTIVE_FILTERS",
   SET_BANNER_STATES: "SET_BANNER_STATES",
-}
+} as const
 
-const reducer = (state, action) => {
+type IAction =
+  | { type: "SET_FORM_VALUES"; formValues: IDisplayState["formValues"] }
+  | { type: "SET_VISIBLE_PANE"; visiblePane: IDisplayState["visiblePane"] }
+  | { type: "SET_IS_FORM_VISIBLE"; isFormVisible: IDisplayState["isFormVisible"] }
+  | { type: "SET_SHOULD_MAP_BE_VISIBLE"; shouldMapBeVisible: IDisplayState["shouldMapBeVisible"] }
+  | { type: "SET_ACTIVE_FILTERS"; activeFilters: IDisplayState["activeFilters"] }
+  | { type: "SET_BANNER_STATES"; bannerStates: IDisplayState["bannerStates"] }
+
+const reducer = (state: IDisplayState, action: IAction) => {
   const state_copy = JSON.parse(JSON.stringify(state))
 
   switch (action.type) {
@@ -64,24 +72,27 @@ const reducer = (state, action) => {
   }
 }
 
-type IContextDisplay = {
+export type IDisplayState = {
   formValues: any
-  setFormValues: (b: any) => void
   visiblePane: string
-  setVisiblePane: (b: string) => void
   isFormVisible: boolean
-  setIsFormVisible: (b: boolean) => void
   shouldMapBeVisible: boolean
-  setShouldMapBeVisible: (b: boolean) => void
   activeFilters: string[]
-  setActiveFilters: (b: string[]) => void
   bannerStates: { isEnvClosed: boolean; isOKClosed: boolean; isInfoClosed: boolean; isAlertClosed: boolean }
+}
+
+type IContextDisplay = IDisplayState & {
+  setFormValues: (b: any) => void
+  setVisiblePane: (b: string) => void
+  setIsFormVisible: (b: boolean) => void
+  setShouldMapBeVisible: (b: boolean) => void
+  setActiveFilters: (b: string[]) => void
   setBannerStates: (o: { isEnvClosed: boolean; isOKClosed: boolean; isInfoClosed: boolean; isAlertClosed: boolean }) => void
 }
 // @ts-expect-error: TODO
 export const DisplayContext = createContext<IContextDisplay>()
 
-const DisplayContextProvider = ({ children }) => {
+const DisplayContextProvider = ({ children }: PropsWithChildren) => {
   const [state, dispatch] = useReducer(reducer, initialState)
 
   const value = {
@@ -89,7 +100,7 @@ const DisplayContextProvider = ({ children }) => {
     setActiveFilters: (activeFilters = defaultFilters) => {
       dispatch({ type: actions.SET_ACTIVE_FILTERS, activeFilters })
     },
-    setFormValues: (formValues = null) => {
+    setFormValues: (formValues: IDisplayState["formValues"] = null) => {
       dispatch({ type: actions.SET_FORM_VALUES, formValues })
     },
     setVisiblePane: (visiblePane = "resultList") => {
@@ -101,7 +112,7 @@ const DisplayContextProvider = ({ children }) => {
     setShouldMapBeVisible: (shouldMapBeVisible = false) => {
       dispatch({ type: actions.SET_SHOULD_MAP_BE_VISIBLE, shouldMapBeVisible })
     },
-    setBannerStates: (bannerStates) => {
+    setBannerStates: (bannerStates: IDisplayState["bannerStates"]) => {
       dispatch({ type: actions.SET_BANNER_STATES, bannerStates })
     },
   }

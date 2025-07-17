@@ -1,9 +1,15 @@
 import { Select } from "@chakra-ui/react"
 import { OPCOS_LABEL } from "shared/constants/index"
 
-export const OpcoSelect = ({ name, onChange, value }) => {
+interface Props {
+  name: string
+  onChange?: (value: OPCOS_LABEL) => void
+  value: OPCOS_LABEL
+}
+
+export const OpcoSelect = ({ name, onChange, value }: Props) => {
   return (
-    <Select variant="outline" size="md" name={name} mr={3} onChange={(e) => onChange?.(e.target.value)} value={value}>
+    <Select variant="outline" size="md" name={name} mr={3} onChange={(e) => onChange?.(e.target.value as OPCOS_LABEL)} value={value}>
       <option hidden>Sélectionnez un OPCO</option>
       <option value={OPCOS_LABEL.AFDAS}>AFDAS</option>
       <option value={OPCOS_LABEL.AKTO}>AKTO</option>

@@ -2,6 +2,7 @@
 
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Alert, AlertIcon, Box, Heading, Link, SimpleGrid, Text } from "@chakra-ui/react"
+import { FormikHelpers } from "formik"
 import { useRouter } from "next/navigation"
 import { useContext, useEffect, useState } from "react"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
@@ -42,7 +43,7 @@ const CreationCompteForm = ({
   const router = useRouter()
   const [isCfa, setIsCfa] = useState(false)
 
-  const submitSiret = ({ establishment_siret }, { setSubmitting, setFieldError }) => {
+  const submitSiret = ({ establishment_siret }: { establishment_siret: string }, { setSubmitting, setFieldError }: FormikHelpers<{ establishment_siret: string }>) => {
     setBandeau(null)
     const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
 

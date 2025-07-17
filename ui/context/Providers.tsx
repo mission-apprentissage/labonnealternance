@@ -1,7 +1,7 @@
 import { ChakraProvider } from "@chakra-ui/react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import PlausibleProvider from "next-plausible"
-import React from "react"
+import React, { PropsWithChildren } from "react"
 
 import { publicConfig } from "@/config.public"
 
@@ -19,7 +19,7 @@ const queryClient = new QueryClient({
   },
 })
 
-const Providers = ({ children }) => {
+const Providers = ({ children }: PropsWithChildren) => {
   return (
     <ChakraProvider theme={theme}>
       <PlausibleProvider domain={publicConfig.plausibleDomain} trackOutboundLinks={true} trackLocalhost={true} enabled={true}>

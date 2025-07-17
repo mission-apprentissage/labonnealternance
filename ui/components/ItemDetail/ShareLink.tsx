@@ -1,6 +1,6 @@
 import { Image, Text } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { useEffect, useState } from "react"
+import { SyntheticEvent, useEffect, useState } from "react"
 import { ILbaItemFormationJson, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 
 const ShareLink = ({ item }: { item: ILbaItemFormationJson | ILbaItemFtJobJson | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemPartnerJobJson }) => {
@@ -10,7 +10,7 @@ const ShareLink = ({ item }: { item: ILbaItemFormationJson | ILbaItemFtJobJson |
     setCopied(false)
   }, [item.id])
 
-  const copyLink = (e) => {
+  const copyLink = (e: SyntheticEvent) => {
     e.preventDefault()
 
     const link = window.location.toString()

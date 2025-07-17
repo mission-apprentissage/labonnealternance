@@ -1,7 +1,7 @@
-import { Icon } from "@chakra-ui/react"
+import { Icon, IconProps } from "@chakra-ui/react"
 import React from "react"
 
-export function MapPin2Fill(props) {
+export function MapPin2Fill(props: IconProps) {
   return (
     <Icon viewBox="0 0 12 15" {...props}>
       <path

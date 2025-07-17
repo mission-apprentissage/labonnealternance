@@ -2,7 +2,21 @@ import { Box, Flex, Text } from "@chakra-ui/react"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
-const StatsInserJeunes = ({ stats }) => {
+interface StatsInserJeunesProps {
+  taux_en_formation: number | null
+  taux_en_emploi_6_mois: number | null
+  taux_autres_6_mois: number | null
+  region: {
+    nom: string
+  }
+  millesime: string
+}
+
+interface Props {
+  stats: StatsInserJeunesProps
+}
+
+const StatsInserJeunes = ({ stats }: Props) => {
   return (
     stats.taux_en_formation && (
       <Box mt={6} padding="16px 24px" background="white" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>

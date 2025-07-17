@@ -2,7 +2,11 @@ import { Box, Image, Progress, SkeletonCircle, SkeletonText, Text } from "@chakr
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import "./ItemDetailLoading.css"
 
-const ItemDetailLoading = ({ type }) => {
+type Props = {
+  type: LBA_ITEM_TYPE_OLD
+}
+
+const ItemDetailLoading = ({ type }: Props) => {
   const loadingIllustrations =
     type === LBA_ITEM_TYPE_OLD.FORMATION
       ? [

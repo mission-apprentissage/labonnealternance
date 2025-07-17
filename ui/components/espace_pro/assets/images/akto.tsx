@@ -1,6 +1,6 @@
-import { Icon } from "@chakra-ui/react"
+import { Icon, IconProps } from "@chakra-ui/react"
 
-export default function LogoAkto(props) {
+export default function LogoAkto(props: IconProps) {
   return (
     <Icon viewBox="0 0 179 46" {...props}>
       <path

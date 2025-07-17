@@ -2,7 +2,7 @@ import { ILbaItemPartnerJobJson, ILbaItemPartnerJobReturnedByAPI } from "shared"
 
 import { apiGet } from "@/utils/api.utils"
 
-const fetchPartnerJobDetails = async (job): Promise<ILbaItemPartnerJobJson> => {
+const fetchPartnerJobDetails = async (job: { id: string }): Promise<ILbaItemPartnerJobJson> => {
   const response: ILbaItemPartnerJobReturnedByAPI = await apiGet("/v1/jobs/partnerJob/:id", { params: { id: job.id }, querystring: {} })
 
   // @ts-expect-error

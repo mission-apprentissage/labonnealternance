@@ -4,7 +4,7 @@ export const MTM_CONSENT_COOKIE_DURATION = 30 * 365 * 24 * 60 * 60 * 1000
 export const CONSENT_REMOVED_COOKIE_NAME = "mtm_consent_removed"
 export const CONSENT_COOKIE_NAME = "mtm_consent"
 
-export const getCookie = (cookieName) => {
+export const getCookie = (cookieName: string) => {
   const cookiePattern = new RegExp("(^|;)[ ]*" + cookieName + "=([^;]*)"),
     cookieMatch = cookiePattern.exec(document.cookie)
   return cookieMatch ? window.decodeURIComponent(cookieMatch[2]) : null
@@ -14,7 +14,7 @@ export const setCookie = (cookieName: string, value: string, msToExpire?: number
   expiryDate.setTime(new Date().getTime() + msToExpire)
   document.cookie = cookieName + "=" + window.encodeURIComponent(value) + (msToExpire ? ";expires=" + expiryDate.toString() : "") + ";path=/;domain=;SameSite=None; Secure"
 }
-export const removeCookie = (cookieName) => {
+export const removeCookie = (cookieName: string) => {
   setCookie(cookieName, "", COOKIE_REMOVE_TIME)
 }
 export const setIsTrackingEnabled = () => {

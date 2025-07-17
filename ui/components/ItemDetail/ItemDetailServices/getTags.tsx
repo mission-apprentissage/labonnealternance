@@ -7,7 +7,13 @@ import TagFormation from "../TagFormation"
 import TagFormationAssociee from "../TagFormationAssociee"
 import TagOffreEmploi from "../TagOffreEmploi"
 
-export default function GetItemTag({ kind, isCfa, isMandataire }) {
+type Props = {
+  kind: LBA_ITEM_TYPE
+  isCfa: boolean
+  isMandataire: boolean
+}
+
+export default function GetItemTag({ kind, isCfa, isMandataire }: Props) {
   return (
     <Box sx={{ mr: "auto", textAlign: "left", mb: 1 }}>
       {kind === LBA_ITEM_TYPE.FORMATION && <>{isCfa ? <TagCfaDEntreprise /> : <TagFormation />}</>}

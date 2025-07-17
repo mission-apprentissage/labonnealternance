@@ -1,9 +1,9 @@
 import { Box, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel } from "@chakra-ui/react"
-import { useField } from "formik"
+import { FieldHookConfig, useField } from "formik"
 
 import { Warning } from "../../theme/components/icons"
 
-export const CustomFormControl = (props) => {
+export const CustomFormControl = (props: FieldHookConfig<unknown>) => {
   const [_field, meta] = useField(props)
 
   return (

@@ -29,7 +29,13 @@ const autreMotifs = [
 
 const motifs = [...motifsPourvus, ...autreMotifs]
 
-export default function ConfirmationSuppressionOffre(props) {
+export interface ConfirmationSuppressionOffreProps {
+  isOpen: boolean
+  onClose: () => void
+  offre: { _id: string }
+}
+
+export default function ConfirmationSuppressionOffre(props: ConfirmationSuppressionOffreProps) {
   const toast = useToast()
   const client = useQueryClient()
 

@@ -66,7 +66,7 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
    * @param {string} email
    * @return {Promise<void>}
    */
-  const upsertEmailDecisionnaire = async (email) => {
+  const upsertEmailDecisionnaire = async (email: string) => {
     try {
       const response = await apiPatch("/admin/etablissements/:id", { params: { id: etablissement?._id }, body: { gestionnaire_email: email } })
       setEtablissement(response)

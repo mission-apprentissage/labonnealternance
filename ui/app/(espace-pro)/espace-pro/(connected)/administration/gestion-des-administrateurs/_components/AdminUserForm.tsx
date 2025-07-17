@@ -1,6 +1,7 @@
 import { Box, FormControl, FormLabel, HStack, Input, VStack, useToast } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { FormikProvider, useFormik } from "formik"
+import { SyntheticEvent } from "react"
 import { AccessStatus, IRoleManagementEvent, IRoleManagementJson, getLastStatusEvent, parseEnum } from "shared"
 import { OPCOS_LABEL } from "shared/constants/index"
 import { AUTHTYPE } from "shared/constants/recruteur"
@@ -75,7 +76,7 @@ export const AdminUserForm = ({
     }
   }
 
-  const onDeleteClicked = async (event) => {
+  const onDeleteClicked = async (event: SyntheticEvent<HTMLButtonElement>) => {
     event.preventDefault()
     if (confirm("Voulez-vous vraiment supprimer cet utilisateur ?")) {
       const result = await apiDelete("/admin/users/:userId", { params: { userId: user._id.toString() }, querystring: {} })
@@ -143,11 +144,11 @@ export const AdminUserForm = ({
   )
 }
 
-const ActivateUserButton = ({ onClick }) => {
+const ActivateUserButton = ({ onClick }: { onClick: React.MouseEventHandler<HTMLButtonElement> }) => {
   return <Button onClick={onClick}>Activer le compte</Button>
 }
 
-const DisableUserButton = ({ onClick }) => {
+const DisableUserButton = ({ onClick }: { onClick: React.MouseEventHandler<HTMLButtonElement> }) => {
   return <Button onClick={onClick}>Désactiver le compte</Button>
 }
 

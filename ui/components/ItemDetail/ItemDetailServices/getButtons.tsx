@@ -1,7 +1,13 @@
 import { Box } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 
-export const getNavigationButtons = ({ goPrev, goNext, handleClose }) => {
+type Props = {
+  goPrev?: () => void
+  goNext?: () => void
+  handleClose: () => void
+}
+
+export const getNavigationButtons = ({ goPrev, goNext, handleClose }: Props) => {
   return (
     <>
       {goPrev && (

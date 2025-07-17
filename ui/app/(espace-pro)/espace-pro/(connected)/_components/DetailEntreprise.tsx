@@ -32,7 +32,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
   const toast = useToast()
   const { user } = useConnectedSessionClient()
 
-  const ActivateUserButton = ({ userId }) => {
+  const ActivateUserButton = ({ userId }: { userId: string }) => {
     const { activate } = useUserPermissionsActions(userId)
 
     return (
@@ -55,7 +55,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
     )
   }
 
-  const getActionButtons = (userHistory, userId) => {
+  const getActionButtons = (userHistory: IUserStatusValidationJson, userId: string) => {
     switch (userHistory.status) {
       case ETAT_UTILISATEUR.ATTENTE:
         return (
@@ -74,7 +74,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
     }
   }
 
-  const getUserBadge = (userHistory) => {
+  const getUserBadge = (userHistory: IUserStatusValidationJson) => {
     switch (userHistory.status) {
       case ETAT_UTILISATEUR.ATTENTE:
         return <Badge variant="awaiting">À VERIFIER</Badge>
@@ -168,7 +168,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
             .required("champ obligatoire"),
           email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
           type: Yup.string().default(userRecruteur.type),
-          opco: Yup.string().when("type", { is: (v) => v === AUTHTYPE.ENTREPRISE, then: Yup.string().required("champ obligatoire") }),
+          opco: Yup.string().when("type", { is: (v: unknown) => v === AUTHTYPE.ENTREPRISE, then: Yup.string().required("champ obligatoire") }),
         })}
         onSubmit={async (values, { setSubmitting }) => {
           setSubmitting(true)

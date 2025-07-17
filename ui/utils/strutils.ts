@@ -1,23 +1,15 @@
-const isNonEmptyString = (val) => typeof val === "string" && val.trim().length > 0
-
-const capitalizeFirstLetter = (s) => {
-  let res = ""
-  if (isNonEmptyString(s)) {
-    res = s.charAt(0).toUpperCase() + s.toLowerCase().slice(1)
-  }
-  return res
-}
+const isNonEmptyString = (val: unknown): val is string => typeof val === "string" && val.trim().length > 0
 
 // See https://stackoverflow.com/a/4009771/2595513
-const countInstances = (string, word) => {
+const countInstances = (string: string, word: string) => {
   return string.split(word).length - 1
 }
 
-const endsWithNumber = (str) => {
+const endsWithNumber = (str: string) => {
   return /[0-9]+$/.test(str)
 }
 
-const formatDate = (d) => {
+const formatDate = (d: number | string | Date) => {
   let resultDate = ""
 
   resultDate = new Date(d).toLocaleDateString("fr-FR", { year: "numeric", month: "short", day: "numeric" })
@@ -25,4 +17,4 @@ const formatDate = (d) => {
   return resultDate
 }
 
-export { capitalizeFirstLetter, countInstances, endsWithNumber, formatDate, isNonEmptyString }
+export { countInstances, endsWithNumber, formatDate, isNonEmptyString }

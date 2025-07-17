@@ -1,7 +1,7 @@
 import { Box, Button, Flex, FormControl, FormErrorMessage, Image, Input, Spinner, Text } from "@chakra-ui/react"
 import * as Sentry from "@sentry/nextjs"
 import { useState } from "react"
-import { useDropzone } from "react-dropzone"
+import { DropzoneOptions, useDropzone } from "react-dropzone"
 
 const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   const [fileData, setFileData] = useState<{ applicant_attachment_name: string; applicant_attachment_content: string | ArrayBuffer } | null>(
@@ -21,9 +21,9 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
     return fileData?.applicant_attachment_name
   }
 
-  const onDrop = (files) => {
+  const onDrop: DropzoneOptions["onDrop"] = (files) => {
     const reader = new FileReader()
-    let applicant_attachment_name = null
+    let applicant_attachment_name: string | null = null
 
     reader.onload = (e) => {
       const readFileData = { applicant_attachment_name, applicant_attachment_content: e.target.result }

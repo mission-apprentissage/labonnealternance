@@ -1,6 +1,7 @@
 "use client"
 import { Box, Checkbox, Container, Divider, SimpleGrid, Text } from "@chakra-ui/react"
 import dynamic from "next/dynamic"
+import { ExtendedRecordMap } from "notion-types"
 import { useEffect, useState } from "react"
 
 import { publicConfig } from "@/config.public"
@@ -21,7 +22,7 @@ import { Breadcrumb } from "../../_components/Breadcrumb"
 
 const NotionRenderer = dynamic(() => import("react-notion-x").then((mod) => mod.NotionRenderer))
 
-export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeConfidentialite }) {
+export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeConfidentialite }: { politiqueDeConfidentialite: ExtendedRecordMap }) {
   const [hasConsent, setHasConsent] = useState(true)
 
   useEffect(() => {
@@ -31,7 +32,7 @@ export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeCo
     }
   }, [])
 
-  const changeMatomoOptout = ({ checked }) => {
+  const changeMatomoOptout = ({ checked }: { checked: boolean }) => {
     if (checked) {
       removeCookie(CONSENT_REMOVED_COOKIE_NAME)
       setCookie(CONSENT_COOKIE_NAME, "" + new Date().getTime(), MTM_CONSENT_COOKIE_DURATION)

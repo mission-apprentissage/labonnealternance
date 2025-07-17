@@ -1,7 +1,7 @@
 "use client"
 import { Accordion, Box, Flex, Image, ListItem, Text, UnorderedList } from "@chakra-ui/react"
 import React, { useEffect } from "react"
-import { ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
+import { IJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
@@ -19,7 +19,7 @@ import ItemWebsiteLink from "../ItemDetailServices/ItemWebsiteLink"
 import { JobDescription, JobDescriptionAccordion } from "../ItemDetailServices/JobDescription"
 import { ReportJobLink } from "../ReportJobLink"
 
-const getContractTypes = (contractTypes) => {
+const getContractTypes = (contractTypes: IJobJson["job_type"] | string) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
 }
 

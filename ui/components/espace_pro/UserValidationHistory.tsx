@@ -9,7 +9,7 @@ const UserValidationHistory = ({ histories }: { histories: IUserStatusValidation
     return <LoadingEmptySpace />
   }
 
-  const getStatut = (status) => {
+  const getStatut = (status: IUserStatusValidationJson["status"]) => {
     switch (status) {
       case "VALIDÉ":
         return <Badge variant="active">{status}</Badge>

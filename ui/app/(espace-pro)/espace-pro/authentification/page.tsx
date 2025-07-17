@@ -11,7 +11,7 @@ import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import { CustomInput } from "@/components/espace_pro"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
-import { sendMagiclink } from "@/utils/api"
+import { apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
@@ -24,12 +24,12 @@ export default function Authentification() {
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState(hasError ? "Session invalidée" : "")
 
-  const submitEmail = (values, { setFieldError, setSubmitting }) => {
+  const submitEmail = (values: { email?: string }, { setFieldError, setSubmitting }) => {
     setMagicLinkSent(true)
     setErrorMessage("")
     setLoading(true)
 
-    sendMagiclink(values)
+    apiPost(`/login/magiclink`, { body: values })
       .then(() => {
         setTimeout(() => {
           setSubmitting(false)

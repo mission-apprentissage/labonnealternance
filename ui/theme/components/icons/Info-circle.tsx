@@ -1,7 +1,7 @@
-import { Icon } from "@chakra-ui/react"
+import { Icon, IconProps } from "@chakra-ui/react"
 import React from "react"
 
-export function InfoCircle(props) {
+export function InfoCircle(props: IconProps) {
   return (
     <Icon viewBox="0 0 24 24" w="15px" h="15px" {...props}>
       <path

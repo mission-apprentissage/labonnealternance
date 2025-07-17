@@ -3,6 +3,7 @@ import { Box, Container, Divider, Grid, GridItem, Text } from "@chakra-ui/react"
 import dynamic from "next/dynamic"
 import Image from "next/image"
 import Link from "next/link"
+import { ExtendedRecordMap } from "notion-types"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { publicConfig } from "@/config.public"
@@ -10,7 +11,7 @@ import { PAGES } from "@/utils/routes.utils"
 
 const NotionRenderer = dynamic(() => import("react-notion-x").then((mod) => mod.NotionRenderer))
 
-export default function CGURendererClient({ recordMap }: { recordMap: any }) {
+export default function CGURendererClient({ recordMap }: { recordMap: ExtendedRecordMap }) {
   return (
     <Box>
       <Box as="main">

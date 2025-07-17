@@ -1,7 +1,7 @@
-import { Icon } from "@chakra-ui/react"
+import { Icon, IconProps } from "@chakra-ui/react"
 import React from "react"
 
-export function LockFill(props) {
+export function LockFill(props: IconProps) {
   return (
     <Icon viewBox="0 0 18 20" {...props}>
       <path

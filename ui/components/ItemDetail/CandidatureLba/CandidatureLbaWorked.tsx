@@ -1,7 +1,12 @@
 import { Box, Container, Flex, Image, Text } from "@chakra-ui/react"
 import React from "react"
 
-const CandidatureLbaWorked = ({ email, company }) => {
+interface Props {
+  email: string
+  company: string
+}
+
+const CandidatureLbaWorked = ({ email, company }: Props) => {
   return (
     <Container data-testid="CandidatureSpontaneeWorked" mx={[6, 8]}>
       <Flex direction="row" alignItems="center" my={4}>

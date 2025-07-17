@@ -1,7 +1,7 @@
-import { Icon } from "@chakra-ui/react"
+import { Icon, IconProps } from "@chakra-ui/react"
 import React from "react"
 
-export function Disquette(props) {
+export function Disquette(props: IconProps) {
   return (
     <Icon viewBox="0 0 611.923 611.923" {...props}>
       <path
