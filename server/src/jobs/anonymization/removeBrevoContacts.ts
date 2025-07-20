@@ -1,27 +1,39 @@
+import { Readable, Transform, Writable } from "node:stream"
+import { pipeline } from "node:stream/promises"
+
 import brevo, { GetContactDetails } from "@getbrevo/brevo"
 
 import { logger } from "@/common/logger"
 import { sleep } from "@/common/utils/asyncUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
+import { groupStreamData } from "@/common/utils/streamUtils"
 import config from "@/config"
 
-const getAllContactsFromBrevo = async (offset = 0, accumulated: GetContactDetails[] = []): Promise<GetContactDetails[]> => {
+const createBrevoContactStream = () => {
   const brevoClient = new brevo.ContactsApi()
   brevoClient.setApiKey(brevo.ContactsApiApiKeys.apiKey, config.smtp.brevoMarketingApiKey)
 
-  const limit = 1000
-  const response = await brevoClient.getContacts(limit, offset)
-  const contacts = response.body.contacts ?? []
+  return Readable.from(
+    (async function* () {
+      let offset = 0
+      const limit = 1000
+      let totalFetched = 0
 
-  const allContacts = [...accumulated, ...contacts]
+      while (true) {
+        const response = await brevoClient.getContacts(limit, offset)
+        const contacts = response.body.contacts ?? []
 
-  if (contacts.length === limit) {
-    logger.info(`Fetched ${allContacts.length} contacts from Brevo out of ${response.body.count}`)
-    // Still more to fetch
-    return getAllContactsFromBrevo(offset + limit, allContacts)
-  }
+        if (contacts.length === 0) break
 
-  return allContacts
+        totalFetched += contacts.length
+        logger.info(`Fetched ${totalFetched} contacts from Brevo out of ${response.body.count}`)
+        yield contacts
+
+        if (contacts.length < limit) break
+        offset += limit
+      }
+    })()
+  )
 }
 
 const deleteContactsFromBrevo = async (contactIds: string[]): Promise<void> => {
@@ -44,24 +56,43 @@ export const removeBrevoContacts = async (): Promise<void> => {
   const twoYearsAgo = new Date()
   twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2)
 
-  const contacts = await getAllContactsFromBrevo()
-  if (!contacts || contacts.length === 0) {
-    logger.info("No contacts found to anonymize")
-    return
-  }
+  let totalToAnonymize = 0
+  const brevoClient = new brevo.ContactsApi()
+  brevoClient.setApiKey(brevo.ContactsApiApiKeys.apiKey, config.smtp.brevoMarketingApiKey)
 
-  logger.info(`Found ${contacts.length} contacts in Brevo to process`)
+  const contactStream = createBrevoContactStream()
 
-  const contactsToAnonymize = contacts
-    .filter((contact) => {
-      const modifiedAt = new Date(contact.modifiedAt)
-      return modifiedAt < twoYearsAgo
+  await pipeline(
+    contactStream, // batches of 1000
+    new Transform({
+      objectMode: true,
+      transform(contactsBatch: GetContactDetails[], _, callback) {
+        const toAnonymize = contactsBatch.filter((contact) => new Date(contact.modifiedAt) < twoYearsAgo)
+        for (const contact of toAnonymize) {
+          this.push(contact)
+        }
+        callback()
+      },
+    }),
+    groupStreamData<GetContactDetails>({ size: 50_000 }),
+    new Writable({
+      objectMode: true,
+      async write(contactsGroup: GetContactDetails[], _, callback) {
+        try {
+          const ids = contactsGroup.map((c) => c.id.toString())
+          await deleteContactsFromBrevo(ids)
+          totalToAnonymize += ids.length
+          callback()
+        } catch (err) {
+          callback(err as Error)
+        }
+      },
     })
-    .map((contacts) => contacts.id.toString())
+  )
 
-  logger.info(`Found ${contactsToAnonymize.length} contacts to anonymize`)
-
-  await deleteContactsFromBrevo(contactsToAnonymize)
-
-  await notifyToSlack({ subject: "Anonymisation des contacts Brevo", message: `Anonymisation de ${contactsToAnonymize.length} contacts Brevo` })
+  logger.info(`Anonymized ${totalToAnonymize} contacts from Brevo`)
+  await notifyToSlack({
+    subject: "Anonymisation des contacts Brevo",
+    message: `Anonymisation de ${totalToAnonymize} contacts Brevo`,
+  })
 }
