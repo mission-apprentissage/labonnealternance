@@ -90,9 +90,9 @@ export const removeBrevoContacts = async (): Promise<void> => {
     })
   )
 
-  logger.info(`Anonymized ${totalToAnonymize} contacts from Brevo`)
+  logger.info(`${totalToAnonymize} Brevo contacts deleted`)
   await notifyToSlack({
-    subject: "Anonymisation des contacts Brevo",
-    message: `Anonymisation de ${totalToAnonymize} contacts Brevo`,
+    subject: "Suppression des contacts Brevo après 2 ans d'inactivité",
+    message: `Suppression de ${totalToAnonymize} contacts Brevo`,
   })
 }
