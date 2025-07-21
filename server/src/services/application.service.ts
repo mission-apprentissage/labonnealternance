@@ -1266,7 +1266,7 @@ const getJobOrCompanyFromApplication = async (application: IApplication) => {
       break
     }
     case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
-      recruiter = await getDbCollection("jobs_partners").findOne({ workplace_siret: application.company_siret! })
+      job = await getDbCollection("jobs_partners").findOne({ workplace_siret: application.company_siret! })
       break
     }
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES: {
@@ -1298,6 +1298,7 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
   if (!applicant) throw notFound("Candidat non trouvé")
 
   const jobOrCompany = await getJobOrCompanyFromApplication(application)
+  console.log(jobOrCompany, "jobOrCompany")
   const { recruiter, job, type } = jobOrCompany ?? {}
   let recruiter_phone = ""
 
