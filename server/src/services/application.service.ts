@@ -1298,7 +1298,6 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
   if (!applicant) throw notFound("Candidat non trouvé")
 
   const jobOrCompany = await getJobOrCompanyFromApplication(application)
-  console.log(jobOrCompany, "jobOrCompany")
   const { recruiter, job, type } = jobOrCompany ?? {}
   let recruiter_phone = ""
 
