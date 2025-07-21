@@ -10,7 +10,6 @@ const BULLET = <>&bull;</>
 
 export const JobDescription = ({ job }: { job: ILbaItemPartnerJobJson | ILbaItemLbaJobJson }) => {
   const { description, employeurDescription } = job.job
-
   const validCustomDescription = description && description.length > BAD_DESCRIPTION_LENGTH ? description : null
 
   if (validCustomDescription || employeurDescription) {
@@ -21,21 +20,12 @@ export const JobDescription = ({ job }: { job: ILbaItemPartnerJobJson | ILbaItem
       </>
     )
   }
+
   const romeDefinition = job?.job?.romeDetails?.definition
   if (romeDefinition) {
-    return (
-      <JobDescriptionAccordion title="Description du métier">
-        {romeDefinition.split("\\n").map((definition, i) => (
-          <Box key={i} mt={2}>
-            &bull;
-            <Text as="span" ml={3}>
-              {definition}
-            </Text>
-          </Box>
-        ))}
-      </JobDescriptionAccordion>
-    )
+    return <JobDescriptionAccordion title="Description du métier">{romeDefinition}</JobDescriptionAccordion>
   }
+
   return null
 }
 
@@ -60,7 +50,7 @@ export const JobDescriptionAccordion = ({ title, children, items }: { title: str
 
             <AccordionPanel pb={4}>
               <Box pl="12px" mt={4}>
-                {children && <Text whiteSpace="pre-wrap">{children}</Text>}
+                {children && <Text whiteSpace="pre-wrap" dangerouslySetInnerHTML={{ __html: children }} />}
                 {items?.length > 0 &&
                   items.map((item, i) => (
                     <Box key={`accordion_${title}_${i}`}>

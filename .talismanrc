@@ -88,7 +88,7 @@ fileignoreconfig:
 - filename: server/src/jobs/offrePartenaire/recruteur-lba/processRecruteursLba.test.ts
   checksum: b1f33d9c2c01bcb249d01b801847d4e71c21e4c6395e124c26012f2200576d04
 - filename: server/src/jobs/partenaireExport/__snapshots__/exportJobsToS3V2.test.ts.snap
-  checksum: 999d858719a80721fc1801792c0db66df0f35d54f20d0b8c0d1e159532fe7d2f
+  checksum: 941b56f49d304948789f7cf9c23866a1b8367f0bcc39ba6e1b652a3a96bc366d
 - filename: server/src/jobs/partenaireExport/exportJobsToS3V2.test.ts
   checksum: 3cc8e98e8945fbd4b50e65ff62bcbfcc13e2846443b916335af82c467fa4ed5f
 - filename: server/src/migrations/20241022093834-remove-multi-published.ts
@@ -317,6 +317,8 @@ fileignoreconfig:
   checksum: e2471ac7e6886e3361b2c0debf2f8b296d5c96270c5324ee2059b788fbe354ff
 - filename: ui/app/(landing-pages)/acces-recruteur/_components/OffresGratuites.tsx
   checksum: 8892d3fb6a4dcffe5938305ec58ae29964f76419ab4211656b0af262eea7dce8
+- filename: ui/components/head.tsx
+  checksum: fd94387931e07a6150e82417ef13ec3c03cad372e69e95c4be60d360ee285ead
 scopeconfig:
 - scope: node
 custom_patterns:
