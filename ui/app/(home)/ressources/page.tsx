@@ -34,7 +34,7 @@ export default function Ressources() {
 
       <DefaultContainer>
         <Box mb={fr.spacing("3w")}>
-          <Typography component={"h1"} variant="h1" sx={{ color: "#0063BC" }}>
+          <Typography component={"h1"} variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }}>
             Ressources
           </Typography>
         </Box>

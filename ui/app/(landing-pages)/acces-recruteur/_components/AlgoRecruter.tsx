@@ -9,10 +9,10 @@ export const AlgoRecruteur = ({ withLinks = false }: { withLinks?: boolean }) =>
     <Box sx={{ p: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.alt.blueFrance.default }}>
       <Grid container spacing={fr.spacing("8w")} sx={{ alignItems: "center", justifyContent: "center" }}>
         <Grid size={{ xs: 12, md: 7 }}>
-          <Typography sx={{ mb: 2, fontSize: "40px", fontWeight: "700", lineHeight: "48px" }}>
+          <Typography component="h2" variant="h2" sx={{ mb: 2 }}>
             La bonne alternance révèle
             <br />
-            <Typography component={"span"} sx={{ color: "#0063BC", fontSize: "40px", fontWeight: "700", lineHeight: "48px" }}>
+            <Typography component="h2" variant="h2" sx={{ color: "#0063BC" }}>
               le marché caché de l&apos;emploi
             </Typography>{" "}
           </Typography>

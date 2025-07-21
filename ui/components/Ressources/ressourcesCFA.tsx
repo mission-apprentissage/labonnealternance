@@ -1,4 +1,5 @@
 import { Box, Center, Flex, Image, ListItem, Text, UnorderedList } from "@chakra-ui/react"
+import { Typography } from "@mui/material"
 
 import { DsfrLink } from "../dsfr/DsfrLink"
 
@@ -16,7 +17,7 @@ const RessourcesCFA = () => {
         </Flex>
         <Text>Proposez-leur de s’entraîner avec nos 3 parcours de mise en situation :</Text>
         <MisesEnSituation target="cfa" />
-        Partagez-leurs des conseils et astuces pour les aider dans leurs démarches de recherche de formation et d’emploi en alternance :
+        <Typography sx={{ mb: 2 }}>Partagez-leurs des conseils et astuces pour les aider dans leurs démarches de recherche de formation et d’emploi en alternance :</Typography>
         <ConseilsEtAstuces />
         <Flex as="h2" fontSize={32} fontWeight={700} mt={10} mb={8}>
           <Image src="/images/pages_ressources/conseils et astuces.svg" alt="" mr={4} aria-hidden="true" />

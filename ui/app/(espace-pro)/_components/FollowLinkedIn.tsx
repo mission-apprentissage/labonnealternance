@@ -10,7 +10,7 @@ export const FollowLinkedIn = () => {
           La bonne alternance est édité par la Délégation générale à l’emploi et à la formation professionnelle (DGEFP) et conçoit des services numériques qui facilitent les
           entrées en apprentissage.
         </Typography>
-        <Typography sx={{ fontSize: "32px", fontWeight: "700", color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+        <Typography component="h2" variant="h2" sx={{ color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Rendez-vous sur LinkedIn pour suivre nos actualités
         </Typography>
       </Grid>

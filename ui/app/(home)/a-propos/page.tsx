@@ -41,10 +41,13 @@ export default function APropos() {
           <Box sx={{ p: fr.spacing("5w"), marginBottom: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
             <Grid container spacing={fr.spacing("5w")}>
               <Grid size={{ xs: 12, md: 5 }}>
-                <Typography component={"h1"} variant="h1" sx={{ mb: 2, fontSize: "40px", fontWeight: "700", lineHeight: "48px", color: "#0063BC" }}>
+                <Typography component={"h1"} variant="h1" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
                   A propos
                 </Typography>
-                <Box component="hr" sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: "4px solid #0063CB", opacity: 1 }} />
+                <Box
+                  component="hr"
+                  sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
+                />
               </Grid>
               <Grid size={{ xs: 12, md: 7 }}>
                 <Typography variant="h4" mb={fr.spacing("2w")}>

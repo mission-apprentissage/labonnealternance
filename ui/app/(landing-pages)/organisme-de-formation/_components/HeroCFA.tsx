@@ -1,5 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Grid2 as Grid } from "@mui/material"
+import { Box, Grid2 as Grid, Typography } from "@mui/material"
 
 import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActions"
 import { FollowLinkedIn } from "@/app/(espace-pro)/_components/FollowLinkedIn"
@@ -27,8 +27,10 @@ export const HeroCFA = () => {
       </Grid>
       <Grid>
         <Box sx={{ p: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
-          <GerezEntreprise />
-          <OffresGratuites />
+          <Grid container spacing={10} sx={{ alignItems: "center", justifyContent: "center" }}>
+            <GerezEntreprise />
+            <OffresGratuites />
+          </Grid>
         </Box>
       </Grid>
       <Grid>
@@ -38,14 +40,16 @@ export const HeroCFA = () => {
       </Grid>
       <Grid>
         <Box sx={{ backgroundColor: fr.colors.decisions.background.default.grey.default }}>
-          <PromoRessources target="recruteur" />
+          <PromoRessources target="cfa" />
         </Box>
       </Grid>
       <Grid>
         <Box sx={{ backgroundColor: fr.colors.decisions.background.default.grey.default }}>
-          <Box sx={{ typography: "h2", textAlign: "center" }}> Vous souhaitez recruter un alternant pour votre entreprise ?</Box>
+          <Typography variant="h2" sx={{ textAlign: "center" }}>
+            Vous souhaitez attirer de nouveaux candidats ?
+          </Typography>
           <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <ConnectionActions service="entreprise" />
+            <ConnectionActions service="cfa" />
           </Box>
         </Box>
       </Grid>

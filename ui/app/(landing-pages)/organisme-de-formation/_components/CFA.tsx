@@ -7,15 +7,15 @@ export const CFA = () => {
   return (
     <Grid container spacing={5}>
       <Grid size={{ xs: 12, md: 5 }}>
-        <Typography variant="h2" component="h2" sx={{ mb: 2, color: "#000091" }}>
+        <Typography variant="h1" component="h1" sx={{ mb: 2, color: "#000091" }}>
           Vous êtes un organisme de formation
         </Typography>
 
-        <Typography variant="h3" component="h3">
+        <Typography variant="h2" component="h2">
           Attirez des candidats en offrant plus de visibilité à vos formations et offres d’emplois
         </Typography>
 
-        <Typography sx={{ mb: 2 }}>Créez le compte de votre CFA pour diffuser les offres de vos entreprises partenaires, et recevoir les candidatures.</Typography>
+        <Typography sx={{ my: 2 }}>Créez le compte de votre CFA pour diffuser les offres de vos entreprises partenaires, et recevoir les candidatures.</Typography>
 
         <ConnectionActions service="cfa" />
       </Grid>

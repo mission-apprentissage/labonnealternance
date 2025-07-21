@@ -6,7 +6,7 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 export const FacilitezRDVA = () => {
   return (
     <Grid container spacing={2} sx={{ alignItems: "center", justifyContent: "center" }}>
-      <Grid size={{ xs: 12, md: 6 }}>
+      <Grid size={{ xs: 12, md: 6 }} sx={{ order: { xs: 2, md: 1 } }}>
         <Typography component="h3" variant="h3" sx={{ mb: 2 }}>
           Répondez facilement aux candidats intéressés par vos formations
         </Typography>
@@ -19,7 +19,7 @@ export const FacilitezRDVA = () => {
           .
         </Typography>
       </Grid>
-      <Grid size={{ xs: 12, md: 6 }}>
+      <Grid size={{ xs: 12, md: 6 }} sx={{ order: { xs: 1, md: 2 } }}>
         <Image src="/images/home_pics/facilitezRDVA.svg" width={585} height={298} alt="" />
       </Grid>
     </Grid>

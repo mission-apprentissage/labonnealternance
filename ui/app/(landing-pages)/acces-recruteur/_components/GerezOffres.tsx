@@ -30,7 +30,7 @@ export const GerezOffres = () => {
             Gérez vos offres de manière collaborative
           </Typography>
           <Typography>Un accès multi-comptes permettra à plusieurs personnes de votre entreprise d’accéder et de gérer vos offres d&apos;emploi.</Typography>
-          <Typography component="h3" variant="h3" sx={{ mb: 2 }}>
+          <Typography component="h3" variant="h3" sx={{ my: 2 }}>
             Consultez et gérez vos candidatures
           </Typography>
           <Typography>Vérifiez d&apos;un coup d&apos;œil la progression des candidatures pour définir les prochaines étapes.</Typography>
