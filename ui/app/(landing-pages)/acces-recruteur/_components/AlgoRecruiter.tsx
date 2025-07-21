@@ -5,8 +5,7 @@ import { DsfrLink } from "../../../../components/dsfr/DsfrLink"
 export const AlgoRecruiter = ({ withLinks }) => (
   <Box as="section" pb={12} backgroundColor="white">
     <Box py={12} backgroundColor="#f5f5fe">
-      {/* @ts-expect-error: TODO */}
-      <Grid templateColumns={{ base: "repeat(1, 1fr)", lg: "repeat(5, 1fr)" }} spacing="20px">
+      <Grid templateColumns={{ base: "repeat(1, 1fr)", lg: "repeat(5, 1fr)" }}>
         {/* @ts-expect-error: TODO */}
         <GridItem colSpan={{ base: "1", lg: "3" }} px={{ base: 3, md: 6, lg: 12 }}>
           <Box as="h2">

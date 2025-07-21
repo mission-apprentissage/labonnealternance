@@ -1024,13 +1024,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
-          "managed_by": {
-            "description": "Id de l'utilisateur gérant l'offre",
-            "type": [
-              "string",
-              "null",
-            ],
-          },
           "mer_sent": {
             "description": "Date d'envoi de la mise en relation",
             "type": [
@@ -3316,10 +3309,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "managed_by": {
             "description": "Id de l'utilisateur gestionnaire",
-            "type": [
-              "string",
-              "null",
-            ],
+            "type": "string",
           },
           "naf_code": {
             "description": "Code NAF de l'établissement",
@@ -3388,6 +3378,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "jobs",
           "opco",
           "idcc",
+          "managed_by",
         ],
         "type": "object",
       },
@@ -7479,6 +7470,42 @@ Limite : 1 appel(s) / 1 seconde(s)
                   },
                   "required": [
                     "id",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-apprentissage": [],
+          },
+        ],
+        "tags": [
+          "V3 - Jobs",
+        ],
+      },
+    },
+    "/v3/jobs/export": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "lastUpdate": {
+                      "type": "string",
+                    },
+                    "url": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "url",
+                    "lastUpdate",
                   ],
                   "type": "object",
                 },

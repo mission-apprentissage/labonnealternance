@@ -7,7 +7,7 @@ import { zRoutes } from "shared/index"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-import { removeHtmlTagsFromString } from "../../common/utils/stringUtils"
+import { sanitizeTextField } from "../../common/utils/stringUtils"
 import config from "../../config"
 import { createRdvaShortRecapToken } from "../../services/appLinks.service"
 import * as appointmentService from "../../services/appointment.service"
@@ -283,9 +283,9 @@ export default (server: Server) => {
           template: getStaticFilePath("./templates/mail-reponse-cfa.mjml.ejs"),
           data: {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            prenom: removeHtmlTagsFromString(user.firstname),
-            nom: removeHtmlTagsFromString(user.lastname),
-            message: removeHtmlTagsFromString(cfa_message_to_applicant),
+            prenom: sanitizeTextField(user.firstname),
+            nom: sanitizeTextField(user.lastname),
+            message: sanitizeTextField(cfa_message_to_applicant),
             nom_formation: eligibleTrainingsForAppointment?.training_intitule_long,
             nom_cfa: eligibleTrainingsForAppointment?.etablissement_formateur_raison_sociale,
             cfa_email: eligibleTrainingsForAppointment?.lieu_formation_email,

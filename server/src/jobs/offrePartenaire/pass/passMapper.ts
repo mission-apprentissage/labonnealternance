@@ -5,7 +5,6 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
 
-import { decodeHtmlEntities, removeHtmlTagsFromString } from "../../../common/utils/stringUtils"
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
 export const ZPassJob = z
@@ -92,13 +91,13 @@ export const passJobToJobsPartners = (job: IPassJob): IComputedJobsPartners => {
     contract_start: contractStart,
     contract_duration: contractDuration,
     offer_title: title,
-    offer_description: removeHtmlTagsFromString(description),
+    offer_description: description,
     offer_target_diploma: parseDiploma(dcType),
     offer_creation: creationDate,
     offer_expiration: offerExpiration,
     offer_opening_count: 1,
     offer_multicast: true,
-    workplace_name: author && removeHtmlTagsFromString(decodeHtmlEntities(author)),
+    workplace_name: author,
     workplace_address_label: `${dcCoverage} ${dcDescription}`,
     apply_url: link,
     apply_email: email,

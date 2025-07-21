@@ -7,8 +7,6 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
 
-import { formatHtmlForPartnerDescription } from "@/common/utils/stringUtils"
-
 import { isCompanyInBlockedCfaList } from "../blockJobsPartnersFromCfaList"
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
@@ -173,7 +171,7 @@ export const cleverConnectJobToJobsPartners = (job: ICleverConnectJob, partner_l
     offer_target_diploma: getOfferTargetDiploma(job),
 
     workplace_name: company.name,
-    workplace_description: company.description && company.description.length >= 30 ? formatHtmlForPartnerDescription(company.description) : null,
+    workplace_description: company.description && company.description.length >= 30 ? company.description : null,
     workplace_address_zipcode: workplaceLocation?.postalCode || null,
     workplace_address_city: workplaceLocation.city || null,
     workplace_address_label: workplaceLocation.$?.label || null,
@@ -191,7 +189,7 @@ export const cleverConnectJobToJobsPartners = (job: ICleverConnectJob, partner_l
 }
 
 const getAccessConditions = (job: ICleverConnectJob): IComputedJobsPartners["offer_access_conditions"] => {
-  if (!job.profile?.experienceLevels) return null
+  if (!job.profile?.experienceLevels) return []
   return isArray(job.profile.experienceLevels.experienceLevel) ? job.profile.experienceLevels.experienceLevel.map((l) => l._) : [job.profile.experienceLevels.experienceLevel._]
 }
 
@@ -311,5 +309,5 @@ const getOfferDescription = (job: ICleverConnectJob): IComputedJobsPartners["off
     descriptionComputed += `Profil: ${profile.description}`
   }
 
-  return formatHtmlForPartnerDescription(descriptionComputed.trim())
+  return descriptionComputed.trim()
 }
