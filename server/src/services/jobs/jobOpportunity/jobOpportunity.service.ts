@@ -557,7 +557,7 @@ export const convertLbaCompanyToJobRecruiterApi = (recruteursLba: IJobsPartnersO
   )
 }
 
-function getDiplomaEuropeanLevel(job: IJob): IJobsPartnersOfferApi["offer_target_diploma"] {
+export function getDiplomaEuropeanLevel(job: IJob): IJobsPartnersOfferApi["offer_target_diploma"] {
   const label = parseEnum(NIVEAUX_POUR_LBA, job.job_level_label)
 
   switch (label) {
