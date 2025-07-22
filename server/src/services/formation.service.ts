@@ -763,6 +763,7 @@ export const getFormationDetailByCleME = async (id: string): Promise<ILbaItemFor
   }
   const priseDeRendezVous = await getDbCollection("eligible_trainings_for_appointments").findOne({
     cle_ministere_educatif: formation.cle_ministere_educatif,
+    lieu_formation_email: { $ne: null },
     referrers: { $in: [referrers.LBA.name] },
   })
   const elligileForAppointment = !!priseDeRendezVous
