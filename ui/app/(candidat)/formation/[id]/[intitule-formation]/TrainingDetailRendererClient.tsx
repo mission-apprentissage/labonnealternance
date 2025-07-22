@@ -193,7 +193,7 @@ function TrainingDetailPage({
 
       <AideApprentissage />
 
-      {!priseDeRendezVous && <GoingToContactQuestion kind={kind} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />}
+      {!elligibleForAppointment && <GoingToContactQuestion kind={kind} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />}
     </Box>
   )
 }
@@ -334,6 +334,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
 }
 
 const TrainingDescriptionDetails = ({ training }: { training: ILbaItemTraining2 }) => {
+  const isPermanentEntry = training.sessions?.some((session: any) => session.isPermanentEntry)
   return (
     <>
       {training.description && training.description.length > 30 && (
@@ -363,9 +364,9 @@ const TrainingDescriptionDetails = ({ training }: { training: ILbaItemTraining2 
           <Image src="/images/icons/training-academic-cap.svg" alt="" />
           <Box pl={4} whiteSpace="pre-wrap">
             <Typography sx={{ fontWeight: "700" }}>Sessions de formation</Typography>
-            {training.sessions?.[0]?.isPermanentEntry
+            {isPermanentEntry
               ? "Il est possible de s’inscrire à cette formation tout au long de l’année."
-              : training["sessions"].map((session, i) => (
+              : training["sessions"].map((session: any, i: number) => (
                   <Fragment key={i}>
                     du {formatDate(session.startDate)} au {formatDate(session.endDate)}
                     <br />

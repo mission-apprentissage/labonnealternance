@@ -182,7 +182,12 @@ function ListeEntreprise() {
   ]
   return (
     <AnimationContainer>
-      <ConfirmationSuppressionEntreprise {...confirmationSuppression} {...currentEntreprise} />
+      <ConfirmationSuppressionEntreprise
+        establishment_id={currentEntreprise.establishment_id}
+        onClose={confirmationSuppression.onClose}
+        isOpen={confirmationSuppression.isOpen}
+        establishment_raison_sociale={currentEntreprise.establishment_raison_sociale}
+      />
       <Container maxW="container.xl" mt={5}>
         <Breadcrumb pages={[PAGES.static.backCfaHome]} />
         <Flex justify="space-between" mb={12}>

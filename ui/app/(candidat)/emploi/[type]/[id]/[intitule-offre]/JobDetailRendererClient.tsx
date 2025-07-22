@@ -112,7 +112,7 @@ function JobDetail({ selectedItem, resultList, params }: WithRecherchePageParams
             {getNavigationButtons({ goPrev, goNext, handleClose })}
           </Flex>
           {!isCollapsedHeader && getJobPublishedTimeAndApplications({ item: selectedItem })}
-          {!isCollapsedHeader && <JobItemCardHeader selectedItem={selectedItem} kind={kind} isMandataire={isMandataire} />}
+          {!isCollapsedHeader && <JobItemCardHeader selectedItem={selectedItem} kind={kind as LBA_ITEM_TYPE} isMandataire={isMandataire} />}
 
           <Typography variant={"h3"} sx={{ color: fr.colors.decisions.border.default.blueCumulus.default }}>
             {actualTitle}

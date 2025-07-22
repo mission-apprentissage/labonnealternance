@@ -1,14 +1,14 @@
 import { Box, Image, Progress, SkeletonCircle, SkeletonText, Text } from "@chakra-ui/react"
-import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import "./ItemDetailLoading.css"
 
 type Props = {
-  type: LBA_ITEM_TYPE_OLD
+  type: LBA_ITEM_TYPE
 }
 
 const ItemDetailLoading = ({ type }: Props) => {
   const loadingIllustrations =
-    type === LBA_ITEM_TYPE_OLD.FORMATION
+    type === LBA_ITEM_TYPE.FORMATION
       ? [
           {
             src: "/images/loading/training_description.svg",
@@ -63,7 +63,7 @@ const ItemDetailLoading = ({ type }: Props) => {
           </Box>
 
           <Box maxWidth="400px" mx="auto" my={4}>
-            <Progress colorScheme={type === LBA_ITEM_TYPE_OLD.FORMATION ? "teal" : "orange"} isIndeterminate size="sm" borderRadius="20px" />
+            <Progress colorScheme={type === LBA_ITEM_TYPE.FORMATION ? "teal" : "orange"} isIndeterminate size="sm" borderRadius="20px" />
           </Box>
 
           <Box padding="6" boxShadow="lg" bg="white">
