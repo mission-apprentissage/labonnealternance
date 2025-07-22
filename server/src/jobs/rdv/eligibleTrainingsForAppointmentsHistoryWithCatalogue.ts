@@ -17,11 +17,6 @@ export const eligibleTrainingsForAppointmentsHistoryWithCatalogue = async () => 
   const eligibleTrainingsCollection = getDbCollection("eligible_trainings_for_appointments")
   const historyCollection = getDbCollection("eligible_trainings_for_appointments_histories")
 
-  const stats = {
-    AncientElligibleTrainingCount: await eligibleTrainingsCollection.countDocuments(),
-    NewElligibleTrainingCount: 0,
-  }
-
   const toHistorize = await eligibleTrainingsCollection
     .aggregate([
       {
@@ -62,8 +57,6 @@ export const eligibleTrainingsForAppointmentsHistoryWithCatalogue = async () => 
 
     await eligibleTrainingsCollection.bulkWrite(deleteOps)
   }
-
-  stats.NewElligibleTrainingCount = await eligibleTrainingsCollection.countDocuments()
 
   await notifyToSlack({ subject: "Historisation des formations éligibles", message: `Formations historisées : ${toHistorize.length}` })
 
