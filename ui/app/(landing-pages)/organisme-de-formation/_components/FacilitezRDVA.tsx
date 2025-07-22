@@ -1,33 +1,27 @@
-import { Box, Grid, GridItem, Image, Text } from "@chakra-ui/react"
+import { Grid2 as Grid, Typography } from "@mui/material"
+import Image from "next/image"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
-export function FacilitezRDVA() {
+export const FacilitezRDVA = () => {
   return (
-    <Grid templateColumns={{ base: "1fr", md: "repeat(12, 1fr)" }} gap={4} mb={{ base: 4, md: 0 }}>
-      <GridItem order={{ base: 2, md: 1 }} colSpan={{ base: 1, md: 5 }}>
-        <Text as="h2" variant="homeEditorialH2">
+    <Grid container spacing={2} sx={{ alignItems: "center", justifyContent: "center" }}>
+      <Grid size={{ xs: 12, md: 6 }} sx={{ order: { xs: 2, md: 1 } }}>
+        <Typography component="h3" variant="h3" sx={{ mb: 2 }}>
           Répondez facilement aux candidats intéressés par vos formations
-        </Text>
-        <Text fontSize="18px" mt={4}>
-          Vous recevez directement dans votre boite mail des demandes de candidats intéressés par vos formations et pouvez leur répondre en quelques clics.
-        </Text>
-        <Text fontSize="14px" mt={6}>
+        </Typography>
+        <Typography>Vous recevez directement dans votre boite mail des demandes de candidats intéressés par vos formations et pouvez leur répondre en quelques clics.</Typography>
+        <Typography sx={{ fontSize: "14px", mt: 2 }}>
           *Vous pouvez à tout moment vous désinscrire de ce service en{" "}
-          <DsfrLink
-            href={`mailto:labonnealternance@beta.gouv.fr?subject=${encodeURIComponent("CFA désactivation RDVA")}`}
-            aria-label="Adresse email de l'équipe La bonne alternance"
-          >
+          <DsfrLink size="sm" href="mailto:labonnealternance@beta.gouv.fr?subject=CFA désactivation RDVA" aria-label="Adresse email de l'équipe La bonne alternance">
             contactant notre équipe
           </DsfrLink>
           .
-        </Text>
-      </GridItem>
-      <GridItem order={{ base: 1, md: 2 }} colSpan={{ base: 1, md: 7 }}>
-        <Box display="flex" alignItems="flex-start" justifyContent={{ base: "center", lg: "flex-end" }} mr={{ base: 0, lg: 4 }} height="100%">
-          <Image src="/images/home_pics/facilitezRDVA.svg" alt="" aria-hidden={true}></Image>
-        </Box>
-      </GridItem>
+        </Typography>
+      </Grid>
+      <Grid size={{ xs: 12, md: 6 }} sx={{ order: { xs: 1, md: 2 } }}>
+        <Image src="/images/home_pics/facilitezRDVA.svg" width={585} height={298} alt="" />
+      </Grid>
     </Grid>
   )
 }

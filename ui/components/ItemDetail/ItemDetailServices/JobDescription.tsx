@@ -11,7 +11,6 @@ const BULLET = <>&bull;</>
 
 export const JobDescription = ({ job }: { job: ILbaItemPartnerJobJson | ILbaItemLbaJobJson }) => {
   const { description, employeurDescription } = job.job
-
   const validCustomDescription = description && description.length > BAD_DESCRIPTION_LENGTH ? description : null
 
   if (validCustomDescription || employeurDescription) {
