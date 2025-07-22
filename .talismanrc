@@ -313,6 +313,10 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
+- filename: ui/app/(landing-pages)/acces-recruteur/_components/HeroRecruteur.tsx
+  checksum: e2471ac7e6886e3361b2c0debf2f8b296d5c96270c5324ee2059b788fbe354ff
+- filename: ui/app/(landing-pages)/acces-recruteur/_components/OffresGratuites.tsx
+  checksum: 8892d3fb6a4dcffe5938305ec58ae29964f76419ab4211656b0af262eea7dce8
 - filename: ui/components/head.tsx
   checksum: fd94387931e07a6150e82417ef13ec3c03cad372e69e95c4be60d360ee285ead
 scopeconfig:
