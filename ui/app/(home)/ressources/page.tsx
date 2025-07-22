@@ -1,8 +1,6 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import { SideMenu } from "@codegouvfr/react-dsfr/SideMenu"
-import Tabs from "@codegouvfr/react-dsfr/Tabs"
 import { Box, Typography } from "@mui/material"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
@@ -38,53 +36,28 @@ export default function Ressources() {
             Ressources
           </Typography>
         </Box>
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: {
-              xs: "repeat(1, 1fr)",
-              lg: "repeat(5, 1fr)",
-            },
-          }}
-        >
-          <Box
-            sx={{
-              display: { xs: "none", lg: "block" },
-              gridColumn: { lg: "span 1" },
-            }}
-          >
-            <SideMenu
-              align="left"
-              burgerMenuButtonText="Dans cette rubrique"
-              items={tabs.map(({ tabId, label }) => ({
-                isActive: selectedTabId === tabId,
-                linkProps: {
-                  href: "#" + tabId,
-                },
-                text: label,
-              }))}
-            />
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", lg: "repeat(5, 1fr)" } }}>
+          <Box sx={{ gridColumn: { xs: "span 5", lg: "span 1" } }}>
+            <nav className="fr-sidemenu" aria-labelledby="fr-sidemenu-title">
+              <div className="fr-sidemenu__inner">
+                <button className="fr-sidemenu__btn" aria-controls="fr-sidemenu-wrapper" aria-expanded="false">
+                  Dans cette rubrique
+                </button>
+                <div className="fr-collapse" id="fr-sidemenu-wrapper">
+                  <ul className="fr-sidemenu__list">
+                    {tabs.map(({ tabId, label }) => (
+                      <li key={tabId} className={`fr-sidemenu__item ${selectedTabId === tabId ? "fr-sidemenu__item--active" : ""}`}>
+                        <a className="fr-sidemenu__link" href={`#${tabId}`} target="_self" aria-current={selectedTabId === tabId ? "page" : undefined}>
+                          {label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </nav>
           </Box>
-
-          <Box
-            sx={{
-              gridColumn: { xs: "span 1", lg: "span 4" },
-            }}
-          >
-            <Box sx={{ display: { xs: "block", lg: "none" }, mb: 6 }}>
-              <Tabs
-                selectedTabId={selectedTabId}
-                tabs={tabs.map(({ label, tabId }) => ({ label, tabId }))}
-                onTabChange={(tabId) => {
-                  window.location.hash = tabId
-                }}
-              >
-                <></>
-              </Tabs>
-            </Box>
-
-            {displayedTab.content}
-          </Box>
+          <Box sx={{ gridColumn: { xs: "span 1", lg: "span 4" } }}>{displayedTab.content}</Box>
         </Box>
       </DefaultContainer>
     </Box>
