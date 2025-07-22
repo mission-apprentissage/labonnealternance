@@ -27,7 +27,7 @@ export const getClassificationFromLab = async (job: TJobClassification): Promise
       partner_label: job.partner_label,
       partner_job_id: job.partner_job_id,
       classification: classificationFromLab.label,
-      score: classificationFromLab.score,
+      scores: classificationFromLab.scores,
     }
     await getDbCollection("cache_classification").insertOne(payload)
     return classificationFromLab.label

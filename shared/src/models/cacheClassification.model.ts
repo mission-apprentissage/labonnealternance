@@ -8,7 +8,7 @@ const ZClassitifationJobsPartners = z.object({
   partner_job_id: z.string(),
   partner_label: z.string(),
   classification: z.string(),
-  score: z.object({
+  scores: z.object({
     cfa: z.number(),
     entreprise: z.number(),
     entreprise_cfa: z.number(),
@@ -18,7 +18,7 @@ export type IClassificationJobsPartners = z.output<typeof ZClassitifationJobsPar
 
 export const ZClassificationLabResponse = z.object({
   label: z.string(),
-  score: ZClassitifationJobsPartners.shape.score,
+  scores: ZClassitifationJobsPartners.shape.scores,
   text: z.string(),
 })
 export type IClassificationLabResponse = z.output<typeof ZClassificationLabResponse>
