@@ -23,7 +23,7 @@ export default function ItemDetailCard({ selectedItem }) {
           />
         </svg>
         <Text as="span">&nbsp;Formation :&nbsp;</Text>
-        <Text as="span">&nbsp;{selectedItem?.company?.place?.address}</Text>
+        <Text as="span">&nbsp;{selectedItem?.place?.fullAddress}</Text>
       </Flex>
     </Box>
   ) : (

@@ -4,7 +4,7 @@ import { AccordionButton, AccordionItem, AccordionPanel, Box, Text } from "@chak
 import { scrollToNestedElement } from "@/utils/tools"
 
 const LbaJobAcces = ({ job }) => {
-  const accesEmploi = job?.job?.romeDetails?.acces_metier ?? null
+  const accesEmploi = job?.job?.offer_access_conditions ?? null
 
   if (!accesEmploi) return <></>
 

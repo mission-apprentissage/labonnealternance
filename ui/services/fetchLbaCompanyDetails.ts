@@ -1,16 +1,15 @@
-import { ILbaItemLbaCompanyJson, ILbaItemLbaCompanyReturnedByAPI } from "shared"
+import { ILbaItemLbaCompanyJson } from "shared"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { apiGet } from "@/utils/api.utils"
 
 const fetchLbaCompanyDetails = async (company): Promise<ILbaItemLbaCompanyJson> => {
-  // KBA 2024-05-31 API should return a single object and not an array as we are only fetching a single object
-  const response: ILbaItemLbaCompanyReturnedByAPI = await apiGet("/v1/jobs/company/:siret", { params: { siret: company.id }, querystring: {} })
+  const lbaCompany: ILbaItemLbaCompanyJson = (await apiGet("/_private/jobs/:source/:id", {
+    params: { id: company.id, source: LBA_ITEM_TYPE.RECRUTEURS_LBA },
+  })) as ILbaItemLbaCompanyJson
 
-  // @ts-expect-error
-  const [firstLbaCompany]: [ILbaItemLbaCompanyJson] = response?.lbaCompanies ?? []
-  if (firstLbaCompany) {
-    firstLbaCompany.detailsLoaded = true
-    return firstLbaCompany
+  if (lbaCompany) {
+    return lbaCompany
   } else {
     throw new Error("unexpected_error")
   }
