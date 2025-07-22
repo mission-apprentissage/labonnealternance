@@ -12,6 +12,7 @@ export function DsfrLink({
   size = "md",
   external = "auto",
   style,
+  className,
   ...props
 }: {
   children: ReactNode
@@ -19,6 +20,7 @@ export function DsfrLink({
   size?: "lg" | "sm" | "md"
   external?: "auto" | boolean
   style?: CSSProperties
+  className?: string
 } & LinkProps) {
   const { href, ...rest } = props
 
@@ -37,19 +39,22 @@ export function DsfrLink({
       href={href}
       rel={isExternal ? "noopener noreferrer" : undefined}
       target={isExternal ? "_blank" : undefined}
-      className={fr.cx(
-        `fr-text--${size}`,
-        "fr-link",
-        {
-          "fr-link--sm": size === "sm",
-          "fr-link--lg": size === "lg",
-          "fr-link--icon-left": arrow === "left",
-          "fr-icon-arrow-left-s-line": arrow === "left",
-          "fr-icon-arrow-right-line": arrow === "right",
-          "fr-link--icon-right": arrow === "right",
-        },
-        "fr-icon-map-pin-2-fill"
-      )}
+      className={
+        className ||
+        fr.cx(
+          `fr-text--${size}`,
+          "fr-link",
+          {
+            "fr-link--sm": size === "sm",
+            "fr-link--lg": size === "lg",
+            "fr-link--icon-left": arrow === "left",
+            "fr-icon-arrow-left-s-line": arrow === "left",
+            "fr-icon-arrow-right-line": arrow === "right",
+            "fr-link--icon-right": arrow === "right",
+          },
+          "fr-icon-map-pin-2-fill"
+        )
+      }
       {...rest}
     >
       {children}
