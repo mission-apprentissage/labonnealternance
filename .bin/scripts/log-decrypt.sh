@@ -26,15 +26,14 @@ readonly PASSPHRASE="$ROOT_DIR/.bin/SEED_PASSPHRASE.txt"
 readonly VAULT_FILE="${ROOT_DIR}/.infra/vault/vault.yml"
 
 delete_cleartext() {
-  rm -f "$PASSPHRASE"
+  shred -f -n 10 -u "$PASSPHRASE"
 }
 trap delete_cleartext EXIT
-
 
 rm -rf /tmp/decrypt
 gh run download "$RUN_ID" -n $LOG_NAME -D /tmp/decrypt
 
-ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq '.vault.SEED_GPG_PASSPHRASE' > "$PASSPHRASE"
+ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq -r '.vault.SEED_GPG_PASSPHRASE' > "$PASSPHRASE"
 
 mkdir -p ./tmp
 

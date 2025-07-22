@@ -19,7 +19,8 @@ pass_file=$(mktemp vault-pass.XXXXXXXXXX)
 chmod 600 $pass_file
 
 delete_tempfiles() {
-  rm -f "$ancestor_tempfile" "$current_tempfile" "$other_tempfile" "$pass_file"
+  rm -f "$ancestor_tempfile" "$current_tempfile" "$other_tempfile"
+  shred -f -n 10 -u "$pass_file"
 }
 trap delete_tempfiles EXIT
 
