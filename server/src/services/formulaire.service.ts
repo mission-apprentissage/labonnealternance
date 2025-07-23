@@ -1046,6 +1046,7 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
     offer_expiration: job.job_expiration_date,
     offer_status: getOfferStatus(job.job_status, recruiter.status),
     offer_opening_count: job.job_count ?? 1,
+    offer_multicast: true,
 
     contract_remote: null,
     offer_status_history: [],

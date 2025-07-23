@@ -487,7 +487,9 @@ export const getJobsPartnersForApi = async ({
   opco,
 }: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> => {
   // recruteurs_lba are available in a different array from the API returned payload
-  const partnersToExclude = partners_to_exclude ? [...partners_to_exclude, JOBPARTNERS_LABEL.RECRUTEURS_LBA] : [JOBPARTNERS_LABEL.RECRUTEURS_LBA]
+  const partnersToExclude = partners_to_exclude
+    ? [...partners_to_exclude, JOBPARTNERS_LABEL.RECRUTEURS_LBA, JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA]
+    : [JOBPARTNERS_LABEL.RECRUTEURS_LBA, JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA]
   const jobsPartners = await getJobsPartnersFromDB({ romes, geo, target_diploma_level, partners_to_exclude: partnersToExclude, opco, departements })
 
   return jobsPartners.map((j) =>

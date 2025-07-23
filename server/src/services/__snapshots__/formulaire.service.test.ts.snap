@@ -120,6 +120,7 @@ exports[`createJob > should insert a job 3`] = `
   "offer_desired_skills": [
     "Faire preuve de rigueur et de précision",
   ],
+  "offer_multicast": true,
   "offer_opening_count": 1,
   "offer_origin": null,
   "offer_rome_codes": [

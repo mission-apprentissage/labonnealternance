@@ -1456,9 +1456,8 @@ describe("findJobsOpportunities", () => {
         const parseResult = zJobSearchApiV3Response.safeParse(results)
         expect.soft(parseResult.success).toBeTruthy()
         expect(parseResult.error).toBeUndefined()
-        expect.soft(results.jobs).toHaveLength(2)
+        expect.soft(results.jobs).toHaveLength(1)
         expect.soft(results.jobs[0].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.RH_ALTERNANCE)
-        expect.soft(results.jobs[1].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA)
 
         results = await findJobsOpportunities(
           {
@@ -1473,10 +1472,9 @@ describe("findJobsOpportunities", () => {
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
 
-        expect.soft(results.jobs).toHaveLength(3)
+        expect.soft(results.jobs).toHaveLength(2)
         expect.soft(results.jobs[0].identifier.partner_label).not.toBe(JOBPARTNERS_LABEL.RH_ALTERNANCE)
         expect.soft(results.jobs[1].identifier.partner_label).not.toBe(JOBPARTNERS_LABEL.RH_ALTERNANCE)
-        expect.soft(results.jobs[2].identifier.partner_label).not.toBe(JOBPARTNERS_LABEL.RH_ALTERNANCE)
 
         results = await findJobsOpportunities(
           {
@@ -1491,8 +1489,7 @@ describe("findJobsOpportunities", () => {
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
 
-        expect.soft(results.jobs).toHaveLength(1)
-        expect.soft(results.jobs[0].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA)
+        expect.soft(results.jobs).toHaveLength(0)
       })
     })
 
