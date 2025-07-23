@@ -1,6 +1,6 @@
 import { captureException } from "@sentry/node"
 import { isEqual } from "lodash-es"
-import { Collection, CollectionInfo, Db, IndexDescriptionInfo, MongoClient, MongoServerError } from "mongodb"
+import { ChangeStream, Collection, CollectionInfo, Db, IndexDescriptionInfo, MongoClient, MongoServerError } from "mongodb"
 import { IModelDescriptor } from "shared/models/common"
 import { CollectionName, IDocument, modelDescriptors } from "shared/models/models"
 import { zodToMongoSchema } from "zod-mongodb-schema"
@@ -12,6 +12,8 @@ import { sleep } from "./asyncUtils"
 
 let mongodbClient: MongoClient | null = null
 let mongodbClientState: string | null = null
+
+export const changeStreams: ChangeStream[] = []
 
 export const ensureInitialization = () => {
   if (!mongodbClient) {
@@ -61,6 +63,13 @@ export const closeMongodbConnection = async () => {
   // Let 100ms for possible callback cleanup to register tasks in mongodb queue
   await sleep(200)
   return mongodbClient?.close()
+}
+
+export const closeChangeStreams = async () => {
+  if (changeStreams.length > 0) {
+    logger.info(`Closing ${changeStreams.length} change streams`)
+    await Promise.all(changeStreams.map((changeStream: ChangeStream) => changeStream.close()))
+  }
 }
 
 export const getDatabase = (): Db => {

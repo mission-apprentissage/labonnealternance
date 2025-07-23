@@ -34,7 +34,7 @@ import { anonymizeLbaJobsPartners } from "@/services/partnerJob.service"
 import { getResumeToken, storeResumeToken } from "@/services/resumeToken.service"
 
 import { asyncForEach } from "../common/utils/asyncUtils"
-import { getDbCollection } from "../common/utils/mongodbUtils"
+import { changeStreams, getDbCollection } from "../common/utils/mongodbUtils"
 import { sanitizeTextField } from "../common/utils/stringUtils"
 import config from "../config"
 
@@ -877,66 +877,7 @@ export const updateCfaManagedRecruiter = async (establishment_id: string, payloa
   return recruiter
 }
 
-const startChangeStream = (collectionName: "recruiters" | "anonymized_recruiters", resumeToken: IResumeToken | null) => {
-  logger.info(`Starting change stream for ${collectionName} with resumeToken:`, resumeToken)
-  const collection = getDbCollection(collectionName)
-  const changeStream = collection.watch([], resumeToken ? { resumeAfter: resumeToken.resumeTokenData } : {})
-
-  if (collectionName === "recruiters") {
-    changeStream
-      .on("change", async (change) => {
-        switch (change.operationType) {
-          case "insert":
-          case "update":
-            await updateJobsPartnersFromRecruiterUpdate(change)
-            await storeResumeToken("recruiters", change._id as IResumeTokenData)
-            break
-          case "delete":
-            // n'arrivera pas car les formulaires ne sont pas supprimés, mais archivés
-            break
-          default:
-            assertUnreachable(`Unexpected change operation type ${change.operationType}` as never)
-        }
-      })
-      .once("error", (error) => {
-        logger.error(`Error in change stream for ${collectionName}:`, error)
-        changeStream.close()
-        startChangeStream(collectionName, null)
-      })
-  } else if (collectionName === "anonymized_recruiters") {
-    changeStream
-      .on("change", async (change) => {
-        if (change.operationType === "insert") {
-          await updateJobsPartnersFromRecruiterDelete(change.documentKey._id)
-          await storeResumeToken("anonymized_recruiters", change._id as IResumeTokenData)
-        }
-      })
-      .once("error", (error) => {
-        logger.error(`Error in change stream for ${collectionName}:`, error)
-        changeStream.close()
-        startChangeStream(collectionName, null)
-      })
-  }
-
-  return changeStream
-}
-
-export const startRecruiterChangeStream = async () => {
-  logger.info("Starting recruiter change stream")
-
-  const resumeRecruiterToken = await getResumeToken("recruiters")
-  const changeRecruiterStream = startChangeStream("recruiters", resumeRecruiterToken)
-
-  const resumeAnonymizedRecruiterToken = await getResumeToken("anonymized_recruiters")
-  const changeAnonymizedRecruiterStream = startChangeStream("anonymized_recruiters", resumeAnonymizedRecruiterToken)
-
-  return {
-    changeRecruiterStream,
-    changeAnonymizedRecruiterStream,
-  }
-}
-
-const updateJobsPartnersFromRecruiterUpdate = async (change: ChangeStreamUpdateDocument<IRecruiter> | ChangeStreamInsertDocument<IRecruiter>) => {
+export const updateJobsPartnersFromRecruiterUpdate = async (change: ChangeStreamUpdateDocument<IRecruiter> | ChangeStreamInsertDocument<IRecruiter>) => {
   await updateJobsPartnersFromRecruiterById(change.documentKey._id)
 }
 
@@ -1070,10 +1011,71 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
   )
 }
 
-const updateJobsPartnersFromRecruiterDelete = async (id: ObjectId) => {
+export const updateJobsPartnersFromRecruiterDelete = async (id: ObjectId) => {
   const recruiter = await getDbCollection("anonymized_recruiters").findOne({ _id: id })
   const jobIds = recruiter?.jobs?.map((job) => job._id) ?? []
   if (jobIds.length) {
     await anonymizeLbaJobsPartners({ partner_job_ids: jobIds })
+  }
+}
+
+//TODO: extraire une partie du code dans un service pour éviter d'avoir du code trop spécifique dans mongodbUtils.ts
+const startChangeStream = (collectionName: "recruiters" | "anonymized_recruiters", resumeToken: IResumeToken | null) => {
+  logger.info(`Starting change stream for ${collectionName} with resumeToken:`, resumeToken)
+  const collection = getDbCollection(collectionName)
+  const changeStream = collection.watch([], resumeToken ? { resumeAfter: resumeToken.resumeTokenData } : {})
+
+  if (collectionName === "recruiters") {
+    changeStream
+      .on("change", async (change) => {
+        switch (change.operationType) {
+          case "insert":
+          case "update":
+            await updateJobsPartnersFromRecruiterUpdate(change)
+            await storeResumeToken("recruiters", change._id as IResumeTokenData)
+            break
+          case "delete":
+            // n'arrivera pas car les formulaires ne sont pas supprimés, mais archivés
+            break
+          default:
+            assertUnreachable(`Unexpected change operation type ${change.operationType}` as never)
+        }
+      })
+      .once("error", (error) => {
+        logger.error(`Error in change stream for ${collectionName}:`, error)
+        changeStream.close()
+        startChangeStream(collectionName, null)
+      })
+  } else if (collectionName === "anonymized_recruiters") {
+    changeStream
+      .on("change", async (change) => {
+        if (change.operationType === "insert") {
+          await updateJobsPartnersFromRecruiterDelete(change.documentKey._id)
+          await storeResumeToken("anonymized_recruiters", change._id as IResumeTokenData)
+        }
+      })
+      .once("error", (error) => {
+        logger.error(`Error in change stream for ${collectionName}:`, error)
+        changeStream.close()
+        startChangeStream(collectionName, null)
+      })
+  }
+
+  changeStreams.push(changeStream)
+  return changeStream
+}
+
+export const startRecruiterChangeStream = async () => {
+  logger.info("Starting recruiter change stream")
+
+  const resumeRecruiterToken = await getResumeToken("recruiters")
+  const changeRecruiterStream = startChangeStream("recruiters", resumeRecruiterToken)
+
+  const resumeAnonymizedRecruiterToken = await getResumeToken("anonymized_recruiters")
+  const changeAnonymizedRecruiterStream = startChangeStream("anonymized_recruiters", resumeAnonymizedRecruiterToken)
+
+  return {
+    changeRecruiterStream,
+    changeAnonymizedRecruiterStream,
   }
 }
