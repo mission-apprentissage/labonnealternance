@@ -1,10 +1,11 @@
 import { z } from "zod"
 
-import { IModelDescriptor } from "./common.js"
+import { IModelDescriptor, zObjectId } from "./common.js"
 
 const collectionName = "cache_classification" as const
 
 const ZClassitifationJobsPartners = z.object({
+  _id: zObjectId,
   partner_job_id: z.string(),
   partner_label: z.string(),
   classification: z.string(),

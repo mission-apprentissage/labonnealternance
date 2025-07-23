@@ -1,3 +1,4 @@
+import { ObjectId } from "bson"
 import { IClassificationJobsPartners } from "shared/models/cacheClassification.model"
 
 import { getLabClassification } from "@/common/apis/classification/classification.client"
@@ -24,6 +25,7 @@ export const getClassificationFromLab = async (job: TJobClassification): Promise
   const classificationFromLab = await getLabClassification(classificationString)
   if (classificationFromLab) {
     const payload: IClassificationJobsPartners = {
+      _id: new ObjectId(),
       partner_label: job.partner_label,
       partner_job_id: job.partner_job_id,
       classification: classificationFromLab.label,
