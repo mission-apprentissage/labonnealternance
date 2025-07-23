@@ -26,7 +26,13 @@ case $response in
 esac
 
 delete_cleartext() {
-  shred -f -n 10 -u "$SEED_GZ" "$PASSPHRASE"
+  if [ -f "$SEED_GZ" ]; then
+    shred -f -n 10 -u "$SEED_GZ"
+  fi
+
+  if [ -f "$PASSPHRASE" ]; then
+    shred -f -n 10 -u "$PASSPHRASE"
+  fi
 }
 trap delete_cleartext EXIT
 
