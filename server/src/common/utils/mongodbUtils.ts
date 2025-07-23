@@ -241,6 +241,7 @@ export const dropIndexes = async () => {
   }
 }
 
+//TODO: extraire une partie du code dans un service pour éviter d'avoir du code trop spécifique dans mongodbUtils.ts
 const startChangeStream = (collectionName: "recruiters" | "anonymized_recruiters", resumeToken: IResumeToken | null) => {
   logger.info(`Starting change stream for ${collectionName} with resumeToken:`, resumeToken)
   const collection = getDbCollection(collectionName)
