@@ -2,7 +2,8 @@ import * as v8 from "v8"
 
 import { modelDescriptors } from "shared/models/models"
 
-import { configureDbSchemaValidation, connectToMongodb, startRecruiterChangeStream } from "@/common/utils/mongodbUtils"
+import { configureDbSchemaValidation, connectToMongodb } from "@/common/utils/mongodbUtils"
+import { startRecruiterChangeStream } from "@/services/formulaire.service"
 
 import { startCLI } from "./commands"
 import { logger } from "./common/logger"

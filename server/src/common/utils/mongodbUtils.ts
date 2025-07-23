@@ -1,14 +1,9 @@
 import { captureException } from "@sentry/node"
 import { isEqual } from "lodash-es"
 import { ChangeStream, Collection, CollectionInfo, Db, IndexDescriptionInfo, MongoClient, MongoServerError } from "mongodb"
-import { assertUnreachable } from "shared"
 import { IModelDescriptor } from "shared/models/common"
 import { CollectionName, IDocument, modelDescriptors } from "shared/models/models"
-import { IResumeToken, IResumeTokenData } from "shared/models/resumeTokens.model"
 import { zodToMongoSchema } from "zod-mongodb-schema"
-
-import { updateJobsPartnersFromRecruiterDelete, updateJobsPartnersFromRecruiterUpdate } from "@/services/formulaire.service"
-import { getResumeToken, storeResumeToken } from "@/services/resumeToken.service"
 
 import config from "../../config"
 import { logger } from "../logger"
@@ -18,8 +13,7 @@ import { sleep } from "./asyncUtils"
 let mongodbClient: MongoClient | null = null
 let mongodbClientState: string | null = null
 
-let changeRecruiterStream: ChangeStream | null = null
-let changeAnonymizedRecruiterStream: ChangeStream | null = null
+export const changeStreams: ChangeStream[] = []
 
 export const ensureInitialization = () => {
   if (!mongodbClient) {
@@ -68,13 +62,17 @@ export const closeMongodbConnection = async () => {
   logger.warn("Closing MongoDB")
   // Let 100ms for possible callback cleanup to register tasks in mongodb queue
   await sleep(200)
-  if (changeRecruiterStream) {
-    await changeRecruiterStream.close()
-  }
-  if (changeAnonymizedRecruiterStream) {
-    await changeAnonymizedRecruiterStream.close()
-  }
+
+  await closeChangeStreams()
+
   return mongodbClient?.close()
+}
+
+export const closeChangeStreams = async () => {
+  if (changeStreams.length > 0) {
+    logger.info(`Closing ${changeStreams.length} change streams`)
+    await Promise.all(changeStreams.map((changeStream: ChangeStream) => changeStream.close()))
+  }
 }
 
 export const getDatabase = (): Db => {
@@ -238,65 +236,5 @@ export const dropIndexes = async () => {
     if (collections.includes(descriptor.collectionName)) {
       await getDbCollection(descriptor.collectionName).dropIndexes()
     }
-  }
-}
-
-//TODO: extraire une partie du code dans un service pour éviter d'avoir du code trop spécifique dans mongodbUtils.ts
-const startChangeStream = (collectionName: "recruiters" | "anonymized_recruiters", resumeToken: IResumeToken | null) => {
-  logger.info(`Starting change stream for ${collectionName} with resumeToken:`, resumeToken)
-  const collection = getDbCollection(collectionName)
-  const changeStream = collection.watch([], resumeToken ? { resumeAfter: resumeToken.resumeTokenData } : {})
-
-  if (collectionName === "recruiters") {
-    changeStream
-      .on("change", async (change) => {
-        switch (change.operationType) {
-          case "insert":
-          case "update":
-            await updateJobsPartnersFromRecruiterUpdate(change)
-            await storeResumeToken("recruiters", change._id as IResumeTokenData)
-            break
-          case "delete":
-            // n'arrivera pas car les formulaires ne sont pas supprimés, mais archivés
-            break
-          default:
-            assertUnreachable(`Unexpected change operation type ${change.operationType}` as never)
-        }
-      })
-      .once("error", (error) => {
-        logger.error(`Error in change stream for ${collectionName}:`, error)
-        changeStream.close()
-        startChangeStream(collectionName, null)
-      })
-  } else if (collectionName === "anonymized_recruiters") {
-    changeStream
-      .on("change", async (change) => {
-        if (change.operationType === "insert") {
-          await updateJobsPartnersFromRecruiterDelete(change.documentKey._id)
-          await storeResumeToken("anonymized_recruiters", change._id as IResumeTokenData)
-        }
-      })
-      .once("error", (error) => {
-        logger.error(`Error in change stream for ${collectionName}:`, error)
-        changeStream.close()
-        startChangeStream(collectionName, null)
-      })
-  }
-
-  return changeStream
-}
-
-export const startRecruiterChangeStream = async () => {
-  logger.info("Starting recruiter change stream")
-
-  const resumeRecruiterToken = await getResumeToken("recruiters")
-  changeRecruiterStream = startChangeStream("recruiters", resumeRecruiterToken)
-
-  const resumeAnonymizedRecruiterToken = await getResumeToken("anonymized_recruiters")
-  changeAnonymizedRecruiterStream = startChangeStream("anonymized_recruiters", resumeAnonymizedRecruiterToken)
-
-  return {
-    changeRecruiterStream,
-    changeAnonymizedRecruiterStream,
   }
 }
