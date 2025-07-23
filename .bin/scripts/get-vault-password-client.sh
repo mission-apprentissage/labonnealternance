@@ -35,7 +35,13 @@ elif [ ! -z "$DOCUMENT_CONTENT" ] && [ "$DOCUMENT_CONTENT" != "$(cat "${vault_pa
     vault_password_file_clear_text="${VAULT_DIR}/new_clear_text"
 
     delete_cleartext() {
-      shred -f -n 10 -u "$previous_vault_password_file_clear_text" "$vault_password_file_clear_text"
+      if [ -f "$previous_vault_password_file_clear_text" ]; then
+        shred -f -n 10 -u "$previous_vault_password_file_clear_text" 
+      fi
+
+      if [ -f "$vault_password_file_clear_text" ]; then
+        shred -f -n 10 -u "$vault_password_file_clear_text"
+      fi
     }
     trap delete_cleartext EXIT
 
