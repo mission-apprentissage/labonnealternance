@@ -3,6 +3,7 @@ import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
 import { logger } from "@/common/logger"
+import { detectClassificationJobsPartners } from "@/jobs/offrePartenaire/detectClassificationJobsPartners"
 import { formatTextFieldsJobsPartners } from "@/jobs/offrePartenaire/formatTextFieldsJobsPartners"
 
 import { blockBadRomeJobsPartners } from "./blockBadRomeJobsPartners"
@@ -28,6 +29,7 @@ export const fillComputedJobsPartners = async (partialContext: Partial<FillCompu
   logger.info("début de fillComputedJobsPartners")
   const context: FillComputedJobsPartnersContext = { ...defaultFillComputedJobsPartnersContext, ...partialContext }
   await formatTextFieldsJobsPartners(context)
+  await detectClassificationJobsPartners(context)
 
   await fillOpcoInfosForPartners(context)
   await fillSiretInfosForPartners(context)

@@ -11,6 +11,7 @@ import applicantModel from "./applicant.model.js"
 import applicantEmailLogModel from "./applicantEmailLog.model.js"
 import applicationsModel from "./applications.model.js"
 import appointmentsModel from "./appointments.model.js"
+import cacheClassificationModel from "./cacheClassification.model.js"
 import cacheDiagorienteModel from "./cacheDiagoriente.model.js"
 import cacheGeolocationModel from "./cacheGeolocation.model.js"
 import cacheInfosSiretModel from "./cacheInfosSiret.model.js"
@@ -79,6 +80,7 @@ const modelDescriptorMap = {
   [cacheDiagorienteModel.collectionName]: cacheDiagorienteModel,
   [cacheGeolocationModel.collectionName]: cacheGeolocationModel,
   [cfaModel.collectionName]: cfaModel,
+  [cacheClassificationModel.collectionName]: cacheClassificationModel,
   [credentialsModel.collectionName]: credentialsModel,
   [customEmailETFAModel.collectionName]: customEmailETFAModel,
   [diplomesMetiersModel.collectionName]: diplomesMetiersModel,
