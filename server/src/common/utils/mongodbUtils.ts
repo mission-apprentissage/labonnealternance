@@ -62,9 +62,6 @@ export const closeMongodbConnection = async () => {
   logger.warn("Closing MongoDB")
   // Let 100ms for possible callback cleanup to register tasks in mongodb queue
   await sleep(200)
-
-  await closeChangeStreams()
-
   return mongodbClient?.close()
 }
 
