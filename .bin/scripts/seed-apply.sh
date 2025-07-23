@@ -26,11 +26,11 @@ case $response in
 esac
 
 delete_cleartext() {
-  rm -f "$SEED_GZ" "$PASSPHRASE"
+  shred -f -n 10 -u "$SEED_GZ" "$PASSPHRASE"
 }
 trap delete_cleartext EXIT
 
-ansible-vault view --vault-password-file="$ROOT_DIR/.bin/scripts/get-vault-password-client.sh" "$VAULT_FILE" | yq '.vault.SEED_GPG_PASSPHRASE' > "$PASSPHRASE"
+ansible-vault view --vault-password-file="$ROOT_DIR/.bin/scripts/get-vault-password-client.sh" "$VAULT_FILE" | yq -r '.vault.SEED_GPG_PASSPHRASE' > "$PASSPHRASE"
 
 rm -f "$SEED_GZ"
 gpg -d --batch --passphrase-file "$PASSPHRASE" -o "$SEED_GZ" "$SEED_GPG"
