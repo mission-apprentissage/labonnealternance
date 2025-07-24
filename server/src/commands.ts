@@ -3,6 +3,8 @@ import { program } from "commander"
 import { addJob, startJobProcessor } from "job-processor"
 import HttpTerminator from "lil-http-terminator"
 
+import { startRecruiterChangeStream } from "@/services/formulaire.service"
+
 import { closeMemoryCache } from "./common/apis/client"
 import { logger } from "./common/logger"
 import { closeSentry } from "./common/sentry/sentry"
@@ -22,6 +24,11 @@ async function setupAndStartProcessor(signal: AbortSignal, shouldStartWorker: bo
     await startJobProcessor(signal)
     logger.info(`Processor shut down`)
   }
+}
+
+async function setupAndStartStreamProcessor(signal: AbortSignal) {
+  logger.info("Setup job processor")
+  await startRecruiterChangeStream(signal)
 }
 
 function createProcessExitSignal() {
@@ -112,6 +119,7 @@ program
           })
         }),
         setupAndStartProcessor(signal, withProcessor),
+        startRecruiterChangeStream(signal),
       ])
     } catch (err) {
       logger.error(err)
@@ -155,6 +163,49 @@ program
           })
         }),
         setupAndStartProcessor(signal, true),
+      ])
+    } catch (err) {
+      logger.error(err)
+      captureException(err)
+      throw err
+    }
+  })
+
+program
+  .command("stream_processor:start")
+  .description("Run stream processor")
+  .action(async () => {
+    try {
+      const signal = createProcessExitSignal()
+      const httpServer = await bindProcessorServer()
+      await httpServer.ready()
+      await httpServer.listen({ port: config.port, host: "0.0.0.0" })
+      logger.info(`Server ready and listening on port ${config.port}`)
+
+      const terminator = HttpTerminator({
+        server: httpServer.server,
+        maxWaitTimeout: 50_000,
+        logger: logger,
+      })
+
+      if (signal.aborted) {
+        await terminator.terminate()
+        return
+      }
+
+      await Promise.all([
+        new Promise<void>((resolve, reject) => {
+          signal.addEventListener("abort", async () => {
+            try {
+              await terminator.terminate()
+              logger.warn("Server shut down")
+              resolve()
+            } catch (err) {
+              reject(err)
+            }
+          })
+        }),
+        setupAndStartStreamProcessor(signal),
       ])
     } catch (err) {
       logger.error(err)

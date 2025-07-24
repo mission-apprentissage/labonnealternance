@@ -78,6 +78,35 @@ services:
       timeout: 30s
       retries: 11
       start_period: 10s
+  change_stream_processor:
+    <<: *default
+    image: ghcr.io/mission-apprentissage/mna_lba_server:{{app_version}}
+    deploy:
+      <<: *deploy-default
+      resources:
+        limits:
+          memory: 1g
+      replicas: 1
+    command: ["yarn", "cli", "stream_processor:start"]
+    environment:
+      INSTANCE_ID: "runner-{% raw %}{{.Task.Slot}}{% endraw %}"
+      NODE_OPTIONS: "--max_old_space_size=768"
+    stop_grace_period: 5m
+    volumes:
+      - /opt/app/data/server:/data
+      - /opt/app/.env_server:/app/server/.env
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: docker.json.lba.{{env_type}}.jobs_processor
+        fluentd-async: "true"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:5000/api/healthcheck"]
+      interval: 60s
+      timeout: 30s
+      retries: 11
+      start_period: 10s
 
   ui:
     <<: *default
