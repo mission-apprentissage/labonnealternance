@@ -69,6 +69,7 @@ program
     await closeSentry()
 
     setTimeout(async () => {
+      logger.info("Process not released, waiting for open handles to close")
       await notifyToSlack({ error: true, subject: "Process not released", message: "Review open handles using wtfnode" })
       // eslint-disable-next-line n/no-process-exit
       process.exit(1)
