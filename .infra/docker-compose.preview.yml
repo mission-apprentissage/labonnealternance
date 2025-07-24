@@ -54,6 +54,15 @@ services:
       - server:/data
       - ./.env_server:/app/server/.env
 
+  stream_processor:
+    <<: *default
+    image: "ghcr.io/mission-apprentissage/mna_lba_server:0.0.0-{{pr_number}}"
+    container_name: lba_{{pr_number}}_stream_processor
+    command: ["yarn", "cli", "stream_processor:start"]
+    volumes:
+      - server:/data
+      - ./.env_server:/app/server/.env
+
 volumes:
   server:
 

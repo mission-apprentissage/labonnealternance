@@ -3,7 +3,6 @@ import * as v8 from "v8"
 import { modelDescriptors } from "shared/models/models"
 
 import { configureDbSchemaValidation, connectToMongodb } from "@/common/utils/mongodbUtils"
-import { startRecruiterChangeStream } from "@/services/formulaire.service"
 
 import { startCLI } from "./commands"
 import { logger } from "./common/logger"
@@ -17,7 +16,6 @@ try {
   logger.info("V8 Options:", v8.getHeapStatistics())
   await connectToMongodb(config.mongodb.uri)
   await configureDbSchemaValidation(modelDescriptors)
-  await startRecruiterChangeStream(new AbortController().signal)
   await startCLI()
 } catch (err) {
   logger.error(err, "startup error")
