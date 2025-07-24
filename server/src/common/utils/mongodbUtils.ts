@@ -13,7 +13,7 @@ import { sleep } from "./asyncUtils"
 let mongodbClient: MongoClient | null = null
 let mongodbClientState: string | null = null
 
-export const changeStreams: ChangeStream[] = []
+export const changeStreams: Set<ChangeStream> = new Set()
 
 export const ensureInitialization = () => {
   if (!mongodbClient) {
@@ -60,16 +60,16 @@ export const getMongodbClientState = () => mongodbClientState
 
 export const closeMongodbConnection = async () => {
   logger.warn("Closing MongoDB")
+  await closeChangeStreams()
   // Let 100ms for possible callback cleanup to register tasks in mongodb queue
   await sleep(200)
-  await closeChangeStreams()
   return mongodbClient?.close()
 }
 
 export const closeChangeStreams = async () => {
-  if (changeStreams.length > 0) {
-    logger.info(`Closing ${changeStreams.length} change streams`)
-    await Promise.all(changeStreams.map((changeStream: ChangeStream) => changeStream.close()))
+  if (changeStreams.size > 0) {
+    logger.info(`Closing ${changeStreams.size} change streams`)
+    await Promise.all(Array.from(changeStreams).map((changeStream: ChangeStream) => changeStream.close()))
   }
 }
 

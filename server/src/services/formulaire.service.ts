@@ -1020,14 +1020,19 @@ export const updateJobsPartnersFromRecruiterDelete = async (id: ObjectId) => {
 }
 
 //TODO: extraire une partie du code dans un service pour éviter d'avoir du code trop spécifique dans mongodbUtils.ts
-const startChangeStream = (collectionName: "recruiters" | "anonymized_recruiters", resumeToken: IResumeToken | null) => {
+const startChangeStream = (collectionName: "recruiters" | "anonymized_recruiters", resumeToken: IResumeToken | null, signal: AbortSignal) => {
   logger.info(`Starting change stream for ${collectionName} with resumeToken:`, resumeToken)
   const collection = getDbCollection(collectionName)
   const changeStream = collection.watch([], resumeToken ? { resumeAfter: resumeToken.resumeTokenData } : {})
 
-  if (collectionName === "recruiters") {
-    changeStream
-      .on("change", async (change) => {
+  signal.addEventListener("abort", () => {
+    logger.info(`Aborting change stream for ${collectionName}`)
+    changeStream.close()
+  })
+
+  changeStream
+    .on("change", async (change) => {
+      if (collectionName === "recruiters") {
         switch (change.operationType) {
           case "insert":
           case "update":
@@ -1040,42 +1045,32 @@ const startChangeStream = (collectionName: "recruiters" | "anonymized_recruiters
           default:
             assertUnreachable(`Unexpected change operation type ${change.operationType}` as never)
         }
-      })
-      .once("error", (error) => {
-        logger.error(`Error in change stream for ${collectionName}:`, error)
-        changeStream.close()
-        startChangeStream(collectionName, null)
-      })
-  } else if (collectionName === "anonymized_recruiters") {
-    changeStream
-      .on("change", async (change) => {
+      } else if (collectionName === "anonymized_recruiters") {
         if (change.operationType === "insert") {
           await updateJobsPartnersFromRecruiterDelete(change.documentKey._id)
           await storeResumeToken("anonymized_recruiters", change._id as IResumeTokenData)
         }
-      })
-      .once("error", (error) => {
-        logger.error(`Error in change stream for ${collectionName}:`, error)
-        changeStream.close()
-        startChangeStream(collectionName, null)
-      })
-  }
+      }
+    })
+    .once("error", (error) => {
+      logger.error(`Error in change stream for ${collectionName}:`, error)
+      changeStream.close()
+      startChangeStream(collectionName, null, signal)
+    })
+    .on("close", () => {
+      changeStreams.delete(changeStream)
+    })
 
-  changeStreams.push(changeStream)
+  changeStreams.add(changeStream)
   return changeStream
 }
 
-export const startRecruiterChangeStream = async () => {
+export const startRecruiterChangeStream = async (signal: AbortSignal) => {
   logger.info("Starting recruiter change stream")
 
   const resumeRecruiterToken = await getResumeToken("recruiters")
-  const changeRecruiterStream = startChangeStream("recruiters", resumeRecruiterToken)
+  startChangeStream("recruiters", resumeRecruiterToken, signal)
 
   const resumeAnonymizedRecruiterToken = await getResumeToken("anonymized_recruiters")
-  const changeAnonymizedRecruiterStream = startChangeStream("anonymized_recruiters", resumeAnonymizedRecruiterToken)
-
-  return {
-    changeRecruiterStream,
-    changeAnonymizedRecruiterStream,
-  }
+  startChangeStream("anonymized_recruiters", resumeAnonymizedRecruiterToken, signal)
 }

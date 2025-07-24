@@ -77,7 +77,8 @@ describe("createJob", () => {
   }
 
   it("should insert a job", async () => {
-    const { changeRecruiterStream, changeAnonymizedRecruiterStream } = await startRecruiterChangeStream() //{ changeRecruiterStream: null, changeAnonymizedRecruiterStream: null }
+    const ctrl = new AbortController()
+    await startRecruiterChangeStream(ctrl.signal) //{ changeRecruiterStream: null, changeAnonymizedRecruiterStream: null }
 
     const job = generateValidJobWritable()
     const result = await createJob({ user, establishment_id: recruiter.establishment_id, job })
@@ -92,8 +93,7 @@ describe("createJob", () => {
     expect.soft(partnerJob?.offer_title).toEqual(job.rome_appellation_label)
     expect.soft(omit(partnerJob, "_id", "created_at", "offer_creation", "partner_job_id", "updated_at", "offer_expiration")).toMatchSnapshot()
 
-    changeRecruiterStream.close()
-    changeAnonymizedRecruiterStream.close()
+    ctrl.abort()
   })
 
   it("should raise a bad request when savoir_etre_professionnel do not match referentiel rome", async () => {
