@@ -26,9 +26,11 @@ async function setupAndStartProcessor(signal: AbortSignal, shouldStartWorker: bo
   }
 }
 
-async function setupAndStartStreamProcessor(signal: AbortSignal) {
-  logger.info("Setup stream processor")
-  await startRecruiterChangeStream(signal)
+async function setupAndStartStreamProcessor(signal: AbortSignal, shouldStartWorker: boolean) {
+  if (shouldStartWorker) {
+    logger.info("Setup stream processor")
+    await startRecruiterChangeStream(signal)
+  }
 }
 
 function createProcessExitSignal() {
@@ -119,7 +121,7 @@ program
           })
         }),
         setupAndStartProcessor(signal, withProcessor),
-        setupAndStartStreamProcessor(signal),
+        setupAndStartStreamProcessor(signal, withProcessor),
       ])
     } catch (err) {
       logger.error(err)
@@ -205,7 +207,7 @@ program
             }
           })
         }),
-        setupAndStartStreamProcessor(signal),
+        setupAndStartStreamProcessor(signal, true),
       ])
     } catch (err) {
       logger.error(err)
