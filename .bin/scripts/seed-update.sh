@@ -26,11 +26,17 @@ readonly PASSPHRASE="$ROOT_DIR/.bin/SEED_PASSPHRASE.txt"
 readonly VAULT_FILE="${ROOT_DIR}/.infra/vault/vault.yml"
 
 delete_cleartext() {
-  rm -f "$SEED_GZ" "$PASSPHRASE"
+  if [ -f "$SEED_GZ" ]; then
+    shred -f -n 10 -u "$SEED_GZ"
+  fi
+
+  if [ -f "$PASSPHRASE" ]; then
+    shred -f -n 10 -u "$PASSPHRASE"
+  fi
 }
 trap delete_cleartext EXIT
 
-ansible-vault view --vault-password-file="$ROOT_DIR/.bin/scripts/get-vault-password-client.sh" "$VAULT_FILE" | yq '.vault.SEED_GPG_PASSPHRASE' > "$PASSPHRASE"
+ansible-vault view --vault-password-file="$ROOT_DIR/.bin/scripts/get-vault-password-client.sh" "$VAULT_FILE" | yq -r '.vault.SEED_GPG_PASSPHRASE' > "$PASSPHRASE"
 
 docker compose -f "$ROOT_DIR/docker-compose.yml" up mongodb -d
 mkdir -p "$ROOT_DIR/.infra/files/mongodb"

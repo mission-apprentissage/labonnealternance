@@ -51,7 +51,6 @@ export const getJobsFromApiPrivate = async ({
   latitude,
   longitude,
   radius,
-  sources,
   diploma,
   opco,
   api = "jobV1/jobs",
@@ -63,8 +62,6 @@ export const getJobsFromApiPrivate = async ({
   latitude?: number
   longitude?: number
   radius?: number
-  sources?: string
-  // sources?: LBA_ITEM_TYPE
   diploma?: string
   opco?: string
   api?: string
@@ -72,76 +69,52 @@ export const getJobsFromApiPrivate = async ({
 }): Promise<
   | IApiError
   | {
-      peJobs: null
-      matchas: TLbaItemResult<ILbaItemLbaJob> | null
+      lbaJobs: TLbaItemResult<ILbaItemPartnerJob> | null
       lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null
-      lbbCompanies: null
       partnerJobs: TLbaItemResult<ILbaItemPartnerJob> | null
     }
 > => {
   try {
-    const convertedSource = sources
-      ?.split(",")
-      .map((source) => {
-        switch (source) {
-          case "partnerJob": // once API consumer shifted to v3, remove case "offres" as it fetches from FT API
-          case "matcha":
-            return LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
-          case "lba":
-            return LBA_ITEM_TYPE.RECRUTEURS_LBA
-
-          default:
-            return
-        }
-      })
-      .join(",")
-
-    const jobSources = !convertedSource ? allLbaItemType : convertedSource.split(",")
     const finalRadius = radius ?? 0
 
-    const [lbaCompanies, matchas, partnerJobs] = await Promise.all([
-      jobSources.includes(LBA_ITEM_TYPE.RECRUTEURS_LBA)
-        ? getSomeCompanies({
-            romes,
-            latitude,
-            longitude,
-            radius: finalRadius,
-            referer,
-            caller,
-            api,
-            opco,
-            isMinimalData,
-          })
-        : null,
-      jobSources.includes(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA)
-        ? getLbaJobs({
-            romes,
-            latitude,
-            longitude,
-            radius: finalRadius,
-            api,
-            caller,
-            diploma,
-            opco,
-            isMinimalData,
-          })
-        : null,
-      jobSources.includes(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA)
-        ? getPartnerJobs({
-            romes,
-            latitude,
-            longitude,
-            radius: finalRadius,
-            api,
-            caller,
-            diploma,
-            opco,
-            isMinimalData,
-          })
-        : null,
+    const [lbaCompanies, lbaJobs, partnerJobs] = await Promise.all([
+      getSomeCompanies({
+        romes,
+        latitude,
+        longitude,
+        radius: finalRadius,
+        referer,
+        caller,
+        api,
+        opco,
+        isMinimalData,
+      }),
+      getPartnerJobs({
+        romes,
+        latitude,
+        longitude,
+        radius: finalRadius,
+        api,
+        caller,
+        diploma,
+        opco,
+        isMinimalData,
+        force_partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      }),
+      getPartnerJobs({
+        romes,
+        latitude,
+        longitude,
+        radius: finalRadius,
+        api,
+        caller,
+        diploma,
+        opco,
+        isMinimalData,
+      }),
     ])
 
-    return { peJobs: null, matchas, lbaCompanies, lbbCompanies: null, partnerJobs }
+    return { lbaJobs, lbaCompanies, partnerJobs }
   } catch (err) {
     if (caller) {
       trackApiCall({ caller, api_path: api, response: "Error" })
@@ -293,11 +266,9 @@ export const getJobsQueryPrivate = async (
 ): Promise<
   | IApiError
   | {
-      peJobs: TLbaItemResult<ILbaItemFtJob> | null
-      matchas: TLbaItemResult<ILbaItemLbaJob> | null
+      lbaJobs: TLbaItemResult<ILbaItemPartnerJob> | null
       lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null
       partnerJobs: TLbaItemResult<ILbaItemPartnerJob> | null
-      lbbCompanies: null
     }
 > => {
   const parameterControl = await jobsQueryValidatorPrivate(query)
@@ -318,9 +289,9 @@ export const getJobsQueryPrivate = async (
     job_count += result.lbaCompanies.results.length
   }
 
-  if ("matchas" in result && result.matchas && "results" in result.matchas) {
-    job_count += result.matchas.results.length
-    await incrementLbaJobsViewCount(result.matchas.results.flatMap((job) => (job?.id ? [job.id] : [])))
+  if ("lbaJobs" in result && result.lbaJobs && "results" in result.lbaJobs) {
+    job_count += result.lbaJobs.results.length
+    await incrementLbaJobsViewCount(result.lbaJobs.results.flatMap((job) => (job?.id ? [job.id] : [])))
   }
 
   if ("partnerJobs" in result && result.partnerJobs && "results" in result.partnerJobs) {
@@ -461,11 +432,16 @@ export const getJobsPartnersFromDB = async ({
     .toArray()
 }
 
-export const getJobsPartnersFromDBForUI = async ({ romes, geo, target_diploma_level }: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivateWithDistance[]> => {
+export const getJobsPartnersFromDBForUI = async ({
+  romes,
+  geo,
+  target_diploma_level,
+  force_partner_label,
+}: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivateWithDistance[]> => {
   const query: Filter<IJobsPartnersOfferPrivate> = {
     offer_status: JOB_STATUS_ENGLISH.ACTIVE,
     offer_expiration: { $gt: new Date() },
-    partner_label: { $ne: JOBPARTNERS_LABEL.RECRUTEURS_LBA }, // until offers are not merged together from the endpoint, lba companies are fetched into another service.
+    partner_label: force_partner_label ? force_partner_label : { $not: { $in: [JOBPARTNERS_LABEL.RECRUTEURS_LBA, JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA] } }, // until offers are not merged together from the endpoint, lba companies are fetched into another service.
   }
 
   if (romes) {
@@ -511,7 +487,9 @@ export const getJobsPartnersForApi = async ({
   opco,
 }: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> => {
   // recruteurs_lba are available in a different array from the API returned payload
-  const partnersToExclude = partners_to_exclude ? [...partners_to_exclude, JOBPARTNERS_LABEL.RECRUTEURS_LBA] : [JOBPARTNERS_LABEL.RECRUTEURS_LBA]
+  const partnersToExclude = partners_to_exclude
+    ? [...partners_to_exclude, JOBPARTNERS_LABEL.RECRUTEURS_LBA, JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA]
+    : [JOBPARTNERS_LABEL.RECRUTEURS_LBA, JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA]
   const jobsPartners = await getJobsPartnersFromDB({ romes, geo, target_diploma_level, partners_to_exclude: partnersToExclude, opco, departements })
 
   return jobsPartners.map((j) =>
@@ -657,7 +635,7 @@ export const convertLbaRecruiterToJobOfferApi = (offresEmploiLba: IJobResult[]):
           },
 
           apply: {
-            url: buildApplyUrl(job._id.toString(), job.custom_job_title ?? job.rome_appellation_label!, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
+            url: buildApplyUrl(job._id.toString(), job.offer_title_custom ?? job.rome_appellation_label!, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
             phone: recruiter.phone ?? null,
             recipient_id: getRecipientID(JobCollectionName.recruiters, job._id.toString()),
           },

@@ -54,15 +54,20 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: s
           </Box>
           {job?.job?.dureeContrat && (
             <Box my={2}>
-              <strong>Durée du contrat : </strong> {job?.job?.dureeContrat} mois
+              <strong>Durée du contrat : </strong> {job?.job?.dureeContrat}
             </Box>
           )}
           <Box my={2}>
-            <strong>Nature du contrat : </strong> {getContractTypes(job?.job?.contractType)}
+            <strong>Nature du contrat : </strong> {getContractTypes(job?.job?.type)}
           </Box>
           {job?.job?.quantiteContrat > 1 && (
             <Box my={2}>
               <strong>Nombre de postes disponibles : </strong> {job?.job?.quantiteContrat}
+            </Box>
+          )}
+          {job?.job?.contract_rythm && (
+            <Box my={2}>
+              <strong>Rythme de l'alternance : </strong> {job?.job?.contract_rythm}
             </Box>
           )}
           <Flex direction="row" wrap="wrap">
@@ -78,10 +83,11 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: s
                 })}
               </Flex>
             ) : (
-              "Indifférent"
+              <Text as="span" ml={2} mb={1}>
+                Indifférent
+              </Text>
             )}
           </Flex>
-
           {job?.job?.elligibleHandicap && (
             <Flex mt={2} p={2} background="white" justifyContent="center" fontSize="12px" alignItems="center" direction="row">
               <Box width="30px" minWidth="30px" mr={2}>
@@ -221,7 +227,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: s
           </Text>
 
           <Text my={2}>Le centre de formation peut vous renseigner sur les formations qu’il propose.</Text>
-          <ItemLocalisation item={job.company} />
+          <ItemLocalisation item={job} />
 
           {job?.contact?.phone && (
             <Flex mt={2} mb={4}>

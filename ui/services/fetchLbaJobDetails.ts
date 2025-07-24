@@ -1,16 +1,13 @@
-import { ILbaItemLbaJobJson, ILbaItemLbaJobReturnedByAPI } from "shared"
+import { ILbaItemLbaJobJson } from "shared"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { apiGet } from "@/utils/api.utils"
 
 const fetchLbaJobDetails = async (job: Pick<ILbaItemLbaJobJson, "id">): Promise<ILbaItemLbaJobJson> => {
-  // KBA 2024-05-31 API should return a single object and not an array as we are only fetching a single job
-  const response: ILbaItemLbaJobReturnedByAPI = await apiGet("/v1/jobs/matcha/:id", { params: { id: job.id }, querystring: {} })
+  const lbaJob: ILbaItemLbaJobJson = (await apiGet(`/_private/jobs/:source/:id`, { params: { id: job.id, source: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA } })) as ILbaItemLbaJobJson
 
-  // @ts-expect-error
-  const [firstMatcha]: [ILbaItemLbaJobJson] = response.matchas ?? []
-  if (firstMatcha) {
-    firstMatcha.detailsLoaded = true
-    return firstMatcha
+  if (lbaJob) {
+    return lbaJob
   } else {
     throw new Error("unexpected_error")
   }

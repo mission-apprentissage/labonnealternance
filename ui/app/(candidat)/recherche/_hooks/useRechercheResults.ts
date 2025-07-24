@@ -106,7 +106,7 @@ function isPartialJobError(data?: IResponse<IGetRoutes["/v1/_private/jobs/min"]>
     return null
   }
 
-  const errors = ["error" in data.matchas, "error" in data.lbaCompanies, "error" in data.partnerJobs]
+  const errors = ["error" in data.lbaJobs, "error" in data.lbaCompanies, "error" in data.partnerJobs]
 
   return errors.some(Boolean)
 }
@@ -115,7 +115,6 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
   const jobQuerystring = useMemo((): IQuery<IGetRoutes["/v1/_private/jobs/min"]> => {
     const query: IQuery<IGetRoutes["/v1/_private/jobs/min"]> = {
       romes: params.romes.join(","),
-      sources: "lba,matcha,partnerJob",
     }
 
     if (params.geo) {
@@ -198,8 +197,8 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
       return result
     }
 
-    if (jobQuery.data.matchas && "results" in jobQuery.data.matchas) {
-      result += jobQuery.data.matchas.results.length
+    if (jobQuery.data.lbaJobs && "results" in jobQuery.data.lbaJobs) {
+      result += jobQuery.data.lbaJobs.results.length
     }
 
     if (jobQuery.data.partnerJobs && "results" in jobQuery.data.partnerJobs) {
@@ -220,8 +219,8 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
       return result
     }
 
-    if (jobQuery.data.matchas && "results" in jobQuery.data.matchas) {
-      result += (jobQuery.data.matchas.results as any[]).filter((job: ILbaItemLbaJob) => job.company.mandataire).length
+    if (jobQuery.data.lbaJobs && "results" in jobQuery.data.lbaJobs) {
+      result += (jobQuery.data.lbaJobs.results as any[]).filter((job: ILbaItemLbaJob) => job.company.mandataire).length
     }
 
     return result
@@ -234,10 +233,10 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
       return result
     }
 
-    if (jobQuery.data.matchas && "results" in jobQuery.data.matchas) {
+    if (jobQuery.data.lbaJobs && "results" in jobQuery.data.lbaJobs) {
       result.push(
         ...[
-          ...(jobQuery.data.matchas.results as any[]).filter((job: ILbaItemLbaJob) => {
+          ...(jobQuery.data.lbaJobs.results as any[]).filter((job: ILbaItemLbaJob) => {
             if (job.company.mandataire) {
               return params.displayPartenariats
             }
