@@ -57,7 +57,7 @@ export const getUserAndRecruitersDataForOpcoUser = async (
   const filteredUserRecruteurs = [...userRecruteurs.active, ...userRecruteurs.awaiting, ...userRecruteurs.disabled]
   const userIds = [...new Set(filteredUserRecruteurs.map(({ _id }) => _id.toString()))]
   const recruiters = await getDbCollection("recruiters")
-    .find({ managed_by: { $in: userIds }, opco }, { projection: { establishment_id: 1, origin: 1, jobs: 1, _id: 0 } })
+    .find({ managed_by: { $in: userIds }, opco }, { projection: { establishment_id: 1, origin: 1, jobs: 1, managed_by: 1, _id: 0 } })
     .toArray()
 
   const recruiterMap = new Map<string, (typeof recruiters)[0]>()
