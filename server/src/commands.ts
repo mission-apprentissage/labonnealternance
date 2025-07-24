@@ -6,7 +6,7 @@ import HttpTerminator from "lil-http-terminator"
 import { closeMemoryCache } from "./common/apis/client"
 import { logger } from "./common/logger"
 import { closeSentry } from "./common/sentry/sentry"
-import { closeChangeStreams, closeMongodbConnection } from "./common/utils/mongodbUtils"
+import { closeMongodbConnection } from "./common/utils/mongodbUtils"
 import { notifyToSlack } from "./common/utils/slackUtils"
 import config from "./config"
 import { bindProcessorServer } from "./http/jobProcessorServer"
@@ -65,7 +65,7 @@ program
     logger.info(`Starting command ${command}`)
   })
   .hook("postAction", async () => {
-    await Promise.all([closeChangeStreams(), closeMongodbConnection(), closeMemoryCache()])
+    await Promise.all([closeMongodbConnection(), closeMemoryCache()])
     await closeSentry()
 
     setTimeout(async () => {
