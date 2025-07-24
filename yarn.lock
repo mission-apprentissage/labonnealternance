@@ -7647,16 +7647,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bunyan-slack@npm:^0.0.10":
-  version: 0.0.10
-  resolution: "bunyan-slack@npm:0.0.10"
-  dependencies:
-    extend.js: 0.0.2
-    request: ^2.51.0
-  checksum: 312599e97b547cbbe41b092e68062cefbae92eac6624c65071b3927969a2b9e67da0a384f53ddd66d481b5575146885011af897c88426175d56be1dde3805dd3
-  languageName: node
-  linkType: hard
-
 "bunyan@npm:^1.8.15":
   version: 1.8.15
   resolution: "bunyan@npm:1.8.15"
@@ -10625,13 +10615,6 @@ __metadata:
   dependencies:
     type: ^2.7.2
   checksum: ef481f9ef45434d8c867cfd09d0393b60945b7c8a1798bedc4514cb35aac342ccb8d8ecb66a513e6a2b4ec1e294a338e3124c49b29736f8e7c735721af352c31
-  languageName: node
-  linkType: hard
-
-"extend.js@npm:0.0.2":
-  version: 0.0.2
-  resolution: "extend.js@npm:0.0.2"
-  checksum: 382cd7ae5874bb289e8cac0e76bc0607823a76c69552bea6e51a9466b1884938712a030e2c5e16fc94bedf465821b9239656ee13f66425e102a2933cfabbbb66
   languageName: node
   linkType: hard
 
@@ -18521,7 +18504,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"request@npm:^2.51.0, request@npm:^2.81.0, request@npm:^2.88.2":
+"request@npm:^2.81.0, request@npm:^2.88.2":
   version: 2.88.2
   resolution: "request@npm:2.88.2"
   dependencies:
@@ -19198,7 +19181,6 @@ __metadata:
     basic-ftp: ^5.0.5
     bson: ^6.10.3
     bunyan: ^1.8.15
-    bunyan-slack: ^0.0.10
     burner-email-providers: ^1.0.67
     chalk: ^5.4.1
     clamscan: ^2.4.0
