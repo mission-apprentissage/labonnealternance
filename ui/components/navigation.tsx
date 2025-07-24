@@ -1,6 +1,8 @@
 import { CloseIcon, HamburgerIcon, LockIcon } from "@chakra-ui/icons"
-import { Box, Container, Flex, Image, Stack, useDisclosure } from "@chakra-ui/react"
+import { Box, Container, Flex, Image, Stack } from "@chakra-ui/react"
 import NextLink from "next/link"
+
+import { useDisclosure } from "@/common/hooks/useDisclosure"
 
 import { LbaNew } from "../theme/components/logos"
 

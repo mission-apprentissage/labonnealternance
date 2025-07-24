@@ -19,7 +19,6 @@ import {
   SimpleGrid,
   Spinner,
   Text,
-  useDisclosure,
 } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Field, Form, Formik } from "formik"
@@ -28,6 +27,7 @@ import { UNSUBSCRIBE_EMAIL_ERRORS } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
+import { useDisclosure } from "@/common/hooks/useDisclosure"
 import postUnsubscribe from "@/services/postUnsubscribe"
 
 const UNSUBSCRIBE_REASON = {

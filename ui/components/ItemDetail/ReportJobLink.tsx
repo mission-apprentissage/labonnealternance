@@ -1,5 +1,5 @@
 "use client"
-import { Box, Flex, Image, Text, Textarea, useDisclosure } from "@chakra-ui/react"
+import { Box, Flex, Image, Text, Textarea } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Formik } from "formik"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -7,6 +7,7 @@ import { z } from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import { useLocalStorage } from "@/app/hooks/useLocalStorage"
+import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { reportLbaItem } from "@/utils/api"
 
 import { CustomFormControl } from "../espace_pro/CustomFormControl"

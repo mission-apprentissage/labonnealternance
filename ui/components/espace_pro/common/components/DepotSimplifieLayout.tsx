@@ -1,5 +1,5 @@
-import { Box } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
+import { Box } from "@mui/material"
 import React from "react"
 
 import Layout from "../../../../app/_components/Layout"

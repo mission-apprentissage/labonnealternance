@@ -1,7 +1,8 @@
-import { Box, Modal, ModalBody, ModalContent, ModalOverlay, Text, useDisclosure } from "@chakra-ui/react"
+import { Box, Modal, ModalBody, ModalContent, ModalOverlay, Text } from "@chakra-ui/react"
 import { useState } from "react"
 
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
+import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { DemandeDeContactConfirmation } from "@/components/RDV/DemandeDeContactConfirmation"
 import { DemandeDeContactForm } from "@/components/RDV/DemandeDeContactForm"
 
