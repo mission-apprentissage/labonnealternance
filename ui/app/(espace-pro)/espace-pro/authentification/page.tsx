@@ -24,7 +24,7 @@ export default function Authentification() {
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState(hasError ? "Session invalidée" : "")
 
-  const submitEmail = (values: { email?: string }, { setFieldError, setSubmitting }) => {
+  const submitEmail = (values: { email: string }, { setFieldError, setSubmitting }) => {
     setMagicLinkSent(true)
     setErrorMessage("")
     setLoading(true)

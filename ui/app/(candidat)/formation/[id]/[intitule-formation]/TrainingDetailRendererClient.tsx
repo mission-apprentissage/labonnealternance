@@ -18,7 +18,6 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
 import GoingToContactQuestion, { getGoingtoId } from "@/components/ItemDetail/GoingToContactQuestion"
 import { getNavigationButtons } from "@/components/ItemDetail/ItemDetailServices/getButtons"
-import getJobPublishedTimeAndApplications from "@/components/ItemDetail/ItemDetailServices/getJobPublishedTimeAndApplications"
 import GetItemTag from "@/components/ItemDetail/ItemDetailServices/getTags"
 import ItemDetailCard from "@/components/ItemDetail/ItemDetailServices/ItemDetailCard"
 import ItemGoogleSearchLink from "@/components/ItemDetail/ItemDetailServices/ItemGoogleSearchLink"
@@ -152,7 +151,6 @@ function TrainingDetailPage({
             </Text>
           </Text>
 
-          {!isCollapsedHeader && getJobPublishedTimeAndApplications({ item: selectedItem })}
           {!isCollapsedHeader && <JobItemCardHeader selectedItem={selectedItem} kind={kind} isMandataire={isMandataire} />}
 
           <Typography variant={"h3"} sx={{ color: fr.colors.decisions.border.default.greenEmeraude.default }}>

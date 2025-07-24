@@ -67,7 +67,7 @@ export default function ExportButtonNew({ data, datasetName = "export" }) {
   const fileName = `${datasetName}_${new Date().toJSON()}.csv`
 
   return (
-    <CSVLink className="fr-link" data={csvData} filename={fileName} border="none">
+    <CSVLink className="fr-link" data={csvData} filename={fileName}>
       <DownloadLine mr={2} mb={1} w="0.75rem" h="0.75rem" />
       Exporter
     </CSVLink>

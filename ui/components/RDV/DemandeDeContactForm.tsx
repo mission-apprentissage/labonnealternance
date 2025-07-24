@@ -94,7 +94,7 @@ export const DemandeDeContactForm = ({
           SendPlausibleEvent("Envoi Prendre RDV - Fiche formation", {
             info_fiche: `${cle_ministere_educatif}`,
           })
-        } catch (json) {
+        } catch (json: any) {
           setError(json?.message || "Une erreur inattendue est survenue.")
         }
       }}
