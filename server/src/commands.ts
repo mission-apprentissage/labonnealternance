@@ -27,7 +27,7 @@ async function setupAndStartProcessor(signal: AbortSignal, shouldStartWorker: bo
 }
 
 async function setupAndStartStreamProcessor(signal: AbortSignal) {
-  logger.info("Setup job processor")
+  logger.info("Setup stream processor")
   await startRecruiterChangeStream(signal)
 }
 
@@ -119,7 +119,7 @@ program
           })
         }),
         setupAndStartProcessor(signal, withProcessor),
-        startRecruiterChangeStream(signal),
+        setupAndStartStreamProcessor(signal),
       ])
     } catch (err) {
       logger.error(err)

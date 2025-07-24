@@ -79,7 +79,7 @@ services:
       retries: 11
       start_period: 10s
 
-  change_stream_processor:
+  stream_processor:
     <<: *default
     image: ghcr.io/mission-apprentissage/mna_lba_server:{{app_version}}
     deploy:
