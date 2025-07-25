@@ -7,7 +7,7 @@ import { isNonEmptyString, countInstances } from "./strutils"
  * Exemple : Service Ressource Humaine, 2 rue Truc, 32300 Mouches
  * Devient : 2 rue Truc, 32300 Mouches
  */
-const rawPostalAddress = (address) => {
+const rawPostalAddress = (address: string) => {
   let result = ""
   const SEPARATOR = ", "
   if (isNonEmptyString(address)) {

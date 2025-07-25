@@ -24,7 +24,7 @@ const NavigationAdmin = ({ currentPage }: { currentPage: IAdminPage }) => {
     selectedIndex = 0
   }
 
-  const handleTabsChange = (event, index) => {
+  const handleTabsChange = (event: unknown, index: number) => {
     const pageDef = Object.keys(AdminPages)[index]
     const pagePath = AdminPages[pageDef as IAdminPage]
     router.push(pagePath)

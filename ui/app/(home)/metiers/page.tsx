@@ -1,4 +1,3 @@
-import fs from "fs"
 import path from "path"
 
 import { fr } from "@codegouvfr/react-dsfr"
@@ -18,7 +17,7 @@ export const metadata: Metadata = {
 
 export default async function Metiers() {
   const txtDirectory = path.join(process.cwd(), "config")
-  const jobs = getStaticMetiers(path, fs, txtDirectory)
+  const jobs = getStaticMetiers(txtDirectory)
 
   return (
     <Box>

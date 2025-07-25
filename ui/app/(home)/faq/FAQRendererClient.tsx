@@ -4,6 +4,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs"
 import { Box, Grid2 as Grid, Typography } from "@mui/material"
 import dynamic from "next/dynamic"
+import { ExtendedRecordMap } from "notion-types"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
@@ -13,7 +14,13 @@ import { PAGES } from "@/utils/routes.utils"
 
 const NotionRenderer = dynamic(() => import("react-notion-x").then((mod) => mod.NotionRenderer), { ssr: false })
 
-export default function FAQRendererClient({ recruteur, organisme, candidat }) {
+interface Props {
+  recruteur: ExtendedRecordMap
+  organisme: ExtendedRecordMap
+  candidat: ExtendedRecordMap
+}
+
+export default function FAQRendererClient({ recruteur, organisme, candidat }: Props) {
   const tabs = [
     { tabId: "candidat", label: "Candidat", recordMap: candidat },
     { tabId: "recruteur", label: "Recruteur", recordMap: recruteur },

@@ -1,19 +1,21 @@
 import { AddIcon, MinusIcon } from "@chakra-ui/icons"
 import { AccordionButton, AccordionItem, AccordionPanel, Box, Text } from "@chakra-ui/react"
+import { SyntheticEvent } from "react"
+import { ILbaItemLbaJobJson } from "shared"
 
 import { scrollToNestedElement } from "@/utils/tools"
 
-const LbaJobTechniques = ({ job }) => {
-  const onClick = (e) => {
+const LbaJobTechniques = ({ job }: { job: ILbaItemLbaJobJson }) => {
+  const onClick = (e: SyntheticEvent) => {
     setTimeout(() => {
-      scrollToNestedElement({ containerId: "itemDetailColumn", nestedElement: e.target, yOffsett: 220 })
+      scrollToNestedElement({ containerId: "itemDetailColumn", nestedElement: e.target as HTMLElement, yOffsett: 220 })
     }, 200)
   }
 
   let currentSkillGroup = null
 
   return (
-    job?.job?.offer_to_be_acquired_knowledge?.length && (
+    job.job.offer_to_be_acquired_knowledge?.length && (
       <AccordionItem borderBottom="1px solid #E5E5E5" onClick={onClick} key={"techniques"}>
         {({ isExpanded }) => (
           <>

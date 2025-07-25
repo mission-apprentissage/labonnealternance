@@ -1,8 +1,8 @@
-import { Link as ChakraLink } from "@chakra-ui/react"
+import { Link as ChakraLink, LinkProps } from "@chakra-ui/react"
 import NavLink from "next/link"
-import React from "react"
+import React, { PropsWithChildren } from "react"
 
-const Link = ({ children, href, shallow = false, ...rest }) => {
+const Link = ({ children, href, shallow = false, ...rest }: PropsWithChildren<{ href: string; shallow?: boolean } & LinkProps>) => {
   return (
     <NavLink legacyBehavior href={href} passHref shallow={shallow}>
       <ChakraLink {...rest}>{children}</ChakraLink>

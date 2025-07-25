@@ -1,7 +1,7 @@
 import { Box, Flex, Spinner, Text } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { captureException } from "@sentry/nextjs"
-import { Form, Formik, FormikHelpers, FormikValues } from "formik"
+import { Form, Formik, FormikHelpers } from "formik"
 import { useState } from "react"
 import { validateSIRET } from "shared/validators/siretValidator"
 import * as Yup from "yup"
@@ -18,7 +18,7 @@ export const SiretAutocomplete = ({
   onSubmit,
 }: {
   onSelectOrganisation?: (organisation: Organisation) => void
-  onSubmit: (props: { establishment_siret: string }, formik: FormikHelpers<FormikValues>) => void
+  onSubmit: (props: { establishment_siret: string }, formik: FormikHelpers<{ establishment_siret: string }>) => void
 }) => {
   const [searchInput, setSearchInput] = useState<string>()
   const [selectedEntreprise, setSelectedEntreprise] = useState<Organisation | null>(null)

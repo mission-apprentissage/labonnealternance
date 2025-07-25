@@ -100,7 +100,7 @@ fileignoreconfig:
 - filename: server/src/security/apiApprentissageService.ts
   checksum: 0e6d208dc8de66d2a440ff40a1260a76e41bf69fb414ccbfc6d99396df3f3b91
 - filename: server/src/services/__snapshots__/formulaire.service.test.ts.snap
-  checksum: 8ee34969b1a30a8be0bada5c548e670d81ce5a8948baa5ed89014430b95c9fd8
+  checksum: c9537ceb127351b38f85892b416e260ab146426b913225b492c4b17392f44705
 - filename: server/src/services/__snapshots__/partnerJob.service.test.ts.snap
   checksum: 6f190e19172481706181e0a13ed7de5f0f6c699f86d35d9b08071ece445920b1
 - filename: server/src/services/application.service.test.ts

@@ -1,7 +1,7 @@
-import { Icon } from "@chakra-ui/react"
+import { Icon, IconProps } from "@chakra-ui/react"
 import React from "react"
 
-export const BarberGuy = (props) => {
+export const BarberGuy = (props: IconProps) => {
   return (
     <Icon viewBox="0 0 34 39" {...props}>
       <svg fill="none" xmlns="http://www.w3.org/2000/svg">

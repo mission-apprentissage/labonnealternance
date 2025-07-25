@@ -4,8 +4,15 @@
     // Limit to ensure browser compatibility
     "lib": ["dom", "dom.iterable", "es2022"],
     // need to be removed once fully switched to nextjs app router
-    "strict": false,
+    "strict": true,
+    "strictBindCallApply": true,
+    "strictBuiltinIteratorReturn": true,
+    "strictFunctionTypes": true,
     "strictNullChecks": false,
+    "strictPropertyInitialization": false,
+    "noImplicitAny": false,
+    "noImplicitThis": true,
+    "useUnknownInCatchVariables": true,
 
     "baseUrl": ".",
     "forceConsistentCasingInFileNames": true,

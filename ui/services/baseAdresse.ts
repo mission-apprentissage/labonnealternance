@@ -1,11 +1,8 @@
 import { IPointGeometry, ZPointGeometry } from "shared"
 import { z } from "zod"
 
-import memoize from "../utils/memoize"
-
 import { simplifiedItems } from "./arrondissements"
 
-type IFetchAddresses = ((value: string, type?: string) => Promise<IAddressItem[]>) & { abortController?: AbortController | null }
 type AddressFeature = {
   properties: {
     label: string
@@ -78,17 +75,6 @@ export async function searchAddress(value: string, type?: string, signal?: Abort
     }
   } else return []
 }
-
-export const fetchAddresses: IFetchAddresses = memoize(async (value: string, type?: string) => {
-  if (fetchAddresses.abortController) {
-    fetchAddresses.abortController.abort()
-  }
-
-  fetchAddresses.abortController = new AbortController()
-  const { signal } = fetchAddresses.abortController
-
-  return searchAddress(value, type, signal)
-})
 
 export const fetchAddressFromCoordinates = async (coordinates: Coordinates, type?: string, signal?: AbortSignal): Promise<IAddressItem[]> => {
   const addressURL = `https://api-adresse.data.gouv.fr/reverse/?lat=${coordinates[1]}&lon=${coordinates[0]}${type ? "&type=" + type : ""}`

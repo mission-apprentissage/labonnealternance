@@ -4,6 +4,7 @@ import { Box, Checkbox, FormControlLabel, Grid2 as Grid, Typography } from "@mui
 import dynamic from "next/dynamic"
 import Image from "next/image"
 import Link from "next/link"
+import { ExtendedRecordMap } from "notion-types"
 import { useEffect, useState } from "react"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
@@ -24,7 +25,7 @@ import { PAGES } from "@/utils/routes.utils"
 
 const NotionRenderer = dynamic(() => import("react-notion-x").then((mod) => mod.NotionRenderer))
 
-export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeConfidentialite }: { politiqueDeConfidentialite: any }) {
+export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeConfidentialite }: { politiqueDeConfidentialite: ExtendedRecordMap }) {
   const [hasConsent, setHasConsent] = useState(true)
 
   useEffect(() => {

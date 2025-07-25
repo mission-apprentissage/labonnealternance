@@ -5660,6 +5660,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/autosuggest-highlight@npm:^3.2.3":
+  version: 3.2.3
+  resolution: "@types/autosuggest-highlight@npm:3.2.3"
+  checksum: de115f7a838482e5af750f2b51249fcbe1f3473d1c31119731d392dc1dfb119d6b7275f97db737cd4d01b626d3c32d88554377ba4aa55fac8bbae73ab7881756
+  languageName: node
+  linkType: hard
+
 "@types/bunyan@npm:^1.8.11":
   version: 1.8.11
   resolution: "@types/bunyan@npm:1.8.11"
@@ -6034,6 +6041,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-csv@npm:^1.1.10":
+  version: 1.1.10
+  resolution: "@types/react-csv@npm:1.1.10"
+  dependencies:
+    "@types/react": "*"
+  checksum: 0a19efd0bb559a288ce640abc491850c81e75ca5900c25044d93ad633d89d62e49c6963a1d5657e664e61edd526295a4a93641dd8429703cc4ebf9a0ab4d4157
+  languageName: node
+  linkType: hard
+
 "@types/react-transition-group@npm:^4.4.12":
   version: 4.4.12
   resolution: "@types/react-transition-group@npm:4.4.12"
@@ -6043,7 +6059,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^19.1.2":
+"@types/react@npm:*, @types/react@npm:^19.1.2":
   version: 19.1.8
   resolution: "@types/react@npm:19.1.8"
   dependencies:
@@ -21172,9 +21188,11 @@ __metadata:
     "@testing-library/dom": ^10.4.0
     "@testing-library/react": ^16.3.0
     "@tsconfig/next": ^2.0.3
+    "@types/autosuggest-highlight": ^3.2.3
     "@types/mersenne-twister": ^1.1.7
     "@types/node": ^20.17.30
     "@types/react": ^19.1.2
+    "@types/react-csv": ^1.1.10
     autosuggest-highlight: ^3.3.4
     bson: ^6.10.3
     csv-stringify: ^6.5.2

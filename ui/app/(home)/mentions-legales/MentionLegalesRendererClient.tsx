@@ -2,8 +2,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Grid2 as Grid, Typography } from "@mui/material"
 import dynamic from "next/dynamic"
-import Image from "next/image"
-import Link from "next/link"
+import type { ExtendedRecordMap } from "notion-types"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
@@ -12,7 +11,7 @@ import { PAGES } from "@/utils/routes.utils"
 
 const NotionRenderer = dynamic(() => import("react-notion-x").then((mod) => mod.NotionRenderer))
 
-export default function MentionLegalesRendererClient({ mentionsLegales }: { mentionsLegales: any }) {
+export default function MentionLegalesRendererClient({ mentionsLegales }: { mentionsLegales: ExtendedRecordMap }) {
   return (
     <Box>
       <Breadcrumb pages={[PAGES.static.mentionsLegales]} />

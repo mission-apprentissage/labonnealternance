@@ -19,6 +19,6 @@ const listeCfaEntreprise = [
   "51825892600048",
 ]
 
-export const isCfaEntreprise = (siret, siretGestionnaire) => {
+export const isCfaEntreprise = (siret: string, siretGestionnaire: string) => {
   return listeCfaEntreprise.indexOf(siret) >= 0 || listeCfaEntreprise.indexOf(siretGestionnaire) >= 0
 }

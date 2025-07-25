@@ -1,4 +1,3 @@
-import fs from "fs"
 import path from "path"
 
 import { generateSitemapFromUrlEntries, SitemapUrlEntry } from "shared/utils/sitemapUtils"
@@ -11,7 +10,7 @@ export const mainSitemapLastModificationDate = new Date("2024-12-04T14:06:47.696
 
 export function generateMainSitemap(request: Request) {
   const txtDirectory = path.join(process.cwd(), "config")
-  const dataJobs = getStaticMetiers(path, fs, txtDirectory)
+  const dataJobs = getStaticMetiers(txtDirectory)
 
   const host = getHostFromHeader(request)
 

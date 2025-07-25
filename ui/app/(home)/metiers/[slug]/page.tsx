@@ -1,4 +1,3 @@
-import fs from "fs"
 import path from "path"
 
 import { fr } from "@codegouvfr/react-dsfr"
@@ -14,12 +13,12 @@ import { PAGES } from "@/utils/routes.utils"
 
 const getTowns = () => {
   const txtDirectory = path.join(process.cwd(), "config")
-  const towns = getStaticVilles(path, fs, txtDirectory)
+  const towns = getStaticVilles(txtDirectory)
   return towns
 }
 const getMetiers = () => {
   const txtDirectory = path.join(process.cwd(), "config")
-  const jobs = getStaticMetiers(path, fs, txtDirectory)
+  const jobs = getStaticMetiers(txtDirectory)
   return jobs
 }
 

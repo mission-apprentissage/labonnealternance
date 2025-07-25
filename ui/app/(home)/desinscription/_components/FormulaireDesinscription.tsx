@@ -39,7 +39,7 @@ const UNSUBSCRIBE_REASON = {
   OPPOSITION: "Je m'oppose au traitement des mes données par La bonne alternance",
   ENTREPRISE_FERMEE: "L’entreprise est fermée",
   AUTRE: "Autre",
-}
+} as const
 
 const getSupportMailto = (complement) => (
   <Link textDecoration="underline" href={`mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Candidature%20spontanée%20-%20Déréférencement%20-%20${complement}`}>
