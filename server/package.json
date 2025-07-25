@@ -45,7 +45,6 @@
     "basic-ftp": "^5.0.5",
     "bson": "^6.10.3",
     "bunyan": "^1.8.15",
-    "bunyan-slack": "^0.0.10",
     "burner-email-providers": "^1.0.67",
     "chalk": "^5.4.1",
     "clamscan": "^2.4.0",

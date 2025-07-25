@@ -2,9 +2,8 @@ import { Transform, Writable } from "node:stream"
 import util from "util"
 
 import bunyan from "bunyan"
-import BunyanSlack from "bunyan-slack"
 import chalk from "chalk"
-import { isEmpty, omit, throttle } from "lodash-es"
+import { isEmpty, omit } from "lodash-es"
 
 import config from "@/config"
 
@@ -68,42 +67,10 @@ function sendLogsToConsole(outputName) {
       }
 }
 
-function sendLogsToSlack() {
-  const stream = new BunyanSlack(
-    {
-      webhook_url: config.slackWebhookUrl,
-      customFormatter: (record, levelName) => {
-        if (record.type === "http") {
-          record = {
-            url: record.request.url.relative,
-            statusCode: record.response.statusCode,
-            ...(record.error ? { message: record.error.message } : {}),
-          }
-        }
-        return {
-          text: util.format(`[%s][${config.env}] %O`, levelName.toUpperCase(), record),
-        }
-      },
-    },
-    (error) => {
-      console.error("Unable to send log to slack", error)
-    }
-  )
-
-  stream.write = throttle(stream.write, 5000)
-
-  return {
-    name: "slack",
-    level: "fatal",
-    stream,
-  }
-}
-
 const createStreams = () => {
   const availableDestinations = {
     stdout: () => sendLogsToConsole("stdout"),
     stderr: () => sendLogsToConsole("stderr"),
-    slack: () => sendLogsToSlack(),
   }
 
   return config.log.destinations

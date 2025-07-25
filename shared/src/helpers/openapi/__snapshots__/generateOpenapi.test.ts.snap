@@ -3035,6 +3035,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "cedex": {
             "description": "L'éventuel CEDEX de l'adresse",
+            "example": null,
             "type": [
               "string",
               "null",
@@ -7192,6 +7193,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                   "apply": {
                     "properties": {
                       "email": {
+                        "default": null,
                         "description": "Email de contact",
                         "format": "email",
                         "type": [
@@ -7200,6 +7202,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         ],
                       },
                       "phone": {
+                        "default": null,
                         "description": "Téléphone de contact",
                         "type": [
                           "string",
@@ -7207,6 +7210,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         ],
                       },
                       "url": {
+                        "default": null,
                         "description": "URL pour candidater",
                         "format": "uri",
                         "type": [
@@ -7221,6 +7225,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                     "default": {},
                     "properties": {
                       "duration": {
+                        "default": null,
                         "description": "Durée du contrat en mois",
                         "minimum": 0,
                         "type": [
@@ -7229,6 +7234,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         ],
                       },
                       "remote": {
+                        "default": null,
                         "description": "Format de travail de l'offre",
                         "enum": [
                           "onsite",
@@ -7241,6 +7247,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         ],
                       },
                       "start": {
+                        "default": null,
                         "format": "date-time",
                         "type": [
                           "string",
@@ -7299,6 +7306,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         "type": "number",
                       },
                       "origin": {
+                        "default": null,
                         "description": "Origine de l'offre provenant d'un aggregateur",
                         "type": [
                           "string",
@@ -7309,6 +7317,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         "default": {},
                         "properties": {
                           "creation": {
+                            "default": null,
                             "format": "date-time",
                             "type": [
                               "string",
@@ -7316,6 +7325,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                             ],
                           },
                           "expiration": {
+                            "default": null,
                             "format": "date-time",
                             "type": [
                               "string",
@@ -7326,6 +7336,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         "type": "object",
                       },
                       "rome_codes": {
+                        "default": null,
                         "description": "Code rome de l'offre",
                         "items": {
                           "pattern": "^[A-Z]\\d{4}$",
@@ -7347,8 +7358,10 @@ Limite : 1 appel(s) / 1 seconde(s)
                         "type": "string",
                       },
                       "target_diploma": {
+                        "default": null,
                         "properties": {
                           "european": {
+                            "default": null,
                             "enum": [
                               "3",
                               "4",
@@ -7390,6 +7403,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                   "workplace": {
                     "properties": {
                       "description": {
+                        "default": null,
                         "description": "description de l'entreprise",
                         "type": [
                           "string",
@@ -7400,6 +7414,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         "default": {},
                         "properties": {
                           "address": {
+                            "default": null,
                             "type": [
                               "string",
                               "null",
@@ -7412,6 +7427,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         ],
                       },
                       "name": {
+                        "default": null,
                         "description": "Nom customisé de l'entreprise",
                         "type": [
                           "string",
@@ -7425,6 +7441,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         "type": "string",
                       },
                       "website": {
+                        "default": null,
                         "description": "Site web de l'entreprise",
                         "format": "uri",
                         "type": [
@@ -7524,6 +7541,7 @@ Limite : 1 appel(s) / 1 seconde(s)
             "name": "latitude",
             "required": false,
             "schema": {
+              "default": null,
               "maximum": 90,
               "minimum": -90,
               "type": [
@@ -7537,6 +7555,7 @@ Limite : 1 appel(s) / 1 seconde(s)
             "name": "longitude",
             "required": false,
             "schema": {
+              "default": null,
               "maximum": 180,
               "minimum": -180,
               "type": [
@@ -7579,6 +7598,7 @@ Limite : 1 appel(s) / 1 seconde(s)
             "name": "romes",
             "required": false,
             "schema": {
+              "default": null,
               "type": [
                 "string",
                 "null",
@@ -7590,6 +7610,7 @@ Limite : 1 appel(s) / 1 seconde(s)
             "name": "rncp",
             "required": false,
             "schema": {
+              "default": null,
               "pattern": "^RNCP\\d{3,5}$",
               "type": [
                 "string",
@@ -7680,6 +7701,7 @@ Limite : 1 appel(s) / 1 seconde(s)
             "name": "opco",
             "required": false,
             "schema": {
+              "default": null,
               "enum": [
                 "AFDAS",
                 "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
@@ -8861,6 +8883,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                   "apply": {
                     "properties": {
                       "email": {
+                        "default": null,
                         "description": "Email de contact",
                         "format": "email",
                         "type": [
@@ -8869,6 +8892,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         ],
                       },
                       "phone": {
+                        "default": null,
                         "description": "Téléphone de contact",
                         "type": [
                           "string",
@@ -8876,6 +8900,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         ],
                       },
                       "url": {
+                        "default": null,
                         "description": "URL pour candidater",
                         "format": "uri",
                         "type": [
@@ -8890,6 +8915,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                     "default": {},
                     "properties": {
                       "duration": {
+                        "default": null,
                         "description": "Durée du contrat en mois",
                         "minimum": 0,
                         "type": [
@@ -8898,6 +8924,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         ],
                       },
                       "remote": {
+                        "default": null,
                         "description": "Format de travail de l'offre",
                         "enum": [
                           "onsite",
@@ -8910,6 +8937,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         ],
                       },
                       "start": {
+                        "default": null,
                         "format": "date-time",
                         "type": [
                           "string",
@@ -8968,6 +8996,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         "type": "number",
                       },
                       "origin": {
+                        "default": null,
                         "description": "Origine de l'offre provenant d'un aggregateur",
                         "type": [
                           "string",
@@ -8978,6 +9007,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         "default": {},
                         "properties": {
                           "creation": {
+                            "default": null,
                             "format": "date-time",
                             "type": [
                               "string",
@@ -8985,6 +9015,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                             ],
                           },
                           "expiration": {
+                            "default": null,
                             "format": "date-time",
                             "type": [
                               "string",
@@ -8995,6 +9026,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         "type": "object",
                       },
                       "rome_codes": {
+                        "default": null,
                         "description": "Code rome de l'offre",
                         "items": {
                           "pattern": "^[A-Z]\\d{4}$",
@@ -9016,8 +9048,10 @@ Limite : 1 appel(s) / 1 seconde(s)
                         "type": "string",
                       },
                       "target_diploma": {
+                        "default": null,
                         "properties": {
                           "european": {
+                            "default": null,
                             "enum": [
                               "3",
                               "4",
@@ -9059,6 +9093,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                   "workplace": {
                     "properties": {
                       "description": {
+                        "default": null,
                         "description": "description de l'entreprise",
                         "type": [
                           "string",
@@ -9069,6 +9104,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         "default": {},
                         "properties": {
                           "address": {
+                            "default": null,
                             "type": [
                               "string",
                               "null",
@@ -9081,6 +9117,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         ],
                       },
                       "name": {
+                        "default": null,
                         "description": "Nom customisé de l'entreprise",
                         "type": [
                           "string",
@@ -9094,6 +9131,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         "type": "string",
                       },
                       "website": {
+                        "default": null,
                         "description": "Site web de l'entreprise",
                         "format": "uri",
                         "type": [
