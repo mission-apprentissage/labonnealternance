@@ -3,6 +3,7 @@ import { program } from "commander"
 import { addJob, startJobProcessor } from "job-processor"
 import HttpTerminator from "lil-http-terminator"
 
+import { bindStreamProcessorServer } from "@/http/StreamProcessorServer"
 import { startRecruiterChangeStream } from "@/services/formulaire.service"
 
 import { closeMemoryCache } from "./common/apis/client"
@@ -179,7 +180,7 @@ program
   .action(async () => {
     try {
       const signal = createProcessExitSignal()
-      const httpServer = await bindProcessorServer()
+      const httpServer = await bindStreamProcessorServer()
       await httpServer.ready()
       await httpServer.listen({ port: config.port, host: "0.0.0.0" })
       logger.info(`Server ready and listening on port ${config.port}`)

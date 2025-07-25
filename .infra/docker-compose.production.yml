@@ -100,7 +100,7 @@ services:
       driver: "fluentd"
       options:
         fluentd-address: localhost:24224
-        tag: docker.json.lba.{{env_type}}.jobs_processor
+        tag: docker.json.lba.{{env_type}}.stream_processor
         fluentd-async: "true"
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:5000/api/healthcheck"]
