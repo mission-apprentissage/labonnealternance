@@ -1,7 +1,7 @@
-import { Icon } from "@chakra-ui/react"
+import { Icon, IconProps } from "@chakra-ui/react"
 import React from "react"
 
-export function CircleCheck(props) {
+export function CircleCheck(props: IconProps) {
   return (
     <Icon width="25" height="25" viewBox="0 0 25 25" {...props}>
       <path

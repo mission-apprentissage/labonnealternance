@@ -495,7 +495,7 @@ export const ZLbaItemLbaJob = z
   .openapi("LbaJob")
 
 export type ILbaItemLbaJob = z.output<typeof ZLbaItemLbaJob>
-export type ILbaItemLbaJobJson = Jsonify<ILbaItemLbaJob>
+export type ILbaItemLbaJobJson = Jsonify<z.output<typeof ZLbaItemLbaJob>>
 export const ZLbaItemLbaJobReturnedByAPI = z.object({ matchas: z.array(ZLbaItemLbaJob) })
 export type ILbaItemLbaJobReturnedByAPI = Jsonify<z.output<typeof ZLbaItemLbaJobReturnedByAPI>>
 

@@ -3,7 +3,7 @@ import { Box, Button, Flex, Link, Text } from "@chakra-ui/react"
 import React, { useContext } from "react"
 
 import { publicConfig } from "@/config.public"
-import { DisplayContext } from "@/context/DisplayContextProvider"
+import { DisplayContext, IDisplayState } from "@/context/DisplayContextProvider"
 
 const blueBannerText = (
   <Text>
@@ -86,8 +86,8 @@ const InfoBanner = ({
   const { bannerStates, setBannerStates } = useContext(DisplayContext)
   const { isEnvClosed, isAlertClosed, isOKClosed, isInfoClosed } = bannerStates
 
-  const setBannerContext = (banner: string, isClosed: boolean) => {
-    const newBannerStates = { ...bannerStates }
+  const setBannerContext = (banner: keyof IDisplayState["bannerStates"], isClosed: boolean) => {
+    const newBannerStates: IDisplayState["bannerStates"] = { ...bannerStates }
     newBannerStates[banner] = isClosed
     setBannerStates(newBannerStates)
   }

@@ -6,7 +6,14 @@ import ModalCloseButton from "@/app/_components/ModalCloseButton"
 import { ArrowRightLine } from "../../theme/components/icons"
 import { archiveFormulaire } from "../../utils/api"
 
-export function ConfirmationSuppressionEntreprise(props) {
+interface ConfirmationSuppressionEntrepriseProps {
+  isOpen: boolean
+  onClose: () => void
+  establishment_raison_sociale?: string
+  establishment_id: string
+}
+
+export function ConfirmationSuppressionEntreprise(props: ConfirmationSuppressionEntrepriseProps) {
   const { isOpen, onClose, establishment_raison_sociale, establishment_id } = props
   const toast = useToast()
 

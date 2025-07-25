@@ -193,3 +193,4 @@ export const ZUserRecruteurForAdmin = ZUserRecruteur.pick(UserRecruteurForAdminP
 })
 
 export type IUserRecruteurForAdmin = z.output<typeof ZUserRecruteurForAdmin>
+export type IUserRecruteurForAdminJSON = Jsonify<z.output<typeof ZUserRecruteurForAdmin>>

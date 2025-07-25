@@ -1,7 +1,7 @@
-import { Icon } from "@chakra-ui/react"
+import { Icon, IconProps } from "@chakra-ui/react"
 import React from "react"
 
-export function ChevronRight(props) {
+export function ChevronRight(props: IconProps) {
   return (
     <Icon width="8px" height="14px" viewBox="0 0 8 14" {...props}>
       <path

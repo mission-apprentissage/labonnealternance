@@ -19,7 +19,7 @@ const additionalMessageByMotif = {
   "Offre inexacte ou expirée": "Précisez les informations obsolètes (numéro de téléphone, adresse postale, etc)",
   "Tentative d’escroquerie": "Pouvez-vous préciser ce qui vous a laissé penser qu'il s'agissait d'une escroquerie (demande de coordonnées bancaires, etc.) ?",
   "Informations erronées": "Précisez les informations erronées (numéro de téléphone, adresse postale, etc)",
-}
+} as Record<string, string>
 
 const noAdditionalMessage = ["Entreprise fermée"]
 

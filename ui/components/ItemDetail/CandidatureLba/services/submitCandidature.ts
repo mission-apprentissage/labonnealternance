@@ -16,47 +16,6 @@ export const useStoredApplicationDate = (item: ILbaItem) => {
   return useLocalStorage<number>(`application-${oldItemTypeToNewItemType(item.ideaType)}-${item.id}`)
 }
 
-export const useSubmitCandidature = (
-  LbaJob: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson,
-  caller?: string
-): {
-  submitCandidature: (props: { formValues: IApplicationSchemaInitValues }) => void
-  isLoading: boolean
-  isSuccess: boolean
-  isError: boolean
-  isDone: boolean
-  error: unknown
-  applicationDate: Date | null
-} => {
-  const { storedValue: applicationDateTimestamp, setLocalStorage: setApplicationDate } = useStoredApplicationDate(LbaJob)
-  const { isPending, error, isSuccess, isError, mutate } = useMutation({
-    mutationKey: ["submitCandidature", LbaJob.id],
-    mutationFn: submitCandidature,
-    onSuccess: () => {
-      setApplicationDate(Date.now())
-    },
-  })
-  const displayContext = useContext(DisplayContext)
-  let finalSubmitCandidature = mutate
-  if (displayContext) {
-    const { formValues } = displayContext
-    const { job } = formValues ?? {}
-    const { label: job_searched_by_user } = job ?? {}
-    finalSubmitCandidature = (props) =>
-      mutate({
-        ...props,
-        LbaJob,
-        caller,
-        formValues: {
-          ...props.formValues,
-          job_searched_by_user,
-        },
-      })
-  }
-  const applicationDate = applicationDateTimestamp ? new Date(applicationDateTimestamp) : null
-  return { submitCandidature: finalSubmitCandidature, isLoading: isPending, error, isSuccess, isError, isDone: isSuccess || isError, applicationDate }
-}
-
 async function submitCandidature({
   formValues,
   LbaJob,
@@ -82,4 +41,54 @@ async function submitCandidature({
 
   sessionStorageSet("application-form-values", payload)
   await apiPost("/v2/_private/application", { body: payload, headers: { authorization: `Bearer ${LbaJob.token}` } }, {})
+}
+
+export const useSubmitCandidature = (
+  LbaJob: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson,
+  caller?: string
+): {
+  handleSubmitCandidature: (props: { formValues: IApplicationSchemaInitValues }) => void
+  isLoading: boolean
+  isSuccess: boolean
+  isError: boolean
+  isDone: boolean
+  error: unknown
+  applicationDate: Date | null
+} => {
+  const { storedValue: applicationDateTimestamp, setLocalStorage: setApplicationDate } = useStoredApplicationDate(LbaJob)
+
+  const { isPending, error, isSuccess, isError, mutate } = useMutation({
+    mutationKey: ["submitCandidature", LbaJob.id],
+    mutationFn: submitCandidature,
+    onSuccess: () => {
+      setApplicationDate(Date.now())
+    },
+  })
+
+  const displayContext = useContext(DisplayContext)
+
+  const handleSubmitCandidature = ({ formValues }: { formValues: IApplicationSchemaInitValues }) => {
+    const job_searched_by_user = displayContext?.formValues?.job?.label
+
+    mutate({
+      formValues: {
+        ...formValues,
+        ...(job_searched_by_user ? { job_searched_by_user } : {}),
+      },
+      LbaJob,
+      caller,
+    })
+  }
+
+  const applicationDate = applicationDateTimestamp ? new Date(applicationDateTimestamp) : null
+
+  return {
+    handleSubmitCandidature,
+    isLoading: isPending,
+    error,
+    isSuccess,
+    isError,
+    isDone: isSuccess || isError,
+    applicationDate,
+  }
 }
