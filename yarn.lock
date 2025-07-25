@@ -6059,7 +6059,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^19.1.2":
+"@types/react@npm:*, @types/react@npm:^19.1.2":
   version: 19.1.8
   resolution: "@types/react@npm:19.1.8"
   dependencies:
