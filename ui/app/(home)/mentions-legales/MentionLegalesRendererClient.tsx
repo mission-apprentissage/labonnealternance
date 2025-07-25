@@ -1,35 +1,59 @@
 "use client"
-import { Box, Container, Divider, Grid, GridItem, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Grid2 as Grid, Typography } from "@mui/material"
 import dynamic from "next/dynamic"
+import Image from "next/image"
+import Link from "next/link"
 
+import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { publicConfig } from "@/config.public"
-
-import { PAGES } from "../../../utils/routes.utils"
-import { Breadcrumb } from "../../_components/Breadcrumb"
+import { PAGES } from "@/utils/routes.utils"
 
 const NotionRenderer = dynamic(() => import("react-notion-x").then((mod) => mod.NotionRenderer))
 
-export default function MentionLegalesRendererClient({ mentionsLegales }) {
+export default function MentionLegalesRendererClient({ mentionsLegales }: { mentionsLegales: any }) {
   return (
     <Box>
       <Breadcrumb pages={[PAGES.static.mentionsLegales]} />
-      <Container p={12} my={0} mb={[0, 12]} variant="pageContainer">
-        <Grid templateColumns="repeat(12, 1fr)">
-          <GridItem px={4} colSpan={[12, 12, 12, 5]}>
-            <Box as="h1">
-              <Text as="span" display="block" mb={1} variant="editorialContentH1">
+      <DefaultContainer>
+        <Box
+          sx={{
+            p: fr.spacing("5w"),
+            marginBottom: fr.spacing("5w"),
+            borderRadius: "10px",
+            backgroundColor: fr.colors.decisions.background.default.grey.hover,
+          }}
+        >
+          <Grid container spacing={0}>
+            <Grid size={{ xs: 12, md: 5 }} sx={{ px: 4 }}>
+              <Typography component={"h1"} variant="h1" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
                 Mentions légales
-              </Text>
-            </Box>
-            <Divider variant="pageTitleDivider" my={12} />
-          </GridItem>
-          <GridItem px={4} colSpan={[12, 12, 12, 7]}>
-            <Box>
-              <NotionRenderer recordMap={mentionsLegales} fullPage={false} darkMode={false} disableHeader={true} rootDomain={publicConfig.baseUrl} bodyClassName="notion-body" />
-            </Box>
-          </GridItem>
-        </Grid>
-      </Container>
+              </Typography>
+              <Box
+                component="hr"
+                sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 7 }} sx={{ px: 4 }}>
+              <Box>
+                <NotionRenderer
+                  recordMap={mentionsLegales}
+                  fullPage={false}
+                  darkMode={false}
+                  disableHeader={true}
+                  rootDomain={publicConfig.baseUrl}
+                  bodyClassName="notion-body"
+                  components={{
+                    nextImage: Image,
+                    nextLink: Link,
+                  }}
+                />
+              </Box>
+            </Grid>
+          </Grid>
+        </Box>
+      </DefaultContainer>
     </Box>
   )
 }
