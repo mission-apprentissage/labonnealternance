@@ -20,7 +20,7 @@ export default function CGURendererClient({ recordMap }: { recordMap: ExtendedRe
       <DefaultContainer>
         <Box sx={{ p: fr.spacing("5w"), marginBottom: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
           <Grid container spacing={0}>
-            <Grid size={{ xs: 12, md: 5 }} sx={{ px: 4 }}>
+            <Grid size={{ xs: 12, md: 5 }}>
               <Typography component={"h1"} variant="h1" sx={{ mb: 2 }}>
                 Conditions
               </Typography>
@@ -35,7 +35,7 @@ export default function CGURendererClient({ recordMap }: { recordMap: ExtendedRe
                 sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
               />
             </Grid>
-            <Grid size={{ xs: 12, md: 7 }} sx={{ px: 4 }}>
+            <Grid size={{ xs: 12, md: 7 }}>
               <Box>
                 <NotionRenderer
                   recordMap={recordMap}

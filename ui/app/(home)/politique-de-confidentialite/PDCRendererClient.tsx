@@ -54,7 +54,7 @@ export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeCo
       <DefaultContainer>
         <Box sx={{ p: fr.spacing("5w"), marginBottom: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
           <Grid container spacing={0}>
-            <Grid size={{ xs: 12, md: 5 }} sx={{ px: 4 }}>
+            <Grid size={{ xs: 12, md: 5 }}>
               <Typography component="h1" variant="h1" sx={{ mb: 2 }}>
                 Politique
                 <Typography component="h1" variant="h1" sx={{ display: "block", color: fr.colors.decisions.text.default.info.default }}>
@@ -66,7 +66,7 @@ export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeCo
                 sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
               />
             </Grid>
-            <Grid size={{ xs: 12, md: 7 }} sx={{ px: 4 }}>
+            <Grid size={{ xs: 12, md: 7 }}>
               <Box>
                 <NotionRenderer
                   recordMap={politiqueDeConfidentialite}
