@@ -1,11 +1,13 @@
 "use client"
-import { Box, Container, Divider, Grid, GridItem, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Grid2 as Grid, Typography } from "@mui/material"
 import dynamic from "next/dynamic"
 import Image from "next/image"
 import Link from "next/link"
 import { ExtendedRecordMap } from "notion-types"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -14,25 +16,26 @@ const NotionRenderer = dynamic(() => import("react-notion-x").then((mod) => mod.
 export default function CGURendererClient({ recordMap }: { recordMap: ExtendedRecordMap }) {
   return (
     <Box>
-      <Box as="main">
-        <Breadcrumb pages={[PAGES.static.cgu]} />
-        <Container p={12} my={0} mb={[0, 12]} variant="pageContainer">
-          <Grid templateColumns="repeat(12, 1fr)">
-            <GridItem px={4} colSpan={[12, 12, 12, 5]}>
-              <Box as="h1">
-                <Text as="span" display="block" mb={1} variant="editorialContentH1" color="#2a2a2a">
-                  Conditions
-                </Text>
-                <Text as="span" display="block" mb={1} variant="editorialContentH1">
-                  générales
-                </Text>
-                <Text as="span" display="block" mb={1} variant="editorialContentH1">
-                  d&apos;utilisation
-                </Text>
-              </Box>
-              <Divider variant="pageTitleDivider" my={12} />
-            </GridItem>
-            <GridItem px={4} colSpan={[12, 12, 12, 7]}>
+      <Breadcrumb pages={[PAGES.static.cgu]} />
+      <DefaultContainer>
+        <Box sx={{ p: fr.spacing("5w"), marginBottom: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
+          <Grid container spacing={0}>
+            <Grid size={{ xs: 12, md: 5 }}>
+              <Typography component={"h1"} variant="h1" sx={{ mb: 2 }}>
+                Conditions
+              </Typography>
+              <Typography component={"h1"} variant="h1" sx={{ mb: 2 }}>
+                générales
+              </Typography>
+              <Typography component={"h1"} variant="h1" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
+                d&apos;utilisation
+              </Typography>
+              <Box
+                component="hr"
+                sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 7 }}>
               <Box>
                 <NotionRenderer
                   recordMap={recordMap}
@@ -47,10 +50,10 @@ export default function CGURendererClient({ recordMap }: { recordMap: ExtendedRe
                   }}
                 />
               </Box>
-            </GridItem>
+            </Grid>
           </Grid>
-        </Container>
-      </Box>
+        </Box>
+      </DefaultContainer>
     </Box>
   )
 }
