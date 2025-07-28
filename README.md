@@ -37,17 +37,17 @@ Consultez la [Fiche Produit](https://beta.gouv.fr/startups/la-bonne-alternance.h
 
 Avant d'installer le projet, assurez-vous d'avoir les éléments suivants :
 
-  - **Bash** 5+
-  - **Docker** 23.03.0+
-  - **Git LFS**
-  - **GnuPG**
-  - **pwgen**
-  - **1password-cli**
-  - **yq**
-  - **shred**
-  - **sshpass**
-  - **NodeJS** 20+
-  - **Ansible** 2.7+
+- **Bash** 5+
+- **Docker** 23.03.0+
+- **Git LFS**
+- **GnuPG**
+- **pwgen**
+- **1password-cli**
+- **yq**
+- **shred**
+- **sshpass**
+- **NodeJS** 20+
+- **Ansible** 2.7+
 
 #### Installation des pré-requis sur un environnement **MacOS** :
 
