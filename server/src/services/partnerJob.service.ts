@@ -135,14 +135,14 @@ function transformPartnerJobWithMinimalData(partnerJob: IJobsPartnersOfferPrivat
     place: {
       //lieu de l'offre. contient ville de l'entreprise et geoloc de l'entreprise
       distance: partnerJob?.distance != null && partnerJob?.distance >= 0 ? roundDistance((partnerJob?.distance ?? 0) / 1000) : null,
-      fullAddress: partnerJob.workplace_address_label,
+      fullAddress: partnerJob.is_delegated ? partnerJob.cfa_address_label : partnerJob.workplace_address_label,
       city: partnerJob.workplace_address_city,
       latitude,
       longitude,
     },
     company: {
-      siret: partnerJob.workplace_siret,
-      name: partnerJob.workplace_name ?? partnerJob.workplace_brand ?? partnerJob.workplace_legal_name ?? UNKNOWN_COMPANY,
+      siret: partnerJob.is_delegated ? partnerJob.cfa_siret : partnerJob.workplace_siret,
+      name: (partnerJob.is_delegated ? partnerJob.cfa_legal_name : (partnerJob.workplace_name ?? partnerJob.workplace_brand ?? partnerJob.workplace_legal_name)) ?? UNKNOWN_COMPANY,
       opco: { label: partnerJob.workplace_opco, url: null },
       mandataire: partnerJob.is_delegated,
     },
