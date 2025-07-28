@@ -25,6 +25,11 @@ export const ZClassificationLabResponse = z.object({
 })
 export type IClassificationLabResponse = z.output<typeof ZClassificationLabResponse>
 
+export const ZClassificationLabVersionResponse = z.object({
+  model: z.string(),
+})
+export type IClassificationLabVersionResponse = z.output<typeof ZClassificationLabVersionResponse>
+
 export default {
   zod: ZClassitifationJobsPartners,
   indexes: [[{ partner_job_id: 1, partner_label: 1 }, {}]],

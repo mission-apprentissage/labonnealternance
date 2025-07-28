@@ -1,5 +1,10 @@
 import { internal } from "@hapi/boom"
-import { IClassificationLabResponse, ZClassificationLabResponse } from "shared/models/cacheClassification.model"
+import {
+  IClassificationLabResponse,
+  IClassificationLabVersionResponse,
+  ZClassificationLabResponse,
+  ZClassificationLabVersionResponse,
+} from "shared/models/cacheClassification.model"
 
 import getApiClient from "@/common/apis/client"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
@@ -21,10 +26,14 @@ export const getLabClassification = async (job: string): Promise<IClassification
   }
 }
 
-export const getLabClassificationModelVersion = async (): Promise<string> => {
+export const getLabClassificationModelVersion = async (): Promise<IClassificationLabVersionResponse> => {
   try {
     const response = await client.get("/version")
-    return response.data
+    const validation = ZClassificationLabVersionResponse.safeParse(response.data)
+    if (!validation.success) {
+      throw internal("getLabClassificationModelVersion: format de réponse non valide", { error: validation.error })
+    }
+    return validation.data
   } catch (error: any) {
     sentryCaptureException(error, { extra: { responseData: error.response?.data } })
     throw internal("getLabClassificationModelVersion: erreur lors de la récupération des données", { error })
