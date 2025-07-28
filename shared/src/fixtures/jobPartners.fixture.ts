@@ -65,6 +65,15 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     stats_postuler: 0,
     stats_search_view: 0,
 
+    cfa_siret: null,
+    cfa_legal_name: null,
+    cfa_apply_phone: null,
+    cfa_apply_email: null,
+    cfa_address_label: null,
+    job_status_comment: null,
+    job_delegation_count: null,
+    delegations: null,
+
     ...data,
   }
 }
@@ -129,6 +138,15 @@ export function generateJobsPartnersFull(data: Partial<IJobsPartnersOfferPrivate
     stats_detail_view: 0,
     stats_postuler: 0,
     stats_search_view: 0,
+
+    cfa_siret: null,
+    cfa_legal_name: null,
+    cfa_apply_phone: null,
+    cfa_apply_email: null,
+    cfa_address_label: null,
+    job_status_comment: null,
+    job_delegation_count: null,
+    delegations: null,
 
     ...data,
   }
