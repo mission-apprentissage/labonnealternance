@@ -20,3 +20,13 @@ export const getLabClassification = async (job: string): Promise<IClassification
     throw internal("getLabClassification: erreur lors de la récupération des données", { error })
   }
 }
+
+export const getLabClassificationModelVersion = async (): Promise<string> => {
+  try {
+    const response = await client.get("/version")
+    return response.data
+  } catch (error: any) {
+    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
+    throw internal("getLabClassificationModelVersion: erreur lors de la récupération des données", { error })
+  }
+}

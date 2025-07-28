@@ -21,6 +21,7 @@ export const ZClassificationLabResponse = z.object({
   label: z.string(),
   scores: ZClassitifationJobsPartners.shape.scores,
   text: z.string(),
+  model: z.string(),
 })
 export type IClassificationLabResponse = z.output<typeof ZClassificationLabResponse>
 

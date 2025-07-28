@@ -27,7 +27,7 @@ describe("getLabClassification", () => {
     offer_description: jobFixture.offer_description,
   }
   const apiPayload = [jobFixture.workplace_name, jobFixture.workplace_description, jobFixture.offer_title, jobFixture.offer_description].filter(Boolean).join("\n")
-  const apiResponse: IClassificationLabResponse = { label: "cfa", scores: { cfa: 0.5, entreprise: 0.4, entreprise_cfa: 0.2 }, text: "Software Engineer" }
+  const apiResponse: IClassificationLabResponse = { label: "cfa", model: "model", scores: { cfa: 0.5, entreprise: 0.4, entreprise_cfa: 0.2 }, text: "Software Engineer" }
 
   it("should request labonnealternance lab for a classification", async () => {
     nockLabClassification(apiPayload, apiResponse)
