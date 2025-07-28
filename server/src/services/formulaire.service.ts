@@ -942,6 +942,28 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
   const lbaJobContactInfo = recruiter.is_delegated ? await getLbaJobContactInfo(recruiter) : null
   const { definition, acces_metier } = romeDetails ?? {}
 
+  const delegatedFields = recruiter.is_delegated
+    ? {
+        cfa_siret: lbaJobContactInfo?.establishment_siret || null,
+        cfa_legal_name: lbaJobContactInfo?.establishment_raison_sociale || null,
+        cfa_apply_phone: lbaJobContactInfo?.phone || null,
+        cfa_apply_email: lbaJobContactInfo?.email || null,
+        cfa_address_label: lbaJobContactInfo?.address || null,
+        job_status_comment: job?.job_status_comment || null,
+        job_delegation_count: job?.job_delegation_count || null,
+        delegations: job?.delegations,
+      }
+    : {
+        cfa_siret: null,
+        cfa_legal_name: null,
+        cfa_apply_phone: null,
+        cfa_apply_email: null,
+        cfa_address_label: null,
+        job_status_comment: null,
+        job_delegation_count: null,
+        delegations: null,
+      }
+
   const partnerJobToUpsert: Partial<IJobsPartnersOfferPrivate> = {
     _id: job._id,
     updated_at: job.job_update_date ?? now,
@@ -995,6 +1017,8 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
     workplace_description: null,
     workplace_name: null,
     workplace_website: null,
+
+    ...delegatedFields,
   }
 
   await getDbCollection("jobs_partners").findOneAndUpdate(
