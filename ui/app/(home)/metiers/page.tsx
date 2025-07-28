@@ -1,4 +1,3 @@
-import fs from "fs"
 import path from "path"
 
 import { Box, Container, Divider, Text, VStack } from "@chakra-ui/react"
@@ -17,7 +16,7 @@ export const metadata: Metadata = {
 
 export default async function Metiers() {
   const txtDirectory = path.join(process.cwd(), "config")
-  const jobs = getStaticMetiers(path, fs, txtDirectory)
+  const jobs = getStaticMetiers(txtDirectory)
 
   return (
     <Box>

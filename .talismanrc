@@ -88,7 +88,7 @@ fileignoreconfig:
 - filename: server/src/jobs/offrePartenaire/recruteur-lba/processRecruteursLba.test.ts
   checksum: b1f33d9c2c01bcb249d01b801847d4e71c21e4c6395e124c26012f2200576d04
 - filename: server/src/jobs/partenaireExport/__snapshots__/exportJobsToS3V2.test.ts.snap
-  checksum: 999d858719a80721fc1801792c0db66df0f35d54f20d0b8c0d1e159532fe7d2f
+  checksum: 941b56f49d304948789f7cf9c23866a1b8367f0bcc39ba6e1b652a3a96bc366d
 - filename: server/src/jobs/partenaireExport/exportJobsToS3V2.test.ts
   checksum: 3cc8e98e8945fbd4b50e65ff62bcbfcc13e2846443b916335af82c467fa4ed5f
 - filename: server/src/migrations/20241022093834-remove-multi-published.ts
@@ -100,7 +100,7 @@ fileignoreconfig:
 - filename: server/src/security/apiApprentissageService.ts
   checksum: 0e6d208dc8de66d2a440ff40a1260a76e41bf69fb414ccbfc6d99396df3f3b91
 - filename: server/src/services/__snapshots__/formulaire.service.test.ts.snap
-  checksum: 8ee34969b1a30a8be0bada5c548e670d81ce5a8948baa5ed89014430b95c9fd8
+  checksum: c9537ceb127351b38f85892b416e260ab146426b913225b492c4b17392f44705
 - filename: server/src/services/__snapshots__/partnerJob.service.test.ts.snap
   checksum: 6f190e19172481706181e0a13ed7de5f0f6c699f86d35d9b08071ece445920b1
 - filename: server/src/services/application.service.test.ts
@@ -313,6 +313,12 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
+- filename: ui/app/(landing-pages)/acces-recruteur/_components/HeroRecruteur.tsx
+  checksum: e2471ac7e6886e3361b2c0debf2f8b296d5c96270c5324ee2059b788fbe354ff
+- filename: ui/app/(landing-pages)/acces-recruteur/_components/OffresGratuites.tsx
+  checksum: 8892d3fb6a4dcffe5938305ec58ae29964f76419ab4211656b0af262eea7dce8
+- filename: ui/components/head.tsx
+  checksum: fd94387931e07a6150e82417ef13ec3c03cad372e69e95c4be60d360ee285ead
 scopeconfig:
 - scope: node
 custom_patterns:

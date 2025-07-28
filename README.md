@@ -60,7 +60,6 @@ Pour décrypter les variables d'environnement, vous avez besoin d'une clé GPG. 
 Voici les étapes pour créer votre clé GPG :
 
 1. Lors de la création de la clé, choisissez les options suivantes :
-
    - `Please select what kind of key you want` > `ECC (sign and encrypt)`
    - `Please select which elliptic curve you want` > `Curve 25519`
    - `Please specify how long the key should be valid` > `0`

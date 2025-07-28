@@ -5,7 +5,7 @@ import { Typography } from "@mui/material"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 
 import { RechercheCarte } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
 import { IUseRechercheResultsSuccess, useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
@@ -108,11 +108,11 @@ function JobDetail({ selectedItem, resultList, params }: WithRecherchePageParams
       >
         <Box width="100%" pl={["0", 4]} pb={isCollapsedHeader ? "0" : 2}>
           <Flex justifyContent="flex-end">
-            {GetItemTag({ kind, isCfa, isMandataire })}
+            {GetItemTag({ kind: oldItemTypeToNewItemType(kind), isCfa, isMandataire })}
             {getNavigationButtons({ goPrev, goNext, handleClose })}
           </Flex>
           {!isCollapsedHeader && getJobPublishedTimeAndApplications({ item: selectedItem })}
-          {!isCollapsedHeader && <JobItemCardHeader selectedItem={selectedItem} kind={kind} isMandataire={isMandataire} />}
+          {!isCollapsedHeader && <JobItemCardHeader selectedItem={selectedItem} kind={kind as LBA_ITEM_TYPE} isMandataire={isMandataire} />}
 
           <Typography variant={"h3"} sx={{ color: fr.colors.decisions.border.default.blueCumulus.default }}>
             {actualTitle}
@@ -143,14 +143,12 @@ function JobDetail({ selectedItem, resultList, params }: WithRecherchePageParams
         <>
           <DidYouKnow />
           {/**TODO: before check was only on FT jobs (LBA_ITEM_TYPE_OLD.PE) */}
-          {!(kind !== LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && (
-            <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
-          )}
+          {!(kind !== LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && <GoingToContactQuestion kind={kind} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />}
         </>
       )}
 
       {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && !isCandidatureLba(selectedItem) && (
-        <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
+        <GoingToContactQuestion kind={kind} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
       )}
     </Box>
   )

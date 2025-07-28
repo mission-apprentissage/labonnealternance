@@ -4,6 +4,7 @@ import { Box, Container, Divider, SimpleGrid, Text } from "@chakra-ui/react"
 import dynamic from "next/dynamic"
 import Image from "next/image"
 import Link from "next/link"
+import { ExtendedRecordMap } from "notion-types"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { publicConfig } from "@/config.public"
@@ -11,7 +12,7 @@ import { PAGES } from "@/utils/routes.utils"
 
 const NotionRenderer = dynamic(() => import("react-notion-x").then((mod) => mod.NotionRenderer), { ssr: false })
 
-export const AccessibilitePage = ({ recordMap }) => {
+export const AccessibilitePage = ({ recordMap }: { recordMap: ExtendedRecordMap }) => {
   return (
     <Box as="main">
       <Breadcrumb pages={[PAGES.static.accessibilite]} />

@@ -9,7 +9,7 @@ import { useAuth } from "@/context/UserContext"
 import { AUTHTYPE } from "../../../common/contants"
 import { DownloadLine } from "../../../theme/components/icons"
 
-const formatDate = (date) => dayjs(date).format("YYYY-MM-DD")
+const formatDate = (date: string | number | Date) => dayjs(date).format("YYYY-MM-DD")
 
 export default function ExportButtonNew({ data, datasetName = "export" }) {
   const { user } = useAuth()
@@ -67,7 +67,7 @@ export default function ExportButtonNew({ data, datasetName = "export" }) {
   const fileName = `${datasetName}_${new Date().toJSON()}.csv`
 
   return (
-    <CSVLink className="fr-link" data={csvData} filename={fileName} border="none">
+    <CSVLink className="fr-link" data={csvData} filename={fileName}>
       <DownloadLine mr={2} mb={1} w="0.75rem" h="0.75rem" />
       Exporter
     </CSVLink>

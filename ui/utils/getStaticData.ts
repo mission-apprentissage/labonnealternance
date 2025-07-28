@@ -1,8 +1,11 @@
+import { readFileSync } from "node:fs"
+import { join } from "node:path"
+
 import { kebabCase, uniq } from "lodash-es"
 
-const extractFromFile = (path, fs, txtDirectory, fileName) => {
-  const filePath = path.join(txtDirectory, fileName)
-  const lineString = fs.readFileSync(filePath, "utf8")
+const extractFromFile = (txtDirectory: string, fileName: string) => {
+  const filePath = join(txtDirectory, fileName)
+  const lineString = readFileSync(filePath, "utf8")
   const arrayOfLines = lineString.match(/[^\r\n]+/g)
   return arrayOfLines
 }
@@ -13,9 +16,8 @@ export type IStaticMetiers = {
   romes: string[]
 }
 
-export const getStaticMetiers = (path, fs, txtDirectory, stubbedExtractionFunction = null): IStaticMetiers[] => {
-  const extractionFunction = stubbedExtractionFunction || extractFromFile
-  const arrayOfJobLines = extractionFunction(path, fs, txtDirectory, "metiers.txt")
+export const getStaticMetiers = (txtDirectory: string): IStaticMetiers[] => {
+  const arrayOfJobLines = extractFromFile(txtDirectory, "metiers.txt")
   const dataJobs = arrayOfJobLines.map(function (singleLine) {
     const splitted = singleLine.split("[")
     const actualName = splitted[0].trim()
@@ -40,9 +42,8 @@ export type IStaticVilles = {
   zip: string
 }
 
-export const getStaticVilles = (path, fs, txtDirectory, stubbedExtractionFunction = null): IStaticVilles[] => {
-  const extractionFunction = stubbedExtractionFunction || extractFromFile
-  const arrayOfTownLines = extractionFunction(path, fs, txtDirectory, "villes.txt")
+export const getStaticVilles = (txtDirectory: string): IStaticVilles[] => {
+  const arrayOfTownLines = extractFromFile(txtDirectory, "villes.txt")
   const dataTowns = arrayOfTownLines.map(function (singleLine) {
     const splitted = singleLine.split("/")
     const townName = splitted[0].trim()

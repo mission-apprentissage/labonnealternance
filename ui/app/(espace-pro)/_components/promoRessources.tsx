@@ -1,5 +1,4 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 
@@ -27,13 +26,12 @@ export const PromoRessources = ({ target }: { target: Target }) => (
     }}
   >
     <Image fetchPriority="low" src="/images/pages_ressources/outils.svg" aria-hidden={true} alt="" width={212} height={145} />
-    <Typography variant="h4" textAlign="center" sx={{ textWrap: "balance" }}>
+    <Typography textAlign="center" sx={{ fontWeight: 700, fontSize: "1.5rem", lineHeight: "2rem", textWrap: "balance" }}>
       {textes[target]}
     </Typography>
-    <Button priority="secondary" size="large">
-      <DsfrLink href={`${PAGES.static.ressources.getPath()}#${target}`} size="lg">
-        Découvrir les ressources
-      </DsfrLink>
-    </Button>
+
+    <DsfrLink href={`${PAGES.static.ressources.getPath()}#${target}`} size="lg" className={fr.cx("fr-btn", "fr-btn--lg", "fr-btn--secondary")}>
+      Découvrir les ressources
+    </DsfrLink>
   </Box>
 )

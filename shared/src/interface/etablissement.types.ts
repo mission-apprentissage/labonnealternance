@@ -1,3 +1,4 @@
+import { Jsonify } from "type-fest"
 import { z } from "zod"
 
 export const ZEtablissementCatalogue = z
@@ -127,3 +128,4 @@ export const ZEtablissementCatalogueProcheWithDistance = ZEtablissementCatalogue
   distance_en_km: z.number(),
 })
 export type IEtablissementCatalogueProcheWithDistance = z.output<typeof ZEtablissementCatalogueProcheWithDistance>
+export type IEtablissementCatalogueProcheWithDistanceJSON = Jsonify<z.output<typeof ZEtablissementCatalogueProcheWithDistance>>

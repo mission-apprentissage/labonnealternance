@@ -53,6 +53,7 @@ import { referentielCommuneModel } from "./referentiel/communes.model.js"
 import referentielOnisepModel from "./referentielOnisep.model.js"
 import referentielOpcoModel from "./referentielOpco.model.js"
 import reportedCompanyModel from "./reportedCompany.model.js"
+import resumeTokensModel from "./resumeTokens.model.js"
 import roleManagementModel from "./roleManagement.model.js"
 import roleManagement360Model from "./roleManagement360.model.js"
 import romeModel from "./rome.model.js"
@@ -108,6 +109,7 @@ const modelDescriptorMap = {
   [recruteurLbaUpdateEventModel.collectionName]: recruteurLbaUpdateEventModel,
   [referentielOnisepModel.collectionName]: referentielOnisepModel,
   [referentielOpcoModel.collectionName]: referentielOpcoModel,
+  [resumeTokensModel.collectionName]: resumeTokensModel,
   [romeModel.collectionName]: romeModel,
   [roleManagementModel.collectionName]: roleManagementModel,
   [roleManagement360Model.collectionName]: roleManagement360Model,

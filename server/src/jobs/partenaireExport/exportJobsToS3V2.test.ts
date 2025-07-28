@@ -5,6 +5,7 @@ import { ObjectId } from "mongodb"
 import { IJob, IRecruiter, JOB_STATUS, JOB_STATUS_ENGLISH } from "shared"
 import { OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { generateJobFixture, generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
+import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -69,6 +70,7 @@ describe("exportJobsToS3V2", () => {
   it("should publish jobs", async () => {
     // given
     await createJobPartner(generateJobsPartnersFull({ _id: new ObjectId("66c52e00c8f12f66f971106f"), partner_job_id: "id_1" }))
+    await getDbCollection("referentielromes").insertOne(generateReferentielRome())
     await createJobPartner(generateJobsPartnersFull({ _id: new ObjectId("66c52e00393b331450d8bedc"), partner_job_id: "id_2" }))
     await getDbCollection("recruiters").insertMany([
       generateValidRecruiter({

@@ -7,31 +7,31 @@ import { useMongo } from "../../../../tests/utils/mongo.test.utils"
 import { useServer } from "../../../../tests/utils/server.test.utils"
 import { getDbCollection } from "../../../common/utils/mongodbUtils"
 
-const parcousupToken = getApiApprentissageTestingToken({
+const parcousupToken = await getApiApprentissageTestingToken({
   email: "test@test.fr",
   organisation: "parcoursup",
   habilitations: { "applications:write": false, "appointments:write": true, "jobs:write": false },
 })
 
-const onisepToken = getApiApprentissageTestingToken({
+const onisepToken = await getApiApprentissageTestingToken({
   email: "test@test.fr",
   organisation: "onisep",
   habilitations: { "applications:write": false, "appointments:write": true, "jobs:write": false },
 })
 
-const lbaToken = getApiApprentissageTestingToken({
+const lbaToken = await getApiApprentissageTestingToken({
   email: "test@test.fr",
   organisation: "lba",
   habilitations: { "applications:write": false, "appointments:write": true, "jobs:write": false },
 })
 
-const affelnetToken = getApiApprentissageTestingToken({
+const affelnetToken = await getApiApprentissageTestingToken({
   email: "test@test.fr",
   organisation: "affelnet",
   habilitations: { "applications:write": false, "appointments:write": true, "jobs:write": false },
 })
 
-const fakeToken = getApiApprentissageTestingTokenFromInvalidPrivateKey({
+const fakeToken = await getApiApprentissageTestingTokenFromInvalidPrivateKey({
   email: "mail@mail.com",
   organisation: "Un super Partenaire",
   habilitations: { "applications:write": false, "appointments:write": true, "jobs:write": false },
