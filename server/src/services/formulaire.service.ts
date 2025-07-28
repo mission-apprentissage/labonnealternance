@@ -886,7 +886,11 @@ export const updateJobsPartnersFromRecruiterById = async (recruiterId: ObjectId)
 
   if (recruiter?.jobs?.length) {
     await asyncForEach(recruiter.jobs, async (job) => {
-      await upsertJobPartnersFromRecruiter(recruiter, job)
+      try {
+        await upsertJobPartnersFromRecruiter(recruiter, job)
+      } catch (error) {
+        logger.error(`Failed to upsert job partners for job ${job._id} in recruiter ${recruiterId}:`, error)
+      }
     })
   }
 }
