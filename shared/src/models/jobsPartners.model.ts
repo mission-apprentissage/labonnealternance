@@ -6,7 +6,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 
 import { ZPointGeometry } from "./address.model.js"
 import { IModelDescriptor, zObjectId } from "./common.js"
-import { JOB_STATUS_ENGLISH } from "./job.model.js"
+import { JOB_STATUS_ENGLISH, ZDelegation } from "./job.model.js"
 import { ZComputedJobPartnersDuplicateRef } from "./jobPartnersDuplicateRef.js"
 import { zOpcoLabel } from "./opco.model.js"
 
@@ -121,6 +121,15 @@ const ZJobsPartnersRecruiterPrivateFields = z.object({
   workplace_address_street_label: z.string().nullable().describe("Numéro et voie, provenant du SIRET ou du partenaire"),
   workplace_address_city: z.string().nullable().describe("Nom de ville, provenant du SIRET ou du partenaire"),
   workplace_address_zipcode: extensions.zipCode().nullable().describe("Code postal, provenant du SIRET ou du partenaire"),
+
+  cfa_siret: extensions.siret.nullable().describe("Siret du CFA si offre déléguée"),
+  cfa_legal_name: z.string().nullable().describe("Raison sociale du CFA si offre déléguée"),
+  cfa_apply_phone: z.string().nullable().describe("Numéro de téléphone du CFA si offre déléguée"),
+  cfa_apply_email: z.string().email().nullable().describe("Email de contact du CFA si offre déléguée"),
+  cfa_address_label: z.string().nullable().describe("Adresse du CFA si offre déléguée"),
+  job_status_comment: z.string().nullish().describe("Raison de la suppression de l'offre"),
+  job_delegation_count: z.number().nullish().describe("Nombre de délégations"),
+  delegations: z.array(ZDelegation).nullish().describe("Liste des délégations"),
 
   created_at: z.date().describe("Date de creation de l'offre"),
   updated_at: z.date().describe("Date de mise à jour de l'offre"),

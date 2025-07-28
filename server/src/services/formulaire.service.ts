@@ -978,13 +978,11 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
     contract_is_disabled_elligible: job.is_disabled_elligible ?? null,
     contract_rythm: job.job_rythm ?? null,
 
-    workplace_legal_name:
-      (lbaJobContactInfo?.establishment_raison_sociale || lbaJobContactInfo?.establishment_enseigne) ??
-      (recruiter.establishment_raison_sociale || recruiter.establishment_enseigne || UNKNOWN_COMPANY),
-    workplace_brand: lbaJobContactInfo?.establishment_enseigne ?? recruiter.establishment_enseigne,
-    workplace_siret: lbaJobContactInfo?.establishment_siret ?? recruiter.establishment_siret,
+    workplace_legal_name: recruiter.establishment_raison_sociale || recruiter.establishment_enseigne || UNKNOWN_COMPANY,
+    workplace_brand: recruiter.establishment_enseigne,
+    workplace_siret: recruiter.establishment_siret,
     workplace_geopoint: recruiter.geopoint ?? undefined,
-    workplace_address_label: (recruiter.is_delegated ? lbaJobContactInfo?.address : recruiter.address) ?? "",
+    workplace_address_label: recruiter.address ?? "",
     workplace_address_zipcode: recruiter.address_detail?.code_postal ?? null,
     workplace_address_city: getCity(recruiter) ?? null,
 
