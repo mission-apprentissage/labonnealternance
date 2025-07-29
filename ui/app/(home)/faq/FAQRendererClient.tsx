@@ -37,7 +37,7 @@ export default function FAQRendererClient({ recruteur, organisme, candidat }: Pr
     <Box>
       <Breadcrumb pages={[PAGES.static.faq]} />
       <DefaultContainer>
-        <Box sx={{ p: { xs: 0, md: fr.spacing("5w") }, marginBottom: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
+        <Box sx={{ p: fr.spacing("5w"), marginBottom: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
           <Grid container spacing={fr.spacing("5w")}>
             <Grid size={{ xs: 12, md: 5 }}>
               <Typography component={"h1"} variant="h1" sx={{ mb: 2 }}>
