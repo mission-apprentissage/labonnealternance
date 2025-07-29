@@ -26,6 +26,7 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vite
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
+import { startRecruiterChangeStream } from "@/services/formulaire.service"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
 import config from "../../../config"
@@ -1482,7 +1483,7 @@ describe("findJobsOpportunities", () => {
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
 
-        expect.soft(results.jobs).toHaveLength(0)
+        expect.soft(results.jobs).toHaveLength(1)
       })
     })
 
@@ -2080,6 +2081,7 @@ describe("findJobOpportunityById tests", () => {
     created_at: originalCreatedAt,
     offer_creation: originalCreatedAt,
     offer_expiration: originalCreatedAtPlus2Months,
+    is_delegated: false,
   })
 
   const lbaJob: IRecruiter = generateRecruiterFixture({
@@ -2244,7 +2246,6 @@ describe("findJobOpportunityById tests", () => {
       vi.setSystemTime(now)
       await getDbCollection("jobs_partners").insertOne(originalJob)
       await getDbCollection("referentielromes").insertMany(romes)
-      await getDbCollection("recruiters").insertOne(lbaJob)
 
       return () => {
         vi.useRealTimers()
@@ -2287,6 +2288,9 @@ describe("findJobOpportunityById tests", () => {
     })
 
     it("should find an offer from recruiters collection on findJobOpportunityById", async () => {
+      const ctrl = new AbortController()
+      await startRecruiterChangeStream(ctrl.signal)
+
       // Créer un contexte mock
       const context = {
         addWarning: vi.fn(),
@@ -2294,6 +2298,11 @@ describe("findJobOpportunityById tests", () => {
 
       // Exécuter la fonction avec un ID existant lié à un élément de la collection recruiters
       const lbaJobId = lbaJob.jobs[0]._id
+
+      await getDbCollection("recruiters").insertOne(lbaJob)
+
+      await new Promise((r) => setTimeout(r, 200))
+
       const result = await findJobOpportunityById(lbaJobId, context)
 
       // Vérifier que le résultat n'est pas nul
@@ -2307,6 +2316,8 @@ describe("findJobOpportunityById tests", () => {
       if (!validationResult.success) {
         console.error("Validation errors:", validationResult.error.format())
       }
+
+      ctrl.abort()
     })
   })
 })
