@@ -37,7 +37,7 @@ import { getSomeFtJobs } from "../../ftjob.service"
 import { FTJob } from "../../ftjob.service.types"
 import { TJobSearchQuery, TLbaItemResult } from "../../jobOpportunity.service.types"
 import { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "../../lbaitem.shared.service.types"
-import { IJobResult, getLbaJobByIdV2AsJobResult, getLbaJobs, getLbaJobsV2, incrementLbaJobsViewCount } from "../../lbajob.service"
+import { IJobResult, getLbaJobByIdV2AsJobResult, getLbaJobs, incrementLbaJobsViewCount } from "../../lbajob.service"
 import { jobsQueryValidator, jobsQueryValidatorPrivate } from "../../queryValidator.service"
 import { getRecruteursLbaFromDB, getSomeCompanies } from "../../recruteurLba.service"
 
@@ -727,26 +727,17 @@ export const findFranceTravailOpportunitiesFromDB = async (resolvedQuery: IJobSe
   )
 }
 
-async function findLbaJobOpportunities(query: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> {
-  const payload: Parameters<typeof getLbaJobsV2>[0] = {
-    geo: query.geo,
-    romes: query.romes ?? null,
-    niveau: null,
-    limit: 150,
-    departements: query.departements ?? null,
-  }
+async function findLbaJobOpportunities({ romes, geo, target_diploma_level, departements, opco }: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> {
+  const jobsPartners = await getJobsPartnersFromDB({ romes, geo, target_diploma_level, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, opco, departements })
 
-  if (query.target_diploma_level) {
-    payload.niveau = NIVEAU_DIPLOME_LABEL[query.target_diploma_level]
-  }
-
-  if (query.opco) {
-    payload.opco = query.opco
-  }
-
-  const lbaJobs = await getLbaJobsV2(payload)
-
-  return convertLbaRecruiterToJobOfferApi(lbaJobs)
+  return jobsPartners.map((j) =>
+    jobsRouteApiv3Converters.convertToJobOfferApiReadV3({
+      ...j,
+      contract_type: j.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
+      apply_url: getApplyUrl(j),
+      apply_recipient_id: j.apply_email ? getRecipientID(JobCollectionName.partners, j._id.toString()) : null,
+    })
+  )
 }
 
 export async function resolveQuery(query: IJobSearchApiV3Query): Promise<IJobSearchApiV3QueryResolved> {

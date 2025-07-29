@@ -274,7 +274,7 @@ function convertToJobWorkplaceReadV3(input: IJobsPartnersOfferApi | IJobsPartner
 function convertToJobApplyReadV3(input: IJobsPartnersOfferApi | IJobsPartnersRecruiterApi): IJobRecruiterApiReadV3["apply"] {
   return {
     url: input.apply_url,
-    phone: input.apply_phone,
+    phone: input.apply_phone || null,
     recipient_id: input.apply_recipient_id || null,
   }
 }

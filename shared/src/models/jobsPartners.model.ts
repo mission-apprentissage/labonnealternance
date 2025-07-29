@@ -61,6 +61,7 @@ export const ZJobsPartnersRecruiterApi = z.object({
     .describe(
       "Identifiant permettant de candidater via l'API ou le widget /postuler, généré à la volée pour les opportunités dont on dispose de l'adresse email. Si null il n'est pas possible d'utiliser le widget /postuler ou d'utiliser la route api pour postuler"
     ),
+  is_delegated: z.boolean().nullish().default(false).describe("Indique si l'offre est déléguée à un mandataire"),
 })
 
 export const zDiplomaEuropeanLevel = z.enum(["3", "4", "5", "6", "7"])
@@ -148,7 +149,6 @@ export const ZJobsPartnersOfferPrivate = ZJobsPartnersOfferApi.omit({
     rank: z.number().nullish().describe("Valeur indiquant la qualité de l'offre. Plus la valeur est élevée, plus la qualité de l'offre est importante"),
     duplicates: z.array(ZComputedJobPartnersDuplicateRef).nullish().describe("Référence les autres offres en duplicata avec celle-ci"),
     applicationCount: z.number().nullish().describe("Nombre de candidatures pour cette offre"),
-    is_delegated: z.boolean().nullish().describe("Indique si l'offre est déléguée à un mandataire"),
   })
 
 export const ZJobsPartnersOfferPrivateWithDistance = ZJobsPartnersOfferPrivate.extend({
