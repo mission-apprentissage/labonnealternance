@@ -18,7 +18,7 @@ const ZClassitifationJobsPartners = z.object({
 export type IClassificationJobsPartners = z.output<typeof ZClassitifationJobsPartners>
 
 export const ZClassificationLabResponse = z.object({
-  label: z.string(),
+  label: z.enum(["cfa", "entreprise", "entreprise_cfa"]),
   scores: ZClassitifationJobsPartners.shape.scores,
   text: z.string(),
   model: z.string(),
