@@ -346,16 +346,12 @@ export const getLbaJobById = async ({ id, caller }: { id: ObjectId; caller?: str
 /**
  * @description Retourne une offre LBA identifiée par son id pour la route d'API GET /v3/jobs/:id
  */
-export const getLbaJobByIdV2AsJobResult = async ({ id, caller }: { id: string; caller?: string }): Promise<IJobResult | null> => {
+export const getLbaJobByIdV2AsJobResult = async ({ id }: { id: string }): Promise<IJobResult | null> => {
   try {
     const rawJob = await getOffreAvecInfoMandataire(id)
 
     if (!rawJob) {
       return null
-    }
-
-    if (caller) {
-      trackApiCall({ caller: caller, job_count: 1, result_count: 1, api_path: "job/offre_emploi_lba", response: "OK" })
     }
 
     const transformedJob = await transformOffreAvecMandataireToJobResult(rawJob)
