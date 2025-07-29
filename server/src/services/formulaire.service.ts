@@ -885,7 +885,7 @@ export const updateJobsPartnersFromRecruiterById = async (recruiterId: ObjectId)
   const recruiter = await getDbCollection("recruiters").findOne({ _id: recruiterId })
 
   if (recruiter?.jobs?.length) {
-    await asyncForEach(recruiter.jobs, async (job) => {
+    await asyncForEach(recruiter.jobs, async (job: IJob) => {
       await upsertJobPartnersFromRecruiter(recruiter, job)
     })
   }
