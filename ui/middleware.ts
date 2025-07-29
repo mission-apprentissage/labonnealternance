@@ -10,7 +10,7 @@ import { PAGES } from "./utils/routes.utils"
 
 const removeAtEnd = (url: string, removed: string): string => (url.endsWith(removed) ? url.slice(0, -removed.length) : url)
 
-async function getSession(request: NextRequest): Promise<{ user: IUserRecruteurPublic | null; userAccess: ComputedUserAccess | null } | null> {
+async function getSession(request: NextRequest): Promise<{ user: IUserRecruteurPublic | null; access: ComputedUserAccess | null } | null> {
   try {
     const sessionCookie = request.cookies.get("lba_session")
 
@@ -36,7 +36,7 @@ async function getSession(request: NextRequest): Promise<{ user: IUserRecruteurP
       return null
     }
 
-    return { user: await sessionRequest.json(), userAccess: await accessRequest.json() }
+    return { user: await sessionRequest.json(), access: await accessRequest.json() }
   } catch (error) {
     return null
   }

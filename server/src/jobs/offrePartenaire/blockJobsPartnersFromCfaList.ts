@@ -1,6 +1,7 @@
 import { removeAccents } from "shared"
 
 const cfaCompanyList = [
+  "ISCOM Lille",
   "CFA IESA PARIS",
   "CFA IESA STRASBOURG",
   "GROUPE IMT",
@@ -119,7 +120,7 @@ const cfaCompanyList = [
   "WIN PARIS",
   "WIN REIMS",
   "WIN RENNES",
-  "WIN SAINT‑QUENTIN‑EN‑YVELINES",
+  "WIN SAINT-QUENTIN-EN-YVELINES",
   "WIN STRASBOURG",
   "WIN TOULOUSE",
   "WIN TOURS",
