@@ -37,7 +37,7 @@ import { getSomeFtJobs } from "../../ftjob.service"
 import { FTJob } from "../../ftjob.service.types"
 import { TJobSearchQuery, TLbaItemResult } from "../../jobOpportunity.service.types"
 import { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "../../lbaitem.shared.service.types"
-import { IJobResult, getLbaJobByIdV2AsJobResult, getLbaJobs, incrementLbaJobsViewCount } from "../../lbajob.service"
+import { IJobResult, getLbaJobs, incrementLbaJobsViewCount } from "../../lbajob.service"
 import { jobsQueryValidator, jobsQueryValidatorPrivate } from "../../queryValidator.service"
 import { getRecruteursLbaFromDB, getSomeCompanies } from "../../recruteurLba.service"
 
@@ -968,17 +968,10 @@ export async function findJobOpportunityById(id: ObjectId, context: JobOpportuni
 }
 
 export async function findOfferPublishing(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferPublishingV3> {
-  const offerV2 = await getLbaJobByIdV2AsJobOfferApi(id, context)
-  if (offerV2) {
-    return {
-      publishing: {
-        status: JOB_PUBLISHING_STATUS.PUBLISHED,
-      },
-    }
-  }
   const publishing = await getJobsPartnersPublishing(id)
 
   if (!publishing) {
+    context.addWarning("JOB_NOT_FOUND")
     logger.warn(`Aucune offre d'emploi trouvée pour l'ID: ${id.toString()}`, { context })
     throw notFound(`Aucune offre d'emploi trouvée pour l'ID: ${id.toString()}`)
   }
@@ -1003,18 +996,6 @@ function validateJobOffer(job: IJobOfferApiReadV3, id: ObjectId, context: JobOpp
   }
 
   return parsedJob.data
-}
-
-export async function getLbaJobByIdV2AsJobOfferApi(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3 | null> {
-  const job = await getLbaJobByIdV2AsJobResult({ id: id.toString(), caller: context?.caller })
-
-  if (!job) {
-    context.addWarning("JOB_NOT_FOUND")
-    return null
-  }
-
-  const transformedJob = convertLbaRecruiterToJobOfferApi([job])[0]
-  return transformedJob
 }
 
 export async function getJobsPartnersByIdAsJobOfferApi(id: ObjectId): Promise<IJobOfferApiReadV3 | null> {
