@@ -949,9 +949,6 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
         cfa_apply_phone: lbaJobContactInfo?.phone || null,
         cfa_apply_email: lbaJobContactInfo?.email || null,
         cfa_address_label: lbaJobContactInfo?.address || null,
-        job_status_comment: job?.job_status_comment || null,
-        job_delegation_count: job?.job_delegation_count || null,
-        delegations: job?.delegations,
       }
     : {
         cfa_siret: null,
@@ -959,9 +956,6 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
         cfa_apply_phone: null,
         cfa_apply_email: null,
         cfa_address_label: null,
-        job_status_comment: null,
-        job_delegation_count: null,
-        delegations: null,
       }
 
   const partnerJobToUpsert: Partial<IJobsPartnersOfferPrivate> = {
@@ -971,6 +965,9 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
     partner_label: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
     partner_job_id: job._id.toString(),
     is_delegated: recruiter.is_delegated,
+    job_status_comment: job?.job_status_comment || null,
+    job_delegation_count: job?.job_delegation_count || null,
+    delegations: job?.delegations,
 
     contract_start: job.job_start_date ?? null,
     contract_duration: job.job_duration ?? null,
