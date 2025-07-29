@@ -30,14 +30,7 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 
 import config from "../../../config"
 
-import {
-  createJobOffer,
-  findJobOpportunityById,
-  findJobsOpportunities,
-  getJobsPartnersByIdAsJobOfferApi,
-  getLbaJobByIdV2AsJobOfferApi,
-  updateJobOffer,
-} from "./jobOpportunity.service"
+import { createJobOffer, findJobOpportunityById, findJobsOpportunities, getJobsPartnersByIdAsJobOfferApi, updateJobOffer } from "./jobOpportunity.service"
 import { JobOpportunityRequestContext } from "./JobOpportunityRequestContext"
 
 useMongo()
@@ -1456,8 +1449,8 @@ describe("findJobsOpportunities", () => {
         const parseResult = zJobSearchApiV3Response.safeParse(results)
         expect.soft(parseResult.success).toBeTruthy()
         expect(parseResult.error).toBeUndefined()
-        expect.soft(results.jobs).toHaveLength(1)
-        expect.soft(results.jobs[0].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.RH_ALTERNANCE)
+        expect.soft(results.jobs).toHaveLength(2)
+        expect.soft(results.jobs[1].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.RH_ALTERNANCE)
 
         results = await findJobsOpportunities(
           {
@@ -1472,7 +1465,7 @@ describe("findJobsOpportunities", () => {
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
 
-        expect.soft(results.jobs).toHaveLength(2)
+        expect.soft(results.jobs).toHaveLength(3)
         expect.soft(results.jobs[0].identifier.partner_label).not.toBe(JOBPARTNERS_LABEL.RH_ALTERNANCE)
         expect.soft(results.jobs[1].identifier.partner_label).not.toBe(JOBPARTNERS_LABEL.RH_ALTERNANCE)
 
@@ -2236,56 +2229,6 @@ describe("findJobOpportunityById tests", () => {
       const validationResult = zJobOfferApiReadV3.safeParse(result)
 
       // Si la validation échoue, afficher les erreurs pour faciliter le débogage
-      if (!validationResult.success) {
-        console.error("Validation errors:", validationResult.error.format())
-      }
-
-      // Vérifier que la validation a réussi
-      expect(validationResult.success).toBe(true)
-    })
-  })
-
-  describe("getLbaJobByIdV2AsJobOfferApi", () => {
-    beforeEach(async () => {
-      await getDbCollection("referentielromes").insertMany(romes)
-      await getDbCollection("recruiters").insertOne(lbaJob)
-    })
-
-    it("should return null when not found", async () => {
-      // Créer un contexte de requête mock
-      const context = {
-        addWarning: vi.fn(),
-      } as unknown as JobOpportunityRequestContext
-
-      // Utiliser un ID qui n'existe pas dans la base de données
-      const nonExistentId = new ObjectId()
-
-      expect(await getLbaJobByIdV2AsJobOfferApi(nonExistentId, context)).toEqual(null)
-
-      // Vérifier que la méthode addWarning a été appelée avec le bon message
-      expect(context.addWarning).toHaveBeenCalledWith("JOB_NOT_FOUND")
-    })
-
-    it("should return a job offer with correct format on getLbaJobByIdV2AsJobOfferApi", async () => {
-      // Créer un contexte de requête mock
-      const context = {
-        addWarning: vi.fn(),
-      } as unknown as JobOpportunityRequestContext
-
-      // Exécuter la fonction avec un ID existant
-      const jobId = lbaJob.jobs[0]._id
-      const result = await getLbaJobByIdV2AsJobOfferApi(jobId, context)
-
-      // Vérifier que addWarning n'a pas été appelé car le job a été trouvé
-      expect(context.addWarning).not.toHaveBeenCalled()
-
-      // Vérifier que le résultat n'est pas null
-      expect(result).not.toBeNull()
-
-      // Valider que le résultat correspond au schéma attendu
-      const validationResult = zJobOfferApiReadV3.safeParse(result)
-
-      // Afficher les erreurs en cas d'échec de validation
       if (!validationResult.success) {
         console.error("Validation errors:", validationResult.error.format())
       }
