@@ -68,8 +68,6 @@ function ListeEntreprise() {
     enabled: Boolean(cfaId),
   })
 
-  console.log(data, "data") // Ajouté pour le débogage
-
   if (isLoading) {
     return <LoadingEmptySpace />
   }
