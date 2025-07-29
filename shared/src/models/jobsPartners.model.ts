@@ -62,6 +62,10 @@ export const ZJobsPartnersRecruiterApi = z.object({
       "Identifiant permettant de candidater via l'API ou le widget /postuler, généré à la volée pour les opportunités dont on dispose de l'adresse email. Si null il n'est pas possible d'utiliser le widget /postuler ou d'utiliser la route api pour postuler"
     ),
   is_delegated: z.boolean().nullish().default(false).describe("Indique si l'offre est déléguée à un mandataire"),
+
+  cfa_legal_name: z.string().nullable().describe("Raison sociale du CFA si offre déléguée"),
+  cfa_siret: extensions.siret.nullable().describe("Siret du CFA si offre déléguée"),
+  cfa_address_label: z.string().nullable().describe("Adresse du CFA si offre déléguée"),
 })
 
 export const zDiplomaEuropeanLevel = z.enum(["3", "4", "5", "6", "7"])

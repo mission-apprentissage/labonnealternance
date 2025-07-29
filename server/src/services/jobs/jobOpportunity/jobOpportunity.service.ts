@@ -946,11 +946,10 @@ export async function upsertJobOffer(data: IJobOfferApiWriteV3, partner_label: s
 
 export async function findJobOpportunityById(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3> {
   try {
-    // Exécuter les requêtes en parallèle puis récupérer la première offre trouvée
-    const promises = await Promise.allSettled([getLbaJobByIdV2AsJobOfferApi(id, context), getJobsPartnersByIdAsJobOfferApi(id)])
-    const [foundJob] = promises.flatMap((promise) => (promise.status === "fulfilled" && promise.value !== null ? [promise.value] : []))
+    const foundJob = await getJobsPartnersByIdAsJobOfferApi(id)
 
     if (!foundJob) {
+      context.addWarning("JOB_NOT_FOUND")
       logger.warn(`Aucune offre d'emploi trouvée pour l'ID: ${id.toString()}`, { context })
       throw notFound(`Aucune offre d'emploi trouvée pour l'ID: ${id.toString()}`)
     }
