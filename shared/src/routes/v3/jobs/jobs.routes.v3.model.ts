@@ -80,6 +80,7 @@ export const zJobOfferApiReadV3 = z.object({
     opening_count: ZJobsPartnersOfferApi.shape.offer_opening_count,
     status: ZJobsPartnersOfferApi.shape.offer_status,
   }),
+  is_delegated: ZJobsPartnersOfferApi.shape.is_delegated.default(false),
 })
 
 export type IJobOfferApiReadV3 = z.output<typeof zJobOfferApiReadV3>
@@ -312,6 +313,8 @@ function convertToJobOfferApiReadV3(input: IJobsPartnersOfferApi): IJobOfferApiR
       opening_count: input.offer_opening_count,
       status: input.offer_status,
     },
+
+    is_delegated: input.is_delegated || false,
   }
 }
 
