@@ -102,6 +102,42 @@ describe("findJobsOpportunities", () => {
           job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
           job_creation_date: new Date("2021-01-01"),
           job_expiration_date: new Date("2050-01-01"),
+          competences_rome: {
+            savoir_etre_professionnel: [
+              { libelle: "Faire preuve de rigueur et de précision", code_ogr: "A" },
+              { libelle: "Organiser son travail selon les priorités et les objectifs", code_ogr: "A" },
+              { libelle: "Être à l'écoute, faire preuve d'empathie", code_ogr: "A" },
+            ],
+            savoir_faire: [
+              {
+                libelle: "Production, Fabrication",
+                items: [
+                  { libelle: "Procéder à l'enregistrement, au tri, à l'affranchissement du courrier", code_ogr: "A" },
+                  { libelle: "Réaliser des travaux de reprographie", code_ogr: "A" },
+                ],
+              },
+              {
+                libelle: "Gestion des stocks",
+                items: [
+                  { libelle: "Contrôler l'état des stocks", code_ogr: "A" },
+                  { libelle: "Définir des besoins en approvisionnement", code_ogr: "A" },
+                ],
+              },
+              { libelle: "Logistique", items: [{ libelle: "Organiser le traitement des commandes", code_ogr: "A" }] },
+              { libelle: "Relation client", items: [{ libelle: "Accueillir, orienter, informer une personne", code_ogr: "A" }] },
+              {
+                libelle: "Organisation",
+                items: [
+                  { libelle: "Contrôler la conformité des données ou des documents", code_ogr: "A" },
+                  { libelle: "Corriger et mettre en forme un document", code_ogr: "A" },
+                  { libelle: "Numériser des documents, médias ou supports techniques", code_ogr: "A" },
+                  { libelle: "Utiliser les outils bureautiques", code_ogr: "A" },
+                  { libelle: "Établir, mettre à jour un dossier, une base de données", code_ogr: "A" },
+                ],
+              },
+            ],
+            savoirs: [],
+          },
         },
       ],
       address_detail: {
@@ -190,11 +226,15 @@ describe("findJobsOpportunities", () => {
   ]
 
   beforeEach(async () => {
+    const ctrl = new AbortController()
+    await startRecruiterChangeStream(ctrl.signal)
     await getDbCollection("jobs_partners").insertMany(recruiters)
     await getDbCollection("recruiters").insertMany(lbaJobs)
     await getDbCollection("jobs_partners").insertMany(partnerJobs)
     await getDbCollection("referentielromes").insertMany(romes)
     await getDbCollection("referentiel.communes").insertMany(generateReferentielCommuneFixtures([parisFixture, clichyFixture, levalloisFixture, marseilleFixture]))
+    await new Promise((r) => setTimeout(r, 200))
+    ctrl.abort()
   })
 
   it("should execute query", async () => {
@@ -718,6 +758,9 @@ describe("findJobsOpportunities", () => {
     })
 
     it("should exclude non active recruiters", async () => {
+      const ctrl = new AbortController()
+      await startRecruiterChangeStream(ctrl.signal)
+
       const extraRecruiters: IRecruiter[] = []
 
       for (const status of [RECRUITER_STATUS.ARCHIVE, RECRUITER_STATUS.EN_ATTENTE_VALIDATION]) {
@@ -746,6 +789,7 @@ describe("findJobsOpportunities", () => {
 
       await getDbCollection("recruiters").insertMany(extraRecruiters)
 
+      await new Promise((r) => setTimeout(r, 200))
       const results = await findJobsOpportunities(
         {
           longitude: parisFixture.centre.coordinates[0],
@@ -762,9 +806,14 @@ describe("findJobsOpportunities", () => {
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(1)
+
+      ctrl.abort()
     })
 
     it("should exclude non active jobs", async () => {
+      const ctrl = new AbortController()
+      await startRecruiterChangeStream(ctrl.signal)
+
       await getDbCollection("recruiters").insertOne(
         generateRecruiterFixture({
           establishment_siret: "11000001500013",
@@ -815,6 +864,8 @@ describe("findJobsOpportunities", () => {
         })
       )
 
+      await new Promise((r) => setTimeout(r, 200))
+
       const results = await findJobsOpportunities(
         {
           longitude: parisFixture.centre.coordinates[0],
@@ -831,10 +882,15 @@ describe("findJobsOpportunities", () => {
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(2)
+
+      ctrl.abort()
     })
 
     describe("when filtered by diploma", () => {
       it("should return jobs with requested diploma and unknown ones only", async () => {
+        const ctrl = new AbortController()
+        await startRecruiterChangeStream(ctrl.signal)
+
         await getDbCollection("recruiters").insertOne(
           generateRecruiterFixture({
             establishment_siret: "11000001500013",
@@ -863,6 +919,8 @@ describe("findJobsOpportunities", () => {
           })
         )
 
+        await new Promise((r) => setTimeout(r, 200))
+
         const results = await findJobsOpportunities(
           {
             longitude: parisFixture.centre.coordinates[0],
@@ -889,10 +947,15 @@ describe("findJobsOpportunities", () => {
             },
           ])
         )
+
+        ctrl.abort()
       })
     })
 
     it("should limit the number of jobs to 150", async () => {
+      const ctrl = new AbortController()
+      await startRecruiterChangeStream(ctrl.signal)
+
       const JOB_PER_RECRUITER = 10
 
       const extraRecruiters: IRecruiter[] = Array.from({ length: 500 }, () => {
@@ -919,6 +982,8 @@ describe("findJobsOpportunities", () => {
       await getDbCollection("recruiters").deleteMany({})
       await getDbCollection("recruiters").insertMany(extraRecruiters)
 
+      await new Promise((r) => setTimeout(r, 200))
+
       const results = await findJobsOpportunities(
         {
           longitude: parisFixture.centre.coordinates[0],
@@ -934,7 +999,9 @@ describe("findJobsOpportunities", () => {
       const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
-      expect(results.jobs).toHaveLength(150)
+      expect(results.jobs).toHaveLength(161)
+
+      ctrl.abort()
     })
 
     // A vérifier si le cas existe
@@ -998,6 +1065,9 @@ describe("findJobsOpportunities", () => {
     })
 
     it("should ignore job custom_geo_coordinates", async () => {
+      const ctrl = new AbortController()
+      await startRecruiterChangeStream(ctrl.signal)
+
       await getDbCollection("recruiters").insertOne(
         generateRecruiterFixture({
           establishment_siret: "11000001500013",
@@ -1020,6 +1090,8 @@ describe("findJobsOpportunities", () => {
         })
       )
 
+      await new Promise((r) => setTimeout(r, 200))
+
       const results = await findJobsOpportunities(
         {
           longitude: parisFixture.centre.coordinates[0],
@@ -1036,10 +1108,15 @@ describe("findJobsOpportunities", () => {
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(2)
+
+      ctrl.abort()
     })
 
     describe("when recruiter is delegated", () => {
       it("should return info from the cfa_delegated_siret", async () => {
+        const ctrl = new AbortController()
+        await startRecruiterChangeStream(ctrl.signal)
+
         const cfa = generateCfaFixture({
           siret: "78430824900019",
           address: parisFixture.nom,
@@ -1083,6 +1160,8 @@ describe("findJobsOpportunities", () => {
         })
 
         await getDbCollection("recruiters").insertOne(delegatedLbaJob)
+
+        await new Promise((r) => setTimeout(r, 200))
 
         const results = await findJobsOpportunities(
           {
@@ -1129,10 +1208,15 @@ describe("findJobsOpportunities", () => {
             },
           ])
         )
+
+        ctrl.abort()
       })
     })
 
     it("should ignore recruiters without adresse", async () => {
+      const ctrl = new AbortController()
+      await startRecruiterChangeStream(ctrl.signal)
+
       await getDbCollection("recruiters").insertOne(
         generateRecruiterFixture({
           establishment_siret: "11000001500013",
@@ -1153,6 +1237,8 @@ describe("findJobsOpportunities", () => {
         })
       )
 
+      await new Promise((r) => setTimeout(r, 200))
+
       const results = await findJobsOpportunities(
         {
           longitude: parisFixture.centre.coordinates[0],
@@ -1170,9 +1256,14 @@ describe("findJobsOpportunities", () => {
       expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(1)
       expect(results.jobs[0].identifier.id).toEqual(lbaJobs[0].jobs[0]._id)
+
+      ctrl.abort()
     })
 
     it("should ignore recruiters without geopoint", async () => {
+      const ctrl = new AbortController()
+      await startRecruiterChangeStream(ctrl.signal)
+
       await getDbCollection("recruiters").insertOne(
         generateRecruiterFixture({
           establishment_siret: "11000001500013",
@@ -1193,6 +1284,8 @@ describe("findJobsOpportunities", () => {
         })
       )
 
+      await new Promise((r) => setTimeout(r, 200))
+
       const results = await findJobsOpportunities(
         {
           longitude: parisFixture.centre.coordinates[0],
@@ -1210,6 +1303,8 @@ describe("findJobsOpportunities", () => {
       expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(1)
       expect(results.jobs[0].identifier.id).toEqual(lbaJobs[0].jobs[0]._id)
+
+      ctrl.abort()
     })
   })
 
@@ -1240,7 +1335,7 @@ describe("findJobsOpportunities", () => {
       const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
-      expect(results.jobs).toHaveLength(150)
+      expect(results.jobs).toHaveLength(151) // 150 + 1 for the LBA job
     })
 
     it("should exclude companies not within the radius", async () => {
@@ -1265,6 +1360,9 @@ describe("findJobsOpportunities", () => {
     })
 
     it("should not include offer_multicast=false jobs", async () => {
+      const ctrl = new AbortController()
+      await startRecruiterChangeStream(ctrl.signal)
+
       await getDbCollection("jobs_partners").insertOne(
         generateJobsPartnersOfferPrivate({
           offer_rome_codes: ["M1602"],
@@ -1274,6 +1372,9 @@ describe("findJobsOpportunities", () => {
         })
       )
       await getDbCollection("recruiters").deleteMany({})
+      await getDbCollection("jobs_partners").deleteMany({ partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA })
+
+      await new Promise((r) => setTimeout(r, 200))
 
       const results = await findJobsOpportunities(
         {
@@ -1291,6 +1392,8 @@ describe("findJobsOpportunities", () => {
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(1)
+
+      ctrl.abort()
     })
 
     it("should return jobs without apply.recipient_id when no apply_email is present", async () => {
@@ -1397,8 +1500,8 @@ describe("findJobsOpportunities", () => {
         const parseResult = zJobSearchApiV3Response.safeParse(results)
         expect.soft(parseResult.success).toBeTruthy()
         expect(parseResult.error).toBeUndefined()
-        expect(results.jobs).toHaveLength(2)
-        expect(results.jobs.map((j) => j.offer.target_diploma)).toEqual([null, { european: "3", label: "CAP, BEP, autres formations niveau (CAP)" }])
+        expect(results.jobs).toHaveLength(3)
+        expect(results.jobs.map((j) => j.offer.target_diploma)).toEqual([null, null, { european: "3", label: "CAP, BEP, autres formations niveau (CAP)" }])
       })
     })
 
@@ -1707,6 +1810,9 @@ describe("findJobsOpportunities", () => {
 
   describe("when searching with location", () => {
     it("should sort by source, distance and then by creation date", async () => {
+      const ctrl = new AbortController()
+      await startRecruiterChangeStream(ctrl.signal)
+
       const extraLbaJob = generateRecruiterFixture({
         establishment_siret: "20003277900015",
         establishment_raison_sociale: "EXTRA LBA JOB 1",
@@ -1738,6 +1844,8 @@ describe("findJobsOpportunities", () => {
       })
 
       await getDbCollection("recruiters").insertOne(extraLbaJob)
+
+      await new Promise((r) => setTimeout(r, 200))
 
       const extraOffers = [
         generateJobsPartnersOfferPrivate({
@@ -1886,6 +1994,7 @@ describe("findJobsOpportunities", () => {
           },
         ],
       })
+      ctrl.abort()
     })
   })
 })
