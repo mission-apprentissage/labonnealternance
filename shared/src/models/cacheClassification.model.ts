@@ -25,6 +25,18 @@ export const ZClassificationLabResponse = z.object({
 })
 export type IClassificationLabResponse = z.output<typeof ZClassificationLabResponse>
 
+export const ZClassificationLabBatchResponse = z
+  .object({
+    id: z.string(),
+    label: z.enum(["cfa", "entreprise", "entreprise_cfa"]),
+    scores: ZClassitifationJobsPartners.shape.scores,
+    text: z.string(),
+    model: z.string(),
+  })
+  .array()
+
+export type IClassificationLabBatchResponse = z.output<typeof ZClassificationLabBatchResponse>
+
 export const ZClassificationLabVersionResponse = z.object({
   model: z.string(),
 })

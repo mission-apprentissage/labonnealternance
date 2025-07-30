@@ -1,7 +1,9 @@
 import { internal } from "@hapi/boom"
 import {
+  IClassificationLabBatchResponse,
   IClassificationLabResponse,
   IClassificationLabVersionResponse,
+  ZClassificationLabBatchResponse,
   ZClassificationLabResponse,
   ZClassificationLabVersionResponse,
 } from "shared/models/cacheClassification.model"
@@ -22,7 +24,26 @@ export const getLabClassification = async (job: string): Promise<IClassification
     return validation.data
   } catch (error: any) {
     sentryCaptureException(error, { extra: { responseData: error.response?.data } })
-    throw internal("getLabClassification: erreur lors de la récupération des données", { error })
+    throw error
+  }
+}
+
+type IGetLabClassificationBatch = {
+  id: string
+  text: string
+}[]
+
+export const getLabClassificationBatch = async (jobs: IGetLabClassificationBatch): Promise<IClassificationLabBatchResponse> => {
+  try {
+    const response = await client.post("/scores", { items: jobs })
+    const validation = ZClassificationLabBatchResponse.safeParse(response.data)
+    if (!validation.success) {
+      throw internal("getLabClassificationBatch: format de réponse non valide", { error: validation.error })
+    }
+    return validation.data
+  } catch (error: any) {
+    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
+    throw error
   }
 }
 
@@ -36,6 +57,6 @@ export const getLabClassificationModelVersion = async (): Promise<IClassificatio
     return validation.data
   } catch (error: any) {
     sentryCaptureException(error, { extra: { responseData: error.response?.data } })
-    throw internal("getLabClassificationModelVersion: erreur lors de la récupération des données", { error })
+    throw error
   }
 }
