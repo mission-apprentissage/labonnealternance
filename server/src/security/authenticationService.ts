@@ -99,8 +99,8 @@ async function authApiKey(req: FastifyRequest): Promise<AccessUserCredential | n
   return user ? { type: "ICredential", value: user } : null
 }
 
-function authApiApprentissage(req: FastifyRequest): AccessApiApprentissage | null {
-  const result = parseApiAlternanceToken({
+async function authApiApprentissage(req: FastifyRequest): Promise<AccessApiApprentissage | null> {
+  const result = await parseApiAlternanceToken({
     token: req.headers.authorization ?? "",
     publicKey: config.auth.apiApprentissage.publicKey,
   })
@@ -148,7 +148,7 @@ export async function authenticationMiddleware<S extends ISecuredRouteSchema>(sc
       req.user = await authAccessToken(req, schema)
       break
     case "api-apprentissage":
-      req.user = authApiApprentissage(req)
+      req.user = await authApiApprentissage(req)
       break
     default:
       assertUnreachable(securityScheme.auth)

@@ -13,30 +13,21 @@ const getPathLink = (anyItem: ILbaItemFormation2Json | ILbaItemLbaCompanyJson | 
   return res
 }
 
-const getValueFromPath = (key) => {
-  let res = ""
-  if (typeof window !== "undefined") {
-    // @ts-expect-error: TODO
-    const url = new URL(window.location)
-
-    // WARNING: URLSearchParams not supported by IE
-    const searchParams = new URLSearchParams(url.search)
-
-    res = searchParams.get(key)
-  }
-
-  return res
+type ScrollToNestedElementParams = {
+  containerId: string
+  nestedElement: HTMLElement
+  yOffsett?: number
 }
 
-const scrollToNestedElement = ({ containerId, nestedElement, yOffsett = 100 }) => {
+const scrollToNestedElement = ({ containerId, nestedElement, yOffsett = 100 }: ScrollToNestedElementParams) => {
   const ancestorElement = document.getElementById(containerId)
 
   let distanceFromAncestorTop = 0
-  let currentElement = nestedElement
+  let currentElement: HTMLElement | null = nestedElement
 
   while (currentElement !== ancestorElement && currentElement !== null) {
     distanceFromAncestorTop += currentElement.offsetTop
-    currentElement = currentElement.offsetParent
+    currentElement = currentElement.offsetParent as HTMLElement | null
   }
   ancestorElement.scrollTo({
     top: distanceFromAncestorTop - yOffsett,
@@ -44,11 +35,11 @@ const scrollToNestedElement = ({ containerId, nestedElement, yOffsett = 100 }) =
   })
 }
 
-const logError = (title, error = undefined) => {
+const logError = (title: string, error: string | Error = undefined) => {
   const err = error instanceof Error ? error : new Error(error)
   err.name = title
 
   console.error(`Error ${title} sent to Sentry`)
 }
 
-export { getPathLink, getValueFromPath, logError, scrollToNestedElement }
+export { getPathLink, logError, scrollToNestedElement }

@@ -4,10 +4,15 @@ export const jobPartnersRankDefaultFactor = 0.5
 
 /*Source du ranking sur Google drive (document "Agrégation et rediffusion d'offres partenaires")*/
 const jobPartnersRankConfigByFlux: Partial<Record<JOBPARTNERS_LABEL, number>> = {
-  Hellowork: 0.24,
-  "France Travail": 0.22,
-  "RH Alternance": 0.3,
+  Hellowork: 0.65,
+  "France Travail": 0.5,
+  "RH Alternance": 0.4,
   "La Poste": 0.7,
+  Monster: 0.3,
+  "annonces Atlas": 0.5,
+  "Vite un emploi": 0.5,
+  "Nos Talents Nos Emplois": 0.5,
+  "Toulouse metropole": 0.5,
 }
 
 const jobPartnersRankConfigByAPI: Record<string, number> = {
@@ -19,6 +24,8 @@ const jobPartnersRankConfigByAPI: Record<string, number> = {
   BPCE: 0.7,
   Decathlon: 0.7,
   "Institut Pasteur": 0.7,
+  Jooble: 0.58,
+  "Jobs that make sense": 0.62,
 }
 
 export const jobPartnersRankConfig = {

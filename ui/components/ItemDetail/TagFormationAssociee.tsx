@@ -6,7 +6,7 @@ const tagProperties = {
   background: fr.colors.decisions.background.contrast.greenEmeraude.default,
 }
 
-const TagFormationAssociee = ({ isMandataire }) => {
+const TagFormationAssociee = ({ isMandataire }: { isMandataire?: boolean }) => {
   return (
     <>
       {isMandataire === true ? (

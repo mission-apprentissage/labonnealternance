@@ -32,7 +32,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
       try {
         const result = (await apiGet(`/v1/metiers/intitule`, { querystring: { label: search } })) as IAppellationsRomes
         return result.coupleAppellationRomeMetier
-      } catch (error) {
+      } catch (error: any) {
         throw new Error(error)
       }
     }

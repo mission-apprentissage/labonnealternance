@@ -2,7 +2,16 @@ import { Button, Heading, Modal, ModalBody, ModalContent, ModalFooter, ModalHead
 
 import { Close } from "../../theme/components/icons"
 
-export default function ConfirmationModificationOpco(props) {
+interface ConfirmationModificationOpcoProps {
+  isOpen: boolean
+  onClose: () => void
+  setFieldValue: (field: string, value: any) => void
+  previousValue: string
+  newValue: string
+  establishment_raison_sociale: string
+}
+
+export default function ConfirmationModificationOpco(props: ConfirmationModificationOpcoProps) {
   const { isOpen, onClose, setFieldValue, previousValue, newValue, establishment_raison_sociale } = props
 
   const handleUpdate = () => {

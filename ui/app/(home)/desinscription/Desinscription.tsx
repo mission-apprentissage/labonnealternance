@@ -7,7 +7,7 @@ import { useState } from "react"
 
 import { FormulaireDesinscription } from "@/app/(home)/desinscription/_components/FormulaireDesinscription"
 import SuccesDesinscription from "@/app/(home)/desinscription/_components/SuccesDesinscription"
-import { AlgoRecruiter } from "@/app/(landing-pages)/acces-recruteur/_components/AlgoRecruiter"
+import { AlgoRecruteur } from "@/app/(landing-pages)/acces-recruteur/_components/AlgoRecruter"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { getApplicationCompanyEmailAddress } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
@@ -37,7 +37,7 @@ export function DesinscriptionRecruteur() {
             <FormulaireDesinscription companyEmail={data?.company_email || ""} handleUnsubscribeSuccess={handleUnsubscribeSuccess} />
 
             <Box>
-              <AlgoRecruiter withLinks={false} />
+              <AlgoRecruteur withLinks={false} />
             </Box>
           </>
         ) : (

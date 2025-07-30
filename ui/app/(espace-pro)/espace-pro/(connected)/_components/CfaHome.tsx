@@ -9,13 +9,13 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { IRecruiter, IRecruiterJson } from "shared"
 
+import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
 import { AnimationContainer, LoadingEmptySpace, TableNew } from "@/components/espace_pro"
 import { ConfirmationSuppressionEntreprise } from "@/components/espace_pro/ConfirmationSuppressionEntreprise"
 import { Parametre } from "@/theme/components/icons"
 import { getEntreprisesManagedByCfa } from "@/utils/api"
-import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
@@ -42,10 +42,7 @@ function ListeEntreprise() {
   const [currentEntreprise, setCurrentEntreprise] = useState<IRecruiterJson | null>(null)
   const confirmationSuppression = useDisclosure()
   const router = useRouter()
-  const { data: userAccess } = useQuery({
-    queryKey: ["getUserAccess"],
-    queryFn: () => apiGet(`/auth/access`, {}),
-  })
+  const { access } = useConnectedSessionClient()
 
   const toast = useToast()
   const { newUser: isNewUser } = useSearchParamsRecord()
@@ -63,7 +60,7 @@ function ListeEntreprise() {
     }
   }, [isNewUser, toast])
 
-  const cfaId = userAccess?.cfas.at(0)
+  const cfaId = access?.cfas.at(0)
 
   const { data, isLoading } = useQuery({
     queryKey: ["listeEntreprise"],
@@ -182,7 +179,14 @@ function ListeEntreprise() {
   ]
   return (
     <AnimationContainer>
-      <ConfirmationSuppressionEntreprise {...confirmationSuppression} {...currentEntreprise} />
+      {currentEntreprise && (
+        <ConfirmationSuppressionEntreprise
+          establishment_id={currentEntreprise.establishment_id}
+          onClose={confirmationSuppression.onClose}
+          isOpen={confirmationSuppression.isOpen}
+          establishment_raison_sociale={currentEntreprise.establishment_raison_sociale}
+        />
+      )}
       <Container maxW="container.xl" mt={5}>
         <Breadcrumb pages={[PAGES.static.backCfaHome]} />
         <Flex justify="space-between" mb={12}>

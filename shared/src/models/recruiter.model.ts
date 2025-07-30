@@ -9,6 +9,7 @@ import { z } from "../helpers/zodWithOpenApi.js"
 import { ZPointGeometry } from "./address.model.js"
 import { IModelDescriptor, zObjectId } from "./common.js"
 import { ZJob } from "./job.model.js"
+import { ZReferentielRome } from "./rome.model.js"
 
 const allRecruiterStatus = Object.values(RECRUITER_STATUS)
 
@@ -68,6 +69,18 @@ export const ZRecruiterWithApplicationCount = ZRecruiter.omit({ jobs: true })
   .openapi("Recruiter")
 
 export type IRecruiterWithApplicationCount = z.output<typeof ZRecruiterWithApplicationCount>
+
+export const ZRecruiterWithRomeDetail = ZRecruiter.omit({ jobs: true })
+  .extend({
+    jobs: z.array(
+      ZJob.extend({
+        rome_detail: ZReferentielRome.nullish(),
+      })
+    ),
+  })
+  .openapi("Recruiter")
+
+export type IRecruiterWithRomeDetail = z.output<typeof ZRecruiterWithRomeDetail>
 
 export const ZAnonymizedRecruiter = ZRecruiterWritable.pick({
   establishment_id: true,

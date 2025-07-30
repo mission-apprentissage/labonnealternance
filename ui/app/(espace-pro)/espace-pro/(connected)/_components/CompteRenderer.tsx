@@ -83,10 +83,10 @@ export default function CompteRenderer() {
           .required("champ obligatoire"),
         email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
       })}
-      onSubmit={async (values, { setSubmitting, setFieldError }) => {
+      onSubmit={async (values, { setSubmitting }) => {
         setSubmitting(true)
         const isChangingEmail = data.email !== values.email
-        userMutation.mutate({ values, isChangingEmail, setFieldError })
+        userMutation.mutate({ values, isChangingEmail })
         setSubmitting(false)
       }}
     >

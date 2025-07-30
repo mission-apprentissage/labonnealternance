@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { IJobWithRomeDetail } from "shared"
 import { ENTREPRISE } from "shared/constants/recruteur"
-import { IEtablissementCatalogueProcheWithDistance } from "shared/interface/etablissement.types"
+import { IEtablissementCatalogueProcheWithDistance, IEtablissementCatalogueProcheWithDistanceJSON } from "shared/interface/etablissement.types"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
@@ -225,7 +225,7 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
                     </Text>
 
                     <Box mt={5}>
-                      {etablissements.map((etablissement: IEtablissementCatalogueProcheWithDistance, index) => {
+                      {etablissements.map((etablissement: IEtablissementCatalogueProcheWithDistanceJSON, index) => {
                         const isDisabled = checkedDisabledEtablissements.some((etab) => etab._id === etablissement._id)
                         return (
                           <Flex

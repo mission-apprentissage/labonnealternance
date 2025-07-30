@@ -14,7 +14,7 @@ import { phoneValidation } from "@/common/validation/fieldValidations"
 import { CustomInput } from "@/components/espace_pro"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 import { ArrowRightLine } from "@/theme/components/icons"
-import { postFormulaire } from "@/utils/api"
+import { apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 
 const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
@@ -23,7 +23,7 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
   const { user } = useConnectedSessionClient()
 
   const submitForm = (values, { setSubmitting, setFieldError }) => {
-    postFormulaire(user._id.toString(), { ...values, establishment_siret })
+    apiPost("/user/:userId/formulaire", { params: { userId: user._id.toString() }, body: { ...values, establishment_siret } })
       .then((data) => {
         setSubmitting(false)
         toast({

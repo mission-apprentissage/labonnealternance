@@ -1,7 +1,7 @@
 "use client"
 
 import { Box, Text } from "@chakra-ui/react"
-import { useCombobox } from "downshift"
+import { useCombobox, UseComboboxState } from "downshift"
 import { useField } from "formik"
 import { useState } from "react"
 
@@ -24,7 +24,12 @@ export default function DropdownCombobox(props) {
   const itemToString = (item) => (item ? item.appellation : "")
   const onInputValueChange = ({ inputValue }) => handleSearch(inputValue)?.then((data) => setInputJobItems(data))
 
-  const onSelectedItemChange = ({ selectedItem }) => saveSelectedItem(selectedItem, reset)
+  const onSelectedItemChange = (changes: Partial<UseComboboxState<any>>) => {
+    if ("selectedItem" in changes) {
+      saveSelectedItem(changes.selectedItem, reset)
+    }
+  }
+
   const stateReducer = (_, actions) => {
     const { type, changes } = actions
     switch (type) {

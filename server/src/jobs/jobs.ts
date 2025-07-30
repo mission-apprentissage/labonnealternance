@@ -263,7 +263,7 @@ export async function setupJobProcessor() {
             handler: sendContactsToBrevo,
             tag: "main",
           },
-          "Mise à jour de la table de correspondance entre Id formation Onisep et Clé ME du catalogue RCO, utilisé pour diffuser la prise de RDV sur l’Onisep": {
+          "Synchronisation Onisep entre Id formation Onisep et Clé ME du catalogue RCO": {
             cron_string: "45 23 * * 2",
             handler: importReferentielOnisep,
             tag: "main",

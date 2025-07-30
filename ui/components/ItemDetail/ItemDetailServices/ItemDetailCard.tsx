@@ -1,8 +1,9 @@
 import { Box, Flex, Text } from "@chakra-ui/react"
+import { ILbaItemJobsGlobal } from "shared"
 
 import ItemDistanceToCenter from "./ItemDistanceToCenter"
 
-export default function ItemDetailCard({ selectedItem }) {
+export default function ItemDetailCard({ selectedItem }: { selectedItem: ILbaItemJobsGlobal }) {
   const res = selectedItem?.company?.mandataire ? (
     <Box color="grey.700" textAlign="left" mt={2}>
       <Flex alignItems="center">
@@ -23,7 +24,7 @@ export default function ItemDetailCard({ selectedItem }) {
           />
         </svg>
         <Text as="span">&nbsp;Formation :&nbsp;</Text>
-        <Text as="span">&nbsp;{selectedItem?.company?.place?.address}</Text>
+        <Text as="span">&nbsp;{selectedItem?.place?.fullAddress}</Text>
       </Flex>
     </Box>
   ) : (

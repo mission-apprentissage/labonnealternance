@@ -1,7 +1,5 @@
-import { Transform } from "node:stream"
-import { pipeline } from "node:stream/promises"
-
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 
 import { logger } from "../../common/logger"
 
@@ -11,52 +9,56 @@ import { logger } from "../../common/logger"
  */
 export const eligibleTrainingsForAppointmentsHistoryWithCatalogue = async () => {
   logger.info("Cron #eligibleTrainingsForAppointmentsHistoryWithCatalogue started.")
+  const now = new Date()
 
-  const control = await getDbCollection("formationcatalogues").countDocuments()
-  if (control === 0) {
-    return
+  const formationcataloguesCount = await getDbCollection("formationcatalogues").countDocuments()
+  if (formationcataloguesCount === 0) return
+
+  const eligibleTrainingsCollection = getDbCollection("eligible_trainings_for_appointments")
+  const historyCollection = getDbCollection("eligible_trainings_for_appointments_histories")
+
+  const toHistorize = await eligibleTrainingsCollection
+    .aggregate([
+      {
+        $lookup: {
+          from: "formationcatalogues",
+          localField: "cle_ministere_educatif",
+          foreignField: "cle_ministere_educatif",
+          as: "match",
+        },
+      },
+      {
+        $match: { match: { $eq: [] } }, // Ceux qui n'ont pas de correspondance
+      },
+      { $unset: "match" },
+      {
+        $project: {
+          _id: 0,
+          allFields: "$$ROOT",
+        },
+      },
+    ])
+    .toArray()
+
+  if (toHistorize.length > 0) {
+    await historyCollection.insertMany(
+      toHistorize.map(({ allFields }) => ({
+        ...allFields,
+        lieu_formation_email: null,
+        historization_date: now,
+      }))
+    )
+
+    const deleteOps = toHistorize.map(({ allFields }) => ({
+      deleteOne: {
+        filter: { cle_ministere_educatif: allFields.cle_ministere_educatif },
+      },
+    }))
+
+    await eligibleTrainingsCollection.bulkWrite(deleteOps)
   }
 
-  const stats = {
-    AncientElligibleTrainingCount: await getDbCollection("eligible_trainings_for_appointments").countDocuments(),
-    NewElligibleTrainingCount: 0,
-  }
-
-  const transformer = new Transform({
-    objectMode: true,
-    async transform(formation, _, callback) {
-      try {
-        const exist = await getDbCollection("formationcatalogues").findOne({
-          cle_ministere_educatif: formation.cle_ministere_educatif,
-        })
-
-        delete formation._id
-
-        if (!exist) {
-          await getDbCollection("eligible_trainings_for_appointments_histories").insertOne({
-            ...formation,
-            email_rdv: undefined,
-            historization_date: new Date(),
-          })
-
-          await getDbCollection("eligible_trainings_for_appointments").deleteOne({
-            cle_ministere_educatif: formation.cle_ministere_educatif,
-          })
-        }
-
-        callback()
-      } catch (err: any) {
-        logger.error(err, "Error processing formation")
-        callback(err)
-      }
-    },
-  })
-
-  await pipeline(getDbCollection("eligible_trainings_for_appointments").find({}).stream(), transformer)
-
-  stats.NewElligibleTrainingCount = await getDbCollection("eligible_trainings_for_appointments").countDocuments()
+  await notifyToSlack({ subject: "Historisation des formations éligibles", message: `Formations historisées : ${toHistorize.length}` })
 
   logger.info("Cron #eligibleTrainingsForAppointmentsHistoryWithCatalogue done.")
-
-  return stats
 }

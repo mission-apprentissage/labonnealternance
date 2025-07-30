@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useParams } from "next/dist/client/components/navigation"
 import { useRouter } from "next/navigation"
 import { CSSProperties, Fragment, useEffect, useState } from "react"
-import { ILbaItemFormation2Json } from "shared"
+import { ILbaItemFormation2Json, ILbaItemTraining2 } from "shared"
 import { LBA_ITEM_TYPE, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 
 import { RechercheCarte } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
@@ -18,7 +18,6 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
 import GoingToContactQuestion, { getGoingtoId } from "@/components/ItemDetail/GoingToContactQuestion"
 import { getNavigationButtons } from "@/components/ItemDetail/ItemDetailServices/getButtons"
-import getJobPublishedTimeAndApplications from "@/components/ItemDetail/ItemDetailServices/getJobPublishedTimeAndApplications"
 import GetItemTag from "@/components/ItemDetail/ItemDetailServices/getTags"
 import ItemDetailCard from "@/components/ItemDetail/ItemDetailServices/ItemDetailCard"
 import ItemGoogleSearchLink from "@/components/ItemDetail/ItemDetailServices/ItemGoogleSearchLink"
@@ -152,7 +151,6 @@ function TrainingDetailPage({
             </Text>
           </Text>
 
-          {!isCollapsedHeader && getJobPublishedTimeAndApplications({ item: selectedItem })}
           {!isCollapsedHeader && <JobItemCardHeader selectedItem={selectedItem} kind={kind} isMandataire={isMandataire} />}
 
           <Typography variant={"h3"} sx={{ color: fr.colors.decisions.border.default.greenEmeraude.default }}>
@@ -193,7 +191,7 @@ function TrainingDetailPage({
 
       <AideApprentissage />
 
-      {!elligibleForAppointment && <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />}
+      {!elligibleForAppointment && <GoingToContactQuestion kind={kind} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />}
     </Box>
   )
 }
@@ -333,7 +331,8 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
   )
 }
 
-const TrainingDescriptionDetails = ({ training }) => {
+const TrainingDescriptionDetails = ({ training }: { training: ILbaItemTraining2 }) => {
+  const isPermanentEntry = training.sessions?.some((session: any) => session.isPermanentEntry)
   return (
     <>
       {training.description && training.description.length > 30 && (
@@ -363,9 +362,9 @@ const TrainingDescriptionDetails = ({ training }) => {
           <Image src="/images/icons/training-academic-cap.svg" alt="" />
           <Box pl={4} whiteSpace="pre-wrap">
             <Typography sx={{ fontWeight: "700" }}>Sessions de formation</Typography>
-            {training["sessions"][0].isPermanentEntry
+            {isPermanentEntry
               ? "Il est possible de s’inscrire à cette formation tout au long de l’année."
-              : training["sessions"].map((session, i) => (
+              : training["sessions"].map((session: any, i: number) => (
                   <Fragment key={i}>
                     du {formatDate(session.startDate)} au {formatDate(session.endDate)}
                     <br />

@@ -1,21 +1,20 @@
-import { Box, Grid, GridItem, Image, Text } from "@chakra-ui/react"
+import { Grid2 as Grid, Typography } from "@mui/material"
+import Image from "next/image"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { PAGES } from "@/utils/routes.utils"
 
-const OffresAutoExposees = () => {
+export const OffresAutoExposees = () => {
   return (
-    <Grid templateColumns={{ base: "1fr", md: "repeat(12, 1fr)" }} gap={4} mb={10}>
-      <GridItem colSpan={{ base: 1, md: 7 }}>
-        <Box display="flex" alignItems="flex-start" justifyContent={{ base: "center", lg: "flex-end" }} mr={{ base: 0, lg: 4 }} height="100%">
-          <Image src="/images/home_pics/illu-offreformation.svg" aria-hidden={true} alt=""></Image>
-        </Box>
-      </GridItem>
-      <GridItem colSpan={{ base: 1, md: 5 }}>
-        <Text as="h2" variant="homeEditorialH2">
+    <Grid container spacing={2} sx={{ alignItems: "center", justifyContent: "center" }}>
+      <Grid size={{ xs: 12, md: 6 }}>
+        <Image src="/images/home_pics/illu-offreformation.svg" width={586} height={298} alt="" />
+      </Grid>
+      <Grid size={{ xs: 12, md: 6 }}>
+        <Typography component="h3" variant="h3" sx={{ mb: 2 }}>
           Vos formations en alternance sont automatiquement exposées
-        </Text>
-        <Text fontSize="18px" mt={4}>
+        </Typography>
+        <Typography>
           Pour référencer et mettre à jour vos formations sur La bonne alternance, nul besoin de vous créer un compte, il vous suffit de les déclarer auprès du Carif-Oref de votre
           région.
           <br />
@@ -24,10 +23,8 @@ const OffresAutoExposees = () => {
           <DsfrLink href={PAGES.static.faq.getPath() + "#cfa"} aria-label="Lien vers la FAQ des CFA">
             En savoir plus
           </DsfrLink>
-        </Text>
-      </GridItem>
+        </Typography>
+      </Grid>
     </Grid>
   )
 }
-
-export default OffresAutoExposees

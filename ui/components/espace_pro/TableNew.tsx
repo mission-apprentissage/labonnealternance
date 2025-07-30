@@ -8,10 +8,16 @@ import { ArrowDownLine, ArrowUpLine, SearchLine } from "../../theme/components/i
 import ExportButtonNew from "./ExportButton/ExportButtonNew"
 import PaginationReactQuery from "./PaginationReactQuery"
 
+interface GlobalFilterProps {
+  globalFilter: string
+  setGlobalFilter: (filterValue: string | undefined) => void
+  searchPlaceholder?: string
+}
+
 // Define a default UI for filtering
-function GlobalFilter({ globalFilter, setGlobalFilter, searchPlaceholder }) {
+function GlobalFilter({ globalFilter, setGlobalFilter, searchPlaceholder }: GlobalFilterProps) {
   const [value, setValue] = React.useState(globalFilter)
-  const onChange = (value) => {
+  const onChange = (value: string) => {
     setGlobalFilter(value || undefined)
   }
 

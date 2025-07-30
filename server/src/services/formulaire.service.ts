@@ -2,20 +2,39 @@ import { randomUUID } from "node:crypto"
 
 import { badRequest, internal, notFound } from "@hapi/boom"
 import equal from "fast-deep-equal"
-import { Filter, ObjectId, UpdateFilter } from "mongodb"
-import { IDelegation, IJob, IJobCreate, IJobWithRomeDetail, IRecruiter, IRecruiterWithApplicationCount, ITrackingCookies, IUserRecruteur, JOB_STATUS, removeAccents } from "shared"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { OPCOS_LABEL, RECRUITER_STATUS, RECRUITER_USER_ORIGIN } from "shared/constants/recruteur"
+import { ChangeStreamInsertDocument, ChangeStreamUpdateDocument, Filter, ObjectId, UpdateFilter } from "mongodb"
+import {
+  assertUnreachable,
+  IDelegation,
+  IJob,
+  IJobCreate,
+  IJobWithRomeDetail,
+  IRecruiter,
+  IRecruiterWithApplicationCount,
+  ITrackingCookies,
+  IUserRecruteur,
+  JOB_STATUS,
+  JOB_STATUS_ENGLISH,
+  removeAccents,
+} from "shared"
+import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
+import { NIVEAUX_POUR_LBA, OPCOS_LABEL, RECRUITER_STATUS, RECRUITER_USER_ORIGIN, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
+import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { IResumeToken, IResumeTokenData } from "shared/models/resumeTokens.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
+import { logger } from "@/common/logger"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { anonymizeLbaJobsPartners } from "@/services/partnerJob.service"
+import { getResumeToken, storeResumeToken } from "@/services/resumeToken.service"
 
 import { asyncForEach } from "../common/utils/asyncUtils"
-import { getDbCollection } from "../common/utils/mongodbUtils"
+import { changeStreams, getDbCollection } from "../common/utils/mongodbUtils"
 import { sanitizeTextField } from "../common/utils/stringUtils"
 import config from "../config"
 
@@ -24,7 +43,7 @@ import { createViewDelegationLink } from "./appLinks.service"
 import { getCatalogueFormations } from "./catalogue.service"
 import dayjs from "./dayjs.service"
 import { sendEmailConfirmationEntreprise } from "./etablissement.service"
-import { replaceRecruiterFieldsWithCfaFields } from "./lbajob.service"
+import { getCity, getLbaJobContactInfo, replaceRecruiterFieldsWithCfaFields } from "./lbajob.service"
 import mailer from "./mailer.service"
 import { getComputedUserAccess, getGrantedRoles } from "./roleManagement.service"
 import { getRomeDetailsFromDB } from "./rome.service"
@@ -856,4 +875,202 @@ export const validateUserEmailFromJobId = async (jobId: ObjectId) => {
 export const updateCfaManagedRecruiter = async (establishment_id: string, payload: Partial<IRecruiter>) => {
   const recruiter = await getDbCollection("recruiters").findOneAndUpdate({ establishment_id }, { $set: { ...payload, updatedAt: new Date() } }, { returnDocument: "after" })
   return recruiter
+}
+
+export const updateJobsPartnersFromRecruiterUpdate = async (change: ChangeStreamUpdateDocument<IRecruiter> | ChangeStreamInsertDocument<IRecruiter>) => {
+  await updateJobsPartnersFromRecruiterById(change.documentKey._id)
+}
+
+export const updateJobsPartnersFromRecruiterById = async (recruiterId: ObjectId) => {
+  const recruiter = await getDbCollection("recruiters").findOne({ _id: recruiterId })
+
+  if (recruiter?.jobs?.length) {
+    await asyncForEach(recruiter.jobs, async (job) => {
+      await upsertJobPartnersFromRecruiter(recruiter, job)
+    })
+  }
+}
+
+function getDiplomaLevel(label: string | null | undefined): IComputedJobsPartners["offer_target_diploma"] {
+  if (!label) {
+    return null
+  }
+
+  switch (label) {
+    case NIVEAUX_POUR_LBA["3 (CAP...)"]:
+      return { european: "3", label }
+    case NIVEAUX_POUR_LBA["4 (BAC...)"]:
+      return { european: "4", label }
+    case NIVEAUX_POUR_LBA["5 (BTS, DEUST...)"]:
+      return { european: "5", label }
+    case NIVEAUX_POUR_LBA["6 (Licence, BUT...)"]:
+      return { european: "6", label }
+    case NIVEAUX_POUR_LBA["7 (Master, titre ingénieur...)"]:
+      return { european: "7", label }
+    default:
+      return null
+  }
+}
+
+function getOfferStatus(job_status: JOB_STATUS, recruiter_status: RECRUITER_STATUS): JOB_STATUS_ENGLISH {
+  if (recruiter_status !== RECRUITER_STATUS.ACTIF) {
+    return JOB_STATUS_ENGLISH.ANNULEE
+  }
+  switch (job_status) {
+    case JOB_STATUS.ACTIVE:
+      return JOB_STATUS_ENGLISH.ACTIVE
+    case JOB_STATUS.POURVUE:
+      return JOB_STATUS_ENGLISH.POURVUE
+    case JOB_STATUS.ANNULEE:
+    case JOB_STATUS.EN_ATTENTE:
+      return JOB_STATUS_ENGLISH.ANNULEE
+    default:
+      assertUnreachable(`Unexpected job status ${job_status} in getOfferStatus` as never)
+  }
+}
+
+function getSkillsFromRome(skills) {
+  if (!skills) return []
+  return skills.flatMap((skill) => skill.items.map((subSkill) => `${skill.libelle}\t${subSkill.libelle}`))
+}
+
+const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) => {
+  const now = new Date()
+
+  const romeDetails = await getRomeDetailsFromDB(job.rome_code[0])
+
+  const lbaJobContactInfo = recruiter.is_delegated ? await getLbaJobContactInfo(recruiter) : null
+  const { definition, acces_metier } = romeDetails ?? {}
+
+  const partnerJobToUpsert: Partial<IJobsPartnersOfferPrivate> = {
+    _id: job._id,
+    updated_at: job.job_update_date ?? now,
+    created_at: job.job_creation_date ?? now,
+    partner_label: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
+    partner_job_id: job._id.toString(),
+    is_delegated: recruiter.is_delegated,
+
+    contract_start: job.job_start_date ?? null,
+    contract_duration: job.job_duration ?? null,
+    contract_type: job.job_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
+    contract_is_disabled_elligible: job.is_disabled_elligible ?? null,
+    contract_rythm: job.job_rythm ?? null,
+
+    workplace_legal_name:
+      (lbaJobContactInfo?.establishment_raison_sociale || lbaJobContactInfo?.establishment_enseigne) ??
+      (recruiter.establishment_raison_sociale || recruiter.establishment_enseigne || UNKNOWN_COMPANY),
+    workplace_brand: lbaJobContactInfo?.establishment_enseigne ?? recruiter.establishment_enseigne,
+    workplace_siret: lbaJobContactInfo?.establishment_siret ?? recruiter.establishment_siret,
+    workplace_geopoint: recruiter.geopoint ?? undefined,
+    workplace_address_label: (recruiter.is_delegated ? lbaJobContactInfo?.address : recruiter.address) ?? "",
+    workplace_address_zipcode: recruiter.address_detail?.code_postal ?? null,
+    workplace_address_city: getCity(recruiter) ?? null,
+
+    apply_phone: (lbaJobContactInfo ? lbaJobContactInfo?.phone : recruiter.phone) ?? null,
+    apply_email: recruiter.is_delegated ? lbaJobContactInfo?.email : recruiter.email,
+
+    workplace_opco: recruiter.opco ?? null,
+    workplace_idcc: recruiter.idcc ?? null,
+    workplace_naf_code: recruiter.naf_code ?? null,
+    workplace_naf_label: recruiter.naf_label ?? null,
+    workplace_size: recruiter.establishment_size ?? null,
+    offer_origin: recruiter.origin ?? null,
+    offer_target_diploma: getDiplomaLevel(job.job_level_label),
+    offer_desired_skills: job.competences_rome?.savoir_etre_professionnel?.map((savoirEtre) => savoirEtre.libelle) ?? [],
+    offer_to_be_acquired_skills: getSkillsFromRome(job.competences_rome?.savoir_faire),
+    offer_to_be_acquired_knowledge: getSkillsFromRome(job.competences_rome?.savoirs),
+    offer_access_conditions: acces_metier ? [acces_metier] : [],
+    offer_title: job.offer_title_custom ?? job.rome_appellation_label ?? job.rome_label ?? "Offre",
+    offer_rome_codes: job.rome_code ?? null,
+    offer_description: job.job_description ?? definition ?? "",
+    offer_creation: job.job_creation_date,
+    offer_expiration: job.job_expiration_date,
+    offer_status: getOfferStatus(job.job_status, recruiter.status),
+    offer_opening_count: job.job_count ?? 1,
+    offer_multicast: true,
+
+    contract_remote: null,
+    offer_status_history: [],
+    workplace_address_street_label: null,
+    workplace_description: null,
+    workplace_name: null,
+    workplace_website: null,
+  }
+
+  await getDbCollection("jobs_partners").findOneAndUpdate(
+    { _id: job._id },
+    {
+      $set: partnerJobToUpsert,
+      $setOnInsert: {
+        stats_detail_view: 0,
+        stats_search_view: 0,
+        stats_postuler: 0,
+      },
+    },
+    { upsert: true }
+  )
+}
+
+export const updateJobsPartnersFromRecruiterDelete = async (id: ObjectId) => {
+  const recruiter = await getDbCollection("anonymized_recruiters").findOne({ _id: id })
+  const jobIds = recruiter?.jobs?.map((job) => job._id) ?? []
+  if (jobIds.length) {
+    await anonymizeLbaJobsPartners({ partner_job_ids: jobIds })
+  }
+}
+
+//TODO: extraire une partie du code dans un service pour éviter d'avoir du code trop spécifique dans mongodbUtils.ts
+const startChangeStream = (collectionName: "recruiters" | "anonymized_recruiters", resumeToken: IResumeToken | null, signal: AbortSignal) => {
+  logger.info(`Starting change stream for ${collectionName} with resumeToken:`, resumeToken)
+  const collection = getDbCollection(collectionName)
+  const changeStream = collection.watch([], resumeToken ? { resumeAfter: resumeToken.resumeTokenData } : {})
+
+  signal.addEventListener("abort", () => {
+    logger.info(`Aborting change stream for ${collectionName}`)
+    changeStream.close()
+  })
+
+  changeStream
+    .on("change", async (change) => {
+      if (collectionName === "recruiters") {
+        switch (change.operationType) {
+          case "insert":
+          case "update":
+            await updateJobsPartnersFromRecruiterUpdate(change)
+            await storeResumeToken("recruiters", change._id as IResumeTokenData)
+            break
+          case "delete":
+            // n'arrivera pas car les formulaires ne sont pas supprimés, mais archivés
+            break
+          default:
+            assertUnreachable(`Unexpected change operation type ${change.operationType}` as never)
+        }
+      } else if (collectionName === "anonymized_recruiters") {
+        if (change.operationType === "insert") {
+          await updateJobsPartnersFromRecruiterDelete(change.documentKey._id)
+          await storeResumeToken("anonymized_recruiters", change._id as IResumeTokenData)
+        }
+      }
+    })
+    .once("error", (error) => {
+      logger.error(`Error in change stream for ${collectionName}:`, error)
+      changeStream.close()
+      startChangeStream(collectionName, null, signal)
+    })
+    .on("close", () => {
+      changeStreams.delete(changeStream)
+    })
+
+  changeStreams.add(changeStream)
+  return changeStream
+}
+
+export const startRecruiterChangeStream = async (signal: AbortSignal) => {
+  logger.info("Starting recruiter change stream")
+
+  const resumeRecruiterToken = await getResumeToken("recruiters")
+  startChangeStream("recruiters", resumeRecruiterToken, signal)
+
+  const resumeAnonymizedRecruiterToken = await getResumeToken("anonymized_recruiters")
+  startChangeStream("anonymized_recruiters", resumeAnonymizedRecruiterToken, signal)
 }

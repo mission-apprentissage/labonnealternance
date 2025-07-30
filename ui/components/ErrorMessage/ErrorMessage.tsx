@@ -9,7 +9,12 @@ const cssParameters = {
   padding: "5px",
 }
 
-const ErrorMessage = ({ type = undefined, message }) => {
+interface Props {
+  type?: "column" | undefined
+  message: string
+}
+
+const ErrorMessage = ({ type = undefined, message }: Props) => {
   return (
     <>
       {type === "column" && <Image width="256px" margin="auto" src="/images/icons/searchingPeople.svg" alt="" />}

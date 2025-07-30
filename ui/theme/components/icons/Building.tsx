@@ -1,7 +1,7 @@
-import { Icon } from "@chakra-ui/react"
+import { Icon, IconProps } from "@chakra-ui/react"
 import React from "react"
 
-export function Building(props) {
+export function Building(props: IconProps) {
   return (
     <Icon viewBox="0 0 14 13" {...props}>
       <path
