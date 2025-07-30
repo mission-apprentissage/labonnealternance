@@ -2288,6 +2288,7 @@ describe("findJobOpportunityById tests", () => {
     })
 
     it("should find an offer from recruiters collection on findJobOpportunityById", async () => {
+      vi.useRealTimers()
       const ctrl = new AbortController()
       await startRecruiterChangeStream(ctrl.signal)
 
