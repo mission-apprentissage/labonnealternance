@@ -919,36 +919,19 @@ describe("findJobsOpportunities", () => {
     })
 
     it("should limit the number of jobs to 150", async () => {
-      const ctrl = new AbortController()
-      await startRecruiterChangeStream(ctrl.signal)
+      await getDbCollection("jobs_partners").deleteMany({})
 
-      const JOB_PER_RECRUITER = 10
-
-      const extraRecruiters: IRecruiter[] = Array.from({ length: 500 }, () => {
-        const jobs = Array.from({ length: JOB_PER_RECRUITER }, () => ({
-          rome_code: ["M1602"],
-          rome_label: "Opérations Administratives",
-          job_status: JOB_STATUS.ACTIVE,
-          job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-          job_expiration_date: new Date(),
-        }))
-
-        return generateRecruiterFixture({
-          establishment_siret: "11000001500013",
-          geopoint: parisFixture.centre,
-          status: RECRUITER_STATUS.ACTIF,
-          jobs,
-          address_detail: {
-            code_insee_localite: parisFixture.code,
-          },
-          address: parisFixture.nom,
+      const extraLbaJobs: IJobsPartnersOfferPrivate[] = Array.from({ length: 1500 }, () =>
+        generateJobsPartnersOfferPrivate({
+          partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+          offer_rome_codes: ["M1602"],
+          workplace_geopoint: parisFixture.centre,
+          offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+          offer_target_diploma: null,
         })
-      })
+      )
 
-      await getDbCollection("recruiters").deleteMany({})
-      await getDbCollection("recruiters").insertMany(extraRecruiters)
-
-      await new Promise((r) => setTimeout(r, 200))
+      await getDbCollection("jobs_partners").insertMany(extraLbaJobs)
 
       const results = await findJobsOpportunities(
         {
@@ -965,9 +948,7 @@ describe("findJobsOpportunities", () => {
       const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
-      expect(results.jobs).toHaveLength(161)
-
-      ctrl.abort()
+      expect(results.jobs).toHaveLength(150)
     })
 
     // A vérifier si le cas existe
