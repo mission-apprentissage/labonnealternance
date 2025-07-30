@@ -805,66 +805,41 @@ describe("findJobsOpportunities", () => {
       const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
-      expect(results.jobs).toHaveLength(1)
+      expect(results.jobs).toHaveLength(0)
 
       ctrl.abort()
     })
 
     it("should exclude non active jobs", async () => {
-      const ctrl = new AbortController()
-      await startRecruiterChangeStream(ctrl.signal)
-
-      await getDbCollection("recruiters").insertOne(
-        generateRecruiterFixture({
-          establishment_siret: "11000001500013",
-          establishment_raison_sociale: "ASSEMBLEE NATIONALE",
-          geopoint: parisFixture.centre,
-          status: RECRUITER_STATUS.ACTIF,
-          jobs: [
-            {
-              rome_code: ["M1602"],
-              rome_label: "Opérations administratives",
-              job_status: JOB_STATUS.ANNULEE,
-              job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-              job_expiration_date: new Date(),
-            },
-            {
-              rome_code: ["M1602"],
-              rome_label: "Opérations administratives",
-              job_status: JOB_STATUS.EN_ATTENTE,
-              job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-              job_expiration_date: new Date(),
-            },
-            {
-              rome_code: ["M1602"],
-              rome_label: "Opérations administratives",
-              job_status: JOB_STATUS.POURVUE,
-              job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-              job_expiration_date: new Date(),
-            },
-            {
-              rome_code: ["M1602"],
-              rome_label: "Opérations administratives",
-              job_status: JOB_STATUS.ACTIVE,
-              job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-              job_expiration_date: new Date(),
-            },
-            {
-              rome_code: ["M1602"],
-              rome_label: "Opérations administratives",
-              job_status: JOB_STATUS.ACTIVE,
-              job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-              job_expiration_date: new Date("2024-01-01"),
-            },
-          ],
-          address_detail: {
-            code_insee_localite: parisFixture.code,
-          },
-          address: parisFixture.nom,
+      await getDbCollection("jobs_partners").insertOne(
+        generateJobsPartnersOfferPrivate({
+          partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+          offer_rome_codes: ["M1602"],
+          workplace_geopoint: parisFixture.centre,
+          offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+          offer_target_diploma: null,
         })
       )
 
-      await new Promise((r) => setTimeout(r, 200))
+      await getDbCollection("jobs_partners").insertOne(
+        generateJobsPartnersOfferPrivate({
+          partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+          offer_rome_codes: ["M1602"],
+          workplace_geopoint: parisFixture.centre,
+          offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+          offer_target_diploma: null,
+        })
+      )
+
+      await getDbCollection("jobs_partners").insertOne(
+        generateJobsPartnersOfferPrivate({
+          partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+          offer_rome_codes: ["M1602"],
+          workplace_geopoint: parisFixture.centre,
+          offer_status: JOB_STATUS_ENGLISH.POURVUE,
+          offer_target_diploma: null,
+        })
+      )
 
       const results = await findJobsOpportunities(
         {
@@ -881,45 +856,38 @@ describe("findJobsOpportunities", () => {
       const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
-      expect(results.jobs).toHaveLength(2)
-
-      ctrl.abort()
+      expect(results.jobs).toHaveLength(1)
     })
 
     describe("when filtered by diploma", () => {
       it("should return jobs with requested diploma and unknown ones only", async () => {
-        const ctrl = new AbortController()
-        await startRecruiterChangeStream(ctrl.signal)
-
-        await getDbCollection("recruiters").insertOne(
-          generateRecruiterFixture({
-            establishment_siret: "11000001500013",
-            geopoint: parisFixture.centre,
-            status: RECRUITER_STATUS.ACTIF,
-            jobs: [
-              {
-                rome_code: ["M1602"],
-                rome_label: "Opérations administratives",
-                job_status: JOB_STATUS.ACTIVE,
-                job_level_label: NIVEAUX_POUR_LBA["3 (CAP...)"],
-                job_expiration_date: new Date(),
-              },
-              {
-                rome_code: ["M1602"],
-                rome_label: "Opérations administratives",
-                job_status: JOB_STATUS.ACTIVE,
-                job_level_label: NIVEAUX_POUR_LBA["4 (BAC...)"],
-                job_expiration_date: new Date(),
-              },
-            ],
-            address_detail: {
-              code_insee_localite: parisFixture.code,
-            },
-            address: parisFixture.nom,
+        await getDbCollection("jobs_partners").insertOne(
+          generateJobsPartnersOfferPrivate({
+            partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+            offer_rome_codes: ["M1602"],
+            workplace_geopoint: parisFixture.centre,
+            offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+            offer_target_diploma: { european: "4", label: "BP, Bac, autres formations niveau (Bac)" },
           })
         )
-
-        await new Promise((r) => setTimeout(r, 200))
+        await getDbCollection("jobs_partners").insertOne(
+          generateJobsPartnersOfferPrivate({
+            partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+            offer_rome_codes: ["M1602"],
+            workplace_geopoint: parisFixture.centre,
+            offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+            offer_target_diploma: { european: "3", label: "CAP, BEP, autres formations niveau (CAP)" },
+          })
+        )
+        await getDbCollection("jobs_partners").insertOne(
+          generateJobsPartnersOfferPrivate({
+            partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+            offer_rome_codes: ["M1602"],
+            workplace_geopoint: parisFixture.centre,
+            offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+            offer_target_diploma: null,
+          })
+        )
 
         const results = await findJobsOpportunities(
           {
@@ -947,8 +915,6 @@ describe("findJobsOpportunities", () => {
             },
           ])
         )
-
-        ctrl.abort()
       })
     })
 
