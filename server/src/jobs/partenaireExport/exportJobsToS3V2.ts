@@ -157,6 +157,7 @@ const recruiterJobToJobPartner = (recruiter: IRecruiterWithRomeDetail, job: IJob
       partner_job_id: job._id.toString(),
       partner_label: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
     },
+    is_delegated: recruiter.is_delegated,
   }
 }
 
