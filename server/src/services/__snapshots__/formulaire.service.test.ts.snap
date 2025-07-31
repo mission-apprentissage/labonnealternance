@@ -3,6 +3,7 @@
 exports[`createJob > should insert a job 1`] = `
 {
   "_id": "670ce30b57a50d6875c141f9",
+  "address": "126 RUE DE L'UNIVERSITE 75007 PARIS",
   "address_detail": {
     "acheminement_postal": {
       "l1": null,
@@ -150,7 +151,7 @@ exports[`createJob > should insert a job 3`] = `
   "stats_postuler": 0,
   "stats_search_view": 0,
   "workplace_address_city": "PARIS",
-  "workplace_address_label": "",
+  "workplace_address_label": "126 RUE DE L'UNIVERSITE 75007 PARIS",
   "workplace_address_street_label": null,
   "workplace_address_zipcode": "75002",
   "workplace_brand": null,
