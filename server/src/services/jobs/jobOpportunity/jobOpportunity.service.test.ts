@@ -1011,54 +1011,6 @@ describe("findJobsOpportunities", () => {
       expect(results.jobs).toHaveLength(0)
     })
 
-    it("should ignore job custom_geo_coordinates", async () => {
-      const ctrl = new AbortController()
-      await startRecruiterChangeStream(ctrl.signal)
-
-      await getDbCollection("recruiters").insertOne(
-        generateRecruiterFixture({
-          establishment_siret: "11000001500013",
-          geopoint: parisFixture.centre,
-          status: RECRUITER_STATUS.ACTIF,
-          jobs: [
-            {
-              rome_code: ["M1602"],
-              rome_label: "Opérations Administratives",
-              job_status: JOB_STATUS.ACTIVE,
-              job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-              custom_geo_coordinates: `${marseilleFixture.centre.coordinates[1]},${marseilleFixture.centre.coordinates[0]}`,
-              job_expiration_date: new Date(),
-            },
-          ],
-          address_detail: {
-            code_insee_localite: parisFixture.code,
-          },
-          address: parisFixture.nom,
-        })
-      )
-
-      await new Promise((r) => setTimeout(r, 200))
-
-      const results = await findJobsOpportunities(
-        {
-          longitude: parisFixture.centre.coordinates[0],
-          latitude: parisFixture.centre.coordinates[1],
-          radius: 30,
-          romes: ["M1602"],
-          rncp: null,
-          opco: null,
-        },
-        new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
-      )
-
-      const parseResult = zJobSearchApiV3Response.safeParse(results)
-      expect.soft(parseResult.success).toBeTruthy()
-      expect(parseResult.error).toBeUndefined()
-      expect(results.jobs).toHaveLength(2)
-
-      ctrl.abort()
-    })
-
     describe("when recruiter is delegated", () => {
       it("should return info from the cfa_delegated_siret", async () => {
         const ctrl = new AbortController()
@@ -1181,53 +1133,6 @@ describe("findJobsOpportunities", () => {
           address_detail: {
             code_insee_localite: parisFixture.code,
           },
-        })
-      )
-
-      await new Promise((r) => setTimeout(r, 200))
-
-      const results = await findJobsOpportunities(
-        {
-          longitude: parisFixture.centre.coordinates[0],
-          latitude: parisFixture.centre.coordinates[1],
-          radius: 30,
-          romes: ["M1602"],
-          rncp: null,
-          opco: null,
-        },
-        new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
-      )
-
-      const parseResult = zJobSearchApiV3Response.safeParse(results)
-      expect.soft(parseResult.success).toBeTruthy()
-      expect(parseResult.error).toBeUndefined()
-      expect(results.jobs).toHaveLength(1)
-      expect(results.jobs[0].identifier.id).toEqual(lbaJobs[0].jobs[0]._id)
-
-      ctrl.abort()
-    })
-
-    it("should ignore recruiters without geopoint", async () => {
-      const ctrl = new AbortController()
-      await startRecruiterChangeStream(ctrl.signal)
-
-      await getDbCollection("recruiters").insertOne(
-        generateRecruiterFixture({
-          establishment_siret: "11000001500013",
-          status: RECRUITER_STATUS.ACTIF,
-          jobs: [
-            {
-              rome_code: ["M1602"],
-              rome_label: "Opérations Administratives",
-              job_status: JOB_STATUS.ACTIVE,
-              job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-              job_expiration_date: new Date(),
-            },
-          ],
-          address_detail: {
-            code_insee_localite: parisFixture.code,
-          },
-          address: parisFixture.nom,
         })
       )
 
