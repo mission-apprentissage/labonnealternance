@@ -1010,7 +1010,9 @@ describe("findJobsOpportunities", () => {
       expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(0)
     })
+  })
 
+  describe("jobs partners", () => {
     describe("when recruiter is delegated", () => {
       it("should return info from the cfa_delegated_siret", async () => {
         const ctrl = new AbortController()
@@ -1039,14 +1041,14 @@ describe("findJobsOpportunities", () => {
               rome_label: "Opérations administratives",
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-              job_expiration_date: new Date(),
+              job_expiration_date: new Date("2050-01-01"),
             },
             {
               rome_code: ["M1602"],
               rome_label: "Opérations administratives",
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-              job_expiration_date: new Date(),
+              job_expiration_date: new Date("2050-01-01"),
             },
           ],
           address_detail: {
@@ -1077,7 +1079,7 @@ describe("findJobsOpportunities", () => {
         const parseResult = zJobSearchApiV3Response.safeParse(results)
         expect.soft(parseResult.success).toBeTruthy()
         expect(parseResult.error).toBeUndefined()
-        expect(results.jobs).toHaveLength(3)
+        expect(results.jobs).toHaveLength(4)
         expect(
           results.jobs.map((j) => ({
             _id: j.identifier.id,
@@ -1127,7 +1129,7 @@ describe("findJobsOpportunities", () => {
               rome_label: "Opérations Administratives",
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-              job_expiration_date: new Date(),
+              job_expiration_date: new Date("2050-01-01"),
             },
           ],
           address_detail: {
@@ -1136,7 +1138,7 @@ describe("findJobsOpportunities", () => {
         })
       )
 
-      await new Promise((r) => setTimeout(r, 200))
+      await new Promise((r) => setTimeout(r, 2000))
 
       const results = await findJobsOpportunities(
         {
@@ -1153,14 +1155,12 @@ describe("findJobsOpportunities", () => {
       const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
-      expect(results.jobs).toHaveLength(1)
+      expect(results.jobs).toHaveLength(2)
       expect(results.jobs[0].identifier.id).toEqual(lbaJobs[0].jobs[0]._id)
 
       ctrl.abort()
     })
-  })
 
-  describe("jobs partners", () => {
     it("should limit jobs to 150", async () => {
       const extraOffers: IJobsPartnersOfferPrivate[] = Array.from({ length: 300 }, (e, idx) =>
         generateJobsPartnersOfferPrivate({
@@ -1170,7 +1170,6 @@ describe("findJobsOpportunities", () => {
         })
       )
       await getDbCollection("jobs_partners").insertMany(extraOffers)
-      await getDbCollection("recruiters").deleteMany({})
 
       const results = await findJobsOpportunities(
         {
@@ -1661,44 +1660,48 @@ describe("findJobsOpportunities", () => {
   })
 
   describe("when searching with location", () => {
-    it("should sort by source, distance and then by creation date", async () => {
+    const extraLbaJob = generateRecruiterFixture({
+      establishment_siret: "20003277900015",
+      establishment_raison_sociale: "EXTRA LBA JOB 1",
+      geopoint: levalloisFixture.centre,
+      status: RECRUITER_STATUS.ACTIF,
+      jobs: [
+        {
+          rome_code: ["D1209"],
+          rome_label: "Vente de végétaux",
+          job_status: JOB_STATUS.ACTIVE,
+          job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+          job_creation_date: new Date("2021-01-01"),
+          job_expiration_date: new Date("2050-01-01"),
+        },
+        {
+          rome_code: ["D1209"],
+          rome_label: "Vente de végétaux",
+          job_status: JOB_STATUS.ACTIVE,
+          job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+          job_creation_date: new Date("2024-01-01"),
+          job_expiration_date: new Date("2050-01-01"),
+        },
+      ],
+      address_detail: {
+        code_insee_localite: levalloisFixture.code,
+      },
+      address: levalloisFixture.nom,
+      phone: "0465000001",
+    })
+
+    beforeEach(async () => {
       const ctrl = new AbortController()
       await startRecruiterChangeStream(ctrl.signal)
-
-      const extraLbaJob = generateRecruiterFixture({
-        establishment_siret: "20003277900015",
-        establishment_raison_sociale: "EXTRA LBA JOB 1",
-        geopoint: levalloisFixture.centre,
-        status: RECRUITER_STATUS.ACTIF,
-        jobs: [
-          {
-            rome_code: ["D1209"],
-            rome_label: "Vente de végétaux",
-            job_status: JOB_STATUS.ACTIVE,
-            job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-            job_creation_date: new Date("2021-01-01"),
-            job_expiration_date: new Date(),
-          },
-          {
-            rome_code: ["D1209"],
-            rome_label: "Vente de végétaux",
-            job_status: JOB_STATUS.ACTIVE,
-            job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-            job_creation_date: new Date("2024-01-01"),
-            job_expiration_date: new Date(),
-          },
-        ],
-        address_detail: {
-          code_insee_localite: levalloisFixture.code,
-        },
-        address: levalloisFixture.nom,
-        phone: "0465000001",
-      })
 
       await getDbCollection("recruiters").insertOne(extraLbaJob)
 
       await new Promise((r) => setTimeout(r, 200))
 
+      ctrl.abort()
+    })
+
+    it("should sort by source, distance and then by creation date", async () => {
       const extraOffers = [
         generateJobsPartnersOfferPrivate({
           offer_rome_codes: ["D1212"],
@@ -1846,7 +1849,6 @@ describe("findJobsOpportunities", () => {
           },
         ],
       })
-      ctrl.abort()
     })
   })
 })
