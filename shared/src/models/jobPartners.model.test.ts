@@ -60,6 +60,18 @@ type IJobOfferApiExpected = IJobWorkplaceApiExpected &
     offer_expiration: Date | null
     offer_opening_count: number
     offer_status: JOB_STATUS_ENGLISH
+    is_delegated: boolean
+    cfa_legal_name: string | null
+    cfa_siret: string | null
+    cfa_address_label: string | null
+    contract_rythm: string | null
+    contract_is_disabled_elligible?: boolean | null
+    offer_to_be_acquired_knowledge: string[]
+    apply_recipient_id: string | null | undefined
+    offer_status_history: string | null
+    stats_detail_view: number
+    stats_search_view: number
+    stats_postuler: number
   }
 
 type IJobOfferApiWritableExpected = {
