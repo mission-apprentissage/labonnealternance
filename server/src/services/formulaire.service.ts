@@ -884,7 +884,7 @@ export const updateJobsPartnersFromRecruiterUpdate = async (change: ChangeStream
 export const updateJobsPartnersFromRecruiterById = async (recruiterId: ObjectId) => {
   const recruiter = await getDbCollection("recruiters").findOne({ _id: recruiterId })
 
-  if (recruiter?.jobs?.length) {
+  if (recruiter?.jobs?.length && recruiter.address) {
     await asyncForEach(recruiter.jobs, async (job: IJob) => {
       await upsertJobPartnersFromRecruiter(recruiter, job)
     })
@@ -979,7 +979,7 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
     workplace_brand: recruiter.establishment_enseigne,
     workplace_siret: recruiter.establishment_siret,
     workplace_geopoint: recruiter.geopoint ?? undefined,
-    workplace_address_label: recruiter.address ?? "",
+    workplace_address_label: recruiter.address!,
     workplace_address_zipcode: recruiter.address_detail?.code_postal ?? null,
     workplace_address_city: getCity(recruiter) ?? null,
 
