@@ -1,10 +1,10 @@
-import { ObjectId } from "bson"
+import { ObjectId } from "mongodb"
 import { describe, expectTypeOf, it } from "vitest"
 
 import { OPCOS_LABEL, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
 
 import { JOB_STATUS_ENGLISH } from "./job.model.js"
-import { IJobsPartnersOfferApi, IJobsPartnersRecruiterApi, IJobsPartnersWritableApi, IJobsPartnersWritableApiInput } from "./jobsPartners.model.js"
+import { IJobsPartnersOfferApi, IJobsPartnersOfferHistoryEvent, IJobsPartnersRecruiterApi, IJobsPartnersWritableApi, IJobsPartnersWritableApiInput } from "./jobsPartners.model.js"
 
 type IJobWorkplaceApiExpected = {
   workplace_siret: string | null
@@ -23,6 +23,10 @@ type IJobWorkplaceApiExpected = {
   workplace_opco: OPCOS_LABEL | null
   workplace_naf_code: string | null
   workplace_naf_label: string | null
+  is_delegated: boolean
+  cfa_legal_name: string | null
+  cfa_siret: string | null
+  cfa_address_label: string | null
 }
 
 type IJobApplyExpected = {
@@ -60,15 +64,11 @@ type IJobOfferApiExpected = IJobWorkplaceApiExpected &
     offer_expiration: Date | null
     offer_opening_count: number
     offer_status: JOB_STATUS_ENGLISH
-    is_delegated: boolean
-    cfa_legal_name: string | null
-    cfa_siret: string | null
-    cfa_address_label: string | null
     contract_rythm: string | null | undefined
     contract_is_disabled_elligible: boolean | null
     offer_to_be_acquired_knowledge: string[] | null | undefined
     apply_recipient_id: string | null | undefined
-    offer_status_history: string | null
+    offer_status_history: IJobsPartnersOfferHistoryEvent[]
     stats_detail_view: number
     stats_search_view: number
     stats_postuler: number

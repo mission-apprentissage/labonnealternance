@@ -78,6 +78,7 @@ export const ZJobsPartnersOfferHistoryEvent = z.object({
   date: z.date().describe("Date de l'évènement"),
   granted_by: z.string().describe("Utilisateur à l'origine du changement"),
 })
+export type IJobsPartnersOfferHistoryEvent = z.output<typeof ZJobsPartnersOfferHistoryEvent>
 
 export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   _id: true,
