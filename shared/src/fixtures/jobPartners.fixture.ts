@@ -73,6 +73,7 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     job_status_comment: null,
     job_delegation_count: null,
     delegations: null,
+    is_delegated: false,
 
     ...data,
   }
@@ -147,6 +148,7 @@ export function generateJobsPartnersFull(data: Partial<IJobsPartnersOfferPrivate
     job_status_comment: null,
     job_delegation_count: null,
     delegations: null,
+    is_delegated: false,
 
     ...data,
   }
