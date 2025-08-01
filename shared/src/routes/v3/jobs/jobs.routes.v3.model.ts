@@ -253,9 +253,9 @@ export type IJobOfferApiWriteV3Input = z.input<typeof zJobOfferApiWriteV3>
 
 function convertToJobWorkplaceReadV3(input: IJobsPartnersOfferApi | IJobsPartnersRecruiterApi): IJobRecruiterApiReadV3["workplace"] {
   return {
-    siret: input.is_delegated ? input.cfa_siret : input.workplace_siret,
+    siret: input.is_delegated ? input.cfa_siret! : input.workplace_siret,
     brand: input.is_delegated ? null : input.workplace_brand,
-    legal_name: input.is_delegated ? input.cfa_legal_name : input.workplace_legal_name,
+    legal_name: (input.is_delegated ? input.cfa_legal_name! : input.workplace_legal_name) || null,
     website: input.workplace_website,
     name: input.workplace_name,
     description: input.workplace_description,

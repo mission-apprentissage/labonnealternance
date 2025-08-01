@@ -29,9 +29,9 @@ type IJobWorkplaceApiExpected = {
   workplace_naf_code: string | null
   workplace_naf_label: string | null
   is_delegated: boolean
-  cfa_legal_name: string | null
-  cfa_siret: string | null
-  cfa_address_label: string | null
+  cfa_legal_name: string | null | undefined
+  cfa_siret: string | null | undefined
+  cfa_address_label: string | null | undefined
 }
 
 type IJobApplyExpected = {

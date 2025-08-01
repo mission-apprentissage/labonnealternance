@@ -63,9 +63,9 @@ export const ZJobsPartnersRecruiterApi = z.object({
     ),
   is_delegated: z.boolean().default(false).describe("Indique si l'offre est déléguée à un mandataire"),
 
-  cfa_legal_name: z.string().nullable().describe("Raison sociale du CFA si offre déléguée"),
-  cfa_siret: extensions.siret.nullable().describe("Siret du CFA si offre déléguée"),
-  cfa_address_label: z.string().nullable().describe("Adresse du CFA si offre déléguée"),
+  cfa_legal_name: z.string().nullish().describe("Raison sociale du CFA si offre déléguée"),
+  cfa_siret: extensions.siret.nullish().describe("Siret du CFA si offre déléguée"),
+  cfa_address_label: z.string().nullish().describe("Adresse du CFA si offre déléguée"),
 })
 
 export const zDiplomaEuropeanLevel = z.enum(["3", "4", "5", "6", "7"])
@@ -128,11 +128,11 @@ const ZJobsPartnersRecruiterPrivateFields = z.object({
   workplace_address_city: z.string().nullable().describe("Nom de ville, provenant du SIRET ou du partenaire"),
   workplace_address_zipcode: extensions.zipCode().nullable().describe("Code postal, provenant du SIRET ou du partenaire"),
 
-  cfa_siret: extensions.siret.nullable().describe("Siret du CFA si offre déléguée"),
-  cfa_legal_name: z.string().nullable().describe("Raison sociale du CFA si offre déléguée"),
-  cfa_apply_phone: z.string().nullable().describe("Numéro de téléphone du CFA si offre déléguée"),
-  cfa_apply_email: z.string().email().nullable().describe("Email de contact du CFA si offre déléguée"),
-  cfa_address_label: z.string().nullable().describe("Adresse du CFA si offre déléguée"),
+  cfa_siret: extensions.siret.nullish().describe("Siret du CFA si offre déléguée"),
+  cfa_legal_name: z.string().nullish().describe("Raison sociale du CFA si offre déléguée"),
+  cfa_apply_phone: z.string().nullish().describe("Numéro de téléphone du CFA si offre déléguée"),
+  cfa_apply_email: z.string().email().nullish().describe("Email de contact du CFA si offre déléguée"),
+  cfa_address_label: z.string().nullish().describe("Adresse du CFA si offre déléguée"),
   job_status_comment: z.string().nullish().describe("Raison de la suppression de l'offre"),
   job_delegation_count: z.number().nullish().describe("Nombre de délégations"),
   delegations: z.array(ZDelegation).nullish().describe("Liste des délégations"),
