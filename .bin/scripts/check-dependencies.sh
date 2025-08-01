@@ -8,7 +8,7 @@ dependencies=(
   "node"
   "shred"
 #  "sshpass"
-  "yq"
+#  "yq"
 )
 
 if [[ -z "${CI:-}" ]]; then
