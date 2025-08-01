@@ -3,7 +3,7 @@
 set -euo pipefail
 
 dependencies=(
-  "ansible"
+#  "ansible"
   "gpg"
   "node"
   "shred"
