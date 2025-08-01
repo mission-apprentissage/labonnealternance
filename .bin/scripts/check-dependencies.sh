@@ -7,7 +7,7 @@ dependencies=(
   "gpg"
   "node"
   "shred"
-  "sshpass"
+#  "sshpass"
   "yq"
 )
 
