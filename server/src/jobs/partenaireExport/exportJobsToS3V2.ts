@@ -5,7 +5,7 @@ import { pipeline } from "stream/promises"
 import { assertUnreachable, IJob, IRecruiterWithRomeDetail, JOB_STATUS, JOB_STATUS_ENGLISH, JobCollectionName } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
-import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IJobOfferApiReadV3 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 
 import { concatStreams, waitForStreamEnd } from "@/common/utils/streamUtils"
@@ -50,7 +50,11 @@ export async function exportJobsToS3V2(handleFileReadStream = uploadFileToS3) {
   jsonArrayTransform.pipe(fileStream, { end: true })
 
   logger.info("starting job partners cursor")
-  const jobPartnersCursor = await getDbCollection("jobs_partners").find({ offer_status: JOB_STATUS_ENGLISH.ACTIVE, offer_multicast: true })
+  const jobPartnersCursor = await getDbCollection("jobs_partners").find({
+    partner_label: { $ne: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA },
+    offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+    offer_multicast: true,
+  })
   await pipeline(jobPartnersCursor, jobPartnersTransform)
 
   logger.info("starting recruiters cursor")
@@ -157,6 +161,7 @@ const recruiterJobToJobPartner = (recruiter: IRecruiterWithRomeDetail, job: IJob
       partner_job_id: job._id.toString(),
       partner_label: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
     },
+    is_delegated: recruiter.is_delegated,
   }
 }
 

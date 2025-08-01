@@ -71,6 +71,11 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
           offer_origin: computedJobPartner.offer_origin ?? null,
           rank: computedJobPartner.rank ?? null,
           duplicates: computedJobPartner.duplicates ?? null,
+          cfa_siret: null,
+          cfa_apply_email: null,
+          cfa_address_label: null,
+          cfa_legal_name: null,
+          cfa_apply_phone: null,
         }
 
         await getDbCollection("jobs_partners").updateOne(
@@ -88,7 +93,7 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
           },
           { upsert: true }
         )
-        if (computedJobPartner.offer_status_history.length) {
+        if (computedJobPartner?.offer_status_history?.length) {
           await getDbCollection("jobs_partners").updateOne(
             { partner_job_id: partnerJobToUpsert.partner_job_id, partner_label: partnerJobToUpsert.partner_label },
             {

@@ -3,12 +3,12 @@
 set -euo pipefail
 
 dependencies=(
-  "ansible"
+#  "ansible"
   "gpg"
   "node"
   "shred"
-  "sshpass"
-  "yq"
+#  "sshpass"
+#  "yq"
 )
 
 if [[ -z "${CI:-}" ]]; then

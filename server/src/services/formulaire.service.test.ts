@@ -45,6 +45,7 @@ describe("createJob", () => {
       email,
       _id: new ObjectId("670ce30b57a50d6875c141f9"),
       establishment_creation_date: new Date("2024-10-14T09:23:21.588Z"),
+      address: "126 RUE DE L'UNIVERSITE 75007 PARIS",
       managed_by: "686e82f6965b78f107bf44c1",
     })
     referentielRome = generateReferentielRome()
@@ -78,7 +79,7 @@ describe("createJob", () => {
 
   it("should insert a job", async () => {
     const ctrl = new AbortController()
-    await startRecruiterChangeStream(ctrl.signal) //{ changeRecruiterStream: null, changeAnonymizedRecruiterStream: null }
+    await startRecruiterChangeStream(ctrl.signal)
 
     const job = generateValidJobWritable()
     const result = await createJob({ user, establishment_id: recruiter.establishment_id, job })

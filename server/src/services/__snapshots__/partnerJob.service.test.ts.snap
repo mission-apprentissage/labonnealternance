@@ -5,7 +5,7 @@ exports[`partnerJob.service > should execute query with full data 1`] = `
   "results": [
     {
       "company": {
-        "mandataire": undefined,
+        "mandataire": false,
         "name": "Enseigne inconnue",
         "opco": {
           "label": null,
@@ -57,7 +57,7 @@ exports[`partnerJob.service > should execute query with full data 1`] = `
         "fullAddress": "126 RUE DE L'UNIVERSITE 75007 PARIS",
         "latitude": 48.8589,
         "longitude": 2.347,
-        "numberAndStreet": "126 RUE DE L'UNIVERSITE",
+        "numberAndStreet": "126 RUE DE L'UNIVERSITE 75007 PARIS",
         "remoteOnly": false,
         "zipCode": "75007",
       },
@@ -81,7 +81,7 @@ exports[`partnerJob.service > should execute query with minimalData 1`] = `
   "results": [
     {
       "company": {
-        "mandataire": undefined,
+        "mandataire": false,
         "name": "Enseigne inconnue",
         "opco": {
           "label": null,
@@ -114,7 +114,7 @@ exports[`partnerJob.service > should find offer by id 1`] = `
   "partnerJobs": [
     {
       "company": {
-        "mandataire": undefined,
+        "mandataire": false,
         "name": "Enseigne inconnue",
         "opco": {
           "label": null,
@@ -166,7 +166,7 @@ exports[`partnerJob.service > should find offer by id 1`] = `
         "fullAddress": "126 RUE DE L'UNIVERSITE 75007 PARIS",
         "latitude": 48.8946,
         "longitude": 2.2874,
-        "numberAndStreet": "126 RUE DE L'UNIVERSITE",
+        "numberAndStreet": "126 RUE DE L'UNIVERSITE 75007 PARIS",
         "remoteOnly": false,
         "zipCode": "75007",
       },

@@ -75,6 +75,7 @@ type IJobOfferExpected = {
     opening_count: number
     status: JOB_STATUS_ENGLISH
   }
+  is_delegated: boolean
 }
 
 type IJobOfferApiWriteV3Expected = {
@@ -529,6 +530,10 @@ describe("convertToJobOfferApiReadV3", () => {
       stats_detail_view: 0,
       stats_postuler: 0,
       stats_search_view: 0,
+      is_delegated: false,
+      cfa_siret: null,
+      cfa_legal_name: null,
+      cfa_address_label: null,
     }
 
     const expected: IJobOfferApiReadV3 = {
@@ -594,6 +599,7 @@ describe("convertToJobOfferApiReadV3", () => {
         opening_count: 1,
         status: JOB_STATUS_ENGLISH.ACTIVE,
       },
+      is_delegated: false,
     }
 
     expect(jobsRouteApiv3Converters.convertToJobOfferApiReadV3(jobPartner)).toEqual(expected)

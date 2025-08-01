@@ -17,6 +17,7 @@ import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEnt
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
+import { startRecruiterChangeStream } from "@/services/formulaire.service"
 import { getApiApprentissageTestingToken, getApiApprentissageTestingTokenFromInvalidPrivateKey } from "@tests/utils/jwt.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
@@ -629,7 +630,13 @@ describe("GET /v3/jobs/:id", () => {
     await getDbCollection("referentielromes").insertMany(romes)
 
     await getDbCollection("jobs_partners").insertOne(originalJob)
+
+    const ctrl = new AbortController()
+    await startRecruiterChangeStream(ctrl.signal)
+
     await getDbCollection("recruiters").insertOne(lbaJob)
+    await new Promise((r) => setTimeout(r, 200))
+    ctrl.abort()
   })
 
   it("should return 401 if no api key provided", async () => {

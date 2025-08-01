@@ -884,8 +884,8 @@ export const updateJobsPartnersFromRecruiterUpdate = async (change: ChangeStream
 export const updateJobsPartnersFromRecruiterById = async (recruiterId: ObjectId) => {
   const recruiter = await getDbCollection("recruiters").findOne({ _id: recruiterId })
 
-  if (recruiter?.jobs?.length) {
-    await asyncForEach(recruiter.jobs, async (job) => {
+  if (recruiter?.jobs?.length && recruiter.address) {
+    await asyncForEach(recruiter.jobs, async (job: IJob) => {
       await upsertJobPartnersFromRecruiter(recruiter, job)
     })
   }
@@ -942,6 +942,22 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
   const lbaJobContactInfo = recruiter.is_delegated ? await getLbaJobContactInfo(recruiter) : null
   const { definition, acces_metier } = romeDetails ?? {}
 
+  const delegatedFields = recruiter.is_delegated
+    ? {
+        cfa_siret: lbaJobContactInfo?.establishment_siret || null,
+        cfa_legal_name: lbaJobContactInfo?.establishment_raison_sociale || null,
+        cfa_apply_phone: lbaJobContactInfo?.phone || null,
+        cfa_apply_email: lbaJobContactInfo?.email || null,
+        cfa_address_label: lbaJobContactInfo?.address || null,
+      }
+    : {
+        cfa_siret: null,
+        cfa_legal_name: null,
+        cfa_apply_phone: null,
+        cfa_apply_email: null,
+        cfa_address_label: null,
+      }
+
   const partnerJobToUpsert: Partial<IJobsPartnersOfferPrivate> = {
     _id: job._id,
     updated_at: job.job_update_date ?? now,
@@ -949,6 +965,9 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
     partner_label: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
     partner_job_id: job._id.toString(),
     is_delegated: recruiter.is_delegated,
+    job_status_comment: job?.job_status_comment || null,
+    job_delegation_count: job?.job_delegation_count || null,
+    delegations: job?.delegations,
 
     contract_start: job.job_start_date ?? null,
     contract_duration: job.job_duration ?? null,
@@ -956,13 +975,11 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
     contract_is_disabled_elligible: job.is_disabled_elligible ?? null,
     contract_rythm: job.job_rythm ?? null,
 
-    workplace_legal_name:
-      (lbaJobContactInfo?.establishment_raison_sociale || lbaJobContactInfo?.establishment_enseigne) ??
-      (recruiter.establishment_raison_sociale || recruiter.establishment_enseigne || UNKNOWN_COMPANY),
-    workplace_brand: lbaJobContactInfo?.establishment_enseigne ?? recruiter.establishment_enseigne,
-    workplace_siret: lbaJobContactInfo?.establishment_siret ?? recruiter.establishment_siret,
+    workplace_legal_name: recruiter.establishment_raison_sociale || recruiter.establishment_enseigne || UNKNOWN_COMPANY,
+    workplace_brand: recruiter.establishment_enseigne,
+    workplace_siret: recruiter.establishment_siret,
     workplace_geopoint: recruiter.geopoint ?? undefined,
-    workplace_address_label: (recruiter.is_delegated ? lbaJobContactInfo?.address : recruiter.address) ?? "",
+    workplace_address_label: recruiter.address!,
     workplace_address_zipcode: recruiter.address_detail?.code_postal ?? null,
     workplace_address_city: getCity(recruiter) ?? null,
 
@@ -995,6 +1012,8 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
     workplace_description: null,
     workplace_name: null,
     workplace_website: null,
+
+    ...delegatedFields,
   }
 
   await getDbCollection("jobs_partners").findOneAndUpdate(
