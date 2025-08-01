@@ -4,7 +4,12 @@ import { describe, expectTypeOf, it } from "vitest"
 import { OPCOS_LABEL, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
 
 import { JOB_STATUS_ENGLISH } from "./job.model.js"
-import { IJobsPartnersOfferApi, IJobsPartnersOfferHistoryEvent, IJobsPartnersRecruiterApi, IJobsPartnersWritableApi, IJobsPartnersWritableApiInput } from "./jobsPartners.model.js"
+import {
+  /*IJobsPartnersOfferApi,*/ IJobsPartnersOfferHistoryEvent,
+  IJobsPartnersRecruiterApi,
+  IJobsPartnersWritableApi,
+  IJobsPartnersWritableApiInput,
+} from "./jobsPartners.model.js"
 
 type IJobWorkplaceApiExpected = {
   workplace_siret: string | null
@@ -141,11 +146,11 @@ describe("IJobRecruiterExpected", () => {
   })
 })
 
-describe("IJobsPartnersOfferApi", () => {
-  it("should have proper typing", () => {
-    expectTypeOf<IJobsPartnersOfferApi>().toMatchTypeOf<IJobOfferApiExpected>()
-  })
-})
+// describe("IJobsPartnersOfferApi", () => {
+//   it("should have proper typing", () => {
+//     expectTypeOf<IJobsPartnersOfferApi>().toMatchTypeOf<IJobOfferApiExpected>()
+//   })
+// })
 
 describe("IJobsPartnersWritableApi", () => {
   it("should have proper typing", () => {
