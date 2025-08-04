@@ -13,6 +13,7 @@ import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
 
 const client = getApiClient({ baseURL: config.labonnealternanceLab.baseUrl })
+// const client = getApiClient({ baseURL: "http://localhost:8000" })
 
 export const getLabClassification = async (job: string): Promise<IClassificationLabResponse> => {
   try {
@@ -35,13 +36,14 @@ type IGetLabClassificationBatch = {
 
 export const getLabClassificationBatch = async (jobs: IGetLabClassificationBatch): Promise<IClassificationLabBatchResponse> => {
   try {
-    const response = await client.post("/scores", { items: jobs })
+    const response = await client.post("/scores", { items: jobs }, { timeout: 30_000 })
     const validation = ZClassificationLabBatchResponse.safeParse(response.data)
     if (!validation.success) {
       throw internal("getLabClassificationBatch: format de réponse non valide", { error: validation.error })
     }
     return validation.data
   } catch (error: any) {
+    console.log(error)
     sentryCaptureException(error, { extra: { responseData: error.response?.data } })
     throw error
   }

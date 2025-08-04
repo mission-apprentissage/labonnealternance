@@ -1,7 +1,7 @@
 import { ObjectId } from "bson"
 import { IClassificationJobsPartners } from "shared/models/cacheClassification.model"
 
-import { getLabClassification } from "@/common/apis/classification/classification.client"
+import { getLabClassificationBatch } from "@/common/apis/classification/classification.client"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 export type TJobClassification = {
@@ -13,26 +13,59 @@ export type TJobClassification = {
   offer_description: string
 }
 
-const getClassificationFromDB = async (job: TJobClassification): Promise<IClassificationJobsPartners | null> => {
-  const classification = await getDbCollection("cache_classification").findOne({ partner_label: job.partner_label, partner_job_id: job.partner_job_id })
-  return classification ?? null
+const getClassificationFromDB = async (jobs: TJobClassification[]): Promise<(IClassificationJobsPartners | null)[]> => {
+  const queries = jobs.map((job) => ({ partner_label: job.partner_label, partner_job_id: job.partner_job_id }))
+  const results = await getDbCollection("cache_classification").find({ $or: queries }).toArray()
+  return jobs.map((job) => {
+    return results.find((result) => result.partner_label === job.partner_label && result.partner_job_id === job.partner_job_id) ?? null
+  })
 }
 
-export const getClassificationFromLab = async (job: TJobClassification): Promise<string | null> => {
-  const classificationString = [job.workplace_name, job.workplace_description, job.offer_title, job.offer_description].filter(Boolean).join("\n")
-  const classificationFromCache = await getClassificationFromDB(job)
-  if (classificationFromCache) return classificationFromCache.classification
-  const classificationFromLab = await getLabClassification(classificationString)
-  if (classificationFromLab) {
-    const payload: IClassificationJobsPartners = {
-      _id: new ObjectId(),
-      partner_label: job.partner_label,
-      partner_job_id: job.partner_job_id,
-      classification: classificationFromLab.label,
-      scores: classificationFromLab.scores,
+export const getClassificationFromLab = async (jobs: TJobClassification[]): Promise<(string | null)[]> => {
+  const cachedClassifications = await getClassificationFromDB(jobs)
+  const notFoundJobs = jobs.flatMap((job, index) => {
+    if (cachedClassifications[index] !== null) {
+      return []
     }
-    await getDbCollection("cache_classification").insertOne(payload)
-    return classificationFromLab.label
+    return [{ ...job, originalIndex: index }]
+  })
+
+  if (!notFoundJobs.length) {
+    return cachedClassifications.map((cached) => cached?.classification ?? null)
   }
-  return null
+
+  const classificationPayload = notFoundJobs.map((job) => ({
+    id: `${job.partner_label}_${job.partner_job_id}`,
+    text: [job.workplace_name, job.workplace_description, job.offer_title, job.offer_description].filter(Boolean).join("\n"),
+  }))
+
+  const classificationsFromLab = await getLabClassificationBatch(classificationPayload)
+
+  if (classificationsFromLab && classificationsFromLab.length) {
+    const payloads = notFoundJobs
+      .map((job, idx) => ({
+        _id: new ObjectId(),
+        partner_label: job.partner_label,
+        partner_job_id: job.partner_job_id,
+        classification: classificationsFromLab[idx]?.label,
+        scores: classificationsFromLab[idx]?.scores,
+      }))
+      .filter((payload) => payload.classification)
+
+    if (payloads.length > 0) {
+      await getDbCollection("cache_classification").insertMany(payloads)
+    }
+  }
+
+  return jobs.map((job, index) => {
+    const cached = cachedClassifications[index]
+    if (cached) return cached.classification
+
+    const notFoundJobIndex = notFoundJobs.findIndex((nfJob) => nfJob.partner_label === job.partner_label && nfJob.partner_job_id === job.partner_job_id)
+    if (notFoundJobIndex >= 0 && classificationsFromLab && classificationsFromLab[notFoundJobIndex]) {
+      return classificationsFromLab[notFoundJobIndex].label
+    }
+
+    return null
+  })
 }

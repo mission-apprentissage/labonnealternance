@@ -32,7 +32,7 @@ describe("getLabClassification", () => {
   it("should request labonnealternance lab for a classification", async () => {
     nockLabClassification(apiPayload, apiResponse)
 
-    expect(await getClassificationFromLab(payload)).toEqual(apiResponse.label)
+    expect(await getClassificationFromLab([payload])).toEqual([apiResponse.label])
     expect(nock.isDone()).toBe(true)
   })
 })

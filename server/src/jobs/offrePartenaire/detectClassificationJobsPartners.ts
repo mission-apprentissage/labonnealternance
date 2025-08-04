@@ -15,25 +15,31 @@ export const detectClassificationJobsPartners = async ({ addedMatchFilter, shoul
     job: COMPUTED_ERROR_SOURCE.CLASSIFICATION,
     sourceFields: ["workplace_description", "workplace_name", "offer_description", "offer_title", "partner_job_id", "partner_label"],
     filledFields,
-    groupSize: 1,
+    groupSize: 100,
     addedMatchFilter,
     replaceMatchFilter: { $and: filters },
     getData: async (documents) => {
-      const [document] = documents
-      const { _id, workplace_description, offer_description, offer_title, workplace_name, partner_job_id, partner_label } = document
-      const classification = await getClassificationFromLab({
-        workplace_name: workplace_name!,
-        workplace_description: workplace_description!,
-        offer_title: offer_title!,
-        offer_description: offer_description!,
-        partner_job_id,
-        partner_label,
+      const payload = documents.map((document) => {
+        const { workplace_description, offer_description, offer_title, workplace_name, partner_job_id, partner_label } = document
+        return {
+          workplace_name: workplace_name!,
+          workplace_description: workplace_description!,
+          offer_title: offer_title!,
+          offer_description: offer_description!,
+          partner_job_id,
+          partner_label,
+        }
       })
-      const result: Pick<IComputedJobsPartners, (typeof filledFields)[number] | "_id"> = {
-        _id,
-        business_error: classification && classification === "cfa" ? JOB_PARTNER_BUSINESS_ERROR.CFA : null,
-      }
-      return [result]
+      const classifications = await getClassificationFromLab(payload)
+
+      return documents.map((document, index) => {
+        const classification = classifications[index]
+        const result: Pick<IComputedJobsPartners, (typeof filledFields)[number] | "_id"> = {
+          _id: document._id,
+          business_error: classification && classification === "cfa" ? JOB_PARTNER_BUSINESS_ERROR.CFA : null,
+        }
+        return result
+      })
     },
     shouldNotifySlack,
   })
