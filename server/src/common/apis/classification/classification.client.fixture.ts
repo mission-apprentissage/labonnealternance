@@ -1,8 +1,9 @@
 import nock from "nock"
-import { IClassificationLabResponse } from "shared/models/cacheClassification.model"
+import { IClassificationLabBatchResponse } from "shared/models/cacheClassification.model"
 
+import { IGetLabClassificationBatch } from "@/common/apis/classification/classification.client"
 import config from "@/config"
 
-export function nockLabClassification(payload: string, response: IClassificationLabResponse) {
-  return nock(config.labonnealternanceLab.baseUrl).post("/score", { text: payload }).reply(200, response)
+export function nockLabClassification(payload: IGetLabClassificationBatch, response: IClassificationLabBatchResponse) {
+  return nock(config.labonnealternanceLab.baseUrl).post("/scores", { items: payload }).reply(200, response)
 }

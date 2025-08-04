@@ -29,7 +29,7 @@ export const getLabClassification = async (job: string): Promise<IClassification
   }
 }
 
-type IGetLabClassificationBatch = {
+export type IGetLabClassificationBatch = {
   id: string
   text: string
 }[]
