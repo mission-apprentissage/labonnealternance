@@ -1060,6 +1060,7 @@ const startChangeStream = (
 
   changeStream
     .on("change", async (change) => {
+      logger.info("change detected in change stream for", collectionName, ":", change)
       if (collectionName === "recruiters") {
         switch (change.operationType) {
           case "insert":
@@ -1095,6 +1096,7 @@ const startChangeStream = (
       startChangeStream(collectionName, null, signal)
     })
     .on("close", () => {
+      logger.info("deleting change stream for", collectionName)
       changeStreams.delete(changeStream)
     })
 
