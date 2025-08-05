@@ -85,6 +85,7 @@ const nextConfig = {
   eslint: {
     dirs: ["."],
   },
+  compress: false,
   images: {
     unoptimized: true,
     // Tout changement d'image devra passer par un changement de nom de fichier
