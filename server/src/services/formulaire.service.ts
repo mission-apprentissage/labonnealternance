@@ -1069,17 +1069,18 @@ const startChangeStream = (
             await storeResumeToken("recruiters", change._id as IResumeTokenData)
             break
           case "rename":
-          case "invalidate":
           case "drop":
           case "delete":
             // n'arrivera pas car les formulaires ne sont pas supprimés, mais archivés
             break
-          // case "invalidate": {
-          //   // provoqué par des événement de type "drop" ou "rename" sur la collection
-          //   logger.info(`Change stream for ${collectionName} invalidated, restarting...`)
-          //   startChangeStream("recruiters", resumeToken, signal, "startAfter")
-          //   break
-          // }
+          case "invalidate": {
+            // provoqué par des événement de type "drop" ou "rename" sur la collection
+            logger.info(`Change stream for ${collectionName} invalidated, restarting after 10 seconds...`)
+            await new Promise((resolve) => setTimeout(resolve, 10000))
+            // on relance le change stream sans le token de reprise
+            startChangeStream("recruiters", null, signal)
+            break
+          }
           default:
             assertUnreachable(`Unexpected change operation type ${change.operationType}` as never)
         }
