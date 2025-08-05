@@ -99,7 +99,6 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
           job_status: offre?.job_status ?? JOB_STATUS.ACTIVE,
           job_type: offre?.job_type ?? ["Apprentissage"],
           delegations: offre?.delegations ?? undefined,
-          is_disabled_elligible: offre?.is_disabled_elligible ?? false,
           job_count: offre?.job_count ?? 1,
           job_duration: offre?.job_duration ?? 12,
           job_rythm: offre?.job_rythm ?? null,

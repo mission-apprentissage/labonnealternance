@@ -26,6 +26,7 @@ import {
 import { normalizeDepartementToRegex } from "@/common/utils/geolib"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { getPartnerJobs } from "@/services/partnerJob.service"
+import { getEntrepriseEngagement } from "@/services/referentielEngagementEntreprise.service"
 
 import { logger } from "../../../common/logger"
 import { IApiError } from "../../../common/utils/errorManager"
@@ -835,8 +836,13 @@ async function upsertJobOfferPrivate({
   current: IJobsPartnersOfferPrivate | null
 }): Promise<ObjectId> {
   const now = new Date()
-
   const _id = current?._id ?? new ObjectId()
+  let contract_is_disabled_elligible = false
+
+  if (current === null) {
+    contract_is_disabled_elligible = await getEntrepriseEngagement(data.workplace.siret)
+  }
+
   const invariantData: Pick<IJobsPartnersOfferPrivate, InvariantFields> = {
     _id,
     created_at: current?.created_at ?? now,
@@ -855,6 +861,7 @@ async function upsertJobOfferPrivate({
     contract_duration: data.contract.duration,
     contract_type: data.contract.type,
     contract_remote: data.contract.remote,
+    contract_is_disabled_elligible,
 
     offer_title: data.offer.title,
     offer_description: data.offer.description,
