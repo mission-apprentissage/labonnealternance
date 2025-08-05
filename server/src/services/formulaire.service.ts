@@ -1039,10 +1039,19 @@ export const updateJobsPartnersFromRecruiterDelete = async (id: ObjectId) => {
 }
 
 //TODO: extraire une partie du code dans un service pour éviter d'avoir du code trop spécifique dans mongodbUtils.ts
-const startChangeStream = (collectionName: "recruiters" | "anonymized_recruiters", resumeToken: IResumeToken | null, signal: AbortSignal) => {
+const startChangeStream = (
+  collectionName: "recruiters" | "anonymized_recruiters",
+  resumeToken: IResumeToken | null,
+  signal: AbortSignal
+  //resumeBehavior?: "startAfter" | "resumeAfter" = "resumeAfter"
+) => {
   logger.info(`Starting change stream for ${collectionName} with resumeToken:`, resumeToken)
   const collection = getDbCollection(collectionName)
-  const changeStream = collection.watch([], resumeToken ? { resumeAfter: resumeToken.resumeTokenData } : {})
+  const changeStream = collection.watch(
+    [],
+    //resumeToken ? (resumeBehavior === "resumeAfter" ? { resumeAfter: resumeToken.resumeTokenData } : { startAfter: resumeToken.resumeTokenData }) : {}
+    resumeToken ? { startAfter: resumeToken.resumeTokenData } : {}
+  )
 
   signal.addEventListener("abort", () => {
     logger.info(`Aborting change stream for ${collectionName}`)
@@ -1058,9 +1067,18 @@ const startChangeStream = (collectionName: "recruiters" | "anonymized_recruiters
             await updateJobsPartnersFromRecruiterUpdate(change)
             await storeResumeToken("recruiters", change._id as IResumeTokenData)
             break
+          case "rename":
+          case "invalidate":
+          case "drop":
           case "delete":
             // n'arrivera pas car les formulaires ne sont pas supprimés, mais archivés
             break
+          // case "invalidate": {
+          //   // provoqué par des événement de type "drop" ou "rename" sur la collection
+          //   logger.info(`Change stream for ${collectionName} invalidated, restarting...`)
+          //   startChangeStream("recruiters", resumeToken, signal, "startAfter")
+          //   break
+          // }
           default:
             assertUnreachable(`Unexpected change operation type ${change.operationType}` as never)
         }
