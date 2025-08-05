@@ -1,8 +1,8 @@
 "use client"
-import { Divider, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import { Alert } from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box } from "@mui/material"
+import { Box, Divider, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -105,8 +105,10 @@ export default function Authentification() {
           margin: "auto",
         }}
       >
-        <Text as="h5">Vous avez déjà un compte ?</Text>
-        <Text mb={3}>Indiquez le mail avec lequel vous avez créé votre compte et vous recevrez un lien pour vous connecter.</Text>
+        <Typography variant="h5" sx={{ mb: fr.spacing("6v") }}>
+          Vous avez déjà un compte ?
+        </Typography>
+        <Typography sx={{ mb: fr.spacing("3v") }}>Indiquez le mail avec lequel vous avez créé votre compte et vous recevrez un lien pour vous connecter.</Typography>
         <Box>
           <Formik
             validateOnMount
@@ -132,11 +134,11 @@ export default function Authentification() {
           </Formik>
         </Box>
 
-        <Divider mt={4} pb={0} />
+        <Divider />
 
-        <Text mt={4} as="h5">
+        <Typography variant="h5" sx={{ mt: fr.spacing("4v"), mb: fr.spacing("6v") }}>
           Vous n'avez pas de compte ?
-        </Text>
+        </Typography>
         <Button priority="secondary" type="button" onClick={() => router.push(PAGES.static.espaceProCreationEntreprise.getPath())} style={{ width: "100%" }}>
           <Box margin="auto">Créer un compte</Box>
         </Button>
