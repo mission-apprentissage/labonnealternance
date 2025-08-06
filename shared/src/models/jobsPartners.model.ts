@@ -6,7 +6,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 
 import { ZPointGeometry } from "./address.model.js"
 import { IModelDescriptor, zObjectId } from "./common.js"
-import { JOB_STATUS_ENGLISH } from "./job.model.js"
+import { JOB_STATUS_ENGLISH, ZDelegation } from "./job.model.js"
 import { ZComputedJobPartnersDuplicateRef } from "./jobPartnersDuplicateRef.js"
 import { zOpcoLabel } from "./opco.model.js"
 
@@ -61,6 +61,11 @@ export const ZJobsPartnersRecruiterApi = z.object({
     .describe(
       "Identifiant permettant de candidater via l'API ou le widget /postuler, généré à la volée pour les opportunités dont on dispose de l'adresse email. Si null il n'est pas possible d'utiliser le widget /postuler ou d'utiliser la route api pour postuler"
     ),
+  is_delegated: z.boolean().default(false).describe("Indique si l'offre est déléguée à un mandataire"),
+
+  cfa_legal_name: z.string().nullish().describe("Raison sociale du CFA si offre déléguée"),
+  cfa_siret: extensions.siret.nullish().describe("Siret du CFA si offre déléguée"),
+  cfa_address_label: z.string().nullish().describe("Adresse du CFA si offre déléguée"),
 })
 
 export const zDiplomaEuropeanLevel = z.enum(["3", "4", "5", "6", "7"])
@@ -73,6 +78,7 @@ export const ZJobsPartnersOfferHistoryEvent = z.object({
   date: z.date().describe("Date de l'évènement"),
   granted_by: z.string().describe("Utilisateur à l'origine du changement"),
 })
+export type IJobsPartnersOfferHistoryEvent = z.output<typeof ZJobsPartnersOfferHistoryEvent>
 
 export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   _id: true,
@@ -87,7 +93,7 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   contract_type: z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)).describe("type de contrat, formaté à l'insertion"),
   contract_remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).nullable().describe("Format de travail de l'offre"),
   contract_rythm: z.string().nullish().describe("Rythme de l'alternance, formaté à l'insertion, exemple : 2 semaines entreprise / 1 semaine école"),
-  contract_is_disabled_elligible: z.boolean().nullish().default(null).describe("Indique si l'offre est éligible aux personnes en situation de handicap"),
+  contract_is_disabled_elligible: z.boolean().nullable().default(null).describe("Indique si l'offre est éligible aux personnes en situation de handicap"),
 
   offer_title: z.string().min(3).describe("Titre de l'offre"),
   offer_rome_codes: z.array(extensions.romeCode()).describe("Code rome de l'offre"),
@@ -122,6 +128,15 @@ const ZJobsPartnersRecruiterPrivateFields = z.object({
   workplace_address_city: z.string().nullable().describe("Nom de ville, provenant du SIRET ou du partenaire"),
   workplace_address_zipcode: extensions.zipCode().nullable().describe("Code postal, provenant du SIRET ou du partenaire"),
 
+  cfa_siret: extensions.siret.nullish().describe("Siret du CFA si offre déléguée"),
+  cfa_legal_name: z.string().nullish().describe("Raison sociale du CFA si offre déléguée"),
+  cfa_apply_phone: z.string().nullish().describe("Numéro de téléphone du CFA si offre déléguée"),
+  cfa_apply_email: z.string().email().nullish().describe("Email de contact du CFA si offre déléguée"),
+  cfa_address_label: z.string().nullish().describe("Adresse du CFA si offre déléguée"),
+  job_status_comment: z.string().nullish().describe("Raison de la suppression de l'offre"),
+  job_delegation_count: z.number().nullish().describe("Nombre de délégations"),
+  delegations: z.array(ZDelegation).nullish().describe("Liste des délégations"),
+
   created_at: z.date().describe("Date de creation de l'offre"),
   updated_at: z.date().describe("Date de mise à jour de l'offre"),
 })
@@ -139,7 +154,6 @@ export const ZJobsPartnersOfferPrivate = ZJobsPartnersOfferApi.omit({
     rank: z.number().nullish().describe("Valeur indiquant la qualité de l'offre. Plus la valeur est élevée, plus la qualité de l'offre est importante"),
     duplicates: z.array(ZComputedJobPartnersDuplicateRef).nullish().describe("Référence les autres offres en duplicata avec celle-ci"),
     applicationCount: z.number().nullish().describe("Nombre de candidatures pour cette offre"),
-    is_delegated: z.boolean().nullish().describe("Indique si l'offre est déléguée à un mandataire"),
   })
 
 export const ZJobsPartnersOfferPrivateWithDistance = ZJobsPartnersOfferPrivate.extend({
