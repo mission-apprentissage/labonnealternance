@@ -8,6 +8,7 @@ exports[`createJobOffer > should create a job offer with the minimal data 1`] = 
   "apply_url": null,
   "business_error": null,
   "contract_duration": null,
+  "contract_is_disabled_elligible": false,
   "contract_remote": null,
   "contract_start": 2024-09-01T00:00:00.000Z,
   "contract_type": [
@@ -236,6 +237,7 @@ exports[`updateJobOffer > should update a job offer with the minimal data 1`] = 
   "apply_url": null,
   "business_error": null,
   "contract_duration": null,
+  "contract_is_disabled_elligible": false,
   "contract_remote": null,
   "contract_start": 2024-09-01T00:00:00.000Z,
   "contract_type": [
