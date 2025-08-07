@@ -48,6 +48,7 @@ function release:app() {
 }
 
 function deploy() {
+  Help
   "${SCRIPT_DIR}/deploy-app.sh" "$@"
 }
 
