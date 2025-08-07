@@ -70,6 +70,7 @@ describe("helloWorkJobToJobsPartners", () => {
       contract_type: ["Apprentissage", "Professionnalisation"],
       contract_remote: "onsite",
       contract_duration: 12,
+      contract_is_disabled_elligible: false,
       offer_title: "Gestionnaire Paie et ADP - Alternance H/F",
       offer_description: "ceci est une longue description qui a du sens et qui va passer la limite de 30 caractères",
       offer_status: "Active",
