@@ -8,6 +8,7 @@ exports[`createJobOffer > should create a job offer with the minimal data 1`] = 
   "apply_url": null,
   "business_error": null,
   "contract_duration": null,
+  "contract_is_disabled_elligible": false,
   "contract_remote": null,
   "contract_start": 2024-09-01T00:00:00.000Z,
   "contract_type": [
@@ -142,6 +143,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
       "partner_job_id": "",
       "partner_label": "Hellowork",
     },
+    "is_delegated": false,
     "offer": {
       "access_conditions": [],
       "description": "Attention il te faut une super motivation pour ce job",
@@ -234,6 +236,7 @@ exports[`updateJobOffer > should update a job offer with the minimal data 1`] = 
   "apply_url": null,
   "business_error": null,
   "contract_duration": null,
+  "contract_is_disabled_elligible": false,
   "contract_remote": null,
   "contract_start": 2024-09-01T00:00:00.000Z,
   "contract_type": [
