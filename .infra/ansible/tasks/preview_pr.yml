@@ -66,6 +66,10 @@
       with_items:
         - "/opt/app/projects/{{ pr_number }}/repository"
 
+    - name: "Test"
+      shell:
+        cmd: "echo >>>>; env; echo >>>>"
+
     - name: "[{{ pr_number }}] Build local images 0.0.0-{{ pr_number }}"
       shell:
         cmd: "flock --verbose --close /tmp/deployment_build.lock .bin/mna-lba preview:build 0.0.0-{{ pr_number }} load commit-hash-temp preview"
