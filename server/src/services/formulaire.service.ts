@@ -31,6 +31,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { logger } from "@/common/logger"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { anonymizeLbaJobsPartners } from "@/services/partnerJob.service"
+import { getEntrepriseEngagement } from "@/services/referentielEngagementEntreprise.service"
 import { getResumeToken, storeResumeToken } from "@/services/resumeToken.service"
 
 import { asyncForEach } from "../common/utils/asyncUtils"
@@ -176,6 +177,7 @@ export const createJob = async ({
   if (!recruiter) {
     throw internal(`recruiter with establishment_id=${establishment_id} not found`)
   }
+  const is_disabled_elligible = await getEntrepriseEngagement(recruiter.establishment_siret)
   const { is_delegated, cfa_delegated_siret } = recruiter
   const organization = await (cfa_delegated_siret
     ? getDbCollection("cfas").findOne({ siret: cfa_delegated_siret })
@@ -208,6 +210,7 @@ export const createJob = async ({
     job_creation_date: creationDate,
     job_expiration_date: addExpirationPeriod(creationDate).toDate(),
     job_update_date: creationDate,
+    is_disabled_elligible,
   }
   const updatedJob: Partial<IJob> = Object.assign(job, addedFields)
   // insert job

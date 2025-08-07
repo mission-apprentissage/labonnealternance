@@ -6,7 +6,6 @@ import { getSourceFromCookies } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateOffreToken } from "@/services/appLinks.service"
-import { getEntrepriseEngagement } from "@/services/referentielEngagementEntreprise.service"
 import { getUserRecruteurById } from "@/services/userRecruteur.service"
 import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
 
@@ -173,7 +172,7 @@ export default (server: Server) => {
       if (!recruiter) {
         throw badRequest("/formulaire/:establishment_id/offre - L'entreprise n'existe pas")
       }
-      const is_disabled_elligible = await getEntrepriseEngagement(recruiter.establishment_siret)
+
       const {
         job_type,
         delegations,
@@ -190,7 +189,6 @@ export default (server: Server) => {
       } = req.body
       const updatedFormulaire = await createJob({
         job: {
-          is_disabled_elligible,
           job_type,
           delegations,
           job_count,
@@ -240,7 +238,7 @@ export default (server: Server) => {
       if (!recruiter) {
         throw badRequest("/formulaire/:establishment_id/offre - L'entreprise n'existe pas")
       }
-      const is_disabled_elligible = await getEntrepriseEngagement(recruiter.establishment_siret)
+
       const {
         job_type,
         delegations,
@@ -258,7 +256,6 @@ export default (server: Server) => {
       } = req.body
       const updatedFormulaire = await createJob({
         job: {
-          is_disabled_elligible,
           job_type,
           delegations,
           job_count,
