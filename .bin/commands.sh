@@ -81,6 +81,7 @@ function seed:apply() {
 }
 
 function deploy:log:encrypt() {
+  export FLAG=1
   (cd "$ROOT_DIR" && "${SCRIPT_DIR}/deploy-log-encrypt.sh" "$@")
 }
 
