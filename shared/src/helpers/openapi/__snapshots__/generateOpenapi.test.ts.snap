@@ -7843,6 +7843,11 @@ Limite : 1 appel(s) / 1 seconde(s)
                             ],
                             "type": "object",
                           },
+                          "is_delegated": {
+                            "default": false,
+                            "description": "Indique si l'offre est déléguée à un mandataire",
+                            "type": "boolean",
+                          },
                           "offer": {
                             "properties": {
                               "access_conditions": {
@@ -8544,6 +8549,11 @@ Limite : 1 appel(s) / 1 seconde(s)
                         "partner_job_id",
                       ],
                       "type": "object",
+                    },
+                    "is_delegated": {
+                      "default": false,
+                      "description": "Indique si l'offre est déléguée à un mandataire",
+                      "type": "boolean",
                     },
                     "offer": {
                       "properties": {

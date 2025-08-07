@@ -3,6 +3,7 @@
 exports[`createJob > should insert a job 1`] = `
 {
   "_id": "670ce30b57a50d6875c141f9",
+  "address": "126 RUE DE L'UNIVERSITE 75007 PARIS",
   "address_detail": {
     "acheminement_postal": {
       "l1": null,
@@ -104,6 +105,11 @@ exports[`createJob > should insert a job 3`] = `
 {
   "apply_email": "entreprise@mail.fr",
   "apply_phone": null,
+  "cfa_address_label": null,
+  "cfa_apply_email": null,
+  "cfa_apply_phone": null,
+  "cfa_legal_name": null,
+  "cfa_siret": null,
   "contract_duration": null,
   "contract_is_disabled_elligible": null,
   "contract_remote": null,
@@ -112,7 +118,10 @@ exports[`createJob > should insert a job 3`] = `
   "contract_type": [
     "Apprentissage",
   ],
+  "delegations": null,
   "is_delegated": false,
+  "job_delegation_count": null,
+  "job_status_comment": null,
   "offer_access_conditions": [
     "Ce métier est accessible avec un diplôme de fin d'études secondaires (brevet des collèges) à Bac (professionnel, Brevet Professionnel, ...) dans le secteur tertiaire. Il est également accessible avec une expérience professionnelle sans diplôme particulier. La maîtrise de l'outil bureautique (traitement de texte, tableur, ...) peut être requise.",
   ],
@@ -142,7 +151,7 @@ exports[`createJob > should insert a job 3`] = `
   "stats_postuler": 0,
   "stats_search_view": 0,
   "workplace_address_city": "PARIS",
-  "workplace_address_label": "",
+  "workplace_address_label": "126 RUE DE L'UNIVERSITE 75007 PARIS",
   "workplace_address_street_label": null,
   "workplace_address_zipcode": "75002",
   "workplace_brand": null,
