@@ -38,7 +38,7 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     contract_duration: null,
     contract_type: ["Apprentissage", "Professionnalisation"],
     contract_remote: null,
-    contract_is_disabled_elligible: null,
+    contract_is_disabled_elligible: false,
 
     offer_title: "Une super offre d'alternance",
     offer_rome_codes: [],
@@ -111,7 +111,7 @@ export function generateJobsPartnersFull(data: Partial<IJobsPartnersOfferPrivate
     contract_duration: 6,
     contract_type: ["Apprentissage", "Professionnalisation"],
     contract_remote: TRAINING_REMOTE_TYPE.onsite,
-    contract_is_disabled_elligible: null,
+    contract_is_disabled_elligible: false,
 
     offer_title: "Une super offre d'alternance",
     offer_rome_codes: ["D1102"],

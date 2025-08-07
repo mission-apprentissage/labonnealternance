@@ -9,7 +9,7 @@ export const ZReferentielEngagementEntreprise = z
     _id: zObjectId,
     siret: z.string(),
     engagement: z.enum(["handicap"]),
-    sources: z.array(z.string()),
+    sources: z.array(z.enum(["france-travail", "lba", "les"])),
   })
   .strict()
 
