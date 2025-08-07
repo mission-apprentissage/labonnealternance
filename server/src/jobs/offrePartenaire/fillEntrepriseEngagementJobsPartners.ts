@@ -8,7 +8,7 @@ import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 export const fillEntrepriseEngagementJobsPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext = defaultFillComputedJobsPartnersContext) => {
   const filledFields = ["contract_is_disabled_elligible"] as const satisfies (keyof IComputedJobsPartners)[]
   return fillFieldsForPartnersFactory({
-    job: COMPUTED_ERROR_SOURCE.API_OPCO,
+    job: COMPUTED_ERROR_SOURCE.ENGAGEMENT_ENTREPRISE,
     sourceFields: ["workplace_siret"],
     filledFields,
     groupSize: 500,

@@ -55,6 +55,7 @@ export const blankComputedJobPartner = (): Omit<IComputedJobsPartners, "_id" | "
   contract_remote: null,
   contract_start: null,
   contract_type: [],
+  contract_is_disabled_elligible: false,
   created_at: new Date(),
   errors: [],
   offer_access_conditions: [],

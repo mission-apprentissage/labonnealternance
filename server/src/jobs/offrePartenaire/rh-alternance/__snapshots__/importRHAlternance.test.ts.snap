@@ -6,6 +6,7 @@ exports[`import RH Alternance > rawRhAlternanceToComputedMapper > should test th
   "apply_url": "https://rhalternance.com/jobs/environnement/la-grande-motte/alternant-hse-h-f-913079004",
   "business_error": null,
   "contract_duration": null,
+  "contract_is_disabled_elligible": false,
   "contract_remote": null,
   "contract_start": null,
   "contract_type": [

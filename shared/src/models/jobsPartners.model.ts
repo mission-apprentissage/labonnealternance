@@ -93,7 +93,7 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   contract_type: z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)).describe("type de contrat, formaté à l'insertion"),
   contract_remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).nullable().describe("Format de travail de l'offre"),
   contract_rythm: z.string().nullish().describe("Rythme de l'alternance, formaté à l'insertion, exemple : 2 semaines entreprise / 1 semaine école"),
-  contract_is_disabled_elligible: z.boolean().nullable().default(null).describe("Indique si l'offre est éligible aux personnes en situation de handicap"),
+  contract_is_disabled_elligible: z.boolean().default(false).describe("Indique si l'offre est éligible aux personnes en situation de handicap"),
 
   offer_title: z.string().min(3).describe("Titre de l'offre"),
   offer_rome_codes: z.array(extensions.romeCode()).describe("Code rome de l'offre"),

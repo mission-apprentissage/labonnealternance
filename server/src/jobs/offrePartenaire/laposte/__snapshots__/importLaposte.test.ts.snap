@@ -7,6 +7,7 @@ exports[`importLaposte > should test the import of La Poste data into computed_j
     "apply_url": "https://www.laposterecrute.fr/offre/2025-xxxxx1",
     "business_error": null,
     "contract_duration": 12,
+    "contract_is_disabled_elligible": false,
     "contract_remote": "onsite",
     "contract_start": null,
     "contract_type": [
@@ -78,6 +79,7 @@ La Poste Groupe change, nos métiers évoluent. Etre toujours au plus près des 
     "apply_url": "https://www.laposterecrute.fr/offre/2025-xxxxx9",
     "business_error": null,
     "contract_duration": 24,
+    "contract_is_disabled_elligible": false,
     "contract_remote": null,
     "contract_start": null,
     "contract_type": [

@@ -6637,7 +6637,7 @@ const siret: string[] = [
 
 export const up = async () => {
   const distinctSiret = [...new Set(siret)]
-  const payload: IReferentielEngagementEntreprise[] = distinctSiret.map((siret) => ({ _id: new ObjectId(), siret, engagement: "handicap", sources: ["La bonne alternance"] }))
+  const payload: IReferentielEngagementEntreprise[] = distinctSiret.map((siret) => ({ _id: new ObjectId(), siret, engagement: "handicap", sources: ["lba"] }))
   await getDbCollection("referentiel_engagement_entreprise").insertMany(payload)
 }
 
