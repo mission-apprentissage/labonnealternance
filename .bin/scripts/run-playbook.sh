@@ -11,6 +11,10 @@ readonly PRODUCT_NAME=lba
 function runPlaybook() {
   echo "Lancement du playbook ${PLAYBOOK_NAME} pour l'environnement ${ENV_FILTER}..."
 
+  echo "##########################################"
+  env
+  echo "##########################################"
+
   local ansible_extra_opts=()
   if [[ -z "${ANSIBLE_BECOME_PASS:-}" ]]; then
     if [[ $* != *"pass"* ]]; then
