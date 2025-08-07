@@ -28,4 +28,6 @@ fi;
 
 "${SCRIPT_DIR}/check-dependencies.sh"
 
+echo "foo bar"
+
 $command "$@"
