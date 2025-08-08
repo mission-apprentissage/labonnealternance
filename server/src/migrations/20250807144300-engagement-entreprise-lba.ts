@@ -10287,10 +10287,29 @@ const siretFranceTravail: string[] = [
 export const up = async () => {
   const distinctSiretLba = [...new Set(siretLba)]
   const distinctSiretFT = [...new Set(siretFranceTravail)]
-  const payloadLba: IReferentielEngagementEntreprise[] = distinctSiretLba.map((siret) => ({ _id: new ObjectId(), siret, engagement: "handicap", sources: ["lba"] }))
-  const payloadFt: IReferentielEngagementEntreprise[] = distinctSiretFT.map((siret) => ({ _id: new ObjectId(), siret, engagement: "handicap", sources: ["france-travail"] }))
-  await getDbCollection("referentiel_engagement_entreprise").insertMany(payloadLba)
-  await getDbCollection("referentiel_engagement_entreprise").insertMany(payloadFt)
+
+  // Create a map to merge sources for duplicate SIRETs
+  const siretMap = new Map<string, IReferentielEngagementEntreprise>()
+
+  // Add LBA SIRETs
+  distinctSiretLba.forEach((siret) => {
+    siretMap.set(siret, { _id: new ObjectId(), siret, engagement: "handicap", sources: ["lba"] })
+  })
+
+  // Add France Travail SIRETs, merging sources if SIRET already exists
+  distinctSiretFT.forEach((siret) => {
+    if (siretMap.has(siret)) {
+      const existing = siretMap.get(siret)!
+      existing.sources = [...existing.sources, "france-travail"]
+    } else {
+      siretMap.set(siret, { _id: new ObjectId(), siret, engagement: "handicap", sources: ["france-travail"] })
+    }
+  })
+
+  const payload = Array.from(siretMap.values())
+  if (payload.length > 0) {
+    await getDbCollection("referentiel_engagement_entreprise").insertMany(payload)
+  }
 }
 
 // set to false ONLY IF migration does not imply a breaking change (ex: update field value or add index)
