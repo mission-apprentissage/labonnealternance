@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useSearchParams } from "next/navigation"
 import { useState } from "react"
 
-import FormulaireDesinscription from "@/app/(home)/desinscription/_components/FormulaireDesinscription"
+import { FormulaireDesinscription } from "@/app/(home)/desinscription/_components/FormulaireDesinscription"
 import SuccesDesinscription from "@/app/(home)/desinscription/_components/SuccesDesinscription"
 import { AlgoRecruteur } from "@/app/(landing-pages)/acces-recruteur/_components/AlgoRecruter"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
@@ -14,7 +14,7 @@ import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { getApplicationCompanyEmailAddress } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
-export default function DesinscriptionRecruteur() {
+export function DesinscriptionRecruteur() {
   const [isSuccess, setIsSuccess] = useState(false)
 
   const application_id = useSearchParams().get("application_id")
@@ -24,9 +24,9 @@ export default function DesinscriptionRecruteur() {
   }
 
   const { data } = useQuery({
-    queryKey: ["getApplicationEmail"],
+    queryKey: ["getApplicationEmail", application_id],
     queryFn: () => getApplicationCompanyEmailAddress(application_id),
-    enabled: !!application_id,
+    enabled: Boolean(application_id),
   })
 
   return (
