@@ -43,7 +43,8 @@ const RessourcesRecruteur = () => {
           <Typography component="span" fontWeight={700}>
             Estimez le coût d’un alternant
           </Typography>{" "}
-          pour votre entreprise avec le simulateur du Portail de l'alternance. <DsfrLink href="https://www.alternance.emploi.gouv.fr/simulateur-employeur/etape-1">En savoir plus</DsfrLink>
+          pour votre entreprise avec le simulateur du Portail de l'alternance.{" "}
+          <DsfrLink href="https://www.alternance.emploi.gouv.fr/simulateur-employeur/etape-1">En savoir plus</DsfrLink>
         </ListItem>
 
         <ListItem sx={{ display: "list-item" }}>
