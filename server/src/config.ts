@@ -68,6 +68,9 @@ const config = {
     clientSecret: env.get("LBA_DIAGORIENTE_CLIENT_SECRET").required().asString(),
     authUrl: "https://analytics-auth.atlantis.diagotech.dev/realms/esi-auth-keycloack/protocol/openid-connect/token",
   },
+  labonnealternanceLab: {
+    baseUrl: "https://lab.apprentissage.beta.gouv.fr",
+  },
   franceTravailDepotOffres: {
     login: env.get("LBA_FRANCE_TRAVAIL_DEPOT_OFFRES_LOGIN").required().asString(),
     password: env.get("LBA_FRANCE_TRAVAIL_DEPOT_OFFRES_PASSWORD").required().asString(),

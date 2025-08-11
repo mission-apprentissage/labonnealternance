@@ -1,8 +1,8 @@
 import { Box, Flex, FormControl, FormErrorMessage, FormLabel, Input, Spinner, Text } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
-import emailMisspelled, { top100 } from "email-misspelled"
+import emailMisspelled, { Result, top100 } from "email-misspelled"
 import { useFormik } from "formik"
-import { useState } from "react"
+import { ChangeEvent, useState } from "react"
 import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { toFormikValidationSchema } from "zod-formik-adapter"
@@ -125,15 +125,15 @@ export const CandidatureLbaModalBody = ({
 }
 
 const UserFields = ({ formik }: { formik: any }) => {
-  const [suggestedEmails, setSuggestedEmails] = useState([])
+  const [suggestedEmails, setSuggestedEmails] = useState<Result[]>([])
 
-  const onEmailChange = (e) => {
+  const onEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     const checkedEmail = emailChecker(e.target.value)
     setSuggestedEmails(checkedEmail)
     formik.handleChange(e)
   }
 
-  const clickSuggestion = (value) => {
+  const clickSuggestion = (value: string) => {
     formik.setFieldValue("applicant_email", value)
     setSuggestedEmails([])
   }

@@ -3,6 +3,7 @@ import { RECRUITER_STATUS } from "shared/constants/index"
 import { JOB_STATUS, zRoutes } from "shared/index"
 
 import { getSourceFromCookies } from "@/common/utils/httpUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateOffreToken } from "@/services/appLinks.service"
 import { getUserRecruteurById } from "@/services/userRecruteur.service"
@@ -167,8 +168,12 @@ export default (server: Server) => {
     async (req, res) => {
       const { establishment_id } = req.params
       const user = getUserFromRequest(req, zRoutes.post["/formulaire/:establishment_id/offre"]).value
+      const recruiter = await getDbCollection("recruiters").findOne({ establishment_id })
+      if (!recruiter) {
+        throw badRequest("/formulaire/:establishment_id/offre - L'entreprise n'existe pas")
+      }
+
       const {
-        is_disabled_elligible,
         job_type,
         delegations,
         job_count,
@@ -184,7 +189,6 @@ export default (server: Server) => {
       } = req.body
       const updatedFormulaire = await createJob({
         job: {
-          is_disabled_elligible,
           job_type,
           delegations,
           job_count,
@@ -230,8 +234,12 @@ export default (server: Server) => {
       if (!user) {
         throw internal(`inattendu : impossible de récupérer l'utilisateur de type token ayant pour email=${email}`)
       }
+      const recruiter = await getDbCollection("recruiters").findOne({ establishment_id })
+      if (!recruiter) {
+        throw badRequest("/formulaire/:establishment_id/offre - L'entreprise n'existe pas")
+      }
+
       const {
-        is_disabled_elligible,
         job_type,
         delegations,
         job_count,
@@ -248,7 +256,6 @@ export default (server: Server) => {
       } = req.body
       const updatedFormulaire = await createJob({
         job: {
-          is_disabled_elligible,
           job_type,
           delegations,
           job_count,

@@ -17,6 +17,7 @@ import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEnt
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
+import { startRecruiterChangeStream } from "@/services/formulaire.service"
 import { getApiApprentissageTestingToken, getApiApprentissageTestingTokenFromInvalidPrivateKey } from "@tests/utils/jwt.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
@@ -26,13 +27,13 @@ vi.mock("@/common/apis/apiEntreprise/apiEntreprise.client")
 
 const httpClient = useServer()
 
-const token = getApiApprentissageTestingToken({
+const token = await getApiApprentissageTestingToken({
   email: "test@test.fr",
   organisation: "Un super Partenaire",
   habilitations: { "applications:write": false, "appointments:write": false, "jobs:write": true },
 })
 
-const fakeToken = getApiApprentissageTestingTokenFromInvalidPrivateKey({
+const fakeToken = await getApiApprentissageTestingTokenFromInvalidPrivateKey({
   email: "mail@mail.com",
   organisation: "Un super Partenaire",
   habilitations: { "applications:write": false, "appointments:write": false, "jobs:write": true },
@@ -348,7 +349,7 @@ describe("POST /jobs", async () => {
   })
 
   it('should return 403 if user does not have "jobs:write" permission', async () => {
-    const restrictedToken = getApiApprentissageTestingToken({
+    const restrictedToken = await getApiApprentissageTestingToken({
       email: "mail@mail.com",
       organisation: "Un super Partenaire",
       habilitations: { "applications:write": false, "appointments:write": false, "jobs:write": false },
@@ -542,7 +543,7 @@ describe("PUT /jobs/:id", async () => {
   })
 
   it('should return 403 if user does not have "jobs:write" permission', async () => {
-    const restrictedToken = getApiApprentissageTestingToken({
+    const restrictedToken = await getApiApprentissageTestingToken({
       email: "mail@mail.com",
       organisation: "Un super Partenaire",
       habilitations: { "applications:write": false, "appointments:write": false, "jobs:write": false },
@@ -560,7 +561,7 @@ describe("PUT /jobs/:id", async () => {
   })
 
   it("should return 403 if user is trying to edit other partner_label job", async () => {
-    const restrictedToken = getApiApprentissageTestingToken({
+    const restrictedToken = await getApiApprentissageTestingToken({
       email: "mail@mail.com",
       organisation: "Un autre",
       habilitations: { "applications:write": false, "appointments:write": false, "jobs:write": true },
@@ -629,7 +630,13 @@ describe("GET /v3/jobs/:id", () => {
     await getDbCollection("referentielromes").insertMany(romes)
 
     await getDbCollection("jobs_partners").insertOne(originalJob)
+
+    const ctrl = new AbortController()
+    await startRecruiterChangeStream(ctrl.signal)
+
     await getDbCollection("recruiters").insertOne(lbaJob)
+    await new Promise((r) => setTimeout(r, 200))
+    ctrl.abort()
   })
 
   it("should return 401 if no api key provided", async () => {

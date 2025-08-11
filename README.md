@@ -37,21 +37,35 @@ Consultez la [Fiche Produit](https://beta.gouv.fr/startups/la-bonne-alternance.h
 
 Avant d'installer le projet, assurez-vous d'avoir les éléments suivants :
 
-- Docker 23.03.0+
-- GPG
-- NodeJS 20+ (vous pouvez utiliser [n](https://github.com/tj/n#third-party-installers) pour l'installer)
+- **Bash** 5+
+- **Docker** 23.03.0+
+- **Git LFS**
+- **GnuPG**
+- **pwgen**
+- **1password-cli**
+- **yq**
+- **shred**
+- **sshpass**
+- **NodeJS** 20+
+- **Ansible** 2.7+
 
-- brew install yq https://github.com/mikefarah/yq
-- brew install git-lfs https://git-lfs.com/
-- brew install 1password-cli https://developer.1password.com/docs/cli/get-started/
-- Ansible 2.7+: `brew install ansible`
-- sshpass
-  ```bash
-  brew tap esolitos/ipa
-  brew install esolitos/ipa/sshpass
-  ```
-- pwgen: `brew install pwgen`
-- bash 5+: `brew install bash`
+#### Installation des pré-requis sur un environnement **MacOS** :
+
+```bash
+brew install n
+brew install yq
+brew install coreutils
+brew install git-lfs
+brew install 1password-cli
+brew install ansible
+brew install pwgen
+brew install bash
+```
+
+```bash
+brew tap esolitos/ipa
+brew install esolitos/ipa/sshpass
+```
 
 ### Clé GPG
 
@@ -60,7 +74,6 @@ Pour décrypter les variables d'environnement, vous avez besoin d'une clé GPG. 
 Voici les étapes pour créer votre clé GPG :
 
 1. Lors de la création de la clé, choisissez les options suivantes :
-
    - `Please select what kind of key you want` > `ECC (sign and encrypt)`
    - `Please select which elliptic curve you want` > `Curve 25519`
    - `Please specify how long the key should be valid` > `0`

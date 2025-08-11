@@ -1,14 +1,14 @@
-import fs from "fs"
 import path from "path"
 
-import { Box, Container, Divider, Text, VStack } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Stack, Typography } from "@mui/material"
 import { Metadata } from "next"
 import Link from "next/link"
 
-import { getStaticMetiers } from "../../../utils/getStaticData"
-import { PAGES } from "../../../utils/routes.utils"
-import { Breadcrumb } from "../../_components/Breadcrumb"
+import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { getStaticMetiers } from "@/utils/getStaticData"
+import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = {
   title: PAGES.static.metiers.getMetadata().title,
@@ -17,43 +17,54 @@ export const metadata: Metadata = {
 
 export default async function Metiers() {
   const txtDirectory = path.join(process.cwd(), "config")
-  const jobs = getStaticMetiers(path, fs, txtDirectory)
+  const jobs = getStaticMetiers(txtDirectory)
 
   return (
     <Box>
-      <Box as="main">
+      <Box component="main">
         <Breadcrumb pages={[PAGES.static.metiers]} />
-        <Container p={12} my={0} mb={[0, 12]} variant="pageContainer">
-          <Text variant="editorialContentH1" as="h1">
-            <Text as="span" color="black">
+        <DefaultContainer>
+          <Box sx={{ p: fr.spacing("5w"), marginBottom: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
+            <Typography component="h1" variant="h1" sx={{ mb: 2 }}>
               Tous les emplois
-            </Text>
-            <br />
-            et formations en alternance
-          </Text>
-          <Divider variant="pageTitleDivider" my={12} />
+              <Typography component="h1" variant="h1" sx={{ display: "block", color: fr.colors.decisions.text.default.info.default }}>
+                et formations en alternance
+              </Typography>
+            </Typography>
+            <Box
+              component="hr"
+              sx={{
+                maxWidth: "93px",
+                border: "none",
+                borderBottom: "none",
+                borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`,
+                opacity: 1,
+                my: fr.spacing("3w"),
+              }}
+            />
 
-          <Box as="p">
-            Vous voulez travailler en alternance ? Vous voulez obtenir un diplôme en alternance ? Toutes les informations pour trouver une alternance rapidement sont sur La bonne
-            alternance :
+            <Typography component="p" sx={{ mb: 2 }}>
+              Vous voulez travailler en alternance ? Vous voulez obtenir un diplôme en alternance ? Toutes les informations pour trouver une alternance rapidement sont sur La bonne
+              alternance :
+            </Typography>
+            <Stack spacing={1} alignItems="flex-start" sx={{ mt: 2 }}>
+              <Typography>Offres d&apos;emploi en contrat d&apos;apprentissage ou en contrat de professionnalisation</Typography>
+              <Typography>Liste d'entreprises qui recrutent en alternance</Typography>
+              <Typography>Formations en apprentissage en CAP, Bac pro, Mention complémentaire, BTS, BUT, DEUST, Licence, Master</Typography>
+
+              {jobs.map((job, index) => {
+                return (
+                  <Typography key={index} sx={{ mt: 0, mb: { xs: 2, md: 0 } }}>
+                    <Typography component="span">Emploi en alternance et formation en alternance en </Typography>
+                    <Link className={fr.cx("fr-link", "fr-text--bold")} href={`/metiers/${job.slug}`} aria-label={`Lancement d'une recherche sur le métier ${job.name}`}>
+                      {job.name}
+                    </Link>
+                  </Typography>
+                )
+              })}
+            </Stack>
           </Box>
-          <VStack mt={2} align="flex-start">
-            <Text>Offres d&apos;emploi en contrat d&apos;apprentissage ou en contrat de professionnalisation</Text>
-            <Text>Liste d’entreprises qui recrutent en alternance</Text>
-            <Text>Formations en apprentissage en CAP, Bac pro, Mention complémentaire, BTS, BUT, DEUST, Licence, Master</Text>
-
-            {jobs.map((job, index) => {
-              return (
-                <Text key={index} marginTop="0px" mb={[2, 2, 2, 0]}>
-                  <Text as="span">Emploi en alternance et formation en alternance en </Text>
-                  <Link className={fr.cx("fr-link", "fr-text--bold")} href={`/metiers/${job.slug}`} aria-label={`Lancement d'une recherche sur le métier ${job.name}`}>
-                    {job.name}
-                  </Link>
-                </Text>
-              )
-            })}
-          </VStack>
-        </Container>
+        </DefaultContainer>
       </Box>
     </Box>
   )

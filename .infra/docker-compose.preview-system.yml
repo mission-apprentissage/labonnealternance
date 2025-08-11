@@ -41,7 +41,7 @@ services:
 
   mongodb:
     <<: *default
-    image: mongo:6.0.11 # locked by OVH production version
+    image: mongo:7
     hostname: mongodb
     container_name: lba_mongodb
     deploy:

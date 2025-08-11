@@ -562,12 +562,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "contact": {
             "$ref": "#/components/schemas/Contact",
           },
-          "detailsLoaded": {
-            "type": [
-              "boolean",
-              "null",
-            ],
-          },
           "diploma": {
             "description": "Le diplôme délivré par la formation.",
             "example": "CERTIFICAT D'APTITUDES PROFESSIONNELLES",
@@ -1019,13 +1013,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "job_update_date": {
             "description": "Date de dernière mise à jour de l'offre",
-            "type": [
-              "string",
-              "null",
-            ],
-          },
-          "managed_by": {
-            "description": "Id de l'utilisateur gérant l'offre",
             "type": [
               "string",
               "null",
@@ -1591,12 +1578,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "contact": {
             "$ref": "#/components/schemas/Contact",
           },
-          "detailsLoaded": {
-            "type": [
-              "boolean",
-              "null",
-            ],
-          },
           "id": {
             "type": [
               "string",
@@ -1856,12 +1837,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "contact": {
             "$ref": "#/components/schemas/Contact",
           },
-          "detailsLoaded": {
-            "type": [
-              "boolean",
-              "null",
-            ],
-          },
           "id": {
             "type": [
               "string",
@@ -2000,6 +1975,12 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
+          "contract_rythm": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
           "creationDate": {
             "type": [
               "string",
@@ -2064,6 +2045,15 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "offer_desired_skills": {
+            "items": {
+              "type": "string",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
+          "offer_to_be_acquired_knowledge": {
             "items": {
               "type": "string",
             },
@@ -2498,6 +2488,12 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
       "PartnerJob": {
         "additionalProperties": false,
         "properties": {
+          "applicationCount": {
+            "type": [
+              "number",
+              "null",
+            ],
+          },
           "company": {
             "additionalProperties": false,
             "description": "Les informations de la société. Selon le contexte il peut s'agir du centre de formation ou de l'entreprise offrant une opportunité d'emploi.",
@@ -2678,18 +2674,13 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "contact": {
             "$ref": "#/components/schemas/Contact",
           },
-          "detailsLoaded": {
-            "type": [
-              "boolean",
-              "null",
-            ],
-          },
           "id": {
             "type": "string",
           },
           "ideaType": {
             "enum": [
               "partnerJob",
+              "offres_emploi_lba",
               "offres_emploi_partenaires",
             ],
             "type": "string",
@@ -2947,12 +2938,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "contact": {
             "$ref": "#/components/schemas/Contact",
           },
-          "detailsLoaded": {
-            "type": [
-              "boolean",
-              "null",
-            ],
-          },
           "id": {
             "type": [
               "string",
@@ -3050,6 +3035,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "cedex": {
             "description": "L'éventuel CEDEX de l'adresse",
+            "example": null,
             "type": [
               "string",
               "null",
@@ -3316,10 +3302,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "managed_by": {
             "description": "Id de l'utilisateur gestionnaire",
-            "type": [
-              "string",
-              "null",
-            ],
+            "type": "string",
           },
           "naf_code": {
             "description": "Code NAF de l'établissement",
@@ -3388,6 +3371,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "jobs",
           "opco",
           "idcc",
+          "managed_by",
         ],
         "type": "object",
       },
@@ -7209,6 +7193,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                   "apply": {
                     "properties": {
                       "email": {
+                        "default": null,
                         "description": "Email de contact",
                         "format": "email",
                         "type": [
@@ -7217,6 +7202,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         ],
                       },
                       "phone": {
+                        "default": null,
                         "description": "Téléphone de contact",
                         "type": [
                           "string",
@@ -7224,6 +7210,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         ],
                       },
                       "url": {
+                        "default": null,
                         "description": "URL pour candidater",
                         "format": "uri",
                         "type": [
@@ -7238,6 +7225,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                     "default": {},
                     "properties": {
                       "duration": {
+                        "default": null,
                         "description": "Durée du contrat en mois",
                         "minimum": 0,
                         "type": [
@@ -7246,6 +7234,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         ],
                       },
                       "remote": {
+                        "default": null,
                         "description": "Format de travail de l'offre",
                         "enum": [
                           "onsite",
@@ -7258,6 +7247,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         ],
                       },
                       "start": {
+                        "default": null,
                         "format": "date-time",
                         "type": [
                           "string",
@@ -7316,6 +7306,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         "type": "number",
                       },
                       "origin": {
+                        "default": null,
                         "description": "Origine de l'offre provenant d'un aggregateur",
                         "type": [
                           "string",
@@ -7326,6 +7317,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         "default": {},
                         "properties": {
                           "creation": {
+                            "default": null,
                             "format": "date-time",
                             "type": [
                               "string",
@@ -7333,6 +7325,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                             ],
                           },
                           "expiration": {
+                            "default": null,
                             "format": "date-time",
                             "type": [
                               "string",
@@ -7343,6 +7336,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         "type": "object",
                       },
                       "rome_codes": {
+                        "default": null,
                         "description": "Code rome de l'offre",
                         "items": {
                           "pattern": "^[A-Z]\\d{4}$",
@@ -7364,8 +7358,10 @@ Limite : 1 appel(s) / 1 seconde(s)
                         "type": "string",
                       },
                       "target_diploma": {
+                        "default": null,
                         "properties": {
                           "european": {
+                            "default": null,
                             "enum": [
                               "3",
                               "4",
@@ -7391,7 +7387,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                       },
                       "to_be_acquired_skills": {
                         "default": [],
-                        "description": "Compétence acuqises durant l'alternance",
+                        "description": "Compétence acquises durant l'alternance",
                         "items": {
                           "type": "string",
                         },
@@ -7407,6 +7403,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                   "workplace": {
                     "properties": {
                       "description": {
+                        "default": null,
                         "description": "description de l'entreprise",
                         "type": [
                           "string",
@@ -7417,6 +7414,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         "default": {},
                         "properties": {
                           "address": {
+                            "default": null,
                             "type": [
                               "string",
                               "null",
@@ -7429,6 +7427,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         ],
                       },
                       "name": {
+                        "default": null,
                         "description": "Nom customisé de l'entreprise",
                         "type": [
                           "string",
@@ -7442,6 +7441,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         "type": "string",
                       },
                       "website": {
+                        "default": null,
                         "description": "Site web de l'entreprise",
                         "format": "uri",
                         "type": [
@@ -7541,6 +7541,7 @@ Limite : 1 appel(s) / 1 seconde(s)
             "name": "latitude",
             "required": false,
             "schema": {
+              "default": null,
               "maximum": 90,
               "minimum": -90,
               "type": [
@@ -7554,6 +7555,7 @@ Limite : 1 appel(s) / 1 seconde(s)
             "name": "longitude",
             "required": false,
             "schema": {
+              "default": null,
               "maximum": 180,
               "minimum": -180,
               "type": [
@@ -7596,6 +7598,7 @@ Limite : 1 appel(s) / 1 seconde(s)
             "name": "romes",
             "required": false,
             "schema": {
+              "default": null,
               "type": [
                 "string",
                 "null",
@@ -7607,6 +7610,7 @@ Limite : 1 appel(s) / 1 seconde(s)
             "name": "rncp",
             "required": false,
             "schema": {
+              "default": null,
               "pattern": "^RNCP\\d{3,5}$",
               "type": [
                 "string",
@@ -7697,6 +7701,7 @@ Limite : 1 appel(s) / 1 seconde(s)
             "name": "opco",
             "required": false,
             "schema": {
+              "default": null,
               "enum": [
                 "AFDAS",
                 "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
@@ -7838,6 +7843,11 @@ Limite : 1 appel(s) / 1 seconde(s)
                             ],
                             "type": "object",
                           },
+                          "is_delegated": {
+                            "default": false,
+                            "description": "Indique si l'offre est déléguée à un mandataire",
+                            "type": "boolean",
+                          },
                           "offer": {
                             "properties": {
                               "access_conditions": {
@@ -7937,7 +7947,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                                 "type": "string",
                               },
                               "to_be_acquired_skills": {
-                                "description": "Compétence acuqises durant l'alternance",
+                                "description": "Compétence acquises durant l'alternance",
                                 "items": {
                                   "type": "string",
                                 },
@@ -8540,6 +8550,11 @@ Limite : 1 appel(s) / 1 seconde(s)
                       ],
                       "type": "object",
                     },
+                    "is_delegated": {
+                      "default": false,
+                      "description": "Indique si l'offre est déléguée à un mandataire",
+                      "type": "boolean",
+                    },
                     "offer": {
                       "properties": {
                         "access_conditions": {
@@ -8639,7 +8654,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                           "type": "string",
                         },
                         "to_be_acquired_skills": {
-                          "description": "Compétence acuqises durant l'alternance",
+                          "description": "Compétence acquises durant l'alternance",
                           "items": {
                             "type": "string",
                           },
@@ -8878,6 +8893,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                   "apply": {
                     "properties": {
                       "email": {
+                        "default": null,
                         "description": "Email de contact",
                         "format": "email",
                         "type": [
@@ -8886,6 +8902,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         ],
                       },
                       "phone": {
+                        "default": null,
                         "description": "Téléphone de contact",
                         "type": [
                           "string",
@@ -8893,6 +8910,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         ],
                       },
                       "url": {
+                        "default": null,
                         "description": "URL pour candidater",
                         "format": "uri",
                         "type": [
@@ -8907,6 +8925,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                     "default": {},
                     "properties": {
                       "duration": {
+                        "default": null,
                         "description": "Durée du contrat en mois",
                         "minimum": 0,
                         "type": [
@@ -8915,6 +8934,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         ],
                       },
                       "remote": {
+                        "default": null,
                         "description": "Format de travail de l'offre",
                         "enum": [
                           "onsite",
@@ -8927,6 +8947,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         ],
                       },
                       "start": {
+                        "default": null,
                         "format": "date-time",
                         "type": [
                           "string",
@@ -8985,6 +9006,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         "type": "number",
                       },
                       "origin": {
+                        "default": null,
                         "description": "Origine de l'offre provenant d'un aggregateur",
                         "type": [
                           "string",
@@ -8995,6 +9017,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         "default": {},
                         "properties": {
                           "creation": {
+                            "default": null,
                             "format": "date-time",
                             "type": [
                               "string",
@@ -9002,6 +9025,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                             ],
                           },
                           "expiration": {
+                            "default": null,
                             "format": "date-time",
                             "type": [
                               "string",
@@ -9012,6 +9036,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         "type": "object",
                       },
                       "rome_codes": {
+                        "default": null,
                         "description": "Code rome de l'offre",
                         "items": {
                           "pattern": "^[A-Z]\\d{4}$",
@@ -9033,8 +9058,10 @@ Limite : 1 appel(s) / 1 seconde(s)
                         "type": "string",
                       },
                       "target_diploma": {
+                        "default": null,
                         "properties": {
                           "european": {
+                            "default": null,
                             "enum": [
                               "3",
                               "4",
@@ -9060,7 +9087,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                       },
                       "to_be_acquired_skills": {
                         "default": [],
-                        "description": "Compétence acuqises durant l'alternance",
+                        "description": "Compétence acquises durant l'alternance",
                         "items": {
                           "type": "string",
                         },
@@ -9076,6 +9103,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                   "workplace": {
                     "properties": {
                       "description": {
+                        "default": null,
                         "description": "description de l'entreprise",
                         "type": [
                           "string",
@@ -9086,6 +9114,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         "default": {},
                         "properties": {
                           "address": {
+                            "default": null,
                             "type": [
                               "string",
                               "null",
@@ -9098,6 +9127,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         ],
                       },
                       "name": {
+                        "default": null,
                         "description": "Nom customisé de l'entreprise",
                         "type": [
                           "string",
@@ -9111,6 +9141,7 @@ Limite : 1 appel(s) / 1 seconde(s)
                         "type": "string",
                       },
                       "website": {
+                        "default": null,
                         "description": "Site web de l'entreprise",
                         "format": "uri",
                         "type": [

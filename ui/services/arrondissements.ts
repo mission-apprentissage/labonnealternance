@@ -1,4 +1,13 @@
-const simplifiedArrondissements = (rawItems, town) => {
+import { IPointGeometry } from "shared"
+
+type IArrondissement = {
+  value: IPointGeometry
+  insee: string
+  zipcode: string
+  label: string
+}
+
+const simplifiedArrondissements = (rawItems: IArrondissement[], town: string) => {
   const result = JSON.parse(JSON.stringify(rawItems))
 
   const firstLabel = rawItems[0]?.label?.toLowerCase() || ""
@@ -15,7 +24,7 @@ const simplifiedArrondissements = (rawItems, town) => {
   return result
 }
 
-export const simplifiedItems = (rawItems) => {
+export const simplifiedItems = (rawItems: IArrondissement[]): IArrondissement[] => {
   const firstLabel = rawItems[0]?.label?.toLowerCase() || ""
 
   if (firstLabel.includes("paris")) {

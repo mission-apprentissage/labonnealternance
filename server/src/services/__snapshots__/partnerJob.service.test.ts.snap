@@ -5,6 +5,7 @@ exports[`partnerJob.service > should execute query with full data 1`] = `
   "results": [
     {
       "company": {
+        "mandataire": false,
         "name": "Enseigne inconnue",
         "opco": {
           "label": null,
@@ -20,17 +21,20 @@ exports[`partnerJob.service > should execute query with full data 1`] = `
         "url": "https://apply.com",
       },
       "id": "675209e704377be3d437bbb9",
-      "ideaType": "partnerJob",
+      "ideaType": "offres_emploi_partenaires",
       "job": {
+        "contract_rythm": null,
         "creationDate": 2021-01-01T00:00:00.000Z,
         "description": "Attention il te faut une super motivation pour ce job",
         "dureeContrat": null,
+        "elligibleHandicap": false,
         "employeurDescription": null,
         "id": "job-id-1",
         "jobExpirationDate": 2050-01-01T00:00:00.000Z,
         "jobStartDate": null,
         "offer_access_conditions": [],
         "offer_desired_skills": [],
+        "offer_to_be_acquired_knowledge": [],
         "offer_to_be_acquired_skills": [],
         "origin": null,
         "partner_label": "Hellowork",
@@ -53,7 +57,7 @@ exports[`partnerJob.service > should execute query with full data 1`] = `
         "fullAddress": "126 RUE DE L'UNIVERSITE 75007 PARIS",
         "latitude": 48.8589,
         "longitude": 2.347,
-        "numberAndStreet": "126 RUE DE L'UNIVERSITE",
+        "numberAndStreet": "126 RUE DE L'UNIVERSITE 75007 PARIS",
         "remoteOnly": false,
         "zipCode": "75007",
       },
@@ -77,6 +81,7 @@ exports[`partnerJob.service > should execute query with minimalData 1`] = `
   "results": [
     {
       "company": {
+        "mandataire": false,
         "name": "Enseigne inconnue",
         "opco": {
           "label": null,
@@ -85,11 +90,12 @@ exports[`partnerJob.service > should execute query with minimalData 1`] = `
         "siret": null,
       },
       "id": "675209e704377be3d437bbb9",
-      "ideaType": "partnerJob",
+      "ideaType": "offres_emploi_partenaires",
       "job": {
         "creationDate": 2021-01-01T00:00:00.000Z,
       },
       "place": {
+        "city": "PARIS",
         "distance": 0,
         "fullAddress": "126 RUE DE L'UNIVERSITE 75007 PARIS",
         "latitude": 48.8589,
@@ -108,6 +114,7 @@ exports[`partnerJob.service > should find offer by id 1`] = `
   "partnerJobs": [
     {
       "company": {
+        "mandataire": false,
         "name": "Enseigne inconnue",
         "opco": {
           "label": null,
@@ -125,15 +132,18 @@ exports[`partnerJob.service > should find offer by id 1`] = `
       "id": "67520b8db04d1ef4ff79e1e5",
       "ideaType": "partnerJob",
       "job": {
+        "contract_rythm": null,
         "creationDate": 2023-01-01T00:00:00.000Z,
         "description": "Attention il te faut une super motivation pour ce job",
         "dureeContrat": null,
+        "elligibleHandicap": false,
         "employeurDescription": null,
         "id": "job-id-3",
         "jobExpirationDate": 2050-01-01T00:00:00.000Z,
         "jobStartDate": null,
         "offer_access_conditions": [],
         "offer_desired_skills": [],
+        "offer_to_be_acquired_knowledge": [],
         "offer_to_be_acquired_skills": [],
         "origin": null,
         "partner_label": "Hellowork",
@@ -156,7 +166,7 @@ exports[`partnerJob.service > should find offer by id 1`] = `
         "fullAddress": "126 RUE DE L'UNIVERSITE 75007 PARIS",
         "latitude": 48.8946,
         "longitude": 2.2874,
-        "numberAndStreet": "126 RUE DE L'UNIVERSITE",
+        "numberAndStreet": "126 RUE DE L'UNIVERSITE 75007 PARIS",
         "remoteOnly": false,
         "zipCode": "75007",
       },

@@ -1,16 +1,26 @@
 "use client"
-import { Box, Container, Divider, Grid, GridItem, Text } from "@chakra-ui/react"
+
+import { fr } from "@codegouvfr/react-dsfr"
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs"
+import { Box, Grid2 as Grid, Typography } from "@mui/material"
 import dynamic from "next/dynamic"
+import { ExtendedRecordMap } from "notion-types"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { useUrlHash } from "@/app/hooks/useUrlHash"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
 
 const NotionRenderer = dynamic(() => import("react-notion-x").then((mod) => mod.NotionRenderer), { ssr: false })
 
-export default function FAQRendererClient({ recruteur, organisme, candidat }) {
+interface Props {
+  recruteur: ExtendedRecordMap
+  organisme: ExtendedRecordMap
+  candidat: ExtendedRecordMap
+}
+
+export default function FAQRendererClient({ recruteur, organisme, candidat }: Props) {
   const tabs = [
     { tabId: "candidat", label: "Candidat", recordMap: candidat },
     { tabId: "recruteur", label: "Recruteur", recordMap: recruteur },
@@ -26,44 +36,49 @@ export default function FAQRendererClient({ recruteur, organisme, candidat }) {
   return (
     <Box>
       <Breadcrumb pages={[PAGES.static.faq]} />
-      <Container p={{ base: 2, md: 12 }} my={0} mb={[0, 12]} variant="pageContainer">
-        <Grid templateColumns="repeat(12, 1fr)">
-          <GridItem px={0} colSpan={[12, 12, 12, 5]}>
-            <Box as="h1">
-              <Text as="span" display="block" mb={1} variant="editorialContentH1" color="#2a2a2a">
+      <DefaultContainer>
+        <Box sx={{ p: fr.spacing("5w"), marginBottom: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
+          <Grid container spacing={fr.spacing("5w")}>
+            <Grid size={{ xs: 12, md: 5 }}>
+              <Typography component={"h1"} variant="h1" sx={{ mb: 2 }}>
                 Questions
-              </Text>
-              <Text as="span" display="block" mb={1} variant="editorialContentH1">
-                fréquemment
-              </Text>
-              <Text as="span" display="block" mb={1} variant="editorialContentH1">
-                posées
-              </Text>
-            </Box>
-            <Divider variant="pageTitleDivider" my={12} />
-          </GridItem>
-          <GridItem px={0} colSpan={[12, 12, 12, 7]}>
-            <Tabs
-              selectedTabId={selectedTabId}
-              tabs={tabs}
-              onTabChange={(tabId) => {
-                window.location.hash = tabId
-              }}
-            >
-              <Box height="auto" color="grey.800" padding="0 !important;">
-                <NotionRenderer
-                  recordMap={displayedTab.recordMap}
-                  fullPage={false}
-                  darkMode={false}
-                  disableHeader={true}
-                  rootDomain={publicConfig.baseUrl}
-                  bodyClassName="notion-body"
-                />
-              </Box>
-            </Tabs>
-          </GridItem>
-        </Grid>
-      </Container>
+                <br />
+                <Typography component={"h1"} variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }}>
+                  fréquemment
+                  <br />
+                </Typography>
+                <Typography component={"h1"} variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }}>
+                  posées
+                </Typography>{" "}
+              </Typography>
+              <Box
+                component="hr"
+                sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 7 }}>
+              <Tabs
+                selectedTabId={selectedTabId}
+                tabs={tabs}
+                onTabChange={(tabId) => {
+                  window.location.hash = tabId
+                }}
+              >
+                <Box height="auto" color="grey.800" padding="0 !important;">
+                  <NotionRenderer
+                    recordMap={displayedTab.recordMap}
+                    fullPage={false}
+                    darkMode={false}
+                    disableHeader={true}
+                    rootDomain={publicConfig.baseUrl}
+                    bodyClassName="notion-body"
+                  />
+                </Box>
+              </Tabs>
+            </Grid>
+          </Grid>
+        </Box>
+      </DefaultContainer>
     </Box>
   )
 }

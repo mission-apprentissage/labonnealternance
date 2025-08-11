@@ -7,6 +7,7 @@ exports[`importLaposte > should test the import of La Poste data into computed_j
     "apply_url": "https://www.laposterecrute.fr/offre/2025-xxxxx1",
     "business_error": null,
     "contract_duration": 12,
+    "contract_is_disabled_elligible": false,
     "contract_remote": "onsite",
     "contract_start": null,
     "contract_type": [
@@ -42,6 +43,7 @@ Afin d'être éligible pour cette formation, vous devez : Vous êtes titulaire (
       "label": "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
     },
     "offer_title": "Alternance Commercial B to B F/H",
+    "offer_to_be_acquired_knowledge": [],
     "offer_to_be_acquired_skills": [],
     "partner_job_id": "2025-XXXX1",
     "partner_label": "La Poste",
@@ -77,6 +79,7 @@ La Poste Groupe change, nos métiers évoluent. Etre toujours au plus près des 
     "apply_url": "https://www.laposterecrute.fr/offre/2025-xxxxx9",
     "business_error": null,
     "contract_duration": 24,
+    "contract_is_disabled_elligible": false,
     "contract_remote": null,
     "contract_start": null,
     "contract_type": [
@@ -98,7 +101,7 @@ Vous souhaitez acquérir de l'expérience dans le management, l’accompagnement
 
 Profil candidat :
 
-Afin d'être éligible pour cette formation, vous devez :  Être éligible au contrat d'apprentissage (- de 30 ans/pas de limite d'âge pour les personnes possédant une RQTH)  Être titulaire d'un BAC+3 Être mobile au sein des lieux où les postes sont à pourvoir Expérience professionnelle de 6 mois Permis B souhaité. Intégrer un centre de formation, Formaposte Sud Est et obtenir Mastère Manager de Projets Innovants &amp; Entrepreneuriat en partenariat avec La Poste et bénéficier d'une rémunération (entre 1 467 € et 2 067 €* BRUT selon votre âge et votre contrat). * Salaire donné à titre indicatif, peut varier lors de votre entrée en formation.",
+Afin d'être éligible pour cette formation, vous devez :  Être éligible au contrat d'apprentissage (- de 30 ans/pas de limite d'âge pour les personnes possédant une RQTH)  Être titulaire d'un BAC+3 Être mobile au sein des lieux où les postes sont à pourvoir Expérience professionnelle de 6 mois Permis B souhaité. Intégrer un centre de formation, Formaposte Sud Est et obtenir Mastère Manager de Projets Innovants & Entrepreneuriat en partenariat avec La Poste et bénéficier d'une rémunération (entre 1 467 € et 2 067 €* BRUT selon votre âge et votre contrat). * Salaire donné à titre indicatif, peut varier lors de votre entrée en formation.",
     "offer_desired_skills": [],
     "offer_expiration": 2025-07-22T00:00:00.000Z,
     "offer_multicast": true,
@@ -112,6 +115,7 @@ Afin d'être éligible pour cette formation, vous devez :  Être éligible au co
       "label": "Master, titre ingénieur, autres formations niveau (Bac+5)",
     },
     "offer_title": "Alternance Responsable production F/H",
+    "offer_to_be_acquired_knowledge": [],
     "offer_to_be_acquired_skills": [],
     "partner_job_id": "2025-xxxx9",
     "partner_label": "La Poste",

@@ -33,7 +33,7 @@ const anonimizeRecruiterByUserId = (userId: ObjectId) =>
   getDbCollection("recruiters")
     .aggregate([
       {
-        $match: { "jobs.managed_by": userId },
+        $match: { managed_by: userId },
       },
       {
         $project: {
@@ -147,7 +147,7 @@ const anonymizeUserWithAccountAndRecruiter = async (userId: ObjectId) => {
     throw new Error("Anonymize user with account not found")
   }
   await Promise.all([anonimizeUserWithAccount(userId), anonimizeRecruiterByUserId(userId)])
-  await Promise.all([deleteUserWithAccount({ _id: userId }), deleteRecruiter({ "jobs.managed_by": userId })])
+  await Promise.all([deleteUserWithAccount({ _id: userId }), deleteRecruiter({ managed_by: userId })])
   logger.info(`[END] Anonymized user with account & related recruiters`)
 }
 

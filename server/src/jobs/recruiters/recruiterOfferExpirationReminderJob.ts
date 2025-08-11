@@ -2,7 +2,7 @@ import { internal } from "@hapi/boom"
 import { groupBy } from "lodash-es"
 import { ObjectId } from "mongodb"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { IJob, JOB_STATUS } from "shared/models/index"
+import { JOB_STATUS } from "shared/models/index"
 
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
@@ -10,7 +10,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
-import { removeHtmlTagsFromString } from "@/common/utils/stringUtils"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
 import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { createAuthMagicLink, createCancelJobLink, createProvidedJobLink } from "@/services/appLinks.service"
@@ -65,9 +65,6 @@ export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirati
     const recruiter = jobsWithRecruiter[0].recruiter
     const { establishment_raison_sociale, is_delegated, managed_by } = recruiter
     try {
-      if (!managed_by) {
-        throw internal(`inattendu : managed_by manquant pour le formulaire id=${recruiter._id}`)
-      }
       const contactUser = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(managed_by) })
       if (!contactUser) {
         throw internal(`inattendu : impossible de trouver l'utilisateur gérant le formulaire id=${recruiter._id}`)
@@ -85,8 +82,8 @@ export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirati
             logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
             logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
           },
-          last_name: removeHtmlTagsFromString(contactUser.last_name),
-          first_name: removeHtmlTagsFromString(contactUser.first_name),
+          last_name: sanitizeTextField(contactUser.last_name),
+          first_name: sanitizeTextField(contactUser.first_name),
           establishment_raison_sociale,
           is_delegated,
           offres: jobsWithRecruiter.map((job) => ({
@@ -103,10 +100,14 @@ export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirati
         },
       })
       if (dateRelanceFieldName) {
-        const jobUpdate: Partial<IJob> = {}
-        jobUpdate[`jobs.$[elem].${dateRelanceFieldName}`] = now
         await asyncForEach(jobsWithRecruiter, async (job) => {
-          await getDbCollection("recruiters").findOneAndUpdate({ "jobs._id": job._id }, { $set: jobUpdate }, { arrayFilters: [{ "elem._id": job._id }] })
+          await getDbCollection("recruiters").findOneAndUpdate(
+            { "jobs._id": job._id },
+            {
+              $set: { [`jobs.$[elem].${dateRelanceFieldName}`]: now },
+            },
+            { arrayFilters: [{ "elem._id": job._id }] }
+          )
         })
       }
     } catch (err) {

@@ -6,7 +6,6 @@ import { Link } from "@mui/material"
 import dayjs from "dayjs"
 import { useFormikContext } from "formik"
 import { useParams } from "next/navigation"
-import { useContext } from "react"
 import { IAppellationsRomes } from "shared"
 import { TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "shared/constants/recruteur"
 
@@ -14,7 +13,6 @@ import { ChampNombre } from "@/app/(espace-pro)/espace-pro/(connected)/_componen
 import { AUTHTYPE } from "@/common/contants"
 import { debounce } from "@/common/utils/debounce"
 import { CustomInput, DropdownCombobox } from "@/components/espace_pro"
-import { LogoContext } from "@/context/contextLogo"
 import { useAuth } from "@/context/UserContext"
 import { Warning } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
@@ -23,7 +21,6 @@ const ISO_DATE_FORMAT = "YYYY-MM-DD"
 
 export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (rome: string, appellation: string) => void }) => {
   const { user } = useAuth()
-  const { organisation } = useContext(LogoContext)
 
   const { type } = useParams() as { establishment_id: string; email: string; userId: string; type: string; token: string }
 
@@ -32,7 +29,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
       try {
         const result = (await apiGet(`/v1/metiers/intitule`, { querystring: { label: search } })) as IAppellationsRomes
         return result.coupleAppellationRomeMetier
-      } catch (error) {
+      } catch (error: any) {
         throw new Error(error)
       }
     }
@@ -142,16 +139,6 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
           max={maxStartDate.format(ISO_DATE_FORMAT)}
         />
       </Box>
-      {organisation !== "atlas" && (
-        <FormControl mt={6}>
-          <Checkbox name="is_disabled_elligible" isChecked={values.is_disabled_elligible} onChange={handleChange}>
-            <Text ml={3}>
-              Je souhaite faire figurer sur l’offre la mention suivante: <br />
-              <Text as="cite">"À compétences égales, une attention particulière sera apportée aux personnes en situation de handicap."</Text>
-            </Text>
-          </Checkbox>
-        </FormControl>
-      )}
       <FormControl mt={6} maxWidth={["400px", "400px", "400px", "450px"]}>
         <ChampNombre max={10} name="job_count" value={values.job_count} label="Nombre de poste(s) disponible(s)" handleChange={setFieldValue} dataTestId="offre-job-count" />
       </FormControl>

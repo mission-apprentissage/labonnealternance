@@ -2,16 +2,15 @@ import { createReadStream, createWriteStream } from "fs"
 import Stream, { Transform } from "stream"
 import { pipeline } from "stream/promises"
 
-import { assertUnreachable, IJob, IRecruiter, JOB_STATUS, JOB_STATUS_ENGLISH } from "shared"
+import { assertUnreachable, IJob, IRecruiterWithRomeDetail, JOB_STATUS, JOB_STATUS_ENGLISH, JobCollectionName } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { NIVEAUX_POUR_LBA, RECRUITER_STATUS } from "shared/constants/recruteur"
-import { buildJobUrl } from "shared/metier/lbaitemutils"
-import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import { RECRUITER_STATUS } from "shared/constants/recruteur"
+import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IJobOfferApiReadV3 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 
 import { concatStreams, waitForStreamEnd } from "@/common/utils/streamUtils"
-import config from "@/config"
-import { jobsPartnersToApiV3Read } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
+import { romeDetailAggregateStages } from "@/services/formulaire.service"
+import { buildApplyUrl, getDiplomaEuropeanLevel, getRecipientID, jobsPartnersToApiV3Read } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
 
 import { logger } from "../../common/logger"
 import { s3WriteStream } from "../../common/utils/awsUtils"
@@ -42,7 +41,7 @@ export async function exportJobsToS3V2(handleFileReadStream = uploadFileToS3) {
     return JSON.stringify(jobsPartnersToApiV3Read(jobPartner), null, 2)
   })
 
-  const recruiterTransform = getCusorTransform<IRecruiter>((recruiter) => {
+  const recruiterTransform = getCusorTransform<IRecruiterWithRomeDetail>((recruiter) => {
     const jobs = recruiterToJobPartner(recruiter)
     const result = jobs.map((job) => JSON.stringify(job, null, 2)).join(", ")
     return result
@@ -51,11 +50,18 @@ export async function exportJobsToS3V2(handleFileReadStream = uploadFileToS3) {
   jsonArrayTransform.pipe(fileStream, { end: true })
 
   logger.info("starting job partners cursor")
-  const jobPartnersCursor = await getDbCollection("jobs_partners").find({ offer_status: JOB_STATUS_ENGLISH.ACTIVE, offer_multicast: true })
+  const jobPartnersCursor = await getDbCollection("jobs_partners").find({
+    partner_label: { $ne: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA },
+    offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+    offer_multicast: true,
+  })
   await pipeline(jobPartnersCursor, jobPartnersTransform)
 
   logger.info("starting recruiters cursor")
-  const recruiterCursor = await getDbCollection("recruiters").find({ status: RECRUITER_STATUS.ACTIF, "jobs.job_status": JOB_STATUS.ACTIVE })
+  const recruiterCursor = await getDbCollection("recruiters").aggregate([
+    { $match: { status: RECRUITER_STATUS.ACTIF, "jobs.job_status": JOB_STATUS.ACTIVE } },
+    ...romeDetailAggregateStages,
+  ])
   await pipeline(recruiterCursor, recruiterTransform)
 
   logger.info("waiting for jsonArrayTransform")
@@ -66,26 +72,6 @@ export async function exportJobsToS3V2(handleFileReadStream = uploadFileToS3) {
   logger.info("creating read stream")
   const fileReadStream = createReadStream(filePath)
   await handleFileReadStream(filePath, fileReadStream)
-}
-
-function getDiplomaLevel(label: string | null | undefined): IJobsPartnersOfferPrivate["offer_target_diploma"] {
-  if (!label) {
-    return null
-  }
-  switch (label) {
-    case NIVEAUX_POUR_LBA["3 (CAP...)"]:
-      return { european: "3", label }
-    case NIVEAUX_POUR_LBA["4 (Bac, Bac pro...)"]:
-      return { european: "4", label }
-    case NIVEAUX_POUR_LBA["5 (BTS, DEUST...)"]:
-      return { european: "5", label }
-    case NIVEAUX_POUR_LBA["6 (Licence, BUT...)"]:
-      return { european: "6", label }
-    case NIVEAUX_POUR_LBA["7 (Master, titre ingénieur...)"]:
-      return { european: "7", label }
-    default:
-      return null
-  }
 }
 
 function getOfferStatus(job_status: JOB_STATUS, recruiter_status: RECRUITER_STATUS): JOB_STATUS_ENGLISH {
@@ -105,14 +91,14 @@ function getOfferStatus(job_status: JOB_STATUS, recruiter_status: RECRUITER_STAT
   }
 }
 
-const recruiterToJobPartner = (recruiter: IRecruiter): IJobOfferApiReadV3[] => {
+const recruiterToJobPartner = (recruiter: IRecruiterWithRomeDetail): IJobOfferApiReadV3[] => {
   return recruiter.jobs.flatMap((job) => {
     const jobPartnerOpt = recruiterJobToJobPartner(recruiter, job)
     return jobPartnerOpt ? [jobPartnerOpt] : []
   })
 }
 
-const recruiterJobToJobPartner = (recruiter: IRecruiter, job: IJob): IJobOfferApiReadV3 | null => {
+const recruiterJobToJobPartner = (recruiter: IRecruiterWithRomeDetail, job: IJob): IJobOfferApiReadV3 | null => {
   const { address, geopoint } = recruiter
   const title = job.offer_title_custom ?? job.rome_appellation_label
   const status = getOfferStatus(job.job_status, recruiter.status)
@@ -123,7 +109,7 @@ const recruiterJobToJobPartner = (recruiter: IRecruiter, job: IJob): IJobOfferAp
   return {
     workplace: {
       brand: recruiter.establishment_enseigne ?? null,
-      description: null,
+      description: job.job_employer_description ?? null,
       domain: {
         idcc: recruiter.idcc,
         naf: recruiter.naf_code
@@ -145,9 +131,10 @@ const recruiterJobToJobPartner = (recruiter: IRecruiter, job: IJob): IJobOfferAp
       website: null,
     },
     offer: {
-      access_conditions: [],
-      description: "",
-      desired_skills: [],
+      desired_skills: job.rome_detail?.competences.savoir_etre_professionnel?.map((x) => x.libelle) ?? [],
+      to_be_acquired_skills: job.rome_detail?.competences.savoir_faire?.flatMap((x) => x.items.map((y) => `${x.libelle}: ${y.libelle}`)) ?? [],
+      access_conditions: job.rome_detail?.acces_metier.split("\n") ?? [],
+      description: job.job_description ? job.job_description : (job.rome_detail?.definition ?? ""),
       opening_count: job.job_count ?? 1,
       publication: {
         creation: job.job_creation_date ?? null,
@@ -155,14 +142,13 @@ const recruiterJobToJobPartner = (recruiter: IRecruiter, job: IJob): IJobOfferAp
       },
       rome_codes: job.rome_code ?? null,
       status,
-      target_diploma: getDiplomaLevel(job.job_level_label),
+      target_diploma: getDiplomaEuropeanLevel(job),
       title,
-      to_be_acquired_skills: [],
     },
     apply: {
       phone: null,
-      url: `${config.publicUrl}/${buildJobUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id.toString(), title)}`,
-      recipient_id: null,
+      url: buildApplyUrl(job._id.toString(), title, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
+      recipient_id: getRecipientID(JobCollectionName.recruiters, job._id.toString()),
     },
     contract: {
       duration: job.job_duration ?? null,
@@ -175,6 +161,7 @@ const recruiterJobToJobPartner = (recruiter: IRecruiter, job: IJob): IJobOfferAp
       partner_job_id: job._id.toString(),
       partner_label: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
     },
+    is_delegated: recruiter.is_delegated,
   }
 }
 

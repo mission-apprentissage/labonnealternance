@@ -13,7 +13,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
 import { getDbCollection } from "../common/utils/mongodbUtils"
-import { removeHtmlTagsFromString } from "../common/utils/stringUtils"
+import { sanitizeTextField } from "../common/utils/stringUtils"
 import config from "../config"
 
 import { createAuthMagicLink } from "./appLinks.service"
@@ -234,9 +234,18 @@ export const updateUserWithAccountFields = async (userId: ObjectId, fields: Part
   const newEmail = email?.toLocaleLowerCase()
 
   if (newEmail) {
-    const exist = await getDbCollection("userswithaccounts").findOne({ email: newEmail, _id: { $ne: userId } })
-    if (exist) {
-      return { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS }
+    const oldUser = await getDbCollection("userswithaccounts").findOne({ _id: userId })
+    if (!oldUser) {
+      throw new Error(`inattendu: user id=${userId} introuvable`)
+    }
+    const oldEmail = oldUser.email
+    const emailHasChanged = oldEmail !== newEmail
+    if (emailHasChanged) {
+      const userExist = await getDbCollection("userswithaccounts").findOne({ email: newEmail })
+      const recruiterExist = await getDbCollection("recruiters").findOne({ email: newEmail })
+      if (userExist || recruiterExist) {
+        return { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS }
+      }
     }
   }
 
@@ -252,7 +261,7 @@ export const updateUserWithAccountFields = async (userId: ObjectId, fields: Part
     throw badRequest("user not found")
   }
   await getDbCollection("recruiters").updateMany(
-    { "jobs.managed_by": userId.toString() },
+    { managed_by: userId.toString() },
     { $set: { ...removeUndefinedFields({ first_name, last_name, phone, email: newEmail }), updatedAt: new Date() } }
   )
   return newUser
@@ -377,10 +386,10 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) =>
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
         logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
       },
-      last_name: removeHtmlTagsFromString(last_name),
-      first_name: removeHtmlTagsFromString(first_name),
+      last_name: sanitizeTextField(last_name),
+      first_name: sanitizeTextField(first_name),
       confirmation_url: createAuthMagicLink(userWithAccountToUserForToken(user)),
-      email: removeHtmlTagsFromString(user.email),
+      email: sanitizeTextField(user.email),
       establishment_name: organization.raison_sociale,
     },
   })

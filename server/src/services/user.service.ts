@@ -57,17 +57,12 @@ export const getUserAndRecruitersDataForOpcoUser = async (
   const filteredUserRecruteurs = [...userRecruteurs.active, ...userRecruteurs.awaiting, ...userRecruteurs.disabled]
   const userIds = [...new Set(filteredUserRecruteurs.map(({ _id }) => _id.toString()))]
   const recruiters = await getDbCollection("recruiters")
-    .find({ "jobs.managed_by": { $in: userIds }, opco }, { projection: { establishment_id: 1, origin: 1, jobs: 1, _id: 0 } })
+    .find({ managed_by: { $in: userIds }, opco }, { projection: { establishment_id: 1, origin: 1, jobs: 1, managed_by: 1, _id: 0 } })
     .toArray()
 
   const recruiterMap = new Map<string, (typeof recruiters)[0]>()
   recruiters.forEach((recruiter) => {
-    recruiter.jobs.forEach((job) => {
-      if (!job.managed_by) {
-        throw internal(`inattendu: managed_by vide pour le job avec id=${job._id}`)
-      }
-      recruiterMap.set(job.managed_by.toString(), recruiter)
-    })
+    recruiterMap.set(recruiter.managed_by.toString(), recruiter)
   })
 
   const results = filteredUserRecruteurs.reduce(

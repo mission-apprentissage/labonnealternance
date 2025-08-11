@@ -26,4 +26,6 @@ if [[ `command -v $command` != $command ]]; then
   Help
 fi;
 
+"${SCRIPT_DIR}/check-dependencies.sh"
+
 $command "$@"

@@ -9,6 +9,7 @@ import { z } from "../helpers/zodWithOpenApi.js"
 import { ZPointGeometry } from "./address.model.js"
 import { IModelDescriptor, zObjectId } from "./common.js"
 import { ZJob } from "./job.model.js"
+import { ZReferentielRome } from "./rome.model.js"
 
 const allRecruiterStatus = Object.values(RECRUITER_STATUS)
 
@@ -42,7 +43,7 @@ const ZRecruiterWritable = z
     naf_label: z.string().nullish().describe("Libellé NAF de l'établissement"),
     establishment_size: z.string().nullish().describe("Tranche d'effectif salariale de l'établissement"),
     establishment_creation_date: z.date().nullish().describe("Date de creation de l'établissement"),
-    managed_by: z.string().nullish().describe("Id de l'utilisateur gestionnaire"),
+    managed_by: z.string().describe("Id de l'utilisateur gestionnaire"),
   })
   .openapi("RecruiterWritable")
 
@@ -68,6 +69,18 @@ export const ZRecruiterWithApplicationCount = ZRecruiter.omit({ jobs: true })
   .openapi("Recruiter")
 
 export type IRecruiterWithApplicationCount = z.output<typeof ZRecruiterWithApplicationCount>
+
+export const ZRecruiterWithRomeDetail = ZRecruiter.omit({ jobs: true })
+  .extend({
+    jobs: z.array(
+      ZJob.extend({
+        rome_detail: ZReferentielRome.nullish(),
+      })
+    ),
+  })
+  .openapi("Recruiter")
+
+export type IRecruiterWithRomeDetail = z.output<typeof ZRecruiterWithRomeDetail>
 
 export const ZAnonymizedRecruiter = ZRecruiterWritable.pick({
   establishment_id: true,
@@ -108,12 +121,6 @@ export default {
     [{ "jobs.relance_mail_expiration_J7": 1 }, {}],
     [{ "jobs.job_expiration_date": 1 }, {}],
     [{ "jobs.job_status": 1 }, {}],
-    [
-      {
-        "jobs.managed_by": 1,
-      },
-      {},
-    ],
 
     // Support API v2 request (by ROME without location)
     [

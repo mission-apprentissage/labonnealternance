@@ -91,10 +91,9 @@ export const ZJobFields = z
     job_rythm: extensions.buildEnum(TRAINING_RYTHM).nullish().describe("Répartition de la présence de l'alternant en formation/entreprise"),
     custom_address: z.string().nullish().describe("Adresse personnalisée de l'entreprise"),
     custom_geo_coordinates: z.string().nullish().describe("Latitude/Longitude de l'adresse personnalisée de l'entreprise"),
-    custom_job_title: z.string().nullish().describe("Titre personnalisée de l'offre"),
+    custom_job_title: z.string().nullish().describe("Titre personnalisée de l'offre"), // TODO: à supprimer
     stats_detail_view: z.number().nullish().describe("Nombre de vues de la page de détail"),
     stats_search_view: z.number().nullish().describe("Nombre de vues sur une page de recherche"),
-    managed_by: z.string().nullish().describe("Id de l'utilisateur gérant l'offre"),
     competences_rome: ZRomeCompetence.nullish().describe("Compétences du code ROME sélectionnées par le recruteur"),
     mer_sent: z.date().nullish().describe("Date d'envoi de la mise en relation"),
     offer_title_custom: z
@@ -147,7 +146,6 @@ export const ZJobCreate = ZJobFields.pick({
   rome_label: true,
   job_type: true,
   job_level_label: true,
-  is_disabled_elligible: true,
   job_count: true,
   job_duration: true,
   job_rythm: true,

@@ -26,18 +26,12 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vite
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
+import { startRecruiterChangeStream } from "@/services/formulaire.service"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
 import config from "../../../config"
 
-import {
-  createJobOffer,
-  findJobOpportunityById,
-  findJobsOpportunities,
-  getJobsPartnersByIdAsJobOfferApi,
-  getLbaJobByIdV2AsJobOfferApi,
-  updateJobOffer,
-} from "./jobOpportunity.service"
+import { createJobOffer, findJobOpportunityById, findJobsOpportunities, getJobsPartnersByIdAsJobOfferApi, updateJobOffer } from "./jobOpportunity.service"
 import { JobOpportunityRequestContext } from "./JobOpportunityRequestContext"
 
 useMongo()
@@ -108,6 +102,42 @@ describe("findJobsOpportunities", () => {
           job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
           job_creation_date: new Date("2021-01-01"),
           job_expiration_date: new Date("2050-01-01"),
+          competences_rome: {
+            savoir_etre_professionnel: [
+              { libelle: "Faire preuve de rigueur et de précision", code_ogr: "A" },
+              { libelle: "Organiser son travail selon les priorités et les objectifs", code_ogr: "A" },
+              { libelle: "Être à l'écoute, faire preuve d'empathie", code_ogr: "A" },
+            ],
+            savoir_faire: [
+              {
+                libelle: "Production, Fabrication",
+                items: [
+                  { libelle: "Procéder à l'enregistrement, au tri, à l'affranchissement du courrier", code_ogr: "A" },
+                  { libelle: "Réaliser des travaux de reprographie", code_ogr: "A" },
+                ],
+              },
+              {
+                libelle: "Gestion des stocks",
+                items: [
+                  { libelle: "Contrôler l'état des stocks", code_ogr: "A" },
+                  { libelle: "Définir des besoins en approvisionnement", code_ogr: "A" },
+                ],
+              },
+              { libelle: "Logistique", items: [{ libelle: "Organiser le traitement des commandes", code_ogr: "A" }] },
+              { libelle: "Relation client", items: [{ libelle: "Accueillir, orienter, informer une personne", code_ogr: "A" }] },
+              {
+                libelle: "Organisation",
+                items: [
+                  { libelle: "Contrôler la conformité des données ou des documents", code_ogr: "A" },
+                  { libelle: "Corriger et mettre en forme un document", code_ogr: "A" },
+                  { libelle: "Numériser des documents, médias ou supports techniques", code_ogr: "A" },
+                  { libelle: "Utiliser les outils bureautiques", code_ogr: "A" },
+                  { libelle: "Établir, mettre à jour un dossier, une base de données", code_ogr: "A" },
+                ],
+              },
+            ],
+            savoirs: [],
+          },
         },
       ],
       address_detail: {
@@ -196,11 +226,15 @@ describe("findJobsOpportunities", () => {
   ]
 
   beforeEach(async () => {
+    const ctrl = new AbortController()
+    await startRecruiterChangeStream(ctrl.signal)
     await getDbCollection("jobs_partners").insertMany(recruiters)
     await getDbCollection("recruiters").insertMany(lbaJobs)
     await getDbCollection("jobs_partners").insertMany(partnerJobs)
     await getDbCollection("referentielromes").insertMany(romes)
     await getDbCollection("referentiel.communes").insertMany(generateReferentielCommuneFixtures([parisFixture, clichyFixture, levalloisFixture, marseilleFixture]))
+    await new Promise((r) => setTimeout(r, 200))
+    ctrl.abort()
   })
 
   it("should execute query", async () => {
@@ -724,6 +758,9 @@ describe("findJobsOpportunities", () => {
     })
 
     it("should exclude non active recruiters", async () => {
+      const ctrl = new AbortController()
+      await startRecruiterChangeStream(ctrl.signal)
+
       const extraRecruiters: IRecruiter[] = []
 
       for (const status of [RECRUITER_STATUS.ARCHIVE, RECRUITER_STATUS.EN_ATTENTE_VALIDATION]) {
@@ -752,6 +789,7 @@ describe("findJobsOpportunities", () => {
 
       await getDbCollection("recruiters").insertMany(extraRecruiters)
 
+      await new Promise((r) => setTimeout(r, 200))
       const results = await findJobsOpportunities(
         {
           longitude: parisFixture.centre.coordinates[0],
@@ -767,57 +805,39 @@ describe("findJobsOpportunities", () => {
       const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
-      expect(results.jobs).toHaveLength(1)
+      expect(results.jobs).toHaveLength(0)
+
+      ctrl.abort()
     })
 
     it("should exclude non active jobs", async () => {
-      await getDbCollection("recruiters").insertOne(
-        generateRecruiterFixture({
-          establishment_siret: "11000001500013",
-          establishment_raison_sociale: "ASSEMBLEE NATIONALE",
-          geopoint: parisFixture.centre,
-          status: RECRUITER_STATUS.ACTIF,
-          jobs: [
-            {
-              rome_code: ["M1602"],
-              rome_label: "Opérations administratives",
-              job_status: JOB_STATUS.ANNULEE,
-              job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-              job_expiration_date: new Date(),
-            },
-            {
-              rome_code: ["M1602"],
-              rome_label: "Opérations administratives",
-              job_status: JOB_STATUS.EN_ATTENTE,
-              job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-              job_expiration_date: new Date(),
-            },
-            {
-              rome_code: ["M1602"],
-              rome_label: "Opérations administratives",
-              job_status: JOB_STATUS.POURVUE,
-              job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-              job_expiration_date: new Date(),
-            },
-            {
-              rome_code: ["M1602"],
-              rome_label: "Opérations administratives",
-              job_status: JOB_STATUS.ACTIVE,
-              job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-              job_expiration_date: new Date(),
-            },
-            {
-              rome_code: ["M1602"],
-              rome_label: "Opérations administratives",
-              job_status: JOB_STATUS.ACTIVE,
-              job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-              job_expiration_date: new Date("2024-01-01"),
-            },
-          ],
-          address_detail: {
-            code_insee_localite: parisFixture.code,
-          },
-          address: parisFixture.nom,
+      await getDbCollection("jobs_partners").insertOne(
+        generateJobsPartnersOfferPrivate({
+          partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+          offer_rome_codes: ["M1602"],
+          workplace_geopoint: parisFixture.centre,
+          offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+          offer_target_diploma: null,
+        })
+      )
+
+      await getDbCollection("jobs_partners").insertOne(
+        generateJobsPartnersOfferPrivate({
+          partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+          offer_rome_codes: ["M1602"],
+          workplace_geopoint: parisFixture.centre,
+          offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+          offer_target_diploma: null,
+        })
+      )
+
+      await getDbCollection("jobs_partners").insertOne(
+        generateJobsPartnersOfferPrivate({
+          partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+          offer_rome_codes: ["M1602"],
+          workplace_geopoint: parisFixture.centre,
+          offer_status: JOB_STATUS_ENGLISH.POURVUE,
+          offer_target_diploma: null,
         })
       )
 
@@ -836,36 +856,36 @@ describe("findJobsOpportunities", () => {
       const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
-      expect(results.jobs).toHaveLength(2)
+      expect(results.jobs).toHaveLength(1)
     })
 
     describe("when filtered by diploma", () => {
       it("should return jobs with requested diploma and unknown ones only", async () => {
-        await getDbCollection("recruiters").insertOne(
-          generateRecruiterFixture({
-            establishment_siret: "11000001500013",
-            geopoint: parisFixture.centre,
-            status: RECRUITER_STATUS.ACTIF,
-            jobs: [
-              {
-                rome_code: ["M1602"],
-                rome_label: "Opérations administratives",
-                job_status: JOB_STATUS.ACTIVE,
-                job_level_label: NIVEAUX_POUR_LBA["3 (CAP...)"],
-                job_expiration_date: new Date(),
-              },
-              {
-                rome_code: ["M1602"],
-                rome_label: "Opérations administratives",
-                job_status: JOB_STATUS.ACTIVE,
-                job_level_label: NIVEAUX_POUR_LBA["4 (BAC...)"],
-                job_expiration_date: new Date(),
-              },
-            ],
-            address_detail: {
-              code_insee_localite: parisFixture.code,
-            },
-            address: parisFixture.nom,
+        await getDbCollection("jobs_partners").insertOne(
+          generateJobsPartnersOfferPrivate({
+            partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+            offer_rome_codes: ["M1602"],
+            workplace_geopoint: parisFixture.centre,
+            offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+            offer_target_diploma: { european: "4", label: "BP, Bac, autres formations niveau (Bac)" },
+          })
+        )
+        await getDbCollection("jobs_partners").insertOne(
+          generateJobsPartnersOfferPrivate({
+            partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+            offer_rome_codes: ["M1602"],
+            workplace_geopoint: parisFixture.centre,
+            offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+            offer_target_diploma: { european: "3", label: "CAP, BEP, autres formations niveau (CAP)" },
+          })
+        )
+        await getDbCollection("jobs_partners").insertOne(
+          generateJobsPartnersOfferPrivate({
+            partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+            offer_rome_codes: ["M1602"],
+            workplace_geopoint: parisFixture.centre,
+            offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+            offer_target_diploma: null,
           })
         )
 
@@ -899,31 +919,19 @@ describe("findJobsOpportunities", () => {
     })
 
     it("should limit the number of jobs to 150", async () => {
-      const JOB_PER_RECRUITER = 10
+      await getDbCollection("jobs_partners").deleteMany({})
 
-      const extraRecruiters: IRecruiter[] = Array.from({ length: 500 }, () => {
-        const jobs = Array.from({ length: JOB_PER_RECRUITER }, () => ({
-          rome_code: ["M1602"],
-          rome_label: "Opérations Administratives",
-          job_status: JOB_STATUS.ACTIVE,
-          job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-          job_expiration_date: new Date(),
-        }))
-
-        return generateRecruiterFixture({
-          establishment_siret: "11000001500013",
-          geopoint: parisFixture.centre,
-          status: RECRUITER_STATUS.ACTIF,
-          jobs,
-          address_detail: {
-            code_insee_localite: parisFixture.code,
-          },
-          address: parisFixture.nom,
+      const extraLbaJobs: IJobsPartnersOfferPrivate[] = Array.from({ length: 1500 }, () =>
+        generateJobsPartnersOfferPrivate({
+          partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+          offer_rome_codes: ["M1602"],
+          workplace_geopoint: parisFixture.centre,
+          offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+          offer_target_diploma: null,
         })
-      })
+      )
 
-      await getDbCollection("recruiters").deleteMany({})
-      await getDbCollection("recruiters").insertMany(extraRecruiters)
+      await getDbCollection("jobs_partners").insertMany(extraLbaJobs)
 
       const results = await findJobsOpportunities(
         {
@@ -1002,50 +1010,14 @@ describe("findJobsOpportunities", () => {
       expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(0)
     })
+  })
 
-    it("should ignore job custom_geo_coordinates", async () => {
-      await getDbCollection("recruiters").insertOne(
-        generateRecruiterFixture({
-          establishment_siret: "11000001500013",
-          geopoint: parisFixture.centre,
-          status: RECRUITER_STATUS.ACTIF,
-          jobs: [
-            {
-              rome_code: ["M1602"],
-              rome_label: "Opérations Administratives",
-              job_status: JOB_STATUS.ACTIVE,
-              job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-              custom_geo_coordinates: `${marseilleFixture.centre.coordinates[1]},${marseilleFixture.centre.coordinates[0]}`,
-              job_expiration_date: new Date(),
-            },
-          ],
-          address_detail: {
-            code_insee_localite: parisFixture.code,
-          },
-          address: parisFixture.nom,
-        })
-      )
-
-      const results = await findJobsOpportunities(
-        {
-          longitude: parisFixture.centre.coordinates[0],
-          latitude: parisFixture.centre.coordinates[1],
-          radius: 30,
-          romes: ["M1602"],
-          rncp: null,
-          opco: null,
-        },
-        new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
-      )
-
-      const parseResult = zJobSearchApiV3Response.safeParse(results)
-      expect.soft(parseResult.success).toBeTruthy()
-      expect(parseResult.error).toBeUndefined()
-      expect(results.jobs).toHaveLength(2)
-    })
-
+  describe("jobs partners", () => {
     describe("when recruiter is delegated", () => {
       it("should return info from the cfa_delegated_siret", async () => {
+        const ctrl = new AbortController()
+        await startRecruiterChangeStream(ctrl.signal)
+
         const cfa = generateCfaFixture({
           siret: "78430824900019",
           address: parisFixture.nom,
@@ -1069,14 +1041,14 @@ describe("findJobsOpportunities", () => {
               rome_label: "Opérations administratives",
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-              job_expiration_date: new Date(),
+              job_expiration_date: new Date("2050-01-01"),
             },
             {
               rome_code: ["M1602"],
               rome_label: "Opérations administratives",
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-              job_expiration_date: new Date(),
+              job_expiration_date: new Date("2050-01-01"),
             },
           ],
           address_detail: {
@@ -1089,6 +1061,8 @@ describe("findJobsOpportunities", () => {
         })
 
         await getDbCollection("recruiters").insertOne(delegatedLbaJob)
+
+        await new Promise((r) => setTimeout(r, 200))
 
         const results = await findJobsOpportunities(
           {
@@ -1105,7 +1079,7 @@ describe("findJobsOpportunities", () => {
         const parseResult = zJobSearchApiV3Response.safeParse(results)
         expect.soft(parseResult.success).toBeTruthy()
         expect(parseResult.error).toBeUndefined()
-        expect(results.jobs).toHaveLength(3)
+        expect(results.jobs).toHaveLength(4)
         expect(
           results.jobs.map((j) => ({
             _id: j.identifier.id,
@@ -1135,10 +1109,15 @@ describe("findJobsOpportunities", () => {
             },
           ])
         )
+
+        ctrl.abort()
       })
     })
 
     it("should ignore recruiters without adresse", async () => {
+      const ctrl = new AbortController()
+      await startRecruiterChangeStream(ctrl.signal)
+
       await getDbCollection("recruiters").insertOne(
         generateRecruiterFixture({
           establishment_siret: "11000001500013",
@@ -1150,7 +1129,7 @@ describe("findJobsOpportunities", () => {
               rome_label: "Opérations Administratives",
               job_status: JOB_STATUS.ACTIVE,
               job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-              job_expiration_date: new Date(),
+              job_expiration_date: new Date("2050-01-01"),
             },
           ],
           address_detail: {
@@ -1158,6 +1137,8 @@ describe("findJobsOpportunities", () => {
           },
         })
       )
+
+      await new Promise((r) => setTimeout(r, 2000))
 
       const results = await findJobsOpportunities(
         {
@@ -1174,52 +1155,12 @@ describe("findJobsOpportunities", () => {
       const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
-      expect(results.jobs).toHaveLength(1)
+      expect(results.jobs).toHaveLength(2)
       expect(results.jobs[0].identifier.id).toEqual(lbaJobs[0].jobs[0]._id)
+
+      ctrl.abort()
     })
 
-    it("should ignore recruiters without geopoint", async () => {
-      await getDbCollection("recruiters").insertOne(
-        generateRecruiterFixture({
-          establishment_siret: "11000001500013",
-          status: RECRUITER_STATUS.ACTIF,
-          jobs: [
-            {
-              rome_code: ["M1602"],
-              rome_label: "Opérations Administratives",
-              job_status: JOB_STATUS.ACTIVE,
-              job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-              job_expiration_date: new Date(),
-            },
-          ],
-          address_detail: {
-            code_insee_localite: parisFixture.code,
-          },
-          address: parisFixture.nom,
-        })
-      )
-
-      const results = await findJobsOpportunities(
-        {
-          longitude: parisFixture.centre.coordinates[0],
-          latitude: parisFixture.centre.coordinates[1],
-          radius: 30,
-          romes: ["M1602"],
-          rncp: null,
-          opco: null,
-        },
-        new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
-      )
-
-      const parseResult = zJobSearchApiV3Response.safeParse(results)
-      expect.soft(parseResult.success).toBeTruthy()
-      expect(parseResult.error).toBeUndefined()
-      expect(results.jobs).toHaveLength(1)
-      expect(results.jobs[0].identifier.id).toEqual(lbaJobs[0].jobs[0]._id)
-    })
-  })
-
-  describe("jobs partners", () => {
     it("should limit jobs to 150", async () => {
       const extraOffers: IJobsPartnersOfferPrivate[] = Array.from({ length: 300 }, (e, idx) =>
         generateJobsPartnersOfferPrivate({
@@ -1229,7 +1170,6 @@ describe("findJobsOpportunities", () => {
         })
       )
       await getDbCollection("jobs_partners").insertMany(extraOffers)
-      await getDbCollection("recruiters").deleteMany({})
 
       const results = await findJobsOpportunities(
         {
@@ -1246,7 +1186,7 @@ describe("findJobsOpportunities", () => {
       const parseResult = zJobSearchApiV3Response.safeParse(results)
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
-      expect(results.jobs).toHaveLength(150)
+      expect(results.jobs).toHaveLength(151) // 150 + 1 for the LBA job
     })
 
     it("should exclude companies not within the radius", async () => {
@@ -1271,6 +1211,9 @@ describe("findJobsOpportunities", () => {
     })
 
     it("should not include offer_multicast=false jobs", async () => {
+      const ctrl = new AbortController()
+      await startRecruiterChangeStream(ctrl.signal)
+
       await getDbCollection("jobs_partners").insertOne(
         generateJobsPartnersOfferPrivate({
           offer_rome_codes: ["M1602"],
@@ -1280,6 +1223,9 @@ describe("findJobsOpportunities", () => {
         })
       )
       await getDbCollection("recruiters").deleteMany({})
+      await getDbCollection("jobs_partners").deleteMany({ partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA })
+
+      await new Promise((r) => setTimeout(r, 200))
 
       const results = await findJobsOpportunities(
         {
@@ -1297,6 +1243,8 @@ describe("findJobsOpportunities", () => {
       expect.soft(parseResult.success).toBeTruthy()
       expect(parseResult.error).toBeUndefined()
       expect(results.jobs).toHaveLength(1)
+
+      ctrl.abort()
     })
 
     it("should return jobs without apply.recipient_id when no apply_email is present", async () => {
@@ -1403,8 +1351,8 @@ describe("findJobsOpportunities", () => {
         const parseResult = zJobSearchApiV3Response.safeParse(results)
         expect.soft(parseResult.success).toBeTruthy()
         expect(parseResult.error).toBeUndefined()
-        expect(results.jobs).toHaveLength(2)
-        expect(results.jobs.map((j) => j.offer.target_diploma)).toEqual([null, { european: "3", label: "CAP, BEP, autres formations niveau (CAP)" }])
+        expect(results.jobs).toHaveLength(3)
+        expect(results.jobs.map((j) => j.offer.target_diploma)).toEqual([null, null, { european: "3", label: "CAP, BEP, autres formations niveau (CAP)" }])
       })
     })
 
@@ -1457,8 +1405,7 @@ describe("findJobsOpportunities", () => {
         expect.soft(parseResult.success).toBeTruthy()
         expect(parseResult.error).toBeUndefined()
         expect.soft(results.jobs).toHaveLength(2)
-        expect.soft(results.jobs[0].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.RH_ALTERNANCE)
-        expect.soft(results.jobs[1].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA)
+        expect.soft(results.jobs[1].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.RH_ALTERNANCE)
 
         results = await findJobsOpportunities(
           {
@@ -1476,7 +1423,6 @@ describe("findJobsOpportunities", () => {
         expect.soft(results.jobs).toHaveLength(3)
         expect.soft(results.jobs[0].identifier.partner_label).not.toBe(JOBPARTNERS_LABEL.RH_ALTERNANCE)
         expect.soft(results.jobs[1].identifier.partner_label).not.toBe(JOBPARTNERS_LABEL.RH_ALTERNANCE)
-        expect.soft(results.jobs[2].identifier.partner_label).not.toBe(JOBPARTNERS_LABEL.RH_ALTERNANCE)
 
         results = await findJobsOpportunities(
           {
@@ -1492,7 +1438,6 @@ describe("findJobsOpportunities", () => {
         )
 
         expect.soft(results.jobs).toHaveLength(1)
-        expect.soft(results.jobs[0].identifier.partner_label).toEqual(JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA)
       })
     })
 
@@ -1715,39 +1660,48 @@ describe("findJobsOpportunities", () => {
   })
 
   describe("when searching with location", () => {
-    it("should sort by source, distance and then by creation date", async () => {
-      const extraLbaJob = generateRecruiterFixture({
-        establishment_siret: "20003277900015",
-        establishment_raison_sociale: "EXTRA LBA JOB 1",
-        geopoint: levalloisFixture.centre,
-        status: RECRUITER_STATUS.ACTIF,
-        jobs: [
-          {
-            rome_code: ["D1209"],
-            rome_label: "Vente de végétaux",
-            job_status: JOB_STATUS.ACTIVE,
-            job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-            job_creation_date: new Date("2021-01-01"),
-            job_expiration_date: new Date(),
-          },
-          {
-            rome_code: ["D1209"],
-            rome_label: "Vente de végétaux",
-            job_status: JOB_STATUS.ACTIVE,
-            job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-            job_creation_date: new Date("2024-01-01"),
-            job_expiration_date: new Date(),
-          },
-        ],
-        address_detail: {
-          code_insee_localite: levalloisFixture.code,
+    const extraLbaJob = generateRecruiterFixture({
+      establishment_siret: "20003277900015",
+      establishment_raison_sociale: "EXTRA LBA JOB 1",
+      geopoint: levalloisFixture.centre,
+      status: RECRUITER_STATUS.ACTIF,
+      jobs: [
+        {
+          rome_code: ["D1209"],
+          rome_label: "Vente de végétaux",
+          job_status: JOB_STATUS.ACTIVE,
+          job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+          job_creation_date: new Date("2021-01-01"),
+          job_expiration_date: new Date("2050-01-01"),
         },
-        address: levalloisFixture.nom,
-        phone: "0465000001",
-      })
+        {
+          rome_code: ["D1209"],
+          rome_label: "Vente de végétaux",
+          job_status: JOB_STATUS.ACTIVE,
+          job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+          job_creation_date: new Date("2024-01-01"),
+          job_expiration_date: new Date("2050-01-01"),
+        },
+      ],
+      address_detail: {
+        code_insee_localite: levalloisFixture.code,
+      },
+      address: levalloisFixture.nom,
+      phone: "0465000001",
+    })
+
+    beforeEach(async () => {
+      const ctrl = new AbortController()
+      await startRecruiterChangeStream(ctrl.signal)
 
       await getDbCollection("recruiters").insertOne(extraLbaJob)
 
+      await new Promise((r) => setTimeout(r, 200))
+
+      ctrl.abort()
+    })
+
+    it("should sort by source, distance and then by creation date", async () => {
       const extraOffers = [
         generateJobsPartnersOfferPrivate({
           offer_rome_codes: ["D1212"],
@@ -2090,6 +2044,7 @@ describe("findJobOpportunityById tests", () => {
     created_at: originalCreatedAt,
     offer_creation: originalCreatedAt,
     offer_expiration: originalCreatedAtPlus2Months,
+    is_delegated: false,
   })
 
   const lbaJob: IRecruiter = generateRecruiterFixture({
@@ -2248,63 +2203,12 @@ describe("findJobOpportunityById tests", () => {
     })
   })
 
-  describe("getLbaJobByIdV2AsJobOfferApi", () => {
-    beforeEach(async () => {
-      await getDbCollection("referentielromes").insertMany(romes)
-      await getDbCollection("recruiters").insertOne(lbaJob)
-    })
-
-    it("should return null when not found", async () => {
-      // Créer un contexte de requête mock
-      const context = {
-        addWarning: vi.fn(),
-      } as unknown as JobOpportunityRequestContext
-
-      // Utiliser un ID qui n'existe pas dans la base de données
-      const nonExistentId = new ObjectId()
-
-      expect(await getLbaJobByIdV2AsJobOfferApi(nonExistentId, context)).toEqual(null)
-
-      // Vérifier que la méthode addWarning a été appelée avec le bon message
-      expect(context.addWarning).toHaveBeenCalledWith("JOB_NOT_FOUND")
-    })
-
-    it("should return a job offer with correct format on getLbaJobByIdV2AsJobOfferApi", async () => {
-      // Créer un contexte de requête mock
-      const context = {
-        addWarning: vi.fn(),
-      } as unknown as JobOpportunityRequestContext
-
-      // Exécuter la fonction avec un ID existant
-      const jobId = lbaJob.jobs[0]._id
-      const result = await getLbaJobByIdV2AsJobOfferApi(jobId, context)
-
-      // Vérifier que addWarning n'a pas été appelé car le job a été trouvé
-      expect(context.addWarning).not.toHaveBeenCalled()
-
-      // Vérifier que le résultat n'est pas null
-      expect(result).not.toBeNull()
-
-      // Valider que le résultat correspond au schéma attendu
-      const validationResult = zJobOfferApiReadV3.safeParse(result)
-
-      // Afficher les erreurs en cas d'échec de validation
-      if (!validationResult.success) {
-        console.error("Validation errors:", validationResult.error.format())
-      }
-
-      // Vérifier que la validation a réussi
-      expect(validationResult.success).toBe(true)
-    })
-  })
-
   describe("findJobOpportunityById", () => {
     beforeEach(async () => {
       vi.useFakeTimers()
       vi.setSystemTime(now)
       await getDbCollection("jobs_partners").insertOne(originalJob)
       await getDbCollection("referentielromes").insertMany(romes)
-      await getDbCollection("recruiters").insertOne(lbaJob)
 
       return () => {
         vi.useRealTimers()
@@ -2347,6 +2251,10 @@ describe("findJobOpportunityById tests", () => {
     })
 
     it("should find an offer from recruiters collection on findJobOpportunityById", async () => {
+      vi.useRealTimers()
+      const ctrl = new AbortController()
+      await startRecruiterChangeStream(ctrl.signal)
+
       // Créer un contexte mock
       const context = {
         addWarning: vi.fn(),
@@ -2354,6 +2262,11 @@ describe("findJobOpportunityById tests", () => {
 
       // Exécuter la fonction avec un ID existant lié à un élément de la collection recruiters
       const lbaJobId = lbaJob.jobs[0]._id
+
+      await getDbCollection("recruiters").insertOne(lbaJob)
+
+      await new Promise((r) => setTimeout(r, 200))
+
       const result = await findJobOpportunityById(lbaJobId, context)
 
       // Vérifier que le résultat n'est pas nul
@@ -2367,6 +2280,8 @@ describe("findJobOpportunityById tests", () => {
       if (!validationResult.success) {
         console.error("Validation errors:", validationResult.error.format())
       }
+
+      ctrl.abort()
     })
   })
 })

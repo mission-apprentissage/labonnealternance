@@ -2,7 +2,7 @@ import { Box, Text } from "@chakra-ui/react"
 
 import { getCurrentDate, getCurrentHourMinute } from "../../../common/utils/dateUtils"
 
-export const CfaCandidatInformationAnswered = (props) => {
+export const CfaCandidatInformationAnswered = (props: { msg: string }) => {
   return (
     <Box mt={8} p={6} backgroundColor="#F5F5FE">
       <Text as="h2" fontWeight="700" color="#000091" fontSize="22px" lineHeight="36px">
