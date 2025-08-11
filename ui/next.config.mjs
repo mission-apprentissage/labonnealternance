@@ -85,6 +85,8 @@ const nextConfig = {
   eslint: {
     dirs: ["."],
   },
+  compress: false, // disable default gzip compression by nextJS, done by Nginx
+  cacheMaxMemorySize: 0, // disable default in-memory caching
   images: {
     unoptimized: true,
     // Tout changement d'image devra passer par un changement de nom de fichier

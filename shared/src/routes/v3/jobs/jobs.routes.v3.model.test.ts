@@ -75,6 +75,7 @@ type IJobOfferExpected = {
     opening_count: number
     status: JOB_STATUS_ENGLISH
   }
+  is_delegated: boolean
 }
 
 type IJobOfferApiWriteV3Expected = {
@@ -488,7 +489,7 @@ describe("convertToJobOfferApiReadV3", () => {
       contract_remote: TRAINING_REMOTE_TYPE.onsite,
       contract_start: startOfNextMonth,
       contract_type: ["Apprentissage"],
-      contract_is_disabled_elligible: null,
+      contract_is_disabled_elligible: false,
       offer_access_conditions: ["Ce métier est accessible avec un diplôme de fin d'études secondaires"],
       offer_creation: yesterday,
       offer_description: "Exécute des travaux administratifs courants",
@@ -529,6 +530,10 @@ describe("convertToJobOfferApiReadV3", () => {
       stats_detail_view: 0,
       stats_postuler: 0,
       stats_search_view: 0,
+      is_delegated: false,
+      cfa_siret: null,
+      cfa_legal_name: null,
+      cfa_address_label: null,
     }
 
     const expected: IJobOfferApiReadV3 = {
@@ -594,6 +599,7 @@ describe("convertToJobOfferApiReadV3", () => {
         opening_count: 1,
         status: JOB_STATUS_ENGLISH.ACTIVE,
       },
+      is_delegated: false,
     }
 
     expect(jobsRouteApiv3Converters.convertToJobOfferApiReadV3(jobPartner)).toEqual(expected)

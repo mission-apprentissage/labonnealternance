@@ -1,12 +1,14 @@
 "use client"
 
-import { Box, Container, Divider, SimpleGrid, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Grid2 as Grid, Typography } from "@mui/material"
 import dynamic from "next/dynamic"
 import Image from "next/image"
 import Link from "next/link"
 import { ExtendedRecordMap } from "notion-types"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -14,35 +16,40 @@ const NotionRenderer = dynamic(() => import("react-notion-x").then((mod) => mod.
 
 export const AccessibilitePage = ({ recordMap }: { recordMap: ExtendedRecordMap }) => {
   return (
-    <Box as="main">
+    <Box component="main">
       <Breadcrumb pages={[PAGES.static.accessibilite]} />
-      <Container p={12} my={0} mb={[0, 12]} variant="pageContainer">
-        <SimpleGrid columns={[1, 1, 1, 2]}>
-          <Box>
-            <Box as="h1">
-              <Text as="span" display="block" mb={1} variant="editorialContentH1" color="#2a2a2a">
+      <DefaultContainer>
+        <Box sx={{ p: fr.spacing("5w"), marginBottom: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
+          <Grid container spacing={0}>
+            <Grid size={{ xs: 12, md: 5 }}>
+              <Typography sx={{ mb: 1 }} variant="h1" component={"h1"}>
                 Déclaration
-              </Text>
-              <Text as="span" display="block" mb={1} variant="editorialContentH1">
+              </Typography>
+              <Typography sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }} variant="h1" component={"h1"}>
                 d'accessibilité
-              </Text>
-            </Box>
-            <Divider variant="pageTitleDivider" my={12} />
-          </Box>
-          <NotionRenderer
-            recordMap={recordMap}
-            fullPage={false}
-            darkMode={false}
-            disableHeader={true}
-            rootDomain={publicConfig.baseUrl}
-            className="notion-body"
-            components={{
-              nextImage: Image,
-              nextLink: Link,
-            }}
-          />
-        </SimpleGrid>
-      </Container>
+              </Typography>
+              <Box
+                component="hr"
+                sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, lg: 7 }}>
+              <NotionRenderer
+                recordMap={recordMap}
+                fullPage={false}
+                darkMode={false}
+                disableHeader={true}
+                rootDomain={publicConfig.baseUrl}
+                className="notion-body"
+                components={{
+                  nextImage: Image,
+                  nextLink: Link,
+                }}
+              />
+            </Grid>
+          </Grid>
+        </Box>
+      </DefaultContainer>
     </Box>
   )
 }

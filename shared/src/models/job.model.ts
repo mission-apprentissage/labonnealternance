@@ -146,7 +146,6 @@ export const ZJobCreate = ZJobFields.pick({
   rome_label: true,
   job_type: true,
   job_level_label: true,
-  is_disabled_elligible: true,
   job_count: true,
   job_duration: true,
   job_rythm: true,

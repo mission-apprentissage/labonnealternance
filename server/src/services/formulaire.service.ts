@@ -31,6 +31,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { logger } from "@/common/logger"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { anonymizeLbaJobsPartners } from "@/services/partnerJob.service"
+import { getEntrepriseEngagement } from "@/services/referentielEngagementEntreprise.service"
 import { getResumeToken, storeResumeToken } from "@/services/resumeToken.service"
 
 import { asyncForEach } from "../common/utils/asyncUtils"
@@ -176,6 +177,7 @@ export const createJob = async ({
   if (!recruiter) {
     throw internal(`recruiter with establishment_id=${establishment_id} not found`)
   }
+  const is_disabled_elligible = await getEntrepriseEngagement(recruiter.establishment_siret)
   const { is_delegated, cfa_delegated_siret } = recruiter
   const organization = await (cfa_delegated_siret
     ? getDbCollection("cfas").findOne({ siret: cfa_delegated_siret })
@@ -208,6 +210,7 @@ export const createJob = async ({
     job_creation_date: creationDate,
     job_expiration_date: addExpirationPeriod(creationDate).toDate(),
     job_update_date: creationDate,
+    is_disabled_elligible,
   }
   const updatedJob: Partial<IJob> = Object.assign(job, addedFields)
   // insert job
@@ -884,8 +887,8 @@ export const updateJobsPartnersFromRecruiterUpdate = async (change: ChangeStream
 export const updateJobsPartnersFromRecruiterById = async (recruiterId: ObjectId) => {
   const recruiter = await getDbCollection("recruiters").findOne({ _id: recruiterId })
 
-  if (recruiter?.jobs?.length) {
-    await asyncForEach(recruiter.jobs, async (job) => {
+  if (recruiter?.jobs?.length && recruiter.address) {
+    await asyncForEach(recruiter.jobs, async (job: IJob) => {
       await upsertJobPartnersFromRecruiter(recruiter, job)
     })
   }
@@ -942,6 +945,22 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
   const lbaJobContactInfo = recruiter.is_delegated ? await getLbaJobContactInfo(recruiter) : null
   const { definition, acces_metier } = romeDetails ?? {}
 
+  const delegatedFields = recruiter.is_delegated
+    ? {
+        cfa_siret: lbaJobContactInfo?.establishment_siret || null,
+        cfa_legal_name: lbaJobContactInfo?.establishment_raison_sociale || null,
+        cfa_apply_phone: lbaJobContactInfo?.phone || null,
+        cfa_apply_email: lbaJobContactInfo?.email || null,
+        cfa_address_label: lbaJobContactInfo?.address || null,
+      }
+    : {
+        cfa_siret: null,
+        cfa_legal_name: null,
+        cfa_apply_phone: null,
+        cfa_apply_email: null,
+        cfa_address_label: null,
+      }
+
   const partnerJobToUpsert: Partial<IJobsPartnersOfferPrivate> = {
     _id: job._id,
     updated_at: job.job_update_date ?? now,
@@ -949,20 +968,21 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
     partner_label: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
     partner_job_id: job._id.toString(),
     is_delegated: recruiter.is_delegated,
+    job_status_comment: job?.job_status_comment || null,
+    job_delegation_count: job?.job_delegation_count || null,
+    delegations: job?.delegations,
 
     contract_start: job.job_start_date ?? null,
     contract_duration: job.job_duration ?? null,
     contract_type: job.job_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
-    contract_is_disabled_elligible: job.is_disabled_elligible ?? null,
+    contract_is_disabled_elligible: job.is_disabled_elligible ?? false,
     contract_rythm: job.job_rythm ?? null,
 
-    workplace_legal_name:
-      (lbaJobContactInfo?.establishment_raison_sociale || lbaJobContactInfo?.establishment_enseigne) ??
-      (recruiter.establishment_raison_sociale || recruiter.establishment_enseigne || UNKNOWN_COMPANY),
-    workplace_brand: lbaJobContactInfo?.establishment_enseigne ?? recruiter.establishment_enseigne,
-    workplace_siret: lbaJobContactInfo?.establishment_siret ?? recruiter.establishment_siret,
+    workplace_legal_name: recruiter.establishment_raison_sociale || recruiter.establishment_enseigne || UNKNOWN_COMPANY,
+    workplace_brand: recruiter.establishment_enseigne,
+    workplace_siret: recruiter.establishment_siret,
     workplace_geopoint: recruiter.geopoint ?? undefined,
-    workplace_address_label: (recruiter.is_delegated ? lbaJobContactInfo?.address : recruiter.address) ?? "",
+    workplace_address_label: recruiter.address!,
     workplace_address_zipcode: recruiter.address_detail?.code_postal ?? null,
     workplace_address_city: getCity(recruiter) ?? null,
 
@@ -995,6 +1015,8 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
     workplace_description: null,
     workplace_name: null,
     workplace_website: null,
+
+    ...delegatedFields,
   }
 
   await getDbCollection("jobs_partners").findOneAndUpdate(
@@ -1020,10 +1042,19 @@ export const updateJobsPartnersFromRecruiterDelete = async (id: ObjectId) => {
 }
 
 //TODO: extraire une partie du code dans un service pour éviter d'avoir du code trop spécifique dans mongodbUtils.ts
-const startChangeStream = (collectionName: "recruiters" | "anonymized_recruiters", resumeToken: IResumeToken | null, signal: AbortSignal) => {
+const startChangeStream = (
+  collectionName: "recruiters" | "anonymized_recruiters",
+  resumeToken: IResumeToken | null,
+  signal: AbortSignal
+  //resumeBehavior?: "startAfter" | "resumeAfter" = "resumeAfter"
+) => {
   logger.info(`Starting change stream for ${collectionName} with resumeToken:`, resumeToken)
   const collection = getDbCollection(collectionName)
-  const changeStream = collection.watch([], resumeToken ? { resumeAfter: resumeToken.resumeTokenData } : {})
+  const changeStream = collection.watch(
+    [],
+    //resumeToken ? (resumeBehavior === "resumeAfter" ? { resumeAfter: resumeToken.resumeTokenData } : { startAfter: resumeToken.resumeTokenData }) : {}
+    resumeToken ? { startAfter: resumeToken.resumeTokenData } : {}
+  )
 
   signal.addEventListener("abort", () => {
     logger.info(`Aborting change stream for ${collectionName}`)
@@ -1032,6 +1063,7 @@ const startChangeStream = (collectionName: "recruiters" | "anonymized_recruiters
 
   changeStream
     .on("change", async (change) => {
+      logger.info("change detected in change stream for", collectionName, ":", change)
       if (collectionName === "recruiters") {
         switch (change.operationType) {
           case "insert":
@@ -1039,9 +1071,19 @@ const startChangeStream = (collectionName: "recruiters" | "anonymized_recruiters
             await updateJobsPartnersFromRecruiterUpdate(change)
             await storeResumeToken("recruiters", change._id as IResumeTokenData)
             break
+          case "rename":
+          case "drop":
           case "delete":
             // n'arrivera pas car les formulaires ne sont pas supprimés, mais archivés
             break
+          case "invalidate": {
+            // provoqué par des événement de type "drop" ou "rename" sur la collection
+            logger.info(`Change stream for ${collectionName} invalidated, restarting after 10 seconds...`)
+            await new Promise((resolve) => setTimeout(resolve, 10000))
+            // on relance le change stream sans le token de reprise
+            startChangeStream("recruiters", null, signal)
+            break
+          }
           default:
             assertUnreachable(`Unexpected change operation type ${change.operationType}` as never)
         }
@@ -1058,6 +1100,7 @@ const startChangeStream = (collectionName: "recruiters" | "anonymized_recruiters
       startChangeStream(collectionName, null, signal)
     })
     .on("close", () => {
+      logger.info("deleting change stream for", collectionName)
       changeStreams.delete(changeStream)
     })
 
