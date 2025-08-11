@@ -38,7 +38,7 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     contract_duration: null,
     contract_type: ["Apprentissage", "Professionnalisation"],
     contract_remote: null,
-    contract_is_disabled_elligible: null,
+    contract_is_disabled_elligible: false,
 
     offer_title: "Une super offre d'alternance",
     offer_rome_codes: [],
@@ -64,6 +64,16 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     stats_detail_view: 0,
     stats_postuler: 0,
     stats_search_view: 0,
+
+    cfa_siret: null,
+    cfa_legal_name: null,
+    cfa_apply_phone: null,
+    cfa_apply_email: null,
+    cfa_address_label: null,
+    job_status_comment: null,
+    job_delegation_count: null,
+    delegations: null,
+    is_delegated: false,
 
     ...data,
   }
@@ -101,7 +111,7 @@ export function generateJobsPartnersFull(data: Partial<IJobsPartnersOfferPrivate
     contract_duration: 6,
     contract_type: ["Apprentissage", "Professionnalisation"],
     contract_remote: TRAINING_REMOTE_TYPE.onsite,
-    contract_is_disabled_elligible: null,
+    contract_is_disabled_elligible: false,
 
     offer_title: "Une super offre d'alternance",
     offer_rome_codes: ["D1102"],
@@ -129,6 +139,16 @@ export function generateJobsPartnersFull(data: Partial<IJobsPartnersOfferPrivate
     stats_detail_view: 0,
     stats_postuler: 0,
     stats_search_view: 0,
+
+    cfa_siret: null,
+    cfa_legal_name: null,
+    cfa_apply_phone: null,
+    cfa_apply_email: null,
+    cfa_address_label: null,
+    job_status_comment: null,
+    job_delegation_count: null,
+    delegations: null,
+    is_delegated: false,
 
     ...data,
   }

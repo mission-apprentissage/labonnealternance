@@ -22,6 +22,7 @@ exports[`exportJobsToS3V2 > should publish jobs 1`] = `
       "partner_job_id": "id_1",
       "partner_label": "Hellowork",
     },
+    "is_delegated": false,
     "offer": {
       "access_conditions": [
         "offer_access_conditions",
@@ -96,6 +97,7 @@ exports[`exportJobsToS3V2 > should publish jobs 1`] = `
       "partner_job_id": "id_2",
       "partner_label": "Hellowork",
     },
+    "is_delegated": false,
     "offer": {
       "access_conditions": [
         "offer_access_conditions",
@@ -169,6 +171,7 @@ exports[`exportJobsToS3V2 > should publish jobs 1`] = `
       "partner_job_id": "66c52e0088651f3c2cd0d785",
       "partner_label": "offres_emploi_lba",
     },
+    "is_delegated": false,
     "offer": {
       "access_conditions": [
         "Ce métier est accessible avec un diplôme de fin d'études secondaires (brevet des collèges) à Bac (professionnel, Brevet Professionnel, ...) dans le secteur tertiaire. Il est également accessible avec une expérience professionnelle sans diplôme particulier. La maîtrise de l'outil bureautique (traitement de texte, tableur, ...) peut être requise.",
@@ -248,6 +251,7 @@ exports[`exportJobsToS3V2 > should publish jobs 1`] = `
       "partner_job_id": "66c52e00f03faa7ce1aaccbc",
       "partner_label": "offres_emploi_lba",
     },
+    "is_delegated": false,
     "offer": {
       "access_conditions": [
         "Ce métier est accessible avec un diplôme de fin d'études secondaires (brevet des collèges) à Bac (professionnel, Brevet Professionnel, ...) dans le secteur tertiaire. Il est également accessible avec une expérience professionnelle sans diplôme particulier. La maîtrise de l'outil bureautique (traitement de texte, tableur, ...) peut être requise.",

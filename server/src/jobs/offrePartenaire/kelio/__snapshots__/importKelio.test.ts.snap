@@ -7,6 +7,7 @@ exports[`importKelio > should test the import of kelio data into computed_job_pa
     "apply_url": "https://tada.talentview.io/jobs/0gmq0v?source=la_bonne_alternance",
     "business_error": null,
     "contract_duration": 12,
+    "contract_is_disabled_elligible": false,
     "contract_remote": null,
     "contract_start": 2025-09-01T00:00:00.000Z,
     "contract_type": [
@@ -62,6 +63,7 @@ exports[`importKelio > should test the import of kelio data into computed_job_pa
     "apply_url": "https://groupe-TADA.talentview.io/jobs/cqhbxp?source=la_bonne_alternance",
     "business_error": null,
     "contract_duration": 12,
+    "contract_is_disabled_elligible": false,
     "contract_remote": null,
     "contract_start": 2025-09-01T00:00:00.000Z,
     "contract_type": [

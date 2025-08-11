@@ -1,14 +1,15 @@
 import path from "path"
 
-import { Box, Container, Divider, Text, VStack } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Stack, Typography } from "@mui/material"
 import { Metadata } from "next"
 import Link from "next/link"
 
-import { buildLinkForTownAndJob } from "../../../../utils/buildLinkForTownAndJob"
-import { getStaticMetiers, getStaticVilles, IStaticMetiers } from "../../../../utils/getStaticData"
-import { PAGES } from "../../../../utils/routes.utils"
-import { Breadcrumb } from "../../../_components/Breadcrumb"
+import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { buildLinkForTownAndJob } from "@/utils/buildLinkForTownAndJob"
+import { getStaticMetiers, getStaticVilles, IStaticMetiers } from "@/utils/getStaticData"
+import { PAGES } from "@/utils/routes.utils"
 
 const getTowns = () => {
   const txtDirectory = path.join(process.cwd(), "config")
@@ -42,32 +43,43 @@ export default async function MetiersByJobId({ params }: { params: IStaticMetier
   const relatedMetier = getMetierBySlug(metiers, _params.slug)
   return (
     <Box>
-      <Box as="main">
-        <Breadcrumb pages={[PAGES.static.metiers, PAGES.dynamic.metierJobById(relatedMetier.name)]} />
-        <Container p={12} my={0} mb={[0, 12]} variant="pageContainer">
-          <Text variant="editorialContentH1" as="h1">
-            <Text as="span" color="black">
-              Tous les emplois et formations en alternance en
-            </Text>
-            <br />
-            {relatedMetier.name}
-          </Text>
-          <Divider variant="pageTitleDivider" my={12} />
+      <Breadcrumb pages={[PAGES.static.metiers, PAGES.dynamic.metierJobById(relatedMetier.name)]} />
+      <DefaultContainer>
+        <Box sx={{ p: fr.spacing("5w"), marginBottom: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
+          <Typography component="h1" variant="h1" sx={{ mb: 2 }}>
+            Tous les emplois et formations en alternance en
+            <Typography component="h1" variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default, display: "block" }}>
+              {relatedMetier.name}
+            </Typography>
+          </Typography>
+          <Box
+            component="hr"
+            sx={{
+              maxWidth: "93px",
+              border: "none",
+              borderBottom: "none",
+              borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`,
+              opacity: 1,
+              my: fr.spacing("3w"),
+            }}
+          />
 
-          <Box as="p">Vous êtes à seulement 2 clics d&apos;obtenir toutes les informations pour trouver une alternance rapidement sur La bonne alternance :</Box>
-          <VStack spacing={1} align="flex-start">
-            <Text>
+          <Typography component="p" sx={{ mb: 2 }}>
+            Vous êtes à seulement 2 clics d&apos;obtenir toutes les informations pour trouver une alternance rapidement sur La bonne alternance :
+          </Typography>
+          <Stack spacing={1} alignItems="flex-start">
+            <Typography>
               Offres d&apos;emploi en contrat d&apos;apprentissage ou en contrat de professionnalisation en <i>{relatedMetier.name}</i>
-            </Text>
-            <Text>
-              Liste d’entreprises qui recrutent en alternance en <i>{relatedMetier.name}</i>
-            </Text>
-            <Text>
+            </Typography>
+            <Typography>
+              Liste d'entreprises qui recrutent en alternance en <i>{relatedMetier.name}</i>
+            </Typography>
+            <Typography>
               Formations en apprentissage en CAP, Bac pro, Mention complémentaire, BTS, BUT, DEUST, Licence, Master en <i>{relatedMetier.name}</i>
-            </Text>
+            </Typography>
 
-            <Text marginTop="0px" mb={[2, 2, 2, 0]}>
-              <Text as="span">Emploi en alternance et formation en alternance en </Text>
+            <Typography sx={{ mt: 0, mb: { xs: 2, md: 0 } }}>
+              <Typography component="span">Emploi en alternance et formation en alternance en </Typography>
 
               <Link
                 className={fr.cx("fr-link", "fr-text--bold")}
@@ -76,12 +88,12 @@ export default async function MetiersByJobId({ params }: { params: IStaticMetier
               >
                 {relatedMetier.name} sur l'ensemble du territoire
               </Link>
-            </Text>
+            </Typography>
 
             {towns.map((currentTown, index) => {
               return (
-                <Text key={index} marginTop="0px" mb={[2, 2, 2, 0]}>
-                  <Text as="span">Emploi en alternance et formation en alternance en </Text>
+                <Typography key={index} sx={{ mt: 0, mb: { xs: 2, md: 0 } }}>
+                  <Typography component="span">Emploi en alternance et formation en alternance en </Typography>
                   <Link
                     className={fr.cx("fr-link", "fr-text--bold")}
                     href={buildLinkForTownAndJob(currentTown, relatedMetier)}
@@ -89,12 +101,12 @@ export default async function MetiersByJobId({ params }: { params: IStaticMetier
                   >
                     {relatedMetier.name} à {currentTown.name}
                   </Link>
-                </Text>
+                </Typography>
               )
             })}
-          </VStack>
-        </Container>
-      </Box>
+          </Stack>
+        </Box>
+      </DefaultContainer>
     </Box>
   )
 }

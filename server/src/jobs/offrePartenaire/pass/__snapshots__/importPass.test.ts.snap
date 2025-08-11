@@ -8,6 +8,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
     "apply_url": "https://www.pass.fonction-publique.gouv.fr/offre/chargee-de-projet-formationcommunication",
     "business_error": null,
     "contract_duration": 24,
+    "contract_is_disabled_elligible": false,
     "contract_remote": null,
     "contract_start": 2025-09-14T20:00:00.000Z,
     "contract_type": [
@@ -60,6 +61,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
     "apply_url": "https://www.pass.fonction-publique.gouv.fr/offre/chargee-de-projet-formationcommunication-0",
     "business_error": null,
     "contract_duration": 24,
+    "contract_is_disabled_elligible": false,
     "contract_remote": null,
     "contract_start": 2025-09-14T20:00:00.000Z,
     "contract_type": [
@@ -112,6 +114,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
     "apply_url": "https://www.pass.fonction-publique.gouv.fr/offre/contrat-dapprentissage-education-aux-images-hf",
     "business_error": null,
     "contract_duration": 12,
+    "contract_is_disabled_elligible": false,
     "contract_remote": null,
     "contract_start": 2025-04-14T20:00:00.000Z,
     "contract_type": [
@@ -164,6 +167,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
     "apply_url": "https://www.pass.fonction-publique.gouv.fr/offre/apprentie-redacteur-en-matiere-domanial-equivalent-attache-cat-division-des-domaine-service-4",
     "business_error": null,
     "contract_duration": 12,
+    "contract_is_disabled_elligible": false,
     "contract_remote": null,
     "contract_start": 2025-09-14T20:00:00.000Z,
     "contract_type": [
@@ -216,6 +220,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
     "apply_url": "https://www.pass.fonction-publique.gouv.fr/offre/apprentie-redacteur-en-matiere-domanial-equivalent-attache-cat-division-du-domaine-service-6",
     "business_error": null,
     "contract_duration": 12,
+    "contract_is_disabled_elligible": false,
     "contract_remote": null,
     "contract_start": 2025-09-14T20:00:00.000Z,
     "contract_type": [
@@ -268,6 +273,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
     "apply_url": "https://www.pass.fonction-publique.gouv.fr/offre/apprentie-redacteur-en-matiere-juridique-et-fiscal-equivalent-attache-cat-pole-de-controle",
     "business_error": null,
     "contract_duration": 12,
+    "contract_is_disabled_elligible": false,
     "contract_remote": null,
     "contract_start": 2025-09-14T20:00:00.000Z,
     "contract_type": [
@@ -320,6 +326,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
     "apply_url": "https://www.pass.fonction-publique.gouv.fr/offre/contrat-dapprentissage-financements-hf",
     "business_error": null,
     "contract_duration": 12,
+    "contract_is_disabled_elligible": false,
     "contract_remote": null,
     "contract_start": 2025-09-14T20:00:00.000Z,
     "contract_type": [

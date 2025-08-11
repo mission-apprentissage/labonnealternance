@@ -4,6 +4,7 @@ import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
 import { logger } from "@/common/logger"
 import { detectClassificationJobsPartners } from "@/jobs/offrePartenaire/detectClassificationJobsPartners"
+import { fillEntrepriseEngagementJobsPartners } from "@/jobs/offrePartenaire/fillEntrepriseEngagementJobsPartners"
 import { formatTextFieldsJobsPartners } from "@/jobs/offrePartenaire/formatTextFieldsJobsPartners"
 
 import { blockBadRomeJobsPartners } from "./blockBadRomeJobsPartners"
@@ -28,6 +29,7 @@ export const defaultFillComputedJobsPartnersContext: FillComputedJobsPartnersCon
 export const fillComputedJobsPartners = async (partialContext: Partial<FillComputedJobsPartnersContext> = {}) => {
   logger.info("début de fillComputedJobsPartners")
   const context: FillComputedJobsPartnersContext = { ...defaultFillComputedJobsPartnersContext, ...partialContext }
+  await fillEntrepriseEngagementJobsPartners(context)
   await formatTextFieldsJobsPartners(context)
   await detectClassificationJobsPartners(context)
 
@@ -53,6 +55,7 @@ export const blankComputedJobPartner = (): Omit<IComputedJobsPartners, "_id" | "
   contract_remote: null,
   contract_start: null,
   contract_type: [],
+  contract_is_disabled_elligible: false,
   created_at: new Date(),
   errors: [],
   offer_access_conditions: [],
