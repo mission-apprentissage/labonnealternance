@@ -50,6 +50,10 @@ function runPlaybook() {
     echo "Récupération de la passphrase depuis l'environnement variable ANSIBLE_VAULT_PASSWORD_FILE" 
   fi
 
+  if [[ ! -z "${CI:-}" ]]; then
+    ansible_extra_opts+=("--extra-vars" "CI=true")
+  fi
+
   ANSIBLE_CONFIG="${ROOT_DIR}/.infra/ansible/ansible.cfg" ansible-playbook \
       --limit "${ENV_FILTER}" \
       "${ansible_extra_opts[@]}" \
@@ -63,4 +67,4 @@ if [[ -z "${CI:-}" ]]; then
   runPlaybook "$@"
 else
   runPlaybook "$@" &> /tmp/deploy.log
-fi;
+fi
