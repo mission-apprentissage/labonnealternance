@@ -50,6 +50,11 @@ export function isItemReferenceInList(item: ItemReferenceLike, list: ItemReferen
   return list.some((ref) => areItemReferencesEqual(ref, item))
 }
 
+export enum RechercheViewType {
+  EMPLOI = "EMPLOI",
+  FORMATION = "FORMATION",
+}
+
 const zRecherchePageParams = z.object({
   romes: z.array(z.string()),
   geo: z
@@ -68,6 +73,7 @@ const zRecherchePageParams = z.object({
   displayFormations: z.boolean().optional(),
   displayPartenariats: z.boolean().optional(),
   displayFilters: z.boolean().optional(),
+  displayMobileForm: z.boolean().optional(),
   activeItems: z
     .object({
       ideaType: z.nativeEnum(LBA_ITEM_TYPE_OLD),
@@ -79,7 +85,7 @@ const zRecherchePageParams = z.object({
   rncp: z.string().nullish(),
 })
 
-export type IRecherchePageParams = Required<z.output<typeof zRecherchePageParams>>
+export type IRecherchePageParams = Required<z.output<typeof zRecherchePageParams>> & { viewType?: RechercheViewType }
 
 export type WithRecherchePageParams<T = object> = T & { params: IRecherchePageParams }
 
@@ -93,13 +99,16 @@ export function buildRecherchePageParams(params: Partial<IRecherchePageParams>, 
   }
 
   if (params.geo) {
-    query.set("lat", params.geo.latitude.toString())
-    query.set("lon", params.geo.longitude.toString())
-    const radius = params.geo.radius
+    const { latitude, longitude, radius } = params.geo
+    if (latitude !== undefined) {
+      query.set("lat", latitude.toString())
+    }
+    if (longitude !== undefined) {
+      query.set("lon", longitude.toString())
+    }
     if (radius !== undefined) {
       query.set("radius", radius.toString())
     }
-
     if (params.geo.address) {
       query.set("address", params.geo.address)
     }
@@ -140,6 +149,10 @@ export function buildRecherchePageParams(params: Partial<IRecherchePageParams>, 
     }
   }
 
+  if (params.displayMobileForm === true) {
+    query.set("displayMobileForm", "true")
+  }
+
   return query.toString()
 }
 
@@ -173,17 +186,24 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
   const opco = search.get("opco") || null
   const rncp = search.get("rncp") || null
 
+  const displayMobileForm = search.get("displayMobileForm") === "true"
+
+  const commonProps = {
+    romes,
+    geo,
+    diploma,
+    job_name,
+    job_type,
+    displayMap,
+    displayMobileForm,
+    activeItems,
+    opco,
+    rncp,
+  }
+
   if (mode === "formations-only") {
     return {
-      romes,
-      geo,
-      diploma,
-      job_name,
-      job_type,
-      displayMap,
-      activeItems,
-      opco,
-      rncp,
+      ...commonProps,
       displayEntreprises: false,
       displayFormations: true,
       displayPartenariats: false,
@@ -193,19 +213,11 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
 
   if (mode === "jobs-only") {
     return {
-      romes,
-      geo,
-      diploma,
-      job_name,
-      job_type,
-      displayMap,
-      activeItems,
+      ...commonProps,
       displayEntreprises: true,
       displayFormations: false,
       displayPartenariats: true,
       displayFilters: false,
-      opco,
-      rncp,
     }
   }
 
@@ -214,7 +226,13 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
   const displayPartenariats = search.get("displayPartenariats") !== "false"
   const displayFilters = search.get("displayFilters") !== "false"
 
-  return { romes, geo, diploma, job_name, job_type, activeItems, displayMap, displayEntreprises, displayFormations, displayPartenariats, displayFilters, opco, rncp }
+  return {
+    ...commonProps,
+    displayEntreprises,
+    displayFormations,
+    displayPartenariats,
+    displayFilters,
+  }
 }
 
 export function detectModeFromParams(params: IRecherchePageParams): IRechercheMode {

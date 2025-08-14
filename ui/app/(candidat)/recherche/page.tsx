@@ -4,7 +4,7 @@ import { Metadata } from "next"
 import { permanentRedirect } from "next/navigation"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
-import { RecherchePageComponent } from "@/app/(candidat)/recherche/_components/RecherchePageComponent"
+import { RecherchePageComponentServer } from "@/app/(candidat)/recherche/_components/RecherchePageComponentServer"
 import { parseRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -24,5 +24,5 @@ export default async function RecherchePage({ searchParams }: Props) {
     permanentRedirect(PAGES.dynamic.jobDetail({ type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, jobId: urlSearchParams.get("itemId") }).getPath())
   }
   const params = parseRecherchePageParams(urlSearchParams, "default")
-  return <RecherchePageComponent params={params} />
+  return <RecherchePageComponentServer params={params} />
 }

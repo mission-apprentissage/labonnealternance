@@ -197,11 +197,11 @@ async function createLayer(layer: LAYERS, map: Mapbox) {
 // We need to workaround this by using a promise to prevent infinite waiting
 async function onceLoaded(map: Mapbox): Promise<void> {
   if (map.loaded()) {
-    console.log("Map already loaded")
+    console.debug("Map already loaded")
     return
   }
 
-  console.log("Waiting for map to load")
+  console.debug("Waiting for map to load")
   await new Promise((resolve, reject) => {
     const controller = new AbortController()
     const signal = controller.signal
@@ -215,7 +215,7 @@ async function onceLoaded(map: Mapbox): Promise<void> {
         clearTimeout(timeoutId)
         resolve(undefined)
       } else if (signal.aborted) {
-        console.log("Map loading timeout")
+        console.debug("Map loading timeout")
         reject(signal.reason)
       } else {
         globalThis.window.requestAnimationFrame(callback)
@@ -266,7 +266,7 @@ async function setupMap(container: HTMLDivElement): Promise<Mapbox> {
 
   await onceLoaded(mapSingleton)
 
-  console.log("Loading images!!!")
+  console.debug("Loading images!!!")
   await Promise.all([
     loadImage("/images/icons/formation.png", "formation", mapSingleton),
     loadImage("/images/icons/job.png", "job", mapSingleton),
@@ -274,7 +274,7 @@ async function setupMap(container: HTMLDivElement): Promise<Mapbox> {
     loadImage("/images/icons/job_large_shadow.png", "job-active", mapSingleton),
   ])
 
-  console.log("Creating layers")
+  console.debug("Creating layers")
   // Layout order is important to control the z-index (last added is on top)
   await createLayer("job", mapSingleton)
   await createLayer("formation", mapSingleton)
@@ -366,16 +366,16 @@ function useMap(container: HTMLDivElement | null, props: RechercheCarteProps) {
 
   useLayoutEffect(() => {
     if (container === null) {
-      console.log("No container")
+      console.debug("No container")
       return
     }
 
     setError(null)
-    console.log("Start Setup")
+    console.debug("Start Setup")
 
     setupMap(container)
       .then((m) => {
-        console.log("Setup Complete")
+        console.debug("Setup Complete")
         setMap(m)
       })
       .catch((error) => {
@@ -388,7 +388,7 @@ function useMap(container: HTMLDivElement | null, props: RechercheCarteProps) {
     return () => {
       setMap((prev) => {
         if (prev !== null) {
-          console.log("Remove map")
+          console.debug("Remove map")
           prev.getContainer().remove()
         }
         return null
@@ -541,7 +541,7 @@ function RechercheCarteInternal(props: RechercheCarteProps) {
 }
 
 export function RechercheCarte(props: RechercheCarteProps) {
-  console.log("render RechercheCarte")
+  console.debug("render RechercheCarte")
   return (
     <ErrorBoundary>
       <RechercheCarteInternal {...props} />

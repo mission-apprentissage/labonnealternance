@@ -26,6 +26,8 @@ const ZRechercheForm = z.object({
     })
     .nullish(),
   displayedItemTypes: z.array(extensions.buildEnum(UserItemTypes)),
+  radius: z.string().nullish(),
+  diploma: z.string().nullish(),
 })
 
 export type IRechercheForm = z.output<typeof ZRechercheForm>
@@ -45,7 +47,7 @@ function validate(values: IRechercheForm) {
 }
 
 export const rechercheFormToRechercheParams = (rechercheForm: IRechercheForm): Partial<IRecherchePageParams> => {
-  const { displayedItemTypes, lieu, metier } = rechercheForm
+  const { displayedItemTypes, lieu, metier, diploma, radius } = rechercheForm
   return {
     displayEntreprises: displayedItemTypes.includes(UserItemTypes.EMPLOI),
     displayFormations: displayedItemTypes.includes(UserItemTypes.FORMATIONS),
@@ -56,10 +58,12 @@ export const rechercheFormToRechercheParams = (rechercheForm: IRechercheForm): P
           address: lieu.label,
           latitude: lieu.latitude,
           longitude: lieu.longitude,
+          radius: radius ? parseInt(radius, 10) : undefined,
         }
       : undefined,
     job_name: metier?.label,
     job_type: metier?.type,
+    diploma,
   }
 }
 
@@ -87,6 +91,8 @@ const rechercheParamsToRechercheForm = (rechercheParams: Partial<IRecherchePageP
         }
       : null,
     displayedItemTypes,
+    radius: rechercheParams?.geo?.radius?.toString(),
+    diploma: rechercheParams?.diploma,
   }
   return rechercheForm
 }
@@ -97,11 +103,13 @@ export function RechercheForm(props: { children: React.ReactNode; rechercheParam
 
   return (
     <Formik<IRechercheForm> initialValues={initialValues} enableReinitialize validate={validate} validateOnBlur={false} onSubmit={props.onSubmit}>
-      {(formik) => (
-        <Box component={"form"} onSubmit={formik.handleSubmit}>
-          {children}
-        </Box>
-      )}
+      {(formik) => {
+        return (
+          <Box component={"form"} onSubmit={formik.handleSubmit}>
+            {children}
+          </Box>
+        )
+      }}
     </Formik>
   )
 }

@@ -8,10 +8,9 @@ import { RechercheNiveauSelect } from "@/app/(candidat)/recherche/_components/Re
 import { RechercheRayonSelect } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheRayonSelect"
 import { RechercheToggleMap } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheToggleMap"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
-import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+import type { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 
-export function CandidatRechercheFilters(props: WithRecherchePageParams) {
-  const rechercheParams = props.params
+function CandidatRechercheFiltersRaw({ params: rechercheParams }: { params: IRecherchePageParams }) {
   const { displayMap, geo, diploma } = rechercheParams
   const { radius } = geo ?? {}
 
@@ -28,8 +27,6 @@ export function CandidatRechercheFilters(props: WithRecherchePageParams) {
       sx={{
         display: "flex",
         justifyContent: "space-between",
-        marginLeft: fr.spacing("10w"),
-        paddingRight: fr.spacing("2w"),
       }}
     >
       <Box
@@ -38,7 +35,13 @@ export function CandidatRechercheFilters(props: WithRecherchePageParams) {
           gap: fr.spacing("3w"),
         }}
       >
-        <RechercheRayonSelect value={radius} onChange={(newRadius) => navigateToRecherchePage({ geo: { ...geo, radius: newRadius } })} />
+        <RechercheRayonSelect
+          value={radius}
+          onChange={(newRadius) => {
+            navigateToRecherchePage({ geo: { ...geo, radius: newRadius } })
+          }}
+          disabled={!geo}
+        />
         <RechercheNiveauSelect value={diploma} onChange={(newDiploma) => navigateToRecherchePage({ diploma: newDiploma })} />
       </Box>
       <Box
@@ -48,6 +51,38 @@ export function CandidatRechercheFilters(props: WithRecherchePageParams) {
       >
         <RechercheToggleMap onChange={onDisplayMapChange} checked={displayMap} />
       </Box>
+    </Box>
+  )
+}
+
+export function CandidatRechercheFilters({ params }: { params: IRecherchePageParams }) {
+  const { displayMap } = params
+  return (
+    <Box
+      key="filters"
+      sx={{
+        display: {
+          xs: "none",
+          md: "block",
+        },
+        marginTop: fr.spacing("2w"),
+        marginBottom: fr.spacing("4w"),
+        paddingLeft: displayMap
+          ? {
+              md: fr.spacing("1w"),
+              lg: fr.spacing("2w"),
+            }
+          : {
+              md: fr.spacing("10w"),
+              lg: fr.spacing("14w"),
+            },
+        paddingRight: {
+          md: displayMap ? fr.spacing("1w") : fr.spacing("2w"),
+          lg: fr.spacing("2w"),
+        },
+      }}
+    >
+      <CandidatRechercheFiltersRaw params={params} />
     </Box>
   )
 }

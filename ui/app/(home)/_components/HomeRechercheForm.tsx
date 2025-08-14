@@ -17,7 +17,10 @@ function HomeRechercheFormUI(props: { onSubmit: (values: IRechercheForm) => void
   return (
     <Box
       sx={{
-        padding: fr.spacing("4w"),
+        padding: {
+          xs: fr.spacing("2w"),
+          md: fr.spacing("4w"),
+        },
         backgroundColor: fr.colors.decisions.background.default.grey.default,
         display: "flex",
         flexDirection: "column",
@@ -38,7 +41,11 @@ function HomeRechercheFormUI(props: { onSubmit: (values: IRechercheForm) => void
         <Box
           sx={{
             display: "flex",
-            alignItems: "flex-end",
+            flexDirection: {
+              xs: "column",
+              md: "row",
+            },
+            alignItems: { xs: "stretch", md: "flex-end" },
             gap: fr.spacing("2w"),
           }}
         >
@@ -46,7 +53,7 @@ function HomeRechercheFormUI(props: { onSubmit: (values: IRechercheForm) => void
             sx={{
               "& .fr-fieldset__content": {
                 display: "flex",
-                flexDirection: "column",
+                flexDirection: { xs: "row", md: "column" },
                 gap: fr.spacing("1w"),
 
                 "& .fr-checkbox-group": {
@@ -64,7 +71,7 @@ function HomeRechercheFormUI(props: { onSubmit: (values: IRechercheForm) => void
           <Box sx={{ flex: 250 }}>
             <RechercheLieuAutocomplete />
           </Box>
-          <RechercheSubmitButton>C'est parti</RechercheSubmitButton>
+          <RechercheSubmitButton>C’est parti</RechercheSubmitButton>
         </Box>
       </RechercheForm>
     </Box>
@@ -77,7 +84,6 @@ function HomeRechercheFormComponent(props: WithRecherchePageParams) {
   return (
     <HomeRechercheFormUI
       onSubmit={(rechercheForm) => {
-        console.log(rechercheForm)
         onSubmit(rechercheFormToRechercheParams(rechercheForm))
       }}
     />

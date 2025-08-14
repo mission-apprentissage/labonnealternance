@@ -26,7 +26,7 @@ export function RechercheRayonSelectFormik() {
   )
 }
 
-export function RechercheRayonSelect({ value, onChange }: { value: number; onChange: (value: number) => void }) {
+export function RechercheRayonSelect({ value, onChange, disabled = false }: { value: number; onChange: (value: number) => void; disabled?: boolean }) {
   const valueString: string | undefined = value?.toString() ?? undefined
   return (
     <SelectField
@@ -34,12 +34,16 @@ export function RechercheRayonSelect({ value, onChange }: { value: number; onCha
       label="Rayon"
       style={{
         marginBottom: 0,
-        maxWidth: "104px",
+        maxWidth: "120px",
       }}
       options={radiusOptions.map((option) => ({ ...option, selected: option.value === valueString }))}
       nativeSelectProps={{
         value: valueString,
         onChange: (event) => onChange(parseInt(event.target.value, 10)),
+        disabled,
+        style: {
+          fontWeight: 700,
+        },
       }}
     />
   )

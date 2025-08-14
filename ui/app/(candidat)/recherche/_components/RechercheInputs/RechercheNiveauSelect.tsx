@@ -31,11 +31,11 @@ export const niveauOptions = [
 ] satisfies Array<{ value: string; label: string; selected?: boolean }>
 
 export function RechercheNiveauSelectForm() {
-  const [field] = useField({ name: "niveau" })
+  const [field] = useField({ name: "diploma" })
 
   return (
     <SelectFormField
-      id="niveau"
+      id="diploma"
       label="Niveau d'études visé"
       style={{
         marginBottom: 0,
@@ -49,7 +49,7 @@ export function RechercheNiveauSelectForm() {
 export function RechercheNiveauSelect({ value, onChange }: { value: string; onChange: (value: string) => void }) {
   return (
     <SelectField
-      id="niveau"
+      id="diploma"
       label="Niveau d'études visé"
       style={{
         marginBottom: 0,
@@ -60,6 +60,9 @@ export function RechercheNiveauSelect({ value, onChange }: { value: string; onCh
       nativeSelectProps={{
         value: value ?? undefined,
         onChange: (event) => onChange(event.target.value),
+        style: {
+          fontWeight: 700,
+        },
       }}
     />
   )

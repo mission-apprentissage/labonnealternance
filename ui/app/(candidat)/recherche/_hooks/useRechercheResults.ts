@@ -111,7 +111,7 @@ function isPartialJobError(data?: IResponse<IGetRoutes["/v1/_private/jobs/min"]>
   return errors.some(Boolean)
 }
 
-export function useRechercheResults(params: Required<IRecherchePageParams> | null): IUseRechercheResults {
+export function useRechercheResults(params: IRecherchePageParams | null): IUseRechercheResults {
   const jobQuerystring = useMemo((): IQuery<IGetRoutes["/v1/_private/jobs/min"]> => {
     const query: IQuery<IGetRoutes["/v1/_private/jobs/min"]> = {
       romes: params.romes.join(","),
@@ -155,8 +155,9 @@ export function useRechercheResults(params: Required<IRecherchePageParams> | nul
     return query
   }, [params])
 
-  const isFormationEnabled = formationQuerystring.romes.length > 0 && params.displayFormations
-  const isJobsEnabled = (jobQuerystring.romes.length > 0 || jobQuerystring.rncp) && (params.displayEntreprises || params.displayPartenariats)
+  const isFormationEnabled = Boolean(formationQuerystring.romes.length > 0 && params.displayFormations)
+  const isJobsEnabled = Boolean((jobQuerystring.romes.length > 0 || jobQuerystring.rncp) && (params.displayEntreprises || params.displayPartenariats))
+  console.log({ isFormationEnabled, isJobsEnabled })
 
   const formationQuery = useQuery<Jsonify<ILbaItemFormation>[]>({
     queryKey: ["/v1/_private/formations/min", formationQuerystring],

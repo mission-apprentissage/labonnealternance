@@ -66,7 +66,7 @@ export async function exportJobsToS3V2(handleFileReadStream = uploadFileToS3) {
 
   logger.info("waiting for jsonArrayTransform")
   await waitForStreamEnd(jsonArrayTransform)
-  console.log("waiting for fileStream")
+  console.info("waiting for fileStream")
   await waitForStreamEnd(fileStream)
 
   logger.info("creating read stream")

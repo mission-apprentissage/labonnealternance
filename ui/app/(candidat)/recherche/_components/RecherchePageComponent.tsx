@@ -1,69 +1,40 @@
+"use client"
+
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Link } from "@mui/material"
-import Image from "next/image"
-import NextLink from "next/link"
-import { Suspense } from "react"
+import { Box } from "@mui/material"
+import { useRef } from "react"
 
 import { CandidatRechercheFilters } from "@/app/(candidat)/recherche/_components/CandidatRechercheFilters"
-import { CandidatRechercheForm } from "@/app/(candidat)/recherche/_components/CandidatRechercheForm"
-import { RechercheResultats } from "@/app/(candidat)/recherche/_components/RechercheResultats"
-import { RechercheResultatsPlaceholder } from "@/app/(candidat)/recherche/_components/RechercheResultatsPlaceholder"
-import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
-import { PAGES } from "@/utils/routes.utils"
+import { RechercheBackToTopButton } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheBackToTopButton"
+import { RechercheHeader } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheHeader"
+import { RechercheCarte } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
+import { RechercheMobileFormUpdate } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMobileFormUpdate"
+import { RechercheMobileToggleMapButton } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMobileToggleMapButton"
+import { RecherchePageHome } from "@/app/(candidat)/recherche/_components/RechercheResultats/RecherchePageHome"
+import { RechercheResultatsList } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheResultatsList"
+import { VirtualContainer } from "@/app/(candidat)/recherche/_components/RechercheResultats/VirtualContainer"
+import { useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
+import { IRecherchePageParams, isItemReferenceInList } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 
-function RechercheHeader(props: WithRecherchePageParams) {
-  return (
-    <>
-      <Box
-        sx={{
-          boxShadow: 2,
-          backgroundColor: fr.colors.decisions.background.default.grey.default,
-          zIndex: 5,
-        }}
-      >
-        <Box
-          sx={{
-            padding: fr.spacing("3v"),
-            maxWidth: "xl",
-            margin: "auto",
-            display: "flex",
-            gap: {
-              md: fr.spacing("4w"),
-              lg: fr.spacing("8w"),
-            },
-            alignItems: "center",
-          }}
-        >
-          <Link
-            component={NextLink}
-            sx={{
-              textDecoration: "none",
-            }}
-            href={PAGES.static.home.getPath()}
-          >
-            <Image src="/images/logo-violet-seul.svg" width={40} height={44} alt="Retour page d'accueil de La bonne alternance" unoptimized />
-          </Link>
-          <Box sx={{ flex: 1 }}>
-            <CandidatRechercheForm {...props} />
-          </Box>
-        </Box>
-      </Box>
-      <Box
-        sx={{
-          maxWidth: "xl",
-          alignSelf: "center",
-          width: "100%",
-          marginTop: fr.spacing("2w"),
-          marginBottom: fr.spacing("4w"),
-        }}
-      >
-        <CandidatRechercheFilters {...props} />
-      </Box>
-    </>
-  )
-}
+function RecherchePageComponentWithParams(props: { params: IRecherchePageParams }) {
+  const { displayMap, displayMobileForm, activeItems = [] } = props.params
+  const scrollElement = useRef<HTMLElement>(null)
+  const rechercheResult = useRechercheResults(props.params)
 
-export function RecherchePageComponent(props: WithRecherchePageParams) {
+  const elements = [
+    {
+      height: 122,
+      render: () => <CandidatRechercheFilters params={props.params} />,
+    },
+    ...RechercheResultatsList(props),
+  ] satisfies Parameters<typeof VirtualContainer>[0]["elements"]
+
+  if (displayMobileForm) {
+    return <RechercheMobileFormUpdate params={props.params} />
+  }
+
+  const scolledElementIndex = elements.findIndex((element) => "item" in element && element.item.ideaType !== "whisper" && isItemReferenceInList(element.item, activeItems))
+
   return (
     <Box
       sx={{
@@ -74,18 +45,49 @@ export function RecherchePageComponent(props: WithRecherchePageParams) {
       }}
     >
       <RechercheHeader {...props} />
-      <Suspense fallback={<RechercheResultatsPlaceholder />}>
+      <Box
+        sx={{
+          overflow: "hidden",
+          flex: 1,
+          display: "flex",
+          flexDirection: {
+            xs: "column",
+            md: "row",
+          },
+        }}
+      >
+        <VirtualContainer
+          ref={scrollElement}
+          defaultHeight={270}
+          elements={elements}
+          scrollToElementIndex={scolledElementIndex}
+          parentStyle={{
+            ...(displayMap ? { display: { xs: "none", md: "block" } } : {}),
+          }}
+        />
+        {displayMap ? <RechercheCarte item={null} variant="recherche" {...props} /> : <></>}
         <Box
           sx={{
-            overflow: "hidden",
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
+            padding: fr.spacing("2w"),
+            margin: "auto",
+            display: {
+              xs: "block",
+              md: "none",
+            },
           }}
         >
-          <RechercheResultats {...props} />
+          <RechercheMobileToggleMapButton displayMap={displayMap} params={props.params} />
         </Box>
-      </Suspense>
+        {rechercheResult.status === "success" && <RechercheBackToTopButton onClick={() => scrollElement.current?.scrollTo({ top: 0 })} />}
+      </Box>
     </Box>
   )
+}
+
+export function RecherchePageComponent(props: { params: IRecherchePageParams }) {
+  const rechercheResult = useRechercheResults(props.params)
+  if (rechercheResult.status === "idle") {
+    return <RecherchePageHome {...props} />
+  }
+  return <RecherchePageComponentWithParams {...props} />
 }
