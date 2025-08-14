@@ -9,6 +9,7 @@ import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobs
 import { IJobOfferApiReadV3 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 
 import { concatStreams, waitForStreamEnd } from "@/common/utils/streamUtils"
+import config from "@/config"
 import { romeDetailAggregateStages } from "@/services/formulaire.service"
 import { buildApplyUrl, getDiplomaEuropeanLevel, getRecipientID, jobsPartnersToApiV3Read } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
 
@@ -30,7 +31,7 @@ const uploadFileToS3 = async (filepath: string, readStream: Stream.Readable) => 
   logger.info(`file ${filepath} uploaded`)
 }
 
-export const EXPORT_JOBS_TO_S3_V2_FILENAME = "exportJobsToS3V2.json"
+export const EXPORT_JOBS_TO_S3_V2_FILENAME = `exportJobsToS3V2.${config.env}.json`
 
 export async function exportJobsToS3V2(handleFileReadStream = uploadFileToS3) {
   const { filePath, writeStream: fileStream } = getFileWriteStream(EXPORT_JOBS_TO_S3_V2_FILENAME)
