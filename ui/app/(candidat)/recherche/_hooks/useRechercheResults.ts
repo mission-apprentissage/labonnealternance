@@ -157,7 +157,6 @@ export function useRechercheResults(params: IRecherchePageParams | null): IUseRe
 
   const isFormationEnabled = Boolean(formationQuerystring.romes.length > 0 && params.displayFormations)
   const isJobsEnabled = Boolean((jobQuerystring.romes.length > 0 || jobQuerystring.rncp) && (params.displayEntreprises || params.displayPartenariats))
-  console.log({ isFormationEnabled, isJobsEnabled })
 
   const formationQuery = useQuery<Jsonify<ILbaItemFormation>[]>({
     queryKey: ["/v1/_private/formations/min", formationQuerystring],
