@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 
-export function useIsMobileDevice(query: string = "(max-width: 500px)") {
+export function useIsMobileDevice(query: string = "(max-width: 500px)"): boolean {
   const [matches, setMatches] = useState(false)
 
   useEffect(() => {

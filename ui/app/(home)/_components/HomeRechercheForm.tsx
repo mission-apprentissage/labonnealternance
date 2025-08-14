@@ -4,16 +4,23 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import { Suspense } from "react"
 
+import { RechercheLieuAutocomplete } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheLieuAutocomplete"
+import { RechercheMetierAutocomplete } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheMetierAutocomplete"
+import { RechercheResultTypeCheckboxForm } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheResultTypeCheckbox"
+import { RechercheSubmitButton } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheSubmitButton"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
 import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
-import { RechercheForm, type RechercheFormProps } from "@/app/_components/RechercheForm/RechercheForm"
+import { IRechercheForm, RechercheForm, rechercheFormToRechercheParams } from "@/app/_components/RechercheForm/RechercheForm"
 import { RechercheFormTitle } from "@/app/_components/RechercheForm/RechercheFormTitle"
 
-function HomeRechercheFormUI(props: Pick<RechercheFormProps, "onSubmit">) {
+function HomeRechercheFormUI(props: { onSubmit: (values: IRechercheForm) => void }) {
   return (
     <Box
       sx={{
-        padding: fr.spacing("4w"),
+        padding: {
+          xs: fr.spacing("2w"),
+          md: fr.spacing("4w"),
+        },
         backgroundColor: fr.colors.decisions.background.default.grey.default,
         display: "flex",
         flexDirection: "column",
@@ -23,7 +30,50 @@ function HomeRechercheFormUI(props: Pick<RechercheFormProps, "onSubmit">) {
       }}
     >
       <RechercheFormTitle />
-      <RechercheForm type="home" onSubmit={props.onSubmit} />
+      <RechercheForm
+        onSubmit={props.onSubmit}
+        rechercheParams={{
+          displayEntreprises: true,
+          displayFormations: true,
+          displayPartenariats: true,
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: {
+              xs: "column",
+              md: "row",
+            },
+            alignItems: { xs: "stretch", md: "flex-end" },
+            gap: fr.spacing("2w"),
+          }}
+        >
+          <Box
+            sx={{
+              "& .fr-fieldset__content": {
+                display: "flex",
+                flexDirection: { xs: "row", md: "column" },
+                gap: fr.spacing("1w"),
+
+                "& .fr-checkbox-group": {
+                  marginTop: "-0.75rem",
+                  marginBottom: "-0.75rem",
+                },
+              },
+            }}
+          >
+            <RechercheResultTypeCheckboxForm />
+          </Box>
+          <Box sx={{ flex: 450 }}>
+            <RechercheMetierAutocomplete />
+          </Box>
+          <Box sx={{ flex: 250 }}>
+            <RechercheLieuAutocomplete />
+          </Box>
+          <RechercheSubmitButton>C’est parti</RechercheSubmitButton>
+        </Box>
+      </RechercheForm>
     </Box>
   )
 }
@@ -31,7 +81,13 @@ function HomeRechercheFormUI(props: Pick<RechercheFormProps, "onSubmit">) {
 function HomeRechercheFormComponent(props: WithRecherchePageParams) {
   const onSubmit = useNavigateToRecherchePage(props.params)
 
-  return <HomeRechercheFormUI onSubmit={onSubmit} />
+  return (
+    <HomeRechercheFormUI
+      onSubmit={(rechercheForm) => {
+        onSubmit(rechercheFormToRechercheParams(rechercheForm))
+      }}
+    />
+  )
 }
 
 export function HomeRechercheForm(props: WithRecherchePageParams) {

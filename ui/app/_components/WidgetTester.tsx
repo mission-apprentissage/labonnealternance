@@ -7,21 +7,15 @@ import { Box } from "@mui/material"
 import { Formik, FormikProps } from "formik"
 import { useState } from "react"
 
-import { AutocompleteAsync } from "@/app/_components/FormComponents/AutocompleteAsync"
+import { RechercheLieuAutocomplete } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheLieuAutocomplete"
+import { RechercheMetierAutocomplete } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheMetierAutocomplete"
+import { RechercheNiveauSelectForm } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheNiveauSelect"
+import { RechercheRayonSelectFormik } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheRayonSelect"
 import { SelectFormField } from "@/app/_components/FormComponents/SelectFormField"
-import {
-  fetchLieuOptions,
-  fetchRomeSearchOptions,
-  getMetierOptionKey,
-  getMetierOptionLabel,
-  IFormType,
-  IRomeSearchOption,
-  niveauOptions,
-  radiusOptions,
-} from "@/app/_components/RechercheForm/RechercheForm"
+import { IRechercheForm } from "@/app/_components/RechercheForm/RechercheForm"
 import { baseUrl } from "@/config/config"
 
-type IFormTypeWidget = IFormType & {
+type IFormTypeWidget = IRechercheForm & {
   job_name?: string
   opco?: string
   caller?: string
@@ -99,53 +93,16 @@ function WidgetFormComponent(props: FormikProps<IFormTypeWidget>) {
     <Box component={"form"} onSubmit={props.handleSubmit}>
       <Grid>
         <GridItem mt={4}>
-          <AutocompleteAsync
-            noOptionsText="Nous ne parvenons pas à identifier le métier ou la formation que vous cherchez, veuillez reformuler votre recherche"
-            id="metier"
-            key="metier"
-            label="Métier ou formation * (pour renseigner le champ romes)"
-            fetchOptions={fetchRomeSearchOptions}
-            getOptionKey={getMetierOptionKey}
-            getOptionLabel={getMetierOptionLabel}
-            groupBy={(option: IRomeSearchOption) => option.group}
-            placeholder="Indiquer un métier ou une formation"
-            disabled={false}
-          />
+          <RechercheMetierAutocomplete />
         </GridItem>
         <GridItem mt={4}>
-          <AutocompleteAsync
-            noOptionsText="Nous ne parvenons pas à identifier le lieu que vous cherchez, veuillez reformuler votre recherche"
-            id="lieu"
-            label="Lieu (pour renseigner lat et lon)"
-            fetchOptions={fetchLieuOptions}
-            getOptionKey={(option) => option.label}
-            getOptionLabel={(option) => option.label}
-            placeholder="À quel endroit ?"
-            disabled={false}
-          />
+          <RechercheLieuAutocomplete />
         </GridItem>
         <GridItem mt={4}>
-          <SelectFormField
-            id="radius"
-            label="Rayon de recherche (radius)"
-            style={{
-              marginBottom: 0,
-            }}
-            options={radiusOptions.map((option) => ({ ...option, selected: option.value === props.values.radius }))}
-            disabled={false}
-          />
+          <RechercheRayonSelectFormik />
         </GridItem>
         <GridItem mt={4}>
-          <SelectFormField
-            id="niveau"
-            label="Niveau d'études visé"
-            style={{
-              marginBottom: 0,
-              textWrap: "nowrap",
-            }}
-            options={niveauOptions.map((option) => ({ ...option, selected: option.value === props.values.niveau }))}
-            disabled={false}
-          />
+          <RechercheNiveauSelectForm />
         </GridItem>
         <GridItem mt={4}>
           <SelectFormField

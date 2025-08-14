@@ -1,7 +1,7 @@
 import { Metadata } from "next"
 
-import { RecherchePageComponent } from "@/app/(candidat)/recherche/_components/RecherchePageComponent"
-import { parseRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+import { RecherchePageComponentServer } from "@/app/(candidat)/recherche/_components/RecherchePageComponentServer"
+import { parseRecherchePageParams, RechercheViewType } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { PAGES } from "@/utils/routes.utils"
 
 type Props = {
@@ -14,5 +14,5 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 
 export default async function RechercheEmploiPage({ searchParams }: Props) {
   const params = parseRecherchePageParams(new URLSearchParams(await searchParams), "jobs-only")
-  return <RecherchePageComponent params={params} />
+  return <RecherchePageComponentServer params={{ ...params, viewType: RechercheViewType.EMPLOI }} />
 }

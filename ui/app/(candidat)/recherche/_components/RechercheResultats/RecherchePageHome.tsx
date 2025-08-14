@@ -1,0 +1,78 @@
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box } from "@mui/material"
+
+import { CandidatRechercheFilters } from "@/app/(candidat)/recherche/_components/CandidatRechercheFilters"
+import { RechercheHeader } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheHeader"
+import { RechercheMobileFormUpdate } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMobileFormUpdate"
+import { RechercheMobileHome } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMobileHome"
+import { RechercheResultatsPlaceholder } from "@/app/(candidat)/recherche/_components/RechercheResultatsPlaceholder"
+import { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+
+export function RecherchePageHome(props: { params: IRecherchePageParams }) {
+  const { displayMobileForm } = props.params
+
+  if (displayMobileForm) {
+    return <RechercheMobileFormUpdate params={props.params} />
+  }
+
+  return (
+    <>
+      <Box
+        sx={{
+          display: {
+            xs: "block",
+            md: "none",
+          },
+        }}
+      >
+        <RechercheMobileHome {...props} />
+      </Box>
+      <Box
+        sx={{
+          backgroundColor: fr.colors.decisions.background.alt.grey.default,
+          height: "100vh",
+          flexDirection: "column",
+          display: {
+            xs: "none",
+            md: "flex",
+          },
+        }}
+      >
+        <RechercheHeader {...props} />
+        <Box
+          sx={{
+            overflow: "hidden",
+            flex: 1,
+            display: "flex",
+            flexDirection: {
+              xs: "column",
+              md: "row",
+            },
+          }}
+        >
+          <Box
+            sx={{
+              overflow: "auto",
+              height: "100%",
+              width: "100%",
+              contain: "strict",
+              flex: 1,
+            }}
+          >
+            <Box
+              sx={{
+                maxWidth: "xl",
+                width: "100%",
+                position: "relative",
+                margin: "auto",
+              }}
+            >
+              <CandidatRechercheFilters params={props.params} />
+              <RechercheResultatsPlaceholder {...props} />
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+    </>
+  )
+}
