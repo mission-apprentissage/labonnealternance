@@ -6,87 +6,41 @@ import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
 import { Formik, FormikProps } from "formik"
 import { useState } from "react"
+import { OPCOS_LABEL } from "shared/constants/recruteur"
 
 import { RechercheLieuAutocomplete } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheLieuAutocomplete"
 import { RechercheMetierAutocomplete } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheMetierAutocomplete"
 import { RechercheNiveauSelectForm } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheNiveauSelect"
 import { RechercheRayonSelectFormik } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheRayonSelect"
+import { IRechercheMode } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { SelectFormField } from "@/app/_components/FormComponents/SelectFormField"
-import { IRechercheForm } from "@/app/_components/RechercheForm/RechercheForm"
+import { IRechercheForm, rechercheFormToRechercheParams } from "@/app/_components/RechercheForm/RechercheForm"
 import { baseUrl } from "@/config/config"
+import { PAGES } from "@/utils/routes.utils"
 
 type IFormTypeWidget = IRechercheForm & {
   job_name?: string
   opco?: string
   caller?: string
-  scope: string
+  scope: IRechercheMode
 }
 
 const scopeOptions = [
   {
-    value: "/recherche",
+    value: IRechercheMode.DEFAULT,
     label: "Tout",
   },
   {
-    value: "/recherche-emploi",
+    value: IRechercheMode.JOBS_ONLY,
     label: "Emplois uniquement",
   },
   {
-    value: "/recherche-formation",
+    value: IRechercheMode.FORMATIONS_ONLY,
     label: "Formations uniquement",
   },
 ]
 
-const opcoOptions = [
-  {
-    value: "",
-    label: "Indifférent",
-  },
-  {
-    value: "AFDAS",
-    label: "AFDAS",
-  },
-  {
-    value: "AKTO",
-    label: "AKTO",
-  },
-  {
-    value: "ATLAS",
-    label: "ATLAS",
-  },
-  {
-    value: "CONSTRUCTYS",
-    label: "CONSTRUCTYS",
-  },
-  {
-    value: "OPCOMMERCE",
-    label: "OPCOMMERCE",
-  },
-  {
-    value: "OCAPIAT",
-    label: "OCAPIAT",
-  },
-  {
-    value: "OPCO2I",
-    label: "OPCO2I",
-  },
-  {
-    value: "EP",
-    label: "EP",
-  },
-  {
-    value: "MOBILITE",
-    label: "MOBILITE",
-  },
-  {
-    value: "SANTE",
-    label: "SANTE",
-  },
-  {
-    value: "UNIFORMATION",
-    label: "UNIFORMATION",
-  },
-]
+const validOpcos = Object.values(OPCOS_LABEL).filter((value) => value !== OPCOS_LABEL.UNKNOWN_OPCO)
 
 function WidgetFormComponent(props: FormikProps<IFormTypeWidget>) {
   return (
@@ -112,7 +66,7 @@ function WidgetFormComponent(props: FormikProps<IFormTypeWidget>) {
               marginBottom: 0,
               textWrap: "nowrap",
             }}
-            options={scopeOptions.map((option) => ({ ...option, selected: option.value === props.values.niveau }))}
+            options={scopeOptions.map((option) => ({ ...option, selected: option.value === props.values.scope }))}
             disabled={false}
           />
         </GridItem>
@@ -124,7 +78,7 @@ function WidgetFormComponent(props: FormikProps<IFormTypeWidget>) {
               marginBottom: 0,
               textWrap: "nowrap",
             }}
-            options={opcoOptions.map((option) => ({ ...option, selected: option.value === props.values.opco }))}
+            options={validOpcos.map((opco) => ({ value: opco, label: opco, selected: opco === props.values.opco }))}
             disabled={false}
           />
         </GridItem>
@@ -151,14 +105,14 @@ function WidgetFormComponent(props: FormikProps<IFormTypeWidget>) {
 }
 
 export function WidgetTester() {
-  const initialValues = {
+  const initialValues: IFormTypeWidget = {
     radius: "30",
-    niveau: "",
+    diploma: "",
     metier: null,
     lieu: null,
     job_name: "",
     opco: "",
-    scope: "/recherche",
+    scope: IRechercheMode.DEFAULT,
     caller: "",
   }
 
@@ -203,20 +157,25 @@ export function WidgetTester() {
         enableReinitialize
         validateOnBlur={false}
         onSubmit={async (values) => {
-          let iFrameUrl = baseUrl
-          const path = values.scope
+          const { job_name, opco, caller, scope, metier } = values
+          const rechercheParams = rechercheFormToRechercheParams(values)
+          const path = PAGES.dynamic.genericRecherche({ params: rechercheParams, mode: scope }).getPath()
 
-          iFrameUrl = `${iFrameUrl}${path}`
-
-          iFrameUrl += "?"
-          iFrameUrl += values.caller ? `&caller=${encodeURIComponent(values.caller)}` : ""
-          iFrameUrl += values.metier ? `&romes=${values.metier.romes}` : ""
-          iFrameUrl += values.lieu ? `&lon=${values.lieu.longitude}&lat=${values.lieu.latitude}` : ""
-          iFrameUrl += values.radius ? `&radius=${values.radius}` : ""
-          iFrameUrl += values.opco ? `&opco=${encodeURIComponent(values.opco)}` : ""
-          iFrameUrl += values.job_name ? `&job_name=${encodeURIComponent(values.job_name)}` : values?.metier?.label ? `&job_name=${values.metier.label}` : ""
-
-          setWidgetUrl(iFrameUrl)
+          const url = new URL(`${baseUrl}${path}`)
+          const searchParams = url.searchParams
+          if (caller) {
+            searchParams.append("caller", caller)
+          }
+          if (opco) {
+            searchParams.append("opco", opco)
+          }
+          if (job_name) {
+            searchParams.append("job_name", job_name)
+          } else if (metier?.label) {
+            searchParams.append("job_name", metier.label)
+          }
+          console.log(url)
+          setWidgetUrl(url.toString())
         }}
         component={WidgetFormComponent}
       />

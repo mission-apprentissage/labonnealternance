@@ -1,7 +1,7 @@
 import { Metadata } from "next"
 
 import { RecherchePageComponentServer } from "@/app/(candidat)/recherche/_components/RecherchePageComponentServer"
-import { parseRecherchePageParams, RechercheViewType } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+import { IRechercheMode, parseRecherchePageParams, RechercheViewType } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { PAGES } from "@/utils/routes.utils"
 
 type Props = {
@@ -9,10 +9,10 @@ type Props = {
 }
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
-  return PAGES.dynamic.rechercheFormation(parseRecherchePageParams(new URLSearchParams(await searchParams), "formations-only")).getMetadata?.() ?? {}
+  return PAGES.dynamic.rechercheFormation(parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.FORMATIONS_ONLY)).getMetadata?.() ?? {}
 }
 
 export default async function RechercheFormationPage({ searchParams }: Props) {
-  const params = parseRecherchePageParams(new URLSearchParams(await searchParams), "formations-only")
+  const params = parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.FORMATIONS_ONLY)
   return <RecherchePageComponentServer params={{ ...params, viewType: RechercheViewType.FORMATION }} />
 }

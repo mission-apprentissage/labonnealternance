@@ -89,9 +89,14 @@ export type IRecherchePageParams = Required<z.output<typeof zRecherchePageParams
 
 export type WithRecherchePageParams<T = object> = T & { params: IRecherchePageParams }
 
-export type IRechercheMode = "default" | "formations-only" | "jobs-only"
+export enum IRechercheMode {
+  DEFAULT = "default",
+  FORMATIONS_ONLY = "formations-only",
+  JOBS_ONLY = "jobs-only",
+}
 
-export function buildRecherchePageParams(params: Partial<IRecherchePageParams>, mode: IRechercheMode | null): string {
+export function buildRecherchePageParams(params: Partial<IRecherchePageParams> | null, mode: IRechercheMode | null): string {
+  if (params === null) return ""
   const query = new URLSearchParams()
 
   if (params?.romes?.length > 0) {
@@ -154,6 +159,19 @@ export function buildRecherchePageParams(params: Partial<IRecherchePageParams>, 
   }
 
   return query.toString()
+}
+
+export function buildSearchTitle(params: Partial<IRecherchePageParams> | null) {
+  let searchTitleContext = ""
+  if (params?.job_name) {
+    searchTitleContext += ` - ${params.job_name}`
+    if (params?.geo?.address) {
+      searchTitleContext += ` à ${params.geo.address}`
+    } else if (params?.geo == null) {
+      searchTitleContext += ` sur la France entière `
+    }
+  }
+  return searchTitleContext
 }
 
 export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSearchParams | null, mode: IRechercheMode): IRecherchePageParams | null {
@@ -237,18 +255,18 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
 
 export function detectModeFromParams(params: IRecherchePageParams): IRechercheMode {
   if (params.displayFilters) {
-    return "default"
+    return IRechercheMode.DEFAULT
   }
 
   if (!params.displayEntreprises && !params.displayPartenariats && params.displayFormations) {
-    return "formations-only"
+    return IRechercheMode.FORMATIONS_ONLY
   }
 
   if (params.displayEntreprises && params.displayPartenariats && !params.displayFormations) {
-    return "jobs-only"
+    return IRechercheMode.JOBS_ONLY
   }
 
-  return "default"
+  return IRechercheMode.DEFAULT
 }
 
 export function getResultItemUrl(item: ItemReferenceLike, searchParams: Partial<IRecherchePageParams> = {}): string {

@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container } from "@mui/material"
 
-import { parseRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
 import { AlgoHome } from "@/app/(home)/_components/AlgoHome"
 import { AmeliorerLBA } from "@/app/(home)/_components/AmeliorerLBA"
@@ -10,7 +10,7 @@ import { HomeRechercheForm } from "@/app/(home)/_components/HomeRechercheForm"
 import { HowTo } from "@/app/(home)/_components/HowTo"
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
-  const params = parseRecherchePageParams(new URLSearchParams(await searchParams), "default")
+  const params = parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)
 
   return (
     <Container

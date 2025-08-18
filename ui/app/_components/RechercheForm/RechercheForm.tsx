@@ -46,13 +46,13 @@ function validate(values: IRechercheForm) {
   return errors
 }
 
-export const rechercheFormToRechercheParams = (rechercheForm: IRechercheForm): Partial<IRecherchePageParams> => {
+export const rechercheFormToRechercheParams = (rechercheForm: Partial<IRechercheForm>): Partial<IRecherchePageParams> => {
   const { displayedItemTypes, lieu, metier, diploma, radius } = rechercheForm
   return {
-    displayEntreprises: displayedItemTypes.includes(UserItemTypes.EMPLOI),
-    displayFormations: displayedItemTypes.includes(UserItemTypes.FORMATIONS),
-    displayPartenariats: displayedItemTypes.includes(UserItemTypes.EMPLOI),
-    romes: metier.romes ?? [],
+    displayEntreprises: displayedItemTypes?.includes(UserItemTypes.EMPLOI),
+    displayFormations: displayedItemTypes?.includes(UserItemTypes.FORMATIONS),
+    displayPartenariats: displayedItemTypes?.includes(UserItemTypes.EMPLOI),
+    romes: metier?.romes ?? [],
     geo: lieu
       ? {
           address: lieu.label,

@@ -4,7 +4,7 @@ import { ADMIN, AUTHTYPE, CFA, ENTREPRISE, OPCO } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateUri } from "shared/helpers/generateUri"
 
-import { buildRecherchePageParams, IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+import { buildRecherchePageParams, buildSearchTitle, IRechercheMode, IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 
 export interface IPage {
   getPath: (args?: any) => string
@@ -388,18 +388,18 @@ export const PAGES = {
       getPath: () => `/espace-pro/offre/impression/${jobId}`,
       title: "Imprimer mon offre",
     }),
-    recherche: (params: IRecherchePageParams | null): IPage => {
-      const search = params === null ? "" : buildRecherchePageParams(params, "default")
-
-      let searchTitleContext = ""
-      if (params?.job_name) {
-        searchTitleContext += ` - ${params.job_name}`
-        if (params?.geo?.address) {
-          searchTitleContext += ` à ${params.geo.address}`
-        } else if (params?.geo == null) {
-          searchTitleContext += ` sur la France entière `
-        }
+    genericRecherche({ params, mode }: { params: Partial<IRecherchePageParams> | null; mode: IRechercheMode }): IPage {
+      if (mode == "formations-only") {
+        return PAGES.dynamic.rechercheFormation(params)
       }
+      if (mode === "jobs-only") {
+        return PAGES.dynamic.rechercheEmploi(params)
+      }
+      return PAGES.dynamic.recherche(params)
+    },
+    recherche: (params: Partial<IRecherchePageParams> | null): IPage => {
+      const search = buildRecherchePageParams(params, IRechercheMode.DEFAULT)
+      const searchTitleContext = buildSearchTitle(params)
 
       return {
         getPath: () => `/recherche?${search}` as string,
@@ -411,18 +411,9 @@ export const PAGES = {
         title: "Offres en alternance",
       }
     },
-    rechercheFormation: (params: IRecherchePageParams | null): IPage => {
-      const search = params === null ? "" : buildRecherchePageParams(params, "formations-only")
-
-      let searchTitleContext = ""
-      if (params?.job_name) {
-        searchTitleContext += ` - ${params.job_name}`
-        if (params?.geo?.address) {
-          searchTitleContext += ` à ${params.geo.address}`
-        } else if (params?.geo == null) {
-          searchTitleContext += ` sur la France entière `
-        }
-      }
+    rechercheFormation: (params: Partial<IRecherchePageParams> | null): IPage => {
+      const search = buildRecherchePageParams(params, IRechercheMode.FORMATIONS_ONLY)
+      const searchTitleContext = buildSearchTitle(params)
 
       return {
         getPath: () => `/recherche-formation?${search}` as string,
@@ -434,18 +425,9 @@ export const PAGES = {
         title: "Formations en alternance",
       }
     },
-    rechercheEmploi: (params: IRecherchePageParams | null): IPage => {
-      const search = params === null ? "" : buildRecherchePageParams(params, "jobs-only")
-
-      let searchTitleContext = ""
-      if (params?.job_name) {
-        searchTitleContext += ` - ${params.job_name}`
-        if (params?.geo?.address) {
-          searchTitleContext += ` à ${params.geo.address}`
-        } else if (params?.geo == null) {
-          searchTitleContext += ` sur la France entière `
-        }
-      }
+    rechercheEmploi: (params: Partial<IRecherchePageParams> | null): IPage => {
+      const search = buildRecherchePageParams(params, IRechercheMode.JOBS_ONLY)
+      const searchTitleContext = buildSearchTitle(params)
 
       return {
         getPath: () => `/recherche-emploi?${search}` as string,
@@ -459,7 +441,7 @@ export const PAGES = {
     },
     jobDetail: (params: { type: Exclude<LBA_ITEM_TYPE, LBA_ITEM_TYPE.FORMATION>; jobId: string } & Partial<IRecherchePageParams>): IPage => {
       const jobTitle = params.job_name ?? "Offre"
-      const search = buildRecherchePageParams(params, "default")
+      const search = buildRecherchePageParams(params, IRechercheMode.DEFAULT)
       return {
         getPath: () => `/emploi/${params.type}/${encodeURIComponent(params.jobId)}/${toKebabCase(jobTitle)}?${search}` as string,
         title: jobTitle,
@@ -467,7 +449,7 @@ export const PAGES = {
     },
     formationDetail: (params: { jobId: string } & Partial<IRecherchePageParams>): IPage => {
       const jobTitle = params.job_name ?? "Formation"
-      const search = buildRecherchePageParams(params, "default")
+      const search = buildRecherchePageParams(params, IRechercheMode.DEFAULT)
 
       return {
         getPath: () => `/formation/${encodeURIComponent(params.jobId)}/${toKebabCase(jobTitle)}?${search}` as string,

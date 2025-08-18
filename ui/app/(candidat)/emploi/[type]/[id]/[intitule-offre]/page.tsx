@@ -4,7 +4,7 @@ import { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, /*ILbaItemLbaJobJson, */ IL
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import JobDetailRendererClient from "@/app/(candidat)/emploi/[type]/[id]/[intitule-offre]/JobDetailRendererClient"
-import { parseRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { apiGet } from "@/utils/api.utils"
 
 const typeToJobMap = {
@@ -54,7 +54,7 @@ export default async function JobOfferPage({ params, searchParams }: { params: P
   return (
     <JobDetailRendererClient
       job={job as ILbaItemLbaCompanyJson /*| ILbaItemLbaJobJson*/ | ILbaItemPartnerJobJson}
-      params={parseRecherchePageParams(new URLSearchParams(await searchParams), "default")}
+      params={parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)}
     />
   )
 }

@@ -5,7 +5,7 @@ import { permanentRedirect } from "next/navigation"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { RecherchePageComponentServer } from "@/app/(candidat)/recherche/_components/RecherchePageComponentServer"
-import { parseRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { PAGES } from "@/utils/routes.utils"
 
 type Props = {
@@ -13,7 +13,7 @@ type Props = {
 }
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
-  return PAGES.dynamic.recherche(parseRecherchePageParams(new URLSearchParams(await searchParams), "default")).getMetadata?.() ?? {}
+  return PAGES.dynamic.recherche(parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)).getMetadata?.() ?? {}
 }
 
 export default async function RecherchePage({ searchParams }: Props) {
@@ -23,6 +23,6 @@ export default async function RecherchePage({ searchParams }: Props) {
   if (urlSearchParams.get("type") === "matcha" && urlSearchParams.get("itemId")) {
     permanentRedirect(PAGES.dynamic.jobDetail({ type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, jobId: urlSearchParams.get("itemId") }).getPath())
   }
-  const params = parseRecherchePageParams(urlSearchParams, "default")
+  const params = parseRecherchePageParams(urlSearchParams, IRechercheMode.DEFAULT)
   return <RecherchePageComponentServer params={params} />
 }
