@@ -1,24 +1,27 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox"
+import { CircularProgress } from "@mui/material"
 import { useField } from "formik"
+import { assertUnreachable } from "shared"
 
+import { IUseRechercheResults, QueryStatus } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { UserItemTypes } from "@/app/_components/RechercheForm/RechercheForm"
 
-export const RechercheResultTypeCheckboxForm = ({ counts }: { counts?: Partial<Record<UserItemTypes, number>> }) => {
+export const RechercheResultTypeCheckboxFormik = ({ rechercheResults }: { rechercheResults?: IUseRechercheResults }) => {
   const [field, _meta, helper] = useField({ name: "displayedItemTypes" })
   const checkedLabels: UserItemTypes[] = field.value || []
 
-  return <RechercheResultTypeCheckbox checked={checkedLabels} onChange={(newValues) => helper.setValue(newValues, true)} counts={counts} />
+  return <RechercheResultTypeCheckbox checked={checkedLabels} onChange={(newValues) => helper.setValue(newValues, true)} rechercheResults={rechercheResults} />
 }
 
 export const RechercheResultTypeCheckbox = ({
   checked,
-  counts,
   onChange,
+  rechercheResults,
 }: {
-  counts?: Partial<Record<UserItemTypes, number>>
   checked: UserItemTypes[]
   onChange: (checked: UserItemTypes[]) => void
+  rechercheResults?: IUseRechercheResults
 }) => {
   const isChecked = (label: UserItemTypes) => checked.includes(label)
 
@@ -27,6 +30,8 @@ export const RechercheResultTypeCheckbox = ({
     onChange(newCheckedLabels)
   }
 
+  const counts = rechercheResults ? getItemCounts(rechercheResults) : null
+
   return (
     <Checkbox
       classes={{
@@ -34,15 +39,21 @@ export const RechercheResultTypeCheckbox = ({
         content: fr.cx("fr-m-0", "fr-p-0"),
       }}
       disabled={false}
-      options={Object.values(UserItemTypes).map((label) => {
-        const checked = isChecked(label)
-        const count = counts?.[label]
+      options={Object.values(UserItemTypes).map((itemType) => {
+        const checked = isChecked(itemType)
+        const count = counts?.[itemType]
+        const displayLoading: boolean = rechercheResults ? getQueryStatus(rechercheResults, itemType) === "loading" : false
         return {
-          label: `${label}${count === undefined ? "" : ` (${count})`}`,
+          label: (
+            <>
+              {itemType}
+              {count !== undefined ? ` (${count})` : displayLoading ? <CircularProgress size={14} style={{ marginLeft: fr.spacing("1w") }} /> : null}
+            </>
+          ),
           nativeInputProps: {
             checked,
-            onChange: () => toggleValue(label, checked),
-            name: label,
+            onChange: () => toggleValue(itemType, checked),
+            name: itemType,
           },
         }
       })}
@@ -50,4 +61,29 @@ export const RechercheResultTypeCheckbox = ({
       small
     />
   )
+}
+
+function getQueryStatus(rechercheResult: IUseRechercheResults, itemType: UserItemTypes): QueryStatus {
+  switch (itemType) {
+    case UserItemTypes.EMPLOI:
+      return rechercheResult.jobQuery.status
+    case UserItemTypes.FORMATIONS:
+      return rechercheResult.formationQuery.status
+    default:
+      assertUnreachable(itemType)
+  }
+}
+
+function getItemCounts(rechercheResults: IUseRechercheResults) {
+  const {
+    formationQuery,
+    formationQuery: { formations },
+    jobQuery,
+    jobs,
+  } = rechercheResults
+  const result = {
+    [UserItemTypes.EMPLOI]: jobQuery.status === "success" ? jobs.length : undefined,
+    [UserItemTypes.FORMATIONS]: formationQuery.status === "success" ? formations.length : undefined,
+  }
+  return result
 }

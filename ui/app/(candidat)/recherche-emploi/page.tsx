@@ -13,6 +13,6 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 }
 
 export default async function RechercheEmploiPage({ searchParams }: Props) {
-  const params = parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.JOBS_ONLY)
-  return <RecherchePageComponentServer params={{ ...params, viewType: RechercheViewType.EMPLOI }} />
+  const rechercheParams = parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.JOBS_ONLY)
+  return <RecherchePageComponentServer rechercheParams={{ ...rechercheParams, viewType: RechercheViewType.EMPLOI }} />
 }

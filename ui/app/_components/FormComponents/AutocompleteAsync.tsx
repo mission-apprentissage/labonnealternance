@@ -119,15 +119,15 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
   const isDeferredOrFetching = result.isFetching || query !== debouncedQuery
 
   const renderInput = useCallback(
-    (params: AutocompleteRenderInputParams) => {
+    (inputParams: AutocompleteRenderInputParams) => {
       return (
         <InputFormField
-          disabled={params.disabled ?? false}
+          disabled={inputParams.disabled ?? false}
           label={props.label}
           // @ts-expect-error
-          ref={params.InputProps.ref}
+          ref={inputParams.InputProps.ref}
           nativeInputProps={{
-            ...params.inputProps,
+            ...inputParams.inputProps,
             placeholder: props.placeholder,
           }}
           action={
@@ -158,7 +158,7 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
   )
 
   const renderOption = useCallback(
-    (params: React.HTMLAttributes<HTMLLIElement>, option: T, { inputValue }: AutocompleteRenderOptionState) => {
+    (htmlAttributes: React.HTMLAttributes<HTMLLIElement>, option: T, { inputValue }: AutocompleteRenderOptionState) => {
       const key = getOptionKey(option)
       const label = getOptionLabel(option)
 
@@ -168,7 +168,7 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
       return (
         <Box
           component={"li"}
-          {...params}
+          {...htmlAttributes}
           key={key}
           sx={{
             px: fr.spacing("2w"),

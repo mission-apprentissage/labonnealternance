@@ -26,7 +26,7 @@ export function RechercheRayonSelectFormik() {
   )
 }
 
-export function RechercheRayonSelect({ value, onChange, disabled = false }: { value: number; onChange: (value: number) => void; disabled?: boolean }) {
+export function RechercheRayonSelect({ value, onChange }: { value: number; onChange: (value: number) => void }) {
   const valueString: string | undefined = value?.toString() ?? undefined
   return (
     <SelectField
@@ -40,7 +40,6 @@ export function RechercheRayonSelect({ value, onChange, disabled = false }: { va
       nativeSelectProps={{
         value: valueString,
         onChange: (event) => onChange(parseInt(event.target.value, 10)),
-        disabled,
         style: {
           fontWeight: 700,
         },

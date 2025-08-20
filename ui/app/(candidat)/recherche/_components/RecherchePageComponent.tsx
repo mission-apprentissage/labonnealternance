@@ -16,21 +16,21 @@ import { VirtualContainer } from "@/app/(candidat)/recherche/_components/Recherc
 import { useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { IRecherchePageParams, isItemReferenceInList } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 
-function RecherchePageComponentWithParams(props: { params: IRecherchePageParams }) {
-  const { displayMap, displayMobileForm, activeItems = [] } = props.params
+function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePageParams }) {
+  const { displayMap, displayMobileForm, activeItems = [] } = props.rechercheParams
   const scrollElement = useRef<HTMLElement>(null)
-  const rechercheResult = useRechercheResults(props.params)
+  const rechercheResult = useRechercheResults(props.rechercheParams)
 
   const elements = [
     {
       height: 122,
-      render: () => <CandidatRechercheFilters params={props.params} />,
+      render: () => <CandidatRechercheFilters rechercheParams={props.rechercheParams} />,
     },
     ...RechercheResultatsList(props),
   ] satisfies Parameters<typeof VirtualContainer>[0]["elements"]
 
   if (displayMobileForm) {
-    return <RechercheMobileFormUpdate params={props.params} />
+    return <RechercheMobileFormUpdate rechercheParams={props.rechercheParams} />
   }
 
   const scolledElementIndex = elements.findIndex((element) => "item" in element && element.item.ideaType !== "whisper" && isItemReferenceInList(element.item, activeItems))
@@ -76,17 +76,17 @@ function RecherchePageComponentWithParams(props: { params: IRecherchePageParams 
             },
           }}
         >
-          <RechercheMobileToggleMapButton displayMap={displayMap} params={props.params} />
+          <RechercheMobileToggleMapButton displayMap={displayMap} rechercheParams={props.rechercheParams} />
         </Box>
-        {rechercheResult.status === "success" && <RechercheBackToTopButton onClick={() => scrollElement.current?.scrollTo({ top: 0 })} />}
+        {!displayMap && rechercheResult.items.length > 1 && <RechercheBackToTopButton onClick={() => scrollElement.current?.scrollTo({ top: 0 })} />}
       </Box>
     </Box>
   )
 }
 
-export function RecherchePageComponent(props: { params: IRecherchePageParams }) {
-  const rechercheResult = useRechercheResults(props.params)
-  if (rechercheResult.status === "idle") {
+export function RecherchePageComponent(props: { rechercheParams: IRecherchePageParams }) {
+  const rechercheResult = useRechercheResults(props.rechercheParams)
+  if (rechercheResult.status === "disabled") {
     return <RecherchePageHome {...props} />
   }
   return <RecherchePageComponentWithParams {...props} />

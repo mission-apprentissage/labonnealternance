@@ -30,7 +30,7 @@ export const niveauOptions = [
   },
 ] satisfies Array<{ value: string; label: string; selected?: boolean }>
 
-export function RechercheNiveauSelectForm() {
+export function RechercheNiveauSelectFormik() {
   const [field] = useField({ name: "diploma" })
 
   return (

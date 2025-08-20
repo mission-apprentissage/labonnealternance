@@ -4,7 +4,6 @@ import {
   IGetRoutes,
   ILbaItemFormation,
   ILbaItemFormationJson,
-  ILbaItemLbaCompany,
   ILbaItemLbaCompanyJson,
   ILbaItemLbaJob,
   ILbaItemLbaJobJson,
@@ -18,77 +17,43 @@ import { Jsonify } from "type-fest"
 import { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { apiGet } from "@/utils/api.utils"
 
+export type QueryStatus = "success" | "error" | "disabled" | "loading"
+
 export type ILbaItem = ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson | ILbaItemFormationJson | ILbaItemLbaJobJson
 
-type IUseRechercheResultsIdle = {
-  status: "idle"
-  formationStatus: "idle"
-  jobStatus: "idle"
-  itemsCount: 0
-}
-
-type IUseRechercheResultLoading = {
-  status: "loading"
-  formationStatus: "loading"
-  jobStatus: "success" | "error" | "disabled" | "loading"
-
-  itemsCount: 0
-}
-
-type IUseRechercheResultLoadingJobs = {
-  status: "loading"
-
-  formationStatus: "success" | "error" | "disabled"
-  jobStatus: "loading"
-
-  items: Array<ILbaItemFormationJson>
-  itemsCount: number
-
+export type IUseRechercheResultsFormations = {
+  status: QueryStatus
   formations: Array<ILbaItemFormationJson>
-
-  formationsCount: number
-
-  nonBlockingErrors: {
-    formations: string | null
-    jobs: string | null
-  }
+  errorMessage: string | null
 }
 
-export type IUseRechercheResultsSuccess = {
-  status: "success"
+export type IUseRechercheResultsJobs = {
+  status: QueryStatus
+  lbaCompanies: Array<ILbaItemLbaCompanyJson>
+  partnerJobs: Array<ILbaItemPartnerJobJson>
+  lbaJobs: Array<ILbaItemLbaJobJson>
+  errorMessage: string | null
+}
 
-  formationStatus: "success" | "error" | "disabled"
-  jobStatus: "success" | "error" | "disabled"
-
-  items: Array<ILbaItem>
-  itemsCount: number
-  formations: Array<ILbaItemFormationJson>
+export type IUseRechercheResults = {
+  status: QueryStatus
+  jobQuery: IUseRechercheResultsJobs
+  formationQuery: IUseRechercheResultsFormations
+  items: ILbaItem[]
   jobs: Array<ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson | ILbaItemLbaJobJson>
-
-  nonBlockingErrors: {
-    formations: string | null
-    jobs: string | null
-  }
-
-  jobsCount: number
-  entrepriseCount: number
-  partenariatCount: number
-  formationsCount: number
 }
 
-type IUseRechercheResultsError = {
-  status: "error"
-
-  formationStatus: "error" | "disabled"
-  jobStatus: "error" | "disabled"
-  itemsCount: 0
+const statusPriorities: QueryStatus[] = ["error", "loading", "success", "disabled"]
+function reduceQueryStatus(status: QueryStatus[]): QueryStatus {
+  return status.reduce((acc, value) => {
+    const accPriority = statusPriorities.indexOf(acc)
+    const valuePriority = statusPriorities.indexOf(value)
+    return accPriority < valuePriority ? acc : value
+  }, "disabled")
 }
-
-export type IUseRechercheResults = IUseRechercheResultsIdle | IUseRechercheResultLoading | IUseRechercheResultLoadingJobs | IUseRechercheResultsSuccess | IUseRechercheResultsError
 
 function getQueryStatus(query: ReturnType<typeof useQuery>, isEnabled: boolean): "success" | "error" | "disabled" | "loading" {
   const isQueryDisabled = query.isLoading && query.fetchStatus === "idle"
-
   if (isQueryDisabled || !isEnabled) {
     return "disabled"
   }
@@ -111,52 +76,52 @@ function isPartialJobError(data?: IResponse<IGetRoutes["/v1/_private/jobs/min"]>
   return errors.some(Boolean)
 }
 
-export function useRechercheResults(params: IRecherchePageParams | null): IUseRechercheResults {
+export function useRechercheResults(rechercheParams: IRecherchePageParams | null): IUseRechercheResults {
   const jobQuerystring = useMemo((): IQuery<IGetRoutes["/v1/_private/jobs/min"]> => {
     const query: IQuery<IGetRoutes["/v1/_private/jobs/min"]> = {
-      romes: params.romes.join(","),
+      romes: rechercheParams.romes.join(","),
     }
 
-    if (params.geo) {
-      query.longitude = params.geo.longitude
-      query.latitude = params.geo.latitude
-      query.radius = params.geo.radius
+    if (rechercheParams.geo) {
+      query.longitude = rechercheParams.geo.longitude
+      query.latitude = rechercheParams.geo.latitude
+      query.radius = rechercheParams.radius
     }
 
-    if (params.diploma) {
-      query.diploma = params.diploma
+    if (rechercheParams.diploma) {
+      query.diploma = rechercheParams.diploma
     }
 
-    if (params.opco) {
-      query.opco = params.opco
+    if (rechercheParams.opco) {
+      query.opco = rechercheParams.opco
     }
 
-    if (params.rncp) {
-      query.rncp = params.rncp
+    if (rechercheParams.rncp) {
+      query.rncp = rechercheParams.rncp
     }
     return query
-  }, [params])
+  }, [rechercheParams])
 
   const formationQuerystring = useMemo((): IQuery<IGetRoutes["/v1/_private/formations/min"]> => {
     const query: IQuery<IGetRoutes["/v1/_private/formations/min"]> = {
-      romes: params.romes.join(","),
+      romes: rechercheParams.romes.join(","),
     }
 
-    if (params.geo) {
-      query.longitude = params.geo.longitude
-      query.latitude = params.geo.latitude
-      query.radius = params.geo.radius
+    if (rechercheParams.geo) {
+      query.longitude = rechercheParams.geo.longitude
+      query.latitude = rechercheParams.geo.latitude
+      query.radius = rechercheParams.radius
     }
 
-    if (params.diploma) {
-      query.diploma = params.diploma
+    if (rechercheParams.diploma) {
+      query.diploma = rechercheParams.diploma
     }
 
     return query
-  }, [params])
+  }, [rechercheParams])
 
-  const isFormationEnabled = Boolean(formationQuerystring.romes.length > 0 && params.displayFormations)
-  const isJobsEnabled = Boolean((jobQuerystring.romes.length > 0 || jobQuerystring.rncp) && (params.displayEntreprises || params.displayPartenariats))
+  const isFormationEnabled = Boolean(formationQuerystring.romes.length > 0 && rechercheParams.displayFormations)
+  const isJobsEnabled = Boolean((jobQuerystring.romes.length > 0 || jobQuerystring.rncp) && (rechercheParams.displayEntreprises || rechercheParams.displayPartenariats))
 
   const formationQuery = useQuery<Jsonify<ILbaItemFormation>[]>({
     queryKey: ["/v1/_private/formations/min", formationQuerystring],
@@ -178,165 +143,105 @@ export function useRechercheResults(params: IRecherchePageParams | null): IUseRe
     staleTime: 1000 * 60 * 60,
   })
 
-  const formationCount = useMemo(() => {
-    let result = 0
-
-    if (!formationQuery.isSuccess) {
-      return result
+  const jobQueryResult = useMemo(() => {
+    const queryStatus = getQueryStatus(jobQuery, isJobsEnabled)
+    if (queryStatus === "disabled") {
+      const jobQueryResult: IUseRechercheResultsJobs = {
+        status: queryStatus,
+        lbaJobs: [],
+        lbaCompanies: [],
+        partnerJobs: [],
+        errorMessage: null,
+      }
+      return jobQueryResult
     }
 
-    result += formationQuery.data.length
+    const lbaJobs: ILbaItemLbaJobJson[] = []
+    const partnerJobs: ILbaItemPartnerJobJson[] = []
+    const lbaCompanies: ILbaItemLbaCompanyJson[] = []
 
-    return result
-  }, [formationQuery.data, formationQuery.isSuccess])
+    const jobData = jobQuery.data
+    if (jobData) {
+      if (jobData.lbaJobs && "results" in jobData.lbaJobs) {
+        lbaJobs.push(
+          ...[
+            ...(jobData.lbaJobs.results as any[]).filter((job: ILbaItemLbaJob) => {
+              if (job.company.mandataire) {
+                return rechercheParams.displayPartenariats
+              }
+              return rechercheParams.displayEntreprises
+            }),
+          ].sort((a: ILbaItemLbaJob, b: ILbaItemLbaJob) => {
+            return a.place.distance - b.place.distance
+          })
+        )
+      }
+      if (rechercheParams.displayEntreprises && jobData.partnerJobs && "results" in jobData.partnerJobs) {
+        partnerJobs.push(
+          ...[...(jobData.partnerJobs.results as any)].sort((a: ILbaItemPartnerJob, b: ILbaItemPartnerJob) => {
+            return a.place.distance - b.place.distance
+          })
+        )
+      }
 
-  const jobCount = useMemo(() => {
-    let result = 0
-
-    if (!jobQuery.isSuccess) {
-      return result
+      if (rechercheParams.displayEntreprises && jobData.lbaCompanies && "results" in jobData.lbaCompanies) {
+        lbaCompanies.push(...jobData.lbaCompanies.results)
+      }
     }
 
-    if (jobQuery.data.lbaJobs && "results" in jobQuery.data.lbaJobs) {
-      result += jobQuery.data.lbaJobs.results.length
-    }
-
-    if (jobQuery.data.partnerJobs && "results" in jobQuery.data.partnerJobs) {
-      result += jobQuery.data.partnerJobs.results.length
-    }
-
-    if (jobQuery.data.lbaCompanies && "results" in jobQuery.data.lbaCompanies) {
-      result += jobQuery.data.lbaCompanies.results.length
-    }
-
-    return result
-  }, [jobQuery.data, jobQuery.isSuccess])
-
-  const jobPartenariatCount = useMemo(() => {
-    let result = 0
-
-    if (!jobQuery.isSuccess || !isJobsEnabled) {
-      return result
-    }
-
-    if (jobQuery.data.lbaJobs && "results" in jobQuery.data.lbaJobs) {
-      result += (jobQuery.data.lbaJobs.results as any[]).filter((job: ILbaItemLbaJob) => job.company.mandataire).length
-    }
-
-    return result
-  }, [jobQuery.data, jobQuery.isSuccess, isJobsEnabled])
-
-  const jobs = useMemo(() => {
-    const result: Array<Jsonify<ILbaItemLbaCompany | ILbaItemPartnerJob | ILbaItemLbaJob>> = []
-
-    if (!jobQuery.isSuccess || !isJobsEnabled) {
-      return result
-    }
-
-    if (jobQuery.data.lbaJobs && "results" in jobQuery.data.lbaJobs) {
-      result.push(
-        ...[
-          ...(jobQuery.data.lbaJobs.results as any[]).filter((job: ILbaItemLbaJob) => {
-            if (job.company.mandataire) {
-              return params.displayPartenariats
-            }
-            return params.displayEntreprises
-          }),
-        ].sort((a: ILbaItemLbaJob, b: ILbaItemLbaJob) => {
-          return a.place.distance - b.place.distance
-        })
-      )
-    }
-
-    if (!params.displayEntreprises) {
-      return result
-    }
-
-    if (jobQuery.data.partnerJobs && "results" in jobQuery.data.partnerJobs) {
-      result.push(
-        ...[...(jobQuery.data.partnerJobs.results as any)].sort((a: ILbaItemPartnerJob, b: ILbaItemPartnerJob) => {
-          return a.place.distance - b.place.distance
-        })
-      )
-    }
-
-    if (jobQuery.data.lbaCompanies && "results" in jobQuery.data.lbaCompanies) {
-      result.push(...jobQuery.data.lbaCompanies.results)
-    }
-
-    return result
-  }, [jobQuery.data, jobQuery.isSuccess, isJobsEnabled, params.displayPartenariats, params.displayEntreprises])
-
-  const formations = useMemo((): ILbaItemFormationJson[] => {
-    return formationQuery.data && isFormationEnabled ? formationQuery.data : []
-  }, [formationQuery.data, isFormationEnabled])
-
-  const items = useMemo(() => {
-    const result: Array<ILbaItem> = []
-
-    if (formations.length > 0) {
-      result.push(...formations)
-    }
-
-    if (jobs.length > 0) {
-      result.push(...jobs)
-    }
-
-    return result
-  }, [jobs, formations])
-
-  const formationStatus = getQueryStatus(formationQuery, isFormationEnabled)
-  const jobStatus = getQueryStatus(jobQuery, isJobsEnabled)
-
-  return useMemo(() => {
-    if (!isFormationEnabled && !isJobsEnabled) {
-      return { status: "idle", formationStatus: "idle", jobStatus: "idle", itemsCount: 0 }
-    }
-
-    if ((formationStatus === "error" || formationStatus === "disabled") && (jobStatus === "error" || jobStatus === "disabled")) {
-      return { status: "error", formationStatus, jobStatus, itemsCount: 0 }
-    }
-
-    if (formationStatus === "loading") {
-      return { status: "loading", formationStatus, jobStatus, itemsCount: 0 }
-    }
-
-    const nonBlockingErrors = {
-      formations: formationStatus === "error" ? "Oups ! Les résultats formation ne sont pas disponibles actuellement !" : null,
-      jobs:
-        jobStatus === "error"
+    const jobQueryResult: IUseRechercheResultsJobs = {
+      status: getQueryStatus(jobQuery, isJobsEnabled),
+      lbaJobs,
+      partnerJobs,
+      lbaCompanies,
+      errorMessage:
+        queryStatus === "error"
           ? "Problème momentané d'accès aux opportunités d'emploi"
           : isPartialJobError(jobQuery.data)
             ? "Problème momentané d'accès à certaines opportunités d'emploi"
             : null,
     }
+    return jobQueryResult
+  }, [isJobsEnabled, jobQuery, rechercheParams.displayEntreprises, rechercheParams.displayPartenariats])
 
-    if (jobStatus === "loading") {
-      return {
-        status: "loading",
-        formationStatus,
-        jobStatus,
-        items: formations,
-        itemsCount: formations.length,
-        formations,
-        formationsCount: formations.length,
-        nonBlockingErrors,
+  const formationQueryResult = useMemo(() => {
+    const queryStatus = getQueryStatus(formationQuery, isFormationEnabled)
+    if (queryStatus === "disabled") {
+      const formationQueryResult: IUseRechercheResultsFormations = {
+        status: queryStatus,
+        formations: [],
+        errorMessage: null,
       }
+      return formationQueryResult
     }
-
-    return {
-      status: "success",
-      formationStatus,
-      jobStatus,
-      items,
-      itemsCount: items.length,
-      nonBlockingErrors,
-      jobs,
-      jobsCount: jobs.length,
+    const formations = formationQuery.data || []
+    const formationQueryResult: IUseRechercheResultsFormations = {
+      status: queryStatus,
       formations,
-      formationsCount: formationCount,
-      entrepriseCount: jobCount,
-      partenariatCount: jobPartenariatCount,
+      errorMessage: queryStatus === "error" ? "Oups ! Les résultats formation ne sont pas disponibles actuellement !" : null,
     }
-  }, [jobQuery.data, isFormationEnabled, isJobsEnabled, jobs, formations, items, formationStatus, jobStatus, jobCount, formationCount, jobPartenariatCount])
+    return formationQueryResult
+  }, [formationQuery, isFormationEnabled])
+
+  const result = useMemo(() => {
+    const jobs: Array<ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson | ILbaItemLbaJobJson> = []
+    jobs.push(...jobQueryResult.lbaJobs)
+    jobs.push(...jobQueryResult.partnerJobs)
+    jobs.push(...jobQueryResult.lbaCompanies)
+
+    const items: Array<ILbaItem> = []
+    items.push(...formationQueryResult.formations)
+    items.push(...jobs)
+
+    const result: IUseRechercheResults = {
+      status: reduceQueryStatus([jobQueryResult.status, formationQueryResult.status]),
+      jobQuery: jobQueryResult,
+      formationQuery: formationQueryResult,
+      items,
+      jobs,
+    }
+    return result
+  }, [formationQueryResult, jobQueryResult])
+
+  return result
 }

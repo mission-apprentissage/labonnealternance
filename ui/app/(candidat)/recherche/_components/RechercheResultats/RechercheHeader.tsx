@@ -11,8 +11,8 @@ import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/us
 import type { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { PAGES } from "@/utils/routes.utils"
 
-export function RechercheHeader(props: { params: IRecherchePageParams }) {
-  const navigateToRecherchePage = useNavigateToRecherchePage(props.params)
+export function RechercheHeader(props: { rechercheParams: IRecherchePageParams }) {
+  const navigateToRecherchePage = useNavigateToRecherchePage(props.rechercheParams)
 
   return (
     <Box

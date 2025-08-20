@@ -62,9 +62,9 @@ const zRecherchePageParams = z.object({
       address: z.string().nullable(),
       latitude: z.number(),
       longitude: z.number(),
-      radius: z.number(),
     })
     .nullable(),
+  radius: z.number(),
   diploma: z.string().nullable(),
   job_name: z.string().nullable(),
   job_type: z.string().nullable(),
@@ -87,7 +87,7 @@ const zRecherchePageParams = z.object({
 
 export type IRecherchePageParams = Required<z.output<typeof zRecherchePageParams>> & { viewType?: RechercheViewType }
 
-export type WithRecherchePageParams<T = object> = T & { params: IRecherchePageParams }
+export type WithRecherchePageParams<T = object> = T & { rechercheParams: IRecherchePageParams }
 
 export enum IRechercheMode {
   DEFAULT = "default",
@@ -95,79 +95,79 @@ export enum IRechercheMode {
   JOBS_ONLY = "jobs-only",
 }
 
-export function buildRecherchePageParams(params: Partial<IRecherchePageParams> | null, mode: IRechercheMode | null): string {
-  if (params === null) return ""
+export function buildRecherchePageParams(rechercheParams: Partial<IRecherchePageParams> | null, mode: IRechercheMode | null): string {
+  if (rechercheParams === null) return ""
   const query = new URLSearchParams()
 
-  if (params?.romes?.length > 0) {
-    query.set("romes", params.romes.join(","))
+  if (rechercheParams?.romes?.length > 0) {
+    query.set("romes", rechercheParams.romes.join(","))
   }
 
-  if (params.geo) {
-    const { latitude, longitude, radius } = params.geo
+  if (rechercheParams.radius !== undefined) {
+    query.set("radius", rechercheParams.radius.toString())
+  }
+  if (rechercheParams.geo) {
+    const { latitude, longitude } = rechercheParams.geo
     if (latitude !== undefined) {
       query.set("lat", latitude.toString())
     }
     if (longitude !== undefined) {
       query.set("lon", longitude.toString())
     }
-    if (radius !== undefined) {
-      query.set("radius", radius.toString())
-    }
-    if (params.geo.address) {
-      query.set("address", params.geo.address)
+    if (rechercheParams.geo.address) {
+      query.set("address", rechercheParams.geo.address)
     }
   }
 
-  if (params.diploma) {
-    query.set("diploma", params.diploma)
+  if (rechercheParams.diploma) {
+    query.set("diploma", rechercheParams.diploma)
   }
-  if (params.job_name) {
-    query.set("job_name", params.job_name)
+  if (rechercheParams.job_name) {
+    query.set("job_name", rechercheParams.job_name)
   }
-  if (params.displayMap === true) {
+  if (rechercheParams.displayMap === true) {
     query.set("displayMap", "true")
   }
-  if (params?.activeItems?.length > 0) {
-    query.set("activeItems", serializeItemReferences(params.activeItems))
+  if (rechercheParams?.activeItems?.length > 0) {
+    query.set("activeItems", serializeItemReferences(rechercheParams.activeItems))
   }
-  if (params?.opco) {
-    query.set("opco", params.opco)
+  if (rechercheParams?.opco) {
+    query.set("opco", rechercheParams.opco)
   }
-  if (params?.rncp) {
-    query.set("rncp", params.rncp)
+  if (rechercheParams?.rncp) {
+    query.set("rncp", rechercheParams.rncp)
   }
 
   // In mode formations-only & jobs-only theses params cannot be modified
   if (mode === "default") {
-    if (params.displayEntreprises === false) {
+    if (rechercheParams.displayEntreprises === false) {
       query.set("displayEntreprises", "false")
     }
-    if (params.displayFormations === false) {
+    if (rechercheParams.displayFormations === false) {
       query.set("displayFormations", "false")
     }
-    if (params.displayPartenariats === false) {
+    if (rechercheParams.displayPartenariats === false) {
       query.set("displayPartenariats", "false")
     }
-    if (params.displayFilters === false) {
+    if (rechercheParams.displayFilters === false) {
       query.set("displayFilters", "false")
     }
   }
 
-  if (params.displayMobileForm === true) {
+  if (rechercheParams.displayMobileForm === true) {
     query.set("displayMobileForm", "true")
   }
 
   return query.toString()
 }
 
-export function buildSearchTitle(params: Partial<IRecherchePageParams> | null) {
+export function buildSearchTitle(rechercheParams: Partial<IRecherchePageParams> | null) {
   let searchTitleContext = ""
-  if (params?.job_name) {
-    searchTitleContext += ` - ${params.job_name}`
-    if (params?.geo?.address) {
-      searchTitleContext += ` à ${params.geo.address}`
-    } else if (params?.geo == null) {
+  if (rechercheParams?.job_name) {
+    searchTitleContext += ` - ${rechercheParams.job_name}`
+    if (rechercheParams?.geo?.address) {
+      searchTitleContext += ` à ${rechercheParams.geo.address}`
+    } else if (rechercheParams?.geo == null) {
       searchTitleContext += ` sur la France entière `
     }
   }
@@ -191,10 +191,10 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
           address: search.get("address") ?? null,
           latitude: parseFloat(rawLat),
           longitude: parseFloat(rawLon),
-          radius: parseInt(search.get("radius") ?? "30", 10),
         }
       : null
 
+  const radius = parseInt(search.get("radius") ?? "30", 10)
   const diploma = search.get("diploma") || null
   const job_name = search.get("job_name") || null
   const job_type = search.get("job_type") || null
@@ -217,6 +217,7 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
     activeItems,
     opco,
     rncp,
+    radius,
   }
 
   if (mode === "formations-only") {
@@ -253,16 +254,16 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
   }
 }
 
-export function detectModeFromParams(params: IRecherchePageParams): IRechercheMode {
-  if (params.displayFilters) {
+export function detectModeFromParams({ displayFilters, displayEntreprises, displayPartenariats, displayFormations }: IRecherchePageParams): IRechercheMode {
+  if (displayFilters) {
     return IRechercheMode.DEFAULT
   }
 
-  if (!params.displayEntreprises && !params.displayPartenariats && params.displayFormations) {
+  if (!displayEntreprises && !displayPartenariats && displayFormations) {
     return IRechercheMode.FORMATIONS_ONLY
   }
 
-  if (params.displayEntreprises && params.displayPartenariats && !params.displayFormations) {
+  if (displayEntreprises && displayPartenariats && !displayFormations) {
     return IRechercheMode.JOBS_ONLY
   }
 

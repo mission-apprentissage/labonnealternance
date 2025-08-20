@@ -10,9 +10,8 @@ import { RechercheToggleMap } from "@/app/(candidat)/recherche/_components/Reche
 import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
 import type { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 
-function CandidatRechercheFiltersRaw({ params: rechercheParams }: { params: IRecherchePageParams }) {
-  const { displayMap, geo, diploma } = rechercheParams
-  const { radius } = geo ?? {}
+function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
+  const { displayMap, diploma, radius } = rechercheParams
 
   const navigateToRecherchePage = useNavigateToRecherchePage(rechercheParams)
   const onDisplayMapChange = useCallback(
@@ -38,9 +37,8 @@ function CandidatRechercheFiltersRaw({ params: rechercheParams }: { params: IRec
         <RechercheRayonSelect
           value={radius}
           onChange={(newRadius) => {
-            navigateToRecherchePage({ geo: { ...geo, radius: newRadius } })
+            navigateToRecherchePage({ radius: newRadius })
           }}
-          disabled={!geo}
         />
         <RechercheNiveauSelect value={diploma} onChange={(newDiploma) => navigateToRecherchePage({ diploma: newDiploma })} />
       </Box>
@@ -55,8 +53,8 @@ function CandidatRechercheFiltersRaw({ params: rechercheParams }: { params: IRec
   )
 }
 
-export function CandidatRechercheFilters({ params }: { params: IRecherchePageParams }) {
-  const { displayMap } = params
+export function CandidatRechercheFilters({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
+  const { displayMap } = rechercheParams
   return (
     <Box
       key="filters"
@@ -82,7 +80,7 @@ export function CandidatRechercheFilters({ params }: { params: IRecherchePagePar
         },
       }}
     >
-      <CandidatRechercheFiltersRaw params={params} />
+      <CandidatRechercheFiltersRaw rechercheParams={rechercheParams} />
     </Box>
   )
 }

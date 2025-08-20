@@ -23,6 +23,6 @@ export default async function RecherchePage({ searchParams }: Props) {
   if (urlSearchParams.get("type") === "matcha" && urlSearchParams.get("itemId")) {
     permanentRedirect(PAGES.dynamic.jobDetail({ type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, jobId: urlSearchParams.get("itemId") }).getPath())
   }
-  const params = parseRecherchePageParams(urlSearchParams, IRechercheMode.DEFAULT)
-  return <RecherchePageComponentServer params={params} />
+  const rechercheParams = parseRecherchePageParams(urlSearchParams, IRechercheMode.DEFAULT)
+  return <RecherchePageComponentServer rechercheParams={rechercheParams} />
 }

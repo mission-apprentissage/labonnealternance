@@ -13,7 +13,7 @@ export function useNavigateToRecherchePage(searchParams: IRecherchePageParams): 
     (newParams: Partial<IRecherchePageParams>, replace: boolean = false): void => {
       const finalParams = { ...searchParams, ...newParams }
       const mode = detectModeFromParams(finalParams)
-      const url = PAGES.dynamic.genericRecherche({ params: finalParams, mode }).getPath()
+      const url = PAGES.dynamic.genericRecherche({ rechercheParams: finalParams, mode }).getPath()
 
       if (replace) {
         router.replace(url)

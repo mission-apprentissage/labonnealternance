@@ -19,7 +19,7 @@ type RechercheMapIciProps = {
 
 const MAX_RADIUS = Math.max(...RADIUS_OPTIONS_VALUES)
 
-function computeNewSearchGeoParams(map: Mapbox): Required<IRecherchePageParams["geo"]> {
+function computeNewSearchGeoParams(map: Mapbox): Partial<IRecherchePageParams> {
   const newCenter = map.getCenter()
   const newZoom = map.getZoom()
 
@@ -34,9 +34,11 @@ function computeNewSearchGeoParams(map: Mapbox): Required<IRecherchePageParams["
 
   if (MAX_RADIUS < newRadiusRaw) {
     return {
-      address: null,
-      latitude: newCenter.lat,
-      longitude: newCenter.lng,
+      geo: {
+        address: null,
+        latitude: newCenter.lat,
+        longitude: newCenter.lng,
+      },
       radius: MAX_RADIUS,
     }
   }
@@ -46,9 +48,11 @@ function computeNewSearchGeoParams(map: Mapbox): Required<IRecherchePageParams["
   const newRadius = Math.min(...containedOptions)
 
   return {
-    address: null,
-    latitude: newCenter.lat,
-    longitude: newCenter.lng,
+    geo: {
+      address: null,
+      latitude: newCenter.lat,
+      longitude: newCenter.lng,
+    },
     radius: newRadius,
   }
 }
@@ -58,7 +62,7 @@ export function RechercheMapIci(props: WithRecherchePageParams<RechercheMapIciPr
 
   const [isVisible, setIsVisible] = useState(false)
 
-  const navigateToRecherchePage = useNavigateToRecherchePage(props.params)
+  const navigateToRecherchePage = useNavigateToRecherchePage(props.rechercheParams)
 
   const isSameArea = useCallback(
     (map: Mapbox) => {
@@ -100,8 +104,8 @@ export function RechercheMapIci(props: WithRecherchePageParams<RechercheMapIciPr
   }, [map, searchArea, isSameArea])
 
   const onClick = useCallback(() => {
-    const params = computeNewSearchGeoParams(map)
-    navigateToRecherchePage({ geo: params }, true)
+    const newRechercheParams = computeNewSearchGeoParams(map)
+    navigateToRecherchePage({ ...newRechercheParams }, true)
   }, [map, navigateToRecherchePage])
 
   if (!isVisible) {

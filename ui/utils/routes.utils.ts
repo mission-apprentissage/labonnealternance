@@ -20,7 +20,7 @@ interface INotionPage extends IPage {
 interface IPages {
   static: Record<string, IPage>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dynamic: Record<string, (params: any) => IPage>
+  dynamic: Record<string, (props: any) => IPage>
   notion: Record<string, INotionPage>
 }
 
@@ -338,16 +338,16 @@ export const PAGES = {
         getMetadata: () => ({}),
       }
     },
-    espaceProCreationDetail: (params: { siret: string; email?: string; type: "CFA" | "ENTREPRISE"; origin: string; isWidget: boolean }): IPage => ({
+    espaceProCreationDetail: (props: { siret: string; email?: string; type: "CFA" | "ENTREPRISE"; origin: string; isWidget: boolean }): IPage => ({
       getPath: () => {
-        const { isWidget, ...querystring } = params
+        const { isWidget, ...querystring } = props
         return generateUri(isWidget ? "/espace-pro/widget/entreprise/detail" : "/espace-pro/creation/detail", {
           querystring: { ...querystring },
         }) as string
       },
       title: "Créer un compte entreprise",
     }),
-    espaceProCreationOffre: (params: {
+    espaceProCreationOffre: (props: {
       establishment_id: string
       type: "CFA" | "ENTREPRISE"
       email: string
@@ -357,14 +357,14 @@ export const PAGES = {
       isWidget: boolean
     }): IPage => ({
       getPath: () => {
-        const { isWidget, displayBanner, ...querystring } = params
+        const { isWidget, displayBanner, ...querystring } = props
         return generateUri(isWidget ? "/espace-pro/widget/entreprise/offre" : "/espace-pro/creation/offre", {
           querystring: { ...querystring, displayBanner: displayBanner.toString() },
         }) as string
       },
       title: "Créer un compte entreprise",
     }),
-    espaceProCreationFin: (params: {
+    espaceProCreationFin: (props: {
       jobId: string
       email?: string
       withDelegation: boolean
@@ -374,7 +374,7 @@ export const PAGES = {
       isWidget: boolean
     }): IPage => ({
       getPath: () => {
-        const { isWidget, fromDashboard, withDelegation, ...querystring } = params
+        const { isWidget, fromDashboard, withDelegation, ...querystring } = props
 
         const path = isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin"
 
@@ -382,24 +382,24 @@ export const PAGES = {
           querystring: removeUndefinedFields({ ...querystring, fromDashboard: fromDashboard.toString(), withDelegation: withDelegation.toString() }),
         }) as string
       },
-      title: params.fromDashboard ? "Nouvelle offre" : "Créer un compte entreprise",
+      title: props.fromDashboard ? "Nouvelle offre" : "Créer un compte entreprise",
     }),
     espaceProOffreImpression: (jobId: string) => ({
       getPath: () => `/espace-pro/offre/impression/${jobId}`,
       title: "Imprimer mon offre",
     }),
-    genericRecherche({ params, mode }: { params: Partial<IRecherchePageParams> | null; mode: IRechercheMode }): IPage {
+    genericRecherche({ rechercheParams, mode }: { rechercheParams: Partial<IRecherchePageParams> | null; mode: IRechercheMode }): IPage {
       if (mode == "formations-only") {
-        return PAGES.dynamic.rechercheFormation(params)
+        return PAGES.dynamic.rechercheFormation(rechercheParams)
       }
       if (mode === "jobs-only") {
-        return PAGES.dynamic.rechercheEmploi(params)
+        return PAGES.dynamic.rechercheEmploi(rechercheParams)
       }
-      return PAGES.dynamic.recherche(params)
+      return PAGES.dynamic.recherche(rechercheParams)
     },
-    recherche: (params: Partial<IRecherchePageParams> | null): IPage => {
-      const search = buildRecherchePageParams(params, IRechercheMode.DEFAULT)
-      const searchTitleContext = buildSearchTitle(params)
+    recherche: (rechercheParams: Partial<IRecherchePageParams> | null): IPage => {
+      const search = buildRecherchePageParams(rechercheParams, IRechercheMode.DEFAULT)
+      const searchTitleContext = buildSearchTitle(rechercheParams)
 
       return {
         getPath: () => `/recherche?${search}` as string,
@@ -411,9 +411,9 @@ export const PAGES = {
         title: "Offres en alternance",
       }
     },
-    rechercheFormation: (params: Partial<IRecherchePageParams> | null): IPage => {
-      const search = buildRecherchePageParams(params, IRechercheMode.FORMATIONS_ONLY)
-      const searchTitleContext = buildSearchTitle(params)
+    rechercheFormation: (rechercheParams: Partial<IRecherchePageParams> | null): IPage => {
+      const search = buildRecherchePageParams(rechercheParams, IRechercheMode.FORMATIONS_ONLY)
+      const searchTitleContext = buildSearchTitle(rechercheParams)
 
       return {
         getPath: () => `/recherche-formation?${search}` as string,
@@ -425,9 +425,9 @@ export const PAGES = {
         title: "Formations en alternance",
       }
     },
-    rechercheEmploi: (params: Partial<IRecherchePageParams> | null): IPage => {
-      const search = buildRecherchePageParams(params, IRechercheMode.JOBS_ONLY)
-      const searchTitleContext = buildSearchTitle(params)
+    rechercheEmploi: (rechercheParams: Partial<IRecherchePageParams> | null): IPage => {
+      const search = buildRecherchePageParams(rechercheParams, IRechercheMode.JOBS_ONLY)
+      const searchTitleContext = buildSearchTitle(rechercheParams)
 
       return {
         getPath: () => `/recherche-emploi?${search}` as string,
@@ -439,20 +439,21 @@ export const PAGES = {
         title: "Offres en alternance",
       }
     },
-    jobDetail: (params: { type: Exclude<LBA_ITEM_TYPE, LBA_ITEM_TYPE.FORMATION>; jobId: string } & Partial<IRecherchePageParams>): IPage => {
-      const jobTitle = params.job_name ?? "Offre"
-      const search = buildRecherchePageParams(params, IRechercheMode.DEFAULT)
+    jobDetail: (props: { type: Exclude<LBA_ITEM_TYPE, LBA_ITEM_TYPE.FORMATION>; jobId: string } & Partial<IRecherchePageParams>): IPage => {
+      const rechercheParams = props
+      const jobTitle = rechercheParams.job_name ?? "Offre"
+      const search = buildRecherchePageParams(rechercheParams, IRechercheMode.DEFAULT)
       return {
-        getPath: () => `/emploi/${params.type}/${encodeURIComponent(params.jobId)}/${toKebabCase(jobTitle)}?${search}` as string,
+        getPath: () => `/emploi/${rechercheParams.type}/${encodeURIComponent(rechercheParams.jobId)}/${toKebabCase(jobTitle)}?${search}` as string,
         title: jobTitle,
       }
     },
-    formationDetail: (params: { jobId: string } & Partial<IRecherchePageParams>): IPage => {
-      const jobTitle = params.job_name ?? "Formation"
-      const search = buildRecherchePageParams(params, IRechercheMode.DEFAULT)
+    formationDetail: (props: { jobId: string } & Partial<IRecherchePageParams>): IPage => {
+      const jobTitle = props.job_name ?? "Formation"
+      const search = buildRecherchePageParams(props, IRechercheMode.DEFAULT)
 
       return {
-        getPath: () => `/formation/${encodeURIComponent(params.jobId)}/${toKebabCase(jobTitle)}?${search}` as string,
+        getPath: () => `/formation/${encodeURIComponent(props.jobId)}/${toKebabCase(jobTitle)}?${search}` as string,
         title: jobTitle,
       }
     },
@@ -523,20 +524,20 @@ export const PAGES = {
       index: false,
       title: `Job ${name}`,
     }),
-    adminProcessorJobInstance: (params: { name: string; id: string }): IPage => ({
-      getPath: () => `/espace-pro/administration/processeur/job/${params.name}/${params.id}`,
+    adminProcessorJobInstance: (props: { name: string; id: string }): IPage => ({
+      getPath: () => `/espace-pro/administration/processeur/job/${props.name}/${props.id}`,
       index: false,
-      title: `Tâche Job ${params.id}`,
+      title: `Tâche Job ${props.id}`,
     }),
     adminProcessorCron: (name: string): IPage => ({
       getPath: () => `/espace-pro/administration/processeur/cron/${name}`,
       index: false,
       title: `CRON ${name}`,
     }),
-    adminProcessorCronTask: (params: { name: string; id: string }): IPage => ({
-      getPath: () => `/espace-pro/administration/processeur/cron/${params.name}/${params.id}`,
+    adminProcessorCronTask: (props: { name: string; id: string }): IPage => ({
+      getPath: () => `/espace-pro/administration/processeur/cron/${props.name}/${props.id}`,
       index: false,
-      title: `Tâche CRON ${params.id}`,
+      title: `Tâche CRON ${props.id}`,
     }),
   },
   notion: {},

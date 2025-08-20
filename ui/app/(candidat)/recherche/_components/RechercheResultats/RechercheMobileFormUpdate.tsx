@@ -8,8 +8,8 @@ import { RechercheMobileForm } from "@/app/(candidat)/recherche/_components/Rech
 import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
 import { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 
-export function RechercheMobileFormUpdate(props: { params: IRecherchePageParams }) {
-  const navigateToRecherchePage = useNavigateToRecherchePage(props.params)
+export function RechercheMobileFormUpdate(props: { rechercheParams: IRecherchePageParams }) {
+  const navigateToRecherchePage = useNavigateToRecherchePage(props.rechercheParams)
 
   return (
     <Box

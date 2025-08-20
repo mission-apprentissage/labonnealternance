@@ -8,11 +8,11 @@ import { RechercheMobileHome } from "@/app/(candidat)/recherche/_components/Rech
 import { RechercheResultatsPlaceholder } from "@/app/(candidat)/recherche/_components/RechercheResultatsPlaceholder"
 import { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 
-export function RecherchePageHome(props: { params: IRecherchePageParams }) {
-  const { displayMobileForm } = props.params
+export function RecherchePageHome(props: { rechercheParams: IRecherchePageParams }) {
+  const { displayMobileForm } = props.rechercheParams
 
   if (displayMobileForm) {
-    return <RechercheMobileFormUpdate params={props.params} />
+    return <RechercheMobileFormUpdate rechercheParams={props.rechercheParams} />
   }
 
   return (
@@ -67,7 +67,7 @@ export function RecherchePageHome(props: { params: IRecherchePageParams }) {
                 margin: "auto",
               }}
             >
-              <CandidatRechercheFilters params={props.params} />
+              <CandidatRechercheFilters rechercheParams={props.rechercheParams} />
               <RechercheResultatsPlaceholder {...props} />
             </Box>
           </Box>

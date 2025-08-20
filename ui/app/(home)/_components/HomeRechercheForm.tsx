@@ -4,9 +4,10 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import { Suspense } from "react"
 
+import { RechercheInputsLayout } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheInputsLayout"
 import { RechercheLieuAutocomplete } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheLieuAutocomplete"
 import { RechercheMetierAutocomplete } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheMetierAutocomplete"
-import { RechercheResultTypeCheckboxForm } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheResultTypeCheckbox"
+import { RechercheResultTypeCheckboxFormik } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheResultTypeCheckbox"
 import { RechercheSubmitButton } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheSubmitButton"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
 import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
@@ -38,48 +39,19 @@ function HomeRechercheFormUI(props: { onSubmit: (values: IRechercheForm) => void
           displayPartenariats: true,
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: {
-              xs: "column",
-              md: "row",
-            },
-            alignItems: { xs: "stretch", md: "flex-end" },
-            gap: fr.spacing("2w"),
-          }}
-        >
-          <Box
-            sx={{
-              "& .fr-fieldset__content": {
-                display: "flex",
-                flexDirection: { xs: "row", md: "column" },
-                gap: fr.spacing("1w"),
-
-                "& .fr-checkbox-group": {
-                  marginTop: "-0.75rem",
-                  marginBottom: "-0.75rem",
-                },
-              },
-            }}
-          >
-            <RechercheResultTypeCheckboxForm />
-          </Box>
-          <Box sx={{ flex: 450 }}>
-            <RechercheMetierAutocomplete />
-          </Box>
-          <Box sx={{ flex: 250 }}>
-            <RechercheLieuAutocomplete />
-          </Box>
-          <RechercheSubmitButton>C’est parti</RechercheSubmitButton>
-        </Box>
+        <RechercheInputsLayout
+          viewTypeCheckboxs={<RechercheResultTypeCheckboxFormik />}
+          metierInput={<RechercheMetierAutocomplete />}
+          lieuInput={<RechercheLieuAutocomplete />}
+          submitButton={<RechercheSubmitButton>C’est parti</RechercheSubmitButton>}
+        />
       </RechercheForm>
     </Box>
   )
 }
 
 function HomeRechercheFormComponent(props: WithRecherchePageParams) {
-  const onSubmit = useNavigateToRecherchePage(props.params)
+  const onSubmit = useNavigateToRecherchePage(props.rechercheParams)
 
   return (
     <HomeRechercheFormUI
@@ -93,7 +65,7 @@ function HomeRechercheFormComponent(props: WithRecherchePageParams) {
 export function HomeRechercheForm(props: WithRecherchePageParams) {
   return (
     <Suspense fallback={<HomeRechercheFormUI onSubmit={null} />}>
-      <HomeRechercheFormComponent params={props.params} />
+      <HomeRechercheFormComponent rechercheParams={props.rechercheParams} />
     </Suspense>
   )
 }

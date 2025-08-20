@@ -5,7 +5,7 @@ import Image from "next/image"
 import { RechercheViewType, WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 
 export function RechercheResultatsPlaceholder(props: WithRecherchePageParams) {
-  const { viewType } = props.params
+  const { viewType } = props.rechercheParams
   return (
     <Box
       sx={{

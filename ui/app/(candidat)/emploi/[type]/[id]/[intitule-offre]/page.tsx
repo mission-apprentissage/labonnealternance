@@ -54,7 +54,7 @@ export default async function JobOfferPage({ params, searchParams }: { params: P
   return (
     <JobDetailRendererClient
       job={job as ILbaItemLbaCompanyJson /*| ILbaItemLbaJobJson*/ | ILbaItemPartnerJobJson}
-      params={parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)}
+      rechercheParams={parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)}
     />
   )
 }

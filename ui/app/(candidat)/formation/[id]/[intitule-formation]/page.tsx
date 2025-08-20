@@ -23,5 +23,5 @@ export default async function FormationPage({ params, searchParams }: { params: 
   const formation = await apiGet("/_private/formations/:id", { params: { id: idParam } })
   if (!formation) redirect("/404")
 
-  return <TrainingDetailRendererClient training={formation} params={parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)} />
+  return <TrainingDetailRendererClient training={formation} rechercheParams={parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)} />
 }

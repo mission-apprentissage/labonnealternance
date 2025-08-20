@@ -12,8 +12,8 @@ const titles = {
   [RechercheViewType.FORMATION]: "Trouvez votre formation",
 }
 
-export function RechercheMobileHome(props: { params: IRecherchePageParams }) {
-  const { viewType } = props.params
+export function RechercheMobileHome(props: { rechercheParams: IRecherchePageParams }) {
+  const { viewType } = props.rechercheParams
   return (
     <Box
       sx={{

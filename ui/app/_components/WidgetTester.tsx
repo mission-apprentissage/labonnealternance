@@ -10,7 +10,7 @@ import { OPCOS_LABEL } from "shared/constants/recruteur"
 
 import { RechercheLieuAutocomplete } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheLieuAutocomplete"
 import { RechercheMetierAutocomplete } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheMetierAutocomplete"
-import { RechercheNiveauSelectForm } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheNiveauSelect"
+import { RechercheNiveauSelectFormik } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheNiveauSelect"
 import { RechercheRayonSelectFormik } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheRayonSelect"
 import { IRechercheMode } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { SelectFormField } from "@/app/_components/FormComponents/SelectFormField"
@@ -56,7 +56,7 @@ function WidgetFormComponent(props: FormikProps<IFormTypeWidget>) {
           <RechercheRayonSelectFormik />
         </GridItem>
         <GridItem mt={4}>
-          <RechercheNiveauSelectForm />
+          <RechercheNiveauSelectFormik />
         </GridItem>
         <GridItem mt={4}>
           <SelectFormField
@@ -104,6 +104,21 @@ function WidgetFormComponent(props: FormikProps<IFormTypeWidget>) {
   )
 }
 
+const WidgetIFrame = ({ title, width, height, url }: { title: string; width?: number; height: number; url: string }) => {
+  return (
+    <iframe
+      title={title}
+      style={{
+        marginTop: "30px",
+        marginBottom: "30px",
+        height: `${height}px`,
+        width: width ? `${width}px` : "100%",
+      }}
+      src={url}
+    />
+  )
+}
+
 export function WidgetTester() {
   const initialValues: IFormTypeWidget = {
     radius: "30",
@@ -117,21 +132,6 @@ export function WidgetTester() {
   }
 
   const [widgetUrl, setWidgetUrl] = useState(`${baseUrl}/recherche`)
-
-  const getWidget = (params) => {
-    return (
-      <iframe
-        title={params.title}
-        style={{
-          marginTop: "30px",
-          marginBottom: "30px",
-          height: `${params.height}px`,
-          width: params.width ? `${params.width}px` : "100%",
-        }}
-        src={widgetUrl}
-      />
-    )
-  }
 
   return (
     <Container p={12} my={0} mb={[0, 12]} variant="pageContainer">
@@ -159,7 +159,7 @@ export function WidgetTester() {
         onSubmit={async (values) => {
           const { job_name, opco, caller, scope, metier } = values
           const rechercheParams = rechercheFormToRechercheParams(values)
-          const path = PAGES.dynamic.genericRecherche({ params: rechercheParams, mode: scope }).getPath()
+          const path = PAGES.dynamic.genericRecherche({ rechercheParams: rechercheParams, mode: scope }).getPath()
 
           const url = new URL(`${baseUrl}${path}`)
           const searchParams = url.searchParams
@@ -174,7 +174,6 @@ export function WidgetTester() {
           } else if (metier?.label) {
             searchParams.append("job_name", metier.label)
           }
-          console.log(url)
           setWidgetUrl(url.toString())
         }}
         component={WidgetFormComponent}
@@ -186,19 +185,12 @@ export function WidgetTester() {
         <GridItem>
           <hr />
           <Text as="h3">Largeur 360 px - hauteur 640 px</Text>
-          {getWidget({
-            title: "mobile",
-            height: 640,
-            width: 360,
-          })}
+          <WidgetIFrame title="mobile" height={640} width={360} url={widgetUrl} />
         </GridItem>
         <GridItem>
           <hr />
           <Text as="h3">Largeur 100% - hauteur 800 px</Text>
-          {getWidget({
-            title: "desktop",
-            height: 800,
-          })}
+          <WidgetIFrame title="desktop" height={800} url={widgetUrl} />
         </GridItem>
       </Grid>
     </Container>

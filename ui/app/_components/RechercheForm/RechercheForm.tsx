@@ -58,9 +58,9 @@ export const rechercheFormToRechercheParams = (rechercheForm: Partial<IRecherche
           address: lieu.label,
           latitude: lieu.latitude,
           longitude: lieu.longitude,
-          radius: radius ? parseInt(radius, 10) : undefined,
         }
       : undefined,
+    radius: radius ? parseInt(radius, 10) : undefined,
     job_name: metier?.label,
     job_type: metier?.type,
     diploma,
@@ -76,7 +76,7 @@ const rechercheParamsToRechercheForm = (rechercheParams: Partial<IRecherchePageP
     displayedItemTypes.push(UserItemTypes.FORMATIONS)
   }
   const rechercheForm: IRechercheForm = {
-    metier: rechercheParams?.romes
+    metier: rechercheParams?.romes?.length
       ? {
           label: rechercheParams.job_name ?? "",
           romes: rechercheParams.romes,
@@ -91,8 +91,8 @@ const rechercheParamsToRechercheForm = (rechercheParams: Partial<IRecherchePageP
         }
       : null,
     displayedItemTypes,
-    radius: rechercheParams?.geo?.radius?.toString(),
-    diploma: rechercheParams?.diploma,
+    radius: rechercheParams?.radius?.toString() ?? "",
+    diploma: rechercheParams?.diploma || "",
   }
   return rechercheForm
 }
