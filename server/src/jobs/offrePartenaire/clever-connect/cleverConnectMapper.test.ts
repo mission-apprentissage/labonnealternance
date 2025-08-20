@@ -1,6 +1,5 @@
 //import { ObjectId } from "mongodb"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { cleverConnectJobToJobsPartners } from "@/jobs/offrePartenaire/clever-connect/cleverConnectMapper"
@@ -364,7 +363,7 @@ describe("cleverConnectJobToJobsPartners", () => {
       apply_url: "https://www.meteojob.com/jobads/43954570?utm_source=labonnealternance&utm_medium=aggregator-free&utm_campaign=alternance",
       errors: [],
       validated: false,
-      business_error: JOB_PARTNER_BUSINESS_ERROR.CFA,
+      business_error: null,
       jobs_in_success: [],
     })
   })
