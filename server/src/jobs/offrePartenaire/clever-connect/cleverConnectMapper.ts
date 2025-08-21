@@ -4,10 +4,9 @@ import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "shared/constants/i
 import dayjs from "shared/helpers/dayjs"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
 
-import { isCompanyInBlockedCfaList } from "../blockJobsPartnersFromCfaList"
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
 const ZCleverConnectjobJobLocation = z.object({
@@ -183,7 +182,6 @@ export const cleverConnectJobToJobsPartners = (job: ICleverConnectJob, partner_l
     contract_start: startDate,
 
     apply_url: urlParsing.success ? urlParsing.data : null,
-    business_error: isCompanyInBlockedCfaList(company.name) ? JOB_PARTNER_BUSINESS_ERROR.CFA : null,
   }
   return partnerJob
 }
