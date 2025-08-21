@@ -3,6 +3,8 @@ import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
 import { logger } from "@/common/logger"
+import { detectClassificationJobsPartners } from "@/jobs/offrePartenaire/detectClassificationJobsPartners"
+import { fillEntrepriseEngagementJobsPartners } from "@/jobs/offrePartenaire/fillEntrepriseEngagementJobsPartners"
 import { formatTextFieldsJobsPartners } from "@/jobs/offrePartenaire/formatTextFieldsJobsPartners"
 
 import { blockBadRomeJobsPartners } from "./blockBadRomeJobsPartners"
@@ -27,7 +29,9 @@ export const defaultFillComputedJobsPartnersContext: FillComputedJobsPartnersCon
 export const fillComputedJobsPartners = async (partialContext: Partial<FillComputedJobsPartnersContext> = {}) => {
   logger.info("début de fillComputedJobsPartners")
   const context: FillComputedJobsPartnersContext = { ...defaultFillComputedJobsPartnersContext, ...partialContext }
+  await fillEntrepriseEngagementJobsPartners(context)
   await formatTextFieldsJobsPartners(context)
+  await detectClassificationJobsPartners(context)
 
   await fillOpcoInfosForPartners(context)
   await fillSiretInfosForPartners(context)
@@ -51,6 +55,7 @@ export const blankComputedJobPartner = (): Omit<IComputedJobsPartners, "_id" | "
   contract_remote: null,
   contract_start: null,
   contract_type: [],
+  contract_is_disabled_elligible: false,
   created_at: new Date(),
   errors: [],
   offer_access_conditions: [],
@@ -66,6 +71,7 @@ export const blankComputedJobPartner = (): Omit<IComputedJobsPartners, "_id" | "
   offer_target_diploma: null,
   offer_title: null,
   offer_to_be_acquired_skills: [],
+  offer_to_be_acquired_knowledge: [],
   updated_at: null,
   validated: false,
   workplace_address_city: null,

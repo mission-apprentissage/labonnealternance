@@ -7,6 +7,7 @@ exports[`importKelio > should test the import of kelio data into computed_job_pa
     "apply_url": "https://tada.talentview.io/jobs/0gmq0v?source=la_bonne_alternance",
     "business_error": null,
     "contract_duration": 12,
+    "contract_is_disabled_elligible": false,
     "contract_remote": null,
     "contract_start": 2025-09-01T00:00:00.000Z,
     "contract_type": [
@@ -28,6 +29,7 @@ exports[`importKelio > should test the import of kelio data into computed_job_pa
     "offer_status_history": [],
     "offer_target_diploma": null,
     "offer_title": "Alternance |Assistant(e) Chef de Projet H/F",
+    "offer_to_be_acquired_knowledge": [],
     "offer_to_be_acquired_skills": [],
     "partner_job_id": "147171",
     "partner_label": "Kelio",
@@ -61,6 +63,7 @@ exports[`importKelio > should test the import of kelio data into computed_job_pa
     "apply_url": "https://groupe-TADA.talentview.io/jobs/cqhbxp?source=la_bonne_alternance",
     "business_error": null,
     "contract_duration": 12,
+    "contract_is_disabled_elligible": false,
     "contract_remote": null,
     "contract_start": 2025-09-01T00:00:00.000Z,
     "contract_type": [
@@ -82,6 +85,7 @@ exports[`importKelio > should test the import of kelio data into computed_job_pa
     "offer_status_history": [],
     "offer_target_diploma": null,
     "offer_title": "Alternance | Technicien supérieur audiovisuel H/F",
+    "offer_to_be_acquired_knowledge": [],
     "offer_to_be_acquired_skills": [],
     "partner_job_id": "147682",
     "partner_label": "Kelio",

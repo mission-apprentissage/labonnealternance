@@ -2,7 +2,7 @@ import { Box, Button, Link } from "@chakra-ui/react"
 
 import { ChevronLeft, ChevronRight } from "../../theme/components/icons"
 
-const PageLink = ({ pageNumber, onClick, isActive = false }) => {
+const PageLink = ({ pageNumber, onClick, isActive = false }: { pageNumber: number; onClick: () => unknown; isActive: boolean }) => {
   return (
     // @ts-expect-error: TODO
     <Link onClick={() => onClick()} alt={`Page ${pageNumber}`} className={`${isActive ? "active" : ""}`}>
@@ -11,7 +11,7 @@ const PageLink = ({ pageNumber, onClick, isActive = false }) => {
   )
 }
 
-const PreviousLink = ({ previousPage, canPreviousPage }) => {
+const PreviousLink = ({ previousPage, canPreviousPage }: { previousPage: () => unknown; canPreviousPage: boolean }) => {
   return (
     <Button leftIcon={<ChevronLeft />} as={Link} variant="link" isDisabled={!canPreviousPage} onClick={previousPage}>
       Précédent
@@ -19,7 +19,7 @@ const PreviousLink = ({ previousPage, canPreviousPage }) => {
   )
 }
 
-const NextLink = ({ nextPage, canNextPage }) => {
+const NextLink = ({ nextPage, canNextPage }: { nextPage: () => unknown; canNextPage: boolean }) => {
   return (
     <Button rightIcon={<ChevronRight />} as={Link} variant="link" isDisabled={!canNextPage} onClick={nextPage}>
       Suivant
@@ -27,10 +27,16 @@ const NextLink = ({ nextPage, canNextPage }) => {
   )
 }
 
-const sequence = (from, to) => [...new Array(to - from + 1)].map((_, index) => index + from)
+const sequence = (from: number, to: number) => [...new Array(to - from + 1)].map((_, index) => index + from)
 const uniq = (array: number[]): number[] => [...new Set(array)]
 
-function PaginationReactQuery({ pageCount, gotoPage: goToPageIndex, currentPage: pageIndex }) {
+interface PaginationReactQueryProps {
+  pageCount: number
+  gotoPage: (pageIndex: number) => void
+  currentPage: number
+}
+
+function PaginationReactQuery({ pageCount, gotoPage: goToPageIndex, currentPage: pageIndex }: PaginationReactQueryProps) {
   if (Number.isNaN(pageCount) || pageCount <= 1) {
     return null
   }

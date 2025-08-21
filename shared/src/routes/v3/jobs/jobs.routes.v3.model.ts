@@ -80,6 +80,7 @@ export const zJobOfferApiReadV3 = z.object({
     opening_count: ZJobsPartnersOfferApi.shape.offer_opening_count,
     status: ZJobsPartnersOfferApi.shape.offer_status,
   }),
+  is_delegated: ZJobsPartnersOfferApi.shape.is_delegated.default(false),
 })
 
 export type IJobOfferApiReadV3 = z.output<typeof zJobOfferApiReadV3>
@@ -153,6 +154,7 @@ export type IJobSearchApiV3Response = z.output<typeof zJobSearchApiV3Response>
 export type IJobSearchApiV3Query = z.output<typeof zJobSearchApiV3Query>
 export type IJobSearchApiV3QueryResolved = Omit<IJobSearchApiV3Query, "latitude" | "longitude" | "radius" | "rncp"> & {
   geo: { latitude: number; longitude: number; radius: number } | null
+  force_partner_label?: JOBPARTNERS_LABEL
 }
 
 export const zJobOfferApiWriteV3 = z.object({
@@ -251,15 +253,15 @@ export type IJobOfferApiWriteV3Input = z.input<typeof zJobOfferApiWriteV3>
 
 function convertToJobWorkplaceReadV3(input: IJobsPartnersOfferApi | IJobsPartnersRecruiterApi): IJobRecruiterApiReadV3["workplace"] {
   return {
-    siret: input.workplace_siret,
-    brand: input.workplace_brand,
-    legal_name: input.workplace_legal_name,
+    siret: input.is_delegated ? input.cfa_siret! : input.workplace_siret,
+    brand: input.is_delegated ? null : input.workplace_brand,
+    legal_name: (input.is_delegated ? input.cfa_legal_name! : input.workplace_legal_name) || null,
     website: input.workplace_website,
     name: input.workplace_name,
     description: input.workplace_description,
     size: input.workplace_size,
     location: {
-      address: input.workplace_address_label,
+      address: input.is_delegated ? input.cfa_address_label! : input.workplace_address_label,
       geopoint: input.workplace_geopoint,
     },
     domain: {
@@ -273,7 +275,7 @@ function convertToJobWorkplaceReadV3(input: IJobsPartnersOfferApi | IJobsPartner
 function convertToJobApplyReadV3(input: IJobsPartnersOfferApi | IJobsPartnersRecruiterApi): IJobRecruiterApiReadV3["apply"] {
   return {
     url: input.apply_url,
-    phone: input.apply_phone,
+    phone: input.apply_phone || null,
     recipient_id: input.apply_recipient_id || null,
   }
 }
@@ -311,6 +313,8 @@ function convertToJobOfferApiReadV3(input: IJobsPartnersOfferApi): IJobOfferApiR
       opening_count: input.offer_opening_count,
       status: input.offer_status,
     },
+
+    is_delegated: input.is_delegated || false,
   }
 }
 

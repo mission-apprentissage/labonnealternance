@@ -77,13 +77,6 @@ export const insertOpcos = async (opcoDatas: Omit<IOpco, "_id">[]) => {
 
 /**
  * @description retourne le nom court d'un opco en paramètre
- * @param {string} shortName
- * @returns {string}
- */
-export const getOpcoLongName = memoize((shortName: string) => Object.values(OPCOS_LABEL).find((k) => OPCOS_LABEL[k] === shortName.toUpperCase()))
-
-/**
- * @description retourne le nom court d'un opco en paramètre
  * @param {string} longName
  * @returns {string}
  */

@@ -3,6 +3,7 @@
 exports[`createJob > should insert a job 1`] = `
 {
   "_id": "670ce30b57a50d6875c141f9",
+  "address": "126 RUE DE L'UNIVERSITE 75007 PARIS",
   "address_detail": {
     "acheminement_postal": {
       "l1": null,
@@ -28,6 +29,14 @@ exports[`createJob > should insert a job 1`] = `
   "establishment_creation_date": 2024-10-14T09:23:21.588Z,
   "establishment_id": "xxxx-xxxx-xxxx-xxxx",
   "establishment_siret": "42476141900045",
+  "geo_coordinates": "48.8566,2.3522",
+  "geopoint": {
+    "coordinates": [
+      2.3522,
+      48.8566,
+    ],
+    "type": "Point",
+  },
   "idcc": null,
   "is_delegated": false,
   "managed_by": "686e82f6965b78f107bf44c1",
@@ -77,7 +86,7 @@ exports[`createJob > should insert a job 2`] = `
       },
     ],
   },
-  "is_disabled_elligible": null,
+  "is_disabled_elligible": false,
   "job_count": 1,
   "job_start_date": 2021-01-28T15:00:00.000Z,
   "job_status": "En attente",
@@ -89,5 +98,79 @@ exports[`createJob > should insert a job 2`] = `
     "M1602",
   ],
   "rome_label": "Opérations administratives",
+}
+`;
+
+exports[`createJob > should insert a job 3`] = `
+{
+  "apply_email": "entreprise@mail.fr",
+  "apply_phone": null,
+  "cfa_address_label": null,
+  "cfa_apply_email": null,
+  "cfa_apply_phone": null,
+  "cfa_legal_name": null,
+  "cfa_siret": null,
+  "contract_duration": null,
+  "contract_is_disabled_elligible": false,
+  "contract_remote": null,
+  "contract_rythm": null,
+  "contract_start": 2021-01-28T15:00:00.000Z,
+  "contract_type": [
+    "Apprentissage",
+  ],
+  "delegations": null,
+  "is_delegated": false,
+  "job_delegation_count": null,
+  "job_status_comment": null,
+  "offer_access_conditions": [
+    "Ce métier est accessible avec un diplôme de fin d'études secondaires (brevet des collèges) à Bac (professionnel, Brevet Professionnel, ...) dans le secteur tertiaire. Il est également accessible avec une expérience professionnelle sans diplôme particulier. La maîtrise de l'outil bureautique (traitement de texte, tableur, ...) peut être requise.",
+  ],
+  "offer_description": "Exécute des travaux administratifs courants (vérification de documents, frappe et mise en forme de courriers pré-établis, suivi de dossier administratifs, ...) selon l'organisation de la structure ou du service. Peut être en charge d'activités de reprographie et d'archivage. Peut réaliser l'accueil de la structure.",
+  "offer_desired_skills": [
+    "Faire preuve de rigueur et de précision",
+  ],
+  "offer_multicast": true,
+  "offer_opening_count": 1,
+  "offer_origin": null,
+  "offer_rome_codes": [
+    "M1602",
+  ],
+  "offer_status": "Cancelled",
+  "offer_status_history": [],
+  "offer_target_diploma": null,
+  "offer_title": "Agent administratif / Agente administrative",
+  "offer_to_be_acquired_knowledge": [
+    "Domaines d'expertise	Gestion administrative du courrier",
+  ],
+  "offer_to_be_acquired_skills": [
+    "Production, Fabrication	Procéder à l'enregistrement, au tri, à l'affranchissement du courrier",
+    "Production, Fabrication	Réaliser des travaux de reprographie",
+  ],
+  "partner_label": "offres_emploi_lba",
+  "stats_detail_view": 0,
+  "stats_postuler": 0,
+  "stats_search_view": 0,
+  "workplace_address_city": "PARIS",
+  "workplace_address_label": "126 RUE DE L'UNIVERSITE 75007 PARIS",
+  "workplace_address_street_label": null,
+  "workplace_address_zipcode": "75002",
+  "workplace_brand": null,
+  "workplace_description": null,
+  "workplace_geopoint": {
+    "coordinates": [
+      2.3522,
+      48.8566,
+    ],
+    "type": "Point",
+  },
+  "workplace_idcc": null,
+  "workplace_legal_name": "Enseigne inconnue",
+  "workplace_naf_code": null,
+  "workplace_naf_label": null,
+  "workplace_name": null,
+  "workplace_opco": null,
+  "workplace_siret": "42476141900045",
+  "workplace_size": null,
+  "workplace_website": null,
 }
 `;

@@ -1,17 +1,17 @@
-import { badRequest, internal } from "@hapi/boom"
+import { internal } from "@hapi/boom"
 import dayjs from "dayjs"
 import { Document, Filter, ObjectId } from "mongodb"
 import { IJob, ILbaItemPartnerJob, IRecruiter, IReferentielRomeForJob, JOB_STATUS } from "shared"
 import { FRANCE_LATITUDE, FRANCE_LONGITUDE } from "shared/constants/geolocation"
 import { NIVEAUX_POUR_LBA } from "shared/constants/index"
-import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
-import { INiveauPourLbaLabel, OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/recruteur"
+import { LBA_ITEM_TYPE_OLD, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
+import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
-import { normalizeDepartementToRegex, roundDistance } from "../common/utils/geolib"
+import { roundDistance } from "../common/utils/geolib"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 
@@ -117,113 +117,6 @@ export const getJobs = async ({
 export type IJobResult = {
   recruiter: Omit<IRecruiter, "jobs">
   job: IJob & { rome_detail: IReferentielRomeForJob }
-}
-
-export const getLbaJobsV2 = async ({
-  geo,
-  romes,
-  niveau,
-  limit,
-  departements,
-  opco,
-}: {
-  geo: { latitude: number; longitude: number; radius: number } | null
-  romes: string[] | null
-  niveau: INiveauPourLbaLabel | null
-  limit: number
-  departements: string[] | null
-  opco?: OPCOS_LABEL | null
-}): Promise<IJobResult[]> => {
-  const jobFilters: Filter<IRecruiter> = {
-    "jobs.job_status": JOB_STATUS.ACTIVE,
-    "jobs.job_expiration_date": { $gt: dayjs().add(-1, "day").toDate() },
-  }
-
-  if (romes) {
-    jobFilters["jobs.rome_code"] = { $in: romes }
-  }
-
-  if (niveau && niveau !== NIVEAUX_POUR_LBA["INDIFFERENT"]) {
-    jobFilters["jobs.job_level_label"] = { $in: [niveau, NIVEAUX_POUR_LBA["INDIFFERENT"]] }
-  }
-
-  const query: Filter<IRecruiter> = {
-    status: RECRUITER_STATUS.ACTIF,
-    ...jobFilters,
-  }
-
-  if (departements?.length) {
-    const departmentsRegex = departements.flatMap(normalizeDepartementToRegex)
-    query["address_detail.code_postal"] = { $in: departmentsRegex }
-  }
-
-  if (opco) {
-    query.opco = opco
-  }
-
-  const filterStage: Document[] =
-    geo === null
-      ? // Sans géoloc, on trie par date de création (Important de le faire avant le $limit)
-        [
-          { $match: query },
-          { $sort: { "jobs.job_creation_date": -1 } },
-          { $limit: limit },
-          { $unwind: { path: "$jobs" } },
-          // Make sure to sort after unwinding
-          { $sort: { "jobs.job_creation_date": -1 } },
-        ]
-      : [
-          // Avec géoloc, on trie par distance (comportement par défaut de $geoNear)
-          {
-            $geoNear: {
-              near: { type: "Point", coordinates: [geo.longitude, geo.latitude] },
-              distanceField: "distance",
-              key: "geopoint",
-              maxDistance: geo.radius * 1000,
-              query,
-            },
-          },
-          { $limit: limit },
-          { $unwind: { path: "$jobs" } },
-          { $sort: { distance: 1, "jobs.job_creation_date": -1 } },
-        ]
-
-  const recruiters = await getDbCollection("recruiters")
-    .aggregate<IJobResult["recruiter"] & { jobs: IJobResult["job"] }>([
-      ...filterStage,
-      // Apply filters again on jobs individually
-      { $match: jobFilters },
-      // Limit the actual number of jobs returned
-      { $limit: limit },
-      // We only lookup the first rome code --> match will be only on the first rome code
-      {
-        $lookup: {
-          from: "referentielromes",
-          localField: "jobs.rome_code.0",
-          foreignField: "rome.code_rome",
-          as: "jobs.rome_detail",
-        },
-      },
-      // Here we will have only one rome_detail, so we unwind it
-      { $unwind: { path: "$jobs.rome_detail" } },
-    ])
-    .toArray()
-
-  return Promise.all(
-    recruiters.map(async ({ jobs: job, ...recruiter }) => {
-      const contactInfo = await getLbaJobContactInfo(recruiter)
-      return {
-        recruiter: {
-          ...recruiter,
-          ...contactInfo,
-        },
-        job: {
-          ...job,
-          rome_label: job.rome_appellation_label ?? job.rome_label,
-        },
-      }
-    })
-  )
 }
 
 /**
@@ -343,82 +236,7 @@ export const getLbaJobById = async ({ id, caller }: { id: ObjectId; caller?: str
   }
 }
 
-/**
- * @description Retourne une offre LBA identifiée par son id
- */
-export const getLbaJobByIdV2 = async (id: string): Promise<ILbaItemLbaJob> => {
-  const rawJob = await getOffreAvecInfoMandataire(id)
-
-  if (!rawJob) {
-    throw badRequest("Job not found")
-  }
-
-  const applicationCountByJob = await getApplicationByJobCount([id])
-
-  const job = transformLbaJobPrivate({
-    recruiter: rawJob.recruiter,
-    job: rawJob.job,
-    applicationCountByJob,
-  })
-
-  return job
-}
-
-/**
- * @description Retourne une offre LBA identifiée par son id pour la route d'API GET /v3/jobs/:id
- */
-export const getLbaJobByIdV2AsJobResult = async ({ id, caller }: { id: string; caller?: string }): Promise<IJobResult | null> => {
-  try {
-    const rawJob = await getOffreAvecInfoMandataire(id)
-
-    if (!rawJob) {
-      return null
-    }
-
-    if (caller) {
-      trackApiCall({ caller: caller, job_count: 1, result_count: 1, api_path: "job/offre_emploi_lba", response: "OK" })
-    }
-
-    const transformedJob = await transformOffreAvecMandataireToJobResult(rawJob)
-    return transformedJob
-  } catch (error) {
-    sentryCaptureException(error)
-    return null
-  }
-}
-
-/**
- * @description Transforme une offre LBA en IJobResult
- */
-async function transformOffreAvecMandataireToJobResult({ recruiter, job }: { recruiter: IRecruiter; job: IJob }): Promise<IJobResult> {
-  const contactInfo = await getLbaJobContactInfo(recruiter)
-
-  const jobResult = {
-    recruiter: {
-      ...recruiter,
-      ...contactInfo,
-    },
-    job: {
-      ...job,
-      rome_label: job.rome_appellation_label ?? job.rome_label,
-      rome_detail: {
-        numero: job?.rome_detail?.numero || "",
-        rome: job.rome_detail?.rome || { code_rome: "", intitule: "", code_ogr: "" },
-        appellations: job?.rome_detail?.appellations || [],
-        definition: job?.rome_detail?.definition || "",
-        acces_metier: job?.rome_detail?.acces_metier || "",
-        competences: job?.rome_detail?.competences as any,
-        competencesDeBase: job?.rome_detail?.competencesDeBase,
-        contextes_travail: job?.rome_detail?.contextes_travail,
-        mobilites: job?.rome_detail?.mobilites,
-      },
-    },
-  }
-
-  return jobResult
-}
-
-const getCity = (recruiter) => {
+export const getCity = (recruiter) => {
   let city = ""
   if (recruiter.establishment_location) {
     // cas mandataire
@@ -438,87 +256,6 @@ const getNumberAndStreet = (addressDetail: IRecruiter["address_detail"]): string
   const type_voie = addressDetail?.type_voie
   const libelle_voie = addressDetail?.libelle_voie
   return [numero_voie, indice_repetition_voie, type_voie, libelle_voie].flatMap((x) => (x ? [x] : [])).join(" ") || null
-}
-
-/**
- * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
- */
-function transformLbaJobPrivate({
-  recruiter,
-  job,
-  applicationCountByJob,
-}: {
-  recruiter: Partial<IRecruiter>
-  job: IJob
-  applicationCountByJob: IApplicationCount[]
-}): ILbaItemLbaJob {
-  const applicationCountForCurrentJob = applicationCountByJob.find((job) => job._id.toString() === job._id.toString())
-  const romes = job.rome_code.map((code) => ({ code, label: null }))
-
-  const latitude = recruiter?.geopoint?.coordinates[1] ?? 0
-  const longitude = recruiter?.geopoint?.coordinates[0] ?? 0
-
-  const resultJob: ILbaItemLbaJob = {
-    ideaType: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
-    id: job._id.toString(),
-    title: job.offer_title_custom ?? job.rome_appellation_label ?? job.rome_label,
-    contact: {
-      email: recruiter.email,
-      name: recruiter.first_name + " " + recruiter.last_name,
-      phone: recruiter.phone,
-    },
-    place: {
-      //lieu de l'offre. contient ville de l'entreprise et geoloc de l'entreprise
-      distance: (recruiter.distance ?? false) ? roundDistance((recruiter?.distance ?? 0) / 1000) : null,
-      fullAddress: recruiter.is_delegated ? null : recruiter.address,
-      address: recruiter.is_delegated ? null : recruiter.address,
-      numberAndStreet: recruiter.is_delegated ? null : getNumberAndStreet(recruiter.address_detail),
-      latitude,
-      longitude,
-      city: getCity(recruiter),
-      zipCode: recruiter?.address_detail?.code_postal,
-    },
-    company: {
-      // si mandataire contient les données du CFA
-      siret: recruiter.establishment_siret,
-      name: recruiter.establishment_enseigne || recruiter.establishment_raison_sociale || UNKNOWN_COMPANY,
-      size: recruiter.establishment_size,
-      mandataire: recruiter.is_delegated,
-      creationDate: recruiter.establishment_creation_date ? new Date(recruiter.establishment_creation_date) : null,
-      place: recruiter.is_delegated
-        ? {
-            // contient infos d'adresse du cfa mandataire
-            address: recruiter.address,
-            fullAddress: recruiter.address,
-          }
-        : null,
-    },
-    nafs: [{ label: recruiter.naf_label }],
-    target_diploma_level: job.job_level_label || null,
-    job: {
-      id: job._id.toString(),
-      description: job.job_description && job.job_description.length > 50 ? job.job_description : null,
-      employeurDescription: job.job_employer_description || null,
-      creationDate: job.job_creation_date ? new Date(job.job_creation_date) : null,
-      contractType: job.job_type ? job.job_type.join(", ") : null,
-      jobStartDate: job.job_start_date ? new Date(job.job_start_date) : null,
-      jobExpirationDate: job.job_expiration_date ? new Date(job.job_expiration_date) : null,
-      romeDetails: job.rome_detail ? { ...job.rome_detail, competences: job?.competences_rome ?? job.rome_detail?.competences } : null,
-      rythmeAlternance: job.job_rythm || null,
-      dureeContrat: "" + job.job_duration,
-      quantiteContrat: job.job_count,
-      elligibleHandicap: job.is_disabled_elligible,
-      status: recruiter.status === RECRUITER_STATUS.ACTIF && job.job_status === JOB_STATUS.ACTIVE ? JOB_STATUS.ACTIVE : JOB_STATUS.ANNULEE,
-      type: job.job_type,
-    },
-    romes,
-    applicationCount: applicationCountForCurrentJob?.count || 0,
-    token: generateApplicationToken({ jobId: job._id.toString() }),
-    // migration ui: need to update with function from main
-    recipient_id: `recruiters_${job._id.toString()}`,
-  }
-
-  return resultJob
 }
 
 /**
@@ -720,7 +457,7 @@ export const incrementLbaJobsViewCount = async (jobIds: string[]) => {
   }
 }
 
-const getLbaJobContactInfo = async (recruiter: IJobResult["recruiter"]): Promise<Partial<IJobResult["recruiter"]>> => {
+export const getLbaJobContactInfo = async (recruiter: IJobResult["recruiter"]): Promise<Partial<IJobResult["recruiter"]>> => {
   if (recruiter.is_delegated && recruiter.cfa_delegated_siret) {
     const { managed_by } = recruiter
     const [cfa, cfaUser] = await Promise.all([

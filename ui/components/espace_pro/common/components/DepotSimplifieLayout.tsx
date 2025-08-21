@@ -2,13 +2,13 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import React from "react"
 
-import Layout from "../../../../app/_components/Layout"
+import WidgetLayout from "../../../../app/_components/Layout"
 
 export const DepotSimplifieLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <Layout header={false} displayNavigationMenu={false}>
+    <WidgetLayout>
       <DepotSimplifieStyling>{children}</DepotSimplifieStyling>
-    </Layout>
+    </WidgetLayout>
   )
 }
 

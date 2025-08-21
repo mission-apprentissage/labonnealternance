@@ -1,7 +1,7 @@
-import { Icon } from "@chakra-ui/react"
+import { Icon, IconProps } from "@chakra-ui/react"
 import React from "react"
 
-export function Close(props) {
+export function Close(props: IconProps) {
   return (
     <Icon viewBox="0 0 10 10" {...props}>
       <path

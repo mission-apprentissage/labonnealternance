@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
-import { getLastStatusEvent, IUserRecruteurJson, IUserStatusValidationJson } from "shared"
+import { getLastStatusEvent, IUserRecruteurForAdminJSON, IUserRecruteurJson, IUserStatusValidationJson } from "shared"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
@@ -19,7 +19,7 @@ import { apiGet } from "@/utils/api.utils"
 
 function Users() {
   const { newUser } = useParams() as { newUser: string }
-  const [currentEntreprise, setCurrentEntreprise] = useState({})
+  const [currentEntreprise, setCurrentEntreprise] = useState<IUserRecruteurForAdminJSON | null>(null)
   const [tabIndex, setTabIndex] = useState("0")
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationActivationUtilisateur = useDisclosure()
@@ -216,7 +216,12 @@ function Users() {
   return (
     <>
       <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={currentEntreprise} />
-      <ConfirmationActivationUtilisateur {...confirmationActivationUtilisateur} {...currentEntreprise} />
+      <ConfirmationActivationUtilisateur
+        onClose={confirmationActivationUtilisateur.onClose}
+        isOpen={confirmationActivationUtilisateur.isOpen}
+        _id={currentEntreprise?._id}
+        establishment_raison_sociale={currentEntreprise?.establishment_raison_sociale}
+      />
 
       <Flex align="center" justify="space-between" mb={12}>
         <Text fontSize="2rem" fontWeight={700}>

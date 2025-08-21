@@ -1,17 +1,21 @@
 import { AddIcon, MinusIcon } from "@chakra-ui/icons"
 import { AccordionButton, AccordionItem, AccordionPanel, Box, Text } from "@chakra-ui/react"
+import { SyntheticEvent } from "react"
+import { ILbaItemLbaJobJson } from "shared"
 
 import { scrollToNestedElement } from "@/utils/tools"
 
-const LbaJobTechniques = ({ job }) => {
-  const onClick = (e) => {
+const LbaJobTechniques = ({ job }: { job: ILbaItemLbaJobJson }) => {
+  const onClick = (e: SyntheticEvent) => {
     setTimeout(() => {
-      scrollToNestedElement({ containerId: "itemDetailColumn", nestedElement: e.target, yOffsett: 220 })
+      scrollToNestedElement({ containerId: "itemDetailColumn", nestedElement: e.target as HTMLElement, yOffsett: 220 })
     }, 200)
   }
 
+  let currentSkillGroup = null
+
   return (
-    job?.job?.romeDetails?.competences?.savoirs?.length && (
+    job.job.offer_to_be_acquired_knowledge?.length && (
       <AccordionItem borderBottom="1px solid #E5E5E5" onClick={onClick} key={"techniques"}>
         {({ isExpanded }) => (
           <>
@@ -24,18 +28,27 @@ const LbaJobTechniques = ({ job }) => {
 
             <AccordionPanel pb={4}>
               <Box pl="12px">
-                {job.job.romeDetails.competences.savoirs.map((competence) => (
-                  <Box key={competence.code} mb={2}>
-                    <Text as="span" ml={3} fontWeight={700}>
-                      {competence.libelle}
-                    </Text>
-                    {competence.items.map((item, idx) => (
-                      <Box key={idx} pl={6}>
-                        <Text as="span">&bull; {item.libelle}</Text>
+                {job.job.offer_to_be_acquired_knowledge.map((competence, idx) => {
+                  const [group, skill] = competence.split("\t")
+                  let title = <></>
+
+                  if (group !== currentSkillGroup) {
+                    currentSkillGroup = group
+                    title = (
+                      <Text as="span" ml={3} fontWeight={700}>
+                        {group}
+                      </Text>
+                    )
+                  }
+                  return (
+                    <Box key={idx} mb={2}>
+                      {title}
+                      <Box pl={6}>
+                        <Text as="span">&bull; {skill}</Text>
                       </Box>
-                    ))}
-                  </Box>
-                ))}
+                    </Box>
+                  )
+                })}
               </Box>
             </AccordionPanel>
           </>

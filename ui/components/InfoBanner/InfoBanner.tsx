@@ -4,7 +4,7 @@ import { Box, Link, Typography } from "@mui/material"
 import React, { useContext } from "react"
 
 import { publicConfig } from "@/config.public"
-import { DisplayContext } from "@/context/DisplayContextProvider"
+import { DisplayContext, IDisplayState } from "@/context/DisplayContextProvider"
 
 const blueBannerText = (
   <Typography>
@@ -79,8 +79,8 @@ const InfoBanner = ({
   const { bannerStates, setBannerStates } = useContext(DisplayContext)
   const { isEnvClosed, isAlertClosed, isOKClosed, isInfoClosed } = bannerStates
 
-  const setBannerContext = (banner: string, isClosed: boolean) => {
-    const newBannerStates = { ...bannerStates }
+  const setBannerContext = (banner: keyof IDisplayState["bannerStates"], isClosed: boolean) => {
+    const newBannerStates: IDisplayState["bannerStates"] = { ...bannerStates }
     newBannerStates[banner] = isClosed
     setBannerStates(newBannerStates)
   }

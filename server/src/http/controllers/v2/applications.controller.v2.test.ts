@@ -34,12 +34,12 @@ vi.mock("@/services/clamav.service", () => {
   }
 })
 
-const token = getApiApprentissageTestingToken({
+const token = await getApiApprentissageTestingToken({
   email: "test@test.fr",
   organisation: "Un super Partenaire",
   habilitations: { "applications:write": true, "appointments:write": false, "jobs:write": false },
 })
-const fakeToken = getApiApprentissageTestingTokenFromInvalidPrivateKey({
+const fakeToken = await getApiApprentissageTestingTokenFromInvalidPrivateKey({
   email: "mail@mail.com",
   organisation: "Un super Partenaire",
   habilitations: { "applications:write": true, "appointments:write": false, "jobs:write": false },

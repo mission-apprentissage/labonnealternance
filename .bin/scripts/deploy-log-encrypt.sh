@@ -12,11 +12,13 @@ readonly PASSPHRASE="$ROOT_DIR/.bin/SEED_PASSPHRASE.txt"
 readonly VAULT_FILE="${ROOT_DIR}/.infra/vault/vault.yml"
 
 delete_cleartext() {
-  rm -f "$PASSPHRASE"
+  if [ -f "$PASSPHRASE" ]; then
+    shred -f -n 10 -u  "$PASSPHRASE"
+  fi
 }
 trap delete_cleartext EXIT
 
-ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq '.vault.SEED_GPG_PASSPHRASE' > "$PASSPHRASE"
+ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq -r '.vault.SEED_GPG_PASSPHRASE' > "$PASSPHRASE"
 
 # Make sur the file exists
 touch /tmp/deploy.log

@@ -23,12 +23,12 @@ export const CandidatureLbaModal = ({
 }) => {
   const [applicantEmail, setApplicantEmail] = useState<string>("")
   const { isOpen, onClose: onModalClose } = modalControls
-  const { submitCandidature, isDone, isSuccess, isError, error, isLoading } = submitControls
+  const { handleSubmitCandidature, isDone, isSuccess, isError, error, isLoading } = submitControls
   const kind = item.ideaType
 
   const onSubmit = (formValues: IApplicationSchemaInitValues) => {
     setApplicantEmail(formValues.applicant_email)
-    submitCandidature({ formValues })
+    handleSubmitCandidature({ formValues })
   }
 
   const content = (

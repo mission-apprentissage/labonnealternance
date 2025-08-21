@@ -6,6 +6,7 @@ import { Link, Tab } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useEffect, useState } from "react"
+import { IUserRecruteurForAdminJSON } from "shared"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
@@ -19,7 +20,7 @@ import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
 function AdministrationOpco() {
   const { newUser } = useSearchParamsRecord()
-  const [currentEntreprise, setCurrentEntreprise] = useState({})
+  const [currentEntreprise, setCurrentEntreprise] = useState<IUserRecruteurForAdminJSON | null>(null)
   const [tabIndex, setTabIndex] = useState("0")
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationActivationUtilisateur = useDisclosure()
@@ -196,7 +197,12 @@ function AdministrationOpco() {
   return (
     <>
       <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={currentEntreprise} />
-      <ConfirmationActivationUtilisateur {...confirmationActivationUtilisateur} {...currentEntreprise} />
+      <ConfirmationActivationUtilisateur
+        onClose={confirmationActivationUtilisateur.onClose}
+        isOpen={confirmationActivationUtilisateur.isOpen}
+        _id={currentEntreprise?._id}
+        establishment_raison_sociale={currentEntreprise?.establishment_raison_sociale}
+      />
 
       <Breadcrumb pages={[PAGES.static.backOpcoHome]} />
 

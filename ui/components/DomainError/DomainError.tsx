@@ -1,5 +1,5 @@
 import { Box, Button, Image } from "@chakra-ui/react"
-import React from "react"
+import React, { SyntheticEvent } from "react"
 
 const cssParameters = {
   padding: "1rem",
@@ -9,8 +9,14 @@ const cssParameters = {
   fontSize: "20px",
 }
 
-export default function DomainError({ position = undefined, setDomainError, setDiplomaError }) {
-  const reset = (e) => {
+interface DomainErrorProps {
+  position?: "header" | undefined
+  setDomainError: (value: boolean) => void
+  setDiplomaError: (value: boolean) => void
+}
+
+export default function DomainError({ position = undefined, setDomainError, setDiplomaError }: DomainErrorProps) {
+  const reset = (e: SyntheticEvent) => {
     if (e) {
       e.stopPropagation()
     }

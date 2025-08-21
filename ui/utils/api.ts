@@ -23,8 +23,6 @@ export const getFormulaire = (establishment_id: string) => apiGet("/formulaire/:
 export const getFormulaireByToken = (establishment_id: string, token: string) =>
   apiGet("/formulaire/:establishment_id/by-token", { params: { establishment_id }, headers: { authorization: `Bearer ${token}` } }).catch(errorHandler)
 
-export const postFormulaire = (userId: string, form) => apiPost("/user/:userId/formulaire", { params: { userId }, body: form })
-
 export const archiveFormulaire = (establishment_id: string) => apiDelete("/formulaire/:establishment_id", { params: { establishment_id } }).catch(errorHandler)
 
 /**
@@ -44,7 +42,7 @@ export const cancelOffre = (jobId: string, token: string) => apiPut(`/formulaire
 export const cancelOffreFromAdmin = (jobId: string, data: IRoutes["put"]["/formulaire/offre/f/:jobId/cancel"]["body"]["_input"]) =>
   apiPut("/formulaire/offre/f/:jobId/cancel", { params: { jobId }, body: data })
 export const extendOffre = (jobId: string) => apiPut(`/formulaire/offre/:jobId/extend`, { params: { jobId } })
-export const fillOffre = (jobId, token) => apiPut(`/formulaire/offre/:jobId/provided`, { params: { jobId }, headers: { authorization: `Bearer ${token}` } })
+export const fillOffre = (jobId: string, token: string) => apiPut(`/formulaire/offre/:jobId/provided`, { params: { jobId }, headers: { authorization: `Bearer ${token}` } })
 export const notifyLbaJobDetailView = async (jobId: string) => await apiPost("/v1/jobs/matcha/:id/stats/view-details", { params: { id: jobId } })
 export const notifyJobDetailViewV3 = (jobId: string) => apiPost("/v3/jobs/:id/stats/:eventType", { params: { id: jobId, eventType: "detail_view" } })
 export const notifyJobSearchViewV3 = (ids: string[]) => {
@@ -103,7 +101,6 @@ export const updateUser = async (userId: string, user: any) => {
 /**
  * Auth API
  */
-export const sendMagiclink = async (email) => await apiPost(`/login/magiclink`, { body: email })
 export const sendValidationLink = async (userId: string, token: string) =>
   await apiPost("/login/:userId/resend-confirmation-email", { params: { userId }, headers: { authorization: `Bearer ${token}` } })
 
@@ -169,7 +166,8 @@ export const getPrdvContext = async (cleMinistereEducatif: string, referrer: str
     const data = await apiGet("/_private/appointment", { querystring: { cleMinistereEducatif, referrer } }, { timeout: 7000 })
     return data
   } catch (error) {
-    if (error?.message !== BusinessErrorCodes.TRAINING_NOT_FOUND) {
+    const isBusinessError = error instanceof ApiError && error.message === BusinessErrorCodes.TRAINING_NOT_FOUND
+    if (!isBusinessError) {
       captureException(error)
     }
   }
@@ -201,17 +199,7 @@ export const getApplicationDataForIntention = async (applicationId: string, inte
   return data
 }
 
-export const createEtablissement = (etablissement) => apiPost("/etablissement/creation", { body: etablissement })
-
 export const getRomeDetail = (rome: string) => apiGet("/rome/detail/:rome", { params: { rome } })
-
-export const etablissementUnsubscribeDemandeDelegation = (establishment_siret: any, token: string) =>
-  apiPost("/etablissement/:establishment_siret/proposition/unsubscribe", {
-    params: { establishment_siret },
-    headers: {
-      authorization: `Bearer ${token}`,
-    },
-  })
 
 /**
  * Administration OPCO
@@ -226,3 +214,11 @@ export const getEligibleTrainingsForAppointments = (siret: string) =>
   apiGet("/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret", { params: { siret: siret } })
 
 export const getEtablissement = (siret: string) => apiGet("/admin/etablissements/siret-formateur/:siret", { params: { siret: siret } })
+
+export async function unsubscribeCompany({ email, reason }: { email: string; reason: string }) {
+  return apiPost("/unsubscribe", { body: { email, reason } })
+}
+
+export async function unsubscribeCompanySirets({ email, reason, sirets }: { email: string; reason: string; sirets: string[] }) {
+  return apiPost("/unsubscribe/sirets", { body: { email, reason, sirets } })
+}

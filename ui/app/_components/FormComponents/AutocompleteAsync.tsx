@@ -1,6 +1,11 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography, CircularProgress } from "@mui/material"
-import Autocomplete, { AutocompleteRenderGroupParams, AutocompleteRenderInputParams, AutocompleteRenderOptionState } from "@mui/material/Autocomplete"
+import Autocomplete, {
+  AutocompleteInputChangeReason,
+  AutocompleteRenderGroupParams,
+  AutocompleteRenderInputParams,
+  AutocompleteRenderOptionState,
+} from "@mui/material/Autocomplete"
 import { useQuery } from "@tanstack/react-query"
 import { useWindowSize } from "@uidotdev/usehooks"
 import match from "autosuggest-highlight/match"
@@ -98,9 +103,9 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
 
   const enabled = isOpen && debouncedQuery.length > 0
 
-  const onInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event && event.type === "change") {
-      setQuery(event?.target?.value ?? "")
+  const onInputChange = useCallback((_event: React.SyntheticEvent<Element, Event>, value: string, reason: AutocompleteInputChangeReason) => {
+    if (reason === "input") {
+      setQuery(value ?? "")
     }
   }, [])
 

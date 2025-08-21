@@ -11,6 +11,7 @@ import applicantModel from "./applicant.model.js"
 import applicantEmailLogModel from "./applicantEmailLog.model.js"
 import applicationsModel from "./applications.model.js"
 import appointmentsModel from "./appointments.model.js"
+import cacheClassificationModel from "./cacheClassification.model.js"
 import cacheDiagorienteModel from "./cacheDiagoriente.model.js"
 import cacheGeolocationModel from "./cacheGeolocation.model.js"
 import cacheInfosSiretModel from "./cacheInfosSiret.model.js"
@@ -49,9 +50,11 @@ import recruiterModel from "./recruiter.model.js"
 import lbaCompanyLegacyModel from "./recruteurLbaLegacy.model.js"
 import recruteurLbaUpdateEventModel from "./recruteurLbaUpdateEvent.model.js"
 import { referentielCommuneModel } from "./referentiel/communes.model.js"
+import referentielEngagementEntrepriseModel from "./referentielEngagementEntreprise.model.js"
 import referentielOnisepModel from "./referentielOnisep.model.js"
 import referentielOpcoModel from "./referentielOpco.model.js"
 import reportedCompanyModel from "./reportedCompany.model.js"
+import resumeTokensModel from "./resumeTokens.model.js"
 import roleManagementModel from "./roleManagement.model.js"
 import roleManagement360Model from "./roleManagement360.model.js"
 import romeModel from "./rome.model.js"
@@ -78,6 +81,7 @@ const modelDescriptorMap = {
   [cacheDiagorienteModel.collectionName]: cacheDiagorienteModel,
   [cacheGeolocationModel.collectionName]: cacheGeolocationModel,
   [cfaModel.collectionName]: cfaModel,
+  [cacheClassificationModel.collectionName]: cacheClassificationModel,
   [credentialsModel.collectionName]: credentialsModel,
   [customEmailETFAModel.collectionName]: customEmailETFAModel,
   [diplomesMetiersModel.collectionName]: diplomesMetiersModel,
@@ -106,6 +110,8 @@ const modelDescriptorMap = {
   [recruteurLbaUpdateEventModel.collectionName]: recruteurLbaUpdateEventModel,
   [referentielOnisepModel.collectionName]: referentielOnisepModel,
   [referentielOpcoModel.collectionName]: referentielOpcoModel,
+  [referentielEngagementEntrepriseModel.collectionName]: referentielEngagementEntrepriseModel,
+  [resumeTokensModel.collectionName]: resumeTokensModel,
   [romeModel.collectionName]: romeModel,
   [roleManagementModel.collectionName]: roleManagementModel,
   [roleManagement360Model.collectionName]: roleManagement360Model,

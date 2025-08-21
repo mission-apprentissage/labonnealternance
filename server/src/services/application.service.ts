@@ -953,10 +953,10 @@ export const processApplicationCandidateHardbounceEvent = async (payload) => {
   return false
 }
 
-export const obfuscateLbaCompanyApplications = async (company_siret: string) => {
+export const obfuscateLbaCompanyApplications = async (sirets: string[]) => {
   const fakeEmail = "faux_email@faux-domaine-compagnie.com"
   await getDbCollection("applications").updateMany(
-    { job_origin: LBA_ITEM_TYPE.RECRUTEURS_LBA, company_siret },
+    { job_origin: LBA_ITEM_TYPE.RECRUTEURS_LBA, company_siret: { $in: sirets } },
     { $set: { to_company_message_id: fakeEmail, company_email: fakeEmail } }
   )
 }
@@ -1266,7 +1266,7 @@ const getJobOrCompanyFromApplication = async (application: IApplication) => {
       break
     }
     case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
-      recruiter = await getDbCollection("jobs_partners").findOne({ workplace_siret: application.company_siret! })
+      job = await getDbCollection("jobs_partners").findOne({ workplace_siret: application.company_siret! })
       break
     }
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES: {
@@ -1301,7 +1301,7 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
   const { recruiter, job, type } = jobOrCompany ?? {}
   let recruiter_phone = ""
 
-  if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA || type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
+  if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     if (!recruiter) throw internal(`Société pour ${application.job_origin} introuvable`)
 
     const { managed_by } = recruiter
@@ -1309,7 +1309,7 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
     recruiter_phone = recruiter.phone || ""
   }
 
-  if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) {
+  if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES || type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     recruiter_phone = job.apply_phone || ""
   }
 

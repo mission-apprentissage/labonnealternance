@@ -7,6 +7,7 @@ exports[`importCleverConnect > should test the import of clever connect data int
     "apply_url": "https://www.meteojob.com/jobads/00000070?utm_source=labonnealternance&utm_medium=aggregator-free&utm_campaign=alternance",
     "business_error": null,
     "contract_duration": 12,
+    "contract_is_disabled_elligible": false,
     "contract_remote": null,
     "contract_start": null,
     "contract_type": [
@@ -44,6 +45,7 @@ Profil: <ul><li><p>Vous êtes organisé, polyvalent, curieux et vous avez le sen
     "offer_status_history": [],
     "offer_target_diploma": null,
     "offer_title": "VENDEUR MAGASINIER H/F",
+    "offer_to_be_acquired_knowledge": [],
     "offer_to_be_acquired_skills": [],
     "partner_job_id": "00000070",
     "partner_label": "Meteojob",
@@ -77,6 +79,7 @@ Profil: <ul><li><p>Vous êtes organisé, polyvalent, curieux et vous avez le sen
     "apply_url": "https://www.meteojob.com/jobads/00000400?utm_source=labonnealternance&utm_medium=aggregator-free&utm_campaign=alternance",
     "business_error": null,
     "contract_duration": null,
+    "contract_is_disabled_elligible": false,
     "contract_remote": null,
     "contract_start": null,
     "contract_type": [
@@ -111,6 +114,7 @@ Profil: VOTRE PROFILSi aider les autres est votre mission et la bienveillance vo
       "label": "BTS, DEUST, autres formations niveau (Bac+2)",
     },
     "offer_title": "Assistant(e) de Vie aux familles en alternance H/F",
+    "offer_to_be_acquired_knowledge": [],
     "offer_to_be_acquired_skills": [],
     "partner_job_id": "00000400",
     "partner_label": "Meteojob",
@@ -144,6 +148,7 @@ Profil: VOTRE PROFILSi aider les autres est votre mission et la bienveillance vo
     "apply_url": "https://www.meteojob.com/jobads/00000629?utm_source=labonnealternance&utm_medium=aggregator-free&utm_campaign=alternance",
     "business_error": null,
     "contract_duration": null,
+    "contract_is_disabled_elligible": false,
     "contract_remote": null,
     "contract_start": null,
     "contract_type": [
@@ -184,6 +189,7 @@ Profil: <ul><li><p>Adepte du terrain</p></li><li><p>Défier les objectifs commer
       "label": "BP, Bac, autres formations niveau (Bac)",
     },
     "offer_title": "Commercial(e) H/F",
+    "offer_to_be_acquired_knowledge": [],
     "offer_to_be_acquired_skills": [],
     "partner_job_id": "00000629",
     "partner_label": "Meteojob",
