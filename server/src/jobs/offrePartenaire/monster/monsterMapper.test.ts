@@ -1,6 +1,5 @@
 //import { ObjectId } from "mongodb"
 import { ObjectId } from "mongodb"
-import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { monsterJobToJobsPartners } from "./monsterMapper"
@@ -90,7 +89,7 @@ describe("monsterJobToJobsPartners", () => {
         "https://www.monster.fr/emploi/recherche?q=Charg%C3%A9+dAffaires+Professionnels++Territoire+de+Boulogne+Billancourt++H&where=Boulogne-Billancourt&id=001003b0-a719-4a77-8b6b-01c8503afb8f&mstr_dist=true&utm_medium=feeds_boards&utm_term=unpaid&utm_content=prospecting&utm_source=labonnealternance&utm_campaign=labonnealternance_fr",
       errors: [],
       validated: false,
-      business_error: JOB_PARTNER_BUSINESS_ERROR.CFA,
+      business_error: null,
       jobs_in_success: [],
     })
   })
