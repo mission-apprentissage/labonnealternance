@@ -5,7 +5,6 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
 
-import { isCompanyInBlockedCfaList } from "../blockJobsPartnersFromCfaList"
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
 export const ZKelioJob = z
@@ -66,9 +65,6 @@ export const kelioJobToJobsPartners = (job: IKelioJob): IComputedJobsPartners =>
   }
 
   let business_error: string | null = null
-  if (isCompanyInBlockedCfaList(company.name)) {
-    business_error = JOB_PARTNER_BUSINESS_ERROR.CFA
-  }
 
   let contract_type: ("Apprentissage" | "Professionnalisation")[] = []
   if (job_type === "Alternating") {

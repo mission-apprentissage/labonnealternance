@@ -3,6 +3,7 @@ import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
 import { logger } from "@/common/logger"
+import { blockJobsPartnersFromCfaList } from "@/jobs/offrePartenaire/blockJobsPartnersFromCfaList"
 import { detectClassificationJobsPartners } from "@/jobs/offrePartenaire/detectClassificationJobsPartners"
 import { fillEntrepriseEngagementJobsPartners } from "@/jobs/offrePartenaire/fillEntrepriseEngagementJobsPartners"
 import { formatTextFieldsJobsPartners } from "@/jobs/offrePartenaire/formatTextFieldsJobsPartners"
@@ -31,6 +32,7 @@ export const fillComputedJobsPartners = async (partialContext: Partial<FillCompu
   const context: FillComputedJobsPartnersContext = { ...defaultFillComputedJobsPartnersContext, ...partialContext }
   await fillEntrepriseEngagementJobsPartners(context)
   await formatTextFieldsJobsPartners(context)
+  await blockJobsPartnersFromCfaList(context)
   await detectClassificationJobsPartners(context)
 
   await fillOpcoInfosForPartners(context)
