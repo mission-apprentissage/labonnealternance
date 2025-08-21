@@ -1775,7 +1775,7 @@ const cfaCompanyList = [
   "YOUSCHOOL",
   "ZILLENIUM",
   "ZLS",
-  "ZONE 01 ROUEN"
+  "ZONE 01 ROUEN",
 ]
 
 export const stringNormaliser = (str: string) => {
