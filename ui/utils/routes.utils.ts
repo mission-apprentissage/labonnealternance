@@ -389,10 +389,10 @@ export const PAGES = {
       title: "Imprimer mon offre",
     }),
     genericRecherche({ rechercheParams, mode }: { rechercheParams: Partial<IRecherchePageParams> | null; mode: IRechercheMode }): IPage {
-      if (mode == "formations-only") {
+      if (mode === IRechercheMode.FORMATIONS_ONLY) {
         return PAGES.dynamic.rechercheFormation(rechercheParams)
       }
-      if (mode === "jobs-only") {
+      if (mode === IRechercheMode.JOBS_ONLY) {
         return PAGES.dynamic.rechercheEmploi(rechercheParams)
       }
       return PAGES.dynamic.recherche(rechercheParams)

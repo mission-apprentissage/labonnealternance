@@ -139,7 +139,7 @@ export function buildRecherchePageParams(rechercheParams: Partial<IRecherchePage
   }
 
   // In mode formations-only & jobs-only theses params cannot be modified
-  if (mode === "default") {
+  if (mode === IRechercheMode.DEFAULT) {
     if (rechercheParams.displayEntreprises === false) {
       query.set("displayEntreprises", "false")
     }
@@ -220,7 +220,7 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
     radius,
   }
 
-  if (mode === "formations-only") {
+  if (mode === IRechercheMode.FORMATIONS_ONLY) {
     return {
       ...commonProps,
       displayEntreprises: false,
@@ -230,7 +230,7 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
     }
   }
 
-  if (mode === "jobs-only") {
+  if (mode === IRechercheMode.JOBS_ONLY) {
     return {
       ...commonProps,
       displayEntreprises: true,
