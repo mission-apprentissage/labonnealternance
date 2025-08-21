@@ -1775,8 +1775,6 @@ const cfaCompanyList = [
   "ÉCOLES AFTEC",
 ]
 
-console.log(JSON.stringify([...cfaCompanyList.map((x) => x.toLocaleUpperCase())].sort(), null, 2))
-
 const stringNormaliser = (str: string): string => {
   return removeAccents(str.toLowerCase())
 }
