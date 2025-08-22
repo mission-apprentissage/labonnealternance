@@ -7,11 +7,12 @@ import { ApplicationIntention, ApplicationIntentionDefaultText, RefusalReasons }
 import * as Yup from "yup"
 
 import { CustomFormControl } from "@/app/_components/CustomFormControl"
+import CustomInput from "@/app/_components/CustomInput"
 import { SuccessCircle } from "@/theme/components/icons"
 import { getApplicationDataForIntention } from "@/utils/api"
 
 import { apiPost } from "../../utils/api.utils"
-import { CustomInput, LoadingEmptySpace } from "../espace_pro"
+import { LoadingEmptySpace } from "../espace_pro"
 
 import { IntensionFormNavigation } from "./IntensionFormNavigation"
 import { IntensionFormResult } from "./IntentionFormResult"

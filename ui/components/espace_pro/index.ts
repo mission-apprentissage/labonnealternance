@@ -2,7 +2,6 @@ import AnimationContainer from "../../app/(espace-pro)/espace-pro/(connected)/_c
 
 import ConfirmationDesactivationUtilisateur from "./ConfirmationDesactivationUtilisateur"
 import ConfirmationModificationOpco from "./ConfirmationModificationOpco"
-import CustomInput from "./CustomInput"
 import DropdownCombobox from "./DropdownCombobox"
 import InfoPopover from "./InfoPopover"
 import InfoTooltip from "./InfoToolTip"
@@ -14,7 +13,6 @@ export {
   AnimationContainer,
   ConfirmationDesactivationUtilisateur,
   ConfirmationModificationOpco,
-  CustomInput,
   DropdownCombobox,
   InfoPopover,
   InfoTooltip,

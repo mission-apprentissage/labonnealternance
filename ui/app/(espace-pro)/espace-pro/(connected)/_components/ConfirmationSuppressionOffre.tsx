@@ -6,9 +6,9 @@ import { JOB_STATUS } from "shared"
 import { z } from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
-import CustomInput from "@/app/(espace-pro)/_components/CustomInput"
 import { CustomSelect } from "@/app/(espace-pro)/_components/CustomSelect"
 import { CustomFormControl } from "@/app/_components/CustomFormControl"
+import CustomInput from "@/app/_components/CustomInput"
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
 import { cancelOffreFromAdmin } from "@/utils/api"
 

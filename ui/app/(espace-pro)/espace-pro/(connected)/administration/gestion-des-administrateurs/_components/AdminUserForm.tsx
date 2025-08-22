@@ -9,9 +9,9 @@ import { INewSuperUser, IUserWithAccountJson, ZNewSuperUser, ZUserWithAccountFie
 import { Jsonify } from "type-fest"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
-import CustomInput from "@/app/(espace-pro)/_components/CustomInput"
 import { CustomSelect } from "@/app/(espace-pro)/_components/CustomSelect"
 import { CustomFormControl } from "@/app/_components/CustomFormControl"
+import CustomInput from "@/app/_components/CustomInput"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 import { createSuperUser, updateUser } from "@/utils/api"
 import { apiDelete, ApiError } from "@/utils/api.utils"

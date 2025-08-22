@@ -12,11 +12,11 @@ import * as Yup from "yup"
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 import ModificationCompteEmail from "@/app/(espace-pro)/espace-pro/(connected)/_components/ModificationCompteEmail"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
+import CustomInput from "@/app/_components/CustomInput"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 
 import { AUTHTYPE } from "../../../../../common/contants"
 import { LoadingEmptySpace } from "../../../../../components/espace_pro"
-import CustomInput from "../../../../../components/espace_pro/CustomInput"
 import { ArrowRightLine } from "../../../../../theme/components/icons"
 import { getUser, updateUserWithAccountFields } from "../../../../../utils/api"
 

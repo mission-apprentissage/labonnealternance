@@ -1,28 +1,31 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Image, Input } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box, FormControl, FormHelperText, FormLabel, Input, Typography } from "@mui/material"
 import { useField } from "formik"
 import parse from "html-react-parser"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 
-import { Warning } from "../../theme/components/icons"
-import Link from "../Link"
+import Link from "@/app/_components/Link"
+import { Warning } from "@/theme/components/icons"
 
 const CustomInput = (props) => {
   const [field, meta] = useField(props)
   return (
-    <Box pb={props.pb ?? "5"}>
-      <FormControl isInvalid={meta.error && meta.touched} isRequired={props.required ?? true}>
-        <FormLabel _invalid={{ color: "red.500" }}>{props.label}</FormLabel>
-        {props.info && <FormHelperText pb={2}>{props.info}</FormHelperText>}
-        <Input {...field} {...props} />
+    <Box pb={props.pb ?? 3}>
+      <FormControl sx={{ width: "100%" }} error={meta.error && meta.touched} required={props.required ?? true}>
+        <FormLabel sx={{ fontWeight: 700 }} error={meta.error && meta.touched}>
+          {props.label}
+        </FormLabel>
+        {props.info && <FormHelperText sx={{ pb: 1 }}>{props.info}</FormHelperText>}
+        <Input className={fr.cx("fr-input")} {...field} {...props} />
         {props.helper && <FormHelperText>{props.helper}</FormHelperText>}
-        <FormErrorMessage>
-          {meta.error === BusinessErrorCodes.NON_DIFFUSIBLE ? (
+        {meta.error &&
+          (meta.error === BusinessErrorCodes.NON_DIFFUSIBLE ? (
             <Box ml={1}>
-              <Flex alignItems="center">
+              <Box sx={{ display: "flex", alignItems: "center" }}>
                 <Warning mr={1} />
                 Les informations de votre entreprise sont non diffusibles.
-              </Flex>
+              </Box>
               <Link
                 href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Espace%20pro%20-%20Donnees%20entreprise%20non%20diffusibles"
                 title="contacter l'équipe labonnealternance - nouvelle fenêtre"
@@ -34,19 +37,17 @@ const CustomInput = (props) => {
               </Link>
             </Box>
           ) : (
-            <Flex direction="row" alignItems="center">
-              {meta.error === "Société inconnue" ? <Image src="/images/icons/crossInOctogon.svg" alt="" h="13px" aria-hidden="true" m={0} mt={1} /> : <Warning m={0} />}
-              <Flex ml={1}>
-                <div>{parse(meta.error || "")}</div>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Box sx={{ display: "flex" }} ml={1}>
+                <Typography className={fr.cx("fr-message--error")}>{parse(meta.error || "")}</Typography>
                 {meta.error?.includes("déjà associé") && (
                   <Link href="/espace-pro/authentification" textColor="bluefrance.500" textDecoration="underline" ml={1}>
                     Connexion
                   </Link>
                 )}
-              </Flex>
-            </Flex>
-          )}
-        </FormErrorMessage>
+              </Box>
+            </Box>
+          ))}
       </FormControl>
     </Box>
   )

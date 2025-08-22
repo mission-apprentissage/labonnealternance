@@ -5,7 +5,7 @@ import { useCombobox, UseComboboxState } from "downshift"
 import { useField } from "formik"
 import { useState } from "react"
 
-import CustomInput from "./CustomInput"
+import CustomInput from "@/app/_components/CustomInput"
 
 const neutralItemProps = {
   padding: "0.4rem 0.8rem 0.4rem 0.8rem",

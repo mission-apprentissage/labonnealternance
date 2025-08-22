@@ -2,9 +2,8 @@ import { Box, Spinner, Text } from "@chakra-ui/react"
 import { useCombobox } from "downshift"
 import { useMemo, useState } from "react"
 
+import CustomInput from "@/app/_components/CustomInput"
 import { debounce } from "@/common/utils/debounce"
-
-import CustomInput from "./CustomInput"
 
 export default function AutocompleteAsync<T>({
   onSelectItem,
