@@ -11,7 +11,7 @@ import { useLocalStorage } from "@/app/hooks/useLocalStorage"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { reportLbaItem } from "@/utils/api"
 
-import { CustomRadio } from "../espace_pro/CustomRadio"
+import { CustomRadio } from "../../app/_components/CustomRadio"
 import { InfoTooltipOrModal } from "../InfoTooltipOrModal"
 import { ModalReadOnly } from "../ModalReadOnly"
 
@@ -126,12 +126,13 @@ export const ReportJobLink = ({
                       radioProps={{
                         display: "flex",
                         flexDirection: "column",
-                        gap: 4,
-                        mb: 6,
+                        gap: 1,
+                        mb: 1,
                       }}
+                      size="small"
                       name="reason"
                       value={values.reason}
-                      onChange={(newValue) => setFieldValue("reason", newValue, true)}
+                      onChange={(_, newValue) => setFieldValue("reason", newValue, true)}
                       possibleValues={content.motifs}
                     />
                     {values.reason && !noAdditionalMessage.includes(values.reason) && (
