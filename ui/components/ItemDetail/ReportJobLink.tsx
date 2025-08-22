@@ -6,11 +6,11 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { z } from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
+import { CustomFormControl } from "@/app/_components/CustomFormControl"
 import { useLocalStorage } from "@/app/hooks/useLocalStorage"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { reportLbaItem } from "@/utils/api"
 
-import { CustomFormControl } from "../espace_pro/CustomFormControl"
 import { CustomRadio } from "../espace_pro/CustomRadio"
 import { InfoTooltipOrModal } from "../InfoTooltipOrModal"
 import { ModalReadOnly } from "../ModalReadOnly"
