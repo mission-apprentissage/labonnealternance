@@ -1,5 +1,85 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`exportJobsToS3V2 > should publish a partenariat job 1`] = `
+[
+  {
+    "apply": {
+      "phone": "0123456789",
+      "recipient_id": "partners_66c52e00c8f12f66f971106f",
+      "url": "https://apply.com",
+    },
+    "contract": {
+      "duration": 6,
+      "remote": "onsite",
+      "start": "2021-01-28T15:00:00.000Z",
+      "type": [
+        "Apprentissage",
+        "Professionnalisation",
+      ],
+    },
+    "identifier": {
+      "id": "66c52e00c8f12f66f971106f",
+      "partner_job_id": "id_1",
+      "partner_label": "Hellowork",
+    },
+    "is_delegated": true,
+    "offer": {
+      "access_conditions": [
+        "offer_access_conditions",
+      ],
+      "description": "Attention il te faut une super motivation pour ce job",
+      "desired_skills": [
+        "offer_desired_skills",
+      ],
+      "opening_count": 1,
+      "publication": {
+        "creation": "2021-01-28T15:00:00.000Z",
+        "expiration": "2050-01-01T00:00:00.000Z",
+      },
+      "rome_codes": [
+        "D1102",
+      ],
+      "status": "Active",
+      "target_diploma": {
+        "european": "3",
+        "label": "Master",
+      },
+      "title": "Une super offre d'alternance",
+      "to_be_acquired_skills": [
+        "offer_to_be_acquired_skills",
+      ],
+    },
+    "workplace": {
+      "brand": null,
+      "description": "workplace_description",
+      "domain": {
+        "idcc": 1003,
+        "naf": {
+          "code": "6201Z",
+          "label": "Programmation informatique",
+        },
+        "opco": "ATLAS",
+      },
+      "legal_name": "nom CFA",
+      "location": {
+        "address": "rue du cfa 75002 Paris",
+        "geopoint": {
+          "coordinates": [
+            0,
+            0,
+          ],
+          "type": "Point",
+        },
+      },
+      "name": "workplace_name",
+      "siret": "12345678901234",
+      "size": "0-50",
+      "website": "http://workplace_website.com",
+    },
+  },
+]
+`;
+
 exports[`exportJobsToS3V2 > should publish jobs 1`] = `
 [
   {
@@ -150,166 +230,6 @@ exports[`exportJobsToS3V2 > should publish jobs 1`] = `
       "siret": "13002526500013",
       "size": "0-50",
       "website": "http://workplace_website.com",
-    },
-  },
-  {
-    "apply": {
-      "phone": null,
-      "recipient_id": "recruiters_66c52e0088651f3c2cd0d785",
-      "url": "http://localhost:3000/emploi/offres_emploi_lba/66c52e0088651f3c2cd0d785/Boulanger",
-    },
-    "contract": {
-      "duration": null,
-      "remote": null,
-      "start": "2021-01-28T15:00:00.000Z",
-      "type": [
-        "Apprentissage",
-      ],
-    },
-    "identifier": {
-      "id": "66c52e0088651f3c2cd0d785",
-      "partner_job_id": "66c52e0088651f3c2cd0d785",
-      "partner_label": "offres_emploi_lba",
-    },
-    "is_delegated": false,
-    "offer": {
-      "access_conditions": [
-        "Ce métier est accessible avec un diplôme de fin d'études secondaires (brevet des collèges) à Bac (professionnel, Brevet Professionnel, ...) dans le secteur tertiaire. Il est également accessible avec une expérience professionnelle sans diplôme particulier. La maîtrise de l'outil bureautique (traitement de texte, tableur, ...) peut être requise.",
-      ],
-      "description": "Exécute des travaux administratifs courants (vérification de documents, frappe et mise en forme de courriers pré-établis, suivi de dossier administratifs, ...) selon l'organisation de la structure ou du service. Peut être en charge d'activités de reprographie et d'archivage. Peut réaliser l'accueil de la structure.",
-      "desired_skills": [
-        "Faire preuve de rigueur et de précision",
-        "Organiser son travail selon les priorités et les objectifs",
-        "Être à l'écoute, faire preuve d'empathie",
-      ],
-      "opening_count": 1,
-      "publication": {
-        "creation": null,
-        "expiration": null,
-      },
-      "rome_codes": [
-        "M1602",
-      ],
-      "status": "Active",
-      "target_diploma": null,
-      "title": "Boulanger",
-      "to_be_acquired_skills": [
-        "Production, Fabrication: Procéder à l'enregistrement, au tri, à l'affranchissement du courrier",
-        "Production, Fabrication: Réaliser des travaux de reprographie",
-        "Gestion des stocks: Contrôler l'état des stocks",
-        "Gestion des stocks: Définir des besoins en approvisionnement",
-        "Logistique: Organiser le traitement des commandes",
-        "Relation client: Accueillir, orienter, informer une personne",
-        "Organisation: Contrôler la conformité des données ou des documents",
-        "Organisation: Corriger et mettre en forme un document",
-        "Organisation: Numériser des documents, médias ou supports techniques",
-        "Organisation: Utiliser les outils bureautiques",
-        "Organisation: Établir, mettre à jour un dossier, une base de données",
-      ],
-    },
-    "workplace": {
-      "brand": null,
-      "description": null,
-      "domain": {
-        "idcc": 1000,
-        "naf": null,
-        "opco": "ATLAS",
-      },
-      "legal_name": null,
-      "location": {
-        "address": "3 rue du loup 75001 Paris",
-        "geopoint": {
-          "coordinates": [
-            0,
-            0,
-          ],
-          "type": "Point",
-        },
-      },
-      "name": null,
-      "siret": "11000001500013",
-      "size": null,
-      "website": null,
-    },
-  },
-  {
-    "apply": {
-      "phone": null,
-      "recipient_id": "recruiters_66c52e00f03faa7ce1aaccbc",
-      "url": "http://localhost:3000/emploi/offres_emploi_lba/66c52e00f03faa7ce1aaccbc/Patissier",
-    },
-    "contract": {
-      "duration": null,
-      "remote": null,
-      "start": "2021-01-28T15:00:00.000Z",
-      "type": [
-        "Apprentissage",
-      ],
-    },
-    "identifier": {
-      "id": "66c52e00f03faa7ce1aaccbc",
-      "partner_job_id": "66c52e00f03faa7ce1aaccbc",
-      "partner_label": "offres_emploi_lba",
-    },
-    "is_delegated": false,
-    "offer": {
-      "access_conditions": [
-        "Ce métier est accessible avec un diplôme de fin d'études secondaires (brevet des collèges) à Bac (professionnel, Brevet Professionnel, ...) dans le secteur tertiaire. Il est également accessible avec une expérience professionnelle sans diplôme particulier. La maîtrise de l'outil bureautique (traitement de texte, tableur, ...) peut être requise.",
-      ],
-      "description": "Exécute des travaux administratifs courants (vérification de documents, frappe et mise en forme de courriers pré-établis, suivi de dossier administratifs, ...) selon l'organisation de la structure ou du service. Peut être en charge d'activités de reprographie et d'archivage. Peut réaliser l'accueil de la structure.",
-      "desired_skills": [
-        "Faire preuve de rigueur et de précision",
-        "Organiser son travail selon les priorités et les objectifs",
-        "Être à l'écoute, faire preuve d'empathie",
-      ],
-      "opening_count": 1,
-      "publication": {
-        "creation": null,
-        "expiration": null,
-      },
-      "rome_codes": [
-        "M1602",
-      ],
-      "status": "Active",
-      "target_diploma": null,
-      "title": "Patissier",
-      "to_be_acquired_skills": [
-        "Production, Fabrication: Procéder à l'enregistrement, au tri, à l'affranchissement du courrier",
-        "Production, Fabrication: Réaliser des travaux de reprographie",
-        "Gestion des stocks: Contrôler l'état des stocks",
-        "Gestion des stocks: Définir des besoins en approvisionnement",
-        "Logistique: Organiser le traitement des commandes",
-        "Relation client: Accueillir, orienter, informer une personne",
-        "Organisation: Contrôler la conformité des données ou des documents",
-        "Organisation: Corriger et mettre en forme un document",
-        "Organisation: Numériser des documents, médias ou supports techniques",
-        "Organisation: Utiliser les outils bureautiques",
-        "Organisation: Établir, mettre à jour un dossier, une base de données",
-      ],
-    },
-    "workplace": {
-      "brand": null,
-      "description": null,
-      "domain": {
-        "idcc": 1000,
-        "naf": null,
-        "opco": "ATLAS",
-      },
-      "legal_name": null,
-      "location": {
-        "address": "3 rue du loup 75001 Paris",
-        "geopoint": {
-          "coordinates": [
-            0,
-            0,
-          ],
-          "type": "Point",
-        },
-      },
-      "name": null,
-      "siret": "11000001500013",
-      "size": null,
-      "website": null,
     },
   },
 ]

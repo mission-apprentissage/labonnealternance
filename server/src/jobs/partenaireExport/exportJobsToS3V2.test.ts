@@ -2,10 +2,7 @@ import fs from "node:fs/promises"
 import Stream from "stream"
 
 import { ObjectId } from "mongodb"
-import { IJob, IRecruiter, JOB_STATUS, JOB_STATUS_ENGLISH } from "shared"
-import { OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/recruteur"
-import { generateJobFixture, generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
-import { generateReferentielRome } from "shared/fixtures/rome.fixture"
+import { JOB_STATUS_ENGLISH } from "shared"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -17,28 +14,6 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import { generateJobsPartnersFull } from "../../../../shared/src/fixtures/jobPartners.fixture"
 
 useMongo()
-
-const generateValidRecruiter = (props: Partial<IRecruiter> = {}): IRecruiter => {
-  return generateRecruiterFixture({
-    idcc: 1000,
-    opco: OPCOS_LABEL.ATLAS,
-    status: RECRUITER_STATUS.ACTIF,
-    address: "3 rue du loup 75001 Paris",
-    geopoint: {
-      type: "Point",
-      coordinates: [0, 0],
-    },
-    jobs: [generateValidJob()],
-    ...props,
-  })
-}
-
-const generateValidJob = (props: Partial<IJob> = {}): IJob => {
-  return generateJobFixture({
-    job_status: JOB_STATUS.ACTIVE,
-    ...props,
-  })
-}
 
 const exportJobsToS3V2ForTests = async () => {
   let content = ""
@@ -57,7 +32,6 @@ describe("exportJobsToS3V2", () => {
     return async () => {
       vi.useRealTimers()
       await getDbCollection("jobs_partners").deleteMany({})
-      await getDbCollection("recruiters").deleteMany({})
       const filepath = new URL(`./${EXPORT_JOBS_TO_S3_V2_FILENAME}`, import.meta.url).pathname
       try {
         await fs.unlink(filepath)
@@ -70,83 +44,37 @@ describe("exportJobsToS3V2", () => {
   it("should publish jobs", async () => {
     // given
     await createJobPartner(generateJobsPartnersFull({ _id: new ObjectId("66c52e00c8f12f66f971106f"), partner_job_id: "id_1" }))
-    await getDbCollection("referentielromes").insertOne(generateReferentielRome())
     await createJobPartner(generateJobsPartnersFull({ _id: new ObjectId("66c52e00393b331450d8bedc"), partner_job_id: "id_2" }))
-    await getDbCollection("recruiters").insertMany([
-      generateValidRecruiter({
-        _id: new ObjectId("66c52e00799958c69908c660"),
-        jobs: [
-          generateValidJob({
-            _id: new ObjectId("66c52e0088651f3c2cd0d785"),
-            rome_appellation_label: "Boulanger",
-          }),
-          generateValidJob({
-            _id: new ObjectId("66c52e00f03faa7ce1aaccbc"),
-            rome_appellation_label: "Patissier",
-          }),
-        ],
-      }),
-    ])
     // when
     const jobs = await exportJobsToS3V2ForTests()
     // then
+    expect.soft(jobs.length).toBe(2)
     expect.soft(jobs).toMatchSnapshot()
-    expect.soft(jobs.length).toBe(4)
+  })
+  it("should publish a partenariat job", async () => {
+    // given
+    await createJobPartner(
+      generateJobsPartnersFull({
+        _id: new ObjectId("66c52e00c8f12f66f971106f"),
+        partner_job_id: "id_1",
+        is_delegated: true,
+        cfa_siret: "12345678901234",
+        cfa_address_label: "rue du cfa 75002 Paris",
+        cfa_apply_email: "cfa@cfa.fr",
+        cfa_apply_phone: "0123456789",
+        cfa_legal_name: "nom CFA",
+      })
+    )
+    // when
+    const jobs = await exportJobsToS3V2ForTests()
+    // then
+    expect.soft(jobs.length).toBe(1)
+    expect.soft(jobs).toMatchSnapshot()
   })
   it("should not publish a job partner that is not active", async () => {
     // given
     await createJobPartner(generateJobsPartnersFull({ offer_status: JOB_STATUS_ENGLISH.ANNULEE }))
     await createJobPartner(generateJobsPartnersFull({ offer_status: JOB_STATUS_ENGLISH.POURVUE }))
-    // when
-    const jobs = await exportJobsToS3V2ForTests()
-    // then
-    expect.soft(jobs.length).toBe(0)
-  })
-  it("should not publish a recruiter that is not active", async () => {
-    // given
-    await getDbCollection("recruiters").insertMany([
-      generateValidRecruiter({
-        status: RECRUITER_STATUS.EN_ATTENTE_VALIDATION,
-      }),
-      generateValidRecruiter({
-        status: RECRUITER_STATUS.ARCHIVE,
-      }),
-    ])
-    // when
-    const jobs = await exportJobsToS3V2ForTests()
-    // then
-    expect.soft(jobs.length).toBe(0)
-  })
-  it("should not publish a recruiter that is does not have a valid geopoint", async () => {
-    // given
-    await getDbCollection("recruiters").insertMany([
-      generateValidRecruiter({
-        geopoint: null,
-      }),
-    ])
-    // when
-    const jobs = await exportJobsToS3V2ForTests()
-    // then
-    expect.soft(jobs.length).toBe(0)
-  })
-  it("should not publish a inative jobs", async () => {
-    // given
-    await getDbCollection("recruiters").insertMany([
-      generateValidRecruiter({
-        jobs: [
-          generateValidJob(),
-          generateValidJob({
-            job_status: JOB_STATUS.ANNULEE,
-          }),
-          generateValidJob({
-            job_status: JOB_STATUS.POURVUE,
-          }),
-          generateValidJob({
-            job_status: JOB_STATUS.EN_ATTENTE,
-          }),
-        ],
-      }),
-    ])
     // when
     const jobs = await exportJobsToS3V2ForTests()
     // then

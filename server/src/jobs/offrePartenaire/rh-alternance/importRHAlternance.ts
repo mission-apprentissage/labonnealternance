@@ -14,7 +14,6 @@ import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
 import dayjs from "@/services/dayjs.service"
 
-import { isCompanyInBlockedCfaList } from "../blockJobsPartnersFromCfaList"
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 import { rawToComputedJobsPartners } from "../rawToComputedJobsPartners"
 
@@ -102,7 +101,7 @@ export const rawRhAlternanceToComputedMapper =
   }: IRawRHAlternance["job"]): IComputedJobsPartners => {
     const offer_creation = jobSubmitDateTime ? dayjs.tz(jobSubmitDateTime).toDate() : now
 
-    const business_error = jobType === "Alternance" ? (isCompanyInBlockedCfaList(companyName ?? "") ? JOB_PARTNER_BUSINESS_ERROR.CFA : null) : JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA
+    const business_error = jobType === "Alternance" ? null : JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA
 
     const computedJob: IComputedJobsPartners = {
       ...blankComputedJobPartner(),
