@@ -20,6 +20,7 @@ const CustomInput = (props) => {
         <Input className={fr.cx("fr-input")} {...field} {...props} />
         {props.helper && <FormHelperText>{props.helper}</FormHelperText>}
         {meta.error &&
+          meta.touched &&
           (meta.error === BusinessErrorCodes.NON_DIFFUSIBLE ? (
             <Box ml={1}>
               <Box sx={{ display: "flex", alignItems: "center" }}>
