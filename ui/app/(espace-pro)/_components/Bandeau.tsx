@@ -1,5 +1,5 @@
 import { Alert } from "@codegouvfr/react-dsfr/Alert"
-import { Link } from "@mui/material"
+import { Box, Link } from "@mui/material"
 
 export type BandeauProps = {
   header: React.ReactNode
@@ -20,5 +20,9 @@ export const Bandeau = ({ header, description, lien = null, type }: BandeauProps
     </>
   )
 
-  return <Alert severity={type === "success" ? "success" : "error"} sx={{ mb: 4 }} title={header} description={descriptionContent} />
+  return (
+    <Box mb={1}>
+      <Alert severity={type === "success" ? "success" : "error"} title={header} description={descriptionContent} />
+    </Box>
+  )
 }
