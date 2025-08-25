@@ -43,7 +43,7 @@ export const getLabClassificationBatch = async (jobs: IGetLabClassificationBatch
     }
     return validation.data
   } catch (error: any) {
-    console.log(error)
+    console.error(error)
     sentryCaptureException(error, { extra: { responseData: error.response?.data } })
     throw error
   }
