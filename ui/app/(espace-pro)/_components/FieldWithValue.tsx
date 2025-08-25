@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material"
 
-import InfoTooltip from "./InfoToolTip"
+import InfoTooltip from "../../../components/espace_pro/InfoToolTip"
 
 export const FieldWithValue = ({
   title,
