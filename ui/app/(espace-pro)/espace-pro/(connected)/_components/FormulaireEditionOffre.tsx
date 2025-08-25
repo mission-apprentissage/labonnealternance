@@ -1,6 +1,6 @@
 "use client"
 
-import { Box, Grid, Heading } from "@chakra-ui/react"
+import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { Formik } from "formik"
@@ -122,19 +122,20 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
         onSubmit={(values: any) => onSubmit(values)}
       >
         {({ values }) => (
-          <Grid
-            gridTemplateColumns={["repeat(1, 1fr)", "repeat(1, 1fr)", "repeat(2, 1fr)", "repeat(2, 1fr)"]}
-            gridTemplateRows={["repeat(3, auto)", "repeat(3, auto)", "auto 1fr", "auto 1fr"]}
+          <Box
+            sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(2, 1fr)" }, gridTemplateRows: { xs: "repeat(3, auto)", md: "auto 1fr" } }}
             rowGap={4}
             columnGap={4}
           >
             <Box>
-              <Heading className="big">Votre offre</Heading>
+              <Typography sx={{ fontWeight: 700 }} component="h2">
+                Votre offre
+              </Typography>
               <Box mt={4}>
                 <FormulaireEditionOffreFields onRomeChange={onRomeChange} />
               </Box>
             </Box>
-            <Box gridColumnStart={[1, 1, 2, 2]} gridRow={["2 / 3", "2 / 3", "1 / 3", "1 / 3"]}>
+            <Box sx={{ gridColumnStart: { xs: 1, md: 2 }, gridRow: { xs: "2 / 3", md: "1 / 3" } }}>
               {romeAndAppellation ? (
                 <RomeDetailWithQuery
                   selectedCompetences={{
@@ -155,7 +156,7 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
             <Box mt={8}>
               <FormulaireEditionOffreButtons offre={offre} competencesDirty={competencesDirty} />
             </Box>
-          </Grid>
+          </Box>
         )}
       </Formik>
     </>
