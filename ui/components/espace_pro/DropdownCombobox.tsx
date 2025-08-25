@@ -1,6 +1,6 @@
 "use client"
 
-import { Box, Text } from "@chakra-ui/react"
+import { Box, Typography } from "@mui/material"
 import { useCombobox, UseComboboxState } from "downshift"
 import { useField } from "formik"
 import { useState } from "react"
@@ -80,12 +80,12 @@ export default function DropdownCombobox(props) {
               data-testid={item.appellation}
               {...getItemProps({ item, index })}
             >
-              <Text fontSize="16px" fontWeight="700">
+              <Typography fontSize="16px" fontWeight="700">
                 {item.appellation}
-              </Text>
-              <Text fontSize="12px" color="#666666">
+              </Typography>
+              <Typography fontSize="12px" color="#666666">
                 {item.intitule}
-              </Text>
+              </Typography>
             </li>
           ))}
         {isOpen && inputItems.length === 0 && (
