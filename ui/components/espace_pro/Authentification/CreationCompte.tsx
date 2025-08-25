@@ -13,11 +13,11 @@ import { ApiError } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
+import { Bandeau, BandeauProps } from "../../../app/(espace-pro)/_components/Bandeau"
 import { AUTHTYPE } from "../../../common/contants"
 import { LogoContext } from "../../../context/contextLogo"
 import { WidgetContext } from "../../../context/contextWidget"
 import { getEntrepriseInformation, validateCfaCreation } from "../../../utils/api"
-import { Bandeau, BandeauProps } from "../Bandeau"
 import { InformationsSiret } from "../CreationRecruteur/InformationsSiret"
 import { AnimationContainer } from "../index"
 

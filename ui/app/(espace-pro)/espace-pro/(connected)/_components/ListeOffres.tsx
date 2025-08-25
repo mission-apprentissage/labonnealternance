@@ -1,9 +1,11 @@
 "use client"
-import { Box, Container, Flex, Heading, Image, Stack, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
+import { Box, Stack, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { IJobJson } from "shared"
 import { AUTHTYPE } from "shared/constants/index"
@@ -11,7 +13,7 @@ import { AUTHTYPE } from "shared/constants/index"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { OffresTabs } from "@/app/(espace-pro)/espace-pro/(connected)/_components/OffresTabs"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
-import { Building, Plus } from "@/theme/components/icons"
+import { Plus } from "@/theme/components/icons"
 import { getFormulaire } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -49,63 +51,64 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
   }
 
   const ActionButtons = (
-    <Flex>
+    <Box sx={{ display: "flex", alignItems: "center" }}>
       {!hideModify && user.type !== AUTHTYPE.OPCO && (
-        <Box mr={5}>
+        <Box mr={fr.spacing("3w")}>
           <Button priority="secondary" onClick={() => router.push(PAGES.dynamic.modificationEntreprise(user.type, establishment_id).getPath())}>
-            <Building mr={2} /> {user.type === AUTHTYPE.ENTREPRISE ? "Mes informations" : "Modifier l'entreprise"}
+            <Typography mr={fr.spacing("1w")} className={fr.cx("fr-icon-hotel-line")} />
+            {user.type === AUTHTYPE.ENTREPRISE ? "Mes informations" : "Modifier l'entreprise"}
           </Button>
         </Box>
       )}
       <Button onClick={navigateToCreation}>
-        <Plus mr={2} /> Ajouter une offre
+        <Plus sx={{ mr: fr.spacing("1w") }} /> Ajouter une offre
       </Button>
-    </Flex>
+    </Box>
   )
 
   if (jobs.length === 0) {
     return (
-      <Container maxW="container.xl" my={12}>
-        <Flex justify="space-between" align="center" flexWrap="wrap">
-          <Text fontSize="2rem" fontWeight={700}>
+      <Box sx={{ width: "100%", maxWidth: "1280px", my: fr.spacing("3v"), px: fr.spacing("2w") }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" }}>
+          <Typography fontSize="2rem" fontWeight={700}>
             {entrepriseTitle}
-          </Text>
+          </Typography>
           {ActionButtons}
-        </Flex>
+        </Box>
         <EmptySpace />
-      </Container>
+      </Box>
     )
   }
 
   return (
-    <Container maxW="container.xl" my={5} pb={4}>
-      <Flex justify="space-between" align="center" flexWrap="wrap">
-        <Text fontSize="2rem" fontWeight={700}>
+    <Box sx={{ width: "100%", maxWidth: "1280px", my: fr.spacing("3v"), px: fr.spacing("2w") }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" }}>
+        <Typography fontSize="2rem" fontWeight={700}>
           {establishment_raison_sociale ?? `SIRET ${establishment_siret}`}
-        </Text>
+        </Typography>
         {ActionButtons}
-      </Flex>
-      <Text fontWeight="700" py={6}>
+      </Box>
+      <Typography fontWeight="700" py={fr.spacing("3w")}>
         Offres de recrutement en alternance
-      </Text>
+      </Typography>
       <OffresTabs showStats={showStats} recruiter={data} buildOfferEditionUrl={getOffreEditionUrl} />
-    </Container>
+    </Box>
   )
 }
 
 const EmptySpace = () => (
-  <Stack direction={["column", "column", "column", "row"]} mt={12} pt={12} py={8} border="1px solid" borderColor="grey.400" spacing="32px">
-    <Flex justify={["center", "center", "center", "flex-end"]} align={["center", "center", "center", "flex-start"]} w={["100%", "100%", "100%", "350px"]} h="150px">
-      <Image src="/images/espace_pro/add-offer.svg" alt="" />
-    </Flex>
+  <Stack direction={{ xs: "column", lg: "row" }} spacing="32px" sx={{ mt: fr.spacing("4w"), py: fr.spacing("5w"), border: "1px solid", borderColor: "grey.400" }}>
+    <Box sx={{ display: "flex", justifyContent: { xs: "center", lg: "flex-end" }, align: { xs: "center", lg: "flex-start" } }} width={{ xs: "100%", lg: "350px" }} height="150px">
+      <Image src="/images/espace_pro/add-offer.svg" width="246" height="170" alt="" />
+    </Box>
 
-    <Box w={["100%", "100%", "100%", "600px"]}>
-      <Heading fontSize="2rem" pb={7}>
+    <Box px={{ xs: fr.spacing("2w") }} width={{ xs: "100%", lg: "600px" }}>
+      <Typography variant="h2" sx={{ mb: fr.spacing("3w") }}>
         Ajoutez votre première offre d’emploi en alternance.
-      </Heading>
-      <Text fontSize="1.375rem">
+      </Typography>
+      <Typography>
         Décrivez vos besoins de recrutement pour les afficher sur le site <span style={{ fontWeight: "700" }}>La bonne alternance</span> dès aujourd’hui.
-      </Text>
+      </Typography>
     </Box>
   </Stack>
 )
