@@ -88,9 +88,9 @@ fileignoreconfig:
 - filename: server/src/jobs/offrePartenaire/recruteur-lba/processRecruteursLba.test.ts
   checksum: b1f33d9c2c01bcb249d01b801847d4e71c21e4c6395e124c26012f2200576d04
 - filename: server/src/jobs/partenaireExport/__snapshots__/exportJobsToS3V2.test.ts.snap
-  checksum: 941b56f49d304948789f7cf9c23866a1b8367f0bcc39ba6e1b652a3a96bc366d
+  checksum: 1d8989e356043d6fae0614c654a5f683ef80df4807999698ead864c2fb99864c
 - filename: server/src/jobs/partenaireExport/exportJobsToS3V2.test.ts
-  checksum: 3cc8e98e8945fbd4b50e65ff62bcbfcc13e2846443b916335af82c467fa4ed5f
+  checksum: 4afb3d979ea0f354bae2f04d36a0b885564a24e3e9742603a64eb044d7301128
 - filename: server/src/migrations/20241022093834-remove-multi-published.ts
   checksum: a807c70a69c4c8bfc2a0568b466a7f274fd3840169ef3ef4792885d63cb75217
 - filename: server/src/security/accessApiApprentissageService.ts

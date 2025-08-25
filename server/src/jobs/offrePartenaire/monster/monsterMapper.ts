@@ -4,10 +4,9 @@ import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import dayjs from "shared/helpers/dayjs"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
 
-import { isCompanyInBlockedCfaList } from "../blockJobsPartnersFromCfaList"
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
 export const ZMonsterJob = z
@@ -81,7 +80,6 @@ export const monsterJobToJobsPartners = (job: IMonsterJob): IComputedJobsPartner
     apply_url: urlParsing.success ? urlParsing.data : null,
     offer_multicast: true,
     contract_type: [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
-    business_error: isCompanyInBlockedCfaList(CompanyName) ? JOB_PARTNER_BUSINESS_ERROR.CFA : null,
   }
   return partnerJob
 }

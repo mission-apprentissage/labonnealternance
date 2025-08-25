@@ -8,6 +8,7 @@ import { ZJobsPartnersOfferPrivate } from "./jobsPartners.model.js"
 
 export enum COMPUTED_ERROR_SOURCE {
   BLOCK_BAD_ROME = "BLOCK_BAD_ROME",
+  BLOCK_CFA_NAME = "BLOCK_CFA_NAME",
   API_SIRET = "api_siret",
   API_OPCO = "api_opco",
   API_ADRESSE = "api_adresse",
