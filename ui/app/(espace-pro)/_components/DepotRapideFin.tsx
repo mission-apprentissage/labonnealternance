@@ -107,7 +107,7 @@ function FinComponent(props: ComponentProps) {
   const shouldDisplayAccountInformation = !fromDashboard && !userIsInError
 
   return (
-    <BorderedBox display="flex" flexDirection={["column", "column", "column", "row"]} gap={[3, 4, 4, 12]} justifyContent="center" width="100%" mt={4}>
+    <BorderedBox sx={{ display: "flex", flexDirection: { xs: "column", lg: "row" }, gap: { xs: 1, lg: 2 }, justifyContent: "center", width: "100%", mt: 2 }}>
       <MailCloud w={["120px", "120px", "120px", "269px"]} h={["67px", "67px", "67px", "151px"]} />
       <Box>
         <Heading className="big" mb={3}>
