@@ -5,7 +5,9 @@ import { matchSorter } from "match-sorter"
 import React, { useMemo } from "react"
 import { useFilters, useFlexLayout, useGlobalFilter, usePagination, useSortBy, useTable } from "react-table"
 
-import { ArrowDownLine, ArrowUpLine } from "../../theme/components/icons"
+import { ArrowDownLine } from "@/app/_components/ArrowDownLine"
+import { ArrowUpDownLine } from "@/app/_components/ArrowUpDownLine"
+import { ArrowUpLine } from "@/app/_components/ArrowUpLine"
 
 import ExportButtonNew from "./ExportButton/ExportButtonNew"
 import PaginationReactQuery from "./PaginationReactQuery"
@@ -135,20 +137,9 @@ function TableNew({ data = [], columns, description = undefined, exportable, sea
                             <Typography className="fr-cell__title">
                               {column.render("Header")}
 
-                              {column.isSorted ? (
-                                column.isSortedDesc ? (
-                                  <ArrowDownLine pl={1} color="bluefrance.500" />
-                                ) : (
-                                  <ArrowUpLine pl={1} color="bluefrance.500" />
-                                )
-                              ) : (
-                                column.canSort && (
-                                  <Box component="span" pl={1}>
-                                    <ArrowUpLine color="bluefrance.500" />
-                                    <ArrowDownLine color="bluefrance.500" />
-                                  </Box>
-                                )
-                              )}
+                              <Box component="span" pl={1}>
+                                {column.isSorted ? column.isSortedDesc ? <ArrowDownLine /> : <ArrowUpLine /> : column.canSort && <ArrowUpDownLine />}
+                              </Box>
                             </Typography>
                           </Box>
                         </Box>

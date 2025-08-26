@@ -1,7 +1,5 @@
 export * from "./Arrow-right-line"
-export * from "./ArrowDownLine"
 export * from "./ArrowRightLine"
-export * from "./ArrowUpLine"
 export * from "./ChevronLeft"
 export * from "./ChevronRight"
 export * from "./CircleCheck"
