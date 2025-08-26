@@ -1,6 +1,7 @@
 "use client"
 
-import { Box, Button, Circle, Heading, Image, Stack, Text, useToast } from "@chakra-ui/react"
+import { Button, Circle, Image, Text, useToast } from "@chakra-ui/react"
+import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { ETAT_UTILISATEUR } from "shared/constants/index"
@@ -110,15 +111,15 @@ function FinComponent(props: ComponentProps) {
     <BorderedBox sx={{ display: "flex", flexDirection: { xs: "column", lg: "row" }, gap: { xs: 1, lg: 2 }, justifyContent: "center", width: "100%", mt: 2 }}>
       <MailCloud w={["120px", "120px", "120px", "269px"]} h={["67px", "67px", "67px", "151px"]} />
       <Box>
-        <Heading className="big" mb={3}>
+        <Typography sx={{ backgroundColor: "white", fontSize: "32px", fontWeight: "bold" }} component="h1" mb={3}>
           {shouldDisplayAccountInformation ? <>Encore une étape avant la publication de votre offre...</> : <>Félicitations, votre offre est créée.</>}
-        </Heading>
+        </Typography>
         {shouldDisplayAccountInformation ? (
           userIsValidated ? (
             <Box>
-              <Heading fontSize="18px" lineHeight="28px">
+              <Typography component="h2" sx={{ fontSize: "18px", fontWeight: "bold" }}>
                 Confirmez votre email
-              </Heading>
+              </Typography>
               <Text>
                 {withDelegation
                   ? "Pour publier votre offre auprès des candidats et la transmettre aux organismes de formation sélectionnés, confirmez votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à l’adresse suivante :"
@@ -132,7 +133,7 @@ function FinComponent(props: ComponentProps) {
           )
         ) : null}
 
-        <Box mt={7}>
+        <Box mt={2}>
           <JobPreview jobId={jobId} userIsValidated={userIsValidated} />
         </Box>
       </Box>
@@ -142,10 +143,12 @@ function FinComponent(props: ComponentProps) {
 
 const AwaitingAccountDescription = ({ withDelegation, email, onResendEmail }: { withDelegation: boolean; email: string; onResendEmail: () => void }) => {
   return (
-    <Stack spacing={4} my={4}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 1, my: 1 }}>
       <Text>Voici les prochaines étapes qui vous attendent :</Text>
       <ContenuAvecPuce contenuPuce={1}>
-        <Heading fontSize="18px">Confirmez votre email</Heading>
+        <Typography component="h2" sx={{ fontSize: "18px", fontWeight: "bold" }}>
+          Confirmez votre email
+        </Typography>
         <Text>
           Cliquez sur le lien que nous venons de vous transmettre à l'adresse suivante :
           <br />
@@ -154,25 +157,27 @@ const AwaitingAccountDescription = ({ withDelegation, email, onResendEmail }: { 
         <ResendEmailContent onClick={onResendEmail} />
       </ContenuAvecPuce>
       <ContenuAvecPuce contenuPuce={2}>
-        <Heading fontSize="18px">Votre compte sera validé manuellement</Heading>
+        <Typography component="h2" sx={{ fontSize: "18px", fontWeight: "bold" }}>
+          Votre compte sera validé manuellement
+        </Typography>
         <Text>
           {withDelegation
             ? "Une fois votre compte validé, vous en serez notifié par email. Votre offre sera publiée en ligne et partagée aux organismes de formation que vous avez sélectionnés."
             : "Une fois votre compte validé, vous en serez notifié par email. Votre offre sera publiée en ligne."}
         </Text>
       </ContenuAvecPuce>
-    </Stack>
+    </Box>
   )
 }
 
 const ContenuAvecPuce = ({ children, contenuPuce }: { children: React.ReactNode; contenuPuce: React.ReactNode }) => {
   return (
-    <Stack direction="row" spacing={4}>
+    <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
       <Circle p={[4, 4, 4, 5]} size="20px" bg="#E3E3FD" color="#000091" fontWeight="700">
         {contenuPuce}
       </Circle>
       <Box>{children}</Box>
-    </Stack>
+    </Box>
   )
 }
 
@@ -180,7 +185,7 @@ const ResendEmailContent = ({ onClick }: { onClick: () => void }) => {
   const [disableLink, setDisableLink] = useState(false)
 
   return (
-    <Box mt={[4, 4, 4, 6]}>
+    <Box mt={{ xs: 1, lg: 2 }}>
       <Box
         sx={{
           "& > *": {
@@ -222,7 +227,7 @@ const JobPreview = ({ jobId, userIsValidated }: { jobId: string; userIsValidated
         </DsfrLink>
       </Text>
       {userIsValidated && (
-        <Box mb={2}>
+        <Box mb={1}>
           <PrintJobLink jobId={jobId} />
         </Box>
       )}
