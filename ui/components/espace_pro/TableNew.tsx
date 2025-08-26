@@ -1,9 +1,11 @@
-import { Box, Flex, Input, InputGroup, InputRightElement, Text } from "@chakra-ui/react"
+import Button from "@codegouvfr/react-dsfr/Button"
+import Input from "@codegouvfr/react-dsfr/Input"
+import { Box, Typography } from "@mui/material"
 import { matchSorter } from "match-sorter"
 import React, { useMemo } from "react"
 import { useFilters, useFlexLayout, useGlobalFilter, usePagination, useSortBy, useTable } from "react-table"
 
-import { ArrowDownLine, ArrowUpLine, SearchLine } from "../../theme/components/icons"
+import { ArrowDownLine, ArrowUpLine } from "../../theme/components/icons"
 
 import ExportButtonNew from "./ExportButton/ExportButtonNew"
 import PaginationReactQuery from "./PaginationReactQuery"
@@ -22,21 +24,19 @@ function GlobalFilter({ globalFilter, setGlobalFilter, searchPlaceholder }: Glob
   }
 
   return (
-    <InputGroup>
-      <Input
-        data-testid="search-input"
-        variant="search"
-        value={value || ""}
-        onChange={(e) => {
+    <Input
+      label="Rechercher une société"
+      data-testid="search-input"
+      nativeInputProps={{
+        value: value || "",
+        placeholder: searchPlaceholder,
+        onChange: (e) => {
           setValue(e.target.value)
           onChange(e.target.value)
-        }}
-        placeholder={searchPlaceholder}
-      />
-      <InputRightElement background="bluefrance.500" border="none" pointerEvents="none">
-        <SearchLine color="white" />
-      </InputRightElement>
-    </InputGroup>
+        },
+      }}
+      addon={<Button iconId="fr-icon-search-line" priority="primary" title="Lancer la recherche" />}
+    />
   )
 }
 
@@ -96,7 +96,7 @@ function TableNew({ data = [], columns, description = undefined, exportable, sea
 
   return (
     <Box className="search-page">
-      <Flex align="center" mb={10}>
+      <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
         <Box width="90%">
           <Box width="50%">
             {/*  @ts-expect-error: TODO */}
@@ -104,27 +104,35 @@ function TableNew({ data = [], columns, description = undefined, exportable, sea
           </Box>
           {description && (
             <Box width="95%">
-              <Text mt={3} noOfLines={3}>
+              <Typography
+                mt={3}
+                sx={{
+                  display: "-webkit-box",
+                  WebkitLineClamp: 3, // ← number of lines
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                }}
+              >
                 {description}
-              </Text>
+              </Typography>
             </Box>
           )}
         </Box>
         {exportable && <ExportButtonNew data={tableData} />}
-      </Flex>
+      </Box>
 
       <Box className="fr-table">
         <Box className="fr-table__wrapper">
           <Box className="fr-table__container">
             <Box className="fr-table__content">
               <Box as="table" {...getTableProps()}>
-                <Box as="thead">
+                <Box component="thead">
                   {headerGroups.map((headerGroup, k) => (
                     <Box key={k} as="tr" {...headerGroup.getHeaderGroupProps({})}>
                       {headerGroup.headers.map((column, i) => (
                         <Box key={i} as="th" {...column.getHeaderProps(column.getSortByToggleProps())} role="hack">
-                          <Flex flexDirection="column" w="full" alignItems="flex-start" justify="center">
-                            <Text className="fr-cell__title">
+                          <Box sx={{ display: "flex", flexDirection: "column", w: "full", alignItems: "flex-start", justify: "center" }}>
+                            <Typography className="fr-cell__title">
                               {column.render("Header")}
 
                               {column.isSorted ? (
@@ -135,14 +143,14 @@ function TableNew({ data = [], columns, description = undefined, exportable, sea
                                 )
                               ) : (
                                 column.canSort && (
-                                  <Box as="span" pl={1}>
+                                  <Box component="span" pl={1}>
                                     <ArrowUpLine color="bluefrance.500" />
                                     <ArrowDownLine color="bluefrance.500" />
                                   </Box>
                                 )
                               )}
-                            </Text>
-                          </Flex>
+                            </Typography>
+                          </Box>
                         </Box>
                       ))}
                     </Box>
@@ -155,9 +163,9 @@ function TableNew({ data = [], columns, description = undefined, exportable, sea
                       <Box key={i} as="tr" {...row.getRowProps()}>
                         {row.cells.map((cell, j) => {
                           return (
-                            <Flex key={j} as="td" {...cell.getCellProps()} sx={cell.column.id === "action" ? { padding: "4px !important" } : {}}>
+                            <Box key={j} component="td" {...cell.getCellProps()} sx={cell.column.id === "action" ? { display: "flex", padding: "4px !important" } : {}}>
                               {cell.render("Cell")}
-                            </Flex>
+                            </Box>
                           )
                         })}
                       </Box>
