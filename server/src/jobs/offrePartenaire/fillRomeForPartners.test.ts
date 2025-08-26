@@ -97,4 +97,31 @@ describe("fillRomeForPartners", () => {
     expect.soft(job.errors).toEqual([])
     expect.soft(offer_rome_codes).toEqual([romeCode])
   })
+  it("should enrich when offer_rome_codes is an empty array", async () => {
+    // given
+    const romeCode = "K1601"
+    await givenSomeComputedJobPartners([
+      {
+        offer_title: title,
+        workplace_naf_label: nafLabel,
+        offer_rome_codes: [],
+      },
+    ])
+    const cacheDiagoriente = cacheDiagorienteFixture({
+      title,
+      sector: nafLabel,
+      code_rome: romeCode,
+      intitule_rome: "Chef de partie, second de cuisine",
+    })
+    await getDbCollection("cache_diagoriente").insertOne(cacheDiagoriente)
+    // when
+    await fillRomeForPartners()
+    // then
+    const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
+    expect.soft(jobs.length).toBe(1)
+    const [job] = jobs
+    const { offer_rome_codes } = job
+    expect.soft(job.errors).toEqual([])
+    expect.soft(offer_rome_codes).toEqual([romeCode])
+  })
 })
