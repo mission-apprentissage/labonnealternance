@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { IRecruiter, IRecruiterJson } from "shared"
 
-import TableNew from "@/app/(espace-pro)/_components/TableNew"
+import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
@@ -201,7 +201,7 @@ function ListeEntreprise() {
             </Button>
           </Box>
         </Flex>
-        {data?.length ? <TableNew columns={columns} data={data} exportable={false} /> : <EmptySpace />}
+        {data?.length ? <TableWithPagination columns={columns} data={data} exportable={false} /> : <EmptySpace />}
       </Container>
     </AnimationContainer>
   )

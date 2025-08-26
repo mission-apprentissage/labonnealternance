@@ -7,7 +7,7 @@ import dayjs from "dayjs"
 import { useRouter } from "next/navigation"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
-import TableNew from "@/app/(espace-pro)/_components/TableNew"
+import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
 import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
 import { AdminUserForm } from "@/app/(espace-pro)/espace-pro/(connected)/administration/gestion-des-administrateurs/_components/AdminUserForm"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
@@ -63,7 +63,7 @@ export default function GestionDesAdministrateurs() {
         <Button onClick={newUser.onOpen}>Créer un utilisateur</Button>
       </Flex>
 
-      <TableNew
+      <TableWithPagination
         data={users || []}
         columns={[
           {

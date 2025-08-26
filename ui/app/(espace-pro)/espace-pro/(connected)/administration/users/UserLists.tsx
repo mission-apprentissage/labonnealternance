@@ -10,7 +10,7 @@ import { getLastStatusEvent, IUserRecruteurForAdminJSON, IUserRecruteurJson, IUs
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
-import TableNew from "@/app/(espace-pro)/_components/TableNew"
+import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
 import { ConfirmationDesactivationUtilisateur } from "@/components/espace_pro"
@@ -240,16 +240,16 @@ function Users() {
           </TabList>
         </Box>
         <TabPanel value="0">
-          <TableNew columns={columns} data={data.awaiting} description={null} exportable={null} />
+          <TableWithPagination columns={columns} data={data.awaiting} description={null} exportable={null} />
         </TabPanel>
         <TabPanel value="1">
-          <TableNew columns={columns} data={data.active} description={null} exportable={null} />
+          <TableWithPagination columns={columns} data={data.active} description={null} exportable={null} />
         </TabPanel>
         <TabPanel value="2">
-          <TableNew columns={columns} data={data.disabled} description={null} exportable={null} />
+          <TableWithPagination columns={columns} data={data.disabled} description={null} exportable={null} />
         </TabPanel>
         <TabPanel value="3">
-          <TableNew columns={columns} data={data.error} description={null} exportable={null} />
+          <TableWithPagination columns={columns} data={data.error} description={null} exportable={null} />
         </TabPanel>
       </TabContext>
     </>

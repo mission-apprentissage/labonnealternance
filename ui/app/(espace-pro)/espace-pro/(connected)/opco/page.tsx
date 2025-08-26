@@ -8,7 +8,7 @@ import dayjs from "dayjs"
 import { useEffect, useState } from "react"
 import { IUserRecruteurForAdminJSON } from "shared"
 
-import TableNew from "@/app/(espace-pro)/_components/TableNew"
+import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
@@ -223,17 +223,17 @@ function AdministrationOpco() {
         </Box>
         <TabPanel value="0">
           {/* @ts-expect-error: TODO */}
-          <TableNew
+          <TableWithPagination
             columns={columns}
             data={data.awaiting}
             description="Les entreprises en attente de vérification représentent pour votre OPCO de nouvelles opportunités d’accompagnement.  Vous pouvez contacter chacun des comptes en attente, vérifier qu’il s’agit bien d’une entreprise relevant de vos champs de compétences, et qu’il ne s’agit pas d’une tentative d’usurpation de compte."
           />
         </TabPanel>
-        <TabPanel value="1">{isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={data.active} exportable />}</TabPanel>
+        <TabPanel value="1">{isLoading ? <LoadingEmptySpace /> : <TableWithPagination columns={columns} data={data.active} exportable />}</TabPanel>
 
         <TabPanel value="2">
           {/* @ts-expect-error: TODO */}
-          {isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={data.disable} />}
+          {isLoading ? <LoadingEmptySpace /> : <TableWithPagination columns={columns} data={data.disable} />}
         </TabPanel>
       </TabContext>
     </>
