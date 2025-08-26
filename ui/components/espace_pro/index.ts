@@ -5,7 +5,6 @@ import DropdownCombobox from "../../app/(espace-pro)/espace-pro/(connected)/_com
 import ConfirmationDesactivationUtilisateur from "./ConfirmationDesactivationUtilisateur"
 import ConfirmationModificationOpco from "./ConfirmationModificationOpco"
 import LoadingEmptySpace from "./LoadingEmptySpace"
-import TableNew from "./TableNew"
 import UserValidationHistory from "./UserValidationHistory"
 
 export { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationModificationOpco, DropdownCombobox, InfoTooltip, LoadingEmptySpace, TableNew, UserValidationHistory }

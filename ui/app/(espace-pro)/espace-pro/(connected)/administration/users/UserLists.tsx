@@ -10,9 +10,10 @@ import { getLastStatusEvent, IUserRecruteurForAdminJSON, IUserRecruteurJson, IUs
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
+import TableNew from "@/app/(espace-pro)/_components/TableNew"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
-import { ConfirmationDesactivationUtilisateur, TableNew } from "@/components/espace_pro"
+import { ConfirmationDesactivationUtilisateur } from "@/components/espace_pro"
 import ConfirmationActivationUtilisateur from "@/components/espace_pro/ConfirmationActivationUtilisateur"
 import { Parametre } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
