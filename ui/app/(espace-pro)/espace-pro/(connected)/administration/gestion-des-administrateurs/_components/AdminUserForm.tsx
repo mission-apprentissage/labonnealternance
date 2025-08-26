@@ -1,5 +1,6 @@
 import { Box, FormControl, FormLabel, HStack, Input, VStack, useToast } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
+import Select from "@codegouvfr/react-dsfr/Select"
 import { FormikProvider, useFormik } from "formik"
 import { SyntheticEvent } from "react"
 import { AccessStatus, IRoleManagementEvent, IRoleManagementJson, getLastStatusEvent, parseEnum } from "shared"
@@ -9,12 +10,10 @@ import { INewSuperUser, IUserWithAccountJson, ZNewSuperUser, ZUserWithAccountFie
 import { Jsonify } from "type-fest"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
-import { CustomSelect } from "@/app/(espace-pro)/_components/CustomSelect"
-import { CustomFormControl } from "@/app/_components/CustomFormControl"
 import CustomInput from "@/app/_components/CustomInput"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 import { createSuperUser, updateUser } from "@/utils/api"
-import { apiDelete, ApiError } from "@/utils/api.utils"
+import { ApiError, apiDelete } from "@/utils/api.utils"
 
 const { OPCO, ADMIN } = AUTHTYPE
 
@@ -189,31 +188,36 @@ const UserFieldsForm = ({
               <Input type="text" id="id" name="id" value={user._id.toString()} disabled />
             </FormControl>
           )}
-          <CustomFormControl name="type" label="Type de compte">
-            <CustomSelect
-              name="type"
-              possibleValues={[AUTHTYPE.OPCO, AUTHTYPE.ADMIN]}
-              value={values.type}
-              onChange={(newValue) => formik?.setFieldValue("type", newValue, true)}
-              dataTestId="select-type"
-              selectProps={{
-                isDisabled: Boolean(user),
-              }}
-            />
-          </CustomFormControl>
+          <Select
+            label="Type de compte"
+            nativeSelectProps={{
+              onChange: (event) => formik?.setFieldValue("type", event.target.value, true),
+              name: "type",
+              disabled: Boolean(user),
+            }}
+          >
+            <option value={AUTHTYPE.OPCO}>{AUTHTYPE.OPCO}</option>
+            <option value={AUTHTYPE.ADMIN}>{AUTHTYPE.ADMIN}</option>
+          </Select>
+
           {values.type === AUTHTYPE.OPCO && (
-            <CustomFormControl name="opco" label="OPCO">
-              <CustomSelect
-                name="opco"
-                possibleValues={Object.values(OPCOS_LABEL)}
-                value={values.opco}
-                onChange={(newValue) => formik?.setFieldValue("opco", newValue, true)}
-                dataTestId="select-opco"
-                selectProps={{
-                  isDisabled: Boolean(user),
-                }}
-              />
-            </CustomFormControl>
+            <Select
+              label="OPCO"
+              nativeSelectProps={{
+                onChange: (event) => formik?.setFieldValue("opco", event.target.value, true),
+                name: "opco",
+                disabled: Boolean(user),
+                value: values.opco,
+              }}
+            >
+              <option value={AUTHTYPE.OPCO}>{AUTHTYPE.OPCO}</option>
+              <option value={AUTHTYPE.ADMIN}>{AUTHTYPE.ADMIN}</option>
+              {Object.values(OPCOS_LABEL).map((opco) => (
+                <option key={opco} value={opco}>
+                  {opco}
+                </option>
+              ))}
+            </Select>
           )}
           <CustomInput required={true} name="first_name" label="Prénom" type="text" value={values.first_name ?? ""} />
           <CustomInput required={true} name="last_name" label="Nom" type="text" value={values.last_name ?? ""} />
