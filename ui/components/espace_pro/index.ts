@@ -7,4 +7,4 @@ import ConfirmationModificationOpco from "./ConfirmationModificationOpco"
 import LoadingEmptySpace from "./LoadingEmptySpace"
 import UserValidationHistory from "./UserValidationHistory"
 
-export { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationModificationOpco, DropdownCombobox, InfoTooltip, LoadingEmptySpace, TableNew, UserValidationHistory }
+export { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationModificationOpco, DropdownCombobox, InfoTooltip, LoadingEmptySpace, UserValidationHistory }
