@@ -1,5 +1,6 @@
 import { Box, Checkbox, Flex, Heading, Image, Link, Modal, ModalBody, ModalContent, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Text } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
+import Select from "@codegouvfr/react-dsfr/Select"
 import { captureException } from "@sentry/browser"
 import { useMutation } from "@tanstack/react-query"
 import { Form, FormikContext, useFormik } from "formik"
@@ -7,8 +8,6 @@ import { useState } from "react"
 import { IUnsubscribePossibleCompany } from "shared/routes/unsubscribe.routes"
 import * as Yup from "yup"
 
-import { CustomSelect } from "@/app/(espace-pro)/_components/CustomSelect"
-import { CustomFormControl } from "@/app/_components/CustomFormControl"
 import CustomInput from "@/app/_components/CustomInput"
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
 import { Warning } from "@/theme/components/icons"
@@ -217,9 +216,24 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
                 info="Indiquez l'email sur lequel sont actuellement reçues les candidatures"
               />
 
-              <CustomFormControl name="reason" required={true} label="Motif" info="Indiquez la raison pour laquelle vous ne souhaitez plus recevoir de candidature">
-                <CustomSelect name="reason" possibleValues={unsubscribeReasons} onChange={(value) => setFieldValue("reason", value, true)} />
-              </CustomFormControl>
+              <Select
+                label="Motif *"
+                hint="Indiquez la raison pour laquelle vous ne souhaitez plus recevoir de candidature"
+                nativeSelectProps={{
+                  onChange: (event) => setFieldValue("reason", event.target.value, true),
+                  name: "reason",
+                  required: true,
+                }}
+              >
+                <option disabled hidden selected value="">
+                  Sélectionnez une valeur...
+                </option>
+                {unsubscribeReasons.map((reason) => (
+                  <option key={reason} value={reason}>
+                    {reason}
+                  </option>
+                ))}
+              </Select>
 
               {errorMessage && (
                 <Flex direction="row" alignItems="center" color="red.500">
