@@ -34,17 +34,6 @@ export function RechercheInputsLayout({
         <Box
           sx={{
             marginTop: { xs: 0, md: "18px" },
-            minWidth: "170px",
-            "& .fr-fieldset__content": {
-              display: "flex",
-              flexDirection: { xs: "row", md: "column" },
-              gap: fr.spacing("1w"),
-
-              "& .fr-checkbox-group": {
-                marginTop: "-0.75rem",
-                marginBottom: "-0.75rem",
-              },
-            },
           }}
         >
           {viewTypeCheckboxs}

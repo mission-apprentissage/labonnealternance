@@ -21,9 +21,8 @@ export function RechercheMobileForm({ rechercheParams }: { rechercheParams: IRec
       onSubmit={(formValues) => {
         navigateToRecherchePage({ ...rechercheFormToRechercheParams(formValues), displayMobileForm: false })
       }}
-      rechercheParams={{
-        ...rechercheParams,
-      }}
+      rechercheParams={rechercheParams}
+      itemTypeRequired={true}
     >
       <RechercheInputsLayout
         viewTypeCheckboxs={<RechercheResultTypeCheckboxFormik rechercheResults={rechercheResults} />}

@@ -1,27 +1,42 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox"
-import { CircularProgress } from "@mui/material"
+import { Box, CircularProgress } from "@mui/material"
 import { useField } from "formik"
 import { assertUnreachable } from "shared"
 
 import { IUseRechercheResults, QueryStatus } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { UserItemTypes } from "@/app/_components/RechercheForm/RechercheForm"
 
-export const RechercheResultTypeCheckboxFormik = ({ rechercheResults }: { rechercheResults?: IUseRechercheResults }) => {
+export const RechercheResultTypeCheckboxFormik = ({ rechercheResults, canDisplayCounts }: { rechercheResults?: IUseRechercheResults; canDisplayCounts?: boolean }) => {
   const [field, _meta, helper] = useField({ name: "displayedItemTypes" })
   const checkedLabels: UserItemTypes[] = field.value || []
 
-  return <RechercheResultTypeCheckbox checked={checkedLabels} onChange={(newValues) => helper.setValue(newValues, true)} rechercheResults={rechercheResults} />
+  return (
+    <RechercheResultTypeCheckbox
+      checked={checkedLabels}
+      onChange={(newValues) => {
+        helper.setValue(newValues, true)
+      }}
+      rechercheResults={rechercheResults}
+      errorMessage={_meta.error}
+      canDisplayCounts={canDisplayCounts}
+    />
+  )
 }
 
 export const RechercheResultTypeCheckbox = ({
+  id = "displayedItemTypes",
   checked,
   onChange,
   rechercheResults,
+  errorMessage,
+  canDisplayCounts = true,
 }: {
+  id?: string
   checked: UserItemTypes[]
   onChange: (checked: UserItemTypes[]) => void
   rechercheResults?: IUseRechercheResults
+  errorMessage?: string
+  canDisplayCounts?: boolean
 }) => {
   const isChecked = (label: UserItemTypes) => checked.includes(label)
 
@@ -32,34 +47,61 @@ export const RechercheResultTypeCheckbox = ({
 
   const counts = rechercheResults ? getItemCounts(rechercheResults) : null
 
+  const messagesId = `${id}-messages`
+  const errorMessageId = `${messagesId}-error`
+  const hasError = Boolean(errorMessage)
   return (
-    <Checkbox
-      classes={{
-        root: fr.cx("fr-m-0", "fr-p-0"),
-        content: fr.cx("fr-m-0", "fr-p-0"),
-      }}
-      disabled={false}
-      options={Object.values(UserItemTypes).map((itemType) => {
-        const checked = isChecked(itemType)
-        const count = counts?.[itemType]
-        const displayLoading: boolean = rechercheResults ? getQueryStatus(rechercheResults, itemType) === "loading" : false
-        return {
-          label: (
-            <>
-              {itemType}
-              {count !== undefined ? ` (${count})` : displayLoading ? <CircularProgress size={14} style={{ marginLeft: fr.spacing("1w") }} /> : null}
-            </>
-          ),
-          nativeInputProps: {
-            checked,
-            onChange: () => toggleValue(itemType, checked),
-            name: itemType,
+    <Box
+      sx={{
+        marginTop: {
+          xs: fr.spacing("1w"),
+          md: 0,
+        },
+        fieldset: {
+          maxWidth: {
+            xs: "inherit",
+            md: canDisplayCounts ? "180px" : "164px",
           },
-        }
-      })}
-      orientation="horizontal"
-      small
-    />
+        },
+      }}
+    >
+      <fieldset className={`fr-fieldset ${hasError ? "fr-fieldset--error" : ""}`} id={id} aria-labelledby={messagesId} style={{ marginBottom: 0 }}>
+        {Object.values(UserItemTypes).map((itemType) => {
+          const checked = isChecked(itemType)
+          const count = counts?.[itemType]
+          const displayLoading: boolean = rechercheResults ? getQueryStatus(rechercheResults, itemType) === "loading" : false
+          const checkboxId = `${id}-${itemType}`
+          return (
+            <Box
+              key={itemType}
+              className={`fr-fieldset__element`}
+              sx={{ marginBottom: "0.5rem", flex: { xs: "0 0 auto", md: "1 1 100%" } }}
+              onClick={(event) => {
+                event.preventDefault()
+                event.stopPropagation()
+                toggleValue(itemType, checked)
+                return event
+              }}
+            >
+              <div className="fr-checkbox-group fr-checkbox-group--sm">
+                <input name={itemType} id={checkboxId} type="checkbox" checked={checked} data-fr-js-checkbox-input={checked} readOnly />
+                <label className="fr-label" htmlFor={checkboxId}>
+                  {itemType}
+                  {count !== undefined ? ` (${count})` : displayLoading ? <CircularProgress size={14} style={{ marginLeft: fr.spacing("1w") }} /> : null}
+                </label>
+              </div>
+            </Box>
+          )
+        })}
+        <div className="fr-messages-group" id={messagesId} aria-live="polite">
+          {hasError && (
+            <p className="fr-message fr-message--error" id={errorMessageId}>
+              {errorMessage}
+            </p>
+          )}
+        </div>
+      </fieldset>
+    </Box>
   )
 }
 

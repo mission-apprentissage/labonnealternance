@@ -32,9 +32,9 @@ const ZRechercheForm = z.object({
 
 export type IRechercheForm = z.output<typeof ZRechercheForm>
 
-function validate(values: IRechercheForm) {
+const validate = (zodSchema: z.AnyZodObject) => (values: IRechercheForm) => {
   const errors: FormikErrors<IRechercheForm> = {}
-  const result = ZRechercheForm.safeParse(values)
+  const result = zodSchema.safeParse(values)
   if (!result.success) {
     result.error.issues.forEach((issue) => {
       if (issue.path.length > 0) {
@@ -97,12 +97,22 @@ const rechercheParamsToRechercheForm = (rechercheParams: Partial<IRecherchePageP
   return rechercheForm
 }
 
-export function RechercheForm(props: { children: React.ReactNode; rechercheParams: Partial<IRecherchePageParams>; onSubmit: (formValues: IRechercheForm) => void }) {
-  const { children, rechercheParams } = props
+export function RechercheForm(props: {
+  children: React.ReactNode
+  rechercheParams: Partial<IRecherchePageParams>
+  onSubmit: (formValues: IRechercheForm) => void
+  itemTypeRequired?: boolean
+}) {
+  const { children, rechercheParams, itemTypeRequired = false } = props
+  const zodSchema = itemTypeRequired
+    ? ZRechercheForm.omit({ displayedItemTypes: true }).extend({
+        displayedItemTypes: ZRechercheForm.shape.displayedItemTypes.min(1, "Veuillez sélectionner une catégorie"),
+      })
+    : ZRechercheForm
   const initialValues: IRechercheForm = rechercheParamsToRechercheForm(rechercheParams)
 
   return (
-    <Formik<IRechercheForm> initialValues={initialValues} enableReinitialize validate={validate} validateOnBlur={false} onSubmit={props.onSubmit}>
+    <Formik<IRechercheForm> initialValues={initialValues} enableReinitialize validate={validate(zodSchema)} validateOnBlur={false} onSubmit={props.onSubmit}>
       {(formik) => {
         return (
           <Box component={"form"} onSubmit={formik.handleSubmit}>
