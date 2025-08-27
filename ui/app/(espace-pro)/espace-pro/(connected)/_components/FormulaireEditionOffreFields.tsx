@@ -1,8 +1,8 @@
 "use client"
 
-import { Box, Checkbox, CheckboxGroup, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input, Select, Text } from "@chakra-ui/react"
+import { Checkbox, CheckboxGroup, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input, Select } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
-import { Link } from "@mui/material"
+import { Box, Link, Typography } from "@mui/material"
 import dayjs from "dayjs"
 import { useFormikContext } from "formik"
 import { useParams } from "next/navigation"
@@ -66,7 +66,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
         />
       </FormControl>
       {values.rome_label && (
-        <Box mt={6}>
+        <Box mt={2}>
           <CustomInput
             required={false}
             name="offer_title_custom"
@@ -78,7 +78,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
         </Box>
       )}
       <FormControl mt={6} isRequired>
-        <Box mb={4}>
+        <Box mb={1}>
           <FormLabel display="inline-block" mb={0}>
             Type de contrat en alternance{" "}
           </FormLabel>
@@ -129,7 +129,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
         </Select>
         {errors.job_level_label && touched.job_level_label && <FormErrorMessage>{errors.job_level_label as string}</FormErrorMessage>}
       </FormControl>
-      <Box mt={6}>
+      <Box mt={2}>
         <CustomInput
           required={true}
           name="job_start_date"
@@ -145,20 +145,22 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
       </FormControl>
       {/* @ts-expect-error: TODO */}
       <FormControl mt={6} isInvalid={errors.job_duration} maxWidth={["400px", "400px", "400px", "450px"]}>
-        <Flex align="center" gap={6}>
-          <Text flexGrow={2}>Durée du contrat (mois)</Text>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Typography sx={{ flexGrow: 2 }}>Durée du contrat (mois)</Typography>
           <Input
             maxWidth="128px"
             name="job_duration"
             value={values.job_duration}
             onChange={(e) => (parseInt(e.target.value) > 0 ? setFieldValue("job_duration", parseInt(e.target.value)) : setFieldValue("job_duration", null))}
           />
-        </Flex>
+        </Box>
         <FormErrorMessage>
-          <Flex direction="row" alignItems="center">
+          <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
             <Warning m={0} />
-            <Flex ml={1}>{errors.job_duration as string}</Flex>
-          </Flex>
+            <Box sx={{ display: "flex" }} ml={1}>
+              {errors.job_duration as string}
+            </Box>
+          </Box>
         </FormErrorMessage>
       </FormControl>
       {Boolean((user && user.type !== AUTHTYPE.ENTREPRISE) || (type && type !== AUTHTYPE.ENTREPRISE)) && (
