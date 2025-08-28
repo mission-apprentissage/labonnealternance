@@ -5,7 +5,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox"
 import Input from "@codegouvfr/react-dsfr/Input"
 import Select from "@codegouvfr/react-dsfr/Select"
-import { Box, FormControl, FormHelperText, FormLabel, Link, Typography } from "@mui/material"
+import { Box, FormControl, FormLabel, Link, Typography } from "@mui/material"
 import dayjs from "dayjs"
 import { useFormikContext } from "formik"
 import { useParams } from "next/navigation"
@@ -166,10 +166,14 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
         </FormErrorMessage>
       </FormControl>
       {Boolean((user && user.type !== AUTHTYPE.ENTREPRISE) || (type && type !== AUTHTYPE.ENTREPRISE)) && (
-        <FormControl sx={{ mt: 6, width: "100%" }}>
-          <FormLabel>Rythme de l'alternance (formation / entreprise)</FormLabel>
-          <FormHelperText sx={{ pb: 2 }}>Facultatif</FormHelperText>
-          <Select variant="outline" size="md" name="job_rythm" defaultValue={values.job_rythm} onChange={handleChange}>
+        <FormControl sx={{ mt: 2, width: "100%" }}>
+          <Select
+            state={errors.job_rythm && touched.job_rythm ? "error" : "default"}
+            stateRelatedMessage={errors.job_rythm as string}
+            label="Rythme de l'alternance (formation / entreprise)"
+            nativeSelectProps={{ name: "job_rythm", defaultValue: values.job_rythm, onChange: handleChange }}
+            hint="Facultatif"
+          >
             <option value="" hidden>
               Choisissez un rythme
             </option>
@@ -179,7 +183,6 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
               </option>
             ))}
           </Select>
-          {errors.job_rythm && touched.job_rythm && <FormErrorMessage>{errors.job_rythm as string}</FormErrorMessage>}
         </FormControl>
       )}
     </>
