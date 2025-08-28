@@ -2,7 +2,7 @@ import { Metadata } from "next"
 import { redirect } from "next/navigation"
 
 import TrainingDetailRendererClient from "@/app/(candidat)/formation/[id]/[intitule-formation]/TrainingDetailRendererClient"
-import { parseRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { apiGet } from "@/utils/api.utils"
 
 export async function generateMetadata({ params }): Promise<Metadata> {
@@ -23,5 +23,5 @@ export default async function FormationPage({ params, searchParams }: { params: 
   const formation = await apiGet("/_private/formations/:id", { params: { id: idParam } })
   if (!formation) redirect("/404")
 
-  return <TrainingDetailRendererClient training={formation} params={parseRecherchePageParams(new URLSearchParams(await searchParams), "default")} />
+  return <TrainingDetailRendererClient training={formation} rechercheParams={parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)} />
 }

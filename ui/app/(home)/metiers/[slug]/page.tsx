@@ -36,11 +36,10 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 }
 
-export default async function MetiersByJobId({ params }: { params: IStaticMetiers }) {
-  const _params = params
+export default async function MetiersByJobId({ staticMetiers }: { staticMetiers: IStaticMetiers }) {
   const towns = getTowns()
   const metiers = getMetiers()
-  const relatedMetier = getMetierBySlug(metiers, _params.slug)
+  const relatedMetier = getMetierBySlug(metiers, staticMetiers.slug)
   return (
     <Box>
       <Breadcrumb pages={[PAGES.static.metiers, PAGES.dynamic.metierJobById(relatedMetier.name)]} />
