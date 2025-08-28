@@ -1,7 +1,8 @@
 "use client"
 
-import { Checkbox, CheckboxGroup, FormErrorMessage, Select } from "@chakra-ui/react"
+import { FormErrorMessage, Select } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
+import Checkbox from "@codegouvfr/react-dsfr/Checkbox"
 import Input from "@codegouvfr/react-dsfr/Input"
 import { Box, FormControl, FormHelperText, FormLabel, Link, Typography } from "@mui/material"
 import dayjs from "dayjs"
@@ -75,44 +76,41 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
           />
         </Box>
       )}
-      <FormControl sx={{ width: "100%", mt: 6 }} required={true}>
-        <Box mb={1}>
-          <FormLabel sx={{ display: "inline-block", mb: 0 }}>Type de contrat en alternance </FormLabel>
-          <Link
-            href="https://www.service-public.fr/professionnels-entreprises/vosdroits/F31704"
-            target="_blank"
-            rel="noreferrer noopener"
-            aria-label="Accès au contrat en alternance - nouvelle fenêtre"
-            className={fr.cx("fr-text--xs")}
-          >
-            En savoir plus
-          </Link>
-        </Box>
-        <CheckboxGroup
-          onChange={(value) => {
-            setFieldValue("job_type", value)
-          }}
-          value={values.job_type}
-          defaultValue={["Apprentissage"]}
-          data-testid="offre-job-type"
-        >
-          {Object.values(TRAINING_CONTRACT_TYPE).map((label) => (
-            <Checkbox
-              key={label}
-              value={label}
-              sx={{
-                ml: 5,
-                mb: 3,
-                "&:first": {
-                  ml: 0,
+
+      <Box mt={2}>
+        <Checkbox
+          orientation="horizontal"
+          state={values.job_type.length === 0 ? "error" : "default"}
+          stateRelatedMessage="Champ requis"
+          small={true}
+          options={Object.values(TRAINING_CONTRACT_TYPE).map((label) => {
+            return {
+              label: label,
+              nativeInputProps: {
+                name: label,
+                checked: values.job_type.includes(label),
+                onChange: (e) => {
+                  setFieldValue("job_type", e.target.checked ? [...values.job_type, label] : values.job_type.filter((item) => item !== label))
                 },
-              }}
-            >
-              <span data-testid={label}>{label}</span>
-            </Checkbox>
-          ))}
-        </CheckboxGroup>
-      </FormControl>
+              },
+            }
+          })}
+          legend={
+            <Box mb={1}>
+              <FormLabel sx={{ display: "inline-block", mb: 0, mr: 1 }}>Type de contrat en alternance *</FormLabel>
+              <Link
+                href="https://www.service-public.fr/professionnels-entreprises/vosdroits/F31704"
+                target="_blank"
+                rel="noreferrer noopener"
+                aria-label="Accès au contrat en alternance - nouvelle fenêtre"
+                className={fr.cx("fr-text--xs")}
+              >
+                En savoir plus
+              </Link>
+            </Box>
+          }
+        />
+      </Box>
       <FormControl sx={{ width: "100%", mt: 6 }} required={true}>
         <FormLabel>Niveau visé en fin d’études</FormLabel>
         <Select size="md" name="job_level_label" defaultValue={values.job_level_label} onChange={handleChange}>
