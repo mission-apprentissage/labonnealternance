@@ -4,6 +4,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import { useCallback } from "react"
 
+import { RechercheElligibleHandicapCheckbox } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheElligibleHandicapCheckbox"
 import { RechercheNiveauSelect } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheNiveauSelect"
 import { RechercheRayonSelect } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheRayonSelect"
 import { RechercheToggleMap } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheToggleMap"
@@ -11,7 +12,7 @@ import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/us
 import type { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 
 function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
-  const { displayMap, diploma, radius } = rechercheParams
+  const { displayMap, diploma, radius, elligibleHandicapFilter } = rechercheParams
 
   const navigateToRecherchePage = useNavigateToRecherchePage(rechercheParams)
   const onDisplayMapChange = useCallback(
@@ -32,6 +33,7 @@ function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRe
         sx={{
           display: "flex",
           gap: fr.spacing("3w"),
+          alignItems: "flex-end",
         }}
       >
         <RechercheRayonSelect
@@ -41,6 +43,12 @@ function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRe
           }}
         />
         <RechercheNiveauSelect value={diploma} onChange={(newDiploma) => navigateToRecherchePage({ diploma: newDiploma })} />
+        <RechercheElligibleHandicapCheckbox
+          value={elligibleHandicapFilter}
+          onChange={(newValue) => {
+            navigateToRecherchePage({ elligibleHandicapFilter: newValue })
+          }}
+        />
       </Box>
       <Box
         sx={{

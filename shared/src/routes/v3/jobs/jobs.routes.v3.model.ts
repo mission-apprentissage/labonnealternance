@@ -131,6 +131,7 @@ export const zJobSearchApiV3Query = z
       .nullish(),
 
     opco: extensions.buildEnum(OPCOS_LABEL).nullable().default(null),
+    elligibleHandicapFilter: z.boolean().nullish(),
   })
   .superRefine((data, ctx) => {
     if (data.longitude == null && data.latitude != null) {

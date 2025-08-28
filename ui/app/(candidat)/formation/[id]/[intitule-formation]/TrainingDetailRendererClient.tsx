@@ -11,18 +11,17 @@ import { LBA_ITEM_TYPE, newItemTypeToOldItemType } from "shared/constants/lbaite
 
 import { RechercheCarte } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
 import { IUseRechercheResults, useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
-import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { useBuildNavigation } from "@/app/hooks/useBuildNavigation"
 import { useFormationPrdvTracker } from "@/app/hooks/useFormationPrdvTracker"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
 import GoingToContactQuestion, { getGoingtoId } from "@/components/ItemDetail/GoingToContactQuestion"
-import { getNavigationButtons } from "@/components/ItemDetail/ItemDetailServices/getButtons"
-import GetItemTag from "@/components/ItemDetail/ItemDetailServices/getTags"
+import { NavigationButtons } from "@/components/ItemDetail/ItemDetailServices/getButtons"
 import ItemDetailCard from "@/components/ItemDetail/ItemDetailServices/ItemDetailCard"
 import ItemGoogleSearchLink from "@/components/ItemDetail/ItemDetailServices/ItemGoogleSearchLink"
 import ItemLocalisation from "@/components/ItemDetail/ItemDetailServices/ItemLocalisation"
 import JobItemCardHeader from "@/components/ItemDetail/ItemDetailServices/JobItemCardHeader"
+import { LbaItemTags } from "@/components/ItemDetail/ItemDetailServices/LbaItemTags"
 import ShareLink from "@/components/ItemDetail/ShareLink"
 import StatsInserJeunes from "@/components/ItemDetail/StatsInserJeunes"
 import { DemandeDeContact } from "@/components/RDV/DemandeDeContact"
@@ -73,15 +72,15 @@ function TrainingDetailPage({
   resultList,
   rechercheParams,
   onRdvSuccess,
-}: WithRecherchePageParams<{
+}: {
+  rechercheParams: IRecherchePageParams
   selectedItem: ILbaItemFormation2Json
   appliedDate: string | null
   resultList: IUseRechercheResults["items"]
   onRdvSuccess: () => void
-}>) {
+}) {
   const kind: LBA_ITEM_TYPE = selectedItem?.type
   const actualTitle = selectedItem.training.title
-  const isCfa = isCfaEntreprise(selectedItem?.company?.siret, selectedItem?.company?.headquarter?.siret)
   const isMandataire = selectedItem?.company?.mandataire
   const currentItem = resultList.find((item) => item.id === selectedItem.id)
 
@@ -140,8 +139,8 @@ function TrainingDetailPage({
       >
         <Box width="100%" pl={["0", 4]} pb={isCollapsedHeader ? "0" : 2}>
           <Flex justifyContent="flex-end">
-            {GetItemTag({ kind, isCfa, isMandataire })}
-            {getNavigationButtons({ goPrev, goNext, handleClose })}
+            <LbaItemTags item={selectedItem} />
+            <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
           </Flex>
 
           <Text as="p" textAlign="left" color="grey.600" mt={isCollapsedHeader ? 1 : 1} mb={isCollapsedHeader ? 1 : 1} fontWeight={700} fontSize="1rem">

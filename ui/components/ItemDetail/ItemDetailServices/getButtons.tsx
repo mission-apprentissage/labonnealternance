@@ -1,55 +1,44 @@
 import { Box } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 
-type Props = {
-  goPrev?: () => void
-  goNext?: () => void
-  handleClose: () => void
-}
-
-export const getNavigationButtons = ({ goPrev, goNext, handleClose }: Props) => {
+export const NavigationButtons = ({ goPrev, goNext, handleClose }: { goPrev?: () => void; goNext?: () => void; handleClose: () => void }) => {
   return (
-    <>
+    <Box sx={{ display: "flex", gap: fr.spacing("1w") }}>
       {goPrev && (
-        <Box>
-          <Button
-            priority="tertiary"
-            iconId="ri-arrow-left-s-line"
-            onClick={() => {
-              goPrev()
-            }}
-            data-testid="previous-button"
-            title="previous"
-            size="small"
-          />
-        </Box>
-      )}
-      {goNext && (
-        <Box ml={2}>
-          <Button
-            priority="tertiary"
-            iconId="ri-arrow-right-s-line"
-            onClick={() => {
-              goNext()
-            }}
-            data-testid="next-button"
-            title="next"
-            size="small"
-          />
-        </Box>
-      )}
-      <Box ml={2}>
         <Button
           priority="tertiary"
-          iconId="ri-close-line"
+          iconId="ri-arrow-left-s-line"
           onClick={() => {
-            handleClose()
+            goPrev()
           }}
-          data-testid="close-detail-button"
-          title="close"
+          data-testid="previous-button"
+          title="previous"
           size="small"
         />
-      </Box>
-    </>
+      )}
+      {goNext && (
+        <Button
+          priority="tertiary"
+          iconId="ri-arrow-right-s-line"
+          onClick={() => {
+            goNext()
+          }}
+          data-testid="next-button"
+          title="next"
+          size="small"
+        />
+      )}
+      <Button
+        priority="tertiary"
+        iconId="ri-close-line"
+        onClick={() => {
+          handleClose()
+        }}
+        data-testid="close-detail-button"
+        title="close"
+        size="small"
+      />
+    </Box>
   )
 }

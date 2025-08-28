@@ -6,6 +6,7 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { JobPostingSchema } from "@/components/ItemDetail/JobPostingSchema"
+import { LbaJobEngagement } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagement"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { notifyLbaJobDetailView } from "../../../utils/api"
@@ -88,15 +89,8 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: s
               </Text>
             )}
           </Flex>
-          {job?.job?.elligibleHandicap && (
-            <Flex mt={2} p={2} background="white" justifyContent="center" fontSize="12px" alignItems="center" direction="row">
-              <Box width="30px" minWidth="30px" mr={2}>
-                <Image mt="2px" src="/images/info.svg" alt="" aria-hidden={true} />
-              </Box>
-              <Box>À compétences égales, une attention particulière sera apportée aux personnes en situation de handicap.</Box>
-            </Flex>
-          )}
         </Box>
+        {job?.job?.elligibleHandicap && <LbaJobEngagement />}
         {job?.company?.mandataire && (
           <Text>
             Offre publiée par{" "}

@@ -366,8 +366,21 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { referer } = req.headers
-      const { romes, rncp, caller, latitude, longitude, radius, insee, diploma, opco } = req.query
-      const result = await getJobsQueryPrivate({ romes, rncp, caller, referer, latitude, longitude, radius, insee, diploma, opco, isMinimalData: true })
+      const { romes, rncp, caller, latitude, longitude, radius, insee, diploma, opco, elligibleHandicapFilter } = req.query
+      const result = await getJobsQueryPrivate({
+        romes,
+        rncp,
+        caller,
+        referer,
+        latitude,
+        longitude,
+        radius,
+        insee,
+        diploma,
+        opco,
+        isMinimalData: true,
+        elligibleHandicapFilter: elligibleHandicapFilter === "true",
+      })
 
       if ("error" in result) {
         return res.status(500).send(result)

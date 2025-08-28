@@ -56,6 +56,7 @@ export const getJobsFromApiPrivate = async ({
   opco,
   api = "jobV1/jobs",
   isMinimalData,
+  elligibleHandicapFilter,
 }: {
   romes?: string
   referer?: string
@@ -67,6 +68,7 @@ export const getJobsFromApiPrivate = async ({
   opco?: string
   api?: string
   isMinimalData: boolean
+  elligibleHandicapFilter?: boolean
 }): Promise<
   | IApiError
   | {
@@ -89,6 +91,7 @@ export const getJobsFromApiPrivate = async ({
         api,
         opco,
         isMinimalData,
+        elligibleHandicapFilter,
       }),
       getPartnerJobs({
         romes,
@@ -101,6 +104,7 @@ export const getJobsFromApiPrivate = async ({
         opco,
         isMinimalData,
         force_partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+        elligibleHandicapFilter,
       }),
       getPartnerJobs({
         romes,
@@ -112,6 +116,7 @@ export const getJobsFromApiPrivate = async ({
         diploma,
         opco,
         isMinimalData,
+        elligibleHandicapFilter,
       }),
     ])
 
@@ -438,6 +443,7 @@ export const getJobsPartnersFromDBForUI = async ({
   geo,
   target_diploma_level,
   force_partner_label,
+  elligibleHandicapFilter,
 }: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivateWithDistance[]> => {
   const query: Filter<IJobsPartnersOfferPrivate> = {
     offer_status: JOB_STATUS_ENGLISH.ACTIVE,
@@ -451,6 +457,9 @@ export const getJobsPartnersFromDBForUI = async ({
 
   if (target_diploma_level) {
     query["offer_target_diploma.european"] = { $in: [target_diploma_level, null] }
+  }
+  if (elligibleHandicapFilter) {
+    query.contract_is_disabled_elligible = true
   }
 
   const filterStages: Document[] =
@@ -491,7 +500,7 @@ export const getJobsPartnersForApi = async ({
   const partnersToExclude = partners_to_exclude
     ? [...partners_to_exclude, JOBPARTNERS_LABEL.RECRUTEURS_LBA, JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA]
     : [JOBPARTNERS_LABEL.RECRUTEURS_LBA, JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA]
-  const jobsPartners = await getJobsPartnersFromDB({ romes, geo, target_diploma_level, partners_to_exclude: partnersToExclude, opco, departements })
+  const jobsPartners = await getJobsPartnersFromDB({ romes, geo, target_diploma_level, partners_to_exclude: partnersToExclude, opco, departements, elligibleHandicapFilter: false })
 
   return jobsPartners.map((j) =>
     jobsRouteApiv3Converters.convertToJobOfferApiReadV3({
@@ -659,7 +668,15 @@ export const findFranceTravailOpportunitiesFromDB = async (resolvedQuery: IJobSe
 }
 
 async function findLbaJobOpportunities({ romes, geo, target_diploma_level, departements, opco }: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> {
-  const jobsPartners = await getJobsPartnersFromDB({ romes, geo, target_diploma_level, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, opco, departements })
+  const jobsPartners = await getJobsPartnersFromDB({
+    romes,
+    geo,
+    target_diploma_level,
+    partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+    opco,
+    departements,
+    elligibleHandicapFilter: false,
+  })
 
   return jobsPartners.map((j) =>
     jobsRouteApiv3Converters.convertToJobOfferApiReadV3({

@@ -1,5 +1,6 @@
 "use client"
 
+import { RechercheElligibleHandicapCheckboxFormik } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheElligibleHandicapCheckbox"
 import { RechercheInputsLayout } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheInputsLayout"
 import { RechercheLieuAutocomplete } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheLieuAutocomplete"
 import { RechercheMetierAutocomplete } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheMetierAutocomplete"
@@ -30,6 +31,7 @@ export function RechercheMobileForm({ rechercheParams }: { rechercheParams: IRec
         lieuInput={<RechercheLieuAutocomplete />}
         rayonSelect={<RechercheRayonSelectFormik />}
         niveauSelect={<RechercheNiveauSelectFormik />}
+        handicapCheckbox={<RechercheElligibleHandicapCheckboxFormik />}
         submitButton={<RechercheSubmitButton>C’est parti</RechercheSubmitButton>}
       />
     </RechercheForm>

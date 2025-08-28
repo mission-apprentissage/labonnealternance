@@ -28,6 +28,7 @@ const ZRechercheForm = z.object({
   displayedItemTypes: z.array(extensions.buildEnum(UserItemTypes)),
   radius: z.string().nullish(),
   diploma: z.string().nullish(),
+  elligibleHandicapFilter: z.boolean().nullish(),
 })
 
 export type IRechercheForm = z.output<typeof ZRechercheForm>
@@ -47,7 +48,7 @@ const validate = (zodSchema: z.AnyZodObject) => (values: IRechercheForm) => {
 }
 
 export const rechercheFormToRechercheParams = (rechercheForm: Partial<IRechercheForm>): Partial<IRecherchePageParams> => {
-  const { displayedItemTypes, lieu, metier, diploma, radius } = rechercheForm
+  const { displayedItemTypes, lieu, metier, diploma, radius, elligibleHandicapFilter } = rechercheForm
   return {
     displayEntreprises: displayedItemTypes?.includes(UserItemTypes.EMPLOI),
     displayFormations: displayedItemTypes?.includes(UserItemTypes.FORMATIONS),
@@ -64,6 +65,7 @@ export const rechercheFormToRechercheParams = (rechercheForm: Partial<IRecherche
     job_name: metier?.label,
     job_type: metier?.type,
     diploma,
+    elligibleHandicapFilter,
   }
 }
 
@@ -93,6 +95,7 @@ const rechercheParamsToRechercheForm = (rechercheParams: Partial<IRecherchePageP
     displayedItemTypes,
     radius: rechercheParams?.radius?.toString() ?? "",
     diploma: rechercheParams?.diploma || "",
+    elligibleHandicapFilter: rechercheParams.elligibleHandicapFilter,
   }
   return rechercheForm
 }

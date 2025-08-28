@@ -261,6 +261,7 @@ export default {
     [{ workplace_name: 1 }, {}],
     [{ offer_status: 1 }, {}],
     [{ offer_expiration: 1 }, {}],
+    [{ contract_is_disabled_elligible: 1 }, {}],
     [{ "duplicates.partner_job_id": 1 }, {}],
     [{ "duplicates.partner_job_label": 1 }, {}],
   ],

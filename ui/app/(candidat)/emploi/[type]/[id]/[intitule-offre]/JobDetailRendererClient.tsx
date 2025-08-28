@@ -5,7 +5,7 @@ import { Typography } from "@mui/material"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
-import { LBA_ITEM_TYPE, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { RechercheCarte } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
 import { IUseRechercheResults, useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
@@ -17,21 +17,21 @@ import { CandidatureLba, NoCandidatureLba } from "@/components/ItemDetail/Candid
 import isCandidatureLba from "@/components/ItemDetail/CandidatureLba/services/isCandidatureLba"
 import DidYouKnow from "@/components/ItemDetail/DidYouKnow"
 import GoingToContactQuestion, { getGoingtoId } from "@/components/ItemDetail/GoingToContactQuestion"
-import { getNavigationButtons } from "@/components/ItemDetail/ItemDetailServices/getButtons"
+import { NavigationButtons } from "@/components/ItemDetail/ItemDetailServices/getButtons"
 import getJobPublishedTimeAndApplications from "@/components/ItemDetail/ItemDetailServices/getJobPublishedTimeAndApplications"
-import GetItemTag from "@/components/ItemDetail/ItemDetailServices/getTags"
 import ItemDetailCard from "@/components/ItemDetail/ItemDetailServices/ItemDetailCard"
 import JobItemCardHeader from "@/components/ItemDetail/ItemDetailServices/JobItemCardHeader"
+import { LbaItemTags } from "@/components/ItemDetail/ItemDetailServices/LbaItemTags"
 import { LbaJobDetail } from "@/components/ItemDetail/LbaJobComponents/LbaJobDetail"
 import { PartnerJobDetail } from "@/components/ItemDetail/PartnerJobComponents/PartnerJobDetail"
 import { PartnerJobPostuler } from "@/components/ItemDetail/PartnerJobComponents/PartnerJobPostuler"
 import RecruteurLbaDetail from "@/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaDetail"
 import ShareLink from "@/components/ItemDetail/ShareLink"
-import { isCfaEntreprise } from "@/services/cfaEntreprise"
 import { PAGES } from "@/utils/routes.utils"
 
 export default function JobDetailRendererClient({ job, rechercheParams }: { job: ILbaItemJobsGlobal; rechercheParams: IRecherchePageParams }) {
   const result = useRechercheResults(rechercheParams)
+  console.log(result)
 
   const jobDetail = <JobDetail selectedItem={job} resultList={result.items} rechercheParams={rechercheParams} />
 
@@ -64,7 +64,6 @@ function JobDetail({
   const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItem, rechercheParams: rechercheParams })
 
   const kind = selectedItem.ideaType
-  const isCfa = isCfaEntreprise(selectedItem?.company?.siret, selectedItem?.company?.headquarter?.siret)
   const isMandataire = selectedItem?.company?.mandataire
   const handleClose = () => router.push(PAGES.dynamic.recherche(rechercheParams).getPath())
 
@@ -115,9 +114,9 @@ function JobDetail({
         {...stickyHeaderProperties}
       >
         <Box width="100%" pl={["0", 4]} pb={isCollapsedHeader ? "0" : 2}>
-          <Flex justifyContent="flex-end">
-            {GetItemTag({ kind: oldItemTypeToNewItemType(kind), isCfa, isMandataire })}
-            {getNavigationButtons({ goPrev, goNext, handleClose })}
+          <Flex justifyContent="space-between" alignItems="center">
+            <LbaItemTags item={selectedItem} />
+            <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
           </Flex>
           {!isCollapsedHeader && getJobPublishedTimeAndApplications({ item: selectedItem })}
           {!isCollapsedHeader && <JobItemCardHeader selectedItem={selectedItem} kind={kind as LBA_ITEM_TYPE} isMandataire={isMandataire} />}

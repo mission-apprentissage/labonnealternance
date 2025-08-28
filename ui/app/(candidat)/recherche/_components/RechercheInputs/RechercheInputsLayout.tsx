@@ -2,6 +2,7 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
+import React from "react"
 
 export function RechercheInputsLayout({
   viewTypeCheckboxs,
@@ -9,6 +10,7 @@ export function RechercheInputsLayout({
   lieuInput,
   rayonSelect,
   niveauSelect,
+  handicapCheckbox,
   submitButton,
 }: {
   viewTypeCheckboxs?: React.ReactNode
@@ -16,6 +18,7 @@ export function RechercheInputsLayout({
   lieuInput?: React.ReactNode
   rayonSelect?: React.ReactNode
   niveauSelect?: React.ReactNode
+  handicapCheckbox?: React.ReactNode
   submitButton?: React.ReactNode
 }) {
   return (
@@ -43,6 +46,7 @@ export function RechercheInputsLayout({
       {lieuInput && <Box sx={{ flex: 250 }}>{lieuInput}</Box>}
       {rayonSelect}
       {niveauSelect}
+      {handicapCheckbox}
       {submitButton && <Box sx={{ marginTop: { xs: 0, md: "32px" } }}>{submitButton}</Box>}
     </Box>
   )

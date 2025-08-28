@@ -223,6 +223,7 @@ const ZLbaItemCompany = z
     creationDate: z.date().nullish(), // matcha -> date_creation_etablissement
     headquarter: ZLbaItemCompanyHQ.nullish(), // uniquement pour formation
     opco: ZLbaItemOpco.nullish(), // partner -> workplace_opco
+    elligibleHandicap: z.boolean().nullish(),
   })
   .strict()
   .openapi({

@@ -17,5 +17,15 @@ export default async function FAQ() {
     await fetchNotionPage("2543e456b94649e5aefeefa64398b9f9"),
   ])
 
-  return <FAQRendererClient recruteur={recruteur} organisme={organisme} candidat={candidat} />
+  return (
+    <FAQRendererClient
+      recruteur={recruteur}
+      organisme={organisme}
+      candidat={candidat}
+      onLoaded={{
+        action: "clickAndScroll",
+        selector: ".notion-block-2630c88032c8806996e6ed4a86fd2bdd > summary",
+      }}
+    />
+  )
 }

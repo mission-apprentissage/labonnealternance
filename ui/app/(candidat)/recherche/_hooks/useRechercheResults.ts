@@ -99,6 +99,9 @@ export function useRechercheResults(rechercheParams: IRecherchePageParams | null
     if (rechercheParams.rncp) {
       query.rncp = rechercheParams.rncp
     }
+    if (rechercheParams.elligibleHandicapFilter) {
+      query.elligibleHandicapFilter = "true"
+    }
     return query
   }, [rechercheParams])
 
