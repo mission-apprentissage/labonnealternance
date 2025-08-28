@@ -128,10 +128,10 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
             columnGap={4}
           >
             <Box>
-              <Typography sx={{ fontWeight: 700 }} component="h2">
+              <Typography className="big" fontWeight={700} component="h2">
                 Votre offre
               </Typography>
-              <Box mt={4}>
+              <Box mt={2}>
                 <FormulaireEditionOffreFields onRomeChange={onRomeChange} />
               </Box>
             </Box>

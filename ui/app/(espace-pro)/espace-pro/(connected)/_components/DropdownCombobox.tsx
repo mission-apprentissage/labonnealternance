@@ -18,7 +18,7 @@ const neutralItemProps = {
 export default function DropdownCombobox(props) {
   const [inputItems, setInputJobItems] = useState([])
 
-  const { saveSelectedItem, handleSearch, value, placeholder, name } = props
+  const { saveSelectedItem, handleSearch, value, placeholder, name, label } = props
   const [, , helpers] = useField(props.name)
 
   const itemToString = (item) => (item ? item.appellation : "")
@@ -54,7 +54,7 @@ export default function DropdownCombobox(props) {
   return (
     <div data-testid={props.dataTestId}>
       <div {...getComboboxProps()}>
-        <CustomInput pb="0" required={false} name={name} placeholder={placeholder || "sélectionner un métier"} {...getInputProps()} />
+        <CustomInput label={label} pb="0" required={false} name={name} placeholder={placeholder || "sélectionner un métier"} {...getInputProps()} />
       </div>
       <Box
         sx={{

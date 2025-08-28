@@ -1,8 +1,9 @@
 "use client"
 
-import { Checkbox, CheckboxGroup, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input, Select } from "@chakra-ui/react"
+import { Checkbox, CheckboxGroup, FormErrorMessage, Select } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Link, Typography } from "@mui/material"
+import Input from "@codegouvfr/react-dsfr/Input"
+import { Box, FormControl, FormHelperText, FormLabel, Link, Typography } from "@mui/material"
 import dayjs from "dayjs"
 import { useFormikContext } from "formik"
 import { useParams } from "next/navigation"
@@ -43,9 +44,9 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
   const { values, setFieldValue, handleChange, errors, touched } = useFormikContext<any>()
   return (
     <>
-      <FormControl isRequired>
-        <FormLabel>Métier</FormLabel>
+      <FormControl required={true} sx={{ width: "100%" }}>
         <DropdownCombobox
+          label="Métier"
           handleSearch={debounce(handleJobSearch, 300)}
           saveSelectedItem={(values: IAppellationsRomes["coupleAppellationRomeMetier"][number]) => {
             /**
@@ -77,11 +78,9 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
           />
         </Box>
       )}
-      <FormControl mt={6} isRequired>
+      <FormControl sx={{ width: "100%", mt: 6 }} required={true}>
         <Box mb={1}>
-          <FormLabel display="inline-block" mb={0}>
-            Type de contrat en alternance{" "}
-          </FormLabel>
+          <FormLabel sx={{ display: "inline-block", mb: 0 }}>Type de contrat en alternance </FormLabel>
           <Link
             href="https://www.service-public.fr/professionnels-entreprises/vosdroits/F31704"
             target="_blank"
@@ -117,7 +116,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
           ))}
         </CheckboxGroup>
       </FormControl>
-      <FormControl mt={6} isRequired>
+      <FormControl sx={{ width: "100%", mt: 6 }} required={true}>
         <FormLabel>Niveau visé en fin d’études</FormLabel>
         <Select size="md" name="job_level_label" defaultValue={values.job_level_label} onChange={handleChange}>
           <option value="Indifférent">Indifférent</option>
@@ -140,18 +139,20 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
           max={maxStartDate.format(ISO_DATE_FORMAT)}
         />
       </Box>
-      <FormControl mt={6} maxWidth={["400px", "400px", "400px", "450px"]}>
+      <FormControl sx={{ mt: 6, maxWidth: { xs: "400px", lg: "450px" } }} required={true}>
         <ChampNombre max={10} name="job_count" value={values.job_count} label="Nombre de poste(s) disponible(s)" handleChange={setFieldValue} dataTestId="offre-job-count" />
       </FormControl>
-      {/* @ts-expect-error: TODO */}
-      <FormControl mt={6} isInvalid={errors.job_duration} maxWidth={["400px", "400px", "400px", "450px"]}>
+      <FormControl sx={{ mt: 6, maxWidth: { xs: "400px", lg: "450px" } }} error={errors.job_duration ? true : false}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <Typography sx={{ flexGrow: 2 }}>Durée du contrat (mois)</Typography>
           <Input
-            maxWidth="128px"
-            name="job_duration"
-            value={values.job_duration}
-            onChange={(e) => (parseInt(e.target.value) > 0 ? setFieldValue("job_duration", parseInt(e.target.value)) : setFieldValue("job_duration", null))}
+            label=""
+            className={fr.cx("fr-fieldset__element--inline", "fr-fieldset__element--number")}
+            nativeInputProps={{
+              name: "job_duration",
+              value: values.job_duration,
+              onChange: (e) => (parseInt(e.target.value) > 0 ? setFieldValue("job_duration", parseInt(e.target.value)) : setFieldValue("job_duration", null)),
+            }}
           />
         </Box>
         <FormErrorMessage>
@@ -164,9 +165,9 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
         </FormErrorMessage>
       </FormControl>
       {Boolean((user && user.type !== AUTHTYPE.ENTREPRISE) || (type && type !== AUTHTYPE.ENTREPRISE)) && (
-        <FormControl mt={6}>
+        <FormControl sx={{ mt: 6, width: "100%" }}>
           <FormLabel>Rythme de l'alternance (formation / entreprise)</FormLabel>
-          <FormHelperText pb={2}>Facultatif</FormHelperText>
+          <FormHelperText sx={{ pb: 2 }}>Facultatif</FormHelperText>
           <Select variant="outline" size="md" name="job_rythm" defaultValue={values.job_rythm} onChange={handleChange}>
             <option value="" hidden>
               Choisissez un rythme

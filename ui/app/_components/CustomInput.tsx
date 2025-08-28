@@ -13,11 +13,13 @@ const CustomInput = (props) => {
   return (
     <Box pb={props.pb ?? 3}>
       <FormControl sx={{ width: "100%" }} error={meta.error && meta.touched} required={props.required ?? true}>
-        <FormLabel sx={{ fontWeight: 700 }} error={meta.error && meta.touched}>
-          {props.label}
-        </FormLabel>
+        {props.label && (
+          <FormLabel sx={{ fontWeight: 700 }} error={meta.error && meta.touched}>
+            {props.label}
+          </FormLabel>
+        )}
         {props.info && <FormHelperText sx={{ pb: 1 }}>{props.info}</FormHelperText>}
-        <Input className={fr.cx("fr-input")} {...field} {...props} />
+        <Input sx={{ mt: "8px !important" }} className={fr.cx("fr-input")} {...field} {...props} />
         {props.helper && <FormHelperText>{props.helper}</FormHelperText>}
         {meta.error &&
           meta.touched &&
