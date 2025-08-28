@@ -28,10 +28,10 @@ export const blockJobsPartnersFromCfaList = async ({ addedMatchFilter }: FillCom
     replaceMatchFilter: { $and: filters },
     getData: async (documents) => {
       return documents.map((document) => {
-        const { _id, workplace_name } = document
+        const { _id, workplace_name, business_error } = document
         const result: Pick<IComputedJobsPartners, (typeof filledFields)[number] | "_id"> = {
           _id,
-          business_error: isCompanyInBlockedCfaList(workplace_name) ? JOB_PARTNER_BUSINESS_ERROR.CFA : null,
+          business_error: isCompanyInBlockedCfaList(workplace_name) ? JOB_PARTNER_BUSINESS_ERROR.CFA : business_error,
         }
         return result
       })

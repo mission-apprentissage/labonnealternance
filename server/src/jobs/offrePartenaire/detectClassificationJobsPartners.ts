@@ -40,10 +40,11 @@ export const detectClassificationJobsPartners = async ({ addedMatchFilter, shoul
       const classifications = await getClassificationFromLab(payload)
 
       return documents.map((document, index) => {
+        const { _id, business_error } = document
         const classification = classifications[index]
         const result: Pick<IComputedJobsPartners, (typeof filledFields)[number] | "_id"> = {
-          _id: document._id,
-          business_error: classification && classification === "cfa" ? JOB_PARTNER_BUSINESS_ERROR.CFA : null,
+          _id,
+          business_error: classification && classification === "cfa" ? JOB_PARTNER_BUSINESS_ERROR.CFA : business_error,
         }
         return result
       })
