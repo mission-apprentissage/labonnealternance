@@ -1,9 +1,10 @@
 "use client"
 
-import { FormErrorMessage, Select } from "@chakra-ui/react"
+import { FormErrorMessage } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox"
 import Input from "@codegouvfr/react-dsfr/Input"
+import Select from "@codegouvfr/react-dsfr/Select"
 import { Box, FormControl, FormHelperText, FormLabel, Link, Typography } from "@mui/material"
 import dayjs from "dayjs"
 import { useFormikContext } from "formik"
@@ -113,18 +114,21 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
           }
         />
       </Box>
-      <FormControl sx={{ width: "100%", mt: 6 }} required={true}>
-        <FormLabel>Niveau visé en fin d’études</FormLabel>
-        <Select size="md" name="job_level_label" defaultValue={values.job_level_label} onChange={handleChange}>
-          <option value="Indifférent">Indifférent</option>
-          <option value="Cap, autres formations niveau (Infrabac)">Cap, autres formations niveau (Infrabac)</option>
-          <option value="BP, Bac, autres formations niveau (Bac)">BP, Bac, autres formations niveau (Bac)</option>
-          <option value="BTS, DEUST, autres formations niveau (Bac+2)">BTS, DEUST, autres formations niveau (Bac+2)</option>
-          <option value="Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)">Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)</option>
-          <option value="Master, titre ingénieur, autres formations niveau (Bac+5)">Master, titre ingénieur, autres formations niveau (Bac+5)</option>
-        </Select>
-        {errors.job_level_label && touched.job_level_label && <FormErrorMessage>{errors.job_level_label as string}</FormErrorMessage>}
-      </FormControl>
+
+      <Select
+        state={errors.job_level_label && touched.job_level_label ? "error" : "default"}
+        stateRelatedMessage={errors.job_level_label as string}
+        label="Niveau visé en fin d’études *"
+        nativeSelectProps={{ name: "job_level_label", defaultValue: values.job_level_label, onChange: handleChange }}
+      >
+        <option value="Indifférent">Indifférent</option>
+        <option value="Cap, autres formations niveau (Infrabac)">Cap, autres formations niveau (Infrabac)</option>
+        <option value="BP, Bac, autres formations niveau (Bac)">BP, Bac, autres formations niveau (Bac)</option>
+        <option value="BTS, DEUST, autres formations niveau (Bac+2)">BTS, DEUST, autres formations niveau (Bac+2)</option>
+        <option value="Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)">Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)</option>
+        <option value="Master, titre ingénieur, autres formations niveau (Bac+5)">Master, titre ingénieur, autres formations niveau (Bac+5)</option>
+      </Select>
+
       <Box mt={2}>
         <CustomInput
           required={true}
