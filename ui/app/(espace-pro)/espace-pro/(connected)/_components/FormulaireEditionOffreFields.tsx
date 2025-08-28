@@ -96,8 +96,10 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
             }
           })}
           legend={
-            <Box mb={1}>
-              <FormLabel sx={{ display: "inline-block", mb: 0, mr: 1 }}>Type de contrat en alternance *</FormLabel>
+            <>
+              <FormLabel sx={{ ...(values.job_type.length === 0 ? { color: fr.colors.decisions.text.default.error.default } : {}), display: "inline-block", mb: 0, mr: 1 }}>
+                Type de contrat en alternance *
+              </FormLabel>
               <Link
                 href="https://www.service-public.fr/professionnels-entreprises/vosdroits/F31704"
                 target="_blank"
@@ -107,7 +109,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
               >
                 En savoir plus
               </Link>
-            </Box>
+            </>
           }
         />
       </Box>
