@@ -1,3 +1,4 @@
+import { Filter } from "mongodb"
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 
 import { FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
@@ -9,12 +10,22 @@ const sourceFields = ["workplace_name"] as const satisfies (keyof IComputedJobsP
 
 export const blockJobsPartnersFromCfaList = async ({ addedMatchFilter }: FillComputedJobsPartnersContext) => {
   const filledFields = ["business_error"] as const satisfies (keyof IComputedJobsPartners)[]
+
+  const filters: Filter<IComputedJobsPartners>[] = [
+    {
+      workplace_name: { $ne: null },
+      business_error: null,
+    },
+  ]
+  if (addedMatchFilter) filters.push(addedMatchFilter)
+
   return fillFieldsForPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.BLOCK_CFA_NAME,
     sourceFields,
     filledFields,
     groupSize: 500,
     addedMatchFilter,
+    replaceMatchFilter: { $and: filters },
     getData: async (documents) => {
       return documents.map((document) => {
         const { _id, workplace_name } = document

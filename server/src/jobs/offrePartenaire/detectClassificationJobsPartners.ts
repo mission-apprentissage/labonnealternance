@@ -8,7 +8,14 @@ import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 
 export const detectClassificationJobsPartners = async ({ addedMatchFilter, shouldNotifySlack }: FillComputedJobsPartnersContext) => {
   const filledFields = ["business_error"] as const satisfies (keyof IComputedJobsPartners)[]
-  const filters: Filter<IComputedJobsPartners>[] = [{ workplace_description: { $ne: null } }, { workplace_name: { $ne: null } }, { offer_description: { $ne: null } }]
+  const filters: Filter<IComputedJobsPartners>[] = [
+    {
+      workplace_description: { $ne: null },
+      workplace_name: { $ne: null },
+      offer_description: { $ne: null },
+      business_error: null,
+    },
+  ]
   if (addedMatchFilter) filters.push(addedMatchFilter)
 
   return fillFieldsForPartnersFactory({
