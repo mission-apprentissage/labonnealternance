@@ -1,11 +1,10 @@
 "use client"
 
-import { FormErrorMessage } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox"
 import Input from "@codegouvfr/react-dsfr/Input"
 import Select from "@codegouvfr/react-dsfr/Select"
-import { Box, FormControl, FormLabel, Link, Typography } from "@mui/material"
+import { Box, FormControl, FormLabel, Link } from "@mui/material"
 import dayjs from "dayjs"
 import { useFormikContext } from "formik"
 import { useParams } from "next/navigation"
@@ -140,12 +139,12 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
           max={maxStartDate.format(ISO_DATE_FORMAT)}
         />
       </Box>
-      <FormControl sx={{ mt: 6, maxWidth: { xs: "400px", lg: "450px" } }} required={true}>
+      <FormControl sx={{ mt: 2, width: "100%", maxWidth: { xs: "400px", sm: "100%" } }} required={true}>
         <ChampNombre max={10} name="job_count" value={values.job_count} label="Nombre de poste(s) disponible(s)" handleChange={setFieldValue} dataTestId="offre-job-count" />
       </FormControl>
-      <FormControl sx={{ mt: 6, maxWidth: { xs: "400px", lg: "450px" } }} error={errors.job_duration ? true : false}>
+      <FormControl sx={{ mt: 2, width: "100%", maxWidth: { xs: "400px", sm: "100%" } }} error={errors.job_duration ? true : false}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <Typography sx={{ flexGrow: 2 }}>Durée du contrat (mois)</Typography>
+          <FormLabel sx={{ flexGrow: 2 }}>Durée du contrat (mois)</FormLabel>
           <Input
             label=""
             className={fr.cx("fr-fieldset__element--inline", "fr-fieldset__element--number")}
@@ -156,14 +155,14 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
             }}
           />
         </Box>
-        <FormErrorMessage>
-          <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+        {errors.job_duration && (
+          <Box sx={{ color: fr.colors.decisions.text.default.error.default, display: "flex", flexDirection: "row", alignItems: "center" }}>
             <Warning m={0} />
             <Box sx={{ display: "flex" }} ml={1}>
               {errors.job_duration as string}
             </Box>
           </Box>
-        </FormErrorMessage>
+        )}
       </FormControl>
       {Boolean((user && user.type !== AUTHTYPE.ENTREPRISE) || (type && type !== AUTHTYPE.ENTREPRISE)) && (
         <FormControl sx={{ mt: 2, width: "100%" }}>
