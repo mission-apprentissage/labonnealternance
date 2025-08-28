@@ -92,7 +92,7 @@ export const OffresTabsMenu = ({
         iconId="fr-icon-settings-5-line"
         title="Actions sur l'offre"
       />
-      <Popper open={open} anchorEl={anchorRef.current} role={undefined} placement="bottom-start" transition disablePortal>
+      <Popper sx={{ zIndex: 1 }} open={open} anchorEl={anchorRef.current} role={undefined} placement="bottom-start" transition disablePortal>
         {({ TransitionProps, placement }) => (
           <Grow
             {...TransitionProps}
