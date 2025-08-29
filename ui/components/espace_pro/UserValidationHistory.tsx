@@ -1,6 +1,8 @@
-import { Badge, Box, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react"
+import { Box, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import { IUserStatusValidationJson } from "shared"
+
+import Badge from "@/app/(espace-pro)/_components/Badge"
 
 import LoadingEmptySpace from "./LoadingEmptySpace"
 

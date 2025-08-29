@@ -1,24 +1,10 @@
+import InfoTooltip from "../../app/(espace-pro)/_components/InfoToolTip"
 import AnimationContainer from "../../app/(espace-pro)/espace-pro/(connected)/_components/AnimationContainer"
+import DropdownCombobox from "../../app/(espace-pro)/espace-pro/(connected)/_components/DropdownCombobox"
 
 import ConfirmationDesactivationUtilisateur from "./ConfirmationDesactivationUtilisateur"
 import ConfirmationModificationOpco from "./ConfirmationModificationOpco"
-import CustomInput from "./CustomInput"
-import DropdownCombobox from "./DropdownCombobox"
-import InfoPopover from "./InfoPopover"
-import InfoTooltip from "./InfoToolTip"
 import LoadingEmptySpace from "./LoadingEmptySpace"
-import TableNew from "./TableNew"
 import UserValidationHistory from "./UserValidationHistory"
 
-export {
-  AnimationContainer,
-  ConfirmationDesactivationUtilisateur,
-  ConfirmationModificationOpco,
-  CustomInput,
-  DropdownCombobox,
-  InfoPopover,
-  InfoTooltip,
-  LoadingEmptySpace,
-  TableNew,
-  UserValidationHistory,
-}
+export { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationModificationOpco, DropdownCombobox, InfoTooltip, LoadingEmptySpace, UserValidationHistory }

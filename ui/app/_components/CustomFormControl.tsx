@@ -1,4 +1,4 @@
-import { Box, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel } from "@chakra-ui/react"
+import { Box, FormControl, FormHelperText, FormLabel } from "@mui/material"
 import { useField } from "formik"
 
 import { Warning } from "../../theme/components/icons"
@@ -7,18 +7,20 @@ export const CustomFormControl = (props) => {
   const [_field, meta] = useField(props)
 
   return (
-    <Box pb={props.pb ?? "5"}>
-      <FormControl isInvalid={meta.error && meta.touched} isRequired={props.required ?? true}>
+    <Box sx={{ width: "100%" }} pb={props.pb ?? "5"}>
+      <FormControl sx={{ width: "100%" }} required={props.required ?? true} error={meta.error && meta.touched}>
         <FormLabel>{props.label}</FormLabel>
-        {props.info && <FormHelperText pb={2}>{props.info}</FormHelperText>}
+        {props.info && <FormHelperText sx={{ pb: "8px" }}>{props.info}</FormHelperText>}
         {props.children}
         {props.helper && <FormHelperText>{props.helper}</FormHelperText>}
-        <FormErrorMessage>
-          <Flex direction="row" alignItems="center">
+        {meta.error && (
+          <Box pb={3} sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
             <Warning m={0} />
-            <Flex ml={1}>{meta.error}</Flex>
-          </Flex>
-        </FormErrorMessage>
+            <Box sx={{ display: "flex" }} ml={1}>
+              {meta.error}
+            </Box>
+          </Box>
+        )}
       </FormControl>
     </Box>
   )

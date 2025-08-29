@@ -1,15 +1,14 @@
 import { Box, Flex, Heading, Modal, ModalBody, ModalContent, ModalHeader, ModalOverlay, Text, useToast } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
+import Select from "@codegouvfr/react-dsfr/Select"
 import { useQueryClient } from "@tanstack/react-query"
 import { FormikProvider, useFormik } from "formik"
 import { JOB_STATUS } from "shared"
 import { z } from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
-import CustomInput from "@/app/(espace-pro)/_components/CustomInput"
-import { CustomSelect } from "@/app/(espace-pro)/_components/CustomSelect"
+import CustomInput from "@/app/_components/CustomInput"
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
-import { CustomFormControl } from "@/components/espace_pro/CustomFormControl"
 import { cancelOffreFromAdmin } from "@/utils/api"
 
 const zodSchema = z.object({
@@ -95,17 +94,23 @@ export default function ConfirmationSuppressionOffre(props: ConfirmationSuppress
           </Text>
           <FormikProvider value={formik}>
             <form onSubmit={formik.handleSubmit}>
-              <CustomFormControl label="Motif de la suppression (obligatoire)" required name="motif">
-                <CustomSelect
-                  name="motif"
-                  possibleValues={motifs}
-                  value={formik.values.motif || ""}
-                  selectProps={{
-                    isRequired: true,
-                  }}
-                  onChange={(newValue) => formik.setFieldValue("motif", newValue, true)}
-                />
-              </CustomFormControl>
+              <Select
+                label="Motif de la suppression (obligatoire) *"
+                nativeSelectProps={{
+                  onChange: (event) => formik.setFieldValue("motif", event.target.value, true),
+                  name: "motif",
+                  required: true,
+                }}
+              >
+                <option disabled hidden selected value="">
+                  Sélectionnez une valeur...
+                </option>
+                {motifs.map((reason) => (
+                  <option key={reason} value={reason}>
+                    {reason}
+                  </option>
+                ))}
+              </Select>
               {formik.values.motif === motifAutre && <CustomInput label="Précisez votre motif (facultatif)" name="autreMotif" required={false} />}
               <Flex justifyContent="flex-end" mt={8}>
                 <Box ml={3}>

@@ -1,18 +1,19 @@
 "use client"
 
-import { Box, Flex, Modal, ModalContent, ModalHeader, ModalOverlay, useDisclosure } from "@chakra-ui/react"
+import { Box, Flex, Modal, ModalContent, ModalHeader, ModalOverlay } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useRouter } from "next/navigation"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
+import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
 import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
 import { AdminUserForm } from "@/app/(espace-pro)/espace-pro/(connected)/administration/gestion-des-administrateurs/_components/AdminUserForm"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
+import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableString } from "@/common/utils/dateUtils"
-import { TableNew } from "@/components/espace_pro"
 import { ArrowRightLine2 } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
@@ -62,7 +63,7 @@ export default function GestionDesAdministrateurs() {
         <Button onClick={newUser.onOpen}>Créer un utilisateur</Button>
       </Flex>
 
-      <TableNew
+      <TableWithPagination
         data={users || []}
         columns={[
           {

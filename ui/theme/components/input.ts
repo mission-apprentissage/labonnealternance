@@ -41,48 +41,6 @@ const Input = {
         color: "#1e1e1e",
       },
     },
-    defaultAutocomplete: {
-      field: {
-        fontSize: "14px",
-        fontWeight: 600,
-        background: "white",
-        px: 0.5,
-        py: "1px",
-        mb: "1px",
-        height: "32px",
-        width: "95%",
-        marginLeft: "5px",
-        border: "none !important",
-        _placeholder: {
-          color: "grey.500",
-          lineHeight: "17px",
-          letterSpacing: "0px",
-          fontWeight: 400,
-          fontSize: "14px",
-        },
-      },
-    },
-    homeAutocomplete: {
-      field: {
-        fontSize: "16px",
-        fontWeight: 600,
-        background: "white",
-        px: 0.5,
-        py: "1px",
-        mb: "1px",
-        height: "32px",
-        width: "95%",
-        marginLeft: "5px",
-        border: "none !important",
-        _placeholder: {
-          color: "grey.500",
-          lineHeight: "17px",
-          letterSpacing: "0px",
-          fontWeight: 400,
-          fontSize: "16px",
-        },
-      },
-    },
   },
 }
 
