@@ -13,7 +13,7 @@ export const CustomAccordion = ({ id, header, children }: { id: string; header: 
                 <Box flex={1} textAlign="left">
                   {header}
                 </Box>
-                {isExpanded ? <Minus color="bluefrance.500" /> : <Plus sx={{ color: "bluefrance.500" }} />}
+                {isExpanded ? <Minus sx={{ color: "bluefrance.500" }} /> : <Plus sx={{ color: "bluefrance.500" }} />}
               </AccordionButton>
             </h2>
             <AccordionPanel maxH="50%" p={0} my={0} mx={2} mb={4}>
