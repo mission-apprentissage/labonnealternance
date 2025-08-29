@@ -171,6 +171,12 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin, limit }: { 
     }
   )
 
+  /*
+  TODO ici si formations est vide, relancer la recherche en préfixe sur rome_code.slice(0,3)
+
+
+  */
+
   const etablissementsToRetrieve = new Set()
   formations.forEach((formation) => etablissementsToRetrieve.add(formation.etablissement_formateur_id))
 
