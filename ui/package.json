@@ -43,7 +43,7 @@
     "match-sorter": "^8.0.0",
     "mersenne-twister": "^1.1.0",
     "motion": "^12.7.4",
-    "next": "^15.3.1",
+    "next": "^15.4.7",
     "next-plausible": "^3.12.4",
     "next-recompose-plugins": "^3.0.0",
     "next-seo": "^4.29.0",
