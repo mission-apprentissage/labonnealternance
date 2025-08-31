@@ -19,13 +19,13 @@ export const FieldWithValue = ({
   }
   return (
     <Box sx={{ display: "flex", alignItems: "center" }}>
-      <Typography mr={3} sx={{ minWidth: "fit-content" }}>
+      <Typography mr={1} sx={{ minWidth: "fit-content" }}>
         {title} :
       </Typography>
       {!isValueEmpty ? (
-        <Typography sx={{ background: "#F9F8F6", px: 2, py: "2px", mr: 2, fontWeight: 700 }}>{value}</Typography>
+        <Typography sx={{ background: "#F9F8F6", px: 1, py: "2px", mr: 1, fontWeight: 700 }}>{value}</Typography>
       ) : (
-        <Typography sx={{ textTransform: "uppercase", background: "#FFE9E9", color: "#CE0500", px: 2, py: "2px", fontWeight: 700, mr: 2 }}>Non identifié</Typography>
+        <Typography sx={{ textTransform: "uppercase", background: "#FFE9E9", color: "#CE0500", px: 1, py: "2px", fontWeight: 700, mr: 1 }}>Non identifié</Typography>
       )}
       {tooltip && (typeof tooltip === "string" ? <InfoTooltip description={tooltip} /> : tooltip)}
     </Box>
