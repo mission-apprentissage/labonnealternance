@@ -133,14 +133,11 @@ function TableWithPagination({ data = [], columns, description = undefined, expo
                     <Box key={k} as="tr" {...headerGroup.getHeaderGroupProps({})}>
                       {headerGroup.headers.map((column, i) => (
                         <Box key={i} as="th" {...column.getHeaderProps(column.getSortByToggleProps())} role="hack">
-                          <Box sx={{ display: "flex", flexDirection: "column", w: "full", alignItems: "flex-start", justify: "center" }}>
-                            <Typography className="fr-cell__title">
-                              {column.render("Header")}
-
-                              <Box component="span" pl={1}>
-                                {column.isSorted ? column.isSortedDesc ? <ArrowDownLine /> : <ArrowUpLine /> : column.canSort && <ArrowUpDownLine />}
-                              </Box>
-                            </Typography>
+                          <Box sx={{ display: "flex", flexDirection: "row", w: "full", alignItems: "flex-start" }}>
+                            <Typography className="fr-cell__title">{column.render("Header")}</Typography>
+                            <Box component="span" pl={1}>
+                              {column.isSorted ? column.isSortedDesc ? <ArrowDownLine /> : <ArrowUpLine /> : column.canSort && <ArrowUpDownLine />}
+                            </Box>
                           </Box>
                         </Box>
                       ))}

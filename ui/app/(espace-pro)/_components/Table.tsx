@@ -34,13 +34,11 @@ const Table = ({ data, columns }) => {
                     {headerGroup.headers.map((column, i) => {
                       return (
                         <Box key={i} as="th" {...column.getHeaderProps(column.getSortByToggleProps())} role="hack">
-                          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center", width: "100%" }}>
-                            <Typography>
-                              {column.render("Header")}
-                              <Box component="span" pl={1}>
-                                {column.isSorted ? column.isSortedDesc ? <ArrowDownLine /> : <ArrowUpLine /> : column.canSort && <ArrowUpDownLine />}
-                              </Box>
-                            </Typography>
+                          <Box sx={{ display: "flex", flexDirection: "row", alignItems: "flex-start", width: "100%" }}>
+                            <Typography>{column.render("Header")}</Typography>
+                            <Box component="span" pl={1}>
+                              {column.isSorted ? column.isSortedDesc ? <ArrowDownLine /> : <ArrowUpLine /> : column.canSort && <ArrowUpDownLine />}
+                            </Box>
                           </Box>
                         </Box>
                       )
