@@ -144,7 +144,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
       </FormControl>
       <FormControl sx={{ mt: 2, width: "100%", maxWidth: { xs: "400px", sm: "100%" } }} error={errors.job_duration ? true : false}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <FormLabel sx={{ flexGrow: 2 }}>Durée du contrat (mois)</FormLabel>
+          <FormLabel sx={{ flexGrow: 2 }}>Durée du contrat (mois) *</FormLabel>
           <Input
             label=""
             className={fr.cx("fr-fieldset__element--inline", "fr-fieldset__element--number")}
