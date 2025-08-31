@@ -186,7 +186,7 @@ export default function RendezVousApprentissageDetailRendererClient({
                         <Td align="center" fontSize="0.8em" px="1px">
                           <HStack spacing={0}>
                             <HStack w={150} spacing={0}>
-                              <InfoTooltip description="DESACTIVER L'ECRASEMENT DU MAIL VIA LA SYNCHRONISATION CATALOGUE" />
+                              <InfoTooltip description="Désactiver l'écrasement du mail via la synchronisation catalogue" />
                               <Text ml={1} w={80}>
                                 DESACTIVER
                               </Text>
@@ -199,7 +199,7 @@ export default function RendezVousApprentissageDetailRendererClient({
                           </HStack>
                           <HStack spacing={0}>
                             <HStack w={150} spacing={0}>
-                              <InfoTooltip description="PUBLIE SUR LE CATALOGUE" />
+                              <InfoTooltip description="Publié sur le catalogue" />
                               <Text ml={1} w={80}>
                                 PUBLIÉ
                               </Text>
@@ -208,7 +208,7 @@ export default function RendezVousApprentissageDetailRendererClient({
                           </HStack>
                           <HStack spacing={0}>
                             <HStack w={150} spacing={0}>
-                              <InfoTooltip description="DERNIERE SYNCHRONISATION CATALOGUE" />
+                              <InfoTooltip description="Dernière synchronisation catalogue" />
                               <Text ml={1} w={80}>
                                 SYNCHRO
                               </Text>
