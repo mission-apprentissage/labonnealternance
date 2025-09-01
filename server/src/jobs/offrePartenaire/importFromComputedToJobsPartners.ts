@@ -37,6 +37,7 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
           contract_duration: computedJobPartner.contract_duration ?? null,
           contract_type: computedJobPartner.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
           contract_remote: computedJobPartner.contract_remote ?? null,
+          contract_is_disabled_elligible: computedJobPartner.contract_is_disabled_elligible ?? false,
           offer_title: computedJobPartner.offer_title,
           offer_rome_codes: computedJobPartner.offer_rome_codes,
           offer_description: computedJobPartner.offer_description,
