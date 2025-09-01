@@ -254,7 +254,7 @@ export async function setupJobProcessor() {
             tag: "main",
           },
           "Emission des intentions des recruteurs": {
-            cron_string: "30 20 * * *",
+            cron_string: "0 9 * * *",
             handler: processRecruiterIntentions,
             tag: "main",
           },
