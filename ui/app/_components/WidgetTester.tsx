@@ -122,7 +122,7 @@ const WidgetIFrame = ({ title, width, height, url }: { title: string; width?: nu
 export function WidgetTester() {
   const initialValues: IFormTypeWidget = {
     radius: "30",
-    diploma: "",
+    diploma: null,
     metier: null,
     lieu: null,
     job_name: "",

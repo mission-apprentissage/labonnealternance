@@ -91,7 +91,9 @@ export const NIVEAUX_DIPLOMES_EUROPEENS = [
   },
 ] as const
 
-export const zDiplomaEuropeanLevel = z.enum([NIVEAUX_DIPLOMES_EUROPEENS[0].value, ...NIVEAUX_DIPLOMES_EUROPEENS.slice(1).map((x) => x.value)])
+export const NIVEAUX_DIPLOMES_EUROPEENS_ENUM = Object.fromEntries(NIVEAUX_DIPLOMES_EUROPEENS.map((x) => [x.value, x.value]))
+
+export const zDiplomaEuropeanLevel = extensions.buildEnum(NIVEAUX_DIPLOMES_EUROPEENS_ENUM)
 
 export type INiveauDiplomeEuropeen = z.output<typeof zDiplomaEuropeanLevel>
 

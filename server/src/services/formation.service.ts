@@ -4,6 +4,7 @@ import { chain } from "lodash-es"
 import { assertUnreachable, type IFormationCatalogue, type ILbaItemFormation2 } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { referrers } from "shared/constants/referers"
+import { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -30,8 +31,8 @@ const diplomaMap = {
   7: "7 (Master, titre ingénieur...)",
 }
 
-const getDiplomaIndexName = (value) => {
-  return value ? diplomaMap[value[0]] : ""
+const getDiplomaIndexName = (value: INiveauDiplomeEuropeen) => {
+  return value ? diplomaMap[parseInt(value, 10)] : ""
 }
 
 const minimalDataMongoFields = {
@@ -80,7 +81,7 @@ const getFormations = async ({
   romeDomain?: string
   coords?: [number, number]
   radius?: number
-  diploma?: string
+  diploma?: INiveauDiplomeEuropeen
   limit?: number
   caller?: string
   api?: string
@@ -173,7 +174,7 @@ const getRegionFormations = async ({
   romeDomain?: string
   region?: string
   departement?: string
-  diploma?: string
+  diploma?: INiveauDiplomeEuropeen
   limit?: number
   options: "with_description"[]
   caller?: string
@@ -246,7 +247,7 @@ const getAtLeastSomeFormations = async ({
   romeDomain?: string
   coords?: [number, number]
   radius?: number
-  diploma?: string
+  diploma?: INiveauDiplomeEuropeen
   maxOutLimitFormation: number
   caller?: string
   options: "with_description"[]
@@ -643,7 +644,7 @@ export const getFormationsQuery = async ({
   longitude?: number
   latitude?: number
   radius?: number
-  diploma?: string
+  diploma?: INiveauDiplomeEuropeen
   romeDomain?: string
   caller?: string
   options?: "with_description"
@@ -662,7 +663,7 @@ export const getFormationsQuery = async ({
       romes: parameterControl.romes?.split(","),
       coords: longitude !== undefined && latitude !== undefined ? [longitude, latitude] : undefined,
       radius,
-      diploma: diploma,
+      diploma,
       maxOutLimitFormation: 5,
       romeDomain,
       caller,
@@ -698,7 +699,7 @@ export const getFormationsV2 = async ({
   longitude?: number
   latitude?: number
   radius?: number
-  diploma?: string
+  diploma?: INiveauDiplomeEuropeen
   romeDomain?: string
   caller?: string
   options?: "with_description"
@@ -720,7 +721,7 @@ export const getFormationsV2 = async ({
       romes: parameterControl.romes?.split(","),
       coords: longitude !== undefined && latitude !== undefined ? [longitude, latitude] : undefined,
       radius,
-      diploma: diploma,
+      diploma,
       maxOutLimitFormation: 5,
       romeDomain,
       caller,
@@ -798,7 +799,7 @@ export const getFormationsParRegionQuery = async ({
   romes?: string
   departement?: string
   region?: string
-  diploma?: string
+  diploma?: INiveauDiplomeEuropeen
   romeDomain?: string
   caller?: string
   options?: "with_description"
@@ -815,7 +816,7 @@ export const getFormationsParRegionQuery = async ({
       romes: romes ? romes.split(",") : [],
       region: region,
       departement: departement,
-      diploma: diploma,
+      diploma,
       romeDomain: romeDomain,
       caller: caller,
       options: options === "with_description" ? ["with_description"] : [],
@@ -852,7 +853,7 @@ export const getFormationsParRegionV2 = async ({
   romes?: string
   departement?: string
   region?: string
-  diploma?: string
+  diploma?: INiveauDiplomeEuropeen
   romeDomain?: string
   caller?: string
   withDescription?: boolean
@@ -873,7 +874,7 @@ export const getFormationsParRegionV2 = async ({
       romes: romes ? romes.split(",") : [],
       region: region,
       departement: departement,
-      diploma: diploma,
+      diploma,
       romeDomain: romeDomain,
       caller: caller,
       options: withDescription ? ["with_description"] : [],
