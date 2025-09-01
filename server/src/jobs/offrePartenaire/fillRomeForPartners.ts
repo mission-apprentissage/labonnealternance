@@ -11,7 +11,13 @@ export const fillRomeForPartners = async ({ addedMatchFilter }: FillComputedJobs
   const filledFields = ["offer_rome_codes"] as const satisfies (keyof IComputedJobsPartners)[]
 
   const finalFilter: Filter<IComputedJobsPartners> = {
-    $and: [{ business_error: null, "offer_rome_codes.0": { $exists: false } }, ...(addedMatchFilter ? [addedMatchFilter] : [])],
+    $and: [
+      {
+        business_error: null,
+        "offer_rome_codes.0": { $exists: false },
+      },
+      ...(addedMatchFilter ? [addedMatchFilter] : []),
+    ],
   }
 
   return fillFieldsForPartnersFactory({
