@@ -111,7 +111,7 @@ function FinComponent(props: ComponentProps) {
     <BorderedBox sx={{ display: "flex", flexDirection: { xs: "column", lg: "row" }, gap: { xs: 1, lg: 2 }, justifyContent: "center", width: "100%", mt: 2 }}>
       <MailCloud w={["120px", "120px", "120px", "269px"]} h={["67px", "67px", "67px", "151px"]} />
       <Box>
-        <Typography sx={{ backgroundColor: "white", fontSize: "32px", fontWeight: "bold" }} component="h1" mb={3}>
+        <Typography sx={{ backgroundColor: "white", fontSize: "32px", fontWeight: "bold", lineHeight: "32px" }} component="h1" mb={3}>
           {shouldDisplayAccountInformation ? <>Encore une étape avant la publication de votre offre...</> : <>Félicitations, votre offre est créée.</>}
         </Typography>
         {shouldDisplayAccountInformation ? (
