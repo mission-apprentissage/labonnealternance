@@ -3,6 +3,7 @@ import { z } from "zod"
 import { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
 import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { IDiplomaParam } from "../routes/_params.js"
 
 import { ZPointGeometry } from "./address.model.js"
 import { IModelDescriptor, zObjectId } from "./common.js"
@@ -96,6 +97,12 @@ export const NIVEAUX_DIPLOMES_EUROPEENS_ENUM = Object.fromEntries(NIVEAUX_DIPLOM
 export const zDiplomaEuropeanLevel = extensions.buildEnum(NIVEAUX_DIPLOMES_EUROPEENS_ENUM)
 
 export type INiveauDiplomeEuropeen = z.output<typeof zDiplomaEuropeanLevel>
+
+export const INiveauDiplomeEuropeen = {
+  fromParam(niveauParam: IDiplomaParam): INiveauDiplomeEuropeen | undefined {
+    return NIVEAUX_DIPLOMES_EUROPEENS.find((x) => x.value === niveauParam?.substring(0, 1))?.value
+  },
+}
 
 export const ZJobsPartnersOfferHistoryEvent = z.object({
   status: extensions.buildEnum(JOB_STATUS_ENGLISH).describe("Statut de l'accès"),

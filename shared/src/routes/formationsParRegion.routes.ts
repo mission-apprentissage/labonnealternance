@@ -50,7 +50,7 @@ export const zV1FormationsParRegion = {
               },
               example: "84",
             }),
-          diploma: zDiplomaParam.optional(),
+          diploma: zDiplomaParam,
           options: zGetFormationOptions,
         })
         .strict()

@@ -1,6 +1,8 @@
+import { NIVEAUX_POUR_LBA } from "shared/constants/recruteur"
+
 import { LBA_ITEM_TYPE_OLD } from "../constants/lbaitem.js"
 import { z } from "../helpers/zodWithOpenApi.js"
-import { zDiplomaEuropeanLevel } from "../models/jobsPartners.model.js"
+import { typedKeys } from "../utils/objectUtils.js"
 
 export const zCallerParam = z
   .string()
@@ -113,11 +115,18 @@ export const zSourcesParams = z
     },
   })
 
-export const zDiplomaParam = zDiplomaEuropeanLevel.openapi({
-  param: {
-    description: "Le niveau de diplôme visé en fin d'études",
-  },
-})
+const diplomaLevels = typedKeys(NIVEAUX_POUR_LBA)
+
+export const zDiplomaParam = z
+  .enum([diplomaLevels[0], ...diplomaLevels.slice(1)])
+  .optional()
+  .openapi({
+    param: {
+      description: "Le niveau de diplôme visé en fin d'études",
+    },
+  })
+
+export type IDiplomaParam = z.output<typeof zDiplomaParam>
 
 export const zOpcoParams = z
   .string()

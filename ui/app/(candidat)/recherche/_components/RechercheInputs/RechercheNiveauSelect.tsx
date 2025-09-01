@@ -1,16 +1,15 @@
 import { useField } from "formik"
-import { parseEnum } from "shared"
-import { INiveauDiplomeEuropeen, NIVEAUX_DIPLOMES_EUROPEENS, NIVEAUX_DIPLOMES_EUROPEENS_ENUM } from "shared/models/jobsPartners.model"
+import { typedEntries } from "shared"
+import { NIVEAUX_POUR_LBA } from "shared/constants/recruteur"
+import { IDiplomaParam } from "shared/routes/_params"
 
 import { SelectField } from "@/app/_components/FormComponents/SelectField"
 
-export const niveauOptions = [
-  {
-    value: "",
-    label: "Indifférent",
-  },
-  ...NIVEAUX_DIPLOMES_EUROPEENS,
-] as const satisfies Array<{ value: string; label: string; selected?: boolean }>
+export const niveauOptions = typedEntries(NIVEAUX_POUR_LBA).map(([value, label]) => ({ value, label })) satisfies Array<{
+  value: string
+  label: string
+  selected?: boolean
+}>
 
 export function RechercheNiveauSelectFormik() {
   const [field, meta, helper] = useField({ name: "diploma" })
@@ -18,7 +17,7 @@ export function RechercheNiveauSelectFormik() {
   return <RechercheNiveauSelect value={field.value} onChange={(newValue) => helper.setValue(newValue, true)} error={meta.touched && meta.error} />
 }
 
-export function RechercheNiveauSelect({ value, onChange, error }: { value: INiveauDiplomeEuropeen; onChange: (value: INiveauDiplomeEuropeen) => void; error?: string }) {
+export function RechercheNiveauSelect({ value, onChange, error }: { value: IDiplomaParam; onChange: (value: IDiplomaParam) => void; error?: string }) {
   return (
     <SelectField
       id="diploma"
@@ -33,8 +32,8 @@ export function RechercheNiveauSelect({ value, onChange, error }: { value: INive
         value: value ?? undefined,
         onChange: (event) => {
           const { value } = event.target
-          const enumValue = parseEnum(NIVEAUX_DIPLOMES_EUROPEENS_ENUM, value) || null
-          onChange(enumValue)
+          const option = niveauOptions.find((option) => option.value === value)
+          onChange(option?.value || null)
         },
         style: {
           fontWeight: 700,

@@ -1,7 +1,8 @@
 import { ReadonlyURLSearchParams } from "next/navigation"
-import { parseEnum } from "shared"
+import { typedKeys } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
-import { NIVEAUX_DIPLOMES_EUROPEENS_ENUM, zDiplomaEuropeanLevel } from "shared/models/jobsPartners.model"
+import { NIVEAUX_POUR_LBA } from "shared/constants/recruteur"
+import { zDiplomaParam } from "shared/routes/_params"
 import { z } from "zod"
 
 import { ILbaItem } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
@@ -67,7 +68,7 @@ const zRecherchePageParams = z.object({
     })
     .nullable(),
   radius: z.number(),
-  diploma: zDiplomaEuropeanLevel.nullish(),
+  diploma: zDiplomaParam.nullish(),
   job_name: z.string().nullable(),
   job_type: z.string().nullable(),
   displayMap: z.boolean().optional(),
@@ -197,7 +198,7 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
       : null
 
   const radius = parseInt(search.get("radius") ?? "30", 10)
-  const diploma = parseEnum(NIVEAUX_DIPLOMES_EUROPEENS_ENUM, search.get("diploma")) || null
+  const diploma = typedKeys(NIVEAUX_POUR_LBA).find((x) => x === search.get("diploma")) || null
   const job_name = search.get("job_name") || null
   const job_type = search.get("job_type") || null
 

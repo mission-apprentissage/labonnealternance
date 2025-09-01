@@ -3,7 +3,7 @@
 import { Box } from "@mui/material"
 import { Formik, FormikErrors } from "formik"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
-import { zDiplomaEuropeanLevel } from "shared/models/jobsPartners.model"
+import { zDiplomaParam } from "shared/routes/_params"
 import { z } from "zod"
 
 import { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
@@ -28,7 +28,7 @@ const ZRechercheForm = z.object({
     .nullish(),
   displayedItemTypes: z.array(extensions.buildEnum(UserItemTypes)),
   radius: z.string().nullish(),
-  diploma: zDiplomaEuropeanLevel.nullish(),
+  diploma: zDiplomaParam.nullish(),
 })
 
 export type IRechercheForm = z.output<typeof ZRechercheForm>
