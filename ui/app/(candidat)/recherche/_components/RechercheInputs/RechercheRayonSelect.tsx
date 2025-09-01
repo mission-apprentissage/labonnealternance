@@ -1,7 +1,6 @@
 import { useField } from "formik"
 
 import { SelectField } from "@/app/_components/FormComponents/SelectField"
-import { SelectFormField } from "@/app/_components/FormComponents/SelectFormField"
 
 export const RADIUS_OPTIONS_VALUES = [10, 30, 60, 100]
 
@@ -12,21 +11,12 @@ export const radiusOptions = RADIUS_OPTIONS_VALUES.map((value) => ({ label: `${v
 }>
 
 export function RechercheRayonSelectFormik() {
-  const [field] = useField({ name: "radius" })
+  const [field, meta, helper] = useField({ name: "radius" })
 
-  return (
-    <SelectFormField
-      id="radius"
-      label="Rayon"
-      style={{
-        marginBottom: 0,
-      }}
-      options={radiusOptions.map((option) => ({ ...option, selected: option.value === field.value }))}
-    />
-  )
+  return <RechercheRayonSelect value={field.value} onChange={(newValue) => helper.setValue(newValue, true)} error={meta.touched && meta.error} />
 }
 
-export function RechercheRayonSelect({ value, onChange }: { value: number; onChange: (value: number) => void }) {
+export function RechercheRayonSelect({ value, onChange, error }: { value: number; onChange: (value: number) => void; error?: string }) {
   const valueString: string | undefined = value?.toString() ?? undefined
   return (
     <SelectField
@@ -39,11 +29,16 @@ export function RechercheRayonSelect({ value, onChange }: { value: number; onCha
       options={radiusOptions.map((option) => ({ ...option, selected: option.value === valueString }))}
       nativeSelectProps={{
         value: valueString,
-        onChange: (event) => onChange(parseInt(event.target.value, 10)),
+        onChange: (event) => {
+          const { value } = event.target
+          onChange(parseInt(value, 10))
+        },
         style: {
           fontWeight: 700,
         },
       }}
+      state={error ? "error" : "default"}
+      stateRelatedMessage={error}
     />
   )
 }

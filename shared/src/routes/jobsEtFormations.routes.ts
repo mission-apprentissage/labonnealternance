@@ -34,7 +34,7 @@ export const zV1JobsEtFormationsRoutes = {
           radius: ZRadiusParam,
           insee: zInseeParams,
           sources: zSourcesParams,
-          diploma: zDiplomaParam,
+          diploma: zDiplomaParam.optional(),
           opco: zOpcoParams,
           opcoUrl: zOpcoUrlParams,
           options: z.literal("with_description").optional(), // hidden

@@ -179,7 +179,7 @@ export const zV1JobsRoutes = {
           radius: ZRadiusParam,
           insee: zInseeParams,
           sources: zSourcesParams,
-          diploma: zDiplomaParam,
+          diploma: zDiplomaParam.optional(),
           opco: zOpcoParams,
           opcoUrl: zOpcoUrlParams,
         })
@@ -250,7 +250,7 @@ export const zV1JobsRoutes = {
           longitude: ZLongitudeParam,
           radius: ZRadiusParam,
           insee: zInseeParams,
-          diploma: zDiplomaParam,
+          diploma: zDiplomaParam.optional(),
           opco: zOpcoParams,
         })
         .strict()

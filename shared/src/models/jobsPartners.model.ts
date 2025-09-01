@@ -68,7 +68,30 @@ export const ZJobsPartnersRecruiterApi = z.object({
   cfa_address_label: z.string().nullish().describe("Adresse du CFA si offre déléguée"),
 })
 
-export const zDiplomaEuropeanLevel = z.enum(["3", "4", "5", "6", "7"])
+export const NIVEAUX_DIPLOMES_EUROPEENS = [
+  {
+    value: "3",
+    label: "Cap, autres formations niveau 3",
+  },
+  {
+    value: "4",
+    label: "Bac, autres formations niveau 4",
+  },
+  {
+    value: "5",
+    label: "BTS, DEUST, autres formations niveaux 5 (Bac+2)",
+  },
+  {
+    value: "6",
+    label: "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
+  },
+  {
+    value: "7",
+    label: "Master, titre ingénieur, autres formations niveaux 7 ou 8 (Bac+5)",
+  },
+] as const
+
+export const zDiplomaEuropeanLevel = z.enum([NIVEAUX_DIPLOMES_EUROPEENS[0].value, ...NIVEAUX_DIPLOMES_EUROPEENS.slice(1).map((x) => x.value)])
 
 export type INiveauDiplomeEuropeen = z.output<typeof zDiplomaEuropeanLevel>
 
