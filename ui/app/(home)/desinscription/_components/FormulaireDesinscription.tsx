@@ -8,7 +8,7 @@ import { useState } from "react"
 import { IUnsubscribePossibleCompany } from "shared/routes/unsubscribe.routes"
 import * as Yup from "yup"
 
-import CustomInput from "@/app/_components/CustomInput"
+import CustomDSFRInput from "@/app/_components/CustomDSFRInput"
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
 import { Warning } from "@/theme/components/icons"
 import { unsubscribeCompany, unsubscribeCompanySirets } from "@/utils/api"
@@ -207,33 +207,38 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
         <Box>
           <FormikContext value={formik}>
             <Form>
-              <CustomInput
-                name="email"
-                type="email"
-                placeholder="Adresse email de contact de la société..."
+              <CustomDSFRInput
+                label="Email de l'établissement *"
+                hintText="Indiquez l'email sur lequel sont actuellement reçues les candidatures"
                 required={true}
-                label="Email de l'établissement"
-                info="Indiquez l'email sur lequel sont actuellement reçues les candidatures"
+                name="email"
+                nativeInputProps={{
+                  type: "email",
+                  name: "email",
+                  placeholder: "Adresse email de contact de la société...",
+                }}
               />
 
-              <Select
-                label="Motif *"
-                hint="Indiquez la raison pour laquelle vous ne souhaitez plus recevoir de candidature"
-                nativeSelectProps={{
-                  onChange: (event) => setFieldValue("reason", event.target.value, true),
-                  name: "reason",
-                  required: true,
-                }}
-              >
-                <option disabled hidden selected value="">
-                  Sélectionnez une valeur...
-                </option>
-                {unsubscribeReasons.map((reason) => (
-                  <option key={reason} value={reason}>
-                    {reason}
+              <Box sx={{ mt: 4 }}>
+                <Select
+                  label="Motif *"
+                  hint="Indiquez la raison pour laquelle vous ne souhaitez plus recevoir de candidature"
+                  nativeSelectProps={{
+                    onChange: (event) => setFieldValue("reason", event.target.value, true),
+                    name: "reason",
+                    required: true,
+                  }}
+                >
+                  <option disabled hidden selected value="">
+                    Sélectionnez une valeur...
                   </option>
-                ))}
-              </Select>
+                  {unsubscribeReasons.map((reason) => (
+                    <option key={reason} value={reason}>
+                      {reason}
+                    </option>
+                  ))}
+                </Select>
+              </Box>
 
               {errorMessage && (
                 <Flex direction="row" alignItems="center" color="red.500">
