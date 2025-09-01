@@ -12,6 +12,7 @@ export const fillEntrepriseEngagementJobsPartners = async ({ addedMatchFilter }:
     sourceFields: ["workplace_siret"],
     filledFields,
     groupSize: 500,
+    replaceMatchFilter: {}, // run on all documents each time
     addedMatchFilter,
     getData: async (documents) => {
       const sirets = [...new Set<string>(documents.flatMap(({ workplace_siret }) => (workplace_siret ? [workplace_siret] : [])))]

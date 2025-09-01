@@ -2,6 +2,7 @@ import { badRequest } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { assertUnreachable, zRoutes } from "shared"
 
+import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getS3FileLastUpdate, s3SignedUrl } from "@/common/utils/awsUtils"
 import { Server } from "@/http/server"
 import { EXPORT_JOBS_TO_S3_V2_FILENAME } from "@/jobs/partenaireExport/exportJobsToS3V2"
@@ -90,6 +91,37 @@ export const jobsApiV3Routes = (server: Server) => {
         return res.status(304).send()
       }
       return res.status(200).send({ id })
+    }
+  )
+
+  server.post(
+    "/v4/jobs/multi-partner/bulk",
+    {
+      schema: zRoutes.post["/v4/jobs/multi-partner/bulk"],
+      onRequest: server.auth(zRoutes.post["/v4/jobs/multi-partner/bulk"]),
+      config,
+    },
+    async (req, res) => {
+      const user = getUserFromRequest(req, zRoutes.post["/v4/jobs/multi-partner/bulk"]).value
+      const jobs = req.body
+      const results: { status: number; id?: string; error?: string }[] = []
+      await asyncForEach(jobs, async (job, index) => {
+        try {
+          if (index > 2) throw new Error("test")
+          const { id, modified } = await upsertJobsPartnersMulti({ data: job, requestedByEmail: user.email })
+          const status = modified ? 200 : 304
+          results.push({
+            id: id.toString(),
+            status,
+          })
+        } catch (err) {
+          results.push({
+            error: err + "",
+            status: 500,
+          })
+        }
+      })
+      return res.status(200).send(results)
     }
   )
 

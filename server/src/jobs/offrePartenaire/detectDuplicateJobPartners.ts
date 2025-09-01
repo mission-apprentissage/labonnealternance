@@ -57,7 +57,9 @@ type TreatedDocument = ProjectedComputedJobPartner & {
 export const detectDuplicateJobPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext = defaultFillComputedJobsPartnersContext) => {
   const startDate = new Date()
   // @ts-ignore
-  const computedJobPartnersFilter: Filter<IComputedJobsPartners> = { $and: [{ business_error: null }, { offer_status: "Active" }, ...(addedMatchFilter ? [addedMatchFilter] : [])] }
+  const computedJobPartnersFilter: Filter<IComputedJobsPartners> = {
+    $and: [{ business_error: null, offer_status: JOB_STATUS_ENGLISH.ACTIVE }, ...(addedMatchFilter ? [addedMatchFilter] : [])],
+  }
 
   await getDbCollection("computed_jobs_partners").updateMany(computedJobPartnersFilter, { $set: { duplicates: [] } })
   const jobPartnerFields: (keyof IComputedJobsPartners)[] = ["workplace_siret", "workplace_brand", "workplace_legal_name", "workplace_name"]
@@ -183,7 +185,7 @@ const computedJobPartnerVsRecruiterStreamFactory = (
                     $filter: {
                       input: "$$recruiter.jobs",
                       as: "job",
-                      cond: { $eq: ["$$job.job_status", "Active"] },
+                      cond: { $eq: ["$$job.job_status", JOB_STATUS_ENGLISH.ACTIVE] },
                     },
                   },
                   as: "job",
