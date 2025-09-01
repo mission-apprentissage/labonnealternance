@@ -16,3 +16,7 @@ export const syncLbaJobsIntoJobsPartners = async (type?: "full") => {
     await updateJobsPartnersFromRecruiterById(recruiter._id)
   })
 }
+
+export const syncLbaJobsIntoJobsPartnersFull = async () => {
+  await syncLbaJobsIntoJobsPartners(FULL_RECRUITER_SYNC)
+}
