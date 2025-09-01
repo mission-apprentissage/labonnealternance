@@ -10308,7 +10308,7 @@ export const up = async () => {
 
   const payload = Array.from(siretMap.values())
   if (payload.length > 0) {
-    await getDbCollection("referentiel_engagement_entreprise").insertMany(payload)
+    await getDbCollection("referentiel_engagement_entreprise").insertMany(payload, { ordered: false })
   }
 }
 
