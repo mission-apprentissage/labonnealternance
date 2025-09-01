@@ -190,7 +190,7 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
                       </>
                     )}
                     {isRefusedState && (
-                      <Box pt={2} data-testid="fieldset-message">
+                      <Box mt={4} data-testid="fieldset-message">
                         <CustomFormControl label="Précisez la ou les raison(s) de votre refus :" required={false} name="refusal_reasons">
                           <CheckboxGroup
                             onChange={(value) => {
