@@ -16,7 +16,7 @@ export default function CompteEnAttente() {
 
   return (
     <DepotSimplifieStyling>
-      <BorderedBox display="flex" flexDirection={["column", "column", "column", "row"]} gap={[3, 4, 4, 12]} justifyContent="center" width="100%" my={8}>
+      <BorderedBox sx={{ display: "flex", flexDirection: { xs: "column", lg: "row" }, gap: { xs: 1, lg: 2 }, justifyContent: "center", width: "100%", my: 2 }}>
         <MailCloud w={["120px", "120px", "120px", "269px"]} h={["67px", "67px", "67px", "151px"]} />
         <Box>
           <Heading className="big" mb={3}>

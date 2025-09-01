@@ -1,7 +1,5 @@
-import { Box } from "@chakra-ui/react"
+import { Box } from "@mui/material"
 
-export const BorderedBox = ({ children, ...otherProps }: Parameters<typeof Box>[0]) => (
-  <Box border="1px solid #000091" px={[3, 4, 4, 8]} py={[3, 3, 3, 8]} {...otherProps}>
-    {children}
-  </Box>
+export const BorderedBox = ({ children, sx }: Parameters<typeof Box>[0]) => (
+  <Box sx={{ border: "1px solid #000091", px: { xs: 1, lg: 2 }, py: { xs: 1, lg: 2 }, ...sx }}>{children}</Box>
 )

@@ -1,6 +1,8 @@
 "use client"
-import { Box, Flex, Heading, SimpleGrid, Spinner, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import { Heading, SimpleGrid, Text, useToast } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
+import { Box, CircularProgress } from "@mui/material"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
 import { IUserWithAccountFields } from "shared"
@@ -10,10 +12,11 @@ import * as Yup from "yup"
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 import ModificationCompteEmail from "@/app/(espace-pro)/espace-pro/(connected)/_components/ModificationCompteEmail"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
+import CustomInput from "@/app/_components/CustomInput"
+import { useDisclosure } from "@/common/hooks/useDisclosure"
 
 import { AUTHTYPE } from "../../../../../common/contants"
 import { LoadingEmptySpace } from "../../../../../components/espace_pro"
-import CustomInput from "../../../../../components/espace_pro/CustomInput"
 import { ArrowRightLine } from "../../../../../theme/components/icons"
 import { getUser, updateUserWithAccountFields } from "../../../../../utils/api"
 
@@ -107,17 +110,17 @@ export default function CompteRenderer() {
                     Vous recevrez les candidatures sur l’email enregistré.
                   </Text>
                 )}
-                <Box mt={4}>
+                <Box sx={{ mt: fr.spacing("2w") }}>
                   <Form>
                     <CustomInput name="last_name" label="Nom" type="text" value={values.last_name} />
                     <CustomInput name="first_name" label="Prénom" type="test" value={values.first_name} />
                     <CustomInput name="phone" label="Téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
                     <CustomInput name="email" label="Email" type="email" value={values.email} />
-                    <Flex justify="flex-end" mt={10}>
+                    <Box sx={{ display: "flex", justifyContent: "flex-end", mt: fr.spacing("5w"), mb: fr.spacing("2w") }}>
                       <Button type="submit" disabled={!isValid || isSubmitting}>
-                        {isSubmitting ? <Spinner mr={2} /> : <ArrowRightLine mr={2} />}Enregistrer
+                        {isSubmitting ? <CircularProgress size={fr.spacing("7v")} sx={{ color: "white", mr: fr.spacing("1w") }} /> : <ArrowRightLine mr={2} />}Enregistrer
                       </Button>
-                    </Flex>
+                    </Box>
                   </Form>
                 </Box>
               </Box>

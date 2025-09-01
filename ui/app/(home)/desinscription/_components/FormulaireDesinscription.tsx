@@ -1,5 +1,6 @@
 import { Box, Checkbox, Flex, Heading, Image, Link, Modal, ModalBody, ModalContent, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Text } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
+import Select from "@codegouvfr/react-dsfr/Select"
 import { captureException } from "@sentry/browser"
 import { useMutation } from "@tanstack/react-query"
 import { Form, FormikContext, useFormik } from "formik"
@@ -7,10 +8,8 @@ import { useState } from "react"
 import { IUnsubscribePossibleCompany } from "shared/routes/unsubscribe.routes"
 import * as Yup from "yup"
 
-import { CustomSelect } from "@/app/(espace-pro)/_components/CustomSelect"
+import CustomDSFRInput from "@/app/_components/CustomDSFRInput"
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
-import { CustomInput } from "@/components/espace_pro"
-import { CustomFormControl } from "@/components/espace_pro/CustomFormControl"
 import { Warning } from "@/theme/components/icons"
 import { unsubscribeCompany, unsubscribeCompanySirets } from "@/utils/api"
 import { ApiError } from "@/utils/api.utils"
@@ -208,18 +207,38 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
         <Box>
           <FormikContext value={formik}>
             <Form>
-              <CustomInput
-                name="email"
-                type="email"
-                placeholder="Adresse email de contact de la société..."
+              <CustomDSFRInput
+                label="Email de l'établissement *"
+                hintText="Indiquez l'email sur lequel sont actuellement reçues les candidatures"
                 required={true}
-                label="Email de l'établissement"
-                info="Indiquez l'email sur lequel sont actuellement reçues les candidatures"
+                name="email"
+                nativeInputProps={{
+                  type: "email",
+                  name: "email",
+                  placeholder: "Adresse email de contact de la société...",
+                }}
               />
 
-              <CustomFormControl name="reason" required={true} label="Motif" info="Indiquez la raison pour laquelle vous ne souhaitez plus recevoir de candidature">
-                <CustomSelect name="reason" possibleValues={unsubscribeReasons} onChange={(value) => setFieldValue("reason", value, true)} />
-              </CustomFormControl>
+              <Box sx={{ mt: 4 }}>
+                <Select
+                  label="Motif *"
+                  hint="Indiquez la raison pour laquelle vous ne souhaitez plus recevoir de candidature"
+                  nativeSelectProps={{
+                    onChange: (event) => setFieldValue("reason", event.target.value, true),
+                    name: "reason",
+                    required: true,
+                  }}
+                >
+                  <option disabled hidden selected value="">
+                    Sélectionnez une valeur...
+                  </option>
+                  {unsubscribeReasons.map((reason) => (
+                    <option key={reason} value={reason}>
+                      {reason}
+                    </option>
+                  ))}
+                </Select>
+              </Box>
 
               {errorMessage && (
                 <Flex direction="row" alignItems="center" color="red.500">

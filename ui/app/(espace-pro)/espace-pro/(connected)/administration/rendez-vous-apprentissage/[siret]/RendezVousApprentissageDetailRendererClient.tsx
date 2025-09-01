@@ -12,7 +12,7 @@ import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_componen
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { formatDate } from "@/common/dayjs"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import { InfoPopover } from "@/components/espace_pro"
+import { InfoTooltip } from "@/components/espace_pro"
 import EtablissementComponent from "@/components/espace_pro/Admin/widgetParameters/components/EtablissementComponent"
 import { apiPatch } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
@@ -186,8 +186,10 @@ export default function RendezVousApprentissageDetailRendererClient({
                         <Td align="center" fontSize="0.8em" px="1px">
                           <HStack spacing={0}>
                             <HStack w={150} spacing={0}>
-                              <InfoPopover>DESACTIVER L'ECRASEMENT DU MAIL VIA LA SYNCHRONISATION CATALOGUE</InfoPopover>
-                              <Text w={80}>DESACTIVER</Text>
+                              <InfoTooltip description="Désactiver l'écrasement du mail via la synchronisation catalogue" />
+                              <Text ml={1} w={80}>
+                                DESACTIVER
+                              </Text>
                             </HStack>
                             <Checkbox
                               isChecked={parameter?.is_lieu_formation_email_customized}
@@ -197,15 +199,19 @@ export default function RendezVousApprentissageDetailRendererClient({
                           </HStack>
                           <HStack spacing={0}>
                             <HStack w={150} spacing={0}>
-                              <InfoPopover>PUBLIE SUR LE CATALOGUE</InfoPopover>
-                              <Text w={80}>PUBLIÉ</Text>
+                              <InfoTooltip description="Publié sur le catalogue" />
+                              <Text ml={1} w={80}>
+                                PUBLIÉ
+                              </Text>
                             </HStack>
                             <Text>{parameter?.is_catalogue_published ? "Oui" : "Non"}</Text>
                           </HStack>
                           <HStack spacing={0}>
                             <HStack w={150} spacing={0}>
-                              <InfoPopover>DERNIERE SYNCHRONISATION CATALOGUE</InfoPopover>
-                              <Text w={80}>SYNCHRO</Text>
+                              <InfoTooltip description="Dernière synchronisation catalogue" />
+                              <Text ml={1} w={80}>
+                                SYNCHRO
+                              </Text>
                             </HStack>
                             <Text>{parameter?.last_catalogue_sync_date ? formatDate(parameter?.last_catalogue_sync_date) : "N/A"}</Text>
                           </HStack>
