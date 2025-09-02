@@ -1,4 +1,4 @@
-import { Flex, Text } from "@chakra-ui/react"
+import { Box, Typography } from "@mui/material"
 
 import InfoTooltip from "./InfoToolTip"
 
@@ -18,20 +18,16 @@ export const FieldWithValue = ({
     return null
   }
   return (
-    <Flex align="center">
-      <Text mr={3} minW="fit-content">
+    <Box sx={{ display: "flex", alignItems: "center" }}>
+      <Typography mr={1} sx={{ minWidth: "fit-content" }}>
         {title} :
-      </Text>
+      </Typography>
       {!isValueEmpty ? (
-        <Text bg="#F9F8F6" px={2} py="2px" mr={2} fontWeight={700} noOfLines={1}>
-          {value}
-        </Text>
+        <Typography sx={{ background: "#F9F8F6", px: 1, py: "2px", mr: 1, fontWeight: 700 }}>{value}</Typography>
       ) : (
-        <Text textTransform="uppercase" bg="#FFE9E9" textColor="#CE0500" px={2} py="2px" fontWeight={700} mr={2} noOfLines={1}>
-          Non identifié
-        </Text>
+        <Typography sx={{ textTransform: "uppercase", background: "#FFE9E9", color: "#CE0500", px: 1, py: "2px", fontWeight: 700, mr: 1 }}>Non identifié</Typography>
       )}
       {tooltip && (typeof tooltip === "string" ? <InfoTooltip description={tooltip} /> : tooltip)}
-    </Flex>
+    </Box>
   )
 }

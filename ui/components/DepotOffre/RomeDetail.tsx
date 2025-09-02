@@ -1,8 +1,9 @@
-import { Accordion, Badge, Box, Checkbox, Heading, Text } from "@chakra-ui/react"
+import { Accordion, Box, Checkbox, Heading, Text } from "@chakra-ui/react"
 import styled from "@emotion/styled"
 import { useState } from "react"
 import { IReferentielRomeForJobJson } from "shared"
 
+import Badge from "@/app/(espace-pro)/_components/Badge"
 import { classNames } from "@/utils/classNames"
 
 import { BorderedBox } from "../espace_pro/common/components/BorderedBox"
@@ -17,14 +18,6 @@ const AccordionHeader = styled.p`
     font-style: italic;
     font-weight: 400;
     margin-left: 4px;
-  }
-  .count-badge {
-    border-radius: 12px;
-    background-color: #eeeeee;
-    font-size: 12px;
-    line-height: 20px;
-    padding: 2px 8px;
-    margin-left: 16px;
   }
 `
 
