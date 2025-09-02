@@ -1,6 +1,6 @@
 "use client"
 
-import { Box, Button, Flex, Icon, Menu, MenuButton, MenuItem, MenuList, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import { Box, Button, Flex, Icon, Menu, MenuButton, MenuItem, MenuList, Text, useToast } from "@chakra-ui/react"
 import { TabContext, TabList, TabPanel } from "@mui/lab"
 import { Link, Tab } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
@@ -8,9 +8,11 @@ import dayjs from "dayjs"
 import { useEffect, useState } from "react"
 import { IUserRecruteurForAdminJSON } from "shared"
 
+import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
-import { ConfirmationDesactivationUtilisateur, LoadingEmptySpace, TableNew } from "@/components/espace_pro"
+import { ConfirmationDesactivationUtilisateur, LoadingEmptySpace } from "@/components/espace_pro"
 import ConfirmationActivationUtilisateur from "@/components/espace_pro/ConfirmationActivationUtilisateur"
 import { Parametre } from "@/theme/components/icons"
 import { getOpcoUsers } from "@/utils/api"
@@ -221,17 +223,17 @@ function AdministrationOpco() {
         </Box>
         <TabPanel value="0">
           {/* @ts-expect-error: TODO */}
-          <TableNew
+          <TableWithPagination
             columns={columns}
             data={data.awaiting}
             description="Les entreprises en attente de vérification représentent pour votre OPCO de nouvelles opportunités d’accompagnement.  Vous pouvez contacter chacun des comptes en attente, vérifier qu’il s’agit bien d’une entreprise relevant de vos champs de compétences, et qu’il ne s’agit pas d’une tentative d’usurpation de compte."
           />
         </TabPanel>
-        <TabPanel value="1">{isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={data.active} exportable />}</TabPanel>
+        <TabPanel value="1">{isLoading ? <LoadingEmptySpace /> : <TableWithPagination columns={columns} data={data.active} exportable />}</TabPanel>
 
         <TabPanel value="2">
           {/* @ts-expect-error: TODO */}
-          {isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={data.disable} />}
+          {isLoading ? <LoadingEmptySpace /> : <TableWithPagination columns={columns} data={data.disable} />}
         </TabPanel>
       </TabContext>
     </>

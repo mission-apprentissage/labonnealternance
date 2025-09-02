@@ -1,16 +1,11 @@
-import { Box, Text } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
-
-import { Close } from "@/theme/components/icons"
+import { Box } from "@mui/material"
 
 export default function ModalCloseButton({ onClose }: { onClose: () => void }) {
   return (
     <Box display={"flex"} alignSelf={"flex-end"}>
-      <Button type="button" priority="tertiary no outline" onClick={onClose}>
+      <Button type="button" priority="tertiary no outline" onClick={onClose} iconId="fr-icon-close-line" iconPosition="right">
         Fermer
-        <Text as={"span"} ml={2}>
-          <Close boxSize={4} />
-        </Text>
       </Button>
     </Box>
   )
