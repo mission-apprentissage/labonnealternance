@@ -70,7 +70,7 @@ const getText = ({
 }
 
 export const IntentionForm = ({ company_recruitment_intention, id, token }: { company_recruitment_intention: ApplicationIntention; id: string; token: string | undefined }) => {
-  const { data, error } = useQuery({
+  const { data, error, isLoading } = useQuery({
     queryKey: ["getApplicationDataForIntention"],
     queryFn: () => getApplicationDataForIntention(id, company_recruitment_intention, token),
     retry: false,
@@ -109,7 +109,7 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
       .catch(() => setSendingState("not_sent_because_of_errors"))
   }
 
-  if (!data && !error) {
+  if (isLoading) {
     return (
       <Box>
         <IntensionFormNavigation />
