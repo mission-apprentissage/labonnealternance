@@ -6,146 +6,57 @@ import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
 import { Formik, FormikProps } from "formik"
 import { useState } from "react"
+import { OPCOS_LABEL } from "shared/constants/recruteur"
 
-import { AutocompleteAsync } from "@/app/_components/FormComponents/AutocompleteAsync"
+import { RechercheLieuAutocomplete } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheLieuAutocomplete"
+import { RechercheMetierAutocomplete } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheMetierAutocomplete"
+import { RechercheNiveauSelectFormik } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheNiveauSelect"
+import { RechercheRayonSelectFormik } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheRayonSelect"
+import { IRechercheMode } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { SelectFormField } from "@/app/_components/FormComponents/SelectFormField"
-import {
-  fetchLieuOptions,
-  fetchRomeSearchOptions,
-  getMetierOptionKey,
-  getMetierOptionLabel,
-  IFormType,
-  IRomeSearchOption,
-  niveauOptions,
-  radiusOptions,
-} from "@/app/_components/RechercheForm/RechercheForm"
+import { IRechercheForm, rechercheFormToRechercheParams } from "@/app/_components/RechercheForm/RechercheForm"
 import { baseUrl } from "@/config/config"
+import { PAGES } from "@/utils/routes.utils"
 
-type IFormTypeWidget = IFormType & {
+type IFormTypeWidget = IRechercheForm & {
   job_name?: string
   opco?: string
   caller?: string
-  scope: string
+  scope: IRechercheMode
 }
 
 const scopeOptions = [
   {
-    value: "/recherche",
+    value: IRechercheMode.DEFAULT,
     label: "Tout",
   },
   {
-    value: "/recherche-emploi",
+    value: IRechercheMode.JOBS_ONLY,
     label: "Emplois uniquement",
   },
   {
-    value: "/recherche-formation",
+    value: IRechercheMode.FORMATIONS_ONLY,
     label: "Formations uniquement",
   },
 ]
 
-const opcoOptions = [
-  {
-    value: "",
-    label: "Indifférent",
-  },
-  {
-    value: "AFDAS",
-    label: "AFDAS",
-  },
-  {
-    value: "AKTO",
-    label: "AKTO",
-  },
-  {
-    value: "ATLAS",
-    label: "ATLAS",
-  },
-  {
-    value: "CONSTRUCTYS",
-    label: "CONSTRUCTYS",
-  },
-  {
-    value: "OPCOMMERCE",
-    label: "OPCOMMERCE",
-  },
-  {
-    value: "OCAPIAT",
-    label: "OCAPIAT",
-  },
-  {
-    value: "OPCO2I",
-    label: "OPCO2I",
-  },
-  {
-    value: "EP",
-    label: "EP",
-  },
-  {
-    value: "MOBILITE",
-    label: "MOBILITE",
-  },
-  {
-    value: "SANTE",
-    label: "SANTE",
-  },
-  {
-    value: "UNIFORMATION",
-    label: "UNIFORMATION",
-  },
-]
+const validOpcos = Object.values(OPCOS_LABEL).filter((value) => value !== OPCOS_LABEL.UNKNOWN_OPCO)
 
 function WidgetFormComponent(props: FormikProps<IFormTypeWidget>) {
   return (
     <Box component={"form"} onSubmit={props.handleSubmit}>
       <Grid>
         <GridItem mt={4}>
-          <AutocompleteAsync
-            noOptionsText="Nous ne parvenons pas à identifier le métier ou la formation que vous cherchez, veuillez reformuler votre recherche"
-            id="metier"
-            key="metier"
-            label="Métier ou formation * (pour renseigner le champ romes)"
-            fetchOptions={fetchRomeSearchOptions}
-            getOptionKey={getMetierOptionKey}
-            getOptionLabel={getMetierOptionLabel}
-            groupBy={(option: IRomeSearchOption) => option.group}
-            placeholder="Indiquer un métier ou une formation"
-            disabled={false}
-          />
+          <RechercheMetierAutocomplete />
         </GridItem>
         <GridItem mt={4}>
-          <AutocompleteAsync
-            noOptionsText="Nous ne parvenons pas à identifier le lieu que vous cherchez, veuillez reformuler votre recherche"
-            id="lieu"
-            label="Lieu (pour renseigner lat et lon)"
-            fetchOptions={fetchLieuOptions}
-            getOptionKey={(option) => option.label}
-            getOptionLabel={(option) => option.label}
-            placeholder="À quel endroit ?"
-            disabled={false}
-          />
+          <RechercheLieuAutocomplete />
         </GridItem>
         <GridItem mt={4}>
-          <SelectFormField
-            id="radius"
-            label="Rayon de recherche (radius)"
-            style={{
-              marginBottom: 0,
-            }}
-            options={radiusOptions.map((option) => ({ ...option, selected: option.value === props.values.radius }))}
-            disabled={false}
-          />
+          <RechercheRayonSelectFormik />
         </GridItem>
         <GridItem mt={4}>
-          <SelectFormField
-            id="niveau"
-            label="Niveau d'études visé"
-            style={{
-              marginBottom: 0,
-              textWrap: "nowrap",
-            }}
-            options={niveauOptions.map((option) => ({ ...option, selected: option.value === props.values.niveau }))}
-            disabled={false}
-          />
+          <RechercheNiveauSelectFormik />
         </GridItem>
         <GridItem mt={4}>
           <SelectFormField
@@ -155,7 +66,7 @@ function WidgetFormComponent(props: FormikProps<IFormTypeWidget>) {
               marginBottom: 0,
               textWrap: "nowrap",
             }}
-            options={scopeOptions.map((option) => ({ ...option, selected: option.value === props.values.niveau }))}
+            options={scopeOptions.map((option) => ({ ...option, selected: option.value === props.values.scope }))}
             disabled={false}
           />
         </GridItem>
@@ -167,7 +78,7 @@ function WidgetFormComponent(props: FormikProps<IFormTypeWidget>) {
               marginBottom: 0,
               textWrap: "nowrap",
             }}
-            options={opcoOptions.map((option) => ({ ...option, selected: option.value === props.values.opco }))}
+            options={validOpcos.map((opco) => ({ value: opco, label: opco, selected: opco === props.values.opco }))}
             disabled={false}
           />
         </GridItem>
@@ -193,34 +104,34 @@ function WidgetFormComponent(props: FormikProps<IFormTypeWidget>) {
   )
 }
 
+const WidgetIFrame = ({ title, width, height, url }: { title: string; width?: number; height: number; url: string }) => {
+  return (
+    <iframe
+      title={title}
+      style={{
+        marginTop: "30px",
+        marginBottom: "30px",
+        height: `${height}px`,
+        width: width ? `${width}px` : "100%",
+      }}
+      src={url}
+    />
+  )
+}
+
 export function WidgetTester() {
-  const initialValues = {
+  const initialValues: IFormTypeWidget = {
     radius: "30",
-    niveau: "",
+    diploma: null,
     metier: null,
     lieu: null,
     job_name: "",
     opco: "",
-    scope: "/recherche",
+    scope: IRechercheMode.DEFAULT,
     caller: "",
   }
 
   const [widgetUrl, setWidgetUrl] = useState(`${baseUrl}/recherche`)
-
-  const getWidget = (params) => {
-    return (
-      <iframe
-        title={params.title}
-        style={{
-          marginTop: "30px",
-          marginBottom: "30px",
-          height: `${params.height}px`,
-          width: params.width ? `${params.width}px` : "100%",
-        }}
-        src={widgetUrl}
-      />
-    )
-  }
 
   return (
     <Container p={12} my={0} mb={[0, 12]} variant="pageContainer">
@@ -246,20 +157,24 @@ export function WidgetTester() {
         enableReinitialize
         validateOnBlur={false}
         onSubmit={async (values) => {
-          let iFrameUrl = baseUrl
-          const path = values.scope
+          const { job_name, opco, caller, scope, metier } = values
+          const rechercheParams = rechercheFormToRechercheParams(values)
+          const path = PAGES.dynamic.genericRecherche({ rechercheParams: rechercheParams, mode: scope }).getPath()
 
-          iFrameUrl = `${iFrameUrl}${path}`
-
-          iFrameUrl += "?"
-          iFrameUrl += values.caller ? `&caller=${encodeURIComponent(values.caller)}` : ""
-          iFrameUrl += values.metier ? `&romes=${values.metier.romes}` : ""
-          iFrameUrl += values.lieu ? `&lon=${values.lieu.longitude}&lat=${values.lieu.latitude}` : ""
-          iFrameUrl += values.radius ? `&radius=${values.radius}` : ""
-          iFrameUrl += values.opco ? `&opco=${encodeURIComponent(values.opco)}` : ""
-          iFrameUrl += values.job_name ? `&job_name=${encodeURIComponent(values.job_name)}` : values?.metier?.label ? `&job_name=${values.metier.label}` : ""
-
-          setWidgetUrl(iFrameUrl)
+          const url = new URL(`${baseUrl}${path}`)
+          const searchParams = url.searchParams
+          if (caller) {
+            searchParams.append("caller", caller)
+          }
+          if (opco) {
+            searchParams.append("opco", opco)
+          }
+          if (job_name) {
+            searchParams.append("job_name", job_name)
+          } else if (metier?.label) {
+            searchParams.append("job_name", metier.label)
+          }
+          setWidgetUrl(url.toString())
         }}
         component={WidgetFormComponent}
       />
@@ -270,19 +185,12 @@ export function WidgetTester() {
         <GridItem>
           <hr />
           <Text as="h3">Largeur 360 px - hauteur 640 px</Text>
-          {getWidget({
-            title: "mobile",
-            height: 640,
-            width: 360,
-          })}
+          <WidgetIFrame title="mobile" height={640} width={360} url={widgetUrl} />
         </GridItem>
         <GridItem>
           <hr />
           <Text as="h3">Largeur 100% - hauteur 800 px</Text>
-          {getWidget({
-            title: "desktop",
-            height: 800,
-          })}
+          <WidgetIFrame title="desktop" height={800} url={widgetUrl} />
         </GridItem>
       </Grid>
     </Container>
