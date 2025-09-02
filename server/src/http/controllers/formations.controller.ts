@@ -1,5 +1,6 @@
 import { badRequest, internal } from "@hapi/boom"
 import { zRoutes } from "shared"
+import { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 
 import { trackApiCall } from "../../common/utils/sendTrackingEvent"
 import { getFormationDetailByCleME, getFormationQuery, getFormationsQuery } from "../../services/formation.service"
@@ -22,7 +23,18 @@ export default (server: Server) => {
     async (req, res) => {
       const { referer } = req.headers
       const { romes, romeDomain, caller, latitude, longitude, radius, diploma, options } = req.query
-      const result = await getFormationsQuery({ romes, longitude, latitude, radius, diploma, romeDomain, caller, options, referer, isMinimalData: false })
+      const result = await getFormationsQuery({
+        romes,
+        longitude,
+        latitude,
+        radius,
+        diploma: INiveauDiplomeEuropeen.fromParam(diploma),
+        romeDomain,
+        caller,
+        options,
+        referer,
+        isMinimalData: false,
+      })
 
       if ("error" in result) {
         if (result.error === "wrong_parameters") {
@@ -56,7 +68,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { referer } = req.headers
       const { romes, latitude, longitude, radius, diploma } = req.query
-      const result = await getFormationsQuery({ romes, longitude, latitude, radius, diploma, referer, isMinimalData: true })
+      const result = await getFormationsQuery({ romes, longitude, latitude, radius, diploma: INiveauDiplomeEuropeen.fromParam(diploma), referer, isMinimalData: true })
 
       if ("error" in result) {
         if (result.error === "wrong_parameters") {

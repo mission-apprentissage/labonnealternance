@@ -2,7 +2,10 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 
-export function RechercheResultatsPlaceholder() {
+import { RechercheViewType, WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+
+export function RechercheResultatsPlaceholder(props: WithRecherchePageParams) {
+  const { viewType } = props.rechercheParams
   return (
     <Box
       sx={{
@@ -24,10 +27,12 @@ export function RechercheResultatsPlaceholder() {
               alternance
             </Box>
           </Typography>
-          <Typography className={fr.cx("fr-text--lead")}>
-            Démarrez une recherche pour trouver votre
-            <br />
-            formation ou votre emploi en alternance
+          <Typography className={fr.cx("fr-text--lead")} style={{ maxWidth: 460 }}>
+            {viewType === RechercheViewType.EMPLOI
+              ? "Démarrez une recherche pour trouver votre emploi en alternance"
+              : viewType === RechercheViewType.FORMATION
+                ? "Démarrez une recherche pour trouver votre formation en alternance"
+                : "Démarrez une recherche pour trouver votre formation ou votre emploi en alternance"}
           </Typography>
         </Box>
       </Box>

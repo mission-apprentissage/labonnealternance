@@ -4,7 +4,7 @@ import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 export const analyzeClosedCompanies = async (): Promise<void> => {
-  console.log("start")
+  console.info("start")
   const activeRecruiters = await getDbCollection("recruiters")
     .aggregate([
       {
@@ -15,7 +15,7 @@ export const analyzeClosedCompanies = async (): Promise<void> => {
       },
     ])
     .toArray()
-  console.log("active recruiters", activeRecruiters.length)
+  console.info("active recruiters", activeRecruiters.length)
 
   const results = await getDbCollection("recruiters")
     .aggregate([
@@ -47,7 +47,7 @@ export const analyzeClosedCompanies = async (): Promise<void> => {
       },
     ])
     .toArray()
-  console.log("recruteurs avec problemes", results.length)
+  console.info("recruteurs avec problemes", results.length)
   const flatResults = results.map(({ establishment_siret, cache }) => ({ siret: establishment_siret, status: cache?.[0]?.data?.data?.etat_administratif }))
-  console.log(flatResults)
+  console.info(flatResults)
 }
