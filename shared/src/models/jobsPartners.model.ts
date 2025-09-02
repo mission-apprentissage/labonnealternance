@@ -66,7 +66,7 @@ export const ZJobsPartnersRecruiterApi = z.object({
   cfa_legal_name: z.string().nullish().describe("Raison sociale du CFA si offre déléguée"),
   cfa_siret: extensions.siret.nullish().describe("Siret du CFA si offre déléguée"),
   cfa_address_label: z.string().nullish().describe("Adresse du CFA si offre déléguée"),
-  cfa_apply_phone: z.string().nullable().describe("Téléphone de contact du CFA"),
+  cfa_apply_phone: z.string().nullish().describe("Téléphone de contact du CFA"),
 })
 
 export const zDiplomaEuropeanLevel = z.enum(["3", "4", "5", "6", "7"])
