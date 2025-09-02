@@ -2,7 +2,7 @@ fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: 7fbbed821c19f094f6a7836dd5403f18af4b3737f9f8e7a6dcb1223f7b722bd0
 - filename: .infra/vault/vault.yml
-  checksum: d14c8ff5a9ab2d59ff5a8c6d05d4639b8893efeb0b0feadb94ef2b0d8b6a0766
+  checksum: 7852781310ed91ecef26e555e15d265fcf4825c64a26beaca37f48998c23d4df
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
   checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
 - filename: cypress/pages/FlowAdminPage.ts
@@ -100,7 +100,7 @@ fileignoreconfig:
 - filename: server/src/security/apiApprentissageService.ts
   checksum: 0e6d208dc8de66d2a440ff40a1260a76e41bf69fb414ccbfc6d99396df3f3b91
 - filename: server/src/services/__snapshots__/formulaire.service.test.ts.snap
-  checksum: c9537ceb127351b38f85892b416e260ab146426b913225b492c4b17392f44705
+  checksum: 3561769820b5dc9b96fe7b8491517857031500c474ca5352c9b8c0ed0e5235f2
 - filename: server/src/services/__snapshots__/partnerJob.service.test.ts.snap
   checksum: 6f190e19172481706181e0a13ed7de5f0f6c699f86d35d9b08071ece445920b1
 - filename: server/src/services/application.service.test.ts
