@@ -1,5 +1,5 @@
 "use client"
-import { Box, ListItem, Text, UnorderedList } from "@chakra-ui/react"
+import { Box, Typography, List, ListItem } from "@mui/material"
 import { useFormik } from "formik"
 import { useState } from "react"
 import { IAppointmentRecapJson } from "shared"
@@ -76,81 +76,87 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
         <>
           Un candidat souhaite <br />
           être contacté <br />
-          <Text textStyle="h2" as="span" color="grey.700">
+          <Typography variant="h2" component="span" color="text.secondary">
             par votre centre de formation
-          </Text>
+          </Typography>
         </>
       }
     >
       {appointment?.user && (
-        <Box mt={10}>
-          <Text as="span" color="bluefrance" textStyle="h6">
-            Voici les coordonnées du contact
-          </Text>
+        <Box sx={{ my: 4 }}>
+          <Typography component="span" color="primary" variant="h6">
+            Voici les coordonnées du contact de :{" "}
+          </Typography>
           {appointment.user?.type && (
-            <Text fontWeight="700" mb={4}>
+            <Typography component={"span"} color="primary" variant="h6">
               {appointment.user.type === "parent" ? "Le parent" : "L'étudiant"}
-            </Text>
+            </Typography>
           )}
-          <Box mt={6} pb={8} borderBottom="solid 1px #D0C9C4">
-            <Text>
+          <Box sx={{ my: 4 }}>
+            <Typography>
               Nom :{" "}
-              <Text as="span">
+              <Typography component="span">
                 <strong>{appointment.user.lastname}</strong>
-              </Text>
-            </Text>
-            <Text>
+              </Typography>
+            </Typography>
+            <Typography>
               Prénom :{" "}
-              <Text as="span">
+              <Typography component="span">
                 <b>{appointment.user.firstname}</b>
-              </Text>
-            </Text>
-            <Text mt={4}>
+              </Typography>
+            </Typography>
+            <Typography sx={{ mt: 4 }}>
               Numéro de téléphone :{" "}
-              <Text as="span">
+              <Typography component="span">
                 <b>{appointment.user.phone.match(/.{1,2}/g).join(".")}</b>
-              </Text>
-            </Text>
-            <Text>
+              </Typography>
+            </Typography>
+            <Typography>
               Email :{" "}
-              <Text as="span">
+              <Typography component="span">
                 <b>{appointment.user.email}</b>
-              </Text>
-            </Text>
+              </Typography>
+            </Typography>
           </Box>
-          <Box mt={8} pb={8} borderBottom="solid 1px #D0C9C4">
-            <Text as="p" my="2">
+          <hr />
+          <Box sx={{ mb: 4 }}>
+            <Typography component="p" sx={{ my: 2 }}>
               Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant(s) :
-            </Text>
-            <Text as="p" my="2">
-              <UnorderedList>
+            </Typography>
+            <Typography component="p">
+              <List sx={{ listStyleType: "disc", pl: 4 }}>
                 {(appointment.appointment?.applicant_reasons || []).map((reason, i) => {
-                  return <ListItem key={i}>{RdvReasons.find((item) => item.key === reason).title}</ListItem>
+                  return (
+                    <ListItem key={i} sx={{ display: "list-item" }}>
+                      {RdvReasons.find((item) => item.key === reason).title}
+                    </ListItem>
+                  )
                 })}
-              </UnorderedList>
-            </Text>
+              </List>
+            </Typography>
             {(appointment.appointment?.applicant_reasons || []).includes("autre") ? (
-              <Text as="p" bg="#F6F6F6" color="#2A2A2A" fontSize="16px" lineHeight="24px" fontWeight="700" px="4" py="2">
+              <Typography component="p" sx={{ bgcolor: "#F6F6F6", color: "#2A2A2A", fontSize: "16px", lineHeight: "24px", fontWeight: 700, px: 4, py: 2 }}>
                 {appointment.appointment.applicant_message_to_cfa}
-              </Text>
+              </Typography>
             ) : (
-              <Text as="div" marginTop={2}></Text>
+              <Typography component="div" sx={{ marginTop: 2 }}></Typography>
             )}
             {appointment.formation && (
               <>
-                <Text as="p" mt="2">
+                <Typography component="p" sx={{ mt: 2 }}>
                   à propos de la formation : <strong>{appointment.formation.training_intitule_long}</strong>
-                </Text>
-                <Text as="p" mt="1">
+                </Typography>
+                <Typography component="p" sx={{ mt: 1 }}>
                   dispensée par :{" "}
                   <strong>
                     {appointment.formation.etablissement_formateur_raison_sociale}, {appointment.formation.lieu_formation_street}, {appointment.formation.lieu_formation_zip_code},{" "}
                     {appointment.formation.lieu_formation_city}
                   </strong>
-                </Text>
+                </Typography>
               </>
             )}
           </Box>
+          <hr />
           {currentState === "initial" ? (
             <CfaCandidatInformationForm formik={formik} setCurrentState={setCurrentState} otherClicked={otherClicked} unreachableClicked={unreachableClicked} />
           ) : (
