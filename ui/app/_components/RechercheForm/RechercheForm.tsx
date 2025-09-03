@@ -68,7 +68,7 @@ export const rechercheFormToRechercheParams = (rechercheForm: Partial<IRecherche
   }
 }
 
-const rechercheParamsToRechercheForm = (rechercheParams: Partial<IRecherchePageParams>): IRechercheForm => {
+export const rechercheParamsToRechercheForm = (rechercheParams: Partial<IRecherchePageParams>): IRechercheForm => {
   const displayedItemTypes: UserItemTypes[] = []
   if (rechercheParams.displayEntreprises) {
     displayedItemTypes.push(UserItemTypes.EMPLOI)

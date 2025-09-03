@@ -12,7 +12,7 @@ const titles = {
   [RechercheViewType.FORMATION]: "Trouvez votre formation",
 }
 
-export function RechercheMobileHome(props: { rechercheParams: IRecherchePageParams }) {
+export function RechercheMobileEmpty(props: { rechercheParams: IRecherchePageParams }) {
   const { viewType } = props.rechercheParams
   return (
     <Box

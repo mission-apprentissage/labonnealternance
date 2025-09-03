@@ -13,6 +13,7 @@ import { useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRecher
 import type { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { IRechercheForm, RechercheForm, rechercheFormToRechercheParams, UserItemTypes } from "@/app/_components/RechercheForm/RechercheForm"
 import { apiGet } from "@/utils/api.utils"
+import { SendPlausibleEvent } from "@/utils/plausible"
 
 export function CandidatRechercheForm({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
   const rechercheResults = useRechercheResults(rechercheParams)
@@ -29,8 +30,11 @@ export function CandidatRechercheForm({ rechercheParams }: { rechercheParams: IR
   const navigateToRecherchePage = useNavigateToRecherchePage(rechercheParams)
 
   const onSubmit = useCallback(
-    (result: IRechercheForm) => {
-      navigateToRecherchePage(rechercheFormToRechercheParams(result))
+    (rechercheForm: IRechercheForm) => {
+      const { displayedItemTypes } = rechercheForm
+      const plausibleLabel = `Recherche - Page de résultats - ${displayedItemTypes.join(" et ")}`
+      SendPlausibleEvent(plausibleLabel)
+      navigateToRecherchePage(rechercheFormToRechercheParams(rechercheForm))
     },
     [navigateToRecherchePage]
   )
