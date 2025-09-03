@@ -2,15 +2,15 @@
 
 import { useToast } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
-import Button from "@codegouvfr/react-dsfr/Button"
 import { TabContext, TabList, TabPanel } from "@mui/lab"
-import { Box, ClickAwayListener, Grow, Link, MenuItem, MenuList, Paper, Popper, Tab, Typography } from "@mui/material"
+import { Box, Link, Tab, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { IUserRecruteurForAdminJSON } from "shared"
 
 import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
+import { UserMenu } from "@/app/(espace-pro)/espace-pro/(connected)/opco/_component/UserMenu"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
@@ -27,28 +27,6 @@ function AdministrationOpco() {
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationActivationUtilisateur = useDisclosure()
   const toast = useToast()
-  const [open, setOpen] = useState(false)
-  const anchorRef = useRef<HTMLButtonElement>(null)
-
-  const handleToggle = () => {
-    setOpen((prevOpen) => !prevOpen)
-  }
-
-  const handleClose = (event: Event | React.SyntheticEvent) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
-      return
-    }
-    setOpen(false)
-  }
-
-  function handleListKeyDown(event: React.KeyboardEvent) {
-    if (event.key === "Tab") {
-      event.preventDefault()
-      setOpen(false)
-    } else if (event.key === "Escape") {
-      setOpen(false)
-    }
-  }
 
   useEffect(() => {
     if (newUser) {
@@ -76,80 +54,13 @@ function AdministrationOpco() {
       disableSortBy: true,
       accessor: (row) => {
         return (
-          <Box>
-            <Button
-              ref={anchorRef}
-              id="composition-button"
-              aria-controls={open ? "composition-menu" : undefined}
-              aria-expanded={open ? "true" : undefined}
-              aria-haspopup="true"
-              onClick={handleToggle}
-              priority="tertiary no outline"
-              iconId="fr-icon-settings-5-line"
-              title="Actions sur l'offre"
-            />
-            <Popper sx={{ zIndex: 1 }} open={open} anchorEl={anchorRef.current} role={undefined} placement="bottom-start" transition disablePortal>
-              {({ TransitionProps, placement }) => (
-                <Grow
-                  {...TransitionProps}
-                  style={{
-                    transformOrigin: placement === "bottom-start" ? "left top" : "left bottom",
-                  }}
-                >
-                  <Paper sx={{ border: "1px solid", width: "max-content", minWidth: "200px", maxWidth: "300px" }}>
-                    <ClickAwayListener onClickAway={handleClose}>
-                      <MenuList sx={{ py: 0, mt: "0 !important" }} autoFocusItem={open} id="composition-menu" aria-labelledby="composition-button" onKeyDown={handleListKeyDown}>
-                        <MenuItem
-                          disableGutters
-                          sx={{ py: fr.spacing("1v"), mx: `${fr.spacing("1w")} !important`, mb: `0 !important`, fontSize: "14px !important", minHeight: "24px" }}
-                        >
-                          <Link underline="hover" href={PAGES.dynamic.backOpcoInformationEntreprise({ user_id: row._id as string }).getPath()} aria-label="voir les informations">
-                            Voir les informations
-                          </Link>
-                        </MenuItem>
-                        {tabIndex !== "1" && (
-                          <MenuItem
-                            disableGutters
-                            dense
-                            sx={{ py: fr.spacing("1v"), mx: `${fr.spacing("1w")} !important`, mb: `0 !important`, fontSize: "14px !important", minHeight: "24px" }}
-                          >
-                            <Link
-                              underline="hover"
-                              component="button"
-                              onClick={() => {
-                                confirmationActivationUtilisateur.onOpen()
-                                setCurrentEntreprise(row)
-                              }}
-                            >
-                              Activer le compte
-                            </Link>
-                          </MenuItem>
-                        )}
-                        {tabIndex !== "2" && (
-                          <MenuItem
-                            disableGutters
-                            onClick={handleClose}
-                            sx={{ py: fr.spacing("1v"), mx: `${fr.spacing("1w")} !important`, mb: `0 !important`, fontSize: "14px !important", minHeight: "24px" }}
-                          >
-                            <Link
-                              underline="hover"
-                              component="button"
-                              onClick={() => {
-                                confirmationDesactivationUtilisateur.onOpen()
-                                setCurrentEntreprise(row)
-                              }}
-                            >
-                              Désactiver le compte
-                            </Link>
-                          </MenuItem>
-                        )}
-                      </MenuList>
-                    </ClickAwayListener>
-                  </Paper>
-                </Grow>
-              )}
-            </Popper>
-          </Box>
+          <UserMenu
+            row={row}
+            tabIndex={tabIndex}
+            setCurrentEntreprise={setCurrentEntreprise}
+            confirmationActivationUtilisateur={confirmationActivationUtilisateur}
+            confirmationDesactivationUtilisateur={confirmationDesactivationUtilisateur}
+          />
         )
       },
     },
