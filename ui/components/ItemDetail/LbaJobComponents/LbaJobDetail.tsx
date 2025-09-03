@@ -1,5 +1,5 @@
 "use client"
-import { Accordion, Box, Flex, Image, Link, ListItem, Text, UnorderedList } from "@chakra-ui/react"
+import { Box, Flex, Image, Link, ListItem, Text, UnorderedList } from "@chakra-ui/react"
 import React, { useEffect } from "react"
 import { IJobJson, ILbaItemLbaJobJson, ILbaItemNaf } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -88,29 +88,28 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: s
               </Text>
             )}
           </Flex>
-          {job?.job?.elligibleHandicap && (
-            <Flex mt={2} p={2} background="white" justifyContent="center" fontSize="12px" alignItems="center" direction="row">
-              <Box width="30px" minWidth="30px" mr={2}>
-                <Image mt="2px" src="/images/info.svg" alt="" aria-hidden={true} />
-              </Box>
-              <Box>À compétences égales, une attention particulière sera apportée aux personnes en situation de handicap.</Box>
-            </Flex>
-          )}
+          {/* {job?.job?.elligibleHandicap && ( */}
+          <Flex mt={2} p={2} background="white" justifyContent="center" fontSize="12px" alignItems="center" direction="row">
+            <Box width="30px" minWidth="30px" mr={2}>
+              <Image mt="2px" src="/images/info.svg" alt="" aria-hidden={true} />
+            </Box>
+            <Box>À compétences égales, une attention particulière sera apportée aux personnes en situation de handicap.</Box>
+          </Flex>
+          {/* )} */}
         </Box>
-        {job?.company?.mandataire && (
-          <Text>
-            Offre publiée par{" "}
-            <Text as="span" fontWeight={700}>
-              {job.company.name}
-            </Text>{" "}
-            pour une entreprise partenaire du centre de formation.
-          </Text>
-        )}
+        {/* {job?.company?.mandataire && ( */}
+        <Text>
+          Offre publiée par{" "}
+          <Text as="span" fontWeight={700}>
+            {job.company.name}
+          </Text>{" "}
+          pour une entreprise partenaire du centre de formation.
+        </Text>
+        {/* )} */}
 
-        <Accordion allowToggle defaultIndex={0}>
-          <JobDescription job={job} />
-          <LbaJobQualites job={job} />
-        </Accordion>
+        <JobDescription job={job} />
+        <LbaJobQualites job={job} />
+
         <Box marginTop="10px">
           <ReportJobLink
             itemId={job?.job?.id}
@@ -155,11 +154,9 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: s
         <Text as="h2" variant="itemDetailH2" mt={2}>{`En savoir plus sur le métier ${job.title}`}</Text>
         <Box data-testid="lbb-component">
           <Box mb={4}>
-            <Accordion allowToggle>
-              <LbaJobCompetences job={job} />
-              <LbaJobTechniques job={job} />
-              <LbaJobAcces job={job} />
-            </Accordion>
+            <LbaJobCompetences job={job} />
+            <LbaJobTechniques job={job} />
+            <LbaJobAcces job={job} />
           </Box>
         </Box>
       </Box>
