@@ -1,5 +1,5 @@
 "use client"
-import { Accordion, Box, Flex, Image, ListItem, Text, UnorderedList } from "@chakra-ui/react"
+import { Box, Flex, Image, ListItem, Text, UnorderedList } from "@chakra-ui/react"
 import React, { useEffect } from "react"
 import { IJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -68,10 +68,9 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
           )}
         </Box>
 
-        <Accordion allowToggle defaultIndex={0}>
-          <JobDescription job={job} />
-          <JobDescriptionAccordion title="Qualités souhaitées pour ce poste" items={job?.job?.offer_desired_skills} />
-        </Accordion>
+        <JobDescription job={job} />
+        <JobDescriptionAccordion title="Qualités souhaitées pour ce poste" items={job?.job?.offer_desired_skills} defaultExpanded={false} />
+
         <Box marginTop="10px">
           <ReportJobLink
             itemId={job.id}
@@ -115,10 +114,8 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
           <Text as="h2" variant="itemDetailH2" mt={2}>{`En savoir plus sur le métier ${job.title}`}</Text>
           <Box data-testid="lbb-component">
             <Box mb={4}>
-              <Accordion allowToggle>
-                <JobDescriptionAccordion title="Compétences qui seront acquises durant l'alternance" items={job?.job?.offer_to_be_acquired_skills} />
-                <JobDescriptionAccordion title="À qui ce métier est-il accessible ?" items={job?.job?.offer_access_conditions} />
-              </Accordion>
+              <JobDescriptionAccordion title="Compétences qui seront acquises durant l'alternance" items={job?.job?.offer_to_be_acquired_skills} defaultExpanded={false} />
+              <JobDescriptionAccordion title="À qui ce métier est-il accessible ?" items={job?.job?.offer_access_conditions} defaultExpanded={false} />
             </Box>
           </Box>
         </Box>
