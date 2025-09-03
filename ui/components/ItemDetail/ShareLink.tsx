@@ -1,5 +1,6 @@
-import { Image, Text } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
+import { Box, Typography } from "@mui/material"
+import Image from "next/image"
 import { SyntheticEvent, useEffect, useState } from "react"
 import { ILbaItemFormationJson, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 
@@ -22,19 +23,15 @@ const ShareLink = ({ item }: { item: ILbaItemFormationJson | ILbaItemFtJobJson |
   return (
     <Button priority="tertiary no outline" onClick={copyLink} data-tracking-id={`partager-${item.ideaType}`}>
       {copied ? (
-        <>
-          <Image mr={2} src="/images/icons/share_copied_icon.svg" aria-hidden={true} alt="" />
-          <Text fontSize={14} color="#18753C">
-            Lien copié !
-          </Text>
-        </>
+        <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+          <Image src="/images/icons/share_copied_icon.svg" width={16} height={16} aria-hidden={true} alt="" />
+          <Typography color="#18753C">Lien copié !</Typography>
+        </Box>
       ) : (
-        <>
-          <Image mr={2} src="/images/icons/share_icon.svg" aria-hidden={true} alt="" />
-          <Text fontSize={14} color="bluefrance.500">
-            Partager
-          </Text>
-        </>
+        <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+          <Image src="/images/icons/share_icon.svg" width={16} height={16} aria-hidden={true} alt="" />
+          <Typography color="bluefrance.500">Partager</Typography>
+        </Box>
       )}
     </Button>
   )
