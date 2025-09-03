@@ -2,6 +2,7 @@ import { badRequest, internal, notFound } from "@hapi/boom"
 import { assertUnreachable, IJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob, JOB_STATUS, zRoutes } from "shared"
 import { OPCOS_LABEL } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 
 import { getSourceFromCookies } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -350,7 +351,21 @@ export default (server: Server) => {
     async (req, res) => {
       const { referer } = req.headers
       const { romes, rncp, caller, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl } = req.query
-      const result = await getJobsQuery({ romes, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, isMinimalData: false })
+      const result = await getJobsQuery({
+        romes,
+        rncp,
+        caller,
+        referer,
+        latitude,
+        longitude,
+        radius,
+        insee,
+        sources,
+        diploma: INiveauDiplomeEuropeen.fromParam(diploma),
+        opco,
+        opcoUrl,
+        isMinimalData: false,
+      })
 
       if ("error" in result) {
         return res.status(500).send(result)
@@ -376,7 +391,7 @@ export default (server: Server) => {
         longitude,
         radius,
         insee,
-        diploma,
+        diploma: INiveauDiplomeEuropeen.fromParam(diploma),
         opco,
         isMinimalData: true,
         elligibleHandicapFilter: elligibleHandicapFilter === "true",

@@ -7,7 +7,13 @@ import { IGeoPoint, IJob, IJobCollectionName, ILbaItemPartnerJob, JOB_STATUS_ENG
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import { NIVEAUX_POUR_LBA, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
-import { IJobsPartnersOfferApi, IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import {
+  IJobsPartnersOfferApi,
+  IJobsPartnersOfferPrivate,
+  IJobsPartnersOfferPrivateWithDistance,
+  INiveauDiplomeEuropeen,
+  JOBPARTNERS_LABEL,
+} from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners, IComputedJobsPartnersWrite, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import {
   IJobOfferApiReadV3,
@@ -64,7 +70,7 @@ export const getJobsFromApiPrivate = async ({
   latitude?: number
   longitude?: number
   radius?: number
-  diploma?: string
+  diploma?: INiveauDiplomeEuropeen
   opco?: string
   api?: string
   isMinimalData: boolean
@@ -157,7 +163,7 @@ export const getJobsFromApi = async ({
   insee?: string
   sources?: string
   // sources?: LBA_ITEM_TYPE
-  diploma?: string
+  diploma?: INiveauDiplomeEuropeen
   opco?: string
   opcoUrl?: string
   api?: string

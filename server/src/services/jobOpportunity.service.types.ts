@@ -1,3 +1,5 @@
+import { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
+
 import { IApiError } from "../common/utils/errorManager"
 
 import { ILbaItemCompany, ILbaItemFormation, ILbaItemJob, ILbaItemFtJob } from "./lbaitem.shared.service.types"
@@ -14,7 +16,7 @@ export type TJobSearchQuery = {
   insee?: string
   sources?: string
   // sources?: LBA_ITEM_TYPE
-  diploma?: string
+  diploma?: INiveauDiplomeEuropeen
   opco?: string
   opcoUrl?: string
   isMinimalData: boolean

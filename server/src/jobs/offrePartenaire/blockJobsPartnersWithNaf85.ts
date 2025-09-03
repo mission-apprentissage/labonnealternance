@@ -16,10 +16,10 @@ export const blockJobsPartnersWithNaf85 = async ({ addedMatchFilter }: FillCompu
     addedMatchFilter,
     getData: async (documents) => {
       return documents.map((document) => {
-        const { _id, workplace_naf_code } = document
+        const { _id, workplace_naf_code, business_error } = document
         const result: Pick<IComputedJobsPartners, (typeof filledFields)[number] | "_id"> = {
           _id,
-          business_error: workplace_naf_code?.startsWith("85") ? JOB_PARTNER_BUSINESS_ERROR.CFA : null,
+          business_error: workplace_naf_code?.startsWith("85") ? JOB_PARTNER_BUSINESS_ERROR.CFA : business_error,
         }
         return result
       })

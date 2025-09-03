@@ -1,5 +1,7 @@
-import { Box, useDisclosure } from "@chakra-ui/react"
+import { Box } from "@chakra-ui/react"
 import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
+
+import { useDisclosure } from "@/common/hooks/useDisclosure"
 
 import { CandidatureLbaModal } from "./CandidatureLbaModal"
 import { useSubmitCandidature } from "./services/submitCandidature"

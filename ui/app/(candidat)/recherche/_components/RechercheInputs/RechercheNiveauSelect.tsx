@@ -1,52 +1,23 @@
 import { useField } from "formik"
+import { typedEntries } from "shared"
+import { NIVEAUX_POUR_LBA } from "shared/constants/recruteur"
+import { IDiplomaParam } from "shared/routes/_params"
 
 import { SelectField } from "@/app/_components/FormComponents/SelectField"
-import { SelectFormField } from "@/app/_components/FormComponents/SelectFormField"
 
-export const niveauOptions = [
-  {
-    value: "",
-    label: "Indifférent",
-  },
-  {
-    value: "3 (CAP...)",
-    label: "Cap, autres formations niveau 3",
-  },
-  {
-    value: "4 (BAC...)",
-    label: "Bac, autres formations niveau 4",
-  },
-  {
-    value: "5 (BTS, DEUST...)",
-    label: "BTS, DEUST, autres formations niveaux 5 (Bac+2)",
-  },
-  {
-    value: "6 (Licence, BUT...)",
-    label: "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
-  },
-  {
-    value: "7 (Master, titre ingénieur...)",
-    label: "Master, titre ingénieur, autres formations niveaux 7 ou 8 (Bac+5)",
-  },
-] satisfies Array<{ value: string; label: string; selected?: boolean }>
+export const niveauOptions = typedEntries(NIVEAUX_POUR_LBA).map(([value, label]) => ({ value, label })) satisfies Array<{
+  value: string
+  label: string
+  selected?: boolean
+}>
 
 export function RechercheNiveauSelectFormik() {
-  const [field] = useField({ name: "diploma" })
+  const [field, meta, helper] = useField({ name: "diploma" })
 
-  return (
-    <SelectFormField
-      id="diploma"
-      label="Niveau d'études visé"
-      style={{
-        marginBottom: 0,
-        textWrap: "nowrap",
-      }}
-      options={niveauOptions.map((option) => ({ ...option, selected: option.value === field.value }))}
-    />
-  )
+  return <RechercheNiveauSelect value={field.value} onChange={(newValue) => helper.setValue(newValue, true)} error={meta.touched && meta.error} />
 }
 
-export function RechercheNiveauSelect({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+export function RechercheNiveauSelect({ value, onChange, error }: { value: IDiplomaParam; onChange: (value: IDiplomaParam) => void; error?: string }) {
   return (
     <SelectField
       id="diploma"
@@ -59,11 +30,17 @@ export function RechercheNiveauSelect({ value, onChange }: { value: string; onCh
       options={niveauOptions.map((option) => ({ ...option, selected: option.value === value }))}
       nativeSelectProps={{
         value: value ?? undefined,
-        onChange: (event) => onChange(event.target.value),
+        onChange: (event) => {
+          const { value } = event.target
+          const option = niveauOptions.find((option) => option.value === value)
+          onChange(option?.value || null)
+        },
         style: {
           fontWeight: 700,
         },
       }}
+      state={error ? "error" : "default"}
+      stateRelatedMessage={error}
     />
   )
 }

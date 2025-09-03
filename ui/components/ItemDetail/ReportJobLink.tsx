@@ -1,16 +1,17 @@
 "use client"
-import { Box, Flex, Image, Text, Textarea, useDisclosure } from "@chakra-ui/react"
+import { Box, Flex, Image, Text, Textarea } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Formik } from "formik"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { z } from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
+import { CustomFormControl } from "@/app/_components/CustomFormControl"
 import { useLocalStorage } from "@/app/hooks/useLocalStorage"
+import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { reportLbaItem } from "@/utils/api"
 
-import { CustomFormControl } from "../espace_pro/CustomFormControl"
-import { CustomRadio } from "../espace_pro/CustomRadio"
+import { CustomRadio } from "../../app/_components/CustomRadio"
 import { InfoTooltipOrModal } from "../InfoTooltipOrModal"
 import { ModalReadOnly } from "../ModalReadOnly"
 
@@ -125,12 +126,13 @@ export const ReportJobLink = ({
                       radioProps={{
                         display: "flex",
                         flexDirection: "column",
-                        gap: 4,
-                        mb: 6,
+                        gap: 1,
+                        mb: 1,
                       }}
+                      size="small"
                       name="reason"
                       value={values.reason}
-                      onChange={(newValue) => setFieldValue("reason", newValue, true)}
+                      onChange={(_, newValue) => setFieldValue("reason", newValue, true)}
                       possibleValues={content.motifs}
                     />
                     {values.reason && !noAdditionalMessage.includes(values.reason) && (

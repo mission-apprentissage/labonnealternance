@@ -3,6 +3,7 @@
 import { Box } from "@mui/material"
 import { Formik, FormikErrors } from "formik"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
+import { zDiplomaParam } from "shared/routes/_params"
 import { z } from "zod"
 
 import { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
@@ -27,7 +28,7 @@ const ZRechercheForm = z.object({
     .nullish(),
   displayedItemTypes: z.array(extensions.buildEnum(UserItemTypes)),
   radius: z.string().nullish(),
-  diploma: z.string().nullish(),
+  diploma: zDiplomaParam.nullish(),
   elligibleHandicapFilter: z.boolean().nullish(),
 })
 
@@ -69,7 +70,7 @@ export const rechercheFormToRechercheParams = (rechercheForm: Partial<IRecherche
   }
 }
 
-const rechercheParamsToRechercheForm = (rechercheParams: Partial<IRecherchePageParams>): IRechercheForm => {
+export const rechercheParamsToRechercheForm = (rechercheParams: Partial<IRecherchePageParams>): IRechercheForm => {
   const displayedItemTypes: UserItemTypes[] = []
   if (rechercheParams.displayEntreprises) {
     displayedItemTypes.push(UserItemTypes.EMPLOI)
@@ -94,7 +95,7 @@ const rechercheParamsToRechercheForm = (rechercheParams: Partial<IRecherchePageP
       : null,
     displayedItemTypes,
     radius: rechercheParams?.radius?.toString() ?? "",
-    diploma: rechercheParams?.diploma || "",
+    diploma: rechercheParams?.diploma || null,
     elligibleHandicapFilter: rechercheParams.elligibleHandicapFilter,
   }
   return rechercheForm

@@ -47,7 +47,7 @@ export const zFormationsRoutes = {
           latitude: ZLatitudeParam,
           longitude: ZLongitudeParam,
           radius: ZRadiusParam.default(30),
-          diploma: zDiplomaParam.optional(),
+          diploma: zDiplomaParam,
           caller: zCallerParam.optional(),
           options: zGetFormationOptions,
         })
@@ -80,7 +80,7 @@ export const zFormationsRoutes = {
         latitude: ZLatitudeParam,
         longitude: ZLongitudeParam,
         radius: ZRadiusParam.default(30),
-        diploma: zDiplomaParam.optional(),
+        diploma: zDiplomaParam,
       }),
       headers: zRefererHeaders,
       response: {

@@ -31,7 +31,6 @@ import { PAGES } from "@/utils/routes.utils"
 
 export default function JobDetailRendererClient({ job, rechercheParams }: { job: ILbaItemJobsGlobal; rechercheParams: IRecherchePageParams }) {
   const result = useRechercheResults(rechercheParams)
-  console.log(result)
 
   const jobDetail = <JobDetail selectedItem={job} resultList={result.items} rechercheParams={rechercheParams} />
 

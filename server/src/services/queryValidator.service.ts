@@ -158,10 +158,6 @@ const validateLongitude = (longitude: number | undefined, error_messages: string
   else if (longitude > 180 || longitude < -180) error_messages.push("longitude : Search center longitude must be a number between -180 and 180.")
 }
 
-const validateDiploma = (diploma: string | undefined, error_messages: string[]) => {
-  if (diploma && ["3", "4", "5", "6", "7"].indexOf(diploma[0]) < 0) error_messages.push("diploma : Optional diploma argument used with wrong value")
-}
-
 const validateInsee = (insee: string | undefined, error_messages: string[]) => {
   if (!insee) {
     error_messages.push("insee : insee city code is missing.")
@@ -284,9 +280,6 @@ export const formationsQueryValidator = async (
     validateRadius(query.radius, error_messages)
   }
 
-  // diploma mal formée si présente
-  validateDiploma(query.diploma, error_messages)
-
   if (error_messages.length) return { error: "wrong_parameters", error_messages }
 
   return { result: "passed", romes: query.romes }
@@ -313,9 +306,6 @@ export const formationsRegionQueryValidator = (
 
   // region ou rome obligatoires (règle : si pas de region donc France entière rome devient obligatoire)
   validateRegionOrRome({ region: query.region, departement: query.departement, romes: query.romes, romeDomain: query.romeDomain }, error_messages)
-
-  // diploma mal formée si présente
-  validateDiploma(query.diploma, error_messages)
 
   if (error_messages.length) return { error: "wrong_parameters", error_messages }
 
@@ -346,9 +336,6 @@ export const jobsEtFormationsQueryValidator = async (
     // rayon de recherche : radius
     validateRadius(query.radius, error_messages)
   }
-
-  // diploma mal formée si présente
-  validateDiploma(query.diploma, error_messages)
 
   // code INSEE : insee
   if (query.longitude) {
