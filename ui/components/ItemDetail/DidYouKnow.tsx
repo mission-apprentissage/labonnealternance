@@ -7,7 +7,17 @@ import TagCandidatureSpontanee from "./TagCandidatureSpontanee"
 
 const DidYouKnow = () => {
   return (
-    <Box sx={{ position: "relative", backgroundColor: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, sm: "30px", md: "30px", lg: "auto" }, mb: 8, mt: 6 }}>
+    <Box
+      sx={{
+        position: "relative",
+        backgroundColor: "white",
+        padding: "16px 24px",
+        maxWidth: "970px",
+        mx: { xs: 0, sm: "30px", md: "30px", lg: "auto" },
+        mb: 8,
+        mt: fr.spacing("3w"),
+      }}
+    >
       <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
         Le saviez-vous ?
       </Typography>
