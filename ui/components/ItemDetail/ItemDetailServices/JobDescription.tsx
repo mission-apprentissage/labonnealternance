@@ -29,7 +29,7 @@ export const JobDescription = ({ job }: { job: ILbaItemPartnerJobJson | ILbaItem
 
 export const JobDescriptionAccordion = ({ title, children, items }: { title: string; children?: React.ReactNode; items?: string[] }) => {
   return (
-    <Accordion label={title}>
+    <Accordion label={title} defaultExpanded={true}>
       {children && <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: children }} />}
       {items?.length > 0 &&
         items.map((item, i) => (
