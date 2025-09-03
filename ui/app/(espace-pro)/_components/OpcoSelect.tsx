@@ -1,15 +1,24 @@
-import { Select } from "@chakra-ui/react"
+import Select from "@codegouvfr/react-dsfr/Select"
+import { FormikErrors, FormikTouched } from "formik"
 import { OPCOS_LABEL } from "shared/constants/index"
 
 interface Props {
   name: string
   onChange?: (value: OPCOS_LABEL) => void
   value: OPCOS_LABEL
+  errors: FormikErrors<any>
+  touched: FormikTouched<any>
 }
 
-export const OpcoSelect = ({ name, onChange, value }: Props) => {
+export const OpcoSelect = ({ name, onChange, value, errors, touched }: Props) => {
   return (
-    <Select variant="outline" size="md" name={name} mr={3} onChange={(e) => onChange?.(e.target.value as OPCOS_LABEL)} value={value}>
+    <Select
+      label="OPCO"
+      hint="Pour vous accompagner dans vos recrutements, votre OPCO accède à vos informations sur La bonne alternance."
+      nativeSelectProps={{ name, value, required: true, onChange: (e) => onChange?.(e.target.value as OPCOS_LABEL) }}
+      state={errors?.opco && touched?.opco ? "error" : "default"}
+      stateRelatedMessage={errors?.opco && touched?.opco ? (errors.opco as string) : undefined}
+    >
       <option hidden>Sélectionnez un OPCO</option>
       <option value={OPCOS_LABEL.AFDAS}>AFDAS</option>
       <option value={OPCOS_LABEL.AKTO}>AKTO</option>

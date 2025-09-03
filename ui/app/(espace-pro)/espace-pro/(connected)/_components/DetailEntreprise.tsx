@@ -1,5 +1,5 @@
 "use client"
-import { Box, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, SimpleGrid, Spinner, Stack, Text, useToast } from "@chakra-ui/react"
+import { Box, Flex, Heading, SimpleGrid, Spinner, Stack, Text, useToast } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Alert } from "@mui/material"
@@ -12,6 +12,7 @@ import * as Yup from "yup"
 
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import { FieldWithValue } from "@/app/(espace-pro)/_components/FieldWithValue"
+import { OpcoSelect } from "@/app/(espace-pro)/_components/OpcoSelect"
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 import { OffresTabs } from "@/app/(espace-pro)/espace-pro/(connected)/_components/OffresTabs"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
@@ -19,7 +20,6 @@ import CustomInput from "@/app/_components/CustomInput"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 import { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationModificationOpco, UserValidationHistory } from "@/components/espace_pro"
-import { OpcoSelect } from "@/components/espace_pro/CreationRecruteur/OpcoSelect"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { updateEntrepriseAdmin, updateEntrepriseCFA } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
@@ -180,7 +180,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
           setSubmitting(false)
         }}
       >
-        {({ values, isSubmitting, isValid, setFieldValue, errors }) => {
+        {({ values, isSubmitting, isValid, setFieldValue, errors, touched }) => {
           return (
             <>
               <ConfirmationModificationOpco
@@ -202,19 +202,16 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                       <CustomInput name="phone" label="Téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
                       <CustomInput name="email" label="Email" type="email" value={values.email} />
                       {userRecruteur.type === AUTHTYPE.ENTREPRISE && (
-                        <FormControl>
-                          <FormLabel>OPCO</FormLabel>
-                          <FormHelperText pb={2}>Pour vous accompagner dans vos recrutements, votre OPCO accède à vos informations sur La bonne alternance.</FormHelperText>
-                          <OpcoSelect
-                            value={values.opco}
-                            name="opco"
-                            onChange={(newValue) => {
-                              setFieldValue("opco", newValue)
-                              confirmationModificationOpco.onOpen()
-                            }}
-                          />
-                          <FormErrorMessage>{errors.opco as string}</FormErrorMessage>
-                        </FormControl>
+                        <OpcoSelect
+                          value={values.opco}
+                          name="opco"
+                          errors={errors}
+                          touched={touched}
+                          onChange={(newValue) => {
+                            setFieldValue("opco", newValue)
+                            confirmationModificationOpco.onOpen()
+                          }}
+                        />
                       )}
                       {userMutation.error && (
                         <Alert sx={{ marginTop: fr.spacing("2w") }} severity="error">

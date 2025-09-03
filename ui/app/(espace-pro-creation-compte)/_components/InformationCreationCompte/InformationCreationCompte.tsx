@@ -1,6 +1,6 @@
 "use client"
 
-import { Box, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, SimpleGrid, Spinner, Text } from "@chakra-ui/react"
+import { Box, Flex, Heading, SimpleGrid, Spinner, Text } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { useQuery } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
@@ -16,9 +16,9 @@ import { infosOpcos } from "@/theme/components/logos/infosOpcos"
 import { ApiError, apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 
+import { OpcoSelect } from "../../../(espace-pro)/_components/OpcoSelect"
 import { AUTHTYPE } from "../../../../common/contants"
 import { phoneValidation } from "../../../../common/validation/fieldValidations"
-import { OpcoSelect } from "../../../../components/espace_pro/CreationRecruteur/OpcoSelect"
 import { AnimationContainer } from "../../../../components/espace_pro/index"
 import { InformationOpco } from "../../../../components/espace_pro/InformationOpco"
 import { WidgetContext } from "../../../../context/contextWidget"
@@ -71,7 +71,7 @@ const Formulaire = ({
       })}
       onSubmit={onSubmit}
     >
-      {({ values, isValid, isSubmitting, setFieldValue, errors }) => {
+      {({ values, isValid, isSubmitting, setFieldValue, errors, touched }) => {
         const infosOpco = infosOpcos.find((x) => x.nom === values.opco)
         return (
           <Form>
@@ -97,12 +97,7 @@ const Formulaire = ({
                     }
                   />
                   {shouldSelectOpco && (
-                    <FormControl>
-                      <FormLabel>OPCO</FormLabel>
-                      <FormHelperText pb={2}>Pour vous accompagner dans vos recrutements, votre OPCO accède à vos informations sur La bonne alternance.</FormHelperText>
-                      <OpcoSelect name="opco" onChange={(newValue) => setFieldValue("opco", newValue)} value={values.opco as OPCOS_LABEL} />
-                      <FormErrorMessage>{errors.opco as string}</FormErrorMessage>
-                    </FormControl>
+                    <OpcoSelect name="opco" onChange={(newValue) => setFieldValue("opco", newValue)} value={values.opco as OPCOS_LABEL} errors={errors} touched={touched} />
                   )}
                   <Flex justifyContent="flex-end" alignItems="center" mt={5}>
                     {!widget?.isWidget && (
