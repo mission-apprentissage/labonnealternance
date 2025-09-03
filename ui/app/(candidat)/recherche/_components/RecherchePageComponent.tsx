@@ -10,7 +10,7 @@ import { RechercheHeader } from "@/app/(candidat)/recherche/_components/Recherch
 import { RechercheCarte } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
 import { RechercheMobileFormUpdate } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMobileFormUpdate"
 import { RechercheMobileToggleMapButton } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMobileToggleMapButton"
-import { RecherchePageHome } from "@/app/(candidat)/recherche/_components/RechercheResultats/RecherchePageHome"
+import { RecherchePageEmpty } from "@/app/(candidat)/recherche/_components/RechercheResultats/RecherchePageEmpty"
 import { RechercheResultatsList } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheResultatsList"
 import { VirtualContainer } from "@/app/(candidat)/recherche/_components/RechercheResultats/VirtualContainer"
 import { useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
@@ -87,7 +87,7 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
 export function RecherchePageComponent(props: { rechercheParams: IRecherchePageParams }) {
   const rechercheResult = useRechercheResults(props.rechercheParams)
   if (rechercheResult.status === "disabled") {
-    return <RecherchePageHome {...props} />
+    return <RecherchePageEmpty {...props} />
   }
   return <RecherchePageComponentWithParams {...props} />
 }
