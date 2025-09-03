@@ -1,21 +1,21 @@
 "use client"
-import { Box, Button, Flex, Icon, Menu, MenuButton, MenuItem, MenuList, Text, useToast } from "@chakra-ui/react"
+import { useToast } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import { TabContext, TabList, TabPanel } from "@mui/lab"
-import { Link, Tab } from "@mui/material"
+import { Box, Link, Tab, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
-import { getLastStatusEvent, IUserRecruteurForAdminJSON, IUserRecruteurJson, IUserStatusValidationJson } from "shared"
-import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import { IUserRecruteurForAdminJSON, IUserRecruteurJson } from "shared"
 
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
+import { UserMenu } from "@/app/(espace-pro)/espace-pro/(connected)/administration/users/_component/UserMenu"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
 import { ConfirmationDesactivationUtilisateur } from "@/components/espace_pro"
 import ConfirmationActivationUtilisateur from "@/components/espace_pro/ConfirmationActivationUtilisateur"
-import { Parametre } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
 
 function Users() {
@@ -56,56 +56,13 @@ function Users() {
       disableSortBy: true,
       // isSticky: true,
       accessor: (row: IUserRecruteurJson) => {
-        const status = getLastStatusEvent(row.status as IUserStatusValidationJson[])?.status
-        const canActivate = [ETAT_UTILISATEUR.DESACTIVE, ETAT_UTILISATEUR.ATTENTE].includes(status)
-        const canDeactivate = [ETAT_UTILISATEUR.VALIDE, ETAT_UTILISATEUR.ATTENTE].includes(status)
         return (
-          <Box>
-            <Menu>
-              {({ isOpen }) => (
-                <>
-                  <MenuButton isActive={isOpen} as={Button} variant="navdot" _hover={{ backgroundColor: "none" }}>
-                    <Icon as={Parametre} color="bluefrance.500" />
-                  </MenuButton>
-                  <MenuList>
-                    <MenuItem>
-                      <Link underline="hover" href={`/espace-pro/administration/users/${row._id}`} aria-label="voir les informations">
-                        Voir les informations
-                      </Link>
-                    </MenuItem>
-                    {canActivate && (
-                      <MenuItem>
-                        <Link
-                          underline="hover"
-                          component="button"
-                          onClick={() => {
-                            confirmationActivationUtilisateur.onOpen()
-                            setCurrentEntreprise(row)
-                          }}
-                        >
-                          Activer le compte
-                        </Link>
-                      </MenuItem>
-                    )}
-                    {canDeactivate && (
-                      <MenuItem>
-                        <Link
-                          underline="hover"
-                          component="button"
-                          onClick={() => {
-                            confirmationDesactivationUtilisateur.onOpen()
-                            setCurrentEntreprise(row)
-                          }}
-                        >
-                          Désactiver le compte
-                        </Link>
-                      </MenuItem>
-                    )}
-                  </MenuList>
-                </>
-              )}
-            </Menu>
-          </Box>
+          <UserMenu
+            row={row}
+            setCurrentEntreprise={setCurrentEntreprise}
+            confirmationActivationUtilisateur={confirmationActivationUtilisateur}
+            confirmationDesactivationUtilisateur={confirmationDesactivationUtilisateur}
+          />
         )
       },
     },
@@ -122,13 +79,9 @@ function Users() {
         },
       }) => {
         const { establishment_raison_sociale, establishment_siret, _id, opco } = data[id]
-        const siretText = (
-          <Text color="#666666" fontSize="14px">
-            SIRET {establishment_siret}
-          </Text>
-        )
+        const siretText = <Typography sx={{ color: "#666666", fontSize: "14px" }}>SIRET {establishment_siret}</Typography>
         return (
-          <Flex direction="column">
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
             <Link fontWeight="700" href={`/espace-pro/administration/users/${_id}`} aria-label="voir les informations">
               {establishment_raison_sociale}
             </Link>
@@ -139,10 +92,8 @@ function Users() {
                 {siretText}
               </Link>
             )}
-            <Text sx={{ maxWidth: "100%", textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden" }} color="redmarianne" fontSize="14px">
-              {opco}
-            </Text>
-          </Flex>
+            <Typography sx={{ maxWidth: "100%", textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", color: "redmarianne", fontSize: "14px" }}>{opco}</Typography>
+          </Box>
         )
       },
       filter: "fuzzyText",
@@ -151,20 +102,16 @@ function Users() {
       Header: "Type",
       id: "type",
       maxWidth: "140",
-      accessor: ({ type }) => (
-        <Text color="#666666" fontSize="14px">
-          {type}
-        </Text>
-      ),
+      accessor: ({ type }) => <Typography sx={{ color: "#666666", fontSize: "14px" }}>{type}</Typography>,
     },
     {
       Header: "Nom",
       id: "nom",
       width: "200",
       accessor: ({ last_name, first_name }) => (
-        <Text color="#666666" fontSize="14px">
+        <Typography sx={{ color: "#666666", fontSize: "14px" }}>
           {first_name} {last_name}
-        </Text>
+        </Typography>
       ),
     },
     {
@@ -172,9 +119,11 @@ function Users() {
       width: "250",
       accessor: "email",
       Cell: ({ value }) => (
-        <Text color="#666666" fontSize="14px" noOfLines={2}>
+        <Typography
+          sx={{ color: "#666666", fontSize: "14px", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}
+        >
           {value}
-        </Text>
+        </Typography>
       ),
       filter: "fuzzyText",
     },
@@ -182,21 +131,13 @@ function Users() {
       Header: "Téléphone",
       accessor: "phone",
       width: "160",
-      Cell: ({ value }) => (
-        <Text color="#666666" fontSize="14px">
-          {value}
-        </Text>
-      ),
+      Cell: ({ value }) => <Typography sx={{ color: "#666666", fontSize: "14px" }}>{value}</Typography>,
       filter: "text",
     },
     {
       Header: "Créé le",
       accessor: "createdAt",
-      Cell: ({ value }) => (
-        <Text color="#666666" fontSize="14px">
-          {dayjs(value).format("DD/MM/YYYY")}
-        </Text>
-      ),
+      Cell: ({ value }) => <Typography sx={{ color: "#666666", fontSize: "14px" }}>{dayjs(value).format("DD/MM/YYYY")}</Typography>,
       width: "130",
       id: "createdAt",
       sortType: (a, b) => sortReactTableDate(a.original.createdAt, b.original.createdAt),
@@ -205,9 +146,11 @@ function Users() {
       Header: "Origine",
       accessor: "origin",
       Cell: ({ value }) => (
-        <Text color="#666666" fontSize="14px" noOfLines={2}>
+        <Typography
+          sx={{ color: "#666666", fontSize: "14px", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}
+        >
           {value}
-        </Text>
+        </Typography>
       ),
       width: "300",
       id: "origine",
@@ -224,11 +167,9 @@ function Users() {
         establishment_raison_sociale={currentEntreprise?.establishment_raison_sociale}
       />
 
-      <Flex align="center" justify="space-between" mb={12}>
-        <Text fontSize="2rem" fontWeight={700}>
-          Gestion des recruteurs
-        </Text>
-      </Flex>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: fr.spacing("3w") }}>
+        <Typography sx={{ fontSize: "2rem", fontWeight: 700 }}>Gestion des recruteurs</Typography>
+      </Box>
 
       <TabContext value={tabIndex}>
         <Box mx={8} className="fr-tabs">
