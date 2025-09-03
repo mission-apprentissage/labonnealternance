@@ -282,7 +282,7 @@ fileignoreconfig:
 - filename: ui/components/ItemDetail/PartnerJobComponents/PartnerJobDetail.tsx
   checksum: c1ace8f1692bbeec4534c6378b7be72b971462182df401d2c22b92a25b659875
 - filename: ui/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaDetail.tsx
-  checksum: 5d8d24178d6390f4745bcddcaca7e7ea3f8f6af79ef304bb48187a6bea7ccfa1
+  checksum: 01d16b8817fd9a10177340633d61ed096c4484331566f30b4e5b2c8351ae8202
 - filename: ui/components/ItemDetail/TrainingDetail.tsx
   checksum: a681f3f410db93db9fc2640636b70df05fe2d9e3d0879f8afc19f9cd451bae59
 - filename: ui/components/ItemDetail/loadedItemDetail.tsx
