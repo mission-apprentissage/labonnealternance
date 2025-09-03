@@ -15,7 +15,7 @@ const LbaJobTechniques = ({ job }: { job: ILbaItemLbaJobJson }) => {
           if (group !== currentSkillGroup) {
             currentSkillGroup = group
             title = (
-              <Typography component="span" sx={{ ml: 3, fontWeight: 700 }}>
+              <Typography component="span" sx={{ fontWeight: 700 }}>
                 {group}
               </Typography>
             )
@@ -23,7 +23,7 @@ const LbaJobTechniques = ({ job }: { job: ILbaItemLbaJobJson }) => {
           return (
             <div key={idx}>
               {title}
-              <Box sx={{ pl: 6 }}>
+              <Box sx={{ pl: 3 }}>
                 <Typography component="span">&bull; {skill}</Typography>
               </Box>
             </div>
