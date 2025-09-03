@@ -118,7 +118,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
           "type": "Point",
         },
       },
-      "name": null,
+      "name": "ASSEMBLEE NATIONALE",
       "siret": "11000001500013",
       "size": null,
       "website": null,
