@@ -1,7 +1,22 @@
-import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Checkbox, CheckboxGroup } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, Input, Typography, FormControl, FormLabel, FormHelperText, Stack, RadioGroup, FormControlLabel, Radio } from "@mui/material"
+import {
+  Box,
+  Input,
+  Typography,
+  FormControl,
+  FormLabel,
+  FormHelperText,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Select,
+  MenuItem,
+  ListItemText,
+  SelectChangeEvent,
+  OutlinedInput,
+  Checkbox,
+} from "@mui/material"
 import emailMisspelled, { top100 } from "email-misspelled"
 import { Formik, useField } from "formik"
 import { useState } from "react"
@@ -225,52 +240,37 @@ const EmailField = () => {
 const ReasonsField = ({ formik }: { formik: any }) => {
   const [field, meta, helper] = useField("applicantReasons")
   const applicantReasons: EReasonsKey[] = field.value || []
-  const hasApplicantReasonChecked = applicantReasons.length > 0
 
   /**
    * On change on applicant reasons, it updates the state.
    */
-  const onChangeApplicantReasons = (values: EReasonsKey[]) => {
-    helper.setValue(values, true)
+  const onChangeApplicantReasons = (event: SelectChangeEvent<typeof EReasonsKey>) => {
+    const {
+      target: { value },
+    } = event
+    helper.setValue(value, true)
   }
 
   return (
-    <FormControl data-testid="fieldset-reasons">
+    <FormControl data-testid="fieldset-reasons" fullWidth>
       <FormLabel htmlFor="reasons">Quel(s) sujet(s) souhaitez-vous aborder ? *</FormLabel>
-      <Accordion allowToggle borderLeftWidth={1} borderRightWidth={1} width={["100%", "100%", "auto", "auto"]}>
-        <AccordionItem _expanded={{ _last: { borderBottomWidth: "1px" } }} sx={{ _last: { borderBottomWidth: "0" } }}>
-          <h2>
-            <AccordionButton
-              sx={{
-                borderRadius: 0,
-                height: "40px",
-                bg: "grey.200",
-                color: "grey.800",
-                borderBottom: "solid 2px #000",
-              }}
-            >
-              <Box component="span" flex="1" textAlign="left" sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                {RdvReasons.flatMap(({ key, title }) => (applicantReasons.includes(key) ? [title] : [])).join(", ") || "Sélectionner une ou des options"}
-              </Box>
-              <AccordionIcon />
-            </AccordionButton>
-          </h2>
-          <AccordionPanel pb={4}>
-            <CheckboxGroup onChange={onChangeApplicantReasons}>
-              <Stack direction="column" spacing={3} mt={1} ml={1}>
-                {RdvReasons.map(({ key, title }, index) => {
-                  const checked = applicantReasons.includes(key)
-                  return (
-                    <Checkbox key={key} id={`reason-${index}`} size="lg" defaultChecked={checked} value={key}>
-                      {title}
-                    </Checkbox>
-                  )
-                })}
-              </Stack>
-            </CheckboxGroup>
-          </AccordionPanel>
-        </AccordionItem>
-      </Accordion>
+      <Select
+        multiline
+        value={field.value}
+        onChange={onChangeApplicantReasons}
+        renderValue={() => field.value}
+        input={<OutlinedInput label="Tag" className={fr.cx("fr-input")} error={meta.touched && Boolean(meta.error)} />}
+      >
+        {RdvReasons.map(({ key, title }, index) => {
+          const checked = applicantReasons.includes(key)
+          return (
+            <MenuItem key={key} value={title} id={`reason-${index}`}>
+              <Checkbox checked={checked} />
+              <ListItemText primary={title} />
+            </MenuItem>
+          )
+        })}
+      </Select>
       {applicantReasons.includes(EReasonsKey.AUTRE) && (
         <FormControl data-testid="fieldset-applicantMessageToCfa">
           <Input
@@ -286,9 +286,7 @@ const ReasonsField = ({ formik }: { formik: any }) => {
           />
         </FormControl>
       )}
-      <FormControl error={!hasApplicantReasonChecked && meta.touched}>
-        <FormHelperText>Le(s) sujet(s) que je souhaite aborder doit/doivent être renseigné(s).</FormHelperText>
-      </FormControl>
+      <FormHelperText>{meta.touched && meta.error}</FormHelperText>
     </FormControl>
   )
 }
