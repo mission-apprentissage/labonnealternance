@@ -1,16 +1,25 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, ClickAwayListener, Grow, Link, MenuItem, MenuList, Paper, Popper } from "@mui/material"
-import { useEffect, useRef, useState } from "react"
+import { Dispatch, useEffect, useRef, useState } from "react"
 
 export type PopoverMenuAction = {
-  label: string
-  onClick?: () => void
+  label: string | React.JSX.Element
+  onClick?: (any) => void
   link?: string
-  type: "button" | "link"
-}
+  ariaLabel?: string
+  type: "button" | "link" | "externalLink"
+} | null
 
-export const PopoverMenu = ({ actions, title }: { actions: { label: string; onClick?: () => void; link?: string; type: "button" | "link" }[]; title: string }) => {
+export const PopoverMenu = ({
+  actions,
+  title,
+  resetFlagsOnClose,
+}: {
+  actions: PopoverMenuAction[]
+  title: string
+  resetFlagsOnClose?: Dispatch<React.SetStateAction<boolean>>[]
+}) => {
   const [open, setOpen] = useState(false)
   const anchorRef = useRef<HTMLButtonElement>(null)
 
@@ -23,6 +32,9 @@ export const PopoverMenu = ({ actions, title }: { actions: { label: string; onCl
       return
     }
     setOpen(false)
+    if (resetFlagsOnClose?.length) {
+      resetFlagsOnClose.forEach((reset) => reset(false))
+    }
   }
 
   function handleListKeyDown(event: React.KeyboardEvent) {
@@ -67,24 +79,31 @@ export const PopoverMenu = ({ actions, title }: { actions: { label: string; onCl
             <Paper sx={{ border: "1px solid", width: "max-content", minWidth: "200px", maxWidth: "300px" }}>
               <ClickAwayListener onClickAway={handleClose}>
                 <MenuList sx={{ py: 0, mt: "0 !important" }} autoFocusItem={open} id="composition-menu" aria-labelledby="composition-button" onKeyDown={handleListKeyDown}>
-                  {actions.map((action, idx) => (
-                    <MenuItem
-                      key={idx}
-                      onClick={handleClose}
-                      disableGutters
-                      sx={{ py: fr.spacing("1v"), mx: `${fr.spacing("1w")} !important`, mb: `0 !important`, fontSize: "14px !important", minHeight: "24px" }}
-                    >
-                      {action.type === "link" ? (
-                        <Link underline="hover" href={action.link} aria-label={action.label}>
-                          {action.label}
-                        </Link>
-                      ) : (
-                        <Link underline="hover" component="button" onClick={action.onClick}>
-                          {action.label}
-                        </Link>
-                      )}
-                    </MenuItem>
-                  ))}
+                  {actions.map((action, idx) =>
+                    action !== null ? (
+                      <MenuItem
+                        key={idx}
+                        onClick={handleClose}
+                        disableGutters
+                        sx={{ py: fr.spacing("1v"), mx: `${fr.spacing("1w")} !important`, mb: `0 !important`, fontSize: "14px !important", minHeight: "24px" }}
+                      >
+                        {action.type === "link" || action.type === "externalLink" ? (
+                          <Link
+                            underline="hover"
+                            href={action.link}
+                            aria-label={action.ariaLabel || (action.label as string)}
+                            {...(action.type === "externalLink" ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                          >
+                            {action.label}
+                          </Link>
+                        ) : (
+                          <Link underline="hover" component="button" onClick={action.onClick}>
+                            {action.label}
+                          </Link>
+                        )}
+                      </MenuItem>
+                    ) : null
+                  )}
                 </MenuList>
               </ClickAwayListener>
             </Paper>
