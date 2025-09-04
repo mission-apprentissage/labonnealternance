@@ -90,6 +90,7 @@ export const PopoverMenu = ({
                         {action.type === "link" || action.type === "externalLink" ? (
                           <Link
                             underline="hover"
+                            sx={{ width: "100%", textAlign: "left" }}
                             href={action.link}
                             aria-label={action.ariaLabel || (action.label as string)}
                             {...(action.type === "externalLink" ? { target: "_blank", rel: "noopener noreferrer" } : {})}
@@ -97,7 +98,7 @@ export const PopoverMenu = ({
                             {action.label}
                           </Link>
                         ) : (
-                          <Link underline="hover" component="button" onClick={action.onClick}>
+                          <Link underline="hover" component="button" onClick={action.onClick} sx={{ width: "100%", textAlign: "left" }}>
                             {action.label}
                           </Link>
                         )}
