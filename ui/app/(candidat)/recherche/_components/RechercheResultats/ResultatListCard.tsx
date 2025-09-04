@@ -132,8 +132,8 @@ const activeStyle = {
   },
 }
 
-export function ResultCard({ item, active, params }: ResultCardProps) {
-  const itemUrl = useResultItemUrl(item, params)
+export function ResultCard({ item, active, rechercheParams }: ResultCardProps) {
+  const itemUrl = useResultItemUrl(item, rechercheParams)
 
   return (
     <Box sx={active ? activeStyle : null}>
@@ -180,7 +180,7 @@ export function ResultCard({ item, active, params }: ResultCardProps) {
                 className={fr.cx("fr-text--xs")}
               >
                 {getAdresse(item)}
-                {params.geo && item.place.distance != null && (
+                {rechercheParams.geo && item.place.distance != null && (
                   <>
                     <br />
                     <Typography

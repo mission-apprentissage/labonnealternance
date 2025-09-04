@@ -11,7 +11,7 @@ import { ILbaItemFormation2Json, ILbaItemTraining2 } from "shared"
 import { LBA_ITEM_TYPE, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 
 import { RechercheCarte } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
-import { IUseRechercheResultsSuccess, useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
+import { IUseRechercheResults, useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { useBuildNavigation } from "@/app/hooks/useBuildNavigation"
 import { useFormationPrdvTracker } from "@/app/hooks/useFormationPrdvTracker"
@@ -33,6 +33,8 @@ import { SendPlausibleEvent } from "@/utils/plausible"
 import { PAGES } from "@/utils/routes.utils"
 import { formatDate } from "@/utils/strutils"
 
+import { IRecherchePageParams } from "../../../recherche/_utils/recherche.route.utils"
+
 // Read https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/
 const dontBreakOutCssParameters = {
   overflowWrap: "break-word",
@@ -41,8 +43,8 @@ const dontBreakOutCssParameters = {
   hyphens: "auto",
 }
 
-export default function TrainingDetailRendererClient({ training, params }: WithRecherchePageParams<{ training: ILbaItemFormation2Json }>) {
-  const result = useRechercheResults(params)
+export default function TrainingDetailRendererClient({ training, rechercheParams }: { rechercheParams: IRecherchePageParams; training: ILbaItemFormation2Json }) {
+  const result = useRechercheResults(rechercheParams)
 
   const trainingReference = {
     id: training.id,
@@ -51,16 +53,14 @@ export default function TrainingDetailRendererClient({ training, params }: WithR
 
   const { appliedDate, setPrdvDone } = useFormationPrdvTracker(training.id)
 
-  const detailPage = (
-    <TrainingDetailPage selectedItem={training} appliedDate={appliedDate} resultList={result.status === "success" ? result.items : []} params={params} onRdvSuccess={setPrdvDone} />
-  )
+  const detailPage = <TrainingDetailPage selectedItem={training} appliedDate={appliedDate} resultList={result.items} rechercheParams={rechercheParams} onRdvSuccess={setPrdvDone} />
 
-  if (params?.displayMap) {
+  if (rechercheParams?.displayMap) {
     return (
       <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", height: "100vh", overflow: "hidden" }}>
         {detailPage}
         {/* TODO : remove extended search button from map view */}
-        <RechercheCarte item={trainingReference} variant="detail" params={params} />
+        <RechercheCarte item={trainingReference} variant="detail" rechercheParams={rechercheParams} />
       </Box>
     )
   }
@@ -72,12 +72,12 @@ function TrainingDetailPage({
   selectedItem,
   appliedDate,
   resultList,
-  params,
+  rechercheParams,
   onRdvSuccess,
 }: WithRecherchePageParams<{
   selectedItem: ILbaItemFormation2Json
   appliedDate: string | null
-  resultList: IUseRechercheResultsSuccess["items"]
+  resultList: IUseRechercheResults["items"]
   onRdvSuccess: () => void
 }>) {
   const kind: LBA_ITEM_TYPE = selectedItem?.type
@@ -87,8 +87,8 @@ function TrainingDetailPage({
   const currentItem = resultList.find((item) => item.id === selectedItem.id)
 
   const router = useRouter()
-  const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItem, params })
-  const handleClose = () => router.push(PAGES.dynamic.recherche(params).getPath())
+  const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItem, rechercheParams: rechercheParams })
+  const handleClose = () => router.push(PAGES.dynamic.recherche(rechercheParams).getPath())
 
   const contextPRDV = {
     cle_ministere_educatif: selectedItem.id,

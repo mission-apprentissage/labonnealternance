@@ -5,13 +5,15 @@ import { useCallback } from "react"
 
 import { getItemReference, getResultItemUrl, IRecherchePageParams, ItemReferenceLike } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 
-export function useNavigateToResultItemDetail(params: IRecherchePageParams): (item: ItemReferenceLike, newParams?: Partial<IRecherchePageParams>, replace?: boolean) => void {
+export function useNavigateToResultItemDetail(
+  rechercheParams: IRecherchePageParams
+): (item: ItemReferenceLike, newParams?: Partial<IRecherchePageParams>, replace?: boolean) => void {
   const router = useRouter()
 
   const navigateToResultItemDetail = useCallback(
     (item: ItemReferenceLike, newParams: Partial<IRecherchePageParams> = {}, replace: boolean = false) => {
       const url = getResultItemUrl(item, {
-        ...params,
+        ...rechercheParams,
         activeItems: [getItemReference(item)],
         ...newParams,
       })
@@ -22,7 +24,7 @@ export function useNavigateToResultItemDetail(params: IRecherchePageParams): (it
         router.push(url)
       }
     },
-    [params, router]
+    [rechercheParams, router]
   )
 
   return navigateToResultItemDetail

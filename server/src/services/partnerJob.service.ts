@@ -1,10 +1,10 @@
 import { badRequest } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { FRANCE_LATITUDE, FRANCE_LONGITUDE } from "shared/constants/geolocation"
-import { NIVEAUX_POUR_LBA, OPCOS_LABEL, TRAINING_REMOTE_TYPE } from "shared/constants/index"
+import { OPCOS_LABEL, TRAINING_REMOTE_TYPE } from "shared/constants/index"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { ILbaItemPartnerJob, JOB_STATUS_ENGLISH, traductionJobStatus } from "shared/models/index"
-import { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, INiveauDiplomeEuropeen, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
 import { IApiError, manageApiError } from "@/common/utils/errorManager"
 import { roundDistance } from "@/common/utils/geolib"
@@ -185,7 +185,7 @@ export const getPartnerJobs = async ({
   api: string
   opco?: string
   opcoUrl?: string
-  diploma?: string
+  diploma?: INiveauDiplomeEuropeen
   caller?: string | null
   isMinimalData: boolean
   force_partner_label?: JOBPARTNERS_LABEL
@@ -204,7 +204,7 @@ export const getPartnerJobs = async ({
       distance,
       lat: hasLocation ? (latitude as number) : FRANCE_LATITUDE,
       lon: hasLocation ? (longitude as number) : FRANCE_LONGITUDE,
-      niveau: diploma ? NIVEAUX_POUR_LBA[diploma] : undefined,
+      niveau: diploma,
       isMinimalData,
       opco,
     }

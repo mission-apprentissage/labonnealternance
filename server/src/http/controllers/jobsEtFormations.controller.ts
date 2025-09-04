@@ -1,5 +1,6 @@
 import { zRoutes } from "shared"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
+import { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 
 import { trackApiCall } from "../../common/utils/sendTrackingEvent"
 import { getFormationsQuery } from "../../services/formation.service"
@@ -35,7 +36,7 @@ export default (server: Server) => {
         radius,
         insee,
         sources,
-        diploma,
+        diploma: INiveauDiplomeEuropeen.fromParam(diploma),
         opco,
         opcoUrl,
       })
@@ -60,7 +61,7 @@ export default (server: Server) => {
               ...(latitude ? { latitude: latitude } : {}),
               ...(longitude ? { longitude: longitude } : {}),
               radius,
-              diploma,
+              diploma: INiveauDiplomeEuropeen.fromParam(diploma),
               caller,
               options,
               referer,
@@ -78,7 +79,7 @@ export default (server: Server) => {
               radius,
               insee,
               sources,
-              diploma,
+              diploma: INiveauDiplomeEuropeen.fromParam(diploma),
               opco,
               opcoUrl,
               api: "jobEtFormationV1",

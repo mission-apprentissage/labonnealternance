@@ -1,5 +1,8 @@
 import { ReadonlyURLSearchParams } from "next/navigation"
+import { typedKeys } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
+import { NIVEAUX_POUR_LBA } from "shared/constants/recruteur"
+import { zDiplomaParam } from "shared/routes/_params"
 import { z } from "zod"
 
 import { ILbaItem } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
@@ -50,6 +53,11 @@ export function isItemReferenceInList(item: ItemReferenceLike, list: ItemReferen
   return list.some((ref) => areItemReferencesEqual(ref, item))
 }
 
+export enum RechercheViewType {
+  EMPLOI = "EMPLOI",
+  FORMATION = "FORMATION",
+}
+
 const zRecherchePageParams = z.object({
   romes: z.array(z.string()),
   geo: z
@@ -57,10 +65,10 @@ const zRecherchePageParams = z.object({
       address: z.string().nullable(),
       latitude: z.number(),
       longitude: z.number(),
-      radius: z.number(),
     })
     .nullable(),
-  diploma: z.string().nullable(),
+  radius: z.number(),
+  diploma: zDiplomaParam.nullish(),
   job_name: z.string().nullable(),
   job_type: z.string().nullable(),
   displayMap: z.boolean().optional(),
@@ -68,6 +76,7 @@ const zRecherchePageParams = z.object({
   displayFormations: z.boolean().optional(),
   displayPartenariats: z.boolean().optional(),
   displayFilters: z.boolean().optional(),
+  displayMobileForm: z.boolean().optional(),
   activeItems: z
     .object({
       ideaType: z.nativeEnum(LBA_ITEM_TYPE_OLD),
@@ -79,65 +88,93 @@ const zRecherchePageParams = z.object({
   rncp: z.string().nullish(),
 })
 
-export type IRecherchePageParams = Required<z.output<typeof zRecherchePageParams>>
+export type IRecherchePageParams = Required<z.output<typeof zRecherchePageParams>> & { viewType?: RechercheViewType }
 
-export type WithRecherchePageParams<T = object> = T & { params: IRecherchePageParams }
+export type WithRecherchePageParams<T = object> = T & { rechercheParams: IRecherchePageParams }
 
-export type IRechercheMode = "default" | "formations-only" | "jobs-only"
+export enum IRechercheMode {
+  DEFAULT = "default",
+  FORMATIONS_ONLY = "formations-only",
+  JOBS_ONLY = "jobs-only",
+}
 
-export function buildRecherchePageParams(params: Partial<IRecherchePageParams>, mode: IRechercheMode | null): string {
+export function buildRecherchePageParams(rechercheParams: Partial<IRecherchePageParams> | null, mode: IRechercheMode | null): string {
+  if (rechercheParams === null) return ""
   const query = new URLSearchParams()
 
-  if (params?.romes?.length > 0) {
-    query.set("romes", params.romes.join(","))
+  if (rechercheParams?.romes?.length > 0) {
+    query.set("romes", rechercheParams.romes.join(","))
   }
 
-  if (params.geo) {
-    query.set("lat", params.geo.latitude.toString())
-    query.set("lon", params.geo.longitude.toString())
-    query.set("radius", params.geo.radius.toString())
-
-    if (params.geo.address) {
-      query.set("address", params.geo.address)
+  if (rechercheParams.radius !== undefined) {
+    query.set("radius", rechercheParams.radius.toString())
+  }
+  if (rechercheParams.geo) {
+    const { latitude, longitude } = rechercheParams.geo
+    if (latitude !== undefined) {
+      query.set("lat", latitude.toString())
+    }
+    if (longitude !== undefined) {
+      query.set("lon", longitude.toString())
+    }
+    if (rechercheParams.geo.address) {
+      query.set("address", rechercheParams.geo.address)
     }
   }
 
-  if (params.diploma) {
-    query.set("diploma", params.diploma)
+  if (rechercheParams.diploma) {
+    query.set("diploma", rechercheParams.diploma)
   }
-  if (params.job_name) {
-    query.set("job_name", params.job_name)
+  if (rechercheParams.job_name) {
+    query.set("job_name", rechercheParams.job_name)
   }
-  if (params.displayMap === true) {
+  if (rechercheParams.displayMap === true) {
     query.set("displayMap", "true")
   }
-  if (params?.activeItems?.length > 0) {
-    query.set("activeItems", serializeItemReferences(params.activeItems))
+  if (rechercheParams?.activeItems?.length > 0) {
+    query.set("activeItems", serializeItemReferences(rechercheParams.activeItems))
   }
-  if (params?.opco) {
-    query.set("opco", params.opco)
+  if (rechercheParams?.opco) {
+    query.set("opco", rechercheParams.opco)
   }
-  if (params?.rncp) {
-    query.set("rncp", params.rncp)
+  if (rechercheParams?.rncp) {
+    query.set("rncp", rechercheParams.rncp)
   }
 
   // In mode formations-only & jobs-only theses params cannot be modified
-  if (mode === "default") {
-    if (params.displayEntreprises === false) {
+  if (mode === IRechercheMode.DEFAULT) {
+    if (rechercheParams.displayEntreprises === false) {
       query.set("displayEntreprises", "false")
     }
-    if (params.displayFormations === false) {
+    if (rechercheParams.displayFormations === false) {
       query.set("displayFormations", "false")
     }
-    if (params.displayPartenariats === false) {
+    if (rechercheParams.displayPartenariats === false) {
       query.set("displayPartenariats", "false")
     }
-    if (params.displayFilters === false) {
+    if (rechercheParams.displayFilters === false) {
       query.set("displayFilters", "false")
     }
   }
 
+  if (rechercheParams.displayMobileForm === true) {
+    query.set("displayMobileForm", "true")
+  }
+
   return query.toString()
+}
+
+export function buildSearchTitle(rechercheParams: Partial<IRecherchePageParams> | null) {
+  let searchTitleContext = ""
+  if (rechercheParams?.job_name) {
+    searchTitleContext += ` - ${rechercheParams.job_name}`
+    if (rechercheParams?.geo?.address) {
+      searchTitleContext += ` à ${rechercheParams.geo.address}`
+    } else if (rechercheParams?.geo == null) {
+      searchTitleContext += ` sur la France entière `
+    }
+  }
+  return searchTitleContext
 }
 
 export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSearchParams | null, mode: IRechercheMode): IRecherchePageParams | null {
@@ -157,11 +194,11 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
           address: search.get("address") ?? null,
           latitude: parseFloat(rawLat),
           longitude: parseFloat(rawLon),
-          radius: parseInt(search.get("radius") ?? "30"),
         }
       : null
 
-  const diploma = search.get("diploma") || null
+  const radius = parseInt(search.get("radius") ?? "30", 10)
+  const diploma = typedKeys(NIVEAUX_POUR_LBA).find((x) => x === search.get("diploma")) || null
   const job_name = search.get("job_name") || null
   const job_type = search.get("job_type") || null
 
@@ -170,17 +207,25 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
   const opco = search.get("opco") || null
   const rncp = search.get("rncp") || null
 
-  if (mode === "formations-only") {
+  const displayMobileForm = search.get("displayMobileForm") === "true"
+
+  const commonProps = {
+    romes,
+    geo,
+    diploma,
+    job_name,
+    job_type,
+    displayMap,
+    displayMobileForm,
+    activeItems,
+    opco,
+    rncp,
+    radius,
+  }
+
+  if (mode === IRechercheMode.FORMATIONS_ONLY) {
     return {
-      romes,
-      geo,
-      diploma,
-      job_name,
-      job_type,
-      displayMap,
-      activeItems,
-      opco,
-      rncp,
+      ...commonProps,
       displayEntreprises: false,
       displayFormations: true,
       displayPartenariats: false,
@@ -188,21 +233,13 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
     }
   }
 
-  if (mode === "jobs-only") {
+  if (mode === IRechercheMode.JOBS_ONLY) {
     return {
-      romes,
-      geo,
-      diploma,
-      job_name,
-      job_type,
-      displayMap,
-      activeItems,
+      ...commonProps,
       displayEntreprises: true,
       displayFormations: false,
       displayPartenariats: true,
       displayFilters: false,
-      opco,
-      rncp,
     }
   }
 
@@ -211,23 +248,29 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
   const displayPartenariats = search.get("displayPartenariats") !== "false"
   const displayFilters = search.get("displayFilters") !== "false"
 
-  return { romes, geo, diploma, job_name, job_type, activeItems, displayMap, displayEntreprises, displayFormations, displayPartenariats, displayFilters, opco, rncp }
+  return {
+    ...commonProps,
+    displayEntreprises,
+    displayFormations,
+    displayPartenariats,
+    displayFilters,
+  }
 }
 
-export function detectModeFromParams(params: IRecherchePageParams): IRechercheMode {
-  if (params.displayFilters) {
-    return "default"
+export function detectModeFromParams({ displayFilters, displayEntreprises, displayPartenariats, displayFormations }: IRecherchePageParams): IRechercheMode {
+  if (displayFilters) {
+    return IRechercheMode.DEFAULT
   }
 
-  if (!params.displayEntreprises && !params.displayPartenariats && params.displayFormations) {
-    return "formations-only"
+  if (!displayEntreprises && !displayPartenariats && displayFormations) {
+    return IRechercheMode.FORMATIONS_ONLY
   }
 
-  if (params.displayEntreprises && params.displayPartenariats && !params.displayFormations) {
-    return "jobs-only"
+  if (displayEntreprises && displayPartenariats && !displayFormations) {
+    return IRechercheMode.JOBS_ONLY
   }
 
-  return "default"
+  return IRechercheMode.DEFAULT
 }
 
 export function getResultItemUrl(item: ItemReferenceLike, searchParams: Partial<IRecherchePageParams> = {}): string {
