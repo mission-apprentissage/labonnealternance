@@ -1,6 +1,6 @@
 "use client"
 
-import { Box, Button as ChakraButton, Container, Flex, Heading, Icon, Image, Menu, MenuButton, MenuItem, MenuList, Stack, Text, useToast } from "@chakra-ui/react"
+import { Box, Container, Flex, Heading, Image, Stack, Text, useToast } from "@chakra-ui/react"
 import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Link } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
@@ -10,13 +10,13 @@ import { useEffect, useState } from "react"
 import { IRecruiter, IRecruiterJson } from "shared"
 
 import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
+import { CfaHomeEntrepriseMenu } from "@/app/(espace-pro)/espace-pro/(connected)/_components/CfaHomeEntrepriseMenu"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
 import { AnimationContainer, LoadingEmptySpace } from "@/components/espace_pro"
 import { ConfirmationSuppressionEntreprise } from "@/components/espace_pro/ConfirmationSuppressionEntreprise"
-import { Parametre } from "@/theme/components/icons"
 import { getEntreprisesManagedByCfa } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
@@ -81,38 +81,7 @@ function ListeEntreprise() {
       maxWidth: "40",
       disableSortBy: true,
       accessor: (row: IRecruiterJson) => {
-        return (
-          <Box>
-            <Menu>
-              {({ isOpen }) => (
-                <>
-                  <MenuButton isActive={isOpen} as={ChakraButton} variant="navdot">
-                    <Icon as={Parametre} color="bluefrance.500" />
-                  </MenuButton>
-                  <MenuList>
-                    <MenuItem>
-                      <Link underline="hover" href={PAGES.dynamic.backCfaPageEntreprise(row.establishment_id).getPath()}>
-                        Voir les offres
-                      </Link>
-                    </MenuItem>
-                    <MenuItem>
-                      <Link
-                        underline="hover"
-                        component="button"
-                        onClick={() => {
-                          confirmationSuppression.onOpen()
-                          setCurrentEntreprise(row)
-                        }}
-                      >
-                        Supprimer l'entreprise
-                      </Link>
-                    </MenuItem>
-                  </MenuList>
-                </>
-              )}
-            </Menu>
-          </Box>
-        )
+        return <CfaHomeEntrepriseMenu row={row} confirmationSuppression={confirmationSuppression} setCurrentEntreprise={setCurrentEntreprise} />
       },
     },
     {
