@@ -178,16 +178,16 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
             linkLabelNotReported="Signaler l’entreprise"
             linkLabelReported="Entreprise signalée"
             tooltip={
-              <Box>
+              <Box sx={{ p: 1 }}>
                 <Typography fontSize="16px" lineHeight="24px" fontWeight="700" marginBottom="8px" color="#161616">
                   Cette entreprise vous semble peu recommandable ? Voici les raisons pour lesquelles vous pouvez nous signaler une entreprise :
                 </Typography>
-                <List sx={{ color: "#383838", fontSize: "16px", lineHeight: "24px", listStyleType: "disc", "& .MuiListItem-root": { display: "list-item" } }}>
-                  <ListItem>Informations trompeuses ou fausses</ListItem>
-                  <ListItem>Non-respect des lois du travail </ListItem>
-                  <ListItem>Fraude ou arnaque</ListItem>
-                  <ListItem>Comportement inapproprié ou abusif </ListItem>
-                </List>
+                <ul>
+                  <li>Informations trompeuses ou fausses</li>
+                  <li>Non-respect des lois du travail </li>
+                  <li>Fraude ou arnaque</li>
+                  <li>Comportement inapproprié ou abusif </li>
+                </ul>
               </Box>
             }
           />

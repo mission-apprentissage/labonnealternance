@@ -1,6 +1,6 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Stack, Typography, List, ListItem, Link } from "@mui/material"
+import { Box, Stack, Typography, Link } from "@mui/material"
 import Image from "next/image"
 import React, { useEffect } from "react"
 import { IJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
@@ -108,16 +108,16 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
             linkLabelNotReported="Signaler l'offre"
             linkLabelReported="Offre signalée"
             tooltip={
-              <Box>
+              <Box sx={{ p: 1 }}>
                 <Typography sx={{ fontSize: "16px", lineHeight: "24px", fontWeight: 700, marginBottom: "8px", color: "#161616" }}>
                   Cette offre vous semble inappropriée ? Voici les raisons pour lesquelles vous pouvez nous signaler une offre :
                 </Typography>
-                <List sx={{ color: "#383838", fontSize: "16px", lineHeight: "24px", listStyleType: "disc", pl: 2 }}>
-                  <ListItem sx={{ display: "list-item" }}>Offre offensante ou discriminatoire</ListItem>
-                  <ListItem sx={{ display: "list-item" }}>Offre inexacte ou expirée</ListItem>
-                  <ListItem sx={{ display: "list-item" }}>Fausse offre provenant d'un centre de formation</ListItem>
-                  <ListItem sx={{ display: "list-item" }}>Tentative d'escroquerie</ListItem>
-                </List>
+                <ul>
+                  <li>Offre offensante ou discriminatoire</li>
+                  <li>Offre inexacte ou expirée</li>
+                  <li>Fausse offre provenant d'un centre de formation</li>
+                  <li>Tentative d'escroquerie</li>
+                </ul>
               </Box>
             }
           />

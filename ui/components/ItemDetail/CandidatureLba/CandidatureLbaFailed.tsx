@@ -1,4 +1,4 @@
-import { Box, Container, Typography } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import React from "react"
 
@@ -74,7 +74,7 @@ const CandidatureLbaFailed = ({ error }: { error: string }) => {
   const { dataTestId, title, text } = errorData
 
   return (
-    <Container data-testid="CandidatureSpontaneeFailed">
+    <Box sx={{ p: 1 }}>
       <Typography variant="h1" sx={{ mb: 5, fontSize: "1.5rem", fontWeight: 700 }}>
         Erreur
       </Typography>
@@ -85,7 +85,7 @@ const CandidatureLbaFailed = ({ error }: { error: string }) => {
         </Typography>
       </Box>
       <Box sx={{ mt: 5, mb: 8, fontSize: "18px" }}>{text}</Box>
-    </Container>
+    </Box>
   )
 }
 

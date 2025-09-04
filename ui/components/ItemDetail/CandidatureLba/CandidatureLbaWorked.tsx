@@ -1,4 +1,4 @@
-import { Box, Container, Typography } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import React from "react"
 
@@ -9,10 +9,10 @@ interface Props {
 
 const CandidatureLbaWorked = ({ email, company }: Props) => {
   return (
-    <Container data-testid="CandidatureSpontaneeWorked" sx={{ mx: { xs: 6, sm: 8 } }}>
+    <Box sx={{ p: 1 }}>
       <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", my: 4 }}>
         <Image src="/images/paperplane2.svg" aria-hidden={true} alt="" width={48} height={48} />
-        <Box sx={{ pl: 4, ml: 4 }}>
+        <Box sx={{ ml: 2 }}>
           <Typography data-testid="application-success" variant="h2" sx={{ fontSize: "20px", fontWeight: 700 }}>
             Votre candidature a bien été envoyée à{" "}
             <Typography component="span" sx={{ fontSize: "22px" }}>
@@ -27,10 +27,10 @@ const CandidatureLbaWorked = ({ email, company }: Props) => {
           {email}
         </Typography>
       </Typography>
-      <Typography sx={{ fontSize: "18px", mt: 4, mb: 12 }}>
+      <Typography sx={{ fontSize: "18px", mt: 4, mb: 4 }}>
         Si vous n&apos;avez pas reçu d&apos;email de confirmation d&apos;ici 24 heures, soumettez à nouveau votre candidature
       </Typography>
-    </Container>
+    </Box>
   )
 }
 

@@ -1,5 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Typography } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import { useState } from "react"
 
 import { useDisclosure } from "@/common/hooks/useDisclosure"
@@ -46,7 +46,7 @@ const DemandeDeContactBody = ({
   }
 
   return (
-    <div>
+    <Box sx={{ p: 1 }}>
       {confirmation ? (
         <DemandeDeContactConfirmation {...confirmation} />
       ) : (
@@ -57,6 +57,6 @@ const DemandeDeContactBody = ({
           <DemandeDeContactForm context={context} onRdvSuccess={localOnSuccess} referrer={referrer} />
         </>
       )}
-    </div>
+    </Box>
   )
 }

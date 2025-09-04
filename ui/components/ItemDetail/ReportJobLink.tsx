@@ -101,7 +101,7 @@ export const ReportJobLink = ({
         {storedValue ? (
           <ReportedAcknowledgement />
         ) : (
-          <>
+          <Box sx={{ p: 1 }}>
             <Typography variant="h1" sx={{ fontSize: "24px", fontWeight: 700 }}>
               {content.title}
             </Typography>
@@ -160,7 +160,7 @@ export const ReportJobLink = ({
                 )
               }}
             </Formik>
-          </>
+          </Box>
         )}
       </ModalReadOnly>
     </Stack>

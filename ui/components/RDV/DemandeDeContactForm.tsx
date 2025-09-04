@@ -274,19 +274,22 @@ const ReasonsField = ({ formik }: { formik: any }) => {
         })}
       </Select>
       {applicantReasons.includes(EReasonsKey.AUTRE) && (
-        <FormControl data-testid="fieldset-applicantMessageToCfa">
-          <Input
-            id="applicantMessageToCfa"
-            data-testid="applicantMessageToCfa"
-            name="applicantMessageToCfa"
-            type="text"
-            fullWidth
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.applicantMessageToCfa}
-            className={fr.cx("fr-input")}
-          />
-        </FormControl>
+        <Box sx={{ mt: fr.spacing("2w") }}>
+          <FormControl data-testid="fieldset-applicantMessageToCfa" fullWidth>
+            <FormLabel htmlFor="reasons">Quel(s) sujet(s) souhaitez-vous aborder ?</FormLabel>
+            <Input
+              id="applicantMessageToCfa"
+              data-testid="applicantMessageToCfa"
+              name="applicantMessageToCfa"
+              type="text"
+              fullWidth
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.applicantMessageToCfa}
+              className={fr.cx("fr-input")}
+            />
+          </FormControl>
+        </Box>
       )}
       <FormHelperText>{meta.touched && meta.error}</FormHelperText>
     </FormControl>
