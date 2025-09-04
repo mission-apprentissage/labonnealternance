@@ -19,18 +19,20 @@ export function RechercheHeader(props: { rechercheParams: IRecherchePageParams }
       sx={{
         boxShadow: {
           xs: 0,
-          md: 2,
+          md: 0,
+          lg: 2,
         },
         backgroundColor: {
           xs: fr.colors.decisions.background.alt.grey.default,
-          md: fr.colors.decisions.background.default.grey.default,
+          md: fr.colors.decisions.background.alt.grey.default,
+          lg: fr.colors.decisions.background.default.grey.default,
         },
         zIndex: 5,
       }}
     >
       <Box
         sx={{
-          padding: fr.spacing("3v"),
+          padding: fr.spacing("2w"),
           maxWidth: "xl",
           margin: "auto",
           display: "flex",
@@ -55,7 +57,8 @@ export function RechercheHeader(props: { rechercheParams: IRecherchePageParams }
             sx={{
               display: {
                 xs: "none",
-                md: "block",
+                md: "none",
+                lg: "block",
               },
             }}
           >
@@ -65,23 +68,18 @@ export function RechercheHeader(props: { rechercheParams: IRecherchePageParams }
             sx={{
               display: {
                 xs: "flex",
-                md: "none",
-                justifyContent: "flex-end",
+                md: "flex",
+                lg: "none",
               },
+              justifyContent: "flex-end",
             }}
           >
-            <ModifierRechercheButton onClick={() => navigateToRecherchePage({ displayMobileForm: true }, true)} />
+            <Button iconId="fr-icon-search-line" priority="secondary" onClick={() => navigateToRecherchePage({ displayMobileForm: true }, true)}>
+              Modifier la recherche
+            </Button>
           </Box>
         </Box>
       </Box>
     </Box>
-  )
-}
-
-function ModifierRechercheButton({ onClick }: { onClick: () => void }) {
-  return (
-    <Button iconId="fr-icon-search-line" priority="secondary" onClick={onClick}>
-      Modifier la recherche
-    </Button>
   )
 }

@@ -121,10 +121,11 @@ function getItemCounts(rechercheResults: IUseRechercheResults) {
     formationQuery,
     formationQuery: { formations },
     jobQuery,
-    jobs,
+    jobQuery: { lbaCompanies, lbaJobs, partnerJobs },
   } = rechercheResults
+  const jobTotal = lbaCompanies.length + lbaJobs.length + partnerJobs.length
   const result = {
-    [UserItemTypes.EMPLOI]: jobQuery.status === "success" ? jobs.length : undefined,
+    [UserItemTypes.EMPLOI]: jobQuery.status === "success" ? jobTotal : undefined,
     [UserItemTypes.FORMATIONS]: formationQuery.status === "success" ? formations.length : undefined,
   }
   return result

@@ -252,6 +252,7 @@ export const zV1JobsRoutes = {
           insee: zInseeParams,
           diploma: zDiplomaParam,
           opco: zOpcoParams,
+          elligibleHandicapFilter: z.enum(["true", "false"]).optional(),
         })
         .strict()
         .passthrough(),

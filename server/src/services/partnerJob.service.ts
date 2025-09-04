@@ -78,6 +78,7 @@ function transformPartnerJob(
       opco: { label: partnerJob.workplace_opco, url: null },
       url: partnerJob.workplace_website,
       mandataire: partnerJob.is_delegated,
+      elligibleHandicap: partnerJob.contract_is_disabled_elligible ?? null,
     },
     job: {
       id: partnerJob.partner_job_id,
@@ -145,9 +146,11 @@ function transformPartnerJobWithMinimalData(partnerJob: IJobsPartnersOfferPrivat
       name: (partnerJob.is_delegated ? partnerJob.cfa_legal_name : (partnerJob.workplace_name ?? partnerJob.workplace_brand ?? partnerJob.workplace_legal_name)) ?? UNKNOWN_COMPANY,
       opco: { label: partnerJob.workplace_opco, url: null },
       mandataire: partnerJob.is_delegated,
+      elligibleHandicap: partnerJob.contract_is_disabled_elligible ?? null,
     },
     job: {
       creationDate: partnerJob.offer_creation ? new Date(partnerJob.offer_creation) : null,
+      elligibleHandicap: partnerJob.contract_is_disabled_elligible ?? null,
     },
     // KBA 20250131 Quick fix, to remove once return type LBA_ITEM is merge when all jobs comes only from JOBS_PARTNERS COLLECTION
     token: "",
@@ -177,6 +180,7 @@ export const getPartnerJobs = async ({
   caller,
   isMinimalData,
   force_partner_label,
+  elligibleHandicapFilter,
 }: {
   romes?: string
   radius?: number
@@ -189,6 +193,7 @@ export const getPartnerJobs = async ({
   caller?: string | null
   isMinimalData: boolean
   force_partner_label?: JOBPARTNERS_LABEL
+  elligibleHandicapFilter?: boolean
 }) => {
   if (radius === 0) {
     radius = 10
@@ -219,6 +224,7 @@ export const getPartnerJobs = async ({
       romes: params.romes,
       rncp: null,
       opco: opcoParam,
+      elligibleHandicapFilter: elligibleHandicapFilter ?? false,
     })
 
     const rawPartnerJobs = await getJobsPartnersFromDBForUI({ ...resolvedQuery, force_partner_label })

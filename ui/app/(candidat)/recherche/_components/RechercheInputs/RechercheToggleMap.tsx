@@ -6,6 +6,7 @@ export const RechercheToggleMap = ({ onChange, checked }: { checked: boolean; on
     <Box
       sx={{
         display: "flex",
+        minWidth: "182px",
       }}
     >
       <ToggleSwitch

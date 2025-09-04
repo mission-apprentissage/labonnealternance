@@ -8,12 +8,7 @@ import { ILbaItem } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { useResultItemUrl } from "@/app/(candidat)/recherche/_hooks/useResultItemUrl"
 import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import ItemDetailApplicationsStatus from "@/components/ItemDetail/ItemDetailServices/ItemDetailApplicationStatus"
-import TagCandidatureSpontanee from "@/components/ItemDetail/TagCandidatureSpontanee"
-import TagCfaDEntreprise from "@/components/ItemDetail/TagCfaDEntreprise"
-import TagFormation from "@/components/ItemDetail/TagFormation"
-import TagFormationAssociee from "@/components/ItemDetail/TagFormationAssociee"
-import TagOffreEmploi from "@/components/ItemDetail/TagOffreEmploi"
-import { isCfaEntreprise } from "@/services/cfaEntreprise"
+import { LbaItemTags } from "@/components/ItemDetail/ItemDetailServices/LbaItemTags"
 import { getDaysSinceDate } from "@/utils/dateUtils"
 
 type ResultCardProps = WithRecherchePageParams<{
@@ -31,25 +26,6 @@ function getTitle(item: ILbaItem) {
   }
 
   return item.title
-}
-
-function ItemTag(props: Pick<ResultCardProps, "item">) {
-  if (props.item.ideaType === LBA_ITEM_TYPE_OLD.LBA || props.item.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    return <TagCandidatureSpontanee />
-  }
-
-  if (props.item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION) {
-    const isCfa = isCfaEntreprise(props.item?.company?.siret, props.item?.company?.headquarter?.siret)
-
-    return isCfa ? <TagCfaDEntreprise /> : <TagFormation />
-  }
-
-  return (
-    <>
-      <TagOffreEmploi />
-      <TagFormationAssociee isMandataire={props.item.company?.mandataire} />
-    </>
-  )
 }
 
 function ItemCompanyName({ item }: Pick<ResultCardProps, "item">) {
@@ -148,7 +124,7 @@ export function ResultCard({ item, active, rechercheParams }: ResultCardProps) {
             href: itemUrl,
             prefetch: false,
           }}
-          start={<ItemTag item={item} />}
+          start={<LbaItemTags item={item} />}
           title={
             <Typography
               component="span"

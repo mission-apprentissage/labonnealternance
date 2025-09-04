@@ -234,7 +234,7 @@ fileignoreconfig:
 - filename: ui/app/(espace-pro)/_components/OffresGratuites.tsx
   checksum: a81881696ad47f4efd1e7956f1972f0425cce0b07dba4afbcc7c088fb5edd90d
 - filename: ui/app/(home)/faq/page.tsx
-  checksum: e4b3904897fb67afd63187ff382138e9d60b9ca0395385eb2afd6a822696b804
+  checksum: 9ffb966754ed1d21f8fb933e48bab51024b9d4c11218caf1c5a1e17e474a4d4d
 - filename: ui/app/(home)/mentions-legales/page.tsx
   checksum: 4740029daff0308bfa65289c4eb5be61834c0c8c5d00bdcab0b1662f28c8a0e6
 - filename: ui/app/(home)/politique-de-confidentialite/page.tsx

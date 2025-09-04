@@ -5,6 +5,7 @@ import { ILbaItemLbaCompanyJson, ILbaItemNaf } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { LbaJobEngagement } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagement"
 import { scrollToNestedElement } from "@/utils/tools"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
@@ -38,8 +39,8 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
   }
 
   return (
-    <>
-      <Box mt={6} mb={4} position="relative" background="white" pt={4} pb={6} px={6} maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
+    <Box maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
+      <Box mt={6} mb={4} position="relative" background="white" pt={4} pb={6} px={6}>
         <Text mb={6} color="bluefrance.500" fontSize="22px" fontWeight={700} as="h2">
           Qu’est ce qu’une candidature spontanée ?
         </Text>
@@ -56,8 +57,9 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
           </Box>
         </Flex>
       </Box>
+      <LbaJobEngagement />
 
-      <Box mt={6} mb={4} position="relative" background="white" pt={4} pb={6} px={6} maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
+      <Box mt={6} mb={4} position="relative" background="white" pt={4} pb={6} px={6}>
         <Text mb={6} color="bluefrance.500" fontSize="22px" fontWeight={700} as="h2">
           Comment candidater ?
         </Text>
@@ -238,7 +240,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
           />
         </Box>
       </Box>
-    </>
+    </Box>
   )
 }
 export default RecruteurLbaDetail
