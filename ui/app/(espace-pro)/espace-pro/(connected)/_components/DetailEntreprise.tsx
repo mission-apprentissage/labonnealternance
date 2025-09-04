@@ -1,8 +1,8 @@
 "use client"
-import { Box, Flex, Heading, SimpleGrid, Spinner, Stack, Text, useToast } from "@chakra-ui/react"
+import { Heading, SimpleGrid, Spinner, Stack, Text, useToast } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
-import { Alert } from "@mui/material"
+import { Alert, Box } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/navigation"
@@ -121,24 +121,24 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
     <AnimationContainer>
       <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={userRecruteur} onUpdate={() => onChange?.({})} />
 
-      <Box borderBottom="1px solid #E3E3FD" mb={10}>
+      <Box sx={{ borderBottom: "1px solid #E3E3FD", mb: fr.spacing("5w") }}>
         {user.type !== "CFA" && (
           <>
             <Heading fontSize="32px" noOfLines={2}>
               {establishmentLabel}
             </Heading>
-            <Flex align="center" justify="space-between" mb={5}>
-              <Flex align="center" justify="flex-start" maxW="50%">
-                <Box ml={5}>{getUserBadge(lastUserState)}</Box>
-              </Flex>
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: fr.spacing("5v") }}>
+              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-start", maxW: "50%" }}>
+                <Box sx={{ ml: fr.spacing("5v") }}>{getUserBadge(lastUserState)}</Box>
+              </Box>
               <Stack direction={["column", "column", "column", "row"]} spacing="10px">
                 {getActionButtons(lastUserState, userRecruteur._id)}
               </Stack>
-            </Flex>
+            </Box>
           </>
         )}
         {user.type === "CFA" && (
-          <Flex mb={5} justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
+          <Box sx={{ mb: fr.spacing("5v"), display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: fr.spacing("2v") }}>
             <Heading fontSize="32px" mx={0} noOfLines={2}>
               {establishmentLabel}
             </Heading>
@@ -146,7 +146,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
             <Button priority="secondary" type="button" onClick={() => router.push(PAGES.dynamic.backCfaPageEntreprise(userRecruteur.establishment_id).getPath())}>
               Fermer
             </Button>
-          </Flex>
+          </Box>
         )}
       </Box>
       <Formik
@@ -218,11 +218,11 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                           {userMutation.error + ""}
                         </Alert>
                       )}
-                      <Flex justify="flex-end" my={5}>
+                      <Box sx={{ display: "flex", justifyContent: "flex-end", my: fr.spacing("5v") }}>
                         <Button type="submit" disabled={!isValid || isSubmitting}>
                           {isSubmitting ? <Spinner mr={2} /> : <ArrowRightLine mr={2} />}Enregistrer
                         </Button>
-                      </Flex>
+                      </Box>
                     </Form>
                   </Box>
                 </Box>

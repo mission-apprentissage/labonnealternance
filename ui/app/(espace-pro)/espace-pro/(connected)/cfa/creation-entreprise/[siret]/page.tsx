@@ -1,7 +1,9 @@
 "use client"
 
-import { Box, Flex, Grid, GridItem, Heading, Spinner, Text, useToast } from "@chakra-ui/react"
+import { Grid, GridItem, Heading, Spinner, Text, useToast } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
+import { Box } from "@mui/material"
 import { Form, Formik } from "formik"
 import { useParams, useRouter } from "next/navigation"
 import { ENTREPRISE } from "shared/constants/recruteur"
@@ -65,8 +67,8 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
             <CustomInput required={false} name="first_name" label="Prénom" type="text" value={informationForm.values.first_name} />
             <CustomInput required={false} name="phone" label="Numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={informationForm.values.phone} />
             <CustomInput required={false} name="email" label="Email" type="email" value={informationForm.values.email} />
-            <Flex justifyContent="flex-end" alignItems="center" mt={5}>
-              <Box mr={5}>
+            <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", mt: fr.spacing("5v") }}>
+              <Box sx={{ mr: fr.spacing("5v") }}>
                 <Button type="button" priority="secondary" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
                   Annuler
                 </Button>
@@ -74,7 +76,7 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
               <Button type="submit" disabled={!informationForm.isValid || informationForm.isSubmitting}>
                 {informationForm.isSubmitting ? <Spinner mr={2} /> : <ArrowRightLine width={5} mr={2} />}Suivant
               </Button>
-            </Flex>
+            </Box>
           </Form>
         )
       }}
@@ -88,7 +90,7 @@ function CreationEntrepriseDetail({ siret }: { siret: string }) {
       <Breadcrumb pages={[PAGES.static.backCfaHome, PAGES.static.backCfaCreationEntreprise, PAGES.dynamic.backCfaEntrepriseCreationDetail(siret)]} />
       <Grid templateRows={["1fr", ".5fr 2fr"]} templateColumns={["1fr", "4fr 5fr"]} gap={6}>
         <GridItem>
-          <Heading>Informations de contact</Heading>
+          <Heading>Informations de contact ddd</Heading>
           <Text fontSize="20px" textAlign="justify" mt={2}>
             Il s’agit des informations de contact de votre entreprise partenaire. Ces informations ne seront pas visibles sur l’offre.
           </Text>
