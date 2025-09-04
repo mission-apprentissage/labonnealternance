@@ -39,8 +39,10 @@ export type IUseRechercheResults = {
   status: QueryStatus
   jobQuery: IUseRechercheResultsJobs
   formationQuery: IUseRechercheResultsFormations
-  items: ILbaItem[]
-  jobs: Array<ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson | ILbaItemLbaJobJson>
+  displayedJobs: Array<ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson | ILbaItemLbaJobJson>
+  displayedFormations: Array<ILbaItemFormationJson>
+  displayedItems: Array<ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson | ILbaItemLbaJobJson | ILbaItemFormationJson>
+  elligibleHandicapCount: number
 }
 
 const statusPriorities: QueryStatus[] = ["error", "loading", "success", "disabled"]
@@ -76,65 +78,42 @@ function isPartialJobError(data?: IResponse<IGetRoutes["/v1/_private/jobs/min"]>
   return errors.some(Boolean)
 }
 
-export function useRechercheResults(rechercheParams: IRecherchePageParams | null): IUseRechercheResults {
-  const jobQuerystring = useMemo((): IQuery<IGetRoutes["/v1/_private/jobs/min"]> => {
-    const query: IQuery<IGetRoutes["/v1/_private/jobs/min"]> = {
-      romes: rechercheParams.romes.join(","),
-    }
+function rechercheParamsToJobQueryString(rechercheParams: IRecherchePageParams | null): IQuery<IGetRoutes["/v1/_private/jobs/min"]> {
+  if (!rechercheParams) return {}
 
-    if (rechercheParams.geo) {
-      query.longitude = rechercheParams.geo.longitude
-      query.latitude = rechercheParams.geo.latitude
-      query.radius = rechercheParams.radius
-    }
+  const query: IQuery<IGetRoutes["/v1/_private/jobs/min"]> = {
+    romes: rechercheParams.romes.join(","),
+  }
 
-    if (rechercheParams.diploma) {
-      query.diploma = rechercheParams.diploma
-    }
+  if (rechercheParams.geo) {
+    query.longitude = rechercheParams.geo.longitude
+    query.latitude = rechercheParams.geo.latitude
+    query.radius = rechercheParams.radius
+  }
 
-    if (rechercheParams.opco) {
-      query.opco = rechercheParams.opco
-    }
+  if (rechercheParams.diploma) {
+    query.diploma = rechercheParams.diploma
+  }
 
-    if (rechercheParams.rncp) {
-      query.rncp = rechercheParams.rncp
-    }
-    if (rechercheParams.elligibleHandicapFilter) {
-      query.elligibleHandicapFilter = "true"
-    }
-    return query
+  if (rechercheParams.opco) {
+    query.opco = rechercheParams.opco
+  }
+
+  if (rechercheParams.rncp) {
+    query.rncp = rechercheParams.rncp
+  }
+  if (rechercheParams.elligibleHandicapFilter) {
+    query.elligibleHandicapFilter = "true"
+  }
+  return query
+}
+
+function useJobQuery(rechercheParams: IRecherchePageParams | null) {
+  const { isJobsEnabled, queryString: jobQuerystring } = useMemo(() => {
+    const queryString = rechercheParamsToJobQueryString(rechercheParams)
+    const isJobsEnabled = Boolean((queryString.romes.length > 0 || queryString.rncp) && (rechercheParams.displayEntreprises || rechercheParams.displayPartenariats))
+    return { isJobsEnabled, queryString }
   }, [rechercheParams])
-
-  const formationQuerystring = useMemo((): IQuery<IGetRoutes["/v1/_private/formations/min"]> => {
-    const query: IQuery<IGetRoutes["/v1/_private/formations/min"]> = {
-      romes: rechercheParams.romes.join(","),
-    }
-
-    if (rechercheParams.geo) {
-      query.longitude = rechercheParams.geo.longitude
-      query.latitude = rechercheParams.geo.latitude
-      query.radius = rechercheParams.radius
-    }
-
-    if (rechercheParams.diploma) {
-      query.diploma = rechercheParams.diploma
-    }
-
-    return query
-  }, [rechercheParams])
-
-  const isFormationEnabled = Boolean(formationQuerystring.romes.length > 0 && rechercheParams.displayFormations)
-  const isJobsEnabled = Boolean((jobQuerystring.romes.length > 0 || jobQuerystring.rncp) && (rechercheParams.displayEntreprises || rechercheParams.displayPartenariats))
-
-  const formationQuery = useQuery<Jsonify<ILbaItemFormation>[]>({
-    queryKey: ["/v1/_private/formations/min", formationQuerystring],
-    queryFn: async ({ signal }) => {
-      return apiGet("/v1/_private/formations/min", { querystring: formationQuerystring }, { signal, priority: "high" })
-    },
-    enabled: isFormationEnabled,
-    throwOnError: false,
-    staleTime: 1000 * 60 * 60,
-  })
 
   const jobQuery = useQuery({
     queryKey: ["/v1/_private/jobs/min", jobQuerystring],
@@ -206,6 +185,39 @@ export function useRechercheResults(rechercheParams: IRecherchePageParams | null
     }
     return jobQueryResult
   }, [isJobsEnabled, jobQuery, rechercheParams.displayEntreprises, rechercheParams.displayPartenariats])
+  return { jobQueryResult }
+}
+
+function useFormationQuery(rechercheParams: IRecherchePageParams | null) {
+  const formationQuerystring = useMemo((): IQuery<IGetRoutes["/v1/_private/formations/min"]> => {
+    const query: IQuery<IGetRoutes["/v1/_private/formations/min"]> = {
+      romes: rechercheParams.romes.join(","),
+    }
+
+    if (rechercheParams.geo) {
+      query.longitude = rechercheParams.geo.longitude
+      query.latitude = rechercheParams.geo.latitude
+      query.radius = rechercheParams.radius
+    }
+
+    if (rechercheParams.diploma) {
+      query.diploma = rechercheParams.diploma
+    }
+
+    return query
+  }, [rechercheParams])
+
+  const isFormationEnabled = Boolean(rechercheParams.displayFormations && formationQuerystring.romes.length > 0)
+
+  const formationQuery = useQuery<Jsonify<ILbaItemFormation>[]>({
+    queryKey: ["/v1/_private/formations/min", formationQuerystring],
+    queryFn: async ({ signal }) => {
+      return apiGet("/v1/_private/formations/min", { querystring: formationQuerystring }, { signal, priority: "high" })
+    },
+    enabled: isFormationEnabled,
+    throwOnError: false,
+    staleTime: 1000 * 60 * 60,
+  })
 
   const formationQueryResult = useMemo(() => {
     const queryStatus = getQueryStatus(formationQuery, isFormationEnabled)
@@ -226,25 +238,37 @@ export function useRechercheResults(rechercheParams: IRecherchePageParams | null
     return formationQueryResult
   }, [formationQuery, isFormationEnabled])
 
-  const result = useMemo(() => {
-    const jobs: Array<ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson | ILbaItemLbaJobJson> = []
-    jobs.push(...jobQueryResult.lbaJobs)
-    jobs.push(...jobQueryResult.partnerJobs)
-    jobs.push(...jobQueryResult.lbaCompanies)
+  return { formationQueryResult }
+}
 
-    const items: Array<ILbaItem> = []
-    items.push(...formationQueryResult.formations)
-    items.push(...jobs)
+export function useRechercheResults(rechercheParams: IRecherchePageParams | null): IUseRechercheResults {
+  const { jobQueryResult: allJobQueryResult } = useJobQuery({ ...rechercheParams, elligibleHandicapFilter: false })
+  const { jobQueryResult: handicapJobQueryResult } = useJobQuery({ ...rechercheParams, elligibleHandicapFilter: true })
+  const { formationQueryResult } = useFormationQuery(rechercheParams)
+
+  const result = useMemo(() => {
+    const selectedJobQuery = rechercheParams.elligibleHandicapFilter ? handicapJobQueryResult : allJobQueryResult
+
+    const allJobs = [...allJobQueryResult.lbaJobs, ...allJobQueryResult.partnerJobs, ...allJobQueryResult.lbaCompanies]
+    const handicapJobs = [...handicapJobQueryResult.lbaJobs, ...handicapJobQueryResult.partnerJobs, ...handicapJobQueryResult.lbaCompanies]
+
+    const displayedJobs: Array<ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson | ILbaItemLbaJobJson> = rechercheParams.elligibleHandicapFilter ? handicapJobs : allJobs
+
+    const displayedFormations = rechercheParams.elligibleHandicapFilter ? [] : formationQueryResult.formations
+
+    const elligibleHandicapCount = handicapJobs.length
 
     const result: IUseRechercheResults = {
-      status: reduceQueryStatus([jobQueryResult.status, formationQueryResult.status]),
-      jobQuery: jobQueryResult,
+      status: reduceQueryStatus([selectedJobQuery.status, formationQueryResult.status]),
+      jobQuery: allJobQueryResult,
       formationQuery: formationQueryResult,
-      items,
-      jobs,
+      displayedJobs,
+      displayedFormations,
+      displayedItems: [...displayedFormations, ...displayedJobs],
+      elligibleHandicapCount,
     }
     return result
-  }, [formationQueryResult, jobQueryResult])
+  }, [rechercheParams.elligibleHandicapFilter, handicapJobQueryResult, allJobQueryResult, formationQueryResult])
 
   return result
 }

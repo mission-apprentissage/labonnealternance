@@ -35,7 +35,9 @@ export function RechercheResultatsFooter(props: RechercheResultatsFooterProps) {
     if (props.jobCount === 0) {
       return (
         <Typography textAlign="center" fontWeight="bold">
-          Aucune entreprise trouvée pour votre recherche
+          Aucune entreprise trouvée pour votre recherche.
+          <br />
+          Nous vous conseillons de modifier vos critères : mots-clés, zone géographique, engagement handicap, etc.
         </Typography>
       )
     }

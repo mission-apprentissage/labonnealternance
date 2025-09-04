@@ -2,24 +2,38 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
 import { useField } from "formik"
 
+import { useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
+import { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { InfoTooltipOrModal } from "@/components/InfoTooltipOrModal"
 
 const infoIconButtonId = "recherche-elligible-handicap-tooltip-button"
 
-export function RechercheElligibleHandicapCheckboxFormik() {
+export function RechercheElligibleHandicapCheckboxFormik({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
   const [field, _meta, helper] = useField({ name: "elligibleHandicapFilter" })
 
-  return <RechercheElligibleHandicapCheckbox value={field.value} onChange={(newValue) => helper.setValue(newValue, true)} />
+  return <RechercheElligibleHandicapCheckbox value={field.value} onChange={(newValue) => helper.setValue(newValue, true)} rechercheParams={rechercheParams} />
 }
 
-export function RechercheElligibleHandicapCheckbox({ value, onChange }: { value: boolean; onChange: (newValue: boolean) => void }) {
+export function RechercheElligibleHandicapCheckbox({
+  value,
+  onChange,
+  rechercheParams,
+}: {
+  value: boolean
+  onChange: (newValue: boolean) => void
+  rechercheParams: IRecherchePageParams
+}) {
+  const rechercheResults = useRechercheResults(rechercheParams)
+
+  const displayedCount = rechercheResults.jobQuery.status === "success" ? rechercheResults.elligibleHandicapCount : null
+
   const id = "elligible-handicap"
   const checkboxId = `${id}-checkbox`
 
   const label = (
     <>
-      Employeur engagé handicap
+      Employeur engagé handicap{displayedCount === null ? "" : ` (${displayedCount})`}
       <InfoTooltipOrModal
         tooltipContent={
           <Box sx={{ maxWidth: "800px" }}>
@@ -37,7 +51,7 @@ export function RechercheElligibleHandicapCheckbox({ value, onChange }: { value:
   )
 
   return (
-    <fieldset className="fr-fieldset" id={id} style={{ marginBottom: 0 }}>
+    <fieldset className="fr-fieldset" id={id} style={{ marginBottom: 0, minWidth: "298px" }}>
       <Box
         className="fr-fieldset__element"
         sx={{

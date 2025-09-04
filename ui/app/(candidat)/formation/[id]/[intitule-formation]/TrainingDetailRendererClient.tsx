@@ -51,7 +51,9 @@ export default function TrainingDetailRendererClient({ training, rechercheParams
 
   const { appliedDate, setPrdvDone } = useFormationPrdvTracker(training.id)
 
-  const detailPage = <TrainingDetailPage selectedItem={training} appliedDate={appliedDate} resultList={result.items} rechercheParams={rechercheParams} onRdvSuccess={setPrdvDone} />
+  const detailPage = (
+    <TrainingDetailPage selectedItem={training} appliedDate={appliedDate} resultList={result.displayedItems} rechercheParams={rechercheParams} onRdvSuccess={setPrdvDone} />
+  )
 
   if (rechercheParams?.displayMap) {
     return (
@@ -76,16 +78,15 @@ function TrainingDetailPage({
   rechercheParams: IRecherchePageParams
   selectedItem: ILbaItemFormation2Json
   appliedDate: string | null
-  resultList: IUseRechercheResults["items"]
+  resultList: IUseRechercheResults["displayedItems"]
   onRdvSuccess: () => void
 }) {
   const kind: LBA_ITEM_TYPE = selectedItem?.type
   const actualTitle = selectedItem.training.title
   const isMandataire = selectedItem?.company?.mandataire
-  const currentItem = resultList.find((item) => item.id === selectedItem.id)
 
   const router = useRouter()
-  const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItem, rechercheParams: rechercheParams })
+  const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItemId: selectedItem.id, rechercheParams: rechercheParams })
   const handleClose = () => router.push(PAGES.dynamic.recherche(rechercheParams).getPath())
 
   const contextPRDV = {

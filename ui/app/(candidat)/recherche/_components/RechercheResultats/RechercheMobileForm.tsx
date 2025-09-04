@@ -35,7 +35,7 @@ export function RechercheMobileForm({ rechercheParams }: { rechercheParams: IRec
         lieuInput={<RechercheLieuAutocomplete />}
         rayonSelect={<RechercheRayonSelectFormik />}
         niveauSelect={<RechercheNiveauSelectFormik />}
-        handicapCheckbox={<RechercheElligibleHandicapCheckboxFormik />}
+        handicapCheckbox={<RechercheElligibleHandicapCheckboxFormik rechercheParams={rechercheParams} />}
         submitButton={<RechercheSubmitButton>C’est parti</RechercheSubmitButton>}
       />
     </RechercheForm>

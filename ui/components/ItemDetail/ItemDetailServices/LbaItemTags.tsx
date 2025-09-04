@@ -27,7 +27,6 @@ export function LbaItemTags({ item }: { item: ILbaItem }) {
     tags.push(<TagFormationAssociee />)
   }
 
-  console.log(item)
   if ("company" in item && item?.company?.elligibleHandicap) {
     tags.push(<LbaJobEngagementTag key="job engagement" />)
   }

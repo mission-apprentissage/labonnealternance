@@ -32,7 +32,7 @@ import { PAGES } from "@/utils/routes.utils"
 export default function JobDetailRendererClient({ job, rechercheParams }: { job: ILbaItemJobsGlobal; rechercheParams: IRecherchePageParams }) {
   const result = useRechercheResults(rechercheParams)
 
-  const jobDetail = <JobDetail selectedItem={job} resultList={result.items} rechercheParams={rechercheParams} />
+  const jobDetail = <JobDetail selectedItem={job} resultList={result.displayedItems} rechercheParams={rechercheParams} />
 
   if (rechercheParams?.displayMap) {
     return (
@@ -54,13 +54,15 @@ function JobDetail({
 }: {
   rechercheParams: IRecherchePageParams
   selectedItem: ILbaItemJobsGlobal
-  resultList: IUseRechercheResults["items"]
+  resultList: IUseRechercheResults["displayedItems"]
 }) {
-  // const { activeFilters } = useContext(DisplayContext)
-  const currentItem = resultList.find((item) => item.id === selectedItem.id)
   const router = useRouter()
   const [isCollapsedHeader, setIsCollapsedHeader] = useState(false)
-  const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItem, rechercheParams: rechercheParams })
+  const { swipeHandlers, goNext, goPrev } = useBuildNavigation({
+    items: resultList,
+    currentItemId: selectedItem.id,
+    rechercheParams: rechercheParams,
+  })
 
   const kind = selectedItem.ideaType
   const isMandataire = selectedItem?.company?.mandataire

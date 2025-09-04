@@ -40,9 +40,16 @@ function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRe
     >
       <Box
         sx={{
-          display: "flex",
-          gap: fr.spacing("3w"),
-          alignItems: "flex-end",
+          display: "block",
+          "& > *": {
+            display: "inline-block",
+            marginRight: fr.spacing("3w"),
+            marginBottom: `${fr.spacing("1w")} !important`,
+            verticalAlign: "bottom",
+            "&:last-child": {
+              marginRight: 0,
+            },
+          },
         }}
       >
         <RechercheRayonSelect
@@ -60,6 +67,7 @@ function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRe
           }}
         />
         <RechercheElligibleHandicapCheckbox
+          rechercheParams={rechercheParams}
           value={elligibleHandicapFilter}
           onChange={(newValue) => {
             if (newValue) {
@@ -72,6 +80,7 @@ function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRe
       <Box
         sx={{
           alignSelf: "flex-end",
+          marginBottom: fr.spacing("1w"),
         }}
       >
         <RechercheToggleMap onChange={onDisplayMapChange} checked={displayMap} />
@@ -88,7 +97,8 @@ export function CandidatRechercheFilters({ rechercheParams }: { rechercheParams:
       sx={{
         display: {
           xs: "none",
-          md: "block",
+          md: "none",
+          lg: "block",
         },
         marginTop: fr.spacing("2w"),
         marginBottom: fr.spacing("4w"),

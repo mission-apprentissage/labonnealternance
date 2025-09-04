@@ -12,6 +12,7 @@ export function LbaJobEngagement() {
         border: "solid 1px #DDDDDD",
         borderRadius: "8px",
         padding: fr.spacing("2w"),
+        backgroundColor: "white",
       }}
     >
       <LbaJobEngagementTag />
