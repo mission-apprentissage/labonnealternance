@@ -1,8 +1,8 @@
 "use client"
-import { Heading, SimpleGrid, Spinner, Stack, Text, useToast } from "@chakra-ui/react"
+import { useToast } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
-import { Alert, Box } from "@mui/material"
+import { Alert, Box, CircularProgress, Typography } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/navigation"
@@ -20,6 +20,7 @@ import CustomInput from "@/app/_components/CustomInput"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 import { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationModificationOpco, UserValidationHistory } from "@/components/espace_pro"
+import { webkitLineClamp } from "@/styles/webkitLineClamp"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { updateEntrepriseAdmin, updateEntrepriseCFA } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
@@ -124,24 +125,22 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
       <Box sx={{ borderBottom: "1px solid #E3E3FD", mb: fr.spacing("5w") }}>
         {user.type !== "CFA" && (
           <>
-            <Heading fontSize="32px" noOfLines={2}>
+            <Typography component="h2" sx={{ fontSize: "32px", ...webkitLineClamp }}>
               {establishmentLabel}
-            </Heading>
+            </Typography>
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: fr.spacing("5v") }}>
               <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-start", maxW: "50%" }}>
                 <Box sx={{ ml: fr.spacing("5v") }}>{getUserBadge(lastUserState)}</Box>
               </Box>
-              <Stack direction={["column", "column", "column", "row"]} spacing="10px">
-                {getActionButtons(lastUserState, userRecruteur._id)}
-              </Stack>
+              <Box sx={{ display: "flex", flexDirection: { xs: "column", lg: "row" }, gap: fr.spacing("2v") }}>{getActionButtons(lastUserState, userRecruteur._id)}</Box>
             </Box>
           </>
         )}
         {user.type === "CFA" && (
           <Box sx={{ mb: fr.spacing("5v"), display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: fr.spacing("2v") }}>
-            <Heading fontSize="32px" mx={0} noOfLines={2}>
+            <Typography sx={{ fontSize: "32px", mx: 0, ...webkitLineClamp }} component="h2">
               {establishmentLabel}
-            </Heading>
+            </Typography>
 
             <Button priority="secondary" type="button" onClick={() => router.push(PAGES.dynamic.backCfaPageEntreprise(userRecruteur.establishment_id).getPath())}>
               Fermer
@@ -190,11 +189,18 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                 previousValue={userRecruteur.opco}
                 newValue={values.opco}
               />
-              <SimpleGrid columns={[1, 1, 1, 2]} spacing={[0, 10]}>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: {
+                    xs: "1fr",
+                    lg: "repeat(2, 1fr)",
+                  },
+                  gap: { xs: 0, sm: 2, lg: 5 },
+                }}
+              >
                 <Box>
-                  <Text fontSize="20px" fontWeight="700">
-                    Informations de contact
-                  </Text>
+                  <Typography sx={{ fontSize: "20px", fontWeight: "700" }}>Informations de contact</Typography>
                   <Box mt={4}>
                     <Form>
                       <CustomInput name="last_name" label="Nom" type="text" value={values.last_name} />
@@ -220,7 +226,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                       )}
                       <Box sx={{ display: "flex", justifyContent: "flex-end", my: fr.spacing("5v") }}>
                         <Button type="submit" disabled={!isValid || isSubmitting}>
-                          {isSubmitting ? <Spinner mr={2} /> : <ArrowRightLine mr={2} />}Enregistrer
+                          {isSubmitting ? <CircularProgress size={24} /> : <ArrowRightLine mr={2} />}Enregistrer
                         </Button>
                       </Box>
                     </Form>
@@ -234,14 +240,12 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                     </Box>
                   )}
                 </Box>
-              </SimpleGrid>
+              </Box>
               {(user.type === AUTHTYPE.ADMIN || user.type === AUTHTYPE.OPCO) && (
                 <>
                   <hr style={{ marginTop: 24 }} />
                   <Box my={6}>
-                    <Text fontSize="20px" lineHeight="32px" fontWeight="700" mb={6}>
-                      Offres de recrutement en alternance
-                    </Text>
+                    <Typography sx={{ fontSize: "20px", lineHeight: "32px", fontWeight: "700", mb: fr.spacing("3w") }}>Offres de recrutement en alternance</Typography>
                     <OffresTabs
                       recruiter={recruiter}
                       buildOfferEditionUrl={(offerId) => {

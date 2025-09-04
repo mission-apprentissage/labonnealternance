@@ -16,6 +16,7 @@ import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
 import { ConfirmationDesactivationUtilisateur } from "@/components/espace_pro"
 import ConfirmationActivationUtilisateur from "@/components/espace_pro/ConfirmationActivationUtilisateur"
+import { webkitLineClamp } from "@/styles/webkitLineClamp"
 import { apiGet } from "@/utils/api.utils"
 
 function Users() {
@@ -118,13 +119,7 @@ function Users() {
       Header: "Email",
       width: "250",
       accessor: "email",
-      Cell: ({ value }) => (
-        <Typography
-          sx={{ color: "#666666", fontSize: "14px", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}
-        >
-          {value}
-        </Typography>
-      ),
+      Cell: ({ value }) => <Typography sx={{ color: "#666666", fontSize: "14px", ...webkitLineClamp }}>{value}</Typography>,
       filter: "fuzzyText",
     },
     {
@@ -145,13 +140,7 @@ function Users() {
     {
       Header: "Origine",
       accessor: "origin",
-      Cell: ({ value }) => (
-        <Typography
-          sx={{ color: "#666666", fontSize: "14px", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}
-        >
-          {value}
-        </Typography>
-      ),
+      Cell: ({ value }) => <Typography sx={{ color: "#666666", fontSize: "14px", ...webkitLineClamp }}>{value}</Typography>,
       width: "300",
       id: "origine",
     },

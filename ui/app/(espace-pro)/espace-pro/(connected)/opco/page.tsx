@@ -16,6 +16,7 @@ import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
 import { ConfirmationDesactivationUtilisateur, LoadingEmptySpace } from "@/components/espace_pro"
 import ConfirmationActivationUtilisateur from "@/components/espace_pro/ConfirmationActivationUtilisateur"
+import { webkitLineClamp } from "@/styles/webkitLineClamp"
 import { getOpcoUsers } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
@@ -107,11 +108,7 @@ function AdministrationOpco() {
           sx={{
             color: "#666666",
             fontSize: "14px",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
+            ...webkitLineClamp,
           }}
         >
           {value}
