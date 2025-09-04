@@ -1,9 +1,9 @@
 "use client"
 
-import { Grid, GridItem, Heading, Spinner, Text, useToast } from "@chakra-ui/react"
+import { useToast } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box } from "@mui/material"
+import { Box, CircularProgress, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { useParams, useRouter } from "next/navigation"
 import { ENTREPRISE } from "shared/constants/recruteur"
@@ -74,7 +74,7 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
                 </Button>
               </Box>
               <Button type="submit" disabled={!informationForm.isValid || informationForm.isSubmitting}>
-                {informationForm.isSubmitting ? <Spinner mr={2} /> : <ArrowRightLine width={5} mr={2} />}Suivant
+                {informationForm.isSubmitting ? <CircularProgress size={24} /> : <ArrowRightLine width={5} mr={2} />}Suivant
               </Button>
             </Box>
           </Form>
@@ -88,20 +88,22 @@ function CreationEntrepriseDetail({ siret }: { siret: string }) {
   return (
     <>
       <Breadcrumb pages={[PAGES.static.backCfaHome, PAGES.static.backCfaCreationEntreprise, PAGES.dynamic.backCfaEntrepriseCreationDetail(siret)]} />
-      <Grid templateRows={["1fr", ".5fr 2fr"]} templateColumns={["1fr", "4fr 5fr"]} gap={6}>
-        <GridItem>
-          <Heading>Informations de contact ddd</Heading>
-          <Text fontSize="20px" textAlign="justify" mt={2}>
+      <Box sx={{ display: "grid", gridTemplateRows: { xs: "1fr", sm: ".5fr 2fr" }, gridTemplateColumns: { xs: "1fr", sm: "4fr 5fr" }, gap: fr.spacing("3w") }}>
+        <Box>
+          <Typography component="h2" sx={{ fontSize: "24px", fontWeight: "bold" }}>
+            Informations de contact
+          </Typography>
+          <Typography sx={{ fontSize: "20px", textAlign: "justify", mt: fr.spacing("1w") }}>
             Il s’agit des informations de contact de votre entreprise partenaire. Ces informations ne seront pas visibles sur l’offre.
-          </Text>
-        </GridItem>
-        <GridItem rowStart={["auto", 2]}>
+          </Typography>
+        </Box>
+        <Box sx={{ gridRowStart: { xs: "auto", sm: fr.spacing("1w") } }}>
           <Formulaire siret={siret} />
-        </GridItem>
-        <GridItem rowStart={["auto", 2]} pt={[4, 8]} minW="0">
+        </Box>
+        <Box sx={{ gridRowStart: { xs: "auto", sm: fr.spacing("1w") }, pt: { xs: fr.spacing("2w"), sm: fr.spacing("4w") }, minW: "0" }}>
           <InformationLegaleEntreprise siret={siret} type={ENTREPRISE} />
-        </GridItem>
-      </Grid>
+        </Box>
+      </Box>
     </>
   )
 }
