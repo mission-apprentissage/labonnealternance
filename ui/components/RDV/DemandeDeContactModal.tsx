@@ -1,3 +1,4 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Typography } from "@mui/material"
 import { useState } from "react"
 
@@ -50,7 +51,7 @@ const DemandeDeContactBody = ({
         <DemandeDeContactConfirmation {...confirmation} />
       ) : (
         <>
-          <Typography variant="h4" data-testid="DemandeDeContactFormTitle">
+          <Typography variant="h4" data-testid="DemandeDeContactFormTitle" sx={{ mb: fr.spacing("2w") }}>
             Contacter {etablissement_formateur_entreprise_raison_sociale}
           </Typography>
           <DemandeDeContactForm context={context} onRdvSuccess={localOnSuccess} referrer={referrer} />
