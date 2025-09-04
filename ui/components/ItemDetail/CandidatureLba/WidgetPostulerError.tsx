@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui/react"
+import { Box } from "@mui/material"
 import React from "react"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 
@@ -32,9 +32,5 @@ const getErrorText = (error: string) => {
 
 export function WidgetPostulerError({ error }: { error: string }) {
   const errorText = getErrorText(error)
-  return (
-    <Box width="250px" textAlign="center" m="auto" my={8}>
-      {errorText}
-    </Box>
-  )
+  return <Box sx={{ width: "250px", textAlign: "center", m: "auto", my: 8 }}>{errorText}</Box>
 }

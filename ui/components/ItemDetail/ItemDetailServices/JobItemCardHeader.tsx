@@ -1,4 +1,4 @@
-import { Text } from "@chakra-ui/react"
+import { Typography } from "@mui/material"
 import { ILbaItemJobsGlobal } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
@@ -25,57 +25,54 @@ export default function JobItemCardHeader({ selectedItem, kind, isMandataire, is
   if (!isCollapsedHeader) {
     if (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && isMandataire) {
       res = (
-        // @ts-expect-error: TODO
-        <Text as="p" {...detailActivityProperties} my={1}>
-          <Text as="span" fontWeight={400}>
+        <Typography component="p" sx={{ ...detailActivityProperties, my: 1 }}>
+          <Typography component="span" sx={{ fontWeight: 400 }}>
             Le centre de formation&nbsp;
-          </Text>
-          <Text as="span">{companyName}</Text>
-          <Text as="span" fontWeight={400}>
+          </Typography>
+          <Typography component="span">{companyName}</Typography>
+          <Typography component="span" sx={{ fontWeight: 400 }}>
             &nbsp;propose actuellement cette offre dans le domaine suivant
-          </Text>
-        </Text>
+          </Typography>
+        </Typography>
       )
     }
 
     if ([LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA].includes(kind) && !isMandataire) {
       res = (
-        // @ts-expect-error: TODO
-        <Text as="p" {...detailActivityProperties} my={1}>
+        <Typography component="p" sx={{ ...detailActivityProperties, my: 1 }}>
           {companyName ? (
             <>
-              <Text as="span">{companyName}</Text>
-              <Text as="span" fontWeight={400}>
+              <Typography component="span">{companyName}</Typography>
+              <Typography component="span" sx={{ fontWeight: 400 }}>
                 &nbsp;recherche un.e alternant.e pour le poste suivant :
-              </Text>
+              </Typography>
             </>
           ) : (
             <>
-              <Text as="span" fontWeight={400}>
-                {selectedItem?.nafs ? (
+              <Typography component="span" sx={{ fontWeight: 400 }}>
+                {selectedItem.nafs.length > 0 && "label" in selectedItem.nafs ? (
                   <>
-                    {/* @ts-expect-error: TODO */}
-                    Une société du secteur&nbsp;<bold>{selectedItem.nafs[0].label}</bold>&nbsp;propose actuellement cette offre
+                    {/** @ts-expect-error: TODO */}
+                    Une société du secteur&nbsp;<strong>{selectedItem.nafs[0].label}</strong>&nbsp;propose actuellement cette offre
                   </>
                 ) : (
                   "Une société ayant souhaité garder l'anonymat propose actuellement cette offre"
                 )}
-              </Text>
+              </Typography>
             </>
           )}
-        </Text>
+        </Typography>
       )
     }
 
     if (kind === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
       res = (
-        // @ts-expect-error: TODO
-        <Text as="p" {...detailActivityProperties} my={1}>
-          <Text as="span">{companyName}</Text>
-          <Text as="span" fontWeight={400}>
+        <Typography component="p" sx={{ ...detailActivityProperties, my: 1 }}>
+          <Typography component="span">{companyName}</Typography>
+          <Typography component="span" sx={{ fontWeight: 400 }}>
             &nbsp;a des salariés qui exercent le métier auquel vous vous destinez. Envoyez votre candidature spontanée !
-          </Text>
-        </Text>
+          </Typography>
+        </Typography>
       )
     }
   }

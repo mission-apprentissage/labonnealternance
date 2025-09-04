@@ -1,4 +1,6 @@
-import { Box, Button, Flex } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import Button from "@codegouvfr/react-dsfr/Button"
+import { Box, Typography } from "@mui/material"
 import { ILbaItemJobsGlobal } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
@@ -26,37 +28,27 @@ const GoingToContactQuestion = ({ kind, item }: GoingToContactQuestionProps) => 
   const typeForEventTracking = getType()
 
   return (
-    <Flex
+    <Box
+      sx={{
+        mt: fr.spacing("3w"),
+        p: fr.spacing("2v"),
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-around",
+        backgroundColor: "white",
+        maxWidth: "970px",
+        mx: { xs: 0, md: "auto" },
+      }}
       data-testid="GoingToContactQuestion"
-      pb="0px"
-      mt={6}
-      alignItems="center"
-      justifyContent="space-around"
-      position="relative"
-      background="white"
-      padding={["6px 12px 8px 12px", "6px 24px 8px 24px", "6px 12px 8px 12px"]}
-      maxWidth="970px"
-      mx={["0", "30px", "30px", "auto"]}
     >
-      <Box fontSize="14px" fontWeight={700}>
-        Allez-vous contacter {workplace} ?
-      </Box>
+      <Typography sx={{ fontWeight: 700 }}>Allez-vous contacter {workplace} ?</Typography>
       {storedValue ? (
-        <Box borderRadius="10px" px="3" py="2" background="grey.100" fontSize="14px" fontWeight={700}>
-          Merci pour votre réponse ! 👌
-        </Box>
+        <Typography sx={{ fontWeight: 700 }}>Merci pour votre réponse ! 👌</Typography>
       ) : (
         <>
           <Button
             type="button"
-            ml={1}
-            border="none"
-            background="inherit"
-            _hover={{
-              border: "none",
-              background: "inherit",
-            }}
-            fontSize="14px"
+            priority="tertiary no outline"
             onClick={() => {
               setLocalStorage(true)
               SendPlausibleEvent(`Clic Je vais contacter - Fiche ${typeForEventTracking}`, {
@@ -68,14 +60,7 @@ const GoingToContactQuestion = ({ kind, item }: GoingToContactQuestionProps) => 
           </Button>
           <Button
             type="button"
-            ml={1}
-            border="none"
-            background="inherit"
-            _hover={{
-              border: "none",
-              background: "inherit",
-            }}
-            fontSize="14px"
+            priority="tertiary no outline"
             onClick={() => {
               setLocalStorage(true)
               SendPlausibleEvent(`Clic Je ne vais pas contacter - Fiche ${typeForEventTracking}`, {
@@ -87,7 +72,7 @@ const GoingToContactQuestion = ({ kind, item }: GoingToContactQuestionProps) => 
           </Button>
         </>
       )}
-    </Flex>
+    </Box>
   )
 }
 

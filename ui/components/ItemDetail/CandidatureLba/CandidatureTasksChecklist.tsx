@@ -1,7 +1,8 @@
-import { Box, Checkbox, Heading, Image, Text } from "@chakra-ui/react"
 import styled from "@emotion/styled"
+import { Box, Checkbox, Typography, FormControlLabel } from "@mui/material"
 import { AnimatePresence, domAnimation, LazyMotion } from "motion/react"
 import * as motion from "motion/react-m"
+import Image from "next/image"
 import { useState } from "react"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
@@ -25,13 +26,12 @@ const TasksContainer = styled.div`
   .checkbox-container {
     color: #161616;
   }
-  .chakra-checkbox {
+  .mui-checkbox {
     align-items: flex-start;
   }
-  .chakra-checkbox__control {
+  .mui-checkbox .MuiCheckbox-root {
     margin: 4px;
     border-radius: 4px;
-    border: solid 1px #161616;
   }
   .animated-div {
     display: flex;
@@ -58,7 +58,7 @@ export const CandidatureTasksChecklist = ({ kind }: { kind: LBA_ITEM_TYPE | LBA_
   return (
     <TasksContainer>
       <LazyMotion features={domAnimation}>
-        <Box width={363} minWidth={363} padding="124px 44px 44px 44px" height="100%">
+        <Box sx={{ width: 363, minWidth: 363, padding: "124px 44px 44px 44px", height: "100%" }}>
           <AnimatePresence>
             {!isFullyChecked && (
               <motion.div
@@ -69,15 +69,19 @@ export const CandidatureTasksChecklist = ({ kind }: { kind: LBA_ITEM_TYPE | LBA_
                 exit={{ opacity: 0 }}
                 className="animated-div"
               >
-                <Image src="/images/head_with_bulb.svg" alt="" marginBottom={7} />
-                <Heading textAlign="center" color="#000091" fontSize="20px" lineHeight="28px" fontWeight={700} mb={6}>
+                <Image src="/images/head_with_bulb.svg" alt="" width={120} height={120} style={{ marginBottom: "28px" }} />
+                <Typography variant="h2" sx={{ textAlign: "center", color: "#000091", fontSize: "20px", lineHeight: "28px", fontWeight: 700, mb: 6 }}>
                   Mettez toutes les chances de votre côté !
-                </Heading>
+                </Typography>
                 <Box className="checkbox-container">
                   {tasks.map((task) => (
-                    <Checkbox key={task} defaultChecked={false} marginTop={2} onChange={() => toggleTask(task)}>
-                      <Text>{task}</Text>
-                    </Checkbox>
+                    <FormControlLabel
+                      key={task}
+                      control={<Checkbox defaultChecked={false} onChange={() => toggleTask(task)} />}
+                      label={task}
+                      sx={{ mt: 2, alignItems: "flex-start" }}
+                      className="mui-checkbox"
+                    />
                   ))}
                 </Box>
               </motion.div>
@@ -91,11 +95,11 @@ export const CandidatureTasksChecklist = ({ kind }: { kind: LBA_ITEM_TYPE | LBA_
               exit={{ opacity: 0 }}
               className="animated-div"
             >
-              <Image src="/images/launching_rocket.svg" alt="" marginBottom={7} />
-              <Heading textAlign="center" color="#000091" fontSize="20px" lineHeight="28px" fontWeight={700} mb={6}>
+              <Image src="/images/launching_rocket.svg" alt="" width={120} height={120} style={{ marginBottom: "28px" }} />
+              <Typography variant="h2" sx={{ textAlign: "center", color: "#000091", fontSize: "20px", lineHeight: "28px", fontWeight: 700, mb: 6 }}>
                 Bravo !<br />
                 Vous pouvez envoyer votre candidature en toute sérénité.
-              </Heading>
+              </Typography>
             </motion.div>
           )}
         </Box>

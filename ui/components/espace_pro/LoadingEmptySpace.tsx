@@ -1,13 +1,13 @@
-import { Box, Flex, Spinner, Text } from "@chakra-ui/react"
+import { Box, CircularProgress, Typography } from "@mui/material"
 
 export default function LoadingEmptySpace({ label = "" }) {
   return (
     <>
       <Box>
-        <Flex justify="center" align="center" h="100vh" direction="column">
-          <Spinner thickness="4px" speed="0.5s" emptyColor="gray.200" color="bluefrance.500" size="xl" />
-          <Text>{label}</Text>
-        </Flex>
+        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", flexDirection: "column" }}>
+          <CircularProgress size={60} thickness={4} sx={{ color: "primary.main" }} />
+          <Typography>{label}</Typography>
+        </Box>
       </Box>
     </>
   )

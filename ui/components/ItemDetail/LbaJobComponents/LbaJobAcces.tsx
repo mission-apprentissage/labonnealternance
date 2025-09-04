@@ -1,38 +1,14 @@
-import { AddIcon, MinusIcon } from "@chakra-ui/icons"
-import { AccordionButton, AccordionItem, AccordionPanel, Box, Text } from "@chakra-ui/react"
-import { SyntheticEvent } from "react"
+import Accordion from "@codegouvfr/react-dsfr/Accordion"
+import { Typography } from "@mui/material"
 import { ILbaItemLbaJobJson } from "shared"
-
-import { scrollToNestedElement } from "@/utils/tools"
 
 const LbaJobAcces = ({ job }: { job: ILbaItemLbaJobJson }) => {
   const accesEmploi = job?.job?.romeDetails?.acces_metier ?? null
-
-  if (!accesEmploi) return <></>
-
-  const onClick = (e: SyntheticEvent) => {
-    setTimeout(() => {
-      scrollToNestedElement({ containerId: "itemDetailColumn", nestedElement: e.target as HTMLElement, yOffsett: 220 })
-    }, 200)
-  }
-
+  if (!accesEmploi) return null
   return (
-    <AccordionItem borderBottom="1px solid #E5E5E5" onClick={onClick} key={"acces"}>
-      {({ isExpanded }) => (
-        <>
-          <AccordionButton fontSize="1rem" fontWeight={700} color="#161616">
-            <Box as="span" flex="1" textAlign="left">
-              À qui ce métier est-il accessible ?
-            </Box>
-            {isExpanded ? <MinusIcon fontSize="10px" /> : <AddIcon fontSize="10px" />}
-          </AccordionButton>
-
-          <AccordionPanel pb={4}>
-            <Text as="span">{accesEmploi}</Text>
-          </AccordionPanel>
-        </>
-      )}
-    </AccordionItem>
+    <Accordion label="À qui ce métier est-il accessible ?">
+      <Typography component="span">{accesEmploi}</Typography>
+    </Accordion>
   )
 }
 

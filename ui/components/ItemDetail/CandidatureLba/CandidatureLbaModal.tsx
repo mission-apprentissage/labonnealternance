@@ -44,14 +44,7 @@ export const CandidatureLbaModal = ({
   return fromWidget ? (
     content
   ) : (
-    <ModalReadOnly
-      isOpen={isOpen}
-      onClose={onModalClose}
-      modalContentProps={{
-        maxWidth: 1152,
-      }}
-      hideCloseButton={isSuccess || isError ? false : true}
-    >
+    <ModalReadOnly size="xl" isOpen={isOpen} onClose={onModalClose} hideCloseButton={isSuccess || isError ? false : true}>
       {content}
     </ModalReadOnly>
   )

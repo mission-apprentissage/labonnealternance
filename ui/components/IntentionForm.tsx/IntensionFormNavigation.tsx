@@ -1,17 +1,18 @@
-import { Flex, Image, Spacer } from "@chakra-ui/react"
+import { Box } from "@mui/material"
+import Image from "next/image"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 export const IntensionFormNavigation = () => {
   return (
-    <Flex width="80%" maxWidth="800px" margin="auto" pt={12}>
+    <Box sx={{ display: "flex", width: "80%", maxWidth: "800px", margin: "auto", pt: 12 }}>
       <DsfrLink style={{ backgroundImage: "none" }} href="/">
-        <Image src="/images/logo_LBA.svg" alt="" minWidth="160px" width="160px" />
+        <Image src="/images/logo_LBA.svg" alt="" width={160} height={60} style={{ minWidth: "160px" }} />
       </DsfrLink>
-      <Spacer minWidth={8} />
+      <Box sx={{ flexGrow: 1, minWidth: 8 }} />
       <DsfrLink style={{ backgroundImage: "none" }} href="/">
         Page d&apos;accueil La bonne alternance
       </DsfrLink>
-    </Flex>
+    </Box>
   )
 }

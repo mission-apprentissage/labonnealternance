@@ -1,4 +1,4 @@
-import { Box, Image, Progress, Text } from "@chakra-ui/react"
+import { Box, LinearProgress, Typography } from "@mui/material"
 import React, { useEffect, useState } from "react"
 
 enum LOADING_ILLUSTRATION_TYPES {
@@ -84,21 +84,21 @@ const ResultListsLoading = ({ isTrainingSearchLoading, isJobSearchLoading }: Pro
   }, [isLoading])
 
   const resultListProperties = {
-    color: "grey.425",
+    color: "grey.700",
     fontWeight: 500,
     fontSize: "18px",
-    mt: [0, 0, 2],
+    mt: { xs: 0, sm: 0, md: 2 },
   }
 
   return (
     <Box pt="0">
-      <Box {...resultListProperties}>
+      <Box sx={resultListProperties}>
         {isLoading ? (
           <Box textAlign="center">
-            <Image margin="auto" src={loadingIllustrations[currentIllustrationIndex].src} aria-hidden={true} alt="" />
-            <Text mt={1}>{loadingIllustrations[currentIllustrationIndex].text}</Text>
-            <Box maxWidth="400px" mx="auto" my={4}>
-              <Progress isIndeterminate size="sm" borderRadius="20px" />
+            <Box component="img" src={loadingIllustrations[currentIllustrationIndex].src} aria-hidden={true} alt="" sx={{ margin: "auto", display: "block" }} />
+            <Typography sx={{ mt: 1 }}>{loadingIllustrations[currentIllustrationIndex].text}</Typography>
+            <Box sx={{ maxWidth: "400px", mx: "auto", my: 4 }}>
+              <LinearProgress sx={{ borderRadius: "20px" }} />
             </Box>
           </Box>
         ) : (

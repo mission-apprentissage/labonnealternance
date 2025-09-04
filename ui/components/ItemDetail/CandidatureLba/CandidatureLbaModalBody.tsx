@@ -1,5 +1,6 @@
-import { Box, Flex, FormControl, FormErrorMessage, FormLabel, Input, Spinner, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
+import { Box, Typography, CircularProgress, Input, FormControl, FormLabel, FormHelperText, Grid2 as Grid } from "@mui/material"
 import emailMisspelled, { Result, top100 } from "email-misspelled"
 import { useFormik } from "formik"
 import { ChangeEvent, useState } from "react"
@@ -52,18 +53,18 @@ export const CandidatureLbaModalBody = ({
 
   return (
     <form onSubmit={formik.handleSubmit} style={{ display: "flex", height: "100%", alignItems: "stretch" }}>
-      <Box display={["none", "none", "none", "block"]}>
+      <Box sx={{ display: { xs: "none", sm: "none", md: "none", lg: "block" } }}>
         <CandidatureTasksChecklist kind={kind} />
       </Box>
-      <Box marginX={[6, 8, 8, 8, "69px"]} my={4}>
+      <Box sx={{ mx: { xs: 6, sm: 8, md: 8, lg: 8, xl: "69px" }, my: 4 }}>
         {!fromWidget && (
           <>
-            <Flex justifyContent="flex-end" mr={-6}>
+            <Box sx={{ display: "flex", justifyContent: "flex-end", mr: -6 }}>
               <ModalCloseButton onClose={onClose} />
-            </Flex>
+            </Box>
           </>
         )}
-        <Text as="h1" fontWeight={700} fontSize="24px" data-testid="CandidatureSpontaneeTitle">
+        <Typography variant="h1" sx={{ fontWeight: 700, fontSize: "24px" }} data-testid="CandidatureSpontaneeTitle">
           {isOffre ? (
             <>
               Postuler à l&apos;offre {fromWidget ? `${item.title} ` : ""}de {company}
@@ -71,23 +72,21 @@ export const CandidatureLbaModalBody = ({
           ) : (
             <>Candidature spontanée{fromWidget ? ` auprès de ${company}` : ""}</>
           )}
-        </Text>
+        </Typography>
 
         <CandidatureLbaMessage formik={formik} />
-        <Box mt={4}>
+        <Box sx={{ mt: 4 }}>
           <CandidatureLbaFileDropzone formik={formik} setFileValue={setFileValue} />
         </Box>
         <UserFields formik={formik} />
 
-        <Box mt={4}>
+        <Box sx={{ mt: 4 }}>
           <CandidatureLbaMandataireMessage item={item} />
         </Box>
 
-        <Box my={4}>
-          <Text mb={2} fontSize="14px" color="grey.600">
-            * Champs obligatoires
-          </Text>
-          <Text>
+        <Box sx={{ my: 4 }}>
+          <Typography sx={{ mb: 2, fontSize: "14px", color: "grey.600" }}>* Champs obligatoires</Typography>
+          <Typography>
             En remplissant ce formulaire, vous acceptez les{" "}
             <DsfrLink href="/conditions-generales-utilisation" aria-description="Conditions générales d'utilisation - nouvelle fenêtre" external>
               Conditions générales d&apos;utilisation
@@ -99,16 +98,16 @@ export const CandidatureLbaModalBody = ({
               Politique de confidentialité
             </DsfrLink>{" "}
             de La bonne alternance.
-          </Text>
+          </Typography>
         </Box>
 
         <InfoBanner showInfo={false} showAlert={false} showOK={false} forceEnvBanner={true} />
-        <Flex my={4} justifyContent="flex-end">
+        <Box sx={{ display: "flex", my: 4, justifyContent: "flex-end" }}>
           {isLoading ? (
-            <Flex alignItems="center" direction="row" data-testid="candidature-currently-sending">
-              <Spinner mr={4} />
-              <Text>Veuillez patienter</Text>
-            </Flex>
+            <Box sx={{ display: "flex", alignItems: "center", flexDirection: "row" }} data-testid="candidature-currently-sending">
+              <CircularProgress sx={{ mr: 4 }} />
+              <Typography>Veuillez patienter</Typography>
+            </Box>
           ) : isOffre ? (
             <Button data-tracking-id="postuler-offre-lba" aria-label="Envoyer la candidature" type="submit" data-testid="candidature-not-sent">
               J'envoie ma candidature
@@ -118,7 +117,7 @@ export const CandidatureLbaModalBody = ({
               J'envoie ma candidature spontanée
             </Button>
           )}
-        </Flex>
+        </Box>
       </Box>
     </form>
   )
@@ -139,46 +138,61 @@ const UserFields = ({ formik }: { formik: any }) => {
   }
 
   return (
-    <>
-      <Flex direction={["column", "column", "row"]} mt={6} gap={[0, 0, 6]}>
-        <FormControl data-testid="fieldset-lastname" mt={{ base: 3, md: "0" }} isInvalid={formik.touched.applicant_last_name && formik.errors.applicant_last_name}>
-          <FormLabel htmlFor="lastName">Nom *</FormLabel>
+    <Grid container spacing={2} sx={{ mt: 4 }}>
+      <Grid size={{ xs: 12, md: 6 }}>
+        <FormControl error={formik.touched.applicant_last_name && Boolean(formik.errors.applicant_last_name)} fullWidth>
+          <FormLabel required>Nom</FormLabel>
           <Input
-            id="lastName"
+            fullWidth={true}
             data-testid="lastName"
+            id="lastName"
             name="applicant_last_name"
             type="text"
+            error={formik.touched.applicant_last_name && Boolean(formik.errors.applicant_last_name)}
+            value={formik.values.applicant_last_name}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            value={formik.values.applicant_last_name}
+            className={fr.cx("fr-input")}
           />
-          <FormErrorMessage>{formik.errors.applicant_last_name}</FormErrorMessage>
+          <FormHelperText>{formik.touched.applicant_last_name && formik.errors.applicant_last_name}</FormHelperText>
         </FormControl>
-
-        <FormControl data-testid="fieldset-firstname" mt={{ base: 3, md: "0" }} isInvalid={formik.touched.applicant_first_name && formik.errors.applicant_first_name}>
-          <FormLabel htmlFor="firstName">Prénom *</FormLabel>
+      </Grid>
+      <Grid size={{ xs: 12, md: 6 }}>
+        <FormControl error={formik.touched.applicant_first_name && Boolean(formik.errors.applicant_first_name)} fullWidth>
+          <FormLabel required>Prénom</FormLabel>
           <Input
-            id="firstName"
+            className={fr.cx("fr-input")}
             data-testid="firstName"
+            id="firstName"
             name="applicant_first_name"
             type="text"
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.applicant_first_name}
           />
-          <FormErrorMessage>{formik.errors.applicant_first_name}</FormErrorMessage>
+          <FormHelperText>{formik.touched.applicant_first_name && formik.errors.applicant_first_name}</FormHelperText>
         </FormControl>
-      </Flex>
+      </Grid>
 
-      <Flex direction={["column", "column", "row"]} mt={[null, null, 4]} gap={[0, 0, 6]}>
-        <FormControl data-testid="fieldset-email" mt={{ base: 3, md: "0" }} isInvalid={formik.touched.applicant_email && formik.errors.applicant_email}>
-          <FormLabel htmlFor="email">E-mail *</FormLabel>
-          <Input id="email" data-testid="email" name="applicant_email" type="text" onChange={onEmailChange} onBlur={formik.handleBlur} value={formik.values.applicant_email} />
+      <Grid size={{ xs: 12, md: 6 }}>
+        <FormControl error={formik.touched.applicant_email && Boolean(formik.errors.applicant_email)} fullWidth>
+          <FormLabel required>E-mail</FormLabel>
+          <Input
+            fullWidth={true}
+            className={fr.cx("fr-input")}
+            data-testid="email"
+            id="email"
+            name="applicant_email"
+            type="email"
+            onChange={onEmailChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.applicant_email}
+          />
           {suggestedEmails.length > 0 && (
-            <Box mt={2} fontSize="12px" color="grey.600">
-              <Text as="span" mr={2}>
+            <Box sx={{ mt: 2, fontSize: "12px", color: "grey.600" }}>
+              <Typography component="span" sx={{ mr: 2 }}>
                 Voulez vous dire ?
-              </Text>
+              </Typography>
               {suggestedEmails.map((suggestedEmail) => (
                 <Button key={suggestedEmail.corrected} onClick={() => clickSuggestion(suggestedEmail.corrected)} priority="tertiary no outline" size="small">
                   {suggestedEmail.corrected}
@@ -186,23 +200,27 @@ const UserFields = ({ formik }: { formik: any }) => {
               ))}
             </Box>
           )}
-          <FormErrorMessage>{formik.errors.applicant_email}</FormErrorMessage>
+          <FormHelperText>{formik.touched.applicant_email && formik.errors.applicant_email}</FormHelperText>
         </FormControl>
-
-        <FormControl data-testid="fieldset-phone" mt={{ base: 3, md: "0" }} isInvalid={formik.touched.applicant_phone && formik.errors.applicant_phone}>
-          <FormLabel htmlFor="email">Téléphone *</FormLabel>
+      </Grid>
+      <Grid size={{ xs: 12, md: 6 }}>
+        <FormControl error={formik.touched.applicant_phone && Boolean(formik.errors.applicant_phone)} fullWidth>
+          <FormLabel required>Téléphone</FormLabel>
           <Input
-            id="phone"
+            className={fr.cx("fr-input")}
             data-testid="phone"
+            id="phone"
             name="applicant_phone"
-            type="text"
+            type="tel"
+            fullWidth
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.applicant_phone}
+            sx={{ mt: { xs: 3, md: 0 } }}
           />
-          <FormErrorMessage>{formik.errors.applicant_phone}</FormErrorMessage>
+          <FormHelperText>{formik.touched.applicant_phone && formik.errors.applicant_phone}</FormHelperText>
         </FormControl>
-      </Flex>
-    </>
+      </Grid>
+    </Grid>
   )
 }

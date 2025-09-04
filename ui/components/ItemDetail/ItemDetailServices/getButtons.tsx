@@ -1,5 +1,5 @@
-import { Box } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
+import { Box } from "@mui/material"
 
 type Props = {
   goPrev?: () => void
@@ -25,7 +25,7 @@ export const getNavigationButtons = ({ goPrev, goNext, handleClose }: Props) => 
         </Box>
       )}
       {goNext && (
-        <Box ml={2}>
+        <Box sx={{ ml: 2 }}>
           <Button
             priority="tertiary"
             iconId="ri-arrow-right-s-line"
