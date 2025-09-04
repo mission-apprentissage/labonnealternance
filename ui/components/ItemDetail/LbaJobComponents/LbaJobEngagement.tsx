@@ -20,7 +20,7 @@ export function LbaJobEngagement() {
         <Typography sx={{ fontSize: "16px", lineHeight: "24px" }}>
           Cet employeur est reconnu <i>Handi-engagé</i> par France Travail, Cap emploi et leurs partenaires, du fait des actions concrètes qu’il mène en faveur du recrutement
           d’alternants en situation de handicap.{" "}
-          <DsfrLink href="/faq" external aria-label="Accéder à la FAQ - Qu'est-ce qu'un employeur engagé handicap - nouvelle fenêtre">
+          <DsfrLink href="/faq?engagement-handicap=1" external aria-label="Accéder à la FAQ - Qu'est-ce qu'un employeur engagé handicap - nouvelle fenêtre">
             En savoir plus
           </DsfrLink>
         </Typography>

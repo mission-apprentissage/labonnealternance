@@ -39,7 +39,7 @@ export function RechercheElligibleHandicapCheckbox({
           <Box sx={{ maxWidth: "800px" }}>
             La bonne alternance met en avant les employeurs engagés pour l’emploi en faveur des personnes en situation de handicap. Ces entreprises sont vérifiées par France
             Travail, Cap emploi et leurs partenaires.{" "}
-            <DsfrLink href="/faq" external aria-label="Accéder à la FAQ - Qu'est-ce qu'un employeur engagé handicap - nouvelle fenêtre">
+            <DsfrLink href="/faq?engagement-handicap=1" external aria-label="Accéder à la FAQ - Qu'est-ce qu'un employeur engagé handicap - nouvelle fenêtre">
               En savoir plus
             </DsfrLink>
           </Box>
