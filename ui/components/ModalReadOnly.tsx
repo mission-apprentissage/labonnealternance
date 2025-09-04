@@ -9,13 +9,13 @@ export const ModalReadOnly = ({
   children,
   isOpen,
   onClose,
-  modalContentProps,
+  size = "md",
   hideCloseButton = false,
 }: {
   children: React.ReactNode
   isOpen: boolean
   onClose: () => void
-  modalContentProps?: any
+  size?: "xs" | "sm" | "md" | "lg" | "xl"
   hideCloseButton?: boolean
 }) => {
   const isMobile = useIsMobileDevice()
@@ -29,17 +29,12 @@ export const ModalReadOnly = ({
       open={isOpen}
       onClose={onClose}
       fullScreen={isMobile}
-      maxWidth={false}
-      PaperProps={{
-        sx: {
-          overflowY: "auto",
-          margin: "auto",
-          maxHeight: { xs: "100%", sm: "95%" },
-          maxWidth: { xs: "100%", sm: "95%" },
-          width: isMobile ? "100vw" : "fit-content",
-          height: isMobile ? "100vh" : "auto",
-          borderRadius: 0,
-          ...modalContentProps,
+      maxWidth={size}
+      slotProps={{
+        paper: {
+          sx: {
+            p: isMobile ? 1 : 2,
+          },
         },
       }}
     >

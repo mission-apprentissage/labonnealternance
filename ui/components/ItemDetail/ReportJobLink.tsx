@@ -97,14 +97,7 @@ export const ReportJobLink = ({
       <InfoTooltipOrModal tooltipContent={tooltip}>
         <Button priority="tertiary no outline" iconId="ri-question-line" size="small" title="label" />
       </InfoTooltipOrModal>
-      <ModalReadOnly
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        modalContentProps={{
-          width: 792,
-          p: 5,
-        }}
-      >
+      <ModalReadOnly isOpen={isModalOpen} onClose={closeModal}>
         {storedValue ? (
           <ReportedAcknowledgement />
         ) : (

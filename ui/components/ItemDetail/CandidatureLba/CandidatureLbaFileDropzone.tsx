@@ -125,7 +125,7 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
           {isDragActive ? (
             <Typography sx={{ ml: 6 }}>Déposez le fichier ici</Typography>
           ) : (
-            <Box sx={{ display: "flex", ml: 6, flexDirection: "row", alignItems: "center", gap: 4 }}>
+            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: "center", gap: 4 }}>
               <Image width={24} height={24} style={{ marginRight: "8px" }} alt="" src="/images/icons/candidature_file_upload.svg" />{" "}
               <Box>
                 <Typography sx={{ fontSize: "14px", fontWeight: 700, color: "grey.700", mb: 0 }}>Chargez votre CV ou déposez le ici</Typography>

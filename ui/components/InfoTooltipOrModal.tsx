@@ -18,13 +18,7 @@ export const InfoTooltipOrModal = ({ tooltipContent, children }: { tooltipConten
 
   return (
     <>
-      <ModalReadOnly
-        isOpen={isModalOpen /* && isMobileBool*/}
-        onClose={closeModal}
-        modalContentProps={{
-          padding: 6,
-        }}
-      >
+      <ModalReadOnly isOpen={isModalOpen /* && isMobileBool*/} onClose={closeModal}>
         {tooltipContent}
       </ModalReadOnly>
       <Text as={"span"} _hover={{ cursor: "pointer" }} onClick={onClick}>
