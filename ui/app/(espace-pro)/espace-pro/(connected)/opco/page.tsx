@@ -141,13 +141,7 @@ function AdministrationOpco() {
       Header: "Origine",
       accessor: "origin",
       width: "200",
-      Cell: ({ value }) => (
-        <Typography
-          sx={{ color: "#666666", fontSize: "14px", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}
-        >
-          {value}
-        </Typography>
-      ),
+      Cell: ({ value }) => <Typography sx={{ color: "#666666", fontSize: "14px", ...webkitLineClamp }}>{value}</Typography>,
       id: "origin",
     },
   ]
