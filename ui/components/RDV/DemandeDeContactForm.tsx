@@ -14,7 +14,6 @@ import {
   MenuItem,
   ListItemText,
   SelectChangeEvent,
-  OutlinedInput,
   Checkbox,
 } from "@mui/material"
 import emailMisspelled, { top100 } from "email-misspelled"
@@ -244,27 +243,30 @@ const ReasonsField = ({ formik }: { formik: any }) => {
   /**
    * On change on applicant reasons, it updates the state.
    */
-  const onChangeApplicantReasons = (event: SelectChangeEvent<typeof EReasonsKey>) => {
+  const onChangeApplicantReasons = (event: SelectChangeEvent<EReasonsKey[]>) => {
     const {
       target: { value },
     } = event
-    helper.setValue(value, true)
+    helper.setValue(typeof value === "string" ? value.split(",") : value, true)
   }
 
   return (
-    <FormControl data-testid="fieldset-reasons" fullWidth>
+    <FormControl data-testid="fieldset-reasons" error={meta.touched && Boolean(meta.error)} fullWidth>
       <FormLabel htmlFor="reasons">Quel(s) sujet(s) souhaitez-vous aborder ? *</FormLabel>
       <Select
-        multiline
+        multiple
         value={field.value}
         onChange={onChangeApplicantReasons}
-        renderValue={() => field.value}
-        input={<OutlinedInput label="Tag" className={fr.cx("fr-input")} error={meta.touched && Boolean(meta.error)} />}
+        renderValue={(selected) => {
+          const selectedReasons = RdvReasons.filter((reason) => selected.includes(reason.key))
+          return selectedReasons.map((reason) => reason.title).join(", ")
+        }}
+        input={<Input className={fr.cx("fr-input")} />}
       >
         {RdvReasons.map(({ key, title }, index) => {
           const checked = applicantReasons.includes(key)
           return (
-            <MenuItem key={key} value={title} id={`reason-${index}`}>
+            <MenuItem key={key} value={key} id={`reason-${index}`}>
               <Checkbox checked={checked} />
               <ListItemText primary={title} />
             </MenuItem>
