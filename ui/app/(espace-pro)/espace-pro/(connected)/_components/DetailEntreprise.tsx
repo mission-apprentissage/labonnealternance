@@ -1,8 +1,8 @@
 "use client"
-import { Box, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, SimpleGrid, Spinner, Stack, Text, useToast } from "@chakra-ui/react"
+import { useToast } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
-import { Alert } from "@mui/material"
+import { Alert, Box, CircularProgress, Typography } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/navigation"
@@ -12,6 +12,7 @@ import * as Yup from "yup"
 
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import { FieldWithValue } from "@/app/(espace-pro)/_components/FieldWithValue"
+import { OpcoSelect } from "@/app/(espace-pro)/_components/OpcoSelect"
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 import { OffresTabs } from "@/app/(espace-pro)/espace-pro/(connected)/_components/OffresTabs"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
@@ -19,7 +20,7 @@ import CustomInput from "@/app/_components/CustomInput"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 import { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationModificationOpco, UserValidationHistory } from "@/components/espace_pro"
-import { OpcoSelect } from "@/components/espace_pro/CreationRecruteur/OpcoSelect"
+import { webkitLineClamp } from "@/styles/webkitLineClamp"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { updateEntrepriseAdmin, updateEntrepriseCFA } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
@@ -121,32 +122,30 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
     <AnimationContainer>
       <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={userRecruteur} onUpdate={() => onChange?.({})} />
 
-      <Box borderBottom="1px solid #E3E3FD" mb={10}>
+      <Box sx={{ borderBottom: "1px solid #E3E3FD", mb: fr.spacing("5w") }}>
         {user.type !== "CFA" && (
           <>
-            <Heading fontSize="32px" noOfLines={2}>
+            <Typography component="h2" sx={{ fontSize: "32px", ...webkitLineClamp }}>
               {establishmentLabel}
-            </Heading>
-            <Flex align="center" justify="space-between" mb={5}>
-              <Flex align="center" justify="flex-start" maxW="50%">
-                <Box ml={5}>{getUserBadge(lastUserState)}</Box>
-              </Flex>
-              <Stack direction={["column", "column", "column", "row"]} spacing="10px">
-                {getActionButtons(lastUserState, userRecruteur._id)}
-              </Stack>
-            </Flex>
+            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: fr.spacing("5v") }}>
+              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-start", maxW: "50%" }}>
+                <Box sx={{ ml: fr.spacing("5v") }}>{getUserBadge(lastUserState)}</Box>
+              </Box>
+              <Box sx={{ display: "flex", flexDirection: { xs: "column", lg: "row" }, gap: fr.spacing("2v") }}>{getActionButtons(lastUserState, userRecruteur._id)}</Box>
+            </Box>
           </>
         )}
         {user.type === "CFA" && (
-          <Flex mb={5} justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
-            <Heading fontSize="32px" mx={0} noOfLines={2}>
+          <Box sx={{ mb: fr.spacing("5v"), display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: fr.spacing("2v") }}>
+            <Typography sx={{ fontSize: "32px", mx: 0, ...webkitLineClamp }} component="h2">
               {establishmentLabel}
-            </Heading>
+            </Typography>
 
             <Button priority="secondary" type="button" onClick={() => router.push(PAGES.dynamic.backCfaPageEntreprise(userRecruteur.establishment_id).getPath())}>
               Fermer
             </Button>
-          </Flex>
+          </Box>
         )}
       </Box>
       <Formik
@@ -180,7 +179,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
           setSubmitting(false)
         }}
       >
-        {({ values, isSubmitting, isValid, setFieldValue, errors }) => {
+        {({ values, isSubmitting, isValid, setFieldValue, errors, touched }) => {
           return (
             <>
               <ConfirmationModificationOpco
@@ -190,11 +189,18 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                 previousValue={userRecruteur.opco}
                 newValue={values.opco}
               />
-              <SimpleGrid columns={[1, 1, 1, 2]} spacing={[0, 10]}>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: {
+                    xs: "1fr",
+                    lg: "repeat(2, 1fr)",
+                  },
+                  gap: { xs: 0, sm: 2, lg: 5 },
+                }}
+              >
                 <Box>
-                  <Text fontSize="20px" fontWeight="700">
-                    Informations de contact
-                  </Text>
+                  <Typography sx={{ fontSize: "20px", fontWeight: "700" }}>Informations de contact</Typography>
                   <Box mt={4}>
                     <Form>
                       <CustomInput name="last_name" label="Nom" type="text" value={values.last_name} />
@@ -202,30 +208,27 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                       <CustomInput name="phone" label="Téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
                       <CustomInput name="email" label="Email" type="email" value={values.email} />
                       {userRecruteur.type === AUTHTYPE.ENTREPRISE && (
-                        <FormControl>
-                          <FormLabel>OPCO</FormLabel>
-                          <FormHelperText pb={2}>Pour vous accompagner dans vos recrutements, votre OPCO accède à vos informations sur La bonne alternance.</FormHelperText>
-                          <OpcoSelect
-                            value={values.opco}
-                            name="opco"
-                            onChange={(newValue) => {
-                              setFieldValue("opco", newValue)
-                              confirmationModificationOpco.onOpen()
-                            }}
-                          />
-                          <FormErrorMessage>{errors.opco as string}</FormErrorMessage>
-                        </FormControl>
+                        <OpcoSelect
+                          value={values.opco}
+                          name="opco"
+                          errors={errors}
+                          touched={touched}
+                          onChange={(newValue) => {
+                            setFieldValue("opco", newValue)
+                            confirmationModificationOpco.onOpen()
+                          }}
+                        />
                       )}
                       {userMutation.error && (
                         <Alert sx={{ marginTop: fr.spacing("2w") }} severity="error">
                           {userMutation.error + ""}
                         </Alert>
                       )}
-                      <Flex justify="flex-end" my={5}>
+                      <Box sx={{ display: "flex", justifyContent: "flex-end", my: fr.spacing("5v") }}>
                         <Button type="submit" disabled={!isValid || isSubmitting}>
-                          {isSubmitting ? <Spinner mr={2} /> : <ArrowRightLine mr={2} />}Enregistrer
+                          {isSubmitting ? <CircularProgress size={24} /> : <ArrowRightLine mr={2} />}Enregistrer
                         </Button>
-                      </Flex>
+                      </Box>
                     </Form>
                   </Box>
                 </Box>
@@ -237,14 +240,12 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                     </Box>
                   )}
                 </Box>
-              </SimpleGrid>
+              </Box>
               {(user.type === AUTHTYPE.ADMIN || user.type === AUTHTYPE.OPCO) && (
                 <>
                   <hr style={{ marginTop: 24 }} />
                   <Box my={6}>
-                    <Text fontSize="20px" lineHeight="32px" fontWeight="700" mb={6}>
-                      Offres de recrutement en alternance
-                    </Text>
+                    <Typography sx={{ fontSize: "20px", lineHeight: "32px", fontWeight: "700", mb: fr.spacing("3w") }}>Offres de recrutement en alternance</Typography>
                     <OffresTabs
                       recruiter={recruiter}
                       buildOfferEditionUrl={(offerId) => {

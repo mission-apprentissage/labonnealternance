@@ -1,6 +1,7 @@
 "use client"
-import { Box, Flex, Heading, Text } from "@chakra-ui/react"
+
 import Button from "@codegouvfr/react-dsfr/Button"
+import { Box, Typography } from "@mui/material"
 import { useRouter } from "next/navigation"
 
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
@@ -19,19 +20,19 @@ export default function CompteEnAttente() {
       <BorderedBox sx={{ display: "flex", flexDirection: { xs: "column", lg: "row" }, gap: { xs: 1, lg: 2 }, justifyContent: "center", width: "100%", my: 2 }}>
         <MailCloud w={["120px", "120px", "120px", "269px"]} h={["67px", "67px", "67px", "151px"]} />
         <Box>
-          <Heading className="big" mb={3}>
+          <Typography component="h1" sx={{ fontSize: "28px", mb: 3, fontWeight: "bold", lineHeight: "28px" }}>
             Votre demande d’accès est désormais en attente de validation.
-          </Heading>
-          <Flex alignItems="flex-start" mb={6}>
+          </Typography>
+          <Box sx={{ display: "flex", alignItems: "flex-start", mb: 3 }}>
             <InfoCircle mr={2} mt={1} />
-            <Text>Vous serez notifié par email une fois votre compte validé, et vous pourrez ensuite publier vos offres d’emplois.</Text>
-          </Flex>
+            <Typography>Vous serez notifié par email une fois votre compte validé, et vous pourrez ensuite publier vos offres d’emplois.</Typography>
+          </Box>
 
-          <Flex align="center" ml={5} mb={4}>
+          <Box sx={{ display: "flex", alignItems: "center", ml: 2, mb: 2 }}>
             <Button priority="secondary" onClick={redirectFn}>
               Retour à l'accueil
             </Button>
-          </Flex>
+          </Box>
         </Box>
       </BorderedBox>
     </DepotSimplifieStyling>

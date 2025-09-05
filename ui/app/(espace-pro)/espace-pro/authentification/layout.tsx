@@ -1,5 +1,5 @@
-import { Container } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
+import { Box } from "@mui/material"
 import type { PropsWithChildren } from "react"
 
 import { PublicHeader } from "@/app/(espace-pro)/_components/PublicHeader"
@@ -12,9 +12,9 @@ export default async function AuthentificationLayout({ children }: PropsWithChil
   return (
     <>
       <PublicHeader user={user} />
-      <Container maxW="container.xl" sx={{ alignContent: "center", marginTop: fr.spacing("2v"), marginBottom: fr.spacing("2v") }}>
+      <Box maxWidth={1200} paddingTop={fr.spacing("3v")} paddingBottom={fr.spacing("3v")} marginX="auto">
         {children}
-      </Container>
+      </Box>
       <Footer />
     </>
   )
