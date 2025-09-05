@@ -1,10 +1,12 @@
 "use client"
 
-import { Box, Container, Flex, Heading, Image, Stack, Text, useToast } from "@chakra-ui/react"
+import { useToast } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
-import { Link } from "@mui/material"
+import { Box, Link, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { IRecruiter, IRecruiterJson } from "shared"
@@ -22,22 +24,40 @@ import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
 const EmptySpace = () => (
-  <Stack direction={["column", "column", "column", "row"]} mt={12} pt={12} py={8} border="1px solid" borderColor="grey.400" spacing="32px">
-    <Flex justify={["center", "center", "center", "flex-end"]} align={["center", "center", "center", "flex-start"]} w={["100%", "100%", "100%", "350px"]} h="150px">
-      {/* eslint-disable-next-line jsx-a11y/alt-text */}
-      <Image src="/images/espace_pro/images/add-offer.svg" />
-    </Flex>
-
-    <Box w={["100%", "100%", "100%", "600px"]}>
-      <Heading fontSize="2rem" pb={7} datatest-id="header-ajouter-entreprise">
-        Ajoutez votre première entreprise partenaire
-      </Heading>
-      <Text fontSize="1.375rem">Une entreprise partenaire vous fait confiance pour gérer ses offres d’emploi ?</Text>
-      <Text fontSize="1.375rem">
-        Décrivez les besoins de recrutement de cette entreprise pour les afficher sur le site <span style={{ fontWeight: "700" }}>La bonne alternance</span> dès aujourd’hui.
-      </Text>
+  <Box
+    sx={{
+      display: "flex",
+      flexDirection: { xs: "column", lg: "row" },
+      mt: fr.spacing("3w"),
+      px: fr.spacing("3w"),
+      py: fr.spacing("3w"),
+      border: "1px solid",
+      borderColor: "grey.400",
+      gap: "32px",
+    }}
+  >
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: { xs: "center", lg: "flex-end" },
+        alignItems: { xs: "center", lg: "flex-start" },
+        width: { xs: "100%", lg: "350px" },
+        height: "150px",
+      }}
+    >
+      <Image width={246} height={170} src="/images/espace_pro/images/add-offer.svg" alt="" />
     </Box>
-  </Stack>
+
+    <Box sx={{ width: { xs: "100%", lg: "600px" } }}>
+      <Typography component="h2" sx={{ fontSize: { xs: "4rem", md: "2rem" }, pb: fr.spacing("3w") }} datatest-id="header-ajouter-entreprise">
+        Ajoutez votre première entreprise partenaire
+      </Typography>
+      <Typography sx={{ fontSize: "1.375rem" }}>Une entreprise partenaire vous fait confiance pour gérer ses offres d’emploi ?</Typography>
+      <Typography sx={{ fontSize: "1.375rem" }}>
+        Décrivez les besoins de recrutement de cette entreprise pour les afficher sur le site <span style={{ fontWeight: "700" }}>La bonne alternance</span> dès aujourd’hui.
+      </Typography>
+    </Box>
+  </Box>
 )
 
 function ListeEntreprise() {
@@ -97,13 +117,9 @@ function ListeEntreprise() {
         },
       }) => {
         const { establishment_raison_sociale, establishment_siret, establishment_id, opco } = data[id]
-        const siretText = (
-          <Text color="#666666" fontSize="14px">
-            SIRET {establishment_siret}
-          </Text>
-        )
+        const siretText = <Typography sx={{ color: "#666666", fontSize: "14px" }}>SIRET {establishment_siret}</Typography>
         return (
-          <Flex direction="column">
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
             <Link underline="hover" fontWeight="700" href={PAGES.dynamic.backCfaPageEntreprise(establishment_id).getPath()} aria-label="voir les informations">
               {establishment_raison_sociale}
             </Link>
@@ -114,10 +130,8 @@ function ListeEntreprise() {
                 {siretText}
               </Link>
             )}
-            <Text color="redmarianne" fontSize="14px">
-              {opco}
-            </Text>
-          </Flex>
+            <Typography sx={{ color: "redmarianne", fontSize: "14px" }}>{opco}</Typography>
+          </Box>
         )
       },
     },
@@ -158,20 +172,22 @@ function ListeEntreprise() {
           establishment_raison_sociale={currentEntreprise.establishment_raison_sociale}
         />
       )}
-      <Container maxW="container.xl" mt={5}>
-        <Breadcrumb pages={[PAGES.static.backCfaHome]} />
-        <Flex justify="space-between" mb={12}>
-          <Text fontSize="2rem" fontWeight={700}>
-            Mes entreprises
-          </Text>
-          <Box mr={3}>
-            <Button size="small" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
-              Nouvelle entreprise
-            </Button>
+      <Box sx={{ maxWidth: 1200, mx: "auto", mt: fr.spacing("5v") }}>
+        <Box>
+          <Breadcrumb pages={[PAGES.static.backCfaHome]} />
+          <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: fr.spacing("4w"), justifyContent: "space-between", mb: fr.spacing("3w") }}>
+            <Box>
+              <Typography sx={{ fontSize: "2rem !important", fontWeight: 700 }}>Mes entreprises</Typography>
+            </Box>
+            <Box mr={3}>
+              <Button size="small" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
+                Nouvelle entreprise
+              </Button>
+            </Box>
           </Box>
-        </Flex>
+        </Box>
         {data?.length ? <TableWithPagination columns={columns} data={data} exportable={false} /> : <EmptySpace />}
-      </Container>
+      </Box>
     </AnimationContainer>
   )
 }
