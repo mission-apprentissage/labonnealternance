@@ -1,7 +1,8 @@
 "use client"
 
-import { Box, Flex, Heading, SimpleGrid, Spinner, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
+import { Box, CircularProgress, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/navigation"
@@ -99,18 +100,18 @@ const Formulaire = ({
                   {shouldSelectOpco && (
                     <OpcoSelect name="opco" onChange={(newValue) => setFieldValue("opco", newValue)} value={values.opco as OPCOS_LABEL} errors={errors} touched={touched} />
                   )}
-                  <Flex justifyContent="flex-end" alignItems="center" mt={5}>
+                  <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", mt: fr.spacing("5v") }}>
                     {!widget?.isWidget && (
-                      <Box mr={5}>
+                      <Box sx={{ mr: fr.spacing("5v") }}>
                         <Button type="button" priority="secondary" onClick={() => router.back()}>
                           Annuler
                         </Button>
                       </Box>
                     )}
                     <Button type="submit" disabled={!isValid || isSubmitting}>
-                      {isSubmitting ? <Spinner mr={2} /> : <ArrowRightLine width={5} mr={2} />}Suivant
+                      {isSubmitting ? <CircularProgress size={24} sx={{ mr: fr.spacing("1w") }} /> : <ArrowRightLine width={5} mr={2} />}Suivant
                     </Button>
-                  </Flex>
+                  </Box>
                 </>
               }
               right={
@@ -129,20 +130,26 @@ const Formulaire = ({
 
 const FormulaireLayout = ({ left, right, type }: { left: React.ReactNode; right: React.ReactNode; type: string }) => {
   return (
-    <SimpleGrid columns={[1, 1, 2, 2]} spacing={4} mt={0}>
+    <Box
+      sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(2, 1fr)" }, gridTemplateRows: { xs: "repeat(3, auto)", md: "auto 1fr" }, mt: 0 }}
+      rowGap={4}
+      columnGap={4}
+    >
       <Box>
-        <Heading>{type === AUTHTYPE.ENTREPRISE ? "Vos informations de contact" : "Créez votre compte"}</Heading>
-        <Box fontSize="20px" mb={4}>
-          <Text className="big" mt={2} mb={4}>
+        <Typography component="h2" sx={{ fontSize: "24px", fontWeight: "bold" }}>
+          {type === AUTHTYPE.ENTREPRISE ? "Vos informations de contact" : "Créez votre compte"}
+        </Typography>
+        <Box sx={{ fontSize: "20px", mb: fr.spacing("2w"), pt: fr.spacing("1w"), pb: fr.spacing("2w") }}>
+          <Typography>
             {type === AUTHTYPE.ENTREPRISE
               ? "Seul le numéro de téléphone sera visible sur vos offres. Vous recevrez les candidatures sur l'email renseigné."
               : "Seul le numéro de téléphone sera visible sur les offres de vos entreprises partenaires. Vous recevrez les candidatures sur l'email renseigné."}
-          </Text>
+          </Typography>
         </Box>
         <Box>{left}</Box>
       </Box>
       <Box>{right}</Box>
-    </SimpleGrid>
+    </Box>
   )
 }
 
