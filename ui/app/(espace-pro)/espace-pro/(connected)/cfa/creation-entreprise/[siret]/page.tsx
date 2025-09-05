@@ -97,10 +97,10 @@ function CreationEntrepriseDetail({ siret }: { siret: string }) {
             Il s’agit des informations de contact de votre entreprise partenaire. Ces informations ne seront pas visibles sur l’offre.
           </Typography>
         </Box>
-        <Box sx={{ gridRowStart: { xs: "auto", sm: fr.spacing("1w") } }}>
+        <Box sx={{ gridRowStart: { xs: "auto", sm: 2 } }}>
           <Formulaire siret={siret} />
         </Box>
-        <Box sx={{ gridRowStart: { xs: "auto", sm: fr.spacing("1w") }, pt: { xs: fr.spacing("2w"), sm: fr.spacing("4w") }, minW: "0" }}>
+        <Box sx={{ gridRowStart: { xs: "auto", sm: 2 }, pt: { xs: fr.spacing("2w"), sm: fr.spacing("4w") }, minW: "0" }}>
           <InformationLegaleEntreprise siret={siret} type={ENTREPRISE} />
         </Box>
       </Box>
