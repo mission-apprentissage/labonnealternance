@@ -1,13 +1,16 @@
 "use client"
-import { Box, Input, Text, useToast } from "@chakra-ui/react"
+import { useToast } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Field, Form, Formik } from "formik"
+import { Box, Typography } from "@mui/material"
+import { Form, Formik } from "formik"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { IFormationCatalogueJson } from "shared"
 
 import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import CustomDSFRInput from "@/app/_components/CustomDSFRInput"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -44,19 +47,23 @@ export default function RendezVousApprentissage() {
   return (
     <AdminLayout currentAdminPage="RECHERCHE_RENDEZ_VOUS">
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.rendezVousApprentissageRecherche]} />
-      <Box border="1px solid #E0E5ED" bg="white">
-        <Text fontWeight="500" textStyle="h6" p={4} px={6} borderBottom="1px solid #E0E5ED">
+      <Box sx={{ border: "1px solid #E0E5ED", backgroundColor: "white" }}>
+        <Typography component="h2" sx={{ fontWeight: 700, p: fr.spacing("2w"), borderBottom: "1px solid #E0E5ED" }}>
           Rechercher un établissement
-        </Text>
-        <Box mt={5} px={6}>
+        </Typography>
+        <Box sx={{ mt: fr.spacing("2w"), px: fr.spacing("2w") }}>
           <Formik initialValues={{ keyword: "" }} onSubmit={search}>
             <Form>
-              <Box mb={5}>
-                <Field name="keyword">
-                  {({ field }) => {
-                    return <Input placeholder="Siret formateur / Cle ministère educatif / UAI / Identifiant RCO formation" {...field} />
+              <Box sx={{ mb: fr.spacing("2w") }}>
+                <CustomDSFRInput
+                  label="Identification de l'établissement *"
+                  required={true}
+                  name="keyword"
+                  nativeInputProps={{
+                    type: "text",
+                    placeholder: "Siret formateur / Cle ministère educatif / UAI / Identifiant RCO formation",
                   }}
-                </Field>
+                />
               </Box>
               <Button type="submit" disabled={loading} style={{ marginBottom: "10px" }}>
                 Rechercher
