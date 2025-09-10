@@ -1,7 +1,9 @@
 "use client"
 
-import { Box, Checkbox, Editable, EditableInput, EditablePreview, Flex, Heading, HStack, Table, Tbody, Td, Text, Th, Thead, Tr, useToast, VStack } from "@chakra-ui/react"
+import { useToast } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
+import { Box, Checkbox, FormControlLabel, Input, Typography } from "@mui/material"
 import { useParams, useRouter } from "next/navigation"
 import { createRef } from "react"
 import { IEligibleTrainingsForAppointmentJson, IEtablissementJson, IETFAParametersJson } from "shared"
@@ -99,151 +101,145 @@ export default function RendezVousApprentissageDetailRendererClient({
   return (
     <AdminLayout currentAdminPage="RECHERCHE_RENDEZ_VOUS">
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.rendezVousApprentissageRecherche, PAGES.dynamic.rendezVousApprentissageDetail({ siret })]} />
-      <Heading textStyle="h2" mt={5}>
+      <Typography component="h2" sx={{ fontWeight: 700, mt: fr.spacing("2w") }}>
         {title}
-      </Heading>
+      </Typography>
       <Box>
         {eligibleTrainingsForAppointmentResult ? (
           <>
             <EtablissementComponent id={etablissement?._id.toString()} />
-            <Flex bg="white" mt={10} border="1px solid #E0E5ED" borderRadius="4px" borderBottom="none">
-              <Text flex="1" fontSize="16px" p={5}>
-                Formations
-              </Text>
-            </Flex>
-            <Box border="1px solid #E0E5ED" overflow="auto" cursor="pointer">
-              <Table bg="white">
-                <Thead color="#ADB2BC">
-                  <Tr>
-                    <Th textStyle="sm" fontSize="0.8em" p="1px">
-                      FORMATION
-                    </Th>
-                    <Th textStyle="sm" fontSize="0.8em" p="1px">
-                      ADRESSE
-                    </Th>
-                    <Th textStyle="sm" fontSize="0.8em" p="1px">
-                      LIEU FORMATION EMAIL
-                    </Th>
-
-                    <Th textStyle="sm" fontSize="0.8em" p="1px">
-                      CATALOGUE
-                    </Th>
-
-                    <Th textStyle="sm" fontSize="0.8em" p="1px">
-                      SOURCE
-                    </Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {eligibleTrainingsForAppointmentResult.parameters.map((parameter: IEligibleTrainingsForAppointmentJson, i) => {
-                    const emailRef = createRef()
-                    const emailFocusRef = createRef()
-
-                    return (
-                      <Tr key={i} _hover={{ bg: "#f4f4f4", transition: "0.5s" }} transition="0.5s" my={10}>
-                        <Td fontSize="0.8em" px="1px">
-                          <VStack alignItems="flex-start">
-                            <Box>
-                              <Text fontWeight="bold">Clé ministere educatif</Text> {parameter?.cle_ministere_educatif}
+            <Box sx={{ display: "flex", backgroundColor: "white", mt: fr.spacing("5w"), border: "1px solid #E0E5ED", borderRadius: "4px", borderBottom: "none" }}>
+              <Typography sx={{ flex: "1", fontSize: "20px", fontWeight: 700, p: fr.spacing("2w") }}>Formations</Typography>
+            </Box>
+            <Box sx={{ border: "1px solid #E0E5ED", overflow: "auto", cursor: "pointer" }}>
+              <Box className="fr-table">
+                <Box className="fr-table__wrapper">
+                  <Box className="fr-table__container">
+                    <Box className="fr-table__content">
+                      <Box component="table" sx={{ backgroundColor: "white" }}>
+                        <Box component="thead" sx={{ color: "#ADB2BC" }}>
+                          <Box component="tr" sx={{ fontSize: "0.8em", p: "1px" }}>
+                            <Box component="th">FORMATION</Box>
+                            <Box component="th">ADRESSE</Box>
+                            <Box component="th" sx={{ width: "250px" }}>
+                              LIEU FORMATION EMAIL
                             </Box>
-                            <Box>
-                              <Text fontWeight="bold">Id parcoursup </Text> {parameter?.parcoursup_id || "N/C"}
+                            <Box component="th" sx={{ width: "450px" }}>
+                              CATALOGUE
                             </Box>
-                            <Box>
-                              <Text fontWeight="bold">Intitulé</Text> {parameter?.training_intitule_long}
-                            </Box>
-                            <DsfrLink
-                              href={`https://catalogue-apprentissage.intercariforef.org/recherche/formations?SEARCH=%22${encodeURIComponent(parameter.cle_ministere_educatif)}%22`}
-                              aria-label="La formation du Catalogue - nouvelle fenêtre"
-                            >
-                              Lien catalogue
-                            </DsfrLink>
-                          </VStack>
-                        </Td>
-
-                        <Td fontSize="0.8em" px="1px">
-                          <VStack w={150} spacing={0}>
-                            <Text>{parameter.etablissement_formateur_street}</Text>
-                            <Text mt={2}>{parameter.etablissement_formateur_zip_code}</Text>
-                          </VStack>
-                        </Td>
-                        {/* @ts-expect-error: TODO */}
-                        <Td onClick={() => emailFocusRef.current.focus()} fontSize="0.8em" px="1px">
-                          <Editable
-                            defaultValue={parameter?.lieu_formation_email}
-                            style={{ border: "solid #dee2e6 1px", padding: 5, marginRight: 10, borderRadius: 4, minWidth: 225 }}
-                          >
-                            {/* @ts-expect-error: TODO */}
-                            <EditableInput ref={emailRef} type="email" _focus={{ border: "none" }} />
-                            {/* @ts-expect-error: TODO */}
-                            <EditablePreview ref={emailFocusRef} />
-                          </Editable>
-                          <Box mt={4}>
-                            {/* @ts-expect-error: TODO */}
-                            <Button onClick={() => saveEmail(parameter._id, emailRef.current.value, parameter.cle_ministere_educatif)}>OK</Button>
+                            <Box component="th">SOURCE</Box>
                           </Box>
-                        </Td>
-                        <Td align="center" fontSize="0.8em" px="1px">
-                          <HStack spacing={0}>
-                            <HStack w={150} spacing={0}>
-                              <InfoTooltip description="Désactiver l'écrasement du mail via la synchronisation catalogue" />
-                              <Text ml={1} w={80}>
-                                DESACTIVER
-                              </Text>
-                            </HStack>
-                            <Checkbox
-                              isChecked={parameter?.is_lieu_formation_email_customized}
-                              defaultChecked={parameter?.is_lieu_formation_email_customized}
-                              onChange={(event) => disableEmailOverriding(parameter._id, event.target.checked)}
-                            />
-                          </HStack>
-                          <HStack spacing={0}>
-                            <HStack w={150} spacing={0}>
-                              <InfoTooltip description="Publié sur le catalogue" />
-                              <Text ml={1} w={80}>
-                                PUBLIÉ
-                              </Text>
-                            </HStack>
-                            <Text>{parameter?.is_catalogue_published ? "Oui" : "Non"}</Text>
-                          </HStack>
-                          <HStack spacing={0}>
-                            <HStack w={150} spacing={0}>
-                              <InfoTooltip description="Dernière synchronisation catalogue" />
-                              <Text ml={1} w={80}>
-                                SYNCHRO
-                              </Text>
-                            </HStack>
-                            <Text>{parameter?.last_catalogue_sync_date ? formatDate(parameter?.last_catalogue_sync_date) : "N/A"}</Text>
-                          </HStack>
-                        </Td>
+                        </Box>
+                        <Box component="tbody">
+                          {eligibleTrainingsForAppointmentResult.parameters.map((parameter: IEligibleTrainingsForAppointmentJson, i) => {
+                            const emailRef = createRef()
+                            const emailFocusRef = createRef()
 
-                        <Td fontSize="0.8em" px="1px">
-                          {Object.values(referrers).map((referrer, i) => {
-                            const parameterReferrers = parameter.referrers?.find((parameterReferrer) => parameterReferrer === referrer.name)
                             return (
-                              <Flex mt={1} key={i}>
-                                <Checkbox
-                                  key={referrer.name}
-                                  isChecked={!!parameterReferrers}
-                                  value={referrer.name}
-                                  defaultChecked={!!parameterReferrers}
-                                  onChange={(event) => onCheckboxChange({ parameter, referrer, checked: event.target.checked })}
-                                >
-                                  <Text fontSize="0.8em">{referrer.name}</Text>
-                                </Checkbox>
-                              </Flex>
+                              <Box component="tr" key={i} sx={{ _hover: { bg: "#f4f4f4", transition: "0.5s" } }}>
+                                <Box component="td" sx={{ verticalAlign: "top", fontSize: "0.8em", py: fr.spacing("2w"), px: fr.spacing("1v") }} fontSize="0.8em" px="1px">
+                                  <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                                    <Box>
+                                      <Typography sx={{ fontWeight: 700 }}>Clé ministere educatif</Typography> {parameter?.cle_ministere_educatif}
+                                    </Box>
+                                    <Box>
+                                      <Typography sx={{ fontWeight: 700 }}>Id parcoursup </Typography> {parameter?.parcoursup_id || "N/C"}
+                                    </Box>
+                                    <Box>
+                                      <Typography sx={{ fontWeight: 700 }}>Intitulé</Typography> {parameter?.training_intitule_long}
+                                    </Box>
+                                    <DsfrLink
+                                      href={`https://catalogue-apprentissage.intercariforef.org/recherche/formations?SEARCH=%22${encodeURIComponent(parameter.cle_ministere_educatif)}%22`}
+                                      aria-label="La formation du Catalogue - nouvelle fenêtre"
+                                    >
+                                      Lien catalogue
+                                    </DsfrLink>
+                                  </Box>
+                                </Box>
+
+                                <Box component="td" sx={{ fontSize: "0.8em", px: "1px", verticalAlign: "top !important" }}>
+                                  <Box sx={{ width: 180 }}>
+                                    <Typography>{parameter.etablissement_formateur_street}</Typography>
+                                    <Typography>{parameter.etablissement_formateur_zip_code}</Typography>
+                                  </Box>
+                                </Box>
+                                {/* @ts-expect-error: TODO */}
+                                <Box component="td" onClick={() => emailFocusRef.current.focus()} sx={{ fontSize: "0.8em", px: "1px", verticalAlign: "top !important" }}>
+                                  <Input
+                                    sx={{ mt: "8px !important", fontSize: "12px", width: 250 }}
+                                    className={fr.cx("fr-input")}
+                                    inputRef={emailRef}
+                                    defaultValue={parameter?.lieu_formation_email}
+                                  />
+                                  <Box mt={fr.spacing("2w")}>
+                                    {/* @ts-expect-error: TODO */}
+                                    <Button onClick={() => saveEmail(parameter._id, emailRef.current.value, parameter.cle_ministere_educatif)}>OK</Button>
+                                  </Box>
+                                </Box>
+                                <Box component="td" align="center" sx={{ fontSize: "0.8em", px: "1px", verticalAlign: "top !important", width: "350px" }}>
+                                  <Box sx={{ display: "flex", flexDirection: "row", gap: 0 }}>
+                                    <Box sx={{ display: "flex", flexDirection: "row", gap: 0 }}>
+                                      <InfoTooltip description="Désactiver l'écrasement du mail via la synchronisation catalogue" />
+                                      <Typography sx={{ ml: fr.spacing("1v"), width: 140 }}>DESACTIVER</Typography>
+                                    </Box>
+                                    <Checkbox
+                                      sx={{ pt: 0, pb: fr.spacing("1v") }}
+                                      checked={parameter?.is_lieu_formation_email_customized}
+                                      defaultChecked={parameter?.is_lieu_formation_email_customized}
+                                      onChange={(event) => disableEmailOverriding(parameter._id, event.target.checked)}
+                                      className={fr.cx("fr-mt-0")}
+                                    />
+                                  </Box>
+                                  <Box sx={{ display: "flex", flexDirection: "row", gap: 0 }}>
+                                    <Box sx={{ display: "flex", flexDirection: "row", gap: 0 }}>
+                                      <InfoTooltip description="Publié sur le catalogue" />
+                                      <Typography sx={{ ml: fr.spacing("1v"), width: 150 }}>PUBLIÉ</Typography>
+                                    </Box>
+                                    <Typography>{parameter?.is_catalogue_published ? "Oui" : "Non"}</Typography>
+                                  </Box>
+                                  <Box sx={{ display: "flex", flexDirection: "row", gap: 0 }}>
+                                    <Box sx={{ display: "flex", flexDirection: "row", gap: 0 }}>
+                                      <InfoTooltip description="Dernière synchronisation catalogue" />
+                                      <Typography sx={{ ml: fr.spacing("1v"), width: 150 }}>SYNCHRO</Typography>
+                                    </Box>
+                                    <Typography>{parameter?.last_catalogue_sync_date ? formatDate(parameter?.last_catalogue_sync_date) : "N/A"}</Typography>
+                                  </Box>
+                                </Box>
+
+                                <Box component="td" sx={{ fontSize: "0.8em", px: "1px", verticalAlign: "top !important" }}>
+                                  <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                                    {Object.values(referrers).map((referrer, i) => {
+                                      const parameterReferrers = parameter.referrers?.find((parameterReferrer) => parameterReferrer === referrer.name)
+                                      return (
+                                        <FormControlLabel
+                                          key={`${referrer.name}-${i}`}
+                                          label={referrer.name}
+                                          control={
+                                            <Checkbox
+                                              sx={{ pt: 0, pb: fr.spacing("1v") }}
+                                              checked={!!parameterReferrers}
+                                              value={referrer.name}
+                                              onChange={(event) => onCheckboxChange({ parameter, referrer, checked: event.target.checked })}
+                                            />
+                                          }
+                                        />
+                                      )
+                                    })}
+                                  </Box>
+                                </Box>
+                              </Box>
                             )
                           })}
-                        </Td>
-                      </Tr>
-                    )
-                  })}
-                </Tbody>
-              </Table>
+                        </Box>
+                      </Box>
+                    </Box>
+                  </Box>
+                </Box>
+              </Box>
             </Box>
           </>
         ) : (
-          <Text>Etablissement introuvable</Text>
+          <Typography>Etablissement introuvable</Typography>
         )}
       </Box>
     </AdminLayout>
