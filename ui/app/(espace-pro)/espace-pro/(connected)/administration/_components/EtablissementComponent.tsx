@@ -1,12 +1,13 @@
-import { Editable, EditableInput, EditablePreview, Tag, useToast } from "@chakra-ui/react"
+import { useToast } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, Typography } from "@mui/material"
+import { Box, Input, Typography } from "@mui/material"
 import { createRef, useEffect, useState } from "react"
 
 import "react-dates/initialize"
 import "react-dates/lib/css/_datepicker.css"
 
+import LbaBadge from "@/app/(espace-pro)/_components/Badge"
 import { apiGet, apiPatch } from "@/utils/api.utils"
 
 import { dayjs } from "../../../../../../common/dayjs"
@@ -142,9 +143,7 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
             <Typography sx={{ fontWeight: 700 }}>
               Date d'invitation à l'opt-out <br />
               <br />
-              <Tag bg="#467FCF" size="md" color="white">
-                {dayjs(etablissement?.optout_invitation_date).format("DD/MM/YYYY")}
-              </Tag>
+              <LbaBadge variant="neutral">{dayjs(etablissement?.optout_invitation_date).format("DD/MM/YYYY")}</LbaBadge>
             </Typography>
           </Box>
         )}
@@ -154,27 +153,23 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
               Date d'activation des formations
               <br />
               <br />
-              <Tag bg="#467FCF" size="md" color="white">
-                {dayjs(etablissement?.optout_activation_date).format("DD/MM/YYYY")}
-              </Tag>
+              <LbaBadge variant="neutral">{dayjs(etablissement?.optout_activation_date).format("DD/MM/YYYY")}</LbaBadge>
             </Typography>
           </Box>
         )}
       </Box>
-      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: 2, p: fr.spacing("2w") }}>
-        {etablissement?.optout_refusal_date && (
+      {etablissement?.optout_refusal_date && (
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: 2, p: fr.spacing("2w") }}>
           <Box sx={{ width: "100%" }}>
             <Typography sx={{ fontWeight: 700 }}>
               Date de refus de l'opt-out
               <br />
               <br />
-              <Tag bg="#467FCF" size="md" color="white">
-                {dayjs(etablissement?.optout_refusal_date).format("DD/MM/YYYY")}
-              </Tag>
+              <LbaBadge variant="neutral">{dayjs(etablissement?.optout_refusal_date).format("DD/MM/YYYY")}</LbaBadge>
             </Typography>
           </Box>
-        )}
-      </Box>
+        </Box>
+      )}
       <Box sx={{ p: fr.spacing("2w") }}>
         {/*  @ts-expect-error: TODO */}
         <Box onClick={() => emailGestionnaireFocusRef.current.focus()}>
@@ -183,23 +178,14 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
             <br />
           </Typography>
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Editable
+            <Input
+              sx={{ fontSize: "12px", maxWidth: "400px", width: "100%" }}
+              className={fr.cx("fr-input")}
+              inputRef={emailGestionnaireRef}
               defaultValue={etablissement?.gestionnaire_email}
-              key={etablissement?.gestionnaire_email || "gestionnaire_email"}
-              style={{
-                border: "solid #dee2e6 1px",
-                padding: 5,
-                marginRight: 10,
-                borderRadius: 4,
-                minWidth: "70%",
-              }}
-            >
-              {/*  @ts-expect-error: TODO */}
-              <EditablePreview ref={emailGestionnaireFocusRef} />
-              {/*  @ts-expect-error: TODO */}
-              <EditableInput ref={emailGestionnaireRef} type="email" _focus={{ border: "none" }} />
-            </Editable>
-            <Box>
+              type="email"
+            />
+            <Box sx={{ ml: 1 }}>
               {/*  @ts-expect-error: TODO */}
               <Button onClick={() => upsertEmailDecisionnaire(emailGestionnaireRef.current.value.toLowerCase())}>
                 <Disquette w="16px" h="16px" />
