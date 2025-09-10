@@ -1,16 +1,16 @@
-import { EmailIcon } from "@chakra-ui/icons"
-import { Box, Editable, EditableInput, EditablePreview, Flex, Grid, Tag, Text, useToast } from "@chakra-ui/react"
+import { Editable, EditableInput, EditablePreview, Tag, useToast } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
+import { Box, Typography } from "@mui/material"
 import { createRef, useEffect, useState } from "react"
 
 import "react-dates/initialize"
 import "react-dates/lib/css/_datepicker.css"
 
-import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { apiGet, apiPatch } from "@/utils/api.utils"
 
-import { dayjs } from "../../../../../common/dayjs"
-import { Disquette } from "../../../../../theme/components/icons"
+import { dayjs } from "../../../../../../common/dayjs"
+import { Disquette } from "../../../../../../theme/components/icons"
 
 const EtablissementComponent = ({ id }: { id?: string }) => {
   const emailGestionnaireFocusRef = createRef()
@@ -18,7 +18,6 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
 
   const [etablissement, setEtablissement]: [any, (t: any) => void] = useState(undefined)
   const toast = useToast()
-  const { onOpen } = useDisclosure()
 
   const fetchData = async () => {
     try {
@@ -60,6 +59,7 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
 
   useEffect(() => {
     fetchData()
+    /* eslint react-hooks/exhaustive-deps: 0 */
   }, [])
 
   /**
@@ -78,116 +78,111 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
   }
 
   if (etablissement === null) {
-    return <Text>Etablissement introuvable</Text>
+    return <Typography>Etablissement introuvable</Typography>
   }
 
   return (
-    <Box bg="white" border="1px solid #E0E5ED" borderRadius="4px" mt={10} pb="5">
-      <Box borderBottom="1px solid #E0E5ED">
-        <Text fontSize="16px" p={5}>
-          Etablissement
-          <Text as="span" fontSize="16px" float="right" onClick={onOpen}>
-            <EmailIcon cursor="pointer" fontSize={30} />
-          </Text>
-        </Text>
+    <Box sx={{ backgroundColor: "white", border: "1px solid #E0E5ED", borderRadius: "4px", mt: fr.spacing("5w"), pb: fr.spacing("2w") }}>
+      <Box sx={{ borderBottom: "1px solid #E0E5ED" }}>
+        <Typography sx={{ fontSize: "20px", fontWeight: 700, p: fr.spacing("2w") }}>Etablissement</Typography>
       </Box>
-      <Grid templateColumns="repeat(3, 1fr)" gap={5} p="5">
-        <Box w="100%" h="10">
-          <Text textStyle="sm" fontWeight="600">
+      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: 2, p: fr.spacing("2w") }}>
+        <Box sx={{ width: "100%" }}>
+          <Typography sx={{ fontWeight: 700 }}>
             Raison sociale <br />
             <br />
-            <Text as="span" fontWeight="400">
+            <Typography component="span" sx={{ fontWeight: 400 }}>
               {etablissement?.raison_sociale}
-            </Text>
-          </Text>
+            </Typography>
+          </Typography>
         </Box>
-        <Box w="100%" h="10">
-          <Text textStyle="sm" fontWeight="600">
+        <Box sx={{ width: "100%" }}>
+          <Typography sx={{ fontWeight: 700 }}>
             SIRET Formateur <br />
             <br />
-            <Text as="span" fontWeight="400">
+            <Typography component="span" sx={{ fontWeight: 400 }}>
               {etablissement?.formateur_siret}
-            </Text>
-          </Text>
+            </Typography>
+          </Typography>
         </Box>
-        <Box w="100%" h="10">
-          <Text textStyle="sm" fontWeight="600">
+        <Box sx={{ width: "100%" }}>
+          <Typography sx={{ fontWeight: 700 }}>
             SIRET Gestionnaire <br />
             <br />
-            <Text as="span" fontWeight="400">
+            <Typography component="span" sx={{ fontWeight: 400 }}>
               {etablissement?.gestionnaire_siret}
-            </Text>
-          </Text>
+            </Typography>
+          </Typography>
         </Box>
-      </Grid>
-      <Grid templateColumns="repeat(3, 1fr)" gap={5} p="5" pt="10" mt={10}>
-        <Box w="100%" h="10">
-          <Text textStyle="sm" fontWeight="600">
+      </Box>
+      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: 2, p: fr.spacing("2w") }}>
+        <Box sx={{ width: "100%" }}>
+          <Typography sx={{ fontWeight: 700 }}>
             Adresse
             <br />
             <br />
-            <Text as="span" fontWeight="400">
+            <Typography component="span" sx={{ fontWeight: 400 }}>
               {etablissement?.formateur_address}
-            </Text>
-          </Text>
+            </Typography>
+          </Typography>
         </Box>
-        <Box w="100%" h="10">
-          <Text textStyle="sm" fontWeight="600">
+        <Box sx={{ width: "100%" }}>
+          <Typography sx={{ fontWeight: 700 }}>
             Code postal <br />
             <br />
-            <Text as="span" fontWeight="400">
+            <Typography component="span" sx={{ fontWeight: 400 }}>
               {etablissement?.formateur_zip_code}
-            </Text>
-          </Text>
+            </Typography>
+          </Typography>
         </Box>
-      </Grid>
-      <Grid templateColumns="repeat(3, 1fr)" gap={5} p="5" pt="10">
+      </Box>
+      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: 2, p: fr.spacing("2w") }}>
         {etablissement?.optout_invitation_date && (
-          <Box w="100%" h="10">
-            <Text textStyle="sm" fontWeight="600">
+          <Box sx={{ width: "100%" }}>
+            <Typography sx={{ fontWeight: 700 }}>
               Date d'invitation à l'opt-out <br />
               <br />
               <Tag bg="#467FCF" size="md" color="white">
                 {dayjs(etablissement?.optout_invitation_date).format("DD/MM/YYYY")}
               </Tag>
-            </Text>
+            </Typography>
           </Box>
         )}
         {etablissement?.optout_activation_date && (
-          <Box w="100%" h="10">
-            <Text textStyle="sm" fontWeight="600">
+          <Box sx={{ width: "100%" }}>
+            <Typography sx={{ fontWeight: 700 }}>
               Date d'activation des formations
               <br />
               <br />
               <Tag bg="#467FCF" size="md" color="white">
                 {dayjs(etablissement?.optout_activation_date).format("DD/MM/YYYY")}
               </Tag>
-            </Text>
+            </Typography>
           </Box>
         )}
-      </Grid>
-      <Grid templateColumns="repeat(3, 1fr)" gap={5} p="5" pt="10">
+      </Box>
+      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: 2, p: fr.spacing("2w") }}>
         {etablissement?.optout_refusal_date && (
-          <Box w="100%" h="10">
-            <Text textStyle="sm" fontWeight="600">
+          <Box sx={{ width: "100%" }}>
+            <Typography sx={{ fontWeight: 700 }}>
               Date de refus de l'opt-out
               <br />
               <br />
               <Tag bg="#467FCF" size="md" color="white">
                 {dayjs(etablissement?.optout_refusal_date).format("DD/MM/YYYY")}
               </Tag>
-            </Text>
+            </Typography>
           </Box>
         )}
-      </Grid>
-      <Grid templateColumns="repeat(3, 1fr)" gap={5} p="5" pt="10">
+      </Box>
+      <Box sx={{ p: fr.spacing("2w") }}>
         {/*  @ts-expect-error: TODO */}
         <Box onClick={() => emailGestionnaireFocusRef.current.focus()}>
-          <Text textStyle="sm" fontWeight="600">
+          <Typography sx={{ fontWeight: 700 }}>
             Email décisionnaire <br />
             <br />
-          </Text>
-          <Flex>
+          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
             <Editable
               defaultValue={etablissement?.gestionnaire_email}
               key={etablissement?.gestionnaire_email || "gestionnaire_email"}
@@ -210,15 +205,11 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
                 <Disquette w="16px" h="16px" />
               </Button>
             </Box>
-          </Flex>
+          </Box>
         </Box>
-      </Grid>
+      </Box>
     </Box>
   )
 }
-
-// EtablissementComponent.propTypes = {
-//   id: PropTypes.string.isRequired,
-// }
 
 export default EtablissementComponent

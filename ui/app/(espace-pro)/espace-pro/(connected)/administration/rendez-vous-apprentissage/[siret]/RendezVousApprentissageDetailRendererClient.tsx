@@ -11,11 +11,11 @@ import { referrers } from "shared/constants/referers"
 import { z } from "zod"
 
 import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
+import EtablissementComponent from "@/app/(espace-pro)/espace-pro/(connected)/administration/_components/EtablissementComponent"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { formatDate } from "@/common/dayjs"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { InfoTooltip } from "@/components/espace_pro"
-import EtablissementComponent from "@/components/espace_pro/Admin/widgetParameters/components/EtablissementComponent"
 import { apiPatch } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 
