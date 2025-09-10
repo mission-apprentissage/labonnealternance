@@ -1,6 +1,6 @@
-import { Box } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
+import { Box } from "@mui/material"
 
 export const NavigationButtons = ({ goPrev, goNext, handleClose }: { goPrev?: () => void; goNext?: () => void; handleClose: () => void }) => {
   return (

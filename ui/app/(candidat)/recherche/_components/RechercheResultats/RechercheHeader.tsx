@@ -19,12 +19,10 @@ export function RechercheHeader(props: { rechercheParams: IRecherchePageParams }
       sx={{
         boxShadow: {
           xs: 0,
-          md: 0,
           lg: 2,
         },
         backgroundColor: {
           xs: fr.colors.decisions.background.alt.grey.default,
-          md: fr.colors.decisions.background.alt.grey.default,
           lg: fr.colors.decisions.background.default.grey.default,
         },
         zIndex: 5,
@@ -57,7 +55,6 @@ export function RechercheHeader(props: { rechercheParams: IRecherchePageParams }
             sx={{
               display: {
                 xs: "none",
-                md: "none",
                 lg: "block",
               },
             }}
@@ -68,7 +65,6 @@ export function RechercheHeader(props: { rechercheParams: IRecherchePageParams }
             sx={{
               display: {
                 xs: "flex",
-                md: "flex",
                 lg: "none",
               },
               justifyContent: "flex-end",

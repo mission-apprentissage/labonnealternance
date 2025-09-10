@@ -52,7 +52,6 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
           display: "flex",
           flexDirection: {
             xs: "column",
-            md: "column",
             lg: "row",
           },
         }}
@@ -67,7 +66,6 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
               ? {
                   display: {
                     xs: "none",
-                    md: "none",
                     lg: "block",
                   },
                 }
@@ -81,7 +79,6 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
             margin: "auto",
             display: {
               xs: "block",
-              md: "block",
               lg: "none",
             },
           }}

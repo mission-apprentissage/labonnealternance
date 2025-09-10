@@ -12,6 +12,7 @@ export function RechercheInputsLayout({
   niveauSelect,
   handicapCheckbox,
   submitButton,
+  forceMobileStyle = false,
 }: {
   viewTypeCheckboxs?: React.ReactNode
   metierInput?: React.ReactNode
@@ -20,6 +21,7 @@ export function RechercheInputsLayout({
   niveauSelect?: React.ReactNode
   handicapCheckbox?: React.ReactNode
   submitButton?: React.ReactNode
+  forceMobileStyle?: boolean
 }) {
   return (
     <Box
@@ -27,16 +29,19 @@ export function RechercheInputsLayout({
         display: "flex",
         flexDirection: {
           xs: "column",
-          md: "row",
+          md: forceMobileStyle ? "column" : "row",
         },
-        alignItems: { xs: "stretch", md: "flex-start" },
+        alignItems: {
+          xs: "stretch",
+          md: forceMobileStyle ? "stretch" : "flex-start",
+        },
         gap: fr.spacing("2w"),
       }}
     >
       {viewTypeCheckboxs && (
         <Box
           sx={{
-            marginTop: { xs: 0, md: "18px" },
+            marginTop: { xs: 0, md: forceMobileStyle ? 0 : "18px" },
           }}
         >
           {viewTypeCheckboxs}
@@ -47,7 +52,7 @@ export function RechercheInputsLayout({
       {rayonSelect}
       {niveauSelect}
       {handicapCheckbox}
-      {submitButton && <Box sx={{ marginTop: { xs: 0, md: "32px" } }}>{submitButton}</Box>}
+      {submitButton && <Box sx={{ marginTop: { xs: 0, md: forceMobileStyle ? 0 : "32px" } }}>{submitButton}</Box>}
     </Box>
   )
 }

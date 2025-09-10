@@ -97,7 +97,6 @@ export function CandidatRechercheFilters({ rechercheParams }: { rechercheParams:
       sx={{
         display: {
           xs: "none",
-          md: "none",
           lg: "block",
         },
         marginTop: fr.spacing("2w"),
