@@ -1,8 +1,8 @@
 "use client"
-import { Heading, SimpleGrid, Text, useToast } from "@chakra-ui/react"
+import { useToast } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
-import { Box, CircularProgress } from "@mui/material"
+import { Box, CircularProgress, Typography } from "@mui/material"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
 import { IUserWithAccountFields } from "shared"
@@ -97,18 +97,18 @@ export default function CompteRenderer() {
         return (
           <>
             <ModificationCompteEmail {...ModificationEmailPopup} />
-            <SimpleGrid columns={[1, 1, 1, 2]} spacing={[0, 10]} marginBottom={6}>
+            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", lg: "repeat(2, 1fr)" }, gap: 2, marginBottom: fr.spacing("2w") }}>
               <Box>
-                <Heading>Vos informations de contact</Heading>
-                <Text fontSize="20px" textAlign="justify">
+                <Typography component="h2" sx={{ fontWeight: 700 }}>
+                  Vos informations de contact
+                </Typography>
+                <Typography sx={{ fontSize: "20px", textAlign: "justify" }} mt={fr.spacing("1w")}>
                   {user.type === AUTHTYPE.ENTREPRISE
                     ? "Vos informations de contact seront visibles sur les offres mises en ligne. Vous recevrez les candidatures sur l’email enregistré."
                     : "Vos informations de contact seront visibles sur les offres mises en ligne à partir de votre espace personnel La bonne alternance, pour vos entreprises partenaires."}
-                </Text>
+                </Typography>
                 {user.type === AUTHTYPE.CFA && (
-                  <Text fontSize="20px" textAlign="justify" mt={2}>
-                    Vous recevrez les candidatures sur l’email enregistré.
-                  </Text>
+                  <Typography sx={{ fontSize: "20px", textAlign: "justify", mt: fr.spacing("1w") }}>Vous recevrez les candidatures sur l’email enregistré.</Typography>
                 )}
                 <Box sx={{ mt: fr.spacing("2w") }}>
                   <Form>
@@ -127,7 +127,7 @@ export default function CompteRenderer() {
               <Box>
                 <InformationLegaleEntreprise siret={data.establishment_siret} type={data.type as typeof CFA | typeof ENTREPRISE} />
               </Box>
-            </SimpleGrid>
+            </Box>
           </>
         )
       }}
