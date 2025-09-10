@@ -1,6 +1,5 @@
 "use client"
 
-import { useToast } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Box, Link, Typography } from "@mui/material"
@@ -15,6 +14,7 @@ import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPaginat
 import { CfaHomeEntrepriseMenu } from "@/app/(espace-pro)/espace-pro/(connected)/_components/CfaHomeEntrepriseMenu"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import { useToast } from "@/app/hooks/useToast"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
 import { AnimationContainer, LoadingEmptySpace } from "@/components/espace_pro"
@@ -66,7 +66,7 @@ function ListeEntreprise() {
   const router = useRouter()
   const { access } = useConnectedSessionClient()
 
-  const toast = useToast()
+  const { toast, ToastComponent } = useToast()
   const { newUser: isNewUser } = useSearchParamsRecord()
 
   useEffect(() => {
@@ -74,10 +74,8 @@ function ListeEntreprise() {
       toast({
         title: "Vérification réussie",
         description: "Votre adresse mail a été validée avec succès.",
-        position: "top-right",
         status: "success",
         duration: 7000,
-        isClosable: true,
       })
     }
   }, [isNewUser, toast])
@@ -163,32 +161,35 @@ function ListeEntreprise() {
     },
   ]
   return (
-    <AnimationContainer>
-      {currentEntreprise && (
-        <ConfirmationSuppressionEntreprise
-          establishment_id={currentEntreprise.establishment_id}
-          onClose={confirmationSuppression.onClose}
-          isOpen={confirmationSuppression.isOpen}
-          establishment_raison_sociale={currentEntreprise.establishment_raison_sociale}
-        />
-      )}
-      <Box sx={{ maxWidth: 1200, mx: "auto", mt: fr.spacing("5v") }}>
-        <Box>
-          <Breadcrumb pages={[PAGES.static.backCfaHome]} />
-          <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: fr.spacing("4w"), justifyContent: "space-between", mb: fr.spacing("3w") }}>
-            <Box>
-              <Typography sx={{ fontSize: "2rem !important", fontWeight: 700 }}>Mes entreprises</Typography>
-            </Box>
-            <Box mr={3}>
-              <Button size="small" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
-                Nouvelle entreprise
-              </Button>
+    <>
+      {ToastComponent}
+      <AnimationContainer>
+        {currentEntreprise && (
+          <ConfirmationSuppressionEntreprise
+            establishment_id={currentEntreprise.establishment_id}
+            onClose={confirmationSuppression.onClose}
+            isOpen={confirmationSuppression.isOpen}
+            establishment_raison_sociale={currentEntreprise.establishment_raison_sociale}
+          />
+        )}
+        <Box sx={{ maxWidth: 1200, mx: "auto", mt: fr.spacing("5v") }}>
+          <Box>
+            <Breadcrumb pages={[PAGES.static.backCfaHome]} />
+            <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: fr.spacing("4w"), justifyContent: "space-between", mb: fr.spacing("3w") }}>
+              <Box>
+                <Typography sx={{ fontSize: "2rem !important", fontWeight: 700 }}>Mes entreprises</Typography>
+              </Box>
+              <Box mr={3}>
+                <Button size="small" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
+                  Nouvelle entreprise
+                </Button>
+              </Box>
             </Box>
           </Box>
+          {data?.length ? <TableWithPagination columns={columns} data={data} exportable={false} /> : <EmptySpace />}
         </Box>
-        {data?.length ? <TableWithPagination columns={columns} data={data} exportable={false} /> : <EmptySpace />}
-      </Box>
-    </AnimationContainer>
+      </AnimationContainer>
+    </>
   )
 }
 
