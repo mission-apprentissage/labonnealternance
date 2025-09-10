@@ -39,6 +39,9 @@ export const AUTHTYPE = {
   ADMIN,
 } as const
 
+const authTypeValues = Object.values(AUTHTYPE)
+export type AUTHTYPE = (typeof authTypeValues)[0]
+
 export const REGEX = {
   SIRET: /^([0-9]{9}|[0-9]{14})$/,
   GEO: /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/,

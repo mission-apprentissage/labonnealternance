@@ -1,19 +1,18 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
-import { parseEnum } from "shared"
+import { EntrepriseEngagementHandicapOrigin, parseEnum } from "shared"
 import { CFA, ENTREPRISE, OPCO, OPCOS_LABEL } from "shared/constants/recruteur"
 
 import { FieldWithValue } from "@/app/(espace-pro)/_components/FieldWithValue"
+import { AUTHTYPE } from "@/common/contants"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { InfoTooltip } from "@/components/espace_pro"
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
 import { useAuth } from "@/context/UserContext"
 import { getCfaInformation, getEntrepriseInformation } from "@/utils/api"
 
-type InformationLegaleEntrepriseProps = { siret: string; type: typeof CFA | typeof ENTREPRISE; opco?: OPCOS_LABEL }
-
-const InformationLegaleEntreprise = ({ siret, type, opco }: InformationLegaleEntrepriseProps) => {
+const InformationLegaleEntreprise = ({ siret, type, opco, viewerType }: { siret: string; type: typeof CFA | typeof ENTREPRISE; opco?: OPCOS_LABEL; viewerType: AUTHTYPE }) => {
   const { user } = useAuth()
   const entrepriseQuery = useQuery({
     queryKey: ["get-entreprise", siret],
@@ -37,7 +36,7 @@ const InformationLegaleEntreprise = ({ siret, type, opco }: InformationLegaleEnt
   return (
     <BorderedBox>
       <Typography fontWeight={700} component="h2" mb={2}>
-        Informations légales
+        {type === ENTREPRISE ? "Informations de l'entreprise" : "Informations légales"}
       </Typography>
       {raisonSociale && user?.type !== OPCO && (
         <Box sx={{ display: "flex", alignItems: "flex-start", mb: 4 }}>
@@ -69,9 +68,11 @@ const InformationLegaleEntreprise = ({ siret, type, opco }: InformationLegaleEnt
               establishment_raison_sociale: entreprise?.raison_sociale,
               address: entreprise?.address,
               opco: finalOpco,
+              engagementHandicapOrigin: entreprise?.engagementHandicapOrigin,
             })}
         type={type}
         siret={siret}
+        viewerType={viewerType}
       />
     </BorderedBox>
   )
@@ -85,6 +86,8 @@ const OrganizationInfoFields = ({
   type,
   is_qualiopi,
   opco,
+  engagementHandicapOrigin,
+  viewerType,
 }: {
   siret: string
   establishment_enseigne?: string
@@ -93,6 +96,8 @@ const OrganizationInfoFields = ({
   type: typeof CFA | typeof ENTREPRISE
   opco?: OPCOS_LABEL
   is_qualiopi?: boolean
+  engagementHandicapOrigin?: EntrepriseEngagementHandicapOrigin
+  viewerType: AUTHTYPE
 }) => {
   const RAISON_SOCIALE =
     establishment_raison_sociale && establishment_raison_sociale.length > 30 ? establishment_raison_sociale.substring(0, 30) + "..." : (establishment_raison_sociale ?? "")
@@ -151,8 +156,61 @@ const OrganizationInfoFields = ({
           tooltip="La donnée 'Qualiopi' provient du Référentiel de l'ONISEP puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler."
         />
       )}
+      {type === ENTREPRISE && (
+        <FieldWithValue
+          title="Engagement Handicap recensé par"
+          value={engagementHandicapLabels[engagementHandicapOrigin]?.label ?? "inconnu"}
+          tooltip={
+            <InfoTooltip
+              description={
+                (viewerType === ENTREPRISE && engagementHandicapLabels[engagementHandicapOrigin]?.tooltip) || (
+                  <>
+                    La bonne alternance met en avant les employeurs engagés pour l’emploi en faveur des personnes en situation de handicap. Ces entreprises sont vérifiées par
+                    France Travail, Cap emploi et leurs partenaires.{" "}
+                    <DsfrLink
+                      href="https://www.francetravail.fr/candidat/vos-services-en-ligne/favoriser-la-mise-en-relation-en.html"
+                      external
+                      aria-label="Employeur handi-engagé avec France Travail - nouvelle fenêtre"
+                    >
+                      En savoir plus
+                    </DsfrLink>
+                  </>
+                )
+              }
+            />
+          }
+        />
+      )}
     </Box>
   )
+}
+
+const engagementHandicapLabels: Record<
+  EntrepriseEngagementHandicapOrigin,
+  {
+    label: string
+    tooltip?: React.ReactNode
+  }
+> = {
+  [EntrepriseEngagementHandicapOrigin.FRANCE_TRAVAIL]: {
+    label: "France Travail",
+  },
+  [EntrepriseEngagementHandicapOrigin.LA_BONNE_ALTERNANCE]: {
+    label: "La bonne alternance",
+    tooltip: (
+      <>
+        La bonne alternance mène des travaux visant à valoriser les entreprises engagées en faveur de l’emploi des personnes en situation de handicap. Votre entreprise a déjà par
+        le passé publié des offres mentionnant votre engagement.{" "}
+        <DsfrLink
+          href="https://www.francetravail.fr/candidat/vos-services-en-ligne/favoriser-la-mise-en-relation-en.html"
+          external
+          aria-label="Employeur handi-engagé avec France Travail - nouvelle fenêtre"
+        >
+          En savoir plus
+        </DsfrLink>
+      </>
+    ),
+  },
 }
 
 export default InformationLegaleEntreprise

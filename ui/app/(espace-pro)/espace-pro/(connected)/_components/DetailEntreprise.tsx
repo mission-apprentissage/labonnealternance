@@ -230,7 +230,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                   </Box>
                 </Box>
                 <Box>
-                  <InformationLegaleEntreprise siret={userRecruteur.establishment_siret} type={userRecruteur.type as typeof CFA | typeof ENTREPRISE} />
+                  <InformationLegaleEntreprise siret={userRecruteur.establishment_siret} type={userRecruteur.type as typeof CFA | typeof ENTREPRISE} viewerType={user.type} />
                   {user.type !== "CFA" && (
                     <Box my={4}>
                       <FieldWithValue title="Origine" value={userRecruteur.origin} />

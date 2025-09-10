@@ -4,7 +4,7 @@ import { Box, Flex, Grid, GridItem, Heading, Spinner, Text, useToast } from "@ch
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Form, Formik } from "formik"
 import { useParams, useRouter } from "next/navigation"
-import { ENTREPRISE } from "shared/constants/recruteur"
+import { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
@@ -97,7 +97,7 @@ function CreationEntrepriseDetail({ siret }: { siret: string }) {
           <Formulaire siret={siret} />
         </GridItem>
         <GridItem rowStart={["auto", 2]} pt={[4, 8]} minW="0">
-          <InformationLegaleEntreprise siret={siret} type={ENTREPRISE} />
+          <InformationLegaleEntreprise siret={siret} type={ENTREPRISE} viewerType={CFA} />
         </GridItem>
       </Grid>
     </>

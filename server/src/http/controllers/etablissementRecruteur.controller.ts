@@ -1,5 +1,5 @@
 import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
-import { assertUnreachable, IEntreprise, toPublicUser, TrafficType, zRoutes } from "shared"
+import { assertUnreachable, EntrepriseEngagementHandicapOrigin, IEntreprise, toPublicUser, TrafficType, zRoutes } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { CFA, ENTREPRISE } from "shared/constants/index"
 import { OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/recruteur"
@@ -23,6 +23,7 @@ import {
   validateEligibiliteCfa,
 } from "@/services/etablissement.service"
 import { Organization, upsertEntrepriseData, UserAndOrganization } from "@/services/organization.service"
+import { getEntrepriseEngagement } from "@/services/referentielEngagementEntreprise.service"
 import { getMainRoleManagement, getPublicUserRecruteurPropsOrError, isGrantedAndAutoValidatedRole } from "@/services/roleManagement.service"
 import { saveUserTrafficSourceIfAny } from "@/services/trafficSource.service"
 import {
@@ -65,12 +66,9 @@ export default (server: Server) => {
       schema: zRoutes.get["/etablissement/entreprise/:siret"],
     },
     async (req, res) => {
-      const siret: string | undefined = req.params.siret
+      const { siret } = req.params
       const cfa_delegated_siret: string | undefined = req.query.cfa_delegated_siret
       const skipUpdate: boolean = req.query.skipUpdate === "true"
-      if (!siret) {
-        throw badRequest("Le numéro siret est obligatoire.")
-      }
 
       let entrepriseOpt: IEntreprise | null = null
       if (skipUpdate) {
@@ -87,6 +85,13 @@ export default (server: Server) => {
       const cfaVerification = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret, nafCode: entrepriseOpt.naf_code ?? undefined })
       if (cfaVerification) {
         throw badRequest(cfaVerification.message)
+      }
+
+      if (entrepriseOpt.engagementHandicapOrigin !== EntrepriseEngagementHandicapOrigin.FRANCE_TRAVAIL) {
+        const isFTEngageHandicap = await getEntrepriseEngagement(siret)
+        if (isFTEngageHandicap) {
+          entrepriseOpt.engagementHandicapOrigin = EntrepriseEngagementHandicapOrigin.FRANCE_TRAVAIL
+        }
       }
 
       return res.status(200).send(entrepriseOpt)

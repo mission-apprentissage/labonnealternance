@@ -24,6 +24,7 @@ import { renvoiMailCreationCompte } from "@/jobs/oneTimeJob/renvoiMailCreationCo
 import { exportJobsToS3V2 } from "@/jobs/partenaireExport/exportJobsToS3V2"
 import { exportJobsToFranceTravail } from "@/jobs/partenaireExport/exportToFranceTravail"
 import { repriseEnvoiEmailsPRDV } from "@/jobs/rdv/repriseEnvoiPRDV"
+import { sendMailEngagementHandicap } from "@/jobs/recruiters/sendMailEngagementHandicap"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
@@ -361,5 +362,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: removeBrevoContacts,
     description: "Anonymise les contacts Brevo dont la date de creation est supérieure à 2 ans",
+  },
+  {
+    fct: sendMailEngagementHandicap,
+    description: "Envoie les mails de sensibilisation à l'handi-engagement",
   },
 ]
