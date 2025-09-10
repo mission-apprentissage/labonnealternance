@@ -1,4 +1,4 @@
-import { Box, FormControl, FormLabel, HStack, Input, VStack, useToast } from "@chakra-ui/react"
+import { Box, FormControl, FormLabel, HStack, Input, VStack } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 import Select from "@codegouvfr/react-dsfr/Select"
 import { FormikProvider, useFormik } from "formik"
@@ -11,6 +11,7 @@ import { Jsonify } from "type-fest"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import CustomInput from "@/app/_components/CustomInput"
+import { useToast } from "@/app/hooks/useToast"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 import { createSuperUser, updateUser } from "@/utils/api"
 import { ApiError, apiDelete } from "@/utils/api.utils"
@@ -30,7 +31,7 @@ export const AdminUserForm = ({
   onDelete?: () => void
   onUpdate?: () => void
 }) => {
-  const toast = useToast()
+  const { toast, ToastComponent } = useToast()
   const { activate: activateUser, deactivate: deactivateUser } = useUserPermissionsActions(user?._id.toString())
 
   const errorHandler = (error: any) => {
@@ -40,7 +41,6 @@ export const AdminUserForm = ({
     toast({
       title: error + "",
       status: "error",
-      isClosable: true,
     })
   }
 
@@ -52,7 +52,6 @@ export const AdminUserForm = ({
           toast({
             title: "Utilisateur mis à jour",
             status: "success",
-            isClosable: true,
           })
           onUpdate?.()
         })
@@ -67,7 +66,6 @@ export const AdminUserForm = ({
           toast({
             title: "Utilisateur créé",
             status: "success",
-            isClosable: true,
           })
           onCreate?.(user._id.toString())
         })
@@ -83,13 +81,11 @@ export const AdminUserForm = ({
         toast({
           title: "Utilisateur supprimé",
           status: "success",
-          isClosable: true,
         })
       } else {
         toast({
           title: "Erreur lors de la suppression de l'utilisateur.",
           status: "error",
-          isClosable: true,
           description: " Merci de réessayer plus tard",
         })
       }
@@ -103,6 +99,7 @@ export const AdminUserForm = ({
 
   return (
     <>
+      {ToastComponent}
       {user && (
         <>
           <HStack mt={4} mb={4} alignItems="baseline">

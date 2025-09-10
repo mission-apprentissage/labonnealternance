@@ -1,5 +1,4 @@
 "use client"
-import { useToast } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import { TabContext, TabList, TabPanel } from "@mui/lab"
 import { Box, Link, Tab, Typography } from "@mui/material"
@@ -12,6 +11,7 @@ import { IUserRecruteurForAdminJSON, IUserRecruteurJson } from "shared"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
 import { UserMenu } from "@/app/(espace-pro)/espace-pro/(connected)/administration/users/_component/UserMenu"
+import { useToast } from "@/app/hooks/useToast"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
 import { ConfirmationDesactivationUtilisateur } from "@/components/espace_pro"
@@ -25,17 +25,14 @@ function Users() {
   const [tabIndex, setTabIndex] = useState("0")
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationActivationUtilisateur = useDisclosure()
-  const toast = useToast()
+  const { toast, ToastComponent } = useToast()
 
   useEffect(() => {
     if (newUser) {
       toast({
         title: "Vérification réussie",
         description: "Votre adresse mail a été validée avec succès.",
-        position: "top-right",
-        status: "success",
         duration: 7000,
-        isClosable: true,
       })
     }
   }, [newUser, toast])
@@ -148,6 +145,7 @@ function Users() {
 
   return (
     <>
+      {ToastComponent}
       <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={currentEntreprise} />
       <ConfirmationActivationUtilisateur
         onClose={confirmationActivationUtilisateur.onClose}
