@@ -27,7 +27,6 @@ export function CustomTag({ children, icon, color }: { children: React.ReactNode
         display: "inline-block",
         fontSize: "12px",
         lineHeight: "20px",
-        textTransform: "uppercase",
         paddingRight: "6px",
         paddingLeft: icon ? "4px" : "6px",
         borderRadius: "4px",

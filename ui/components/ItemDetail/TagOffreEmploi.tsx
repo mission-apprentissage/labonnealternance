@@ -3,7 +3,7 @@ import { LbaItemTag } from "@/components/SearchForTrainingsAndJobs/components/Lb
 export const TagOffreEmploi = () => {
   return (
     <LbaItemTag color="darkBlue" iconImageUri="/images/briefcase.svg">
-      Offre d'emploi
+      OFFRE D'EMPLOI
     </LbaItemTag>
   )
 }
