@@ -10,6 +10,7 @@ export const FULL_RECRUITER_SYNC = "full"
 export const syncLbaJobsIntoJobsPartners = async (type?: "full") => {
   const recruitersWithActiveJobs = await getDbCollection("recruiters")
     .find(type === FULL_RECRUITER_SYNC ? {} : { status: RECRUITER_STATUS.ACTIF, "jobs.job_status": JOB_STATUS.ACTIVE })
+    .project({ _id: 1 })
     .toArray()
 
   await asyncForEach(recruitersWithActiveJobs, async (recruiter) => {
