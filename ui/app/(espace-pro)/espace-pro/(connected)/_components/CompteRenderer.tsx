@@ -1,5 +1,5 @@
 "use client"
-import { useToast } from "@chakra-ui/react"
+
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Box, CircularProgress, Typography } from "@mui/material"
@@ -13,6 +13,7 @@ import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connecte
 import ModificationCompteEmail from "@/app/(espace-pro)/espace-pro/(connected)/_components/ModificationCompteEmail"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import CustomInput from "@/app/_components/CustomInput"
+import { useToast } from "@/app/hooks/useToast"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 
 import { AUTHTYPE } from "../../../../../common/contants"
@@ -24,7 +25,7 @@ export default function CompteRenderer() {
   const { user } = useConnectedSessionClient()
 
   const client = useQueryClient()
-  const toast = useToast()
+  const { toast, ToastComponent } = useToast()
   const ModificationEmailPopup = useDisclosure()
 
   const { data, isLoading } = useQuery({
@@ -42,12 +43,10 @@ export default function CompteRenderer() {
       client.invalidateQueries({
         queryKey: ["user"],
       })
+
       toast({
         title: "Mise à jour enregistrée avec succès",
-        position: "top-right",
-        status: "success",
-        duration: 2000,
-        isClosable: true,
+        status: "info",
       })
 
       if (variables.isChangingEmail) {
@@ -67,70 +66,73 @@ export default function CompteRenderer() {
   }
 
   return (
-    <Formik
-      validateOnMount={true}
-      enableReinitialize={true}
-      initialValues={{
-        last_name: data.last_name,
-        first_name: data.first_name,
-        phone: data.phone,
-        email: data.email,
-      }}
-      validationSchema={Yup.object().shape({
-        last_name: Yup.string().required("champ obligatoire"),
-        first_name: Yup.string().required("champ obligatoire"),
-        phone: Yup.string()
-          .matches(/^[0-9]+$/, "Le téléphone est composé uniquement de chiffres")
-          .min(10, "le téléphone est sur 10 chiffres")
-          .max(10, "le téléphone est sur 10 chiffres")
-          .required("champ obligatoire"),
-        email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
-      })}
-      onSubmit={async (values, { setSubmitting }) => {
-        setSubmitting(true)
-        const isChangingEmail = data.email !== values.email
-        userMutation.mutate({ values, isChangingEmail })
-        setSubmitting(false)
-      }}
-    >
-      {({ values, isSubmitting, isValid }) => {
-        return (
-          <>
-            <ModificationCompteEmail {...ModificationEmailPopup} />
-            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", lg: "repeat(2, 1fr)" }, gap: 2, marginBottom: fr.spacing("2w") }}>
-              <Box>
-                <Typography component="h2" sx={{ fontWeight: 700 }}>
-                  Vos informations de contact
-                </Typography>
-                <Typography sx={{ fontSize: "20px", textAlign: "justify" }} mt={fr.spacing("1w")}>
-                  {user.type === AUTHTYPE.ENTREPRISE
-                    ? "Vos informations de contact seront visibles sur les offres mises en ligne. Vous recevrez les candidatures sur l’email enregistré."
-                    : "Vos informations de contact seront visibles sur les offres mises en ligne à partir de votre espace personnel La bonne alternance, pour vos entreprises partenaires."}
-                </Typography>
-                {user.type === AUTHTYPE.CFA && (
-                  <Typography sx={{ fontSize: "20px", textAlign: "justify", mt: fr.spacing("1w") }}>Vous recevrez les candidatures sur l’email enregistré.</Typography>
-                )}
-                <Box sx={{ mt: fr.spacing("2w") }}>
-                  <Form>
-                    <CustomInput name="last_name" label="Nom" type="text" value={values.last_name} />
-                    <CustomInput name="first_name" label="Prénom" type="test" value={values.first_name} />
-                    <CustomInput name="phone" label="Téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
-                    <CustomInput name="email" label="Email" type="email" value={values.email} />
-                    <Box sx={{ display: "flex", justifyContent: "flex-end", mt: fr.spacing("5w"), mb: fr.spacing("2w") }}>
-                      <Button type="submit" disabled={!isValid || isSubmitting}>
-                        {isSubmitting ? <CircularProgress size={fr.spacing("7v")} sx={{ color: "white", mr: fr.spacing("1w") }} /> : <ArrowRightLine mr={2} />}Enregistrer
-                      </Button>
-                    </Box>
-                  </Form>
+    <>
+      {ToastComponent}
+      <Formik
+        validateOnMount={true}
+        enableReinitialize={true}
+        initialValues={{
+          last_name: data.last_name,
+          first_name: data.first_name,
+          phone: data.phone,
+          email: data.email,
+        }}
+        validationSchema={Yup.object().shape({
+          last_name: Yup.string().required("champ obligatoire"),
+          first_name: Yup.string().required("champ obligatoire"),
+          phone: Yup.string()
+            .matches(/^[0-9]+$/, "Le téléphone est composé uniquement de chiffres")
+            .min(10, "le téléphone est sur 10 chiffres")
+            .max(10, "le téléphone est sur 10 chiffres")
+            .required("champ obligatoire"),
+          email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
+        })}
+        onSubmit={async (values, { setSubmitting }) => {
+          setSubmitting(true)
+          const isChangingEmail = data.email !== values.email
+          userMutation.mutate({ values, isChangingEmail })
+          setSubmitting(false)
+        }}
+      >
+        {({ values, isSubmitting, isValid }) => {
+          return (
+            <>
+              <ModificationCompteEmail {...ModificationEmailPopup} />
+              <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", lg: "repeat(2, 1fr)" }, gap: 2, marginBottom: fr.spacing("2w") }}>
+                <Box>
+                  <Typography component="h2" sx={{ fontWeight: 700 }}>
+                    Vos informations de contact
+                  </Typography>
+                  <Typography sx={{ fontSize: "20px", textAlign: "justify" }} mt={fr.spacing("1w")}>
+                    {user.type === AUTHTYPE.ENTREPRISE
+                      ? "Vos informations de contact seront visibles sur les offres mises en ligne. Vous recevrez les candidatures sur l’email enregistré."
+                      : "Vos informations de contact seront visibles sur les offres mises en ligne à partir de votre espace personnel La bonne alternance, pour vos entreprises partenaires."}
+                  </Typography>
+                  {user.type === AUTHTYPE.CFA && (
+                    <Typography sx={{ fontSize: "20px", textAlign: "justify", mt: fr.spacing("1w") }}>Vous recevrez les candidatures sur l’email enregistré.</Typography>
+                  )}
+                  <Box sx={{ mt: fr.spacing("2w") }}>
+                    <Form>
+                      <CustomInput name="last_name" label="Nom" type="text" value={values.last_name} />
+                      <CustomInput name="first_name" label="Prénom" type="test" value={values.first_name} />
+                      <CustomInput name="phone" label="Téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
+                      <CustomInput name="email" label="Email" type="email" value={values.email} />
+                      <Box sx={{ display: "flex", justifyContent: "flex-end", mt: fr.spacing("5w"), mb: fr.spacing("2w") }}>
+                        <Button type="submit" disabled={!isValid || isSubmitting}>
+                          {isSubmitting ? <CircularProgress size={fr.spacing("7v")} sx={{ color: "white", mr: fr.spacing("1w") }} /> : <ArrowRightLine mr={2} />}Enregistrer
+                        </Button>
+                      </Box>
+                    </Form>
+                  </Box>
+                </Box>
+                <Box>
+                  <InformationLegaleEntreprise siret={data.establishment_siret} type={data.type as typeof CFA | typeof ENTREPRISE} />
                 </Box>
               </Box>
-              <Box>
-                <InformationLegaleEntreprise siret={data.establishment_siret} type={data.type as typeof CFA | typeof ENTREPRISE} />
-              </Box>
-            </Box>
-          </>
-        )
-      }}
-    </Formik>
+            </>
+          )
+        }}
+      </Formik>
+    </>
   )
 }
