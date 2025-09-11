@@ -1,5 +1,5 @@
 "use client"
-import { Flex, Spinner } from "@chakra-ui/react"
+import { Box, CircularProgress, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useSearchParams } from "next/navigation"
 import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson, JobCollectionName } from "shared"
@@ -64,10 +64,10 @@ export default function WidgetPostuler() {
 
   if (!isError && (isLoading || isFetching)) {
     return (
-      <Flex alignItems="center" m="auto" width="250px" my={8}>
-        <Spinner mr={4} />
-        Veuillez patienter
-      </Flex>
+      <Box sx={{ display: "flex", alignItems: "center", m: "auto", width: "250px", my: 8 }}>
+        <CircularProgress sx={{ mr: 4 }} />
+        <Typography>Veuillez patienter</Typography>
+      </Box>
     )
   }
 

@@ -1,18 +1,19 @@
-import { Box, Container, ContainerProps } from "@chakra-ui/react"
+// import { Box, Container, ContainerProps } from "@chakra-ui/react"
+
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Container } from "@mui/material"
 import { PropsWithChildren, ReactNode } from "react"
 
-import { FormCreatePageFooter } from "../FormCreatePageFooter"
+import { Footer } from "@/app/_components/Footer"
 
 import { FormHeaderComponent } from "./FormHeaderComponent"
 
-export const FormLayoutComponent = ({ children, headerText, ...rest }: PropsWithChildren<ContainerProps & { headerText: ReactNode }>) => {
+export const FormLayoutComponent = ({ children, headerText }: PropsWithChildren<{ headerText: ReactNode }>) => {
   return (
-    <Container maxW="full" p={0} {...rest} boxShadow="0px 0px 24px rgba(30, 30, 30, 0.24)" maxWidth="82ch">
+    <Container sx={{ boxShadow: "0px 0px 24px rgba(30, 30, 30, 0.24)" }} disableGutters>
       <FormHeaderComponent>{headerText}</FormHeaderComponent>
-      <Box mx={["2rem", "2rem", "6rem"]} minH={"63vh"}>
-        {children}
-      </Box>
-      <FormCreatePageFooter />
+      <Box sx={{ mx: { xs: fr.spacing("6w"), sm: fr.spacing("12w"), md: fr.spacing("12w") } }}>{children}</Box>
+      <Footer hideLinkList />
     </Container>
   )
 }
