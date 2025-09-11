@@ -1,3 +1,4 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Checkbox, FormGroup, FormControlLabel, Stack, Typography, TextField } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
@@ -46,7 +47,7 @@ const getText = ({
       return {
         header: (
           <>
-            <Typography sx={{ fontWeight: 700, fontSize: "16px", pt: 8 }}>
+            <Typography sx={{ fontWeight: 700, fontSize: "16px", pt: fr.spacing("3w") }}>
               Personnalisez votre réponse pour apporter à {`${applicant_first_name}`} un message qui lui correspond vraiment.
             </Typography>
           </>
@@ -135,13 +136,13 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
     <Box>
       <IntensionFormNavigation />
       {!["ok_sent", "canceled"].includes(sendingState) && (
-        <Box sx={{ display: "flex", flexDirection: "column", width: "80%", maxWidth: "992px", margin: "auto", pt: 12, alignItems: "center" }} data-testid="IntentionFormSuccess">
+        <Box sx={{ display: "flex", flexDirection: "column", width: "80%", maxWidth: "992px", margin: "auto", pt: 6, alignItems: "center" }} data-testid="IntentionFormSuccess">
           <Box sx={{ p: 4, backgroundColor: "#E1FEE8", fontWeight: 700, color: "#18753C", width: "100%", maxWidth: "800px" }}>
             <SuccessCircle width="20px" fillHexaColor="#18753C" mr={2} />
             {text.confirmation}
           </Box>
 
-          <Box sx={{ width: "100%", maxWidth: "800px", mb: 4 }}>{text.header}</Box>
+          <Box sx={{ width: "100%", maxWidth: "800px" }}>{text.header}</Box>
           <Box sx={{ width: "100%", maxWidth: "800px" }}>
             <Formik
               initialValues={{ company_feedback: text.placeholderTextArea, email: data.recruiter_email ?? "", phone: data.recruiter_phone ?? "", refusal_reasons: [] }}
@@ -155,9 +156,9 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
               {({ values, setFieldValue, handleChange, handleBlur, submitForm, isValid, isSubmitting }) => {
                 return (
                   <>
-                    <Box sx={{ pt: 2 }} data-testid="fieldset-message">
+                    <Box sx={{ pt: fr.spacing("3w") }} data-testid="fieldset-message">
                       <CustomFormControl label="Votre réponse :" required name="company_feedback">
-                        <Typography sx={{ fontSize: "12px", color: "#666", mb: 4 }}>
+                        <Typography sx={{ fontSize: "12px", color: "#666", mb: 1 }}>
                           Le candidat recevra le message suivant {company_recruitment_intention === ApplicationIntention.ENTRETIEN && "ainsi que vos coordonnées "}par courriel.
                         </Typography>
                         <TextField
@@ -175,7 +176,7 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
 
                     {!isRefusedState && (
                       <>
-                        <Typography sx={{ mt: 6, mb: 4 }}>
+                        <Typography sx={{ my: fr.spacing("3w") }}>
                           Indiquez au candidat <strong>vos coordonnées</strong>, afin qu'il puisse vous recontacter.
                         </Typography>
                         <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 8 }}>

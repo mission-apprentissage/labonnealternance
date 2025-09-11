@@ -10,7 +10,7 @@ export const IntensionFormNavigation = () => {
         <Image src="/images/logo_LBA.svg" alt="" width={160} height={60} style={{ minWidth: "160px" }} />
       </DsfrLink>
       <Box sx={{ flexGrow: 1, minWidth: 8 }} />
-      <DsfrLink style={{ backgroundImage: "none" }} href="/">
+      <DsfrLink style={{ backgroundImage: "none", textDecoration: "underline" }} href="/">
         Page d&apos;accueil La bonne alternance
       </DsfrLink>
     </Box>
