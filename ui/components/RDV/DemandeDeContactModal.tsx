@@ -46,7 +46,7 @@ const DemandeDeContactBody = ({
   }
 
   return (
-    <Box sx={{ p: 1 }}>
+    <Box sx={{ p: fr.spacing("4w") }}>
       {confirmation ? (
         <DemandeDeContactConfirmation {...confirmation} />
       ) : (

@@ -1,3 +1,4 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import React from "react"
@@ -9,7 +10,7 @@ interface Props {
 
 const CandidatureLbaWorked = ({ email, company }: Props) => {
   return (
-    <Box sx={{ p: 1 }}>
+    <Box sx={{ px: fr.spacing("4w") }}>
       <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", my: 4 }}>
         <Image src="/images/paperplane2.svg" aria-hidden={true} alt="" width={48} height={48} />
         <Box sx={{ ml: 2 }}>

@@ -1,4 +1,5 @@
 "use client"
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Stack, Typography, TextField } from "@mui/material"
 import { Formik } from "formik"
@@ -101,7 +102,7 @@ export const ReportJobLink = ({
         {storedValue ? (
           <ReportedAcknowledgement />
         ) : (
-          <Box sx={{ p: 1 }}>
+          <Box sx={{ p: fr.spacing("4w") }}>
             <Typography variant="h1" sx={{ fontSize: "24px", fontWeight: 700 }}>
               {content.title}
             </Typography>

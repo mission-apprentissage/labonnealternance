@@ -1,3 +1,4 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import React from "react"
@@ -74,7 +75,7 @@ const CandidatureLbaFailed = ({ error }: { error: string }) => {
   const { dataTestId, title, text } = errorData
 
   return (
-    <Box sx={{ p: 1 }}>
+    <Box sx={{ px: fr.spacing("4w") }}>
       <Typography variant="h1" sx={{ mb: 5, fontSize: "1.5rem", fontWeight: 700 }}>
         Erreur
       </Typography>

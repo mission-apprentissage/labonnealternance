@@ -59,7 +59,7 @@ export const CandidatureLbaModalBody = ({
       <Box sx={{ mx: { xs: 6, sm: 8, md: 8, lg: 8, xl: "69px" }, my: 4 }}>
         {!fromWidget && (
           <>
-            <Box sx={{ display: "flex", justifyContent: "flex-end", mr: -6 }}>
+            <Box sx={{ display: "flex", justifyContent: "flex-end", mr: -6, mb: fr.spacing("2w") }}>
               <ModalCloseButton onClose={onClose} />
             </Box>
           </>
