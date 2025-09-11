@@ -190,7 +190,7 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
                       </>
                     )}
                     {isRefusedState && (
-                      <Box sx={{ mt: 4 }} data-testid="fieldset-message">
+                      <Box sx={{ my: fr.spacing("3w") }} data-testid="fieldset-message">
                         <CustomFormControl label="Précisez la ou les raison(s) de votre refus :" required={false} name="refusal_reasons">
                           <FormGroup>
                             <Stack direction="column" spacing={3} sx={{ mt: 1, ml: 1 }}>
