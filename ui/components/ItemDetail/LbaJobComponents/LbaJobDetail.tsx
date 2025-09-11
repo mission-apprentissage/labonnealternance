@@ -105,7 +105,6 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: s
               </Typography>
             )}
           </Stack>
-          {job?.job?.elligibleHandicap && <LbaJobEngagement />}
           {job?.company?.mandataire && (
             <Box sx={{ display: "flex", p: 2, background: "white", fontSize: "12px", alignItems: "center" }}>
               <Typography>
@@ -118,6 +117,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: s
             </Box>
           )}
         </Stack>
+        <Box sx={{ mb: fr.spacing("2w") }}>{job?.job?.elligibleHandicap && <LbaJobEngagement />}</Box>
 
         <JobDescription job={job} />
         <LbaJobQualites job={job} />

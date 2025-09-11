@@ -113,7 +113,7 @@ function JobDetail({
         {...stickyHeaderProperties}
       >
         <Box sx={{ width: "100%", pl: { xs: 0, md: 4, pb: isCollapsedHeader ? 0 : 2 } }}>
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <LbaItemTags item={selectedItem} />
             <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
           </Box>

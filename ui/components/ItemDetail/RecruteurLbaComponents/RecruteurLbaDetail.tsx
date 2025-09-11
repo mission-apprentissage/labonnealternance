@@ -50,7 +50,9 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
           </Box>
         </Stack>
       </Box>
-      <LbaJobEngagement />
+      <Box sx={{ mt: fr.spacing("2w") }}>
+        <LbaJobEngagement />
+      </Box>
 
       <Box sx={{ pt: 2, pb: 3, px: 3, position: "relative", bgcolor: "white", mt: fr.spacing("3w") }}>
         <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
