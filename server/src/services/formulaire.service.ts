@@ -30,6 +30,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { logger } from "@/common/logger"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { anonymizeLbaJobsPartners } from "@/services/partnerJob.service"
 import { getEntrepriseEngagement } from "@/services/referentielEngagementEntreprise.service"
 import { getResumeToken, storeResumeToken } from "@/services/resumeToken.service"
@@ -889,7 +890,12 @@ export const updateJobsPartnersFromRecruiterById = async (recruiterId: ObjectId)
 
   if (recruiter?.jobs?.length && recruiter.address) {
     await asyncForEach(recruiter.jobs, async (job: IJob) => {
-      await upsertJobPartnersFromRecruiter(recruiter, job)
+      try {
+        await upsertJobPartnersFromRecruiter(recruiter, job)
+      } catch (e) {
+        logger.error(`Error while upserting job partner for job id=${job._id} and recruiter id=${recruiter._id}:`, e)
+        sentryCaptureException(e, { extra: { jobId: job._id, recruiterId: recruiter._id } })
+      }
     })
   }
 }
