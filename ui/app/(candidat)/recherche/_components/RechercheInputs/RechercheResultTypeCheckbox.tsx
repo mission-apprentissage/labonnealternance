@@ -6,12 +6,21 @@ import { assertUnreachable } from "shared"
 import { IUseRechercheResults, QueryStatus } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { UserItemTypes } from "@/app/_components/RechercheForm/RechercheForm"
 
-export const RechercheResultTypeCheckboxFormik = ({ rechercheResults, canDisplayCounts }: { rechercheResults?: IUseRechercheResults; canDisplayCounts?: boolean }) => {
+export const RechercheResultTypeCheckboxFormik = ({
+  rechercheResults,
+  canDisplayCounts,
+  forceMobileStyle,
+}: {
+  rechercheResults?: IUseRechercheResults
+  canDisplayCounts?: boolean
+  forceMobileStyle?: boolean
+}) => {
   const [field, _meta, helper] = useField({ name: "displayedItemTypes" })
   const checkedLabels: UserItemTypes[] = field.value || []
 
   return (
     <RechercheResultTypeCheckbox
+      forceMobileStyle={forceMobileStyle}
       checked={checkedLabels}
       onChange={(newValues) => {
         helper.setValue(newValues, true)
@@ -30,6 +39,7 @@ export const RechercheResultTypeCheckbox = ({
   rechercheResults,
   errorMessage,
   canDisplayCounts = true,
+  forceMobileStyle = false,
 }: {
   id?: string
   checked: UserItemTypes[]
@@ -37,6 +47,7 @@ export const RechercheResultTypeCheckbox = ({
   rechercheResults?: IUseRechercheResults
   errorMessage?: string
   canDisplayCounts?: boolean
+  forceMobileStyle?: boolean
 }) => {
   const isChecked = (label: UserItemTypes) => checked.includes(label)
 
@@ -55,12 +66,12 @@ export const RechercheResultTypeCheckbox = ({
       sx={{
         marginTop: {
           xs: fr.spacing("1w"),
-          md: 0,
+          md: forceMobileStyle ? fr.spacing("1w") : 0,
         },
         fieldset: {
           maxWidth: {
             xs: "inherit",
-            md: canDisplayCounts ? "180px" : "164px",
+            md: forceMobileStyle ? "inherit" : canDisplayCounts ? "180px" : "164px",
           },
         },
       }}
@@ -75,7 +86,7 @@ export const RechercheResultTypeCheckbox = ({
             <Box
               key={itemType}
               className={`fr-fieldset__element`}
-              sx={{ marginBottom: "0.5rem", flex: { xs: "0 0 auto", md: "1 1 100%" } }}
+              sx={{ marginBottom: "0.5rem", flex: { xs: "0 0 auto", md: forceMobileStyle ? "0 0 auto" : "1 1 100%" } }}
               onClick={(event) => {
                 event.preventDefault()
                 event.stopPropagation()
@@ -121,10 +132,11 @@ function getItemCounts(rechercheResults: IUseRechercheResults) {
     formationQuery,
     formationQuery: { formations },
     jobQuery,
-    jobs,
+    jobQuery: { lbaCompanies, lbaJobs, partnerJobs },
   } = rechercheResults
+  const jobTotal = lbaCompanies.length + lbaJobs.length + partnerJobs.length
   const result = {
-    [UserItemTypes.EMPLOI]: jobQuery.status === "success" ? jobs.length : undefined,
+    [UserItemTypes.EMPLOI]: jobQuery.status === "success" ? jobTotal : undefined,
     [UserItemTypes.FORMATIONS]: formationQuery.status === "success" ? formations.length : undefined,
   }
   return result

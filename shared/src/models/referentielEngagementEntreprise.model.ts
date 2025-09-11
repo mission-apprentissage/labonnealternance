@@ -17,6 +17,10 @@ export type IReferentielEngagementEntreprise = z.output<typeof ZReferentielEngag
 
 export default {
   zod: ZReferentielEngagementEntreprise,
-  indexes: [[{ siret: 1 }, { unique: true }]],
+  indexes: [
+    [{ siret: 1 }, { unique: true }],
+    [{ engagement: 1 }, {}],
+    [{ sources: 1 }, {}],
+  ],
   collectionName,
 } as const satisfies IModelDescriptor

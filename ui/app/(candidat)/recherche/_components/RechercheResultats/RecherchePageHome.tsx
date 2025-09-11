@@ -3,12 +3,12 @@ import { Box } from "@mui/material"
 
 import { CandidatRechercheFilters } from "@/app/(candidat)/recherche/_components/CandidatRechercheFilters"
 import { RechercheHeader } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheHeader"
-import { RechercheMobileEmpty } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMobileEmpty"
 import { RechercheMobileFormUpdate } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMobileFormUpdate"
+import { RechercheMobileHome } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMobileHome"
 import { RechercheResultatsPlaceholder } from "@/app/(candidat)/recherche/_components/RechercheResultatsPlaceholder"
 import { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 
-export function RecherchePageEmpty(props: { rechercheParams: IRecherchePageParams }) {
+export function RecherchePageHome(props: { rechercheParams: IRecherchePageParams }) {
   const { displayMobileForm } = props.rechercheParams
 
   if (displayMobileForm) {
@@ -21,11 +21,11 @@ export function RecherchePageEmpty(props: { rechercheParams: IRecherchePageParam
         sx={{
           display: {
             xs: "block",
-            lg: "none",
+            md: "none",
           },
         }}
       >
-        <RechercheMobileEmpty {...props} />
+        <RechercheMobileHome {...props} />
       </Box>
       <Box
         sx={{
@@ -34,7 +34,7 @@ export function RecherchePageEmpty(props: { rechercheParams: IRecherchePageParam
           flexDirection: "column",
           display: {
             xs: "none",
-            lg: "flex",
+            md: "flex",
           },
         }}
       >

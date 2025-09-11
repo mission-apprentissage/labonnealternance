@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
-import TagCandidatureSpontanee from "./TagCandidatureSpontanee"
+import { TagCandidatureSpontanee } from "./TagCandidatureSpontanee"
 
 const DidYouKnow = () => {
   return (

@@ -21,7 +21,7 @@ export function RechercheResultatsList(props: WithRecherchePageParams) {
   const whispers = useWhispers(props.rechercheParams)
 
   const items = useMemo((): Array<ILbaItem | IWhisper> => {
-    const itemsCount = result.items.length
+    const itemsCount = result.displayedItems.length
     if (!itemsCount) {
       return []
     }
@@ -30,7 +30,7 @@ export function RechercheResultatsList(props: WithRecherchePageParams) {
       if (whispers.has(i)) {
         data.push(whispers.get(i))
       }
-      data.push(result.items[i])
+      data.push(result.displayedItems[i])
     }
 
     return data
@@ -56,7 +56,7 @@ export function RechercheResultatsList(props: WithRecherchePageParams) {
   }
 
   const [firstFormation] = formationQuery.formations
-  const jobsCount = result.jobs.length
+  const jobsCount = result.displayedJobs.length
 
   return [
     <Box key={0} sx={{ maxWidth: "xl", margin: "auto" }}>
@@ -88,6 +88,7 @@ export function RechercheResultatsList(props: WithRecherchePageParams) {
         gap: fr.spacing("3w"),
         my: fr.spacing("3w"),
         alignItems: "center",
+        paddingX: fr.spacing("4w"),
       }}
     >
       <RechercheResultatsFooter jobStatus={jobQuery.status} searchParams={props.rechercheParams} jobCount={jobQuery.status === "loading" ? 0 : jobsCount} />

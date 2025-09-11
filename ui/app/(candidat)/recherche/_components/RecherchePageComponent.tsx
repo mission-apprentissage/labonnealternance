@@ -52,7 +52,7 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
           display: "flex",
           flexDirection: {
             xs: "column",
-            md: "row",
+            lg: "row",
           },
         }}
       >
@@ -62,7 +62,14 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
           elements={elements}
           scrollToElementIndex={scolledElementIndex}
           parentStyle={{
-            ...(displayMap ? { display: { xs: "none", md: "block" } } : {}),
+            ...(displayMap
+              ? {
+                  display: {
+                    xs: "none",
+                    lg: "block",
+                  },
+                }
+              : {}),
           }}
         />
         {displayMap ? <RechercheCarte item={null} variant="recherche" {...props} /> : <></>}
@@ -72,13 +79,13 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
             margin: "auto",
             display: {
               xs: "block",
-              md: "none",
+              lg: "none",
             },
           }}
         >
           <RechercheMobileToggleMapButton displayMap={displayMap} rechercheParams={props.rechercheParams} />
         </Box>
-        {!displayMap && rechercheResult.items.length > 1 && <RechercheBackToTopButton onClick={() => scrollElement.current?.scrollTo({ top: 0 })} />}
+        {!displayMap && rechercheResult.displayedItems.length > 1 && <RechercheBackToTopButton onClick={() => scrollElement.current?.scrollTo({ top: 0 })} />}
       </Box>
     </Box>
   )

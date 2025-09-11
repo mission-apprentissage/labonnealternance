@@ -5,7 +5,7 @@ import { Box } from "@mui/material"
 import { useFormikContext } from "formik"
 import React, { CSSProperties } from "react"
 
-export function RechercheSubmitButton({ children, style }: { children?: React.ReactNode; style?: CSSProperties }) {
+export function RechercheSubmitButton({ children, style, forceMobileStyle = false }: { children?: React.ReactNode; style?: CSSProperties; forceMobileStyle?: boolean }) {
   const formikContext = useFormikContext()
   const { isSubmitting, errors, touched } = formikContext
 
@@ -16,11 +16,11 @@ export function RechercheSubmitButton({ children, style }: { children?: React.Re
       sx={{
         fontSize: {
           xs: "18px",
-          md: "16px",
+          md: forceMobileStyle ? "18px" : "16px",
         },
         lineHeight: {
           xs: "28px",
-          md: "24px",
+          md: forceMobileStyle ? "28px" : "24px",
         },
         "& button:before": {
           ...(!children ? { marginRight: "0 !important" } : {}),
