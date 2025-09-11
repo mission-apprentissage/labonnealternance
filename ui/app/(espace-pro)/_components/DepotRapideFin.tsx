@@ -1,6 +1,6 @@
 "use client"
 
-import { Button, Circle, Image, Text, useToast } from "@chakra-ui/react"
+import { Button, Circle, Image, Text } from "@chakra-ui/react"
 import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
@@ -9,6 +9,7 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { zObjectId } from "shared/models/common"
 import { z } from "zod"
 
+import { useToast } from "@/app/hooks/useToast"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { LoadingEmptySpace } from "@/components/espace_pro"
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
@@ -43,7 +44,7 @@ export function DepotRapideFin() {
 }
 
 function FinComponent(props: ComponentProps) {
-  const toast = useToast()
+  const { toast, ToastComponent } = useToast()
 
   const { jobId, email, withDelegation, fromDashboard, userId, token } = props
 
@@ -53,7 +54,6 @@ function FinComponent(props: ComponentProps) {
         toast({
           title: "Email envoyé.",
           description: "Un nouveau email vient d'être envoyé.",
-          position: "top-right",
           status: "success",
           duration: 4000,
         })
@@ -65,7 +65,6 @@ function FinComponent(props: ComponentProps) {
               toast({
                 title: "Un problème est survenu.",
                 description: "L'email n'a pas pu être vérfié, merci de contacter le support.",
-                position: "top-right",
                 status: "success",
                 duration: 4000,
               })
@@ -74,7 +73,6 @@ function FinComponent(props: ComponentProps) {
               toast({
                 title: "L'email est déjà vérifié.",
                 description: "Vous pouvez vous connecter.",
-                position: "top-right",
                 status: "success",
                 duration: 4000,
               })
@@ -108,36 +106,39 @@ function FinComponent(props: ComponentProps) {
   const shouldDisplayAccountInformation = !fromDashboard && !userIsInError
 
   return (
-    <BorderedBox sx={{ display: "flex", flexDirection: { xs: "column", lg: "row" }, gap: { xs: 1, lg: 2 }, justifyContent: "center", width: "100%", mt: 2 }}>
-      <MailCloud w={["120px", "120px", "120px", "269px"]} h={["67px", "67px", "67px", "151px"]} />
-      <Box>
-        <Typography sx={{ backgroundColor: "white", fontSize: "32px", fontWeight: "bold", lineHeight: "32px" }} component="h1" mb={3}>
-          {shouldDisplayAccountInformation ? <>Encore une étape avant la publication de votre offre...</> : <>Félicitations, votre offre est créée.</>}
-        </Typography>
-        {shouldDisplayAccountInformation ? (
-          userIsValidated ? (
-            <Box>
-              <Typography component="h2" sx={{ fontSize: "18px", fontWeight: "bold" }}>
-                Confirmez votre email
-              </Typography>
-              <Text>
-                {withDelegation
-                  ? "Pour publier votre offre auprès des candidats et la transmettre aux organismes de formation sélectionnés, confirmez votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à l’adresse suivante :"
-                  : "Pour publier votre offre auprès des candidats, confirmez votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à l’adresse suivante :"}{" "}
-                <GreenText>{email}</GreenText>
-              </Text>
-              <ResendEmailContent onClick={resendMail} />
-            </Box>
-          ) : (
-            <AwaitingAccountDescription withDelegation={withDelegation} email={email} onResendEmail={resendMail} />
-          )
-        ) : null}
+    <>
+      {ToastComponent}
+      <BorderedBox sx={{ display: "flex", flexDirection: { xs: "column", lg: "row" }, gap: { xs: 1, lg: 2 }, justifyContent: "center", width: "100%", mt: 2 }}>
+        <MailCloud w={["120px", "120px", "120px", "269px"]} h={["67px", "67px", "67px", "151px"]} />
+        <Box>
+          <Typography sx={{ backgroundColor: "white", fontSize: "32px", fontWeight: "bold", lineHeight: "32px" }} component="h1" mb={3}>
+            {shouldDisplayAccountInformation ? <>Encore une étape avant la publication de votre offre...</> : <>Félicitations, votre offre est créée.</>}
+          </Typography>
+          {shouldDisplayAccountInformation ? (
+            userIsValidated ? (
+              <Box>
+                <Typography component="h2" sx={{ fontSize: "18px", fontWeight: "bold" }}>
+                  Confirmez votre email
+                </Typography>
+                <Text>
+                  {withDelegation
+                    ? "Pour publier votre offre auprès des candidats et la transmettre aux organismes de formation sélectionnés, confirmez votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à l’adresse suivante :"
+                    : "Pour publier votre offre auprès des candidats, confirmez votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à l’adresse suivante :"}{" "}
+                  <GreenText>{email}</GreenText>
+                </Text>
+                <ResendEmailContent onClick={resendMail} />
+              </Box>
+            ) : (
+              <AwaitingAccountDescription withDelegation={withDelegation} email={email} onResendEmail={resendMail} />
+            )
+          ) : null}
 
-        <Box mt={2}>
-          <JobPreview jobId={jobId} userIsValidated={userIsValidated} />
+          <Box mt={2}>
+            <JobPreview jobId={jobId} userIsValidated={userIsValidated} />
+          </Box>
         </Box>
-      </Box>
-    </BorderedBox>
+      </BorderedBox>
+    </>
   )
 }
 
