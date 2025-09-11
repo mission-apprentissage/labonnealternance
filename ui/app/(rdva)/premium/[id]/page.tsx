@@ -70,11 +70,11 @@ export default function PremiumParcoursup() {
       })) as IEtablissementJson
 
       if (etablissement2.premium_refusal_date) {
-        // setHasRefused(true)
+        setHasRefused(true)
       }
 
       if (etablissement2.premium_activation_date) {
-        // setHasAccepted(true)
+        setHasAccepted(true)
       }
 
       setEtablissement(etablissement2)
