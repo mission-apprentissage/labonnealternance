@@ -5,10 +5,10 @@ import { Box, Stack, Typography } from "@mui/material"
 import { Metadata } from "next"
 import Link from "next/link"
 
+import { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
-import { buildLinkForTownAndJob } from "@/utils/buildLinkForTownAndJob"
-import { getStaticMetiers, getStaticVilles, IStaticMetiers } from "@/utils/getStaticData"
+import { getStaticMetiers, getStaticVilles, IStaticMetiers, IStaticVilles } from "@/utils/getStaticData"
 import { PAGES } from "@/utils/routes.utils"
 
 const getTowns = () => {
@@ -27,20 +27,17 @@ const getMetierBySlug = (jobs: IStaticMetiers[], slug: IStaticMetiers["slug"]) =
   return relatedTown
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const _params = await params
   const metier = getMetierBySlug(getMetiers(), _params.slug)
-  return {
-    title: PAGES.dynamic.metierJobById(metier.name).getMetadata().title,
-    description: PAGES.dynamic.metierJobById(metier.name).getMetadata().description,
-  }
+  return PAGES.dynamic.metierJobById(metier.name).getMetadata()
 }
 
-export default async function MetiersByJobId({ params }: { params: IStaticMetiers }) {
-  const _params = params
+export default async function MetiersByJobId({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
   const towns = getTowns()
   const metiers = getMetiers()
-  const relatedMetier = getMetierBySlug(metiers, _params.slug)
+  const relatedMetier = getMetierBySlug(metiers, slug)
   return (
     <Box>
       <Breadcrumb pages={[PAGES.static.metiers, PAGES.dynamic.metierJobById(relatedMetier.name)]} />
@@ -109,4 +106,27 @@ export default async function MetiersByJobId({ params }: { params: IStaticMetier
       </DefaultContainer>
     </Box>
   )
+}
+
+const buildLinkForTownAndJob = (town: Partial<IStaticVilles>, job: IStaticMetiers): string => {
+  const addedParams: Partial<IRecherchePageParams> =
+    town.name === "France"
+      ? {}
+      : {
+          radius: 30,
+          geo: {
+            latitude: parseFloat(town.lat),
+            longitude: parseFloat(town.lon),
+            address: town.name,
+          },
+        }
+
+  return PAGES.dynamic
+    .recherche({
+      displayMap: false,
+      romes: job.romes,
+      job_name: job.name,
+      ...addedParams,
+    })
+    .getPath()
 }

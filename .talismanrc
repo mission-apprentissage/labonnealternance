@@ -1,8 +1,8 @@
 fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: c82369a50fe59611193ea9ee44793dce363c5704a9d608753376a82ca9564873
+  checksum: 7fbbed821c19f094f6a7836dd5403f18af4b3737f9f8e7a6dcb1223f7b722bd0
 - filename: .infra/vault/vault.yml
-  checksum: d3459d3a8f5f0a023775b2b2328da658bffcc5614714a63eaa50ed2d20b638d9
+  checksum: 7852781310ed91ecef26e555e15d265fcf4825c64a26beaca37f48998c23d4df
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
   checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
 - filename: cypress/pages/FlowAdminPage.ts
@@ -100,7 +100,7 @@ fileignoreconfig:
 - filename: server/src/security/apiApprentissageService.ts
   checksum: 0e6d208dc8de66d2a440ff40a1260a76e41bf69fb414ccbfc6d99396df3f3b91
 - filename: server/src/services/__snapshots__/formulaire.service.test.ts.snap
-  checksum: c9537ceb127351b38f85892b416e260ab146426b913225b492c4b17392f44705
+  checksum: 3561769820b5dc9b96fe7b8491517857031500c474ca5352c9b8c0ed0e5235f2
 - filename: server/src/services/__snapshots__/partnerJob.service.test.ts.snap
   checksum: 6f190e19172481706181e0a13ed7de5f0f6c699f86d35d9b08071ece445920b1
 - filename: server/src/services/application.service.test.ts
@@ -233,6 +233,8 @@ fileignoreconfig:
   checksum: 08eeb75b0a0b4ef859ea9fff944077f347a53648ee93e26ea13b27f621f04d3e
 - filename: ui/app/(espace-pro)/_components/OffresGratuites.tsx
   checksum: a81881696ad47f4efd1e7956f1972f0425cce0b07dba4afbcc7c088fb5edd90d
+- filename: ui/app/(home)/_components/AmeliorerLBA.tsx
+  checksum: b964e92051d750feaf2e3b33ec43b64d164705763fb50f225b6f3fbf243452de
 - filename: ui/app/(home)/faq/page.tsx
   checksum: e4b3904897fb67afd63187ff382138e9d60b9ca0395385eb2afd6a822696b804
 - filename: ui/app/(home)/mentions-legales/page.tsx
@@ -282,7 +284,7 @@ fileignoreconfig:
 - filename: ui/components/ItemDetail/PartnerJobComponents/PartnerJobDetail.tsx
   checksum: c1ace8f1692bbeec4534c6378b7be72b971462182df401d2c22b92a25b659875
 - filename: ui/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaDetail.tsx
-  checksum: 5d8d24178d6390f4745bcddcaca7e7ea3f8f6af79ef304bb48187a6bea7ccfa1
+  checksum: 67bbb036037f6e12b0e63c746ad37c8f80ebd0a627aebe2eab2f6b9a969ed0cf
 - filename: ui/components/ItemDetail/TrainingDetail.tsx
   checksum: a681f3f410db93db9fc2640636b70df05fe2d9e3d0879f8afc19f9cd451bae59
 - filename: ui/components/ItemDetail/loadedItemDetail.tsx

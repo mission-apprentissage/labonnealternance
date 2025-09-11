@@ -1,29 +1,36 @@
-import { Box, Checkbox, CheckboxGroup, Flex, Stack, Text, Textarea } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
+import { Box, Checkbox, FormGroup, FormControlLabel, Stack, Typography, TextField } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { Formik } from "formik"
 import { useState } from "react"
 import { ApplicationIntention, ApplicationIntentionDefaultText, RefusalReasons } from "shared/constants/application"
 import * as Yup from "yup"
 
+import { CustomFormControl } from "@/app/_components/CustomFormControl"
+import CustomInput from "@/app/_components/CustomInput"
 import { SuccessCircle } from "@/theme/components/icons"
 import { getApplicationDataForIntention } from "@/utils/api"
 
 import { apiPost } from "../../utils/api.utils"
-import { CustomInput, LoadingEmptySpace } from "../espace_pro"
-import { CustomFormControl } from "../espace_pro/CustomFormControl"
+import { LoadingEmptySpace } from "../espace_pro"
 
 import { IntensionFormNavigation } from "./IntensionFormNavigation"
 import { IntensionFormResult } from "./IntentionFormResult"
 
 const textAreaProperties = {
-  border: "none",
-  background: "grey.200",
-  borderRadius: "4px 4px 0px 0px",
-  width: "100%",
-  height: "250px",
-  paddingLeft: 4,
-  borderBottom: "2px solid",
+  multiline: true,
+  rows: 10,
+  fullWidth: true,
+  sx: {
+    "& .MuiOutlinedInput-root": {
+      border: "none",
+      backgroundColor: "grey.200",
+      borderRadius: "4px 4px 0px 0px",
+      borderBottom: "2px solid",
+    },
+    pl: 1,
+  },
 }
 
 const getText = ({
@@ -40,9 +47,9 @@ const getText = ({
       return {
         header: (
           <>
-            <Text fontWeight={700} fontSize="16px" pt={8}>
+            <Typography sx={{ fontWeight: 700, fontSize: "16px", pt: fr.spacing("3w") }}>
               Personnalisez votre réponse pour apporter à {`${applicant_first_name}`} un message qui lui correspond vraiment.
-            </Text>
+            </Typography>
           </>
         ),
         placeholderTextArea: ApplicationIntentionDefaultText.ENTRETIEN,
@@ -52,9 +59,7 @@ const getText = ({
       return {
         header: (
           <>
-            <Text pt={8} fontWeight={700}>
-              Personnalisez votre réponse afin d’aider {applicant_first_name} à s’améliorer pour ses prochaines candidatures.
-            </Text>
+            <Typography sx={{ pt: 8, fontWeight: 700 }}>Personnalisez votre réponse afin d'aider {applicant_first_name} à s'améliorer pour ses prochaines candidatures.</Typography>
           </>
         ),
         placeholderTextArea: ApplicationIntentionDefaultText.REFUS,
@@ -66,7 +71,7 @@ const getText = ({
 }
 
 export const IntentionForm = ({ company_recruitment_intention, id, token }: { company_recruitment_intention: ApplicationIntention; id: string; token: string | undefined }) => {
-  const { data, error } = useQuery({
+  const { data, error, isLoading } = useQuery({
     queryKey: ["getApplicationDataForIntention"],
     queryFn: () => getApplicationDataForIntention(id, company_recruitment_intention, token),
     retry: false,
@@ -105,7 +110,7 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
       .catch(() => setSendingState("not_sent_because_of_errors"))
   }
 
-  if (!data && !error) {
+  if (isLoading) {
     return (
       <Box>
         <IntensionFormNavigation />
@@ -118,11 +123,9 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
     return (
       <Box>
         <IntensionFormNavigation />
-        <Flex width="80%" maxWidth="800px" margin="auto" pt={20}>
-          <Box fontSize="20px" margin="auto">
-            {error.message}
-          </Box>
-        </Flex>
+        <Box sx={{ width: "80%", maxWidth: "800px", margin: "auto", pt: 20, display: "flex" }}>
+          <Box sx={{ fontSize: "20px", margin: "auto" }}>{error.message}</Box>
+        </Box>
       </Box>
     )
   }
@@ -133,16 +136,14 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
     <Box>
       <IntensionFormNavigation />
       {!["ok_sent", "canceled"].includes(sendingState) && (
-        <Flex direction="column" width="80%" maxWidth="992px" margin="auto" pt={12} alignItems="center" data-testid="IntentionFormSuccess">
-          <Box p={4} backgroundColor="#E1FEE8" fontWeight={700} color="#18753C" width="100%" maxWidth="800px">
+        <Box sx={{ display: "flex", flexDirection: "column", width: "80%", maxWidth: "992px", margin: "auto", pt: 6, alignItems: "center" }} data-testid="IntentionFormSuccess">
+          <Box sx={{ p: 4, backgroundColor: "#E1FEE8", fontWeight: 700, color: "#18753C", width: "100%", maxWidth: "800px" }}>
             <SuccessCircle width="20px" fillHexaColor="#18753C" mr={2} />
             {text.confirmation}
           </Box>
 
-          <Box width="100%" maxWidth="800px" mb={4}>
-            {text.header}
-          </Box>
-          <Box width="100%" maxWidth="800px">
+          <Box sx={{ width: "100%", maxWidth: "800px" }}>{text.header}</Box>
+          <Box sx={{ width: "100%", maxWidth: "800px" }}>
             <Formik
               initialValues={{ company_feedback: text.placeholderTextArea, email: data.recruiter_email ?? "", phone: data.recruiter_phone ?? "", refusal_reasons: [] }}
               validationSchema={Yup.object().shape({
@@ -155,12 +156,12 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
               {({ values, setFieldValue, handleChange, handleBlur, submitForm, isValid, isSubmitting }) => {
                 return (
                   <>
-                    <Box pt={2} data-testid="fieldset-message">
+                    <Box sx={{ pt: fr.spacing("3w") }} data-testid="fieldset-message">
                       <CustomFormControl label="Votre réponse :" required name="company_feedback">
-                        <Text fontSize="12px" color="#666" mb={4}>
+                        <Typography sx={{ fontSize: "12px", color: "#666", mb: 1 }}>
                           Le candidat recevra le message suivant {company_recruitment_intention === ApplicationIntention.ENTRETIEN && "ainsi que vos coordonnées "}par courriel.
-                        </Text>
-                        <Textarea
+                        </Typography>
+                        <TextField
                           id="company_feedback"
                           data-testid="company_feedback"
                           name="company_feedback"
@@ -175,47 +176,59 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
 
                     {!isRefusedState && (
                       <>
-                        <Text mt={6} mb={4}>
+                        <Typography sx={{ my: fr.spacing("3w") }}>
                           Indiquez au candidat <strong>vos coordonnées</strong>, afin qu'il puisse vous recontacter.
-                        </Text>
-                        <Flex direction={{ base: "column", md: "row" }} gap={8}>
-                          <Box data-testid="fieldset-email" flex={1}>
+                        </Typography>
+                        <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 8 }}>
+                          <Box data-testid="fieldset-email" sx={{ flex: 1 }}>
                             <CustomInput data-testid="email" name="email" required={true} label="E-mail" type="email" value={values.email} />
                           </Box>
-                          <Box data-testid="fieldset-phone" flex={1}>
+                          <Box data-testid="fieldset-phone" sx={{ flex: 1 }}>
                             <CustomInput data-testid="phone" name="phone" required={false} label="Téléphone" type="tel" value={values.phone} />
                           </Box>
-                        </Flex>
+                        </Box>
                       </>
                     )}
                     {isRefusedState && (
-                      <Box pt={2} data-testid="fieldset-message">
+                      <Box sx={{ my: fr.spacing("3w") }} data-testid="fieldset-message">
                         <CustomFormControl label="Précisez la ou les raison(s) de votre refus :" required={false} name="refusal_reasons">
-                          <CheckboxGroup
-                            onChange={(value) => {
-                              setFieldValue("refusal_reasons", value)
-                            }}
-                          >
-                            <Stack direction="column" spacing={3} mt={1} ml={1}>
+                          <FormGroup>
+                            <Stack direction="column" spacing={3} sx={{ mt: 1, ml: 1 }}>
                               {Object.values(RefusalReasons).map((key) => (
-                                <Checkbox key={key} size="lg" value={key}>
-                                  {key}
-                                </Checkbox>
+                                <FormControlLabel
+                                  key={key}
+                                  control={
+                                    <Checkbox
+                                      size="medium"
+                                      value={key}
+                                      onChange={(event) => {
+                                        const currentValues = values.refusal_reasons || []
+                                        if (event.target.checked) {
+                                          setFieldValue("refusal_reasons", [...currentValues, key])
+                                        } else {
+                                          setFieldValue(
+                                            "refusal_reasons",
+                                            currentValues.filter((v) => v !== key)
+                                          )
+                                        }
+                                      }}
+                                    />
+                                  }
+                                  label={key}
+                                />
                               ))}
                             </Stack>
-                          </CheckboxGroup>
+                          </FormGroup>
                         </CustomFormControl>
                       </Box>
                     )}
 
                     {sendingState === "not_sent_because_of_errors" ? (
-                      <Box mt={8} mb={8} fontWeight={700}>
-                        <Box mb={2} lineHeight="20px" fontSize="12px" color="#e10600">
-                          Une erreur technique s'est produite
-                        </Box>
+                      <Box sx={{ mt: 8, mb: 8, fontWeight: 700 }}>
+                        <Box sx={{ mb: 2, lineHeight: "20px", fontSize: "12px", color: "#e10600" }}>Une erreur technique s'est produite</Box>
                       </Box>
                     ) : (
-                      <Flex direction={{ base: "column-reverse", md: "row-reverse" }} mb={8} gap={4}>
+                      <Box sx={{ display: "flex", flexDirection: { xs: "column-reverse", md: "row-reverse" }, mb: 8, gap: 4 }}>
                         <Button aria-label="Envoyer le message au candidat" type="submit" onClick={submitForm} disabled={!isValid || isSubmitting}>
                           Envoyer le message
                         </Button>
@@ -223,14 +236,14 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
                         <Button priority="secondary" aria-label="Annuler l’envoi de la réponse" type="button" onClick={cancelForm} disabled={isSubmitting}>
                           Annuler l'envoi de la réponse
                         </Button>
-                      </Flex>
+                      </Box>
                     )}
                   </>
                 )
               }}
             </Formik>
           </Box>
-        </Flex>
+        </Box>
       )}
       {sendingState === "ok_sent" && <IntensionFormResult intention={company_recruitment_intention} />}
       {sendingState === "canceled" && <IntensionFormResult intention={company_recruitment_intention} canceled={true} />}

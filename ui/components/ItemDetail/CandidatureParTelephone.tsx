@@ -1,4 +1,6 @@
-import { Box, Container, Flex, Heading, Link, Text, useDisclosure } from "@chakra-ui/react"
+import { Box, Container, Flex, Heading, Link, Text } from "@chakra-ui/react"
+
+import { useDisclosure } from "@/common/hooks/useDisclosure"
 
 import { focusWithin } from "../../theme/theme-lba-tools"
 import { ModalReadOnly } from "../ModalReadOnly"
@@ -22,7 +24,7 @@ export default function CandidatureParTelephone({
           Contacter le recruteur
         </Link>
       </Box>
-      <ModalReadOnly isOpen={isOpen} onClose={onClose} modalContentProps={{ px: 6, pb: 6 }}>
+      <ModalReadOnly isOpen={isOpen} onClose={onClose}>
         <Container size={{ base: "full", md: "container.md" }}>
           <Heading as="h2" fontSize="xl" mb={4}>
             Postuler à l'offre de {companyName}

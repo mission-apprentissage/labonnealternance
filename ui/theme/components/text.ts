@@ -63,16 +63,6 @@ const Text = {
       padding: "0.25rem",
       alignItems: "center",
     },
-
-    defaultAutocomplete: {
-      marginBottom: "0",
-      marginLeft: 2,
-      paddingTop: "0.3rem",
-      color: "grey.700",
-      textAlign: "left",
-      lineHeight: "15px",
-      fontSize: "12px",
-    },
   },
 }
 

@@ -1,16 +1,17 @@
 "use client"
-import { Box, Flex, Image, Text } from "@chakra-ui/react"
+
 import { fr } from "@codegouvfr/react-dsfr"
-import { Typography } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "next/dist/client/components/navigation"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { CSSProperties, Fragment, useEffect, useState } from "react"
 import { ILbaItemFormation2Json, ILbaItemTraining2 } from "shared"
 import { LBA_ITEM_TYPE, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 
 import { RechercheCarte } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
-import { IUseRechercheResultsSuccess, useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
+import { IUseRechercheResults, useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { useBuildNavigation } from "@/app/hooks/useBuildNavigation"
 import { useFormationPrdvTracker } from "@/app/hooks/useFormationPrdvTracker"
@@ -32,6 +33,8 @@ import { SendPlausibleEvent } from "@/utils/plausible"
 import { PAGES } from "@/utils/routes.utils"
 import { formatDate } from "@/utils/strutils"
 
+import { IRecherchePageParams } from "../../../recherche/_utils/recherche.route.utils"
+
 // Read https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/
 const dontBreakOutCssParameters = {
   overflowWrap: "break-word",
@@ -40,8 +43,8 @@ const dontBreakOutCssParameters = {
   hyphens: "auto",
 }
 
-export default function TrainingDetailRendererClient({ training, params }: WithRecherchePageParams<{ training: ILbaItemFormation2Json }>) {
-  const result = useRechercheResults(params)
+export default function TrainingDetailRendererClient({ training, rechercheParams }: { rechercheParams: IRecherchePageParams; training: ILbaItemFormation2Json }) {
+  const result = useRechercheResults(rechercheParams)
 
   const trainingReference = {
     id: training.id,
@@ -50,16 +53,14 @@ export default function TrainingDetailRendererClient({ training, params }: WithR
 
   const { appliedDate, setPrdvDone } = useFormationPrdvTracker(training.id)
 
-  const detailPage = (
-    <TrainingDetailPage selectedItem={training} appliedDate={appliedDate} resultList={result.status === "success" ? result.items : []} params={params} onRdvSuccess={setPrdvDone} />
-  )
+  const detailPage = <TrainingDetailPage selectedItem={training} appliedDate={appliedDate} resultList={result.items} rechercheParams={rechercheParams} onRdvSuccess={setPrdvDone} />
 
-  if (params?.displayMap) {
+  if (rechercheParams?.displayMap) {
     return (
       <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", height: "100vh", overflow: "hidden" }}>
         {detailPage}
         {/* TODO : remove extended search button from map view */}
-        <RechercheCarte item={trainingReference} variant="detail" params={params} />
+        <RechercheCarte item={trainingReference} variant="detail" rechercheParams={rechercheParams} />
       </Box>
     )
   }
@@ -71,12 +72,12 @@ function TrainingDetailPage({
   selectedItem,
   appliedDate,
   resultList,
-  params,
+  rechercheParams,
   onRdvSuccess,
 }: WithRecherchePageParams<{
   selectedItem: ILbaItemFormation2Json
   appliedDate: string | null
-  resultList: IUseRechercheResultsSuccess["items"]
+  resultList: IUseRechercheResults["items"]
   onRdvSuccess: () => void
 }>) {
   const kind: LBA_ITEM_TYPE = selectedItem?.type
@@ -86,8 +87,8 @@ function TrainingDetailPage({
   const currentItem = resultList.find((item) => item.id === selectedItem.id)
 
   const router = useRouter()
-  const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItem, params })
-  const handleClose = () => router.push(PAGES.dynamic.recherche(params).getPath())
+  const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItem, rechercheParams: rechercheParams })
+  const handleClose = () => router.push(PAGES.dynamic.recherche(rechercheParams).getPath())
 
   const contextPRDV = {
     cle_ministere_educatif: selectedItem.id,
@@ -117,11 +118,10 @@ function TrainingDetailPage({
 
   return (
     <Box
-      as="section"
       onScroll={handleScroll}
       id="itemDetailColumn"
-      display={selectedItem ? "block" : "none"}
       sx={{
+        display: selectedItem ? "block" : "none",
         overflowY: "auto",
         position: "relative",
         height: "100vh",
@@ -130,60 +130,59 @@ function TrainingDetailPage({
       {...swipeHandlers}
     >
       <Box
-        as="header"
         sx={{
           filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
           padding: "10px 20px 0px 10px",
+          background: "white",
           ...stickyHeaderProperties,
         }}
-        background="white"
       >
-        <Box width="100%" pl={["0", 4]} pb={isCollapsedHeader ? "0" : 2}>
-          <Flex justifyContent="flex-end">
+        <Box sx={{ width: "100%", pl: { xs: 0, md: 4, pb: isCollapsedHeader ? 0 : 2 } }}>
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             {GetItemTag({ kind, isCfa, isMandataire })}
             {getNavigationButtons({ goPrev, goNext, handleClose })}
-          </Flex>
+          </Box>
 
-          <Text as="p" textAlign="left" color="grey.600" mt={isCollapsedHeader ? 1 : 1} mb={isCollapsedHeader ? 1 : 1} fontWeight={700} fontSize="1rem">
-            <Text as="span">{`${selectedItem?.company?.name || ""} (${selectedItem.company.place.city})`}</Text>
-            <Text as="span" fontWeight={400}>
+          <Box component="p" color="grey.600" mt={isCollapsedHeader ? 1 : 1} mb={isCollapsedHeader ? 1 : 1}>
+            <Typography component="span" sx={{ fontWeight: 700 }}>{`${selectedItem?.company?.name || ""} (${selectedItem.company.place.city})`}</Typography>
+            <Typography component="span" fontWeight={400}>
               &nbsp;propose cette formation
-            </Text>
-          </Text>
+            </Typography>
+          </Box>
 
           {!isCollapsedHeader && <JobItemCardHeader selectedItem={selectedItem} kind={kind} isMandataire={isMandataire} />}
 
-          <Typography variant={"h3"} sx={{ color: fr.colors.decisions.border.default.greenEmeraude.default }}>
+          <Typography variant="h3" sx={{ color: fr.colors.decisions.border.default.greenEmeraude.default }}>
             {actualTitle}
           </Typography>
 
           {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
           {!isCollapsedHeader && <hr style={{ paddingBottom: "1px" }} />}
 
-          <Flex flexDirection="row" alignItems="center" gap={2}>
-            <Box flex={1}>
+          <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 2 }}>
+            <Box sx={{ flex: 1 }}>
               {Boolean(appliedDate) && (
-                <Box>
-                  <Text
-                    as="span"
+                <div>
+                  <Typography
+                    component="span"
                     className={fr.cx("ri-history-line", "fr-icon--sm", "fr-text--xs")}
-                    px={2}
-                    fontStyle="italic"
                     sx={{
+                      px: 2,
+                      fontStyle: "italic",
                       backgroundColor: fr.colors.decisions.background.contrast.info.default,
                       color: fr.colors.decisions.background.actionHigh.info.default,
                     }}
                   >
                     Super, vous avez déjà pris contact le {appliedDate}.
-                  </Text>
-                </Box>
+                  </Typography>
+                </div>
               )}
               {elligibleForAppointment && (
                 <DemandeDeContact hideButton={Boolean(appliedDate)} isCollapsedHeader={isCollapsedHeader} context={contextPRDV} referrer="LBA" onRdvSuccess={onRdvSuccess} />
               )}
             </Box>
             <ShareLink item={selectedItem} />
-          </Flex>
+          </Box>
         </Box>
       </Box>
 
@@ -216,28 +215,20 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
 
   return (
     <>
-      <Box
-        pb="0px"
-        mt={6}
-        position="relative"
-        background="white"
-        padding={["1px 12px 36px 12px", "1px 24px 36px 24px", "1px 12px 24px 12px"]}
-        maxWidth="970px"
-        mx={["0", "30px", "30px", "auto"]}
-      >
+      <Box sx={{ pb: "0px", mt: fr.spacing("3w"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
         <TrainingDescriptionDetails training={training.training} />
-        <Box background="#f6f6f6" borderRadius="8px" mt={8} pl={8} py="10px" pr="10px">
+        <Box sx={{ backgroundColor: "#f6f6f6", mt: fr.spacing("3w"), p: 2 }}>
           {training.training.onisepUrl && (
-            <Box>
-              <Text as="span">Descriptif du {training.training.title} sur&nbsp;</Text>
-              <Text as="span">
+            <div>
+              <Typography component="span">Descriptif du {training.training.title} sur&nbsp;</Typography>
+              <Typography component="span">
                 <DsfrLink href={training.training.onisepUrl} aria-label="Formation sur le site de l'onisep - nouvelle fenêtre">
                   le site Onisep&nbsp;
                 </DsfrLink>
-              </Text>
-            </Box>
+              </Typography>
+            </div>
           )}
-          <Box my={2}>
+          <Box sx={{ my: 2 }}>
             Vous vous posez des questions sur votre orientation ou votre recherche d&apos;emploi ?&nbsp;
             <DsfrLink
               href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987"
@@ -251,70 +242,69 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
 
       {IJStats.isFetched && <StatsInserJeunes stats={IJStats.data} />}
 
-      <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
-        <Text as="h2" variant="itemDetailH2" my={2}>
+      <Box sx={{ pb: "0px", mt: fr.spacing("3w"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
+        <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Quelques informations l'établissement
-        </Text>
+        </Typography>
 
         <ItemLocalisation item={training} />
 
         {training?.contact?.phone && (
-          <Text mt={1}>
-            <Text as="span" fontWeight={700}>
+          <Typography mt={1}>
+            <Typography component="span" fontWeight={700}>
               Téléphone :{" "}
-            </Text>
-            <Text as="span">
+            </Typography>
+            <Typography component="span">
               <DsfrLink href={`tel:${training.contact.phone}`} aria-label="Appeler la société au téléphone">
                 {training.contact.phone}
               </DsfrLink>
-            </Text>
-          </Text>
+            </Typography>
+          </Typography>
         )}
 
         <ItemGoogleSearchLink item={training} />
 
         {training.contact.url && (
-          <Flex alignItems="center" mt={2} direction="row">
-            <Box width="30px" minWidth="30px" mr={2}>
-              <Image mt="2px" src="/images/icons/small_info.svg" alt="" />
-            </Box>
-            <Text as="span">
+          <Box sx={{ display: "flex", alignItems: "center", mt: fr.spacing("2w"), flexDirection: "row" }}>
+            <Image width={30} height={30} src="/images/icons/small_info.svg" alt="" />
+
+            <Typography component="span">
               En savoir plus sur
               <DsfrLink href={training.contact.url} aria-label="Site de l'entreprise - nouvelle fenêtre">
                 {training.contact.url}
               </DsfrLink>
-            </Text>
-          </Flex>
+            </Typography>
+          </Box>
         )}
       </Box>
 
       {isCfaDEntreprise && (
-        <Box background="white" borderRadius="8px" mt={6} padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
-          <Flex alignItems="center" pt={1} pb={2}>
-            <Image src="/images/info.svg" alt="" width="24px" height="24px" />
-            <Text as="span" ml={2} fontWeight={700}>
-              Cet établissement est un CFA d&apos;entreprise
-            </Text>
-          </Flex>
-          <Text>
+        <Box sx={{ pb: "0px", mt: fr.spacing("3w"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
+          <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+            Cet établissement est un CFA d&apos;entreprise
+          </Typography>
+
+          <Typography>
             La particularité ? Il s&apos;agit d&apos;une formule complète <strong>Emploi + Formation</strong> ! Cette formation vous intéresse ? La marche à suivre diffère selon le
             CFA d&apos;entreprise concerné :
-          </Text>
+          </Typography>
 
-          <Box mt={3}>
-            &bull;{" "}
-            <Text as="span" ml={4}>
-              Commencez par vous inscrire à la formation pour accéder ensuite au contrat,
-            </Text>
-          </Box>
-          <Box mt={2}>
-            &bull;{" "}
-            <Text as="span" ml={4}>
-              Ou commencez par postuler à une offre d&apos;emploi pour être ensuite inscrit en formation.
-            </Text>
+          <Box sx={{ my: fr.spacing("2w") }}>
+            <Box>
+              &bull;{" "}
+              <Typography component="span" ml={4}>
+                Commencez par vous inscrire à la formation pour accéder ensuite au contrat,
+              </Typography>
+            </Box>
+            <Box>
+              &bull;{" "}
+              <Typography component="span" ml={4}>
+                Ou commencez par postuler à une offre d&apos;emploi pour être ensuite inscrit en formation.
+              </Typography>
+            </Box>
           </Box>
 
-          <Text>Prenez contact avec cet établissement ou consultez son site web pour en savoir + !</Text>
+          <Typography>Prenez contact avec cet établissement ou consultez son site web pour en savoir + !</Typography>
 
           <Box my={2}>
             Vous vous posez des questions sur votre orientation ou votre recherche d&apos;emploi ?&nbsp;
@@ -336,31 +326,31 @@ const TrainingDescriptionDetails = ({ training }: { training: ILbaItemTraining2 
   return (
     <>
       {training.description && training.description.length > 30 && (
-        <Flex alignItems="flex-start" mt={5}>
-          <Image src="/images/icons/traning-clipboard-list.svg" alt="" />
+        <Box sx={{ display: "flex", alignItems: "flex-start" }}>
+          <Image width={24} height={24} src="/images/icons/traning-clipboard-list.svg" alt="" />
           <Box pl={4} whiteSpace="pre-wrap">
             <Typography sx={{ fontWeight: "700" }}>Description de la formation</Typography>
-            <Text as="span" sx={dontBreakOutCssParameters}>
+            <Typography component="span" sx={dontBreakOutCssParameters}>
               {training.description}
-            </Text>
+            </Typography>
           </Box>
-        </Flex>
+        </Box>
       )}
       {training.objectif && training.objectif.length > 20 && (
-        <Flex alignItems="flex-start" mt={5}>
-          <Image mt={1} src="/images/icons/training-target.svg" alt="" />
+        <Box sx={{ display: "flex", alignItems: "flex-start", mt: fr.spacing("2w") }}>
+          <Image width={24} height={24} src="/images/icons/training-target.svg" alt="" />
           <Box pl={4} whiteSpace="pre-wrap">
             <Typography sx={{ fontWeight: "700" }}>Objectifs</Typography>
-            <Text as="span" sx={dontBreakOutCssParameters}>
+            <Typography component="span" sx={dontBreakOutCssParameters}>
               {training.objectif}
-            </Text>
+            </Typography>
           </Box>
-        </Flex>
+        </Box>
       )}
       {training.sessions.length ? (
-        <Flex alignItems="flex-start" mt={5}>
-          <Image src="/images/icons/training-academic-cap.svg" alt="" />
-          <Box pl={4} whiteSpace="pre-wrap">
+        <Box sx={{ display: "flex", alignItems: "flex-start", mt: fr.spacing("2w") }}>
+          <Image width={24} height={24} src="/images/icons/training-academic-cap.svg" alt="" />
+          <Box sx={{ pl: 4, whiteSpace: "pre-wrap" }}>
             <Typography sx={{ fontWeight: "700" }}>Sessions de formation</Typography>
             {isPermanentEntry
               ? "Il est possible de s’inscrire à cette formation tout au long de l’année."
@@ -371,7 +361,7 @@ const TrainingDescriptionDetails = ({ training }: { training: ILbaItemTraining2 
                   </Fragment>
                 ))}
           </Box>
-        </Flex>
+        </Box>
       ) : null}
     </>
   )

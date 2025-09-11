@@ -3,6 +3,7 @@ import { z } from "zod"
 import { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
 import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
+import { IDiplomaParam } from "../routes/_params.js"
 
 import { ZPointGeometry } from "./address.model.js"
 import { IModelDescriptor, zObjectId } from "./common.js"
@@ -67,11 +68,43 @@ export const ZJobsPartnersRecruiterApi = z.object({
   cfa_legal_name: z.string().nullish().describe("Raison sociale du CFA si offre déléguée"),
   cfa_siret: extensions.siret.nullish().describe("Siret du CFA si offre déléguée"),
   cfa_address_label: z.string().nullish().describe("Adresse du CFA si offre déléguée"),
+  cfa_apply_phone: z.string().nullish().describe("Téléphone de contact du CFA"),
 })
 
-export const zDiplomaEuropeanLevel = z.enum(["3", "4", "5", "6", "7"])
+export const NIVEAUX_DIPLOMES_EUROPEENS = [
+  {
+    value: "3",
+    label: "Cap, autres formations niveau 3",
+  },
+  {
+    value: "4",
+    label: "Bac, autres formations niveau 4",
+  },
+  {
+    value: "5",
+    label: "BTS, DEUST, autres formations niveaux 5 (Bac+2)",
+  },
+  {
+    value: "6",
+    label: "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
+  },
+  {
+    value: "7",
+    label: "Master, titre ingénieur, autres formations niveaux 7 ou 8 (Bac+5)",
+  },
+] as const
+
+export const NIVEAUX_DIPLOMES_EUROPEENS_ENUM = Object.fromEntries(NIVEAUX_DIPLOMES_EUROPEENS.map((x) => [x.value, x.value]))
+
+export const zDiplomaEuropeanLevel = extensions.buildEnum(NIVEAUX_DIPLOMES_EUROPEENS_ENUM)
 
 export type INiveauDiplomeEuropeen = z.output<typeof zDiplomaEuropeanLevel>
+
+export const INiveauDiplomeEuropeen = {
+  fromParam(niveauParam: IDiplomaParam): INiveauDiplomeEuropeen | undefined {
+    return NIVEAUX_DIPLOMES_EUROPEENS.find((x) => x.value === niveauParam?.substring(0, 1))?.value
+  },
+}
 
 export const ZJobsPartnersOfferHistoryEvent = z.object({
   status: extensions.buildEnum(JOB_STATUS_ENGLISH).describe("Statut de l'accès"),

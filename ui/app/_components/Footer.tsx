@@ -102,7 +102,7 @@ const linkListContent: FooterProps["linkList"] = [
   },
 ]
 
-export function Footer({ isWidget = false }: { isWidget?: boolean }) {
+export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: boolean; hideLinkList?: boolean }) {
   const description =
     "La bonne alternance simplifie les mises en relation entre les trois types d’acteurs candidats, recruteurs et centres de formation, afin de faciliter les entrées en alternance."
   const widgetDescription = (
@@ -127,7 +127,7 @@ export function Footer({ isWidget = false }: { isWidget?: boolean }) {
       }}
       brandTop={DsfrHeaderProps.brandTop}
       homeLinkProps={DsfrHeaderProps.homeLinkProps}
-      linkList={isWidget ? undefined : linkListContent}
+      linkList={isWidget ? undefined : hideLinkList ? undefined : linkListContent}
     />
   )
 }

@@ -1,7 +1,7 @@
-import { useDisclosure } from "@chakra-ui/react"
 import { useState } from "react"
 import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 
+import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 
 import CandidatureLbaFailed from "./CandidatureLbaFailed"
@@ -44,14 +44,7 @@ export const CandidatureLbaModal = ({
   return fromWidget ? (
     content
   ) : (
-    <ModalReadOnly
-      isOpen={isOpen}
-      onClose={onModalClose}
-      modalContentProps={{
-        maxWidth: 1152,
-      }}
-      hideCloseButton={isSuccess || isError ? false : true}
-    >
+    <ModalReadOnly size="xl" isOpen={isOpen} onClose={onModalClose} hideCloseButton={isSuccess || isError ? false : true}>
       {content}
     </ModalReadOnly>
   )

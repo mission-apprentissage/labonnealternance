@@ -72,10 +72,10 @@ function getBestZoomLevel({ map, latitude, radius }: { map: Mapbox; latitude: nu
   return Math.log2(Math.abs(earthCircumferenceKm * Math.cos(latitude * Math.PI) * fitSize) / (2 * radius * mapboxTileSize))
 }
 
-function useCenterCamera(map: Mapbox | null, params: IRecherchePageParams, activeItems: ILbaItem[]): { center: [number, number]; zoom: number } {
-  const longitude = params.geo?.longitude ?? null
-  const latitude = params.geo?.latitude ?? null
-  const radius = params.geo?.radius ?? null
+function useCenterCamera(map: Mapbox | null, rechercheParams: IRecherchePageParams, activeItems: ILbaItem[]): { center: [number, number]; zoom: number } {
+  const longitude = rechercheParams.geo?.longitude ?? null
+  const latitude = rechercheParams.geo?.latitude ?? null
+  const radius = rechercheParams.radius ?? null
 
   const searchArea: { center: [number, number]; zoom: number } = useMemo(() => {
     const defaultSearchArea = {
@@ -197,11 +197,11 @@ async function createLayer(layer: LAYERS, map: Mapbox) {
 // We need to workaround this by using a promise to prevent infinite waiting
 async function onceLoaded(map: Mapbox): Promise<void> {
   if (map.loaded()) {
-    console.log("Map already loaded")
+    console.debug("Map already loaded")
     return
   }
 
-  console.log("Waiting for map to load")
+  console.debug("Waiting for map to load")
   await new Promise((resolve, reject) => {
     const controller = new AbortController()
     const signal = controller.signal
@@ -215,7 +215,7 @@ async function onceLoaded(map: Mapbox): Promise<void> {
         clearTimeout(timeoutId)
         resolve(undefined)
       } else if (signal.aborted) {
-        console.log("Map loading timeout")
+        console.debug("Map loading timeout")
         reject(signal.reason)
       } else {
         globalThis.window.requestAnimationFrame(callback)
@@ -266,7 +266,7 @@ async function setupMap(container: HTMLDivElement): Promise<Mapbox> {
 
   await onceLoaded(mapSingleton)
 
-  console.log("Loading images!!!")
+  console.debug("Loading images!!!")
   await Promise.all([
     loadImage("/images/icons/formation.png", "formation", mapSingleton),
     loadImage("/images/icons/job.png", "job", mapSingleton),
@@ -274,7 +274,7 @@ async function setupMap(container: HTMLDivElement): Promise<Mapbox> {
     loadImage("/images/icons/job_large_shadow.png", "job-active", mapSingleton),
   ])
 
-  console.log("Creating layers")
+  console.debug("Creating layers")
   // Layout order is important to control the z-index (last added is on top)
   await createLayer("job", mapSingleton)
   await createLayer("formation", mapSingleton)
@@ -324,7 +324,7 @@ function buildSourceData<T extends ILbaItem>(items: T[], type: LAYERS): GeoJSON.
 }
 
 function setPointOfInterests(map: Mapbox, result: IUseRechercheResults, activeItems: ILbaItem[]) {
-  const jobs = result.status === "success" ? result.jobs : []
+  const { jobs } = result
   map.getSource<GeoJSONSource>(MAP_LAYERS.job.geopoints).setData(
     buildSourceData(
       jobs.filter((job) => !isItemReferenceInList(job, activeItems)),
@@ -332,7 +332,7 @@ function setPointOfInterests(map: Mapbox, result: IUseRechercheResults, activeIt
     )
   )
 
-  const formations = result.formationStatus === "success" ? result.formations : []
+  const { formations } = result.formationQuery
   map.getSource<GeoJSONSource>(MAP_LAYERS.formation.geopoints).setData(
     buildSourceData(
       formations.filter((formation) => !isItemReferenceInList(formation, activeItems)),
@@ -348,9 +348,9 @@ function setPointOfInterests(map: Mapbox, result: IUseRechercheResults, activeIt
 // @refresh reset
 function useMap(container: HTMLDivElement | null, props: RechercheCarteProps) {
   const [error, setError] = useState<Error | null>(null)
-  const result = useRechercheResults(props.params)
-  const navigateToRecherchePage = useNavigateToRecherchePage(props.params)
-  const navigateToResultItemDetail = useNavigateToResultItemDetail(props.params)
+  const result = useRechercheResults(props.rechercheParams)
+  const navigateToRecherchePage = useNavigateToRecherchePage(props.rechercheParams)
+  const navigateToResultItemDetail = useNavigateToResultItemDetail(props.rechercheParams)
   const [map, setMap] = useState<Mapbox | null>(null)
 
   const updateSearchParam = useCallback(
@@ -366,16 +366,16 @@ function useMap(container: HTMLDivElement | null, props: RechercheCarteProps) {
 
   useLayoutEffect(() => {
     if (container === null) {
-      console.log("No container")
+      console.debug("No container")
       return
     }
 
     setError(null)
-    console.log("Start Setup")
+    console.debug("Start Setup")
 
     setupMap(container)
       .then((m) => {
-        console.log("Setup Complete")
+        console.debug("Setup Complete")
         setMap(m)
       })
       .catch((error) => {
@@ -388,7 +388,7 @@ function useMap(container: HTMLDivElement | null, props: RechercheCarteProps) {
     return () => {
       setMap((prev) => {
         if (prev !== null) {
-          console.log("Remove map")
+          console.debug("Remove map")
           prev.getContainer().remove()
         }
         return null
@@ -397,20 +397,13 @@ function useMap(container: HTMLDivElement | null, props: RechercheCarteProps) {
   }, [container])
 
   const activeItems = useMemo(() => {
-    const refs: ItemReferenceLike[] = props.item === null ? props.params.activeItems : [props.item]
-
-    if (refs == null || refs.length === 0) {
+    const refs: ItemReferenceLike[] = props.item === null ? props.rechercheParams.activeItems : [props.item]
+    if (!refs?.length) {
       return []
     }
-
-    if (result.status === "success" || result.formationStatus === "success") {
-      const items = result.items.filter((i) => isItemReferenceInList(i, refs))
-
-      return items
-    }
-
-    return []
-  }, [props.params.activeItems, result, props.item])
+    const items = result.items.filter((i) => isItemReferenceInList(i, refs))
+    return items
+  }, [props.rechercheParams.activeItems, result, props.item])
 
   useEffect(() => {
     if (map === null) {
@@ -487,13 +480,13 @@ function useMap(container: HTMLDivElement | null, props: RechercheCarteProps) {
     }
   }, [map, updateSearchParam, navigateToResultItemDetail, props.variant])
 
-  const searchArea = useCenterCamera(map, props.params, activeItems)
+  const searchArea = useCenterCamera(map, props.rechercheParams, activeItems)
 
   if (error !== null) {
     throw error
   }
 
-  return { map, activeItems, searchArea, radius: props.params.geo?.radius ?? null }
+  return { map, activeItems, searchArea, radius: props.rechercheParams.radius ?? null }
 }
 
 type RechercheCarteProps = WithRecherchePageParams<
@@ -516,12 +509,14 @@ function RechercheCarteInternal(props: RechercheCarteProps) {
 
   return (
     <Box
+      id="RechercheCarte"
       sx={{
         background: "center no-repeat url('/images/static_map.svg'), #fff",
         backgroundSize: "auto",
         position: "relative",
         overflow: "hidden",
         height: "100%",
+        flex: 1,
       }}
     >
       <Box
@@ -539,6 +534,7 @@ function RechercheCarteInternal(props: RechercheCarteProps) {
 }
 
 export function RechercheCarte(props: RechercheCarteProps) {
+  console.debug("render RechercheCarte")
   return (
     <ErrorBoundary>
       <RechercheCarteInternal {...props} />

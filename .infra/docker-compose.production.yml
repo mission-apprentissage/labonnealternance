@@ -130,7 +130,7 @@ services:
 
   metabase:
     <<: *default
-    image: metabase/metabase:v0.51.2
+    image: metabase/metabase:v0.56.3
     deploy:
       <<: *deploy-default
       resources:

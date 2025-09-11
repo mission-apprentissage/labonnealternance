@@ -1,4 +1,5 @@
 import { zRoutes } from "shared"
+import { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 
 import { trackApiCall } from "../../common/utils/sendTrackingEvent"
 import { getFormationsParRegionQuery } from "../../services/formation.service"
@@ -22,7 +23,7 @@ export default (server: Server) => {
       const { romes, romeDomain, caller, departement, region, diploma, options } = req.query
       const { referer } = req.headers
 
-      const result = await getFormationsParRegionQuery({ romes, departement, region, diploma, romeDomain, caller, options, referer })
+      const result = await getFormationsParRegionQuery({ romes, departement, region, diploma: INiveauDiplomeEuropeen.fromParam(diploma), romeDomain, caller, options, referer })
 
       if ("error" in result) {
         if (result.error === "wrong_parameters") {

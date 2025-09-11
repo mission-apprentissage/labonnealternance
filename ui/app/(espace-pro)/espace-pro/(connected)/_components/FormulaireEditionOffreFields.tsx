@@ -1,8 +1,10 @@
 "use client"
 
-import { Box, Checkbox, CheckboxGroup, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input, Select, Text } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
-import { Link } from "@mui/material"
+import Checkbox from "@codegouvfr/react-dsfr/Checkbox"
+import Input from "@codegouvfr/react-dsfr/Input"
+import Select from "@codegouvfr/react-dsfr/Select"
+import { Box, FormControl, FormLabel, Link } from "@mui/material"
 import dayjs from "dayjs"
 import { useFormikContext } from "formik"
 import { useParams } from "next/navigation"
@@ -10,9 +12,10 @@ import { IAppellationsRomes } from "shared"
 import { TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "shared/constants/recruteur"
 
 import { ChampNombre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/ChampNombre"
+import CustomInput from "@/app/_components/CustomInput"
 import { AUTHTYPE } from "@/common/contants"
 import { debounce } from "@/common/utils/debounce"
-import { CustomInput, DropdownCombobox } from "@/components/espace_pro"
+import { DropdownCombobox } from "@/components/espace_pro"
 import { useAuth } from "@/context/UserContext"
 import { Warning } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
@@ -42,9 +45,9 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
   const { values, setFieldValue, handleChange, errors, touched } = useFormikContext<any>()
   return (
     <>
-      <FormControl isRequired>
-        <FormLabel>Métier</FormLabel>
+      <FormControl required={true} sx={{ width: "100%" }}>
         <DropdownCombobox
+          label="Métier *"
           handleSearch={debounce(handleJobSearch, 300)}
           saveSelectedItem={(values: IAppellationsRomes["coupleAppellationRomeMetier"][number]) => {
             /**
@@ -65,70 +68,67 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
         />
       </FormControl>
       {values.rome_label && (
-        <Box mt={6}>
-          <CustomInput
-            required={false}
-            name="offer_title_custom"
-            label="Intitulé de l'offre si différent"
-            info="Personnalisez le titre du poste (Facultatif)"
-            type="text"
-            value={values.offer_title_custom}
+        <Box mt={2}>
+          <Input
+            label="Intitulé de l'offre"
+            hintText="Personnalisez le titre du poste (Facultatif)"
+            nativeInputProps={{ value: values.offer_title_custom, type: "text", name: "offer_title_custom", onChange: (e) => setFieldValue("offer_title_custom", e.target.value) }}
           />
         </Box>
       )}
-      <FormControl mt={6} isRequired>
-        <Box mb={4}>
-          <FormLabel display="inline-block" mb={0}>
-            Type de contrat en alternance{" "}
-          </FormLabel>
-          <Link
-            href="https://www.service-public.fr/professionnels-entreprises/vosdroits/F31704"
-            target="_blank"
-            rel="noreferrer noopener"
-            aria-label="Accès au contrat en alternance - nouvelle fenêtre"
-            className={fr.cx("fr-text--xs")}
-          >
-            En savoir plus
-          </Link>
-        </Box>
-        <CheckboxGroup
-          onChange={(value) => {
-            setFieldValue("job_type", value)
-          }}
-          value={values.job_type}
-          defaultValue={["Apprentissage"]}
-          data-testid="offre-job-type"
-        >
-          {Object.values(TRAINING_CONTRACT_TYPE).map((label) => (
-            <Checkbox
-              key={label}
-              value={label}
-              sx={{
-                ml: 5,
-                mb: 3,
-                "&:first": {
-                  ml: 0,
+
+      <Box mt={2}>
+        <Checkbox
+          orientation="horizontal"
+          state={values.job_type.length === 0 ? "error" : "default"}
+          stateRelatedMessage="Information requise"
+          small={true}
+          options={Object.values(TRAINING_CONTRACT_TYPE).map((label) => {
+            return {
+              label: label,
+              nativeInputProps: {
+                name: label,
+                checked: values.job_type.includes(label),
+                onChange: (e) => {
+                  setFieldValue("job_type", e.target.checked ? [...values.job_type, label] : values.job_type.filter((item) => item !== label))
                 },
-              }}
-            >
-              <span data-testid={label}>{label}</span>
-            </Checkbox>
-          ))}
-        </CheckboxGroup>
-      </FormControl>
-      <FormControl mt={6} isRequired>
-        <FormLabel>Niveau visé en fin d’études</FormLabel>
-        <Select size="md" name="job_level_label" defaultValue={values.job_level_label} onChange={handleChange}>
-          <option value="Indifférent">Indifférent</option>
-          <option value="Cap, autres formations niveau (Infrabac)">Cap, autres formations niveau (Infrabac)</option>
-          <option value="BP, Bac, autres formations niveau (Bac)">BP, Bac, autres formations niveau (Bac)</option>
-          <option value="BTS, DEUST, autres formations niveau (Bac+2)">BTS, DEUST, autres formations niveau (Bac+2)</option>
-          <option value="Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)">Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)</option>
-          <option value="Master, titre ingénieur, autres formations niveau (Bac+5)">Master, titre ingénieur, autres formations niveau (Bac+5)</option>
-        </Select>
-        {errors.job_level_label && touched.job_level_label && <FormErrorMessage>{errors.job_level_label as string}</FormErrorMessage>}
-      </FormControl>
-      <Box mt={6}>
+              },
+            }
+          })}
+          legend={
+            <>
+              <FormLabel sx={{ ...(values.job_type.length === 0 ? { color: fr.colors.decisions.text.default.error.default } : {}), display: "inline-block", mb: 0, mr: 1 }}>
+                Type de contrat en alternance *
+              </FormLabel>
+              <Link
+                href="https://www.service-public.fr/professionnels-entreprises/vosdroits/F31704"
+                target="_blank"
+                rel="noreferrer noopener"
+                aria-label="Accès au contrat en alternance - nouvelle fenêtre"
+                className={fr.cx("fr-text--xs")}
+              >
+                En savoir plus
+              </Link>
+            </>
+          }
+        />
+      </Box>
+
+      <Select
+        state={errors.job_level_label && touched.job_level_label ? "error" : "default"}
+        stateRelatedMessage={errors.job_level_label as string}
+        label="Niveau visé en fin d’études *"
+        nativeSelectProps={{ name: "job_level_label", defaultValue: values.job_level_label, onChange: handleChange }}
+      >
+        <option value="Indifférent">Indifférent</option>
+        <option value="Cap, autres formations niveau (Infrabac)">Cap, autres formations niveau (Infrabac)</option>
+        <option value="BP, Bac, autres formations niveau (Bac)">BP, Bac, autres formations niveau (Bac)</option>
+        <option value="BTS, DEUST, autres formations niveau (Bac+2)">BTS, DEUST, autres formations niveau (Bac+2)</option>
+        <option value="Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)">Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)</option>
+        <option value="Master, titre ingénieur, autres formations niveau (Bac+5)">Master, titre ingénieur, autres formations niveau (Bac+5)</option>
+      </Select>
+
+      <Box mt={2}>
         <CustomInput
           required={true}
           name="job_start_date"
@@ -139,32 +139,40 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
           max={maxStartDate.format(ISO_DATE_FORMAT)}
         />
       </Box>
-      <FormControl mt={6} maxWidth={["400px", "400px", "400px", "450px"]}>
+      <FormControl sx={{ mt: 2, width: "100%", maxWidth: { xs: "400px", sm: "100%" } }} required={true}>
         <ChampNombre max={10} name="job_count" value={values.job_count} label="Nombre de poste(s) disponible(s)" handleChange={setFieldValue} dataTestId="offre-job-count" />
       </FormControl>
-      {/* @ts-expect-error: TODO */}
-      <FormControl mt={6} isInvalid={errors.job_duration} maxWidth={["400px", "400px", "400px", "450px"]}>
-        <Flex align="center" gap={6}>
-          <Text flexGrow={2}>Durée du contrat (mois)</Text>
+      <FormControl sx={{ mt: 2, width: "100%", maxWidth: { xs: "400px", sm: "100%" } }} error={errors.job_duration ? true : false}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <FormLabel sx={{ flexGrow: 2 }}>Durée du contrat (mois) *</FormLabel>
           <Input
-            maxWidth="128px"
-            name="job_duration"
-            value={values.job_duration}
-            onChange={(e) => (parseInt(e.target.value) > 0 ? setFieldValue("job_duration", parseInt(e.target.value)) : setFieldValue("job_duration", null))}
+            label=""
+            className={fr.cx("fr-fieldset__element--inline", "fr-fieldset__element--number")}
+            nativeInputProps={{
+              name: "job_duration",
+              value: values.job_duration,
+              onChange: (e) => (parseInt(e.target.value) > 0 ? setFieldValue("job_duration", parseInt(e.target.value)) : setFieldValue("job_duration", null)),
+            }}
           />
-        </Flex>
-        <FormErrorMessage>
-          <Flex direction="row" alignItems="center">
+        </Box>
+        {errors.job_duration && (
+          <Box sx={{ color: fr.colors.decisions.text.default.error.default, display: "flex", flexDirection: "row", alignItems: "center" }}>
             <Warning m={0} />
-            <Flex ml={1}>{errors.job_duration as string}</Flex>
-          </Flex>
-        </FormErrorMessage>
+            <Box sx={{ display: "flex" }} ml={1}>
+              {errors.job_duration as string}
+            </Box>
+          </Box>
+        )}
       </FormControl>
       {Boolean((user && user.type !== AUTHTYPE.ENTREPRISE) || (type && type !== AUTHTYPE.ENTREPRISE)) && (
-        <FormControl mt={6}>
-          <FormLabel>Rythme de l'alternance (formation / entreprise)</FormLabel>
-          <FormHelperText pb={2}>Facultatif</FormHelperText>
-          <Select variant="outline" size="md" name="job_rythm" defaultValue={values.job_rythm} onChange={handleChange}>
+        <FormControl sx={{ mt: 2, width: "100%" }}>
+          <Select
+            state={errors.job_rythm && touched.job_rythm ? "error" : "default"}
+            stateRelatedMessage={errors.job_rythm as string}
+            label="Rythme de l'alternance (formation / entreprise)"
+            nativeSelectProps={{ name: "job_rythm", defaultValue: values.job_rythm, onChange: handleChange }}
+            hint="Facultatif"
+          >
             <option value="" hidden>
               Choisissez un rythme
             </option>
@@ -174,7 +182,6 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
               </option>
             ))}
           </Select>
-          {errors.job_rythm && touched.job_rythm && <FormErrorMessage>{errors.job_rythm as string}</FormErrorMessage>}
         </FormControl>
       )}
     </>
