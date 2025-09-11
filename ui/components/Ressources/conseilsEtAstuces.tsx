@@ -68,7 +68,7 @@ const accordions = [
             peut vous épauler tout au long de votre parcours et suivant vos besoins !{" "}
             <DsfrLink href="https://www.mentorat-apprentissage.fr/" aria-label="Accéder au site mentorat apprentissage">
               En savoir plus sur le programme de l'ANAF
-            </DsfrLink>/ 
+            </DsfrLink>
             <DsfrLink href="https://www.jobirl.com/e-mentorat/e-mentorat-jeunes-stage-alternance" aria-label="Accéder au site job irl">
               En savoir plus sur le programme de Jobirl
             </DsfrLink>
