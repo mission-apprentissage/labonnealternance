@@ -170,7 +170,7 @@ export const ReportJobLink = ({
 
 const ReportedAcknowledgement = () => {
   return (
-    <Box sx={{ justifySelf: "center" }}>
+    <Box sx={{ justifySelf: "center", p: fr.spacing("4w") }}>
       <Stack direction="row" spacing={4} alignItems="center" sx={{ mb: 2 }}>
         <Image width={56} height={56} src="/images/paperplane2.svg" alt="" />
         <Typography variant="h2">Votre signalement a bien été envoyé à notre équipe.</Typography>
