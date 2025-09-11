@@ -9,13 +9,13 @@ export const ModalReadOnly = ({
   children,
   isOpen,
   onClose,
-  modalContentProps,
+  size = "md",
   hideCloseButton = false,
 }: {
   children: React.ReactNode
   isOpen: boolean
   onClose: () => void
-  modalContentProps?: any
+  size?: "xs" | "sm" | "md" | "lg" | "xl"
   hideCloseButton?: boolean
 }) => {
   const isMobile = useIsMobileDevice()
@@ -25,24 +25,7 @@ export const ModalReadOnly = ({
   }, [isOpen])
 
   return (
-    <Dialog
-      open={isOpen}
-      onClose={onClose}
-      fullScreen={isMobile}
-      maxWidth={false}
-      PaperProps={{
-        sx: {
-          overflowY: "auto",
-          margin: "auto",
-          maxHeight: { xs: "100%", sm: "95%" },
-          maxWidth: { xs: "100%", sm: "95%" },
-          width: isMobile ? "100vw" : "fit-content",
-          height: isMobile ? "100vh" : "auto",
-          borderRadius: 0,
-          ...modalContentProps,
-        },
-      }}
-    >
+    <Dialog open={isOpen} onClose={onClose} fullScreen={isMobile} maxWidth={size}>
       {!hideCloseButton && (
         <Box sx={{ display: "flex", mr: { xs: 4, sm: 2, md: 0 }, alignSelf: "flex-end" }}>
           <ModalCloseButton onClose={onClose} />

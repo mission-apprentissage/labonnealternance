@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui/react"
+import { Box } from "@mui/material"
 import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 
 import { useDisclosure } from "@/common/hooks/useDisclosure"
@@ -11,7 +11,7 @@ const WidgetCandidatureLba = ({ item, caller }: { item: ILbaItemLbaJobJson | ILb
   const submitControls = useSubmitCandidature(item, caller)
 
   return (
-    <Box width="100%" height="100%">
+    <Box sx={{ width: "100%", height: "100%" }}>
       <CandidatureLbaModal item={item} modalControls={modalControls} submitControls={submitControls} fromWidget={true} />
     </Box>
   )
