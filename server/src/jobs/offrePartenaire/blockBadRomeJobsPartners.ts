@@ -18,10 +18,10 @@ export const blockBadRomeJobsPartners = async ({ addedMatchFilter }: FillCompute
     addedMatchFilter,
     getData: async (documents) => {
       return documents.map((document) => {
-        const { _id, offer_rome_codes } = document
+        const { _id, offer_rome_codes, business_error } = document
         const result: Pick<IComputedJobsPartners, (typeof filledFields)[number] | "_id"> = {
           _id,
-          business_error: offer_rome_codes?.some((romeCode) => blacklistedRomes.includes(romeCode)) ? JOB_PARTNER_BUSINESS_ERROR.ROME_BLACKLISTED : null,
+          business_error: offer_rome_codes?.some((romeCode) => blacklistedRomes.includes(romeCode)) ? JOB_PARTNER_BUSINESS_ERROR.ROME_BLACKLISTED : business_error,
         }
         return result
       })

@@ -125,6 +125,19 @@ export const zJobsRoutesV3 = {
         resources: {},
       },
     },
+    "/v4/jobs/multi-partner/bulk": {
+      method: "post",
+      path: "/v4/jobs/multi-partner/bulk",
+      body: ZComputedJobsPartnersWrite.array(),
+      response: {
+        "200": z.object({ id: zObjectId.nullish(), status: z.number(), error: z.string().nullish() }).array(),
+      },
+      securityScheme: {
+        auth: "api-key",
+        access: null,
+        resources: {},
+      },
+    },
     "/v3/jobs/:id/stats/:eventType": {
       method: "post",
       path: "/v3/jobs/:id/stats/:eventType",

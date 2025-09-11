@@ -21,7 +21,7 @@ type RechercheMapPopupProps = {
 const popupElement = globalThis.document == null ? null : globalThis.document.createElement("div")
 
 function RechercheMapPopupLink(props: WithRecherchePageParams<{ item: ILbaItem }>) {
-  const url = useResultItemUrl(props.item, props.params)
+  const url = useResultItemUrl(props.item, props.rechercheParams)
 
   return (
     <Box>
@@ -77,7 +77,7 @@ function RechercheMapPopupContent(props: WithRecherchePageParams<{ activeItems: 
         }}
       >
         {props.activeItems.map((item) => (
-          <RechercheMapPopupLink key={item.id} item={item} params={props.params} />
+          <RechercheMapPopupLink key={item.id} item={item} rechercheParams={props.rechercheParams} />
         ))}
       </Box>
     </Box>
@@ -86,7 +86,7 @@ function RechercheMapPopupContent(props: WithRecherchePageParams<{ activeItems: 
 
 export function RechercheMapPopup(props: WithRecherchePageParams<RechercheMapPopupProps>) {
   const [popup, setPopup] = useState<Popup | null>(null)
-  const navigateToRecherchePage = useNavigateToRecherchePage(props.params)
+  const navigateToRecherchePage = useNavigateToRecherchePage(props.rechercheParams)
 
   useEffect(() => {
     if (props.map === null || popupElement === null) {
@@ -136,5 +136,5 @@ export function RechercheMapPopup(props: WithRecherchePageParams<RechercheMapPop
     return null
   }
 
-  return createPortal(<RechercheMapPopupContent activeItems={props.activeItems} params={props.params} />, popupElement)
+  return createPortal(<RechercheMapPopupContent activeItems={props.activeItems} rechercheParams={props.rechercheParams} />, popupElement)
 }

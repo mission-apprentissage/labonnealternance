@@ -1,15 +1,14 @@
 "use client"
-import { Box, Flex } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
-import { Typography } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 
 import { RechercheCarte } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
-import { IUseRechercheResultsSuccess, useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
-import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+import { IUseRechercheResults, useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
+import type { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { useBuildNavigation } from "@/app/hooks/useBuildNavigation"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
@@ -30,17 +29,17 @@ import ShareLink from "@/components/ItemDetail/ShareLink"
 import { isCfaEntreprise } from "@/services/cfaEntreprise"
 import { PAGES } from "@/utils/routes.utils"
 
-export default function JobDetailRendererClient({ job, params }: WithRecherchePageParams<{ job: ILbaItemJobsGlobal }>) {
-  const result = useRechercheResults(params)
+export default function JobDetailRendererClient({ job, rechercheParams }: { job: ILbaItemJobsGlobal; rechercheParams: IRecherchePageParams }) {
+  const result = useRechercheResults(rechercheParams)
 
-  const jobDetail = <JobDetail selectedItem={job} resultList={result.status === "success" ? result.items : []} params={params} />
+  const jobDetail = <JobDetail selectedItem={job} resultList={result.items} rechercheParams={rechercheParams} />
 
-  if (params?.displayMap) {
+  if (rechercheParams?.displayMap) {
     return (
       <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", height: "100vh", overflow: "hidden" }}>
         {jobDetail}
         {/* TODO : remove extended search button from map view */}
-        <RechercheCarte item={job} variant="detail" params={params} />
+        <RechercheCarte item={job} variant="detail" rechercheParams={rechercheParams} />
       </Box>
     )
   }
@@ -48,17 +47,25 @@ export default function JobDetailRendererClient({ job, params }: WithRecherchePa
   return jobDetail
 }
 
-function JobDetail({ selectedItem, resultList, params }: WithRecherchePageParams<{ selectedItem: ILbaItemJobsGlobal; resultList: IUseRechercheResultsSuccess["items"] }>) {
+function JobDetail({
+  selectedItem,
+  resultList,
+  rechercheParams,
+}: {
+  rechercheParams: IRecherchePageParams
+  selectedItem: ILbaItemJobsGlobal
+  resultList: IUseRechercheResults["items"]
+}) {
   // const { activeFilters } = useContext(DisplayContext)
   const currentItem = resultList.find((item) => item.id === selectedItem.id)
   const router = useRouter()
   const [isCollapsedHeader, setIsCollapsedHeader] = useState(false)
-  const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItem, params })
+  const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItem, rechercheParams: rechercheParams })
 
   const kind = selectedItem.ideaType
   const isCfa = isCfaEntreprise(selectedItem?.company?.siret, selectedItem?.company?.headquarter?.siret)
   const isMandataire = selectedItem?.company?.mandataire
-  const handleClose = () => router.push(PAGES.dynamic.recherche(params).getPath())
+  const handleClose = () => router.push(PAGES.dynamic.recherche(rechercheParams).getPath())
 
   // @ts-expect-error
   const actualTitle = kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && selectedItem?.nafs?.length > 0 ? selectedItem.nafs[0]?.label : selectedItem.title
@@ -83,11 +90,10 @@ function JobDetail({ selectedItem, resultList, params }: WithRecherchePageParams
 
   return (
     <Box
-      as="section"
       onScroll={handleScroll}
       id="itemDetailColumn"
-      display={selectedItem ? "block" : "none"}
       sx={{
+        display: selectedItem ? "block" : "none",
         overflowY: "auto",
         position: "relative",
         height: "100vh",
@@ -98,19 +104,19 @@ function JobDetail({ selectedItem, resultList, params }: WithRecherchePageParams
       <InfoBanner />
       {/* @ts-expect-error: TODO */}
       <Box
-        as="header"
         sx={{
           filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
           padding: "10px 20px 0px 10px",
+          backgroundColor: "white",
+          zIndex: 2, // DSFR Accordion gets zIndex 1 when manipulated for some reason.
         }}
-        background="white"
         {...stickyHeaderProperties}
       >
-        <Box width="100%" pl={["0", 4]} pb={isCollapsedHeader ? "0" : 2}>
-          <Flex justifyContent="flex-end">
+        <Box sx={{ width: "100%", pl: { xs: 0, md: 4, pb: isCollapsedHeader ? 0 : 2 } }}>
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             {GetItemTag({ kind: oldItemTypeToNewItemType(kind), isCfa, isMandataire })}
             {getNavigationButtons({ goPrev, goNext, handleClose })}
-          </Flex>
+          </Box>
           {!isCollapsedHeader && getJobPublishedTimeAndApplications({ item: selectedItem })}
           {!isCollapsedHeader && <JobItemCardHeader selectedItem={selectedItem} kind={kind as LBA_ITEM_TYPE} isMandataire={isMandataire} />}
 
@@ -120,16 +126,16 @@ function JobDetail({ selectedItem, resultList, params }: WithRecherchePageParams
 
           {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
           {!isCollapsedHeader && <hr style={{ paddingBottom: "1px" }} />}
-          <Flex flexDirection="row" justifyContent="space-between" gap={2} alignItems="center">
-            <Box>
+          <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", gap: 2, alignItems: "center" }}>
+            <div>
               {isCandidatureLba(selectedItem) && <CandidatureLba item={selectedItem as ILbaItemLbaJobJson | ILbaItemLbaCompanyJson} />}
               {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && !isCandidatureLba(selectedItem) && <NoCandidatureLba />}
               {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && <PartnerJobPostuler isCollapsedHeader={isCollapsedHeader} job={selectedItem} />}
-            </Box>
-            <Box>
+            </div>
+            <div>
               <ShareLink item={selectedItem} />
-            </Box>
-          </Flex>
+            </div>
+          </Box>
         </Box>
       </Box>
 

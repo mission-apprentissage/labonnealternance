@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation"
 import { IJobJson } from "shared"
 
+import { Bandeau } from "@/app/(espace-pro)/_components/Bandeau"
 import { FormulaireEditionOffre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffre"
-import { Bandeau } from "@/components/espace_pro/Bandeau"
 import { createOffreByToken } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"

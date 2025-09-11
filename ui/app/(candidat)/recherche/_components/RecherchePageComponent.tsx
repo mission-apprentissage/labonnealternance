@@ -1,82 +1,93 @@
+"use client"
+
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Link } from "@mui/material"
-import Image from "next/image"
-import NextLink from "next/link"
-import { Suspense } from "react"
+import { Box } from "@mui/material"
+import { useRef } from "react"
 
 import { CandidatRechercheFilters } from "@/app/(candidat)/recherche/_components/CandidatRechercheFilters"
-import { CandidatRechercheForm } from "@/app/(candidat)/recherche/_components/CandidatRechercheForm"
-import { RechercheResultats } from "@/app/(candidat)/recherche/_components/RechercheResultats"
-import { RechercheResultatsPlaceholder } from "@/app/(candidat)/recherche/_components/RechercheResultatsPlaceholder"
-import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
-import { PAGES } from "@/utils/routes.utils"
+import { RechercheBackToTopButton } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheBackToTopButton"
+import { RechercheHeader } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheHeader"
+import { RechercheCarte } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
+import { RechercheMobileFormUpdate } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMobileFormUpdate"
+import { RechercheMobileToggleMapButton } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMobileToggleMapButton"
+import { RecherchePageEmpty } from "@/app/(candidat)/recherche/_components/RechercheResultats/RecherchePageEmpty"
+import { RechercheResultatsList } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheResultatsList"
+import { VirtualContainer } from "@/app/(candidat)/recherche/_components/RechercheResultats/VirtualContainer"
+import { useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
+import { IRecherchePageParams, isItemReferenceInList } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 
-function RechercheHeader(props: WithRecherchePageParams) {
-  return (
-    <Box
-      sx={{
-        boxShadow: 2,
-        backgroundColor: fr.colors.decisions.background.default.grey.default,
-        zIndex: 5,
-      }}
-    >
-      <Box
-        sx={{
-          p: fr.spacing("3v"),
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "1fr",
-            lg: "max-content 1fr",
-          },
-          gap: fr.spacing("4w"),
-          alignItems: "center",
-          justifyContent: "space-between",
-          maxWidth: "xl",
-          margin: "auto",
-        }}
-      >
-        <Box
-          sx={{
-            display: {
-              xs: "none",
-              lg: "block",
-            },
-            alignSelf: "start",
-          }}
-        >
-          <Link
-            component={NextLink}
-            sx={{
-              textDecoration: "none",
-            }}
-            href={PAGES.static.home.getPath()}
-          >
-            <Image src="/images/logo-violet-seul.svg" width={40} height={44} alt="Retour page d'accueil de La bonne alternance" unoptimized />
-          </Link>
-        </Box>
-        <Box>
-          <CandidatRechercheForm {...props} />
-          <CandidatRechercheFilters {...props} />
-        </Box>
-      </Box>
-    </Box>
-  )
-}
+function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePageParams }) {
+  const { displayMap, displayMobileForm, activeItems = [] } = props.rechercheParams
+  const scrollElement = useRef<HTMLElement>(null)
+  const rechercheResult = useRechercheResults(props.rechercheParams)
 
-export function RecherchePageComponent(props: WithRecherchePageParams) {
+  const elements = [
+    {
+      height: 122,
+      render: () => <CandidatRechercheFilters rechercheParams={props.rechercheParams} />,
+    },
+    ...RechercheResultatsList(props),
+  ] satisfies Parameters<typeof VirtualContainer>[0]["elements"]
+
+  if (displayMobileForm) {
+    return <RechercheMobileFormUpdate rechercheParams={props.rechercheParams} />
+  }
+
+  const scolledElementIndex = elements.findIndex((element) => "item" in element && element.item.ideaType !== "whisper" && isItemReferenceInList(element.item, activeItems))
+
   return (
     <Box
       sx={{
         backgroundColor: fr.colors.decisions.background.alt.grey.default,
         height: "100vh",
-        gridTemplateRows: "min-content 1fr",
-        display: "grid",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       <RechercheHeader {...props} />
-      <Suspense fallback={<RechercheResultatsPlaceholder />}>
-        <RechercheResultats {...props} />
-      </Suspense>
+      <Box
+        sx={{
+          overflow: "hidden",
+          flex: 1,
+          display: "flex",
+          flexDirection: {
+            xs: "column",
+            md: "row",
+          },
+        }}
+      >
+        <VirtualContainer
+          ref={scrollElement}
+          defaultHeight={270}
+          elements={elements}
+          scrollToElementIndex={scolledElementIndex}
+          parentStyle={{
+            ...(displayMap ? { display: { xs: "none", md: "block" } } : {}),
+          }}
+        />
+        {displayMap ? <RechercheCarte item={null} variant="recherche" {...props} /> : <></>}
+        <Box
+          sx={{
+            padding: fr.spacing("2w"),
+            margin: "auto",
+            display: {
+              xs: "block",
+              md: "none",
+            },
+          }}
+        >
+          <RechercheMobileToggleMapButton displayMap={displayMap} rechercheParams={props.rechercheParams} />
+        </Box>
+        {!displayMap && rechercheResult.items.length > 1 && <RechercheBackToTopButton onClick={() => scrollElement.current?.scrollTo({ top: 0 })} />}
+      </Box>
     </Box>
   )
+}
+
+export function RecherchePageComponent(props: { rechercheParams: IRecherchePageParams }) {
+  const rechercheResult = useRechercheResults(props.rechercheParams)
+  if (rechercheResult.status === "disabled") {
+    return <RecherchePageEmpty {...props} />
+  }
+  return <RecherchePageComponentWithParams {...props} />
 }

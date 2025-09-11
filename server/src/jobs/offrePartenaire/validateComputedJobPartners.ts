@@ -41,6 +41,12 @@ export const validateComputedJobPartners = async ({ addedMatchFilter, shouldNoti
 
       for (const document of documents) {
         const { success: validated, error } = zodModel.safeParse(document)
+        let finalError: any = error
+        let finalValidated = validated
+        if (finalValidated && !document.offer_rome_codes?.length) {
+          finalValidated = false
+          finalError = "offer_rome_codes is empty"
+        }
 
         operations.push({
           updateOne: {
@@ -52,11 +58,11 @@ export const validateComputedJobPartners = async ({ addedMatchFilter, shouldNoti
         operations.push({
           updateOne: {
             filter: { _id: document._id },
-            update: { $set: { validated } },
+            update: { $set: { validated: finalValidated } },
           },
         })
 
-        if (error) {
+        if (finalError) {
           counters.error++
           operations.push({
             updateOne: {
@@ -65,7 +71,7 @@ export const validateComputedJobPartners = async ({ addedMatchFilter, shouldNoti
                 $push: {
                   errors: {
                     source: job,
-                    error: JSON.stringify(error),
+                    error: JSON.stringify(finalError),
                   },
                 },
               },

@@ -1,163 +1,21 @@
 "use client"
+
 import { fr } from "@codegouvfr/react-dsfr"
-import Button from "@codegouvfr/react-dsfr/Button"
-import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox"
-import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch"
 import { Box } from "@mui/material"
-import { ChangeEvent, Suspense, useCallback } from "react"
+import { useCallback } from "react"
 
-import { candidatRechercheFormModal } from "@/app/(candidat)/recherche/_components/CandidatRechercheForm"
+import { RechercheNiveauSelect } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheNiveauSelect"
+import { RechercheRayonSelect } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheRayonSelect"
+import { RechercheToggleMap } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheToggleMap"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
-import { useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
-import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+import type { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+import { rechercheParamsToRechercheForm } from "@/app/_components/RechercheForm/RechercheForm"
+import { SendPlausibleEvent } from "@/utils/plausible"
 
-type CandidatRechercheFiltersUIProps = {
-  entrepriseCount: number | null
-  displayEntreprises: boolean
-  onEntrepriseChange: null | ((e: ChangeEvent<HTMLInputElement>) => void)
-  formationsCount: number | null
-  displayFormations: boolean
-  onFormationsChange: null | ((e: ChangeEvent<HTMLInputElement>) => void)
-  partenariatCount: number | null
-  displayPartenariats: boolean
-  onPartenariatsChange: null | ((e: ChangeEvent<HTMLInputElement>) => void)
-  displayMap: boolean
-  onDisplayMapChange: null | ((value: boolean) => void)
-  displayFilters: boolean
-  forceOpenModal: boolean
-}
+function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
+  const { displayMap, diploma, radius } = rechercheParams
 
-function CandidatRechercheFiltersUI({
-  entrepriseCount,
-  displayEntreprises,
-  onEntrepriseChange,
-  formationsCount,
-  displayFormations,
-  onFormationsChange,
-  partenariatCount,
-  displayPartenariats,
-  onPartenariatsChange,
-  displayMap,
-  onDisplayMapChange,
-  displayFilters,
-  forceOpenModal,
-}: CandidatRechercheFiltersUIProps) {
-  return (
-    <Box
-      sx={{
-        display: "grid",
-        justifyContent: displayFilters ? "space-between" : "flex-end",
-        gridTemplateColumns: `${displayFilters ? "1fr " : ""}max-content`,
-        alignItems: "baseline",
-      }}
-    >
-      {displayFilters && (
-        <Checkbox
-          classes={{
-            root: fr.cx("fr-m-0", "fr-p-0"),
-            content: fr.cx("fr-m-0", "fr-p-0"),
-          }}
-          disabled={onEntrepriseChange === null || onFormationsChange === null || onPartenariatsChange === null}
-          options={[
-            {
-              label: `Entreprises${entrepriseCount != null ? ` (${entrepriseCount})` : ""}`,
-              nativeInputProps: {
-                checked: displayEntreprises,
-                onChange: onEntrepriseChange,
-                name: "entreprises",
-              },
-            },
-            {
-              label: `Formations${formationsCount != null ? ` (${formationsCount})` : ""}`,
-              nativeInputProps: {
-                checked: displayFormations,
-                onChange: onFormationsChange,
-                name: "formations",
-              },
-            },
-            ...(partenariatCount
-              ? [
-                  {
-                    label: `Partenariats${partenariatCount != null ? ` (${partenariatCount})` : ""}`,
-                    nativeInputProps: {
-                      checked: displayPartenariats,
-                      onChange: onPartenariatsChange,
-                      name: "partenariats",
-                    },
-                  },
-                ]
-              : []),
-          ]}
-          orientation="horizontal"
-          small
-        />
-      )}
-      <Box
-        sx={{
-          display: {
-            xs: "none",
-            md: "block",
-          },
-          marginTop: displayFilters ? 0 : fr.spacing("3v"),
-        }}
-      >
-        <ToggleSwitch
-          disabled={onDisplayMapChange === null}
-          showCheckedHint={false}
-          label="Afficher la carte"
-          labelPosition="left"
-          inputTitle="display_map"
-          checked={displayMap}
-          onChange={onDisplayMapChange}
-        />
-      </Box>
-      <Box
-        sx={{
-          display: {
-            xs: "block",
-            md: "none",
-          },
-        }}
-      >
-        <Button
-          iconId="fr-icon-filter-line"
-          nativeButtonProps={{
-            ...candidatRechercheFormModal.buttonProps,
-            "data-fr-opened": candidatRechercheFormModal.buttonProps["data-fr-opened"] || forceOpenModal,
-          }}
-          priority="secondary"
-        >
-          Modifier la recherche
-        </Button>
-      </Box>
-    </Box>
-  )
-}
-
-function CandidatRechercheFiltersComponent(props: WithRecherchePageParams) {
-  const result = useRechercheResults(props.params)
-  const navigateToRecherchePage = useNavigateToRecherchePage(props.params)
-
-  const { displayEntreprises, displayFormations, displayPartenariats, displayMap } = props.params
-
-  const onEntrepriseChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      navigateToRecherchePage({ displayEntreprises: e.target.checked })
-    },
-    [navigateToRecherchePage]
-  )
-  const onFormationsChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      navigateToRecherchePage({ displayFormations: e.target.checked })
-    },
-    [navigateToRecherchePage]
-  )
-  const onPartenariatsChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      navigateToRecherchePage({ displayPartenariats: e.target.checked })
-    },
-    [navigateToRecherchePage]
-  )
+  const navigateToRecherchePage = useNavigateToRecherchePage(rechercheParams)
   const onDisplayMapChange = useCallback(
     (value: boolean) => {
       navigateToRecherchePage({ displayMap: value }, true)
@@ -165,47 +23,80 @@ function CandidatRechercheFiltersComponent(props: WithRecherchePageParams) {
     [navigateToRecherchePage]
   )
 
+  const sendPlausibleEvent = () => {
+    const rechercheForm = rechercheParamsToRechercheForm(rechercheParams)
+    const { displayedItemTypes } = rechercheForm
+    const plausibleLabel = `Recherche - Page de résultats - ${displayedItemTypes.join(" et ")}`
+    SendPlausibleEvent(plausibleLabel)
+  }
+
   return (
-    <CandidatRechercheFiltersUI
-      entrepriseCount={result.status === "success" && result.jobStatus === "success" ? result.entrepriseCount : null}
-      formationsCount={result.status === "success" && (result.formationStatus === "success" || result.formationStatus === "disabled") ? result.formationsCount : null}
-      partenariatCount={result.status === "success" && result.jobStatus === "success" ? result.partenariatCount : null}
-      displayEntreprises={displayEntreprises}
-      displayFormations={displayFormations}
-      displayPartenariats={displayPartenariats}
-      displayMap={displayMap}
-      displayFilters={props.params.displayFilters}
-      onEntrepriseChange={onEntrepriseChange}
-      onFormationsChange={onFormationsChange}
-      onPartenariatsChange={onPartenariatsChange}
-      onDisplayMapChange={onDisplayMapChange}
-      forceOpenModal={props.params.romes.length === 0}
-    />
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "space-between",
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          gap: fr.spacing("3w"),
+        }}
+      >
+        <RechercheRayonSelect
+          value={radius}
+          onChange={(newRadius) => {
+            sendPlausibleEvent()
+            navigateToRecherchePage({ radius: newRadius })
+          }}
+        />
+        <RechercheNiveauSelect
+          value={diploma}
+          onChange={(newDiploma) => {
+            sendPlausibleEvent()
+            navigateToRecherchePage({ diploma: newDiploma })
+          }}
+        />
+      </Box>
+      <Box
+        sx={{
+          alignSelf: "flex-end",
+        }}
+      >
+        <RechercheToggleMap onChange={onDisplayMapChange} checked={displayMap} />
+      </Box>
+    </Box>
   )
 }
 
-export function CandidatRechercheFilters(props: WithRecherchePageParams) {
+export function CandidatRechercheFilters({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
+  const { displayMap } = rechercheParams
   return (
-    <Suspense
-      fallback={
-        <CandidatRechercheFiltersUI
-          entrepriseCount={null}
-          formationsCount={null}
-          partenariatCount={null}
-          displayEntreprises={props.params.displayEntreprises}
-          displayFormations={props.params.displayFormations}
-          displayPartenariats={props.params.displayPartenariats}
-          displayMap={props.params.displayMap}
-          displayFilters={props.params.displayFilters}
-          onEntrepriseChange={null}
-          onFormationsChange={null}
-          onPartenariatsChange={null}
-          onDisplayMapChange={null}
-          forceOpenModal={false}
-        />
-      }
+    <Box
+      key="filters"
+      sx={{
+        display: {
+          xs: "none",
+          md: "block",
+        },
+        marginTop: fr.spacing("2w"),
+        marginBottom: fr.spacing("4w"),
+        paddingLeft: displayMap
+          ? {
+              md: fr.spacing("1w"),
+              lg: fr.spacing("2w"),
+            }
+          : {
+              md: fr.spacing("10w"),
+              lg: fr.spacing("14w"),
+            },
+        paddingRight: {
+          md: displayMap ? fr.spacing("1w") : fr.spacing("2w"),
+          lg: fr.spacing("2w"),
+        },
+      }}
     >
-      <CandidatRechercheFiltersComponent {...props} />
-    </Suspense>
+      <CandidatRechercheFiltersRaw rechercheParams={rechercheParams} />
+    </Box>
   )
 }
