@@ -1,6 +1,7 @@
 "use client"
 
-import { Button, Circle, Image, Text } from "@chakra-ui/react"
+import { Button, Image } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
@@ -120,12 +121,12 @@ function FinComponent(props: ComponentProps) {
                 <Typography component="h2" sx={{ fontSize: "18px", fontWeight: "bold" }}>
                   Confirmez votre email
                 </Typography>
-                <Text>
+                <Typography>
                   {withDelegation
                     ? "Pour publier votre offre auprès des candidats et la transmettre aux organismes de formation sélectionnés, confirmez votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à l’adresse suivante :"
                     : "Pour publier votre offre auprès des candidats, confirmez votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à l’adresse suivante :"}{" "}
                   <GreenText>{email}</GreenText>
-                </Text>
+                </Typography>
                 <ResendEmailContent onClick={resendMail} />
               </Box>
             ) : (
@@ -145,27 +146,27 @@ function FinComponent(props: ComponentProps) {
 const AwaitingAccountDescription = ({ withDelegation, email, onResendEmail }: { withDelegation: boolean; email: string; onResendEmail: () => void }) => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1, my: 1 }}>
-      <Text>Voici les prochaines étapes qui vous attendent :</Text>
+      <Typography>Voici les prochaines étapes qui vous attendent :</Typography>
       <ContenuAvecPuce contenuPuce={1}>
         <Typography component="h2" sx={{ fontSize: "18px", fontWeight: "bold" }}>
           Confirmez votre email
         </Typography>
-        <Text>
+        <Typography>
           Cliquez sur le lien que nous venons de vous transmettre à l'adresse suivante :
           <br />
           <GreenText>{email}</GreenText>.
-        </Text>
+        </Typography>
         <ResendEmailContent onClick={onResendEmail} />
       </ContenuAvecPuce>
       <ContenuAvecPuce contenuPuce={2}>
         <Typography component="h2" sx={{ fontSize: "18px", fontWeight: "bold" }}>
           Votre compte sera validé manuellement
         </Typography>
-        <Text>
+        <Typography>
           {withDelegation
             ? "Une fois votre compte validé, vous en serez notifié par email. Votre offre sera publiée en ligne et partagée aux organismes de formation que vous avez sélectionnés."
             : "Une fois votre compte validé, vous en serez notifié par email. Votre offre sera publiée en ligne."}
-        </Text>
+        </Typography>
       </ContenuAvecPuce>
     </Box>
   )
@@ -174,9 +175,24 @@ const AwaitingAccountDescription = ({ withDelegation, email, onResendEmail }: { 
 const ContenuAvecPuce = ({ children, contenuPuce }: { children: React.ReactNode; contenuPuce: React.ReactNode }) => {
   return (
     <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
-      <Circle p={[4, 4, 4, 5]} size="20px" bg="#E3E3FD" color="#000091" fontWeight="700">
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "40px",
+          width: "40px",
+          minWidth: "40px",
+          minHeight: "40px",
+          borderRadius: "20px",
+          backgroundColor: "#E3E3FD",
+          fontSize: "20px",
+          color: "#000091",
+          fontWeight: "700",
+        }}
+      >
         {contenuPuce}
-      </Circle>
+      </Box>
       <Box>{children}</Box>
     </Box>
   )
@@ -194,7 +210,7 @@ const ResendEmailContent = ({ onClick }: { onClick: () => void }) => {
           },
         }}
       >
-        <Text mr={8}>Vous n’avez pas reçu le mail ? </Text>
+        <Typography sx={{ mr: fr.spacing("4w") }}>Vous n’avez pas reçu le mail ? </Typography>
         <Button
           variant="popover"
           fontWeight={400}
@@ -218,7 +234,7 @@ const ResendEmailContent = ({ onClick }: { onClick: () => void }) => {
 const JobPreview = ({ jobId, userIsValidated }: { jobId: string; userIsValidated: boolean }) => {
   return (
     <Box mb={2}>
-      <Text mb={2}>
+      <Typography sx={{ mb: fr.spacing("1w") }}>
         <DsfrLink
           href={PAGES.dynamic.jobDetail({ type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, jobId }).getPath()}
           aria-label="Ouvrir la page de prévisualisation de l'offre sur le site La bonne alternance - nouvelle fenêtre"
@@ -226,16 +242,16 @@ const JobPreview = ({ jobId, userIsValidated }: { jobId: string; userIsValidated
         >
           Voir mon offre sur La bonne alternance
         </DsfrLink>
-      </Text>
+      </Typography>
       {userIsValidated && (
         <Box mb={1}>
           <PrintJobLink jobId={jobId} />
         </Box>
       )}
-      <Text fontStyle="italic" fontSize={16} color="grey.425">
+      <Typography sx={{ fontSize: "16px", fontStyle: "italic", color: "grey.425" }}>
         Votre offre est également visible sur les sites internet partenaires de La bonne alternance dont : Parcoursup, “Choisir son affectation après la 3è”, le Portail de
         l’alternance, l’ONISEP, la CCI, des plateformes régionales et certains sites d’OPCO.
-      </Text>
+      </Typography>
     </Box>
   )
 }
@@ -252,7 +268,8 @@ function PrintJobLink({ jobId }) {
         aria-label="Ouvrir la page de prévisualisation de l'offre sur le site La bonne alternance - nouvelle fenêtre"
         external
       >
-        <Text as="span">Imprimer l'offre</Text> <Image src="/images/icons/print.svg" mt="4px" mx="3px" aria-hidden={true} alt="" display="inline-block" marginTop={0} />
+        <Typography component="span">Imprimer l'offre</Typography>{" "}
+        <Image src="/images/icons/print.svg" mt="4px" mx="3px" aria-hidden={true} alt="" display="inline-block" marginTop={0} />
       </DsfrLink>
     </Box>
   )
