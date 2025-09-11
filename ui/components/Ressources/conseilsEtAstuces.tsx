@@ -66,8 +66,11 @@ const accordions = [
               Un mentor (ancien alternant ou adulte actif inséré dans la vie professionnelle)
             </Typography>{" "}
             peut vous épauler tout au long de votre parcours et suivant vos besoins !{" "}
-            <DsfrLink href="https://www.mentorat-apprentissage.fr/" aria-label="Accéder au site mentorat apprentissage point fr">
-              En savoir plus
+            <DsfrLink href="https://www.mentorat-apprentissage.fr/" aria-label="Accéder au site mentorat apprentissage">
+              En savoir plus sur le programme de l'ANAF
+            </DsfrLink>/ 
+            <DsfrLink href="https://www.jobirl.com/e-mentorat/e-mentorat-jeunes-stage-alternance" aria-label="Accéder au site job irl">
+              En savoir plus sur le programme de Jobirl
             </DsfrLink>
           </ListItem>
           <ListItem sx={{ display: "list-item", mb: 2 }}>
@@ -121,6 +124,10 @@ const accordions = [
             <br />
             <DsfrLink href="https://www.studyrama.com/salons" aria-label="Accéder à la liste des salons recensés par studyrama">
               Voir les salons Studyrama
+            </DsfrLink>
+            <br />
+            <DsfrLink href="https://jeunesdavenirs.fr/nos-evenements/" aria-label="Accéder à la liste des salons recensés par jeunes d'avenir">
+              Voir les salons Jeunes d’Avenirs
             </DsfrLink>
           </ListItem>
           <ListItem sx={{ display: "list-item", mb: 2 }}>
