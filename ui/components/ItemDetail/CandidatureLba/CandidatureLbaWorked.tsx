@@ -16,7 +16,7 @@ const CandidatureLbaWorked = ({ email, company }: Props) => {
         <Box sx={{ ml: 2 }}>
           <Typography data-testid="application-success" variant="h2" sx={{ fontSize: "20px", fontWeight: 700 }}>
             Votre candidature a bien été envoyée à{" "}
-            <Typography component="span" sx={{ fontSize: "22px" }}>
+            <Typography component="span" variant="h2">
               {company}
             </Typography>
           </Typography>
@@ -24,7 +24,7 @@ const CandidatureLbaWorked = ({ email, company }: Props) => {
       </Box>
       <Typography sx={{ fontSize: "18px" }}>
         Un e-mail de confirmation vous a été envoyé sur votre boite e-mail{" "}
-        <Typography component="span" sx={{ fontWeight: 700, color: "#f07f87" }}>
+        <Typography component="span" sx={{ fontWeight: 700, color: fr.colors.decisions.artwork.minor.blueFrance.default }}>
           {email}
         </Typography>
       </Typography>

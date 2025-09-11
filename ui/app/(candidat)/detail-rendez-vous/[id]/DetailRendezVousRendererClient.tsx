@@ -1,4 +1,5 @@
 "use client"
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography, List, ListItem } from "@mui/material"
 import { useFormik } from "formik"
 import { useState } from "react"
@@ -85,15 +86,15 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
       {appointment?.user && (
         <Box sx={{ my: 4 }}>
           <Typography component="span" color="primary" variant="h6">
-            Voici les coordonnées du contact de :{" "}
+            Voici les coordonnées du contact :{" "}
           </Typography>
-          {appointment.user?.type && (
-            <Typography component={"span"} color="primary" variant="h6">
-              {appointment.user.type === "parent" ? "Le parent" : "L'étudiant"}
-            </Typography>
-          )}
           <Box sx={{ my: 4 }}>
-            <Typography>
+            {appointment.user?.type && (
+              <Typography component={"span"} variant="h6">
+                {appointment.user.type === "parent" ? "Le parent" : "L'étudiant"}
+              </Typography>
+            )}
+            <Typography sx={{ mt: fr.spacing("3w") }}>
               Nom :{" "}
               <Typography component="span">
                 <strong>{appointment.user.lastname}</strong>
@@ -105,7 +106,7 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
                 <b>{appointment.user.firstname}</b>
               </Typography>
             </Typography>
-            <Typography sx={{ mt: 4 }}>
+            <Typography sx={{ mt: fr.spacing("3w") }}>
               Numéro de téléphone :{" "}
               <Typography component="span">
                 <b>{appointment.user.phone.match(/.{1,2}/g).join(".")}</b>
@@ -120,15 +121,15 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
           </Box>
           <hr />
           <Box sx={{ mb: 4 }}>
-            <Typography component="p" sx={{ my: 2 }}>
+            <Typography component="p" sx={{ mt: 1 }}>
               Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant(s) :
             </Typography>
             <Typography component="p">
-              <List sx={{ listStyleType: "disc", pl: 4 }}>
+              <List sx={{ listStyleType: "disc", pl: 2 }}>
                 {(appointment.appointment?.applicant_reasons || []).map((reason, i) => {
                   return (
                     <ListItem key={i} sx={{ display: "list-item" }}>
-                      {RdvReasons.find((item) => item.key === reason).title}
+                      <strong>{RdvReasons.find((item) => item.key === reason).title}</strong>
                     </ListItem>
                   )
                 })}
