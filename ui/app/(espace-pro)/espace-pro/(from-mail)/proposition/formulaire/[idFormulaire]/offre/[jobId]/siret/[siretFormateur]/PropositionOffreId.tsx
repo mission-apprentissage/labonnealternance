@@ -1,6 +1,5 @@
 "use client"
 
-import { useToast } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
@@ -8,6 +7,7 @@ import { useQuery } from "@tanstack/react-query"
 import { IJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
+import { useToast } from "@/app/hooks/useToast"
 import { dayjs } from "@/common/dayjs"
 import { RomeDetailReadOnly } from "@/components/DepotOffre/RomeDetailReadOnly"
 import { LoadingEmptySpace } from "@/components/espace_pro"
@@ -28,7 +28,7 @@ const valueWithEllipsis = {
 }
 
 export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token }: { idFormulaire: string; jobId: string; siretFormateur: string; token: string }) {
-  const toast = useToast()
+  const { toast, ToastComponent } = useToast()
 
   const { isError, data: formulaire } = useQuery({
     queryKey: ["getFormulaire", idFormulaire, token],
@@ -57,7 +57,6 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
     navigator.clipboard.writeText(`${publicConfig.baseUrl}${jobUrl}`)
     toast({
       title: "Lien copié.",
-      position: "top-right",
       status: "success",
       duration: 5000,
     })
@@ -71,6 +70,7 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
 
   return (
     <DepotSimplifieStyling>
+      {ToastComponent}
       <Box>
         <Typography component="h2" sx={{ fontSize: "32px", fontWeight: 700, mt: fr.spacing("4w"), mb: fr.spacing("3w") }}>
           Détails de la demande
