@@ -9,7 +9,7 @@ import { rawToComputedJobsPartners } from "../rawToComputedJobsPartners"
 import { joobleJobToJobsPartners, ZJoobleJob } from "./joobleMapper"
 
 const rawCollectionName = rawJoobleModel.collectionName
-const offerXmlTag = "offre"
+const offerXmlTag = "job"
 
 export const importJoobleRaw = async (sourceStream?: NodeJS.ReadableStream) => {
   if (sourceStream) {
