@@ -29,10 +29,9 @@ export default function ItemDetailApplicationsStatus({ item }: { item: ILbaItem 
         backgroundColor: fr.colors.decisions.background.contrast.info.default,
         color: fr.colors.decisions.background.actionHigh.info.default,
         px: fr.spacing("1w"),
-        // py: fr.spacing("1v"),
         fontStyle: "italic",
       }}
-      className={fr.cx("ri-history-line", "fr-icon--sm", "fr-text--xs")}
+      className={fr.cx("ri-history-line", "fr-icon--sm", "fr-text--sm")}
     >
       {" "}
       {ideaType === LBA_ITEM_TYPE_OLD.FORMATION ? <>Super, vous avez déjà pris contact le {dateString}.</> : <>Bravo, vous avez déjà postulé le {dateString}.</>}

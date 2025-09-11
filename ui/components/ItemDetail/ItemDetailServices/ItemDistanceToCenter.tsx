@@ -1,4 +1,4 @@
-import { Text } from "@chakra-ui/react"
+import { Typography } from "@mui/material"
 import { useContext } from "react"
 import { ILbaItemFormation2Json, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson } from "shared"
 
@@ -8,8 +8,8 @@ export default function ItemDistanceToCenter({ item }: { item: ILbaItemFormation
   const { formValues } = useContext(DisplayContext)
 
   return formValues?.location?.value && (item?.place?.distance ?? -1) >= 0 ? (
-    <Text as="span" color="grey.425" whiteSpace="nowrap" fontSize={14}>
+    <Typography component="span" sx={{ color: "grey.425", whiteSpace: "nowrap", fontSize: 14 }}>
       {item?.place?.distance} km(s) du lieu de recherche
-    </Text>
+    </Typography>
   ) : null
 }

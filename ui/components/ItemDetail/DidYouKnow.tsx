@@ -1,4 +1,5 @@
-import { Box, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Typography } from "@mui/material"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
@@ -6,22 +7,31 @@ import { TagCandidatureSpontanee } from "./TagCandidatureSpontanee"
 
 const DidYouKnow = () => {
   return (
-    <Box position="relative" background="white" padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]} mb={8} mt={6}>
-      <Text mt={2} as="h2" variant="itemDetailH2">
+    <Box
+      sx={{
+        position: "relative",
+        backgroundColor: "white",
+        padding: "16px 24px",
+        maxWidth: "970px",
+        mx: { xs: 0, sm: "30px", md: "30px", lg: "auto" },
+        mt: fr.spacing("3w"),
+      }}
+    >
+      <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
         Le saviez-vous ?
-      </Text>
-      <Text>
+      </Typography>
+      <Typography>
         Diversifiez vos démarches en envoyant aussi des candidatures spontanées aux entreprises qui n&apos;ont pas diffusé d&apos;offre! Repérez les tags suivants dans la liste de
         résultats <TagCandidatureSpontanee />
-      </Text>
+      </Typography>
 
-      <Text pb={4}>
+      <Typography sx={{ pt: 2 }}>
         Un employeur vous a proposé un entretien ?
         <br />
         <DsfrLink href="https://dinum.didask.com/courses/demonstration/60d1adbb877dae00003f0eac" aria-label="Conseils de préparation à un entretien - nouvelle fenêtre">
           On vous donne des conseils pour vous aider à le préparer.
         </DsfrLink>
-      </Text>
+      </Typography>
     </Box>
   )
 }

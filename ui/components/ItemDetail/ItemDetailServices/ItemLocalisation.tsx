@@ -1,4 +1,4 @@
-import { Text } from "@chakra-ui/react"
+import { Typography } from "@mui/material"
 import { ILbaItemCompany, ILbaItemFormation2Json, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson } from "shared"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
@@ -8,17 +8,17 @@ import ItemDistanceToCenter from "./ItemDistanceToCenter"
 
 export default function ItemLocalisation({ item }: { item: ILbaItemFormation2Json | ILbaItemLbaCompanyJson | ILbaItemCompany | ILbaItemLbaJobJson | ILbaItemFtJobJson }) {
   return (
-    <Text mt={1}>
-      <Text as="span" fontWeight={700}>
+    <Typography sx={{ my: 2 }}>
+      <Typography component="span" sx={{ fontWeight: 700 }}>
         Localisation :{" "}
-      </Text>
-      <Text as="span">
+      </Typography>
+      <Typography component="span">
         <DsfrLink href={getPathLink(item)} aria-label="Localisation sur google maps - nouvelle fenêtre">
           {item?.place?.fullAddress}
         </DsfrLink>
-      </Text>
+      </Typography>
       <br />
       <ItemDistanceToCenter item={item} />
-    </Text>
+    </Typography>
   )
 }

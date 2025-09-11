@@ -24,7 +24,7 @@ export default function CandidatureParTelephone({
           Contacter le recruteur
         </Link>
       </Box>
-      <ModalReadOnly isOpen={isOpen} onClose={onClose} modalContentProps={{ px: 6, pb: 6 }}>
+      <ModalReadOnly isOpen={isOpen} onClose={onClose}>
         <Container size={{ base: "full", md: "container.md" }}>
           <Heading as="h2" fontSize="xl" mb={4}>
             Postuler à l'offre de {companyName}
