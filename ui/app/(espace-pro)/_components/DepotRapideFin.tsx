@@ -15,7 +15,6 @@ import { useToast } from "@/app/hooks/useToast"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { LoadingEmptySpace } from "@/components/espace_pro"
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
-import { MailCloud } from "@/theme/components/logos"
 import { getUserStatus, getUserStatusByToken, sendValidationLink } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
@@ -111,7 +110,7 @@ function FinComponent(props: ComponentProps) {
     <>
       {ToastComponent}
       <BorderedBox sx={{ display: "flex", flexDirection: { xs: "column", lg: "row" }, gap: { xs: 1, lg: 2 }, justifyContent: "center", width: "100%", mt: 2 }}>
-        <MailCloud w={["120px", "120px", "120px", "269px"]} h={["67px", "67px", "67px", "151px"]} />
+        <Image src="/images/espace_pro/mailcloud.svg" width="269" height="151" alt="" />
         <Box>
           <Typography sx={{ backgroundColor: "white", fontSize: "32px", fontWeight: "bold", lineHeight: "32px" }} component="h1" mb={3}>
             {shouldDisplayAccountInformation ? <>Encore une étape avant la publication de votre offre...</> : <>Félicitations, votre offre est créée.</>}
