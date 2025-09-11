@@ -1,13 +1,12 @@
 "use client"
-import { Box, Container, Flex, Heading, Radio, RadioGroup, Stack, Text, Textarea } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
+import { Container, Typography, Box, Stack, TextareaAutosize, Radio, RadioGroup, FormControlLabel, FormControl } from "@mui/material"
 import { useParams, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { IEtablissementJson } from "shared"
 
-import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { apiGet, apiPost } from "@/utils/api.utils"
-import { PAGES } from "@/utils/routes.utils"
 
 import { SuccessCircle } from "../../../../../theme/components/icons"
 
@@ -40,8 +39,6 @@ export default function OptOutUnsubscribe() {
   const [isQuestionSent, setIsQuestionSent] = useState(false)
   const [etablissement, setEtablissement] = useState<undefined | IEtablissementPartial>()
   const [radioValue, setRadioValue] = useState(radioOptions.UNSUBSCRIBE_NO_DETAILS)
-
-  const title = "Désinscription à l'opt out"
 
   /**
    * @description Save textarea content.
@@ -97,98 +94,77 @@ export default function OptOutUnsubscribe() {
   }
 
   return (
-    <Box w="100%" pt={[4]} px={[1, 1, 12, 24]}>
-      <Container maxW="996px" pl={20} pr={24}>
-        <Breadcrumb pages={[PAGES.dynamic.prdvUnsubscribeOptout({ id })]} />
-        <Heading textStyle="h2" mt={5}>
-          {title}
-        </Heading>
-        {hasBeenUnsubscribed && (
-          <Flex mb={12}>
-            <Box w="40px">
-              <SuccessCircle width={33} fillHexaColor="#000091" />
-            </Box>
-            <Box w="100%">
-              <Text textStyle="h3" fontSize="24px" fontWeight="bold" color="grey.800" ml={2}>
-                Votre désinscription au service “RDV Apprentissage” a bien été prise en compte
-              </Text>
-            </Box>
-          </Flex>
-        )}
-        {isQuestionSent && (
-          <Flex mb={12}>
-            <Box w="40px">
-              <SuccessCircle width={33} fillHexaColor="#000091" />
-            </Box>
-            <Box w="100%">
-              <Text textStyle="h3" fontSize="24px" fontWeight="bold" color="grey.800" ml={2}>
-                L'équipe “RDV Apprentissage” reviendra vers vous très prochainement pour répondre à vos questions.
-              </Text>
-            </Box>
-          </Flex>
-        )}
-        {!hasBeenUnsubscribed && !isQuestionSent && (
-          <>
-            <Box>
-              <Text textStyle="h3" fontSize="24px" fontWeight="bold" color="grey.800" ml={2}>
-                Désinscription au service “RDV Apprentissage”
-              </Text>
-            </Box>
-            <Flex>
-              <RadioGroup marginTop={10} alignItems={"normal"} onChange={setRadioValue} value={radioValue}>
-                <Stack>
-                  <Radio value={radioOptions.UNSUBSCRIBE_NO_DETAILS} pb={5} alignItems={"normal"}>
-                    <Text mt="-7px">Je confirme ne pas souhaiter activer le service RDV Apprentissage sur toutes les formations de l’organisme suivant :</Text>
-                    <Box bg="#E5E5E5" px={10} py={6} mt={6} lineHeight="38px">
-                      <Text>
-                        Raison sociale :{" "}
-                        <Text as="span" fontWeight="700">
-                          {etablissement.raison_sociale}
-                        </Text>
-                      </Text>
-                      <Text>
-                        SIRET :{" "}
-                        <Text as="span" fontWeight="700">
-                          {etablissement.formateur_siret}
-                        </Text>
-                      </Text>
-                      <Text>
-                        Adresse :{" "}
-                        <Text as="span" fontWeight="700">
-                          {etablissement.formateur_address}
-                        </Text>
-                      </Text>
-                      <Text>
-                        Code postal :{" "}
-                        <Text as="span" fontWeight="700">
-                          {etablissement.formateur_zip_code}
-                        </Text>
-                      </Text>
-                      <Text>
-                        Ville :{" "}
-                        <Text as="span" fontWeight="700">
-                          {etablissement.formateur_city}
-                        </Text>
-                      </Text>
-                    </Box>
-                  </Radio>
-                  <Radio value={radioOptions.UNSUBSCRIBE_MORE_DETAILS} pt={5} alignItems={"normal"}>
-                    <Text mt="-7px">J’ai besoin d’informations complémentaires avant de prendre ma décision. Voici les questions que je souhaite poser :</Text>
-                  </Radio>
-                  <Box pl={6} pt={5}>
-                    <Textarea onChange={handleTextarea} value={textarea} minH={120} onClick={() => setRadioValue(radioOptions.UNSUBSCRIBE_MORE_DETAILS)} />
-                  </Box>
+    <Container>
+      <Typography variant="h3" sx={{ my: fr.spacing("3w") }}>
+        Désinscription au service “RDV Apprentissage”
+      </Typography>
+      {hasBeenUnsubscribed && (
+        <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("2w"), my: fr.spacing("3w") }}>
+          <SuccessCircle width={33} fillHexaColor="#000091" />
+          <Typography component="h3" sx={{ fontWeight: 700 }}>
+            Votre désinscription au service “RDV Apprentissage” a bien été prise en compte
+          </Typography>
+        </Box>
+      )}
+      {isQuestionSent && (
+        <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("2w"), my: fr.spacing("3w") }}>
+          <SuccessCircle width={33} fillHexaColor="#000091" />
+          <Typography component="h3" sx={{ fontWeight: 700 }}>
+            L'équipe “RDV Apprentissage” reviendra vers vous très prochainement pour répondre à vos questions.
+          </Typography>
+        </Box>
+      )}
+      {!hasBeenUnsubscribed && !isQuestionSent && (
+        <>
+          <FormControl>
+            <RadioGroup onChange={(e) => setRadioValue(e.target.value)} value={radioValue}>
+              <Stack gap={fr.spacing("2w")}>
+                <FormControlLabel
+                  label="Je confirme ne pas souhaiter activer le service RDV Apprentissage sur toutes les formations de l’organisme suivant :"
+                  control={<Radio />}
+                  value={radioOptions.UNSUBSCRIBE_NO_DETAILS}
+                />
+                <Stack gap={fr.spacing("1w")} sx={{ backgroundColor: "#E5E5E5", p: fr.spacing("3w") }}>
+                  <Typography>
+                    Raison sociale : <strong>{etablissement.raison_sociale}</strong>
+                  </Typography>
+                  <Typography>
+                    SIRET : <strong>{etablissement.formateur_siret}</strong>
+                  </Typography>
+                  <Typography>
+                    Adresse : <strong>{etablissement.formateur_address}</strong>
+                  </Typography>
+                  <Typography>
+                    Code postal : <strong>{etablissement.formateur_zip_code}</strong>
+                  </Typography>
+                  <Typography>
+                    Ville : <strong>{etablissement.formateur_city}</strong>
+                  </Typography>
                 </Stack>
-              </RadioGroup>
-            </Flex>
-            <Box textAlign={"center"} mt={12} mb={14}>
-              <Button onClick={submit} disabled={radioValue === radioOptions.UNSUBSCRIBE_MORE_DETAILS && textarea === ""}>
-                Envoyer
-              </Button>
-            </Box>
-          </>
-        )}
-      </Container>
-    </Box>
+
+                <FormControlLabel
+                  label={
+                    <>
+                      J’ai besoin d’informations complémentaires avant de prendre ma décision. <br />
+                      Voici les questions que je souhaite poser :
+                    </>
+                  }
+                  control={<Radio />}
+                  value={radioOptions.UNSUBSCRIBE_MORE_DETAILS}
+                />
+                <Box>
+                  <TextareaAutosize className={fr.cx("fr-input")} onChange={handleTextarea} value={textarea} onClick={() => setRadioValue(radioOptions.UNSUBSCRIBE_MORE_DETAILS)} />
+                </Box>
+              </Stack>
+            </RadioGroup>
+          </FormControl>
+          <Box sx={{ my: fr.spacing("5w") }}>
+            <Button onClick={submit} disabled={radioValue === radioOptions.UNSUBSCRIBE_MORE_DETAILS && textarea === ""}>
+              Envoyer
+            </Button>
+          </Box>
+        </>
+      )}
+    </Container>
   )
 }
