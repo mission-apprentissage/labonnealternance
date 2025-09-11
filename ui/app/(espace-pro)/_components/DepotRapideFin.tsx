@@ -1,9 +1,10 @@
 "use client"
 
-import { Button, Image } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
+import Image from "next/image"
 import { useState } from "react"
 import { ETAT_UTILISATEUR } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -212,17 +213,20 @@ const ResendEmailContent = ({ onClick }: { onClick: () => void }) => {
       >
         <Typography sx={{ mr: fr.spacing("4w") }}>Vous n’avez pas reçu le mail ? </Typography>
         <Button
-          variant="popover"
-          fontWeight={400}
-          ml={-4}
-          fontSize={["12px", "12px", "12px", "16px"]}
-          width="fit-content"
-          textDecoration="underline"
+          type="button"
+          style={{
+            marginLeft: "-4px",
+            background: "none",
+            color: "#000091",
+            textDecoration: "underline",
+            lineHeight: "inherit",
+            width: "fit-content",
+          }}
           onClick={() => {
             setDisableLink(true)
             onClick()
           }}
-          isDisabled={disableLink}
+          disabled={disableLink}
         >
           Renvoyer le mail
         </Button>
@@ -244,7 +248,7 @@ const JobPreview = ({ jobId, userIsValidated }: { jobId: string; userIsValidated
         </DsfrLink>
       </Typography>
       {userIsValidated && (
-        <Box mb={1}>
+        <Box mb={1} mt={2}>
           <PrintJobLink jobId={jobId} />
         </Box>
       )}
@@ -267,9 +271,14 @@ function PrintJobLink({ jobId }) {
         href={PAGES.dynamic.espaceProOffreImpression(jobId).getPath()}
         aria-label="Ouvrir la page de prévisualisation de l'offre sur le site La bonne alternance - nouvelle fenêtre"
         external
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "2px",
+        }}
       >
-        <Typography component="span">Imprimer l'offre</Typography>{" "}
-        <Image src="/images/icons/print.svg" mt="4px" mx="3px" aria-hidden={true} alt="" display="inline-block" marginTop={0} />
+        <Typography component="span">Imprimer l'offre </Typography>
+        <Image src="/images/icons/print.svg" width="24" height="24" style={{ marginTop: "4px", marginLeft: "3px", marginRight: "3px" }} aria-hidden={true} alt="" />
       </DsfrLink>
     </Box>
   )
