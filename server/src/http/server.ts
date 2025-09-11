@@ -16,6 +16,7 @@ import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { localOrigin } from "@/common/utils/isOriginLocal"
 import { processorAdminRoutes } from "@/http/controllers/_private/admin/processor.admin.routes"
 import { geoRouteController } from "@/http/controllers/_private/geo.private.controller"
+import { classificationRoutes } from "@/http/controllers/classification.controller"
 
 import { initSentryFastify } from "../common/sentry/sentry.fastify"
 import config from "../config"
@@ -166,6 +167,9 @@ export async function bind(app: Server) {
       jobsApiV3Routes(typedSubApp)
       applicationRouteV2(typedSubApp)
       appointmentRequestRouteV2(typedSubApp)
+
+      /** model training */
+      classificationRoutes(typedSubApp)
 
       done()
     },

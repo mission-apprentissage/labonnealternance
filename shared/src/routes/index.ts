@@ -5,6 +5,7 @@ import { zProcessorAdminRoutes } from "./_private/admin/processor.admin.routes.j
 import { zPrivateGeoRoutes } from "./_private/geo.routes.js"
 import { zApplicationRoutes } from "./application.routes.js"
 import { zAppointmentsRoute } from "./appointments.routes.js"
+import { zClassificationRoute } from "./classification.routes.js"
 import { IRouteSchema, IRouteSchemaWrite } from "./common.routes.js"
 import { zCoreRoutes } from "./core.routes.js"
 import { zEligibleTrainingsForAppointmentRoutes } from "./eligibleTrainingsForAppointment.routes.js"
@@ -66,6 +67,7 @@ const zRoutesGetP5 = {
   ...zRecruiterRoutes.get,
   ...zJobsRoutesV2.get,
   ...zJobsRoutesV3.get,
+  ...zClassificationRoute.get,
 } as const
 
 const zRoutesGet: typeof zRoutesGetP1 & typeof zRoutesGetP2 & typeof zRoutesGetP3 & typeof zRoutesGetP4 & typeof zRoutesGetP5 = {
