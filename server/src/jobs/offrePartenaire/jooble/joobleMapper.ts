@@ -49,7 +49,7 @@ export const joobleJobToJobsPartners = (job: IJoobleJob): IComputedJobsPartners 
     offer_title: job.title,
     workplace_name: job.company,
     workplace_address_city: job.region.city.split(",")[0],
-    workplace_address_label: job.region.city,
+    workplace_address_label: job.region.city.split(",")[0],
     offer_description: job.description,
     offer_creation: updatedDate ?? publicationDate,
     offer_expiration: dayjs
