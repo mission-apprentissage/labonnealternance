@@ -1,6 +1,8 @@
 "use client"
 
-import { Box, Button, Flex, Heading, ListItem, Stack, Text, UnorderedList } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import Button from "@codegouvfr/react-dsfr/Button"
+import { Box, List, ListItem, Stack, Typography } from "@mui/material"
 import { useRouter } from "next/navigation"
 import { CFA, ENTREPRISE } from "shared/constants/index"
 
@@ -42,29 +44,31 @@ function InformationsEntreprise() {
 
   return (
     <>
-      <Heading fontSize="24px" mb={3}>
+      <Typography component="h2" sx={{ fontSize: "24px", fontWeight: 700, mb: fr.spacing("3v") }}>
         Où trouver votre SIRET ?
-      </Heading>
-      <Flex alignItems="flex-start">
+      </Typography>
+      <Box sx={{ display: "flex", alignItems: "flex-start" }}>
         <span style={{ color: "#000091" }}>
-          <InfoCircle mr={2} />
+          <InfoCircle sx={{ mr: fr.spacing("1w") }} />
         </span>
-        <Text>
+        <Typography>
           Le numéro d’identification de votre entreprise peut être trouvé sur{" "}
           <CatalogueLink href="https://annuaire-entreprises.data.gouv.fr/" aria-label="Site de l'annuaire des entreprises - nouvelle fenêtre">
             l’annuaire des entreprises
           </CatalogueLink>{" "}
           ou bien sur les registres de votre entreprise.
-        </Text>
-      </Flex>
-      <Box mt={5}>
-        <Heading fontSize="24px" mb={3}>
+        </Typography>
+      </Box>
+      <Box sx={{ mt: fr.spacing("5v") }}>
+        <Typography component="h2" sx={{ fontSize: "24px", fontWeight: 700, mb: fr.spacing("3v") }}>
           Vous avez déjà déposé une offre en alternance par le passé ?
-        </Heading>
-        <Text>Connectez-vous à votre compte entreprise pour publier de nouvelles offres et administrer vos offres existantes.</Text>
-        <Button variant="primary" mt={4} onClick={() => router.push("/espace-pro/authentification")}>
-          Me connecter
-        </Button>
+        </Typography>
+        <Typography>Connectez-vous à votre compte entreprise pour publier de nouvelles offres et administrer vos offres existantes.</Typography>
+        <Box sx={{ mt: fr.spacing("2w") }}>
+          <Button priority="primary" onClick={() => router.push("/espace-pro/authentification")}>
+            Me connecter
+          </Button>
+        </Box>
       </Box>
     </>
   )
@@ -74,10 +78,12 @@ function InformationsCfa() {
   const router = useRouter()
   return (
     <>
-      <Stack direction="column" spacing={3} mb={5}>
-        <Heading>Comment s'inscrire ?</Heading>
-        <Text>Pour créer le compte de votre organisme de formation, il faut :</Text>
-        <UnorderedList>
+      <Stack direction="column" sx={{ gap: fr.spacing("3v"), mb: fr.spacing("5v") }}>
+        <Typography component="h2" sx={{ fontSize: "24px", fontWeight: 700 }}>
+          Comment s'inscrire ?
+        </Typography>
+        <Typography>Pour créer le compte de votre organisme de formation, il faut :</Typography>
+        <List>
           <ListItem>
             <span style={{ fontWeight: "700" }}>Être référencé dans le Catalogue.</span> Pour ajouter une offre de formation au Catalogue de l’offre de formation en apprentissage,
             merci de la déclarer auprès du Carif-Oref de votre région en allant sur la page suivante :{" "}
@@ -96,14 +102,16 @@ function InformationsCfa() {
             est l’unique moyen d’accéder au fichier national des organismes de formation référencés et de permettre à vos entreprises clientes de faire financer vos actions avec
             les fonds publics.
           </ListItem>
-        </UnorderedList>
+        </List>
       </Stack>
-      <Heading mb={3}>Où trouver votre SIRET ?</Heading>
-      <Flex alignItems="flex-start">
+      <Typography component="h2" sx={{ fontSize: "24px", fontWeight: 700, mb: fr.spacing("3v") }}>
+        Où trouver votre SIRET ?
+      </Typography>
+      <Box sx={{ display: "flex", alignItems: "flex-start" }}>
         <span style={{ color: "#000091" }}>
-          <InfoCircle mr={2} />
+          <InfoCircle sx={{ mr: fr.spacing("1w") }} />
         </span>
-        <Text>
+        <Typography>
           Le numéro d’identification de votre organisme peut être trouvé sur le site Le numéro d’identification de votre entreprise peut être trouvé sur{" "}
           <CatalogueLink
             href="https://catalogue.apprentissage.beta.gouv.fr/recherche/etablissements"
@@ -112,14 +120,18 @@ function InformationsCfa() {
             le catalogue des offres de formations en apprentissage
           </CatalogueLink>{" "}
           ou bien sur les registres de votre organisme de formation.
-        </Text>
-      </Flex>
+        </Typography>
+      </Box>
       <Box mt={5}>
-        <Heading mb={3}>Vous avez déjà déposé une offre en alternance par le passé ?</Heading>
-        <Text>Connectez-vous à votre compte CFA pour publier de nouvelles offres et administrer vos offres existantes.</Text>
-        <Button variant="primary" mt={4} onClick={() => router.push("/espace-pro/authentification")}>
-          Me connecter
-        </Button>
+        <Typography component="h2" sx={{ fontSize: "24px", fontWeight: 700, mb: fr.spacing("3v") }}>
+          Vous avez déjà déposé une offre en alternance par le passé ?
+        </Typography>
+        <Typography>Connectez-vous à votre compte CFA pour publier de nouvelles offres et administrer vos offres existantes.</Typography>
+        <Box sx={{ mt: fr.spacing("2w") }}>
+          <Button priority="primary" onClick={() => router.push("/espace-pro/authentification")}>
+            Me connecter
+          </Button>
+        </Box>
       </Box>
     </>
   )
