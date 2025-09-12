@@ -8,7 +8,7 @@ const jobPartnersRankConfigByFlux: Partial<Record<JOBPARTNERS_LABEL, number>> = 
   "France Travail": 0.5,
   "RH Alternance": 0.4,
   "La Poste": 0.7,
-  Monster: 0.3,
+  Jooble: 0.58,
   "annonces Atlas": 0.5,
   "Vite un emploi": 0.5,
   "Nos Talents Nos Emplois": 0.5,
@@ -24,7 +24,6 @@ const jobPartnersRankConfigByAPI: Record<string, number> = {
   BPCE: 0.7,
   Decathlon: 0.7,
   "Institut Pasteur": 0.7,
-  Jooble: 0.58,
   "Jobs that make sense": 0.62,
 }
 

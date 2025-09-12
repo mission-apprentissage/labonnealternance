@@ -153,6 +153,7 @@ const config = {
   monsterUrl: env.get("MONSTER_FLUX_URL").required().asString(),
   kelioUrl: env.get("KELIO_FLUX_URL").required().asString(),
   laposteUrl: env.get("LAPOSTE_FLUX_URL").required().asString(),
+  joobleUrl: env.get("JOOBLE_FLUX_URL").required().asString(),
 
   passUrl: "https://www.pass.fonction-publique.gouv.fr/flux/offres",
   openai: {
