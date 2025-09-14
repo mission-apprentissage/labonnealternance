@@ -1,5 +1,6 @@
 "use client"
 
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
@@ -24,7 +25,7 @@ export default function CompteEnAttente() {
             Votre demande d’accès est désormais en attente de validation.
           </Typography>
           <Box sx={{ display: "flex", alignItems: "flex-start", mb: 3 }}>
-            <InfoCircle mr={2} mt={1} />
+            <InfoCircle sx={{ mr: fr.spacing("1w"), mt: fr.spacing("1v") }} />
             <Typography>Vous serez notifié par email une fois votre compte validé, et vous pourrez ensuite publier vos offres d’emplois.</Typography>
           </Box>
 

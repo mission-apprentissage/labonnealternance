@@ -25,7 +25,7 @@ export const InformationOpco = ({ isUpdatable, infosOpco, resetOpcoChoice }: { i
         </Flex>
         <Flex alignItems="flex-start" gap="2px">
           <Box lineHeight={["16px", "16px", "16px", "20px"]}>
-            <InfoCircle w={["14px", "14px", "20px", "20px"]} color="#000091" />
+            <InfoCircle sx={{ color: "#000091", width: { xs: "14px", md: "20px" } }} />
           </Box>
           <Text color="#000091">
             Chaque entreprise est rattachée à un OPCO. C’est votre acteur de référence pour vous accompagner dans vos démarches liées à l’alternance (financement des contrats,
