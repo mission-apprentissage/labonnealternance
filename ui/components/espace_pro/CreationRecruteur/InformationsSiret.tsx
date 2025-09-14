@@ -51,7 +51,7 @@ function InformationsEntreprise() {
         <span style={{ color: "#000091" }}>
           <InfoCircle sx={{ mr: fr.spacing("1w") }} />
         </span>
-        <Typography>
+        <Typography component="span">
           Le numéro d’identification de votre entreprise peut être trouvé sur{" "}
           <CatalogueLink href="https://annuaire-entreprises.data.gouv.fr/" aria-label="Site de l'annuaire des entreprises - nouvelle fenêtre">
             l’annuaire des entreprises
@@ -84,23 +84,47 @@ function InformationsCfa() {
         </Typography>
         <Typography>Pour créer le compte de votre organisme de formation, il faut :</Typography>
         <List>
-          <ListItem>
-            <span style={{ fontWeight: "700" }}>Être référencé dans le Catalogue.</span> Pour ajouter une offre de formation au Catalogue de l’offre de formation en apprentissage,
-            merci de la déclarer auprès du Carif-Oref de votre région en allant sur la page suivante :{" "}
-            <CatalogueLink href="https://reseau.intercariforef.org/referencer-son-offre-de-formation" arial-label="Site intercariforef.org - nouvelle fenêtre">
-              "référencer son offre de formation"
-            </CatalogueLink>
+          <ListItem
+            sx={{
+              m: "0 !important",
+              ml: `${fr.spacing("4w")} !important`,
+              pl: `${fr.spacing("3w")} !important`,
+              pr: `${fr.spacing("5w")} !important`,
+              pb: fr.spacing("3w"),
+              listStyleType: "disc",
+              display: "list-item",
+            }}
+          >
+            <Box>
+              <span style={{ fontWeight: "700" }}>Être référencé dans le Catalogue.</span> Pour ajouter une offre de formation au Catalogue de l’offre de formation en
+              apprentissage, merci de la déclarer auprès du Carif-Oref de votre région en allant sur la page suivante :{" "}
+              <CatalogueLink href="https://reseau.intercariforef.org/referencer-son-offre-de-formation" arial-label="Site intercariforef.org - nouvelle fenêtre">
+                "référencer son offre de formation"
+              </CatalogueLink>
+            </Box>
           </ListItem>
-          <ListItem>
-            <span style={{ fontWeight: "700" }}>Être certifié Qualiopi.</span>{" "}
-            <CatalogueLink
-              href="https://travail-emploi.gouv.fr/formation-professionnelle/acteurs-cadre-et-qualite-de-la-formation-professionnelle/liste-organismes-certificateurs"
-              aria-label="Site travail-emploi.gouv.fr - nouvelle fenêtre"
-            >
-              La certification Qualiopi
-            </CatalogueLink>{" "}
-            est l’unique moyen d’accéder au fichier national des organismes de formation référencés et de permettre à vos entreprises clientes de faire financer vos actions avec
-            les fonds publics.
+          <ListItem
+            sx={{
+              m: "0 !important",
+              ml: `${fr.spacing("4w")} !important`,
+              pl: `${fr.spacing("3w")} !important`,
+              pr: `${fr.spacing("5w")} !important`,
+              pb: fr.spacing("3w"),
+              listStyleType: "disc",
+              display: "list-item",
+            }}
+          >
+            <Box>
+              <span style={{ fontWeight: "700" }}>Être certifié Qualiopi.</span>{" "}
+              <CatalogueLink
+                href="https://travail-emploi.gouv.fr/formation-professionnelle/acteurs-cadre-et-qualite-de-la-formation-professionnelle/liste-organismes-certificateurs"
+                aria-label="Site travail-emploi.gouv.fr - nouvelle fenêtre"
+              >
+                La certification Qualiopi
+              </CatalogueLink>{" "}
+              est l’unique moyen d’accéder au fichier national des organismes de formation référencés et de permettre à vos entreprises clientes de faire financer vos actions avec
+              les fonds publics.
+            </Box>
           </ListItem>
         </List>
       </Stack>
