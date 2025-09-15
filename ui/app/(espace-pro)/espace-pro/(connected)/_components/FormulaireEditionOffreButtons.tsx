@@ -21,7 +21,7 @@ export const FormulaireEditionOffreButtons = ({ offre, competencesDirty }: { off
         </Button>
       </Box>
       <Button disabled={!(isValid && (dirty || competencesDirty)) || isSubmitting} onClick={submitForm} data-testid="creer-offre">
-        <ArrowRightLine mr={2} />
+        <ArrowRightLine sx={{ mr: fr.spacing("1w") }} />
         {offre?._id ? "Mettre à jour" : "Créer l'offre"}
       </Button>
     </Box>

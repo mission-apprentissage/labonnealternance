@@ -80,47 +80,49 @@ export default function ConfirmationSuppressionOffre(props: ConfirmationSuppress
   return (
     <>
       {ToastComponent}
-      <ModalReadOnly isOpen={isOpen} onClose={onClose} modalContentProps={{ px: 2, pb: 2 }}>
-        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: 2 }} component="h2">
-          Êtes-vous certain de vouloir supprimer votre offre ?
-        </Typography>
+      <ModalReadOnly isOpen={isOpen} onClose={onClose}>
+        <Box sx={{ pb: fr.spacing("2w"), px: fr.spacing("2w") }}>
+          <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("1w") }} component="h2">
+            Êtes-vous certain de vouloir supprimer votre offre ?
+          </Typography>
 
-        <Box pb={2}>
-          <Typography sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>Celle-ci sera définitivement supprimée. Vous ne recevrez plus de candidatures.</Typography>
-          <FormikProvider value={formik}>
-            <form onSubmit={formik.handleSubmit}>
-              <Select
-                label="Motif de la suppression (obligatoire) *"
-                nativeSelectProps={{
-                  onChange: (event) => formik.setFieldValue("motif", event.target.value, true),
-                  name: "motif",
-                  required: true,
-                }}
-              >
-                <option disabled hidden selected value="">
-                  Sélectionnez une valeur...
-                </option>
-                {motifs.map((reason) => (
-                  <option key={reason} value={reason}>
-                    {reason}
+          <Box pb={2}>
+            <Typography sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>Celle-ci sera définitivement supprimée. Vous ne recevrez plus de candidatures.</Typography>
+            <FormikProvider value={formik}>
+              <form onSubmit={formik.handleSubmit}>
+                <Select
+                  label="Motif de la suppression (obligatoire) *"
+                  nativeSelectProps={{
+                    onChange: (event) => formik.setFieldValue("motif", event.target.value, true),
+                    name: "motif",
+                    required: true,
+                  }}
+                >
+                  <option disabled hidden selected value="">
+                    Sélectionnez une valeur...
                   </option>
-                ))}
-              </Select>
-              {formik.values.motif === motifAutre && <CustomInput label="Précisez votre motif (facultatif)" name="autreMotif" required={false} />}
-              <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
-                <Box ml={3}>
-                  <Button type="button" priority="secondary" onClick={() => resetState()}>
-                    Annuler
-                  </Button>
+                  {motifs.map((reason) => (
+                    <option key={reason} value={reason}>
+                      {reason}
+                    </option>
+                  ))}
+                </Select>
+                {formik.values.motif === motifAutre && <CustomInput label="Précisez votre motif (facultatif)" name="autreMotif" required={false} />}
+                <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
+                  <Box sx={{ ml: fr.spacing("3v") }}>
+                    <Button type="button" priority="secondary" onClick={() => resetState()}>
+                      Annuler
+                    </Button>
+                  </Box>
+                  <Box sx={{ ml: fr.spacing("3v") }}>
+                    <Button type="submit" disabled={!formik.dirty || !formik.isValid}>
+                      Confirmer la suppression
+                    </Button>
+                  </Box>
                 </Box>
-                <Box ml={3}>
-                  <Button type="submit" disabled={!formik.dirty || !formik.isValid}>
-                    Confirmer la suppression
-                  </Button>
-                </Box>
-              </Box>
-            </form>
-          </FormikProvider>
+              </form>
+            </FormikProvider>
+          </Box>
         </Box>
       </ModalReadOnly>
     </>

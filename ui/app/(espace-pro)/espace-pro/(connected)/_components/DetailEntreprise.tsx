@@ -226,7 +226,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                         )}
                         <Box sx={{ display: "flex", justifyContent: "flex-end", my: fr.spacing("5v") }}>
                           <Button type="submit" disabled={!isValid || isSubmitting}>
-                            {isSubmitting ? <CircularProgress size={24} /> : <ArrowRightLine mr={2} />}Enregistrer
+                            {isSubmitting ? <CircularProgress size={24} /> : <ArrowRightLine sx={{ mr: fr.spacing("1w") }} />}Enregistrer
                           </Button>
                         </Box>
                       </Form>

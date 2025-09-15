@@ -75,7 +75,7 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
                   </Button>
                 </Box>
                 <Button type="submit" disabled={!informationForm.isValid || informationForm.isSubmitting}>
-                  {informationForm.isSubmitting ? <CircularProgress size={24} /> : <ArrowRightLine width={5} mr={2} />}Suivant
+                  {informationForm.isSubmitting ? <CircularProgress size={24} /> : <ArrowRightLine sx={{ mr: fr.spacing("1w") }} width={5} />}Suivant
                 </Button>
               </Box>
             </Form>
