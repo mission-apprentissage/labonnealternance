@@ -1,5 +1,5 @@
-import { Button } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Stack, Typography } from "@mui/material"
 import Image from "next/image"
 
@@ -15,8 +15,9 @@ export const InformationOpco = ({ isUpdatable, infosOpco, resetOpcoChoice }: { i
             Votre OPCO
           </Typography>
           {isUpdatable && (
-            <Button onClick={resetOpcoChoice} variant="pill" color="bluefrance.500" leftIcon={<Edit2Fill width={3} />}>
+            <Button type="button" priority="tertiary no outline" onClick={resetOpcoChoice}>
               Modifier
+              <Edit2Fill sx={{ ml: fr.spacing("2v"), width: "14px" }} />
             </Button>
           )}
         </Box>
