@@ -1,8 +1,8 @@
 "use client"
-import { Checkbox } from "@chakra-ui/react"
+
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, Container, Divider, Link, Typography } from "@mui/material"
+import { Box, Checkbox, Container, Divider, Link, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
@@ -240,7 +240,9 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
                             key={etablissement._id}
                             data-testid={`cfa-${index}`}
                           >
-                            <Checkbox disabled={isDisabled} defaultChecked={isDisabled} onChange={() => changeEtablissement(etablissement)} />
+                            <Box sx={{ display: "flex", alignItems: "center", flexDirection: "row" }}>
+                              <Checkbox disabled={isDisabled} defaultChecked={isDisabled} onChange={() => changeEtablissement(etablissement)} />
+                            </Box>
                             <Box sx={{ flex: 1 }}>
                               {isDisabled && (
                                 <Box
