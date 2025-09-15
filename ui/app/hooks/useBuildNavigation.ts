@@ -2,38 +2,40 @@ import { useRouter } from "next/navigation"
 import { useMemo } from "react"
 import { useSwipeable } from "react-swipeable"
 
-import { ILbaItem, IUseRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
+import { IUseRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
 import { getItemReference, getResultItemUrl, type WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 
-export function useBuildNavigation({ items, currentItem, rechercheParams }: WithRecherchePageParams<{ items: IUseRechercheResults["items"]; currentItem: ILbaItem }>) {
+export function useBuildNavigation({ items, currentItemId, rechercheParams }: WithRecherchePageParams<{ items: IUseRechercheResults["displayedItems"]; currentItemId?: string }>) {
   const router = useRouter()
   // TODO: quand nous aurons la pagination partout il ne sera pas nécessaire de gérer le cas où currentItem est null (conséquence de lien partagé recherche France entière)
-  const currentIndex = currentItem ? items.findIndex((item) => currentItem.id === item.id) : 0
-  const nextItem = currentIndex == items.length - 1 ? 0 : items[currentIndex + 1]
-  const previousItem = currentIndex == 0 ? items[items.length - 1] : items[currentIndex - 1]
-  const nextUrl = useMemo(() => {
-    return nextItem ? getResultItemUrl(nextItem, { ...rechercheParams, activeItems: [getItemReference(nextItem)] }) : null
-  }, [nextItem, rechercheParams])
-  const previousUrl = useMemo(() => {
-    return previousItem ? getResultItemUrl(previousItem, { ...rechercheParams, activeItems: [getItemReference(previousItem)] }) : null
-  }, [previousItem, rechercheParams])
+
+  const { goPrev, goNext } = useMemo(() => {
+    if (items.length <= 1) {
+      return {}
+    }
+    const currentIndex = currentItemId ? items.findIndex((item) => currentItemId === item.id) : 0
+    const nextItemIndex = (currentIndex + 1) % items.length
+    const previousItemIndex = currentIndex === 0 ? items.length - 1 : currentIndex - 1
+
+    const goToIndex = (index: number) => {
+      const item = items[index]
+      if (!item) return null
+      const url = getResultItemUrl(item, { ...rechercheParams, activeItems: [getItemReference(item)] })
+      return () => router.push(url)
+    }
+
+    return { goNext: goToIndex(nextItemIndex), goPrev: goToIndex(previousItemIndex) }
+  }, [currentItemId, items, rechercheParams, router])
 
   const swipeHandlers = useSwipeable({
     onSwiped: (event_data) => {
       if (event_data.dir === "Right") {
-        if (items.length > 1) {
-          goPrev()
-        }
+        goPrev?.()
       } else if (event_data.dir === "Left") {
-        if (items.length > 1) {
-          goNext()
-        }
+        goNext?.()
       }
     },
   })
-
-  const goNext = nextUrl ? () => router.push(nextUrl) : null
-  const goPrev = previousUrl ? () => router.push(previousUrl) : null
 
   return {
     swipeHandlers,

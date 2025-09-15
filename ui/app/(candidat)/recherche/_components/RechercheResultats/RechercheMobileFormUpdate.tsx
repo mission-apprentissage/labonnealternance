@@ -17,8 +17,6 @@ export function RechercheMobileFormUpdate(props: { rechercheParams: IRecherchePa
         py: fr.spacing("2w"),
         px: fr.spacing("1w"),
         backgroundColor: fr.colors.decisions.background.default.grey.default,
-        display: "flex",
-        flexDirection: "column",
       }}
     >
       <Button iconId="fr-icon-arrow-left-line" priority="secondary" onClick={() => navigateToRecherchePage({ displayMobileForm: false }, true)}>

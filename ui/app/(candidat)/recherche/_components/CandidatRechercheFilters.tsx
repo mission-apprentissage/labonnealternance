@@ -4,6 +4,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import { useCallback } from "react"
 
+import { RechercheElligibleHandicapCheckbox } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheElligibleHandicapCheckbox"
 import { RechercheNiveauSelect } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheNiveauSelect"
 import { RechercheRayonSelect } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheRayonSelect"
 import { RechercheToggleMap } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheToggleMap"
@@ -13,7 +14,7 @@ import { rechercheParamsToRechercheForm } from "@/app/_components/RechercheForm/
 import { SendPlausibleEvent } from "@/utils/plausible"
 
 function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
-  const { displayMap, diploma, radius } = rechercheParams
+  const { displayMap, diploma, radius, elligibleHandicapFilter } = rechercheParams
 
   const navigateToRecherchePage = useNavigateToRecherchePage(rechercheParams)
   const onDisplayMapChange = useCallback(
@@ -39,8 +40,16 @@ function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRe
     >
       <Box
         sx={{
-          display: "flex",
-          gap: fr.spacing("3w"),
+          display: "block",
+          "& > *": {
+            display: "inline-block",
+            marginRight: fr.spacing("3w"),
+            marginBottom: `${fr.spacing("1w")} !important`,
+            verticalAlign: "bottom",
+            "&:last-child": {
+              marginRight: 0,
+            },
+          },
         }}
       >
         <RechercheRayonSelect
@@ -57,10 +66,21 @@ function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRe
             navigateToRecherchePage({ diploma: newDiploma })
           }}
         />
+        <RechercheElligibleHandicapCheckbox
+          rechercheParams={rechercheParams}
+          value={elligibleHandicapFilter}
+          onChange={(newValue) => {
+            if (newValue) {
+              SendPlausibleEvent("Filtre - Engagé Handicap")
+            }
+            navigateToRecherchePage({ elligibleHandicapFilter: newValue })
+          }}
+        />
       </Box>
       <Box
         sx={{
           alignSelf: "flex-end",
+          marginBottom: fr.spacing("1w"),
         }}
       >
         <RechercheToggleMap onChange={onDisplayMapChange} checked={displayMap} />
@@ -77,7 +97,7 @@ export function CandidatRechercheFilters({ rechercheParams }: { rechercheParams:
       sx={{
         display: {
           xs: "none",
-          md: "block",
+          lg: "block",
         },
         marginTop: fr.spacing("2w"),
         marginBottom: fr.spacing("4w"),
