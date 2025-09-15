@@ -12,18 +12,17 @@ import { LBA_ITEM_TYPE, newItemTypeToOldItemType } from "shared/constants/lbaite
 
 import { RechercheCarte } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
 import { IUseRechercheResults, useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
-import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { useBuildNavigation } from "@/app/hooks/useBuildNavigation"
 import { useFormationPrdvTracker } from "@/app/hooks/useFormationPrdvTracker"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
 import GoingToContactQuestion, { getGoingtoId } from "@/components/ItemDetail/GoingToContactQuestion"
-import { getNavigationButtons } from "@/components/ItemDetail/ItemDetailServices/getButtons"
-import GetItemTag from "@/components/ItemDetail/ItemDetailServices/getTags"
 import ItemDetailCard from "@/components/ItemDetail/ItemDetailServices/ItemDetailCard"
 import ItemGoogleSearchLink from "@/components/ItemDetail/ItemDetailServices/ItemGoogleSearchLink"
 import ItemLocalisation from "@/components/ItemDetail/ItemDetailServices/ItemLocalisation"
 import JobItemCardHeader from "@/components/ItemDetail/ItemDetailServices/JobItemCardHeader"
+import { LbaItemTags } from "@/components/ItemDetail/ItemDetailServices/LbaItemTags"
+import { NavigationButtons } from "@/components/ItemDetail/ItemDetailServices/NavigationButtons"
 import ShareLink from "@/components/ItemDetail/ShareLink"
 import StatsInserJeunes from "@/components/ItemDetail/StatsInserJeunes"
 import { DemandeDeContact } from "@/components/RDV/DemandeDeContact"
@@ -53,7 +52,9 @@ export default function TrainingDetailRendererClient({ training, rechercheParams
 
   const { appliedDate, setPrdvDone } = useFormationPrdvTracker(training.id)
 
-  const detailPage = <TrainingDetailPage selectedItem={training} appliedDate={appliedDate} resultList={result.items} rechercheParams={rechercheParams} onRdvSuccess={setPrdvDone} />
+  const detailPage = (
+    <TrainingDetailPage selectedItem={training} appliedDate={appliedDate} resultList={result.displayedItems} rechercheParams={rechercheParams} onRdvSuccess={setPrdvDone} />
+  )
 
   if (rechercheParams?.displayMap) {
     return (
@@ -74,20 +75,19 @@ function TrainingDetailPage({
   resultList,
   rechercheParams,
   onRdvSuccess,
-}: WithRecherchePageParams<{
+}: {
+  rechercheParams: IRecherchePageParams
   selectedItem: ILbaItemFormation2Json
   appliedDate: string | null
-  resultList: IUseRechercheResults["items"]
+  resultList: IUseRechercheResults["displayedItems"]
   onRdvSuccess: () => void
-}>) {
+}) {
   const kind: LBA_ITEM_TYPE = selectedItem?.type
   const actualTitle = selectedItem.training.title
-  const isCfa = isCfaEntreprise(selectedItem?.company?.siret, selectedItem?.company?.headquarter?.siret)
   const isMandataire = selectedItem?.company?.mandataire
-  const currentItem = resultList.find((item) => item.id === selectedItem.id)
 
   const router = useRouter()
-  const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItem, rechercheParams: rechercheParams })
+  const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItemId: selectedItem.id, rechercheParams: rechercheParams })
   const handleClose = () => router.push(PAGES.dynamic.recherche(rechercheParams).getPath())
 
   const contextPRDV = {
@@ -138,9 +138,9 @@ function TrainingDetailPage({
         }}
       >
         <Box sx={{ width: "100%", pl: { xs: 0, md: 4, pb: isCollapsedHeader ? 0 : 2 } }}>
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-            {GetItemTag({ kind, isCfa, isMandataire })}
-            {getNavigationButtons({ goPrev, goNext, handleClose })}
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <LbaItemTags item={selectedItem} />
+            <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
           </Box>
 
           <Box component="p" color="grey.600" mt={isCollapsedHeader ? 1 : 1} mb={isCollapsedHeader ? 1 : 1}>

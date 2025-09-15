@@ -2,8 +2,8 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container, Typography } from "@mui/material"
 import Image from "next/image"
 
-import TagCandidatureSpontanee from "../../../components/ItemDetail/TagCandidatureSpontanee"
-import TagOffreEmploi from "../../../components/ItemDetail/TagOffreEmploi"
+import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
+import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 
 export const AlgoHome = () => (
   <Container maxWidth="xl" component="section">

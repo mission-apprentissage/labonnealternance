@@ -12,8 +12,7 @@ export const fillEntrepriseEngagementJobsPartners = async ({ addedMatchFilter }:
     sourceFields: ["workplace_siret"],
     filledFields,
     groupSize: 500,
-    replaceMatchFilter: {}, // run on all documents each time
-    addedMatchFilter,
+    replaceMatchFilter: addedMatchFilter ?? {}, // run on all documents each time
     getData: async (documents) => {
       const sirets = [...new Set<string>(documents.flatMap(({ workplace_siret }) => (workplace_siret ? [workplace_siret] : [])))]
       const engagementsEntreprise = await getDbCollection("referentiel_engagement_entreprise")

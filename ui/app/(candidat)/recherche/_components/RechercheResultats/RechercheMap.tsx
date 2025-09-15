@@ -324,7 +324,7 @@ function buildSourceData<T extends ILbaItem>(items: T[], type: LAYERS): GeoJSON.
 }
 
 function setPointOfInterests(map: Mapbox, result: IUseRechercheResults, activeItems: ILbaItem[]) {
-  const { jobs } = result
+  const { displayedJobs: jobs, displayedFormations: formations } = result
   map.getSource<GeoJSONSource>(MAP_LAYERS.job.geopoints).setData(
     buildSourceData(
       jobs.filter((job) => !isItemReferenceInList(job, activeItems)),
@@ -332,7 +332,6 @@ function setPointOfInterests(map: Mapbox, result: IUseRechercheResults, activeIt
     )
   )
 
-  const { formations } = result.formationQuery
   map.getSource<GeoJSONSource>(MAP_LAYERS.formation.geopoints).setData(
     buildSourceData(
       formations.filter((formation) => !isItemReferenceInList(formation, activeItems)),
@@ -401,7 +400,7 @@ function useMap(container: HTMLDivElement | null, props: RechercheCarteProps) {
     if (!refs?.length) {
       return []
     }
-    const items = result.items.filter((i) => isItemReferenceInList(i, refs))
+    const items = result.displayedItems.filter((i) => isItemReferenceInList(i, refs))
     return items
   }, [props.rechercheParams.activeItems, result, props.item])
 
