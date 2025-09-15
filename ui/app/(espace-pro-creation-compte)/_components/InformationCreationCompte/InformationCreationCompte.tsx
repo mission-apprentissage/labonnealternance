@@ -109,7 +109,7 @@ const Formulaire = ({
                       </Box>
                     )}
                     <Button type="submit" disabled={!isValid || isSubmitting}>
-                      {isSubmitting ? <CircularProgress size={24} sx={{ mr: fr.spacing("1w") }} /> : <ArrowRightLine width={5} mr={2} />}Suivant
+                      {isSubmitting ? <CircularProgress size={24} sx={{ mr: fr.spacing("1w") }} /> : <ArrowRightLine sx={{ mr: fr.spacing("1w") }} width={5} />}Suivant
                     </Button>
                   </Box>
                 </>
