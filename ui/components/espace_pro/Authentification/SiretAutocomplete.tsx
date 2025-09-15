@@ -8,8 +8,8 @@ import * as Yup from "yup"
 
 import { searchEntreprise } from "@/services/searchEntreprises"
 
+import AutocompleteAsync from "../../../app/(espace-pro)/_components/AutocompleteAsync"
 import { SIRETValidation } from "../../../common/validation/fieldValidations"
-import AutocompleteAsync from "../AutocompleteAsync"
 
 type Organisation = Awaited<ReturnType<typeof searchEntreprise>>[number]
 
