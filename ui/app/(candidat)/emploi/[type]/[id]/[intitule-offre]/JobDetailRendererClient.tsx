@@ -145,7 +145,7 @@ function JobDetail({
 
       <AideApprentissage />
 
-      {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && (
+      {[LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA].includes(kind as LBA_ITEM_TYPE) && (
         <>
           <DidYouKnow />
           {/**TODO: before check was only on FT jobs (LBA_ITEM_TYPE_OLD.PE) */}
