@@ -77,6 +77,7 @@ const zRecherchePageParams = z.object({
   displayPartenariats: z.boolean().optional(),
   displayFilters: z.boolean().optional(),
   displayMobileForm: z.boolean().optional(),
+  elligibleHandicapFilter: z.boolean().optional(),
   activeItems: z
     .object({
       ideaType: z.nativeEnum(LBA_ITEM_TYPE_OLD),
@@ -160,6 +161,9 @@ export function buildRecherchePageParams(rechercheParams: Partial<IRecherchePage
   if (rechercheParams.displayMobileForm === true) {
     query.set("displayMobileForm", "true")
   }
+  if (rechercheParams.elligibleHandicapFilter === true) {
+    query.set("elligibleHandicapFilter", "true")
+  }
 
   return query.toString()
 }
@@ -208,6 +212,7 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
   const rncp = search.get("rncp") || null
 
   const displayMobileForm = search.get("displayMobileForm") === "true"
+  const elligibleHandicapFilter = search.get("elligibleHandicapFilter") === "true"
 
   const commonProps = {
     romes,
@@ -217,6 +222,7 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
     job_type,
     displayMap,
     displayMobileForm,
+    elligibleHandicapFilter,
     activeItems,
     opco,
     rncp,

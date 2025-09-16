@@ -138,7 +138,7 @@ export const IntentionForm = ({ company_recruitment_intention, id, token }: { co
       {!["ok_sent", "canceled"].includes(sendingState) && (
         <Box sx={{ display: "flex", flexDirection: "column", width: "80%", maxWidth: "992px", margin: "auto", pt: 6, alignItems: "center" }} data-testid="IntentionFormSuccess">
           <Box sx={{ p: 4, backgroundColor: "#E1FEE8", fontWeight: 700, color: "#18753C", width: "100%", maxWidth: "800px" }}>
-            <SuccessCircle width="20px" fillHexaColor="#18753C" mr={2} />
+            <SuccessCircle width="20px" fillHexaColor="#18753C" />
             {text.confirmation}
           </Box>
 

@@ -14,6 +14,7 @@ const ZClassitifationJobsPartners = z.object({
     entreprise: z.number(),
     entreprise_cfa: z.number(),
   }),
+  human_verification: z.enum(["cfa", "entreprise", "entreprise_cfa"]).nullish(),
 })
 export type IClassificationJobsPartners = z.output<typeof ZClassitifationJobsPartners>
 

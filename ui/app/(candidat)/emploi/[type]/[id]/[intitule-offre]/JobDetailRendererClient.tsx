@@ -4,7 +4,7 @@ import { Box, Typography } from "@mui/material"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
-import { LBA_ITEM_TYPE, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { RechercheCarte } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
 import { IUseRechercheResults, useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
@@ -16,23 +16,22 @@ import { CandidatureLba, NoCandidatureLba } from "@/components/ItemDetail/Candid
 import isCandidatureLba from "@/components/ItemDetail/CandidatureLba/services/isCandidatureLba"
 import DidYouKnow from "@/components/ItemDetail/DidYouKnow"
 import GoingToContactQuestion, { getGoingtoId } from "@/components/ItemDetail/GoingToContactQuestion"
-import { getNavigationButtons } from "@/components/ItemDetail/ItemDetailServices/getButtons"
 import getJobPublishedTimeAndApplications from "@/components/ItemDetail/ItemDetailServices/getJobPublishedTimeAndApplications"
-import GetItemTag from "@/components/ItemDetail/ItemDetailServices/getTags"
 import ItemDetailCard from "@/components/ItemDetail/ItemDetailServices/ItemDetailCard"
 import JobItemCardHeader from "@/components/ItemDetail/ItemDetailServices/JobItemCardHeader"
+import { LbaItemTags } from "@/components/ItemDetail/ItemDetailServices/LbaItemTags"
+import { NavigationButtons } from "@/components/ItemDetail/ItemDetailServices/NavigationButtons"
 import { LbaJobDetail } from "@/components/ItemDetail/LbaJobComponents/LbaJobDetail"
 import { PartnerJobDetail } from "@/components/ItemDetail/PartnerJobComponents/PartnerJobDetail"
 import { PartnerJobPostuler } from "@/components/ItemDetail/PartnerJobComponents/PartnerJobPostuler"
 import RecruteurLbaDetail from "@/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaDetail"
 import ShareLink from "@/components/ItemDetail/ShareLink"
-import { isCfaEntreprise } from "@/services/cfaEntreprise"
 import { PAGES } from "@/utils/routes.utils"
 
 export default function JobDetailRendererClient({ job, rechercheParams }: { job: ILbaItemJobsGlobal; rechercheParams: IRecherchePageParams }) {
   const result = useRechercheResults(rechercheParams)
 
-  const jobDetail = <JobDetail selectedItem={job} resultList={result.items} rechercheParams={rechercheParams} />
+  const jobDetail = <JobDetail selectedItem={job} resultList={result.displayedItems} rechercheParams={rechercheParams} />
 
   if (rechercheParams?.displayMap) {
     return (
@@ -54,16 +53,17 @@ function JobDetail({
 }: {
   rechercheParams: IRecherchePageParams
   selectedItem: ILbaItemJobsGlobal
-  resultList: IUseRechercheResults["items"]
+  resultList: IUseRechercheResults["displayedItems"]
 }) {
-  // const { activeFilters } = useContext(DisplayContext)
-  const currentItem = resultList.find((item) => item.id === selectedItem.id)
   const router = useRouter()
   const [isCollapsedHeader, setIsCollapsedHeader] = useState(false)
-  const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItem, rechercheParams: rechercheParams })
+  const { swipeHandlers, goNext, goPrev } = useBuildNavigation({
+    items: resultList,
+    currentItemId: selectedItem.id,
+    rechercheParams: rechercheParams,
+  })
 
   const kind = selectedItem.ideaType
-  const isCfa = isCfaEntreprise(selectedItem?.company?.siret, selectedItem?.company?.headquarter?.siret)
   const isMandataire = selectedItem?.company?.mandataire
   const handleClose = () => router.push(PAGES.dynamic.recherche(rechercheParams).getPath())
 
@@ -113,9 +113,9 @@ function JobDetail({
         {...stickyHeaderProperties}
       >
         <Box sx={{ width: "100%", pl: { xs: 0, md: 4, pb: isCollapsedHeader ? 0 : 2 } }}>
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-            {GetItemTag({ kind: oldItemTypeToNewItemType(kind), isCfa, isMandataire })}
-            {getNavigationButtons({ goPrev, goNext, handleClose })}
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <LbaItemTags item={selectedItem} />
+            <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
           </Box>
           {!isCollapsedHeader && getJobPublishedTimeAndApplications({ item: selectedItem })}
           {!isCollapsedHeader && <JobItemCardHeader selectedItem={selectedItem} kind={kind as LBA_ITEM_TYPE} isMandataire={isMandataire} />}
@@ -145,7 +145,7 @@ function JobDetail({
 
       <AideApprentissage />
 
-      {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && (
+      {[LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA].includes(kind as LBA_ITEM_TYPE) && (
         <>
           <DidYouKnow />
           {/**TODO: before check was only on FT jobs (LBA_ITEM_TYPE_OLD.PE) */}
