@@ -46,7 +46,7 @@ export function CustomSearchBox(props) {
             autoComplete="off"
             autoCorrect="off"
             autoCapitalize="off"
-            placeholder="Search for products"
+            placeholder="Indiquer un métier ou une formation"
             spellCheck={false}
             maxLength={512}
             type="search"

@@ -54,17 +54,17 @@ export default function AlogliaPage() {
         <Configure hitsPerPage={10} />
         <CustomSearchBox />
         <Box sx={{ display: "flex", gap: fr.spacing("2w"), marginBottom: fr.spacing("3w") }}>
-          <CustomRefinementList attribute="niveau" />
+          <CustomRefinementList attribute="niveau" title="Niveau" />
           <Index indexName="lba_jobs">
-            <CustomRefinementList attribute="workplace.name" />
-            <CustomRefinementList attribute="identifier.partner_label" />
+            <CustomRefinementList attribute="workplace.name" title="Entreprise" />
+            <CustomRefinementList attribute="identifier.partner_label" title="Partenaire" />
           </Index>
         </Box>
-        <Index indexName="lba_jobs">
-          <Hits hitComponent={HitJob} />
-        </Index>
         <Index indexName="lba_trainings">
           <Hits hitComponent={HitFormation} />
+        </Index>
+        <Index indexName="lba_jobs">
+          <Hits hitComponent={HitJob} />
         </Index>
       </InstantSearch>
     </Box>
