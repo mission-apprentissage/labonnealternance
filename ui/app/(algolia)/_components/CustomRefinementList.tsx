@@ -8,7 +8,7 @@ interface CustomRefinementListProps extends UseRefinementListProps {
 }
 
 export function CustomRefinementList({ title, placeholder, attribute, ...props }: CustomRefinementListProps) {
-  const { items, refine } = useRefinementList({ attribute, ...props })
+  const { items, refine } = useRefinementList({ attribute, ...props, showMore: true, showMoreLimit: 1000 })
 
   if (items.length === 0) return null
 
@@ -44,17 +44,26 @@ export function CustomRefinementList({ title, placeholder, attribute, ...props }
             if (selected.length === 0) {
               return placeholder || "Sélectionner..."
             }
-            const selectedItems = items.filter((item) => selected.includes(item.value))
-            return selectedItems.map((item) => `${item.label} (${item.count})`).join(", ")
+            if (selected.length === 1) {
+              const selectedItem = items.find((item) => selected.includes(item.value))
+              return selectedItem ? `${selectedItem.label} (${selectedItem.count})` : ""
+            }
+            return `${selected.length} éléments sélectionnés`
           }}
           input={<Input className={fr.cx("fr-input")} />}
         >
           {items.map((item) => {
             const isChecked = selectedValues.includes(item.value)
+            const isDisabled = item.count === 0 && !isChecked
             return (
-              <MenuItem key={item.value} value={item.value}>
-                <Checkbox checked={isChecked} />
-                <ListItemText primary={`${item.label} (${item.count})`} />
+              <MenuItem key={item.value} value={item.value} disabled={isDisabled}>
+                <Checkbox checked={isChecked} disabled={isDisabled} />
+                <ListItemText
+                  primary={`${item.label} (${item.count})`}
+                  sx={{
+                    opacity: isDisabled ? 0.5 : 1,
+                  }}
+                />
               </MenuItem>
             )
           })}
