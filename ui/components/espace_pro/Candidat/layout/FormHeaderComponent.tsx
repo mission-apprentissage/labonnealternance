@@ -25,6 +25,7 @@ export const FormHeaderComponent = ({ children }: PropsWithChildren) => {
               display: "flex",
               flexDirection: { xs: "column", sm: "column", md: "row" },
               mt: fr.spacing("2w"),
+              mx: { xs: fr.spacing("2w"), sm: fr.spacing("2w"), md: 0 },
             }}
           >
             <Typography
