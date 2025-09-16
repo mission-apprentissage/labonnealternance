@@ -84,11 +84,11 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
       }
     >
       {appointment?.user && (
-        <Box sx={{ my: 4 }}>
+        <Box sx={{ my: fr.spacing("2w") }}>
           <Typography component="span" color="primary" variant="h6">
             Voici les coordonnées du contact :{" "}
           </Typography>
-          <Box sx={{ my: 4 }}>
+          <Box sx={{ my: fr.spacing("2w") }}>
             {appointment.user?.type && (
               <Typography component={"span"} variant="h6">
                 {appointment.user.type === "parent" ? "Le parent" : "L'étudiant"}
@@ -120,7 +120,7 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
             </Typography>
           </Box>
           <hr />
-          <Box sx={{ mb: 4 }}>
+          <Box sx={{ mb: fr.spacing("2w") }}>
             <Typography component="p" sx={{ mt: 1 }}>
               Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant(s) :
             </Typography>

@@ -119,7 +119,12 @@ export default function CompteRenderer() {
                       <CustomInput name="email" label="Email" type="email" value={values.email} />
                       <Box sx={{ display: "flex", justifyContent: "flex-end", mt: fr.spacing("5w"), mb: fr.spacing("2w") }}>
                         <Button type="submit" disabled={!isValid || isSubmitting}>
-                          {isSubmitting ? <CircularProgress size={fr.spacing("7v")} sx={{ color: "white", mr: fr.spacing("1w") }} /> : <ArrowRightLine mr={2} />}Enregistrer
+                          {isSubmitting ? (
+                            <CircularProgress size={fr.spacing("7v")} sx={{ color: "white", mr: fr.spacing("1w") }} />
+                          ) : (
+                            <ArrowRightLine sx={{ mr: fr.spacing("1w") }} />
+                          )}
+                          Enregistrer
                         </Button>
                       </Box>
                     </Form>

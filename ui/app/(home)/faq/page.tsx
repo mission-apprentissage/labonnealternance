@@ -10,12 +10,27 @@ export const metadata: Metadata = {
   description: PAGES.static.faq.getMetadata().description,
 }
 
-export default async function FAQ() {
+export default async function FAQ({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
+  const resolvedParams = new URLSearchParams(await searchParams)
   const [recruteur, organisme, candidat] = await Promise.all([
     await fetchNotionPage("95ae35012c6d4a32851b6c7b031fd28e"),
     await fetchNotionPage("b166d0ef1e6042f9a4bfd3a834f498d8"),
     await fetchNotionPage("2543e456b94649e5aefeefa64398b9f9"),
   ])
 
-  return <FAQRendererClient recruteur={recruteur} organisme={organisme} candidat={candidat} />
+  return (
+    <FAQRendererClient
+      recruteur={recruteur}
+      organisme={organisme}
+      candidat={candidat}
+      onLoaded={
+        resolvedParams.get("engagement-handicap")
+          ? {
+              action: "clickAndScroll",
+              selector: ".notion-block-2630c88032c8806996e6ed4a86fd2bdd > summary",
+            }
+          : undefined
+      }
+    />
+  )
 }

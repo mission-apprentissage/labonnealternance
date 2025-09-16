@@ -8,6 +8,7 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { JobPostingSchema } from "@/components/ItemDetail/JobPostingSchema"
+import { LbaJobEngagement } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagement"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { notifyLbaJobDetailView } from "../../../utils/api"
@@ -104,14 +105,6 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: s
               </Typography>
             )}
           </Stack>
-          {job?.job?.elligibleHandicap && (
-            <Box sx={{ display: "flex", p: 2, background: "white", fontSize: "12px", alignItems: "center" }}>
-              <Box sx={{ width: "30px", minWidth: "30px" }}>
-                <Image src="/images/info.svg" alt="" aria-hidden={true} width={24} height={24} style={{ marginTop: "2px" }} />
-              </Box>
-              <Typography>À compétences égales, une attention particulière sera apportée aux personnes en situation de handicap.</Typography>
-            </Box>
-          )}
           {job?.company?.mandataire && (
             <Box sx={{ display: "flex", p: 2, background: "white", fontSize: "12px", alignItems: "center" }}>
               <Typography>
@@ -124,6 +117,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: s
             </Box>
           )}
         </Stack>
+        <Box sx={{ mb: fr.spacing("2w") }}>{job?.job?.elligibleHandicap && <LbaJobEngagement />}</Box>
 
         <JobDescription job={job} />
         <LbaJobQualites job={job} />

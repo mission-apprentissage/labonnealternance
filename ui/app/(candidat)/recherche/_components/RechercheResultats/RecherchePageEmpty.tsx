@@ -21,7 +21,7 @@ export function RecherchePageEmpty(props: { rechercheParams: IRecherchePageParam
         sx={{
           display: {
             xs: "block",
-            md: "none",
+            lg: "none",
           },
         }}
       >
@@ -34,7 +34,7 @@ export function RecherchePageEmpty(props: { rechercheParams: IRecherchePageParam
           flexDirection: "column",
           display: {
             xs: "none",
-            md: "flex",
+            lg: "flex",
           },
         }}
       >

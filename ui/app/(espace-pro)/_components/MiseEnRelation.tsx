@@ -1,6 +1,8 @@
 "use client"
-import { Box, Center, Checkbox, Container, Divider, Flex, Heading, Link, Square, Text } from "@chakra-ui/react"
+
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
+import { Box, Checkbox, Container, Divider, Link, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
@@ -17,22 +19,18 @@ import { PAGES } from "@/utils/routes.utils"
 
 function InfoDelegation() {
   return (
-    <Box ml={10} display={{ base: "none", lg: "block" }}>
-      <Box border="1px solid #000091" p={6}>
-        <Heading fontSize="24px" mb={3} ml={5}>
-          Pourquoi être accompagné par des CFA dans votre recherche d’alternant ?
-        </Heading>
-        <Box ml={5}>
-          <Text fontWeight="700" mt={6}>
-            Gagnez du temps.
-          </Text>
-          <Text mt={4}>Accélérez votre recrutement, et trouvez des candidats qualifiés en partageant votre offre aux acteurs de l’apprentissage de votre région.</Text>
-          <Text fontWeight="700" mt={6}>
-            Rejoignez le réseau des acteurs de l'apprentissage de votre territoire.
-          </Text>
-          <Text mt={4}>
+    <Box sx={{ ml: fr.spacing("5w"), display: { xs: "none", lg: "block" } }}>
+      <Box sx={{ border: "1px solid #000091", p: fr.spacing("3w") }}>
+        <Typography sx={{ fontSize: "24px", mb: fr.spacing("3v"), ml: fr.spacing("5v") }}>Pourquoi être accompagné par des CFA dans votre recherche d’alternant ?</Typography>
+        <Box sx={{ ml: fr.spacing("5v") }}>
+          <Typography sx={{ fontWeight: "700", mt: fr.spacing("3w") }}>Gagnez du temps.</Typography>
+          <Typography sx={{ mt: fr.spacing("2w") }}>
+            Accélérez votre recrutement, et trouvez des candidats qualifiés en partageant votre offre aux acteurs de l’apprentissage de votre région.
+          </Typography>
+          <Typography sx={{ fontWeight: "700", mt: fr.spacing("3w") }}>Rejoignez le réseau des acteurs de l'apprentissage de votre territoire.</Typography>
+          <Typography sx={{ mt: fr.spacing("2w") }}>
             Développez des relations de confiance avec les acteurs de l'apprentissage de votre territoire afin de promouvoir votre entreprise et vos métiers auprès des jeunes.
-          </Text>
+          </Typography>
         </Box>
       </Box>
     </Box>
@@ -41,24 +39,24 @@ function InfoDelegation() {
 
 function AucunCFAProche({ title }: { title?: string }) {
   return (
-    <Flex>
-      <Box minWidth={["100%", "100%", "50%"]}>
-        <Box p={6}>
+    <Box sx={{ display: "flex" }}>
+      <Box sx={{ minWidth: { xs: "100%", md: "50%" } }}>
+        <Box sx={{ p: fr.spacing("3w") }}>
           <Image fetchPriority="high" src="/images/aucunCfa.svg" alt="" unoptimized width={287} height={169} style={{ width: "100%", maxWidth: "287px" }} />
-          <Heading fontSize="24px" mt={5}>
-            Aucun CFA à proximité
-          </Heading>
-          <Text mt={6}>
+          <Typography sx={{ fontSize: "24px", mt: fr.spacing("5v") }}>Aucun CFA à proximité</Typography>
+          <Typography sx={{ mt: fr.spacing("3w") }}>
             Votre offre :{" "}
-            <Text as="span" fontWeight={700}>
+            <Typography component="span" sx={{ fontWeight: 700 }}>
               {title}
-            </Text>
-          </Text>
-          <Text mt={4}>Nous n’avons pas identifié de centre de formation dans un rayon de 100km autour de votre entreprise qui forme sur le métier pour lequel vous recrutez.</Text>
+            </Typography>
+          </Typography>
+          <Typography sx={{ mt: fr.spacing("2w") }}>
+            Nous n’avons pas identifié de centre de formation dans un rayon de 100km autour de votre entreprise qui forme sur le métier pour lequel vous recrutez.
+          </Typography>
         </Box>
       </Box>
       <InfoDelegation />
-    </Flex>
+    </Box>
   )
 }
 
@@ -77,43 +75,41 @@ function DelegationsEnregistrees({
 }) {
   return (
     <Box>
-      <Box border="1px solid #000091" p={{ base: 2, md: 6 }} mb={5}>
-        <Flex direction={{ base: "column", md: "row" }} alignItems={{ base: "center", md: "flex-start" }}>
+      <Box sx={{ border: "1px solid #000091", p: { xs: fr.spacing("1w"), md: fr.spacing("3w") }, mb: fr.spacing("5v") }}>
+        <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: { xs: "center", md: "flex-start" } }}>
           <Image fetchPriority="high" src="/images/espace_pro/miseEnRelationEnvoyee.svg" alt="" unoptimized width={268} height={150} style={{ width: "100%", maxWidth: "268px" }} />
-          <Box mt={{ base: 4, md: 0 }} ml={{ base: 0, md: 5 }}>
-            <Heading fontSize="24px" mb={3}>
-              Votre offre a été partagée aux CFA sélectionnés
-            </Heading>
+          <Box sx={{ mt: { xs: fr.spacing("2w"), md: 0 }, ml: { xs: 0, md: fr.spacing("5v") } }}>
+            <Typography sx={{ fontSize: "24px", mb: fr.spacing("3v") }}>Votre offre a été partagée aux CFA sélectionnés</Typography>
             <Box>
               Les écoles que vous avez sélectionnées ont reçu par email votre offre et vos coordonnées suivantes :
-              <Text mt={2}>
+              <Typography sx={{ mt: fr.spacing("1w") }}>
                 Prénom:{" "}
-                <Text as="span" fontWeight={700}>
+                <Typography component="span" sx={{ fontWeight: 700 }}>
                   {first_name}
-                </Text>
-              </Text>
-              <Text mt={2}>
+                </Typography>
+              </Typography>
+              <Typography sx={{ mt: fr.spacing("1w") }}>
                 Nom:{" "}
-                <Text as="span" fontWeight={700}>
+                <Typography component="span" sx={{ fontWeight: 700 }}>
                   {last_name}
-                </Text>
-              </Text>
-              <Text mt={2}>
+                </Typography>
+              </Typography>
+              <Typography sx={{ mt: fr.spacing("1w") }}>
                 Email:{" "}
-                <Text as="span" fontWeight={700}>
+                <Typography component="span" sx={{ fontWeight: 700 }}>
                   {email}
-                </Text>
-              </Text>
-              <Text mt={2}>
+                </Typography>
+              </Typography>
+              <Typography sx={{ mt: fr.spacing("1w") }}>
                 Numéro de téléphone:{" "}
-                <Text as="span" fontWeight={700}>
+                <Typography component="span" sx={{ fontWeight: 700 }}>
                   {phone}
-                </Text>
-              </Text>
-              <Text mt={4}>Elles peuvent désormais vous recontacter pour vous proposer des candidats en adéquation avec vos besoins.</Text>
+                </Typography>
+              </Typography>
+              <Typography sx={{ mt: fr.spacing("2w") }}>Elles peuvent désormais vous recontacter pour vous proposer des candidats en adéquation avec vos besoins.</Typography>
             </Box>
           </Box>
-        </Flex>
+        </Box>
       </Box>
       <Button
         onClick={() => {
@@ -207,88 +203,96 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
 
   return (
     <DepotSimplifieStyling>
-      <Container p={0} maxW="container.xl">
+      <Container maxWidth="xl" sx={{ p: 0 }}>
         <Breadcrumb pages={[PAGES.static.backHomeEntreprise, PAGES.dynamic.backEntrepriseMiseEnRelation({ job_id })]} />
         {delegationsEnregistrees ? (
           <DelegationsEnregistrees router={router} first_name={formulaire.first_name} last_name={formulaire.last_name} email={formulaire.email} phone={formulaire.phone} />
         ) : (
           <>
             {etablissements?.length > 0 && (
-              <Box p={{ base: 0, md: 5 }}>
-                <Flex>
-                  <Box minWidth={["100%", "100%", "50%"]}>
-                    <Heading fontSize="32px">Ces centres de formation pourraient vous proposer des candidats</Heading>
-                    <Text fontSize="20px">
+              <Box sx={{ p: { xs: 0, md: fr.spacing("5v") } }}>
+                <Box sx={{ display: "flex" }}>
+                  <Box sx={{ minWidth: { xs: "100%", md: "50%" } }}>
+                    <Typography component="h1" sx={{ fontSize: "32px", lineHeight: "40px", fontWeight: "bold" }}>
+                      Ces centres de formation pourraient vous proposer des candidats
+                    </Typography>
+                    <Typography sx={{ fontSize: "20px", lineHeight: "28px", mt: fr.spacing("2w") }}>
                       Les centres de formation suivants proposent des formations en lien avec votre offre et sont localisés à proximité de votre entreprise.
                       <br />
                       Choisissez ceux à qui vous souhaitez partager votre offre.
-                    </Text>
+                    </Typography>
 
-                    <Box mt={5}>
+                    <Box sx={{ mt: fr.spacing("5v") }}>
                       {etablissements.map((etablissement: IEtablissementCatalogueProcheWithDistanceJSON, index) => {
                         const isDisabled = checkedDisabledEtablissements.some((etab) => etab._id === etablissement._id)
                         return (
-                          <Flex
-                            borderStyle="solid"
-                            borderWidth="1px"
-                            borderColor={isDisabled ? "#E5E5E5" : "#000091"}
-                            py={4}
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexDirection: "row",
+                              gap: fr.spacing("2w"),
+                              borderStyle: "solid",
+                              borderWidth: "1px",
+                              borderColor: isDisabled ? "#E5E5E5" : "#000091",
+                              mb: fr.spacing("4v"),
+                              p: fr.spacing("2w"),
+                            }}
                             key={etablissement._id}
-                            mb={4}
                             data-testid={`cfa-${index}`}
                           >
-                            <Center w="70px">
+                            <Box sx={{ display: "flex", alignItems: "center", flexDirection: "row" }}>
                               <Checkbox disabled={isDisabled} defaultChecked={isDisabled} onChange={() => changeEtablissement(etablissement)} />
-                            </Center>
-                            <Box flex="1">
+                            </Box>
+                            <Box sx={{ flex: 1 }}>
                               {isDisabled && (
-                                <Flex alignItems="flex-start" backgroundColor="#F6F6F6" width="fit-content" px={2} py={1}>
+                                <Box
+                                  sx={{ display: "flex", alignItems: "flex-start", backgroundColor: "#F6F6F6", width: "fit-content", px: fr.spacing("1w"), py: fr.spacing("1v") }}
+                                >
                                   <Image fetchPriority="high" src="/images/icons/chrono.svg" alt="" style={{ margin: "4px" }} unoptimized width={16} height={16} />
-                                  <Text fontSize="12px" color="#666666" mb={2}>
-                                    CFA déjà contacté
-                                  </Text>
-                                </Flex>
+                                  <Typography sx={{ fontSize: "12px", color: "#666666", mb: fr.spacing("1w") }}>CFA déjà contacté</Typography>
+                                </Box>
                               )}
-                              <Text size="16px" lineHeight="25px" fontWeight="400" color="#161616" textTransform="capitalize" pr={3}>
+                              <Typography sx={{ fontSize: "16px", lineHeight: "25px", fontWeight: "400", color: "#161616", textTransform: "capitalize", pr: fr.spacing("3v") }}>
                                 {etablissement.entreprise_raison_sociale}
-                              </Text>
-                              <Text size="12px" lineHeight="25px" color="#666666" textTransform="capitalize" pr={3}>
+                              </Typography>
+                              <Typography sx={{ fontSize: "12px", lineHeight: "25px", color: "#666666", textTransform: "capitalize", pr: fr.spacing("3v") }}>
                                 {etablissement?.numero_voie} {etablissement?.type_voie} {etablissement?.nom_voie}, {etablissement?.code_postal} {etablissement?.localite}
-                              </Text>
+                              </Typography>
+
                               <Link
-                                href={`https://catalogue-apprentissage.intercariforef.org/etablissement/${etablissement.siret}`}
-                                isExternal
+                                underline="hover"
                                 aria-label="Etablissement sur le site du catalogue des formations en apprentissage - nouvelle fenêtre"
+                                href={`https://catalogue-apprentissage.intercariforef.org/etablissement/${etablissement.siret}`}
+                                color="inherit"
+                                target="_blank"
+                                rel="noopener noreferrer"
                               >
                                 En savoir plus
                               </Link>
                             </Box>
-                            <Square>
-                              <Center height="90px">
-                                <Divider orientation="vertical" />
-                              </Center>
-                              <Text size="12px" fontWeight="700" color="#666666" px={4}>
-                                à {etablissement.distance_en_km} km
-                              </Text>
-                            </Square>
-                          </Flex>
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                              <Divider orientation="vertical" />
+                              <Typography sx={{ fontSize: "12px", fontWeight: "700", color: "#666666", px: fr.spacing("2w") }}>à {etablissement.distance_en_km} km</Typography>
+                            </Box>
+                          </Box>
                         )
                       })}
                     </Box>
                   </Box>
                   <InfoDelegation />
-                </Flex>
+                </Box>
                 <Box
-                  width="100%"
-                  my={1}
-                  position={"sticky"}
-                  bottom={0}
-                  left={0}
-                  bgColor="white"
-                  zIndex={1}
-                  p={5}
-                  style={{
+                  sx={{
+                    display: "flex",
                     boxShadow: "0px -16px 16px -16px rgba(0, 0, 0, 0.32)",
+                    width: "100%",
+                    my: 1,
+                    position: "sticky",
+                    bottom: 0,
+                    left: 0,
+                    bgColor: "white",
+                    zIndex: 1,
+                    p: 5,
                   }}
                 >
                   <Button disabled={checkedEtablissements.length === 0 || isSubmitting} onClick={submit} data-testid="submit-delegation">

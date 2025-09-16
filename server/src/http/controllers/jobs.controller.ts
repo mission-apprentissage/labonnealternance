@@ -381,7 +381,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { referer } = req.headers
-      const { romes, rncp, caller, latitude, longitude, radius, insee, diploma, opco } = req.query
+      const { romes, rncp, caller, latitude, longitude, radius, insee, diploma, opco, elligibleHandicapFilter } = req.query
       const result = await getJobsQueryPrivate({
         romes,
         rncp,
@@ -394,6 +394,7 @@ export default (server: Server) => {
         diploma: INiveauDiplomeEuropeen.fromParam(diploma),
         opco,
         isMinimalData: true,
+        elligibleHandicapFilter: elligibleHandicapFilter === "true",
       })
 
       if ("error" in result) {

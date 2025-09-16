@@ -1,5 +1,3 @@
-// import { Box, Container, ContainerProps } from "@chakra-ui/react"
-
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container } from "@mui/material"
 import { PropsWithChildren, ReactNode } from "react"
@@ -12,7 +10,7 @@ export const FormLayoutComponent = ({ children, headerText }: PropsWithChildren<
   return (
     <Container sx={{ boxShadow: "0px 0px 24px rgba(30, 30, 30, 0.24)" }} disableGutters>
       <FormHeaderComponent>{headerText}</FormHeaderComponent>
-      <Box sx={{ mx: { xs: fr.spacing("6w"), sm: fr.spacing("12w"), md: fr.spacing("12w") } }}>{children}</Box>
+      <Box sx={{ mx: { xs: fr.spacing("2w"), sm: fr.spacing("12w"), md: fr.spacing("12w") } }}>{children}</Box>
       <Footer hideLinkList />
     </Container>
   )

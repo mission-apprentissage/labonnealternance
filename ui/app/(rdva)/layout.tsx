@@ -9,7 +9,7 @@ export default async function HomeLayout({ children }: PropsWithChildren) {
     <>
       <PublicHeader />
       <DepotSimplifieStyling>{children}</DepotSimplifieStyling>
-      <Footer />
+      <Footer hideLinkList />
     </>
   )
 }
