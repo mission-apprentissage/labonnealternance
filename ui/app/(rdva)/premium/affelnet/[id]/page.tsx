@@ -91,64 +91,66 @@ export default function PremiumAffelnet() {
   }
 
   return (
-    <Container>
-      <Typography variant="h3" sx={{ my: fr.spacing("3w") }}>
-        Activation du service “RDV Apprentissage” sur Choisir son affectation après la 3e
-      </Typography>
-      {hasRefused && !hasAccepted && (
-        <Box sx={{ display: "flex", gap: fr.spacing("2w"), mb: fr.spacing("3w"), alignItems: "center" }}>
-          <SuccessCircle width={33} fillHexaColor="#000091" />
+    <Container sx={{ my: fr.spacing("6w") }}>
+      <Box sx={{ border: `1px solid ${fr.colors.decisions.text.actionHigh.blueFrance.default}`, px: fr.spacing("7w") }}>
+        <Typography variant="h3" sx={{ my: fr.spacing("3w") }}>
+          Activation du service “RDV Apprentissage” sur Choisir son affectation après la 3e
+        </Typography>
+        {hasRefused && !hasAccepted && (
+          <Box sx={{ display: "flex", gap: fr.spacing("2w"), mb: fr.spacing("3w"), alignItems: "center" }}>
+            <SuccessCircle width={33} fillHexaColor="#000091" />
 
-          <Typography sx={{ fontWeight: 700 }}>
-            Votre choix a bien été pris en compte Le service RDV Apprentissage ne sera pas activé pour vos formations. <br /> Si vous changez d'avis, merci de nous contacter à
-            l'adresse suivante:{" "}
-            <a style={{ textDecoration: "underline" }} href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Formulaire%20premium%20-%20Activer%20RDVA">
-              labonnealternance@apprentissage.beta.gouv.fr
-            </a>
-          </Typography>
-        </Box>
-      )}
-      {hasAccepted && (
-        <Box sx={{ display: "flex", gap: fr.spacing("2w"), mb: fr.spacing("3w"), alignItems: "center" }}>
-          <SuccessCircle width={33} fillHexaColor="#000091" />
-          <Typography sx={{ fontWeight: 700 }}>
-            Félicitations, votre choix a bien été pris en compte.
-            <br />
-            Le service RDV Apprentissage est désormais activé sur Choisir son affectation après la 3e.
-          </Typography>
-        </Box>
-      )}
-      {!hasRefused && !hasAccepted && (
-        <>
-          <Typography>En activant le service RDV Apprentissage, je m'engage auprès de Choisir son affectation après la 3e à :</Typography>
-
-          <Stack sx={{ mt: fr.spacing("2w") }} gap={fr.spacing("1w")}>
-            <Box sx={{ display: "flex", gap: fr.spacing("2w") }}>
-              <SuccessCircle fillHexaColor="#00AC8C" />
-              <Typography fontWeight="700">Répondre par email ou téléphone à tous les candidats qui me contacteront</Typography>
-            </Box>
-
-            <Box sx={{ display: "flex", gap: fr.spacing("2w") }}>
-              <SuccessCircle fillHexaColor="#00AC8C" />
-              <Typography fontWeight="700">Dans un délai de 4 jours ouvrés après réception de la demande par e-mail</Typography>
-            </Box>
-          </Stack>
-
-          <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "column", md: "row" }, gap: fr.spacing("2w"), my: fr.spacing("3w") }}>
-            <Button onClick={accept}>Oui, j’accepte les conditions</Button>
-
-            <Button priority="secondary" onClick={refuse}>
-              Non, je ne suis pas prêt
-            </Button>
-          </Box>
-          <Box sx={{ mb: fr.spacing("3w") }}>
-            <Typography>
-              Le service sera activé sur toutes les formations éligibles à être affichées sur Choisir son affectation après la 3e, <br /> liées à votre SIRET{" "}
-              <strong>{etablissement.gestionnaire_siret}</strong>.
+            <Typography sx={{ fontWeight: 700 }}>
+              Votre choix a bien été pris en compte Le service RDV Apprentissage ne sera pas activé pour vos formations. <br /> Si vous changez d'avis, merci de nous contacter à
+              l'adresse suivante:{" "}
+              <a style={{ textDecoration: "underline" }} href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Formulaire%20premium%20-%20Activer%20RDVA">
+                labonnealternance@apprentissage.beta.gouv.fr
+              </a>
             </Typography>
           </Box>
-        </>
-      )}
+        )}
+        {hasAccepted && (
+          <Box sx={{ display: "flex", gap: fr.spacing("2w"), mb: fr.spacing("3w"), alignItems: "center" }}>
+            <SuccessCircle width={33} fillHexaColor="#000091" />
+            <Typography sx={{ fontWeight: 700 }}>
+              Félicitations, votre choix a bien été pris en compte.
+              <br />
+              Le service RDV Apprentissage est désormais activé sur Choisir son affectation après la 3e.
+            </Typography>
+          </Box>
+        )}
+        {!hasRefused && !hasAccepted && (
+          <>
+            <Typography>En activant le service RDV Apprentissage, je m'engage auprès de Choisir son affectation après la 3e à :</Typography>
+
+            <Stack sx={{ mt: fr.spacing("2w") }} gap={fr.spacing("1w")}>
+              <Box sx={{ display: "flex", gap: fr.spacing("2w") }}>
+                <SuccessCircle fillHexaColor="#00AC8C" />
+                <Typography fontWeight="700">Répondre par email ou téléphone à tous les candidats qui me contacteront</Typography>
+              </Box>
+
+              <Box sx={{ display: "flex", gap: fr.spacing("2w") }}>
+                <SuccessCircle fillHexaColor="#00AC8C" />
+                <Typography fontWeight="700">Dans un délai de 4 jours ouvrés après réception de la demande par e-mail</Typography>
+              </Box>
+            </Stack>
+
+            <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "column", md: "row" }, gap: fr.spacing("2w"), my: fr.spacing("3w") }}>
+              <Button onClick={accept}>Oui, j’accepte les conditions</Button>
+
+              <Button priority="secondary" onClick={refuse}>
+                Non, je ne suis pas prêt
+              </Button>
+            </Box>
+            <Box sx={{ mb: fr.spacing("3w") }}>
+              <Typography>
+                Le service sera activé sur toutes les formations éligibles à être affichées sur Choisir son affectation après la 3e, <br /> liées à votre SIRET{" "}
+                <strong>{etablissement.gestionnaire_siret}</strong>.
+              </Typography>
+            </Box>
+          </>
+        )}
+      </Box>
     </Container>
   )
 }
