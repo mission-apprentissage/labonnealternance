@@ -40,7 +40,7 @@ export const joobleJobToJobsPartners = (job: IJoobleJob): IComputedJobsPartners 
   const publicationDate = new Date()
   const updatedDate = new Date(job.date_updated.split(" ")[0])
 
-  const regex = /\b(?:cdi|cdd|interim)\b/i
+  const regex = /\b(?:cdi|interim)\b/i
   const business_error = regex.test(job.description) || regex.test(job.title) ? JOB_PARTNER_BUSINESS_ERROR.FULL_TIME : null
 
   const partnerJob: IComputedJobsPartners = {
