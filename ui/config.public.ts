@@ -14,6 +14,8 @@ interface PublicConfig {
   version: string
   plausibleDomain: string
   disableRobots?: boolean
+  algoliaAppId?: string
+  algoliaApiKey?: string
 }
 
 const SENTRY_DSN = "https://d04df44068da41a19f478822fe1d58ea@sentry.apprentissage.beta.gouv.fr/8"
@@ -105,6 +107,8 @@ function getPreviewPublicConfig(): PublicConfig {
     version,
     plausibleDomain: "labonnealternance-recette2.apprentissage.beta.gouv.fr",
     disableRobots: true,
+    algoliaAppId: "KL08PFB3HU",
+    algoliaApiKey: "9ae535d7abadf662e3224adaa5e22aaa",
   }
 }
 
@@ -127,6 +131,8 @@ function getLocalPublicConfig(): PublicConfig {
     version: getVersion(),
     plausibleDomain: "labonnealternance-recette2.apprentissage.beta.gouv.fr",
     disableRobots: true,
+    algoliaAppId: "KL08PFB3HU",
+    algoliaApiKey: "9ae535d7abadf662e3224adaa5e22aaa",
   }
 }
 

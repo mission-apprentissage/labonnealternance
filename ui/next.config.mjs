@@ -48,6 +48,7 @@ const contentSecurityPolicy = `
               https://exposition.inserjeunes.beta.gouv.fr
               https://sentry.apprentissage.beta.gouv.fr
               https://recherche-entreprises.api.gouv.fr
+              https://kl08pfb3hu-3.algolianet.com
               ${process.env.NEXT_PUBLIC_ENV === "local" ? "http://localhost:5001" : ""};
   img-src 'self'
               data:
