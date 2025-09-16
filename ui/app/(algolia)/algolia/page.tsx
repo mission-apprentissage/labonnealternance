@@ -4,8 +4,9 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { liteClient as algoliasearch } from "algoliasearch/lite"
 import React from "react"
-import { InstantSearch, Hits, Highlight, RefinementList, Index, Configure } from "react-instantsearch"
+import { InstantSearch, Hits, Highlight, Index, Configure } from "react-instantsearch"
 
+import { CustomRefinementList } from "@/app/(algolia)/_components/CustomRefinementList"
 import { CustomSearchBox } from "@/app/(algolia)/_components/CustomSearchBox"
 import { TagFormation } from "@/components/ItemDetail/TagFormation"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
@@ -15,8 +16,7 @@ const { algoliaApiKey, algoliaAppId } = publicConfig
 
 const searchClient = algoliasearch(algoliaAppId, algoliaApiKey)
 
-function HitFormation(props) {
-  const { hit } = props
+function HitFormation({ hit }: { hit: any }) {
   return (
     <Box>
       <TagFormation />
@@ -32,8 +32,7 @@ function HitFormation(props) {
   )
 }
 
-function HitJob(props) {
-  const { hit } = props
+function HitJob({ hit }: { hit: any }) {
   return (
     <Box>
       <TagOffreEmploi />
@@ -54,12 +53,14 @@ export default function AlogliaPage() {
       <InstantSearch searchClient={searchClient} indexName="lba_trainings" insights={false}>
         <Configure hitsPerPage={10} />
         <CustomSearchBox />
-        <RefinementList attribute="niveau" />
+        <Box sx={{ display: "flex", gap: fr.spacing("2w"), marginBottom: fr.spacing("3w") }}>
+          <CustomRefinementList attribute="niveau" />
+          <Index indexName="lba_jobs">
+            <CustomRefinementList attribute="workplace.name" />
+            <CustomRefinementList attribute="identifier.partner_label" />
+          </Index>
+        </Box>
         <Index indexName="lba_jobs">
-          <Box>
-            <RefinementList attribute="workplace.name" />
-            <RefinementList attribute="identifier.partner_label" />
-          </Box>
           <Hits hitComponent={HitJob} />
         </Index>
         <Index indexName="lba_trainings">

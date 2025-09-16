@@ -1,36 +1,29 @@
-import { fr } from "@codegouvfr/react-dsfr"
+import { Typography } from "@mui/material"
 import React from "react"
-import { useRefinementList } from "react-instantsearch"
+import { RefinementListProps, useRefinementList } from "react-instantsearch"
 
-export function CustomRefinementList(props) {
-  const { items, refine, searchForItems, canToggleShowMore, isShowingMore, toggleShowMore } = useRefinementList(props)
+export function CustomRefinementList(props: RefinementListProps) {
+  const { items, refine, canToggleShowMore, isShowingMore, toggleShowMore } = useRefinementList(props)
 
   return (
     <>
-      <input
-        type="search"
-        autoComplete="off"
-        autoCorrect="off"
-        autoCapitalize="off"
-        spellCheck={false}
-        maxLength={512}
-        onChange={(event) => searchForItems(event.currentTarget.value)}
-        className={fr.cx("fr-input")}
-      />
       <ul>
         {items.map((item) => (
           <li key={item.label}>
             <label>
-              <input type="checkbox" checked={item.isRefined} onChange={() => refine(item.value)} />
-              <span>{item.label}</span>
-              <span>({item.count})</span>
+              <Typography>
+                <input type="checkbox" checked={item.isRefined} onChange={() => refine(item.value)} />
+                {item.label} ({item.count})
+              </Typography>
             </label>
           </li>
         ))}
       </ul>
-      <button onClick={toggleShowMore} disabled={!canToggleShowMore}>
-        {isShowingMore ? "Show less" : "Show more"}
-      </button>
+      {canToggleShowMore && (
+        <button onClick={toggleShowMore} disabled={!canToggleShowMore}>
+          {isShowingMore ? "Show less" : "Show more"}
+        </button>
+      )}
     </>
   )
 }
