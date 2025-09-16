@@ -20,6 +20,7 @@ export type TJobSearchQuery = {
   opco?: string
   opcoUrl?: string
   isMinimalData: boolean
+  elligibleHandicapFilter?: boolean
 }
 
 export type TFormationSearchQuery = TJobSearchQuery & { region?: string; departement?: string }

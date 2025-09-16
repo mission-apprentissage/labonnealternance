@@ -8,6 +8,7 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { JobPostingSchema } from "@/components/ItemDetail/JobPostingSchema"
+import { LbaJobEngagement } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagement"
 import { notifyJobDetailViewV3 } from "@/utils/api"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
@@ -96,6 +97,10 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
               </Box>
             )}
           </Stack>
+        </Box>
+
+        <Box sx={{ mb: fr.spacing("2w") }}>
+          <LbaJobEngagement />
         </Box>
 
         <JobDescription job={job} />

@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 7fbbed821c19f094f6a7836dd5403f18af4b3737f9f8e7a6dcb1223f7b722bd0
+  checksum: 6f7fcddcf642524f8a2a169c5d9ac72d40d8e9ae34caceefe7cc23770b02619b
 - filename: .infra/vault/vault.yml
   checksum: 7852781310ed91ecef26e555e15d265fcf4825c64a26beaca37f48998c23d4df
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
@@ -236,7 +236,7 @@ fileignoreconfig:
 - filename: ui/app/(home)/_components/AmeliorerLBA.tsx
   checksum: b964e92051d750feaf2e3b33ec43b64d164705763fb50f225b6f3fbf243452de
 - filename: ui/app/(home)/faq/page.tsx
-  checksum: e4b3904897fb67afd63187ff382138e9d60b9ca0395385eb2afd6a822696b804
+  checksum: 9ffb966754ed1d21f8fb933e48bab51024b9d4c11218caf1c5a1e17e474a4d4d
 - filename: ui/app/(home)/mentions-legales/page.tsx
   checksum: 4740029daff0308bfa65289c4eb5be61834c0c8c5d00bdcab0b1662f28c8a0e6
 - filename: ui/app/(home)/politique-de-confidentialite/page.tsx

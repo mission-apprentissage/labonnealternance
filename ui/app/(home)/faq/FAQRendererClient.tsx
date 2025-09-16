@@ -5,6 +5,8 @@ import { Tabs } from "@codegouvfr/react-dsfr/Tabs"
 import { Box, Grid2 as Grid, Typography } from "@mui/material"
 import dynamic from "next/dynamic"
 import { ExtendedRecordMap } from "notion-types"
+import { useEffect, useRef, useState } from "react"
+import { assertUnreachable } from "shared"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
@@ -14,13 +16,77 @@ import { PAGES } from "@/utils/routes.utils"
 
 const NotionRenderer = dynamic(() => import("react-notion-x").then((mod) => mod.NotionRenderer), { ssr: false })
 
-interface Props {
+function clickAndscrollToElement(page: HTMLElement, querySelector: string): boolean {
+  const childElement = page.querySelector(querySelector)
+  if (!childElement) {
+    return false
+  }
+  const typedChildElement = childElement as HTMLElement
+  typedChildElement.click()
+  const htmlElement = document.body.parentElement
+  htmlElement.scrollTo({ top: typedChildElement.getBoundingClientRect().top })
+  return true
+}
+
+type OnLoadedDescriptor = {
+  action: "clickAndScroll"
+  selector: string
+}
+
+function onLoadedDescriptorToFct(descriptor?: OnLoadedDescriptor) {
+  if (!descriptor) return undefined
+  switch (descriptor.action) {
+    case "clickAndScroll":
+      return (page) => clickAndscrollToElement(page, descriptor.selector)
+    default:
+      assertUnreachable(descriptor.action)
+  }
+}
+
+export default function FAQRendererClient({
+  onLoaded,
+  ...rest
+}: {
   recruteur: ExtendedRecordMap
   organisme: ExtendedRecordMap
   candidat: ExtendedRecordMap
+  onLoaded?: OnLoadedDescriptor
+}) {
+  return <FAQRendererClientGeneric {...rest} onLoaded={onLoadedDescriptorToFct(onLoaded)} />
 }
 
-export default function FAQRendererClient({ recruteur, organisme, candidat }: Props) {
+function FAQRendererClientGeneric({
+  recruteur,
+  organisme,
+  candidat,
+  onLoaded,
+}: {
+  recruteur: ExtendedRecordMap
+  organisme: ExtendedRecordMap
+  candidat: ExtendedRecordMap
+  onLoaded?: (page: HTMLElement) => boolean
+}) {
+  const pageRef = useRef<HTMLElement>(null)
+  const [hasExecutedOnLoaded, setExecutedOnLoaded] = useState<boolean>(false)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (hasExecutedOnLoaded || !onLoaded) {
+        clearInterval(interval)
+        return
+      }
+
+      const pageElement = pageRef.current
+      if (!pageElement) {
+        return
+      }
+      const hasExecuted = onLoaded?.(pageElement)
+      if (hasExecuted) {
+        setExecutedOnLoaded(true)
+      }
+    }, 100)
+    return () => clearInterval(interval)
+  }, [hasExecutedOnLoaded, onLoaded])
+
   const tabs = [
     { tabId: "candidat", label: "Candidat", recordMap: candidat },
     { tabId: "recruteur", label: "Recruteur", recordMap: recruteur },
@@ -34,7 +100,7 @@ export default function FAQRendererClient({ recruteur, organisme, candidat }: Pr
   const displayedTab = tabs.find((x) => x.tabId === selectedTabId) ?? firstTab
 
   return (
-    <Box>
+    <Box ref={pageRef}>
       <Breadcrumb pages={[PAGES.static.faq]} />
       <DefaultContainer>
         <Box sx={{ p: fr.spacing("5w"), marginBottom: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>

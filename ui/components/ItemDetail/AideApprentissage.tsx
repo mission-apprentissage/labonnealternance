@@ -5,7 +5,7 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 const AideApprentissage = () => {
   return (
-    <Box sx={{ pb: 0, mt: fr.spacing("3w"), mb: 4, position: "relative", backgroundColor: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
+    <Box sx={{ pb: 0, mt: fr.spacing("3w"), position: "relative", backgroundColor: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
       <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
         Avez-vous droit à des aides financières ?
       </Typography>

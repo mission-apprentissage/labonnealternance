@@ -77,6 +77,7 @@ const transformCompany = ({
         label: company.workplace_opco,
         url: null,
       },
+      elligibleHandicap: company.contract_is_disabled_elligible,
     },
     nafs: [
       {
@@ -123,6 +124,7 @@ const transformCompanyWithMinimalData = ({
     company: {
       name: company.workplace_legal_name,
       siret: company.workplace_siret,
+      elligibleHandicap: company.contract_is_disabled_elligible,
     },
     nafs: [
       {
@@ -174,6 +176,7 @@ const transformCompanyV2 = ({
         label: company.workplace_opco,
         url: null,
       },
+      elligibleHandicap: company.contract_is_disabled_elligible,
     },
     nafs: [
       {
@@ -183,48 +186,6 @@ const transformCompanyV2 = ({
     ],
     applicationCount: applicationCount?.count || 0,
     url: null,
-    token: generateApplicationToken({ company_siret: company.workplace_siret! }),
-    recipient_id: `partners_${company._id.toString()}`,
-  }
-
-  return resultCompany
-}
-
-/**
- * Adaptation au modèle LBA d'une société issue de l'algo avec les données minimales nécessaires pour l'ui LBA
- */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const transformCompanyWithMinimalDataV2 = ({
-  company,
-  applicationCountByCompany,
-}: {
-  company: IJobsPartnersOfferPrivateWithDistance
-  applicationCountByCompany: IApplicationCount[]
-}): ILbaItemLbaCompany => {
-  const applicationCount = applicationCountByCompany.find((cmp) => company.workplace_siret == cmp._id)
-
-  const resultCompany: ILbaItemLbaCompany = {
-    ideaType: LBA_ITEM_TYPE.RECRUTEURS_LBA,
-    id: company.workplace_siret!,
-    title: company.workplace_brand || company.workplace_legal_name,
-    place: {
-      distance: setDistance(company.distance),
-      fullAddress: company.workplace_address_label,
-      longitude: company.workplace_geopoint.coordinates[0],
-      latitude: company.workplace_geopoint.coordinates[1],
-      city: company.workplace_address_city,
-      address: company.workplace_address_label,
-    },
-    company: {
-      name: company.workplace_legal_name,
-      siret: company.workplace_siret,
-    },
-    nafs: [
-      {
-        label: company.workplace_naf_label,
-      },
-    ],
-    applicationCount: applicationCount?.count || 0,
     token: generateApplicationToken({ company_siret: company.workplace_siret! }),
     recipient_id: `partners_${company._id.toString()}`,
   }
@@ -322,7 +283,7 @@ export const getRecruteursLbaFromDB = async ({ geo, romes, opco, departements }:
 /**
  * Retourne des sociétés issues de l'algo matchant les critères en paramètres
  */
-export const getCompanies = async ({
+const getCompanies = async ({
   romes,
   latitude,
   longitude,
@@ -331,6 +292,7 @@ export const getCompanies = async ({
   caller,
   opco,
   opcoUrl,
+  elligibleHandicapFilter,
   api = "jobV1",
 }: {
   romes?: string
@@ -342,11 +304,12 @@ export const getCompanies = async ({
   opco?: string
   opcoUrl?: string
   api: string
+  elligibleHandicapFilter?: boolean
 }): Promise<IJobsPartnersRecruteurAlgoPrivate[] | IApiError> => {
   try {
     const distance = radius || 10
 
-    const query: any = { partner_label: LBA_ITEM_TYPE.RECRUTEURS_LBA }
+    const query: Filter<IJobsPartnersRecruteurAlgoPrivate> = { partner_label: LBA_ITEM_TYPE.RECRUTEURS_LBA }
 
     if (romes) {
       query.offer_rome_codes = { $in: romes?.split(",") }
@@ -359,6 +322,9 @@ export const getCompanies = async ({
     // TODO 20250212 obsolete, to check if still used
     if (opcoUrl) {
       query.opco_url = opcoUrl.toLowerCase()
+    }
+    if (elligibleHandicapFilter) {
+      query.contract_is_disabled_elligible = true
     }
 
     let companies: IJobsPartnersRecruteurAlgoPrivate[] = []
@@ -425,6 +391,7 @@ export const getSomeCompanies = async ({
   opcoUrl,
   api = "jobV1",
   isMinimalData,
+  elligibleHandicapFilter,
 }: {
   romes?: string
   latitude?: number
@@ -436,6 +403,7 @@ export const getSomeCompanies = async ({
   opcoUrl?: string
   api?: string
   isMinimalData: boolean
+  elligibleHandicapFilter?: boolean
 }): Promise<TLbaItemResult<ILbaItemLbaCompany>> => {
   const hasLocation = latitude === undefined ? false : true
   const currentRadius = hasLocation ? radius : 21000
@@ -451,6 +419,7 @@ export const getSomeCompanies = async ({
     api,
     opco,
     opcoUrl,
+    elligibleHandicapFilter,
   })
 
   if (!("error" in companies) && companies instanceof Array) {
