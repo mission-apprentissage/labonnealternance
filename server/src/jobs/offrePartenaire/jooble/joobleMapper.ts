@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import dayjs from "shared/helpers/dayjs"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
 
 import { blankComputedJobPartner } from "../fillComputedJobsPartners"
@@ -40,6 +40,9 @@ export const joobleJobToJobsPartners = (job: IJoobleJob): IComputedJobsPartners 
   const publicationDate = new Date()
   const updatedDate = new Date(job.date_updated.split(" ")[0])
 
+  const regex = /\b(?:cdi|cdd|interim)\b/i
+  const business_error = regex.test(job.description) || regex.test(job.title) ? JOB_PARTNER_BUSINESS_ERROR.FULL_TIME : null
+
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner(),
     _id: new ObjectId(),
@@ -59,6 +62,7 @@ export const joobleJobToJobsPartners = (job: IJoobleJob): IComputedJobsPartners 
     apply_url: job.url,
     offer_multicast: true,
     contract_type: [TRAINING_CONTRACT_TYPE.APPRENTISSAGE],
+    business_error,
   }
   return partnerJob
 }
