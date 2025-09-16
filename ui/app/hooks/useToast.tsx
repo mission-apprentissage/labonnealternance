@@ -17,7 +17,6 @@ export function useToast() {
   })
 
   const toast = useCallback((opts: ToastOptions) => {
-    console.log("Toast", opts)
     setOptions({
       status: opts.status || "info",
       title: opts.title,
