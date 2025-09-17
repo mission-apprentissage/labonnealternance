@@ -37,14 +37,12 @@ RUN mkdir -p /app/shared/node_modules && mkdir -p /app/server/node_modules
 FROM node:22.17-slim AS server
 WORKDIR /app
 
-RUN --mount=type=cache,target=/var/cache/apt \
-    --mount=type=cache,target=/var/lib/apt/lists \
-  apt-get update \
+RUN apt-get update \
   && apt-get install -y curl debsecan \
   && codename=$(sh -c '. /etc/os-release; echo $VERSION_CODENAME') \
   && apt-get install $(debsecan --suite $codename --format packages --only-fixed) \
   && apt-get purge -y debsecan \
-  && rm -rf /var/lib/apt/lists/*
+  && apt-get clean
 
 ENV NODE_ENV=production
 ARG PUBLIC_VERSION
@@ -95,14 +93,12 @@ RUN yarn --cwd ui build
 FROM node:22.17-slim AS ui
 WORKDIR /app
 
-RUN --mount=type=cache,target=/var/cache/apt \
-    --mount=type=cache,target=/var/lib/apt/lists \
-  apt-get update \
+RUN apt-get update \
   && apt-get install -y debsecan \
   && codename=$(sh -c '. /etc/os-release; echo $VERSION_CODENAME') \
   && apt-get install $(debsecan --suite $codename --format packages --only-fixed) \
   && apt-get purge -y debsecan \
-  && rm -rf /var/lib/apt/lists/*
+  && apt-get clean
 
 ENV NODE_ENV=production
 # Uncomment the following line in case you want to disable telemetry during runtime.
