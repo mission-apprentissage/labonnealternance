@@ -50,7 +50,7 @@ export default function AlogliaPage() {
   return (
     <Box sx={{ padding: fr.spacing("3w") }}>
       {/* set insight to true when going in user-testing phase or production */}
-      <InstantSearch searchClient={searchClient} indexName="lba_trainings" insights={false}>
+      <InstantSearch searchClient={searchClient} indexName="lba_trainings" insights={false} routing={true}>
         <Configure hitsPerPage={10} />
         <CustomSearchBox />
         <Box sx={{ display: "flex", gap: fr.spacing("2w"), marginBottom: fr.spacing("3w") }}>
