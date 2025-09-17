@@ -1,3 +1,4 @@
+import { fillAlgoliaCollection } from "@/jobs/algolia/generateData"
 import { removeBrevoContacts } from "@/jobs/anonymization/removeBrevoContacts"
 import { updateDiplomeMetier } from "@/jobs/diplomesMetiers/updateDiplomesMetiers"
 import { updateRomesForDomainesMetiers } from "@/jobs/domainesMetiers/updateRomesForDomainesMetiers"
@@ -365,5 +366,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: removeBrevoContacts,
     description: "Anonymise les contacts Brevo dont la date de creation est supérieure à 2 ans",
+  },
+  {
+    fct: fillAlgoliaCollection,
+    description: "Remplit la collection mongodb algolia avec toutes les formations et les offres",
   },
 ]
