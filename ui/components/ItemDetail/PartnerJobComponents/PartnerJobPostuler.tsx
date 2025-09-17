@@ -31,7 +31,7 @@ export const PartnerJobPostuler = ({ job, isCollapsedHeader }: { job: ILbaItemPa
             href: job.contact.url,
             onClick: () => {
               SendPlausibleEvent("Clic Postuler - Fiche emploi", { partner_label: job.job.partner_label, info_fiche: job.id })
-              notifyJobPostulerV3(job.id)
+              notifyJobPostulerV3(job)
             },
           }}
           data-tracking-id="postuler-offre-job-partner"
