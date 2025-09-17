@@ -96,7 +96,7 @@ jobs:
           only-severities: "critical,high,medium"
 
       - name: Server Docker Upload SARIF result
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: sarif-server.output.json
           category: Docker Server
@@ -112,7 +112,7 @@ jobs:
           only-severities: "critical,high,medium"
 
       - name: UI Docker Upload SARIF result
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: sarif-ui.output.json
           category: Docker UI
