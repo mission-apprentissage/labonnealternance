@@ -8,11 +8,11 @@ import { IEligibleTrainingsForAppointmentJson, IEtablissementJson, IETFAParamete
 import { referrers } from "shared/constants/referers"
 import { z } from "zod"
 
+import { InfoTooltip } from "@/app/(espace-pro)/_components/InfoToolTip"
 import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { formatDate } from "@/common/dayjs"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import { InfoTooltip } from "@/components/espace_pro"
 import EtablissementComponent from "@/components/espace_pro/Admin/widgetParameters/components/EtablissementComponent"
 import { apiPatch } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
@@ -186,7 +186,7 @@ export default function RendezVousApprentissageDetailRendererClient({
                         <Td align="center" fontSize="0.8em" px="1px">
                           <HStack spacing={0}>
                             <HStack w={150} spacing={0}>
-                              <InfoTooltip description="Désactiver l'écrasement du mail via la synchronisation catalogue" />
+                              <InfoTooltip>Désactiver l'écrasement du mail via la synchronisation catalogue</InfoTooltip>
                               <Text ml={1} w={80}>
                                 DESACTIVER
                               </Text>
@@ -199,7 +199,7 @@ export default function RendezVousApprentissageDetailRendererClient({
                           </HStack>
                           <HStack spacing={0}>
                             <HStack w={150} spacing={0}>
-                              <InfoTooltip description="Publié sur le catalogue" />
+                              <InfoTooltip>Publié sur le catalogue</InfoTooltip>
                               <Text ml={1} w={80}>
                                 PUBLIÉ
                               </Text>
@@ -208,7 +208,7 @@ export default function RendezVousApprentissageDetailRendererClient({
                           </HStack>
                           <HStack spacing={0}>
                             <HStack w={150} spacing={0}>
-                              <InfoTooltip description="Dernière synchronisation catalogue" />
+                              <InfoTooltip>Dernière synchronisation catalogue</InfoTooltip>
                               <Text ml={1} w={80}>
                                 SYNCHRO
                               </Text>
