@@ -5,8 +5,8 @@ import { parseEnum } from "shared"
 import { CFA, ENTREPRISE, OPCO, OPCOS_LABEL } from "shared/constants/recruteur"
 
 import { FieldWithValue } from "@/app/(espace-pro)/_components/FieldWithValue"
+import { InfoTooltip } from "@/app/(espace-pro)/_components/InfoToolTip"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import { InfoTooltip } from "@/components/espace_pro"
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
 import { useAuth } from "@/context/UserContext"
 import { getCfaInformation, getEntrepriseInformation } from "@/utils/api"
@@ -104,18 +104,16 @@ const OrganizationInfoFields = ({
         value={siret}
         tooltip={
           type === ENTREPRISE ? (
-            <InfoTooltip
-              description={
-                <>
-                  La donnée “SIRET Organisme” provient de l’INSEE puis est déduite du SIREN. Si cette information est erronée, merci de leur signaler en suivant{" "}
-                  <DsfrLink href="https://www.insee.fr/fr/information/2015441" aria-label="Accès au site de l'INSEE - nouvelle fenêtre">
-                    la marche à suivre.
-                  </DsfrLink>
-                </>
-              }
-            />
+            <InfoTooltip>
+              La donnée “SIRET Organisme” provient de l’INSEE puis est déduite du SIREN. Si cette information est erronée, merci de leur signaler en suivant{" "}
+              <DsfrLink href="https://www.insee.fr/fr/information/2015441" aria-label="Accès au site de l'INSEE - nouvelle fenêtre">
+                la marche à suivre.
+              </DsfrLink>
+            </InfoTooltip>
           ) : (
-            <InfoTooltip description="La donnée “SIRET Organisme”  provient des bases “Carif-Oref”. Si cette information est erronée, merci de le signaler au Carif-Oref de votre région." />
+            <InfoTooltip>
+              La donnée “SIRET Organisme” provient des bases “Carif-Oref”. Si cette information est erronée, merci de le signaler au Carif-Oref de votre région.
+            </InfoTooltip>
           )
         }
       />

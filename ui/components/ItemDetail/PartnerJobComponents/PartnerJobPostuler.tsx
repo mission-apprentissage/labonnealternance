@@ -3,10 +3,11 @@ import { Box } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { ILbaItemPartnerJobJson } from "shared"
 
+import { CandidaterButton } from "@/app/(candidat)/emploi/[type]/[id]/[intitule-offre]/CandidaterButton"
+import { CandidatureLbaModal } from "@/components/ItemDetail/CandidatureLba/CandidatureLbaModal"
 import { notifyJobPostulerV3 } from "@/utils/api"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
-import { CandidatureLba } from "../CandidatureLba/CandidatureLba"
 import CandidatureParTelephone from "../CandidatureParTelephone"
 
 const filteredPartnerLabels = ["Kelio", "Veritone", "France Travail", "BPCE"]
@@ -17,7 +18,7 @@ export const PartnerJobPostuler = ({ job, isCollapsedHeader }: { job: ILbaItemPa
   if (job.contact?.email) {
     return (
       <Box my={4}>
-        <CandidatureLba item={job} />
+        <CandidaterButton item={job} buttonLabel={"J'envoie ma candidature"} CandidaterModal={CandidatureLbaModal} />
       </Box>
     )
   }

@@ -1,4 +1,3 @@
-import InfoTooltip from "../../app/(espace-pro)/_components/InfoToolTip"
 import AnimationContainer from "../../app/(espace-pro)/espace-pro/(connected)/_components/AnimationContainer"
 import DropdownCombobox from "../../app/(espace-pro)/espace-pro/(connected)/_components/DropdownCombobox"
 
@@ -7,4 +6,4 @@ import ConfirmationModificationOpco from "./ConfirmationModificationOpco"
 import LoadingEmptySpace from "./LoadingEmptySpace"
 import UserValidationHistory from "./UserValidationHistory"
 
-export { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationModificationOpco, DropdownCombobox, InfoTooltip, LoadingEmptySpace, UserValidationHistory }
+export { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationModificationOpco, DropdownCombobox, LoadingEmptySpace, UserValidationHistory }
