@@ -1,6 +1,6 @@
 import { Metadata } from "next"
 
-import { PAGES } from "../../../utils/routes.utils"
+import { PAGES } from "@/utils/routes.utils"
 
 import StatistiquesClient from "./StatistiquesClient"
 

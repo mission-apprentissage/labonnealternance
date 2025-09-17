@@ -3,11 +3,10 @@ import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Typography, Box, Grid2 as Grid } from "@mui/material"
 import { Metadata } from "next"
 
+import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
-
-import { DsfrLink } from "../../../components/dsfr/DsfrLink"
-import { PAGES } from "../../../utils/routes.utils"
-import { Breadcrumb } from "../../_components/Breadcrumb"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = {
   title: PAGES.static.contact.getMetadata().title,

@@ -4,11 +4,10 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Divider, Grid2 as Grid, Tab, Tabs, Typography } from "@mui/material"
 import { useState } from "react"
 
+import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
-
-import { publicConfig } from "../../../config.public"
-import { PAGES } from "../../../utils/routes.utils"
-import { Breadcrumb } from "../../_components/Breadcrumb"
+import { publicConfig } from "@/config.public"
+import { PAGES } from "@/utils/routes.utils"
 
 interface TabPanelProps {
   children?: React.ReactNode
