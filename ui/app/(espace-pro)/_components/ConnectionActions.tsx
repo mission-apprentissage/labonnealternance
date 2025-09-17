@@ -11,6 +11,7 @@ export const ConnectionActions = ({ service }: { service: "entreprise" | "cfa" }
         linkProps={{
           href: PAGES.static.espaceProCreationEntreprise.getPath(),
         }}
+        id="home-pro-content"
         aria-label="Déposer une offre"
       >
         Déposer une offre
@@ -21,6 +22,7 @@ export const ConnectionActions = ({ service }: { service: "entreprise" | "cfa" }
         linkProps={{
           href: PAGES.static.espaceProCreationCfa.getPath(),
         }}
+        id="home-pro-content"
         aria-label="Créer mon espace dédié"
       >
         Créer mon espace dédié
