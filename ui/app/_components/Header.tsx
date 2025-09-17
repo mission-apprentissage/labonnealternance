@@ -19,10 +19,10 @@ export const DsfrHeaderProps: HeaderProps = {
     imgUrl: "/images/logo_LBA.svg",
     orientation: "horizontal",
   },
+  id: "header-links",
   quickAccessItems: [
     <HeaderQuickAccessItem
       key="candidat"
-      id="fr-header-quick-access-item-0"
       quickAccessItem={{
         iconId: null,
         text: "Candidat",
