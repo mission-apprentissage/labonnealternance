@@ -5,7 +5,7 @@ exports[`importJooble > should test the import of Jooble data into computed_job_
   {
     "apply_phone": null,
     "apply_url": "https://fr.jooble.org/external/-4721165160650165555?utm_source=affiliate&utm_medium=labonnealternance_fr_xml&extra_id_consumer_run=587462d2-d72f-445f-aeb8-e1c364377858&cpc=d0FU",
-    "business_error": null,
+    "business_error": "FULL_TIME",
     "contract_duration": null,
     "contract_is_disabled_elligible": false,
     "contract_remote": null,
