@@ -25,7 +25,7 @@ export default async function Metiers() {
         <Breadcrumb pages={[PAGES.static.metiers]} />
         <DefaultContainer>
           <Box sx={{ p: fr.spacing("5w"), marginBottom: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
-            <Typography component="h1" variant="h1" sx={{ mb: 2 }}>
+            <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: 2 }}>
               Tous les emplois
               <Typography component="h1" variant="h1" sx={{ display: "block", color: fr.colors.decisions.text.default.info.default }}>
                 et formations en alternance

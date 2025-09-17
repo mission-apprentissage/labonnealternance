@@ -13,7 +13,7 @@ export default async function HomeLayout({ children }: PropsWithChildren) {
       <SkipLinks
         links={[
           { label: "Menu", anchor: "#header-links" },
-          { label: "Contenu", anchor: "#home-content-container" },
+          { label: "Contenu", anchor: "#editorial-content-container" },
           { label: "Pied de page", anchor: "#footer-links" },
         ]}
       />

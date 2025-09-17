@@ -27,7 +27,7 @@ export default function MentionLegalesRendererClient({ mentionsLegales }: { ment
         >
           <Grid container spacing={0}>
             <Grid size={{ xs: 12, md: 5 }}>
-              <Typography component={"h1"} variant="h1" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
+              <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
                 Mentions légales
               </Typography>
               <Box

@@ -20,7 +20,7 @@ export default function Contact() {
       <DefaultContainer>
         <Grid container spacing={0}>
           <Grid size={{ xs: 12, md: 4 }} sx={{ px: 4 }}>
-            <Typography component={"h1"} variant="h1" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
+            <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
               Nous contacter
             </Typography>
             <Box
