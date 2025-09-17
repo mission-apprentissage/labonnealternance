@@ -41,7 +41,7 @@ RUN apt-get update \
   && apt-get install -y curl debsecan \
   && codename=$(sh -c '. /etc/os-release; echo $VERSION_CODENAME') \
   && apt-get install $(debsecan --suite $codename --format packages --only-fixed) \
-  && apt-get purge -y debsecan \
+  && apt-get purge -y --auto-remove debsecan \
   && apt-get clean
 
 ENV NODE_ENV=production
@@ -97,7 +97,7 @@ RUN apt-get update \
   && apt-get install -y debsecan \
   && codename=$(sh -c '. /etc/os-release; echo $VERSION_CODENAME') \
   && apt-get install $(debsecan --suite $codename --format packages --only-fixed) \
-  && apt-get purge -y debsecan \
+  && apt-get purge -y --auto-remove debsecan \
   && apt-get clean
 
 ENV NODE_ENV=production
