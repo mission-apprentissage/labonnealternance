@@ -36,8 +36,13 @@ RUN mkdir -p /app/shared/node_modules && mkdir -p /app/server/node_modules
 # Production image, copy all the files and run next
 FROM node:22.17-slim AS server
 WORKDIR /app
-RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt/lists \
-    apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update \
+  && apt-get install -y curl debsecan \
+  && codename=$(sh -c '. /etc/os-release; echo $VERSION_CODENAME') \
+  && apt-get install $(debsecan --suite $codename --format packages --only-fixed) \
+  && apt-get purge -y debsecan \
+  && apt-get clean
 
 ENV NODE_ENV=production
 ARG PUBLIC_VERSION
@@ -54,7 +59,6 @@ COPY ./server/static /app/server/static
 
 EXPOSE 5000
 WORKDIR /app/server
-
 
 ##############################################################
 ######################      UI      ##########################
@@ -88,6 +92,13 @@ RUN yarn --cwd ui build
 # Production image, copy all the files and run next
 FROM node:22.17-slim AS ui
 WORKDIR /app
+
+RUN apt-get update \
+  && apt-get install -y debsecan \
+  && codename=$(sh -c '. /etc/os-release; echo $VERSION_CODENAME') \
+  && apt-get install $(debsecan --suite $codename --format packages --only-fixed) \
+  && apt-get purge -y debsecan \
+  && apt-get clean
 
 ENV NODE_ENV=production
 # Uncomment the following line in case you want to disable telemetry during runtime.
