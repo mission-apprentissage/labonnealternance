@@ -119,7 +119,7 @@ export function RechercheForm(props: {
     <Formik<IRechercheForm> initialValues={initialValues} enableReinitialize validate={validate(zodSchema)} validateOnBlur={false} onSubmit={props.onSubmit}>
       {(formik) => {
         return (
-          <Box component={"form"} onSubmit={formik.handleSubmit}>
+          <Box id="home-search-form" component={"form"} onSubmit={formik.handleSubmit}>
             {children}
           </Box>
         )

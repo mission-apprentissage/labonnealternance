@@ -14,7 +14,6 @@ export const DsfrHeaderProps: HeaderProps = {
     href: "/",
     title: "Accueil - La bonne alternance",
   },
-  id: "fr-header-with-horizontal-operator-logo",
   operatorLogo: {
     alt: "La bonne alternance",
     imgUrl: "/images/logo_LBA.svg",
@@ -23,6 +22,7 @@ export const DsfrHeaderProps: HeaderProps = {
   quickAccessItems: [
     <HeaderQuickAccessItem
       key="candidat"
+      id="fr-header-quick-access-item-0"
       quickAccessItem={{
         iconId: null,
         text: "Candidat",
