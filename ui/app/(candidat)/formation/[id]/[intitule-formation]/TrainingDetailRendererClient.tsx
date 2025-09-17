@@ -10,8 +10,9 @@ import { CSSProperties, Fragment, useEffect, useState } from "react"
 import { ILbaItemFormation2Json, ILbaItemTraining2 } from "shared"
 import { LBA_ITEM_TYPE, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 
-import { RechercheCarte } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
-import { IUseRechercheResults, useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
+import { RechercheCarte } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/RechercheMap"
+import { IUseRechercheResults, useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
+import { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { useBuildNavigation } from "@/app/hooks/useBuildNavigation"
 import { useFormationPrdvTracker } from "@/app/hooks/useFormationPrdvTracker"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
@@ -31,8 +32,6 @@ import fetchInserJeuneStats from "@/services/fetchInserJeuneStats"
 import { SendPlausibleEvent } from "@/utils/plausible"
 import { PAGES } from "@/utils/routes.utils"
 import { formatDate } from "@/utils/strutils"
-
-import { IRecherchePageParams } from "../../../recherche/_utils/recherche.route.utils"
 
 // Read https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/
 const dontBreakOutCssParameters = {

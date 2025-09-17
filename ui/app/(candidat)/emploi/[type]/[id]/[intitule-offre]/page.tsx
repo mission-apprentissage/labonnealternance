@@ -3,8 +3,8 @@ import { redirect } from "next/navigation"
 import { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, /*ILbaItemLbaJobJson, */ ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
+import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import JobDetailRendererClient from "@/app/(candidat)/emploi/[type]/[id]/[intitule-offre]/JobDetailRendererClient"
-import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { apiGet } from "@/utils/api.utils"
 
 const typeToJobMap = {
