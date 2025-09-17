@@ -68,7 +68,7 @@ export default function (server: Server) {
         refusal_reasons,
       })
 
-      return res.status(200).send({ result: "ok", message: "comment registered" })
+      return res.status(200).send({})
     }
   )
 
@@ -84,7 +84,7 @@ export default function (server: Server) {
 
       await getDbCollection("applications").updateOne({ _id: new ObjectId(id) }, { $set: { company_feedback_send_status: CompanyFeebackSendStatus.CANCELED } })
 
-      return res.status(200).send({ result: "ok", message: "intention canceled" })
+      return res.status(200).send({})
     }
   )
 
@@ -110,7 +110,7 @@ export default function (server: Server) {
       const { id } = req.params
       const { intention } = req.query
       const data = await getApplicationDataForIntentionAndScheduleMessage(id, intention)
-      return res.status(200).send({ ...data })
+      return res.status(200).send(data)
     }
   )
 }
