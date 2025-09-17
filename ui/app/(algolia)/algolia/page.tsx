@@ -4,7 +4,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { liteClient as algoliasearch } from "algoliasearch/lite"
 import React from "react"
-import { InstantSearch, Hits, Highlight, Index, Configure } from "react-instantsearch"
+import { InstantSearch, Hits, Highlight, Configure } from "react-instantsearch"
 
 import { CustomRefinementList } from "@/app/(algolia)/_components/CustomRefinementList"
 import { CustomSearchBox } from "@/app/(algolia)/_components/CustomSearchBox"
@@ -16,31 +16,15 @@ const { algoliaApiKey, algoliaAppId } = publicConfig
 
 const searchClient = algoliasearch(algoliaAppId, algoliaApiKey)
 
-function HitFormation({ hit }: { hit: any }) {
+function Card({ hit }: { hit: any }) {
   return (
     <Box>
-      <TagFormation />
+      {hit.type === "formation" ? <TagFormation /> : <TagOffreEmploi />}
       <Typography variant="h6" sx={{ fontWeight: 700 }}>
-        <Highlight attribute="intitule_long" hit={hit} />
+        <Highlight attribute="title" hit={hit} />
       </Typography>
-      <Typography>{hit.etablissement_formateur_entreprise_raison_sociale}</Typography>
-      <Typography>
-        {hit.etablissement_formateur_adresse} {hit.etablissement_formateur_code_postal} {hit.etablissement_formateur_localite}
-      </Typography>
-      <Typography></Typography>
-    </Box>
-  )
-}
-
-function HitJob({ hit }: { hit: any }) {
-  return (
-    <Box>
-      <TagOffreEmploi />
-      <Typography variant="h6" sx={{ fontWeight: 700 }}>
-        <Highlight attribute="offer.title" hit={hit} />
-      </Typography>
-      <Typography>{hit.workplace.name}</Typography>
-      <Typography>{hit.workplace.location.address}</Typography>
+      <Typography>{hit.organiztion_name}</Typography>
+      <Typography>{hit.address}</Typography>
       <Typography></Typography>
     </Box>
   )
@@ -50,22 +34,18 @@ export default function AlogliaPage() {
   return (
     <Box sx={{ padding: fr.spacing("3w") }}>
       {/* set insight to true when going in user-testing phase or production */}
-      <InstantSearch searchClient={searchClient} indexName="lba_trainings" insights={false} routing={true}>
-        <Configure hitsPerPage={10} />
+      <InstantSearch searchClient={searchClient} indexName="lba" insights={false} routing={true}>
+        <Configure hitsPerPage={20} />
         <CustomSearchBox />
         <Box sx={{ display: "flex", gap: fr.spacing("2w"), marginBottom: fr.spacing("3w") }}>
-          <CustomRefinementList attribute="niveau" title="Niveau" />
-          <Index indexName="lba_jobs">
-            <CustomRefinementList attribute="workplace.name" title="Entreprise" />
-            <CustomRefinementList attribute="identifier.partner_label" title="Partenaire" />
-          </Index>
+          <CustomRefinementList attribute="type" title="Type" />
+          <CustomRefinementList attribute="level" title="Niveau" />
+          <CustomRefinementList attribute="sub_type" title="Partenaire" />
+          <CustomRefinementList attribute="organization_name" title="Entreprise" />
         </Box>
-        <Index indexName="lba_trainings">
-          <Hits hitComponent={HitFormation} />
-        </Index>
-        <Index indexName="lba_jobs">
-          <Hits hitComponent={HitJob} />
-        </Index>
+
+        <Hits hitComponent={Card} />
+        {/* <InfiniteHits hitComponent={Card} /> */}
       </InstantSearch>
     </Box>
   )

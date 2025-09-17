@@ -51,6 +51,9 @@ export function CustomRefinementList({ title, placeholder, attribute, ...props }
             return `${selected.length} éléments sélectionnés`
           }}
           input={<Input className={fr.cx("fr-input")} />}
+          MenuProps={{
+            autoFocus: false,
+          }}
         >
           {items.map((item) => {
             const isChecked = selectedValues.includes(item.value)

@@ -30,15 +30,15 @@ const jobsProjection: Partial<Record<keyof IJobsPartnersOfferPrivate, 1>> = {
 const convertFormationNiveauDiplome = (niveau: string) => {
   switch (niveau) {
     case "3 (CAP...)":
-      return "Cap, autres formations niveau 3"
+      return "Cap, autres formations niveau (Infrabac)"
     case "4 (BAC...)":
-      return "Bac, autres formations niveau 4"
+      return "BP, Bac, autres formations niveau (Bac)"
     case "5 (BTS, DEUST...)":
-      return "BTS, DEUST, autres formations niveaux 5 (Bac+2)"
+      return "BTS, DEUST, autres formations niveaux (Bac+2)"
     case "6 (Licence, BUT...)":
-      return "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)"
+      return "Licence, Maîtrise, autres formations niveau (Bac+3 à Bac+4)"
     case "7 (Master, titre ingénieur...)":
-      return "Master, titre ingénieur, autres formations niveaux 7 ou 8 (Bac+5)"
+      return "Master, titre ingénieur, autres formations niveau (Bac+5)"
     default:
       return ""
   }
