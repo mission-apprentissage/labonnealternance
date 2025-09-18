@@ -1,4 +1,5 @@
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { defaultFillComputedJobsPartnersContext, FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
@@ -16,7 +17,7 @@ export const fillEntrepriseEngagementJobsPartners = async ({ addedMatchFilter }:
     getData: async (documents) => {
       const sirets = [...new Set<string>(documents.flatMap(({ workplace_siret }) => (workplace_siret ? [workplace_siret] : [])))]
       const engagementsEntreprise = await getDbCollection("referentiel_engagement_entreprise")
-        .find({ siret: { $in: sirets } })
+        .find({ siret: { $in: sirets }, sources: EntrepriseEngagementSources.FRANCE_TRAVAIL })
         .toArray()
 
       return documents.map((document) => {
