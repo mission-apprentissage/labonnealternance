@@ -1,5 +1,6 @@
 import { Box, Spinner, Text } from "@chakra-ui/react"
-import { Input } from "@mui/material"
+import { fr } from "@codegouvfr/react-dsfr"
+import { FormControl, FormLabel, Input } from "@mui/material"
 import { useCombobox } from "downshift"
 import { useMemo, useState } from "react"
 
@@ -102,7 +103,10 @@ export default function CustomAddressInput<T>({
           boxSizing: "border-box",
         }}
       >
-        <Input pb="0" required={false} name={name} placeholder={placeholder} {...{ ...getInputProps(), ref: undefined }} />
+        <FormControl fullWidth>
+          <FormLabel>Lieu</FormLabel>
+          <Input className={fr.cx("fr-input")} required={false} name={name} placeholder={placeholder} {...{ ...getInputProps(), ref: undefined }} />
+        </FormControl>
       </Box>
       <Box
         sx={{
