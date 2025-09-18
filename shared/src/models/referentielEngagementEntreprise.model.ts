@@ -7,7 +7,7 @@ const collectionName = "referentiel_engagement_entreprise" as const
 export enum EntrepriseEngagementSources {
   FRANCE_TRAVAIL = "france-travail",
   LBA = "lba",
-  LES = "les",
+  LES_ENTREPRISE_S_ENGAGENT = "les",
 }
 
 export const ZReferentielEngagementEntreprise = z
@@ -15,7 +15,7 @@ export const ZReferentielEngagementEntreprise = z
     _id: zObjectId,
     siret: z.string(),
     engagement: z.enum(["handicap"]),
-    sources: z.array(z.enum([EntrepriseEngagementSources.FRANCE_TRAVAIL, EntrepriseEngagementSources.LBA, EntrepriseEngagementSources.LES])),
+    sources: z.array(z.enum([EntrepriseEngagementSources.FRANCE_TRAVAIL, EntrepriseEngagementSources.LBA, EntrepriseEngagementSources.LES_ENTREPRISE_S_ENGAGENT])),
   })
   .strict()
 
