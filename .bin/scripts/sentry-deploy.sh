@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 set -euo pipefail
 
 export ENVIRONMENT="${1:?"Veuillez préciser l'environement"}";
