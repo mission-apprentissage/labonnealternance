@@ -3,10 +3,11 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { liteClient as algoliasearch } from "algoliasearch/lite"
-import React from "react"
+import React, { useState } from "react"
 import { InstantSearch, Hits, Highlight, Configure } from "react-instantsearch"
 
 import CustomAddressInput from "@/app/(algolia)/_components/CustomAddressInput"
+import { CustomPagination } from "@/app/(algolia)/_components/CustomPagination"
 import { CustomRefinementList } from "@/app/(algolia)/_components/CustomRefinementList"
 import { CustomSearchBox } from "@/app/(algolia)/_components/CustomSearchBox"
 import { TagFormation } from "@/components/ItemDetail/TagFormation"
@@ -33,11 +34,13 @@ function Card({ hit }: { hit: any }) {
 }
 
 export default function AlogliaPage() {
+  const [coordinates, setCoordinates] = useState<string | null>(null)
+
   return (
     <Box sx={{ padding: fr.spacing("3w") }}>
       {/* set insight to true when going in user-testing phase or production */}
       <InstantSearch searchClient={searchClient} indexName="lba" insights={false} routing={true}>
-        <Configure hitsPerPage={20} />
+        <Configure hitsPerPage={20} {...(coordinates && { aroundLatLng: coordinates })} />
         <Box sx={{ display: "flex", gap: fr.spacing("2w"), marginBottom: fr.spacing("3w") }}>
           <CustomSearchBox />
           <CustomAddressInput
@@ -46,7 +49,14 @@ export default function AlogliaPage() {
             renderItem={({ label }) => <>{label}</>}
             itemToString={({ label }) => label}
             onInputFieldChange={() => {}}
-            onSelectItem={() => {}}
+            onSelectItem={(item) => {
+              if (item && item.value && item.value.coordinates) {
+                const [longitude, latitude] = item.value.coordinates
+                setCoordinates(`${latitude},${longitude}`)
+              } else {
+                setCoordinates(null)
+              }
+            }}
             onError={() => {}}
             allowHealFromError={false}
             renderNoResult={undefined}
@@ -62,6 +72,7 @@ export default function AlogliaPage() {
 
         <Hits hitComponent={Card} />
         {/* <InfiniteHits hitComponent={Card} /> */}
+        <CustomPagination />
       </InstantSearch>
     </Box>
   )

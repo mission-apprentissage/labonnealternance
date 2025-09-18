@@ -1,3 +1,5 @@
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box } from "@mui/material"
 import React from "react"
 import { usePagination } from "react-instantsearch"
 
@@ -9,7 +11,7 @@ export function CustomPagination(props) {
   const lastPageIndex = nbPages - 1
 
   return (
-    <ul>
+    <Box sx={{ display: "flex", py: fr.spacing("3w"), justifyContent: "center" }}>
       <PaginationItem isDisabled={isFirstPage} href={createURL(firstPageIndex)} onClick={() => refine(firstPageIndex)}>
         First
       </PaginationItem>
@@ -31,21 +33,17 @@ export function CustomPagination(props) {
       <PaginationItem isDisabled={isLastPage} href={createURL(lastPageIndex)} onClick={() => refine(lastPageIndex)}>
         Last
       </PaginationItem>
-    </ul>
+    </Box>
   )
 }
 
 function PaginationItem({ isDisabled, href, onClick, ...props }) {
   if (isDisabled) {
-    return (
-      <li>
-        <span {...props} />
-      </li>
-    )
+    return <span {...props} />
   }
 
   return (
-    <li>
+    <Box sx={{ px: fr.spacing("2w") }}>
       <a
         href={href}
         onClick={(event) => {
@@ -59,7 +57,7 @@ function PaginationItem({ isDisabled, href, onClick, ...props }) {
         }}
         {...props}
       />
-    </li>
+    </Box>
   )
 }
 
