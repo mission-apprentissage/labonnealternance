@@ -143,8 +143,6 @@ function RadiusSelect() {
       ...prevUiState,
       lba: {
         ...prevUiState.lba,
-        // Force a state change to trigger routing
-        page: 1,
       },
     }))
   }
