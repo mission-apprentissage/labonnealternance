@@ -4,8 +4,8 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography, FormControl, FormLabel, Select, MenuItem, Input, SelectChangeEvent } from "@mui/material"
 import { liteClient as algoliasearch } from "algoliasearch/lite"
 import { history } from "instantsearch.js/es/lib/routers"
-import React from "react"
-import { InstantSearch, Hits, Highlight, Configure, useInstantSearch } from "react-instantsearch"
+import React, { useState, useEffect } from "react"
+import { InstantSearch, Hits, Highlight, useInstantSearch, useConfigure } from "react-instantsearch"
 
 import CustomAddressInput from "@/app/(algolia)/_components/CustomAddressInput"
 import { CustomPagination } from "@/app/(algolia)/_components/CustomPagination"
@@ -20,10 +20,13 @@ const { algoliaApiKey, algoliaAppId } = publicConfig
 
 const searchClient = algoliasearch(algoliaAppId, algoliaApiKey)
 
+// Custom state to store radius outside of InstantSearch but sync with URL
+let globalRadius = 30
+
 const customStateMapping = {
   stateToRoute(uiState: any) {
     const indexUiState = uiState.lba || {}
-    return {
+    const route: any = {
       q: indexUiState.query,
       type: indexUiState.refinementList?.type,
       level: indexUiState.refinementList?.level,
@@ -31,10 +34,15 @@ const customStateMapping = {
       organization_name: indexUiState.refinementList?.organization_name,
       page: indexUiState.page,
       coordinates: indexUiState.configure?.aroundLatLng,
-      radius: indexUiState.configure?.aroundRadius,
+      radius: globalRadius,
     }
+    return route
   },
   routeToState(routeState: any) {
+    // Update global radius from URL
+    if (routeState.radius) {
+      globalRadius = Number(routeState.radius)
+    }
     return {
       lba: {
         query: routeState.q,
@@ -47,7 +55,6 @@ const customStateMapping = {
         },
         configure: {
           ...(routeState.coordinates && { aroundLatLng: routeState.coordinates }),
-          aroundRadius: routeState.radius ? Number(routeState.radius) : 30,
         },
       },
     }
@@ -118,17 +125,26 @@ function AddressInputWithRouting() {
 }
 
 function RadiusSelect() {
-  const { indexUiState, setIndexUiState } = useInstantSearch()
-  const currentRadius = indexUiState.configure?.aroundRadius ?? 30
+  const { setUiState } = useInstantSearch()
+  const [currentRadius, setCurrentRadius] = useState(globalRadius)
+
+  // Sync with global radius changes (from URL)
+  useEffect(() => {
+    setCurrentRadius(globalRadius)
+  }, [])
 
   const handleRadiusChange = (event: SelectChangeEvent) => {
     const radius = Number(event.target.value)
+    globalRadius = radius
+    setCurrentRadius(radius)
 
-    setIndexUiState((prevIndexState) => ({
-      ...prevIndexState,
-      configure: {
-        ...prevIndexState.configure,
-        aroundRadius: radius,
+    // Trigger InstantSearch routing update by setting any UI state
+    setUiState((prevUiState) => ({
+      ...prevUiState,
+      lba: {
+        ...prevUiState.lba,
+        // Force a state change to trigger routing
+        page: 1,
       },
     }))
   }
@@ -147,13 +163,16 @@ function RadiusSelect() {
 }
 
 function DynamicConfigure() {
-  const { indexUiState } = useInstantSearch()
-  const coordinates = indexUiState.configure?.aroundLatLng
-  const radius = indexUiState.configure?.aroundRadius ?? 30
+  const { uiState } = useInstantSearch()
+  const coordinates = uiState.lba?.configure?.aroundLatLng
 
-  console.log(indexUiState)
+  useConfigure({
+    hitsPerPage: 20,
+    ...(coordinates && { aroundLatLng: coordinates }),
+    aroundRadius: globalRadius,
+  })
 
-  return <Configure hitsPerPage={20} {...(coordinates && { aroundLatLng: coordinates })} aroundRadius={radius} />
+  return null
 }
 
 export default function AlogliaPage() {
