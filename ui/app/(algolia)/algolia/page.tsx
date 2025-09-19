@@ -1,7 +1,7 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Typography } from "@mui/material"
+import { Box, Typography, FormControl, FormLabel, Select, MenuItem, Input, SelectChangeEvent } from "@mui/material"
 import { liteClient as algoliasearch } from "algoliasearch/lite"
 import { history } from "instantsearch.js/es/lib/routers"
 import React from "react"
@@ -31,21 +31,23 @@ const customStateMapping = {
       organization_name: indexUiState.refinementList?.organization_name,
       page: indexUiState.page,
       coordinates: indexUiState.configure?.aroundLatLng,
+      radius: indexUiState.configure?.aroundRadius,
     }
   },
   routeToState(routeState: any) {
     return {
       lba: {
         query: routeState.q,
+        page: routeState.page,
         refinementList: {
           type: routeState.type,
           level: routeState.level,
           sub_type: routeState.sub_type,
           organization_name: routeState.organization_name,
         },
-        page: routeState.page,
         configure: {
           ...(routeState.coordinates && { aroundLatLng: routeState.coordinates }),
+          aroundRadius: routeState.radius ? Number(routeState.radius) : 30,
         },
       },
     }
@@ -115,6 +117,45 @@ function AddressInputWithRouting() {
   )
 }
 
+function RadiusSelect() {
+  const { indexUiState, setIndexUiState } = useInstantSearch()
+  const currentRadius = indexUiState.configure?.aroundRadius ?? 30
+
+  const handleRadiusChange = (event: SelectChangeEvent) => {
+    const radius = Number(event.target.value)
+
+    setIndexUiState((prevIndexState) => ({
+      ...prevIndexState,
+      configure: {
+        ...prevIndexState.configure,
+        aroundRadius: radius,
+      },
+    }))
+  }
+
+  return (
+    <FormControl sx={{ minWidth: 120 }}>
+      <FormLabel>Rayon</FormLabel>
+      <Select value={currentRadius.toString()} onChange={handleRadiusChange} input={<Input className={fr.cx("fr-input")} />} size="small">
+        <MenuItem value={10}>10 km</MenuItem>
+        <MenuItem value={30}>30 km</MenuItem>
+        <MenuItem value={60}>60 km</MenuItem>
+        <MenuItem value={100}>100 km</MenuItem>
+      </Select>
+    </FormControl>
+  )
+}
+
+function DynamicConfigure() {
+  const { indexUiState } = useInstantSearch()
+  const coordinates = indexUiState.configure?.aroundLatLng
+  const radius = indexUiState.configure?.aroundRadius ?? 30
+
+  console.log(indexUiState)
+
+  return <Configure hitsPerPage={20} {...(coordinates && { aroundLatLng: coordinates })} aroundRadius={radius} />
+}
+
 export default function AlogliaPage() {
   return (
     <Box sx={{ padding: fr.spacing("3w") }}>
@@ -128,10 +169,11 @@ export default function AlogliaPage() {
           stateMapping: customStateMapping,
         }}
       >
-        <Configure hitsPerPage={20} />
+        <DynamicConfigure />
         <Box sx={{ display: "flex", gap: fr.spacing("2w"), marginBottom: fr.spacing("3w") }}>
           <CustomSearchBox />
           <AddressInputWithRouting />
+          <RadiusSelect />
         </Box>
         <Box sx={{ display: "flex", gap: fr.spacing("2w"), marginBottom: fr.spacing("3w") }}>
           <CustomRefinementList attribute="type" title="Type" />
