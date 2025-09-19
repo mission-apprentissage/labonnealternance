@@ -7,7 +7,7 @@ export const up = async () => {
 
   const engagementSirets = await getDbCollection("referentiel_engagement_entreprise").distinct("siret", { sources: EntrepriseEngagementSources.FRANCE_TRAVAIL })
 
-  await getDbCollection("jobs_partners").updateMany({ siret: { $in: engagementSirets } }, { $set: { contract_is_disabled_elligible: true } })
+  await getDbCollection("jobs_partners").updateMany({ workplace_siret: { $in: engagementSirets } }, { $set: { contract_is_disabled_elligible: true } })
 }
 
 // set to false ONLY IF migration does not imply a breaking change (ex: update field value or add index)
