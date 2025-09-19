@@ -124,7 +124,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
         <option value="Cap, autres formations niveau (Infrabac)">Cap, autres formations niveau (Infrabac)</option>
         <option value="BP, Bac, autres formations niveau (Bac)">BP, Bac, autres formations niveau (Bac)</option>
         <option value="BTS, DEUST, autres formations niveau (Bac+2)">BTS, DEUST, autres formations niveau (Bac+2)</option>
-        <option value="Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)">Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)</option>
+        <option value="Licence, Maîtrise, autres formations niveau (Bac+3 à Bac+4)">Licence, Maîtrise, autres formations niveau (Bac+3 à Bac+4)</option>
         <option value="Master, titre ingénieur, autres formations niveau (Bac+5)">Master, titre ingénieur, autres formations niveau (Bac+5)</option>
       </Select>
 
