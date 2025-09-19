@@ -244,7 +244,7 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
       ...commonProps,
       displayEntreprises: true,
       displayFormations: false,
-      displayPartenariats: true,
+      displayPartenariats: false,
       displayFilters: false,
     }
   }
