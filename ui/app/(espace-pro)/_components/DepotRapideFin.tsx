@@ -109,7 +109,17 @@ function FinComponent(props: ComponentProps) {
   return (
     <>
       {ToastComponent}
-      <BorderedBox sx={{ display: "flex", flexDirection: { xs: "column", lg: "row" }, gap: { xs: 1, lg: 2 }, justifyContent: "center", width: "100%", mt: 2 }}>
+      <BorderedBox
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", lg: "row" },
+          gap: { xs: 1, lg: 2 },
+          justifyContent: "center",
+          width: "100%",
+          mt: fr.spacing("1w"),
+          pt: `${fr.spacing("2w")} !important`,
+        }}
+      >
         <Image src="/images/espace_pro/mailcloud.svg" width="269" height="151" alt="" />
         <Box>
           <Typography sx={{ backgroundColor: "white", fontSize: "32px", fontWeight: "bold", lineHeight: "32px" }} component="h1" mb={3}>
@@ -210,11 +220,11 @@ const ResendEmailContent = ({ onClick }: { onClick: () => void }) => {
           },
         }}
       >
-        <Typography sx={{ mr: fr.spacing("4w") }}>Vous n’avez pas reçu le mail ? </Typography>
+        <Typography sx={{ mr: fr.spacing("1w") }}>Vous n’avez pas reçu le mail ? </Typography>
         <Button
           type="button"
           style={{
-            marginLeft: "-4px",
+            marginLeft: "-12px",
             background: "none",
             color: "#000091",
             textDecoration: "underline",
