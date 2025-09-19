@@ -106,7 +106,7 @@ export default function AutocompleteAsync<T>({
           width: "100%",
           margin: 0,
           marginTop: "6px",
-          zIndex: 1,
+          zIndex: 2000,
           position: "absolute",
           listStyle: "none",
           background: "#fff",
@@ -118,7 +118,7 @@ export default function AutocompleteAsync<T>({
         {...getMenuProps()}
       >
         {isOpen && shouldRenderDropdown && (
-          <Box padding="8px 0px">
+          <Box sx={{ padding: "8px 0px" }}>
             {shouldRenderItems && (
               <Box>
                 {inputItems.map((item, index) => (
