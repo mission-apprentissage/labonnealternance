@@ -16,51 +16,25 @@ export function CustomSearchBox(props) {
   }
 
   return (
-    <div>
-      <form
-        action=""
-        role="search"
-        noValidate
-        onSubmit={(event) => {
-          event.preventDefault()
-          event.stopPropagation()
-
-          if (inputRef.current) {
-            inputRef.current.blur()
-          }
-        }}
-        onReset={(event) => {
-          event.preventDefault()
-          event.stopPropagation()
-
-          setQuery("")
-
-          if (inputRef.current) {
-            inputRef.current.focus()
-          }
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("3w") }}>
-          <FormControl fullWidth>
-            <FormLabel>Métier ou formation</FormLabel>
-            <Input
-              ref={inputRef}
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-              placeholder="Indiquer un métier ou une formation"
-              spellCheck={false}
-              type="search"
-              value={inputValue}
-              onChange={(event) => {
-                setQuery(event.currentTarget.value)
-              }}
-              autoFocus
-              className={fr.cx("fr-input")}
-            />
-          </FormControl>
-        </Box>
-      </form>
-    </div>
+    <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("3w"), width: "100%" }}>
+      <FormControl fullWidth>
+        <FormLabel>Métier ou formation</FormLabel>
+        <Input
+          ref={inputRef}
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          placeholder="Indiquer un métier ou une formation"
+          spellCheck={false}
+          type="search"
+          value={inputValue}
+          onChange={(event) => {
+            setQuery(event.currentTarget.value)
+          }}
+          autoFocus
+          className={fr.cx("fr-input")}
+        />
+      </FormControl>
+    </Box>
   )
 }

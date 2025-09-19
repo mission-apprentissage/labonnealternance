@@ -13,10 +13,10 @@ export function CustomPagination(props) {
   return (
     <Box sx={{ display: "flex", py: fr.spacing("3w"), justifyContent: "center" }}>
       <PaginationItem isDisabled={isFirstPage} href={createURL(firstPageIndex)} onClick={() => refine(firstPageIndex)}>
-        First
+        Première page
       </PaginationItem>
       <PaginationItem isDisabled={isFirstPage} href={createURL(previousPageIndex)} onClick={() => refine(previousPageIndex)}>
-        Previous
+        Précédent
       </PaginationItem>
       {pages.map((page) => {
         const label = page + 1
@@ -28,10 +28,10 @@ export function CustomPagination(props) {
         )
       })}
       <PaginationItem isDisabled={isLastPage} href={createURL(nextPageIndex)} onClick={() => refine(nextPageIndex)}>
-        Next
+        Suivant
       </PaginationItem>
       <PaginationItem isDisabled={isLastPage} href={createURL(lastPageIndex)} onClick={() => refine(lastPageIndex)}>
-        Last
+        Dernière page
       </PaginationItem>
     </Box>
   )
@@ -39,7 +39,11 @@ export function CustomPagination(props) {
 
 function PaginationItem({ isDisabled, href, onClick, ...props }) {
   if (isDisabled) {
-    return <span {...props} />
+    return (
+      <Box sx={{ px: fr.spacing("2w") }}>
+        <span {...props} />
+      </Box>
+    )
   }
 
   return (

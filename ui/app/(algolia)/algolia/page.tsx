@@ -1,16 +1,18 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
+import Card from "@codegouvfr/react-dsfr/Card"
 import { Box, Typography, FormControl, FormLabel, Select, MenuItem, Input, SelectChangeEvent } from "@mui/material"
 import { liteClient as algoliasearch } from "algoliasearch/lite"
 import { history } from "instantsearch.js/es/lib/routers"
 import React, { useState, useEffect } from "react"
-import { InstantSearch, Hits, Highlight, useInstantSearch, useConfigure } from "react-instantsearch"
+import { InstantSearch, Highlight, useInstantSearch, useConfigure, useStats, Hits } from "react-instantsearch"
 
 import CustomAddressInput from "@/app/(algolia)/_components/CustomAddressInput"
 import { CustomPagination } from "@/app/(algolia)/_components/CustomPagination"
 import { CustomRefinementList } from "@/app/(algolia)/_components/CustomRefinementList"
 import { CustomSearchBox } from "@/app/(algolia)/_components/CustomSearchBox"
+import { CardStyling } from "@/app/(candidat)/recherche/_components/RechercheResultats/CardStyling"
 import { TagFormation } from "@/components/ItemDetail/TagFormation"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 import { publicConfig } from "@/config.public"
@@ -21,7 +23,7 @@ const { algoliaApiKey, algoliaAppId } = publicConfig
 const searchClient = algoliasearch(algoliaAppId, algoliaApiKey)
 
 // Custom state to store radius outside of InstantSearch but sync with URL
-let globalRadius = 30
+let globalRadius = 30_000
 
 const customStateMapping = {
   stateToRoute(uiState: any) {
@@ -61,16 +63,59 @@ const customStateMapping = {
   },
 }
 
-function Card({ hit }: { hit: any }) {
+function HitCard({ hit }: { hit: any }) {
   return (
     <Box>
-      {hit.type === "formation" ? <TagFormation /> : <TagOffreEmploi />}
-      <Typography variant="h6" sx={{ fontWeight: 700 }}>
-        <Highlight attribute="title" hit={hit} />
-      </Typography>
-      <Typography>{hit.organiztion_name}</Typography>
-      <Typography>{hit.address}</Typography>
-      <Typography></Typography>
+      <CardStyling>
+        <Card
+          background
+          style={{ paddingBottom: fr.spacing("1v") }}
+          border
+          // enlargeLink
+          horizontal
+          // linkProps={{
+          //   href: "itemUrl",
+          //   prefetch: false,
+          // }}
+          start={hit.type === "formation" ? <TagFormation /> : <TagOffreEmploi />}
+          title={
+            <Typography
+              component="span"
+              className={fr.cx("fr-text--bold", "fr-text--md")}
+              sx={{
+                color: fr.colors.decisions.text.actionHigh.grey.default,
+              }}
+            >
+              <Highlight attribute="title" hit={hit} />
+            </Typography>
+          }
+          desc={
+            <Box
+              component="span"
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: fr.spacing("3v"),
+              }}
+            >
+              <Typography component="span" className={fr.cx("fr-text--sm")} color={fr.colors.decisions.text.actionHigh.grey.default}>
+                {hit.organiztion_name}
+              </Typography>
+              <Typography
+                component="span"
+                sx={{
+                  color: fr.colors.decisions.text.title.grey.default,
+                }}
+                className={fr.cx("fr-text--xs")}
+              >
+                {hit.address}
+              </Typography>
+            </Box>
+          }
+          shadow
+          size="medium"
+        />
+      </CardStyling>
     </Box>
   )
 }
@@ -151,10 +196,10 @@ function RadiusSelect() {
     <FormControl sx={{ minWidth: 120 }}>
       <FormLabel>Rayon</FormLabel>
       <Select value={currentRadius.toString()} onChange={handleRadiusChange} input={<Input className={fr.cx("fr-input")} />} size="small">
-        <MenuItem value={10}>10 km</MenuItem>
-        <MenuItem value={30}>30 km</MenuItem>
-        <MenuItem value={60}>60 km</MenuItem>
-        <MenuItem value={100}>100 km</MenuItem>
+        <MenuItem value={10_000}>10 km</MenuItem>
+        <MenuItem value={30_000}>30 km</MenuItem>
+        <MenuItem value={60_000}>60 km</MenuItem>
+        <MenuItem value={100_000}>100 km</MenuItem>
       </Select>
     </FormControl>
   )
@@ -173,9 +218,19 @@ function DynamicConfigure() {
   return null
 }
 
+const SearchStats = () => {
+  const { nbHits } = useStats()
+
+  return (
+    <Box sx={{ my: fr.spacing("3w") }}>
+      <Typography variant="h6">{nbHits} résultats</Typography>
+    </Box>
+  )
+}
+
 export default function AlogliaPage() {
   return (
-    <Box sx={{ padding: fr.spacing("3w") }}>
+    <Box sx={{ my: fr.spacing("3w") }}>
       {/* set insight to true when going in user-testing phase or production */}
       <InstantSearch
         searchClient={searchClient}
@@ -187,21 +242,26 @@ export default function AlogliaPage() {
         }}
       >
         <DynamicConfigure />
-        <Box sx={{ display: "flex", gap: fr.spacing("2w"), marginBottom: fr.spacing("3w") }}>
-          <CustomSearchBox />
-          <AddressInputWithRouting />
-          <RadiusSelect />
+        <Box sx={{}}>
+          <Box sx={{ display: "flex", gap: fr.spacing("2w"), marginBottom: fr.spacing("3w"), px: fr.spacing("3w") }}>
+            <CustomSearchBox />
+            <AddressInputWithRouting />
+            <RadiusSelect />
+          </Box>
+          <Box sx={{ display: "flex", gap: fr.spacing("2w"), marginBottom: fr.spacing("3w"), px: fr.spacing("3w") }}>
+            <CustomRefinementList attribute="type" title="Type" />
+            <CustomRefinementList attribute="level" title="Niveau" />
+            <CustomRefinementList attribute="sub_type" title="Partenaire" />
+            <CustomRefinementList attribute="organization_name" title="Entreprise" />
+          </Box>
         </Box>
-        <Box sx={{ display: "flex", gap: fr.spacing("2w"), marginBottom: fr.spacing("3w") }}>
-          <CustomRefinementList attribute="type" title="Type" />
-          <CustomRefinementList attribute="level" title="Niveau" />
-          <CustomRefinementList attribute="sub_type" title="Partenaire" />
-          <CustomRefinementList attribute="organization_name" title="Entreprise" />
+        <Box sx={{ backgroundColor: "#f6f6f6", px: fr.spacing("3w"), py: fr.spacing("2w") }}>
+          <Box sx={{ px: fr.spacing("3w") }}>
+            <SearchStats />
+          </Box>
+          <Hits hitComponent={HitCard} />
+          <CustomPagination />
         </Box>
-
-        <Hits hitComponent={Card} />
-        {/* <InfiniteHits hitComponent={Card} /> */}
-        <CustomPagination />
       </InstantSearch>
     </Box>
   )

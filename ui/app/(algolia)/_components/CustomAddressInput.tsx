@@ -1,6 +1,5 @@
-import { Box, Spinner, Text } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
-import { FormControl, FormLabel, Input } from "@mui/material"
+import { FormControl, FormLabel, Input, Typography, Box, CircularProgress, List, ListItemButton, ListItemIcon } from "@mui/material"
 import { useCombobox } from "downshift"
 import { useMemo, useState } from "react"
 
@@ -13,6 +12,9 @@ export default function CustomAddressInput<T>({
   placeholder,
   name,
   dataTestId,
+  // renderItem = (item, highlighted) => {
+  //   return <Typography variant="h1">{JSON.stringify(item)}</Typography>
+  // },
   renderItem = (item, highlighted) => (highlighted ? "highlighted " : "") + JSON.stringify(item),
   itemToString = (item) => JSON.stringify(item),
   debounceDelayInMs = 300,
@@ -20,13 +22,13 @@ export default function CustomAddressInput<T>({
   renderError,
   onError,
   renderNoResult = (
-    <Text padding="8px 16px" fontSize="12px" lineHeight="20px" color="#666666">
+    <Typography padding="8px 16px" fontSize="12px" lineHeight="20px" color="#666666">
       Pas de résultats pour votre recherche
-    </Text>
+    </Typography>
   ),
   renderLoading = (
     <Box padding="8px 16px">
-      <Spinner thickness="4px" speed="0.7s" emptyColor="white" color="#CFCFCF" size="lg" />
+      <CircularProgress />
     </Box>
   ),
   allowHealFromError,
@@ -113,7 +115,7 @@ export default function CustomAddressInput<T>({
           width: "100%",
           margin: 0,
           marginTop: "6px",
-          zIndex: 1,
+          zIndex: 999,
           position: "absolute",
           listStyle: "none",
           background: "#fff",
@@ -129,9 +131,14 @@ export default function CustomAddressInput<T>({
             {shouldRenderItems && (
               <Box>
                 {inputItems.map((item, index) => (
-                  <li key={index} {...getItemProps({ item, index })}>
-                    {renderItem(item, index === highlightedIndex, index)}
-                  </li>
+                  <List key={index} {...getItemProps({ item, index })}>
+                    <ListItemButton>
+                      <ListItemIcon>
+                        <Box component="span" className={fr.cx("ri-map-pin-line")} />
+                      </ListItemIcon>
+                      {renderItem(item, index === highlightedIndex, index)}
+                    </ListItemButton>
+                  </List>
                 ))}
               </Box>
             )}
