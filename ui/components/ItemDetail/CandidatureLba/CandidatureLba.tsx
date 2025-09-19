@@ -63,7 +63,7 @@ export function CandidatureLba({ item }: { item: ILbaItemLbaJobJson | ILbaItemLb
             {item.company?.mandataire && (
               <Stack direction="row" alignItems="center" sx={{ my: 4 }}>
                 <Box component="span">
-                  <Image src="/images/icons/small_info.svg" alt="" />
+                  <Image width={30} height={30} src="/images/icons/small_info.svg" alt="" />
                 </Box>
                 <Typography component="span" variant="body2" sx={{ ml: 2, fontSize: "12px", fontStyle: "italic" }}>
                   Votre candidature sera envoyée au centre de formation en charge du recrutement pour le compte de l'entreprise.{" "}
