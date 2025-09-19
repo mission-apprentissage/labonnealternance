@@ -29,7 +29,7 @@ const getContractTypes = (contractTypes: IJobJson["job_type"] | string) => {
 export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; title: string }) => {
   useEffect(() => {
     SendPlausibleEvent("Affichage - Fiche emploi", { partner_label: job.job.partner_label, info_fiche: `${job?.id}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}` })
-    notifyJobDetailViewV3(job?.id)
+    notifyJobDetailViewV3(job)
   }, [job?.id])
 
   const jobStartDate = job?.job?.jobStartDate ? formatDate(job.job.jobStartDate) : undefined

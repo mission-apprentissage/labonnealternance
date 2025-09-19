@@ -112,7 +112,12 @@ export function ResultCard({ item, active, rechercheParams }: ResultCardProps) {
   const itemUrl = useResultItemUrl(item, rechercheParams)
 
   return (
-    <Box sx={active ? activeStyle : null}>
+    <Box
+      sx={{
+        ".fr-card__title a::before": { zIndex: "unset" },
+        ...(active ? activeStyle : null),
+      }}
+    >
       <CardStyling>
         <Card
           background
@@ -124,7 +129,7 @@ export function ResultCard({ item, active, rechercheParams }: ResultCardProps) {
             href: itemUrl,
             prefetch: false,
           }}
-          start={<LbaItemTags item={item} />}
+          start={<LbaItemTags item={item} displayTooltips={true} />}
           title={
             <Typography
               component="span"

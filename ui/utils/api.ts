@@ -1,5 +1,17 @@
 import { captureException } from "@sentry/nextjs"
-import { IJobCreate, INewDelegations, INewSuperUser, IRecruiterJson, IRoutes, IUserWithAccountFields, removeUndefinedFields, type IBody } from "shared"
+import {
+  IJobCreate,
+  ILbaItemLbaCompanyJson,
+  ILbaItemLbaJobJson,
+  ILbaItemPartnerJobJson,
+  INewDelegations,
+  INewSuperUser,
+  IRecruiterJson,
+  IRoutes,
+  IUserWithAccountFields,
+  removeUndefinedFields,
+  type IBody,
+} from "shared"
 import { ApplicationIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -44,13 +56,21 @@ export const cancelOffreFromAdmin = (jobId: string, data: IRoutes["put"]["/formu
 export const extendOffre = (jobId: string) => apiPut(`/formulaire/offre/:jobId/extend`, { params: { jobId } })
 export const fillOffre = (jobId: string, token: string) => apiPut(`/formulaire/offre/:jobId/provided`, { params: { jobId }, headers: { authorization: `Bearer ${token}` } })
 export const notifyLbaJobDetailView = async (jobId: string) => await apiPost("/v1/jobs/matcha/:id/stats/view-details", { params: { id: jobId } })
-export const notifyJobDetailViewV3 = (jobId: string) => apiPost("/v3/jobs/:id/stats/:eventType", { params: { id: jobId, eventType: "detail_view" } })
+export const notifyJobDetailViewV3 = (job: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson) => {
+  const jobId = getObjectId(job)
+  if (!jobId) return
+  return apiPost("/v3/jobs/:id/stats/:eventType", { params: { id: jobId, eventType: "detail_view" } })
+}
 export const notifyJobSearchViewV3 = (ids: string[]) => {
-  ids = ids.filter((id) => /^[0-9a-f]{24}$/gi.test(id))
+  ids = ids.filter(lookLikeObjectId)
   if (!ids.length) return
   return apiPost("/v3/jobs/stats/search_view", { body: ids })
 }
-export const notifyJobPostulerV3 = (jobId: string) => apiPost("/v3/jobs/:id/stats/:eventType", { params: { id: jobId, eventType: "postuler_click" } })
+export const notifyJobPostulerV3 = (job: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson) => {
+  const jobId = getObjectId(job)
+  if (!jobId) return
+  return apiPost("/v3/jobs/:id/stats/:eventType", { params: { id: jobId, eventType: "postuler_click" } })
+}
 export const getRelatedEtablissementsFromRome = async ({ rome, latitude, longitude, limit }: { rome: string; latitude: number; longitude: number; limit: number }) =>
   apiGet(`/etablissement/cfas-proches`, { querystring: { rome, latitude, longitude, limit } })
 export const createEtablissementDelegation = ({ data, jobId }: { jobId: string; data: INewDelegations }) =>
@@ -221,4 +241,15 @@ export async function unsubscribeCompany({ email, reason }: { email: string; rea
 
 export async function unsubscribeCompanySirets({ email, reason, sirets }: { email: string; reason: string; sirets: string[] }) {
   return apiPost("/unsubscribe/sirets", { body: { email, reason, sirets } })
+}
+
+function lookLikeObjectId(id: string): boolean {
+  return /^[0-9a-f]{24}$/gi.test(id)
+}
+export function getObjectId(job: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson): string | null {
+  const { id, recipient_id } = job
+  if (lookLikeObjectId(id)) return id
+  const [, part] = recipient_id.split("_")
+  if (lookLikeObjectId(part)) return part
+  return null
 }
