@@ -321,6 +321,8 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
+- filename: ui/config.public.ts
+  checksum: 1a1dd44691d54b97200fd47de72801c7abd07b8f248f01cb67122704fe1f65a4
 scopeconfig:
 - scope: node
 custom_patterns:
