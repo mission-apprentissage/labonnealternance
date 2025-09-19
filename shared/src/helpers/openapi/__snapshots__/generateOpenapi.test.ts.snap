@@ -952,7 +952,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "Cap, autres formations niveau (Infrabac)",
               "BP, Bac, autres formations niveau (Bac)",
               "BTS, DEUST, autres formations niveau (Bac+2)",
-              "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
+              "Licence, Maîtrise, autres formations niveau (Bac+3 à Bac+4)",
               "Master, titre ingénieur, autres formations niveau (Bac+5)",
             ],
             "type": [
@@ -5785,7 +5785,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                       "Cap, autres formations niveau (Infrabac)",
                       "BP, Bac, autres formations niveau (Bac)",
                       "BTS, DEUST, autres formations niveau (Bac+2)",
-                      "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
+                      "Licence, Maîtrise, autres formations niveau (Bac+3 à Bac+4)",
                       "Master, titre ingénieur, autres formations niveau (Bac+5)",
                     ],
                     "type": [
@@ -5996,7 +5996,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                       "Cap, autres formations niveau (Infrabac)",
                       "BP, Bac, autres formations niveau (Bac)",
                       "BTS, DEUST, autres formations niveau (Bac+2)",
-                      "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
+                      "Licence, Maîtrise, autres formations niveau (Bac+3 à Bac+4)",
                       "Master, titre ingénieur, autres formations niveau (Bac+5)",
                     ],
                     "type": [
