@@ -246,8 +246,8 @@ const ResendEmailContent = ({ onClick }: { onClick: () => void }) => {
 
 const JobPreview = ({ jobId, userIsValidated }: { jobId: string; userIsValidated: boolean }) => {
   return (
-    <Box mb={2}>
-      <Typography sx={{ mb: fr.spacing("1w") }}>
+    <Box mb={fr.spacing("1w")}>
+      <Box sx={{ mb: fr.spacing("3v") }}>
         <DsfrLink
           href={PAGES.dynamic.jobDetail({ type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, jobId }).getPath()}
           aria-label="Ouvrir la page de prévisualisation de l'offre sur le site La bonne alternance - nouvelle fenêtre"
@@ -255,7 +255,7 @@ const JobPreview = ({ jobId, userIsValidated }: { jobId: string; userIsValidated
         >
           Voir mon offre sur La bonne alternance
         </DsfrLink>
-      </Typography>
+      </Box>
       {userIsValidated && (
         <Box mb={1} mt={2}>
           <PrintJobLink jobId={jobId} />
